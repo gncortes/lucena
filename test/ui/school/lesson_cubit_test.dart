@@ -598,19 +598,17 @@ void main() {
       );
     });
 
-    test('errado não previsto: a explicação abre com o lance numerado '
-        'para a frase genérica', () async {
-      final lesson = await open();
-      await lesson.play(move('e2f2'));
-      expect(lesson.state.step, 1);
-      expect(lesson.state.thinkMistake, '1.Kf2');
-      expect(
-        lesson.state.speech,
-        'Find the route. Every route reaches a key square.',
-      );
-      // A fala seguinte já não leva a frase do erro.
-      expect(lesson.state.copyWith(speech: 'x').thinkMistake, isNull);
-    });
+    test(
+      'errado fora dos dados e sem motor: a peça volta e avisa (T70)',
+      () async {
+        final lesson = await open();
+        await lesson.play(move('e2f2'));
+        expect(lesson.state.step, 0);
+        expect(lesson.state.wrongNotice, isTrue);
+        expect(lesson.state.fen, fen);
+        expect(lesson.state.mistakes, 1);
+      },
+    );
 
     test('lance recusado (refusals) também abre a explicação', () async {
       final lesson = await open();
@@ -619,15 +617,13 @@ void main() {
       expect(lesson.state.thinkMistake, '1.e5');
     });
 
-    test('certo: a explicação abre com o "correto"', () async {
+    test('certo: o estado correto, sem frase de acerto (T70)', () async {
       final lesson = await open();
       await lesson.play(move('e2d3'));
       expect(lesson.state.step, 1);
+      expect(lesson.state.correct, isTrue);
       expect(lesson.state.thinkMistake, isNull);
-      expect(
-        lesson.state.speech,
-        'Correct. Find the route. Every route reaches a key square.',
-      );
+      expect(lesson.state.speech, 'Every route reaches a key square.');
     });
   });
 

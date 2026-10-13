@@ -138,29 +138,16 @@ void main() {
     expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
   });
 
-  testWidgets('think mistake: the explanation is titled CORRECT MOVE and the '
-      'move is in the primary colour (no result colour)', (tester) async {
+  testWidgets('think move outside the data and without engine (T70): the '
+      'piece goes back with a notice, no sheet opens', (tester) async {
     final cubit = await open(2);
     await show(tester, cubit, const Size(360, 740));
     await tester.runAsync(() => cubit.play(move('a1b1')));
     await tester.pumpAndSettle();
-    expect(find.text('CORRECT MOVE'), findsOneWidget);
-    // LICOES-V2 §2: o lance é sempre primary; o resultado não tem cor.
-    final error = Theme.of(tester.element(find.byType(LessonScreen)))
-        .colorScheme
-        .primary;
-    var found = false;
-    for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
-      rich.text.visitChildren((span) {
-        if (span is TextSpan &&
-            (span.text ?? '').contains('1.Rb1') &&
-            span.style?.color == error) {
-          found = true;
-        }
-        return true;
-      });
-    }
-    expect(found, isTrue);
+    expect(cubit.state.wrongNotice, isTrue);
+    expect(cubit.state.step, 2);
+    expect(find.text('CORRECT MOVE'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Continue keeps 16 dp from the right edge', (tester) async {

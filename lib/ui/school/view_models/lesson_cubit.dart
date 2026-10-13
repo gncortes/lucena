@@ -13,6 +13,7 @@ import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
+import '../../../domain/models/failed_alternative.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/engine_fallback.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -40,11 +41,23 @@ enum StepPhase {
   failed,
 }
 
+/// Como a tela se organiza (T60).
+enum LessonLayoutMode {
+  /// O aluno resolve: o tabuleiro no centro, o enunciado curto em cima e o
+  /// cronômetro com as ações embaixo.
+  solving,
+
+  /// O professor fala: o tabuleiro no alto e a folha da fala embaixo.
+  explaining,
+}
+
+/// O balão do prático (T70, crit. 12b): compacto (3 linhas) ou expandido.
+enum SpeechMode { compact, expanded }
+
 /// A fala genérica do app que a tela escreve (l10n) no lugar de um texto da
 /// aula: o motor respondeu (T70, crit. 8) ou o aluno achou outro lance bom.
-/// (Versão mínima do lote 3; o lote 1 traz a completa com o mesmo nome.)
 enum LessonNote {
-  /// "Também é correto. A aula segue com {move}."
+  /// "Também é correto. A aula segue com {move}." ([LessonState.noteSan]).
   alsoCorrect,
 
   /// Comentário do lance do aluno / da resposta do motor (neutros).
@@ -59,14 +72,31 @@ enum LessonNote {
   alsoHoldsShowMain,
 }
 
-/// Como a tela se organiza (T60).
-enum LessonLayoutMode {
-  /// O aluno resolve: o tabuleiro no centro, o enunciado curto em cima e o
-  /// cronômetro com as ações embaixo.
-  solving,
+/// Um lance do aluno com a resposta da máquina no prático (T70): a unidade do
+/// "Voltar" e do "Continuar".
+class PracticePair {
+  const PracticePair({
+    required this.fenBefore,
+    required this.turnBefore,
+    required this.movesBefore,
+    required this.student,
+    this.reply,
+    this.onLine = true,
+    this.commentBefore,
+    this.lastMoveBefore,
+  });
 
-  /// O professor fala: o tabuleiro no alto e a folha da fala embaixo.
-  explaining,
+  final String fenBefore;
+  final int turnBefore;
+  final List<String> movesBefore;
+  final String student;
+  final String? reply;
+
+  /// O par segue a linha da aula (o "Voltar" o devolve ao "Continuar");
+  /// fora dela (erro, motor), o "Voltar" o descarta.
+  final bool onLine;
+  final String? commentBefore;
+  final Move? lastMoveBefore;
 }
 
 class LessonState {
@@ -115,28 +145,94 @@ class LessonState {
     this.wrongMove = false,
     this.solutionSeen = false,
     this.presenting = false,
-    this.typing = false,
+    this.correct = false,
+    this.thinkPlayed,
+    this.fullSpeech,
+    this.alternatives = const [],
+    this.seen = const {},
+    this.wrongNotice = false,
     this.note,
+    this.noteSan,
+    this.typing = false,
+    this.engineErrors = 0,
+    this.engineLine = const [],
+    this.practiceGate = false,
+    this.practiceComment,
+    this.practiceHint = false,
+    this.speechMode = SpeechMode.compact,
+    this.practiceUndo = const [],
+    this.practiceRedo = const [],
+    this.offLine = false,
     this.demoOff = const [],
     this.demoOffFrom = 0,
-    this.engineErrors = 0,
   });
 
-  /// A máquina está respondendo: a folha mostra os três pontinhos.
+  // --- T70: fluxo da lição ---------------------------------------------------
+
+  /// O estado correto do passo de pensar (crit. 7): o tabuleiro depois do
+  /// lance principal, o mesmo por acerto, por erro + "Ver resposta" ou por
+  /// "Ver resposta" do enunciado.
+  final bool correct;
+
+  /// O lance (UCI) que o aluno jogou no passo de pensar, se jogou.
+  final String? thinkPlayed;
+
+  /// O texto inteiro da explicação, quando o estado correto mostra a curta
+  /// (`.short`): "Ver explicação completa" troca [speech] por ele. Nulo: o
+  /// texto já é o completo.
+  final String? fullSpeech;
+
+  /// "Alternativas que falham" do estado correto, com o "Já visto".
+  final List<FailedAlternative> alternatives;
+
+  /// Os lances (UCI) que o aluno já abriu.
+  final Set<String> seen;
+
+  /// Erro sem ramo e sem motor (crit. 1, opção A): a peça voltou e a 1ª linha
+  /// da folha vira "Lance errado. Tente outro lance."
+  final bool wrongNotice;
+
+  /// A fala genérica do app em vez de [speech] (a tela escreve).
+  final LessonNote? note;
+  final String? noteSan;
+
+  /// A máquina está pensando: três pontinhos no lugar do comentário.
   final bool typing;
 
-  /// A fala genérica do app (l10n) no lugar de [speech].
-  final LessonNote? note;
+  /// Quantas vezes o motor falhou (a tela mostra o snackbar a cada mudança).
+  final int engineErrors;
+
+  /// A linha "lance do aluno + resposta do motor" (UCI) que a tela mostra no
+  /// modo variante como um ramo comum (crit. 8b).
+  final List<String> engineLine;
+
+  /// O convite "Vamos praticar": antes do 1º move/play da parte. O tabuleiro
+  /// não responde até [LessonCubit.startPractice].
+  final bool practiceGate;
+
+  /// O texto do balão do Viktor no prático.
+  final String? practiceComment;
+
+  /// O balão mostra a Dica (leva o selo "Dica").
+  final bool practiceHint;
+  final SpeechMode speechMode;
+
+  /// Os pares lance + resposta jogados (para "Voltar") e os desfeitos (para
+  /// "Continuar").
+  final List<PracticePair> practiceUndo;
+  final List<PracticePair> practiceRedo;
+  bool get canUndo => practiceUndo.isNotEmpty;
+  bool get canRedo => practiceRedo.isNotEmpty;
+
+  /// O prático saiu da linha da aula (erro com refutação, motor): só o
+  /// "Voltar" devolve a vez.
+  final bool offLine;
 
   /// Na demonstração: os lances (UCI) que o aluno jogou fora do roteiro, com
-  /// a resposta da máquina (pares aluno + resposta), e o lance do roteiro em
-  /// que ele saiu ([demoMove] não muda fora do roteiro).
+  /// a resposta, e o lance do roteiro em que ele saiu.
   final List<String> demoOff;
   final int demoOffFrom;
   bool get offScript => demoOff.isNotEmpty;
-
-  /// Quantas vezes o motor deu erro inesperado (a tela mostra o aviso).
-  final int engineErrors;
 
   /// A abertura de um passo de exercício (T65 §8): o Viktor apresenta o
   /// objetivo e o relógio do passo ainda não começou. Não é salvo: fechar o
@@ -384,6 +480,9 @@ class LessonState {
   /// O aluno pode mexer no tabuleiro (no passo de tocar, só tocar).
   bool get interactive =>
       phase == StepPhase.active &&
+      !practiceGate &&
+      !offLine &&
+      !typing &&
       current is! TalkStep &&
       current is! TapStep &&
       current is! DemoStep &&
@@ -456,19 +555,31 @@ class LessonState {
     bool? wrongMove,
     bool? solutionSeen,
     bool? presenting,
-    bool? typing,
+    bool clearAttemptedSan = false,
+    bool? correct,
+    String? thinkPlayed,
+    String? fullSpeech,
+    bool clearFullSpeech = false,
+    List<FailedAlternative>? alternatives,
+    Set<String>? seen,
+    bool? wrongNotice,
     LessonNote? note,
+    String? noteSan,
     bool clearNote = false,
+    bool? typing,
+    int? engineErrors,
+    List<String>? engineLine,
+    bool? practiceGate,
+    String? practiceComment,
+    bool clearPracticeComment = false,
+    bool? practiceHint,
+    SpeechMode? speechMode,
+    List<PracticePair>? practiceUndo,
+    List<PracticePair>? practiceRedo,
+    bool? offLine,
     List<String>? demoOff,
     int? demoOffFrom,
-    int? engineErrors,
-    bool clearAttemptedSan = false,
   }) => LessonState(
-    typing: typing ?? this.typing,
-    note: clearNote ? null : note ?? (speech != null ? null : this.note),
-    demoOff: demoOff ?? this.demoOff,
-    demoOffFrom: demoOffFrom ?? this.demoOffFrom,
-    engineErrors: engineErrors ?? this.engineErrors,
     ready: ready ?? this.ready,
     missing: missing ?? this.missing,
     lesson: lesson ?? this.lesson,
@@ -529,6 +640,29 @@ class LessonState {
         ? null
         : attemptedSan ??
               (speech != null || step != null ? null : this.attemptedSan),
+    correct: correct ?? this.correct,
+    thinkPlayed: thinkPlayed ?? this.thinkPlayed,
+    fullSpeech: clearFullSpeech ? null : fullSpeech ?? this.fullSpeech,
+    alternatives: alternatives ?? this.alternatives,
+    seen: seen ?? this.seen,
+    wrongNotice: wrongNotice ?? this.wrongNotice,
+    // Uma fala nova apaga a genérica, a não ser que venha junto.
+    note: clearNote ? null : note ?? (speech != null ? null : this.note),
+    noteSan: clearNote ? null : noteSan ?? this.noteSan,
+    typing: typing ?? this.typing,
+    engineErrors: engineErrors ?? this.engineErrors,
+    engineLine: engineLine ?? this.engineLine,
+    practiceGate: practiceGate ?? this.practiceGate,
+    practiceComment: clearPracticeComment
+        ? null
+        : practiceComment ?? this.practiceComment,
+    practiceHint: practiceHint ?? this.practiceHint,
+    speechMode: speechMode ?? this.speechMode,
+    practiceUndo: practiceUndo ?? this.practiceUndo,
+    practiceRedo: practiceRedo ?? this.practiceRedo,
+    offLine: offLine ?? this.offLine,
+    demoOff: demoOff ?? this.demoOff,
+    demoOffFrom: demoOffFrom ?? this.demoOffFrom,
   );
 }
 
@@ -549,19 +683,15 @@ class LessonCubit extends Cubit<LessonState> {
     this._haptics,
     this._now = const SystemNow(),
     this.replyDelay = const Duration(milliseconds: 450),
+    this.holdDelay = const Duration(milliseconds: 550),
     this.typingDelay = const Duration(milliseconds: 600),
     this._engine,
+    this.practiceV2 = false,
   }) : _source = source ?? SchoolLessonSource(lessons!, progress!),
        super(const LessonState());
 
   final LessonSource _source;
 
-  /// O motor que responde aos lances fora dos dados (T70, crit. 8). Nulo: o
-  /// lance fora do roteiro é desfeito com o aviso de erro do motor.
-  final EngineFallback? _engine;
-
-  /// Quanto tempo os pontinhos "pensando" ficam, no mínimo.
-  final Duration typingDelay;
   ({
     int step,
     String id,
@@ -718,7 +848,10 @@ class LessonCubit extends Cubit<LessonState> {
           snapshot.copyWith(
             explanation: payload,
             attemptedSan: snapshot.attemptedSan,
-            speech: payload.explanations.expand((b) => b.texts).join('\n\n'),
+            // O estado correto (T70) mantém a fala curta/completa dele.
+            speech: snapshot.correct && practiceV2
+                ? snapshot.speech
+                : payload.explanations.expand((b) => b.texts).join('\n\n'),
           ),
         );
       }
@@ -743,6 +876,20 @@ class LessonCubit extends Cubit<LessonState> {
   /// A pausa antes da resposta combinada do outro lado, para o aluno ver o
   /// próprio lance antes.
   final Duration replyDelay;
+
+  /// Quanto o lance do aluno fica na tela antes de a peça voltar (outro lance
+  /// correto, erro sem ramo): somada a [replyDelay], cerca de 1 s (T70).
+  final Duration holdDelay;
+
+  /// Os três pontinhos antes do texto da resposta no prático (crit. 12a).
+  final Duration typingDelay;
+
+  /// O motor para o lance fora dos dados (crit. 8). Nulo: sem motor.
+  final EngineFallback? _engine;
+
+  /// O prático no desenho novo (T70, lotes 3 a 5): convite, Voltar/Continuar,
+  /// balão. Desligado, a tela de hoje segue funcionando.
+  final bool practiceV2;
 
   /// Quanto a máquina pensa em cada lance (e na dica).
   static const thinkTime = Duration(milliseconds: 400);
@@ -884,6 +1031,15 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     final nextStep = state.step + 1;
+    if (practiceV2 &&
+        returnTo == null &&
+        nextStep < state.stepCount &&
+        nextStep == LessonRules.practiceStart(state.lesson!.steps) &&
+        !state.reviewing) {
+      emit(_open(state, nextStep).copyWith(practiceGate: true, speech: null));
+      await _save();
+      return;
+    }
     if (nextStep < state.stepCount) {
       emit(_carryReturn(_open(state, nextStep), returnTo));
       await _save();
@@ -1033,7 +1189,7 @@ class LessonCubit extends Cubit<LessonState> {
       case StarsStep step:
         await _playStar(step, move);
       case MoveStep step:
-        await _playLine(step, move);
+        await (practiceV2 ? _playPractice(step, move) : _playLine(step, move));
       case PlayStep step:
         await _playOut(step, move);
       case ThinkStep():
@@ -1114,7 +1270,6 @@ class LessonCubit extends Cubit<LessonState> {
       if (!isClosed && !_closing) await _explain();
       return;
     }
-    final answerFen = state.fen;
     await Future<void>.delayed(replyDelay);
     await _waitForForeground();
     if (isClosed || _closing || state.step != stepIndex) {
@@ -1124,30 +1279,383 @@ class LessonCubit extends Cubit<LessonState> {
     if (nextIndex < state.stepCount) {
       final steps = state.lesson!.steps;
       final thinkFen = steps[stepIndex].fen;
-      if (LessonRules.acceptsThink(step, move.uci)) {
-        _explainGuessed(nextIndex, answerFen, move);
+      // Acertou: o lance da aula, o que a explicação mostra ou outro lance
+      // que a aula também aceita. Os três chegam ao mesmo estado correto.
+      if (LessonRules.acceptsThink(step, move.uci) ||
+          _guessed(steps[nextIndex], move.uci) ||
+          _alsoAccepted(steps, nextIndex, thinkFen, move.uci)) {
+        await _acceptThink(stepIndex, move);
+        return;
+      }
+      // Sem como dizer que errou (nem lance certo nem erro previsto): segue.
+      if (_mistakeText(step.mistakes[move.uci]?.say) == null &&
+          step.accept.isEmpty &&
+          !_showsMove(steps[nextIndex]) &&
+          !step.mistakes.containsKey(move.uci)) {
+        await _explain();
+        return;
+      }
+      if (await _knownBranch(stepIndex, step, move)) {
+        if (isClosed || _closing || state.step != stepIndex) return;
+        _thinkMistake(step, steps[nextIndex], move);
         await _save();
         return;
       }
-      // O lance que a explicação mostra: o tabuleiro segue dele.
-      if (_guessed(steps[nextIndex], move.uci)) {
-        _explainGuessed(nextIndex, answerFen, move);
-        await _save();
-        return;
-      }
-      // Outro lance que a aula também aceita (o passo de jogar da mesma
-      // posição): está certo, mas a explicação parte da posição dela.
-      if (_alsoAccepted(steps, nextIndex, thinkFen, move.uci)) {
-        _explainGuessed(nextIndex, null, move);
-        await _save();
-        return;
-      }
-      if (_thinkMistake(step, steps[nextIndex], move)) {
-        await _save();
-        return;
-      }
+      if (isClosed || _closing || state.step != stepIndex) return;
+      await _outsideData(stepIndex, step, move);
+      return;
     }
     await _explain();
+  }
+
+  /// Existe um ramo nos dados para o lance errado [move] do aluno (T70, "Texto
+  /// por lance"): erro previsto, demo errada da parte cuja posição é a de
+  /// depois do lance, ou alternativa que falha no feedback.
+  Future<bool> _knownBranch(int index, ThinkStep step, Move move) async {
+    if (step.mistakes.containsKey(move.uci) ||
+        step.refusals.containsKey(move.uci)) {
+      return true;
+    }
+    final steps = state.lesson!.steps;
+    final afterKey = _fenKey(state.fen);
+    for (final other in steps.skip(index + 1)) {
+      if (other is ThinkStep) break;
+      if (other is DemoStep && other.wrong && _fenKey(other.fen) == afterKey) {
+        return true;
+      }
+    }
+    final repository = _feedback;
+    if (repository == null) return false;
+    try {
+      final payload = await repository.findPayload(
+        lessonId: _lessonId,
+        exerciseId: step.id,
+        kind: 'think',
+        turn: 1,
+        fen: step.fen,
+        language: _language,
+        state: ExplanationState.incorrect,
+        playedUci: move.uci,
+      );
+      if (payload == null) return false;
+      return payload.explanations.any(
+        (block) => block.variations.any(
+          (v) =>
+              v.parentId == null &&
+              v.firstUci == move.uci &&
+              v.outcome != VariationOutcome.accepted,
+        ),
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// A posição sem os contadores de lances (para comparar FENs).
+  static String? _fenKey(String? fen) => fen?.split(" ").take(4).join(" ");
+
+  /// O aluno acertou no passo de pensar. Outro lance correto (que não o
+  /// principal) fica ~1 s na tela com a fala "Também é correto"; depois a
+  /// peça volta e o principal anima. Em todos os casos o estado é o mesmo.
+  Future<void> _acceptThink(int index, Move move) async {
+    final principal = _principalUci(index);
+    if (principal != null && principal != move.uci) {
+      final think = state.lesson!.steps[index] as ThinkStep;
+      emit(
+        state.copyWith(
+          note: LessonNote.alsoCorrect,
+          noteSan: _san(think.fen, principal),
+        ),
+      );
+      await Future<void>.delayed(holdDelay);
+      await _waitForForeground();
+      if (isClosed || _closing || state.step != index) return;
+    }
+    await _revealCorrect(index);
+  }
+
+  /// "Ver resposta" (T70, crit. 3 e 6): na posição inicial do passo de pensar
+  /// ou depois de um lance errado, anima o lance principal e abre o estado
+  /// correto, o mesmo do acerto.
+  Future<void> showAnswer() async {
+    final index = _thinkIndex();
+    if (index == null || state.phase == StepPhase.waiting || state.typing) {
+      return;
+    }
+    await _revealCorrect(index);
+  }
+
+  /// O índice do passo de pensar a que o "Ver resposta" se refere: o passo
+  /// aberto, ou o anterior depois de um lance errado (a explicação aberta).
+  int? _thinkIndex() {
+    final steps = state.lesson?.steps;
+    if (steps == null || state.correct) return null;
+    if (state.current is ThinkStep) return state.step;
+    final previous = state.step - 1;
+    if (previous >= 0 &&
+        steps[previous] is ThinkStep &&
+        (state.thinkPlayed != null || state.engineLine.isNotEmpty)) {
+      return previous;
+    }
+    return null;
+  }
+
+  /// O lance principal do passo de pensar: o que o passo seguinte ensina ou
+  /// mostra primeiro; senão, o primeiro aceito do próprio passo.
+  String? _principalUci(int index) {
+    final steps = state.lesson!.steps;
+    final think = steps[index] as ThinkStep;
+    final next = index + 1 < steps.length ? steps[index + 1] : null;
+    final shown = switch (next) {
+      TalkStep(:final arrows) when arrows.isNotEmpty =>
+        '${arrows.first.$1}${arrows.first.$2}',
+      DemoStep(:final line) when line.isNotEmpty => line.first.uci,
+      MoveStep(:final line)
+          when line.isNotEmpty && line.first.accept.isNotEmpty =>
+        line.first.accept.first,
+      _ => null,
+    };
+    for (final uci in [?shown, ...think.accept]) {
+      final parsed = Move.parse(uci);
+      final position = GameRules.fromFen(think.fen);
+      if (parsed != null &&
+          position != null &&
+          GameRules.play(position, parsed) != null) {
+        return uci;
+      }
+    }
+    return null;
+  }
+
+  /// O estado correto (crit. 7), o mesmo por acerto, por erro + "Ver
+  /// resposta" e por "Ver resposta" do enunciado: o passo da explicação, com
+  /// o tabuleiro depois do principal, sem frase de acerto.
+  Future<void> _revealCorrect(int index) async {
+    final steps = state.lesson!.steps;
+    final think = steps[index] as ThinkStep;
+    final nextIndex = index + 1;
+    if (nextIndex >= steps.length) {
+      await _explain();
+      return;
+    }
+    final next = steps[nextIndex];
+    final seen = state.seen;
+    // A tela de hoje ainda pede o payload "correto" da decisão.
+    if (practiceV2) _decision = null;
+    var opened = _open(state, nextIndex);
+    final uci = _principalUci(index) ?? state.moves.lastOrNull;
+    final principal = uci == null ? null : Move.parse(uci);
+    final position = GameRules.fromFen(think.fen);
+    final played = position == null || principal == null
+        ? null
+        : GameRules.play(position, principal);
+    if (next is TalkStep && played != null) {
+      opened = opened.copyWith(fen: played.position.fen, lastMove: principal);
+    } else if (next is DemoStep) {
+      opened = _demoAt(opened, next, 1);
+    }
+    // A fala curta só no desenho novo (lotes 3 a 5); a tela de hoje não tem
+    // o "Ver explicação completa".
+    final short = practiceV2 && (next is TalkStep || next is DemoStep)
+        ? state.texts.say('$_lessonId.${next.id}.short')
+        : null;
+    final full = state.texts.step(_lessonId, next.id) ?? opened.speech;
+    emit(
+      opened.copyWith(
+        correct: next is TalkStep || next is DemoStep,
+        seen: seen,
+        speech: short ?? full,
+        fullSpeech: short == null ? null : full,
+        emotion: Emotion.happy,
+      ),
+    );
+    await _save();
+    if (next is TalkStep || next is DemoStep) {
+      // Dado opcional que chega depois: o estado correto já está na tela.
+      unawaited(_loadAlternatives(index));
+    }
+  }
+
+  /// "Ver explicação completa" (crit. 3b): troca a curta pelo texto inteiro.
+  void showFullExplanation() {
+    final full = state.fullSpeech;
+    if (!state.correct || full == null) return;
+    emit(state.copyWith(speech: full, clearFullSpeech: true));
+  }
+
+  /// O aluno abriu o ramo de [uci] (lista do estado correto): vira "Já visto".
+  void markSeen(String uci) {
+    if (state.seen.contains(uci)) return;
+    emit(
+      state.copyWith(
+        seen: {...state.seen, uci},
+        alternatives: [
+          for (final alternative in state.alternatives)
+            alternative.uci == uci
+                ? alternative.copyWith(seen: true)
+                : alternative,
+        ],
+      ),
+    );
+  }
+
+  /// "Alternativas que falham" do estado correto (crit. 7c): a união, sem
+  /// repetir o lance, das alternativas que falham do feedback (ordem dele) e
+  /// das demos erradas da parte. Nunca um lance aceito.
+  Future<void> _loadAlternatives(int index) async {
+    final steps = state.lesson!.steps;
+    final think = steps[index] as ThinkStep;
+    final fen = think.fen;
+    final position = GameRules.fromFen(fen);
+    if (position == null) return;
+    final ucis = <String>[];
+    final repository = _feedback;
+    if (repository != null) {
+      try {
+        final payload = await repository.findPayload(
+          lessonId: _lessonId,
+          exerciseId: think.id,
+          kind: 'think',
+          turn: 1,
+          fen: fen,
+          language: _language,
+          state: ExplanationState.review,
+        );
+        for (final block in payload?.explanations ?? <ExplanationBlock>[]) {
+          for (final v in block.variations) {
+            final uci = v.firstUci;
+            if (v.parentId == null &&
+                uci != null &&
+                v.outcome != VariationOutcome.accepted &&
+                !ucis.contains(uci)) {
+              ucis.add(uci);
+            }
+          }
+        }
+      } catch (_) {
+        /* Dado opcional: segue só com as demos. */
+      }
+    }
+    for (final other in steps.skip(index + 1)) {
+      if (other is ThinkStep) break;
+      if (other is! DemoStep || !other.wrong) continue;
+      final key = _fenKey(other.fen);
+      for (final move in position.legalMoves.entries.expand(
+        (e) => e.value.squares.map((to) => NormalMove(from: e.key, to: to)),
+      )) {
+        final played = GameRules.play(position, move);
+        if (played != null &&
+            _fenKey(played.position.fen) == key &&
+            !ucis.contains(move.uci)) {
+          ucis.add(move.uci);
+        }
+      }
+    }
+    final principal = _principalUci(index);
+    final alternatives = [
+      for (final uci in ucis)
+        if (uci != principal && !think.accept.contains(uci))
+          if (_numbered(fen, Move.parse(uci)!) case final label?)
+            FailedAlternative(
+              uci: uci,
+              label: '$label?',
+              seen: state.seen.contains(uci),
+            ),
+    ];
+    if (isClosed || _closing || !state.correct || state.step != index + 1) {
+      return;
+    }
+    emit(state.copyWith(alternatives: alternatives));
+  }
+
+  /// [uci] em SAN (letras inglesas) a partir de [fen].
+  static String? _san(String fen, String uci) {
+    final position = GameRules.fromFen(fen);
+    final move = Move.parse(uci);
+    final played = position == null || move == null
+        ? null
+        : GameRules.play(position, move);
+    return played?.san;
+  }
+
+  /// Lição de vencer (o lado do aluno deve seguir ganhando) ou de segurar o
+  /// empate (algum passo de jogar com objetivo de empatar).
+  bool get _mustWin => !(state.lesson?.steps ?? const <LessonStep>[]).any(
+    (step) => step is PlayStep && step.goal == PlayGoal.draw,
+  );
+
+  /// Lance fora dos dados no passo de pensar (crit. 8): o Stockfish responde.
+  /// Sem motor, a peça volta e a folha avisa (crit. 1, opção A).
+  Future<void> _outsideData(int index, ThinkStep step, Move move) async {
+    final thinkFen = step.fen;
+    void revert({bool error = false, bool notice = false}) => emit(
+      state.copyWith(
+        fen: thinkFen,
+        clearLastMove: true,
+        moves: const [],
+        phase: StepPhase.active,
+        typing: false,
+        wrongNotice: notice,
+        mistakes: notice ? state.mistakes + 1 : null,
+        engineErrors: error ? state.engineErrors + 1 : null,
+      ),
+    );
+    final engine = _engine;
+    final after = _position();
+    if (engine == null || after == null) {
+      await Future<void>.delayed(holdDelay);
+      await _waitForForeground();
+      if (isClosed || _closing || state.step != index) return;
+      revert(notice: true);
+      await _save();
+      return;
+    }
+    emit(state.copyWith(typing: true));
+    final answer = await engine.respond(
+      after,
+      student: step.side,
+      mustWin: _mustWin,
+    );
+    await _waitForForeground();
+    if (isClosed || _closing || state.step != index) return;
+    switch (answer.verdict) {
+      case EngineVerdict.failed:
+        revert(error: true);
+        await _save();
+      case EngineVerdict.keeps:
+        emit(
+          state.copyWith(
+            typing: false,
+            note: _mustWin
+                ? LessonNote.alsoWinsShowMain
+                : LessonNote.alsoHoldsShowMain,
+          ),
+        );
+        await Future<void>.delayed(holdDelay);
+        await _waitForForeground();
+        if (isClosed || _closing || state.step != index) return;
+        await _revealCorrect(index);
+      case EngineVerdict.loses:
+        final reply = answer.reply!;
+        final played = GameRules.play(after, reply);
+        if (played == null) {
+          revert(error: true);
+          return;
+        }
+        unawaited(_sounds?.move(played.san));
+        final opened = _open(state, index + 1).copyWith(
+          thinkMistake: _numbered(thinkFen, move),
+          thinkPlayed: move.uci,
+          seen: {move.uci},
+          engineLine: [move.uci, reply.uci],
+          note: LessonNote.engineMove,
+          mistakes: state.mistakes + 1,
+          engineErrors: state.engineErrors,
+          emotion: Emotion.focused,
+        );
+        emit(opened);
+        await _save();
+    }
   }
 
   /// Lance errado no passo de pensar: a explicação abre na hora, começando
@@ -1156,13 +1664,10 @@ class LessonCubit extends Cubit<LessonState> {
   /// lance mostrado na explicação), não há como dizer que errou: falso.
   bool _thinkMistake(ThinkStep step, LessonStep next, Move move) {
     final said = _mistakeText(step.mistakes[move.uci]?.say);
-    if (said == null &&
-        step.accept.isEmpty &&
-        !_showsMove(next) &&
-        !step.mistakes.containsKey(move.uci)) {
-      return false;
-    }
-    final opened = _open(state, state.step + 1);
+    final opened = _open(
+      state,
+      state.step + 1,
+    ).copyWith(thinkPlayed: move.uci, seen: {move.uci});
     if (said != null) {
       emit(_thinkSaid(opened, step, said));
       return true;
@@ -1259,27 +1764,363 @@ class LessonCubit extends Cubit<LessonState> {
     _ => false,
   };
 
-  /// Acertou o lance pensando: a explicação abre com um "correto" antes da
-  /// fala e, com [fen] (o lance que ela mostra), o tabuleiro onde o aluno
-  /// deixou, sem voltar e refazer o lance.
-  void _explainGuessed(int index, String? fen, Move move) {
-    final step = state.lesson!.steps[index];
-    var opened = _open(state, index);
-    // Sem [fen]: certo, mas não é o lance que a explicação mostra; ela
-    // parte da posição dela.
-    if (fen != null && step is TalkStep) {
-      opened = opened.copyWith(fen: fen, lastMove: move);
-    } else if (fen != null && step is DemoStep) {
-      opened = _demoAt(opened, step, 1);
-    }
-    final right = _pick('coach.thinkRight') ?? _pick('coach.praise');
-    final speech = opened.speech;
+  // --- prático (T70, crit. 11 a 16) ------------------------------------------
+
+  /// O convite "Vamos praticar": o tabuleiro passa a responder.
+  void startPractice() {
+    if (!state.practiceGate) return;
+    final step = state.current;
     emit(
-      opened.copyWith(
-        speech: [?right, ?speech].join(' '),
-        emotion: Emotion.happy,
+      state.copyWith(
+        practiceGate: false,
+        speech: step == null ? null : _speechOf(state, state.step),
+        emotion: Emotion.calm,
       ),
     );
+    unawaited(_save());
+  }
+
+  /// "Voltar" do convite: a explicação anterior, como o "Voltar" de sempre.
+  Future<void> practiceInviteBack() async {
+    emit(state.copyWith(practiceGate: false));
+    await back();
+  }
+
+  /// O comentário que o Viktor dá ao n-ésimo lance do aluno (`r<n>`).
+  String? _practiceReply(MoveStep step, int turn) =>
+      state.texts.say('$_lessonId.${step.id}.r${turn + 1}');
+
+  Future<void> _playPractice(MoveStep step, Move move) async {
+    final start = _position();
+    if (start == null || GameRules.play(start, move) == null) return;
+    final index = state.step;
+    final before = PracticePair(
+      fenBefore: state.fen!,
+      turnBefore: state.turn,
+      movesBefore: state.moves,
+      student: move.uci,
+      commentBefore: state.speech,
+      lastMoveBefore: state.lastMove,
+    );
+    final turn = state.turn;
+    var student = move;
+    if (LessonRules.accepts(step, turn, move.uci)) {
+      final main = step.line[turn].accept.first;
+      if (main != move.uci) {
+        // Outro lance que a aula aceita: nota, a peça volta, o principal entra.
+        emit(
+          state.copyWith(
+            note: LessonNote.alsoCorrect,
+            noteSan: _san(state.fen!, main),
+          ),
+        );
+        await Future<void>.delayed(holdDelay);
+        await _waitForForeground();
+        if (isClosed || _closing || state.step != index) return;
+        emit(state.copyWith(clearNote: true, clearLastMove: true));
+        student = Move.parse(main)!;
+      }
+      await _practiceLine(step, index, before, student);
+      return;
+    }
+    // Lance fora da linha da aula.
+    final said = _mistakeText(step.mistakes[move.uci]?.say);
+    if (said != null) {
+      final played = GameRules.play(start, move)!;
+      unawaited(_sounds?.move(played.san));
+      emit(
+        state.copyWith(
+          fen: played.position.fen,
+          lastMove: move,
+          moves: [...state.moves, move.uci],
+          speech: said,
+          clearNote: true,
+          practiceHint: false,
+          practiceUndo: [...state.practiceUndo, _offPair(before)],
+          practiceRedo: const [],
+          offLine: true,
+          mistakes: state.mistakes + 1,
+          emotion: Emotion.focused,
+        ),
+      );
+      await _save();
+      return;
+    }
+    final engine = _engine;
+    if (engine == null) {
+      final mistakes = state.mistakes + 1;
+      final hint = state.texts.hint(_lessonId, step.id);
+      emit(
+        state.copyWith(
+          speech: hint ?? _pick('coach.wrong'),
+          genericMistake: hint == null,
+          emotion: Emotion.focused,
+          mistakes: mistakes,
+          wrongMove: true,
+        ),
+      );
+      await _save();
+      return;
+    }
+    final played = GameRules.play(start, move)!;
+    emit(
+      state.copyWith(
+        fen: played.position.fen,
+        lastMove: move,
+        typing: true,
+        practiceHint: false,
+      ),
+    );
+    final answer = await engine.respond(
+      played.position,
+      student: step.side,
+      mustWin: _mustWin,
+      replyOnKeep: true,
+    );
+    await _waitForForeground();
+    if (isClosed || _closing || state.step != index) return;
+    final reply = answer.reply;
+    final answered = reply == null
+        ? null
+        : GameRules.play(played.position, reply);
+    if (answer.verdict == EngineVerdict.failed || answered == null) {
+      emit(
+        state.copyWith(
+          fen: before.fenBefore,
+          lastMove: before.lastMoveBefore,
+          clearLastMove: before.lastMoveBefore == null,
+          typing: false,
+          engineErrors: state.engineErrors + 1,
+        ),
+      );
+      return;
+    }
+    unawaited(_sounds?.move(answered.san));
+    final keeps = answer.verdict == EngineVerdict.keeps;
+    emit(
+      state.copyWith(
+        fen: answered.position.fen,
+        lastMove: reply,
+        typing: false,
+        moves: [...state.moves, move.uci, reply!.uci],
+        note: keeps
+            ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
+            : LessonNote.engineReply,
+        practiceUndo: [
+          ...state.practiceUndo,
+          _offPair(before, reply: reply.uci),
+        ],
+        practiceRedo: const [],
+        offLine: true,
+        mistakes: keeps ? null : state.mistakes + 1,
+        emotion: keeps ? Emotion.happy : Emotion.focused,
+      ),
+    );
+    await _save();
+  }
+
+  PracticePair _offPair(PracticePair base, {String? reply}) => PracticePair(
+    fenBefore: base.fenBefore,
+    turnBefore: base.turnBefore,
+    movesBefore: base.movesBefore,
+    student: base.student,
+    reply: reply,
+    onLine: false,
+    commentBefore: base.commentBefore,
+    lastMoveBefore: base.lastMoveBefore,
+  );
+
+  /// O lance da aula [student] entra, a máquina "digita" e responde.
+  Future<void> _practiceLine(
+    MoveStep step,
+    int index,
+    PracticePair before,
+    Move student,
+  ) async {
+    final start = _position()!;
+    final played = GameRules.play(start, student)!;
+    unawaited(_sounds?.move(played.san));
+    unawaited(_haptics?.move(played.san));
+    final turn = state.turn;
+    final ends = turn + 1 >= step.line.length;
+    final replyUci = step.line[turn].reply;
+    final reply = replyUci == null ? null : Move.parse(replyUci);
+    emit(
+      state.copyWith(
+        fen: played.position.fen,
+        lastMove: student,
+        clearNote: true,
+        practiceHint: false,
+        offLine: false,
+        wrongMove: false,
+        genericMistake: false,
+        clearHint: true,
+        typing: !ends && reply != null,
+        phase: ends ? StepPhase.done : StepPhase.active,
+      ),
+    );
+    var after = played.position;
+    var answered = reply == null ? null : GameRules.play(after, reply);
+    if (!ends && reply != null) {
+      await Future<void>.delayed(typingDelay);
+      await _waitForForeground();
+      if (isClosed || _closing || state.step != index) return;
+    }
+    final comment = ends
+        ? state.texts.done(_lessonId, step.id) ?? _pick('coach.praise')
+        : _practiceReply(step, turn);
+    if (!ends && answered != null) {
+      unawaited(_sounds?.move(answered.san));
+      after = answered.position;
+    }
+    emit(
+      state.copyWith(
+        fen: after.fen,
+        lastMove: ends ? student : (answered != null ? reply : student),
+        turn: turn + 1,
+        typing: false,
+        moves: [
+          ...state.moves,
+          student.uci,
+          if (!ends && answered != null) reply!.uci,
+        ],
+        speech: comment,
+        practiceUndo: [
+          ...state.practiceUndo,
+          PracticePair(
+            fenBefore: before.fenBefore,
+            turnBefore: before.turnBefore,
+            movesBefore: before.movesBefore,
+            student: student.uci,
+            reply: answered != null && !ends ? reply!.uci : null,
+            commentBefore: before.commentBefore,
+            lastMoveBefore: before.lastMoveBefore,
+          ),
+        ],
+        practiceRedo: const [],
+        emotion: ends ? Emotion.happy : Emotion.calm,
+      ),
+    );
+    await _save();
+  }
+
+  /// "Voltar" do prático (crit. 12): desfaz um par; na vez inicial, volta ao
+  /// convite. No passo de jogar desfaz pares da partida, sem "Continuar".
+  Future<void> practiceBack() async {
+    final current = state.current;
+    if (current is PlayStep) {
+      await _playBack(current);
+      return;
+    }
+    if (current is! MoveStep) return;
+    if (state.practiceUndo.isEmpty) {
+      emit(state.copyWith(practiceGate: true, speech: null));
+      await _save();
+      return;
+    }
+    final pair = state.practiceUndo.last;
+    emit(
+      state.copyWith(
+        fen: pair.fenBefore,
+        turn: pair.turnBefore,
+        moves: pair.movesBefore,
+        lastMove: pair.lastMoveBefore,
+        clearLastMove: pair.lastMoveBefore == null,
+        speech: pair.commentBefore,
+        phase: StepPhase.active,
+        practiceUndo: state.practiceUndo.sublist(
+          0,
+          state.practiceUndo.length - 1,
+        ),
+        practiceRedo: pair.onLine
+            ? [...state.practiceRedo, pair]
+            : state.practiceRedo,
+        offLine: false,
+        clearNote: true,
+        practiceHint: false,
+        wrongMove: false,
+        typing: false,
+      ),
+    );
+    await _save();
+  }
+
+  Future<void> _playBack(PlayStep step) async {
+    final moves = state.moves;
+    if (moves.isEmpty) return;
+    final keep = moves.length.isOdd ? moves.length - 1 : moves.length - 2;
+    final kept = moves.sublist(0, keep < 0 ? 0 : keep);
+    var position = GameRules.fromFen(step.fen)!;
+    Move? last;
+    for (final uci in kept) {
+      final parsed = Move.parse(uci)!;
+      position = GameRules.play(position, parsed)!.position;
+      last = parsed;
+    }
+    emit(
+      state.copyWith(
+        fen: position.fen,
+        moves: kept,
+        lastMove: last,
+        clearLastMove: last == null,
+        phase: StepPhase.active,
+        clearHint: true,
+      ),
+    );
+    await _save();
+  }
+
+  /// "Continuar" do prático (crit. 12): refaz o par desfeito; sem ele, no fim
+  /// do passo, segue para o próximo.
+  Future<void> practiceForward() async {
+    final step = state.current;
+    if (step is MoveStep && state.practiceRedo.isNotEmpty) {
+      final pair = state.practiceRedo.last;
+      var position = GameRules.fromFen(pair.fenBefore)!;
+      final student = Move.parse(pair.student)!;
+      position = GameRules.play(position, student)!.position;
+      Move last = student;
+      final reply = pair.reply == null ? null : Move.parse(pair.reply!);
+      if (reply != null) {
+        position = GameRules.play(position, reply)!.position;
+        last = reply;
+      }
+      final turn = pair.turnBefore + 1;
+      final ends = turn >= step.line.length;
+      emit(
+        state.copyWith(
+          fen: position.fen,
+          lastMove: last,
+          turn: turn,
+          moves: [...pair.movesBefore, pair.student, ?pair.reply],
+          speech: ends
+              ? state.texts.done(_lessonId, step.id) ?? _pick('coach.praise')
+              : _practiceReply(step, pair.turnBefore),
+          phase: ends ? StepPhase.done : StepPhase.active,
+          practiceUndo: [...state.practiceUndo, pair],
+          practiceRedo: state.practiceRedo.sublist(
+            0,
+            state.practiceRedo.length - 1,
+          ),
+          clearNote: true,
+        ),
+      );
+      await _save();
+      return;
+    }
+    await next();
+  }
+
+  /// O balão do prático abre inteiro / volta à altura curta (crit. 16).
+  void expandSpeech() => emit(state.copyWith(speechMode: SpeechMode.expanded));
+  void collapseSpeech() => emit(state.copyWith(speechMode: SpeechMode.compact));
+
+  /// Fim da parte (crit. 17): abre a parte seguinte.
+  Future<void> continueToNextPart() async {
+    final next = state.partNumber + 1;
+    final full = await _source.lesson(_lessonId);
+    if (full == null || next > full.parts.length) return;
+    await load(_lessonId, _language, part: full.parts[next - 1].id);
   }
 
   // --- demonstração (T51) -------------------------------------------------
@@ -1289,7 +2130,7 @@ class LessonCubit extends Cubit<LessonState> {
   /// retoma. Fora do roteiro, volta ao roteiro e anda um lance, pausada.
   Future<void> demoForward() async {
     final step = state.current;
-    if (step is! DemoStep) return;
+    if (step is! DemoStep || state.typing) return;
     if (state.offScript) {
       // Fora do roteiro (pg. 2.5): volta ao roteiro e anda um lance, pausado.
       final next = state.demoOffFrom + 1;
@@ -1309,7 +2150,7 @@ class LessonCubit extends Cubit<LessonState> {
   /// fora, volta ao ponto do roteiro em que o aluno saiu.
   Future<void> demoBack() async {
     final step = state.current;
-    if (step is! DemoStep) {
+    if (step is! DemoStep || state.typing) {
       return;
     }
     if (state.offScript) {
@@ -1383,11 +2224,8 @@ class LessonCubit extends Cubit<LessonState> {
   // As falas de cada par fora do roteiro (para o ⏮ devolver a do par).
   final _offNotes = <_OffNote>[];
 
-  /// Lição de vencer (o lado do aluno deve seguir ganhando) ou de segurar o
-  /// empate (algum passo de jogar com objetivo de empatar).
-  bool get _mustWin => !(state.lesson?.steps ?? const <LessonStep>[]).any(
-    (step) => step is PlayStep && step.goal == PlayGoal.draw,
-  );
+  /// O aluno jogou [move] com a demonstração em pausa: a máquina responde.
+  Future<void> demoPlay(Move move) => _demoStudent(move);
 
   /// O lance do aluno na demonstração (T70, "ponto 2"): só o lado e a vez
   /// dele. O lance pausa a demonstração. Igual ao próximo do roteiro: é o ⏭.
@@ -1664,6 +2502,15 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     switch (current) {
+      case MoveStep step when practiceV2:
+        // A dica só no balão (crit. 14): sem seta no tabuleiro.
+        emit(
+          state.copyWith(
+            practiceHint: true,
+            speech: state.texts.hint(_lessonId, step.id) ?? _pick('coach.hint'),
+            emotion: Emotion.focused,
+          ),
+        );
       case MoveStep step:
         final accepted = step.line[state.turn].accept.first;
         emit(

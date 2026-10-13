@@ -32,6 +32,10 @@ abstract final class AppMotion {
   /// Revelar um lance oculto da faixa de variantes (T69, "desliza para fora").
   static const reveal = Duration(milliseconds: 240);
 
+  /// Os três pontinhos de "digitando" (T70): ciclo e defasagem entre pontos.
+  static const typingCycle = Duration(milliseconds: 1200);
+  static const typingStagger = Durations.short3;
+
   /// Curva da revelação.
   static const revealCurve = Curves.easeOutCubic;
 
@@ -60,6 +64,10 @@ abstract final class AppMotion {
       MediaQuery.disableAnimationsOf(context)
       ? MotionDurations.none
       : MotionDurations.standard;
+
+  /// "Remover animações" está ligado: o que se move fica parado.
+  static bool reduced(BuildContext context) =>
+      MediaQuery.disableAnimationsOf(context);
 }
 
 /// As durações de [AppMotion] já ajustadas para "remover animações".

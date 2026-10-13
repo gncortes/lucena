@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../theme/app_motion.dart';
+
 /// Os três pontinhos de "digitando" (T70): a máquina está respondendo. Ciclo
 /// de 1200 ms, defasagem de 150 ms entre os pontos; com "remover animações"
 /// ficam parados em 0,6 de opacidade. Fora da semântica (o texto que vem
@@ -9,8 +11,8 @@ import 'package:flutter/material.dart';
 class TypingDots extends StatefulWidget {
   const TypingDots({this.color, super.key});
 
-  static const cycle = Duration(milliseconds: 1200);
-  static const stagger = Duration(milliseconds: 150);
+  static const cycle = AppMotion.typingCycle;
+  static const stagger = AppMotion.typingStagger;
   static const staticOpacity = 0.6;
   static const dotSize = 6.0;
   static const gap = 4.0;
@@ -32,7 +34,7 @@ class _TypingDotsState extends State<TypingDots>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final animate = !MediaQuery.disableAnimationsOf(context);
+    final animate = !AppMotion.reduced(context);
     if (animate && !_animating) {
       _controller.repeat();
     } else if (!animate && _animating) {

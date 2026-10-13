@@ -190,6 +190,20 @@ class DemoControls extends StatelessWidget {
   }
 }
 
+/// A ação primária do rodapé do modo variante (T70): no erro do `think`, o
+/// "Ver resposta" ocupa o lugar do ✕ e do primeiro vão.
+class VariationPrimaryAction {
+  const VariationPrimaryAction({
+    required this.label,
+    required this.onPressed,
+    this.buttonKey = LessonKeys.showAnswerButton,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final Key buttonKey;
+}
+
 /// Os controles do modo variante (LICOES-V2 §1), fixos no rodapé nos mesmos
 /// lugares dos da demonstração: fechar à esquerda, lance anterior no meio e
 /// próximo lance no canto. Os dois cursores (a variante da fala e a da
@@ -203,8 +217,24 @@ class VariationControls extends StatelessWidget {
     required this.onForward,
     this.wrong = false,
     this.inBranch = false,
+    this.primaryAction,
+    this.wrongLabel,
+    this.exitTooltip,
+    this.exitKey = LessonKeys.variationExit,
     super.key,
   });
+
+  /// Com ação primária (T70, "Ver resposta"), ela toma o lugar do ✕ e do
+  /// primeiro vão: [Ver resposta] ⏮ ⏭.
+  final VariationPrimaryAction? primaryAction;
+
+  /// O rótulo do selo da linha errada (`WrongLineBadge.label`).
+  final String? wrongLabel;
+
+  /// A dica e a key do ✕: fora de ramo é "Sair da lição" (`lessonExitButton`),
+  /// no ramo "Fechar a variante" (padrão).
+  final String? exitTooltip;
+  final Key exitKey;
 
   final bool canPrevious;
   final bool canNext;
@@ -222,16 +252,22 @@ class VariationControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     const gap = SizedBox.square(dimension: _ControlButton.size);
+    final action = primaryAction;
     return _ControlBar(
       wrong: wrong,
+      wrongLabel: wrongLabel,
       children: [
-        _ControlButton(
-          buttonKey: LessonKeys.variationExit,
-          icon: Icons.close_rounded,
-          tooltip: l10n.lessonVariationClose,
-          onPressed: onExit,
-        ),
-        gap,
+        if (action != null)
+          _PrimaryActionButton(action: action)
+        else ...[
+          _ControlButton(
+            buttonKey: exitKey,
+            icon: Icons.close_rounded,
+            tooltip: exitTooltip ?? l10n.lessonVariationClose,
+            onPressed: onExit,
+          ),
+          gap,
+        ],
         _ControlButton(
           buttonKey: LessonKeys.variationBack,
           icon: Icons.skip_previous_rounded,
@@ -257,12 +293,16 @@ class VariationControls extends StatelessWidget {
 
 /// O selo "Linha errada": a linha mostrada é o que não fazer.
 class WrongLineBadge extends StatelessWidget {
-  const WrongLineBadge({super.key});
+  const WrongLineBadge({this.label, super.key});
+
+  /// O texto do selo; sem ele, "Linha errada". No erro do `think` (T70) é
+  /// "Lance errado" (`lessonIncorrectMove`).
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final label = context.l10n.lessonWrongLine;
+    final label = this.label ?? context.l10n.lessonWrongLine;
     return Semantics(
       label: label,
       excludeSemantics: true,
@@ -303,10 +343,16 @@ class WrongLineBadge extends StatelessWidget {
 /// A fileira dos controles redondos, sobre um esmaecer até o fundo. Na
 /// linha errada, o selo vem acima dela. As setas não espelham (`ltr`).
 class _ControlBar extends StatelessWidget {
-  const _ControlBar({required this.children, this.wrong = false, this.top});
+  const _ControlBar({
+    required this.children,
+    this.wrong = false,
+    this.wrongLabel,
+    this.top,
+  });
 
   final List<Widget> children;
   final bool wrong;
+  final String? wrongLabel;
 
   /// Uma linha acima dos controles (o "Voltar à demonstração").
   final Widget? top;
@@ -320,9 +366,12 @@ class _ControlBar extends StatelessWidget {
           if (top case final top?)
             Padding(padding: const EdgeInsets.only(bottom: 8), child: top),
           if (wrong)
-            const Padding(
-              padding: EdgeInsets.only(bottom: 8),
-              child: WrongLineBadge(key: LessonKeys.wrongLineControls),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: WrongLineBadge(
+                key: LessonKeys.wrongLineControls,
+                label: wrongLabel,
+              ),
             ),
           Directionality(
             textDirection: TextDirection.ltr,
@@ -336,6 +385,26 @@ class _ControlBar extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// O botão cheio do rodapé do erro ("Ver resposta"), 48 dp de altura.
+class _PrimaryActionButton extends StatelessWidget {
+  const _PrimaryActionButton({required this.action});
+
+  final VariationPrimaryAction action;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton(
+      key: action.buttonKey,
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(0, _ControlButton.size),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      ),
+      onPressed: action.onPressed,
+      child: Text(action.label, maxLines: 1, overflow: TextOverflow.ellipsis),
     );
   }
 }
