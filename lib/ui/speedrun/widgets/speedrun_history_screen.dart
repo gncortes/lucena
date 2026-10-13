@@ -143,6 +143,12 @@ class _Header extends StatelessWidget {
                       icon: paceIcon(PaceCategory.of(speedrun.time)),
                       label: paceLabel(l10n, speedrun.time),
                     ),
+                    if (speedrun.kind == SpeedrunKind.marathon)
+                      _Chip(
+                        icon: Icons.all_inclusive,
+                        label: l10n.marathonSection,
+                        outlined: true,
+                      ),
                     if (level != null)
                       _Chip(
                         icon: Icons.signal_cellular_alt,
@@ -226,6 +232,7 @@ class _Numbers extends StatelessWidget {
       height: 18 / 13,
       color: colors.onSurfaceVariant,
     );
+    final marathon = speedrun.kind == SpeedrunKind.marathon;
     final attempts = state.runs.length;
     final finished = state.finished;
     Widget count(Key key, int value, String label) => Column(
@@ -268,12 +275,18 @@ class _Numbers extends StatelessWidget {
             key: SpeedrunKeys.historyRecord,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.speedrunYourRecord, style: muted),
+              Text(
+                marathon ? l10n.marathonBest : l10n.speedrunYourRecord,
+                style: muted,
+              ),
               const SizedBox(height: 4),
               TimeDisplay(
                 value: runTime(context, recordTime(speedrun, best)),
-                semanticsLabel:
-                    '${l10n.speedrunYourRecord}: ${runTime(context, recordTime(speedrun, best))}',
+                semanticsLabel: marathon
+                    ? l10n.marathonBestValue(
+                        runTime(context, recordTime(speedrun, best)),
+                      )
+                    : '${l10n.speedrunYourRecord}: ${runTime(context, recordTime(speedrun, best))}',
                 type: TimeDisplayType.record,
                 size: TimeDisplaySize.pill,
                 state: TimeDisplayState.highlight,
@@ -300,9 +313,21 @@ class _Numbers extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           // Sem conclusão, só as contagens.
           child: best == null || bestAt == null
-              ? Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: counts,
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (marathon) ...[
+                      Text(
+                        l10n.marathonNotFinishedYet,
+                        key: SpeedrunKeys.historyNotFinished,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    counts,
+                  ],
                 )
               : wide
               ? IntrinsicHeight(
@@ -359,27 +384,54 @@ class _RunRow extends StatelessWidget {
       height: 18 / 13,
       color: colors.onSurfaceVariant,
     );
+    final marathon = speedrun.kind == SpeedrunKind.marathon;
     final time = runTime(context, recordTime(speedrun, entry.run.total));
-    final label = '${l10n.speedrunTotal}: $time';
-    final (icon, stopped) = switch (entry.end) {
-      SpeedrunRunEnd.completed => (null, null),
-      SpeedrunRunEnd.lost => (
-        Icons.remove,
-        l10n.speedrunLostHero(stage, total),
-      ),
-      SpeedrunRunEnd.drawn => (
-        Icons.drag_handle,
-        l10n.speedrunDrawnHero(stage, total),
-      ),
-      SpeedrunRunEnd.abandoned => (
-        Icons.do_not_disturb_on_outlined,
-        l10n.speedrunStoppedAt(stage, total),
-      ),
-      SpeedrunRunEnd.timeout => (
-        Icons.timer_off_outlined,
-        l10n.marathonTimeoutHero(stage, total),
-      ),
-    };
+    final label = marathon
+        ? l10n.marathonLeftValue(time)
+        : '${l10n.speedrunTotal}: $time';
+    final (icon, stopped) = marathon
+        ? switch (entry.end) {
+            SpeedrunRunEnd.completed => (null, null),
+            SpeedrunRunEnd.drawn => (
+              Icons.drag_handle,
+              l10n.marathonDrawnHero(stage, total),
+            ),
+            SpeedrunRunEnd.timeout => (
+              Icons.hourglass_bottom,
+              l10n.marathonTimeoutHero(stage, total),
+            ),
+            SpeedrunRunEnd.abandoned => (
+              Icons.do_not_disturb_on_outlined,
+              l10n.speedrunAbandonedHero(stage, total),
+            ),
+            SpeedrunRunEnd.lost => (
+              Icons.remove,
+              l10n.speedrunLostHero(stage, total),
+            ),
+          }
+        : switch (entry.end) {
+            SpeedrunRunEnd.completed => (null, null),
+            SpeedrunRunEnd.lost => (
+              Icons.remove,
+              l10n.speedrunLostHero(stage, total),
+            ),
+            SpeedrunRunEnd.drawn => (
+              Icons.drag_handle,
+              l10n.speedrunDrawnHero(stage, total),
+            ),
+            SpeedrunRunEnd.abandoned => (
+              Icons.do_not_disturb_on_outlined,
+              l10n.speedrunStoppedAt(stage, total),
+            ),
+            SpeedrunRunEnd.timeout => (
+              Icons.timer_off_outlined,
+              l10n.marathonTimeoutHero(stage, total),
+            ),
+          };
+    final day = l10n.historyDayAt(
+      DateFormat(l10n.historyDayPattern, locale).format(endedAt),
+      DateFormat.Hm(locale).format(endedAt),
+    );
     final bonus = entry.bonus;
     return InkWell(
       // O resumo da tentativa: o tempo e o fim de cada etapa.
@@ -402,6 +454,8 @@ class _RunRow extends StatelessWidget {
                         semanticsLabel: label,
                         type: entry.record
                             ? TimeDisplayType.record
+                            : marathon
+                            ? TimeDisplayType.countdown
                             : TimeDisplayType.stopwatch,
                         state: entry.record
                             ? TimeDisplayState.highlight
@@ -433,13 +487,9 @@ class _RunRow extends StatelessWidget {
                       ),
                     const SizedBox(height: 2),
                     Text(
-                      l10n.historyDayAt(
-                        DateFormat(
-                          l10n.historyDayPattern,
-                          locale,
-                        ).format(endedAt),
-                        DateFormat.Hm(locale).format(endedAt),
-                      ),
+                      marathon && stopped == null
+                          ? l10n.marathonDayLeft(day)
+                          : day,
                       style: muted,
                     ),
                     if (bonus != null && bonus > 0)

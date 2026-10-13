@@ -9,6 +9,7 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/speedrun_pace.dart';
+import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 import 'speedrun_bonus_payer.dart';
@@ -121,7 +122,9 @@ class SpeedrunHistoryCubit extends Cubit<SpeedrunHistoryState> {
       for (final run in runs)
         SpeedrunHistoryRun(
           run: run,
-          end: _endOf(run),
+          end: speedrun.kind == SpeedrunKind.marathon
+              ? MarathonEnd.of(speedrun, run)
+              : _endOf(run),
           endedAt: run.finishedAt ?? run.attempt.abandonedAt!,
           record: run.attempt.id == record?.attempt.id,
           bonus: run.completed ? bonuses[run.attempt.id] : null,

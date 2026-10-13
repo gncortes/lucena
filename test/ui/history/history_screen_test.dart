@@ -281,6 +281,24 @@ void main() {
       );
     });
 
+    testWidgets('a linha da aba Maratona abre o histórico da maratona', (
+      tester,
+    ) async {
+      await world.speedrun(time: blitz, marathon: true);
+      final pushed = <String>[];
+      await pump(tester, pushed: pushed);
+      await openTab(tester, 2);
+
+      await tester.tap(find.byKey(HistoryKeys.row(0)));
+      await tester.pumpAndSettle();
+
+      expect(pushed, hasLength(1));
+      expect(
+        Routes.speedrunHistory(pushed.single),
+        startsWith('/speedruns/marathon.queen@'),
+      );
+    });
+
     testWidgets('filtro de nível sem resultado mostra o aviso', (tester) async {
       await world.speedrun(time: blitz);
       world.settings = FakeSettingsRepository(

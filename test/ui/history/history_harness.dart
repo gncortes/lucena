@@ -30,7 +30,9 @@ class HistoryWorld {
   late final FakeSpeedrunRepository speedruns;
   late FakeSettingsRepository settings;
   late final FakeNow now;
-  final journey = FakeJourneyRepository();
+  final journey = FakeJourneyRepository(
+    speedruns: [...sampleSpeedruns, sampleMarathon],
+  );
   final CharacterRepository characters = FakeCharacterRepository();
   final reviews = FakeGameReviewRepository();
 
@@ -86,8 +88,12 @@ class HistoryWorld {
     int stages = 3,
     int seconds = 20,
     int daysAgo = 0,
+    bool marathon = false,
   }) async {
-    final speedrun = SpeedrunPaces.resolve(sampleSpeedruns, 'ending.queen')!;
+    final speedrun = SpeedrunPaces.resolve([
+      ...sampleSpeedruns,
+      sampleMarathon,
+    ], marathon ? sampleMarathon.id : 'ending.queen')!;
     final id = SpeedrunPaces.idFor(speedrun.id, time);
     final at = now().subtract(Duration(days: daysAgo, hours: 2));
     final attempt = await speedruns.start(id, at);
