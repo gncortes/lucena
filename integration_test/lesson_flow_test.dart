@@ -224,11 +224,12 @@ void main() {
     await endgames.expectStep(_lesson, 't_euwe');
 
     // Caso B: a folha cobre o tabuleiro, com o X, sem rodapé nem relógio.
-    await $(LessonKeys.closeSheet).waitUntilVisible();
+    await $(LessonKeys.presentationClose).waitUntilVisible();
     final opened = DateTime.now();
     expect(_cubit($).state.presenting, isTrue);
+    expect(find.byTooltip('Close and see the board'), findsOneWidget);
     expect(find.byKey(LessonKeys.nextButton).hitTestable(), findsNothing);
-    final cover = $.tester.getRect(find.byKey(LessonKeys.scroll));
+    final cover = $.tester.getRect(find.byKey(LessonKeys.presentation));
     final board = $.tester.getRect(find.byKey(LessonKeys.board));
     expect(cover.top, lessThan(board.bottom));
 
@@ -245,6 +246,8 @@ void main() {
     await $.pumpAndSettle();
     // A folha entre o tabuleiro e o rodapé; o rodapé de volta; o relógio do
     // passo começa agora.
+    expect(find.byKey(LessonKeys.presentation), findsNothing);
+    expect(find.byKey(LessonKeys.presentationClose), findsNothing);
     expect(find.byKey(LessonKeys.nextButton).hitTestable(), findsOneWidget);
     final sheet = $.tester.getRect(find.byKey(LessonKeys.scroll));
     expect(sheet.top, greaterThanOrEqualTo(board.bottom));
@@ -299,7 +302,7 @@ void main() {
         .push(Routes.endgameLessonSteps(_lesson, part: 'lateral'));
     await $(LessonKeys.screen).waitUntilVisible();
     await endgames.expectStep(_lesson, 't_euwe');
-    await $(LessonKeys.closeSheet).waitUntilVisible();
+    await $(LessonKeys.presentationClose).waitUntilVisible();
     expect(_cubit($).state.presenting, isTrue);
 
     await app.restart();
@@ -308,6 +311,7 @@ void main() {
     await $.pumpAndSettle();
     // Sem modal: a folha abaixo do tabuleiro, o rodapé tocável e o relógio.
     expect(_cubit($).state.presenting, isFalse);
+    expect(find.byKey(LessonKeys.presentation), findsNothing);
     expect(find.byKey(LessonKeys.nextButton).hitTestable(), findsOneWidget);
     final board = $.tester.getRect(find.byKey(LessonKeys.board));
     final sheet = $.tester.getRect(find.byKey(LessonKeys.scroll));
