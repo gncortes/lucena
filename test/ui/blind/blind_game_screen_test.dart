@@ -118,13 +118,13 @@ void main() {
 
   for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
     testWidgets(
-      'seletor adaptado 132×44 tem três alvos reais44 em $direction',
+      'seletor do canvas 111×36 tem três alvos em $direction',
       (tester) async {
         final semantics = tester.ensureSemantics();
         try {
           await pump(tester, direction: direction);
           final picker = find.byType(SegmentedButton<BlindView>);
-          expect(tester.getSize(picker), const Size(132, 44));
+          expect(tester.getSize(picker), const Size(111, 36));
           expect(
             tester
                 .widget<Icon>(find.byKey(BlindKeys.view(BlindView.hidden)))
@@ -134,7 +134,7 @@ void main() {
           for (final view in BlindView.values) {
             final icon = find.byKey(BlindKeys.view(view));
             final node = tester.getSemantics(icon);
-            expect(node.rect.size, const Size(44, 44));
+            expect(node.rect.size, const Size(37, 36));
             expect(
               node.getSemanticsData().hasAction(SemanticsAction.tap),
               isTrue,
@@ -146,7 +146,7 @@ void main() {
                 .performAction(node.id, SemanticsAction.tap);
             await tester.pumpAndSettle();
             expect(cubit.state.view, view);
-            for (final dx in [-21.0, 21.0]) {
+            for (final dx in [-15.0, 15.0]) {
               cubit.setView(
                 view == BlindView.board ? BlindView.hidden : BlindView.board,
               );
