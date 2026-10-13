@@ -93,6 +93,10 @@ abstract class SpeedrunAttempt with _$SpeedrunAttempt {
 
     /// As partidas da tentativa, na ordem em que foram jogadas.
     @Default(<Attempt>[]) List<Attempt> games,
+
+    /// A conclusão pode dar o bônus de rating. Falso nas tentativas de antes
+    /// do bônus existir (sem retroativo).
+    @Default(true) bool bonusEligible,
   }) = _SpeedrunAttempt;
 }
 
