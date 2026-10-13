@@ -392,6 +392,20 @@ class _ExplanationCardsState extends State<ExplanationCards> {
   /// -> "Também não funcionam". O resto segue a ordem do conteúdo.
   List<ExplanationBlock> _ordered(BuildContext context) {
     final all = widget.payload.explanations;
+    final error = all.indexWhere(
+      (b) => b.kind == ExplanationKind.playedIncorrect,
+    );
+    // Solução vista (LICOES-V2 §4): o payload já traz Lance certo -> lance
+    // do aluno -> Também não funcionam; a ordem dele vale e a citação de
+    // contexto vai por último.
+    final right = all.indexWhere((b) => b.kind == ExplanationKind.mainSolution);
+    final first = all.indexWhere((b) => !_isQuote(context, b));
+    if (error >= 0 && right >= 0 && right == first && right < error) {
+      return [
+        ...all.where((b) => !_isQuote(context, b)),
+        ...all.where((b) => _isQuote(context, b)),
+      ];
+    }
     return [
       ...all.where((b) => b.kind == ExplanationKind.playedIncorrect),
       ...all.where(

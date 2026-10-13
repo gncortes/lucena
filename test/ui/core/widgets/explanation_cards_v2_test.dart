@@ -393,6 +393,45 @@ void main() {
     expect(find.byType(Divider), findsNWidgets(3));
   });
 
+  testWidgets('solution seen: payload order is kept and the quote goes last', (
+    tester,
+  ) async {
+    final data = ExplanationPayload(
+      positionId: 'seen',
+      state: ExplanationState.incorrect,
+      explanations: [
+        ExplanationBlock(
+          id: 'm',
+          kind: ExplanationKind.mainSolution,
+          texts: ['Right text.'],
+          variations: [line('A', '1.d4', 'd2d4')],
+        ),
+        ExplanationBlock(
+          id: 'e',
+          kind: ExplanationKind.playedIncorrect,
+          texts: ['Wrong text.'],
+        ),
+        ExplanationBlock(
+          id: 'f',
+          kind: ExplanationKind.failedAlternatives,
+          variations: [line('B', '1.Kh2?', 'h1h2')],
+        ),
+        ExplanationBlock(
+          id: 'c',
+          kind: ExplanationKind.context,
+          title: 'History',
+          texts: ['Story text.'],
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(data));
+    await tester.pumpAndSettle();
+    double top(String text) => tester.getTopLeft(find.text(text)).dy;
+    expect(top('Right text.'), lessThan(top('Wrong text.')));
+    expect(top('Wrong text.'), lessThan(top('THESE DO NOT WORK EITHER')));
+    expect(top('THESE DO NOT WORK EITHER'), lessThan(top('Story text.')));
+  });
+
   testWidgets('quote: 3 dp start bar, 12 dp padding, 14/20 muted text', (
     tester,
   ) async {

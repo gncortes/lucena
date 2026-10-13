@@ -1982,12 +1982,9 @@ ExplanationPayload wrongMoveSheetPayload(
 }
 
 /// Solução vista (T65 §4): Lance certo, depois o lance do aluno ("Lance
-/// errado"), a citação de contexto e "Também não funcionam". Sem a solução
+/// errado") e "Também não funcionam" (a citação de contexto vai por último,
+/// em `ExplanationCards._ordered`). Sem a solução
 /// vista, a ordem é a do conteúdo (erro antes do certo, §3).
-// TODO(lote A): `ExplanationCards._ordered` hoje reordena por tipo; ao
-// refazê-lo (erro, certo, contexto, falhas), respeitar esta ordem quando o
-// certo vier antes do erro, e a citação de contexto (`LessonQuote`) fica
-// entre o lance do aluno e "Também não funcionam".
 List<ExplanationBlock> _correctFirst(
   bool solutionSeen,
   String correctMoveTitle,
