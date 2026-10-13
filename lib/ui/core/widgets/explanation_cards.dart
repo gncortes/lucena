@@ -6,6 +6,7 @@ import '../keys/explanation_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
 import 'lesson_quote.dart';
 
 typedef ExplanationParagraph = ({String text, ExplanationVariation? variation});
@@ -328,10 +329,21 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         principal &&
         block.kind != ExplanationKind.failedAlternatives &&
         block.variations.where((v) => v.parentId == null).length > 1;
+    // O lance fica destacado num lugar só: se o texto da linha já o cita, o
+    // título não se repete (a linha expansível mantém o título: leva o chevron).
+    final move = variation.movesSan.isEmpty
+        ? null
+        : variation.movesSan.first.replaceAll(RegExp(r'[?!+#]+$'), '');
+    final cited =
+        widget.lessonV2 &&
+        !expandable &&
+        move != null &&
+        texts.any((t) => t.contains(move));
+    final hasRow = !cited && (selector || (expandable && !inline));
     final body = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (selector || (expandable && !inline))
+        if (hasRow)
           Row(
             children: [
               Expanded(
@@ -379,7 +391,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
           ),
         if (showText && texts.isNotEmpty)
           Padding(
-            padding: EdgeInsets.only(bottom: principal ? 0 : 8),
+            padding: EdgeInsets.zero,
             child: _paragraph(texts.join('\n\n'), variation),
           ),
       ],
@@ -394,11 +406,11 @@ class _ExplanationCardsState extends State<ExplanationCards> {
       children: [
         body,
         if (showText)
-          for (final child in children)
+          for (final (i, child) in children.indexed)
             if (principal)
               Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(16),
+                margin: EdgeInsets.only(top: i == 0 ? 0 : AppSpacing.sm),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: colors.surfaceContainer,
                   borderRadius: BorderRadius.circular(AppShape.medium),
@@ -406,7 +418,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                 child: _line(context, block, child, principal: false),
               )
             else ...[
-              const Divider(height: 24, indent: 0, endIndent: 0),
+              const Divider(height: AppSpacing.lg, indent: 0, endIndent: 0),
               _line(context, block, child, principal: false),
             ],
       ],
@@ -415,9 +427,13 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     final empty =
         inline && !(showText && (texts.isNotEmpty || children.isNotEmpty));
     if (empty) return const SizedBox.shrink();
-    // Card da tentativa: 8 dp em cima e embaixo (canvas `tentativa`).
+    // Card da tentativa: colado ao parágrafo quando há linha de 48 dp (ela já
+    // traz 12 dp de ar); 8 dp em cima quando o texto vem direto.
     return principal
-        ? Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: line)
+        ? Padding(
+            padding: EdgeInsets.only(top: hasRow ? 0 : AppSpacing.sm),
+            child: line,
+          )
         : line;
   }
 
@@ -514,21 +530,25 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         for (final (index, block) in blocks.indexed)
           Padding(
             key: ExplanationKeys.block(block.id),
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Entre ideias: 16 (o fim do bloco anterior) + linha + 16.
+                // Entre ideias: 12 (o fim do bloco anterior) + linha + 12.
                 if (index > 0) ...[
                   Divider(height: 1, color: theme.colorScheme.outlineVariant),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                 ],
                 if (_isQuote(context, block))
                   LessonQuote(id: block.id, texts: block.texts)
                 else ...[
                   if (_hasHeader(context, block))
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      // Parágrafo logo abaixo: 8. Linha logo abaixo: ela mesma
+                      // traz o ar (8 em cima do texto ou os 12 do botão de 48).
+                      padding: EdgeInsets.only(
+                        bottom: _texts(block).isNotEmpty ? AppSpacing.sm : 0,
+                      ),
                       child: Text(
                         _label(context, block, rtl),
                         key: ExplanationKeys.header(block.id),

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/ui/core/keys/explanation_keys.dart';
 import 'package:lucena/ui/core/widgets/explanation_cards.dart';
+import 'package:lucena/ui/core/widgets/lesson_quote.dart';
 
 import '../../../../testing/test_app.dart';
 
@@ -485,6 +486,160 @@ void main() {
     expect(chevron.size, const Size(48, 48));
     expect(chevron.top, closeTo(paragraph.top, 1));
     expect(chevron.right, closeTo(paragraph.right, 1));
+  });
+
+  testWidgets('sem lance repetido e com ritmo compacto: 12 entre blocos, 0 entre '
+      'parágrafo e linha de 48, 12 dentro do sub-card', (tester) async {
+    ExplanationVariation v(
+      String id,
+      String san,
+      String uci,
+      List<String> texts, {
+      String? parent,
+      String? origin,
+    }) => ExplanationVariation(
+      id: id,
+      label: id,
+      parentId: parent,
+      parentPly: parent == null ? null : 1,
+      outcome: VariationOutcome.accepted,
+      texts: texts,
+      originFen: origin ?? fen,
+      movesUci: [uci],
+      movesSan: [san],
+      validated: true,
+    );
+    final main = v('A', '1.Kh2', 'h1h2', const []);
+    final child = v(
+      'A.1',
+      '1...Kf7',
+      'g8f7',
+      ['Aqui as pretas recuam com 1...Kf7, mas seguem perdendo.'],
+      parent: 'A',
+      origin: main.open()!.fen,
+    );
+    final fail = v('B', '1.d4?', 'd2d4', ['1.d4 permite empate.']);
+    final data = ExplanationPayload(
+      positionId: 'ritmo',
+      state: ExplanationState.correct,
+      explanations: [
+        ExplanationBlock(
+          id: 'm',
+          kind: ExplanationKind.mainSolution,
+          title: 'A ideia principal',
+          texts: const ['Parágrafo do acerto.'],
+          variations: [main, child],
+        ),
+        ExplanationBlock(
+          id: 'f',
+          kind: ExplanationKind.failedAlternatives,
+          variations: [fail],
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(data));
+    await tester.tap(find.byKey(ExplanationKeys.expand('A')));
+    await tester.pumpAndSettle();
+    // O lance fica num lugar só: nem o título da sub-variante nem o da
+    // linha que falha repetem o que o texto já cita.
+    expect(find.text('1...Kf7'), findsNothing);
+    expect(find.byKey(ExplanationKeys.variation('A.1')), findsNothing);
+    expect(find.text('1.d4?'), findsNothing);
+    expect(find.byKey(ExplanationKeys.variation('B')), findsNothing);
+    expect(find.textContaining('1...Kf7'), findsOneWidget);
+    expect(find.textContaining('1.d4'), findsOneWidget);
+    // A linha expansível continua com 48 dp de toque.
+    final para = tester.getRect(find.byKey(ExplanationKeys.paragraph('m', 0)));
+    final row = tester.getRect(find.byKey(ExplanationKeys.variation('A')));
+    expect(row.height, greaterThanOrEqualTo(48));
+    expect(
+      tester.getSize(find.byKey(ExplanationKeys.expand('A'))),
+      const Size(48, 48),
+    );
+    // Parágrafo -> linha: 0 (a linha de 48 já traz o ar dela).
+    expect(row.top - para.bottom, closeTo(0, 0.5));
+    // Linha -> sub-card: 0; sub-card com 12 de padding.
+    final card = tester.getRect(
+      find
+          .ancestor(
+            of: find.textContaining('1...Kf7'),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    expect(card.top - row.bottom, closeTo(0, 0.5));
+    final text = tester.getRect(find.textContaining('1...Kf7'));
+    expect(text.top - card.top, closeTo(12, 0.5));
+    expect(card.bottom - text.bottom, closeTo(12, 0.5));
+    // Sub-card -> divisor: 12; divisor -> cabeçalho: 12; cabeçalho -> texto: 8.
+    final divider = tester.getRect(find.byType(Divider));
+    expect(divider.top - card.bottom, closeTo(12, 0.5));
+    final header = tester.getRect(find.byKey(ExplanationKeys.header('f')));
+    expect(header.top - divider.bottom, closeTo(12, 0.5));
+    final failText = tester.getRect(find.textContaining('1.d4'));
+    expect(failText.top - header.bottom, closeTo(8, 0.5));
+  });
+
+  // O enunciado (objetivo e ensino, sem link) nunca vai para a citação: só o
+  // parágrafo de história, com link, fica dentro do LessonQuote.
+  for (final (name, state, plainShown) in [
+    ('início do passo', ExplanationState.intro, true),
+    ('passo reiniciado (tentar de novo)', ExplanationState.intro, true),
+    ('demonstração / solução vista', ExplanationState.review, true),
+    ('acerto', ExplanationState.correct, false),
+    ('erro', ExplanationState.incorrect, false),
+  ]) {
+    testWidgets('enunciado fora da citação: $name', (tester) async {
+      const statement =
+          'Você joga de brancas e deve ganhar. Seu rei está em d3.';
+      const history = 'Partida de {{Euwe|max-euwe}} em 1950.';
+      final data = ExplanationPayload(
+        positionId: 'enunciado',
+        state: state,
+        explanations: [
+          ExplanationBlock(
+            id: 'c',
+            kind: ExplanationKind.context,
+            title: 'A posição e o objetivo',
+            texts: [statement, history],
+          ),
+        ],
+      );
+      await tester.pumpWidget(app(data));
+      await tester.pumpAndSettle();
+      final quote = find.byType(LessonQuote);
+      expect(quote, findsOneWidget);
+      expect(
+        find.descendant(of: quote, matching: find.textContaining('Euwe')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: quote, matching: find.textContaining('Você joga')),
+        findsNothing,
+      );
+      expect(
+        find.textContaining('Você joga'),
+        plainShown ? findsOneWidget : findsNothing,
+      );
+    });
+  }
+
+  testWidgets('enunciado sem história: nenhuma citação', (tester) async {
+    final data = ExplanationPayload(
+      positionId: 'enunciado',
+      state: ExplanationState.intro,
+      explanations: [
+        ExplanationBlock(
+          id: 'c',
+          kind: ExplanationKind.context,
+          title: 'A posição e o objetivo',
+          texts: ['Você joga de brancas e deve ganhar.'],
+        ),
+      ],
+    );
+    await tester.pumpWidget(app(data));
+    expect(find.byType(LessonQuote), findsNothing);
+    expect(find.textContaining('Você joga'), findsOneWidget);
   });
 
   testWidgets('quote: 3 dp start bar, 12 dp padding, 14/20 muted text', (
