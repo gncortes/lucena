@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "그 수가 아닙니다. 레슨이 “{topic}”에 대해 보여 준 것을 떠올려 보세요.",
   "lessonThinkMistakeGeneric": "당신의 수 {move}는 여기서 통하지 않습니다. 이유를 보세요:",
   "lessonVariationShow": "변화 보기",
-  "lessonVariationExit": "레슨 포지션으로 돌아가기",
   "lessonDemoBack": "이전 수",
   "lessonDemoForward": "다음 수",
   "lessonDemoReplay": "다시 보기",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "자유 보드에서 열기",
   "lessonExplanationShort": "해설",
   "lessonFreeBoardInvite": "아직 궁금한 점이 있나요? 이 국면에서 내 쪽 보드로 다른 아이디어를 시험해 보세요.",
-  "lessonReturn": "뒤로",
   "lessonTeacherVoice": "빅토르의 음성",
   "lessonTeacherVoiceHint": "설명을 소리 내어 읽기",
   "lessonSoundHint": "기물 효과음과 빅토르의 음성",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{시도는 여기서 끝나고 기록에 남습니다.} =1{이번 시도에서 이긴 단계를 잃습니다.} other{이번 시도에서 이긴 단계 {count}개를 잃습니다.}}",
   "gameSeeResult": "결과 보기",
   "gameSoundLabelOn": "소리",
-  "gameSoundLabelOff": "소리 없음"
+  "gameSoundLabelOff": "소리 없음",
+  "lessonVariationClose": "변화 수순을 닫고 설명으로 돌아가기",
+  "lessonVariationPrevious": "변화 수순의 이전 수",
+  "lessonVariationNext": "변화 수순의 다음 수",
+  "lessonPresentationClose": "닫고 보드 보기"
 }

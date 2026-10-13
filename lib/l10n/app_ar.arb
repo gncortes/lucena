@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "ليست هذه. فكّر فيما أظهره الدرس عن «{topic}».",
   "lessonThinkMistakeGeneric": "نقلتك {move} لا تنجح هنا. إليك السبب:",
   "lessonVariationShow": "عرض التفريع",
-  "lessonVariationExit": "العودة إلى وضعية الدرس",
   "lessonDemoBack": "النقلة السابقة",
   "lessonDemoForward": "النقلة التالية",
   "lessonDemoReplay": "إعادة",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "افتح في الرقعة الحرة",
   "lessonExplanationShort": "الشرح",
   "lessonFreeBoardInvite": "هل ما زلت غير متأكد؟ جرّب أفكارًا أخرى من هذا الوضع، من جهتك من الرقعة.",
-  "lessonReturn": "رجوع",
   "lessonTeacherVoice": "صوت فيكتور",
   "lessonTeacherVoiceHint": "قراءة الشروحات بصوت عالٍ",
   "lessonSoundHint": "أصوات القطع وصوت فيكتور",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{تنتهي المحاولة هنا وتبقى في سجلّك.} =1{ستفقد المرحلة التي فزت بها في هذه المحاولة.} =2{ستفقد المرحلتين اللتين فزت بهما في هذه المحاولة.} few{ستفقد {count} مراحل فزت بها في هذه المحاولة.} many{ستفقد {count} مرحلة فزت بها في هذه المحاولة.} other{ستفقد {count} مرحلة فزت بها في هذه المحاولة.}}",
   "gameSeeResult": "عرض النتيجة",
   "gameSoundLabelOn": "الصوت",
-  "gameSoundLabelOff": "بلا صوت"
+  "gameSoundLabelOff": "بلا صوت",
+  "lessonVariationClose": "إغلاق التفريعة والعودة إلى الشرح",
+  "lessonVariationPrevious": "النقلة السابقة في التفريعة",
+  "lessonVariationNext": "النقلة التالية في التفريعة",
+  "lessonPresentationClose": "إغلاق ومشاهدة اللوح"
 }

@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "यह नहीं। सोचें कि पाठ ने “{topic}” के बारे में क्या दिखाया।",
   "lessonThinkMistakeGeneric": "आपकी चाल {move} यहाँ काम नहीं करती। देखिए क्यों:",
   "lessonVariationShow": "वेरिएशन देखें",
-  "lessonVariationExit": "पाठ की स्थिति पर लौटें",
   "lessonDemoBack": "पिछली चाल",
   "lessonDemoForward": "अगली चाल",
   "lessonDemoReplay": "दोहराएँ",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "स्वतंत्र बोर्ड में खोलें",
   "lessonExplanationShort": "व्याख्या",
   "lessonFreeBoardInvite": "अब भी संदेह है? इसी स्थिति से, बोर्ड की अपनी तरफ़ से, दूसरे विचार आज़माएँ।",
-  "lessonReturn": "वापस",
   "lessonTeacherVoice": "विक्टर की आवाज़",
   "lessonTeacherVoiceHint": "व्याख्याएँ ज़ोर से पढ़ें",
   "lessonSoundHint": "मोहरे की ध्वनियाँ और विक्टर की आवाज़",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{प्रयास यहीं खत्म होगा और इतिहास में रहेगा।} =1{आप इस प्रयास में जीता हुआ चरण खो देंगे।} other{आप इस प्रयास में जीते हुए {count} चरण खो देंगे।}}",
   "gameSeeResult": "नतीजा देखें",
   "gameSoundLabelOn": "ध्वनि",
-  "gameSoundLabelOff": "ध्वनि बंद"
+  "gameSoundLabelOff": "ध्वनि बंद",
+  "lessonVariationClose": "वेरिएशन बंद करें और व्याख्या पर लौटें",
+  "lessonVariationPrevious": "वेरिएशन की पिछली चाल",
+  "lessonVariationNext": "वेरिएशन की अगली चाल",
+  "lessonPresentationClose": "बंद करें और बोर्ड देखें"
 }

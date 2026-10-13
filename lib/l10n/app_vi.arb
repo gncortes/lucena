@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "Không phải nước đó. Hãy nghĩ về điều bài học đã chỉ ra về “{topic}”.",
   "lessonThinkMistakeGeneric": "Nước {move} của bạn không hiệu quả ở đây. Hãy xem vì sao:",
   "lessonVariationShow": "Xem biến",
-  "lessonVariationExit": "Quay lại thế cờ của bài",
   "lessonDemoBack": "Nước trước",
   "lessonDemoForward": "Nước tiếp",
   "lessonDemoReplay": "Xem lại",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "Mở trên bàn cờ tự do",
   "lessonExplanationShort": "Giải thích",
   "lessonFreeBoardInvite": "Vẫn còn thắc mắc? Hãy thử những ý tưởng khác từ thế cờ này, ở phía bàn cờ của bạn.",
-  "lessonReturn": "Quay lại",
   "lessonTeacherVoice": "Giọng của Viktor",
   "lessonTeacherVoiceHint": "Đọc thành tiếng phần giải thích",
   "lessonSoundHint": "Âm thanh quân cờ và giọng của Viktor",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{Lượt thử kết thúc tại đây và vẫn nằm trong lịch sử.} =1{Bạn mất chặng đã thắng trong lượt thử này.} other{Bạn mất {count} chặng đã thắng trong lượt thử này.}}",
   "gameSeeResult": "Xem kết quả",
   "gameSoundLabelOn": "Âm thanh",
-  "gameSoundLabelOff": "Không âm thanh"
+  "gameSoundLabelOff": "Không âm thanh",
+  "lessonVariationClose": "Đóng biến và quay lại phần giải thích",
+  "lessonVariationPrevious": "Nước đi trước trong biến",
+  "lessonVariationNext": "Nước đi tiếp theo trong biến",
+  "lessonPresentationClose": "Đóng và xem bàn cờ"
 }

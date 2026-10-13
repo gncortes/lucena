@@ -24,6 +24,10 @@ void main() {
           'relógio da partida: tempo de jogo',
       'duration: const Duration(milliseconds: 1400)':
           'coreografia do cartão do resultado (sai na frente B)',
+      'total = Duration(milliseconds: 1600)': 'selo de fim: 200 + 1200 + 200',
+      '_reducedFade = Duration(milliseconds: 150)':
+          'selo de fim com movimento reduzido',
+      'const Duration(milliseconds: 1200)': 'pico do selo de fim',
     },
     'lib/ui/free_board/widgets/character_bar.dart': {
       'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
@@ -63,6 +67,12 @@ void main() {
     'lib/ui/school/widgets/lesson_screen.dart': {
       'Timer.periodic(const Duration(milliseconds: 250)':
           'cronômetro do passo e ritmo da demonstração: tempo, não animação',
+      '_pacePresentation(cubit, state, const Duration(milliseconds: 250))':
+          'um tique do cronômetro na apresentação: tempo, não animação',
+    },
+    'lib/ui/school/widgets/lesson_part_widgets.dart': {
+      'tick = Duration(milliseconds: 250)':
+          'o anel acompanha o tique de 250 ms da demonstração',
     },
     'lib/ui/core/widgets/skeleton.dart': {
       'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',

@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "Не этот. Вспомни, что урок показал о «{topic}».",
   "lessonThinkMistakeGeneric": "Твой ход {move} здесь не работает. Посмотри почему:",
   "lessonVariationShow": "Посмотреть вариант",
-  "lessonVariationExit": "Вернуться к позиции урока",
   "lessonDemoBack": "Предыдущий ход",
   "lessonDemoForward": "Следующий ход",
   "lessonDemoReplay": "Повторить",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "Открыть на свободной доске",
   "lessonExplanationShort": "Объяснение",
   "lessonFreeBoardInvite": "Остались сомнения? Проверьте другие идеи из этой позиции со своей стороны доски.",
-  "lessonReturn": "Назад",
   "lessonTeacherVoice": "Голос Виктора",
   "lessonTeacherVoiceHint": "Читать объяснения вслух",
   "lessonSoundHint": "Звуки фигур и голос Виктора",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{Попытка закончится здесь и останется в истории.} one{Вы потеряете {count} этап, выигранный в этой попытке.} few{Вы потеряете {count} этапа, выигранных в этой попытке.} other{Вы потеряете {count} этапов, выигранных в этой попытке.}}",
   "gameSeeResult": "Посмотреть результат",
   "gameSoundLabelOn": "Звук",
-  "gameSoundLabelOff": "Без звука"
+  "gameSoundLabelOff": "Без звука",
+  "lessonVariationClose": "Закрыть вариант и вернуться к объяснению",
+  "lessonVariationPrevious": "Предыдущий ход варианта",
+  "lessonVariationNext": "Следующий ход варианта",
+  "lessonPresentationClose": "Закрыть и посмотреть доску"
 }

@@ -94,7 +94,13 @@ class LessonState {
     this.attemptedSan,
     this.wrongMove = false,
     this.solutionSeen = false,
+    this.presenting = false,
   });
+
+  /// A abertura de um passo de exercício (T65 §8): o Viktor apresenta o
+  /// objetivo e o relógio do passo ainda não começou. Não é salvo: fechar o
+  /// app durante a apresentação reabre com o relógio correndo.
+  final bool presenting;
 
   /// "Ver solução" (T65 §4): depois de um lance errado, o aluno pediu a
   /// solução. O tabuleiro fica na posição anterior ao erro, sem toque, com
@@ -411,6 +417,7 @@ class LessonState {
     String? attemptedSan,
     bool? wrongMove,
     bool? solutionSeen,
+    bool? presenting,
     bool clearAttemptedSan = false,
   }) => LessonState(
     ready: ready ?? this.ready,
@@ -465,6 +472,7 @@ class LessonState {
         (speech != null || step != null || phase != null
             ? false
             : this.wrongMove),
+    presenting: presenting ?? this.presenting,
     solutionSeen:
         solutionSeen ??
         (step != null || fen != null ? false : this.solutionSeen),
@@ -992,6 +1000,10 @@ class LessonCubit extends Cubit<LessonState> {
   Future<void> play(Move move) async {
     if (!state.interactive) {
       return;
+    }
+    // Quem joga já viu o objetivo: o relógio do passo começa.
+    if (state.presenting) {
+      emit(state.copyWith(presenting: false, stepStartedAt: _now()));
     }
     final origin = state;
     final current = origin.current;
@@ -2000,10 +2012,24 @@ class LessonCubit extends Cubit<LessonState> {
       fen: step.fen,
       speech: _speechOf(base, index),
       emotion: index == 0 ? Emotion.happy : Emotion.calm,
-      // O cronômetro do passo começa ao abrir.
-      stepStartedAt: _now(),
+      // O cronômetro do passo começa ao abrir; no passo de exercício, só
+      // depois da apresentação do Viktor (startStepClock).
+      stepStartedAt: _isExercise(step) ? null : _now(),
+      presenting: _isExercise(step),
       references: base.references,
     );
+  }
+
+  static bool _isExercise(LessonStep step) => switch (step) {
+    ThinkStep() || MoveStep() || PlayStep() || TapStep() || StarsStep() => true,
+    TalkStep() || DemoStep() => false,
+  };
+
+  /// Fim da apresentação (T65 §8): o relógio do passo começa agora.
+  Future<void> startStepClock() async {
+    if (!state.presenting) return;
+    emit(state.copyWith(presenting: false, stepStartedAt: _now()));
+    await _save();
   }
 
   /// A fala do passo [index]. Logo depois de um passo de pensar, a
@@ -2040,8 +2066,9 @@ class LessonCubit extends Cubit<LessonState> {
                     pausedAt: saved.stepPausedAt!,
                     now: _now(),
                   )
-                : saved.stepStartedAt)
-          : opened.stepStartedAt,
+                : (saved.stepStartedAt ?? _now()))
+          : _now(),
+      presenting: false,
     );
     switch (step) {
       case PlayStep():

@@ -740,9 +740,7 @@ class TeacherSpeech extends StatelessWidget {
     (int, int)? range,
     Color color,
     Widget child,
-  ) => range == null
-      ? child
-      : _MoveBackdrop(text: words, range: range, color: color, child: child);
+  ) => _MoveBackdrop(text: words, range: range, color: color, child: child);
 
   Widget _bubble(
     BuildContext context,
@@ -1494,36 +1492,51 @@ class _MoveBackdrop extends StatelessWidget {
   });
 
   final Text text;
-  final (int, int) range;
+
+  /// Nulo: sem destaque. A árvore é a mesma com ou sem ele, para o texto que
+  /// aparece aos poucos não recomeçar quando o destaque entra e sai.
+  final (int, int)? range;
   final Color color;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      var style = DefaultTextStyle.of(context).style.merge(text.style);
-      if (MediaQuery.boldTextOf(context)) {
-        style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
-      }
-      final painter = TextPainter(
-        text: TextSpan(
-          style: style,
-          children: [text.textSpan ?? TextSpan(text: text.data)],
-        ),
-        textDirection: text.textDirection ?? Directionality.of(context),
-        textScaler: MediaQuery.textScalerOf(context),
-        locale: Localizations.maybeLocaleOf(context),
-      )..layout(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth);
-      final rects = [
-        for (final box in painter.getBoxesForSelection(
-          TextSelection(baseOffset: range.$1, extentOffset: range.$2),
-        ))
-          box.toRect(),
-      ];
-      painter.dispose();
-      return CustomPaint(painter: _BackdropPainter(rects, color), child: child);
-    },
-  );
+  Widget build(BuildContext context) {
+    final range = this.range;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var style = DefaultTextStyle.of(context).style.merge(text.style);
+        if (MediaQuery.boldTextOf(context)) {
+          style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
+        }
+        final painter =
+            TextPainter(
+              text: TextSpan(
+                style: style,
+                children: [text.textSpan ?? TextSpan(text: text.data)],
+              ),
+              textDirection: text.textDirection ?? Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+              locale: Localizations.maybeLocaleOf(context),
+            )..layout(
+              minWidth: constraints.minWidth,
+              maxWidth: constraints.maxWidth,
+            );
+        final rects = range == null
+            ? const <Rect>[]
+            : [
+                for (final box in painter.getBoxesForSelection(
+                  TextSelection(baseOffset: range.$1, extentOffset: range.$2),
+                ))
+                  box.toRect(),
+              ];
+        painter.dispose();
+        return CustomPaint(
+          painter: range == null ? null : _BackdropPainter(rects, color),
+          child: child,
+        );
+      },
+    );
+  }
 }
 
 class _BackdropPainter extends CustomPainter {

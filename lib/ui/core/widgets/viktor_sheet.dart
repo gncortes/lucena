@@ -19,6 +19,8 @@ class ViktorSheet extends StatefulWidget {
     this.controller,
     this.scrollKey = ViktorSheetKeys.scroll,
     this.closeKey = ViktorSheetKeys.close,
+    this.closeTooltip,
+    this.modalKey,
     this.onExpanded,
     this.onMoving,
     this.onTop,
@@ -47,11 +49,23 @@ class ViktorSheet extends StatefulWidget {
   /// Altura reservada em todos os estados para texto acima das ações.
   static const peekHeight = 160.0;
 
+  /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
+  /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
+  /// (LICOES-V2 §5).
+  static const openGap = 76.0;
+
   final double top;
   final List<Widget> children;
   final DraggableScrollableController? controller;
   final Key scrollKey;
   final Key closeKey;
+
+  /// Rótulo do X (dica e leitor de tela); sem ele, o "Fechar" do sistema.
+  final String? closeTooltip;
+
+  /// Marca a folha na tela enquanto ela é um modal (a apresentação B): um
+  /// quadro transparente sobre a folha, sem remontar o conteúdo.
+  final Key? modalKey;
   final ValueChanged<bool>? onExpanded;
 
   /// A folha está entre recolhida e aberta (arrastando ou animando): quem
@@ -76,7 +90,6 @@ class _ViktorSheetState extends State<ViktorSheet> {
   /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
   /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
   /// (LICOES-V2 §5). Calculado no layout.
-  static const _openGap = 76.0;
   double _maximum = .95;
   double _minimum = .2;
   double? _extent;
@@ -189,7 +202,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
       final height = box.maxHeight;
-      _maximum = (1 - _openGap / height).clamp(.02, 1.0);
+      _maximum = (1 - ViktorSheet.openGap / height).clamp(.02, 1.0);
       _minimum = ((height - widget.top) / height).clamp(.02, _maximum);
       final area = Size(box.maxWidth, height);
       final geometryChanged =
@@ -358,11 +371,20 @@ class _ViktorSheetState extends State<ViktorSheet> {
                 opacity: _expanded ? 1 : 0,
                 child: SheetCloseButton(
                   key: widget.closeKey,
+                  tooltip: widget.closeTooltip,
                   onPressed: _close,
                 ),
               ),
             ),
           ),
+          if (widget.modalKey case final key?)
+            PositionedDirectional(
+              start: 0,
+              end: 0,
+              bottom: 0,
+              top: height * (1 - extent),
+              child: IgnorePointer(child: SizedBox.expand(key: key)),
+            ),
         ],
       );
     },

@@ -627,6 +627,67 @@ void main() {
     },
   );
 
+  testWidgets(
+    'V2: o destaque do lance entrar e sair não faz o texto recomeçar a '
+    'digitar',
+    (tester) async {
+      final variation = ExplanationVariation(
+        id: 'A',
+        label: 'A',
+        outcome: VariationOutcome.accepted,
+        texts: const ['Continue com 1.Kh2 para ganhar.'],
+        originFen: '6k1/8/8/8/8/8/3P4/7K w - - 0 1',
+        movesUci: const ['h1h2'],
+        movesSan: const ['1.Kh2'],
+        validated: true,
+      );
+      Widget speech(VariationCursor? active) => TestApp(
+        child: Scaffold(
+          body: TeacherSpeech(
+            teacher: FakeCharacterRepository.viktor,
+            text: null,
+            speechContext: SpeechContext.teaching,
+            lessonV2: true,
+            typed: true,
+            activeVariation: active,
+            onVariation: (_) {},
+            explanation: ExplanationPayload(
+              positionId: 'typed-backdrop',
+              state: ExplanationState.review,
+              explanations: [
+                ExplanationBlock(
+                  id: 'A',
+                  kind: ExplanationKind.mainSolution,
+                  texts: variation.texts,
+                  variations: [variation],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      final typed = find.byWidgetPredicate(
+        (w) => w.runtimeType.toString() == '_TypedText',
+      );
+
+      await tester.pumpWidget(speech(null));
+      await tester.pumpAndSettle();
+      expect(typed, findsOneWidget);
+      final before = tester.element(typed);
+
+      // A variante abre (o lance fica em destaque) e fecha de novo.
+      await tester.pumpWidget(speech(variation.open()));
+      await tester.pump();
+      expect(tester.element(typed), same(before));
+      await tester.pumpWidget(speech(null));
+      await tester.pump();
+
+      // O mesmo texto, sem remontar: inteiro, sem recorte de digitação.
+      expect(tester.element(typed), same(before));
+      expect(find.byType(ClipPath), findsNothing);
+    },
+  );
+
   testWidgets('V2 header is a 48 dp row with a 28 dp portrait', (tester) async {
     await tester.pumpWidget(v2Speech('Texto.'));
     final header = tester.getRect(find.byKey(ViktorSheetKeys.header));

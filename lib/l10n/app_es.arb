@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "No es esa. Piensa en lo que la lección mostró sobre «{topic}».",
   "lessonThinkMistakeGeneric": "Tu jugada {move} no funciona aquí. Mira por qué:",
   "lessonVariationShow": "Ver la variante",
-  "lessonVariationExit": "Volver a la posición del paso",
   "lessonDemoBack": "Jugada anterior",
   "lessonDemoForward": "Siguiente jugada",
   "lessonDemoReplay": "Repetir",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "Abrir en el tablero libre",
   "lessonExplanationShort": "Explicación",
   "lessonFreeBoardInvite": "¿Aún tienes dudas? Prueba otras ideas desde esta posición, desde tu lado del tablero.",
-  "lessonReturn": "Volver",
   "lessonTeacherVoice": "Voz de Viktor",
   "lessonTeacherVoiceHint": "Leer las explicaciones en voz alta",
   "lessonSoundHint": "Sonidos de las piezas y voz de Viktor",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{El intento termina aquí y queda en tu historial.} =1{Pierdes la etapa ganada en este intento.} other{Pierdes las {count} etapas ganadas en este intento.}}",
   "gameSeeResult": "Ver el resultado",
   "gameSoundLabelOn": "Sonido",
-  "gameSoundLabelOff": "Sin sonido"
+  "gameSoundLabelOff": "Sin sonido",
+  "lessonVariationClose": "Cerrar la variante y volver a la explicación",
+  "lessonVariationPrevious": "Jugada anterior de la variante",
+  "lessonVariationNext": "Jugada siguiente de la variante",
+  "lessonPresentationClose": "Cerrar y ver el tablero"
 }

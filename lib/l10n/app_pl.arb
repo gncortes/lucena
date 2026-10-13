@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "Nie ten. Pomyśl o tym, co lekcja pokazała o „{topic}”.",
   "lessonThinkMistakeGeneric": "Twój ruch {move} tu nie działa. Zobacz dlaczego:",
   "lessonVariationShow": "Zobacz wariant",
-  "lessonVariationExit": "Wróć do pozycji z lekcji",
   "lessonDemoBack": "Poprzedni ruch",
   "lessonDemoForward": "Następny ruch",
   "lessonDemoReplay": "Powtórz",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "Otwórz na swobodnej szachownicy",
   "lessonExplanationShort": "Wyjaśnienie",
   "lessonFreeBoardInvite": "Nadal masz wątpliwości? Sprawdź inne pomysły z tej pozycji, ze swojej strony szachownicy.",
-  "lessonReturn": "Wróć",
   "lessonTeacherVoice": "Głos Viktora",
   "lessonTeacherVoiceHint": "Czytaj wyjaśnienia na głos",
   "lessonSoundHint": "Dźwięki figur i głos Viktora",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{Próba kończy się tutaj i zostaje w historii.} =1{Stracisz etap wygrany w tej próbie.} few{Stracisz {count} etapy wygrane w tej próbie.} other{Stracisz {count} etapów wygranych w tej próbie.}}",
   "gameSeeResult": "Zobacz wynik",
   "gameSoundLabelOn": "Dźwięk",
-  "gameSoundLabelOff": "Bez dźwięku"
+  "gameSoundLabelOff": "Bez dźwięku",
+  "lessonVariationClose": "Zamknij wariant i wróć do wyjaśnienia",
+  "lessonVariationPrevious": "Poprzedni ruch wariantu",
+  "lessonVariationNext": "Następny ruch wariantu",
+  "lessonPresentationClose": "Zamknij i zobacz szachownicę"
 }

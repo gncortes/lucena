@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "Niet deze. Denk aan wat de les liet zien over ‘{topic}’.",
   "lessonThinkMistakeGeneric": "Je zet {move} werkt hier niet. Kijk waarom:",
   "lessonVariationShow": "Variant bekijken",
-  "lessonVariationExit": "Terug naar de stelling van de les",
   "lessonDemoBack": "Vorige zet",
   "lessonDemoForward": "Volgende zet",
   "lessonDemoReplay": "Opnieuw",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "Openen op het vrije bord",
   "lessonExplanationShort": "Uitleg",
   "lessonFreeBoardInvite": "Nog twijfels? Probeer andere ideeën vanuit deze stelling, vanaf jouw kant van het bord.",
-  "lessonReturn": "Terug",
   "lessonTeacherVoice": "Stem van Viktor",
   "lessonTeacherVoiceHint": "De uitleg voorlezen",
   "lessonSoundHint": "Stukgeluiden en de stem van Viktor",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{De poging eindigt hier en blijft in je geschiedenis.} =1{Je verliest de etappe die je in deze poging hebt gewonnen.} other{Je verliest de {count} etappes die je in deze poging hebt gewonnen.}}",
   "gameSeeResult": "Bekijk het resultaat",
   "gameSoundLabelOn": "Geluid",
-  "gameSoundLabelOff": "Geen geluid"
+  "gameSoundLabelOff": "Geen geluid",
+  "lessonVariationClose": "Sluit de variant en ga terug naar de uitleg",
+  "lessonVariationPrevious": "Vorige zet van de variant",
+  "lessonVariationNext": "Volgende zet van de variant",
+  "lessonPresentationClose": "Sluiten en het bord zien"
 }

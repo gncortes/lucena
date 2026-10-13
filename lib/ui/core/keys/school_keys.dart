@@ -81,6 +81,9 @@ abstract final class LessonKeys {
   static const moreHintButton = Key('lesson.think.moreHint');
   static const demoBack = Key('lesson.demo.back');
   static const demoForward = Key('lesson.demo.forward');
+  static const demoRing = Key('lesson.demo.ring');
+  static const variationStrip = Key('lesson.variation.strip');
+  static const variationStripCurrent = Key('lesson.variation.strip.current');
   static const demoReplay = Key('lesson.demo.replay');
   static const demoPause = Key('lesson.demo.pause');
 
@@ -100,6 +103,10 @@ abstract final class LessonKeys {
   static const nextPartButton = Key('lesson.part.next');
   static const reviewPartButton = Key('lesson.part.review');
   static const closeSheet = Key('lesson.sheet.close');
+
+  /// A folha da apresentação B (modal sobre o tabuleiro) e o X dela.
+  static const presentation = Key('lesson.presentation');
+  static const presentationClose = Key('lesson.presentation.close');
   static const marksToggle = Key('lesson.marks');
   static const partSummary = Key('lesson.part.summary');
   static const allPartsDone = Key('lesson.part.allDone');

@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "این نیست. به آنچه درس دربارهٔ «{topic}» نشان داد فکر کن.",
   "lessonThinkMistakeGeneric": "حرکت {move} شما اینجا جواب نمی‌دهد. ببینید چرا:",
   "lessonVariationShow": "دیدن واریانت",
-  "lessonVariationExit": "بازگشت به وضعیت درس",
   "lessonDemoBack": "حرکت قبلی",
   "lessonDemoForward": "حرکت بعدی",
   "lessonDemoReplay": "تکرار",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "باز کردن در صفحهٔ آزاد",
   "lessonExplanationShort": "توضیح",
   "lessonFreeBoardInvite": "هنوز مطمئن نیستید؟ ایده‌های دیگر را از همین وضعیت و از سمت خودتان روی صفحه امتحان کنید.",
-  "lessonReturn": "بازگشت",
   "lessonTeacherVoice": "صدای ویکتور",
   "lessonTeacherVoiceHint": "خواندن توضیحات با صدای بلند",
   "lessonSoundHint": "صدای مهره‌ها و صدای ویکتور",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{تلاش همین‌جا تمام می‌شود و در تاریخچه می‌ماند.} =1{مرحلهٔ بردهٔ این تلاش را از دست می‌دهید.} other{{count} مرحلهٔ بردهٔ این تلاش را از دست می‌دهید.}}",
   "gameSeeResult": "دیدن نتیجه",
   "gameSoundLabelOn": "صدا",
-  "gameSoundLabelOff": "بی‌صدا"
+  "gameSoundLabelOff": "بی‌صدا",
+  "lessonVariationClose": "بستن واریانت و بازگشت به توضیح",
+  "lessonVariationPrevious": "حرکت قبلی واریانت",
+  "lessonVariationNext": "حرکت بعدی واریانت",
+  "lessonPresentationClose": "بستن و دیدن صفحه"
 }

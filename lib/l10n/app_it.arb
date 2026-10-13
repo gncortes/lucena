@@ -742,7 +742,6 @@
   "lessonMistakeGeneric": "Non è questa. Pensa a ciò che la lezione ha mostrato su «{topic}».",
   "lessonThinkMistakeGeneric": "La tua mossa {move} qui non funziona. Ecco perché:",
   "lessonVariationShow": "Vedi la variante",
-  "lessonVariationExit": "Torna alla posizione del passo",
   "lessonDemoBack": "Mossa precedente",
   "lessonDemoForward": "Mossa successiva",
   "lessonDemoReplay": "Ripeti",
@@ -1095,7 +1094,6 @@
   "lessonOpenFreeBoard": "Apri sulla scacchiera libera",
   "lessonExplanationShort": "Spiegazione",
   "lessonFreeBoardInvite": "Hai ancora dubbi? Prova altre idee da questa posizione, dal tuo lato della scacchiera.",
-  "lessonReturn": "Indietro",
   "lessonTeacherVoice": "Voce di Viktor",
   "lessonTeacherVoiceHint": "Leggere le spiegazioni ad alta voce",
   "lessonSoundHint": "Suoni dei pezzi e voce di Viktor",
@@ -1106,5 +1104,9 @@
   "speedrunQuitHint": "{count, plural, =0{Il tentativo finisce qui e resta nella cronologia.} =1{Perdi la tappa vinta in questo tentativo.} other{Perdi le {count} tappe vinte in questo tentativo.}}",
   "gameSeeResult": "Vedi il risultato",
   "gameSoundLabelOn": "Suono",
-  "gameSoundLabelOff": "Senza suono"
+  "gameSoundLabelOff": "Senza suono",
+  "lessonVariationClose": "Chiudi la variante e torna alla spiegazione",
+  "lessonVariationPrevious": "Mossa precedente della variante",
+  "lessonVariationNext": "Mossa successiva della variante",
+  "lessonPresentationClose": "Chiudi e guarda la scacchiera"
 }
