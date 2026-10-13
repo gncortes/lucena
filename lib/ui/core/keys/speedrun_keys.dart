@@ -72,4 +72,15 @@ abstract final class SpeedrunKeys {
   /// O histórico de tempos: o título de cada mês e cada tentativa concluída.
   static Key month(int index) => Key('speedrun.history.month.$index');
   static Key run(int index) => Key('speedrun.history.run.$index');
+
+  /// O histórico de um speedrun: o recorde, as contagens, o mês, a tentativa
+  /// e o "+N" da primeira conclusão.
+  static const historyScreen = Key('speedrun.history.screen');
+  static const historyRecord = Key('speedrun.history.record');
+  static const historyAttempts = Key('speedrun.history.attempts');
+  static const historyFinished = Key('speedrun.history.finished');
+  static Key historyMonth(int index) =>
+      Key('speedrun.history.screen.month.$index');
+  static Key historyRun(int index) => Key('speedrun.history.screen.run.$index');
+  static const historyBonus = Key('speedrun.history.bonus');
 }
