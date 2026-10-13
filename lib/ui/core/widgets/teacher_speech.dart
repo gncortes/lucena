@@ -14,6 +14,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/app_settings.dart';
+import '../../../domain/models/game_review.dart';
+import '../review/move_quality_ui.dart';
 import '../../../domain/models/wiki_links.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
@@ -772,13 +774,20 @@ class TeacherSpeech extends StatelessWidget {
 
     Color moveColor(SpeechLink link) {
       if (!lessonV2) return theme.colorScheme.primary;
+      // Contrato §3.4: a cor da qualidade é a da lista (MoveQualityUi).
       final notation = link.text;
-      if (notation.endsWith('??')) return const Color(0xFFB3261E);
-      if (notation.endsWith('?!')) return const Color(0xFF8A5A00);
-      if (notation.endsWith('?')) return theme.colorScheme.error;
-      if (notation.endsWith('!!')) return const Color(0xFF2D5C82);
-      if (notation.endsWith('!')) return const Color(0xFF3B6E1C);
-      return theme.colorScheme.primary;
+      final quality = notation.endsWith('??')
+          ? MoveQuality.blunder
+          : notation.endsWith('?!')
+          ? MoveQuality.inaccuracy
+          : notation.endsWith('?')
+          ? MoveQuality.mistake
+          : notation.endsWith('!!')
+          ? MoveQuality.great
+          : notation.endsWith('!')
+          ? MoveQuality.best
+          : null;
+      return quality?.listColor(theme.brightness) ?? theme.colorScheme.primary;
     }
 
     final firstParagraphEnd = text.contains('\n\n')

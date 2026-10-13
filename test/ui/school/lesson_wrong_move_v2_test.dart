@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/core/keys/lesson_v2_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -156,9 +158,9 @@ void main() {
     await tester.runAsync(() => cubit.play(move('a1b1')));
     await tester.pumpAndSettle();
     expect(find.text('CORRECT MOVE'), findsOneWidget);
-    final error = Theme.of(tester.element(find.byType(LessonScreen)))
-        .colorScheme
-        .error;
+    final error = MoveQuality.mistake.listColor(
+      Theme.of(tester.element(find.byType(LessonScreen))).brightness,
+    );
     var found = false;
     for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
       rich.text.visitChildren((span) {

@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/game_review.dart';
+import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
@@ -447,7 +449,9 @@ void main() {
       });
       expect(
         move?.style?.color,
-        Theme.of(tester.element(find.byType(TeacherSpeech))).colorScheme.error,
+        MoveQuality.mistake.listColor(
+          Theme.of(tester.element(find.byType(TeacherSpeech))).brightness,
+        ),
       );
     },
   );
