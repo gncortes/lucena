@@ -226,6 +226,9 @@ void main() {
           if (step is DemoStep)
             for (var move = 1; move <= step.line.length; move++)
               'step.${step.id}.m$move',
+          for (final line in step.lines)
+            for (final branch in line.branches)
+              'step.${step.id}.alt.${branch.id}',
         ],
         for (final exercise in lesson.exercises) ...[
           'ex.${exercise.id}',
@@ -234,9 +237,21 @@ void main() {
         ],
         for (final position in lesson.keyPositions) 'key.${position.id}',
       };
+      // O comentário por lance do ramo (`...alt.<id>.m<k>`) é opcional.
+      final optional = {
+        for (final step in lesson.lesson.steps)
+          for (final line in step.lines)
+            for (final branch in line.branches)
+              for (var k = 1; k <= branch.uci.length; k++)
+                'step.${step.id}.alt.${branch.id}.m$k',
+      };
       for (final language in ['pt', 'en']) {
         final all = texts(language, lesson.id);
-        expect(all.keys.toSet(), expected, reason: '$language ${lesson.id}');
+        expect(
+          all.keys.toSet().difference(optional),
+          expected,
+          reason: '$language ${lesson.id}',
+        );
         for (final MapEntry(:key, :value) in all.entries) {
           final text = value is List ? value.join(' ') : '$value';
           expect(

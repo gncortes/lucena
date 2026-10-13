@@ -137,6 +137,7 @@ void main() {
     );
 
     await tour.nextUntilLevel();
+    await tour.chooseLevel(RatingLevel.intermediate);
     await tour.start();
     await home.expectVisible();
     home.expectDark(dark: true);

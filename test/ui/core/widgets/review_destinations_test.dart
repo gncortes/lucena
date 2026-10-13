@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,8 +23,8 @@ import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/player_card.dart';
 import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
-import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
-import 'package:lucena/ui/profile/widgets/rating_screen.dart';
+import 'package:lucena/ui/history/view_models/history_cubit.dart';
+import 'package:lucena/ui/history/widgets/history_screen.dart';
 
 import '../../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../../testing/fakes/fake_analysis_repository.dart';
@@ -51,11 +52,14 @@ class _RequestedProgress extends FakeProgressRepository {
 
 Widget _repositories(
   Widget child,
-  _RequestedProgress progress,
-) => MultiRepositoryProvider(
+  _RequestedProgress progress, {
+  FakeRatingRepository? rating,
+}) => MultiRepositoryProvider(
   providers: [
     RepositoryProvider<ProgressRepository>.value(value: progress),
-    RepositoryProvider<RatingRepository>.value(value: FakeRatingRepository()),
+    RepositoryProvider<RatingRepository>.value(
+      value: rating ?? FakeRatingRepository(),
+    ),
     RepositoryProvider<CharacterRepository>.value(
       value: FakeCharacterRepository(),
     ),
@@ -169,11 +173,11 @@ void main() {
         } else {
           final cubit = tester
               .element(find.byKey(RatingKeys.screen))
-              .read<RatingCubit>();
+              .read<HistoryCubit>();
           expect(cubit.state.highlightedGame, player ? isNull : 77);
           expect(
             tester
-                .widget<RatingScreen>(find.byType(RatingScreen))
+                .widget<HistoryScreen>(find.byType(HistoryScreen))
                 .gameDestinationBuilder,
             same(gameDetailsDestination),
           );
@@ -240,7 +244,7 @@ void main() {
         await tester.pumpAndSettle();
         final rating = tester
             .element(find.byKey(RatingKeys.screen))
-            .read<RatingCubit>();
+            .read<HistoryCubit>();
         expect(router.routeInformationProvider.value.uri.path, '/');
         final action = find.byKey(RatingKeys.emptyHistoryAction);
         await tester.scrollUntilVisible(
@@ -285,6 +289,14 @@ void main() {
           opponentLevel: 1000,
         );
         final id = await progress.addAttempt(attempt);
+        // O Histórico lista as partidas que o rating contou.
+        final ratings = FakeRatingRepository();
+        await ratings.rate(
+          attempt,
+          userSide: Side.white,
+          drawGoal: false,
+          gameId: id,
+        );
         final router = GoRouter(
           initialLocation: Routes.rating,
           routes: [
@@ -308,12 +320,13 @@ void main() {
           _repositories(
             TestApp(router: router, child: const SizedBox.shrink()),
             progress,
+            rating: ratings,
           ),
         );
         await tester.pumpAndSettle();
         final rating = tester
             .element(find.byKey(RatingKeys.screen))
-            .read<RatingCubit>();
+            .read<HistoryCubit>();
         var reloads = 0;
         final subscription = rating.stream.listen((_) => reloads++);
         addTearDown(subscription.cancel);
@@ -325,6 +338,12 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(row.hitTestable(), findsOneWidget);
+        int requestsFor(int id) => progress.requested
+            .where((ids) => ids.length == 1 && ids.first == id)
+            .length;
+        // A leitura do Histórico também pede a partida: só o que vem depois
+        // de abrir é do detalhe.
+        final before = requestsFor(id);
         final open = tester.widget<InkWell>(row).onTap!;
         open();
         open();
@@ -333,12 +352,7 @@ void main() {
             .element(find.byKey(GameDetailsKeys.screen))
             .read<GameDetailsCubit>();
         expect(details.state.attempt, same(attempt));
-        expect(
-          progress.requested
-              .where((ids) => ids.length == 1 && ids.first == id)
-              .length,
-          1,
-        );
+        expect(requestsFor(id) - before, 1);
         expect(router.routeInformationProvider.value.uri.path, Routes.rating);
         expect(find.byType(BackButton).hitTestable(), findsOneWidget);
         await tester.tap(find.byType(BackButton).hitTestable());
@@ -348,7 +362,7 @@ void main() {
         expect(reloads, 1);
         expect(row.hitTestable(), findsOneWidget);
         expect(
-          tester.element(find.byKey(RatingKeys.screen)).read<RatingCubit>(),
+          tester.element(find.byKey(RatingKeys.screen)).read<HistoryCubit>(),
           same(rating),
         );
         expect(tester.takeException(), isNull);

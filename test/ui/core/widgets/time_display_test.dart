@@ -250,7 +250,7 @@ void main() {
       TimeDisplayState.active: scheme.surface,
       TimeDisplayState.low: scheme.errorContainer,
       TimeDisplayState.paused: scheme.surfaceContainerHighest,
-      TimeDisplayState.highlight: scheme.tertiaryContainer,
+      TimeDisplayState.highlight: const Color(0xFF2E7D32),
     };
     for (final entry in expected.entries) {
       await tester.pumpWidget(

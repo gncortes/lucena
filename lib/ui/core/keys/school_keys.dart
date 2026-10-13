@@ -66,6 +66,12 @@ abstract final class LessonKeys {
   static const title = Key('lesson.title');
   static const guide = Key('lesson.guide');
   static const nextButton = Key('lesson.next');
+
+  /// "Ver solução" do rodapé da explicação do erro (T65 §3).
+  static const seeSolution = Key('lesson.seeSolution');
+
+  /// O rodapé de duas linhas da Solução vista (T65 §4).
+  static const solutionFooter = Key('lesson.solutionFooter');
   static const hintButton = Key('lesson.hint');
 
   /// T51: o passo de pensar, a demonstração e o fim de uma parte.
@@ -75,6 +81,11 @@ abstract final class LessonKeys {
   static const moreHintButton = Key('lesson.think.moreHint');
   static const demoBack = Key('lesson.demo.back');
   static const demoForward = Key('lesson.demo.forward');
+  static const demoRing = Key('lesson.demo.ring');
+  static const variationStrip = Key('lesson.variation.strip');
+  static const variationStripScroll = Key('lesson.variation.strip.scroll');
+  static const variationStripList = Key('lesson.variation.strip.list');
+  static const variationStripCurrent = Key('lesson.variation.strip.current');
   static const demoReplay = Key('lesson.demo.replay');
   static const demoPause = Key('lesson.demo.pause');
 
@@ -83,6 +94,14 @@ abstract final class LessonKeys {
   static const variationExit = Key('lesson.variation.exit');
   static const variationBack = Key('lesson.variation.back');
   static const variationForward = Key('lesson.variation.forward');
+  static const variationSheet = Key('lesson.variation.sheet');
+  static const variationSheetClose = Key('lesson.variation.sheet.close');
+  static Key variationMove(int ply) => Key('lesson.variation.move.$ply');
+  static Key variationBranch(String id) => Key('lesson.variation.branch.$id');
+  static Key variationBranchMove(String id, int ply) =>
+      Key('lesson.variation.branch.$id.move.$ply');
+  static Key variationResult(String id) =>
+      Key('lesson.variation.branch.$id.result');
 
   /// O selo de linha errada: junto ao tabuleiro e nos controles.
   static const wrongLine = Key('lesson.wrongLine.board');
@@ -94,7 +113,18 @@ abstract final class LessonKeys {
   static const nextPartButton = Key('lesson.part.next');
   static const reviewPartButton = Key('lesson.part.review');
   static const closeSheet = Key('lesson.sheet.close');
+
+  /// A folha da apresentação B (modal sobre o tabuleiro) e o X dela.
+  static const presentation = Key('lesson.presentation');
+  static const presentationClose = Key('lesson.presentation.close');
   static const marksToggle = Key('lesson.marks');
+
+  /// Lances ocultos (T69): o botão do cabeçalho e o do canto da faixa.
+  static const hiddenMovesToggle = Key('lesson.hiddenMoves');
+  static const variationHiddenToggle = Key('lesson.variation.hiddenMoves');
+  static Key variationHiddenBlock(int row) =>
+      Key('lesson.variation.hidden.$row');
+  static const variationHiddenComment = Key('lesson.variation.hidden.comment');
   static const partSummary = Key('lesson.part.summary');
   static const allPartsDone = Key('lesson.part.allDone');
   static const retryButton = Key('lesson.retry');

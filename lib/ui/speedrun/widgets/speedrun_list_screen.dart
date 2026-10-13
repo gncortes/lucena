@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -53,7 +54,7 @@ class SpeedrunListScreen extends StatelessWidget {
     );
     return Scaffold(
       key: SpeedrunKeys.listScreen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         title: Text(l10n.speedrunTitle),
         actions: [
           IconButton(

@@ -93,7 +93,20 @@ class LessonState {
     this.thinkMistake,
     this.attemptedSan,
     this.wrongMove = false,
+    this.solutionSeen = false,
+    this.presenting = false,
   });
+
+  /// A abertura de um passo de exercício (T65 §8): o Viktor apresenta o
+  /// objetivo e o relógio do passo ainda não começou. Não é salvo: fechar o
+  /// app durante a apresentação reabre com o relógio correndo.
+  final bool presenting;
+
+  /// "Ver solução" (T65 §4): depois de um lance errado, o aluno pediu a
+  /// solução. O tabuleiro fica na posição anterior ao erro, sem toque, com
+  /// a seta no lance certo; o rodapé oferece tentar de novo, voltar e
+  /// continuar. Persistido: fechar o app reabre aqui.
+  final bool solutionSeen;
 
   /// Depois de um lance errado previsto: o id do passo da lição que explica
   /// o ponto ("Rever este ponto"). Nulo: sem passo para rever.
@@ -166,8 +179,18 @@ class LessonState {
       (phase == StepPhase.done ||
           reviewing ||
           (current is TalkStep && phase == StepPhase.active) ||
+          // Lance errado explicado: "Continuar" vale sem refazer (§3).
+          (showsMistake &&
+              result == null &&
+              (explanation != null || wrongMove) &&
+              (current is MoveStep || current is ThinkStep)) ||
           // "Ver explicação": quando o aluno quiser (T60).
           current is ThinkStep);
+
+  /// O erro do aluno está na tela: o passo falhou (`failed`) ou o lance errado
+  /// só devolveu a peça e abriu a explicação (`wrongMove`, passo de lance sem
+  /// erro previsto). Nos dois, valem Voltar | Ver solução | Continuar.
+  bool get showsMistake => phase == StepPhase.failed || wrongMove;
 
   /// Há passo antes deste para rever.
   bool get canGoBack => step > 0 && phase != StepPhase.waiting && !finished;
@@ -280,6 +303,25 @@ class LessonState {
     _ => const [],
   };
 
+  /// O lance certo do passo falhado, para a seta da Solução vista: o da
+  /// linha (passo de lance) ou o primeiro da solução principal da explicação.
+  Move? get solutionMove {
+    final step = current;
+    if (step is MoveStep && turn < step.line.length) {
+      final accepted = step.line[turn].accept;
+      if (accepted.isNotEmpty) return Move.parse(accepted.first);
+    }
+    for (final block in explanation?.explanations ?? const []) {
+      if (block.kind != ExplanationKind.mainSolution) continue;
+      for (final variation in block.variations) {
+        if (variation.parentId != null) continue;
+        final uci = variation.firstUci;
+        if (uci != null) return Move.parse(uci);
+      }
+    }
+    return null;
+  }
+
   LessonStep? get current {
     final steps = lesson?.steps;
     if (steps == null || step >= steps.length) {
@@ -290,20 +332,12 @@ class LessonState {
 
   int get stepCount => lesson?.steps.length ?? 0;
 
-  /// Quanto da aula já foi feito, de 0 a 1 (o passo cumprido conta inteiro).
+  /// Quanto da aula já foi feito, de 0 a 1: anda por passo, e só por passo
+  /// (passo 1 de 3 vale 1/3; no último a barra fica cheia).
   double get progress {
     if (stepCount == 0) return 0;
     if (finished) return 1;
-    if (phase == StepPhase.done) return (step + 1) / stepCount;
-    // Dentro do passo, cada estrela pega e cada lance certo já enchem a barra.
-    final within = switch (current) {
-      StarsStep(:final stars) => collected.length / stars.length,
-      TapStep(:final targets) => collected.length / targets.length,
-      MoveStep(:final line) => turn / line.length,
-      DemoStep(:final line) => demoMove / line.length,
-      _ => 0.0,
-    };
-    return (step + within) / stepCount;
+    return ((step + 1) / stepCount).clamp(0.0, 1.0);
   }
 
   /// O aluno pode mexer no tabuleiro (no passo de tocar, só tocar).
@@ -379,6 +413,8 @@ class LessonState {
     String? thinkMistake,
     String? attemptedSan,
     bool? wrongMove,
+    bool? solutionSeen,
+    bool? presenting,
     bool clearAttemptedSan = false,
   }) => LessonState(
     ready: ready ?? this.ready,
@@ -433,6 +469,10 @@ class LessonState {
         (speech != null || step != null || phase != null
             ? false
             : this.wrongMove),
+    presenting: presenting ?? this.presenting,
+    solutionSeen:
+        solutionSeen ??
+        (step != null || fen != null ? false : this.solutionSeen),
     attemptedSan: clearAttemptedSan
         ? null
         : attemptedSan ??
@@ -531,7 +571,10 @@ class LessonCubit extends Cubit<LessonState> {
         ? (decision.incorrect
               ? ExplanationState.incorrect
               : ExplanationState.correct)
-        : snapshot.interactive && !snapshot.reviewing
+        // Voltar a um passo para refazê-lo (não "Rever este ponto", que traz
+        // `returnTo`): o painel é o objetivo, nunca a solução (T65 §4).
+        : snapshot.interactive &&
+              (!snapshot.reviewing || snapshot.returnTo == null)
         ? ExplanationState.intro
         : ExplanationState.review;
     try {
@@ -721,43 +764,21 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     if (saved != null && saved.lessonId != lessonId) saved = null;
+    // Fechar o app de verdade reabre no INÍCIO da parte (ou da lição, sem
+    // partes) em que o aluno estava (decisão do Gabriel, 2026-10-13): o
+    // checkpoint é lido só para saber a parte; o passo salvo não se usa. O
+    // segundo plano não passa por aqui (fica em memória).
     LessonPart? opened;
     var lesson = full;
     if (full.parts.isNotEmpty) {
       // Checkpoint de antes das partes: o passo contava na aula inteira.
-      if (saved != null && saved.part == null) {
-        final located = full.locate(saved.step);
-        saved = located == null
-            ? null
-            : LessonCheckpoint(
-                lessonId: saved.lessonId,
-                step: located.$2,
-                fen: saved.fen,
-                collected: saved.collected,
-                turn: saved.turn,
-                moves: saved.moves,
-                open: saved.open,
-                part: located.$1.id,
-                stepId: saved.stepId,
-                stepStartedAt: saved.stepStartedAt,
-                stepPausedAt: saved.stepPausedAt,
-                hintsShown: saved.hintsShown,
-                mistakes: saved.mistakes,
-                demoMove: saved.demoMove,
-                demoPlaying: saved.demoPlaying,
-                reviewReturn: saved.reviewReturn,
-                attempt: saved.attempt,
-                failed: saved.failed,
-                reviewStep: saved.reviewStep,
-                attemptedSan: saved.attemptedSan,
-                thinkMistake: saved.thinkMistake,
-              );
-      }
+      final savedPart = saved == null
+          ? null
+          : saved.part ?? full.locate(saved.step)?.$1.id;
       opened =
           full.part(part ?? '') ??
-          full.part(saved?.part ?? '') ??
+          full.part(savedPart ?? '') ??
           full.parts.first;
-      if (saved?.part != opened.id) saved = null;
       lesson = full.only(opened);
     }
     Character? viktor;
@@ -777,38 +798,8 @@ class LessonCubit extends Cubit<LessonState> {
       partCount: full.parts.length,
       references: references,
     );
-    if (saved != null && saved.step < lesson.steps.length) {
-      _reviewReturn = saved.reviewReturn;
-      emit(
-        _resumeAttempt(
-          _restore(base, saved).copyWith(returnTo: _reviewReturn?.step),
-          saved,
-        ),
-      );
-      // A wrong move keeps its explanation: emit() does not fetch it for a
-      // move answered at the same step (the live path asks it explicitly).
-      if (_decision case final decision?
-          when decision.incorrect &&
-              decision.kind != 'think' &&
-              decision.step == state.step) {
-        await _loadExplanation(state);
-      }
-    } else {
-      emit(_open(base, 0));
-    }
+    emit(_open(base, 0));
     await _save();
-    if (state.phase == StepPhase.waiting) {
-      switch (state.current) {
-        case MoveStep step:
-          unawaited(_finishLineReply(step));
-        case PlayStep step:
-          unawaited(_replyPlay(step));
-        case ThinkStep():
-          unawaited(_finishThink());
-        default:
-          break;
-      }
-    }
   }
 
   /// O id do Viktor nas fichas dos personagens.
@@ -838,6 +829,19 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     await _finish();
+  }
+
+  /// "Ver solução" (T65 §4): depois de um lance errado explicado, mostra a
+  /// solução com o tabuleiro parado. Guardado: fechar o app reabre nela.
+  Future<void> seeSolution() async {
+    if (state.solutionSeen ||
+        !state.showsMistake ||
+        state.result != null ||
+        (state.explanation == null && !state.wrongMove)) {
+      return;
+    }
+    emit(state.copyWith(solutionSeen: true));
+    await _save();
   }
 
   /// "Rever este ponto": abre o passo da lição indicado pelo lance errado;
@@ -876,11 +880,26 @@ class LessonCubit extends Cubit<LessonState> {
   Future<void> retry() async {
     _decision = null;
     final step = state.current;
+    // Passo de lance errado (T65 §4): volta ao estado inicial, como na
+    // abertura (as peças voltam animadas); o erro já contado fica como está.
+    if (state.showsMistake && state.result == null && step is MoveStep) {
+      final opened = _open(
+        state,
+        state.step,
+      ).copyWith(mistakes: state.mistakes);
+      emit(
+        state.returnTo == null
+            ? opened
+            : opened.copyWith(returnTo: state.returnTo),
+      );
+      await _save();
+      return;
+    }
     // Depois de um lance errado previsto, o tabuleiro está como antes dele:
     // o aluno joga de novo dali.
     if (state.phase == StepPhase.failed &&
         state.result == null &&
-        (step is MoveStep || step is PlayStep)) {
+        step is PlayStep) {
       emit(
         state.copyWith(
           phase: StepPhase.active,
@@ -905,8 +924,8 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
-  /// Sai da aula pelo voltar: o passo fica guardado, mas o app não reabre
-  /// nela.
+  /// Sai da aula pelo voltar: a parte fica guardada, mas o app não reabre
+  /// nela. Entrar de novo recomeça a parte, como ao fechar o app.
   Future<void> leave() async {
     if (state.finished) {
       return;
@@ -918,6 +937,10 @@ class LessonCubit extends Cubit<LessonState> {
   Future<void> play(Move move) async {
     if (!state.interactive) {
       return;
+    }
+    // Quem joga já viu o objetivo: o relógio do passo começa.
+    if (state.presenting) {
+      emit(state.copyWith(presenting: false, stepStartedAt: _now()));
     }
     final origin = state;
     final current = origin.current;
@@ -1112,80 +1135,6 @@ class LessonCubit extends Cubit<LessonState> {
     ),
     emotion: Emotion.focused,
   );
-
-  /// Reopening the app on a wrong answer (T65 §7): the failed phase, the
-  /// numbered move and the explanation come back. The decision is restored
-  /// too, so the repository returns the same payload for the step id.
-  LessonState _resumeAttempt(LessonState restored, LessonCheckpoint saved) {
-    final attempt = saved.attempt;
-    final steps = restored.lesson?.steps ?? const <LessonStep>[];
-    if (attempt == null ||
-        attempt.step < 0 ||
-        attempt.step >= steps.length ||
-        steps[attempt.step].id != attempt.id ||
-        !(attempt.step == restored.step ||
-            (attempt.kind == 'think' && restored.step == attempt.step + 1))) {
-      return restored;
-    }
-    _decision = (
-      step: attempt.step,
-      id: attempt.id,
-      kind: attempt.kind,
-      fen: attempt.fen,
-      turn: attempt.turn,
-      uci: attempt.uci,
-      incorrect: attempt.incorrect,
-    );
-    if (!attempt.incorrect) return restored;
-    final texts = restored.texts;
-    final lessonId = restored.lesson!.id;
-    final answered = steps[attempt.step];
-    if (attempt.kind == 'think' && answered is ThinkStep) {
-      final said = _mistakeTextIn(
-        texts,
-        lessonId,
-        answered.mistakes[attempt.uci]?.say,
-      );
-      if (said != null) return _thinkSaid(restored, answered, said);
-      return restored.copyWith(
-        thinkMistake: saved.thinkMistake,
-        emotion: Emotion.focused,
-      );
-    }
-    final step = restored.current;
-    final mistake = switch (step) {
-      MoveStep(:final mistakes) ||
-      PlayStep(:final mistakes) => mistakes[attempt.uci],
-      _ => null,
-    };
-    if (saved.failed) {
-      final text = _mistakeTextIn(texts, lessonId, mistake?.say);
-      return restored.copyWith(
-        phase: StepPhase.failed,
-        speech: text ?? texts.say('coach.wrong'),
-        genericMistake: mistake != null && text == null,
-        reviewStep: saved.reviewStep,
-        clearReview: saved.reviewStep == null,
-        clearHint: true,
-        attemptedSan: saved.attemptedSan,
-        emotion: Emotion.focused,
-      );
-    }
-    if (step is! MoveStep) return restored;
-    // A wrong move in a move step: the piece went back, the hint speaks and,
-    // from the second mistake, the arrow shows the move.
-    final hint = texts.hint(lessonId, step.id);
-    return restored.copyWith(
-      speech: hint ?? texts.say('coach.wrong'),
-      genericMistake: hint == null,
-      hint: restored.mistakes >= 2 && restored.turn < step.line.length
-          ? Move.parse(step.line[restored.turn].accept.first)
-          : null,
-      attemptedSan: saved.attemptedSan,
-      wrongMove: true,
-      emotion: Emotion.focused,
-    );
-  }
 
   /// A explicação [next] mostra um lance (seta, demonstração ou passo de
   /// lance).
@@ -1926,10 +1875,24 @@ class LessonCubit extends Cubit<LessonState> {
       fen: step.fen,
       speech: _speechOf(base, index),
       emotion: index == 0 ? Emotion.happy : Emotion.calm,
-      // O cronômetro do passo começa ao abrir.
-      stepStartedAt: _now(),
+      // O cronômetro do passo começa ao abrir; no passo de exercício, só
+      // depois da apresentação do Viktor (startStepClock).
+      stepStartedAt: _isExercise(step) ? null : _now(),
+      presenting: _isExercise(step),
       references: base.references,
     );
+  }
+
+  static bool _isExercise(LessonStep step) => switch (step) {
+    ThinkStep() || MoveStep() || PlayStep() || TapStep() || StarsStep() => true,
+    TalkStep() || DemoStep() => false,
+  };
+
+  /// Fim da apresentação (T65 §8): o relógio do passo começa agora.
+  Future<void> startStepClock() async {
+    if (!state.presenting) return;
+    emit(state.copyWith(presenting: false, stepStartedAt: _now()));
+    await _save();
   }
 
   /// A fala do passo [index]. Logo depois de um passo de pensar, a
@@ -1966,8 +1929,9 @@ class LessonCubit extends Cubit<LessonState> {
                     pausedAt: saved.stepPausedAt!,
                     now: _now(),
                   )
-                : saved.stepStartedAt)
-          : opened.stepStartedAt,
+                : (saved.stepStartedAt ?? _now()))
+          : _now(),
+      presenting: false,
     );
     switch (step) {
       case PlayStep():
@@ -2089,23 +2053,6 @@ class LessonCubit extends Cubit<LessonState> {
     mistakes: state.mistakes,
     demoMove: state.demoMove,
     demoPlaying: state.demoPlaying,
-    reviewReturn: _reviewReturn,
-    attempt: switch (_decision) {
-      final d? => LessonAttempt(
-        step: d.step,
-        id: d.id,
-        kind: d.kind,
-        fen: d.fen,
-        turn: d.turn,
-        uci: d.uci,
-        incorrect: d.incorrect,
-      ),
-      null => null,
-    },
-    failed: state.phase == StepPhase.failed && state.result == null,
-    reviewStep: state.reviewStep,
-    attemptedSan: state.attemptedSan,
-    thinkMistake: state.thinkMistake,
   );
 
   Position? _position() {

@@ -26,6 +26,52 @@
           "type": "talk",
           "id": "intro",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "d3e4",
+                "e8f7",
+                "e4f5"
+              ],
+              "branches": [
+                {
+                  "id": "g4",
+                  "at": 2,
+                  "uci": [
+                    "g3g4",
+                    "f7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            },
+            {
+              "uci": [
+                "d3e4",
+                "e8f8",
+                "e4f5"
+              ],
+              "branches": [
+                {
+                  "id": "g4f8",
+                  "at": 2,
+                  "uci": [
+                    "g3g4",
+                    "f8g7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "marks": [
             "f5",
             "g5",
@@ -112,6 +158,32 @@
           "type": "move",
           "id": "convert",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "d3e4",
+                "e8e7",
+                "e4e5",
+                "e7f7",
+                "e5f5"
+              ],
+              "branches": [
+                {
+                  "id": "g4",
+                  "at": 4,
+                  "uci": [
+                    "g3g4",
+                    "f7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "goal": "win",
           "line": [
             {
@@ -160,6 +232,30 @@
           "type": "talk",
           "id": "diagonal",
           "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "f3f4",
+                "d6e6",
+                "f4e4"
+              ],
+              "branches": [
+                {
+                  "id": "e4",
+                  "at": 2,
+                  "uci": [
+                    "e3e4",
+                    "e6f6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "marks": [
             "e5"
           ],
@@ -572,6 +668,43 @@
           "type": "talk",
           "id": "capablanca",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "e1e2",
+                "e8e7",
+                "e2e3"
+              ],
+              "branches": [
+                {
+                  "id": "kd3",
+                  "at": 2,
+                  "uci": [
+                    "e2d3",
+                    "e7d7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "kf3",
+                  "at": 2,
+                  "uci": [
+                    "e2f3",
+                    "e7f7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "marks": [
             "e2",
             "e3",
@@ -650,6 +783,43 @@
           "type": "move",
           "id": "capablancaMove",
           "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "e1e2",
+                "e8e7",
+                "e2e3"
+              ],
+              "branches": [
+                {
+                  "id": "kd3",
+                  "at": 2,
+                  "uci": [
+                    "e2d3",
+                    "e7d7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "kf3",
+                  "at": 2,
+                  "uci": [
+                    "e2f3",
+                    "e7f7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "goal": "win",
           "ref": "capablanca",
           "line": [
@@ -684,7 +854,7 @@
         {
           "type": "think",
           "id": "t_outflank",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "hints": 3,
           "ask": "plan",
           "ref": "capablanca",
@@ -699,13 +869,13 @@
         {
           "type": "talk",
           "id": "outflank",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "ref": "capablanca"
         },
         {
           "type": "demo",
           "id": "d_outflank",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "side": "white",
           "goal": "win",
           "line": [
@@ -724,7 +894,7 @@
         {
           "type": "move",
           "id": "outflankMove",
-          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 1",
+          "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
           "goal": "win",
           "ref": "capablanca",
           "line": [
@@ -1331,7 +1501,7 @@
         {
           "type": "think",
           "id": "t_useReserve",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1",
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4",
           "hints": 3,
           "ask": "plan",
           "accept": [
@@ -1345,12 +1515,12 @@
         {
           "type": "talk",
           "id": "useReserve",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1"
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4"
         },
         {
           "type": "demo",
           "id": "d_useReserve",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1",
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4",
           "goal": "win",
           "side": "white",
           "line": [
@@ -1377,7 +1547,7 @@
         {
           "type": "move",
           "id": "useReserveMove",
-          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 1",
+          "fen": "8/7p/8/2p3KP/2Pk4/8/1P6/8 w - - 1 4",
           "goal": "win",
           "line": [
             {
@@ -1527,7 +1697,7 @@
         {
           "type": "think",
           "id": "t_synchronize",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "hints": 3,
           "ask": "plan",
           "ref": "grigoriev1920",
@@ -1542,7 +1712,7 @@
         {
           "type": "talk",
           "id": "synchronize",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "ref": "grigoriev1920",
           "arrows": [
             "f5f4"
@@ -1551,7 +1721,7 @@
         {
           "type": "demo",
           "id": "d_synchronize",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "side": "white",
           "goal": "draw",
           "ref": "grigoriev1920",
@@ -1582,7 +1752,7 @@
         {
           "type": "demo",
           "id": "d_synchronizeFinish",
-          "fen": "8/8/8/p7/P7/7p/7k/5K2 b - - 1 1",
+          "fen": "8/8/8/p7/P7/7p/7k/5K2 b - - 1 7",
           "side": "white",
           "goal": "draw",
           "ref": "grigoriev1920",
@@ -1610,7 +1780,7 @@
         {
           "type": "demo",
           "id": "err_synchronize",
-          "fen": "8/8/8/p5Kp/P7/7k/8/8 b - - 1 1",
+          "fen": "8/8/8/p5Kp/P7/7k/8/8 b - - 1 4",
           "side": "black",
           "goal": "win",
           "ref": "grigoriev1920",
@@ -1635,7 +1805,7 @@
         {
           "type": "move",
           "id": "synchronizeMove",
-          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 1",
+          "fen": "8/8/8/p4K1p/P7/7k/8/8 w - - 0 4",
           "goal": "draw",
           "ref": "grigoriev1920",
           "line": [

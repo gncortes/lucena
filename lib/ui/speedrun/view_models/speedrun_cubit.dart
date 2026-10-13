@@ -6,9 +6,11 @@ import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/clock.dart';
+import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/speedrun_pace.dart';
@@ -16,6 +18,7 @@ import '../../../domain/use_cases/default_pace.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
+import 'speedrun_bonus_payer.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 
 part 'speedrun_cubit.freezed.dart';
@@ -35,6 +38,18 @@ abstract class SpeedrunSummary with _$SpeedrunSummary {
     /// antiga: o histórico mostra até onde cada uma foi.
     @Default(<SpeedrunRun>[]) List<SpeedrunRun> abandoned,
   }) = _SpeedrunSummary;
+
+  const SpeedrunSummary._();
+
+  /// A etapa mais longe a que uma tentativa terminada sem concluir chegou
+  /// (índice de 0 a N-1; perder e empatar também contam). Nula sem nenhuma.
+  int? get furthestStage {
+    if (abandoned.isEmpty) return null;
+    final last = speedrun.stages.length - 1;
+    return abandoned
+        .map((run) => run.currentStage.clamp(0, last))
+        .reduce((a, b) => a > b ? a : b);
+  }
 }
 
 @freezed
@@ -55,6 +70,23 @@ abstract class SpeedrunState with _$SpeedrunState {
 
     /// O recorde de antes de [run] terminar. Nulo se não havia.
     Duration? previousBest,
+
+    /// O bônus de rating de [run], se ela concluiu e a conclusão rendeu. Nulo
+    /// nos demais casos.
+    SpeedrunBonus? bonus,
+
+    /// Quanto concluir o speedrun aberto agora renderia de rating. Zero: já
+    /// pago no grupo, sem bônus ou sem rating para ler.
+    @Default(0) int offer,
+
+    /// Quanto concluir a tentativa em andamento rende (fixo, pelo rating de
+    /// quando ela começou). Zero sem tentativa em andamento, sem bônus ou com
+    /// o grupo já pago.
+    @Default(0) int ongoingOffer,
+
+    /// O bônus já pago no mesmo final, modalidade e grupo de [run], quando ela
+    /// concluiu sem render ("você já ganhou"). Nulo nos demais casos.
+    SpeedrunBonus? paid,
 
     /// O ritmo da lista: cada ritmo tem os seus speedruns e recordes.
     @Default(SpeedrunPaces.standard) TimeControl pace,
@@ -90,7 +122,22 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     this._settings,
     this._characters,
     this._profile,
+    this._rating,
   }) : super(const SpeedrunState());
+
+  // O rating do jogador: a oferta e o bônus de rating. Sem ele, sem bônus.
+  final RatingRepository? _rating;
+
+  SpeedrunBonusPayer? get _bonus {
+    final rating = _rating;
+    return rating == null
+        ? null
+        : SpeedrunBonusPayer(
+            rating: rating,
+            speedruns: _speedruns,
+            journey: _journey,
+          );
+  }
 
   // O nível do jogador: sem ritmo escolhido, o speedrun abre no dele.
   final ProfileRepository? _profile;
@@ -146,6 +193,21 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
       if (attempt != null) run = SpeedrunScore.run(selected.speedrun, attempt);
     }
     final characters = await _characters?.characters() ?? const <Character>[];
+    // A oferta do detalhe e o ganho do resumo (paga o que ficou pendente).
+    final payer = _bonus;
+    final offer = selected == null || payer == null
+        ? 0
+        : await payer.offer(selected.speedrun);
+    final bonus = run != null && run.completed && payer != null
+        ? await payer.bonusOf(run.attempt.id)
+        : null;
+    final ongoing = selected?.ongoing;
+    final ongoingOffer = ongoing == null || payer == null
+        ? 0
+        : await payer.offerOf(ongoing.attempt);
+    final paid = run != null && run.completed && bonus == null && payer != null
+        ? await payer.paidFor(selected!.speedrun)
+        : null;
     if (isClosed) return;
     emit(
       SpeedrunState(
@@ -158,6 +220,10 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
             level == RatingLevel.beginner || level == RatingLevel.casual,
         selected: selected,
         run: run,
+        bonus: bonus,
+        offer: offer,
+        ongoingOffer: ongoingOffer,
+        paid: paid,
         previousBest: selected == null || run == null
             ? null
             : SpeedrunScore.previousBest(selected.records, run),

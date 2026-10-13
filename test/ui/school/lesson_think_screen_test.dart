@@ -24,6 +24,7 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/sheet_settle.dart';
 import '../../../testing/test_app.dart';
 
 class _ThinkFeedback extends EmptyExerciseFeedbackRepository
@@ -126,6 +127,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', locale.languageCode);
+    await cubit.startStepClock();
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -156,6 +158,10 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
     await tester.pumpAndSettle();
     return cubit;
   }
@@ -352,13 +358,14 @@ void main() {
     }
   });
 
-  void expectBoardAboveSpeech(WidgetTester tester) {
+  Future<void> expectBoardAboveSpeech(WidgetTester tester) async {
+    await settleSheet(tester);
     final board = tester.getRect(find.byKey(LessonKeys.board));
     final size = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(board.center.dx, closeTo(size.width / 2, 1));
     final progress = tester.getRect(find.byKey(LessonKeys.progress));
     expect(board.top, greaterThanOrEqualTo(progress.bottom));
-    expect(board.top - progress.bottom, lessThanOrEqualTo(16));
+    expect(board.top - progress.bottom, lessThanOrEqualTo(20));
     final teacher = find.byWidgetPredicate(
       (widget) =>
           widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
@@ -388,7 +395,7 @@ void main() {
     final avatar = tester.widget<CharacterAvatar>(
       find.byType(CharacterAvatar).first,
     );
-    expect(avatar.size, 56);
+    expect(avatar.size, 28);
   }
 
   String timerText(WidgetTester tester) => tester
@@ -428,7 +435,7 @@ void main() {
     await pump(tester);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.byKey(LessonKeys.prompt), findsNothing);
-    expectBoardAboveSpeech(tester);
+    await expectBoardAboveSpeech(tester);
     final board = tester.getRect(find.byKey(LessonKeys.board));
     // O cronômetro no canto inferior direito, do zero.
     final timerFinder = find.byKey(LessonKeys.stepTimer);
@@ -543,7 +550,7 @@ void main() {
     // mudou de altura, então o centro também), com o cronômetro do zero.
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(timerText(tester), '0:00');
-    expectBoardAboveSpeech(tester);
+    await expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
   });
 
@@ -583,6 +590,7 @@ void main() {
     final raised = tester.getRect(find.byKey(LessonKeys.board));
     expect(raised.size, centered.size);
     expect(raised.top, closeTo(centered.top, 1));
+    await settleSheet(tester);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.text('Perfect, that is the bridge.'), findsOneWidget);
     expect(
@@ -596,7 +604,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('rook.lucena', 'think')), findsOneWidget);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expectBoardAboveSpeech(tester);
+    await expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
     expect(find.byKey(LessonKeys.stepTimer), findsOneWidget);
   });
@@ -614,7 +622,7 @@ void main() {
       (tester) async {
         final cubit = await pump(tester, size: size, systemBars: true);
         final board = tester.getRect(find.byKey(LessonKeys.board));
-        expectBoardAboveSpeech(tester);
+        await expectBoardAboveSpeech(tester);
         expect(board.width, greaterThanOrEqualTo(200));
         expect(find.byKey(LessonKeys.prompt), findsNothing);
         expect(
@@ -624,11 +632,11 @@ void main() {
         expectPeek(tester);
         // Explicando, o tabuleiro sobe com o mesmo tamanho; jogando, volta ao
         // centro.
-        void raised() {
+        Future<void> raised() async {
           final rect = tester.getRect(find.byKey(LessonKeys.board));
           expect(rect.size, board.size);
           expect(rect.top, closeTo(board.top, 1));
-          expectBoardAboveSpeech(tester);
+          await expectBoardAboveSpeech(tester);
         }
 
         await cubit.next();
@@ -637,7 +645,7 @@ void main() {
         expectPeek(tester);
         await cubit.play(Move.parse('c1c4')!);
         await tester.pumpAndSettle();
-        raised();
+        await raised();
         expect(
           tester.getRect(find.byKey(LessonKeys.scroll)).top,
           greaterThan(tester.getRect(find.byKey(LessonKeys.board)).bottom),

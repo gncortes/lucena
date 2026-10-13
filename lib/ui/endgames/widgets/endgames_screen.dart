@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,7 +27,7 @@ class EndgamesScreen extends StatelessWidget {
     final l10n = context.l10n;
     return Scaffold(
       key: EndgamesKeys.screen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         title: Text(l10n.endgamesTitle),
         actions: [
           // Os filtros valem para a trilha inteira, não para o roteiro.

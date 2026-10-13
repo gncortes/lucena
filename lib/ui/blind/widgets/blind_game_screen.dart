@@ -13,6 +13,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -378,7 +379,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       listener: _onState,
       builder: (context, state) => Scaffold(
         key: BlindKeys.screen,
-        appBar: AppBar(
+        appBar: LucenaAppBar(
           centerTitle: true,
           toolbarHeight: 64,
           title: Text(l10n.blindTitleShort, overflow: TextOverflow.ellipsis),

@@ -175,7 +175,6 @@ void main() {
       expect(home.state.endgame!.lessonId, 'rook.philidor');
       expect(home.state.endgame!.recommended, isFalse);
       expect(home.state.endgame!.lessonOpen, isTrue);
-      expect(home.state.endgame!.step, 1);
     },
   );
 
@@ -283,7 +282,7 @@ void main() {
       expect(endgame.maxScore, 6);
     });
 
-    test('a lição aberta, no passo em que parou', () async {
+    test('a lição aberta, sem o passo: fechar reabre no início', () async {
       endgames = FakeEndgameProgressRepository(
         const EndgameProgress(
           ongoing: LessonCheckpoint(lessonId: 'rook.lucena', step: 1),
@@ -294,8 +293,7 @@ void main() {
 
       final endgame = home.state.endgame!;
       expect(endgame.lessonOpen, isTrue);
-      expect(endgame.step, 2);
-      expect(endgame.stepCount, 2);
+      expect(endgame.partNumber, isNull);
       expect(endgame.openExerciseId, isNull);
     });
 
@@ -314,7 +312,6 @@ void main() {
 
       final endgame = home.state.endgame!;
       expect(endgame.lessonOpen, isTrue);
-      expect(endgame.step, 2);
     });
 
     test(

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,7 +50,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
     final l10n = context.l10n;
     return Scaffold(
       key: SchoolKeys.screen,
-      appBar: AppBar(title: Text(l10n.schoolTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.schoolTitle)),
       body: BlocBuilder<SchoolCubit, SchoolState>(
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();

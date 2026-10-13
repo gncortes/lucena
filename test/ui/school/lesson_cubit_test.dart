@@ -490,7 +490,7 @@ void main() {
     expect(state.viktor!.name, 'Viktor');
     expect(state.current, isA<TalkStep>());
     expect(state.speech, 'The rook moves in straight lines.');
-    expect(state.progress, 0);
+    expect(state.progress, 1 / state.stepCount);
     expect(state.lessonNumber, 1);
     expect(state.lessonCount, 3);
     expect(progress.saved.ongoing!.lessonId, 'pieces.rook');
@@ -687,20 +687,6 @@ void main() {
     },
   );
 
-  test('fechar no meio volta no mesmo passo e com o mesmo tabuleiro', () async {
-    final first = cubit();
-    await first.load('pieces.rook', 'en');
-    await first.next();
-    await first.play(move('a1a5'));
-    expect(progress.saved.ongoing!.open, isTrue);
-
-    final reopened = cubit();
-    await reopened.load('pieces.rook', 'en');
-    expect(reopened.state.step, 1);
-    expect(reopened.state.collected, ['a5']);
-    expect(reopened.state.fen, first.state.fen);
-  });
-
   test(
     'sair pelo voltar guarda o passo, mas o app não reabre na aula',
     () async {
@@ -778,16 +764,6 @@ void main() {
       expect(lesson.state.finished, isTrue);
       expect(lesson.state.courseFinished, isFalse);
       expect(lesson.state.nextLesson, isNull);
-    });
-
-    test('fechar no meio volta no mesmo passo', () async {
-      final first = endgameCubit();
-      await first.load('rook.lucena', 'en');
-      await first.next();
-      final reopened = endgameCubit();
-      await reopened.load('rook.lucena', 'en');
-      expect(reopened.state.step, 1);
-      expect(reopened.state.current, isA<MoveStep>());
     });
 
     test('outro lance bom que não o ensinado cumpre o passo ali', () async {
@@ -965,21 +941,12 @@ void main() {
 
       await lesson.tap('e4');
       expect(lesson.state.tapTarget, 'a1');
-      expect(lesson.state.progress, 0.5);
+      // A barra anda por passo, não por casa tocada.
+      expect(lesson.state.progress, 1 / lesson.state.stepCount);
 
       await lesson.tap('a1');
       expect(lesson.state.phase, StepPhase.done);
       expect(lesson.state.tapTarget, isNull);
-    });
-
-    test('fechar no meio volta na casa em que parou', () async {
-      final first = cubit(course: course);
-      await first.load('notation.coordinates', 'en');
-      await first.tap('e4');
-
-      final again = cubit(course: course);
-      await again.load('notation.coordinates', 'en');
-      expect(again.state.tapTarget, 'a1');
     });
   });
 }

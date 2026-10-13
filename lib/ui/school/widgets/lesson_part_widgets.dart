@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:dartchess/dartchess.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/use_cases/lesson_rules.dart';
-import '../../../domain/use_cases/speech_lines.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -15,12 +17,29 @@ import '../../core/widgets/celebration.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/lesson_cubit.dart';
 
+export 'variation_strip.dart';
+
 /// O ritmo da demonstração, do spike `docs/spikes/T51-ritmo.md`: depois de
 /// cada fala, uma pausa; sem voz, um tempo de leitura pelo tamanho dela.
 abstract final class DemoPace {
   static const pauseMs = 600;
   static const minReadMs = 2500;
   static const msPerChar = 65;
+
+  /// Teto da espera por lance: a demonstração nunca fica parada mais que isso.
+  static const maxWaitMs = 8000;
+
+  /// Quanto esperar depois de uma fala de [length] letras antes do próximo
+  /// lance. [spoke]: a voz acabou de falar (só a pausa); senão, o tempo de
+  /// leitura. A [speed] da voz vale para os dois; o teto vale sempre.
+  static double waitMs({
+    required int length,
+    required bool spoke,
+    required double speed,
+  }) {
+    final reading = spoke ? 0 : max(minReadMs, length * msPerChar);
+    return min((reading + pauseMs) / max(speed, 0.5), maxWaitMs.toDouble());
+  }
 }
 
 /// Lê os toques no tabuleiro de um passo de estrelas para achar o lance
@@ -79,10 +98,19 @@ class IllegalStarMoves {
 /// Os controles da demonstração: repetir do começo, voltar um lance (e
 /// parar ali) e avançar (e seguir sozinha).
 class DemoControls extends StatelessWidget {
-  const DemoControls({required this.state, required this.height, super.key});
+  const DemoControls({
+    required this.state,
+    required this.height,
+    this.ring,
+    super.key,
+  });
 
   final LessonState state;
   final double height;
+
+  /// O anel do ⏭: 0 a 1 contando até o próximo lance, [DemoRing.speaking]
+  /// com a voz falando, nulo sem anel (pausada ou no fim).
+  final ValueListenable<double?>? ring;
 
   @override
   Widget build(BuildContext context) {
@@ -94,12 +122,14 @@ class DemoControls extends StatelessWidget {
       String tooltip,
       VoidCallback? onPressed, {
       bool main = false,
+      ValueListenable<double?>? ring,
     }) => _ControlButton(
       buttonKey: key,
       icon: icon,
       tooltip: tooltip,
       onPressed: onPressed,
       main: main,
+      ring: ring,
     );
     return _ControlBar(
       wrong: state.wrongDemo,
@@ -135,28 +165,37 @@ class DemoControls extends StatelessWidget {
           l10n.lessonDemoForward,
           cubit.demoForward,
           main: true,
+          ring: ring,
         ),
       ],
     );
   }
 }
 
-/// Os controles da variante citada na fala, no estilo dos da demonstração:
-/// voltar à posição do passo, lance anterior e próximo lance.
+/// Os controles do modo variante (LICOES-V2 §1), fixos no rodapé nos mesmos
+/// lugares dos da demonstração: fechar à esquerda, lance anterior no meio e
+/// próximo lance no canto. Os dois cursores (a variante da fala e a da
+/// explicação) usam estes controles.
 class VariationControls extends StatelessWidget {
   const VariationControls({
-    required this.cursor,
+    required this.canPrevious,
+    required this.canNext,
     required this.onExit,
     required this.onBack,
     required this.onForward,
     this.wrong = false,
+    this.inBranch = false,
     super.key,
   });
 
-  final SpeechLineCursor cursor;
+  final bool canPrevious;
+  final bool canNext;
 
   /// A variante é a linha errada da aula.
   final bool wrong;
+
+  /// O lance da vez está numa alternativa (muda a dica do ⏭ desativado).
+  final bool inBranch;
   final VoidCallback onExit;
   final VoidCallback onBack;
   final VoidCallback onForward;
@@ -164,26 +203,33 @@ class VariationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    const gap = SizedBox.square(dimension: _ControlButton.size);
     return _ControlBar(
       wrong: wrong,
       children: [
         _ControlButton(
           buttonKey: LessonKeys.variationExit,
           icon: Icons.close_rounded,
-          tooltip: l10n.lessonVariationExit,
+          tooltip: l10n.lessonVariationClose,
           onPressed: onExit,
         ),
+        gap,
         _ControlButton(
           buttonKey: LessonKeys.variationBack,
           icon: Icons.skip_previous_rounded,
-          tooltip: l10n.lessonDemoBack,
-          onPressed: cursor.canPrevious ? onBack : null,
+          tooltip: l10n.lessonVariationPrevious,
+          onPressed: canPrevious ? onBack : null,
         ),
+        gap,
         _ControlButton(
           buttonKey: LessonKeys.variationForward,
           icon: Icons.skip_next_rounded,
-          tooltip: l10n.lessonDemoForward,
-          onPressed: cursor.canNext ? onForward : null,
+          tooltip: canNext
+              ? l10n.lessonVariationNext
+              : inBranch
+              ? l10n.lessonVariationEndBranch
+              : l10n.lessonVariationEndLine,
+          onPressed: canNext ? onForward : null,
           main: true,
         ),
       ],
@@ -237,7 +283,7 @@ class WrongLineBadge extends StatelessWidget {
 }
 
 /// A fileira dos controles redondos, sobre um esmaecer até o fundo. Na
-/// linha errada, o selo vem acima dela.
+/// linha errada, o selo vem acima dela. As setas não espelham (`ltr`).
 class _ControlBar extends StatelessWidget {
   const _ControlBar({required this.children, this.wrong = false});
 
@@ -255,9 +301,15 @@ class _ControlBar extends StatelessWidget {
               padding: EdgeInsets.only(bottom: 8),
               child: WrongLineBadge(key: LessonKeys.wrongLineControls),
             ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: children,
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: children,
+              ),
+            ),
           ),
         ],
       ),
@@ -265,7 +317,8 @@ class _ControlBar extends StatelessWidget {
   }
 }
 
-/// Um controle redondo: o principal em destaque, desligado sem ação.
+/// Um controle redondo de 48 dp (canvas `redondo`): o principal em destaque,
+/// desligado sem ação (0,38), sem elevação.
 class _ControlButton extends StatelessWidget {
   const _ControlButton({
     required this.buttonKey,
@@ -273,7 +326,10 @@ class _ControlButton extends StatelessWidget {
     required this.tooltip,
     required this.onPressed,
     this.main = false,
+    this.ring,
   });
+
+  static const size = 48.0;
 
   final Key buttonKey;
   final IconData icon;
@@ -281,21 +337,191 @@ class _ControlButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool main;
 
+  /// O anel de tempo em volta do botão (só o ⏭ da demonstração).
+  final ValueListenable<double?>? ring;
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return FloatingActionButton(
+    final background = main ? colors.primary : colors.surfaceContainerHigh;
+    final foreground = main ? colors.onPrimary : colors.onSurface;
+    final button = IconButton(
       key: buttonKey,
-      heroTag: null,
-      shape: const CircleBorder(),
-      elevation: main ? 4 : 2,
-      backgroundColor: main ? colors.primary : colors.surface,
-      foregroundColor: main ? colors.onPrimary : colors.primary,
       tooltip: tooltip,
       onPressed: onPressed,
-      child: Icon(icon),
+      icon: Icon(icon, size: 24),
+      style: IconButton.styleFrom(
+        fixedSize: const Size.square(size),
+        minimumSize: const Size.square(size),
+        padding: EdgeInsets.zero,
+        shape: const CircleBorder(),
+        elevation: 0,
+        backgroundColor: background,
+        foregroundColor: foreground,
+        disabledBackgroundColor: background,
+        disabledForegroundColor: foreground,
+      ),
+    );
+    // Desligado: 0,38 no botão inteiro (fundo e ícone juntos), como no canvas.
+    final dimmed = onPressed == null
+        ? Opacity(opacity: 0.38, child: button)
+        : button;
+    final ring = this.ring;
+    return SizedBox.square(
+      dimension: size,
+      child: ring == null
+          ? dimmed
+          : Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
+                Positioned(
+                  left: -DemoRing.outside,
+                  top: -DemoRing.outside,
+                  child: ExcludeSemantics(
+                    child: IgnorePointer(child: DemoRing(progress: ring)),
+                  ),
+                ),
+                dimmed,
+              ],
+            ),
     );
   }
+}
+
+/// O anel de tempo do ⏭ da demonstração: 60 dp (6 fora do botão), traço 3,
+/// trilho `outlineVariant`, arco `primary` a partir das 12 h, no sentido
+/// horário. Com a voz falando, o trilho fica tracejado e sem arco. Sem valor
+/// (demonstração pausada ou no fim), nada. Com movimento reduzido, o arco
+/// anda em degraus de 25 %.
+class DemoRing extends StatefulWidget {
+  const DemoRing({required this.progress, super.key});
+
+  /// 0 a 1; [speaking] com a voz falando; nulo sem anel.
+  final ValueListenable<double?> progress;
+
+  /// Valor que marca "falando".
+  static const speaking = -1.0;
+  static const outside = 6.0;
+  static const diameter = 60.0;
+  static const stroke = 3.0;
+
+  /// Intervalo entre os tiques da demonstração (a animação do arco).
+  static const tick = Duration(milliseconds: 250);
+
+  @override
+  State<DemoRing> createState() => _DemoRingState();
+}
+
+class _DemoRingState extends State<DemoRing> {
+  double _last = 0;
+
+  /// Muda quando o valor cai (o lance saiu): o arco recomeça em 0 na hora,
+  /// sem "desenrolar" de volta.
+  int _restarts = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final reduced = AppMotion.of(context).disabled;
+    return ValueListenableBuilder<double?>(
+      valueListenable: widget.progress,
+      builder: (context, value, _) {
+        const diameter = DemoRing.diameter;
+        if (value == null) {
+          _last = 0;
+          return const SizedBox.square(dimension: diameter);
+        }
+        if (value >= 0) {
+          if (value < _last) _restarts++;
+          _last = value;
+        }
+        final isSpeaking = value < 0;
+        Widget paint(double v) => CustomPaint(
+          key: LessonKeys.demoRing,
+          size: const Size.square(diameter),
+          painter: _RingPainter(
+            progress: v,
+            speaking: isSpeaking,
+            track: colors.outlineVariant,
+            arc: colors.primary,
+          ),
+        );
+        if (isSpeaking) return paint(0);
+        if (reduced) return paint((value.clamp(0.0, 1.0) * 4).floor() / 4);
+        return TweenAnimationBuilder<double>(
+          key: ValueKey(_restarts),
+          tween: Tween(end: value.clamp(0.0, 1.0)),
+          duration: DemoRing.tick,
+          // Contínuo entre os tiques: linear, não o "enter" das telas.
+          curve: AppMotion.linear,
+          builder: (context, v, _) => paint(v),
+        );
+      },
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  const _RingPainter({
+    required this.progress,
+    required this.speaking,
+    required this.track,
+    required this.arc,
+  });
+
+  final double progress;
+  final bool speaking;
+  final Color track;
+  final Color arc;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const stroke = DemoRing.stroke;
+    // Linha do traço no raio 27 (canvas `redondo`: círculo r=27, traço 3).
+    const inset = stroke / 2 + 1.5;
+    final rect =
+        const Offset(inset, inset) &
+        Size(size.width - 2 * inset, size.height - 2 * inset);
+    final trackPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..color = track;
+    if (speaking) {
+      final path = Path()..addOval(rect);
+      for (final metric in path.computeMetrics()) {
+        var at = 0.0;
+        while (at < metric.length) {
+          canvas.drawPath(
+            metric.extractPath(at, min(at + 3, metric.length)),
+            trackPaint,
+          );
+          at += 6;
+        }
+      }
+      return;
+    }
+    canvas.drawOval(rect, trackPaint);
+    if (progress <= 0) return;
+    canvas.drawArc(
+      rect,
+      -pi / 2,
+      2 * pi * progress,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.round
+        ..color = arc,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_RingPainter old) =>
+      old.progress != progress ||
+      old.speaking != speaking ||
+      old.track != track ||
+      old.arc != arc;
 }
 
 /// O fim de uma parte: o selo de feito, "Parte N concluída" e a próxima

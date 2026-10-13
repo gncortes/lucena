@@ -30,6 +30,25 @@ enum SpeedrunKind {
   static SpeedrunKind? fromCode(String? code) => values.asNameMap()[code];
 }
 
+/// Como uma tentativa de speedrun terminou.
+enum SpeedrunRunEnd {
+  /// Venceu todas as etapas.
+  completed,
+
+  /// Perdeu a partida de uma etapa.
+  lost,
+
+  /// Empatou a partida de uma etapa (que pedia a vitória).
+  drawn,
+
+  /// O jogador desistiu da tentativa.
+  abandoned,
+
+  /// O tempo acabou: a partida perdida ou empatada por tempo, ou o banco da
+  /// Maratona chegando a zero depois de vencer uma etapa.
+  timeout,
+}
+
 /// A dificuldade de um speedrun de final: a lista abre na do nível do
 /// jogador, e as outras ficam a um toque.
 enum SpeedrunCategory {
@@ -93,6 +112,10 @@ abstract class SpeedrunAttempt with _$SpeedrunAttempt {
 
     /// As partidas da tentativa, na ordem em que foram jogadas.
     @Default(<Attempt>[]) List<Attempt> games,
+
+    /// A conclusão pode dar o bônus de rating. Falso nas tentativas de antes
+    /// do bônus existir (sem retroativo).
+    @Default(true) bool bonusEligible,
   }) = _SpeedrunAttempt;
 }
 

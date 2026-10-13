@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/maia_level.dart';
@@ -42,7 +43,7 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
     final running = state.status == MaiaDebugStatus.running;
     return Scaffold(
       key: MaiaDebugKeys.screen,
-      appBar: AppBar(title: Text(l10n.maiaDebugTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.maiaDebugTitle)),
       body: ListView(
         padding: scrollPadding(
           context,

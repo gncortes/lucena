@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -61,7 +62,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
         );
     return Scaffold(
       key: GameSetupKeys.screen,
-      appBar: AppBar(title: Text(l10n.setupTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.setupTitle)),
       // A posição já aparece antes de a configuração ser lida: é nela que o
       // tabuleiro do catálogo pousa. O resto entra quando estiver pronto.
       // O tabuleiro fica no centro do espaço entre a barra do app e o painel

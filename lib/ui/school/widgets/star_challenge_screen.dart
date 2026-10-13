@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -116,7 +117,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           final level = state.level;
           return Scaffold(
             key: StarChallengeKeys.screen,
-            appBar: AppBar(
+            appBar: LucenaAppBar(
               centerTitle: true,
               toolbarHeight: (MediaQuery.textScalerOf(context).scale(44) + 16)
                   .clamp(72.0, double.infinity),
