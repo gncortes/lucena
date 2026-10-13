@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/failed_alternative.dart';
+import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -59,7 +60,7 @@ class FailedMovesList extends StatelessWidget {
                           Directionality(
                             textDirection: TextDirection.ltr,
                             child: Text(
-                              alternative.label,
+                              localizedSan(l10n, alternative.label),
                               style: theme.textTheme.bodyLarge,
                             ),
                           ),

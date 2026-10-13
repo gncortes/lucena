@@ -94,15 +94,11 @@ void main() {
 
     await cubit.next();
     await tester.pumpAndSettle();
-    expect(cubit.state.finished, isTrue);
-    expect(find.byKey(LessonKeys.partFinished), findsOneWidget);
-    expect(find.byKey(LessonKeys.progress), findsNothing);
-
-    final review = tester.getRect(find.byKey(LessonKeys.reviewPartButton));
-    final next = tester.getRect(find.byKey(LessonKeys.nextPartButton));
-    expect(review.width, next.width);
-    expect(review.height, next.height);
-    expect(review.height, 52);
+    // Entre as partes não há tela de fim (crit. 18): vai direto à próxima.
+    expect(find.byKey(LessonKeys.partFinished), findsNothing);
+    expect(cubit.state.partNumber, 2);
+    expect(cubit.state.finished, isFalse);
+    expect(find.byKey(LessonKeys.progress), findsOneWidget);
     addTearDown(() => tester.pumpWidget(const SizedBox()));
   });
 }

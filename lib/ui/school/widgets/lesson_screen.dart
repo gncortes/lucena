@@ -434,7 +434,22 @@ class _LessonScreenState extends State<LessonScreen>
       _elapsed.value = cubit.stepElapsed;
     }
     if (state.step != previous.step) _illegal.reset();
+    final genBefore = _autoGen;
     _syncSheet(state, previous);
+    // O estado correto abre sempre na mesma altura (a do texto inteiro),
+    // venha do acerto, do "Ver resposta" ou do link (crit. 7).
+    if (state.correct &&
+        !previous.correct &&
+        state.ready &&
+        !state.finished &&
+        !_presentingModal.value &&
+        genBefore == _autoGen) {
+      // O acerto já abriu sozinho em _syncSheet; "Ver resposta" e o link
+      // abrem aqui, do mesmo jeito (altura do texto, recolhe no tempo).
+      _cancelAuto();
+      _autoLength = _said(context, state)?.length ?? 0;
+      _measureThenOpen(++_autoGen, null, 0);
+    }
     // Saiu da Solução vista (Tentar de novo): a folha recolhe até o tabuleiro.
     if (previous.solutionSeen && !state.solutionSeen && _sheet.isAttached) {
       if (AppMotion.of(context).disabled) {
@@ -1124,9 +1139,16 @@ class _LessonScreenState extends State<LessonScreen>
     if (practice && viktor != null && hasBoard) {
       return _practice(context, state, viktor, boardSettings, board);
     }
+    // Entre as partes não há tela de fim: fade direto para o 1º passo da
+    // próxima (crit. 18). Só a última parte termina na tela de fim.
+    final advancing =
+        state.finished && state.part != null && state.nextPart != null;
+    if (advancing) _advancePart();
     return AnimatedSwitcher(
       duration: AppMotion.component,
-      child: state.finished && state.part != null
+      child: advancing
+          ? const SizedBox.expand(key: ValueKey('advancing-part'))
+          : state.finished && state.part != null
           ? PartFinished(key: LessonKeys.finished, state: state)
           : state.finished
           ? LessonFinished(key: LessonKeys.finished, state: state)
@@ -1284,12 +1306,12 @@ class _LessonScreenState extends State<LessonScreen>
                                                 canNext: _canStep(
                                                   previous: false,
                                                 ),
-                                                wrong: _wrongShown(state),
-                                                wrongLabel: _wrongBranch
-                                                    ? context
-                                                          .l10n
-                                                          .lessonIncorrectMove
-                                                    : null,
+                                                // No erro do pensar o selo
+                                                // fica só no cabeçalho da
+                                                // folha (canvas 1.2).
+                                                wrong:
+                                                    _wrongShown(state) &&
+                                                    !_wrongBranch,
                                                 primaryAction: _wrongBranch
                                                     ? VariationPrimaryAction(
                                                         label: context
@@ -1416,7 +1438,9 @@ class _LessonScreenState extends State<LessonScreen>
               child: ValueListenableBuilder(
                 valueListenable: _variation,
                 builder: (context, _, _) {
-                  if (!_wrongShown(state)) return const SizedBox.shrink();
+                  if (!_wrongShown(state) || _wrongBranch) {
+                    return const SizedBox.shrink();
+                  }
                   final error = Theme.of(context).colorScheme.error;
                   return Stack(
                     clipBehavior: Clip.none,
@@ -1433,12 +1457,7 @@ class _LessonScreenState extends State<LessonScreen>
                         start: 0,
                         end: 0,
                         child: Center(
-                          child: WrongLineBadge(
-                            key: LessonKeys.wrongLine,
-                            label: _wrongBranch
-                                ? context.l10n.lessonIncorrectMove
-                                : null,
-                          ),
+                          child: WrongLineBadge(key: LessonKeys.wrongLine),
                         ),
                       ),
                     ],
@@ -1453,6 +1472,7 @@ class _LessonScreenState extends State<LessonScreen>
               builder: (context, line, child) {
                 final motion = AppMotion.of(context);
                 final variant = line != null || _authoredVariation != null;
+                _trackSheetScroll(variant);
                 // A folha sai para baixo e fica montada: o tamanho e a
                 // rolagem voltam como estavam ao fechar a variante.
                 return AnimatedSlide(
@@ -1544,6 +1564,20 @@ class _LessonScreenState extends State<LessonScreen>
                           bottom: _footerHeight.value + _endGap,
                         ),
                         children: [
+                          // O selo único do erro do pensar (canvas 1.2).
+                          if (strip != null && _wrongBranch)
+                            Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                bottom: AppSpacing.sm,
+                              ),
+                              child: Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: WrongLineBadge(
+                                  key: LessonKeys.wrongLine,
+                                  label: context.l10n.lessonIncorrectMove,
+                                ),
+                              ),
+                            ),
                           if (strip != null)
                             Builder(
                               builder: (context) {
@@ -1574,7 +1608,8 @@ class _LessonScreenState extends State<LessonScreen>
                                         (rect.bottom + ExerciseLayout.gutter) -
                                         _footerHeight.value -
                                         _endGap -
-                                        24,
+                                        24 -
+                                        (_wrongBranch ? 40 : 0),
                                   ),
                                 );
                               },
@@ -1714,6 +1749,56 @@ class _LessonScreenState extends State<LessonScreen>
     // volta à frase curta (A2).
     if (prompting && step is ThinkStep) _forceStatement = true;
     _measureThenOpen(++_autoGen, null, 0);
+  }
+
+  bool _advancing = false;
+
+  void _advancePart() {
+    if (_advancing) return;
+    _advancing = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await context.read<LessonCubit>().continueToNextPart();
+      _advancing = false;
+    });
+  }
+
+  bool _variantWas = false;
+  double? _savedScroll;
+
+  /// Fechar o ramo devolve a folha na mesma rolagem de antes de abri-lo.
+  void _trackSheetScroll(bool variant) {
+    if (variant == _variantWas) return;
+    _variantWas = variant;
+    final position = _sheetScrollPosition();
+    if (variant) {
+      _savedScroll = position?.pixels;
+      return;
+    }
+    final saved = _savedScroll;
+    _savedScroll = null;
+    if (saved == null) return;
+    void restore() {
+      final position = _sheetScrollPosition();
+      if (!mounted || position == null || !position.hasContentDimensions) {
+        return;
+      }
+      final target = saved.clamp(
+        position.minScrollExtent,
+        position.maxScrollExtent,
+      );
+      if ((position.pixels - target).abs() > .5) position.jumpTo(target);
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      restore();
+      WidgetsBinding.instance.addPostFrameCallback((_) => restore());
+    });
+  }
+
+  ScrollPosition? _sheetScrollPosition() {
+    final context = _speechContent.currentContext;
+    return context == null ? null : Scrollable.maybeOf(context)?.position;
   }
 
   void _snapSheet() {
@@ -2467,11 +2552,7 @@ class _LessonScreenState extends State<LessonScreen>
       side == Side.white ? context.l10n.blindWhite : context.l10n.blindBlack;
 
   String _localSan(BuildContext context, String san) {
-    final letters = MoveNotation.letters.pieceLetters(context.l10n)!;
-    return san.replaceAllMapped(
-      RegExp('[KQRBN]'),
-      (match) => letters[match[0]] ?? match[0]!,
-    );
+    return localizedSan(context.l10n, san);
   }
 
   /// A1/A2/A3: o cabeçalho do Viktor e, embaixo, a frase curta (recolhida)
@@ -2708,35 +2789,6 @@ class _LessonScreenState extends State<LessonScreen>
     );
   }
 
-  /// Os lances da linha de [uci] (o do aluno e o que vem depois), dos dados
-  /// da aula: variação da explicação, demonstração errada da parte.
-  List<String> _branchUcis(LessonState state, String uci) {
-    for (final variation
-        in state.explanation?.variations ?? const <ExplanationVariation>[]) {
-      if (variation.parentId == null &&
-          variation.firstUci == uci &&
-          variation.movesUci.isNotEmpty) {
-        return List.of(variation.movesUci);
-      }
-    }
-    final think = _thinkOf(state);
-    final steps = state.lesson?.steps;
-    final position = think == null ? null : GameRules.fromFen(think.fen);
-    final move = Move.parse(uci);
-    if (think != null && steps != null && position != null && move != null) {
-      final after = GameRules.play(position, move)?.position.fen;
-      String? key(String? fen) => fen?.split(' ').take(4).join(' ');
-      final index = steps.indexOf(think);
-      for (final other in steps.skip(index + 1)) {
-        if (other is ThinkStep) break;
-        if (other is DemoStep && other.wrong && key(other.fen) == key(after)) {
-          return [uci, for (final m in other.line) m.uci];
-        }
-      }
-    }
-    return [uci];
-  }
-
   /// A linha do passo de pensar no modo variante: [ucis] a partir da posição
   /// do passo; [texts] são os comentários por lance.
   bool _openThinkLine(
@@ -2803,25 +2855,21 @@ class _LessonScreenState extends State<LessonScreen>
   void _enterWrongBranch(LessonState state) {
     final played = state.thinkPlayed;
     if (played == null || _variation.value != null) return;
-    final ucis = state.engineLine.isNotEmpty
-        ? state.engineLine
-        : _branchUcis(state, played);
+    final engine = state.engineLine.isNotEmpty;
     final think = _thinkOf(state);
     final opponent = (think?.side ?? Side.white).opposite;
     final l10n = context.l10n;
-    final said = (_said(context, state) ?? '')
-        .split('\n')
-        .where((p) => p.trim().isNotEmpty)
-        .toList();
-    final engine = state.engineLine.isNotEmpty;
-    final texts = [
-      engine
-          ? l10n.lessonEngineMove(_sideWord(context, opponent))
-          : (said.isEmpty ? '' : said.first),
-      engine
-          ? l10n.lessonEngineReply(_sideWord(context, opponent))
-          : said.skip(1).join('\n'),
-    ];
+    final branch = context.read<LessonCubit>().thinkBranch(
+      played,
+      fallback: l10n.lessonBranchMoveFallback,
+    );
+    final ucis = engine ? state.engineLine : branch.ucis;
+    final texts = engine
+        ? [
+            l10n.lessonEngineMove(_sideWord(context, opponent)),
+            l10n.lessonEngineReply(_sideWord(context, opponent)),
+          ]
+        : branch.texts;
     _openThinkLine(state, ucis, texts, wrong: true);
   }
 
@@ -2830,14 +2878,12 @@ class _LessonScreenState extends State<LessonScreen>
   void _openAlternative(String uci) {
     final cubit = context.read<LessonCubit>();
     final state = cubit.state;
-    final alternative = state.alternatives
-        .where((a) => a.uci == uci)
-        .firstOrNull;
-    final label = alternative?.label ?? uci;
-    final ucis = _branchUcis(state, uci);
-    final texts = [
-      context.l10n.lessonThinkMistakeGeneric(_localSan(context, label)),
-    ];
+    final branch = cubit.thinkBranch(
+      uci,
+      fallback: context.l10n.lessonBranchMoveFallback,
+    );
+    final ucis = branch.ucis;
+    final texts = branch.texts;
     // A folha sai para a linha entrar (o toque nela a deixou "em movimento").
     _cancelAuto();
     _snapSheet();
@@ -3106,6 +3152,9 @@ class _LessonScreenState extends State<LessonScreen>
                   icon: const Icon(Icons.grid_on),
                   label: Text(context.l10n.lessonOpenFreeBoard),
                 ),
+                // Estado correto: respiro até o rodapé, o botão nunca fica
+                // rente a ele.
+                if (state.correct) const SizedBox(height: AppSpacing.lg),
               ],
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../../../domain/models/variation_tree.dart';
+import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
@@ -954,6 +955,8 @@ class _MoveButton extends StatelessWidget {
   final GlobalKey buttonKey;
   final GlobalKey textKey;
   final String shown;
+
+  String _text(BuildContext context) => localizedSan(context.l10n, shown);
   final VariationMoveState state;
   final bool branch;
   final TextStyle style;
@@ -969,7 +972,7 @@ class _MoveButton extends StatelessWidget {
   double _reservedWidth(BuildContext context) {
     final painter = TextPainter(
       text: TextSpan(
-        text: '\u2066$shown\u2069',
+        text: '\u2066${_text(context)}\u2069',
         style: style.copyWith(fontWeight: FontWeight.w600),
       ),
       textDirection: Directionality.of(context),
@@ -987,8 +990,8 @@ class _MoveButton extends StatelessWidget {
     final label = Text(
       // Notação isolada da direção do texto (RTL); o leitor de tela lê o
       // lance sem os caracteres de isolamento.
-      '\u2066$shown\u2069',
-      semanticsLabel: shown,
+      '\u2066${_text(context)}\u2069',
+      semanticsLabel: _text(context),
       key: current ? LessonKeys.variationStripCurrent : null,
       style: style.copyWith(
         color: current
