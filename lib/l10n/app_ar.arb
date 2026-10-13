@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "الماراثون: {ending}",
   "marathonBest": "أكثر وقت متبقٍّ",
   "marathonLeft": "الوقت المتبقي",
+  "marathonLeftValue": "الوقت المتبقي: {time}",
+  "marathonDayLeft": "{when} · المتبقي",
   "speedrunModeClassic": "كلاسيكي",
   "homeJourneyBodyPlayer": "تدرّب على كشّات المات الأساسية وتحدَّ كل خصم، من كوكو حتى Stockfish.",
   "homeLearnBodyPlayer": "راجع الأساسيات مع فيكتور.",

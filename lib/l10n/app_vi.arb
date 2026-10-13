@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "Marathon: {ending}",
   "marathonBest": "Còn nhiều thời gian nhất",
   "marathonLeft": "Thời gian còn lại",
+  "marathonLeftValue": "Thời gian còn lại: {time}",
+  "marathonDayLeft": "{when} · còn lại",
   "speedrunModeClassic": "Cổ điển",
   "homeJourneyBodyPlayer": "Luyện các thế chiếu hết cơ bản và thách đấu mọi đối thủ, từ Coco đến Stockfish.",
   "homeLearnBodyPlayer": "Ôn lại những điều cơ bản cùng Viktor.",

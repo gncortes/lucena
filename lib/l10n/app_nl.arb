@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "Marathon: {ending}",
   "marathonBest": "Meeste tijd over",
   "marathonLeft": "Tijd over",
+  "marathonLeftValue": "Tijd over: {time}",
+  "marathonDayLeft": "{when} · over",
   "speedrunModeClassic": "Klassiek",
   "homeJourneyBodyPlayer": "Oefen de basismatten en daag elke tegenstander uit, van Coco tot Stockfish.",
   "homeLearnBodyPlayer": "Herhaal de basis met Viktor.",

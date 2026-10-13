@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "마라톤: {ending}",
   "marathonBest": "가장 많이 남은 시간",
   "marathonLeft": "남은 시간",
+  "marathonLeftValue": "남은 시간: {time}",
+  "marathonDayLeft": "{when} · 남음",
   "speedrunModeClassic": "클래식",
   "homeJourneyBodyPlayer": "기본 체크메이트를 연습하고 코코부터 Stockfish까지 모든 상대에게 도전하세요.",
   "homeLearnBodyPlayer": "빅토르와 함께 기초를 다시 익혀 보세요.",

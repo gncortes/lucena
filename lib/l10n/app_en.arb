@@ -3421,6 +3421,26 @@
   "@marathonLeft": {
     "description": "Label of the time left in the bank at the end of a Marathon attempt."
   },
+  "marathonLeftValue": "Time left: {time}",
+  "@marathonLeftValue": {
+    "description": "Line of the Marathon end card: the time left in the bank when the attempt ended (label and value in one string).",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "1:52.8"
+      }
+    }
+  },
+  "marathonDayLeft": "{when} · left",
+  "@marathonDayLeft": {
+    "description": "Date of a completed Marathon attempt in the Marathon history, followed by 'left' because the time shown is the time left in the bank.",
+    "placeholders": {
+      "when": {
+        "type": "String",
+        "example": "Today, 22:31"
+      }
+    }
+  },
   "speedrunModeClassic": "Classic",
   "@speedrunModeClassic": {
     "description": "Speedrun mode selector: each game has its own clock (as opposed to the Marathon, one clock for the whole run)."

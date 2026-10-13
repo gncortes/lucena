@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "ماراتن: {ending}",
   "marathonBest": "بیشترین زمان باقی‌مانده",
   "marathonLeft": "زمان باقی‌مانده",
+  "marathonLeftValue": "زمان باقی‌مانده: {time}",
+  "marathonDayLeft": "{when} · باقی‌مانده",
   "speedrunModeClassic": "کلاسیک",
   "homeJourneyBodyPlayer": "مات‌های پایه را تمرین کن و با هر حریف، از کوکو تا Stockfish، رقابت کن.",
   "homeLearnBodyPlayer": "اصول پایه را با ویکتور مرور کن.",

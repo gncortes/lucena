@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "Marathon: {ending}",
   "marathonBest": "Meiste Restzeit",
   "marathonLeft": "Restzeit",
+  "marathonLeftValue": "Restzeit: {time}",
+  "marathonDayLeft": "{when} · übrig",
   "speedrunModeClassic": "Klassisch",
   "homeJourneyBodyPlayer": "Übe die Grundmatts und fordere jeden Gegner heraus, von Coco bis Stockfish.",
   "homeLearnBodyPlayer": "Wiederhole die Grundlagen mit Viktor.",

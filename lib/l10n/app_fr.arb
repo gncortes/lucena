@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "Marathon : {ending}",
   "marathonBest": "Le plus de temps restant",
   "marathonLeft": "Temps restant",
+  "marathonLeftValue": "Temps restant: {time}",
+  "marathonDayLeft": "{when} · restant",
   "speedrunModeClassic": "Classique",
   "homeJourneyBodyPlayer": "Entraîne-toi aux mats de base et affronte chaque adversaire, de Coco à Stockfish.",
   "homeLearnBodyPlayer": "Revois les fondamentaux avec Viktor.",

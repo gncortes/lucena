@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "マラソン：{ending}",
   "marathonBest": "最多の残り時間",
   "marathonLeft": "残り時間",
+  "marathonLeftValue": "残り時間：{time}",
+  "marathonDayLeft": "{when} · 残り",
   "speedrunModeClassic": "クラシック",
   "homeJourneyBodyPlayer": "基本のチェックメイトを練習し、ココからStockfishまで全員に挑もう。",
   "homeLearnBodyPlayer": "ヴィクトルと基本をおさらいしよう。",

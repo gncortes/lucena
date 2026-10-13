@@ -201,6 +201,9 @@ class SpeedrunStageRow extends StatelessWidget {
     required this.status,
     this.trailing,
     this.losses = 0,
+    this.note,
+    this.noteKey,
+    this.showNow = true,
     super.key,
   });
 
@@ -215,6 +218,15 @@ class SpeedrunStageRow extends StatelessWidget {
 
   /// As derrotas nesta etapa (a etapa perdida é jogada de novo).
   final int losses;
+
+  /// A nota depois de "Etapa N de M" ("perdeu aqui"): a etapa onde a
+  /// tentativa parou.
+  final String? note;
+  final Key? noteKey;
+
+  /// A etapa da vez leva o selo "Agora". Sem ele, só o destaque (o resumo da
+  /// tentativa que parou nela).
+  final bool showNow;
 
   // O meio da coluna dos retratos, por onde passa a linha.
   static const _railX = 52.0;
@@ -307,17 +319,29 @@ class SpeedrunStageRow extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              [
-                                l10n.speedrunStageOf(
-                                  index + 1,
-                                  speedrun.stages.length,
-                                ),
-                                // Quando o final muda de etapa para etapa, o nome
-                                // dele vem junto.
-                                if (speedrun.kind != SpeedrunKind.ending &&
-                                    speedrun.kind != SpeedrunKind.marathon)
-                                  endgameName(l10n, stage.position.subcategory),
-                              ].join(' · '),
+                              key: noteKey,
+                              note != null
+                                  ? l10n.speedrunStageNote(
+                                      index + 1,
+                                      speedrun.stages.length,
+                                      note!,
+                                    )
+                                  : [
+                                      l10n.speedrunStageOf(
+                                        index + 1,
+                                        speedrun.stages.length,
+                                      ),
+                                      // Quando o final muda de etapa para etapa, o nome
+                                      // dele vem junto.
+                                      if (speedrun.kind !=
+                                              SpeedrunKind.ending &&
+                                          speedrun.kind !=
+                                              SpeedrunKind.marathon)
+                                        endgameName(
+                                          l10n,
+                                          stage.position.subcategory,
+                                        ),
+                                    ].join(' · '),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colors.onSurfaceVariant,
                               ),
@@ -330,13 +354,13 @@ class SpeedrunStageRow extends StatelessWidget {
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                            if (current || last) ...[
+                            if ((current && showNow) || last) ...[
                               const SizedBox(height: 6),
                               TrailBadge(
-                                text: current
+                                text: current && showNow
                                     ? l10n.speedrunNow
                                     : l10n.journeyBoss,
-                                color: current
+                                color: current && showNow
                                     ? colors.primary
                                     : colors.tertiary,
                               ),

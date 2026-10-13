@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "Марафон: {ending}",
   "marathonBest": "Найбільше часу в запасі",
   "marathonLeft": "Залишилося часу",
+  "marathonLeftValue": "Залишилося часу: {time}",
+  "marathonDayLeft": "{when} · залишилось",
   "speedrunModeClassic": "Класика",
   "homeJourneyBodyPlayer": "Відпрацюй базові мати й кинь виклик кожному супернику, від Коко до Stockfish.",
   "homeLearnBodyPlayer": "Повтори основи з Віктором.",

@@ -12,6 +12,7 @@ import '../../core/widgets/time_display.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/step_progress.dart';
 import '../view_models/speedrun_cubit.dart';
+import 'marathon_attempt_view.dart';
 import 'speedrun_ui.dart';
 import '../../core/theme/app_motion.dart';
 
@@ -39,6 +40,10 @@ class SpeedrunAttemptScreen extends StatelessWidget {
       );
     }
     final speedrun = summary.speedrun;
+    // A Maratona tem o seu fim (bônus, motivo, tempo que sobrou).
+    if (speedrun.kind == SpeedrunKind.marathon) {
+      return MarathonAttemptView(state: state);
+    }
     final characters = state.characters;
     final total = speedrun.stages.length;
     final done = run.stages.where((stage) => stage.done).length;

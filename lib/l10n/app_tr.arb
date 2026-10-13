@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "Maraton: {ending}",
   "marathonBest": "En çok kalan süre",
   "marathonLeft": "Kalan süre",
+  "marathonLeftValue": "Kalan süre: {time}",
+  "marathonDayLeft": "{when} · kaldı",
   "speedrunModeClassic": "Klasik",
   "homeJourneyBodyPlayer": "Temel matları çalış ve Coco'dan Stockfish'e her rakibe meydan oku.",
   "homeLearnBodyPlayer": "Temelleri Viktor ile tekrar et.",

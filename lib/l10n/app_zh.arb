@@ -659,6 +659,8 @@
   "speedrunMarathonTitle": "马拉松：{ending}",
   "marathonBest": "剩余时间最多",
   "marathonLeft": "剩余时间",
+  "marathonLeftValue": "剩余时间：{time}",
+  "marathonDayLeft": "{when} · 剩余",
   "speedrunModeClassic": "经典",
   "homeJourneyBodyPlayer": "练习基本杀法，挑战从可可到 Stockfish 的每一位对手。",
   "homeLearnBodyPlayer": "和维克托一起复习基础。",

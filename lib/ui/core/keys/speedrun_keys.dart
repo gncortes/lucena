@@ -73,6 +73,19 @@ abstract final class SpeedrunKeys {
   static const newRecord = Key('speedrun.attempt.newRecord');
   static const recordDifference = Key('speedrun.attempt.recordDifference');
 
+  /// No fim da Maratona: o herói (perdeu, empatou, sem tempo, desistiu), contra
+  /// quem, o tempo que sobrou, o aviso de que ainda não concluiu, o cartão do
+  /// recorde (maratona já concluída) e "Tentar novamente".
+  static const marathonEndHero = Key('speedrun.marathon.end.hero');
+  static const marathonEndOpponent = Key('speedrun.marathon.end.opponent');
+  static const marathonEndLeft = Key('speedrun.marathon.end.left');
+  static const marathonNotFinished = Key('speedrun.marathon.notFinished');
+  static const marathonRecord = Key('speedrun.marathon.record');
+  static const retry = Key('speedrun.attempt.retry');
+
+  /// A nota da etapa onde a tentativa parou ("perdeu aqui").
+  static Key stageNote(int index) => Key('speedrun.attempt.stage.$index.note');
+
   /// O histórico de tempos: o título de cada mês e cada tentativa concluída.
   static Key month(int index) => Key('speedrun.history.month.$index');
   static Key run(int index) => Key('speedrun.history.run.$index');
