@@ -1120,9 +1120,20 @@ class _LessonScreenState extends State<LessonScreen>
         ExplanationBlock(
           id: 'played-unmapped',
           kind: ExplanationKind.playedIncorrect,
-          texts: ['$local: ${context.l10n.explanationDoesNotMeetGoal}.'],
+          texts: ['$local? ${context.l10n.explanationDoesNotMeetGoal}.'],
         ),
-        ...payload.explanations,
+        for (final block in payload.explanations)
+          // A explicação do lance certo ganha o título dela (D13–D16).
+          if (block.kind == ExplanationKind.context && block.title.isEmpty)
+            ExplanationBlock(
+              id: block.id,
+              kind: block.kind,
+              title: context.l10n.lessonCorrectMove,
+              texts: block.texts,
+              variations: block.variations,
+            )
+          else
+            block,
       ],
     );
   }
@@ -1136,24 +1147,25 @@ class _LessonScreenState extends State<LessonScreen>
     required TeacherSpeechPart part,
   }) {
     final theme = Theme.of(context);
+    final prompting =
+        state.layout == LessonLayoutMode.solving && !state.wrongMove;
     return TeacherSpeech(
       part: part,
       lessonV2: true,
       lessonPromptBubble:
           step is ThinkStep &&
-          state.layout == LessonLayoutMode.solving &&
+          prompting &&
           (state.explanation == null ||
               state.explanation?.state == ExplanationState.intro) &&
           _authoredVariation == null,
       onSoundSettings: () => showLessonSoundDialog(context),
       teacher: viktor,
-      explanation:
-          state.layout == LessonLayoutMode.solving && state.explanation == null
+      explanation: prompting && state.explanation == null
           ? null
           : _explanationFor(context, state),
       onVariation: _showAuthoredVariation,
       activeVariation: _authoredVariation,
-      text: state.layout == LessonLayoutMode.solving && step != null
+      text: prompting && step != null
           ? _promptText(context, state, step)
           : _said(context, state),
       emotion: state.emotion,
@@ -1216,7 +1228,8 @@ class _LessonScreenState extends State<LessonScreen>
             ),
           ),
         if (step is TapStep) _guide(context, state, step),
-        if (state.layout == LessonLayoutMode.explaining && state.fen != null)
+        if ((state.layout == LessonLayoutMode.explaining || state.wrongMove) &&
+            state.fen != null)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Column(
@@ -1620,28 +1633,31 @@ class _LessonScreenState extends State<LessonScreen>
             const SizedBox(width: 8),
           ],
           if (state.phase == StepPhase.waiting) _waiting(context),
-          const Spacer(),
+          if (!state.canContinue) const Spacer(),
           // A pill like the FAB, but its label wraps at font 2.0 instead of
           // overflowing the row (CompRodapeLicao `leitura`).
           if (state.canContinue)
-            Flexible(
-              child: FilledButton(
-                key: LessonKeys.nextButton,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size(0, 56),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
+            Expanded(
+              child: Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: FilledButton(
+                  key: LessonKeys.nextButton,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 56),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    elevation: 2,
+                    shape: const StadiumBorder(),
+                    textStyle: Theme.of(context).textTheme.labelLarge,
                   ),
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  elevation: 2,
-                  shape: const StadiumBorder(),
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                onPressed: cubit.next,
-                child: Text(
-                  _nextLabel(context, state, step),
-                  textAlign: TextAlign.center,
+                  onPressed: cubit.next,
+                  child: Text(
+                    _nextLabel(context, state, step),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
