@@ -250,6 +250,70 @@ void main() {
     expect(sheet.top, greaterThanOrEqualTo(board.bottom));
     expect(EndgamesRobot($).stepTimer, '0:00');
   });
+
+  patrolTest('fechar à força no modo variante: reabre na explicação, sem a '
+      'faixa', ($) async {
+    final app = AppRobot($);
+    await app.open(systemLocale: _english);
+    final endgames = EndgamesRobot($);
+    await _openPart(endgames, 'diagonal');
+    await _toDemo($, endgames, 'diagonal', 'd_diagonal');
+    await $(LessonKeys.demoPause).tap();
+    await $.pumpAndSettle();
+    while (_cubit($).state.demoMove < 3) {
+      await $(LessonKeys.demoForward).tap();
+      await $.pumpAndSettle();
+    }
+    if (_cubit($).state.demoPlaying) {
+      await $(LessonKeys.demoPause).tap();
+      await $.pumpAndSettle();
+    }
+    await _tapMove($, '2.Ke4');
+    await $.pump(const Duration(seconds: 1));
+    await $(LessonKeys.variationExit).waitUntilVisible();
+
+    // A variante não persiste: o app volta ao passo, com a fala.
+    await app.restart();
+    await $(LessonKeys.screen).waitUntilVisible();
+    await endgames.expectStep(_lesson, 'd_diagonal');
+    await $(LessonKeys.viktorSheet).waitUntilVisible();
+    expect(find.byKey(LessonKeys.variationStrip), findsNothing);
+    expect(find.byKey(LessonKeys.variationExit), findsNothing);
+    expect(
+      $.tester.widget<Chessboard>(find.byKey(LessonKeys.board)).controller.fen,
+      isNot(startsWith('8/8/4k3/8/4K3/4P3/8/8 b')),
+    );
+  });
+
+  patrolTest('fechar à força na apresentação B: reabre no estado final, com o '
+      'rodapé e o relógio', ($) async {
+    final view = $.tester.view;
+    view
+      ..devicePixelRatio = 3
+      ..physicalSize = const Size(360 * 3, 640 * 3);
+    addTearDown(view.reset);
+    final app = AppRobot($);
+    await app.open(systemLocale: _english);
+    final endgames = EndgamesRobot($);
+    GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)))
+        .push(Routes.endgameLessonSteps(_lesson, part: 'lateral'));
+    await $(LessonKeys.screen).waitUntilVisible();
+    await endgames.expectStep(_lesson, 't_euwe');
+    await $(LessonKeys.closeSheet).waitUntilVisible();
+    expect(_cubit($).state.presenting, isTrue);
+
+    await app.restart();
+    await $(LessonKeys.screen).waitUntilVisible();
+    await endgames.expectStep(_lesson, 't_euwe');
+    await $.pumpAndSettle();
+    // Sem modal: a folha abaixo do tabuleiro, o rodapé tocável e o relógio.
+    expect(_cubit($).state.presenting, isFalse);
+    expect(find.byKey(LessonKeys.nextButton).hitTestable(), findsOneWidget);
+    final board = $.tester.getRect(find.byKey(LessonKeys.board));
+    final sheet = $.tester.getRect(find.byKey(LessonKeys.scroll));
+    expect(sheet.top, greaterThanOrEqualTo(board.bottom));
+    expect(find.byKey(LessonKeys.stepTimer), findsOneWidget);
+  });
 }
 
 LessonCubit _cubit(PatrolIntegrationTester $) =>
