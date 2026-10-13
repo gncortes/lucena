@@ -191,8 +191,9 @@ void main() {
     }
     await HomeRobot($).expectVisible();
     expect(await progress.rating(), greaterThan(before));
-    // Só o bônus entra no histórico; as etapas, não.
-    await progress.expectRatedGames('2 rated games');
+    // O bônus sobe o rating, mas não conta como partida (T67c); as etapas
+    // também não.
+    await progress.expectRatedGames('1 rated game');
   });
 
   patrolTest('perder a etapa de speedrun não mexe no rating', ($) async {
