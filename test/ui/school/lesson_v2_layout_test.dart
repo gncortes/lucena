@@ -148,7 +148,7 @@ void main() {
     // Viktor (header and speech) lives in the sheet, below the board.
     final teacher = find.byWidgetPredicate(
       (widget) =>
-          widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+          widget is TeacherSpeech && widget.part != TeacherSpeechPart.bubble,
     );
     expect(teacher, findsOneWidget, reason: '$state: one Viktor, in the sheet');
     expect(

@@ -9,6 +9,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/typing_dots.dart';
 
 /// O botão que cobre ou mostra os lances ainda não vistos da faixa (T69): no
 /// cabeçalho do Viktor e, no modo variante, sozinho no canto da faixa.
@@ -64,6 +65,7 @@ class VariationStrip extends StatefulWidget {
     this.onReveal,
     this.onToggleHidden,
     this.maxHeight,
+    this.typing = false,
     super.key,
   });
 
@@ -74,6 +76,10 @@ class VariationStrip extends StatefulWidget {
 
   /// O comentário do ponto.
   final String text;
+
+  /// O motor está pensando (T70, crit. 8d/9c): os três pontos no lugar do
+  /// comentário.
+  final bool typing;
 
   /// Toque num lance: o tabuleiro vai à posição dele.
   final ValueChanged<TreePosition> onSelect;
@@ -294,7 +300,17 @@ class _VariationStripState extends State<VariationStrip> {
                 ],
               ),
             ),
-            if (text.isNotEmpty) ...[
+            if (widget.typing) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Divider(height: 1, thickness: 1, color: colors.outlineVariant),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TypingDots(key: LessonKeys.sheetTyping),
+                ),
+              ),
+            ] else if (text.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.xs),
               Divider(height: 1, thickness: 1, color: colors.outlineVariant),
               const SizedBox(height: AppSpacing.sm),

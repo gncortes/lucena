@@ -139,7 +139,8 @@ void main() {
   /// Joga o lance certo do passo de pensar: a explicação (passo novo e longo)
   /// é o texto que abre a folha. Devolve o topo da folha recolhida.
   Future<double> toExplanation(WidgetTester tester, LessonCubit cubit) async {
-    await frames(tester, 100);
+    // O pensar também abre a folha (A1): espera ela recolher.
+    await frames(tester, 14000);
     final collapsed = top(tester);
     await play(tester, cubit, 'd3e4');
     expect(cubit.state.step, 1);
@@ -156,8 +157,9 @@ void main() {
     expect(opened, lessThan(collapsed - 40));
     // A altura é a do conteúdo (limite: os 76 dp livres no alto).
     expect(opened, greaterThanOrEqualTo(ViktorSheet.openGap));
-    // Antes do tempo de leitura continua aberta.
-    await frames(tester, 2000);
+    // Antes do tempo de leitura continua aberta (o estado correto tem fala
+    // curta: o tempo de leitura é menor que o da explicação inteira).
+    await frames(tester, 300);
     expect(top(tester), closeTo(opened, 1));
     await frames(tester, 12000);
     expect(top(tester), closeTo(collapsed, 1));
@@ -233,7 +235,7 @@ void main() {
   Future<void> expectNoIntermediate(
     WidgetTester tester,
     Future<void> Function() act,
-    String old,
+    Finder Function() old,
   ) async {
     final initial = top(tester);
     await act();
@@ -246,7 +248,7 @@ void main() {
       tester.takeException();
       final now = top(tester);
       tops.add(now);
-      if (find.textContaining(old, findRichText: true).evaluate().isNotEmpty) {
+      if (old().evaluate().isNotEmpty) {
         shownOld.add(now);
       }
     }
@@ -275,7 +277,7 @@ void main() {
     await expectNoIntermediate(
       tester,
       () async => unawaited(cubit.play(Move.parse('d3e4')!)),
-      oldText,
+      () => find.textContaining(oldText, findRichText: true),
     );
   });
 
@@ -285,8 +287,8 @@ void main() {
       final cubit = await pump(tester);
       await toExplanation(tester, cubit);
       await frames(tester, 1500);
-      final old = 'Isso, correto';
-      expect(find.textContaining(old, findRichText: true), findsWidgets);
+      Finder old() => find.byKey(LessonKeys.correctTitle);
+      expect(old(), findsOneWidget);
       await expectNoIntermediate(
         tester,
         () => tester.runAsync(cubit.next),
