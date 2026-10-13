@@ -219,11 +219,7 @@ class _VariationStripState extends State<VariationStrip> {
                 text: text,
                 style: body.copyWith(color: colors.onSurface),
                 hiddenMoves: widget.hideUnseen
-                    ? _hiddenNotations(
-                        tree,
-                        widget.revealed,
-                        widget.position,
-                      )
+                    ? _hiddenNotations(tree, widget.revealed, widget.position)
                     : const {},
               ),
             ],
@@ -471,6 +467,11 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
   /// Dos lances de 0,6 da largura de onde vem o que desliza para fora.
   static const slideFrom = .6;
 
+  /// O filete das alternativas: margem antes dele e largura; o respiro
+  /// depois completa o [VariationStrip.branchIndent].
+  static const branchMargin = 4.0;
+  static const branchRule = 2.0;
+
   late final AnimationController _reveal = AnimationController(
     vsync: this,
     duration: AppMotion.reveal,
@@ -621,11 +622,13 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
       ),
       child: Container(
         key: LessonKeys.variationBranch(branch.id),
-        margin: const EdgeInsetsDirectional.only(start: 4),
-        padding: const EdgeInsetsDirectional.only(start: 10),
+        margin: const EdgeInsetsDirectional.only(start: branchMargin),
+        padding: const EdgeInsetsDirectional.only(
+          start: VariationStrip.branchIndent - branchMargin - branchRule,
+        ),
         decoration: BoxDecoration(
           border: BorderDirectional(
-            start: BorderSide(color: colors.outlineVariant, width: 2),
+            start: BorderSide(color: colors.outlineVariant, width: branchRule),
           ),
         ),
         child: wrap,
@@ -882,7 +885,7 @@ class _MoveButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final current = state == VariationMoveState.current;
-    final text = Text(
+    final label = Text(
       // Notação isolada da direção do texto (RTL); o leitor de tela lê o
       // lance sem os caracteres de isolamento.
       '\u2066$shown\u2069',
@@ -899,7 +902,30 @@ class _MoveButton extends StatelessWidget {
             : branch
             ? FontWeight.w400
             : FontWeight.w500,
-        backgroundColor: current ? colors.primaryContainer : null,
+      ),
+    );
+    // O lance da vez (canvas T68, `.cur`): fundo com cantos de 4 que passa
+    // 2 dp de cada lado do texto, sem mudar a posição dele.
+    final text = DecoratedBox(
+      decoration: BoxDecoration(
+        color: current ? colors.primaryContainer : null,
+        borderRadius: BorderRadius.circular(AppShape.tiny),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2),
+        // A medida do texto (o bloco e os 12 dp entre lances) é a dele, sem
+        // a folga do fundo.
+        child: KeyedSubtree(
+          key: textKey,
+          // Reserva a largura do negrito (o lance da vez): trocar o
+          // destaque não move nenhum vizinho nem o bloco.
+          // O deslize fica dentro da medida: a translação não pode entrar
+          // no retângulo medido (localToGlobal aplica a transformação).
+          child: SizedBox(
+            width: _reservedWidth(context),
+            child: _StripRowState._slid(slide, label),
+          ),
+        ),
       ),
     );
     return ExcludeSemantics(
@@ -918,20 +944,10 @@ class _MoveButton extends StatelessWidget {
                 minHeight: VariationStrip.tapSize,
               ),
               child: Padding(
-                // 6 + 6: 12 dp entre os textos (T69, canvas v3).
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: Center(
-                  widthFactor: 1,
-                  child: KeyedSubtree(
-                    key: textKey,
-                    // Reserva a largura do negrito (o lance da vez): trocar o
-                    // destaque não move nenhum vizinho nem o bloco.
-                    child: SizedBox(
-                      width: _reservedWidth(context),
-                      child: _StripRowState._slid(slide, text),
-                    ),
-                  ),
-                ),
+                // (4 + 2) + (2 + 4): 12 dp entre os textos (T69, canvas v3);
+                // os 2 de dentro são a folga do fundo do lance da vez.
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Center(widthFactor: 1, child: text),
               ),
             ),
           ),

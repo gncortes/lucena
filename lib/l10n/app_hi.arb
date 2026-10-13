@@ -764,7 +764,7 @@
   "endgameFinalTest": "अंतिम परीक्षा",
   "endgameTestAdvice": "सुझाव: पहले अध्याय पूरे करें। अभ्यास के लिए परीक्षा जब चाहें खुली है।",
   "endgameStartLesson": "अध्याय 1 शुरू करें",
-  "endgameResumePart": "अध्याय {part} फिर से शुरू करें",
+  "endgameRestartPart": "अध्याय {part} फिर से आरंभ करें",
   "endgameNextPart": "अध्याय {part} पर जाएँ",
   "endgameResumeTest": "अंतिम परीक्षा जारी रखें",
   "endgameContinueTest": "अंतिम परीक्षा दें",

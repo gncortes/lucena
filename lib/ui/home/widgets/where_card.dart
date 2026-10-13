@@ -238,13 +238,11 @@ class _EndgameCard extends StatelessWidget {
 
   String _where(AppLocalizations l10n) {
     final exercise = endgame.exerciseNumber;
-    final step = endgame.step;
     if (exercise != null) {
       return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
     }
     final part = endgame.partNumber;
     if (part != null) return l10n.homeEndgamePart(part, endgame.partCount!);
-    if (step != null) return l10n.lessonStep(step, endgame.stepCount!);
     return l10n.endgameScore(endgame.score, endgame.maxScore);
   }
 

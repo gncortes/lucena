@@ -134,6 +134,20 @@ void main() {
     },
   );
 
+  test('sair pela seta e entrar de novo, com o app aberto, recomeça a '
+      'parte em que estava', () async {
+    final cubit = await open(part: 'bridge');
+    await cubit.next();
+    expect(cubit.state.current?.id, 'demo');
+    await cubit.leave();
+    await cubit.close();
+    // A rota cria um cubit novo a cada entrada.
+    final again = await open();
+    expect(again.state.part?.id, 'bridge');
+    expect(again.state.step, 0);
+    expect(again.state.current?.id, 'think');
+  });
+
   test('abre a primeira parte, só com os passos dela', () async {
     final cubit = await open();
     expect(cubit.state.part?.id, 'bridge');

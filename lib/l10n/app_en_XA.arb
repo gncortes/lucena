@@ -768,7 +768,7 @@
   "endgameFinalTest": "[Fîñål téšt one]",
   "endgameTestAdvice": "[Tîp: dö thé çhåptéŕš fîŕšt. Thé téšt îš öpéñ whéñévéŕ ýöû wåñt tö pŕåçtîçé. one two three four five six seven]",
   "endgameStartLesson": "[Štåŕt çhåptéŕ 1 one two]",
-  "endgameResumePart": "[Ŕéšûmé çhåptéŕ {part} one two three]",
+  "endgameRestartPart": "[Ŕéštåŕt çhåptéŕ {part} one two three]",
   "endgameNextPart": "[Ĝö tö çhåptéŕ {part} one two]",
   "endgameResumeTest": "[Çöñtîñûé thé fîñål téšt one two three]",
   "endgameContinueTest": "[Tåké thé fîñål téšt one two]",

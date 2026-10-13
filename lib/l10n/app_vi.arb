@@ -764,7 +764,7 @@
   "endgameFinalTest": "Bài kiểm tra cuối",
   "endgameTestAdvice": "Mẹo: làm các chương trước. Bài kiểm tra luôn mở khi bạn muốn luyện.",
   "endgameStartLesson": "Bắt đầu chương 1",
-  "endgameResumePart": "Tiếp tục chương {part}",
+  "endgameRestartPart": "Bắt đầu lại chương {part}",
   "endgameNextPart": "Sang chương {part}",
   "endgameResumeTest": "Tiếp tục bài kiểm tra cuối",
   "endgameContinueTest": "Làm bài kiểm tra cuối",

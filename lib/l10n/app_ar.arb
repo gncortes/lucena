@@ -764,7 +764,7 @@
   "endgameFinalTest": "الاختبار النهائي",
   "endgameTestAdvice": "نصيحة: أنجز الفصول أولًا. الاختبار مفتوح متى أردت التدرّب.",
   "endgameStartLesson": "ابدأ الفصل 1",
-  "endgameResumePart": "استئناف الفصل {part}",
+  "endgameRestartPart": "إعادة الفصل {part} من البداية",
   "endgameNextPart": "انتقل إلى الفصل {part}",
   "endgameResumeTest": "متابعة الاختبار النهائي",
   "endgameContinueTest": "خُض الاختبار النهائي",

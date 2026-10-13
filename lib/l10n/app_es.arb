@@ -764,7 +764,7 @@
   "endgameFinalTest": "Prueba final",
   "endgameTestAdvice": "Consejo: haz los capítulos primero. La prueba está abierta cuando quieras practicar.",
   "endgameStartLesson": "Empezar el capítulo 1",
-  "endgameResumePart": "Retomar el capítulo {part}",
+  "endgameRestartPart": "Reiniciar el capítulo {part}",
   "endgameNextPart": "Ir al capítulo {part}",
   "endgameResumeTest": "Seguir con el examen final",
   "endgameContinueTest": "Hacer la prueba final",

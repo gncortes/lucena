@@ -764,7 +764,7 @@
   "endgameFinalTest": "Test końcowy",
   "endgameTestAdvice": "Wskazówka: najpierw zrób rozdziały. Test jest otwarty, kiedy chcesz ćwiczyć.",
   "endgameStartLesson": "Zacznij rozdział 1",
-  "endgameResumePart": "Wróć do rozdziału {part}",
+  "endgameRestartPart": "Zacznij rozdział {part} od nowa",
   "endgameNextPart": "Przejdź do rozdziału {part}",
   "endgameResumeTest": "Kontynuuj test końcowy",
   "endgameContinueTest": "Zrób test końcowy",

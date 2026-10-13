@@ -764,7 +764,7 @@
   "endgameFinalTest": "Підсумковий тест",
   "endgameTestAdvice": "Порада: спершу пройдіть розділи. Тест відкритий, коли захочете потренуватися.",
   "endgameStartLesson": "Почати розділ 1",
-  "endgameResumePart": "Повернутися до розділу {part}",
+  "endgameRestartPart": "Почати розділ {part} знову",
   "endgameNextPart": "Перейти до розділу {part}",
   "endgameResumeTest": "Продовжити підсумковий тест",
   "endgameContinueTest": "Пройти підсумковий тест",

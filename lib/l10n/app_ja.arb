@@ -764,7 +764,7 @@
   "endgameFinalTest": "最終テスト",
   "endgameTestAdvice": "ヒント：先に各章を。テストはいつでも練習できます。",
   "endgameStartLesson": "第1章を始める",
-  "endgameResumePart": "第{part}章を再開",
+  "endgameRestartPart": "第{part}章を最初から",
   "endgameNextPart": "第{part}章へ進む",
   "endgameResumeTest": "最終テストを続ける",
   "endgameContinueTest": "最終テストを受ける",

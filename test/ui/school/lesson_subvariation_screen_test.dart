@@ -288,24 +288,43 @@ void main() {
     expect(boardFen(tester), replay(['c1d1']));
   });
 
-  testWidgets('X do painel aberto só recolhe: segue na variante, no mesmo '
-      'lance; o X da barra sai e o tabuleiro volta ao passo', (tester) async {
+  Finder sheetHandle() => find.descendant(
+    of: find.byKey(LessonKeys.variationSheet),
+    matching: find.byKey(ViktorSheetKeys.handle),
+  );
+
+  Future<void> dragStrip(WidgetTester tester, double dy) async {
+    await tester.drag(
+      find.byKey(LessonKeys.variationStripScroll),
+      Offset(0, dy),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('(g) arrastar para cima abre; para baixo recolhe (snap)', (
+    tester,
+  ) async {
+    await pump(tester);
+    await openLine(tester);
+    await tapKey(tester, d2);
+    final collapsedTop = tester.getRect(sheetHandle()).top;
+    await dragStrip(tester, -600);
+    final openTop = tester.getRect(sheetHandle()).top;
+    expect(openTop, lessThan(collapsedTop));
+    // Para baixo, a folha assenta de novo no recolhido, sem parar no meio.
+    await dragStrip(tester, 600);
+    expect(tester.getRect(sheetHandle()).top, closeTo(collapsedTop, 1));
+    expect(current(tester), '2.Rd2?');
+  });
+
+  testWidgets('(e) X do painel aberto só recolhe: segue na variante, no '
+      'mesmo lance', (tester) async {
     await pump(tester);
     await openLine(tester);
     await tapKey(tester, d2);
     final fen = boardFen(tester);
-    final handle = find.descendant(
-      of: find.byKey(LessonKeys.variationSheet),
-      matching: find.byKey(ViktorSheetKeys.handle),
-    );
-    final collapsedTop = tester.getRect(handle).top;
-    // Arrasta a alça: abre.
-    await tester.drag(
-      find.byKey(LessonKeys.variationStripScroll),
-      const Offset(0, -600),
-    );
-    await tester.pumpAndSettle();
-    expect(tester.getRect(handle).top, lessThan(collapsedTop));
+    final collapsedTop = tester.getRect(sheetHandle()).top;
+    await dragStrip(tester, -600);
     // O X do painel (48 dp) está inteiro na tela.
     final close = tester.getRect(find.byKey(LessonKeys.variationSheetClose));
     expect(close.size, const Size(48, 48));
@@ -314,8 +333,15 @@ void main() {
     expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
     expect(current(tester), '2.Rd2?');
     expect(boardFen(tester), fen);
-    expect(tester.getRect(handle).top, closeTo(collapsedTop, 1));
-    // O X da barra sai da variante.
+    expect(tester.getRect(sheetHandle()).top, closeTo(collapsedTop, 1));
+  });
+
+  testWidgets('(f) X da barra sai da variante e o tabuleiro volta ao passo', (
+    tester,
+  ) async {
+    await pump(tester);
+    await openLine(tester);
+    await tapKey(tester, d2);
     await tapKey(tester, LessonKeys.variationExit);
     expect(find.byKey(LessonKeys.variationStrip), findsNothing);
     expect(boardFen(tester), start);
@@ -370,23 +396,38 @@ void main() {
     });
   }
 
-  testWidgets('a transição existe: a peça anda em quadros intermediários', (
-    tester,
-  ) async {
+  testWidgets('salto de vários lances: uma transição só, sem posição do '
+      'meio', (tester) async {
     await pump(tester);
     await openLine(tester);
+    // Do 1.Rd1+ ao 2.Rd2? são dois lances (…Ke7 e Rd2).
+    expect(boardFen(tester), replay(['c1d1']));
+    final middle = replay(['c1d1', 'd8e7']);
+    final target = replay(['c1d1', 'd8e7', 'd1d2']);
     await tester.tap(find.byKey(d2));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
-    expect(tester.binding.transientCallbackCount, greaterThan(0));
-    // Nos quadros do meio, faixa, tabuleiro e comentário já estão juntos.
-    expectSync(
-      tester,
-      label: '2.Rd2?',
-      ucis: ['c1d1', 'd8e7', 'd1d2'],
-      text: 'Slow.',
-    );
+    final boards = <String>{};
+    var frames = 0;
+    while (tester.binding.transientCallbackCount > 0 && frames < 120) {
+      boards.add(boardFen(tester));
+      // Nos quadros do meio, faixa, tabuleiro e comentário já estão juntos.
+      expectSync(
+        tester,
+        label: '2.Rd2?',
+        ucis: ['c1d1', 'd8e7', 'd1d2'],
+        text: 'Slow.',
+      );
+      await tester.pump(const Duration(milliseconds: 16));
+      frames++;
+    }
+    // Houve animação, ela terminou (uma só, curta) e o tabuleiro foi direto
+    // ao destino: nunca mostrou o lance do meio.
+    expect(frames, greaterThan(1));
+    expect(frames, lessThan(120));
+    expect(boards, {target});
+    expect(boards, isNot(contains(middle)));
     await tester.pumpAndSettle();
+    expect(boardFen(tester), target);
   });
 
   testWidgets('com "remover animações" a transição é instantânea', (

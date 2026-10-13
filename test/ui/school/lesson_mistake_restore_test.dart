@@ -134,35 +134,28 @@ void main() {
     final live = await openAt(progress, 1);
     await live.play(move('a1a7'));
     await live.retry();
-    final saved = (await progress.load()).ongoing!;
-    expect(saved.failed, isFalse);
-    expect(saved.attempt, isNull);
     final cubit = await reopen(progress);
     expect(cubit.state.phase, StepPhase.active);
     expect(cubit.state.attemptedSan, isNull);
   });
 
-  test('the checkpoint keeps the error fields through JSON', () {
-    const checkpoint = LessonCheckpoint(
-      lessonId: 'l',
-      step: 2,
-      attempt: LessonAttempt(
-        step: 1,
-        id: 'think',
-        kind: 'think',
-        fen: mateFen,
-        turn: 1,
-        uci: 'a1b1',
-        incorrect: true,
-      ),
-      failed: true,
-      reviewStep: 'intro',
-      attemptedSan: '1.Rb1',
-      thinkMistake: '1.Rb1',
+  test('an old checkpoint with error fields still reads', () {
+    final back = LessonCheckpoint.fromJson({
+      'lesson': 'l',
+      'step': 2,
+      'part': 'p',
+      'attempt': {'step': 1, 'id': 'think', 'kind': 'think'},
+      'failed': true,
+      'reviewStep': 'intro',
+      'attemptedSan': '1.Rb1',
+      'thinkMistake': '1.Rb1',
+      'solutionSeen': true,
+      'reviewReturn': {'lesson': 'l', 'step': 1},
+    });
+    expect(
+      back,
+      const LessonCheckpoint(lessonId: 'l', step: 2, part: 'p', open: false),
     );
-    final back = LessonCheckpoint.fromJson(checkpoint.toJson());
-    expect(back, checkpoint);
-    expect(back!.attempt, checkpoint.attempt);
-    expect(back.failed, isTrue);
+    expect(back!.toJson().keys, isNot(contains('failed')));
   });
 }

@@ -764,7 +764,7 @@
   "endgameFinalTest": "Final testi",
   "endgameTestAdvice": "İpucu: önce bölümleri yap. Test, pratik yapmak istediğinde açık.",
   "endgameStartLesson": "Bölüm 1'e başla",
-  "endgameResumePart": "{part}. bölüme devam et",
+  "endgameRestartPart": "{part}. bölüme baştan başla",
   "endgameNextPart": "{part}. bölüme geç",
   "endgameResumeTest": "Final testine devam et",
   "endgameContinueTest": "Final testine gir",
