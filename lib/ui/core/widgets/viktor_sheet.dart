@@ -266,13 +266,18 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                       .resolve(Directionality.of(context))
                                       .bottom,
                             );
+                            // Sem 12 dp livres abaixo do cabeçalho (360×640),
+                            // corte seco no fim dele: nem retrato clareado,
+                            // nem rótulo cortado.
+                            final header = _headerBottom();
+                            final tight = header > visible - 12;
                             final start = math.min(
                               rect.height,
-                              math.max(visible - 12, _headerBottom()),
+                              tight ? header : visible - 12,
                             );
                             final end = math.min(
                               rect.height,
-                              math.max(visible - 4, start),
+                              tight ? header : visible - 4,
                             );
                             return LinearGradient(
                               begin: Alignment.topCenter,
