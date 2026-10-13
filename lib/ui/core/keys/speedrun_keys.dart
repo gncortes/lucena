@@ -107,6 +107,9 @@ abstract final class SpeedrunKeys {
   /// e o "+N" da primeira conclusão.
   static const historyScreen = Key('speedrun.history.screen');
   static const historyRecord = Key('speedrun.history.record');
+
+  /// "Em 12 de outubro, às 20:06", embaixo do recorde.
+  static const historyRecordAt = Key('speedrun.history.recordAt');
   static const historyNotFinished = Key('speedrun.history.notFinished');
   static const historyAttempts = Key('speedrun.history.attempts');
   static const historyFinished = Key('speedrun.history.finished');

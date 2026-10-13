@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
-import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/subcategory_material.dart';
@@ -21,11 +20,11 @@ import '../../journey/widgets/journey_ui.dart';
 import '../../journey/widgets/trail_widgets.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../../routing/routes.dart';
-import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../history/widgets/history_labels.dart';
 import '../view_models/speedrun_cubit.dart';
+import 'speedrun_pace_chip.dart';
 
 /// O nome de um speedrun: contra quem (`Contra o Coco`), o nome do final
 /// (`Dama contra torre`), a série de exercícios ou a Jornada completa.
@@ -421,16 +420,14 @@ class SpeedrunHeader extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    SpeedrunChip(
+                    SpeedrunPaceChip(
+                      speedrun.time,
                       key: SpeedrunKeys.paceBadge,
-                      icon: paceIcon(PaceCategory.of(speedrun.time)),
-                      label: paceLabel(l10n, speedrun.time),
                     ),
                     if (level != null)
                       SpeedrunChip(
                         icon: Icons.signal_cellular_alt,
                         label: level,
-                        outlined: true,
                       ),
                   ],
                 ),
@@ -443,38 +440,25 @@ class SpeedrunHeader extends StatelessWidget {
   }
 }
 
-/// Um chip: o do ritmo (preenchido) ou o do nível e da data (contornado).
+/// Um chip contornado: o do nível e o da data. O do ritmo é o SpeedrunPaceChip.
 class SpeedrunChip extends StatelessWidget {
-  const SpeedrunChip({
-    required this.icon,
-    required this.label,
-    this.outlined = false,
-    super.key,
-  });
+  const SpeedrunChip({required this.icon, required this.label, super.key});
 
   final IconData icon;
   final String label;
-
-  /// O do nível e o da data: contornado, raio 8; o do ritmo, preenchido.
-  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final color = outlined
-        ? colors.onSurfaceVariant
-        : colors.onSecondaryContainer;
+    final color = colors.onSurfaceVariant;
     return Container(
       // 28 no artboard; o texto maior (fonte 2,0) cresce a caixa.
       constraints: const BoxConstraints(minHeight: 28),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: outlined ? null : colors.secondaryContainer,
-        border: outlined ? Border.all(color: colors.outlineVariant) : null,
-        borderRadius: BorderRadius.circular(
-          outlined ? AppShape.small : AppShape.large,
-        ),
+        border: Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

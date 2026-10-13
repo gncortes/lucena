@@ -26,6 +26,7 @@ import '../view_models/speedrun_cubit.dart';
 import 'marathon_attempt_view.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
+import 'speedrun_pace_chip.dart';
 
 /// O resumo de uma tentativa terminada do clássico (artboards
 /// `SpeedrunTentativa*`): concluída, com o tempo, a comparação com o recorde e
@@ -243,21 +244,16 @@ class _Chips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final locale = Localizations.localeOf(context).toString();
     final endedAt = run.finishedAt ?? run.attempt.abandonedAt;
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
-        SpeedrunChip(
-          icon: paceIcon(PaceCategory.of(speedrun.time)),
-          label: paceLabel(l10n, speedrun.time),
-        ),
+        SpeedrunPaceChip(speedrun.time),
         if (endedAt != null)
           SpeedrunChip(
             icon: Icons.calendar_today,
-            outlined: true,
             label: HistoryLabels.capitalize(
               DateFormat.MMMd(locale).add_Hm().format(endedAt.toLocal()),
             ),
