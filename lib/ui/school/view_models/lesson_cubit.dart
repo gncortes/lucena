@@ -92,6 +92,7 @@ class LessonState {
     this.genericMistake = false,
     this.thinkMistake,
     this.attemptedSan,
+    this.wrongMove = false,
   });
 
   /// Depois de um lance errado previsto: o id do passo da lição que explica
@@ -112,6 +113,10 @@ class LessonState {
   /// (`lessonThinkMistakeGeneric`), antes de [speech].
   final String? thinkMistake;
   final String? attemptedSan;
+
+  /// Lance errado num passo de lance: a folha explica o erro (LANCE ERRADO,
+  /// LANCE CERTO) e o tabuleiro segue livre, com o rodapé de prática.
+  final bool wrongMove;
 
   /// A demonstração aberta mostra a linha errada.
   bool get wrongDemo => switch (current) {
@@ -373,6 +378,7 @@ class LessonState {
     bool? genericMistake,
     String? thinkMistake,
     String? attemptedSan,
+    bool? wrongMove,
     bool clearAttemptedSan = false,
   }) => LessonState(
     ready: ready ?? this.ready,
@@ -422,6 +428,11 @@ class LessonState {
         genericMistake ?? (speech != null ? false : this.genericMistake),
     // Idem para o lance errado do passo de pensar.
     thinkMistake: thinkMistake ?? (speech != null ? null : this.thinkMistake),
+    wrongMove:
+        wrongMove ??
+        (speech != null || step != null || phase != null
+            ? false
+            : this.wrongMove),
     attemptedSan: clearAttemptedSan
         ? null
         : attemptedSan ??
@@ -1171,6 +1182,7 @@ class LessonCubit extends Cubit<LessonState> {
           ? Move.parse(step.line[restored.turn].accept.first)
           : null,
       attemptedSan: saved.attemptedSan,
+      wrongMove: true,
       emotion: Emotion.focused,
     );
   }
@@ -1512,6 +1524,7 @@ class LessonCubit extends Cubit<LessonState> {
               : null,
           clearHint: mistakes < 2,
           mistakes: mistakes,
+          wrongMove: true,
         ),
       );
       await _loadExplanation(state);

@@ -445,7 +445,10 @@ void main() {
         if (span is TextSpan && span.text == '1.Kh2?') move = span;
         return true;
       });
-      expect(move?.style?.color, const Color(0xFFC2410C));
+      expect(
+        move?.style?.color,
+        Theme.of(tester.element(find.byType(TeacherSpeech))).colorScheme.error,
+      );
     },
   );
   testWidgets('V2 highlights repeated SAN only at its own origin', (

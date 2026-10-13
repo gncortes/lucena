@@ -775,7 +775,7 @@ class TeacherSpeech extends StatelessWidget {
       final notation = link.text;
       if (notation.endsWith('??')) return const Color(0xFFB3261E);
       if (notation.endsWith('?!')) return const Color(0xFF8A5A00);
-      if (notation.endsWith('?')) return const Color(0xFFC2410C);
+      if (notation.endsWith('?')) return theme.colorScheme.error;
       if (notation.endsWith('!!')) return const Color(0xFF2D5C82);
       if (notation.endsWith('!')) return const Color(0xFF3B6E1C);
       return theme.colorScheme.primary;
