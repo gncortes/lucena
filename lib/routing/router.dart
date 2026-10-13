@@ -481,6 +481,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       characters: context.read<CharacterRepository>(),
                       opponent: context.read<OpponentRepository>(),
                       engine: _engineFallback(context),
+                      practiceV2: true,
                     )..load(id, _language(context)),
                     child: LessonScreen(key: ValueKey('lesson.$id')),
                   );
@@ -600,6 +601,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           characters: context.read<CharacterRepository>(),
                           opponent: context.read<OpponentRepository>(),
                           engine: _engineFallback(context),
+                          practiceV2: true,
                         )..load(id, _language(context), part: part),
                         child: LessonScreen(key: ValueKey('lesson.$id.$part')),
                       );

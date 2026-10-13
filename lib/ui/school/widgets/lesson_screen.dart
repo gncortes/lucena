@@ -42,6 +42,7 @@ import '../../core/board/exercise_layout.dart';
 import '../../core/board/centered_board_layout.dart';
 import 'lesson_part_widgets.dart';
 import 'lesson_finished.dart';
+import 'lesson_practice.dart';
 import 'star_shape.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -1092,12 +1093,18 @@ class _LessonScreenState extends State<LessonScreen>
     final theme = Theme.of(context);
     final board = _board;
     final hasBoard = state.fen != null && board != null;
+    // O prático novo (T70): move/play no layout da tela de exercício.
+    final practice =
+        context.read<LessonCubit>().practiceV2 &&
+        (step is MoveStep || step is PlayStep);
     return AnimatedSwitcher(
       duration: AppMotion.component,
       child: state.finished && state.part != null
           ? PartFinished(key: LessonKeys.finished, state: state)
           : state.finished
           ? LessonFinished(key: LessonKeys.finished, state: state)
+          : practice && viktor != null && hasBoard
+          ? _practice(context, state, viktor, boardSettings, board)
           : LayoutBuilder(
               builder: (context, constraints) => Stack(
                 children: [
@@ -1278,6 +1285,40 @@ class _LessonScreenState extends State<LessonScreen>
                 ],
               ),
             ),
+    );
+  }
+
+  /// O convite e o passo prático (T70, crit. 10 a 16): sem folha nem faixa.
+  /// Rodapé: Dica | Voltar, e Continuar depois do 1º lance (refaz o par
+  /// desfeito ou, no fim do passo, segue).
+  Widget _practice(
+    BuildContext context,
+    LessonState state,
+    Character viktor,
+    BoardSettings boardSettings,
+    ChessboardController board,
+  ) {
+    final cubit = context.read<LessonCubit>();
+    final canContinue = state.canRedo || state.phase == StepPhase.done;
+    return LessonPractice(
+      key: ValueKey(('practice', state.step)),
+      viktor: viktor,
+      invite: state.practiceGate,
+      comment: state.practiceComment ?? _baseSpeech(context, state),
+      hint: state.practiceHint,
+      typing: state.typing,
+      expanded: state.speechMode == SpeechMode.expanded,
+      onExpandedChanged: (open) =>
+          open ? cubit.expandSpeech() : cubit.collapseSpeech(),
+      onStart: cubit.startPractice,
+      onInviteBack: cubit.practiceInviteBack,
+      onHint: cubit.askHint,
+      onBack: cubit.practiceBack,
+      onContinue: canContinue
+          ? (state.canRedo ? cubit.practiceForward : cubit.next)
+          : null,
+      board: (context, size) =>
+          _boardArea(context, state, boardSettings, board, size: size),
     );
   }
 
