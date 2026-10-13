@@ -77,6 +77,7 @@ abstract final class SpeedrunKeys {
   /// quem, o tempo que sobrou, o aviso de que ainda não concluiu, o cartão do
   /// recorde (maratona já concluída) e "Tentar novamente".
   static const marathonEndHero = Key('speedrun.marathon.end.hero');
+  static const paceChip = Key('speedrun.pace.chip');
   static const marathonEndOpponent = Key('speedrun.marathon.end.opponent');
   static const marathonEndLeft = Key('speedrun.marathon.end.left');
   static const marathonNotFinished = Key('speedrun.marathon.notFinished');

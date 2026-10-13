@@ -9,6 +9,8 @@ import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
+import 'package:lucena/domain/models/pace.dart';
+import 'package:lucena/ui/core/pace/pace_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
@@ -208,6 +210,16 @@ void main() {
     ) async {
       await pump(tester);
       expect(find.text('Maratona'), findsOneWidget);
+
+      final chip = tester.getRect(find.byKey(SpeedrunKeys.paceChip));
+      expect(chip.height, closeTo(28, 1));
+      expect(
+        find.descendant(
+          of: find.byKey(SpeedrunKeys.paceChip),
+          matching: find.byIcon(paceIcon(PaceCategory.of(sampleSpeedrunTime))),
+        ),
+        findsOneWidget,
+      );
       expect(
         textOf(tester, SpeedrunKeys.historyRecord),
         allOf(contains('Mais tempo sobrando'), isNot(contains('Seu recorde'))),

@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/character.dart';
-import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
@@ -14,7 +13,6 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/goal_style.dart';
@@ -24,6 +22,7 @@ import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/speedrun_cubit.dart';
+import 'speedrun_pace_chip.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
 
@@ -495,11 +494,7 @@ class _Chips extends StatelessWidget {
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
-        _Chip(
-          icon: paceIcon(PaceCategory.of(speedrun.time)),
-          label: HistoryLabels.ltr(paceLabel(l10n, speedrun.time)),
-          filled: true,
-        ),
+        SpeedrunPaceChip(speedrun.time),
         _Chip(icon: Icons.all_inclusive, label: l10n.marathonSection),
         if (endedAt != null)
           _Chip(
@@ -514,13 +509,10 @@ class _Chips extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label, this.filled = false});
+  const _Chip({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
-
-  /// O ritmo: pílula cheia e em negrito (`CompTempo` tipo ritmo, tamanho p).
-  final bool filled;
 
   @override
   Widget build(BuildContext context) {
@@ -534,11 +526,8 @@ class _Chip extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: filled ? colors.surfaceContainerHighest : null,
-        border: filled ? null : Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(
-          filled ? AppShape.full : AppShape.small,
-        ),
+        border: Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -551,9 +540,7 @@ class _Chip extends StatelessWidget {
             child: Text(
               label,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: filled ? colors.onSurface : colors.onSurfaceVariant,
-                fontWeight: filled ? FontWeight.w700 : null,
-                fontSize: filled ? 14 : null,
+                color: colors.onSurfaceVariant,
               ),
             ),
           ),

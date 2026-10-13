@@ -3,19 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
 
-import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../../routing/routes.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_history_cubit.dart';
+import 'speedrun_pace_chip.dart';
 import 'speedrun_ui.dart';
 
 /// O histórico de um speedrun (um final num ritmo): o recorde, as contagens e
@@ -129,7 +129,12 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  speedrunName(l10n, state.characters, speedrun),
+                  speedrun.kind == SpeedrunKind.marathon
+                      ? endgameName(
+                          l10n,
+                          speedrun.stages.first.position.subcategory,
+                        )
+                      : speedrunName(l10n, state.characters, speedrun),
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -139,22 +144,14 @@ class _Header extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _Chip(
-                      icon: paceIcon(PaceCategory.of(speedrun.time)),
-                      label: paceLabel(l10n, speedrun.time),
-                    ),
+                    SpeedrunPaceChip(speedrun.time),
                     if (speedrun.kind == SpeedrunKind.marathon)
                       _Chip(
                         icon: Icons.all_inclusive,
                         label: l10n.marathonSection,
-                        outlined: true,
                       ),
                     if (level != null)
-                      _Chip(
-                        icon: Icons.signal_cellular_alt,
-                        label: level,
-                        outlined: true,
-                      ),
+                      _Chip(icon: Icons.signal_cellular_alt, label: level),
                   ],
                 ),
               ],
@@ -167,30 +164,22 @@ class _Header extends StatelessWidget {
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label, this.outlined = false});
+  const _Chip({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
-
-  /// O do nível: contornado, raio 8; o do ritmo, preenchido como no detalhe.
-  final bool outlined;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final color = outlined
-        ? colors.onSurfaceVariant
-        : colors.onSecondaryContainer;
+    final color = colors.onSurfaceVariant;
     return Container(
       constraints: const BoxConstraints(minHeight: 28),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: outlined ? null : colors.secondaryContainer,
-        border: outlined ? Border.all(color: colors.outlineVariant) : null,
-        borderRadius: BorderRadius.circular(
-          outlined ? AppShape.small : AppShape.large,
-        ),
+        border: Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/speedrun.dart';
+import 'package:lucena/ui/core/pace/pace_ui.dart';
 import 'package:lucena/domain/use_cases/clock_format.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
@@ -467,6 +469,25 @@ void main() {
               expect(note.right, lessThanOrEqualTo(size.width));
               final next = tester.getRect(find.byKey(SpeedrunKeys.stage(2)));
               expect(next.top, greaterThanOrEqualTo(note.bottom));
+              await tester.scrollUntilVisible(
+                find.byKey(SpeedrunKeys.paceChip),
+                -100,
+              );
+              final chipHeight = tester
+                  .getRect(find.byKey(SpeedrunKeys.paceChip))
+                  .height;
+              // 28 em fonte 1,0; em 2,0 o texto maior cresce a caixa.
+              expect(chipHeight, greaterThanOrEqualTo(28 - 1));
+              if (scale == 1) expect(chipHeight, closeTo(28, 1));
+              expect(
+                find.descendant(
+                  of: find.byKey(SpeedrunKeys.paceChip),
+                  matching: find.byIcon(
+                    paceIcon(PaceCategory.of(sampleSpeedrunTime)),
+                  ),
+                ),
+                findsOneWidget,
+              );
               final title = tester.widget<AppBar>(find.byType(AppBar));
               expect(title.centerTitle, isTrue);
               final retry = tester.getRect(find.byKey(SpeedrunKeys.retry));
