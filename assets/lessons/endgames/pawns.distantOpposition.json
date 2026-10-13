@@ -26,6 +26,30 @@
           "type": "talk",
           "id": "intro",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "d3e4",
+                "e8f7",
+                "e4f5"
+              ],
+              "branches": [
+                {
+                  "id": "g4",
+                  "at": 2,
+                  "uci": [
+                    "g3g4",
+                    "f7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "marks": [
             "f5",
             "g5",
@@ -112,6 +136,32 @@
           "type": "move",
           "id": "convert",
           "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+          "lines": [
+            {
+              "uci": [
+                "d3e4",
+                "e8e7",
+                "e4e5",
+                "e7f7",
+                "e5f5"
+              ],
+              "branches": [
+                {
+                  "id": "g4",
+                  "at": 4,
+                  "uci": [
+                    "g3g4",
+                    "f7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            }
+          ],
           "goal": "win",
           "line": [
             {

@@ -226,6 +226,9 @@ void main() {
           if (step is DemoStep)
             for (var move = 1; move <= step.line.length; move++)
               'step.${step.id}.m$move',
+          for (final line in step.lines)
+            for (final branch in line.branches)
+              'step.${step.id}.alt.${branch.id}',
         ],
         for (final exercise in lesson.exercises) ...[
           'ex.${exercise.id}',
