@@ -155,8 +155,11 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     final speedrun = summary.speedrun;
     final previous = state.previousBest;
     // Em destaque só a tentativa que é o recorde de agora; uma que foi
-    // recorde na época e já foi batida vira herói normal.
-    final current = summary.records.best == run.total;
+    // recorde na época e já foi batida vira herói normal; empate com o
+    // recorde anterior também.
+    final current =
+        summary.records.best == run.total &&
+        (previous == null || run.total < previous);
     final newRecord = current && previous != null && run.total < previous;
     final first = current && previous == null;
     final bonus = state.bonus;
@@ -164,8 +167,6 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     final label = newRecord
         ? l10n.speedrunNewRecord
         : first
-        ? l10n.speedrunYourRecord
-        : current
         ? l10n.speedrunYourRecord
         : l10n.speedrunTotalTime;
     final time = runTime(context, run.total);
@@ -389,13 +390,13 @@ class _CompareCard extends StatelessWidget {
               label: l10n.speedrunCompareBefore,
               value: runTime(context, previous),
               fraction: 1,
-              color: recordColor,
+              color: colors.outline,
             ),
             _Bar(
               label: l10n.speedrunCompareNow,
               value: runTime(context, total),
               fraction: _fraction(total, previous),
-              color: colors.primary,
+              color: recordColor,
               strong: true,
             ),
           ]

@@ -267,6 +267,10 @@ void main() {
 
       expect(find.byKey(SpeedrunKeys.recordDifference), findsNothing);
       expect(find.byKey(SpeedrunKeys.recordBars), findsOneWidget);
+      // O empate não é recorde: herói normal, "Tempo total".
+      expect(heroOf(tester).type, isNot(TimeDisplayType.record));
+      expect(find.byKey(SpeedrunKeys.newRecord), findsNothing);
+      expect(find.text('Total time'), findsOneWidget);
     });
 
     testWidgets('bônus já pago em outro ritmo do grupo, sem comparação: o '
