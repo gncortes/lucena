@@ -5,6 +5,20 @@ import '../models/lesson.dart';
 import '../models/variation_tree.dart';
 import 'speech_lines.dart';
 
+/// Uma alternativa citada no JSON da aula (`CitedLine.branches`) com a posição
+/// de onde ela sai: a explicação (LANCE CERTO) a mostra no ponto em que a
+/// variante dela passa por [fen], mesmo que a linha citada seja de outro passo.
+class CitedBranchSource {
+  const CitedBranchSource(this.stepId, this.fen, this.branch);
+
+  /// O passo da aula cuja fala cita a linha (chave do comentário).
+  final String stepId;
+
+  /// A posição depois de `branch.at` lances da linha citada.
+  final String fen;
+  final CitedBranch branch;
+}
+
 /// Monta a árvore da faixa do modo variante (T68) a partir de uma das duas
 /// fontes: a linha citada na fala (com as alternativas do JSON da aula) ou a
 /// variante do painel de explicação (com as filhas dela). Um nível só.
@@ -54,11 +68,47 @@ abstract final class VariationTreeBuilder {
     );
   }
 
+  /// As alternativas citadas dos [steps] da aula, cada uma com a posição de
+  /// onde sai. A que não se joga, ou cuja linha não se joga até o `at`, fica
+  /// de fora; a repetida (mesma posição e mesmos lances) vale a do 1º passo.
+  static List<CitedBranchSource> citedSources(Iterable<LessonStep> steps) {
+    final result = <CitedBranchSource>[];
+    final seen = <String>{};
+    for (final step in steps) {
+      final start = step.fen;
+      if (start == null) continue;
+      for (final line in step.lines) {
+        for (final branch in line.branches) {
+          if (branch.at < 0 || branch.at > line.uci.length) continue;
+          final fen = _play(start, line.uci.take(branch.at));
+          if (fen == null) continue;
+          if (!seen.add(
+            '${_place(fen)}|${branch.id}|${branch.uci.join(' ')}',
+          )) {
+            continue;
+          }
+          result.add(CitedBranchSource(step.id, fen, branch));
+        }
+      }
+    }
+    return result;
+  }
+
+  /// O rótulo do 1º lance da alternativa ("2.g4?"), como a faixa o escreve.
+  static String? firstLabel(
+    CitedBranchSource source, [
+    Map<String, String> letters = const {},
+  ]) => _replay(source.fen, source.branch, letters)?.firstOrNull?.label;
+
   /// A variante aberta [cursor] da explicação de [payload], com as filhas
-  /// dela como alternativas (`parentPly` é o `at`).
+  /// dela como alternativas (`parentPly` é o `at`) e as alternativas citadas
+  /// ([cited]) que saem de uma posição dela.
   static VariationTree fromExplanation({
     required ExplanationPayload payload,
     required VariationCursor cursor,
+    List<CitedBranchSource> cited = const [],
+    Map<String, String> letters = const {},
+    String? Function(String stepId, String id, int? ply)? comment,
   }) {
     final variation = cursor.variation;
     final main = <TreeMove>[
@@ -98,12 +148,63 @@ abstract final class VariationTreeBuilder {
         ),
       );
     }
+    for (final source in cited) {
+      final at = cursor.fens.indexed
+          .where((e) => e.$1 <= cursor.moves.length)
+          .where((e) => _place(e.$2) == _place(source.fen))
+          .map((e) => e.$1)
+          .firstOrNull;
+      if (at == null || branches.any((b) => b.id == source.branch.id)) continue;
+      final moves = _replay(cursor.fens[at], source.branch, letters);
+      if (moves == null) continue;
+      // O mesmo lance da principal não é alternativa.
+      if (at < cursor.moves.length &&
+          moves.first.move?.uci == cursor.moves[at].uci) {
+        continue;
+      }
+      final id = source.branch.id;
+      branches.add(
+        VariationBranch(
+          id: id,
+          at: at,
+          moves: moves,
+          result: source.branch.result,
+          comment: comment?.call(source.stepId, id, null) ?? '',
+          commentByPly: {
+            for (var k = 1; k <= moves.length; k++)
+              k: ?comment?.call(source.stepId, id, k),
+          },
+        ),
+      );
+    }
     return VariationTree(
       startFen: cursor.fens.first,
       main: main,
       branches: branches,
     );
   }
+
+  /// A posição sem os contadores de lances.
+  static String _place(String fen) => fen.split(' ').take(4).join(' ');
+
+  static String? _play(String fen, Iterable<String> ucis) {
+    try {
+      var position = Chess.fromSetup(Setup.parseFen(fen)) as Position;
+      for (final text in ucis) {
+        final move = Move.parse(text);
+        if (move == null || !position.isLegal(move)) return null;
+        position = position.play(move);
+      }
+      return position.fen;
+    } on FenException {
+      return null;
+    } on PositionSetupException {
+      return null;
+    }
+  }
+
+  /// A posição sem os contadores de lances, para comparar.
+  static String placeOf(String fen) => _place(fen);
 
   /// Os lances de [cited] jogados a partir de [fen]; nulo se algum for ilegal.
   static List<TreeMove>? _replay(
