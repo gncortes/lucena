@@ -370,6 +370,10 @@ class _CompareCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final record = total < previous;
+    // A cor clara do selo de recorde: o número no claro, o fundo no escuro.
+    final recordColor = theme.brightness == Brightness.dark
+        ? colors.tertiaryContainer
+        : colors.onTertiaryContainer;
     final difference = (previous - total).abs();
     // Os segundos com uma casa e a vírgula do idioma, truncados.
     final decimal = NumberFormat.decimalPattern(
@@ -385,7 +389,7 @@ class _CompareCard extends StatelessWidget {
               label: l10n.speedrunCompareBefore,
               value: runTime(context, previous),
               fraction: 1,
-              color: colors.onTertiaryContainer,
+              color: recordColor,
             ),
             _Bar(
               label: l10n.speedrunCompareNow,
@@ -400,7 +404,7 @@ class _CompareCard extends StatelessWidget {
               label: l10n.speedrunCompareRecord,
               value: runTime(context, previous),
               fraction: _fraction(previous, total),
-              color: colors.onTertiaryContainer,
+              color: recordColor,
             ),
             _Bar(
               label: l10n.speedrunCompareThis,
