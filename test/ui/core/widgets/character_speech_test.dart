@@ -135,6 +135,24 @@ void main() {
     expect(find.byKey(LessonKeys.practiceSpeechClose), findsNothing);
   });
 
+  testWidgets('texto curto: balão com a largura toda e peso regular', (
+    tester,
+  ) async {
+    await pump(tester, text: 'Sua vez.');
+    final rect = tester.getRect(find.byKey(LessonKeys.practiceSpeech));
+    expect(rect.left, 12);
+    expect(rect.width, 360 - 24);
+    final text = tester.widget<RichText>(
+      find
+          .descendant(
+            of: find.byKey(LessonKeys.practiceSpeech),
+            matching: find.byType(RichText),
+          )
+          .first,
+    );
+    expect(text.text.style?.fontWeight, FontWeight.w400);
+  });
+
   testWidgets('a Dica leva o selo; digitando mostra os pontos', (tester) async {
     await pump(tester, text: 'Pense no rei.', lead: 'Dica');
     expect(find.text('Dica'), findsOneWidget);
