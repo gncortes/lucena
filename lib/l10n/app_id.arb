@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} mnt + {increment} dtk",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Total",
+  "speedrunTotalTime": "Waktu total",
   "teacherName": "Guru {name}",
   "tourBack": "Kembali",
   "tourBoardTitle": "Pilih papanmu",

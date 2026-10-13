@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} min + {increment} s",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Total",
+  "speedrunTotalTime": "Tiempo total",
   "teacherName": "Maestro {name}",
   "tourBack": "Atrás",
   "tourBoardTitle": "Elige tu tablero",

@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes}분 + {increment}초",
   "speedrunTitle": "스피드런",
   "speedrunTotal": "합계",
+  "speedrunTotalTime": "총 시간",
   "teacherName": "{name} 선생님",
   "tourBack": "이전",
   "tourBoardTitle": "체스판을 고르세요",

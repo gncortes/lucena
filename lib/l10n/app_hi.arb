@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} मिनट + {increment} सेकंड",
   "speedrunTitle": "स्पीडरन",
   "speedrunTotal": "कुल",
+  "speedrunTotalTime": "कुल समय",
   "teacherName": "गुरु {name}",
   "tourBack": "पीछे",
   "tourBoardTitle": "अपना बोर्ड चुनें",

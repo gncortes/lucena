@@ -264,7 +264,7 @@ class _RecordCard extends StatelessWidget {
                   : Row(
                       children: [
                         Expanded(child: record),
-                        Flexible(child: link),
+                        link,
                       ],
                     ),
             ),
@@ -348,7 +348,11 @@ class _BestAttemptRow extends StatelessWidget {
               spacing: AppSpacing.sm,
               children: [
                 ExcludeSemantics(
-                  child: Icon(Icons.stairs, size: 18, color: colors.outline),
+                  child: Icon(
+                    Icons.stairs,
+                    size: 18,
+                    color: colors.onSurfaceVariant,
+                  ),
                 ),
                 Expanded(
                   child: Text(
@@ -358,7 +362,7 @@ class _BestAttemptRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Flexible(child: _HistoryLink()),
+                const _HistoryLink(),
               ],
             ),
           ),

@@ -255,6 +255,15 @@ void main() {
     expect(best.semanticsLabel, 'Your record: ${best.value}');
     expect(find.byKey(SpeedrunKeys.recordCard), findsOneWidget);
     expect(find.byKey(SpeedrunKeys.seeHistory), findsOneWidget);
+    // O link fica encostado no fim do cartão (16 de margem + 8 de padding).
+    final card = tester.getRect(find.byKey(SpeedrunKeys.recordCard));
+    final link = tester.getRect(
+      find.descendant(
+        of: find.byKey(SpeedrunKeys.seeHistory),
+        matching: find.byIcon(Icons.chevron_right),
+      ),
+    );
+    expect(card.right - link.right, lessThan(24));
     // A lista de tentativas saiu do detalhe; a conclusão já pagou o bônus.
     expect(find.text('Gave up at stage 2 of $total'), findsNothing);
     expect(cubit.state.offer, 0);

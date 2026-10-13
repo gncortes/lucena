@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} د + {increment} ث",
   "speedrunTitle": "سباق الوقت",
   "speedrunTotal": "المجموع",
+  "speedrunTotalTime": "الوقت الكلي",
   "teacherName": "المعلم {name}",
   "tourBack": "رجوع",
   "tourBoardTitle": "اختر رقعتك",

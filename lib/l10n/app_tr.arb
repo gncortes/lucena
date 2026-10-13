@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} dk + {increment} sn",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Toplam",
+  "speedrunTotalTime": "Toplam süre",
   "teacherName": "Usta {name}",
   "tourBack": "Geri",
   "tourBoardTitle": "Tahtanı seç",

@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} min + {increment} s",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Total",
+  "speedrunTotalTime": "Temps total",
   "teacherName": "Maître {name}",
   "tourBack": "Retour",
   "tourBoardTitle": "Choisissez votre échiquier",

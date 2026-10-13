@@ -154,26 +154,27 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     final l10n = context.l10n;
     final speedrun = summary.speedrun;
     final previous = state.previousBest;
-    final newRecord = previous != null && run.total < previous;
-    final first = previous == null;
+    // Em destaque só a tentativa que é o recorde de agora; uma que foi
+    // recorde na época e já foi batida vira herói normal.
+    final current = summary.records.best == run.total;
+    final newRecord = current && previous != null && run.total < previous;
+    final first = current && previous == null;
     final bonus = state.bonus;
     final paid = state.paid;
     final label = newRecord
         ? l10n.speedrunNewRecord
         : first
         ? l10n.speedrunYourRecord
-        : l10n.speedrunTotal;
+        : current
+        ? l10n.speedrunYourRecord
+        : l10n.speedrunTotalTime;
     final time = runTime(context, run.total);
     final spoken = '$label: $time';
     Widget hero = TimeDisplay(
       value: time,
       semanticsLabel: spoken,
-      type: newRecord || first
-          ? TimeDisplayType.record
-          : TimeDisplayType.stopwatch,
-      state: newRecord || first
-          ? TimeDisplayState.highlight
-          : TimeDisplayState.normal,
+      type: current ? TimeDisplayType.record : TimeDisplayType.stopwatch,
+      state: current ? TimeDisplayState.highlight : TimeDisplayState.normal,
       size: TimeDisplaySize.block,
       label: label,
       textKey: SpeedrunKeys.total,
@@ -384,13 +385,13 @@ class _CompareCard extends StatelessWidget {
               label: l10n.speedrunCompareBefore,
               value: runTime(context, previous),
               fraction: 1,
-              color: colors.outline,
+              color: colors.onTertiaryContainer,
             ),
             _Bar(
               label: l10n.speedrunCompareNow,
               value: runTime(context, total),
               fraction: _fraction(total, previous),
-              color: colors.tertiary,
+              color: colors.primary,
               strong: true,
             ),
           ]
@@ -399,7 +400,7 @@ class _CompareCard extends StatelessWidget {
               label: l10n.speedrunCompareRecord,
               value: runTime(context, previous),
               fraction: _fraction(previous, total),
-              color: colors.tertiary,
+              color: colors.onTertiaryContainer,
             ),
             _Bar(
               label: l10n.speedrunCompareThis,
@@ -513,21 +514,25 @@ class _Bar extends StatelessWidget {
         fontFeatures: const [FontFeature.tabularFigures()],
       ),
     );
-    final track = Container(
-      height: 10,
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      alignment: AlignmentDirectional.centerStart,
-      child: FractionallySizedBox(
-        widthFactor: fraction,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(AppShape.full),
+    // As barras são números: enchem sempre da esquerda, também em RTL.
+    final track = Directionality(
+      textDirection: TextDirection.ltr,
+      child: Container(
+        height: 10,
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(AppShape.full),
+        ),
+        alignment: Alignment.centerLeft,
+        child: FractionallySizedBox(
+          widthFactor: fraction,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(AppShape.full),
+            ),
+            child: const SizedBox(height: 10),
           ),
-          child: const SizedBox(height: 10),
         ),
       ),
     );

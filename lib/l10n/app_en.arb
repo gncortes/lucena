@@ -1585,6 +1585,10 @@
   "@speedrunTotal": {
     "description": "Label of the total time of an attempt."
   },
+  "speedrunTotalTime": "Total time",
+  "@speedrunTotalTime": {
+    "description": "Label of the total time of an attempt that is not the record."
+  },
   "teacherName": "Master {name}",
   "@teacherName": {
     "description": "Name of the teacher above his speech bubble, in the lessons and the tour.",

@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} 分 + {increment} 秒",
   "speedrunTitle": "速通",
   "speedrunTotal": "总计",
+  "speedrunTotalTime": "总用时",
   "teacherName": "{name}老师",
   "tourBack": "上一步",
   "tourBoardTitle": "选择你的棋盘",

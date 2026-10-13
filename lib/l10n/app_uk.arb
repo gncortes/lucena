@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} хв + {increment} с",
   "speedrunTitle": "Спідран",
   "speedrunTotal": "Разом",
+  "speedrunTotalTime": "Загальний час",
   "teacherName": "Майстер {name}",
   "tourBack": "Назад",
   "tourBoardTitle": "Виберіть дошку",

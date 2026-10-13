@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} دقیقه + {increment} ثانیه",
   "speedrunTitle": "اسپیدران",
   "speedrunTotal": "مجموع",
+  "speedrunTotalTime": "زمان کل",
   "teacherName": "استاد {name}",
   "tourBack": "قبلی",
   "tourBoardTitle": "صفحهٔ خود را انتخاب کنید",

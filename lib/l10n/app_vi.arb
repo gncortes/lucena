@@ -300,6 +300,7 @@
   "speedrunTimeControl": "{minutes} phút + {increment} giây",
   "speedrunTitle": "Speedrun",
   "speedrunTotal": "Tổng",
+  "speedrunTotalTime": "Tổng thời gian",
   "teacherName": "Thầy {name}",
   "tourBack": "Quay lại",
   "tourBoardTitle": "Chọn bàn cờ của bạn",

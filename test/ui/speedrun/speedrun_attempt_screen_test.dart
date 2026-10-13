@@ -206,6 +206,38 @@ void main() {
       expect(find.byKey(SpeedrunKeys.ratingBonusEarned), findsNothing);
     });
 
+    testWidgets('um recorde antigo já batido vira herói normal, "Total '
+        'time"', (tester) async {
+      final old = await finished(10);
+      now.advance(const Duration(minutes: 5));
+      await finished(8);
+
+      await pump(tester, old);
+
+      final hero = heroOf(tester);
+      expect(hero.state, TimeDisplayState.normal);
+      expect(hero.type, TimeDisplayType.stopwatch);
+      expect(find.text('Total time'), findsOneWidget);
+      expect(find.byKey(SpeedrunKeys.newRecord), findsNothing);
+    });
+
+    testWidgets('em árabe as barras enchem da esquerda', (tester) async {
+      await finished(10);
+      now.advance(const Duration(minutes: 5));
+      final attempt = await finished(8);
+
+      await pump(tester, attempt, locale: const Locale('ar'));
+
+      final bars = find.descendant(
+        of: find.byKey(SpeedrunKeys.recordBars),
+        matching: find.byType(FractionallySizedBox),
+      );
+      final full = tester.getRect(
+        find.ancestor(of: bars.first, matching: find.byType(Container)).first,
+      );
+      expect(tester.getRect(bars.last).left, closeTo(full.left, 1));
+    });
+
     testWidgets('mais lenta: Recorde/Esta e "Faltaram"', (tester) async {
       await finished(10);
       now.advance(const Duration(minutes: 5));
