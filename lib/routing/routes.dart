@@ -141,6 +141,10 @@ abstract final class Routes {
   static const speedruns = '/speedruns';
   static String speedrun(String id) => '/speedruns/$id';
 
+  /// O histórico de um speedrun: o [id] já com o ritmo
+  /// (`SpeedrunPaces.idFor`).
+  static String speedrunHistory(String id) => '/speedruns/$id/history';
+
   ///
   /// [game] (o instante em que uma etapa terminou) faz a tentativa ser lida de
   /// novo ao voltar do tabuleiro, mesmo que a tela dela já esteja aberta.

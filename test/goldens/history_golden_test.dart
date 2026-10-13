@@ -1,19 +1,18 @@
-import 'dart:convert';
-import 'dart:io' as io;
-
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/characters/character_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
-import 'package:lucena/domain/models/achievement.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
-import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
-import 'package:lucena/ui/profile/widgets/rating_screen.dart';
+import 'package:lucena/ui/history/view_models/history_cubit.dart';
+import 'package:lucena/ui/history/widgets/history_screen.dart';
 
-import '../../testing/fakes/fake_achievements_repository.dart';
+import '../../testing/fakes/fake_game_review_repository.dart';
+import '../../testing/fakes/fake_journey_repository.dart';
+import '../../testing/fakes/fake_settings_repository.dart';
+import '../../testing/fakes/fake_speedrun_repository.dart';
 import '../../testing/fakes/fake_now.dart';
 import '../../testing/fakes/fake_progress_repository.dart';
 import '../../testing/fakes/fake_rating_repository.dart';
@@ -24,7 +23,7 @@ void main() {
   // A tela inteira com um mês de partidas: vitórias, empates e derrotas
   // contra níveis diferentes.
   for (final theme in [ThemeMode.light, ThemeMode.dark]) {
-    testWidgets('rating_screen · ${theme.name}', (tester) async {
+    testWidgets('history_games · ${theme.name}', (tester) async {
       await Goldens.loadFonts();
       final progress = FakeProgressRepository();
       final rating = FakeRatingRepository();
@@ -72,20 +71,7 @@ void main() {
       });
       // Os personagens de verdade, com os retratos.
       final characters = AssetCharacterRepository(const AssetService());
-      // O catálogo de conquistas, com duas já ganhas.
-      final catalog = jsonDecode(
-        io.File('assets/achievements.json').readAsStringSync(),
-      ) as Map<String, dynamic>;
-      final achievements = FakeAchievementsRepository([
-        for (final entry
-            in (catalog['achievements'] as List).cast<Map<String, dynamic>>())
-          ?Achievement.fromJson(entry),
-      ]);
-      await achievements.unlock([
-        UnlockedAchievement(id: 'first-fulfilled', at: now()),
-        UnlockedAchievement(id: 'beat-1000', at: now()),
-      ]);
-      const size = Size(412, 1500);
+      const size = Size(412, 917);
       tester.view
         ..devicePixelRatio = 1
         ..physicalSize = size;
@@ -105,14 +91,17 @@ void main() {
           child: MediaQuery(
             data: const MediaQueryData(size: size, disableAnimations: true),
             child: BlocProvider(
-              create: (_) => RatingCubit(
-                rating,
+              create: (_) => HistoryCubit(
+                rating: rating,
                 progress: progress,
-                now: now,
+                speedruns: FakeSpeedrunRepository(progress),
+                journey: FakeJourneyRepository(),
                 characters: characters,
-                achievements: achievements,
+                reviews: FakeGameReviewRepository(),
+                settings: FakeSettingsRepository(),
+                now: now,
               )..load(),
-              child: const RatingScreen(),
+              child: const HistoryScreen(),
             ),
           ),
         ),
@@ -126,8 +115,8 @@ void main() {
         await tester.pumpAndSettle();
       }
       await expectLater(
-        find.byType(RatingScreen),
-        matchesGoldenFile('goldens/rating_screen/${theme.name}.png'),
+        find.byType(HistoryScreen),
+        matchesGoldenFile('goldens/history_games/${theme.name}.png'),
       );
     });
   }
