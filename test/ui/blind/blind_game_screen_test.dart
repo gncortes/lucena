@@ -146,7 +146,7 @@ void main() {
                 .performAction(node.id, SemanticsAction.tap);
             await tester.pumpAndSettle();
             expect(cubit.state.view, view);
-            for (final dx in [-21.0, 21.0]) {
+            for (final dx in [-15.0, 15.0]) {
               cubit.setView(
                 view == BlindView.board ? BlindView.hidden : BlindView.board,
               );
