@@ -14,8 +14,30 @@ class ConclusionRobot {
 
   final PatrolIntegrationTester $;
 
+  /// Se a partida acabou e parou no tabuleiro, toca em "Ver o resultado";
+  /// volta assim que a conclusão está na árvore (sem esperar assentar).
+  Future<void> seeResult() async {
+    // Acabou a partida contra a máquina: o fim para no tabuleiro até o botão
+    // "Ver o resultado" (Canvas V2). Esperamos o botão ou a conclusão.
+    final seeResult = find.byKey(FreeBoardKeys.seeResultButton);
+    final screen = find.byKey(ConclusionKeys.screen);
+    final deadline = DateTime.now().add(const Duration(seconds: 10));
+    while (screen.evaluate().isEmpty &&
+        seeResult.evaluate().isEmpty &&
+        DateTime.now().isBefore(deadline)) {
+      await $.pump(const Duration(milliseconds: 100));
+    }
+    if (screen.evaluate().isEmpty && seeResult.evaluate().isNotEmpty) {
+      // Sem assentar: o aviso de conquista da conclusão some sozinho e o
+      // assentar esperaria por ele.
+      await $(FreeBoardKeys.seeResultButton)
+          .tap(settlePolicy: SettlePolicy.noSettle);
+    }
+  }
+
   /// Espera a conclusão abrir e ficar pronta (o título no cabeçalho).
   Future<void> waitConclusion() async {
+    await seeResult();
     await $(ConclusionKeys.screen).waitUntilVisible();
     // O aviso de conquista nova desce por cima do título: basta existir.
     await $(ConclusionKeys.title).waitUntilExists();
