@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/models/character.dart';
 import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../view_models/speech_cubit.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/sound_off_icon.dart';
@@ -216,141 +214,6 @@ class TeacherVoiceList extends StatelessWidget {
   }
 }
 
-/// Os adversários, cada um com a voz que tem agora; tocar num abre a
-/// escolha.
-class CharacterVoiceList extends StatelessWidget {
-  const CharacterVoiceList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final language = voiceLanguage(context);
-    return BlocBuilder<SpeechCubit, SpeechState>(
-      buildWhen: (a, b) =>
-          a.settings != b.settings ||
-          a.voices != b.voices ||
-          a.characters != b.characters,
-      builder: (context, state) {
-        final voices = state.voicesFor(language);
-        return VoiceGrid(
-          children: [
-            for (final character in state.characters)
-              VoiceCard(
-                key: VoiceKeys.character(character.id),
-                leading: CharacterAvatar(character: character, size: 44),
-                label: character.name,
-                detail: switch (state.voiceOf(character.id, language)?.voice) {
-                  final voice? => voiceLabel(
-                    context,
-                    voice,
-                    voices.indexOf(voice),
-                  ),
-                  null => null,
-                },
-                selected: false,
-                onTap: () => showModalBottomSheet<void>(
-                  context: context,
-                  showDragHandle: true,
-                  isScrollControlled: true,
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<SpeechCubit>(),
-                    child: CharacterVoiceSheet(character: character),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// A escolha da voz de um adversário: "escolhida pelo app" e as vozes do
-/// idioma, cada uma com o "ouvir" na fala de apresentação dele.
-class CharacterVoiceSheet extends StatelessWidget {
-  const CharacterVoiceSheet({required this.character, super.key});
-
-  final Character character;
-
-  @override
-  Widget build(BuildContext context) {
-    final speech = context.read<SpeechCubit>();
-    final language = voiceLanguage(context);
-    final l10n = context.l10n;
-    final sample = l10n.voiceCharacterSample(character.name);
-    return BlocBuilder<SpeechCubit, SpeechState>(
-      buildWhen: (a, b) => a.settings != b.settings,
-      builder: (context, state) {
-        final voices = state.voicesFor(language);
-        final chosen = state.settings.characterVoices[character.id];
-        final chosenExists = voices.any((v) => v.id == chosen);
-        void hear(String voiceId) => speech.preview(
-          sample,
-          characterId: character.id,
-          voiceId: voiceId,
-          language: language,
-        );
-        return SafeArea(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * 0.75,
-            ),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ListTile(
-                    leading: CharacterAvatar(character: character, size: 44),
-                    title: Text(
-                      character.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                  VoiceGrid(
-                    children: [
-                      VoiceCard(
-                        key: VoiceKeys.appChoice,
-                        icon: Icons.auto_awesome_outlined,
-                        label: l10n.voiceAppChoice,
-                        selected: !chosenExists,
-                        onTap: () {
-                          speech.setCharacterVoice(character.id, null);
-                          final auto = speech.state.voiceOf(
-                            character.id,
-                            language,
-                          );
-                          if (auto != null) hear(auto.voice.id);
-                        },
-                      ),
-                      for (final (i, voice) in voices.indexed)
-                        VoiceCard(
-                          key: VoiceKeys.voice(voice.id),
-                          icon: Icons.record_voice_over_outlined,
-                          label: voiceLabel(context, voice, i),
-                          detail: voiceGenderLabel(context, voice),
-                          selected: chosenExists && voice.id == chosen,
-                          onTap: () {
-                            speech.setCharacterVoice(character.id, voice.id);
-                            hear(voice.id);
-                          },
-                        ),
-                    ],
-                  ),
-                  VoiceTonePicker(
-                    characterId: character.id,
-                    sample: sample,
-                    withProfile: true,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
 /// Como ter vozes mais naturais: o que fazer nas configurações de voz do
 /// aparelho e o botão que abre essa tela.
 class SystemVoicesHelp extends StatelessWidget {
@@ -404,20 +267,17 @@ class SystemVoicesHelp extends StatelessWidget {
   }
 }
 
-/// O tom da voz de [characterId]: grave, natural, suave ou agudo. Tocar num
-/// grava e fala uma amostra nele. [withProfile]: o adversário pode voltar
-/// ao tom do perfil dele ("escolhido pelo app").
+/// O tom da voz de [characterId] (o professor): grave, natural, suave ou
+/// agudo. Tocar num grava e fala uma amostra nele.
 class VoiceTonePicker extends StatelessWidget {
   const VoiceTonePicker({
     required this.characterId,
     required this.sample,
-    this.withProfile = false,
     super.key,
   });
 
   final String characterId;
   final String sample;
-  final bool withProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -433,7 +293,7 @@ class VoiceTonePicker extends StatelessWidget {
       VoiceTone.soft => l10n.voiceToneSoft,
       VoiceTone.high => l10n.voiceToneHigh,
     };
-    void choose(VoiceTone? tone) =>
+    void choose(VoiceTone tone) =>
         speech.setTone(characterId, tone, sample: sample, language: language);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -446,13 +306,6 @@ class VoiceTonePicker extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              if (withProfile)
-                ChoiceChip(
-                  key: VoiceKeys.tone(null),
-                  label: Text(l10n.voiceAppChoice),
-                  selected: tone == null,
-                  onSelected: (_) => choose(null),
-                ),
               for (final option in VoiceTone.values)
                 ChoiceChip(
                   key: VoiceKeys.tone(option),
@@ -466,4 +319,13 @@ class VoiceTonePicker extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Provisório, só até o merge do tour reescrito (T72): o passo antigo das
+/// vozes dos adversários ainda a usa. Não mostra nada: o app escolhe a voz.
+class CharacterVoiceList extends StatelessWidget {
+  const CharacterVoiceList({super.key});
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

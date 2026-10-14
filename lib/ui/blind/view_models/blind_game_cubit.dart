@@ -825,13 +825,9 @@ class BlindGameCubit extends Cubit<BlindState> {
   Future<ResolvedVoice?> _teacherVoice() async {
     final settings = await _voice.load();
     final voices = TtsVoice.forLanguage(await _voice.voices(), _language);
-    final profiles = await _voice.profiles();
-    const id = 'master';
     return VoiceResolver.resolve(
-      profile: profiles[id] ?? const CharacterVoiceProfile.neutral(id),
       voices: voices,
       teacherVoiceId: settings.teacherVoice,
-      teacher: true,
       speed: settings.speed,
       tone: settings.teacherTone,
     );

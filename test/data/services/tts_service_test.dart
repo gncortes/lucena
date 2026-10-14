@@ -112,6 +112,41 @@ void main() {
     ]);
   });
 
+  test(
+    'a qualidade: Android e iOS; o que não se reconhece é desconhecido',
+    () async {
+      final tts = TtsService(
+        _FakeFlutterTts([
+          {'name': 'a', 'locale': 'pt-BR', 'quality': 'very high'},
+          {'name': 'b', 'locale': 'pt-BR', 'quality': 'high'},
+          {'name': 'c', 'locale': 'pt-BR', 'quality': 'normal'},
+          {'name': 'd', 'locale': 'pt-BR', 'quality': 'low'},
+          {'name': 'e', 'locale': 'pt-BR', 'quality': 'very low'},
+          {'name': 'f', 'locale': 'pt-BR', 'quality': 'premium'},
+          {'name': 'g', 'locale': 'pt-BR', 'quality': 'enhanced'},
+          {'name': 'h', 'locale': 'pt-BR', 'quality': 'default'},
+          {'name': 'i', 'locale': 'pt-BR', 'quality': 'xyz'},
+          {'name': 'j', 'locale': 'pt-BR'},
+        ]),
+      );
+      expect(
+        [for (final v in await tts.voices()) v.quality],
+        const [
+          VoiceQuality.veryHigh,
+          VoiceQuality.high,
+          VoiceQuality.normal,
+          VoiceQuality.low,
+          VoiceQuality.veryLow,
+          VoiceQuality.veryHigh,
+          VoiceQuality.high,
+          VoiceQuality.normal,
+          VoiceQuality.unknown,
+          VoiceQuality.unknown,
+        ],
+      );
+    },
+  );
+
   test('sem lista de vozes: nenhuma', () async {
     expect(await TtsService(_FakeFlutterTts(null)).voices(), isEmpty);
   });

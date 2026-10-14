@@ -32,13 +32,6 @@ void main() {
     expect(voice.lastSpoken.$2, _voice(1));
 
     await tour.next();
-    await tour.expectStep(TourStep.characterVoices);
-    await voice.openCharacter('beachgoer');
-    await voice.choose(_voice(0));
-    expect(voice.lastSpoken.$1, contains('Coco'));
-    expect(voice.lastSpoken.$2, _voice(0));
-    await voice.closeSheet();
-    await tour.next();
     await tour.expectStep(TourStep.goal);
 
     // Fechar à força: a escolha continua.

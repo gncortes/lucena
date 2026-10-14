@@ -16,6 +16,7 @@ class SpeechState {
     this.settings = const VoiceSettings(),
     this.voices = const [],
     this.profiles = const {},
+    this.known = const {},
     this.characters = const [],
     this.speaking,
     this.speakerId,
@@ -28,6 +29,9 @@ class SpeechState {
   /// As vozes do aparelho, de todos os idiomas.
   final List<TtsVoice> voices;
   final Map<String, CharacterVoiceProfile> profiles;
+
+  /// O gênero das vozes que o sistema não informa, pelo id da voz.
+  final Map<String, VoiceGender> known;
 
   /// Os adversários que falam (sem o professor nem o Stockfish), do nível
   /// mais baixo ao mais alto.
@@ -60,29 +64,45 @@ class SpeechState {
   bool isSpeaking(String? text) =>
       text != null && speaking == WikiMarkup.plain(text);
 
-  /// A voz com que [characterId] fala em [language].
-  ResolvedVoice? voiceOf(String characterId, String language) =>
-      VoiceResolver.resolve(
-        profile:
-            profiles[characterId] ?? CharacterVoiceProfile.neutral(characterId),
-        voices: voicesFor(language),
+  /// A voz com que [characterId] fala em [language]: a do professor, com o
+  /// tom que o usuário deu, ou a que o app escolheu para o personagem (pelo
+  /// gênero e a idade dele). Quem não tem perfil fala como homem adulto.
+  /// Recalculada a cada chamada: muda sozinha com as vozes, o perfil e a
+  /// voz do professor.
+  ResolvedVoice? voiceOf(String characterId, String language) {
+    final voices = voicesFor(language);
+    if (characterId == SpeechCubit.teacherId) {
+      return VoiceResolver.resolve(
+        voices: voices,
         teacherVoiceId: settings.teacherVoice,
-        chosenVoiceId: settings.characterVoices[characterId],
-        teacher: characterId == SpeechCubit.teacherId,
         speed: settings.speed,
-        tone: toneOf(characterId),
+        tone: settings.teacherTone,
       );
+    }
+    return VoiceResolver.assign(
+      profiles: {
+        ...profiles,
+        if (!profiles.containsKey(characterId))
+          characterId: CharacterVoiceProfile.neutral(characterId),
+      },
+      voices: voices,
+      teacherVoiceId: settings.teacherVoice,
+      known: known,
+      speed: settings.speed,
+    )[characterId];
+  }
 
-  /// O tom escolhido para [characterId] (o do professor sempre há).
-  VoiceTone? toneOf(String characterId) => characterId == SpeechCubit.teacherId
-      ? settings.teacherTone
-      : settings.characterTones[characterId];
+  /// O tom do professor (só ele tem tom escolhido; os personagens têm o da
+  /// idade).
+  VoiceTone? toneOf(String characterId) =>
+      characterId == SpeechCubit.teacherId ? settings.teacherTone : null;
 
   SpeechState copyWith({
     bool? loaded,
     VoiceSettings? settings,
     List<TtsVoice>? voices,
     Map<String, CharacterVoiceProfile>? profiles,
+    Map<String, VoiceGender>? known,
     List<Character>? characters,
     String? Function()? speaking,
     String? Function()? speakerId,
@@ -92,6 +112,7 @@ class SpeechState {
     settings: settings ?? this.settings,
     voices: voices ?? this.voices,
     profiles: profiles ?? this.profiles,
+    known: known ?? this.known,
     characters: characters ?? this.characters,
     speaking: speaking == null ? this.speaking : speaking(),
     speakerId: speakerId == null ? this.speakerId : speakerId(),
@@ -154,6 +175,7 @@ class SpeechCubit extends Cubit<SpeechState> {
     final settings = await _voice.load();
     final voices = await _voice.voices();
     final profiles = await _voice.profiles();
+    final known = await _voice.knownGenders();
     final characters = [
       for (final c in await _characters?.characters() ?? const <Character>[])
         if (c.id != teacherId && c.id != Character.stockfish.id) c,
@@ -165,6 +187,7 @@ class SpeechCubit extends Cubit<SpeechState> {
         settings: settings,
         voices: voices,
         profiles: profiles,
+        known: known,
         characters: characters,
       ),
     );
@@ -322,8 +345,7 @@ class SpeechCubit extends Cubit<SpeechState> {
     state.settings.copyWith(enabled: true, teacherVoice: () => voiceId),
   );
 
-  /// O tom de [characterId] (o professor ou um personagem). Nulo: o do
-  /// perfil do personagem. Fala uma amostra no tom novo.
+  /// O tom do professor. Fala uma amostra no tom novo.
   Future<void> setTone(
     String characterId,
     VoiceTone? tone, {
@@ -334,14 +356,6 @@ class SpeechCubit extends Cubit<SpeechState> {
       await _save(
         state.settings.copyWith(teacherTone: tone ?? VoiceTone.natural),
       );
-    } else {
-      final tones = {...state.settings.characterTones};
-      if (tone == null) {
-        tones.remove(characterId);
-      } else {
-        tones[characterId] = tone;
-      }
-      await _save(state.settings.copyWith(characterTones: tones));
     }
     final voice = state.voiceOf(characterId, language);
     if (voice != null) {
@@ -352,17 +366,6 @@ class SpeechCubit extends Cubit<SpeechState> {
         language: language,
       );
     }
-  }
-
-  /// A voz de um personagem. Nula: volta à escolhida pelo app.
-  Future<void> setCharacterVoice(String characterId, String? voiceId) {
-    final voices = {...state.settings.characterVoices};
-    if (voiceId == null) {
-      voices.remove(characterId);
-    } else {
-      voices[characterId] = voiceId;
-    }
-    return _save(state.settings.copyWith(characterVoices: voices));
   }
 
   Future<void> _save(VoiceSettings settings) async {

@@ -1,18 +1,25 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/domain/use_cases/voice_resolver.dart';
-import 'package:flutter_test/flutter_test.dart';
+
+TtsVoice _v(
+  String id, {
+  VoiceGender? gender,
+  VoiceQuality quality = VoiceQuality.unknown,
+}) => TtsVoice(id: id, locale: 'pt-BR', gender: gender, quality: quality);
+
+CharacterVoiceProfile _p(
+  String id,
+  VoiceGender gender, [
+  VoiceAge age = VoiceAge.adult,
+]) => CharacterVoiceProfile(characterId: id, gender: gender, age: age);
 
 void main() {
+  const m = VoiceGender.male;
+  const f = VoiceGender.female;
   const a = TtsVoice(id: 'pt-br-x-a', locale: 'pt-BR');
   const b = TtsVoice(id: 'pt-br-x-b', locale: 'pt-BR');
   const c = TtsVoice(id: 'pt-br-x-c', locale: 'pt-BR');
-  const tito = CharacterVoiceProfile(
-    characterId: 'grandpa',
-    pitch: 0.8,
-    rate: 0.85,
-    slot: 1,
-  );
-  const viktor = CharacterVoiceProfile(characterId: 'master', pitch: 0.9);
 
   group('o professor', () {
     final cases = <String, (List<TtsVoice>, String?, TtsVoice?)>{
@@ -25,82 +32,178 @@ void main() {
       final (voices, chosen, expected) = data;
       test(name, () {
         final resolved = VoiceResolver.resolve(
-          profile: viktor,
           voices: voices,
           teacherVoiceId: chosen,
-          teacher: true,
         );
         expect(resolved?.voice, expected);
-        // A voz do professor sai como ela é: sem o tom do perfil.
         if (resolved != null) expect(resolved.pitch, 1);
       });
     });
-  });
 
-  group('um personagem', () {
-    final cases = <String, (List<TtsVoice>, String?, String?, TtsVoice?)>{
-      'usa a voz que o usuário escolheu': (
-        [a, b, c],
-        'pt-br-x-a',
-        'pt-br-x-a',
-        a,
-      ),
-      'sem escolha, uma diferente da do professor (pela vaga)': (
-        [a, b, c],
-        'pt-br-x-a',
-        null,
-        c,
-      ),
-      'a vaga dá a volta nas vozes que sobram': ([a, b], 'pt-br-x-a', null, b),
-      'com uma voz só, todos usam essa': ([a], 'pt-br-x-a', null, a),
-      'voz escolhida que sumiu: como sem escolha': (
-        [a, b, c],
-        'pt-br-x-b',
-        'sumiu',
-        c,
-      ),
-      'sem voz no idioma: nenhuma': ([], null, 'pt-br-x-a', null),
-    };
-    cases.forEach((name, data) {
-      final (voices, teacher, chosen, expected) = data;
-      test(name, () {
-        final resolved = VoiceResolver.resolve(
-          profile: tito,
-          voices: voices,
-          teacherVoiceId: teacher,
-          chosenVoiceId: chosen,
-        );
-        expect(resolved?.voice, expected);
-      });
+    test('tom escolhido e velocidade geral', () {
+      final resolved = VoiceResolver.resolve(
+        voices: const [a],
+        teacherVoiceId: null,
+        speed: 1.2,
+        tone: VoiceTone.deep,
+      )!;
+      expect(resolved.pitch, VoiceTone.deep.pitch);
+      expect(resolved.rate, closeTo(0.96 * 1.2, 1e-9));
     });
   });
 
-  test('a mesma voz escolhida soa igual no professor e num personagem', () {
-    final teacher = VoiceResolver.resolve(
-      profile: viktor,
-      voices: const [a, b],
-      teacherVoiceId: 'pt-br-x-b',
-      teacher: true,
-    );
-    final coco = VoiceResolver.resolve(
-      profile: tito,
-      voices: const [a, b],
-      teacherVoiceId: 'pt-br-x-a',
-      chosenVoiceId: 'pt-br-x-b',
-    );
-    expect(coco, teacher);
-  });
+  group('os personagens', () {
+    Map<String, String> ids(
+      Map<String, CharacterVoiceProfile> profiles,
+      List<TtsVoice> voices, {
+      String? teacher,
+      Map<String, VoiceGender> known = const {},
+    }) => {
+      for (final e in VoiceResolver.assign(
+        profiles: profiles,
+        voices: voices,
+        teacherVoiceId: teacher,
+        known: known,
+      ).entries)
+        e.key: e.value.voice.id,
+    };
 
-  test('a voz que o app escolheu tem o tom e a velocidade do perfil, e a '
-      'velocidade geral multiplica', () {
-    final resolved = VoiceResolver.resolve(
-      profile: tito,
-      voices: const [a],
-      teacherVoiceId: null,
-      speed: 1.2,
-    )!;
-    expect(resolved.pitch, 0.8);
-    expect(resolved.rate, closeTo(1.02, 1e-9));
+    test(
+      'o gênero vem na frente: homem na voz masculina, mulher na feminina',
+      () {
+        final voices = [_v('a', gender: f), _v('b', gender: m)];
+        final out = ids(
+          {'x': _p('x', m), 'y': _p('y', f)},
+          voices,
+          teacher: 'a',
+        );
+        expect(out, {'x': 'b', 'y': 'a'});
+      },
+    );
+
+    test('gênero desconhecido vale menos que o igual e mais que o oposto', () {
+      final voices = [_v('a', gender: f), _v('b'), _v('c', gender: m)];
+      // O gênero vem antes de "não usada": a masculina serve aos dois.
+      final out = ids({'x': _p('x', m), 'y': _p('y', m)}, voices, teacher: 'a');
+      expect(out, {'x': 'c', 'y': 'c'});
+      expect(
+        ids({'x': _p('x', m)}, [_v('a', gender: f), _v('b')], teacher: 'z'),
+        {'x': 'b'},
+      );
+    });
+
+    test('a tabela known.json dá o gênero que o sistema não informa', () {
+      final voices = [_v('a'), _v('b')];
+      final out = ids(
+        {'x': _p('x', f)},
+        voices,
+        teacher: 'z',
+        known: {'a': m, 'b': f},
+      );
+      expect(out, {'x': 'b'});
+    });
+
+    test('o gênero do sistema vale mais que o da tabela', () {
+      final out = ids(
+        {'x': _p('x', m)},
+        [_v('a', gender: f), _v('b')],
+        teacher: 'z',
+        known: {'a': m},
+      );
+      expect(out, {'x': 'b'});
+    });
+
+    test('diferente da do Viktor, se houver outra do mesmo gênero', () {
+      final voices = [_v('a', gender: m), _v('b', gender: m)];
+      expect(ids({'x': _p('x', m)}, voices, teacher: 'a'), {'x': 'b'});
+    });
+
+    test('espalha: "não usada" vale mais que a qualidade', () {
+      final voices = [
+        _v('a', gender: m, quality: VoiceQuality.veryHigh),
+        _v('b', gender: m, quality: VoiceQuality.normal),
+        _v('c', gender: m, quality: VoiceQuality.low),
+        _v('t', gender: m),
+      ];
+      final out = ids(
+        {
+          for (final k in ['x', 'y', 'z']) k: _p(k, m),
+        },
+        voices,
+        teacher: 't',
+      );
+      expect(out, {'x': 'a', 'y': 'b', 'z': 'c'});
+    });
+
+    test('a qualidade só desempata entre voz igual em tudo mais', () {
+      final voices = [
+        _v('a', gender: m, quality: VoiceQuality.low),
+        _v('b', gender: m, quality: VoiceQuality.veryHigh),
+        _v('c', gender: m, quality: VoiceQuality.high),
+      ];
+      expect(ids({'x': _p('x', m)}, voices, teacher: 'z'), {'x': 'b'});
+    });
+
+    test('sem mais nada, o id da voz desempata', () {
+      expect(ids({'x': _p('x', m)}, [_v('b'), _v('a')], teacher: 'z'), {
+        'x': 'a',
+      });
+    });
+
+    test('determinístico: a ordem da lista não muda o resultado', () {
+      final voices = [
+        _v('a', gender: f),
+        _v('b', gender: m),
+        _v('c', gender: m),
+        _v('d'),
+      ];
+      final profiles = {
+        'p': _p('p', m),
+        'q': _p('q', f),
+        'r': _p('r', m),
+        'k': _p('k', m),
+      };
+      final first = ids(profiles, voices, teacher: 'b');
+      expect(ids(profiles, voices.reversed.toList(), teacher: 'b'), first);
+      expect(ids(profiles, voices, teacher: 'b'), first);
+    });
+
+    test('uma voz só: todos nela, cada um com o tom da idade', () {
+      final out = VoiceResolver.assign(
+        profiles: {
+          'x': _p('x', m, VoiceAge.elder),
+          'y': _p('y', f, VoiceAge.child),
+        },
+        voices: const [a],
+        teacherVoiceId: null,
+      );
+      expect(out['x']!.voice, a);
+      expect(out['y']!.voice, a);
+      expect(out['x']!.pitch, 0.8);
+      expect(out['y']!.pitch, 1.3);
+    });
+
+    test('sem vozes no idioma: nada', () {
+      expect(
+        VoiceResolver.assign(
+          profiles: {'x': _p('x', m)},
+          voices: const [],
+          teacherVoiceId: null,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('o ritmo da idade é multiplicado pela velocidade geral', () {
+      final out = VoiceResolver.assign(
+        profiles: {'x': _p('x', m, VoiceAge.young)},
+        voices: const [a, b],
+        teacherVoiceId: null,
+        speed: 1.2,
+      );
+      expect(out['x']!.pitch, 1.05);
+      expect(out['x']!.rate, closeTo(1.08 * 1.2, 1e-9));
+    });
   });
 
   group('as vozes do idioma', () {
@@ -126,22 +229,25 @@ void main() {
   });
 
   group('o perfil do JSON', () {
-    test('lê tom, velocidade e vaga', () {
+    test('lê gênero e idade', () {
       expect(
         CharacterVoiceProfile.fromJson('grandpa', {
-          'pitch': 0.8,
-          'rate': 0.85,
-          'slot': 1,
+          'genero': 'm',
+          'idade': 'idoso',
         }),
-        tito,
+        _p('grandpa', m, VoiceAge.elder),
+      );
+      expect(
+        CharacterVoiceProfile.fromJson('prodigy', {
+          'genero': 'f',
+          'idade': 'crianca',
+        }),
+        _p('prodigy', f, VoiceAge.child),
       );
     });
 
-    test('campo ausente fica neutro e valor absurdo vem para a faixa', () {
-      final profile = CharacterVoiceProfile.fromJson('x', {'pitch': 9});
-      expect(profile.pitch, 2);
-      expect(profile.rate, 1);
-      expect(profile.slot, 0);
+    test('campo ausente ou estranho fica em homem adulto', () {
+      expect(CharacterVoiceProfile.fromJson('x', {'genero': '?'}), _p('x', m));
     });
   });
 }
