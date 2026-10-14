@@ -31,7 +31,7 @@ class AnimatedSpeechSwitcher extends StatelessWidget {
     if (AppMotion.reduced(context)) return keyed;
     return AnimatedSize(
       duration: resize,
-      curve: AppMotion.move,
+      curve: AppMotion.resize,
       alignment: AlignmentDirectional.topStart,
       child: AnimatedSwitcher(
         duration: fade,

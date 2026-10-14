@@ -63,7 +63,8 @@ void main() {
       await tester.pump(AnimatedSpeechSwitcher.resize ~/ steps);
       final now = top(tester);
       expect(now, greaterThanOrEqualTo(last));
-      expect(now - last, lessThan(30));
+      // Sem arranque: nenhum décimo do tempo leva mais de 20% do caminho.
+      expect(now - last, lessThan(12));
       last = now;
     }
     await tester.pumpAndSettle();
