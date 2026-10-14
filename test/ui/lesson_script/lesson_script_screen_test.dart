@@ -162,7 +162,7 @@ void main() {
           'na tela baixa, corta em 2 linhas', (tester) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
         final short = _rect(tester, LessonScriptKeys.speech);
-        final lines = size.height < 700 ? 2 * 12 * 1.25 : 2 * 15 * 1.25;
+        final lines = size.height < 700 ? 2 * 12 * 1.5 : 2 * 16 * 1.5;
         final pad = size.height < 700 ? 20.0 : 28.0;
         expect(short.height, closeTo(lines + pad, 1.5));
         final boardTop = _rect(tester, LessonScriptKeys.board).top;

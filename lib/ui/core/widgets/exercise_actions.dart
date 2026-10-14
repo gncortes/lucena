@@ -82,10 +82,15 @@ class ExerciseActions extends StatelessWidget {
   Widget _button(ExerciseAction action) {
     final style = ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
-      // Com [hug], a folga do canvas em volta do rótulo (16).
+      // Com [hug], o botão do canvas: folga de 22 e letra 16.
       padding: WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: hug ? 16 : 8),
+        EdgeInsets.symmetric(horizontal: hug ? 22 : 8),
       ),
+      textStyle: hug
+          ? const WidgetStatePropertyAll(
+              TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            )
+          : null,
     );
     final label = Text(action.label, maxLines: 2, textAlign: TextAlign.center);
     return action.primary
@@ -103,28 +108,45 @@ class ExerciseActions extends StatelessWidget {
           );
   }
 
+  /// Numa linha enquanto couber; numa tela estreita, o contorno quebra em duas
+  /// primeiro, e o principal só quebra se nem sozinho couber.
+  Widget _hugRow() => LayoutBuilder(
+    builder: (context, box) {
+      final others = actions.where((a) => !a.primary).length;
+      final primaryMax = (box.maxWidth - others * (actionWidth + gap)).clamp(
+        actionWidth,
+        double.infinity,
+      );
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < actions.length; i++) ...[
+            if (i > 0) const SizedBox(width: gap),
+            Flexible(
+              flex: actions[i].primary ? 0 : 1,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: actionWidth,
+                  maxWidth: actions[i].primary ? primaryMax : double.infinity,
+                ),
+                child: _button(actions[i]),
+              ),
+            ),
+          ],
+        ],
+      );
+    },
+  );
+
   @override
   Widget build(BuildContext context) {
     final buttons = <Widget>[
       for (var i = 0; i < actions.length; i++) ...[
         if (i > 0) const SizedBox(width: gap),
-        if (hug)
-          // Numa linha enquanto couber; numa tela estreita, o contorno quebra
-          // em duas e o principal fica inteiro.
-          Flexible(
-            flex: actions[i].primary ? 0 : 1,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: actionWidth),
-              child: _button(actions[i]),
-            ),
-          )
-        else
-          Expanded(child: _button(actions[i])),
+        Expanded(child: _button(actions[i])),
       ],
     ];
-    final row = hug
-        ? Row(mainAxisSize: MainAxisSize.min, children: buttons)
-        : null;
+    final row = hug && actions.isNotEmpty ? _hugRow() : null;
     final maxWidth =
         actions.length * actionWidth + (actions.length - 1).clamp(0, 1) * gap;
     final colors = Theme.of(context).colorScheme;
@@ -162,13 +184,15 @@ class ExerciseActions extends StatelessWidget {
                             children: [
                               leading!,
                               const SizedBox(width: gap),
-                              row ??
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxWidth: maxWidth,
-                                    ),
-                                    child: Row(children: buttons),
+                              if (row != null)
+                                Flexible(child: row)
+                              else
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: maxWidth,
                                   ),
+                                  child: Row(children: buttons),
+                                ),
                             ],
                           ),
                   ),

@@ -27,7 +27,7 @@ class ScriptSpeechMetrics {
     final compact = MediaQuery.sizeOf(context).height < 700;
     return ScriptSpeechMetrics._(
       compact: compact,
-      fontSize: compact ? minFontSize : 15,
+      fontSize: compact ? minFontSize : 16,
       verticalPadding: compact ? 10 : 14,
       horizontalPadding: compact ? 14 : 16,
       top: compact ? 12 : 24,
@@ -37,7 +37,7 @@ class ScriptSpeechMetrics {
 
   static const minLines = 2;
   static const margin = 12.0;
-  static const lineHeight = 1.25;
+  static const lineHeight = 1.5;
 
   /// A menor letra da fala: além de [maxLines] linhas, ela diminui até
   /// caber, e o balão não toma a lista (Gabriel, 14/10/2026).

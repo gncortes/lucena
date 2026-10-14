@@ -49,4 +49,32 @@ void main() {
     await pump(tester, 300);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('hug: o principal sozinho, mais largo que a tela, quebra', (
+    tester,
+  ) async {
+    tester.view
+      ..physicalSize = const Size(200, 640)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          bottomNavigationBar: ExerciseActions(
+            hug: true,
+            leading: const SizedBox(width: 48, height: 48),
+            actions: [
+              ExerciseAction(
+                label: 'Ver linha principal',
+                onPressed: () {},
+                key: const Key('b'),
+                primary: true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

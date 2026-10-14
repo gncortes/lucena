@@ -93,9 +93,9 @@ void main() {
           .fontSize!;
     }
 
-    expect(await fontOf('Uma fala curta.'), 15);
+    expect(await fontOf('Uma fala curta.'), 16);
     // Na fonte dos testes cada letra é um quadrado: 25 palavras de 3 letras
-    // dão 5 linhas em 15 sp e cabem em 4 com a letra um pouco menor.
+    // dão 5 linhas em 16 sp e cabem em 4 com a letra um pouco menor.
     final fitted = await fontOf(List.filled(25, 'abc').join(' '));
     expect(fitted, lessThan(15));
     expect(fitted, greaterThanOrEqualTo(ScriptSpeechMetrics.minFontSize));
