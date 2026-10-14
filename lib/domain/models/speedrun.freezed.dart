@@ -341,7 +341,9 @@ mixin _$SpeedrunAttempt {
 
  int get id; String get speedrunId; DateTime get startedAt;/// Quando o jogador desistiu da tentativa. Nulo: não desistiu.
  DateTime? get abandonedAt;/// As partidas da tentativa, na ordem em que foram jogadas.
- List<Attempt> get games;
+ List<Attempt> get games;/// A conclusão pode dar o bônus de rating. Falso nas tentativas de antes
+/// do bônus existir (sem retroativo).
+ bool get bonusEligible;
 /// Create a copy of SpeedrunAttempt
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -353,20 +355,20 @@ $SpeedrunAttemptCopyWith<SpeedrunAttempt> get copyWith => _$SpeedrunAttemptCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as SpeedrunAttempt;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunAttempt&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.speedrunId, _this.speedrunId) || other.speedrunId == _this.speedrunId)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.abandonedAt, _this.abandonedAt) || other.abandonedAt == _this.abandonedAt)&&const DeepCollectionEquality().equals(other.games, _this.games));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunAttempt&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.speedrunId, _this.speedrunId) || other.speedrunId == _this.speedrunId)&&(identical(other.startedAt, _this.startedAt) || other.startedAt == _this.startedAt)&&(identical(other.abandonedAt, _this.abandonedAt) || other.abandonedAt == _this.abandonedAt)&&const DeepCollectionEquality().equals(other.games, _this.games)&&(identical(other.bonusEligible, _this.bonusEligible) || other.bonusEligible == _this.bonusEligible));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SpeedrunAttempt;
-  return Object.hash(runtimeType,_this.id,_this.speedrunId,_this.startedAt,_this.abandonedAt,const DeepCollectionEquality().hash(_this.games));
+  return Object.hash(runtimeType,_this.id,_this.speedrunId,_this.startedAt,_this.abandonedAt,const DeepCollectionEquality().hash(_this.games),_this.bonusEligible);
 }
 
 @override
 String toString() {
   final _this = this as SpeedrunAttempt;
-  return 'SpeedrunAttempt(id: ${_this.id}, speedrunId: ${_this.speedrunId}, startedAt: ${_this.startedAt}, abandonedAt: ${_this.abandonedAt}, games: ${_this.games})';
+  return 'SpeedrunAttempt(id: ${_this.id}, speedrunId: ${_this.speedrunId}, startedAt: ${_this.startedAt}, abandonedAt: ${_this.abandonedAt}, games: ${_this.games}, bonusEligible: ${_this.bonusEligible})';
 }
 
 
@@ -377,7 +379,7 @@ abstract mixin class $SpeedrunAttemptCopyWith<$Res>  {
   factory $SpeedrunAttemptCopyWith(SpeedrunAttempt value, $Res Function(SpeedrunAttempt) _then) = _$SpeedrunAttemptCopyWithImpl;
 @useResult
 $Res call({
- int id, String speedrunId, DateTime startedAt, DateTime? abandonedAt, List<Attempt> games
+ int id, String speedrunId, DateTime startedAt, DateTime? abandonedAt, List<Attempt> games, bool bonusEligible
 });
 
 
@@ -394,14 +396,15 @@ class _$SpeedrunAttemptCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunAttempt
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? speedrunId = null,Object? startedAt = null,Object? abandonedAt = freezed,Object? games = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? speedrunId = null,Object? startedAt = null,Object? abandonedAt = freezed,Object? games = null,Object? bonusEligible = null,}) {
   return _then(SpeedrunAttempt(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,speedrunId: null == speedrunId ? _self.speedrunId : speedrunId // ignore: cast_nullable_to_non_nullable
 as String,startedAt: null == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,abandonedAt: freezed == abandonedAt ? _self.abandonedAt : abandonedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,games: null == games ? _self.games : games // ignore: cast_nullable_to_non_nullable
-as List<Attempt>,
+as List<Attempt>,bonusEligible: null == bonusEligible ? _self.bonusEligible : bonusEligible // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -486,10 +489,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String speedrunId,  DateTime startedAt,  DateTime? abandonedAt,  List<Attempt> games)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String speedrunId,  DateTime startedAt,  DateTime? abandonedAt,  List<Attempt> games,  bool bonusEligible)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SpeedrunAttempt() when $default != null:
-return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_that.games);case _:
+return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_that.games,_that.bonusEligible);case _:
   return orElse();
 
 }
@@ -507,10 +510,10 @@ return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String speedrunId,  DateTime startedAt,  DateTime? abandonedAt,  List<Attempt> games)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String speedrunId,  DateTime startedAt,  DateTime? abandonedAt,  List<Attempt> games,  bool bonusEligible)  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunAttempt():
-return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_that.games);case _:
+return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_that.games,_that.bonusEligible);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -527,10 +530,10 @@ return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String speedrunId,  DateTime startedAt,  DateTime? abandonedAt,  List<Attempt> games)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String speedrunId,  DateTime startedAt,  DateTime? abandonedAt,  List<Attempt> games,  bool bonusEligible)?  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunAttempt() when $default != null:
-return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_that.games);case _:
+return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_that.games,_that.bonusEligible);case _:
   return null;
 
 }
@@ -542,7 +545,7 @@ return $default(_that.id,_that.speedrunId,_that.startedAt,_that.abandonedAt,_tha
 
 
 class _SpeedrunAttempt implements SpeedrunAttempt {
-  const _SpeedrunAttempt({required this.id, required this.speedrunId, required this.startedAt, this.abandonedAt,  List<Attempt> games = const <Attempt>[]}): _games = games;
+  const _SpeedrunAttempt({required this.id, required this.speedrunId, required this.startedAt, this.abandonedAt,  List<Attempt> games = const <Attempt>[], this.bonusEligible = true}): _games = games;
   
 
 @override final  int id;
@@ -559,6 +562,9 @@ class _SpeedrunAttempt implements SpeedrunAttempt {
   return EqualUnmodifiableListView(_games);
 }
 
+/// A conclusão pode dar o bônus de rating. Falso nas tentativas de antes
+/// do bônus existir (sem retroativo).
+@override@JsonKey() final  bool bonusEligible;
 
 /// Create a copy of SpeedrunAttempt
 /// with the given fields replaced by the non-null parameter values.
@@ -570,18 +576,18 @@ _$SpeedrunAttemptCopyWith<_SpeedrunAttempt> get copyWith => __$SpeedrunAttemptCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunAttempt&&(identical(other.id, id) || other.id == id)&&(identical(other.speedrunId, speedrunId) || other.speedrunId == speedrunId)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.abandonedAt, abandonedAt) || other.abandonedAt == abandonedAt)&&const DeepCollectionEquality().equals(other.games, _games));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunAttempt&&(identical(other.id, id) || other.id == id)&&(identical(other.speedrunId, speedrunId) || other.speedrunId == speedrunId)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt)&&(identical(other.abandonedAt, abandonedAt) || other.abandonedAt == abandonedAt)&&const DeepCollectionEquality().equals(other.games, _games)&&(identical(other.bonusEligible, bonusEligible) || other.bonusEligible == bonusEligible));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,speedrunId,startedAt,abandonedAt,const DeepCollectionEquality().hash(_games));
+    return Object.hash(runtimeType,id,speedrunId,startedAt,abandonedAt,const DeepCollectionEquality().hash(_games),bonusEligible);
 }
 
 @override
 String toString() {
-    return 'SpeedrunAttempt(id: $id, speedrunId: $speedrunId, startedAt: $startedAt, abandonedAt: $abandonedAt, games: $games)';
+    return 'SpeedrunAttempt(id: $id, speedrunId: $speedrunId, startedAt: $startedAt, abandonedAt: $abandonedAt, games: $games, bonusEligible: $bonusEligible)';
 }
 
 
@@ -592,7 +598,7 @@ abstract mixin class _$SpeedrunAttemptCopyWith<$Res> implements $SpeedrunAttempt
   factory _$SpeedrunAttemptCopyWith(_SpeedrunAttempt value, $Res Function(_SpeedrunAttempt) _then) = __$SpeedrunAttemptCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String speedrunId, DateTime startedAt, DateTime? abandonedAt, List<Attempt> games
+ int id, String speedrunId, DateTime startedAt, DateTime? abandonedAt, List<Attempt> games, bool bonusEligible
 });
 
 
@@ -609,14 +615,15 @@ class __$SpeedrunAttemptCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunAttempt
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? speedrunId = null,Object? startedAt = null,Object? abandonedAt = freezed,Object? games = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? speedrunId = null,Object? startedAt = null,Object? abandonedAt = freezed,Object? games = null,Object? bonusEligible = null,}) {
   return _then(_SpeedrunAttempt(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,speedrunId: null == speedrunId ? _self.speedrunId : speedrunId // ignore: cast_nullable_to_non_nullable
 as String,startedAt: null == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,abandonedAt: freezed == abandonedAt ? _self.abandonedAt : abandonedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,games: null == games ? _self._games : games // ignore: cast_nullable_to_non_nullable
-as List<Attempt>,
+as List<Attempt>,bonusEligible: null == bonusEligible ? _self.bonusEligible : bonusEligible // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

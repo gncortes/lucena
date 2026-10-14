@@ -97,4 +97,42 @@ void main() {
       }
     }
   }
+
+  testWidgets('lição aberta sem partes: o cartão mostra a nota, não o passo '
+      '(fechar o app reabre no início)', (tester) async {
+    final state = HomeState(
+      ready: true,
+      layout: HomeLayout(
+        order: [HomePath.endgames, HomePath.journey],
+        visible: {HomePath.endgames, HomePath.journey},
+        custom: true,
+      ),
+      endgame: EndgameSummary(
+        lessonId: 'rook.lucena',
+        title: 'The Lucena position',
+        score: 2,
+        maxScore: 6,
+        teacher: FakeCharacterRepository.viktor,
+        lessonOpen: true,
+      ),
+    );
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => Scaffold(body: WhereCard(state: state)),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      TestApp(router: router, child: const SizedBox.shrink()),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.endgameWhere)).data,
+      '2 of 6 points',
+    );
+    expect(find.textContaining('Step'), findsNothing);
+  });
 }

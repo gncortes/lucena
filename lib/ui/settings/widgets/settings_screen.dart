@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,7 +27,9 @@ class SettingsScreen extends StatelessWidget {
     final profile = context.select((ProfileCubit cubit) => cubit.state);
     return Scaffold(
       key: SettingsKeys.screen,
-      appBar: AppBar(title: Text(l10n.settingsTitle, key: SettingsKeys.title)),
+      appBar: LucenaAppBar(
+        title: Text(l10n.settingsTitle, key: SettingsKeys.title),
+      ),
       body: ListView(
         padding: scrollPadding(context),
         children: [

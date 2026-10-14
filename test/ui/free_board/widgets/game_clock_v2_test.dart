@@ -83,9 +83,7 @@ void main() {
       expect((running.border! as Border).top.width, 2);
       expect(
         (running.border! as Border).top.color,
-        Theme.of(tester.element(find.byType(TimeDisplay)))
-            .colorScheme
-            .onSurface,
+        Theme.of(tester.element(find.byType(TimeDisplay))).colorScheme.primary,
       );
       expect((stopped.border! as Border).top.width, 2);
       expect(running.border, isNot(stopped.border));

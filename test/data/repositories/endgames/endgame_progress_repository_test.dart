@@ -72,4 +72,26 @@ void main() {
     );
     expect((await repository.load()).lessons, isEmpty);
   });
+
+  test(
+    'T74: o progresso da oposição antes da divisão é migrado e regravado',
+    () async {
+      await PreferencesService().setString(
+        LocalEndgameProgressRepository.key,
+        '{"lessons":{"pawns.distantOpposition":{"lessonDone":true,'
+        '"parts":[],"stars":{"e09":1,"e14":3}}}}',
+      );
+      final loaded = await repository.load();
+      expect(loaded.of('pawns.distantOpposition').lessonDone, isTrue);
+      expect(loaded.of('pawns.distantOpposition').stars, {'e09': 1});
+      expect(loaded.of('pawns.waitingMoves').lessonDone, isFalse);
+      expect(loaded.of('pawns.waitingMoves').stars, {'e14': 3});
+      final saved = await PreferencesService().getString(
+        LocalEndgameProgressRepository.key,
+      );
+      expect(saved, contains('pawns.waitingMoves'));
+      final again = await repository.load();
+      expect(again.of('pawns.waitingMoves').stars, {'e14': 3});
+    },
+  );
 }

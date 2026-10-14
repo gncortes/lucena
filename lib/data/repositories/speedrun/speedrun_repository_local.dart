@@ -50,6 +50,14 @@ class LocalSpeedrunRepository implements SpeedrunRepository {
     return _withGames(rows);
   }
 
+  @override
+  Future<List<SpeedrunAttempt>> allAttempts() async {
+    final rows = await (_database.select(
+      _database.speedrunAttempts,
+    )..orderBy([(row) => OrderingTerm.asc(row.id)])).get();
+    return _withGames(rows);
+  }
+
   Future<List<SpeedrunAttempt>> _withGames(
     List<SpeedrunAttemptRow> rows,
   ) async {
@@ -70,6 +78,7 @@ class LocalSpeedrunRepository implements SpeedrunRepository {
           speedrunId: row.speedrunId,
           startedAt: row.startedAt.toUtc(),
           abandonedAt: row.abandonedAt?.toUtc(),
+          bonusEligible: row.bonusEligible,
           games: [
             for (final game in games)
               if (game.speedrunAttemptId == row.id)

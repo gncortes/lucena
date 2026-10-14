@@ -80,8 +80,13 @@ flutter:
     # As aulas de finais (geradas) e as falas delas
     - assets/lessons/endgames/
     - assets/lessons/feedback/
+    - assets/lessons/roteiros/
+    - assets/tablebase/
     - assets/lessons/en/endgames/
     - assets/lessons/pt/endgames/
+    # Curso de iniciante na receita de 3 etapas (T71): falas dos roteiros
+    - assets/lessons/en/iniciante/
+    - assets/lessons/pt/iniciante/
     # Teste de nível (T52): mapa de habilidades e banco de perguntas
     - assets/placement/
     # Pesos do Maia-3 (tools/maia/export_weights.py)

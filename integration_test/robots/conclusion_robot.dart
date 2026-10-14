@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/conclusion.dart';
+import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -14,8 +15,30 @@ class ConclusionRobot {
 
   final PatrolIntegrationTester $;
 
+  /// Se a partida acabou e parou no tabuleiro, toca em "Ver o resultado";
+  /// volta assim que a conclusão está na árvore (sem esperar assentar).
+  Future<void> seeResult() async {
+    // Acabou a partida contra a máquina: o fim para no tabuleiro até o botão
+    // "Ver o resultado" (Canvas V2). Esperamos o botão ou a conclusão.
+    final seeResult = find.byKey(FreeBoardKeys.seeResultButton);
+    final screen = find.byKey(ConclusionKeys.screen);
+    final deadline = DateTime.now().add(const Duration(seconds: 10));
+    while (screen.evaluate().isEmpty &&
+        seeResult.evaluate().isEmpty &&
+        DateTime.now().isBefore(deadline)) {
+      await $.pump(const Duration(milliseconds: 100));
+    }
+    if (screen.evaluate().isEmpty && seeResult.evaluate().isNotEmpty) {
+      // Sem assentar: o aviso de conquista da conclusão some sozinho e o
+      // assentar esperaria por ele.
+      await $(FreeBoardKeys.seeResultButton)
+          .tap(settlePolicy: SettlePolicy.noSettle);
+    }
+  }
+
   /// Espera a conclusão abrir e ficar pronta (o título no cabeçalho).
   Future<void> waitConclusion() async {
+    await seeResult();
     await $(ConclusionKeys.screen).waitUntilVisible();
     // O aviso de conquista nova desce por cima do título: basta existir.
     await $(ConclusionKeys.title).waitUntilExists();
@@ -59,6 +82,12 @@ class ConclusionRobot {
     await $(ConclusionKeys.ratingDelta).waitUntilVisible();
   }
 
+  /// A conclusão sem rating: a partida não mexeu nele.
+  Future<void> expectNoRating() async {
+    await waitConclusion();
+    expect(find.byKey(ConclusionKeys.ratingValue), findsNothing);
+  }
+
   /// O botão da ação [action] está (ou não está) na tela.
   Future<void> expectAction(ConclusionAction action) async {
     await waitConclusion();
@@ -92,6 +121,8 @@ class ConclusionRobot {
   /// Fecha a conclusão: volta para onde o jogador estava antes da partida.
   Future<void> close() async {
     await waitConclusion();
+    // O aviso de conquista fica por cima da tela toda e cobre o "X".
+    await _waitToastGone();
     await $(ConclusionKeys.close).tap();
     await $.pumpAndSettle();
     expect(find.byKey(ConclusionKeys.screen), findsNothing);
@@ -99,9 +130,21 @@ class ConclusionRobot {
 
   /// No speedrun: o tempo da etapa que acabou de ser vencida.
   Future<void> expectStageTime(String time) async {
+    await waitConclusion();
     await $(ConclusionKeys.stageTime).scrollTo();
     // "Tempo da etapa: 5.0 s" (o rótulo vem antes do tempo).
     expect(_lastText(ConclusionKeys.stageTime), endsWith(time));
+  }
+
+  /// Espera o aviso de conquista sumir (ele some sozinho), sem prender o
+  /// teste a uma duração fixa.
+  Future<void> _waitToastGone() async {
+    final toast = find.byKey(AchievementsKeys.toast);
+    final end = DateTime.now().add(const Duration(seconds: 15));
+    while (toast.evaluate().isNotEmpty && DateTime.now().isBefore(end)) {
+      await $.pump(const Duration(milliseconds: 200));
+    }
+    expect(toast, findsNothing);
   }
 
   /// No speedrun: o total (somado até aqui ou, no fim, o da tentativa).

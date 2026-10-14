@@ -1,4 +1,5 @@
 import 'package:dartchess/dartchess.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
@@ -6,6 +7,7 @@ import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
+import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 
 import '../../../../testing/fakes/fake_maia_repository.dart';
@@ -171,5 +173,138 @@ void main() {
     );
     expect(entry, isNull);
     expect(await repository.history(), isEmpty);
+  });
+
+  group('o bônus de speedrun', () {
+    final start = DateTime.utc(2026, 10, 4, 12);
+
+    Future<int> attempt(String speedrunId) async => database
+        .into(database.speedrunAttempts)
+        .insert(
+          SpeedrunAttemptsCompanion.insert(
+            speedrunId: speedrunId,
+            startedAt: start,
+          ),
+        );
+
+    setUp(() => now.value = start);
+
+    test('soma ao rating atual, copia o desvio e a volatilidade e marca o '
+        'ponto como bônus', () async {
+      await repository.rate(
+        game(fulfilled: true),
+        userSide: Side.white,
+        drawGoal: false,
+        gameId: 1,
+      );
+      final rated = await repository.current();
+      now.value = start.add(const Duration(minutes: 5));
+      final id = await attempt('ending.queen');
+
+      final bonus = await repository.addSpeedrunBonus(
+        attemptId: id,
+        points: 100,
+      );
+
+      expect(bonus!.before, rated);
+      expect(bonus.after.rating, rated.rating + 100);
+      expect(bonus.after.deviation, rated.deviation);
+      expect(bonus.after.volatility, rated.volatility);
+      expect(bonus.points, 100);
+      expect(await repository.current(), bonus.after);
+      final history = await repository.history();
+      expect(history.map((entry) => entry.isBonus), [false, true]);
+      expect(history.last.speedrunAttemptId, id);
+      expect(await repository.speedrunBonuses(), [
+        SpeedrunBonus(
+          attemptId: id,
+          speedrunId: 'ending.queen',
+          before: rated,
+          after: bonus.after,
+          at: now(),
+        ),
+      ]);
+    });
+
+    test('a mesma tentativa só recebe uma vez', () async {
+      final id = await attempt('ending.queen@600+0');
+
+      expect(
+        await repository.addSpeedrunBonus(attemptId: id, points: 50),
+        isNotNull,
+      );
+      expect(
+        await repository.addSpeedrunBonus(attemptId: id, points: 50),
+        isNull,
+      );
+      expect((await repository.current()).rounded, 1200);
+      expect(await repository.speedrunBonuses(), hasLength(1));
+    });
+
+    test('o índice único impede a segunda linha mesmo por fora', () async {
+      final id = await attempt('ending.queen');
+      Future<int> insert() => database
+          .into(database.ratingHistory)
+          .insert(
+            RatingHistoryCompanion.insert(
+              at: start,
+              rating: 1200,
+              deviation: 50,
+              volatility: 0.06,
+              speedrunAttemptId: Value(id),
+            ),
+          );
+
+      await insert();
+
+      await expectLater(insert(), throwsA(isA<SqliteException>()));
+    });
+
+    test('o rating não passa do teto', () async {
+      await database
+          .into(database.ratingHistory)
+          .insert(
+            RatingHistoryCompanion.insert(
+              at: start,
+              rating: 3450,
+              deviation: 50,
+              volatility: 0.06,
+            ),
+          );
+      final id = await attempt('ending.queen');
+
+      final bonus = await repository.addSpeedrunBonus(
+        attemptId: id,
+        points: 200,
+      );
+
+      expect(bonus!.after.rating, 3500);
+      expect(bonus.points, 50);
+    });
+
+    test('o rating num instante é o da última linha até ele', () async {
+      expect((await repository.at(start)).rounded, 1150);
+      await repository.rate(
+        game(fulfilled: true),
+        userSide: Side.white,
+        drawGoal: false,
+      );
+      final after = await repository.current();
+      now.value = start.add(const Duration(hours: 1));
+      await repository.rate(
+        game(fulfilled: true),
+        userSide: Side.white,
+        drawGoal: false,
+      );
+
+      expect(
+        await repository.at(start.add(const Duration(minutes: 30))),
+        after,
+      );
+      expect(
+        (await repository.at(start.subtract(const Duration(days: 1)))).rounded,
+        1150,
+      );
+    });
   });
 }

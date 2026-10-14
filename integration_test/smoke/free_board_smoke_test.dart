@@ -37,7 +37,7 @@ void main() {
 
     await board.open();
     app.expectDirection(TextDirection.rtl);
-    board.expectTurn('الدور للأبيض');
+    board.expectTurnRing(below: true);
 
     // e2-e4 só é legal se a coluna "a" continuar à esquerda.
     await board.move('e2', 'e4');

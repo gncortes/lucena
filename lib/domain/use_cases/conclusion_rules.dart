@@ -77,9 +77,11 @@ abstract final class ConclusionRules {
       // O speedrun inteiro concluído: só a volta para a lista, para
       // escolher o próximo (sem "Tentar de novo").
       ConclusionKind.speedrunEnd => [ConclusionAction.speedruns],
+      // O resumo primeiro, para o bônus de rating ser visto logo; o painel
+      // mostra só duas ações.
       ConclusionKind.marathonEnd => [
+        ConclusionAction.summary,
         ConclusionAction.retry,
-        ConclusionAction.speedruns,
       ],
     };
     return [

@@ -11,6 +11,7 @@
     "rook.lucena",
     "rook.philidor",
     "pawns.distantOpposition",
+    "pawns.waitingMoves",
     "pawns.outsidePasser",
     "pawns.protectedPasser",
     "pawns.breakthrough",

@@ -1,7 +1,10 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../../domain/models/endgame_position.dart';
 import '../theme/app_shape.dart';
+import 'goal_style.dart';
+import '../theme/app_colors.dart';
 
 enum TimeDisplayType { clock, stopwatch, countdown, record, duration, pace }
 
@@ -69,8 +72,9 @@ class TimeDisplay extends StatelessWidget {
     final running =
         state == TimeDisplayState.active || state == TimeDisplayState.low;
     // Piece-side colors intentionally stay fixed across light/dark themes.
-    const light = Color(0xFFFFFFFF);
-    const dark = Color(0xFF262421);
+    const light = AppColors.white;
+    const dark = AppColors.clockDark;
+    final darkTheme = theme.brightness == Brightness.dark;
     final (background, foreground, accent) = clock
         ? side == Side.white
               ? (light, dark, dark)
@@ -98,10 +102,12 @@ class TimeDisplay extends StatelessWidget {
               colors.onSurfaceVariant,
               colors.onSurfaceVariant,
             ),
+            // Recorde: verde de sucesso do GoalStyle, sólido, com troféu e
+            // tempo em branco (T67d, variante B; 5,1:1 no claro).
             TimeDisplayState.highlight => (
-              colors.tertiaryContainer,
-              colors.onTertiaryContainer,
-              colors.onTertiaryContainer,
+              GoalStyle.of(context, PositionGoal.win).color,
+              darkTheme ? AppColors.clockOnGreen : AppColors.white,
+              darkTheme ? AppColors.clockOnGreen : AppColors.white,
             ),
           };
     final icon = switch (type) {
@@ -122,7 +128,9 @@ class TimeDisplay extends StatelessWidget {
             maxLines: compact ? 1 : null,
             overflow: compact ? TextOverflow.ellipsis : null,
             style: theme.textTheme.labelLarge?.copyWith(
-              color: clock ? foreground : colors.onSurfaceVariant,
+              color: clock || state == TimeDisplayState.highlight
+                  ? foreground
+                  : colors.onSurfaceVariant,
               fontWeight: block ? FontWeight.w600 : FontWeight.w500,
             ),
           );
@@ -236,7 +244,8 @@ class TimeDisplay extends StatelessWidget {
             border: clock
                 ? Border.all(
                     width: 2,
-                    color: running ? colors.onSurface : colors.outlineVariant,
+                    // O relógio aceso (a vez) leva a borda primária de 2 px (T73, D1).
+                    color: running ? colors.primary : colors.outlineVariant,
                   )
                 : state == TimeDisplayState.active
                 ? Border.all(color: colors.outlineVariant)

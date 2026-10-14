@@ -43,18 +43,108 @@ class LocalRatingRepository implements RatingRepository {
       PlayerRating.start((await _profile.load()).rating);
 
   @override
-  Future<List<RatingEntry>> history() async {
+  Future<PlayerRating> at(DateTime at) async {
     final query = _database.select(_database.ratingHistory)
-      ..orderBy([(row) => OrderingTerm.asc(row.id)]);
-    return [
-      for (final row in await query.get())
-        RatingEntry(
-          rating: _ratingOf(row),
-          at: row.at.toUtc(),
-          gameId: row.gameId,
-        ),
-    ];
+      ..where((row) => row.at.isSmallerOrEqualValue(at))
+      ..orderBy([(row) => OrderingTerm.desc(row.id)])
+      ..limit(1);
+    final row = await query.getSingleOrNull();
+    if (row != null) return _ratingOf(row);
+    return start();
   }
+
+  @override
+  Future<List<RatingEntry>> history() async => [
+    for (final row in await _rows())
+      RatingEntry(
+        rating: _ratingOf(row),
+        at: row.at.toUtc(),
+        gameId: row.gameId,
+        speedrunAttemptId: row.speedrunAttemptId,
+      ),
+  ];
+
+  @override
+  Future<List<SpeedrunBonus>> speedrunBonuses() async {
+    final rows = await _rows();
+    final attempts = {
+      for (final attempt in await (_database.select(
+        _database.speedrunAttempts,
+      )..where((row) => row.id.isIn(_attemptIds(rows)))).get())
+        attempt.id: attempt.speedrunId,
+    };
+    final bonuses = <SpeedrunBonus>[];
+    var before = await start();
+    for (final row in rows) {
+      final attemptId = row.speedrunAttemptId;
+      final speedrunId = attempts[attemptId];
+      if (attemptId != null && speedrunId != null) {
+        bonuses.add(
+          SpeedrunBonus(
+            attemptId: attemptId,
+            speedrunId: speedrunId,
+            before: before,
+            after: _ratingOf(row),
+            at: row.at.toUtc(),
+          ),
+        );
+      }
+      before = _ratingOf(row);
+    }
+    return bonuses;
+  }
+
+  @override
+  Future<SpeedrunBonus?> addSpeedrunBonus({
+    required int attemptId,
+    required int points,
+  }) => _database.transaction(() async {
+    final paid =
+        await (_database.select(_database.ratingHistory)
+              ..where((row) => row.speedrunAttemptId.equals(attemptId)))
+            .getSingleOrNull();
+    final attempt = await (_database.select(
+      _database.speedrunAttempts,
+    )..where((row) => row.id.equals(attemptId))).getSingleOrNull();
+    if (paid != null || attempt == null) return null;
+    final before = await current();
+    final after = PlayerRating(
+      rating: (before.rating + points).clamp(
+        RatingRules.minRating,
+        RatingRules.maxRating,
+      ),
+      deviation: before.deviation,
+      volatility: before.volatility,
+    );
+    final at = _now();
+    await _database
+        .into(_database.ratingHistory)
+        .insert(
+          RatingHistoryCompanion.insert(
+            at: at,
+            rating: after.rating,
+            deviation: after.deviation,
+            volatility: after.volatility,
+            speedrunAttemptId: Value(attemptId),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
+    return SpeedrunBonus(
+      attemptId: attemptId,
+      speedrunId: attempt.speedrunId,
+      before: before,
+      after: after,
+      at: at.toUtc(),
+    );
+  });
+
+  Future<List<RatingRow>> _rows() => (_database.select(
+    _database.ratingHistory,
+  )..orderBy([(row) => OrderingTerm.asc(row.id)])).get();
+
+  static List<int> _attemptIds(List<RatingRow> rows) => [
+    for (final row in rows) ?row.speedrunAttemptId,
+  ];
 
   @override
   Future<RatingEntry?> rate(

@@ -160,6 +160,7 @@ class AssetExerciseFeedbackRepository
                     outcome: variation.outcome,
                     outcomeText: variation.outcomeText,
                     texts: variation.texts,
+                    playedTexts: variation.playedTexts,
                     originFen: variation.originFen,
                     movesUci: variation.movesUci,
                     movesSan: variation.movesSan,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+
 /// As estrelas de um exercício: as ganhas cheias, as outras vazias. Sem
 /// [earned], todas em contorno (ainda por resolver).
 class StarsRow extends StatelessWidget {
@@ -9,10 +11,10 @@ class StarsRow extends StatelessWidget {
   final int? earned;
   final double size;
 
-  static const color = Color(0xfff2b705);
+  static const color = AppColors.goldColor;
   static const gold = color;
-  static const silver = Color(0xffa8b3bd);
-  static const bronze = Color(0xffcd7f32);
+  static const silver = AppColors.silverColor;
+  static const bronze = AppColors.bronzeColor;
 
   /// A cor de uma estrela pelo que ela vale: dourada (3), prata (2) ou
   /// bronze (1). Nula sem valor.
