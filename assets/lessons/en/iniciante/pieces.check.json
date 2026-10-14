@@ -33,9 +33,9 @@
   "rot.demos.mateDama.l1": "The queen moves next to the black king, on b7: check.",
   "rot.demos.mateDama.l2": "The black king cannot capture her: the white king, on c6, protects the queen.",
   "rot.demos.mateDama.l3": "And the black king has no escape square: the queen also reaches a7 and b8. Checkmate.",
-  "rot.demos.mateDama.l4": "Now it's your turn: in the next positions, give checkmate in one move.",
-  "rot.pratica.mateCanto.enunciado": "The white king on b6 reaches a7 and b7. Give checkmate with the queen, in one move.",
+  "rot.demos.mateDama.l4": "Now it's your turn: in the next positions, give checkmate.",
+  "rot.pratica.mateCanto.enunciado": "The white king on b6 reaches a7 and b7. Give checkmate with the queen.",
   "rot.pratica.mateCanto.fim": "Perfect. The queen closes the top rank, and the white king closes the rest.",
-  "rot.pratica.mateTorre.enunciado": "Now with the rook. Your king on g6 reaches g7 and h7. Give checkmate in one move.",
+  "rot.pratica.mateTorre.enunciado": "Now with the rook. Your king on g6 reaches g7 and h7. Give checkmate.",
   "rot.pratica.mateTorre.fim": "Well done. You now know what check and checkmate are."
 }

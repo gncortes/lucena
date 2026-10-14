@@ -1,11 +1,11 @@
 {
   "rot.ideia.ex1.e1": "A partida também empata quando nenhum lado tem peças suficientes para dar xeque-mate.",
-  "rot.ideia.ex1.e2": "Quem fica só com rei e cavalo, ou só com rei e bispo, não consegue dar mate, seja de que cor for.",
+  "rot.ideia.ex1.e2": "Quem fica só com rei e cavalo, ou só com rei e bispo, não consegue dar mate.",
   "rot.ideia.ex1.e3": "Aqui as pretas têm cavalo e peão; você, só o rei. Se o peão sobrar, ele pode ser promovido a dama.",
   "rot.ideia.ex1.p": "Faça o lance que garante o empate, ou clique em {verResposta}",
   "rot.ideia.ex1.certo": "Isso mesmo! Sem o peão, as pretas ficam com rei e cavalo: empate.",
   "rot.ideia.ex1.revela": "O rei captura o peão em d5. Sobram rei e cavalo, que não dão mate.",
-  "rot.ideia.ex1.fora": "O peão continua vivo e pode ser promovido. Vamos voltar: o rei está colado nele.",
+  "rot.ideia.ex1.fora": "O peão continua no tabuleiro e pode ser promovido. Vamos voltar: o rei está ao lado dele.",
   "rot.ideia.ex1.volta": "Faça o lance que garante o empate, ou clique em {verResposta}",
   "rot.ideia.ex1.l1": "O empate é automático: com rei e cavalo, nenhum lance leva ao mate.",
   "rot.ideia.ex1.l2": "Guarde a ideia: quando você está perdendo, capturar o último peão pode salvar a partida.",
