@@ -82,8 +82,9 @@ class ExerciseActions extends StatelessWidget {
   Widget _button(ExerciseAction action) {
     final style = ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
-      padding: const WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: 8),
+      // Com [hug], a folga do canvas em volta do rótulo (16).
+      padding: WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: hug ? 16 : 8),
       ),
     );
     final label = Text(action.label, maxLines: 2, textAlign: TextAlign.center);
