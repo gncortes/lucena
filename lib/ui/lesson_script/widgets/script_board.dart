@@ -11,6 +11,7 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_motion.dart';
 import '../view_models/lesson_script_state.dart';
+import 'board_coordinates.dart';
 
 /// As cores das setas e das marcas do professor (protótipo T70: verde
 /// `0xcc15781b` como as marcas de `lesson_screen.dart`, azul = primária a 75%
@@ -338,6 +339,10 @@ class _ScriptBoardState extends State<ScriptBoard> {
   Widget build(BuildContext context) {
     _drawn = _shapeSet(Theme.of(context).colorScheme);
     final ghost = _ghost;
+    final settings = _boardSettings;
+    // As coordenadas na casa vão por cima das marcações (canvas
+    // `T71-360-propostas`, 3B); na borda, ficam com o chessground.
+    final coordinates = settings.enableCoordinates && settings.border == null;
     // O tabuleiro não espelha em idiomas da direita para a esquerda.
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -347,7 +352,9 @@ class _ScriptBoardState extends State<ScriptBoard> {
             key: LessonScriptKeys.board,
             size: widget.size,
             controller: _controller,
-            settings: _boardSettings,
+            settings: coordinates
+                ? settings.copyWith(enableCoordinates: false)
+                : settings,
             orientation: _orientation,
             shapes: _drawn,
             onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
@@ -369,6 +376,14 @@ class _ScriptBoardState extends State<ScriptBoard> {
                       Opacity(opacity: opacity, child: child),
                   child: ghost,
                 ),
+              ),
+            ),
+          if (coordinates)
+            Positioned.fill(
+              child: BoardCoordinates(
+                key: LessonScriptKeys.coordinates,
+                orientation: _orientation,
+                settings: settings,
               ),
             ),
         ],

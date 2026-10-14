@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
+import 'package:lucena/ui/lesson_script/widgets/board_coordinates.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 
 void main() {
@@ -83,6 +84,8 @@ void main() {
 
     Chessboard board(WidgetTester tester) =>
         tester.widget<Chessboard>(find.byType(Chessboard));
+
+    Finder shown() => find.byKey(LessonScriptKeys.coordinates);
 
     testWidgets('a casa vazia e a casa com peça chegam ao cubit', (
       tester,
@@ -163,20 +166,44 @@ void main() {
           coordinates: false,
         ),
       );
-      expect(board(tester).settings.enableCoordinates, isFalse);
+      expect(shown(), findsNothing);
       await pump(
         tester,
         const LessonScriptState(ready: true, fen: fen, touching: true),
         settings: const BoardSettings(coordinates: false),
       );
-      expect(board(tester).settings.enableCoordinates, isTrue);
+      expect(shown(), findsOneWidget);
       // Fora do toque, vale a preferência do aluno.
       await pump(
         tester,
         const LessonScriptState(ready: true, fen: fen),
         settings: const BoardSettings(coordinates: false),
       );
+      expect(shown(), findsNothing);
+    });
+
+    testWidgets('coordenadas por cima das marcações: o chessground vai sem '
+        'as dele e a camada fica acima do tabuleiro', (tester) async {
+      await pump(
+        tester,
+        const LessonScriptState(
+          ready: true,
+          fen: fen,
+          marks: ['h5'],
+          orientation: Side.black,
+        ),
+      );
       expect(board(tester).settings.enableCoordinates, isFalse);
+      final layer = tester.widget<BoardCoordinates>(shown());
+      expect(layer.orientation, Side.black);
+      final stack = tester.widget<Stack>(
+        find.ancestor(of: shown(), matching: find.byType(Stack)).first,
+      );
+      expect(
+        (stack.children.last as Positioned).child,
+        isA<BoardCoordinates>(),
+      );
+      expect(tester.getRect(shown()), tester.getRect(find.byType(Chessboard)));
     });
   });
 

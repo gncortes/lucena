@@ -149,6 +149,11 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       builder: (context, state) => Scaffold(
         key: LessonScriptKeys.screen,
         appBar: LucenaAppBar(
+          // Exceção de D2 só na lição: o livro de Curiosidades só aparece
+          // na posição que tem curiosidade, e o título fica à esquerda em
+          // todas as etapas, com ou sem ele, para não pular (Gabriel,
+          // 14/10/2026; canvas `T70-etapa1-estados`).
+          centerTitle: false,
           title: FutureBuilder<String?>(
             future: widget.title,
             builder: (context, snapshot) => Text(snapshot.data ?? ''),

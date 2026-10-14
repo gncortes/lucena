@@ -14,6 +14,7 @@ import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_move_list.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
@@ -408,6 +409,43 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
     expect(find.text('cur.t'), findsOneWidget);
+  });
+
+  testWidgets('360: a lista fica abaixo da dobra e aparece rolando a tela, '
+      'com o mesmo componente do 412 (Gabriel, 14/10/2026, opção A)', (
+    tester,
+  ) async {
+    final s = await _open(tester, _short);
+    await _until(tester, s, ScriptPhase.pergunta);
+    await _tap(tester, LessonScriptKeys.showAnswer);
+    final list = find.byKey(LessonScriptKeys.moveList);
+    expect(
+      find.ancestor(of: list, matching: find.byType(ScriptMoveList)),
+      findsOneWidget,
+    );
+    final footer = tester.getTopLeft(find.byType(ExerciseActions)).dy;
+    final board = _rect(tester, LessonScriptKeys.board);
+    expect(board.width, greaterThanOrEqualTo(0.8 * _short.width));
+    // Rolando a página, a lista inteira aparece acima do rodapé.
+    await tester.drag(find.byKey(LessonScriptKeys.page), const Offset(0, -400));
+    await _settle(tester);
+    expect(
+      _rect(tester, LessonScriptKeys.moveList).bottom,
+      lessThanOrEqualTo(footer),
+    );
+    expect(_rect(tester, LessonScriptKeys.moveList).height, greaterThan(0));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('livro só na posição com curiosidade; o título fica no mesmo '
+      'lugar com ou sem ele', (tester) async {
+    await _open(tester, _tall);
+    expect(find.byKey(LessonScriptKeys.bookButton), findsOneWidget);
+    final title = tester.getTopLeft(find.text('Oposição distante'));
+    expect(title.dx, lessThan(_tall.width / 4));
+    await _open(tester, _tall, stage: 1);
+    expect(find.byKey(LessonScriptKeys.bookButton), findsNothing);
+    expect(tester.getTopLeft(find.text('Oposição distante')), title);
   });
 
   testWidgets('o botão ao lado do som esconde e mostra as marcações', (
