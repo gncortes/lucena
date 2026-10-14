@@ -40,7 +40,8 @@ class LessonScriptScreen extends StatefulWidget {
   State<LessonScriptScreen> createState() => _LessonScriptScreenState();
 }
 
-class _LessonScriptScreenState extends State<LessonScriptScreen> {
+class _LessonScriptScreenState extends State<LessonScriptScreen>
+    with WidgetsBindingObserver {
   /// A altura da faixa do Viktor: retrato 40, nos botões de 48 dp do lado
   /// (protótipo, 50).
   static const _stripHeight = 50.0;
@@ -57,7 +58,34 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     unawaited(_loadViktor());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  bool _background = false;
+
+  /// Segundo plano mantém tudo: a demonstração e a voz param onde estão e
+  /// seguem na volta.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final background = state != AppLifecycleState.resumed;
+    if (background == _background) return;
+    _background = background;
+    final cubit = context.read<LessonScriptCubit>();
+    final speech = TeacherSpeech.speechOf(context);
+    if (background) {
+      cubit.pauseForBackground();
+      unawaited(speech?.pauseForBackground());
+    } else {
+      cubit.resumeFromBackground();
+      unawaited(speech?.resumeFromBackground());
+    }
   }
 
   Future<void> _loadViktor() async {

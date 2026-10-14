@@ -481,6 +481,25 @@ void main() {
     await _settle(tester);
   });
 
+  testWidgets('segundo plano: a demonstração espera no fundo e segue na '
+      'volta', (tester) async {
+    final s = await _open(tester, _tall, stage: 1);
+    final first = s.cubit.state.speech;
+    final read = LessonScriptCubit.readTime(first.join(' '));
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(read * 5);
+    expect(s.cubit.state.speech, first);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    expect(s.cubit.state.speech, first);
+    expect(s.cubit.state.demo!.playing, isTrue);
+    await tester.pump(read);
+    await tester.pump();
+    expect(s.cubit.state.speech, isNot(first));
+    await _settle(tester);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('rodapé da demonstração: ← sempre, ↻ ⏮ ⏸ e o ⏭ com anel; '
       'no fim, só ↻ e Próxima etapa', (tester) async {
     final s = await _open(tester, _tall, stage: 1);
