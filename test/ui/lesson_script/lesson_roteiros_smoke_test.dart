@@ -232,13 +232,63 @@ class _Run {
   }
 }
 
-/// O aluno das práticas de mate (sem motor): dá mate se puder; senão, entre
-/// os lances que não afogam nem deixam peça sem defesa ao alcance do rei, o
-/// que deixa o rei com menos casas livres e o próprio rei mais perto dele.
+/// O aluno das práticas de mate (sem motor): dá mate se puder (em 1 ou em
+/// 2); com peão, coroa ou avança quando ele não cai; senão, entre os lances
+/// que não afogam nem deixam peça sem defesa ao alcance do rei, o que deixa o
+/// rei com menos casas livres na pior resposta dele e o próprio rei mais perto
+/// dele.
 String _mateMove(Position position, Set<String> seen) {
   final us = position.turn;
+  final safe = <(NormalMove, Position)>[];
+  for (final (move, next) in _moves(position)) {
+    if (next.isCheckmate) return move.uci;
+    if (next.isStalemate || _hangs(next, us)) continue;
+    safe.add((move, next));
+  }
+  // Mate em 2: toda resposta deixa um mate.
+  for (final (move, next) in safe) {
+    final replies = _moves(next).toList();
+    if (replies.every((r) => _moves(r.$2).any((m) => m.$2.isCheckmate))) {
+      return _remember(position, move.uci, seen);
+    }
+  }
+  final pawnMoves = [
+    for (final (move, _) in safe)
+      if (position.board.roleAt(move.from) == Role.pawn)
+        (move.promotion != null ? 0 : 1, move.uci),
+  ]..sort((a, b) => a.$1.compareTo(b.$1));
+  if (pawnMoves.isNotEmpty) {
+    return _remember(position, pawnMoves.first.$2, seen);
+  }
   final candidates = <(int, String)>[];
-  final pawnMoves = <(int, String)>[];
+  for (final (move, next) in safe) {
+    final theirKing = next.board.kingOf(us.opposite)!;
+    // A pior resposta: a que deixa o rei com mais casas.
+    var room = 0;
+    for (final (_, reply) in _moves(next)) {
+      room = max(room, _kingRoom(reply, us));
+    }
+    final escort = [
+      for (final p in next.board.pawns.intersect(next.board.bySide(us)).squares)
+        _distance(next.board.kingOf(us)!, p),
+    ].fold(0, (a, b) => a + b);
+    final key = next.fen.split(' ').take(4).join(' ');
+    final score =
+        room * 30 +
+        _distance(next.board.kingOf(us)!, theirKing) * 3 +
+        escort * 60 +
+        (seen.contains(key) ? 3000 : 0);
+    candidates.add((score, move.uci));
+  }
+  candidates.sort((a, b) {
+    final byScore = a.$1.compareTo(b.$1);
+    return byScore != 0 ? byScore : a.$2.compareTo(b.$2);
+  });
+  return _remember(position, candidates.first.$2, seen);
+}
+
+/// Os lances legais (coroação com dama) e a posição depois de cada um.
+Iterable<(NormalMove, Position)> _moves(Position position) sync* {
   for (final MapEntry(key: from, value: targets)
       in position.legalMoves.entries) {
     final pawn = position.board.roleAt(from) == Role.pawn;
@@ -250,45 +300,19 @@ String _mateMove(Position position, Set<String> seen) {
         to: to,
         promotion: promotes ? Role.queen : null,
       );
-      final next = position.play(move);
-      if (next.isCheckmate) return move.uci;
-      if (next.isStalemate) continue;
-      final hangs = next.legalMoves.entries.any(
-        (entry) => entry.value.squares.any(
-          (square) => next.board.sideAt(square) == us,
-        ),
-      );
-      if (hangs) continue;
-      // Com peão: coroar quando der; senão, avançar quando ele não cai.
-      if (pawn) pawnMoves.add((promotes ? 0 : 1, move.uci));
-      final key = next.fen.split(' ').take(4).join(' ');
-      // Peão parado: o rei vai apoiá-lo.
-      final escort = [
-        for (final p
-            in next.board.pawns.intersect(next.board.bySide(us)).squares)
-          _distance(next.board.kingOf(us)!, p),
-      ].fold(0, (a, b) => a + b);
-      final score =
-          _kingRoom(next, us) * 10 +
-          _distance(next.board.kingOf(us)!, next.board.kingOf(us.opposite)!) +
-          escort * 20 +
-          (seen.contains(key) ? 1000 : 0);
-      candidates.add((score, move.uci));
+      yield (move, position.play(move));
     }
   }
-  if (pawnMoves.isNotEmpty) {
-    pawnMoves.sort((a, b) => a.$1.compareTo(b.$1));
-    final uci = pawnMoves.first.$2;
-    seen.add(position.play(Move.parse(uci)!).fen.split(' ').take(4).join(' '));
-    return uci;
-  }
-  candidates.sort((a, b) {
-    final byScore = a.$1.compareTo(b.$1);
-    return byScore != 0 ? byScore : a.$2.compareTo(b.$2);
-  });
-  final best = candidates.first.$2;
-  seen.add(position.play(Move.parse(best)!).fen.split(' ').take(4).join(' '));
-  return best;
+}
+
+/// O adversário captura alguma peça de [us] em [next].
+bool _hangs(Position next, Side us) => next.legalMoves.entries.any(
+  (entry) => entry.value.squares.any((sq) => next.board.sideAt(sq) == us),
+);
+
+String _remember(Position position, String uci, Set<String> seen) {
+  seen.add(position.play(Move.parse(uci)!).fen.split(' ').take(4).join(' '));
+  return uci;
 }
 
 /// As casas que o rei de quem defende alcança sem passar por casa atacada.
