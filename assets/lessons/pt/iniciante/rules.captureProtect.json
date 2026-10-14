@@ -12,7 +12,7 @@
   "rot.ideia.ex1.l3": "Guarde a ideia: capturar é ocupar a casa da peça adversária.",
   "rot.ideia.ex2.e1": "A dama alcança dois cavalos pretos: um em a4 e outro em d5.",
   "rot.ideia.ex2.e2": "Uma peça protege outra do seu lado quando alcança a casa dela. O peão em e6 protege o cavalo em d5.",
-  "rot.ideia.ex2.e3": "Quem captura peça protegida perde a peça. O cavalo em a4 está sem proteção: ninguém o protege.",
+  "rot.ideia.ex2.e3": "Quem captura peça protegida é capturado de volta. Ninguém protege o cavalo em a4.",
   "rot.ideia.ex2.p": "Capture o cavalo que está sem proteção, ou clique em {verResposta}",
   "rot.ideia.ex2.certo": "Isso mesmo! Um cavalo a mais, e a dama continua segura.",
   "rot.ideia.ex2.revela": "A dama captura o cavalo sem proteção em a4.",

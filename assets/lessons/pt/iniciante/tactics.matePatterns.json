@@ -29,7 +29,7 @@
   "rot.demos.sufocado.l2": "Xeque de cavalo não se cobre, e o rei não tem casa: xeque-mate.",
   "rot.demos.arabe.e1": "O árabe: torre e cavalo juntos. O cavalo protege a torre e vigia uma casa de fuga.",
   "rot.demos.arabe.l1": "A torre vai a h7 e dá xeque, colada no rei.",
-  "rot.demos.arabe.l2": "O cavalo protege a torre e cobre g8, a casa de fuga. A torre cobre g7: xeque-mate.",
+  "rot.demos.arabe.l2": "O cavalo protege a torre e guarda g8, a casa de fuga. A torre guarda g7: xeque-mate.",
   "rot.demos.arabe.l3": "Agora é a sua vez: reconheça o desenho e dê o mate.",
   "rot.pratica.sufocado.enunciado": "O rei preto está cercado pelas próprias peças. Dê xeque-mate com o cavalo.",
   "rot.pratica.sufocado.fim": "Muito bem. Mate sufocado: xeque de cavalo não se cobre.",
