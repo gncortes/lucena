@@ -27,7 +27,7 @@
   "rot.ideia.ex2.l3": "Now I will show a famous rook and knight mate, and a danger: stalemate.",
   "rot.demos.arabe.e1": "This is the Arabian mate: the rook next to the king, and the knight protecting the rook.",
   "rot.demos.arabe.l1": "The knight jumps to f6 and gives check.",
-  "rot.demos.arabe.l2": "The black king goes to the corner.",
+  "rot.demos.arabe.l2": "The black king goes to the corner. On f8 it would escape, but here it errs.",
   "rot.demos.arabe.l3": "Checkmate! The knight protects the rook and also guards g8.",
   "rot.demos.afogamento.e1": "Now a danger. Count the black king's squares: your king guards g7 and h7. Only g8 is left.",
   "rot.demos.afogamento.l1": "If the knight went to f6, it would take g8 without check. The black king would have no move: stalemate.",
