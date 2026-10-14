@@ -6387,6 +6387,10 @@
   "@lessonShowAnswer": {
     "description": "Link and button that reveal the correct move of a think step."
   },
+  "lessonFullSpeech": "Show the whole speech",
+  "@lessonFullSpeech": {
+    "description": "Screen reader hint of the teacher's speech bubble in the scripted lesson: tapping it opens a sheet with the whole speech."
+  },
   "lessonAlreadySeen": "Already seen",
   "@lessonAlreadySeen": {
     "description": "Note under a failed alternative the student already opened."

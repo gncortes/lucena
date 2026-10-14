@@ -70,8 +70,8 @@
   "rot.demos.contorno.l2": "It goes up the g-file, which is clear.",
   "rot.demos.contorno.l3": "And it takes one step sideways, to h8.",
   "rot.demos.contorno.l4": "There is always a way: leave the blocked line, travel along a clear one and only then go to the target.",
-  "rot.demos.contorno.l5": "Now it's your turn: take the rook to the stars.",
-  "rot.pratica.estrelas1.enunciado": "Take the rook to the three stars, in any order you like.",
+  "rot.demos.contorno.l5": "Now it's your turn: in the next positions, take the rook to the stars.",
+  "rot.pratica.estrelas1.enunciado": "Take the rook to the three stars, stopping on each one, in any order you like.",
   "rot.pratica.estrelas1.fim": "Perfect. Did you see how it crosses the board in a single move?",
   "rot.pratica.estrelas2.enunciado": "Now the pawn on f6 is in the way. Take the rook to the stars.",
   "rot.pratica.estrelas2.fim": "Well done. You now know how to move the rook: straight lines, a clear path and, if something blocks the way, a detour."

@@ -53,10 +53,15 @@ class ExerciseActions extends StatelessWidget {
     this.fill = false,
     this.padding = const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 16),
     this.color,
+    this.leading,
     super.key,
   }) : assert(actions.length <= 2);
 
   final Widget? hint;
+
+  /// Colado à esquerda dos botões (o ↻ do fim da demonstração da lição
+  /// roteirizada, T70).
+  final Widget? leading;
   final List<ExerciseAction> actions;
   final bool fill;
   final EdgeInsetsGeometry padding;
@@ -125,10 +130,22 @@ class ExerciseActions extends StatelessWidget {
                     padding: EdgeInsetsDirectional.only(
                       start: hint == null ? 0 : gap,
                     ),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: maxWidth),
-                      child: Row(children: buttons),
-                    ),
+                    child: leading == null
+                        ? ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: maxWidth),
+                            child: Row(children: buttons),
+                          )
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              leading!,
+                              const SizedBox(width: gap),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: maxWidth),
+                                child: Row(children: buttons),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ),

@@ -70,8 +70,8 @@
   "rot.demos.contorno.l2": "Sobe pela coluna g, que está livre.",
   "rot.demos.contorno.l3": "E dá um passo para o lado, até h8.",
   "rot.demos.contorno.l4": "Sempre há um caminho: saia da linha fechada, ande pela linha livre e só então vá para a casa do alvo.",
-  "rot.demos.contorno.l5": "Agora é a sua vez: leve a torre até as estrelas.",
-  "rot.pratica.estrelas1.enunciado": "Leve a torre até as três estrelas, na ordem que quiser.",
+  "rot.demos.contorno.l5": "Agora é a sua vez: nas próximas posições, leve a torre até as estrelas.",
+  "rot.pratica.estrelas1.enunciado": "Leve a torre até as três estrelas, parando em cada uma, na ordem que quiser.",
   "rot.pratica.estrelas1.fim": "Perfeito. Viu como ela cruza o tabuleiro em um lance só?",
   "rot.pratica.estrelas2.enunciado": "Agora o peão em f6 está no caminho. Leve a torre até as estrelas.",
   "rot.pratica.estrelas2.fim": "Muito bem. Você já sabe mover a torre: linha reta, caminho livre e, se algo fecha a passagem, um contorno."

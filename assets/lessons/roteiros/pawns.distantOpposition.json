@@ -318,6 +318,15 @@
       },
       {
        "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
+       "t": "rot.ideia.ex1.l6b",
+       "marcas": [
+        "e5",
+        "e6",
+        "e7"
+       ]
+      },
+      {
+       "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
        "t": "rot.ideia.ex1.l7"
       },
       {
@@ -405,14 +414,20 @@
        "t": "rot.ideia.ex1.l19"
       },
       {
-       "fen": "6k1/6P1/6K1/8/8/8/8/8 b - - 2 11",
+       "fen": "8/6k1/6P1/5K2/8/8/8/8 w - - 1 8",
        "seq": [
         "f4g4",
         "g6g7",
         "g4f5",
         "g7f7",
         "g5g6",
-        "f7g7",
+        "f7g7"
+       ],
+       "t": "rot.ideia.ex1.l20"
+      },
+      {
+       "fen": "6k1/6P1/6K1/8/8/8/8/8 b - - 2 11",
+       "seq": [
         "f5g5",
         "g7g8",
         "g5f6",
@@ -421,7 +436,7 @@
         "f8g8",
         "f6g6"
        ],
-       "t": "rot.ideia.ex1.l20"
+       "t": "rot.ideia.ex1.l20b"
       },
       {
        "fen": "6k1/6P1/6K1/8/8/8/8/8 b - - 2 11",
@@ -471,39 +486,18 @@
        "t": "rot.ideia.ex1.l28"
       },
       {
-       "fen": "8/4k3/8/4K3/8/6P1/8/8 b - - 3 2",
-       "marcas": [
-        "e5",
-        "e7"
-       ],
-       "lance": "e4e5",
-       "t": "rot.ideia.ex1.l29"
-      },
-      {
-       "fen": "8/5k2/8/4K3/8/6P1/8/8 w - - 4 3",
-       "lance": "e7f7",
-       "t": "rot.ideia.ex1.l30"
-      },
-      {
-       "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 5 3",
-       "marcas": [
-        "f5"
-       ],
-       "lance": "e5f5",
-       "t": "rot.ideia.ex1.l31"
-      },
-      {
-       "fen": "8/6k1/8/5K2/8/6P1/8/8 w - - 6 4",
-       "lance": "f7g7",
-       "t": "rot.ideia.ex1.l32"
-      },
-      {
        "fen": "8/6k1/8/6K1/8/6P1/8/8 b - - 7 4",
+       "seq": [
+        "e4e5",
+        "e7f7",
+        "e5f5",
+        "f7g7",
+        "f5g5"
+       ],
+       "t": "rot.ideia.ex1.l29",
        "marcas": [
         "g5"
-       ],
-       "lance": "f5g5",
-       "t": "rot.ideia.ex1.l33"
+       ]
       },
       {
        "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
@@ -525,10 +519,7 @@
       }
      ],
      "curiosidades": {
-      "citacao": {
-       "autor": "Lorem Ipsum",
-       "t": "rot.ideia.ex1.cur.cit"
-      },
+      "t": "rot.ideia.ex1.cur.t",
       "referencias": [
        "capablanca",
        {
@@ -539,28 +530,12 @@
         "dates": "1888–1942",
         "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
        },
-       {
-        "id": "wiki_oposicao",
-        "kind": "web",
-        "title": "Opposition (chess)",
-        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
-       },
-       {
-        "id": "lichess_practice",
-        "kind": "web",
-        "title": "Lichess Practice",
-        "url": "https://lichess.org/practice"
-       },
-       {
-        "id": "ph_livro",
-        "kind": "book",
-        "author": "Lorem Ipsum",
-        "title": "Lorem ipsum dolor",
-        "publisher": "Sit Amet",
-        "year": 1900
-       }
+       "wikiOpposition"
       ],
-      "t": "rot.ideia.ex1.cur.t"
+      "citacao": {
+       "t": "rot.ideia.ex1.cur.cit",
+       "autor": "José Raúl Capablanca, Chess Fundamentals (1921)"
+      }
      }
     },
     {
@@ -577,10 +552,6 @@
       {
        "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
        "t": "rot.ideia.ex2.e2"
-      },
-      {
-       "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
-       "t": "rot.ideia.ex2.e3"
       },
       {
        "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
@@ -842,45 +813,18 @@
         "g6"
        ],
        "t": "rot.ideia.ex2.l18"
+      },
+      {
+       "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
+       "t": "rot.ideia.ex2.ponte"
       }
      ],
      "curiosidades": {
-      "citacao": {
-       "autor": "Lorem Ipsum",
-       "t": "rot.ideia.ex2.cur.cit"
-      },
+      "t": "rot.ideia.ex2.cur.t",
       "referencias": [
-       "capablanca",
-       {
-        "id": "capablanca_jogador",
-        "kind": "player",
-        "name": "José Raúl Capablanca",
-        "initials": "JC",
-        "dates": "1888–1942",
-        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       },
-       {
-        "id": "wiki_oposicao",
-        "kind": "web",
-        "title": "Opposition (chess)",
-        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
-       },
-       {
-        "id": "lichess_practice",
-        "kind": "web",
-        "title": "Lichess Practice",
-        "url": "https://lichess.org/practice"
-       },
-       {
-        "id": "ph_livro",
-        "kind": "book",
-        "author": "Lorem Ipsum",
-        "title": "Lorem ipsum dolor",
-        "publisher": "Sit Amet",
-        "year": 1900
-       }
-      ],
-      "t": "rot.ideia.ex2.cur.t"
+       "carlsenSo2017",
+       "wikiOpposition"
+      ]
      }
     }
    ]
@@ -988,8 +932,7 @@
        "t": "rot.demos.fileiraAbaixo.9"
       },
       {
-       "fen": "6Q1/5K1k/8/8/8/8/8/8 b - - 0 14",
-       "t": "rot.demos.fileiraAbaixo.10",
+       "fen": "6k1/8/6K1/8/8/8/6P1/8 w - - 14 8",
        "seq": [
         "g6h7",
         "g4h5",
@@ -999,7 +942,14 @@
         "g5f6",
         "h7h8",
         "f6g6",
-        "h8g8",
+        "h8g8"
+       ],
+       "t": "rot.demos.fileiraAbaixo.10"
+      },
+      {
+       "fen": "6Q1/5K1k/8/8/8/8/8/8 b - - 0 14",
+       "t": "rot.demos.fileiraAbaixo.10b",
+       "seq": [
         "g2g3",
         "g8h8",
         "g3g4",
@@ -1013,43 +963,6 @@
         "g6g7",
         "h8h7",
         "g7g8q"
-       ]
-      },
-      {
-       "fen": "8/4k3/8/8/8/4K3/6P1/8 b - - 1 1",
-       "t": "rot.demos.fileiraAbaixo.11",
-       "salto": true,
-       "marcas": [
-        "e3",
-        "e7"
-       ]
-      },
-      {
-       "fen": "8/8/4k3/8/8/4K3/6P1/8 w - - 2 2",
-       "t": "rot.demos.fileiraAbaixo.12",
-       "lance": "e7e6"
-      },
-      {
-       "fen": "8/8/4k3/8/4K3/8/6P1/8 b - - 3 2",
-       "t": "rot.demos.fileiraAbaixo.13",
-       "lance": "e3e4",
-       "marcas": [
-        "e4",
-        "e6"
-       ]
-      },
-      {
-       "fen": "8/8/5k2/8/4K3/8/6P1/8 w - - 4 3",
-       "t": "rot.demos.fileiraAbaixo.14",
-       "lance": "e6f6"
-      },
-      {
-       "fen": "8/8/5k2/8/5K2/8/6P1/8 b - - 5 3",
-       "t": "rot.demos.fileiraAbaixo.15",
-       "lance": "e4f4",
-       "marcas": [
-        "f4",
-        "f6"
        ]
       },
       {
@@ -1117,42 +1030,16 @@
       }
      ],
      "curiosidades": {
-      "citacao": {
-       "autor": "Lorem Ipsum",
-       "t": "rot.demos.fileiraAbaixo.cur.cit"
-      },
+      "t": "rot.demos.fileiraAbaixo.cur.t",
       "referencias": [
-       "capablanca",
        {
-        "id": "capablanca_jogador",
-        "kind": "player",
-        "name": "José Raúl Capablanca",
-        "initials": "JC",
-        "dates": "1888–1942",
-        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       },
-       {
-        "id": "wiki_oposicao",
+        "id": "wiki_casa_chave",
         "kind": "web",
-        "title": "Opposition (chess)",
-        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
+        "title": "Wikipedia: Key square",
+        "url": "https://en.wikipedia.org/wiki/Key_square"
        },
-       {
-        "id": "lichess_practice",
-        "kind": "web",
-        "title": "Lichess Practice",
-        "url": "https://lichess.org/practice"
-       },
-       {
-        "id": "ph_livro",
-        "kind": "book",
-        "author": "Lorem Ipsum",
-        "title": "Lorem ipsum dolor",
-        "publisher": "Sit Amet",
-        "year": 1900
-       }
-      ],
-      "t": "rot.demos.fileiraAbaixo.cur.t"
+       "wikiKpk"
+      ]
      }
     },
     {
@@ -1217,58 +1104,18 @@
        ]
       },
       {
-       "fen": "8/8/8/4k3/8/5K2/6P1/8 b - - 4 3",
-       "t": "rot.demos.tempo.7",
-       "lance": "e3f3"
-      },
-      {
-       "fen": "8/8/8/5k2/8/5K2/6P1/8 w - - 5 4",
-       "t": "rot.demos.tempo.8",
-       "lance": "e5f5",
-       "marcas": [
-        "f3",
-        "f5"
-       ]
-      },
-      {
-       "fen": "8/8/8/5k2/6P1/5K2/8/8 b - - 0 4",
-       "t": "rot.demos.tempo.9",
-       "lance": "g2g4"
-      },
-      {
-       "fen": "8/8/8/6k1/6P1/5K2/8/8 w - - 1 5",
-       "t": "rot.demos.tempo.10",
-       "lance": "f5g5",
-       "marcas": [
-        "g5"
-       ]
-      },
-      {
-       "fen": "8/8/8/6k1/6P1/6K1/8/8 b - - 2 5",
-       "t": "rot.demos.tempo.11",
-       "lance": "f3g3"
-      },
-      {
-       "fen": "8/8/6k1/8/6P1/6K1/8/8 w - - 3 6",
-       "t": "rot.demos.tempo.12",
-       "lance": "g5g6"
-      },
-      {
-       "fen": "8/8/6k1/8/5KP1/8/8/8 b - - 4 6",
-       "t": "rot.demos.tempo.13",
-       "lance": "g3f4",
-       "setas": [
-        [
-         "f4",
-         "f5",
-         "r"
-        ]
-       ]
-      },
-      {
        "fen": "8/8/5k2/8/5KP1/8/8/8 w - - 5 7",
-       "t": "rot.demos.tempo.14",
-       "lance": "g6f6",
+       "seq": [
+        "e3f3",
+        "e5f5",
+        "g2g4",
+        "f5g5",
+        "f3g3",
+        "g5g6",
+        "g3f4",
+        "g6f6"
+       ],
+       "t": "rot.demos.tempo.7",
        "marcas": [
         "f4",
         "f6"
@@ -1360,10 +1207,7 @@
       }
      ],
      "curiosidades": {
-      "citacao": {
-       "autor": "Lorem Ipsum",
-       "t": "rot.demos.tempo.cur.cit"
-      },
+      "t": "rot.demos.tempo.cur.t",
       "referencias": [
        "capablanca",
        {
@@ -1373,29 +1217,12 @@
         "initials": "JC",
         "dates": "1888–1942",
         "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       },
-       {
-        "id": "wiki_oposicao",
-        "kind": "web",
-        "title": "Opposition (chess)",
-        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
-       },
-       {
-        "id": "lichess_practice",
-        "kind": "web",
-        "title": "Lichess Practice",
-        "url": "https://lichess.org/practice"
-       },
-       {
-        "id": "ph_livro",
-        "kind": "book",
-        "author": "Lorem Ipsum",
-        "title": "Lorem ipsum dolor",
-        "publisher": "Sit Amet",
-        "year": 1900
        }
       ],
-      "t": "rot.demos.tempo.cur.t"
+      "citacao": {
+       "t": "rot.demos.tempo.cur.cit",
+       "autor": "José Raúl Capablanca, Chess Fundamentals (1921)"
+      }
      }
     },
     {
@@ -1463,59 +1290,16 @@
       },
       {
        "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
-       "t": "rot.demos.erroAtacante.8",
-       "salto": true
-      },
-      {
-       "fen": "8/5k2/8/8/8/8/4K1P1/8 w - - 2 2",
-       "t": "rot.demos.erroAtacante.9",
-       "lance": "e7f7",
-       "setas": [
-        [
-         "e7",
-         "f7",
-         "r"
-        ]
-       ]
-      },
-      {
-       "fen": "8/5k2/8/8/8/8/4K1P1/8 w - - 2 2",
-       "t": "rot.demos.erroAtacante.10"
-      },
-      {
-       "fen": "8/5k2/8/8/8/5K2/6P1/8 b - - 3 2",
-       "t": "rot.demos.erroAtacante.11",
-       "lance": "e2f3",
-       "marcas": [
-        "f4",
-        "f5",
-        "f6"
-       ]
-      },
-      {
-       "fen": "8/5k2/8/8/8/5K2/6P1/8 b - - 3 2",
-       "t": "rot.demos.erroAtacante.12",
-       "marcas": [
-        "f4",
-        "g4",
-        "h4"
-       ]
-      },
-      {
-       "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
-       "t": "rot.demos.erroAtacante.13",
+       "t": "rot.demos.erroAtacante.14",
        "salto": true
       },
       {
        "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
-       "t": "rot.demos.erroAtacante.14"
+       "t": "rot.demos.erroAtacante.ponte"
       }
      ],
      "curiosidades": {
-      "citacao": {
-       "autor": "Lorem Ipsum",
-       "t": "rot.demos.erroAtacante.cur.cit"
-      },
+      "t": "rot.demos.erroAtacante.cur.t",
       "referencias": [
        "capablanca",
        {
@@ -1525,29 +1309,12 @@
         "initials": "JC",
         "dates": "1888–1942",
         "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       },
-       {
-        "id": "wiki_oposicao",
-        "kind": "web",
-        "title": "Opposition (chess)",
-        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
-       },
-       {
-        "id": "lichess_practice",
-        "kind": "web",
-        "title": "Lichess Practice",
-        "url": "https://lichess.org/practice"
-       },
-       {
-        "id": "ph_livro",
-        "kind": "book",
-        "author": "Lorem Ipsum",
-        "title": "Lorem ipsum dolor",
-        "publisher": "Sit Amet",
-        "year": 1900
        }
       ],
-      "t": "rot.demos.erroAtacante.cur.t"
+      "citacao": {
+       "t": "rot.demos.erroAtacante.cur.cit",
+       "autor": "José Raúl Capablanca, Chess Fundamentals (1921)"
+      }
      }
     }
    ]

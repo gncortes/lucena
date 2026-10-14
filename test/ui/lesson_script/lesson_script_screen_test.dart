@@ -156,31 +156,94 @@ void main() {
         );
       });
 
-      testWidgets('balão: duas linhas no mínimo; sobe antes de empurrar', (
-        tester,
-      ) async {
+      testWidgets('balão: duas linhas no mínimo; sobe antes de empurrar; '
+          'na tela baixa, corta em 2 linhas', (tester) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
         final short = _rect(tester, LessonScriptKeys.speech);
-        final lines = size.height < 700 ? 2 * 14 * 1.25 : 2 * 15 * 1.25;
+        final lines = size.height < 700 ? 2 * 12 * 1.25 : 2 * 15 * 1.25;
         final pad = size.height < 700 ? 20.0 : 28.0;
         expect(short.height, closeTo(lines + pad, 1.5));
         final boardTop = _rect(tester, LessonScriptKeys.board).top;
         await _tap(tester, LessonScriptKeys.primary);
         final grown = _rect(tester, LessonScriptKeys.speech);
-        expect(grown.height, greaterThan(short.height));
-        // Três linhas: na tela alta o balão sobe no espaço de cima e o
-        // tabuleiro fica no centro; na baixa, não há espaço e ele desce.
         final board = _rect(tester, LessonScriptKeys.board);
+        final text = tester.widget<Text>(
+          find.descendant(
+            of: find.byKey(LessonScriptKeys.speech),
+            matching: find.byType(Text),
+          ),
+        );
         if (size == _tall) {
+          // Três linhas: o balão sobe no espaço de cima e o tabuleiro fica
+          // no centro.
+          expect(grown.height, greaterThan(short.height));
           final page = _rect(tester, LessonScriptKeys.page);
           expect(board.center.dy, closeTo(page.center.dy, 1));
           expect(grown.top, lessThan(short.top));
+          expect(text.maxLines, isNull);
         } else {
-          expect(board.top, greaterThan(boardTop));
+          // Tela baixa: 2 linhas com reticências, letra 12; o tabuleiro não
+          // se mexe (a fala inteira abre no clique).
+          expect(grown.height, closeTo(short.height, 0.5));
+          expect(board.top, closeTo(boardTop, 0.5));
+          expect(text.maxLines, 2);
+          expect(text.overflow, TextOverflow.ellipsis);
+          expect(text.style?.fontSize, 12);
         }
         expect(tester.takeException(), isNull);
       });
 
+      testWidgets('tabuleiro: um tamanho só, na largura cheia; na tela baixa, '
+          'o maior possível, centralizado', (tester) async {
+        await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
+        final before = _rect(tester, LessonScriptKeys.board);
+        await _tap(tester, LessonScriptKeys.primary);
+        final after = _rect(tester, LessonScriptKeys.board);
+        // A fala mudou de tamanho, o tabuleiro não.
+        expect(after.width, closeTo(before.width, 0.5));
+        if (size == _tall) {
+          expect(after.width, closeTo(size.width, 0.5));
+        } else {
+          expect(after.width, greaterThanOrEqualTo(0.8 * size.width));
+          expect(after.center.dx, closeTo(size.width / 2, 0.5));
+        }
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('clique no balão abre a fala inteira; o ✕ fora da folha '
+          'fecha', (tester) async {
+        await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
+        await _tap(tester, LessonScriptKeys.primary);
+        await tester.tap(find.byKey(LessonScriptKeys.speech));
+        // No meio da subida, o retrato voa (Hero).
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(find.byType(Hero), findsWidgets);
+        await _settle(tester);
+        final sheet = find.byKey(LessonScriptKeys.speechSheet);
+        expect(sheet, findsOneWidget);
+        expect(
+          find.descendant(
+            of: sheet,
+            matching: find.textContaining('contarmos'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(of: sheet, matching: find.textContaining('Viktor')),
+          findsOneWidget,
+        );
+        // O ✕ fica acima da folha, fora dela, com alvo de 48 dp.
+        final close = _rect(tester, LessonScriptKeys.speechSheetClose);
+        expect(
+          close.bottom,
+          lessThanOrEqualTo(_rect(tester, LessonScriptKeys.speechSheet).top),
+        );
+        expect(close.height, greaterThanOrEqualTo(48));
+        await _tap(tester, LessonScriptKeys.speechSheetClose);
+        expect(sheet, findsNothing);
+        expect(tester.takeException(), isNull);
+      });
       testWidgets('trechos curtos se juntam num balão só', (tester) async {
         final s = await _open(tester, size);
         expect(s.cubit.state.speech.length, greaterThan(1));
@@ -371,6 +434,38 @@ void main() {
     expect(find.text('p.t'), findsOneWidget);
     // Sem rótulo de posição (Gabriel, 14/10/2026).
     expect(find.textContaining('Posição'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('rodapé da demonstração: ← sempre, ↻ ⏮ ⏸ e o ⏭ com anel; '
+      'no fim, só ↻ e Próxima etapa', (tester) async {
+    final s = await _open(tester, _tall, stage: 1);
+    expect(s.cubit.state.demo, isNotNull);
+    for (final key in [
+      LessonScriptKeys.back,
+      LessonScriptKeys.demoRepeat,
+      LessonScriptKeys.demoStepBack,
+      LessonScriptKeys.demoToggle,
+      LessonScriptKeys.demoRing,
+      LessonScriptKeys.primary,
+    ]) {
+      expect(find.byKey(key), findsOneWidget, reason: '$key');
+    }
+    expect(find.text('Continuar'), findsNothing);
+    // ⏸ pausa: o ícone vira ▶.
+    await _tap(tester, LessonScriptKeys.demoToggle);
+    expect(s.cubit.state.demo!.playing, isFalse);
+    expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+    // ⏭ avança mesmo pausada.
+    final tick = s.cubit.state.demo!.tick;
+    await _tap(tester, LessonScriptKeys.primary);
+    expect(s.cubit.state.demo?.tick, isNot(tick));
+    await _until(tester, s, ScriptPhase.fimEtapa);
+    expect(s.cubit.state.demo?.ended, isTrue);
+    expect(find.byKey(LessonScriptKeys.demoRepeat), findsOneWidget);
+    expect(find.byKey(LessonScriptKeys.demoToggle), findsNothing);
+    expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
+    expect(find.text('Próxima etapa'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

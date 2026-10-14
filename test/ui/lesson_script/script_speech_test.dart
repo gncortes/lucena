@@ -130,8 +130,75 @@ void main() {
     await tester.tapOnText(link);
     expect(taps, 1);
     expect(
-      ScriptSpeech.plain('Clique em {linhaPrincipal}.', 'Ver linha principal'),
-      'Clique em Ver linha principal.',
+      ScriptSpeech.plain(
+        'Clique em {linhaPrincipal}.',
+        mainLine: 'Ver linha principal',
+        showAnswer: 'Ver resposta',
+      ),
+      'Clique em Ver linha principal',
     );
+  });
+
+  testWidgets('Ver resposta na fala: link sem o ponto colado; o clique faz o '
+      'mesmo que o botão; o balão abre a fala inteira', (tester) async {
+    var answers = 0;
+    var opens = 0;
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: Scaffold(
+          body: Builder(
+            builder: (context) => ScriptSpeech(
+              texts: const ['Pense e clique em {verResposta}.'],
+              metrics: ScriptSpeechMetrics.of(context),
+              onShowAnswer: () => answers++,
+              onOpen: () => opens++,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('{verResposta}'), findsNothing);
+    expect(find.textContaining('Ver resposta.'), findsNothing);
+    final rich = tester.widget<Text>(
+      find.descendant(
+        of: find.byKey(LessonScriptKeys.speech),
+        matching: find.byType(Text),
+      ),
+    );
+    final link = (rich.textSpan! as TextSpan).children!
+        .whereType<TextSpan>()
+        .firstWhere((span) => span.text == 'Ver resposta');
+    expect(link.style?.decoration, TextDecoration.underline);
+    await tester.tapOnText(find.textRange.ofSubstring('Ver resposta'));
+    expect(answers, 1);
+    expect(opens, 0);
+    // Fora do link, o balão inteiro abre a fala.
+    await tester.tapOnText(find.textRange.ofSubstring('Pense'));
+    expect(opens, 1);
+  });
+
+  testWidgets('sem ação, a marca vira texto sublinhado sem clique', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: const Scaffold(
+          body: ScriptSpeechText(
+            text: 'Clique em {linhaPrincipal}. Depois siga.',
+            style: TextStyle(fontSize: 15),
+          ),
+        ),
+      ),
+    );
+    final rich = tester.widget<Text>(find.byType(Text));
+    expect(
+      rich.textSpan!.toPlainText(),
+      'Clique em Ver linha principal Depois siga.',
+    );
+    final link = (rich.textSpan! as TextSpan).children![1] as TextSpan;
+    expect(link.recognizer, isNull);
   });
 }
