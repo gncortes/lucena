@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/widgets/sheet_close_button.dart';
+import '../theme/app_motion.dart';
+import '../theme/app_shape.dart';
+import 'sheet_close_button.dart';
 
 /// Abre uma folha da lição roteirizada (a fala inteira e as Curiosidades)
 /// numa rota transparente que imita a bottom sheet: o fundo escurece, a folha

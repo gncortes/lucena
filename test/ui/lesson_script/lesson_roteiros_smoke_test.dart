@@ -17,7 +17,7 @@ import 'package:lucena/domain/use_cases/machine_move.dart';
 import 'package:lucena/domain/use_cases/move_tree.dart';
 import 'package:lucena/domain/use_cases/script_moves.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
-import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
@@ -77,7 +77,7 @@ class _Run {
     if (!state.ready || state.outcome != null) return;
     final at = '${state.stageId}/${state.exampleIndex} ${state.phase.name}';
     for (final text in state.speech) {
-      final shown = text.replaceAll(ScriptSpeech.markPattern, '');
+      final shown = text.replaceAll(SpeechText.markPattern, '');
       if (_rawKey.hasMatch(shown) || shown.contains('{')) {
         problems.add('$at: fala crua "$text"');
       }

@@ -21,7 +21,8 @@ import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
-import 'package:lucena/ui/core/keys/game_sound_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
@@ -1453,9 +1454,8 @@ void main() {
     }
 
     for (final size in sizes) {
-      testWidgets('D12 $size: X em overlay recebe toque e dica abre ajustes', (
-        tester,
-      ) async {
+      testWidgets('T72 $size: sem X; o toque no balão abre a fala inteira e a '
+          'ponta cai no centro do retrato', (tester) async {
         await pumpScreen(
           tester,
           screen: size * 2.625,
@@ -1468,34 +1468,41 @@ void main() {
         await talk.settled();
         await tester.pumpAndSettle();
         final board = boardRect(tester);
-        for (var dismissal = 0; dismissal < 3; dismissal++) {
-          final close = find.byKey(FreeBoardKeys.speechClose);
-          expect(close.hitTestable(), findsOneWidget);
-          final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
-          expect(bubble.bottom, lessThanOrEqualTo(board.top));
-          await tester.tap(close);
-          await talk.settled();
-          await tester.pumpAndSettle();
-          expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
-          expect(talk.state.enabled, isTrue);
-          expect(boardRect(tester), board);
-          expect(board.width, greaterThanOrEqualTo(280));
-          if (dismissal < 2) {
-            talk.update(
-              cubit.state.copyWith(
-                drawOffer: DrawOffer.declined,
-                drawDeclinedAt: dismissal,
-              ),
-            );
-            await talk.settled();
-            await tester.pumpAndSettle();
-            expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
-          }
-        }
-        expect(find.byKey(FreeBoardKeys.speechHint), findsOneWidget);
-        await tester.tap(find.byKey(FreeBoardKeys.speechHintAdjust));
+        final balloon = find.byKey(FreeBoardKeys.speechBubble);
+        expect(balloon.hitTestable(), findsOneWidget);
+        // Nenhum botão de fechar no balão.
+        expect(
+          find.descendant(of: balloon, matching: find.byType(IconButton)),
+          findsNothing,
+        );
+        expect(
+          find.descendant(of: balloon, matching: find.byIcon(Icons.close)),
+          findsNothing,
+        );
+        final rect = tester.getRect(balloon);
+        expect(rect.bottom, lessThanOrEqualTo(board.top));
+        // A ponta (18x10) no centro do retrato de 44, a 4 dp dele.
+        final shape =
+            tester
+                    .widget<Material>(
+                      find.descendant(
+                        of: balloon,
+                        matching: find.byType(Material),
+                      ),
+                    )
+                    .shape!
+                as SpeechBalloonShape;
+        final tip = shape.tipOf(rect);
+        final avatar = tester.getRect(
+          find.byKey(FreeBoardKeys.characterAvatar(talk.state.emotion)),
+        );
+        expect(tip.dx, closeTo(avatar.center.dx, 2));
+        expect(avatar.top - tip.dy, closeTo(4, 1));
+
+        await tester.tap(balloon);
         await tester.pumpAndSettle();
-        expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+        expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
+        expect(boardRect(tester), board);
         expect(tester.takeException(), isNull);
       });
     }
@@ -2098,10 +2105,12 @@ void main() {
       expect(clock.bottom, lessThanOrEqualTo(bar.bottom));
       expect(clock.bottom, lessThanOrEqualTo(board.top));
       final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
+      // A ponta fica sobre o retrato, que nasce abaixo do alto da barra.
       expect(
-        bubble.bottom <= bar.top || (bubble.top - board.top).abs() <= 1,
-        isTrue,
+        bubble.bottom,
+        lessThanOrEqualTo(tester.getRect(find.byType(CharacterAvatar)).top),
       );
+      expect(bubble.bottom, lessThanOrEqualTo(board.top));
       final unchanged = boardRect(tester);
       await tester.pump(const Duration(seconds: 20));
       await tester.pumpAndSettle();

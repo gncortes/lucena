@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/character.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import 'sound_dialog.dart';
@@ -11,6 +12,8 @@ import 'clock_row.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/character_speech.dart';
+import '../../core/widgets/script_speech_sheet.dart';
+import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/game_entrance.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../voice/view_models/speech_cubit.dart';
@@ -18,9 +21,6 @@ import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/sound_off_icon.dart';
-
-export '../../core/widgets/character_speech.dart'
-    show BubblePainter, TypewriterText;
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
 /// última fala, que aparece letra por letra. O relógio dele fica na linha de
@@ -65,38 +65,17 @@ class CharacterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final character = talk.character!;
     final line = talk.enabled ? talk.line : null;
-    // Retrato pequeno: a fala também diminui, para caber no balão.
-    final small = avatarSize < 72;
     if (speechTop case final top?) {
       return _SpeechOverlay(
         top: top,
         speech: line == null
             ? null
             : _TransientSpeech(
-                key: ValueKey(line.id),
                 text: line.text,
                 child: GameEntrance(
                   part: GameEntrancePart.speech,
-                  child: _spoken(
-                    context,
-                    line.id,
-                    line.text,
-                    _Bubble(
-                      lineId: line.id,
-                      text: line.text,
-                      semantics: context.l10n.characterSays(
-                        character.name,
-                        line.text,
-                      ),
-                      monospace: talk.isEngine,
-                      small: small,
-                      tailBelow: true,
-                      opacity: .94,
-                      onDismiss: () => context.read<TalkCubit>().dismissLine(
-                        lineId: line.id,
-                      ),
-                    ),
-                  ),
+                  // O balão fica no lugar; só o texto troca (crossfade).
+                  child: _balloon(context, character, line, BalloonTail.down),
                 ),
               ),
         child: SizedBox(
@@ -157,36 +136,17 @@ class CharacterBar extends StatelessWidget {
               // Na entrada da partida, o balão chega por último.
               child: GameEntrance(
                 part: GameEntrancePart.speech,
-                child: AnimatedSwitcher(
-                  duration: AppMotion.state,
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: ScaleTransition(
-                      scale: Tween(begin: 0.92, end: 1.0).animate(animation),
-                      alignment: AlignmentDirectional.bottomStart.resolve(
-                        Directionality.of(context),
-                      ),
-                      child: child,
-                    ),
-                  ),
-                  child: line == null
-                      ? const SizedBox(key: ValueKey('none'))
-                      : _spoken(
+                child: line == null
+                    ? const SizedBox.shrink()
+                    : Align(
+                        alignment: AlignmentDirectional.bottomStart,
+                        child: _balloon(
                           context,
-                          line.id,
-                          line.text,
-                          _Bubble(
-                            lineId: line.id,
-                            text: line.text,
-                            semantics: context.l10n.characterSays(
-                              character.name,
-                              line.text,
-                            ),
-                            monospace: talk.isEngine,
-                            small: small,
-                          ),
+                          character,
+                          line,
+                          BalloonTail.start,
                         ),
-                ),
+                      ),
               ),
             ),
           ],
@@ -194,6 +154,45 @@ class CharacterBar extends StatelessWidget {
       ),
     );
   }
+
+  /// O balão único do app com a fala do personagem: o clique abre a folha com
+  /// a fala inteira (sem botão de fechar).
+  Widget _balloon(
+    BuildContext context,
+    Character character,
+    CharacterLine line,
+    BalloonTail tail,
+  ) => SpeechBalloon(
+    key: FreeBoardKeys.speechBubble,
+    speech: line.id,
+    tail: tail,
+    // No overlay o balão começa 4 dp antes do retrato (12 contra 16).
+    tailX:
+        SpeechBalloon.tailXFor(avatarSize) + (tail == BalloonTail.down ? 4 : 0),
+    fitContent: true,
+    semanticsLabel: context.l10n.characterSays(character.name, line.text),
+    tapHint: context.l10n.lessonFullSpeech,
+    onTap: () => unawaited(
+      showScriptSpeechSheet(
+        context,
+        viktor: character,
+        title: character.name,
+        texts: [line.text],
+      ),
+    ),
+    child: _spoken(
+      context,
+      line.id,
+      line.text,
+      TypewriterText(
+        line.text,
+        key: FreeBoardKeys.speechText(line.id),
+        maxLines: 3,
+        shrink: false,
+        style: SpeechBalloon.style(context),
+      ),
+    ),
+  );
 
   /// A fala sai na voz do personagem, com a voz ligada. O Stockfish não
   /// fala.
@@ -216,7 +215,7 @@ class CharacterBar extends StatelessWidget {
   }
 }
 
-/// A camada ocupa o Overlay da rota: o X continua recebendo toques mesmo
+/// A camada ocupa o Overlay da rota: o balão continua recebendo toques mesmo
 /// quando a fala está acima da faixa do jogador, fora da área dessa faixa.
 class _SpeechOverlay extends StatefulWidget {
   const _SpeechOverlay({
@@ -250,12 +249,16 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
         info.childPaintTransform,
         Offset(12, widget.top),
       );
+      // A ponta do balão fica em `top + 80`; o balão cresce para cima.
       return Positioned(
         left: origin.dx,
-        top: origin.dy,
+        bottom: info.overlaySize.height - (origin.dy + 80),
         width: math.max(0, info.childSize.width - 24),
-        height: 80,
-        child: widget.speech!,
+        child: Align(
+          alignment: AlignmentDirectional.bottomStart,
+          heightFactor: 1,
+          child: widget.speech!,
+        ),
       );
     },
     child: widget.child,
@@ -265,7 +268,7 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
 /// A fala flutua sem mudar o tamanho da faixa. A duração
 /// acompanha a leitura; o esmaecer respeita a preferência de movimento.
 class _TransientSpeech extends StatefulWidget {
-  const _TransientSpeech({required this.text, required this.child, super.key});
+  const _TransientSpeech({required this.text, required this.child});
 
   final String text;
   final Widget child;
@@ -406,99 +409,6 @@ class _NameTag extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelMedium
               ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
-        ),
-      ),
-    );
-  }
-}
-
-/// O balão com a ponta virada para o retrato, alinhado pela base da foto.
-class _Bubble extends StatelessWidget {
-  const _Bubble({
-    required this.lineId,
-    required this.text,
-    required this.semantics,
-    required this.monospace,
-    required this.small,
-    this.opacity = 1,
-    this.tailBelow = false,
-    this.onDismiss,
-  });
-
-  final VoidCallback? onDismiss;
-  final String lineId;
-  final String text;
-  final String semantics;
-  final bool monospace;
-  final bool small;
-  final double opacity;
-  final bool tailBelow;
-
-  static const _tail = 10.0;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final dark = theme.brightness == Brightness.dark;
-    final background = dark ? const Color(0xFF3A3A3C) : Colors.white;
-    final foreground = dark ? Colors.white : const Color(0xFF1F1F1F);
-    final rtl = Directionality.of(context) == TextDirection.rtl;
-    final style = small
-        ? theme.textTheme.bodyMedium
-        : theme.textTheme.titleMedium;
-    return Align(
-      alignment: AlignmentDirectional.bottomStart,
-      child: CustomPaint(
-        key: FreeBoardKeys.speechBubble,
-        painter: BubblePainter(
-          color: background.withValues(alpha: opacity),
-          shadow: Colors.black.withValues(alpha: dark ? 0.4 : 0.12),
-          tail: _tail,
-          tailOnRight: rtl,
-          tailBelow: tailBelow,
-        ),
-        child: Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(
-            tailBelow ? 12 : _tail + 12,
-            small ? 8 : 10,
-            12,
-            (small ? 8 : 10) + (tailBelow ? _tail : 0),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Semantics(
-                  liveRegion: true,
-                  label: semantics,
-                  excludeSemantics: true,
-                  child: TypewriterText(
-                    text,
-                    key: FreeBoardKeys.speechText(lineId),
-                    maxLines: 3,
-                    style: style?.copyWith(
-                      color: foreground,
-                      fontWeight: FontWeight.w600,
-                      height: 1.25,
-                      fontFamily: monospace ? 'monospace' : null,
-                      letterSpacing: monospace ? 0.5 : null,
-                    ),
-                  ),
-                ),
-              ),
-              if (onDismiss != null)
-                SizedBox.square(
-                  dimension: 44,
-                  child: IconButton(
-                    key: FreeBoardKeys.speechClose,
-                    padding: EdgeInsets.zero,
-                    tooltip: MaterialLocalizations.of(context)
-                        .closeButtonTooltip,
-                    onPressed: onDismiss,
-                    icon: const Icon(Icons.close, size: 20),
-                  ),
-                ),
-            ],
-          ),
         ),
       ),
     );

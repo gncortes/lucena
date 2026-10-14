@@ -20,7 +20,6 @@ const _viktor = Character(
 /// O convite e o prático da lição (T70, pg. 3.1 e 4.x).
 void main() {
   var starts = 0, inviteBacks = 0, hints = 0, backs = 0, continues = 0;
-  var expanded = false;
 
   Future<void> pump(
     WidgetTester tester,
@@ -46,8 +45,6 @@ void main() {
                 viktor: _viktor,
                 invite: invite,
                 comment: comment,
-                expanded: expanded,
-                onExpandedChanged: (v) => setState(() => expanded = v),
                 board: (context, side) => SizedBox.square(
                   key: const Key('test.board'),
                   dimension: side,

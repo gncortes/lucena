@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
@@ -167,7 +168,10 @@ void main() {
         final short = _rect(tester, LessonScriptKeys.speech);
         final lines = size.height < 700 ? 2 * 12 * 1.5 : 2 * 16 * 1.5;
         final pad = size.height < 700 ? 20.0 : 28.0;
-        expect(short.height, closeTo(lines + pad, 1.5));
+        expect(
+          short.height,
+          closeTo(lines + pad + SpeechBalloon.tailHeight, 1.5),
+        );
         final boardTop = _rect(tester, LessonScriptKeys.board).top;
         await _tap(tester, LessonScriptKeys.primary);
         final grown = _rect(tester, LessonScriptKeys.speech);

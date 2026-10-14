@@ -27,6 +27,7 @@ import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/viktor_sheet.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/board/board_settings_ui.dart';
@@ -1415,9 +1416,14 @@ class _LessonScreenState extends State<LessonScreen>
       comment: state.practiceComment ?? _baseSpeech(context, state),
       hint: state.practiceHint,
       typing: state.typing,
-      expanded: state.speechMode == SpeechMode.expanded,
-      onExpandedChanged: (open) =>
-          open ? cubit.expandSpeech() : cubit.collapseSpeech(),
+      onOpenSpeech: (said) => unawaited(
+        showScriptSpeechSheet(
+          context,
+          viktor: viktor,
+          title: context.l10n.teacherName(viktor.name),
+          texts: [said],
+        ),
+      ),
       onStart: cubit.startPractice,
       onInviteBack: cubit.practiceInviteBack,
       onHint: cubit.askHint,

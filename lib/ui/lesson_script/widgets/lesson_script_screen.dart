@@ -15,6 +15,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/script_speech_sheet.dart';
+import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
@@ -25,7 +27,6 @@ import 'script_demo_controls.dart';
 import 'script_board.dart';
 import 'script_move_list.dart';
 import 'script_speech.dart';
-import 'script_speech_sheet.dart';
 
 /// A tela da lição roteirizada (T70): as três etapas da parte são variações
 /// desta mesma tela. De cima para baixo: a barra, o balão do Viktor, a faixa
@@ -46,8 +47,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   /// (protótipo, 50).
   static const _stripHeight = 50.0;
 
-  /// A folga entre o bico do balão e o retrato (Gabriel, 14/10/2026).
-  static const _tailGap = 6.0;
+  /// A folga entre a ponta do balão e o retrato: 4 dp (T72, canvas `CompBalao`).
+  static const _tailGap = 4.0;
 
   /// Na tela baixa, a folga mínima entre o tabuleiro e o rodapé.
   static const _compactGap = 4.0;
@@ -200,7 +201,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final marks = context.select(
       (SettingsCubit c) => c.state?.lessonMarks ?? true,
     );
-    final text = ScriptSpeech.plainOf(context, state.speech.join(' '));
+    final text = SpeechText.plainOf(context, state.speech.join(' '));
     // Todo botão citado na fala é link e faz o mesmo que ele, enquanto o
     // botão está no rodapé (Gabriel, 14/10/2026).
     VoidCallback? link(ScriptAction action) =>
@@ -217,6 +218,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             showScriptSpeechSheet(
               context,
               viktor: viktor,
+              title: context.l10n.teacherName(viktor.name),
               texts: state.speech,
               onMainLine: onMainLine,
               onShowAnswer: onShowAnswer,
@@ -311,7 +313,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               final above =
                   metrics.top +
                   metrics.minHeight(context) +
-                  ScriptSpeech.tailSize.height +
+                  SpeechBalloon.tailHeight +
                   _stripHeight +
                   _tailGap;
               final room =
@@ -324,7 +326,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
                   (box.maxHeight - size) / 2 -
                   _stripHeight -
                   _tailGap -
-                  ScriptSpeech.tailSize.height -
+                  SpeechBalloon.tailHeight -
                   ScriptSpeechMetrics.minTop -
                   2 * metrics.verticalPadding;
               final lines = metrics.compact

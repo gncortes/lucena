@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/lesson_script/widgets/script_speech_sheet.dart';
+import 'package:lucena/ui/core/widgets/script_speech_sheet.dart';
 
-import '../../../testing/fakes/fake_character_repository.dart';
-import '../../../testing/test_app.dart';
+import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/test_app.dart';
 
 void main() {
   testWidgets('fala inteira: retrato 40, nome, falas separadas por linha em '
@@ -26,6 +26,7 @@ void main() {
               onPressed: () => showScriptSpeechSheet(
                 context,
                 viktor: viktor,
+                title: 'Professor Viktor',
                 texts: const [
                   'Primeira fala.',
                   'Agora clique em {verResposta}.',
@@ -73,6 +74,7 @@ void main() {
               onPressed: () => showScriptSpeechSheet(
                 context,
                 viktor: viktor,
+                title: 'Professor Viktor',
                 texts: const ['Uma fala.'],
               ),
               child: const Text('abrir'),

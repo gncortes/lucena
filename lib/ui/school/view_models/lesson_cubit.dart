@@ -53,9 +53,6 @@ enum LessonLayoutMode {
   explaining,
 }
 
-/// O balão do prático (T70, crit. 12b): compacto (3 linhas) ou expandido.
-enum SpeechMode { compact, expanded }
-
 /// A fala genérica do app que a tela escreve (l10n) no lugar de um texto da
 /// aula: o motor respondeu (T70, crit. 8) ou o aluno achou outro lance bom.
 enum LessonNote {
@@ -179,7 +176,6 @@ class LessonState {
     this.practiceGate = false,
     this.practiceComment,
     this.practiceHint = false,
-    this.speechMode = SpeechMode.compact,
     this.practiceUndo = const [],
     this.practiceRedo = const [],
     this.offLine = false,
@@ -235,7 +231,6 @@ class LessonState {
 
   /// O balão mostra a Dica (leva o selo "Dica").
   final bool practiceHint;
-  final SpeechMode speechMode;
 
   /// Os pares lance + resposta jogados (para "Voltar") e os desfeitos (para
   /// "Continuar").
@@ -597,7 +592,6 @@ class LessonState {
     String? practiceComment,
     bool clearPracticeComment = false,
     bool? practiceHint,
-    SpeechMode? speechMode,
     List<PracticePair>? practiceUndo,
     List<PracticePair>? practiceRedo,
     bool? offLine,
@@ -681,7 +675,6 @@ class LessonState {
         ? null
         : practiceComment ?? this.practiceComment,
     practiceHint: practiceHint ?? this.practiceHint,
-    speechMode: speechMode ?? this.speechMode,
     practiceUndo: practiceUndo ?? this.practiceUndo,
     practiceRedo: practiceRedo ?? this.practiceRedo,
     offLine: offLine ?? this.offLine,
@@ -2334,10 +2327,6 @@ class LessonCubit extends Cubit<LessonState> {
     }
     await next();
   }
-
-  /// O balão do prático abre inteiro / volta à altura curta (crit. 16).
-  void expandSpeech() => emit(state.copyWith(speechMode: SpeechMode.expanded));
-  void collapseSpeech() => emit(state.copyWith(speechMode: SpeechMode.compact));
 
   /// Fim da parte (crit. 17): abre a parte seguinte.
   Future<void> continueToNextPart() async {

@@ -454,7 +454,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 board: boardSettings,
                                 talk: talk,
                               ),
-                              speechTop: -80,
+                              // A ponta do balão a 4 dp do retrato (que começa 12 dp abaixo
+                              // do alto da linha de 68).
+                              speechTop: -72,
                             ),
                           if (character == null && clocks == ClockPosition.top)
                             ClockRow(

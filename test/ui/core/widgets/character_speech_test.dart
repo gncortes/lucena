@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/widgets/character_speech.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 
 import '../../../../testing/test_app.dart';
 
@@ -21,8 +22,10 @@ final _long = List.filled(
   'Procure uma casa do rei que deixe um número ímpar.',
 ).join(' ');
 
-/// O balão do personagem (T70, pg. 4.6): compacto, grande e X.
+/// O balão do personagem (T72): o balão único, sem X; o toque abre a fala.
 void main() {
+  var opened = 0;
+
   Future<void> pump(
     WidgetTester tester, {
     required String text,
@@ -34,33 +37,28 @@ void main() {
       ..physicalSize = size
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    var expanded = false;
+    opened = 0;
     await tester.pumpWidget(
       TestApp(
-        child: StatefulBuilder(
-          builder: (context, setState) => Scaffold(
-            appBar: AppBar(title: const Text('Lição')),
-            body: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 60),
-                child: SizedBox(
-                  height: 160,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CharacterSpeech(
-                      character: _viktor,
-                      text: text,
-                      typing: typing,
-                      lead: lead,
-                      expanded: expanded,
-                      onExpandedChanged: (v) => setState(() => expanded = v),
-                      bubbleKey: LessonKeys.practiceSpeech,
-                      closeKey: LessonKeys.practiceSpeechClose,
-                      scrollKey: LessonKeys.practiceSpeechScroll,
-                      typingKey: LessonKeys.practiceTyping,
-                      avatarKey: LessonKeys.practiceViktor,
-                    ),
+        child: Scaffold(
+          appBar: AppBar(title: const Text('Lição')),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 60),
+              child: SizedBox(
+                height: 160,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CharacterSpeech(
+                    character: _viktor,
+                    text: text,
+                    typing: typing,
+                    lead: lead,
+                    onOpen: () => opened++,
+                    bubbleKey: LessonKeys.practiceSpeech,
+                    typingKey: LessonKeys.practiceTyping,
+                    avatarKey: LessonKeys.practiceViktor,
                   ),
                 ),
               ),
@@ -77,67 +75,56 @@ void main() {
 
   for (final size in const [Size(360, 740), Size(412, 917)]) {
     testWidgets(
-      '$size: texto longo: compacto com 3 linhas, toque abre, X volta',
+      '$size: texto longo: corta com reticências, toque abre, sem X',
       (tester) async {
         await pump(tester, text: _long, size: size);
         final bubble = find.byKey(LessonKeys.practiceSpeech);
-        final compact = tester.getRect(bubble);
-        expect(compact.left, 12);
-        expect(compact.width, size.width - 24);
+        final rect = tester.getRect(bubble);
+        expect(rect.left, 12);
+        expect(rect.width, size.width - 24);
         final text = tester.widget<RichText>(
           find.descendant(of: bubble, matching: find.byType(RichText)).first,
         );
-        expect(text.maxLines, 3);
+        expect(text.maxLines, lessThanOrEqualTo(3));
         expect(text.overflow, TextOverflow.ellipsis);
-        expect(find.byKey(LessonKeys.practiceSpeechClose), findsNothing);
+        expect(find.byIcon(Icons.close), findsNothing);
 
         await tester.tap(bubble);
-        await tester.pumpAndSettle();
-        final close = find.byKey(LessonKeys.practiceSpeechClose);
-        expect(close, findsOneWidget);
-        // Alvo de 48 dp, por fora, acima do balão grande.
-        final closeRect = tester.getRect(close);
-        expect(closeRect.size, const Size(48, 48));
-        final big = tester.getRect(bubble);
-        expect(closeRect.bottom, lessThanOrEqualTo(big.top + .5));
-        expect(big.left, 8);
-        expect(big.width, size.width - 16);
-        expect(big.height, lessThanOrEqualTo(size.height * .6 + .5));
-        expect(big.height, greaterThan(compact.height));
-        // O fim do balão grande fica onde o compacto terminava.
-        expect(big.bottom, closeTo(compact.bottom, 1));
-        // Rolagem interna com barra visível.
-        expect(find.byKey(LessonKeys.practiceSpeechScroll), findsOneWidget);
-        final scrollbar = tester.widget<Scrollbar>(find.byType(Scrollbar));
-        expect(scrollbar.thumbVisibility, isTrue);
-
-        await tester.tap(close);
-        await tester.pumpAndSettle();
-        expect(find.byKey(LessonKeys.practiceSpeechClose), findsNothing);
-        expect(tester.getRect(bubble), compact);
+        expect(opened, 1);
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets('$size: a ponta cai no centro do retrato (±2 dp)', (
+      tester,
+    ) async {
+      await pump(tester, text: 'Sua vez.', size: size);
+      final rect = tester.getRect(find.byKey(LessonKeys.practiceSpeech));
+      final avatar = tester.getRect(find.byKey(LessonKeys.practiceViktor));
+      final shape =
+          tester
+                  .widget<Material>(
+                    find.descendant(
+                      of: find.byKey(LessonKeys.practiceSpeech),
+                      matching: find.byType(Material),
+                    ),
+                  )
+                  .shape!
+              as SpeechBalloonShape;
+      final tip = shape.tipOf(rect);
+      expect(tip.dx, closeTo(avatar.center.dx, 2));
+      // A pontinha fica a 4 dp do retrato.
+      expect(avatar.top - tip.dy, closeTo(4, 1));
+    });
   }
 
-  testWidgets('toque no Viktor também abre o grande', (tester) async {
+  testWidgets('toque no Viktor também abre a fala', (tester) async {
     await pump(tester, text: _long);
     await tester.tap(find.byKey(LessonKeys.practiceViktor));
-    await tester.pumpAndSettle();
-    expect(find.byKey(LessonKeys.practiceSpeechClose), findsOneWidget);
+    expect(opened, 1);
   });
 
-  testWidgets('texto curto não abre o grande', (tester) async {
-    await pump(tester, text: 'Sua vez.');
-    await tester.tap(find.byKey(LessonKeys.practiceSpeech));
-    await tester.tap(find.byKey(LessonKeys.practiceViktor));
-    await tester.pumpAndSettle();
-    expect(find.byKey(LessonKeys.practiceSpeechClose), findsNothing);
-  });
-
-  testWidgets('texto curto: balão com a largura toda e peso regular', (
-    tester,
-  ) async {
+  testWidgets('balão com a largura toda e peso regular', (tester) async {
     await pump(tester, text: 'Sua vez.');
     final rect = tester.getRect(find.byKey(LessonKeys.practiceSpeech));
     expect(rect.left, 12);

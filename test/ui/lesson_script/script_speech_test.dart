@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 
 import '../../../testing/test_app.dart';
@@ -101,7 +102,9 @@ void main() {
     expect(fitted, greaterThanOrEqualTo(ScriptSpeechMetrics.minFontSize));
     // Com a letra menor, a fala cabe em 4 linhas.
     final lines =
-        (tester.getSize(find.byKey(LessonScriptKeys.speech)).height - 2 * 14) /
+        (tester.getSize(find.byKey(LessonScriptKeys.speech)).height -
+            2 * 14 -
+            SpeechBalloon.tailHeight) /
         (fitted * ScriptSpeechMetrics.lineHeight);
     expect(lines, lessThan(4.5));
   });
@@ -130,7 +133,7 @@ void main() {
     await tester.tapOnText(link);
     expect(taps, 1);
     expect(
-      ScriptSpeech.plain(
+      SpeechText.plain(
         'Clique em {linhaPrincipal}.',
         mainLine: 'Ver linha principal',
         showAnswer: 'Ver resposta',
@@ -186,7 +189,7 @@ void main() {
       TestApp(
         locale: const Locale('pt'),
         child: const Scaffold(
-          body: ScriptSpeechText(
+          body: SpeechText(
             text: 'Clique em {linhaPrincipal}. Depois siga.',
             style: TextStyle(fontSize: 15),
           ),

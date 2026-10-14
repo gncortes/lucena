@@ -5,7 +5,7 @@ import '../../../domain/models/lesson_script.dart';
 import '../../core/keys/curiosities_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/external_page_sheet.dart';
-import 'script_sheet_route.dart';
+import '../../core/widgets/script_sheet_route.dart';
 
 /// Abre a folha Curiosidades do exemplo (o livro da barra da lição): o texto
 /// sobre a posição, a citação (se houver) e, no fim, as referências. Visual do

@@ -177,8 +177,6 @@ abstract final class LessonKeys {
   static const practiceButton = Key('lesson.practice.start');
   static const practiceSpeech = Key('lesson.practice.speech');
   static const practiceBoard = Key('lesson.practice.board');
-  static const practiceSpeechClose = Key('lesson.practice.speech.close');
-  static const practiceSpeechScroll = Key('lesson.practice.speech.scroll');
   static const practiceViktor = Key('lesson.practice.viktor');
   static const practiceTyping = Key('lesson.practice.typing');
 }

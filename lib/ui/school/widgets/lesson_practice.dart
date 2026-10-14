@@ -12,13 +12,12 @@ import '../../core/widgets/exercise_frame.dart';
 /// exercício (T70, pg. 3.1 e 4.x): o Viktor no alto com o balão, o tabuleiro
 /// centralizado e o rodapé. Sem view model: a tela da lição traduz o estado
 /// do cubit nestes parâmetros (`practiceGate`, `practiceComment`,
-/// `speechMode`, `typing`, `canUndo`/`canRedo`).
+/// `typing`, `canUndo`/`canRedo`).
 class LessonPractice extends StatelessWidget {
   const LessonPractice({
     required this.viktor,
     required this.board,
-    required this.expanded,
-    required this.onExpandedChanged,
+    this.onOpenSpeech,
     this.invite = false,
     this.comment,
     this.hint = false,
@@ -36,9 +35,8 @@ class LessonPractice extends StatelessWidget {
   /// O tabuleiro, com o lado calculado pela regra do centro.
   final Widget Function(BuildContext context, double size) board;
 
-  /// O balão grande aberto (estado do cubit: `speechMode`).
-  final bool expanded;
-  final ValueChanged<bool> onExpandedChanged;
+  /// O clique no balão: abre a folha com a fala inteira.
+  final ValueChanged<String>? onOpenSpeech;
 
   /// O convite "Vamos praticar" (antes do 1º lance da parte).
   final bool invite;
@@ -82,13 +80,12 @@ class LessonPractice extends StatelessWidget {
           text: text,
           typing: typing,
           lead: hint && !invite ? l10n.lessonHint : null,
-          expanded: expanded,
-          onExpandedChanged: onExpandedChanged,
+          onOpen: onOpenSpeech == null || text == null
+              ? null
+              : () => onOpenSpeech!(text),
           bubbleKey: invite
               ? LessonKeys.practiceInvite
               : LessonKeys.practiceSpeech,
-          closeKey: LessonKeys.practiceSpeechClose,
-          scrollKey: LessonKeys.practiceSpeechScroll,
           typingKey: LessonKeys.practiceTyping,
         ),
       ),
