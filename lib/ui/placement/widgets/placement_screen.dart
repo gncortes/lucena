@@ -2,6 +2,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/app_bar_progress.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -118,74 +119,83 @@ class _Intro extends StatelessWidget {
       (Icons.schedule_rounded, l10n.placementChipMinutes),
       (Icons.timer_off_outlined, l10n.placementChipNoClock),
     ];
-    return SingleChildScrollView(
-      padding: scrollPadding(
-        context,
-        left: AppSpacing.xl,
-        top: AppSpacing.lg,
-        right: AppSpacing.xl,
-        bottom: AppSpacing.xl,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (viktor != null)
-            TeacherSpeech(
-              speechContext: SpeechContext.teaching,
-              teacher: viktor,
-              text: l10n.placementIntroSpeech,
-              emotion: Emotion.happy,
-              avatarSize: 56,
-              speaks: true,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: scrollPadding(
+              context,
+              // Canvas `PropV2TesteAbertura`: margem de 16, como o rodapé.
+              left: AppSpacing.lg,
+              top: AppSpacing.lg,
+              right: AppSpacing.lg,
+              bottom: AppSpacing.xl,
             ),
-          const SizedBox(height: AppSpacing.xl),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              for (final (icon, label) in chips)
-                Chip(avatar: Icon(icon, size: 18), label: Text(label)),
-            ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (viktor != null)
+                  TeacherSpeech(
+                    speechContext: SpeechContext.teaching,
+                    teacher: viktor,
+                    text: l10n.placementIntroSpeech,
+                    emotion: Emotion.happy,
+                    avatarSize: 56,
+                    speaks: true,
+                  ),
+                const SizedBox(height: AppSpacing.xl),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    for (final (icon, label) in chips)
+                      Chip(avatar: Icon(icon, size: 18), label: Text(label)),
+                  ],
+                ),
+                if (onChooseByHand != null) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  TextButton(
+                    key: PlacementKeys.chooseByHand,
+                    onPressed: onChooseByHand,
+                    child: Text(l10n.placementChooseByHand),
+                  ),
+                ],
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          if (state.resuming) ...[
-            FilledButton(
-              key: PlacementKeys.resume,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              onPressed: cubit.start,
-              child: Text(l10n.placementResume(state.number)),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            OutlinedButton(
-              key: PlacementKeys.restart,
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              onPressed: cubit.restart,
-              child: Text(l10n.placementRestart),
-            ),
-          ] else
-            FilledButton(
-              key: PlacementKeys.start,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              onPressed: cubit.start,
-              child: Text(l10n.placementStart),
-            ),
-          if (onChooseByHand != null) ...[
-            const SizedBox(height: AppSpacing.sm),
-            TextButton(
-              key: PlacementKeys.chooseByHand,
-              onPressed: onChooseByHand,
-              child: Text(l10n.placementChooseByHand),
-            ),
-          ],
-        ],
-      ),
+        ),
+        // Fixo no rodapé, como nas lições e no exercício (Gabriel,
+        // 14/10/2026): o mesmo componente, com margem de 16.
+        ExerciseActions(
+          key: PlacementKeys.footer,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          divider: false,
+          hug: true,
+          actions: state.resuming
+              ? [
+                  ExerciseAction(
+                    key: PlacementKeys.restart,
+                    label: l10n.placementRestart,
+                    onPressed: cubit.restart,
+                  ),
+                  ExerciseAction(
+                    key: PlacementKeys.resume,
+                    label: l10n.placementResume(state.number),
+                    primary: true,
+                    onPressed: cubit.start,
+                  ),
+                ]
+              : [
+                  ExerciseAction(
+                    key: PlacementKeys.start,
+                    label: l10n.placementStart,
+                    primary: true,
+                    onPressed: cubit.start,
+                  ),
+                ],
+        ),
+      ],
     );
   }
 }

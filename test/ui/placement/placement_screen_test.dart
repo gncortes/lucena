@@ -7,12 +7,16 @@ import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 import 'package:lucena/ui/placement/widgets/placement_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/domain/models/voice.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/placement_synthetic.dart';
 
@@ -40,6 +44,7 @@ void main() {
     bool geometry = false,
     double textScale = 1,
     bool disableAnimations = false,
+    SpeechCubit? speech,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -72,6 +77,7 @@ void main() {
       TestApp(
         locale: const Locale('pt'),
         settingsCubit: settings,
+        speechCubit: speech,
         child: Builder(
           builder: (context) => MediaQuery(
             data: MediaQuery.of(context).copyWith(
@@ -119,6 +125,82 @@ void main() {
     await tester.pumpAndSettle();
     expect(done, isTrue);
     expect(profile.profile.rating, cubit.state.result!.theta);
+  });
+
+  for (final size in [const Size(412, 915), const Size(360, 640)]) {
+    testWidgets('abertura, $size: "Começar" fixo no rodapé, margem de 16', (
+      tester,
+    ) async {
+      await pump(tester, size: size, onChooseByHand: () {});
+      final footer = tester.getRect(find.byKey(PlacementKeys.footer));
+      final start = tester.getRect(find.byKey(PlacementKeys.start));
+      // O rodapé encosta na base da tela, como nas lições e no exercício.
+      expect(footer.bottom, size.height);
+      expect(footer.left, 0);
+      expect(footer.right, size.width);
+      expect(size.height - start.bottom, 16);
+      expect(size.width - start.right, 16);
+      // O conteúdo (fala, selos, "prefiro escolher") rola acima do rodapé.
+      await tester.scrollUntilVisible(
+        find.byKey(PlacementKeys.chooseByHand),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final choose = tester.getRect(find.byKey(PlacementKeys.chooseByHand));
+      expect(choose.bottom, lessThanOrEqualTo(footer.top));
+      expect(tester.getRect(find.byKey(PlacementKeys.footer)), footer);
+    });
+  }
+
+  for (final enabled in [true, false]) {
+    testWidgets('abertura, voz ${enabled ? 'ligada' : 'desligada'}: o "1×" '
+        '${enabled ? 'aparece' : 'some'} e o som fica à vista', (tester) async {
+      final speech = SpeechCubit(
+        FakeVoiceRepository(settings: VoiceSettings(enabled: enabled)),
+      );
+      addTearDown(speech.close);
+      await speech.load();
+      await pump(tester, speech: speech);
+      expect(
+        find.byKey(VoiceKeys.speedButton),
+        enabled ? findsOneWidget : findsNothing,
+      );
+      expect(find.byKey(VoiceKeys.speakButton), findsOneWidget);
+    });
+  }
+
+  testWidgets('abertura: o balão não repete o que os selos dizem', (
+    tester,
+  ) async {
+    await pump(tester);
+    expect(find.textContaining('20 perguntas, sem relógio'), findsNothing);
+    expect(find.textContaining('Não vale chutar'), findsOneWidget);
+  });
+
+  testWidgets('abertura retomada: "Recomeçar" e "Continuar" no rodapé', (
+    tester,
+  ) async {
+    final (cubit, _) = await pump(tester);
+    await tester.tap(find.byKey(PlacementKeys.start));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(PlacementKeys.dontKnow));
+    await tester.pumpAndSettle();
+    await cubit.load();
+    await tester.pumpAndSettle();
+    expect(cubit.state.resuming, isTrue);
+    final footer = find.byKey(PlacementKeys.footer);
+    for (final key in [PlacementKeys.restart, PlacementKeys.resume]) {
+      expect(
+        find.descendant(of: footer, matching: find.byKey(key)),
+        findsOneWidget,
+      );
+      expect(tester.getRect(find.byKey(key)).bottom, 800 - 16);
+    }
+    // O principal à direita, como no exercício.
+    expect(
+      tester.getRect(find.byKey(PlacementKeys.resume)).left,
+      greaterThan(tester.getRect(find.byKey(PlacementKeys.restart)).right),
+    );
   });
 
   for (final reducedMotion in [false, true]) {

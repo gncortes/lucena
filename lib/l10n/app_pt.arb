@@ -816,7 +816,7 @@
   "ratingPeriodTitle": "Período",
   "conclusionTimeSpent": "Tempo gasto",
   "placementTitle": "Teste de nível",
-  "placementIntroSpeech": "São 20 perguntas, sem relógio. Não vale chutar: se não souber, clique em \"Não sei\". No fim eu monto o seu roteiro de estudo.",
+  "placementIntroSpeech": "Não vale chutar: se não souber, clique em \"Não sei\". No fim eu monto o seu roteiro de estudo.",
   "placementChipQuestions": "20 perguntas",
   "placementChipMinutes": "uns 8 minutos",
   "placementChipNoClock": "sem relógio",
