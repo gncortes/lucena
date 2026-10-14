@@ -34,6 +34,7 @@ import '../../voice/widgets/voice_pickers.dart';
 import '../view_models/tour_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/sound_off_icon.dart';
 
 /// O tour da primeira abertura: o que é o app, a aparência (tema, cor do app
 /// e tabuleiro), rating, Jornada, finais, adversários, speedrun e recordes, e
@@ -553,9 +554,9 @@ class _SoundStep extends StatelessWidget {
           ListTile(
             key: TourKeys.sound(enabled: enabled),
             selected: sound == enabled,
-            leading: Icon(
-              enabled ? Icons.volume_up_outlined : Icons.volume_off_outlined,
-            ),
+            leading: enabled
+                ? const Icon(Icons.volume_up_outlined)
+                : const SoundOffIcon(),
             title: Text(enabled ? l10n.tourSoundOn : l10n.tourSoundOff),
             trailing: Icon(
               sound == enabled

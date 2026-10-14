@@ -10,6 +10,7 @@ import '../keys/lesson_sound_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_spacing.dart';
 import 'one_line.dart';
+import 'sound_off_icon.dart';
 
 /// Som da aula: usa as preferências existentes e preserva as dos adversários.
 /// A tela da aula também deve bloquear a reprodução quando o som geral está off.
@@ -105,8 +106,8 @@ class _LessonSoundDialog extends StatelessWidget {
                       _PreferenceSwitch(
                         switchKey: LessonSoundKeys.sound,
                         icon: settings.sound
-                            ? Icons.volume_up_outlined
-                            : Icons.volume_off_outlined,
+                            ? const Icon(Icons.volume_up_outlined, size: 22)
+                            : const SoundOffIcon(size: 22),
                         title: l10n.settingsSound,
                         subtitle: l10n.lessonSoundHint,
                         value: settings.sound,
@@ -122,9 +123,12 @@ class _LessonSoundDialog extends StatelessWidget {
                       const SizedBox(height: AppSpacing.xs),
                       _PreferenceSwitch(
                         switchKey: LessonSoundKeys.teacherVoice,
-                        icon: speech.settings.enabled
-                            ? Icons.chat_bubble_outline
-                            : Icons.speaker_notes_off_outlined,
+                        icon: Icon(
+                          speech.settings.enabled
+                              ? Icons.chat_bubble_outline
+                              : Icons.speaker_notes_off_outlined,
+                          size: 22,
+                        ),
                         title: l10n.lessonTeacherVoice,
                         subtitle: l10n.lessonTeacherVoiceHint,
                         value: speech.settings.enabled,
@@ -197,7 +201,7 @@ class _PreferenceSwitch extends StatelessWidget {
   });
 
   final Key switchKey;
-  final IconData icon;
+  final Widget icon;
   final String title;
   final String subtitle;
   final bool value;
@@ -213,7 +217,7 @@ class _PreferenceSwitch extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 48),
           child: Row(
             children: [
-              Icon(icon, size: 22),
+              icon,
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(

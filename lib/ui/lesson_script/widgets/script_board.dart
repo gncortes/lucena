@@ -360,11 +360,16 @@ class _ScriptBoardState extends State<ScriptBoard> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return AnimatedRotation(
-      turns: _turns,
-      duration: _spinning ? ScriptBoard.flip : Duration.zero,
-      curve: AppMotion.move,
-      child: _faded(colors),
+    // No giro, os cantos do tabuleiro saem do quadrado: o corte os segura
+    // dentro dele (nada passa por cima da linha do Viktor nem do balão).
+    return ClipRect(
+      clipBehavior: _spinning ? Clip.hardEdge : Clip.none,
+      child: AnimatedRotation(
+        turns: _turns,
+        duration: _spinning ? ScriptBoard.flip : Duration.zero,
+        curve: AppMotion.move,
+        child: _faded(colors),
+      ),
     );
   }
 

@@ -10,6 +10,7 @@ import '../../core/theme/app_shape.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/talk_cubit.dart';
+import '../../core/widgets/sound_off_icon.dart';
 
 /// Preferências persistidas pelos view models existentes; fechar não altera nada.
 Future<void> showGameSoundDialog(BuildContext context) {
@@ -104,11 +105,9 @@ class _SoundDialog extends StatelessWidget {
                       SwitchListTile(
                         key: GameSoundKeys.sound,
                         contentPadding: EdgeInsets.zero,
-                        secondary: Icon(
-                          settings.sound
-                              ? Icons.volume_up_outlined
-                              : Icons.volume_off_outlined,
-                        ),
+                        secondary: settings.sound
+                            ? const Icon(Icons.volume_up_outlined)
+                            : const SoundOffIcon(),
                         title: Text(l10n.settingsSound),
                         subtitle: Text(l10n.settingsSoundHint),
                         value: settings.sound,

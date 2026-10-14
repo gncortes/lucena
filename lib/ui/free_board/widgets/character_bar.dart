@@ -17,6 +17,7 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/widgets/sound_off_icon.dart';
 
 export '../../core/widgets/character_speech.dart'
     show BubblePainter, TypewriterText;
@@ -350,10 +351,9 @@ class CharacterSoundButton extends StatelessWidget {
               Badge(
                 isLabelVisible: heard && speech.availableFor(language),
                 label: Text(l10n.voiceSpeedValue(speech.settings.speed)),
-                child: Icon(
-                  sound ? Icons.volume_up_outlined : Icons.volume_off_outlined,
-                  size: 22,
-                ),
+                child: sound
+                    ? const Icon(Icons.volume_up_outlined, size: 22)
+                    : const SoundOffIcon(size: 22),
               ),
               const SizedBox(height: 4),
               Flexible(

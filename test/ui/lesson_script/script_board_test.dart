@@ -178,4 +178,40 @@ void main() {
       expect(board(tester).settings.enableCoordinates, isFalse);
     });
   });
+
+  testWidgets('na meia-volta, o tabuleiro gira cortado no quadrado', (
+    tester,
+  ) async {
+    Widget at(Side side) => MaterialApp(
+      home: Scaffold(
+        body: ScriptBoard(
+          state: LessonScriptState(
+            ready: true,
+            fen: '4k3/8/8/8/8/8/8/4K3 w - - 0 1',
+            orientation: side,
+          ),
+          size: size,
+          settings: const BoardSettings(),
+          onMove: (_) {},
+        ),
+      ),
+    );
+    Clip clip() => tester
+        .widget<ClipRect>(
+          find
+              .ancestor(
+                of: find.byType(AnimatedRotation),
+                matching: find.byType(ClipRect),
+              )
+              .first,
+        )
+        .clipBehavior;
+    await tester.pumpWidget(at(Side.white));
+    expect(clip(), Clip.none);
+    await tester.pumpWidget(at(Side.black));
+    await tester.pump(ScriptBoard.flip ~/ 2);
+    expect(clip(), Clip.hardEdge);
+    await tester.pumpAndSettle();
+    expect(clip(), Clip.none);
+  });
 }

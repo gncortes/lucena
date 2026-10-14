@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/explanation.dart';
 import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/ui/core/widgets/sound_off_icon.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
@@ -342,7 +343,7 @@ void main() {
       await tester.pump();
       expect(speech.state.speaking, isNull);
       expect(find.text('1×'), findsNothing);
-      expect(find.byIcon(Icons.volume_off_outlined), findsOneWidget);
+      expect(find.byType(SoundOffIcon), findsOneWidget);
       expect(find.byTooltip('Sound and voice: off'), findsOneWidget);
       text.value = 'Next teaching sentence while muted.';
       await tester.pump();
@@ -1247,7 +1248,7 @@ void main() {
         'cala e grava a escolha', (tester) async {
       final (speech, voice) = await pumpWithVoice(tester, enabled: false);
       expect(voice.spoken, isEmpty);
-      expect(find.byIcon(Icons.volume_off_outlined), findsOneWidget);
+      expect(find.byType(SoundOffIcon), findsOneWidget);
       await tester.tap(find.byKey(VoiceKeys.speakButton));
       await tester.pump();
       expect(voice.settings.enabled, isTrue);

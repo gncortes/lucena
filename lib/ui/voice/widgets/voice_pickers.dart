@@ -8,6 +8,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../view_models/speech_cubit.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/sound_off_icon.dart';
 
 /// O idioma do app, para escolher as vozes que falam nele.
 String voiceLanguage(BuildContext context) =>
@@ -187,7 +188,12 @@ class TeacherVoiceList extends StatelessWidget {
             if (withNone)
               VoiceCard(
                 key: VoiceKeys.none,
-                icon: Icons.volume_off_outlined,
+                leading: enabled
+                    ? SoundOffIcon(
+                        size: 30,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      )
+                    : null,
                 label: l10n.voiceNone,
                 selected: !enabled,
                 onTap: () => speech.setEnabled(enabled: false),

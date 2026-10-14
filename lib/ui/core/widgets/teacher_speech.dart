@@ -32,6 +32,7 @@ import 'external_page_sheet.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import '../theme/lesson_text_colors.dart';
+import 'sound_off_icon.dart';
 
 /// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
 enum SpeechContext {
@@ -294,11 +295,10 @@ class TeacherSpeech extends StatelessWidget {
                     clipBehavior: Clip.none,
                     alignment: Alignment.center,
                     children: [
-                      Icon(
-                        audible
-                            ? Icons.volume_up_outlined
-                            : Icons.volume_off_outlined,
-                      ),
+                      if (audible)
+                        const Icon(Icons.volume_up_outlined)
+                      else
+                        const SoundOffIcon(),
                       if (audible)
                         PositionedDirectional(
                           start: -4,
@@ -346,7 +346,7 @@ class TeacherSpeech extends StatelessWidget {
                     ? VisualDensity.standard
                     : VisualDensity.compact,
                 tooltip: context.l10n.voiceSection,
-                icon: const Icon(Icons.volume_off_outlined),
+                icon: const SoundOffIcon(),
                 onPressed: () => context.push(Routes.settingsVoice),
               );
             }
@@ -387,7 +387,7 @@ class TeacherSpeech extends StatelessWidget {
                         : l10n.voiceAutoOn(teacher.name),
                     isSelected: !state.settings.enabled,
                     icon: const Icon(Icons.volume_up_outlined),
-                    selectedIcon: const Icon(Icons.volume_off_outlined),
+                    selectedIcon: const SoundOffIcon(),
                     onPressed: () async {
                       if (_stacked &&
                           !(_settingsOf(context)?.state?.sound ?? true)) {
