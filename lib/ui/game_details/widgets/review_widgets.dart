@@ -354,7 +354,8 @@ class _StoryTellerState extends State<_StoryTeller> {
   Widget build(BuildContext context) {
     if (!_told) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      // Vão de 8 em cima, como o do balão nas outras telas.
+      padding: const EdgeInsets.only(top: 8, bottom: 14),
       child: TeacherSpeech(
         key: GameDetailsKeys.story,
         teacher: widget.viktor,

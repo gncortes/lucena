@@ -543,6 +543,9 @@
     "Good. One more piece of the technique in place.",
     "Chapter complete. Rest your head for a moment, then go on."
   ],
+  "coach.allPartsDone": [
+    "You have studied the whole lesson; the technique is now in your hands."
+  ],
   "coach.lessonDone": [
     "Lesson complete. I am proud of you.",
     "Well done. One more step on your road.",

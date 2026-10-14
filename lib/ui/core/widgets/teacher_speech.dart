@@ -442,11 +442,15 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
+  /// "Mestre" é só do Viktor; os adversários aparecem só pelo nome.
+  String _label(BuildContext context) =>
+      teacher.isMaster ? context.l10n.teacherName(teacher.name) : teacher.name;
+
   Widget _name(BuildContext context) {
     final theme = Theme.of(context);
     if (lessonV2) {
       return Text(
-        context.l10n.teacherName(teacher.name),
+        _label(context),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.titleSmall?.copyWith(
@@ -456,7 +460,7 @@ class TeacherSpeech extends StatelessWidget {
       );
     }
     return Text(
-      context.l10n.teacherName(teacher.name),
+      _label(context),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style:

@@ -543,6 +543,9 @@
     "Boa. Mais uma peça da técnica no lugar.",
     "Capítulo concluído. Descanse a cabeça um instante e siga."
   ],
+  "coach.allPartsDone": [
+    "Você estudou a aula inteira; a técnica já está nas suas mãos."
+  ],
   "coach.lessonDone": [
     "Aula concluída. Estou orgulhoso de você.",
     "Muito bem. Mais um passo no seu caminho.",

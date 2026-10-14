@@ -39,6 +39,31 @@ class _DelayedVoiceRepository extends FakeVoiceRepository {
 }
 
 void main() {
+  testWidgets('"Mestre" só no Viktor; os adversários só pelo nome', (
+    tester,
+  ) async {
+    for (final (teacher, label) in [
+      (FakeCharacterRepository.viktor, 'Mestre Viktor'),
+      (FakeCharacterRepository.magician, 'Valdini'),
+    ]) {
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: Scaffold(
+            body: TeacherSpeech(
+              teacher: teacher,
+              text: 'Olá.',
+              speechContext: SpeechContext.teaching,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text(label), findsOneWidget);
+      expect(find.text('Mestre Valdini'), findsNothing);
+    }
+  });
+
   testWidgets(
     'editorial text direction preserves fallback SAN and Arabic links',
     (tester) async {

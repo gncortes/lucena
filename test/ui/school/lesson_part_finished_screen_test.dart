@@ -67,6 +67,8 @@ void main() {
           texts: LessonTexts.fromJson({
             'rook.lucena.a': 'First.',
             'rook.lucena.b': 'Second.',
+            'coach.partDone': ['Chapter done.'],
+            'coach.allPartsDone': ['Lesson done.'],
           }),
         ),
         FakeEndgameProgressRepository(),
@@ -106,6 +108,8 @@ void main() {
     await cubit.next();
     await tester.pumpAndSettle();
     expect(cubit.state.finished, isTrue);
+    // A última parte fecha a aula: fala de fim de aula, não de capítulo.
+    expect(cubit.state.speech, 'Lesson done.');
     expect(find.byKey(LessonKeys.appBarClose), findsOneWidget);
     expect(
       find.descendant(

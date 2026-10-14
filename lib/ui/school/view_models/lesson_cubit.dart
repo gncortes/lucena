@@ -1066,7 +1066,7 @@ class LessonCubit extends Cubit<LessonState> {
   }
 
   /// O id do Viktor nas fichas dos personagens.
-  static const viktorId = 'master';
+  static const viktorId = Character.masterId;
 
   /// "Continuar": passa da fala, ou do passo cumprido, para o próximo; no
   /// último, conclui a aula.
@@ -3242,7 +3242,10 @@ class LessonCubit extends Cubit<LessonState> {
         state.copyWith(
           finished: true,
           nextPart: outcome.nextPart,
-          speech: _pick('coach.partDone') ?? _pick('coach.lessonDone'),
+          // A última parte fecha a aula: fala de fim de aula, não de capítulo.
+          speech: outcome.nextPart == null
+              ? _pick('coach.allPartsDone') ?? _pick('coach.lessonDone')
+              : _pick('coach.partDone') ?? _pick('coach.lessonDone'),
           emotion: Emotion.confident,
         ),
       );

@@ -328,6 +328,16 @@ void main() {
     }
     expect(cubit.state.reviewing, isTrue);
     expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
+    // Vão de 8 entre a barra de progresso e o retrato da história.
+    final storyPadding = tester.widget<Padding>(
+      find
+          .ancestor(
+            of: find.byKey(GameDetailsKeys.story),
+            matching: find.byType(Padding),
+          )
+          .first,
+    );
+    expect(storyPadding.padding, const EdgeInsets.only(top: 8, bottom: 14));
     final sheetTop = tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
     final board = tester.getRect(find.byKey(GameDetailsKeys.board));
     expect(board.bottom, lessThanOrEqualTo(sheetTop));
