@@ -532,22 +532,6 @@
       "referencias": [
        "capablanca",
        {
-        "id": "ph_partida",
-        "kind": "game",
-        "white": "Lorem Ipsum",
-        "black": "Dolor Sit",
-        "event": "Lorem Open",
-        "year": 1900,
-        "url": "https://lichess.org/AAAAAAAA"
-       },
-       {
-        "id": "ph_estudo",
-        "kind": "study",
-        "author": "lorem",
-        "title": "Lorem ipsum: estudo",
-        "url": "https://lichess.org/study/AAAAAAAA"
-       },
-       {
         "id": "capablanca_jogador",
         "kind": "player",
         "name": "José Raúl Capablanca",
@@ -562,13 +546,18 @@
         "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
+        "id": "lichess_practice",
+        "kind": "web",
+        "title": "Lichess Practice",
+        "url": "https://lichess.org/practice"
+       },
+       {
         "id": "ph_livro",
         "kind": "book",
         "author": "Lorem Ipsum",
         "title": "Lorem ipsum dolor",
         "publisher": "Sit Amet",
-        "year": 1900,
-        "url": "https://example.com/lorem-ipsum"
+        "year": 1900
        }
       ],
       "t": "rot.ideia.ex1.cur.t"
@@ -863,22 +852,6 @@
       "referencias": [
        "capablanca",
        {
-        "id": "ph_partida",
-        "kind": "game",
-        "white": "Lorem Ipsum",
-        "black": "Dolor Sit",
-        "event": "Lorem Open",
-        "year": 1900,
-        "url": "https://lichess.org/AAAAAAAA"
-       },
-       {
-        "id": "ph_estudo",
-        "kind": "study",
-        "author": "lorem",
-        "title": "Lorem ipsum: estudo",
-        "url": "https://lichess.org/study/AAAAAAAA"
-       },
-       {
         "id": "capablanca_jogador",
         "kind": "player",
         "name": "José Raúl Capablanca",
@@ -893,13 +866,18 @@
         "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
+        "id": "lichess_practice",
+        "kind": "web",
+        "title": "Lichess Practice",
+        "url": "https://lichess.org/practice"
+       },
+       {
         "id": "ph_livro",
         "kind": "book",
         "author": "Lorem Ipsum",
         "title": "Lorem ipsum dolor",
         "publisher": "Sit Amet",
-        "year": 1900,
-        "url": "https://example.com/lorem-ipsum"
+        "year": 1900
        }
       ],
       "t": "rot.ideia.ex2.cur.t"
@@ -1146,22 +1124,6 @@
       "referencias": [
        "capablanca",
        {
-        "id": "ph_partida",
-        "kind": "game",
-        "white": "Lorem Ipsum",
-        "black": "Dolor Sit",
-        "event": "Lorem Open",
-        "year": 1900,
-        "url": "https://lichess.org/AAAAAAAA"
-       },
-       {
-        "id": "ph_estudo",
-        "kind": "study",
-        "author": "lorem",
-        "title": "Lorem ipsum: estudo",
-        "url": "https://lichess.org/study/AAAAAAAA"
-       },
-       {
         "id": "capablanca_jogador",
         "kind": "player",
         "name": "José Raúl Capablanca",
@@ -1176,13 +1138,18 @@
         "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
+        "id": "lichess_practice",
+        "kind": "web",
+        "title": "Lichess Practice",
+        "url": "https://lichess.org/practice"
+       },
+       {
         "id": "ph_livro",
         "kind": "book",
         "author": "Lorem Ipsum",
         "title": "Lorem ipsum dolor",
         "publisher": "Sit Amet",
-        "year": 1900,
-        "url": "https://example.com/lorem-ipsum"
+        "year": 1900
        }
       ],
       "t": "rot.demos.fileiraAbaixo.cur.t"
@@ -1400,22 +1367,6 @@
       "referencias": [
        "capablanca",
        {
-        "id": "ph_partida",
-        "kind": "game",
-        "white": "Lorem Ipsum",
-        "black": "Dolor Sit",
-        "event": "Lorem Open",
-        "year": 1900,
-        "url": "https://lichess.org/AAAAAAAA"
-       },
-       {
-        "id": "ph_estudo",
-        "kind": "study",
-        "author": "lorem",
-        "title": "Lorem ipsum: estudo",
-        "url": "https://lichess.org/study/AAAAAAAA"
-       },
-       {
         "id": "capablanca_jogador",
         "kind": "player",
         "name": "José Raúl Capablanca",
@@ -1430,13 +1381,18 @@
         "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
+        "id": "lichess_practice",
+        "kind": "web",
+        "title": "Lichess Practice",
+        "url": "https://lichess.org/practice"
+       },
+       {
         "id": "ph_livro",
         "kind": "book",
         "author": "Lorem Ipsum",
         "title": "Lorem ipsum dolor",
         "publisher": "Sit Amet",
-        "year": 1900,
-        "url": "https://example.com/lorem-ipsum"
+        "year": 1900
        }
       ],
       "t": "rot.demos.tempo.cur.t"
@@ -1563,22 +1519,6 @@
       "referencias": [
        "capablanca",
        {
-        "id": "ph_partida",
-        "kind": "game",
-        "white": "Lorem Ipsum",
-        "black": "Dolor Sit",
-        "event": "Lorem Open",
-        "year": 1900,
-        "url": "https://lichess.org/AAAAAAAA"
-       },
-       {
-        "id": "ph_estudo",
-        "kind": "study",
-        "author": "lorem",
-        "title": "Lorem ipsum: estudo",
-        "url": "https://lichess.org/study/AAAAAAAA"
-       },
-       {
         "id": "capablanca_jogador",
         "kind": "player",
         "name": "José Raúl Capablanca",
@@ -1593,13 +1533,18 @@
         "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
+        "id": "lichess_practice",
+        "kind": "web",
+        "title": "Lichess Practice",
+        "url": "https://lichess.org/practice"
+       },
+       {
         "id": "ph_livro",
         "kind": "book",
         "author": "Lorem Ipsum",
         "title": "Lorem ipsum dolor",
         "publisher": "Sit Amet",
-        "year": 1900,
-        "url": "https://example.com/lorem-ipsum"
+        "year": 1900
        }
       ],
       "t": "rot.demos.erroAtacante.cur.t"
