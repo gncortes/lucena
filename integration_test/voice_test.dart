@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/lesson_sound_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
@@ -70,6 +71,11 @@ void main() {
 
     // Só a voz do professor: nada de lista de vozes por adversário.
     await $(VoiceKeys.voice(_voice(0))).scrollTo();
+    // Controle: o idioma é mesmo o inglês (o título que fica aparece), então
+    // a ausência dos textos antigos, abaixo, prova alguma coisa.
+    final l10n = $.tester.element(find.byKey(VoiceKeys.settingsSection)).l10n;
+    expect(find.text(l10n.voiceTeacher), findsOneWidget);
+    expect(l10n.voiceTeacher, "Teacher's voice");
     expect(find.text("Opponents' voices"), findsNothing);
     expect(find.text('Chosen by the app'), findsNothing);
     expect(find.byKey(VoiceKeys.keep), findsNothing);
