@@ -50,7 +50,7 @@ class ExerciseActions extends StatelessWidget {
     this.hint,
     this.actions = const [],
     this.fill = false,
-    this.padding = const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 16),
+    this.padding = const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
     this.color,
     this.leading,
     this.hug = false,
@@ -69,6 +69,8 @@ class ExerciseActions extends StatelessWidget {
   /// com [actionWidth] de mínimo (lição roteirizada, canvas `T70-etapa1-estados`: "Ver linha
   /// principal" não quebra).
   final bool hug;
+
+  /// Margem lateral de 16, igual à das outras telas (Gabriel, 14/10/2026).
   final EdgeInsetsGeometry padding;
 
   /// O fundo do rodapé; sem ele, branco (pg. 3.1/4.7).

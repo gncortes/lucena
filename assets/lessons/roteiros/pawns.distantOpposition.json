@@ -517,26 +517,7 @@
        "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
        "t": "rot.ideia.ex1.l36"
       }
-     ],
-     "curiosidades": {
-      "t": "rot.ideia.ex1.cur.t",
-      "referencias": [
-       "capablanca",
-       {
-        "id": "capablanca_jogador",
-        "kind": "player",
-        "name": "José Raúl Capablanca",
-        "initials": "JC",
-        "dates": "1888–1942",
-        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       },
-       "wikiOpposition"
-      ],
-      "citacao": {
-       "t": "rot.ideia.ex1.cur.cit",
-       "autor": "José Raúl Capablanca, Chess Fundamentals (1921)"
-      }
-     }
+     ]
     },
     {
      "id": "ex2",
@@ -818,14 +799,7 @@
        "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
        "t": "rot.ideia.ex2.ponte"
       }
-     ],
-     "curiosidades": {
-      "t": "rot.ideia.ex2.cur.t",
-      "referencias": [
-       "carlsenSo2017",
-       "wikiOpposition"
-      ]
-     }
+     ]
     }
    ]
   },
@@ -1028,19 +1002,7 @@
         "h4"
        ]
       }
-     ],
-     "curiosidades": {
-      "t": "rot.demos.fileiraAbaixo.cur.t",
-      "referencias": [
-       {
-        "id": "wiki_casa_chave",
-        "kind": "web",
-        "title": "Wikipedia: Key square",
-        "url": "https://en.wikipedia.org/wiki/Key_square"
-       },
-       "wikiKpk"
-      ]
-     }
+     ]
     },
     {
      "id": "tempo",
@@ -1205,25 +1167,7 @@
        "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
        "t": "rot.demos.tempo.23"
       }
-     ],
-     "curiosidades": {
-      "t": "rot.demos.tempo.cur.t",
-      "referencias": [
-       "capablanca",
-       {
-        "id": "capablanca_jogador",
-        "kind": "player",
-        "name": "José Raúl Capablanca",
-        "initials": "JC",
-        "dates": "1888–1942",
-        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       }
-      ],
-      "citacao": {
-       "t": "rot.demos.tempo.cur.cit",
-       "autor": "José Raúl Capablanca, Chess Fundamentals (1921)"
-      }
-     }
+     ]
     },
     {
      "id": "erroAtacante",
@@ -1297,25 +1241,7 @@
        "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
        "t": "rot.demos.erroAtacante.ponte"
       }
-     ],
-     "curiosidades": {
-      "t": "rot.demos.erroAtacante.cur.t",
-      "referencias": [
-       "capablanca",
-       {
-        "id": "capablanca_jogador",
-        "kind": "player",
-        "name": "José Raúl Capablanca",
-        "initials": "JC",
-        "dates": "1888–1942",
-        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
-       }
-      ],
-      "citacao": {
-       "t": "rot.demos.erroAtacante.cur.cit",
-       "autor": "José Raúl Capablanca, Chess Fundamentals (1921)"
-      }
-     }
+     ]
     }
    ]
   },

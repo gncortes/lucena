@@ -443,7 +443,6 @@
   "ex.e16.r4": "4...Rd4. O rei preto dá um passo de espera, sem capturar. Ele testa se o rei branco conhece a casa que corresponde a d4; um lance fora do compasso, e a captura de e5 vence.",
   "ex.e16.r5": "5...Re4. Outro passo de espera, agora para e4, ainda ao lado do peão de e5. O rei branco precisa, de novo, encontrar a casa que corresponde a essa.",
   "ex.e16.r6": "6...Rxe5. Enfim o rei preto captura o peão de e5 e quer seguir para f6, rumo a h7, para defendê-lo. O rei branco precisa impedir essa passagem com a oposição.",
-  "rot.ideia.ex1.cur.t": "Capablanca, campeão mundial de 1921 a 1927, dedicou uma seção inteira do livro Chess Fundamentals à oposição. Ele mostra a oposição com os reis colados e depois pede ao leitor que os afaste: é a oposição distante deste exemplo.",
   "rot.ideia.ex1.e1": "Vamos estudar um final básico: rei e peão contra o rei sozinho.",
   "rot.ideia.ex1.e2": "Se o peão correr sozinho, o rei preto o alcança e o captura. Quem decide aqui é o seu rei.",
   "rot.ideia.ex1.e3": "Seu rei precisa abrir caminho para o peão.",
@@ -508,7 +507,6 @@
   "rot.ideia.ex1.l34": "Vamos voltar à posição inicial. Nas outras defesas do rei preto, a ideia é a mesma.",
   "rot.ideia.ex1.l35": "Guarde a ideia: o rei vai à frente do peão e conquista a oposição. O peão só avança depois.",
   "rot.ideia.ex1.l36": "Agora vamos ver o outro lado: como as pretas usam a mesma ideia para se defender.",
-  "rot.ideia.ex2.cur.t": "Em 2017, no torneio Norway Chess, Wesley So defendeu um final de reis e peões contra Magnus Carlsen, então campeão mundial, com um peão a menos. A cada passo do rei branco, o rei preto ficava de frente para ele. A posição se repetiu, e a partida terminou empatada.",
   "rot.ideia.ex2.e1": "Agora você joga com as pretas, e o tabuleiro vira. As brancas acabaram de levar o rei para e3.",
   "rot.ideia.ex2.e2": "Com a defesa certa, as pretas seguram esta posição.",
   "rot.ideia.ex2.e4": "O rei branco quer chegar a f5, g5 ou h5, as casas-chave do peão.",
@@ -549,9 +547,6 @@
   "rot.ideia.ex2.l16": "Por isso, contra o rei em f4, a resposta é f6: de frente, mantendo a oposição.",
   "rot.ideia.ex2.l17": "Vamos voltar à posição com o seu rei em e7. Na defesa, a regra é a mesma do ataque.",
   "rot.ideia.ex2.l18": "Conquiste a oposição e leve o rei para a frente do peão.",
-  "rot.demos.fileiraAbaixo.cur.t": "As casas-chave poupam cálculo: em vez de prever todos os lances, basta saber se o rei chega a uma delas. Por isso os livros de finais ensinam essa regra logo no começo.",
-  "rot.demos.tempo.cur.t": "Capablanca mostra uma posição só de reis e peões que, para um iniciante, parece igual. Ele avisa que não é: quem tiver a vez ganha. Foi o que você acabou de ver: a mesma posição, resultados opostos.",
-  "rot.demos.erroAtacante.cur.t": "Capablanca insistia na contagem: antes de mover o rei, conte as casas. Em um dos exemplos dele, o rei branco tem dois caminhos que parecem bons, e só a conta mostra qual ganha e qual empata.",
   "rot.demos.fileiraAbaixo.1": "Agora vamos ver a mesma ideia com o peão uma fileira mais atrás, na segunda.",
   "rot.demos.fileiraAbaixo.2": "Como o peão está uma fileira mais atrás, as casas-chave também ficam uma fileira mais atrás: f4, g4 e h4.",
   "rot.demos.fileiraAbaixo.25": "A regra das casas-chave: a casa duas fileiras à frente do peão e as duas vizinhas dela. Ela vale para os peões das colunas b a g. O peão da borda, nas colunas a e h, segue outra regra, que você verá em outra lição.",
@@ -613,8 +608,5 @@
   "rot.ideia.ex1.l20b": "O peão chega a g7, mas o rei preto segue em g8, diante dele.",
   "rot.ideia.ex2.ponte": "Você já viu a ideia nas duas pontas: no ataque e na defesa. Agora eu jogo os dois lados e lhe mostro a mesma ideia em outras posições. Em cada uma, repare em que casa o rei toma a oposição.",
   "rot.demos.fileiraAbaixo.10b": "Só agora o peão avança, protegido pelo rei, e coroa.",
-  "rot.demos.erroAtacante.ponte": "Agora é a sua vez: duas posições para jogar sozinho contra a máquina, uma no ataque e outra na defesa. Antes de cada lance, conte as casas entre os reis. Se estiverem em colunas diferentes, leve o seu rei para a coluna do outro.",
-  "rot.ideia.ex1.cur.cit": "O assunto da oposição é muito importante e às vezes assume formas bem complicadas.",
-  "rot.demos.tempo.cur.cit": "Quem tiver a vez ganha.",
-  "rot.demos.erroAtacante.cur.cit": "A simples contagem mostra que o primeiro caminho só leva ao empate."
+  "rot.demos.erroAtacante.ponte": "Agora é a sua vez: duas posições para jogar sozinho contra a máquina, uma no ataque e outra na defesa. Antes de cada lance, conte as casas entre os reis. Se estiverem em colunas diferentes, leve o seu rei para a coluna do outro."
 }

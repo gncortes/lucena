@@ -92,7 +92,6 @@ class LessonPractice extends StatelessWidget {
       footer: invite
           ? ExerciseActions(
               fill: true,
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
               actions: [
                 ExerciseAction(
                   label: l10n.lessonFooterBack,

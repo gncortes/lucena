@@ -443,7 +443,6 @@
   "ex.e16.r4": "4...Kd4. The black king makes a waiting step, without capturing. It tests whether the white king knows the square that corresponds to d4; one move out of step, and capturing on e5 wins.",
   "ex.e16.r5": "5...Ke4. Another waiting step, now to e4, still next to the e5-pawn. Once again, the white king must find the square that corresponds to this one.",
   "ex.e16.r6": "6...Kxe5. At last the black king captures the e5-pawn and wants to go on to f6, towards h7, to defend it. The white king must block that path with the opposition.",
-  "rot.ideia.ex1.cur.t": "Capablanca, world champion from 1921 to 1927, devoted a whole section of his book Chess Fundamentals to the opposition. He shows it with the kings close together and then asks the reader to move them apart: that is the distant opposition of this example.",
   "rot.ideia.ex1.e1": "Let's study a basic ending: king and pawn against a lone king.",
   "rot.ideia.ex1.e2": "If the pawn runs alone, the black king catches and captures it. Here your king decides.",
   "rot.ideia.ex1.e3": "Your king must clear the way for the pawn.",
@@ -508,7 +507,6 @@
   "rot.ideia.ex1.l34": "Let's go back to the starting position. Against the other black defenses, the idea is the same.",
   "rot.ideia.ex1.l35": "Keep the idea: the king goes in front of the pawn and wins the opposition. The pawn only advances afterwards.",
   "rot.ideia.ex1.l36": "Now let's look at the other side: how Black uses the same idea to defend.",
-  "rot.ideia.ex2.cur.t": "In 2017, at the Norway Chess tournament, Wesley So defended a king-and-pawn ending a pawn down against Magnus Carlsen, then world champion. Every time the white king stepped forward, the black king faced it. The position repeated and the game was drawn.",
   "rot.ideia.ex2.e1": "Now you play Black, and the board turns around. White has just moved the king to e3.",
   "rot.ideia.ex2.e2": "With the right defence, Black holds this position.",
   "rot.ideia.ex2.e4": "The white king wants to reach f5, g5 or h5, the pawn's key squares.",
@@ -549,9 +547,6 @@
   "rot.ideia.ex2.l16": "That is why, against the king on f4, the answer is f6: facing it, keeping the opposition.",
   "rot.ideia.ex2.l17": "Let's go back to the position with your king on e7. In defense, the rule is the same as in attack.",
   "rot.ideia.ex2.l18": "Win the opposition and bring the king in front of the pawn.",
-  "rot.demos.fileiraAbaixo.cur.t": "Key squares save calculation: instead of foreseeing every move, you only need to know whether the king can reach one of them. That is why endgame books teach this rule right at the start.",
-  "rot.demos.tempo.cur.t": "Capablanca shows a position with only kings and pawns that looks equal to a beginner. He warns that it is not: whoever has the move wins. That is what you have just seen: the same position, opposite results.",
-  "rot.demos.erroAtacante.cur.t": "Capablanca insisted on counting: before moving the king, count the squares. In one of his examples the white king has two paths that both look good, and only counting shows which one wins and which one draws.",
   "rot.demos.fileiraAbaixo.1": "Now let's see the same idea with the pawn one rank further back, on the second rank.",
   "rot.demos.fileiraAbaixo.2": "Since the pawn is one rank further back, the key squares are one rank further back too: f4, g4 and h4.",
   "rot.demos.fileiraAbaixo.25": "The key-square rule: the square two ranks in front of the pawn and its two neighbours. It holds for pawns on the b- to g-files. The edge pawn, on the a- and h-files, follows another rule, which you will see in another lesson.",
@@ -613,8 +608,5 @@
   "rot.ideia.ex1.l20b": "The pawn reaches g7, but the black king is still on g8, in front of it.",
   "rot.ideia.ex2.ponte": "You have now seen the idea from both ends: in attack and in defence. Now I will play both sides and show you the same idea in other positions. In each one, notice on which square the king takes the opposition.",
   "rot.demos.fileiraAbaixo.10b": "Only now does the pawn advance, protected by the king, and promote.",
-  "rot.demos.erroAtacante.ponte": "Now it is your turn: two positions to play on your own against the machine, one in attack and one in defence. Before each move, count the squares between the kings. If they are on different files, bring your king to the other king's file.",
-  "rot.ideia.ex1.cur.cit": "The matter of the opposition is highly important, and takes at times somewhat complicated forms.",
-  "rot.demos.tempo.cur.cit": "Whoever has the move wins.",
-  "rot.demos.erroAtacante.cur.cit": "Mere counting will show that the former course will only lead to a draw."
+  "rot.demos.erroAtacante.ponte": "Now it is your turn: two positions to play on your own against the machine, one in attack and one in defence. Before each move, count the squares between the kings. If they are on different files, bring your king to the other king's file."
 }

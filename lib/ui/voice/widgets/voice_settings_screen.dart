@@ -8,8 +8,8 @@ import '../../core/l10n/l10n.dart';
 import '../view_models/speech_cubit.dart';
 import 'voice_pickers.dart';
 
-/// Configurações da voz: falar sozinho, a velocidade, a voz do professor e as
-/// dos adversários. Sem voz no idioma, só o porquê e como resolver.
+/// Configurações da voz: falar sozinho, a velocidade e a voz do professor (as
+/// dos adversários vêm sozinhas). Sem voz no idioma, só o porquê e como resolver.
 class VoiceSettingsScreen extends StatelessWidget {
   const VoiceSettingsScreen({super.key});
 

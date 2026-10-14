@@ -108,7 +108,8 @@ void main() {
       expect(back.height, 48);
       expect(hint.right, lessThanOrEqualTo(back.left));
       expect(next.left - back.right, closeTo(8, 1));
-      expect(size.width - next.right, closeTo(8, 1));
+      // Margem lateral de 16 (Gabriel, 14/10/2026).
+      expect(size.width - next.right, closeTo(16, 1));
       expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
       // Rodapé branco, com divisória em cima (pg. 3.1/4.7).
       final footer = find.ancestor(

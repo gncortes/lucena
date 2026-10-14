@@ -36,7 +36,7 @@ void main() {
   testWidgets('hug: o rótulo longo fica numa linha quando cabe', (
     tester,
   ) async {
-    await pump(tester, 640);
+    await pump(tester, 700);
     final line = tester.getSize(find.text('Continuar')).height;
     expect(tester.getSize(find.text('Ver linha principal')).height, line);
     expect(
@@ -54,7 +54,7 @@ void main() {
     tester,
   ) async {
     tester.view
-      ..physicalSize = const Size(200, 640)
+      ..physicalSize = const Size(220, 640)
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
