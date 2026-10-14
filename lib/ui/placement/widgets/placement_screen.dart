@@ -2,7 +2,6 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/app_bar_progress.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -17,6 +16,7 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -111,6 +111,7 @@ class _Intro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     final cubit = context.read<PlacementCubit>();
     final viktor = state.viktor;
@@ -149,56 +150,75 @@ class _Intro extends StatelessWidget {
                   spacing: AppSpacing.sm,
                   runSpacing: AppSpacing.sm,
                   children: [
+                    // CompChip informativo: cheio, sem contorno.
                     for (final (icon, label) in chips)
-                      Chip(avatar: Icon(icon, size: 18), label: Text(label)),
+                      Chip(
+                        avatar: Icon(icon, size: 18, color: colors.onSurface),
+                        label: Text(label),
+                        labelStyle: TextStyle(color: colors.onSurface),
+                        backgroundColor: colors.surfaceContainer,
+                        side: BorderSide.none,
+                      ),
                   ],
                 ),
-                if (onChooseByHand != null) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  TextButton(
-                    key: PlacementKeys.chooseByHand,
-                    onPressed: onChooseByHand,
-                    child: Text(l10n.placementChooseByHand),
-                  ),
-                ],
               ],
             ),
           ),
         ),
-        // Fixo no rodapé, como nas lições e no exercício (Gabriel,
-        // 14/10/2026): o mesmo componente, com margem de 16.
-        ExerciseActions(
+        // Fixo no rodapé (Gabriel, 14/10/2026; canvas PropV2TesteAbertura): o
+        // principal cheio na largura toda e a saída em texto logo abaixo.
+        ColoredBox(
           key: PlacementKeys.footer,
           color: Theme.of(context).scaffoldBackgroundColor,
-          divider: false,
-          hug: true,
-          actions: state.resuming
-              ? [
-                  ExerciseAction(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.xs,
+              children: [
+                FilledButton(
+                  key: state.resuming
+                      ? PlacementKeys.resume
+                      : PlacementKeys.start,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(kButtonHeight),
+                    textStyle: AppButtonText.footer(context),
+                  ),
+                  onPressed: cubit.start,
+                  child: Text(
+                    state.resuming
+                        ? l10n.placementResume(state.number)
+                        : l10n.placementStart,
+                  ),
+                ),
+                if (state.resuming)
+                  TextButton(
                     key: PlacementKeys.restart,
-                    label: l10n.placementRestart,
+                    style: _footerText,
                     onPressed: cubit.restart,
+                    child: Text(l10n.placementRestart),
+                  )
+                else if (onChooseByHand != null)
+                  TextButton(
+                    key: PlacementKeys.chooseByHand,
+                    style: _footerText,
+                    onPressed: onChooseByHand,
+                    child: Text(l10n.placementChooseByHand),
                   ),
-                  ExerciseAction(
-                    key: PlacementKeys.resume,
-                    label: l10n.placementResume(state.number),
-                    primary: true,
-                    onPressed: cubit.start,
-                  ),
-                ]
-              : [
-                  ExerciseAction(
-                    key: PlacementKeys.start,
-                    label: l10n.placementStart,
-                    primary: true,
-                    onPressed: cubit.start,
-                  ),
-                ],
+              ],
+            ),
+          ),
         ),
       ],
     );
   }
 }
+
+/// A saída em texto do rodapé da abertura: 40 de altura, largura toda.
+final _footerText = TextButton.styleFrom(
+  minimumSize: const Size.fromHeight(40),
+);
 
 /// Uma pergunta: enunciado no alto, tabuleiro centralizado na área entre
 /// as barras do sistema e respostas no rodapé.

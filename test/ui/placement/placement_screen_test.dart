@@ -128,27 +128,44 @@ void main() {
   });
 
   for (final size in [const Size(412, 915), const Size(360, 640)]) {
-    testWidgets('abertura, $size: "Começar" fixo no rodapé, margem de 16', (
-      tester,
-    ) async {
+    testWidgets('abertura, $size: rodapé em coluna, "Começar" na largura '
+        'toda e "Prefiro informar" em texto abaixo', (tester) async {
       await pump(tester, size: size, onChooseByHand: () {});
-      final footer = tester.getRect(find.byKey(PlacementKeys.footer));
+      final footerFinder = find.byKey(PlacementKeys.footer);
+      final footer = tester.getRect(footerFinder);
       final start = tester.getRect(find.byKey(PlacementKeys.start));
-      // O rodapé encosta na base da tela, como nas lições e no exercício.
+      final choose = tester.getRect(find.byKey(PlacementKeys.chooseByHand));
+      // O rodapé encosta na base da tela (canvas PropV2TesteAbertura).
       expect(footer.bottom, size.height);
       expect(footer.left, 0);
       expect(footer.right, size.width);
-      expect(size.height - start.bottom, 16);
-      expect(size.width - start.right, 16);
-      // O conteúdo (fala, selos, "prefiro escolher") rola acima do rodapé.
-      await tester.scrollUntilVisible(
-        find.byKey(PlacementKeys.chooseByHand),
-        100,
-        scrollable: find.byType(Scrollable).first,
+      expect(start.top - footer.top, 12);
+      expect(start.height, 52);
+      expect(start.left, 16);
+      expect(start.right, size.width - 16);
+      expect(
+        find.descendant(
+          of: footerFinder,
+          matching: find.byKey(PlacementKeys.chooseByHand),
+        ),
+        findsOneWidget,
       );
-      final choose = tester.getRect(find.byKey(PlacementKeys.chooseByHand));
-      expect(choose.bottom, lessThanOrEqualTo(footer.top));
-      expect(tester.getRect(find.byKey(PlacementKeys.footer)), footer);
+      expect(choose.top - start.bottom, 4);
+      // Mínimo de 40 (na fonte de teste o rótulo quebra em duas linhas).
+      final style = tester
+          .widget<TextButton>(find.byKey(PlacementKeys.chooseByHand))
+          .style!;
+      expect(style.minimumSize!.resolve({}), const Size.fromHeight(40));
+      expect(choose.left, 16);
+      expect(choose.right, size.width - 16);
+      expect(size.height - choose.bottom, 24);
+      final label = tester.getRect(
+        find.descendant(
+          of: find.byKey(PlacementKeys.chooseByHand),
+          matching: find.byType(Text),
+        ),
+      );
+      expect(label.center.dx, closeTo(size.width / 2, 0.5));
     });
   }
 
@@ -169,6 +186,20 @@ void main() {
     });
   }
 
+  testWidgets('abertura: os selos são cheios e sem contorno (CompChip info)', (
+    tester,
+  ) async {
+    await pump(tester);
+    final chips = tester.widgetList<Chip>(find.byType(Chip)).toList();
+    expect(chips, hasLength(3));
+    final context = tester.element(find.byType(Chip).first);
+    final colors = Theme.of(context).colorScheme;
+    for (final chip in chips) {
+      expect(chip.side, BorderSide.none);
+      expect(chip.backgroundColor, colors.surfaceContainer);
+    }
+  });
+
   testWidgets('abertura: o balão não repete o que os selos dizem', (
     tester,
   ) async {
@@ -177,10 +208,9 @@ void main() {
     expect(find.textContaining('Não vale chutar'), findsOneWidget);
   });
 
-  testWidgets('abertura retomada: "Recomeçar" e "Continuar" no rodapé', (
-    tester,
-  ) async {
-    final (cubit, _) = await pump(tester);
+  testWidgets('abertura retomada: "Continuar" cheio e "Recomeçar" em texto '
+      'abaixo, sem o link de rating', (tester) async {
+    final (cubit, _) = await pump(tester, onChooseByHand: () {});
     await tester.tap(find.byKey(PlacementKeys.start));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(PlacementKeys.dontKnow));
@@ -194,13 +224,15 @@ void main() {
         find.descendant(of: footer, matching: find.byKey(key)),
         findsOneWidget,
       );
-      expect(tester.getRect(find.byKey(key)).bottom, 800 - 16);
     }
-    // O principal à direita, como no exercício.
-    expect(
-      tester.getRect(find.byKey(PlacementKeys.resume)).left,
-      greaterThan(tester.getRect(find.byKey(PlacementKeys.restart)).right),
-    );
+    final resume = tester.getRect(find.byKey(PlacementKeys.resume));
+    final restart = tester.getRect(find.byKey(PlacementKeys.restart));
+    expect(resume.left, 16);
+    expect(resume.right, 800 - 400 - 16);
+    expect(restart.top - resume.bottom, 4);
+    expect(800 - restart.bottom, 24);
+    expect(find.byKey(PlacementKeys.start), findsNothing);
+    expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
   });
 
   for (final reducedMotion in [false, true]) {
