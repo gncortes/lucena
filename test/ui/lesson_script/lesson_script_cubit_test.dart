@@ -819,6 +819,146 @@ void main() {
     });
   });
 
+  group('lista da partida (jogo livre e prática)', () {
+    List<ScriptMoveEntry> game(_Rig r) =>
+        r.s.moves.where((m) => m.id.startsWith('g:')).toList();
+    List<String> ids(_Rig r) => [for (final m in game(r)) m.id];
+
+    Future<_Rig> free() async {
+      final r = await _Rig.open();
+      await r.times(3);
+      await r.cubit.onMove('d3d4');
+      await r.times(2);
+      await r.cubit.onMove('g3g4');
+      return r;
+    }
+
+    test('refutação: a partida na lista, "?" no erro previsto', () async {
+      final r = await _Rig.open();
+      await r.times(3);
+      await r.cubit.onMove('d3d4');
+      expect(ids(r), ['g:1']);
+      expect(game(r).first.symbol, '?');
+      expect(game(r).first.depth, 0);
+      expect(r.s.currentMoveId, 'g:1');
+      await r.next();
+      expect(ids(r), ['g:1', 'g:2']);
+      expect(game(r)[1].symbol, isNull);
+      expect(r.s.currentMoveId, 'g:2');
+      await r.next();
+      expect(r.s.phase, ScriptPhase.livrePerdido);
+      expect(r.s.currentMoveId, 'g:2');
+      await r.cubit.onMove('g3g4');
+      expect(ids(r), ['g:1', 'g:2', 'g:3', 'g:4']);
+      expect(r.s.currentMoveId, 'g:4');
+      expect(game(r).every((m) => m.depth == 0), isTrue);
+    });
+
+    test('lance fora que mantém: na lista, sem "?"', () async {
+      final r = await _Rig.open();
+      await r.times(3);
+      await r.cubit.onMove('d3e3');
+      expect(ids(r), ['g:1', 'g:2']);
+      expect(game(r).first.symbol, isNull);
+      expect(r.s.currentMoveId, 'g:2');
+    });
+
+    test('toque num lance anterior e outro lance abre sublinha', () async {
+      final r = await free();
+      await r.cubit.goToMove('g:2');
+      expect(r.s.phase, ScriptPhase.livrePerdido);
+      expect(r.s.fen, afterKd4Ke7);
+      expect(r.s.movable, Side.white);
+      expect(r.s.speech, ['free']);
+      expect(r.s.currentMoveId, 'g:2');
+      expect(r.s.transition.kind, TransitionKind.jump);
+      await r.cubit.onMove('d4e4');
+      // A sublinha vem logo depois do lance trocado (Lichess).
+      expect(ids(r), ['g:1', 'g:2', 'g:3', 'g:5', 'g:6', 'g:4']);
+      final sub = game(r)[3];
+      expect(sub.depth, 1);
+      expect(sub.startsVariant, isTrue);
+      expect(game(r)[4].depth, 1);
+      expect(r.s.currentMoveId, 'g:6');
+      expect(r.s.movable, Side.white);
+      await r.cubit.goToMove('g:4');
+      expect(r.s.currentMoveId, 'g:4');
+      expect(r.s.movable, Side.white);
+      // O mesmo lance de antes segue a linha que já existe.
+      await r.cubit.goToMove('g:2');
+      await r.cubit.onMove('g3g4');
+      expect(r.s.currentMoveId, 'g:4');
+      expect(ids(r), hasLength(6));
+    });
+
+    test('toque no lance da máquina não a faz jogar de novo', () async {
+      final r = await free();
+      await r.cubit.goToMove('g:3');
+      expect(r.s.movable, isNull);
+      expect(r.s.machineThinking, isFalse);
+      expect(ids(r), hasLength(4));
+    });
+
+    test('na refutação a lista só mostra', () async {
+      final r = await _Rig.open();
+      await r.times(3);
+      await r.cubit.onMove('d3d4');
+      await r.next();
+      await r.cubit.goToMove('g:1');
+      expect(r.s.phase, ScriptPhase.refutacao);
+      expect(r.s.currentMoveId, 'g:2');
+    });
+
+    test('fim: o resultado no último lance; ◀ e toque voltam a ele', () async {
+      final r = await free();
+      var guard = 0;
+      while (r.s.phase == ScriptPhase.livrePerdido &&
+          r.s.movable != null &&
+          guard++ < 200) {
+        await r.anyMove();
+      }
+      expect(r.s.phase, ScriptPhase.livreFim);
+      final last = game(r).last;
+      expect(last.id, r.s.currentMoveId);
+      expect(last.result, isIn(['½–½', '1–0', '0–1']));
+      expect(game(r).where((m) => m.result != null), hasLength(1));
+      r.cubit.back();
+      expect(r.s.phase, ScriptPhase.livrePerdido);
+      expect(r.s.currentMoveId, isNot(last.id));
+      expect(game(r).last.result, isNotNull);
+      await r.cubit.goToMove(last.id);
+      expect(r.s.phase, ScriptPhase.livreFim);
+      expect(r.s.primary, ScriptAction.linhaPrincipal);
+      expect(r.s.movable, isNull);
+    });
+
+    test('prática: lista, toque num lance e ◀ com o cursor', () async {
+      final r = await _Rig.open(stage: 2);
+      await r.cubit.onMove('f3e3');
+      expect(ids(r), ['g:1', 'g:2']);
+      expect(r.s.currentMoveId, 'g:2');
+      await r.cubit.goToMove('g:1');
+      expect(r.s.phase, ScriptPhase.praticaVez);
+      expect(r.s.currentMoveId, 'g:1');
+      expect(r.s.movable, isNull);
+      expect(r.s.speech, ['p.t']);
+      expect(ids(r), hasLength(2));
+      await r.cubit.goToMove('g:2');
+      expect(r.s.movable, Side.white);
+      r.cubit.back();
+      expect(r.s.currentMoveId, 'g:1');
+      r.cubit.back();
+      expect(r.s.currentMoveId, 'g:2');
+    });
+
+    test('prática que acaba: resultado na lista', () async {
+      final r = await _Rig.open(json: _practiceJson());
+      await r.cubit.onMove('g7g8');
+      expect(game(r).single.result, '1–0');
+      expect(game(r).single.san, startsWith('g8=Q'));
+    });
+  });
+
   group('curiosidades', () {
     test('resolve a referência por id e o jogador em linha', () async {
       const book = Reference(
