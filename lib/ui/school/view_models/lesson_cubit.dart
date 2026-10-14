@@ -852,15 +852,28 @@ class LessonCubit extends Cubit<LessonState> {
           identical(state, snapshot) &&
           payload != null &&
           payload.explanations.isNotEmpty) {
+        // A fala do passo (T70) não é trocada pela do feedback: o estado
+        // correto, o comentário do motor, a demo fora do roteiro e o prático
+        // têm a fala própria. O feedback só alimenta a explicação (variações).
+        final keepsSpeech =
+            practiceV2 &&
+            (snapshot.correct ||
+                snapshot.note != null ||
+                snapshot.offScript ||
+                step is MoveStep);
         super.emit(
-          snapshot.copyWith(
-            explanation: payload,
-            attemptedSan: snapshot.attemptedSan,
-            // O estado correto (T70) mantém a fala curta/completa dele.
-            speech: snapshot.correct && practiceV2
-                ? snapshot.speech
-                : payload.explanations.expand((b) => b.texts).join('\n\n'),
-          ),
+          keepsSpeech
+              ? snapshot.copyWith(
+                  explanation: payload,
+                  attemptedSan: snapshot.attemptedSan,
+                )
+              : snapshot.copyWith(
+                  explanation: payload,
+                  attemptedSan: snapshot.attemptedSan,
+                  speech: payload.explanations
+                      .expand((b) => b.texts)
+                      .join('\n\n'),
+                ),
         );
       }
     } catch (_) {
@@ -1328,7 +1341,9 @@ class LessonCubit extends Cubit<LessonState> {
     final afterKey = _fenKey(state.fen);
     for (final other in steps.skip(index + 1)) {
       if (other is ThinkStep) break;
-      if (other is DemoStep && other.wrong && _fenKey(other.fen) == afterKey) {
+      if (other is DemoStep &&
+          _isMistakeDemo(other) &&
+          _fenKey(other.fen) == afterKey) {
         return true;
       }
     }
@@ -1358,6 +1373,11 @@ class LessonCubit extends Cubit<LessonState> {
       return false;
     }
   }
+
+  /// Demo do que não fazer: marcada `wrong` ou, como nos dados das partes,
+  /// de id `err_...`.
+  static bool _isMistakeDemo(DemoStep demo) =>
+      demo.wrong || demo.id.startsWith('err_');
 
   /// A posição sem os contadores de lances (para comparar FENs).
   static String? _fenKey(String? fen) => fen?.split(" ").take(4).join(" ");
@@ -1535,7 +1555,7 @@ class LessonCubit extends Cubit<LessonState> {
     for (final other in steps.skip(index + 1)) {
       if (other is ThinkStep) break;
       if (other is DemoStep &&
-          other.wrong &&
+          _isMistakeDemo(other) &&
           _fenKey(other.fen) == _fenKey(after)) {
         ucis = [uci, for (final m in other.line) m.uci];
         demoId = other.id;
@@ -1617,7 +1637,7 @@ class LessonCubit extends Cubit<LessonState> {
     }
     for (final other in steps.skip(index + 1)) {
       if (other is ThinkStep) break;
-      if (other is! DemoStep || !other.wrong) continue;
+      if (other is! DemoStep || !_isMistakeDemo(other)) continue;
       final key = _fenKey(other.fen);
       for (final move in position.legalMoves.entries.expand(
         (e) => e.value.squares.map((to) => NormalMove(from: e.key, to: to)),

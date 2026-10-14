@@ -434,7 +434,6 @@ class _LessonScreenState extends State<LessonScreen>
       _elapsed.value = cubit.stepElapsed;
     }
     if (state.step != previous.step) _illegal.reset();
-    final genBefore = _autoGen;
     _syncSheet(state, previous);
     // O estado correto abre sempre na mesma altura (a do texto inteiro),
     // venha do acerto, do "Ver resposta" ou do link (crit. 7).
@@ -442,11 +441,11 @@ class _LessonScreenState extends State<LessonScreen>
         !previous.correct &&
         state.ready &&
         !state.finished &&
-        !_presentingModal.value &&
-        genBefore == _autoGen) {
-      // O acerto já abriu sozinho em _syncSheet; "Ver resposta" e o link
-      // abrem aqui, do mesmo jeito (altura do texto, recolhe no tempo).
+        !_presentingModal.value) {
+      // Acerto, "Ver resposta" e link abrem do mesmo jeito: a folha parte
+      // do recolhido e sobe até a altura do texto, recolhendo no tempo.
       _cancelAuto();
+      _snapSheet();
       _autoLength = _said(context, state)?.length ?? 0;
       _measureThenOpen(++_autoGen, null, 0);
     }
@@ -1567,7 +1566,9 @@ class _LessonScreenState extends State<LessonScreen>
                           // O selo único do erro do pensar (canvas 1.2).
                           if (strip != null && _wrongBranch)
                             Padding(
+                              // Margem de 16 como o cabeçalho da folha.
                               padding: const EdgeInsetsDirectional.only(
+                                start: AppSpacing.lg,
                                 bottom: AppSpacing.sm,
                               ),
                               child: Align(
@@ -1765,6 +1766,7 @@ class _LessonScreenState extends State<LessonScreen>
 
   bool _variantWas = false;
   double? _savedScroll;
+  double? _savedExtent;
 
   /// Fechar o ramo devolve a folha na mesma rolagem de antes de abri-lo.
   void _trackSheetScroll(bool variant) {
@@ -1774,6 +1776,15 @@ class _LessonScreenState extends State<LessonScreen>
     if (variant) {
       _savedScroll = position?.pixels;
       return;
+    }
+    final extent = _savedExtent;
+    _savedExtent = null;
+    if (extent != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _sheet.isAttached && _sheet.size < extent - .01) {
+          _sheet.jumpTo(extent);
+        }
+      });
     }
     final saved = _savedScroll;
     _savedScroll = null;
@@ -1804,6 +1815,8 @@ class _LessonScreenState extends State<LessonScreen>
   void _snapSheet() {
     if (_sheet.isAttached && _sheet.size > _sheetMin + .001) {
       _sheet.jumpTo(_sheetMin);
+      // Recolhida de uma vez: a folha parou, os botões voltam.
+      _sheetMoving.value = false;
     }
   }
 
@@ -2380,7 +2393,8 @@ class _LessonScreenState extends State<LessonScreen>
   ExplanationPayload _explanationFor(BuildContext context, LessonState state) {
     final payload = wrongMoveSheetPayload(
       demoSheetPayload(
-        state.explanation ??
+        // O comentário do motor (nota) vale mais que a explicação do feedback.
+        (state.note != null ? null : state.explanation) ??
             ExplanationPayload.context([?_baseSpeech(context, state)]),
         inDemo: state.current is DemoStep && state.demoMove > 0,
       ),
@@ -2644,31 +2658,29 @@ class _LessonScreenState extends State<LessonScreen>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 body,
-                if (!expanded)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextLink(
-                      key: LessonKeys.fullStatementLink,
-                      label: l10n.lessonSeeFullStatement,
-                      onTap: _showStatement,
+                // Os dois links lado a lado (alvos de 48 dp), sem o vão de
+                // uma linha inteira entre eles.
+                Wrap(
+                  spacing: AppSpacing.lg,
+                  children: [
+                    if (!expanded)
+                      TextLink(
+                        key: LessonKeys.fullStatementLink,
+                        label: l10n.lessonSeeFullStatement,
+                        onTap: _showStatement,
+                      )
+                    else if (_statementShown)
+                      TextLink(
+                        key: LessonKeys.fullStatementLink,
+                        label: l10n.lessonHideStatement,
+                        onTap: _hideStatement,
+                      ),
+                    TextLink(
+                      key: LessonKeys.showAnswerLink,
+                      label: l10n.lessonShowAnswer,
+                      onTap: () => unawaited(cubit.showAnswer()),
                     ),
-                  )
-                else if (_statementShown)
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextLink(
-                      key: LessonKeys.fullStatementLink,
-                      label: l10n.lessonHideStatement,
-                      onTap: _hideStatement,
-                    ),
-                  ),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: TextLink(
-                    key: LessonKeys.showAnswerLink,
-                    label: l10n.lessonShowAnswer,
-                    onTap: () => unawaited(cubit.showAnswer()),
-                  ),
+                  ],
                 ),
               ],
             );
@@ -2809,7 +2821,7 @@ class _LessonScreenState extends State<LessonScreen>
       final played = move == null ? null : GameRules.play(position, move);
       if (move == null || played == null) break;
       final dots = position.turn == Side.white ? '.' : '...';
-      final mark = wrong && moves.isEmpty ? '?' : '';
+      final mark = moves.isEmpty ? '?' : '';
       main.add(
         TreeMove(
           label: '${position.fullmoves}$dots${played.san}$mark',
@@ -2886,6 +2898,8 @@ class _LessonScreenState extends State<LessonScreen>
     final texts = branch.texts;
     // A folha sai para a linha entrar (o toque nela a deixou "em movimento").
     _cancelAuto();
+    // Fechar o ramo devolve a folha a esta altura (e à mesma rolagem).
+    _savedExtent = _sheet.isAttached ? _sheet.size : null;
     _snapSheet();
     if (_openThinkLine(state, ucis, texts, wrong: false)) {
       cubit.markSeen(uci);
