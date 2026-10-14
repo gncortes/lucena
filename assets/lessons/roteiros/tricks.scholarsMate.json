@@ -1,0 +1,489 @@
+{
+ "licao": "tricks.scholarsMate",
+ "parte": "licao",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "ex1",
+     "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "marcas": [
+        "f7"
+       ],
+       "t": "rot.ideia.ex1.e1"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "setas": [
+        [
+         "h5",
+         "f7",
+         "r"
+        ],
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "t": "rot.ideia.ex1.e2"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "marcas": [
+        "f6"
+       ],
+       "t": "rot.ideia.ex1.e3"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "h5"
+      ],
+      "certos": [
+       "h5f7"
+      ],
+      "certo": {
+       "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+       "setas": [
+        [
+         "c4",
+         "f7",
+         "g"
+        ]
+       ],
+       "lance": "h5f7",
+       "t": "rot.ideia.ex1.certo"
+      },
+      "revela": {
+       "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+       "setas": [
+        [
+         "c4",
+         "f7",
+         "g"
+        ]
+       ],
+       "lance": "h5f7",
+       "t": "rot.ideia.ex1.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "h5h7": [
+        {
+         "fen": "r1bqkb1r/pppp1ppQ/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+         "marcas": [
+          "h7"
+         ],
+         "lance": "h5h7",
+         "t": "rot.ideia.ex1.err.h5h7.1"
+        },
+        {
+         "fen": "r1bqkb2/pppp1ppr/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR w KQq - 0 5",
+         "lance": "h8h7",
+         "t": "rot.ideia.ex1.err.h5h7.2"
+        },
+        {
+         "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+         "salto": true,
+         "t": "rot.ideia.ex1.err.h5h7.3"
+        }
+       ]
+      },
+      "fora": "rot.ideia.ex1.fora",
+      "volta": "rot.ideia.ex1.volta",
+      "t": "rot.ideia.ex1.p"
+     },
+     "linha": [
+      {
+       "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+       "marcas": [
+        "d8",
+        "e7",
+        "f8"
+       ],
+       "t": "rot.ideia.ex1.l1"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+       "t": "rot.ideia.ex1.l2"
+      }
+     ]
+    },
+    {
+     "id": "ex2",
+     "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+       "setas": [
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "t": "rot.ideia.ex2.e1"
+      },
+      {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+       "marcas": [
+        "f7"
+       ],
+       "t": "rot.ideia.ex2.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "d1"
+      ],
+      "certos": [
+       "d1h5"
+      ],
+      "certo": {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+       "setas": [
+        [
+         "h5",
+         "f7",
+         "r"
+        ],
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "lance": "d1h5",
+       "t": "rot.ideia.ex2.certo"
+      },
+      "revela": {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+       "setas": [
+        [
+         "h5",
+         "f7",
+         "r"
+        ],
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "lance": "d1h5",
+       "t": "rot.ideia.ex2.revela"
+      },
+      "alternativos": {
+       "d1f3": [
+        {
+         "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+         "setas": [
+          [
+           "f3",
+           "f7",
+           "r"
+          ],
+          [
+           "c4",
+           "f7",
+           "r"
+          ]
+         ],
+         "lance": "d1f3",
+         "t": "rot.ideia.ex2.alt.d1f3.1"
+        },
+        {
+         "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+         "salto": true,
+         "t": "rot.ideia.ex2.alt.d1f3.2"
+        }
+       ]
+      },
+      "erros": {
+       "d1g4": [
+        {
+         "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P1Q1/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+         "marcas": [
+          "f7"
+         ],
+         "lance": "d1g4",
+         "t": "rot.ideia.ex2.err.d1g4.1"
+        },
+        {
+         "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+         "salto": true,
+         "t": "rot.ideia.ex2.err.d1g4.2"
+        }
+       ]
+      },
+      "fora": "rot.ideia.ex2.fora",
+      "volta": "rot.ideia.ex2.volta",
+      "t": "rot.ideia.ex2.p"
+     },
+     "linha": [
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "lance": "g8f6",
+       "t": "rot.ideia.ex2.l1"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "marcas": [
+        "f7"
+       ],
+       "t": "rot.ideia.ex2.l2"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "t": "rot.ideia.ex2.l3"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "t": "rot.ideia.ex2.l4"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "pastor",
+     "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+       "t": "rot.demos.pastor.e1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+       "lance": "e2e4",
+       "t": "rot.demos.pastor.l1"
+      },
+      {
+       "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+       "lance": "e7e5",
+       "t": "rot.demos.pastor.l2"
+      },
+      {
+       "fen": "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
+       "setas": [
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "lance": "f1c4",
+       "t": "rot.demos.pastor.l3"
+      },
+      {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 2 3",
+       "lance": "b8c6",
+       "t": "rot.demos.pastor.l4"
+      },
+      {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+       "setas": [
+        [
+         "h5",
+         "f7",
+         "r"
+        ],
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "lance": "d1h5",
+       "t": "rot.demos.pastor.l5"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+       "lance": "g8f6",
+       "t": "rot.demos.pastor.l6"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
+       "setas": [
+        [
+         "c4",
+         "f7",
+         "g"
+        ]
+       ],
+       "lance": "h5f7",
+       "t": "rot.demos.pastor.l7"
+      }
+     ]
+    },
+    {
+     "id": "aviso",
+     "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 2 3",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/4P3/8/PPPP1PPP/RNB1KBNR w KQkq - 2 3",
+       "marcas": [
+        "h5"
+       ],
+       "t": "rot.demos.aviso.e1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3",
+       "setas": [
+        [
+         "h5",
+         "f7",
+         "r"
+        ],
+        [
+         "c4",
+         "f7",
+         "r"
+        ]
+       ],
+       "lance": "f1c4",
+       "t": "rot.demos.aviso.l1"
+      },
+      {
+       "fen": "r1bqkbnr/pppp1p1p/2n3p1/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 4",
+       "setas": [
+        [
+         "g6",
+         "h5",
+         "r"
+        ]
+       ],
+       "lance": "g7g6",
+       "t": "rot.demos.aviso.l2"
+      },
+      {
+       "fen": "r1bqkbnr/pppp1p1p/2n3p1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR b KQkq - 1 4",
+       "setas": [
+        [
+         "f3",
+         "f7",
+         "r"
+        ]
+       ],
+       "lance": "h5f3",
+       "t": "rot.demos.aviso.l3"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
+       "marcas": [
+        "f6"
+       ],
+       "lance": "g8f6",
+       "t": "rot.demos.aviso.l4"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
+       "t": "rot.demos.aviso.l5"
+      },
+      {
+       "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
+       "t": "rot.demos.aviso.l6"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "inteiro",
+     "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "pratica": {
+      "tipo": "lance",
+      "linha": [
+       {
+        "certos": [
+         "e2e4"
+        ],
+        "resposta": "e7e5"
+       },
+       {
+        "certos": [
+         "f1c4"
+        ],
+        "resposta": "b8c6"
+       },
+       {
+        "certos": [
+         "d1h5"
+        ],
+        "resposta": "g8f6"
+       },
+       {
+        "certos": [
+         "h5f7"
+        ]
+       }
+      ],
+      "fim": "rot.pratica.inteiro.fim",
+      "t": "rot.pratica.inteiro.enunciado",
+      "erros": {}
+     },
+     "entrada": [],
+     "linha": []
+    },
+    {
+     "id": "deF3",
+     "fen": "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "etapa",
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "f3",
+       "c4"
+      ],
+      "linha": [
+       {
+        "certos": [
+         "f3f7"
+        ]
+       }
+      ],
+      "fim": "rot.pratica.deF3.fim",
+      "t": "rot.pratica.deF3.enunciado",
+      "erros": {}
+     },
+     "entrada": [],
+     "linha": []
+    }
+   ]
+  }
+ ]
+}

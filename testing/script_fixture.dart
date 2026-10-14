@@ -200,7 +200,15 @@ Map<String, String> scriptTexts([Map<String, dynamic>? json]) {
     for (final goal in ['ganhar', 'empatar'])
       'gen.verLinha.$goal': 'verLinha.$goal {linhaPrincipal}',
     'gen.pratica.certo': 'certo',
-    for (final end in ['coroa', 'capturado', 'afogado', 'repeticao', 'limite'])
+    'gen.pratica.sucesso.mate': 'sucesso.mate',
+    for (final end in [
+      'coroa',
+      'capturado',
+      'afogado',
+      'repeticao',
+      'limite',
+      'insuficiente',
+    ])
       'gen.fim.$end': 'fim.$end',
   };
 }

@@ -15,11 +15,13 @@
   "gen.fim.afogado": "Stalemate: it is a draw.",
   "gen.fim.repeticao": "The position repeated: it is a draw.",
   "gen.fim.limite": "We reached the move limit.",
+  "gen.fim.insuficiente": "Only the kings are left: no one can give mate, so it is a draw.",
   "gen.troca.white": "Now switch sides: you play White.",
   "gen.troca.black": "Now switch sides: you play Black.",
   "gen.pratica.certo": "Correct. Your move.",
   "gen.pratica.errado.ganhar": "This move lets the win slip. Try another.",
   "gen.pratica.errado.empatar": "This move loses. Try another.",
   "gen.pratica.sucesso.ganhar": "You won! You used the opposition all the way.",
-  "gen.pratica.sucesso.empatar": "Draw secured! The opposition saved Black."
+  "gen.pratica.sucesso.empatar": "Draw secured! The opposition saved Black.",
+  "gen.pratica.sucesso.mate": "Checkmate! You drove the king to the edge and closed the net."
 }

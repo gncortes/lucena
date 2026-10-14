@@ -910,7 +910,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/mates.twoRooks.json"
         },
         {
           "id": "mates.queen",
@@ -994,7 +995,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/mates.queen.json"
         }
       ]
     },
@@ -1047,7 +1049,8 @@
               "id": "count",
               "fen": "4k3/8/8/3p4/8/8/8/3QK3 w - - 0 2"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.pieceValue.json"
         },
         {
           "id": "tricks.scholarsMate",
@@ -1108,7 +1111,8 @@
               "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
               "side": "white"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.scholarsMate.json"
         },
         {
           "id": "tricks.defendScholar",

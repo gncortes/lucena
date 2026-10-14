@@ -296,6 +296,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       settings: settings,
       showMarks: marks,
       onMove: (uci) => unawaited(cubit.onMove(uci)),
+      onSquare: (square) => unawaited(cubit.onSquare(square)),
     );
     return Column(
       children: [
