@@ -338,7 +338,8 @@ class SpeechBalloon extends StatelessWidget {
 
 /// O texto da fala; as marcas [mainLineMark] e [showAnswerMark] viram o
 /// rótulo do botão, sublinhado na cor primária, sem o ponto colado depois, e o
-/// clique faz o mesmo que o botão. Com [maxLines], corta com reticências.
+/// clique faz o mesmo que o botão. Com [maxLines], corta com reticências; se o
+/// trecho cortado tem link, o corte vai para o meio e a frase do link fica.
 class SpeechText extends StatefulWidget {
   const SpeechText({
     required this.text,
@@ -400,18 +401,8 @@ class _SpeechTextState extends State<SpeechText> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final overflow = widget.maxLines == null ? null : TextOverflow.ellipsis;
-    final matches = SpeechText.markPattern.allMatches(widget.text).toList();
-    if (matches.isEmpty) {
-      return Text(
-        widget.text,
-        style: widget.style,
-        maxLines: widget.maxLines,
-        overflow: overflow,
-      );
-    }
+  /// O texto com as marcas trocadas pelos links.
+  List<InlineSpan> _spans(BuildContext context, String text) {
     final l10n = context.l10n;
     final primary = Theme.of(context).colorScheme.primary;
     final link = widget.style.copyWith(
@@ -422,8 +413,8 @@ class _SpeechTextState extends State<SpeechText> {
     );
     final spans = <InlineSpan>[];
     var at = 0;
-    for (final m in matches) {
-      spans.add(TextSpan(text: widget.text.substring(at, m.start)));
+    for (final m in SpeechText.markPattern.allMatches(text)) {
+      spans.add(TextSpan(text: text.substring(at, m.start)));
       final answer = m.group(1) == 'verResposta';
       final onTap = answer ? widget.onShowAnswer : widget.onMainLine;
       spans.add(
@@ -439,11 +430,88 @@ class _SpeechTextState extends State<SpeechText> {
       );
       at = m.end;
     }
-    spans.add(TextSpan(text: widget.text.substring(at)));
+    spans.add(TextSpan(text: text.substring(at)));
+    return spans;
+  }
+
+  Text _rich(BuildContext context, String text, int? maxLines) {
+    final overflow = maxLines == null ? null : TextOverflow.ellipsis;
+    if (!SpeechText.markPattern.hasMatch(text)) {
+      return Text(
+        text,
+        style: widget.style,
+        maxLines: maxLines,
+        overflow: overflow,
+      );
+    }
     return Text.rich(
-      TextSpan(style: widget.style, children: spans),
-      maxLines: widget.maxLines,
+      TextSpan(style: widget.style, children: _spans(context, text)),
+      maxLines: maxLines,
       overflow: overflow,
+    );
+  }
+
+  TextPainter _painter(BuildContext context, String text, double width) =>
+      TextPainter(
+        text: TextSpan(
+          style: DefaultTextStyle.of(context).style.merge(widget.style),
+          children: _spans(context, text),
+        ),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout(maxWidth: width);
+
+  /// Onde começa a frase do último link; nulo se ela é a fala inteira.
+  static int? _linkSentence(String text) {
+    final link = SpeechText.markPattern.allMatches(text).last;
+    final before = text.substring(0, link.start);
+    final end = RegExp(r'[.!?…]\s+').allMatches(before).lastOrNull?.end;
+    return end == null || end == 0 ? null : end;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final maxLines = widget.maxLines;
+    final text = widget.text;
+    if (maxLines == null ||
+        maxLines < 2 ||
+        !SpeechText.markPattern.hasMatch(text)) {
+      return _rich(context, text, maxLines);
+    }
+    // O corte nunca esconde o link (T71, opção C): se o trecho cortado tem
+    // link, o corte vai para o meio, com "…", e as últimas linhas mostram
+    // sempre a frase do link.
+    return LayoutBuilder(
+      builder: (context, box) {
+        final split = _linkSentence(text);
+        if (split == null || !box.hasBoundedWidth) {
+          return _rich(context, text, maxLines);
+        }
+        final width = box.maxWidth;
+        final whole = _painter(context, text, width);
+        final lines = whole.computeLineMetrics().length;
+        whole.dispose();
+        if (lines <= maxLines) return _rich(context, text, maxLines);
+        final tail = text.substring(split);
+        final tailPainter = _painter(context, tail, width);
+        final tailLines = tailPainter.computeLineMetrics().length.clamp(
+          1,
+          maxLines - 1,
+        );
+        tailPainter.dispose();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _rich(
+              context,
+              text.substring(0, split).trimRight(),
+              maxLines - tailLines,
+            ),
+            _rich(context, tail, tailLines),
+          ],
+        );
+      },
     );
   }
 }

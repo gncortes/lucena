@@ -1097,7 +1097,18 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         _push();
         await _nextExample();
       case ScriptPhase.livreFim:
-        await _backToLine();
+        if (state.primary != ScriptAction.continuar) {
+          await _backToLine();
+          return;
+        }
+        // Depois da fala do fim, o convite a ver a linha principal.
+        _push();
+        _publish(
+          state.copyWith(
+            speech: [_say(_seeLineKey)],
+            primary: ScriptAction.linhaPrincipal,
+          ),
+        );
       case ScriptPhase.praticaFim:
         await _nextExample();
       default:
@@ -1356,6 +1367,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _mateGoal ? end == FreeEnd.mate : end.meets(_wantsWin);
   String get _goalName => _example.goal.name;
 
+  /// O convite a ver a linha principal (a fala com o link).
+  String get _seeLineKey => 'gen.verLinha.$_goalName';
+
   Future<void> _answer(String uci) async {
     final question = _example.question!;
     final from = state.fen;
@@ -1556,7 +1570,19 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         ? 'gen.voltaIdeia'
         : _meets(end)
         ? null
-        : 'gen.verLinha.$_goalName';
+        : _seeLineKey;
+    if (next == _seeLineKey) {
+      // A frase com o link é um passo sozinho, depois da fala do fim: no
+      // balão de 2 linhas do 360 o link nunca fica no corte (T71, opção D).
+      return base.copyWith(
+        phase: ScriptPhase.livreFim,
+        speech: [_say(text)],
+        primary: ScriptAction.continuar,
+        secondary: null,
+        movable: null,
+        machineThinking: false,
+      );
+    }
     return base.copyWith(
       phase: ScriptPhase.livreFim,
       speech: [_say(text), if (next != null) _say(next)],

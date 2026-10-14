@@ -387,6 +387,9 @@ void main() {
     await s.cubit.onMove('g3g2');
     await _settle(tester);
     expect(s.cubit.state.phase, ScriptPhase.livreFim);
+    // A fala do fim vem sozinha; o convite com o link é o passo seguinte.
+    expect(find.byKey(LessonScriptKeys.mainLine), findsNothing);
+    await _tap(tester, LessonScriptKeys.primary);
     expect(find.byKey(LessonScriptKeys.mainLine), findsOneWidget);
     expect(find.text('Voltar ao início'), findsNothing);
     // O Viktor convida a ver a linha principal; o rótulo na fala é clicável

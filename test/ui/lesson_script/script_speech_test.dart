@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -203,5 +204,77 @@ void main() {
     );
     final link = (rich.textSpan! as TextSpan).children![1] as TextSpan;
     expect(link.recognizer, isNull);
+  });
+
+  group('corte com link (T71, opção C)', () {
+    const fim =
+        'O rei preto alcançou o peão e o capturou, e sem o peão não '
+        'há como ganhar esta posição. ';
+    const convite = 'Clique em {linhaPrincipal} e eu lhe mostro.';
+    var lines = 0;
+
+    Future<void> pump(WidgetTester tester, String text) async {
+      tester.view
+        ..physicalSize = const Size(900, 400)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: Scaffold(
+            body: SizedBox(
+              // A letra de teste tem 16 de largura: 50 letras por linha.
+              width: 800,
+              child: SpeechText(
+                text: text,
+                style: const TextStyle(fontSize: 16, height: 1.5),
+                maxLines: 2,
+                onMainLine: () => lines++,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('o corte vai para o meio e a última linha é a do link', (
+      tester,
+    ) async {
+      lines = 0;
+      await pump(tester, fim + convite);
+      final texts = tester.widgetList<Text>(find.byType(Text)).toList();
+      expect(texts, hasLength(2));
+      expect(texts.first.maxLines, 1);
+      expect(texts.first.overflow, TextOverflow.ellipsis);
+      expect(
+        texts.last.textSpan!.toPlainText(),
+        'Clique em Ver linha principal e eu lhe mostro.',
+      );
+      // A frase do link cabe inteira na última linha.
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.byWidget(texts.last),
+      );
+      expect(paragraph.didExceedMaxLines, isFalse);
+      // As duas linhas somam a altura de 2 linhas de 24.
+      expect(tester.getSize(find.byType(SpeechText)).height, 48);
+      final link = find.textRange.ofSubstring('Ver linha principal');
+      expect(link, findsOneWidget);
+      await tester.tapOnText(link);
+      expect(lines, 1);
+    });
+
+    testWidgets('sem corte, o texto fica inteiro e corrido', (tester) async {
+      await pump(tester, 'Agora sim. $convite');
+      expect(find.byType(Text), findsOneWidget);
+    });
+
+    testWidgets('corte sem link: reticências no fim, como antes', (
+      tester,
+    ) async {
+      await pump(tester, fim + fim);
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.maxLines, 2);
+      expect(text.overflow, TextOverflow.ellipsis);
+    });
   });
 }
