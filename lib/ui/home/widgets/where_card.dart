@@ -14,6 +14,7 @@ import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/progress_pill.dart';
 
 /// "Continuar": o adversário atual da Jornada, o progresso contra ele e o
 /// próximo desafio, com o tabuleiro em miniatura.
@@ -198,10 +199,8 @@ class _SchoolCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  LinearProgressIndicator(
+                  ProgressPill(
                     value: school.total == 0 ? 0 : school.done / school.total,
-                    minHeight: 6,
-                    borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -238,13 +237,11 @@ class _EndgameCard extends StatelessWidget {
 
   String _where(AppLocalizations l10n) {
     final exercise = endgame.exerciseNumber;
-    final step = endgame.step;
     if (exercise != null) {
       return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
     }
     final part = endgame.partNumber;
     if (part != null) return l10n.homeEndgamePart(part, endgame.partCount!);
-    if (step != null) return l10n.lessonStep(step, endgame.stepCount!);
     return l10n.endgameScore(endgame.score, endgame.maxScore);
   }
 

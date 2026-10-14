@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/domain/use_cases/marathon.dart';
@@ -138,5 +139,116 @@ void main() {
       Marathon.left(pace, records.best!),
       const Duration(minutes: 3) - const Duration(seconds: 6) * stages,
     );
+  });
+
+  group('MarathonEnd', () {
+    Attempt ended(
+      int stage, {
+      required AttemptOutcome outcome,
+      GameEndReason? reason,
+      Duration spent = const Duration(seconds: 10),
+    }) => game(stage, spent: spent, userMoves: 3).copyWith(
+      outcome: outcome,
+      fulfilled: outcome == AttemptOutcome.win,
+      endReason: reason,
+    );
+
+    SpeedrunRun runOf(List<Attempt> games, {bool abandoned = false}) =>
+        SpeedrunScore.run(
+          sampleMarathon,
+          SpeedrunAttempt(
+            id: 1,
+            speedrunId: sampleMarathon.id,
+            startedAt: start,
+            abandonedAt: abandoned ? start : null,
+            games: games,
+          ),
+        );
+
+    SpeedrunRunEnd end(SpeedrunRun run) => MarathonEnd.of(sampleMarathon, run);
+
+    test('concluída vence qualquer outro motivo', () {
+      final games = [
+        for (var i = 0; i < sampleMarathon.stages.length; i++)
+          ended(i, outcome: AttemptOutcome.win),
+      ];
+
+      expect(end(runOf(games)), SpeedrunRunEnd.completed);
+    });
+
+    test('derrota e empate na última partida', () {
+      expect(
+        end(
+          runOf([
+            ended(0, outcome: AttemptOutcome.win),
+            ended(
+              1,
+              outcome: AttemptOutcome.loss,
+              reason: GameEndReason.checkmate,
+            ),
+          ], abandoned: true),
+        ),
+        SpeedrunRunEnd.lost,
+      );
+      expect(
+        end(
+          runOf([
+            ended(
+              0,
+              outcome: AttemptOutcome.draw,
+              reason: GameEndReason.stalemate,
+            ),
+          ], abandoned: true),
+        ),
+        SpeedrunRunEnd.drawn,
+      );
+    });
+
+    test('o tempo acabando na partida é sem tempo, perdendo ou empatando', () {
+      for (final (outcome, reason) in [
+        (AttemptOutcome.loss, GameEndReason.timeout),
+        (AttemptOutcome.draw, GameEndReason.timeoutVsInsufficientMaterial),
+      ]) {
+        expect(
+          end(runOf([ended(0, outcome: outcome, reason: reason)])),
+          SpeedrunRunEnd.timeout,
+          reason: reason.name,
+        );
+      }
+    });
+
+    test('venceu e o banco zerou: abandonada pelo reporter é sem tempo', () {
+      // Três lances de 2 s de acréscimo voltam ao banco: gastou 3:06.
+      final games = [
+        ended(
+          0,
+          outcome: AttemptOutcome.win,
+          spent: pace.initial + const Duration(seconds: 6),
+        ),
+      ];
+
+      expect(end(runOf(games, abandoned: true)), SpeedrunRunEnd.timeout);
+    });
+
+    test('desistiu: com banco sobrando, desistindo da partida ou sem '
+        'partida', () {
+      expect(
+        end(runOf([ended(0, outcome: AttemptOutcome.win)], abandoned: true)),
+        SpeedrunRunEnd.abandoned,
+      );
+      expect(
+        end(
+          runOf([
+            ended(
+              0,
+              outcome: AttemptOutcome.loss,
+              reason: GameEndReason.resign,
+            ),
+          ], abandoned: true),
+        ),
+        SpeedrunRunEnd.abandoned,
+      );
+      expect(end(runOf(const [], abandoned: true)), SpeedrunRunEnd.abandoned);
+    });
   });
 }

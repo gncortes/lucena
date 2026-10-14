@@ -48,7 +48,8 @@
                 "h8"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.rook.json"
         },
         {
           "id": "pieces.bishop",
@@ -93,7 +94,8 @@
                 "h5"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.bishop.json"
         },
         {
           "id": "pieces.queen",
@@ -124,7 +126,8 @@
                 "e1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.queen.json"
         },
         {
           "id": "pieces.king",
@@ -159,7 +162,8 @@
               "id": "active",
               "fen": "8/8/8/4K3/8/8/8/8 w - - 0 1"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.king.json"
         },
         {
           "id": "pieces.knight",
@@ -211,7 +215,8 @@
                 "g7"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.knight.json"
         },
         {
           "id": "pieces.pawn",
@@ -299,7 +304,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.pawn.json"
         },
         {
           "id": "rules.captureProtect",
@@ -361,7 +367,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.captureProtect.json"
         },
         {
           "id": "pieces.check",
@@ -418,7 +425,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.check.json"
         },
         {
           "id": "rules.outOfCheck",
@@ -481,7 +489,8 @@
                 "g1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.outOfCheck.json"
         },
         {
           "id": "rules.castling",
@@ -553,7 +562,8 @@
                 "e1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.castling.json"
         },
         {
           "id": "pieces.stalemate",
@@ -616,7 +626,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.stalemate.json"
         },
         {
           "id": "rules.draws",
@@ -675,7 +686,8 @@
               "id": "fifty",
               "fen": "8/8/8/4k3/8/8/8/R3K3 w - - 0 1"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.draws.json"
         }
       ]
     },
@@ -726,7 +738,8 @@
                 "d5"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/notation.coordinates.json"
         },
         {
           "id": "notation.moves",
@@ -775,7 +788,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/notation.moves.json"
         },
         {
           "id": "notation.read",
@@ -822,7 +836,8 @@
               "id": "end",
               "fen": "4k3/8/8/8/8/8/8/5RK1 b - - 0 1"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/notation.read.json"
         }
       ]
     },
@@ -895,7 +910,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/mates.twoRooks.json"
         },
         {
           "id": "mates.queen",
@@ -979,7 +995,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/mates.queen.json"
         }
       ]
     },
@@ -1032,7 +1049,8 @@
               "id": "count",
               "fen": "4k3/8/8/3p4/8/8/8/3QK3 w - - 0 2"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.pieceValue.json"
         },
         {
           "id": "tricks.scholarsMate",
@@ -1093,7 +1111,8 @@
               "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
               "side": "white"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.scholarsMate.json"
         },
         {
           "id": "tricks.defendScholar",
@@ -1135,7 +1154,8 @@
               "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
               "side": "black"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.defendScholar.json"
         },
         {
           "id": "tricks.foolsMate",
@@ -1182,7 +1202,8 @@
                 "h4e1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.foolsMate.json"
         },
         {
           "id": "tactics.matePatterns",
@@ -1254,7 +1275,8 @@
               ],
               "side": "white"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tactics.matePatterns.json"
         },
         {
           "id": "tricks.principles",
@@ -1315,7 +1337,8 @@
               "id": "online",
               "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.principles.json"
         }
       ]
     },
@@ -1381,7 +1404,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.opposition.json"
         },
         {
           "id": "technique.zugzwang",
@@ -1429,7 +1453,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.zugzwang.json"
         },
         {
           "id": "technique.rookCut",
@@ -1474,7 +1499,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.rookCut.json"
         },
         {
           "id": "technique.rookMate",
@@ -1539,7 +1565,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.rookMate.json"
         }
       ]
     },
@@ -1590,7 +1617,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.enPassant.json"
         },
         {
           "id": "pawns.kingPawn",
@@ -1634,7 +1662,8 @@
               "goal": "promote",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.kingPawn.json"
         },
         {
           "id": "pawns.square",
@@ -1686,7 +1715,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.square.json"
         },
         {
           "id": "pawns.rookPawn",
@@ -1706,7 +1736,8 @@
               "goal": "promote",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.rookPawn.json"
         },
         {
           "id": "pawns.rookTwoPawns",
@@ -1727,7 +1758,8 @@
               "goal": "promote",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.rookTwoPawns.json"
         }
       ]
     },
@@ -1765,7 +1797,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookBishop.json"
         },
         {
           "id": "minor.rookKnight",
@@ -1800,7 +1833,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookKnight.json"
         },
         {
           "id": "minor.rookTwoBishops",
@@ -1821,7 +1855,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookTwoBishops.json"
         },
         {
           "id": "minor.rookTwoKnights",
@@ -1838,7 +1873,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookTwoKnights.json"
         },
         {
           "id": "minor.rookBishopKnight",
@@ -1855,7 +1891,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookBishopKnight.json"
         },
         {
           "id": "minor.twoRooksVsKnight",
@@ -1875,7 +1912,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.twoRooksVsKnight.json"
         }
       ]
     },
@@ -1928,7 +1966,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/graduation.twoBishops.json"
         }
       ]
     }

@@ -24,6 +24,7 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 import '../../achievements/view_models/achievement_facts_loader.dart';
+import '../../speedrun/view_models/speedrun_bonus_payer.dart';
 
 /// O que uma partida terminada mudou: o rating, as mensagens de evolução e as
 /// conquistas novas.
@@ -73,6 +74,7 @@ class SpeedrunStep {
     this.challenge,
     this.lost = false,
     this.userTime,
+    this.bonus,
   });
 
   final String speedrunId;
@@ -90,6 +92,10 @@ class SpeedrunStep {
   /// Na Maratona, o relógio do jogador na etapa seguinte: o que sobrou no
   /// banco, com o acréscimo do ritmo.
   final TimeControl? userTime;
+
+  /// Com a tentativa concluída, o bônus de rating que ela deu. Nulo se não
+  /// deu (grupo já concluído, só da Jornada, rating alto demais).
+  final SpeedrunBonus? bonus;
 
   bool get finished => challenge == null;
 }
@@ -121,6 +127,12 @@ class GameReporter {
   /// O degrau de início do tour: os de baixo já começam liberados.
   final OnboardingRepository? _onboarding;
 
+  late final _bonus = SpeedrunBonusPayer(
+    rating: _rating,
+    speedruns: _speedruns,
+    journey: _journey,
+  );
+
   /// O rating atual do jogador, como a tela mostra.
   Future<int> currentRating() async => (await _rating.current()).rounded;
 
@@ -131,12 +143,15 @@ class GameReporter {
     required bool drawGoal,
   }) async {
     final before = await _rating.current();
-    final rated = await _rating.rate(
-      game,
-      userSide: userSide,
-      drawGoal: drawGoal,
-      gameId: gameId,
-    );
+    // A etapa de speedrun não mexe no rating: só a conclusão, com o bônus.
+    final rated = game.speedrunAttemptId != null
+        ? null
+        : await _rating.rate(
+            game,
+            userSide: userSide,
+            drawGoal: drawGoal,
+            gameId: gameId,
+          );
     final facts = await AchievementFactsLoader(
       journey: _journey,
       progress: _progress,
@@ -231,6 +246,7 @@ class GameReporter {
       attemptId: attemptId,
       stage: run.completed ? null : stage,
       challenge: run.completed ? null : speedrun.stages[stage],
+      bonus: run.completed ? await _bonus.bonusOf(attemptId) : null,
     );
   }
 
@@ -261,6 +277,7 @@ class GameReporter {
       stage: run.completed ? null : stage,
       challenge: run.completed ? null : speedrun.stages[stage],
       userTime: run.completed ? null : Marathon.stageTime(speedrun.time, bank),
+      bonus: run.completed ? await _bonus.bonusOf(attempt.id) : null,
     );
   }
 

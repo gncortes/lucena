@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../keys/external_page_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_shape.dart';
-import 'sheet_close_button.dart';
+import 'lucena_sheet.dart';
 import 'web_pages.dart';
 
 /// Abre uma página da web dentro do app (a Wikipedia de um nome da fala, a
@@ -13,19 +12,15 @@ import 'web_pages.dart';
 /// aula atrás fica como estava.
 Future<void> showExternalPage(BuildContext context, Uri url) {
   final pages = WebPages.of(context);
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    // A página rola na vertical: arrastar não fecha a folha (o ✕ fecha).
+  // A página rola na vertical: arrastar não fecha a folha (o ✕ fecha).
+  return showLucenaSheet<void>(
+    context,
     enableDrag: false,
-    showDragHandle: false,
-    // O fundo é desenhado pela [ExternalPageSheet], abaixo do ✕: a área do
-    // botão fica transparente, sobre a tela escurecida.
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    builder: (context) => FractionallySizedBox(
-      heightFactor: 0.96,
+    sheetKey: ExternalPageKeys.sheet,
+    closeKey: ExternalPageKeys.close,
+    builder: (context) => SizedBox(
+      // Folha alta: o que sobra abaixo do ✕ e da alça.
+      height: MediaQuery.sizeOf(context).height * 0.8,
       child: ExternalPageSheet(url: url, pages: pages),
     ),
   );
@@ -71,48 +66,10 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final domain = ExternalPageSheet.domainOf(widget.url);
     final title = _title;
     final hasTitle = title != null && title.isNotEmpty && title != domain;
-    final sheet = theme.bottomSheetTheme;
-    return Column(
-      key: ExternalPageKeys.sheet,
-      children: [
-        // O ✕ fora da folha, acima dela, no canto: o mesmo da fala do Viktor.
-        Padding(
-          padding: const EdgeInsetsDirectional.only(
-            end: SheetCloseButton.margin,
-            bottom: SheetCloseButton.gap,
-          ),
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: SheetCloseButton(
-              key: ExternalPageKeys.close,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Material(
-            color:
-                sheet.modalBackgroundColor ??
-                sheet.backgroundColor ??
-                colors.surfaceContainerLow,
-            shape:
-                sheet.shape ??
-                const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(AppShape.large),
-                  ),
-                ),
-            clipBehavior: Clip.antiAlias,
-            elevation: 1,
-            child: _content(theme, domain, hasTitle ? title : null),
-          ),
-        ),
-      ],
-    );
+    return _content(theme, domain, hasTitle ? title : null);
   }
 
   Widget _content(ThemeData theme, String domain, String? title) {

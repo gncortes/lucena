@@ -302,12 +302,25 @@ class FreeBoardRobot {
     expect(find.byKey(ConclusionKeys.screen), findsNothing);
   }
 
-  void expectTurn(String text) {
-    expectText(
-      $.tester.widget<Text>(find.byKey(FreeBoardKeys.turn)).data,
-      text,
-    );
+  /// A vez sem relógio é o anel primário de 2 px no retrato de quem joga
+  /// (T73: não há mais texto de vez). Um só na tela; [below] diz se ele fica
+  /// na linha de baixo do tabuleiro ou na de cima.
+  void expectTurnRing({required bool below}) {
+    final ring = find.byKey(FreeBoardKeys.turn);
+    expect(ring, findsOneWidget);
+    final box = $.tester.widget<DecoratedBox>(ring);
+    final border = (box.decoration as BoxDecoration).border! as Border;
+    expect(border.top.width, 2);
+    final board = $.tester.getRect(find.byKey(FreeBoardKeys.board));
+    final dy = $.tester.getCenter(ring).dy;
+    expect(below ? dy > board.bottom : dy < board.top, isTrue);
   }
+
+  /// O anel da vez no retrato de [side] (o lado que tem a vez): fica embaixo
+  /// do tabuleiro quando [side] é o lado de baixo, e em cima quando o
+  /// tabuleiro está virado e [side] é o jogador de cima.
+  void expectTurnRingOf(Side side) =>
+      expectTurnRing(below: side == _chessboard.orientation);
 
   /// O fim da partida de dois (sem máquina), no painel embaixo do
   /// tabuleiro. Contra a máquina, o fim é a conclusão (`ConclusionRobot`).

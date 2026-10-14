@@ -93,6 +93,13 @@ abstract final class LessonRules {
   static bool acceptsThink(ThinkStep step, String uci) =>
       step.accept.contains(uci);
 
+  /// O primeiro passo de lance ou de jogar da parte: o convite "Vamos
+  /// praticar" vem antes dele (T70, crit. 11). Nulo se a parte não tem.
+  static int? practiceStart(List<LessonStep> steps) {
+    final index = steps.indexWhere((s) => s is MoveStep || s is PlayStep);
+    return index < 0 ? null : index;
+  }
+
   /// O lance aceito [uci] na vez [turn] encerra a linha de [step]: é a última
   /// vez, ou é outro lance aceito que não o ensinado (o primeiro). A resposta
   /// combinada e as vezes seguintes valem só para o lance ensinado; depois de

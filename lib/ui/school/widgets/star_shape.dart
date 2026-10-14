@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 
 /// Uma estrela no tabuleiro, que cresce ao aparecer. Com [blinking], pisca
 /// (está para sumir).
 class StarShape extends StatelessWidget {
   const StarShape({
-    this.color = const Color(0xfff2b705),
+    this.color = AppColors.goldColor,
     this.blinking = false,
     super.key,
   });

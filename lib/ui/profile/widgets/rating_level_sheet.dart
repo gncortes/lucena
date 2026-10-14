@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import 'rating_level_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -14,11 +16,8 @@ Future<RatingLevel?> showRatingLevelSheet(
   BuildContext context, {
   required RatingLevel selected,
 }) {
-  return showModalBottomSheet<RatingLevel>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  return showLucenaSheet<RatingLevel>(
+    context,
     // O botão de confirmar fica acima da barra de gestos do sistema.
     builder: (context) =>
         SafeArea(top: false, child: _RatingLevelSheet(initial: selected)),
@@ -84,7 +83,7 @@ class _RatingLevelSheetState extends State<_RatingLevelSheet> {
           child: FilledButton(
             key: ProfileKeys.levelConfirmButton,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: () => Navigator.of(context).pop(_marked),
             child: Text(l10n.profileLevelConfirm),

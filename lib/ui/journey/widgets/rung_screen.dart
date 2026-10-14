@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -54,7 +55,7 @@ class RungScreen extends StatelessWidget {
           ].firstOrNull;
     return Scaffold(
       key: JourneyKeys.rungScreen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         title: Text(
           rung == null
               ? ''
@@ -91,6 +92,7 @@ class RungScreen extends StatelessWidget {
                               speechContext: SpeechContext.teaching,
                               teacher: teacher,
                               text: reunion,
+                              avatarSize: CharacterAvatar.speech,
                             ),
                           ],
                         ),

@@ -122,6 +122,7 @@ class TtsService {
       id: name,
       locale: locale,
       gender: VoiceGender.fromCode(gender is String ? gender : null),
+      quality: VoiceQuality.fromSystem(map['quality']),
     );
   }
 

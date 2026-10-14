@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/endgame_position.dart';
+import '../theme/app_colors.dart';
 
 /// As cores e o ícone de cada objetivo, iguais no catálogo, na Jornada e na
 /// configuração: verde com troféu para ganhar e azul com escudo para defender
@@ -18,15 +19,15 @@ class GoalStyle {
     return switch (goal) {
       PositionGoal.win => GoalStyle._(
         icon: Icons.emoji_events_outlined,
-        color: dark ? const Color(0xFF7BD88F) : const Color(0xFF2E7D32),
-        container: dark ? const Color(0xFF1F4A2A) : const Color(0xFFDCF2DF),
-        onContainer: dark ? const Color(0xFFC8F2CF) : const Color(0xFF1B4D20),
+        color: dark ? AppColors.goalWinDk : AppColors.goalWin,
+        container: dark ? AppColors.goalWinBgDk : AppColors.goalWinBg,
+        onContainer: dark ? AppColors.goalWinOnDk : AppColors.goalWinOn,
       ),
       PositionGoal.draw => GoalStyle._(
         icon: Icons.shield_outlined,
-        color: dark ? const Color(0xFF8CC4FF) : const Color(0xFF1565C0),
-        container: dark ? const Color(0xFF1D3A5C) : const Color(0xFFDDEBFB),
-        onContainer: dark ? const Color(0xFFD3E6FF) : const Color(0xFF0D3C78),
+        color: dark ? AppColors.goalDrawDk : AppColors.goalDraw,
+        container: dark ? AppColors.goalDrawBgDk : AppColors.goalDrawBg,
+        onContainer: dark ? AppColors.goalDrawOnDk : AppColors.goalDrawOn,
       ),
     };
   }
@@ -46,7 +47,7 @@ abstract final class ChangeColors {
   static Color of(BuildContext context, {required bool up}) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return up
-        ? (dark ? const Color(0xFF3FA55A) : const Color(0xFF2E7D32))
-        : (dark ? const Color(0xFFD9534F) : const Color(0xFFC62828));
+        ? (dark ? AppColors.resultUpDk : AppColors.goalWin)
+        : (dark ? AppColors.resultDownDk : AppColors.errorColor);
   }
 }

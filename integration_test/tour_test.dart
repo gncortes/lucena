@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/app_accent.dart';
-import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -22,7 +20,6 @@ void main() {
       '1400', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.passVoice();
 
     await tour.nextUntilLevel();
     await tour.chooseLevel(RatingLevel.intermediate);
@@ -47,14 +44,15 @@ void main() {
     final tour = TourRobot($);
     final home = HomeRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await tour.passVoice();
+    await tour.openVoice();
     await tour.enterName('Gabriel');
 
     // Fechar à força no meio do tour não perde o nome.
     await tour.next();
     await app.restart();
-    await tour.expectStep(TourStep.theme);
+    await tour.expectStep(TourStep.school);
     await tour.back();
+    await tour.expectStep(TourStep.voice);
     await tour.expectName('Gabriel');
 
     await tour.skip();
@@ -70,7 +68,6 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await tour.passVoice();
     await tour.skip();
     await HomeRobot($).expectVisible();
 
@@ -86,9 +83,9 @@ void main() {
     tour.expectNotOpen();
     await HomeRobot($).openSettings();
     await tour.openFromSettings();
-    await tour.passVoice();
+    await tour.expectStep(TourStep.board);
     await tour.next();
-    await tour.expectStep(TourStep.theme);
+    await tour.expectStep(TourStep.voice);
     await tour.skip();
     await HomeRobot($).expectVisible();
   });
@@ -99,35 +96,19 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await TourRobot($).passVoice();
-    await tour.next();
-    await tour.next();
-    await tour.next();
-    await tour.expectStep(TourStep.sound);
+    await tour.nextUntil(TourStep.help);
 
     await app.restart();
-    await tour.expectStep(TourStep.sound);
+    await tour.expectStep(TourStep.help);
   });
 
-  patrolTest('primeira abertura: tema escuro, cor rosa e tabuleiro verde no '
-      'tour valem no app e continuam ao reabrir', ($) async {
+  patrolTest('primeira abertura: tabuleiro verde e peças Mérida no tour valem '
+      'no app e continuam ao reabrir', ($) async {
     final app = AppRobot($);
     final tour = TourRobot($);
     final home = HomeRobot($);
     final settings = SettingsRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await TourRobot($).passVoice();
-    await tour.next();
-    await tour.expectStep(TourStep.theme);
-
-    // A escolha vale na hora, no próprio tour.
-    await tour.chooseThemeMode(AppThemeMode.dark);
-    app.expectBrightness(Brightness.dark);
-    await tour.chooseAccent(AppAccent.pink);
-    tour.expectAccentValue('Pink');
-    app.expectAccent(AppAccent.pink);
-
-    await tour.next();
     await tour.expectStep(TourStep.board);
     await tour.chooseBoardColors(BoardColors.green);
     await tour.chooseBoardPieces(PieceStyle.merida);
@@ -137,53 +118,14 @@ void main() {
     );
 
     await tour.nextUntilLevel();
+    await tour.chooseLevel(RatingLevel.intermediate);
     await tour.start();
     await home.expectVisible();
-    home.expectDark(dark: true);
-    app.expectAccent(AppAccent.pink);
 
     await app.restart();
     await home.expectVisible();
-    home.expectDark(dark: true);
-    app.expectAccent(AppAccent.pink);
     await home.openSettings();
     await settings.openAppearance();
-    settings.expectThemeValue('Dark');
     await settings.expectBoardAppearanceValue('Green · Merida');
-  });
-
-  patrolTest('fechar à força no passo do tema: reabre nele, com a cor '
-      'escolhida', ($) async {
-    final app = AppRobot($);
-    final tour = TourRobot($);
-    await app.open(systemLocale: _english, tour: true);
-    await TourRobot($).passVoice();
-    await tour.next();
-    await tour.chooseThemeMode(AppThemeMode.light);
-    await tour.chooseAccent(AppAccent.purple);
-
-    await app.restart();
-    await tour.expectStep(TourStep.theme);
-    tour.expectAccentValue('Purple');
-    app.expectBrightness(Brightness.light);
-    app.expectAccent(AppAccent.purple);
-  });
-
-  patrolTest('sem escolher cor no tour, o app fica nas cores de fábrica: azul '
-      'no claro e verde no escuro', ($) async {
-    final app = AppRobot($);
-    final tour = TourRobot($);
-    await app.open(systemLocale: _english, tour: true);
-    await TourRobot($).passVoice();
-    await tour.next();
-    await tour.expectStep(TourStep.theme);
-
-    await tour.chooseThemeMode(AppThemeMode.light);
-    tour.expectAccentValue('Blue');
-    app.expectAccent(AppAccent.blue);
-
-    await tour.chooseThemeMode(AppThemeMode.dark);
-    tour.expectAccentValue('Green');
-    app.expectAccent(AppAccent.green);
   });
 }

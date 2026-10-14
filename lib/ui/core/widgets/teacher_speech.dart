@@ -1,12 +1,16 @@
+import 'dart:math' as math;
 import 'dart:ui' show BoxHeightStyle;
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show Bidi;
 
+import 'speech_balloon.dart';
 import 'speech_text_tap_notification.dart';
 import 'explanation_cards.dart';
 import '../../../domain/models/explanation.dart';
 import 'viktor_sheet.dart';
+import '../keys/viktor_sheet_keys.dart';
 
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +18,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/app_settings.dart';
-import '../../../domain/models/game_review.dart';
-import '../review/move_quality_ui.dart';
 import '../../../domain/models/wiki_links.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
@@ -30,6 +32,8 @@ import 'character_avatar.dart';
 import 'external_page_sheet.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import '../theme/lesson_text_colors.dart';
+import 'sound_off_icon.dart';
 
 /// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
 enum SpeechContext {
@@ -55,7 +59,8 @@ class TeacherSpeech extends StatelessWidget {
     this.part = TeacherSpeechPart.all,
     this.explanation,
     this.lessonV2 = false,
-    this.lessonPromptBubble = false,
+    this.headerAvatar,
+    this.avatarHeroTag,
     this.onVariation,
     this.activeVariation,
     required this.teacher,
@@ -67,12 +72,11 @@ class TeacherSpeech extends StatelessWidget {
     this.bubbleKey,
     this.typed = false,
     this.speaks = false,
+    this.controlsOnlyWithVoice = false,
     this.onLink,
     this.onSpoken,
     this.headerAction,
     this.onSoundSettings,
-    this.onClose,
-    this.closeKey,
     super.key,
   });
 
@@ -80,8 +84,14 @@ class TeacherSpeech extends StatelessWidget {
   final ExplanationPayload? explanation;
   final bool lessonV2;
 
-  /// Pensar keeps its speech bubble; explanation sections remain unboxed.
-  final bool lessonPromptBubble;
+  /// Na lição V2, o retrato do cabeçalho maior que o padrão (28), com raio 6
+  /// (lição roteirizada, T70).
+  final double? headerAvatar;
+
+  /// Com valor, o retrato voa como `Hero` com esta tag (a fala inteira da
+  /// lição roteirizada, T70).
+  final Object? avatarHeroTag;
+
   final ValueChanged<VariationCursor?>? onVariation;
   final VariationCursor? activeVariation;
 
@@ -102,10 +112,6 @@ class TeacherSpeech extends StatelessWidget {
 
   /// Lesson V2 opens its dedicated sound panel without changing preferences.
   final VoidCallback? onSoundSettings;
-
-  /// Um ✕ no canto do balão, que fecha a fala (ex.: a história da revisão).
-  final VoidCallback? onClose;
-  final Key? closeKey;
 
   /// A fala. Nula: só o retrato e o nome. Pode trazer nomes marcados
   /// (`{{Andersson|ulf-andersson}}`, ver [WikiMarkup]): na tela, sublinhados
@@ -139,7 +145,8 @@ class TeacherSpeech extends StatelessWidget {
   /// Ensino (balão embaixo do retrato) ou partida (balão ao lado).
   final SpeechContext speechContext;
 
-  bool get _stacked => speechContext == SpeechContext.teaching;
+  bool _stackedIn(BuildContext context) =>
+      speechContext == SpeechContext.teaching || ViktorSheet.insideOf(context);
 
   /// A fala aparece aos poucos, como quem fala. Um toque mostra tudo.
   final bool typed;
@@ -148,25 +155,26 @@ class TeacherSpeech extends StatelessWidget {
   /// áudio aparece sempre que há voz no idioma.
   final bool speaks;
 
-  static const _tail = Size(18, 9);
+  /// Sem voz escolhida, o cabeçalho fica sem a velocidade e sem o botão de
+  /// som (tour, PropV2TourBVoz); com voz, mostra os dois.
+  final bool controlsOnlyWithVoice;
 
   @override
   Widget build(BuildContext context) {
-    final avatar = CharacterAvatar(
+    Widget avatar = CharacterAvatar(
       character: teacher,
       emotion: emotion,
-      size: _compact(context) ? 32 : avatarSize,
+      // LICOES-V2 §9: retrato de 28 dp, raio 8, na linha de 48 dp.
+      size: lessonV2
+          ? (headerAvatar ?? 28)
+          : (_compact(context) ? 32 : avatarSize),
+      radius: lessonV2 ? (headerAvatar == null ? 8 : 6) : null,
     );
+    if (avatarHeroTag case final tag?) avatar = Hero(tag: tag, child: avatar);
     if (part == TeacherSpeechPart.header) {
       // Só o cabeçalho: os botões de voz valem para a fala, mas quem a diz
       // sozinho é o balão (sem repetir a voz).
-      return Row(
-        children: [
-          avatar,
-          const SizedBox(width: 10),
-          Expanded(child: _header(context)),
-        ],
-      );
+      return _headerRow(context, avatar);
     }
     final speech = speechOf(context);
     final text = _plain;
@@ -184,7 +192,7 @@ class TeacherSpeech extends StatelessWidget {
       child: content,
     );
     final settings = _settingsOf(context);
-    if (!_stacked || settings == null) return speakingContent;
+    if (!_stackedIn(context) || settings == null) return speakingContent;
     return BlocListener<SettingsCubit, AppSettings?>(
       bloc: settings,
       listenWhen: (before, after) =>
@@ -203,7 +211,7 @@ class TeacherSpeech extends StatelessWidget {
   }
 
   bool _soundEnabled(BuildContext context) {
-    if (!_stacked) return true;
+    if (!_stackedIn(context)) return true;
     try {
       return context.watch<SettingsCubit>().state?.sound ?? true;
     } on ProviderNotFoundException {
@@ -265,68 +273,17 @@ class TeacherSpeech extends StatelessWidget {
                   soundEnabled &&
                   state.settings.enabled &&
                   state.availableFor(language);
-              final colors = Theme.of(context).colorScheme;
-              return IconButton(
-                key: VoiceKeys.speakButton,
-                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-                tooltip: audible
-                    ? context.l10n.lessonSoundOn(
-                        context.l10n.voiceSpeedValue(state.settings.speed),
-                      )
-                    : context.l10n.lessonSoundOff,
+              return LessonVoiceButton(
+                audible: audible,
+                speed: state.settings.speed,
                 onPressed: onSoundSettings,
-                icon: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        audible
-                            ? Icons.volume_up_outlined
-                            : Icons.volume_off_outlined,
-                      ),
-                      if (audible)
-                        PositionedDirectional(
-                          start: -4,
-                          top: -4,
-                          child: ExcludeSemantics(
-                            child: Container(
-                              height: 16,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.primary,
-                                borderRadius: BorderRadius.circular(
-                                  AppShape.full,
-                                ),
-                              ),
-                              child: Text(
-                                context.l10n.voiceSpeedValue(
-                                  state.settings.speed,
-                                ),
-                                // Decorative badge: the button tooltip exposes
-                                // the full speed using the user's text scale.
-                                textScaler: TextScaler.noScaling,
-                                style: TextStyle(
-                                  color: colors.onPrimary,
-                                  fontSize: 10,
-                                  height: 1.6,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
               );
             }
             // Sem voz no idioma, o botão de som continua à vista: o toque
             // leva aos ajustes de voz, onde se instala uma.
+            if (controlsOnlyWithVoice && !state.settings.enabled) {
+              return const SizedBox.shrink();
+            }
             if (!state.availableFor(language)) {
               return IconButton(
                 key: VoiceKeys.speakButton,
@@ -334,7 +291,7 @@ class TeacherSpeech extends StatelessWidget {
                     ? VisualDensity.standard
                     : VisualDensity.compact,
                 tooltip: context.l10n.voiceSection,
-                icon: const Icon(Icons.volume_off_outlined),
+                icon: const SoundOffIcon(),
                 onPressed: () => context.push(Routes.settingsVoice),
               );
             }
@@ -375,9 +332,9 @@ class TeacherSpeech extends StatelessWidget {
                         : l10n.voiceAutoOn(teacher.name),
                     isSelected: !state.settings.enabled,
                     icon: const Icon(Icons.volume_up_outlined),
-                    selectedIcon: const Icon(Icons.volume_off_outlined),
+                    selectedIcon: const SoundOffIcon(),
                     onPressed: () async {
-                      if (_stacked &&
+                      if (_stackedIn(context) &&
                           !(_settingsOf(context)?.state?.sound ?? true)) {
                         return;
                       }
@@ -388,7 +345,7 @@ class TeacherSpeech extends StatelessWidget {
                       await speech.setEnabled(enabled: true);
                       if (!context.mounted ||
                           !speech.state.settings.enabled ||
-                          (_stacked &&
+                          (_stackedIn(context) &&
                               !(_settingsOf(context)?.state?.sound ?? true))) {
                         return;
                       }
@@ -432,23 +389,17 @@ class TeacherSpeech extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           avatar,
-          const SizedBox(width: 10),
+          SizedBox(width: lessonV2 ? 8 : 10),
           Expanded(child: _closable(context)),
         ],
       );
     }
-    if (_stacked) {
+    if (_stackedIn(context)) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              avatar,
-              const SizedBox(width: 10),
-              Expanded(child: _header(context)),
-            ],
-          ),
-          SizedBox(height: lessonV2 && !lessonPromptBubble ? 8 : 2),
+          _headerRow(context, avatar),
+          SizedBox(height: lessonV2 ? 0 : 2),
           _closable(context),
         ],
       );
@@ -472,69 +423,59 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
+  /// Retrato, nome e botões. Na lição V2 é a linha de 48 dp do canvas
+  /// (`cabecalho(c, 'linha')`): retrato 28, 8 dp, nome, som na ponta.
+  Widget _headerRow(BuildContext context, Widget avatar) {
+    final row = Row(
+      children: [
+        avatar,
+        SizedBox(width: lessonV2 ? 8 : 10),
+        Expanded(child: _header(context)),
+      ],
+    );
+    if (!lessonV2) return row;
+    final avatarSize = headerAvatar ?? 0;
+    return SizedBox(
+      key: ViktorSheetKeys.header,
+      height: avatarSize > 48 ? avatarSize : 48,
+      child: row,
+    );
+  }
+
+  /// "Mestre" é só do Viktor; os adversários aparecem só pelo nome.
+  String _label(BuildContext context) =>
+      teacher.isMaster ? context.l10n.teacherName(teacher.name) : teacher.name;
+
   Widget _name(BuildContext context) {
     final theme = Theme.of(context);
+    if (lessonV2) {
+      return Text(
+        _label(context),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+    }
     return Text(
-      context.l10n.teacherName(teacher.name),
+      _label(context),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style:
-          (_stacked ? theme.textTheme.titleMedium : theme.textTheme.labelLarge)
+          (_stackedIn(context)
+                  ? theme.textTheme.titleMedium
+                  : theme.textTheme.labelLarge)
               ?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
               ),
     );
   }
 
-  /// O balão e, com [onClose], o ✕ no canto de cima, por cima do balão.
-  Widget _closable(BuildContext context) {
-    final onClose = this.onClose;
-    Widget speech = _speech(context);
-    if (lessonPromptBubble && _plain != null) {
-      speech = Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
-        child: speech,
-      );
-    }
-    if (onClose == null || _plain == null) return speech;
-    final colors = Theme.of(context).colorScheme;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        speech,
-        PositionedDirectional(
-          // No ensino, a ponta do balão fica em cima: o ✕ desce com ela.
-          top: (_stacked ? _tail.height : 0) - 20,
-          end: -14,
-          child: IconButton(
-            key: closeKey,
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: onClose,
-            icon: Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest,
-                shape: BoxShape.circle,
-                border: Border.all(color: colors.surface, width: 2),
-              ),
-              child: Icon(
-                Icons.close_rounded,
-                size: 16,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  /// O balão (ou, na folha, o texto direto). Sem ✕: a folha tem o dela.
+  Widget _closable(BuildContext context) => _speech(context);
 
   /// O balão, que troca de fala com uma transição suave.
   Widget _speech(BuildContext context) {
@@ -547,12 +488,16 @@ class TeacherSpeech extends StatelessWidget {
         activeCursor: activeVariation,
         hasInlineNavigation: (text, variation, origin) =>
             onVariation != null &&
+            // O rótulo real é "A"/"B": vale o primeiro lance da variação.
+            variation.movesSan.isNotEmpty &&
             SpeechLinks.find(
-              variation.label,
+              variation.movesSan.first,
               SpeechLinks.lettersFor(
                 Localizations.localeOf(context).languageCode,
               ),
-            ).any((link) => link.isMove && link.text == variation.label) &&
+            ).any(
+              (link) => link.isMove && link.text == variation.movesSan.first,
+            ) &&
             SpeechLinks.find(
               WikiMarkup.plain(text),
               SpeechLinks.lettersFor(
@@ -589,7 +534,6 @@ class TeacherSpeech extends StatelessWidget {
             context,
             WikiMarkup.parse(text),
             useBubbleKey: paragraphIndex++ == 0,
-            emphasizeFirstParagraph: lessonV2 && !lessonPromptBubble,
             originOf: originOf,
             onLinkOverride: (link) {
               final origin = originOf(link);
@@ -676,10 +620,18 @@ class TeacherSpeech extends StatelessWidget {
     String text,
     Text words,
     bool Function(int)? onTapAt,
-    int Function(int) toDrawn,
-  ) {
+    int Function(int) toDrawn, {
+    List<(int, int)>? snap,
+  }) {
     final speech = speechOf(context);
-    if (speech == null) return _TypedText(text: words, onTapAt: onTapAt);
+    if (speech == null) {
+      return _TypedText(
+        key: ValueKey(text),
+        text: words,
+        onTapAt: onTapAt,
+        snap: snap,
+      );
+    }
     final language = Localizations.localeOf(context).toLanguageTag();
     final state = speech.state;
     // Vai falar sozinho: o texto anda no passo da voz, não no da leitura.
@@ -694,8 +646,11 @@ class TeacherSpeech extends StatelessWidget {
           a.isSpeaking(text) != b.isSpeaking(text) ||
           (b.isSpeaking(text) && a.revealed != b.revealed),
       builder: (context, state) => _TypedText(
+        // Fala nova no mesmo lugar (explicação seguinte): digita de novo.
+        key: ValueKey(text),
         text: words,
         onTapAt: onTapAt,
+        snap: snap,
         paced: paced,
         speaking: state.isSpeaking(text),
         // The voice counts in the source text; the clip, in the drawn one.
@@ -709,17 +664,23 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
+  /// O destaque do lance que está no tabuleiro, pintado atrás do texto.
+  Widget _withBackdrop(
+    Text words,
+    (int, int)? range,
+    Color color,
+    Widget child,
+  ) => _MoveBackdrop(text: words, range: range, color: color, child: child);
+
   Widget _bubble(
     BuildContext context,
     MarkedText marked, {
     bool useBubbleKey = true,
-    bool emphasizeFirstParagraph = false,
     ValueChanged<SpeechLink>? onLinkOverride,
     ExplanationVariation? Function(SpeechLink)? originOf,
   }) {
     final text = marked.text;
     final theme = Theme.of(context);
-    final color = theme.colorScheme.surfaceContainerHighest;
     final language = Localizations.localeOf(context).languageCode;
     // Os nomes com página na Wikipedia; chave sem página: texto normal.
     final wiki = wikiOf(context);
@@ -742,22 +703,32 @@ class TeacherSpeech extends StatelessWidget {
               ))
                 link,
           ];
-    final section = lessonV2;
+    final section = lessonV2 || ViktorSheet.insideOf(context);
+    final colors = theme.colorScheme;
+    // Corpo da lição V2 (LICOES-V2 §2): 16/24, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
       fontSize: section ? 16 : null,
       height: section ? 1.5 : null,
+      fontWeight: section ? FontWeight.w400 : null,
+      color: section ? colors.onSurface : null,
     );
-    // As casas e os lances em seminegrito, na cor primária: tocáveis sem
-    // parecer link de site.
+    // As casas e os lances na cor primária: tocáveis sem parecer link de
+    // site. Na lição V2 o lance é peso 500, mesmo com `?`/`!` (o símbolo
+    // carrega o resultado); fora dela, seminegrito.
     final linkStyle = TextStyle(
-      color: theme.colorScheme.primary,
-      fontWeight: FontWeight.w700,
+      color: colors.primary,
+      fontWeight: section ? FontWeight.w500 : FontWeight.w700,
+    );
+    // A casa citada (variante A): um tom mais claro que o do lance.
+    final squareStyle = linkStyle.copyWith(
+      color: LessonTextColors.square(colors),
     );
     // Os nomes, sublinhados como link de site: abrem a Wikipedia.
     final pageStyle = TextStyle(
-      color: theme.colorScheme.primary,
+      color: colors.primary,
+      fontWeight: FontWeight.w400,
       decoration: TextDecoration.underline,
-      decorationColor: theme.colorScheme.primary,
+      decorationColor: colors.primary,
     );
     bool isActiveMove(SpeechLink link) {
       final active = activeVariation;
@@ -774,51 +745,12 @@ class TeacherSpeech extends StatelessWidget {
           cursor.ply == active.ply;
     }
 
-    Color moveColor(SpeechLink link) {
-      if (!lessonV2) return theme.colorScheme.primary;
-      // Contrato §3.4: a cor da qualidade é a da lista (MoveQualityUi).
-      final notation = link.text;
-      final quality = notation.endsWith('??')
-          ? MoveQuality.blunder
-          : notation.endsWith('?!')
-          ? MoveQuality.inaccuracy
-          : notation.endsWith('?')
-          ? MoveQuality.mistake
-          : notation.endsWith('!!')
-          ? MoveQuality.great
-          : notation.endsWith('!')
-          ? MoveQuality.best
-          : null;
-      return quality?.listColor(theme.brightness) ?? theme.colorScheme.primary;
-    }
-
-    final firstParagraphEnd = text.contains('\n\n')
-        ? text.indexOf('\n\n')
-        : text.length;
+    // Parágrafos da mesma ideia viram um só fluxo (0 dp entre eles): o par de
+    // quebras vira espaço, de mesmo tamanho para não mexer nos deslocamentos.
     Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
-      if (!lessonV2) {
-        yield TextSpan(text: value);
-        return;
-      }
-      final paragraphs = value.split('\n\n');
-      var consumed = 0;
-      for (final (index, paragraph) in paragraphs.indexed) {
-        if (index > 0) {
-          yield const TextSpan(text: '\n');
-          yield const TextSpan(
-            text: '\n',
-            style: TextStyle(fontSize: 8, height: 1),
-          );
-        }
-        yield TextSpan(
-          text: paragraph,
-          style:
-              emphasizeFirstParagraph && offset + consumed < firstParagraphEnd
-              ? const TextStyle(fontWeight: FontWeight.w500)
-              : null,
-        );
-        consumed += paragraph.length + 2;
-      }
+      yield TextSpan(
+        text: lessonV2 ? value.replaceAll('\n\n', ' \u200B') : value,
+      );
     }
 
     final spans = [
@@ -826,12 +758,7 @@ class TeacherSpeech extends StatelessWidget {
         (
           link.start,
           link.end,
-          linkStyle.copyWith(
-            color: moveColor(link),
-            backgroundColor: isActiveMove(link)
-                ? theme.colorScheme.primaryContainer
-                : null,
-          ),
+          link.isMove || !lessonV2 ? linkStyle : squareStyle,
         ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
@@ -901,6 +828,13 @@ class TeacherSpeech extends StatelessWidget {
           );
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
+    // Tocar numa casa abre o destaque dela e baixa o painel até a borda do
+    // tabuleiro (A11); o lance só chama [onLink].
+    void fire(SpeechLink link) {
+      if (lessonV2 && !link.isMove) ViktorSheet.collapse(context);
+      onLink!(link);
+    }
+
     bool tapAt(int drawn) {
       final offset = offsets.toSource(drawn);
       for (final (mark, url) in pages) {
@@ -911,7 +845,7 @@ class TeacherSpeech extends StatelessWidget {
       }
       for (final link in links) {
         if (offset >= link.start && offset <= link.end) {
-          onLink!(link);
+          fire(link);
           return true;
         }
       }
@@ -919,71 +853,72 @@ class TeacherSpeech extends StatelessWidget {
     }
 
     final tappable = spans.isEmpty ? null : tapAt;
-    final bubble = Container(
-      width: double.infinity,
-      padding: section
-          ? EdgeInsets.zero
-          : const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: section
-          ? null
-          : BoxDecoration(
-              color: color,
-              borderRadius: _stacked
-                  ? BorderRadius.circular(AppShape.large)
-                  : const BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(AppShape.large),
-                      bottomStart: Radius.circular(AppShape.large),
-                      bottomEnd: Radius.circular(AppShape.large),
-                      topStart: Radius.circular(AppShape.small),
-                    ),
-            ),
-      child: Semantics(
-        liveRegion: true,
-        label: context.l10n.characterSays(teacher.name, text),
-        excludeSemantics: true,
-        // Com leitor de tela: uma ação por casa ou lance.
-        customSemanticsActions: {
-          for (final (mark, url) in pages)
-            CustomSemanticsAction(
-              label: context.l10n.wikiOpen(mark.text),
-            ): () =>
-                showExternalPage(context, url),
-          for (final link in links)
-            CustomSemanticsAction(
-              label: context.l10n.speechShowOnBoard(link.text),
-            ): () =>
-                onLink!(link),
-        },
-        child: _VoiceLinks(
-          text: text,
-          links: links,
-          onLink: onSpoken,
-          child: typed
-              ? _typed(context, text, words, tappable, offsets.toDrawn)
+    // Alvo de toque de 48 dp (A6): o toque perto do glifo vale no link mais
+    // próximo. Só na lição V2.
+    final snap = lessonV2
+        ? [
+            for (final link in links)
+              (offsets.toDrawn(link.start), offsets.toDrawn(link.end)),
+          ]
+        : null;
+    final activeLink = links.where(isActiveMove).firstOrNull;
+    final content = Semantics(
+      liveRegion: true,
+      label: context.l10n.characterSays(teacher.name, text),
+      excludeSemantics: true,
+      // Com leitor de tela: uma ação por casa ou lance.
+      customSemanticsActions: {
+        for (final (mark, url) in pages)
+          CustomSemanticsAction(label: context.l10n.wikiOpen(mark.text)): () =>
+              showExternalPage(context, url),
+        for (final link in links)
+          CustomSemanticsAction(
+            label: context.l10n.speechShowOnBoard(link.text),
+          ): () =>
+              fire(link),
+      },
+      child: _VoiceLinks(
+        text: text,
+        links: links,
+        onLink: onSpoken,
+        child: _withBackdrop(
+          words,
+          activeLink == null
+              ? null
+              : (
+                  offsets.toDrawn(activeLink.start),
+                  offsets.toDrawn(activeLink.end),
+                ),
+          LessonTextColors.activeMoveBackground(colors),
+          typed
+              ? _typed(
+                  context,
+                  text,
+                  words,
+                  tappable,
+                  offsets.toDrawn,
+                  snap: snap,
+                )
               : tappable == null
               ? words
-              : _LinkTapper(text: words, onTapAt: tappable),
+              : _LinkTapper(text: words, onTapAt: tappable, snap: snap),
         ),
       ),
     );
-    if (section ||
-        !_stacked ||
-        _compact(context) ||
-        part == TeacherSpeechPart.bubble) {
-      return bubble;
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // A ponta do balão, embaixo do meio do retrato.
-        Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: (avatarSize - _tail.width) / 2,
-          ),
-          child: CustomPaint(size: _tail, painter: _TailPainter(color)),
-        ),
-        bubble,
-      ],
+    if (section) return SizedBox(width: double.infinity, child: content);
+    // O balão único do app (branco, ponta e animação de `SpeechBalloon`): a
+    // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
+    final stacked = _stackedIn(context);
+    return SpeechBalloon(
+      pop: false,
+      tail: _compact(context) || part == TeacherSpeechPart.bubble
+          ? BalloonTail.none
+          : stacked
+          ? BalloonTail.up
+          : BalloonTail.start,
+      tailX: SpeechBalloon.tailXFor(avatarSize),
+      tailY: avatarSize / 2,
+      child: content,
     );
   }
 }
@@ -1070,25 +1005,6 @@ class _RevealOnChangeState extends State<_RevealOnChange> {
 }
 
 /// A ponta do balão: um triângulo virado para cima.
-class _TailPainter extends CustomPainter {
-  const _TailPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) => canvas.drawPath(
-    Path()
-      ..moveTo(0, size.height)
-      ..lineTo(size.width / 2, 0)
-      ..lineTo(size.width, size.height)
-      ..close(),
-    Paint()..color = color,
-  );
-
-  @override
-  bool shouldRepaint(_TailPainter old) => old.color != color;
-}
-
 /// A fala aparecendo aos poucos. O texto já ocupa o lugar todo (o balão não
 /// pula nem muda de tamanho) e é revelado letra a letra por um recorte; um
 /// toque mostra tudo. Com as animações desligadas no aparelho, aparece de uma
@@ -1096,7 +1012,9 @@ class _TailPainter extends CustomPainter {
 class _TypedText extends StatefulWidget {
   const _TypedText({
     required this.text,
+    super.key,
     this.onTapAt,
+    this.snap,
     this.paced = false,
     this.speaking = false,
     this.revealed,
@@ -1107,6 +1025,10 @@ class _TypedText extends StatefulWidget {
   /// Um toque numa letra já à vista: a posição dela. Devolve se havia uma
   /// casa ou um lance ali.
   final bool Function(int)? onTapAt;
+
+  /// Os trechos (casas e lances) onde o toque perto vale, em posições do
+  /// texto desenhado; ver [_tapNear].
+  final List<(int, int)>? snap;
 
   /// A voz vai falar: o texto anda no passo de quem fala.
   final bool paced;
@@ -1217,7 +1139,7 @@ class _TypedTextState extends State<_TypedText>
     if (AppMotion.of(context).disabled) {
       return onTapAt == null
           ? widget.text
-          : _LinkTapper(text: widget.text, onTapAt: onTapAt);
+          : _LinkTapper(text: widget.text, onTapAt: onTapAt, snap: widget.snap);
     }
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1233,6 +1155,7 @@ class _TypedTextState extends State<_TypedText>
                   painter,
                   details.localPosition,
                   (offset) => offset < shown && onTapAt(offset),
+                  snap: widget.snap,
                 )) {
               return;
             }
@@ -1270,7 +1193,38 @@ class _TypedTextState extends State<_TypedText>
 /// O toque do dedo erra por pouco uma casa curta como "a7": vale a casa ou o
 /// lance no ponto tocado ou, se não houver, o mais perto dele (até uns 20 px
 /// para os lados ou meia linha para cima e para baixo).
-bool _tapNear(TextPainter painter, Offset at, bool Function(int) onTapAt) {
+bool _tapNear(
+  TextPainter painter,
+  Offset at,
+  bool Function(int) onTapAt, {
+  List<(int, int)>? snap,
+}) {
+  if (snap != null) {
+    // LICOES-V2 §2 (A6): alvo de pelo menos 48×48 dp em volta do centro da
+    // caixa do glifo, sem mudar a altura da linha. Vale o link de menor
+    // distância ao centro.
+    (int, int)? best;
+    var bestDistance = double.infinity;
+    for (final range in snap) {
+      for (final box in painter.getBoxesForSelection(
+        TextSelection(baseOffset: range.$1, extentOffset: range.$2),
+      )) {
+        final rect = box.toRect();
+        final target = Rect.fromCenter(
+          center: rect.center,
+          width: math.max(rect.width, 48),
+          height: math.max(rect.height, 48),
+        );
+        if (!target.contains(at)) continue;
+        final distance = (at - rect.center).distance;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = range;
+        }
+      }
+    }
+    if (best != null && onTapAt(best.$1)) return true;
+  }
   const near = [
     Offset.zero,
     Offset(-10, 0),
@@ -1287,10 +1241,11 @@ bool _tapNear(TextPainter painter, Offset at, bool Function(int) onTapAt) {
 }
 
 class _LinkTapper extends StatelessWidget {
-  const _LinkTapper({required this.text, required this.onTapAt});
+  const _LinkTapper({required this.text, required this.onTapAt, this.snap});
 
   final Text text;
   final bool Function(int) onTapAt;
+  final List<(int, int)>? snap;
 
   @override
   Widget build(BuildContext context) {
@@ -1317,7 +1272,7 @@ class _LinkTapper extends StatelessWidget {
                 minWidth: constraints.minWidth,
                 maxWidth: constraints.maxWidth,
               );
-          if (!_tapNear(painter, details.localPosition, onTapAt)) {
+          if (!_tapNear(painter, details.localPosition, onTapAt, snap: snap)) {
             SpeechTextTapNotification().dispatch(context);
           }
           painter.dispose();
@@ -1408,4 +1363,160 @@ class _RevealClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(_RevealClipper old) =>
       old.count != count || old.painter != painter;
+}
+
+/// O destaque do lance que está no tabuleiro (LICOES-V2 §2, A5): fundo
+/// translúcido com cantos de 4 dp, 2 dp de folga nos lados, pintado atrás do
+/// texto com as caixas da seleção (`TextStyle.background` não tem canto) e
+/// sem mexer na métrica da linha.
+class _MoveBackdrop extends StatelessWidget {
+  const _MoveBackdrop({
+    required this.text,
+    required this.range,
+    required this.color,
+    required this.child,
+  });
+
+  final Text text;
+
+  /// Nulo: sem destaque. A árvore é a mesma com ou sem ele, para o texto que
+  /// aparece aos poucos não recomeçar quando o destaque entra e sai.
+  final (int, int)? range;
+  final Color color;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final range = this.range;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var style = DefaultTextStyle.of(context).style.merge(text.style);
+        if (MediaQuery.boldTextOf(context)) {
+          style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
+        }
+        final painter =
+            TextPainter(
+              text: TextSpan(
+                style: style,
+                children: [text.textSpan ?? TextSpan(text: text.data)],
+              ),
+              textDirection: text.textDirection ?? Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+              locale: Localizations.maybeLocaleOf(context),
+            )..layout(
+              minWidth: constraints.minWidth,
+              maxWidth: constraints.maxWidth,
+            );
+        final rects = range == null
+            ? const <Rect>[]
+            : [
+                for (final box in painter.getBoxesForSelection(
+                  TextSelection(baseOffset: range.$1, extentOffset: range.$2),
+                ))
+                  box.toRect(),
+              ];
+        painter.dispose();
+        return CustomPaint(
+          painter: range == null ? null : _BackdropPainter(rects, color),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
+class _BackdropPainter extends CustomPainter {
+  const _BackdropPainter(this.rects, this.color);
+
+  final List<Rect> rects;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    for (final rect in rects) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTRB(rect.left - 2, rect.top, rect.right + 2, rect.bottom),
+          const Radius.circular(AppShape.tiny),
+        ),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_BackdropPainter old) =>
+      old.color != color || !listEquals(old.rects, rects);
+}
+
+/// O botão de som do cabeçalho da fala (lição V2, exercício): o alto-falante
+/// com a velocidade na etiqueta, ou o som desligado.
+class LessonVoiceButton extends StatelessWidget {
+  const LessonVoiceButton({
+    required this.audible,
+    required this.speed,
+    required this.onPressed,
+    super.key,
+  });
+
+  final bool audible;
+  final double speed;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    return IconButton(
+      key: VoiceKeys.speakButton,
+      color: colors.onSurfaceVariant,
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      tooltip: audible
+          ? l10n.lessonSoundOn(l10n.voiceSpeedValue(speed))
+          : l10n.lessonSoundOff,
+      onPressed: onPressed,
+      icon: SizedBox(
+        width: 32,
+        height: 32,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            if (audible)
+              const Icon(Icons.volume_up_outlined)
+            else
+              const SoundOffIcon(),
+            if (audible)
+              PositionedDirectional(
+                start: -4,
+                top: -4,
+                child: ExcludeSemantics(
+                  child: Container(
+                    height: 16,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      borderRadius: BorderRadius.circular(AppShape.full),
+                    ),
+                    child: Text(
+                      l10n.voiceSpeedValue(speed),
+                      // Decorative badge: the button tooltip exposes
+                      // the full speed using the user's text scale.
+                      textScaler: TextScaler.noScaling,
+                      style: TextStyle(
+                        color: colors.onPrimary,
+                        fontSize: 10,
+                        height: 1.6,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

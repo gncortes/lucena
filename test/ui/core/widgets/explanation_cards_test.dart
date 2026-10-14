@@ -202,6 +202,14 @@ void main() {
       await tester.pumpAndSettle();
       expect(cursor!.variation.id, 'A');
       expect(cursor!.fen, child.originFen);
+      // T73 (D1): "Voltar à posição" com o ícone de desfazer.
+      expect(
+        find.descendant(
+          of: find.byKey(ExplanationKeys.restore),
+          matching: find.byIcon(Icons.undo),
+        ),
+        findsOneWidget,
+      );
       await tester.tap(find.byKey(ExplanationKeys.restore));
       await tester.pumpAndSettle();
       expect(cursor, isNull);

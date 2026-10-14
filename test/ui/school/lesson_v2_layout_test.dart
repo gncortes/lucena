@@ -19,6 +19,7 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/sheet_settle.dart';
 import '../../../testing/test_app.dart';
 
 /// T65 §2 and §8: the board stays high in every lesson state (D15), solving
@@ -99,6 +100,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', locale.languageCode);
+    await cubit.startStepClock();
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -126,6 +128,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pumpAndSettle();
     return cubit;
   }
 
@@ -137,12 +143,12 @@ void main() {
     expect(board.height, closeTo(side, 1), reason: '$state: board side');
     expect(board.left, closeTo(8, 1), reason: '$state: board start');
     final progress = tester.getRect(find.byKey(LessonKeys.progress));
-    expect(progress.top, closeTo(64, 1), reason: '$state: progress top');
-    expect(progress.height, closeTo(8, 1), reason: '$state: progress height');
+    expect(progress.top, closeTo(56, 1), reason: '$state: progress top');
+    expect(progress.height, closeTo(4, 1), reason: '$state: progress height');
     // Viktor (header and speech) lives in the sheet, below the board.
     final teacher = find.byWidgetPredicate(
       (widget) =>
-          widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+          widget is TeacherSpeech && widget.part != TeacherSpeechPart.bubble,
     );
     expect(teacher, findsOneWidget, reason: '$state: one Viktor, in the sheet');
     expect(
@@ -205,27 +211,35 @@ void main() {
             );
             // Pensar (solving, think step).
             expect(cubit.state.layout, LessonLayoutMode.solving);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'Pensar');
             expectFooterTargets(tester, 'Pensar');
             // PensarDica.
             await cubit.moreHint();
             await tester.pumpAndSettle();
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'PensarDica');
             // Pratica (move step, solving).
             await cubit.next();
             await tester.pumpAndSettle();
+            // A apresentação do passo (§8) termina antes do jogo.
+            await cubit.startStepClock();
+            await tester.pumpAndSettle();
             expect(cubit.state.current?.id, 'try');
             expect(cubit.state.layout, LessonLayoutMode.solving);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'Pratica');
             expectFooterTargets(tester, 'Pratica');
             // LanceErrado (wrong move, not predicted).
             await cubit.play(Move.parse('c1c2')!);
             await tester.pumpAndSettle();
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'LanceErrado');
             // Errou (predicted wrong move: 2×2 footer).
             await cubit.play(Move.parse('c1c3')!);
             await tester.pumpAndSettle();
             expect(cubit.state.phase, StepPhase.failed);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'Errou');
             expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
             expectFooterTargets(tester, 'Errou');
@@ -235,6 +249,7 @@ void main() {
             await cubit.play(Move.parse('c1c4')!);
             await tester.pumpAndSettle();
             expect(cubit.state.layout, LessonLayoutMode.explaining);
+            await settleSheet(tester);
             expectHighBoard(tester, size, 'LanceResposta');
             expectFooterTargets(tester, 'LanceResposta');
           });

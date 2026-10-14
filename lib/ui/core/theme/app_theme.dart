@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/app_accent.dart';
+import 'app_colors.dart';
 import 'app_shape.dart';
+import 'app_sheet.dart';
 import 'app_tokens.dart';
 
 abstract final class AppTheme {
@@ -157,6 +159,9 @@ abstract final class AppTheme {
         backgroundColor: sheet,
         modalBackgroundColor: sheet,
         surfaceTintColor: Colors.transparent,
+        shape: AppSheet.shape,
+        modalBarrierColor: AppSheet.scrim,
+        dragHandleSize: AppSheet.handleSize,
       ),
       // Cartões com o raio grande dos tokens (T51, G3).
       cardTheme: const CardThemeData(
@@ -164,7 +169,7 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.all(Radius.circular(AppShape.large)),
         ),
       ),
-      extensions: const [AppTokens.standard],
+      extensions: const [AppTokens.standard, AppColors.standard],
       // Uma transição só no app inteiro: a tela nova entra deslizando de leve
       // com fade, numa curva suave.
       pageTransitionsTheme: const PageTransitionsTheme(

@@ -102,6 +102,7 @@ void main() {
   test('todo nó tem pergunta, salvo os isentos do build_items.py', () {
     const exempt = {
       'pawns.shoulder',
+      'pawns.waitingMoves',
       'pawns.spareTempi',
       'pawns.correspondingSquares',
     };

@@ -152,3 +152,13 @@ extension BoardSettingsUi on BoardSettings {
     enablePremoves: premoves,
   );
 }
+
+/// [san] (letras inglesas, com número e `?`/`!` se houver) com as letras das
+/// peças do idioma (`Ke3` vira `Re3` em português).
+String localizedSan(AppLocalizations l10n, String san) {
+  final letters = MoveNotation.letters.pieceLetters(l10n)!;
+  return san.replaceAllMapped(
+    RegExp('[KQRBN]'),
+    (match) => letters[match[0]] ?? match[0]!,
+  );
+}

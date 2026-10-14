@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart' show Side;
 
 import '../models/attempt.dart';
 import '../models/clock.dart';
+import '../models/game_end.dart';
 import '../models/speedrun.dart';
 
 /// A Maratona: o mesmo final do 1000 ao Stockfish, com um banco de tempo só
@@ -63,4 +64,36 @@ abstract final class Marathon {
   /// O relógio do jogador numa etapa: o [bank] com o acréscimo do ritmo.
   static TimeControl stageTime(TimeControl pace, Duration bank) =>
       TimeControl(initial: bank, increment: pace.increment);
+}
+
+/// Por que uma tentativa da Maratona terminou.
+abstract final class MarathonEnd {
+  /// O fim de [run] em [speedrun], na ordem: concluída, sem tempo, empate,
+  /// derrota e, se nenhuma partida falhou no fim (ou o jogador desistiu da
+  /// partida), desistência.
+  ///
+  /// Sem tempo é a partida perdida ou empatada por `timeout`, e também a
+  /// tentativa que o reporter abandona com o banco em zero depois de vencer
+  /// a etapa.
+  static SpeedrunRunEnd of(Speedrun speedrun, SpeedrunRun run) {
+    if (run.completed) return SpeedrunRunEnd.completed;
+    final last = run.attempt.games.lastOrNull;
+    if (last == null) return SpeedrunRunEnd.abandoned;
+    if (last.fulfilled) {
+      return run.attempt.abandonedAt != null &&
+              Marathon.bank(run, speedrun.time) <= Duration.zero
+          ? SpeedrunRunEnd.timeout
+          : SpeedrunRunEnd.abandoned;
+    }
+    final reason = last.endReason;
+    if (reason == GameEndReason.timeout ||
+        reason == GameEndReason.timeoutVsInsufficientMaterial) {
+      return SpeedrunRunEnd.timeout;
+    }
+    // Desistir da partida é desistir da tentativa.
+    if (reason == GameEndReason.resign) return SpeedrunRunEnd.abandoned;
+    return last.outcome == AttemptOutcome.draw
+        ? SpeedrunRunEnd.drawn
+        : SpeedrunRunEnd.lost;
+  }
 }

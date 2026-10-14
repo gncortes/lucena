@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O nome da peça no idioma.
 String pieceName(AppLocalizations l10n, ChallengePiece piece) =>
@@ -48,17 +49,17 @@ extension ChallengePieceLetter on ChallengePiece {
 
 /// A cor de cada tipo de estrela.
 Color starColor(StarKind kind) => switch (kind) {
-  StarKind.gold => const Color(0xfff2b705),
-  StarKind.silver => const Color(0xffb0b8c1),
-  StarKind.bronze => const Color(0xffcd7f32),
+  StarKind.gold => AppColors.goldColor,
+  StarKind.silver => AppColors.silverColor,
+  StarKind.bronze => AppColors.bronzeColor,
 };
 
 /// A cor do selo de cada nível: verde, laranja, vermelho e, às cegas, roxo.
 Color levelColor(ChallengeLevel level) => switch (level) {
-  ChallengeLevel.easy => const Color(0xff2e7d32),
-  ChallengeLevel.medium => const Color(0xffe65100),
-  ChallengeLevel.hard => const Color(0xffc62828),
-  ChallengeLevel.named => const Color(0xff6a1b9a),
+  ChallengeLevel.easy => AppColors.successColor,
+  ChallengeLevel.medium => AppColors.levelMedium,
+  ChallengeLevel.hard => AppColors.errorColor,
+  ChallengeLevel.named => AppColors.levelNamed,
 };
 
 /// O fundo dos cartões da tela (o convite e o placar, D2 do canvas V2): no

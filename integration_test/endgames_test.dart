@@ -47,10 +47,10 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
 
-    // A dica mostra a seta do lance e custa a estrela.
+    // A dica dá a pista sem a seta do lance e custa a estrela.
     await endgames.startExercises(_lessonId, first.id);
     await endgames.hint();
-    endgames.expectHintArrow(first.line.first.accept.first);
+    endgames.expectHintWithoutArrow();
     await endgames.solveExercise(first);
     expectText(endgames.earned, _points(0, first.stars));
     // Com erro ou dica, a correção do Viktor vem sozinha.

@@ -15,6 +15,9 @@ abstract final class ExplanationKeys {
 
   /// The arrow that opens or closes the sub-variations of a line.
   static Key expand(String id) => ValueKey('explanation.expand.$id');
+
+  /// The context/history quote of a block (LessonQuote).
+  static Key quote(String id) => ValueKey('explanation.quote.$id');
   static const first = ValueKey('explanation.first');
   static const previous = ValueKey('explanation.previous');
   static const next = ValueKey('explanation.next');

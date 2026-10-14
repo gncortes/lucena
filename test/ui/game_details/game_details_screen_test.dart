@@ -126,6 +126,30 @@ void main() {
   double sheetTop(WidgetTester tester) =>
       tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
 
+  testWidgets('o painel da análise é uma superfície contínua `surface`, sem '
+      'cartões com cor própria', (tester) async {
+    final id = await progress.addAttempt(game);
+    await pump(tester, id, screen: const Size(1080, 2400));
+    final surface = Theme.of(tester.element(find.byKey(GameDetailsKeys.panel)))
+        .colorScheme
+        .surface;
+    final sheet = tester.widget<DecoratedBox>(
+      find
+          .ancestor(
+            of: find.byKey(GameDetailsKeys.panel),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect((sheet.decoration as BoxDecoration).color, surface);
+    final cards = tester.widgetList<Card>(find.byType(Card));
+    expect(cards, isNotEmpty);
+    for (final card in cards) {
+      expect(card.color, Colors.transparent);
+      expect(card.elevation, 0);
+    }
+  });
+
   testWidgets('a folha: recolhida embaixo do tabuleiro; puxada, sobe por '
       'cima dele com o x; o x a desce de volta', (tester) async {
     final id = await progress.addAttempt(game);
@@ -222,7 +246,7 @@ void main() {
     });
   }
 
-  testWidgets('toque na folha abre até 95% sem mover o tabuleiro', (
+  testWidgets('toque na folha abre até 76 dp do topo sem mover o tabuleiro', (
     tester,
   ) async {
     final id = await progress.addAttempt(game);
@@ -232,10 +256,10 @@ void main() {
     await tester.tapAt(tester.getTopLeft(panel) + const Offset(40, 12));
     await tester.pumpAndSettle();
     final appBar = tester.getRect(find.byType(AppBar));
-    final bottom = tester.getRect(find.byKey(GameDetailsKeys.screen)).bottom;
     expect(
       sheetTop(tester),
-      closeTo(appBar.bottom + (bottom - appBar.bottom) * .05, 1),
+      // Aberta, a folha para 76 dp abaixo do topo da área (LICOES-V2 §5).
+      closeTo(appBar.bottom + 76, 1),
     );
     expect(tester.getRect(find.byKey(GameDetailsKeys.board)), board);
     expect(
@@ -254,6 +278,13 @@ void main() {
     expect(find.byKey(GameDetailsKeys.screen), findsOneWidget);
     expect(plain(tester, GameDetailsKeys.opponent), 'Coco (1000)');
     expect(plain(tester, GameDetailsKeys.result), 'Win · Checkmate');
+    // O placar fecha a lista de lances, só com a notação.
+    await tester.scrollUntilVisible(
+      find.byKey(GameDetailsKeys.score),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(plain(tester, GameDetailsKeys.score), '1–0');
     final after = (await rating.history()).single.rating.rounded;
     expect(find.text('$after'), findsOneWidget);
   });

@@ -1,6 +1,11 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/exercise_actions.dart';
+import '../../core/widgets/app_bar_progress.dart';
+
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -11,6 +16,8 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -44,7 +51,7 @@ class PlacementScreen extends StatelessWidget {
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
       appBar: state.view == PlacementView.result
           ? null
-          : AppBar(
+          : LucenaAppBar(
               title: state.view == PlacementView.question
                   ? Text(
                       l10n.placementQuestionOf(state.number),
@@ -54,18 +61,9 @@ class PlacementScreen extends StatelessWidget {
               // Quanto do questionário já foi: uma barra contínua na base
               // da barra do app, que anda a cada resposta.
               bottom: state.view == PlacementView.question
-                  ? PreferredSize(
-                      preferredSize: const Size.fromHeight(4),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(end: (state.number - 1) / 20),
-                        duration: AppMotion.of(context).component,
-                        curve: AppMotion.enter,
-                        builder: (context, value, _) => LinearProgressIndicator(
-                          key: PlacementKeys.progress,
-                          value: value,
-                          minHeight: 4,
-                        ),
-                      ),
+                  ? AppBarProgress(
+                      key: PlacementKeys.progress,
+                      value: (state.number - 1) / 20,
                     )
                   : null,
             ),
@@ -121,74 +119,83 @@ class _Intro extends StatelessWidget {
       (Icons.schedule_rounded, l10n.placementChipMinutes),
       (Icons.timer_off_outlined, l10n.placementChipNoClock),
     ];
-    return SingleChildScrollView(
-      padding: scrollPadding(
-        context,
-        left: AppSpacing.xl,
-        top: AppSpacing.lg,
-        right: AppSpacing.xl,
-        bottom: AppSpacing.xl,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (viktor != null)
-            TeacherSpeech(
-              speechContext: SpeechContext.teaching,
-              teacher: viktor,
-              text: l10n.placementIntroSpeech,
-              emotion: Emotion.happy,
-              avatarSize: 56,
-              speaks: true,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: scrollPadding(
+              context,
+              // Canvas `PropV2TesteAbertura`: margem de 16, como o rodapé.
+              left: AppSpacing.lg,
+              top: AppSpacing.lg,
+              right: AppSpacing.lg,
+              bottom: AppSpacing.xl,
             ),
-          const SizedBox(height: AppSpacing.xl),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              for (final (icon, label) in chips)
-                Chip(avatar: Icon(icon, size: 18), label: Text(label)),
-            ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (viktor != null)
+                  TeacherSpeech(
+                    speechContext: SpeechContext.teaching,
+                    teacher: viktor,
+                    text: l10n.placementIntroSpeech,
+                    emotion: Emotion.happy,
+                    avatarSize: 56,
+                    speaks: true,
+                  ),
+                const SizedBox(height: AppSpacing.xl),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    for (final (icon, label) in chips)
+                      Chip(avatar: Icon(icon, size: 18), label: Text(label)),
+                  ],
+                ),
+                if (onChooseByHand != null) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  TextButton(
+                    key: PlacementKeys.chooseByHand,
+                    onPressed: onChooseByHand,
+                    child: Text(l10n.placementChooseByHand),
+                  ),
+                ],
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          if (state.resuming) ...[
-            FilledButton(
-              key: PlacementKeys.resume,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              onPressed: cubit.start,
-              child: Text(l10n.placementResume(state.number)),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            OutlinedButton(
-              key: PlacementKeys.restart,
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
-              ),
-              onPressed: cubit.restart,
-              child: Text(l10n.placementRestart),
-            ),
-          ] else
-            FilledButton(
-              key: PlacementKeys.start,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              onPressed: cubit.start,
-              child: Text(l10n.placementStart),
-            ),
-          if (onChooseByHand != null) ...[
-            const SizedBox(height: AppSpacing.sm),
-            TextButton(
-              key: PlacementKeys.chooseByHand,
-              onPressed: onChooseByHand,
-              child: Text(l10n.placementChooseByHand),
-            ),
-          ],
-        ],
-      ),
+        ),
+        // Fixo no rodapé, como nas lições e no exercício (Gabriel,
+        // 14/10/2026): o mesmo componente, com margem de 16.
+        ExerciseActions(
+          key: PlacementKeys.footer,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          divider: false,
+          hug: true,
+          actions: state.resuming
+              ? [
+                  ExerciseAction(
+                    key: PlacementKeys.restart,
+                    label: l10n.placementRestart,
+                    onPressed: cubit.restart,
+                  ),
+                  ExerciseAction(
+                    key: PlacementKeys.resume,
+                    label: l10n.placementResume(state.number),
+                    primary: true,
+                    onPressed: cubit.start,
+                  ),
+                ]
+              : [
+                  ExerciseAction(
+                    key: PlacementKeys.start,
+                    label: l10n.placementStart,
+                    primary: true,
+                    onPressed: cubit.start,
+                  ),
+                ],
+        ),
+      ],
     );
   }
 }
@@ -296,7 +303,7 @@ class _Answers extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.confirm,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: state.selected.isEmpty ? null : cubit.confirmSquares,
               child: Text(l10n.placementConfirm),
@@ -323,7 +330,7 @@ class _Option extends StatelessWidget {
     return OutlinedButton(
       key: PlacementKeys.option(option),
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(56),
+        minimumSize: const Size.fromHeight(kButtonHeight),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         backgroundColor: colors.surfaceContainerLow,
         foregroundColor: colors.onSurface,
@@ -372,8 +379,8 @@ class _OptionBadge extends StatelessWidget {
       _ => null,
     };
     final side = switch (option) {
-      'whiteWins' => Colors.white,
-      'blackWins' => Colors.black,
+      'whiteWins' => AppColors.chessWhiteColor,
+      'blackWins' => AppColors.chessBlackColor,
       _ => null,
     };
     // Só o sinal, sem fundo; o lado que ganha é uma bolinha da cor dele.

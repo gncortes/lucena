@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/school/lesson_script_repository_asset.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
@@ -37,6 +38,47 @@ void main() {
     expect(course.lessons.last.id, 'graduation.twoBishops');
     final ids = course.lessons.map((lesson) => lesson.id).toList();
     expect(ids.toSet().length, ids.length);
+  });
+
+  test('aula com roteiro (T71) aponta um arquivo que existe', () {
+    expect(course.lesson('pieces.rook')!.script, isNotNull);
+    for (final lesson in course.lessons) {
+      final script = lesson.script;
+      if (script == null) continue;
+      expect(io.File(script).existsSync(), isTrue, reason: lesson.id);
+    }
+  });
+
+  test('o catálogo do iniciante (T71) fecha: toda aula tem o seu roteiro, '
+      'com falas em português e em inglês, e todo roteiro é de uma aula do '
+      'curso ou das aulas de finais', () {
+    for (final lesson in course.lessons) {
+      expect(
+        lesson.script,
+        AssetLessonScriptRepository.scriptPath(lesson.id),
+        reason: lesson.id,
+      );
+      for (final language in ['pt', 'en']) {
+        final path = AssetLessonScriptRepository.beginnerTextsPath(
+          lesson.id,
+          language,
+        );
+        expect(io.File(path).existsSync(), isTrue, reason: path);
+      }
+    }
+    final index = jsonDecode(
+      io.File('assets/lessons/endgames/index.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final endgames = {
+      for (final module in (index['modules'] as List).cast<Map>())
+        ...(module['lessons'] as List).cast<String>(),
+    };
+    final orphans = [
+      for (final file in io.Directory('assets/lessons/roteiros').listSync())
+        if (file.path.endsWith('.json'))
+          file.uri.pathSegments.last.replaceAll('.json', ''),
+    ].where((id) => course.lesson(id) == null && !endgames.contains(id));
+    expect(orphans, isEmpty);
   });
 
   test('as 39 aulas na ordem da trilha: as regras novas (T52) entre as '
@@ -256,7 +298,7 @@ void main() {
         'school.welcomeBack',
         'school.graduated',
         'tour.level',
-        'tour.level.beginner',
+        'tour.voice.none',
       ]) {
         expect(all[key], isNotNull, reason: '$language $key');
       }

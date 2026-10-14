@@ -7,6 +7,7 @@ abstract final class PlacementKeys {
 
   /// Na abertura.
   static const start = Key('placement.start');
+  static const footer = Key('placement.footer');
   static const resume = Key('placement.resume');
   static const restart = Key('placement.restart');
   static const chooseByHand = Key('placement.chooseByHand');
