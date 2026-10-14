@@ -259,9 +259,11 @@ void main() {
         );
         final variant = block.variations.single;
         expect(variant.outcomeText, variant.texts.first);
-        // A frase de punição é própria de cada posição e cita a resposta
-        // numerada que pune o lance anterior (rodada 2 da oposição).
-        expect(variant.outcomeText, contains(RegExp(r'\d+\.(\.\.)?[A-Za-h]')));
+        // A frase é própria de cada posição e explica por que o lance
+        // anterior falha, sem entregar a resposta que a demo vai jogar
+        // (Regra 0: a entrada só convida a pensar).
+        expect(variant.outcomeText, isNotEmpty);
+        expect(variant.outcomeText, isNot(contains(variant.label)));
         expect(
           variant.outcomeText,
           isNot(

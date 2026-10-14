@@ -182,7 +182,7 @@
           "type": "demo",
           "id": "err_distantKing",
           "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 1 1",
-          "side": "white",
+          "side": "black",
           "goal": "draw",
           "line": [
             {
@@ -200,7 +200,7 @@
           "type": "demo",
           "id": "err_distantPawn",
           "fen": "4k3/8/8/8/6P1/3K4/8/8 b - - 0 1",
-          "side": "white",
+          "side": "black",
           "goal": "draw",
           "line": [
             {
