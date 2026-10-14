@@ -238,10 +238,18 @@ class _Run {
 String _mateMove(Position position, Set<String> seen) {
   final us = position.turn;
   final candidates = <(int, String)>[];
+  final pawnMoves = <(int, String)>[];
   for (final MapEntry(key: from, value: targets)
       in position.legalMoves.entries) {
+    final pawn = position.board.roleAt(from) == Role.pawn;
     for (final to in targets.squares) {
-      final move = NormalMove(from: from, to: to);
+      final promotes =
+          pawn && (to.rank == Rank.first || to.rank == Rank.eighth);
+      final move = NormalMove(
+        from: from,
+        to: to,
+        promotion: promotes ? Role.queen : null,
+      );
       final next = position.play(move);
       if (next.isCheckmate) return move.uci;
       if (next.isStalemate) continue;
@@ -251,13 +259,28 @@ String _mateMove(Position position, Set<String> seen) {
         ),
       );
       if (hangs) continue;
+      // Com peão: coroar quando der; senão, avançar quando ele não cai.
+      if (pawn) pawnMoves.add((promotes ? 0 : 1, move.uci));
       final key = next.fen.split(' ').take(4).join(' ');
+      // Peão parado: o rei vai apoiá-lo.
+      final escort = [
+        for (final p
+            in next.board.pawns.intersect(next.board.bySide(us)).squares)
+          _distance(next.board.kingOf(us)!, p),
+      ].fold(0, (a, b) => a + b);
       final score =
           _kingRoom(next, us) * 10 +
           _distance(next.board.kingOf(us)!, next.board.kingOf(us.opposite)!) +
+          escort * 20 +
           (seen.contains(key) ? 1000 : 0);
       candidates.add((score, move.uci));
     }
+  }
+  if (pawnMoves.isNotEmpty) {
+    pawnMoves.sort((a, b) => a.$1.compareTo(b.$1));
+    final uci = pawnMoves.first.$2;
+    seen.add(position.play(Move.parse(uci)!).fen.split(' ').take(4).join(' '));
+    return uci;
   }
   candidates.sort((a, b) {
     final byScore = a.$1.compareTo(b.$1);

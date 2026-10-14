@@ -34,8 +34,20 @@ abstract final class MachineMove {
     candidates.sort((a, b) => a.uci.compareTo(b.uci));
 
     final pawn = position.board.pawns.first;
-    final pawnSide = pawn == null ? null : position.board.sideAt(pawn);
-    if (pawn == null || pawnSide == position.turn) {
+    if (pawn == null) {
+      // Depois da coroação: o lado sem a peça nova busca o empate (captura a
+      // peça que ficou solta); o outro, a vitória.
+      final strong = position.board.occupied.squares
+          .where((sq) => position.board.roleAt(sq) != Role.king)
+          .map(position.board.sideAt)
+          .firstOrNull;
+      if (strong != null && strong != position.turn) {
+        return _defend(candidates, position.turn, Square.a1).uci;
+      }
+      return _attack(candidates).uci;
+    }
+    final pawnSide = position.board.sideAt(pawn);
+    if (pawnSide == position.turn) {
       return _attack(candidates).uci;
     }
     final front = Square(pawn.value + (pawnSide == Side.white ? 8 : -8));
