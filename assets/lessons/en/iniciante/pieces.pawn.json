@@ -13,7 +13,7 @@
   "rot.ideia.ex1.l3": "Remember the idea: the pawn moves straight ahead; two squares only on its first move.",
   "rot.ideia.ex2.e1": "A black knight is on e5, right in front of the pawn.",
   "rot.ideia.ex2.e2": "The pawn only moves forward onto an empty square: it does not capture what is in front of it.",
-  "rot.ideia.ex2.e3": "It captures diagonally, one square ahead, any black piece, even another pawn. The captured piece leaves the board.",
+  "rot.ideia.ex2.e3": "It captures diagonally, one square ahead: d5 or f5. The captured piece leaves the board.",
   "rot.ideia.ex2.p": "Capture one of the black pieces on the diagonal, either one, or click {verResposta}",
   "rot.ideia.ex2.certo": "That's right! The pawn captures diagonally and stands on d5.",
   "rot.ideia.ex2.revela": "The pawn captures the black pawn on d5, diagonally.",

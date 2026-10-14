@@ -17,7 +17,7 @@
   "rot.ideia.ex1.l5": "Each move follows a single line. To change direction, the rook needs another move.",
   "rot.ideia.ex1.l6": "Remember the idea: the rook moves in a straight line, as many squares as it likes.",
   "rot.ideia.ex1.l7": "Now let's see what happens when a piece is in the way.",
-  "rot.ideia.ex2.e1": "Now there is a white pawn on c6, on the rook's file.",
+  "rot.ideia.ex2.e1": "Now there is a white pawn on c6, on the rook's file. For now, it is just an obstacle.",
   "rot.ideia.ex2.e2": "The rook does not jump over pieces: the pawn blocks its way up the c-file.",
   "rot.ideia.ex2.e3": "It can go up to c5, just below the pawn, and stop there.",
   "rot.ideia.ex2.e4": "Nor can it stop on c6: the square already holds a piece from its own side.",
