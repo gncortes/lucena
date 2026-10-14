@@ -62,4 +62,21 @@ void main() {
       expect(ScriptMoves.legal(fen, 'g7g8'), 'g7g8q');
     });
   });
+
+  group('lance do outro lado na tarefa (captura de volta)', () {
+    test('com rei: a peça preta joga e a vez volta às brancas', () {
+      const fen = '4k3/8/4p3/3R4/8/8/8/4K3 w - - 0 1';
+      final played = ScriptMoves.play(fen, 'e6d5', keepTurn: true)!;
+      expect(played.san, 'exd5');
+      expect(played.fen, startsWith('4k3/8/8/3p4/8/8/8/4K3 w '));
+      expect(ScriptMoves.moverOf(fen, 'e6d5'), Side.black);
+    });
+
+    test('sem rei também', () {
+      const fen = '8/8/8/3R1r2/8/8/8/8 w - - 0 1';
+      final played = ScriptMoves.play(fen, 'f5d5', keepTurn: true)!;
+      expect(played.fen, '8/8/8/3r4/8/8/8/8 w - - 0 1');
+      expect(played.san, 'Rxd5');
+    });
+  });
 }

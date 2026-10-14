@@ -50,6 +50,9 @@ abstract final class ScriptMoves {
   /// [uci] jogado em [fen]: a posição nova e o lance em notação algébrica.
   /// [keepTurn]: tarefa sem adversário, a vez não passa. Nulo se o lance não
   /// vale ali.
+  ///
+  /// Na tarefa, um passo pode mostrar um lance do outro lado (a captura de
+  /// volta, F3): a peça joga como se fosse a vez dela.
   static ({String fen, String san})? play(
     String fen,
     String uci, {
@@ -57,6 +60,12 @@ abstract final class ScriptMoves {
   }) {
     final move = Move.parse(uci);
     if (move == null) return null;
+    final mover = keepTurn ? moverOf(fen, uci) : null;
+    if (mover != null && mover != _turnOf(fen)) {
+      final played = play(_turnTo(fen, mover), uci, keepTurn: true);
+      if (played == null) return null;
+      return (fen: _withTurn(played.fen, fen), san: played.san);
+    }
     final position = GameRules.fromFen(fen);
     if (position != null) {
       final played = GameRules.play(position, move);
@@ -76,6 +85,23 @@ abstract final class ScriptMoves {
       fen: [after.fen, ...parts.skip(1)].join(' '),
       san: '${piece.role.uppercaseLetter}$capture${move.to.name}',
     );
+  }
+
+  /// A cor da peça que sai da casa de origem de [uci] em [fen], ou nulo.
+  static Side? moverOf(String fen, String uci) {
+    final move = Move.parse(uci);
+    if (move is! NormalMove) return null;
+    return _setup(fen)?.board.pieceAt(move.from)?.color;
+  }
+
+  static Side _turnOf(String fen) =>
+      fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
+
+  static String _turnTo(String fen, Side side) {
+    final parts = fen.split(' ');
+    if (parts.length < 2) return fen;
+    parts[1] = side == Side.white ? 'w' : 'b';
+    return parts.join(' ');
   }
 
   /// [fen] com a vez de [from].
