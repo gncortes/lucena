@@ -22276,6 +22276,43 @@
                   ]
                 },
                 {
+                  "id": "b6a6",
+                  "label": "E",
+                  "outcome": "losing",
+                  "texts": [
+                    "Se as pretas jogassem 1...Ra6?, as brancas responderiam com 2.Rd8 e ganhariam: depois de 2...Rb6 3.Rc8, o rei preto precisa jogar e só tem casas que abandonam c6.",
+                    "Descer para a6 tira o rei preto da sétima fileira, onde ele mantinha a oposição a distância. Com 2.Rd8, o rei branco fica pronto para responder a cada lance: se o rei preto for a b6, vem 3.Rc8; se for a b7, vem 3.Rd7. Na linha, 3...Ra5 4.Rc7 Ra6 5.Rxc6 e o peão cai."
+                  ],
+                  "originFen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 7 1",
+                  "movesUci": [
+                    "b6a6",
+                    "e7d8",
+                    "a6b6",
+                    "d8c8",
+                    "b6a5",
+                    "c8c7",
+                    "a5a6",
+                    "c7c6"
+                  ],
+                  "movesSan": [
+                    "1...Ra6",
+                    "2.Rd8",
+                    "2...Rb6",
+                    "3.Rc8",
+                    "3...Ra5",
+                    "4.Rc7",
+                    "4...Ra6",
+                    "5.Rxc6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "protectPawn/t_protectPawn",
+                  "playedTexts": [
+                    "Com 1...Ra6? você deixa escapar o empate: as brancas respondem com 2.Rd8 e, depois de 2...Rb6 3.Rc8, seu rei precisa jogar e só tem casas que abandonam c6.",
+                    "Descer para a6 tira seu rei da sétima fileira, onde ele mantinha a oposição a distância. Com 2.Rd8, o rei branco fica pronto para responder a cada lance: se seu rei for a b6, vem 3.Rc8; se for a b7, vem 3.Rd7. Na linha, 3...Ra5 4.Rc7 Ra6 5.Rxc6 e o peão cai."
+                  ]
+                },
+                {
                   "id": "b6c7_other_defence",
                   "label": "B.1",
                   "outcome": "losing",
@@ -22532,6 +22569,43 @@
                   "playedTexts": [
                     "With 1...Kc7? you let the draw slip: White replies 2.Ke6!, the only winning move, and after 2...Kb6 3.Kd6 it is Black who has to move.",
                     "Moving closer to c6 seems to strengthen the defence, but it lets the white king switch to the sixth rank and impose the turn. The blocked pawns offer no waiting move; the black king will have to give up the defence of one of the pawns."
+                  ]
+                },
+                {
+                  "id": "b6a6",
+                  "label": "E",
+                  "outcome": "losing",
+                  "texts": [
+                    "If Black played 1...Ka6?, White would reply 2.Kd8 and win: after 2...Kb6 3.Kc8, the black king has to move and every square it has gives up c6.",
+                    "Going down to a6 takes the black king off the seventh rank, where it kept the distant opposition. With 2.Kd8, the white king is ready to answer each move: if the black king goes to b6, 3.Kc8 follows; if it goes to b7, 3.Kd7. In the line, 3...Ka5 4.Kc7 Ka6 5.Kxc6 and the pawn falls."
+                  ],
+                  "originFen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 7 1",
+                  "movesUci": [
+                    "b6a6",
+                    "e7d8",
+                    "a6b6",
+                    "d8c8",
+                    "b6a5",
+                    "c8c7",
+                    "a5a6",
+                    "c7c6"
+                  ],
+                  "movesSan": [
+                    "1...Ka6",
+                    "2.Kd8",
+                    "2...Kb6",
+                    "3.Kc8",
+                    "3...Ka5",
+                    "4.Kc7",
+                    "4...Ka6",
+                    "5.Kxc6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "protectPawn/t_protectPawn",
+                  "playedTexts": [
+                    "With 1...Ka6? you let the draw slip: White replies 2.Kd8 and, after 2...Kb6 3.Kc8, your king has to move and every square it has gives up c6.",
+                    "Going down to a6 takes your king off the seventh rank, where it kept the distant opposition. With 2.Kd8, the white king is ready to answer each move: if your king goes to b6, 3.Kc8 follows; if it goes to b7, 3.Kd7. In the line, 3...Ka5 4.Kc7 Ka6 5.Kxc6 and the pawn falls."
                   ]
                 },
                 {
@@ -36373,7 +36447,7 @@
               "kind": "main_solution",
               "title": "A ideia principal",
               "texts": [
-                "Primeiro as brancas recuperam a oposição; depois usam a passagem d7 para obrigar o rei preto a ceder junto aos peões."
+                "Com 1.Re8 Ra7 2.Re7, as brancas recuperam a oposição a distância: os reis ficam na sétima fileira, com três casas entre eles e as pretas na vez. Depois de 2...Rb7, 3.Rd7 usa a passagem d7, e 3...Rb6 4.Rd6 deixa os reis em b6 e d6 com as pretas na vez: o rei preto precisa ceder junto aos peões."
               ],
               "variations": [
                 {
@@ -36381,7 +36455,7 @@
                   "label": "1.Re8",
                   "outcome": "accepted",
                   "texts": [
-                    "Primeiro as brancas recuperam a oposição; depois usam a passagem d7 para obrigar o rei preto a ceder junto aos peões."
+                    "Com 1.Re8 Ra7 2.Re7, as brancas recuperam a oposição a distância: os reis ficam na sétima fileira, com três casas entre eles e as pretas na vez. Depois de 2...Rb7, 3.Rd7 usa a passagem d7, e 3...Rb6 4.Rd6 deixa os reis em b6 e d6 com as pretas na vez: o rei preto precisa ceder junto aos peões."
                   ],
                   "originFen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 6 1",
                   "movesUci": [
@@ -36449,7 +36523,7 @@
               "kind": "main_solution",
               "title": "The main idea",
               "texts": [
-                "First White regains the opposition; then uses the d7 passage to force the black king to give way next to the pawns."
+                "With 1.Ke8 Ka7 2.Ke7, White regains the distant opposition: the kings stand on the seventh rank, three squares apart, with Black to move. After 2...Kb7, 3.Kd7 uses the d7 passage, and 3...Kb6 4.Kd6 leaves the kings on b6 and d6 with Black to move: the black king has to give way next to the pawns."
               ],
               "variations": [
                 {
@@ -36457,7 +36531,7 @@
                   "label": "1.Ke8",
                   "outcome": "accepted",
                   "texts": [
-                    "First White regains the opposition; then uses the d7 passage to force the black king to give way next to the pawns."
+                    "With 1.Ke8 Ka7 2.Ke7, White regains the distant opposition: the kings stand on the seventh rank, three squares apart, with Black to move. After 2...Kb7, 3.Kd7 uses the d7 passage, and 3...Kb6 4.Kd6 leaves the kings on b6 and d6 with Black to move: the black king has to give way next to the pawns."
                   ],
                   "originFen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 6 1",
                   "movesUci": [
@@ -36533,7 +36607,7 @@
               "kind": "main_solution",
               "title": "A ideia principal",
               "texts": [
-                "O contorno chegou ao ponto útil: as pretas devem abandonar a defesa de um dos peões. Observe qual alvo fica disponível nesta resposta."
+                "Com 4...Ra5, o rei preto deixa de proteger c5, e 5.Rxc5 captura o peão. Só a casa b6 protegia c5 e c6 ao mesmo tempo; com os peões bloqueados, não há lance de espera, e qualquer saída de b6 entrega um dos dois."
               ],
               "variations": [
                 {
@@ -36541,7 +36615,7 @@
                   "label": "4...Ra5",
                   "outcome": "accepted",
                   "texts": [
-                    "O contorno chegou ao ponto útil: as pretas devem abandonar a defesa de um dos peões. Observe qual alvo fica disponível nesta resposta."
+                    "Com 4...Ra5, o rei preto deixa de proteger c5, e 5.Rxc5 captura o peão. Só a casa b6 protegia c5 e c6 ao mesmo tempo; com os peões bloqueados, não há lance de espera, e qualquer saída de b6 entrega um dos dois."
                   ],
                   "originFen": "8/8/1kpK4/2p5/p1P5/P7/8/8 b - - 13 4",
                   "movesUci": [
@@ -36584,7 +36658,7 @@
               "kind": "main_solution",
               "title": "The main idea",
               "texts": [
-                "Outflanking has reached its useful point: Black must abandon the defence of one of the pawns. Watch which target becomes available after this reply."
+                "With 4...Ka5, the black king stops protecting c5, and 5.Kxc5 captures the pawn. Only b6 protected both c5 and c6; with the pawns blocked there is no waiting move, and any move away from b6 gives up one of them."
               ],
               "variations": [
                 {
@@ -36592,7 +36666,7 @@
                   "label": "4...Ka5",
                   "outcome": "accepted",
                   "texts": [
-                    "Outflanking has reached its useful point: Black must abandon the defence of one of the pawns. Watch which target becomes available after this reply."
+                    "With 4...Ka5, the black king stops protecting c5, and 5.Kxc5 captures the pawn. Only b6 protected both c5 and c6; with the pawns blocked there is no waiting move, and any move away from b6 gives up one of them."
                   ],
                   "originFen": "8/8/1kpK4/2p5/p1P5/P7/8/8 b - - 13 4",
                   "movesUci": [
@@ -37125,7 +37199,7 @@
               "kind": "main_solution",
               "title": "A ideia principal",
               "texts": [
-                "O segundo avanço fica guardado até ser necessário; depois de gastá-lo, as brancas observam a resposta preta e usam a entrada que ela permite."
+                "1.c3 gasta o primeiro avanço. Depois de 1...Re4 2.Rg5 Re5, os reis estão frente a frente com as brancas na vez; 3.c4, o segundo avanço, passa a vez às pretas. Com 3...Rd4, o rei preto cede a passagem, e 4.Rh6 entra para atacar o peão de h7."
               ],
               "variations": [
                 {
@@ -37133,7 +37207,7 @@
                   "label": "1.c3",
                   "outcome": "accepted",
                   "texts": [
-                    "O segundo avanço fica guardado até ser necessário; depois de gastá-lo, as brancas observam a resposta preta e usam a entrada que ela permite."
+                    "1.c3 gasta o primeiro avanço. Depois de 1...Re4 2.Rg5 Re5, os reis estão frente a frente com as brancas na vez; 3.c4, o segundo avanço, passa a vez às pretas. Com 3...Rd4, o rei preto cede a passagem, e 4.Rh6 entra para atacar o peão de h7."
                   ],
                   "originFen": "8/7p/8/2p4P/6K1/4k3/1PP5/8 w - - 2 1",
                   "movesUci": [
@@ -37201,7 +37275,7 @@
               "kind": "main_solution",
               "title": "The main idea",
               "texts": [
-                "The second advance is kept until it is needed; once it is spent, White watches Black’s reply and uses the entry it allows."
+                "1.c3 spends the first advance. After 1...Ke4 2.Kg5 Ke5, the kings face each other with White to move; 3.c4, the second advance, passes the move to Black. With 3...Kd4 the black king gives way, and 4.Kh6 gets in to attack the h7-pawn."
               ],
               "variations": [
                 {
@@ -37209,7 +37283,7 @@
                   "label": "1.c3",
                   "outcome": "accepted",
                   "texts": [
-                    "The second advance is kept until it is needed; once it is spent, White watches Black’s reply and uses the entry it allows."
+                    "1.c3 spends the first advance. After 1...Ke4 2.Kg5 Ke5, the kings face each other with White to move; 3.c4, the second advance, passes the move to Black. With 3...Kd4 the black king gives way, and 4.Kh6 gets in to attack the h7-pawn."
                   ],
                   "originFen": "8/7p/8/2p4P/6K1/4k3/1PP5/8 w - - 2 1",
                   "movesUci": [
@@ -38647,7 +38721,7 @@
               "kind": "main_solution",
               "title": "A ideia principal",
               "texts": [
-                "Observe quando c6 passa a ser atacado e como o rei preto ajusta a oposição sem precisar abandonar a defesa."
+                "1...Ra7 deixa três casas entre os reis na sétima fileira, com as brancas na vez. Quando o rei branco ataca c6 com 2.Rd7, o rei preto responde 2...Rb7; quando ele muda de fileira com 3.Rd6, vem 3...Rb6. A cada aproximação, c6 continua protegido e são as brancas que precisam jogar."
               ],
               "variations": [
                 {
@@ -38655,7 +38729,7 @@
                   "label": "1...Ra7",
                   "outcome": "accepted",
                   "texts": [
-                    "Observe quando c6 passa a ser atacado e como o rei preto ajusta a oposição sem precisar abandonar a defesa."
+                    "1...Ra7 deixa três casas entre os reis na sétima fileira, com as brancas na vez. Quando o rei branco ataca c6 com 2.Rd7, o rei preto responde 2...Rb7; quando ele muda de fileira com 3.Rd6, vem 3...Rb6. A cada aproximação, c6 continua protegido e são as brancas que precisam jogar."
                   ],
                   "originFen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 7 1",
                   "movesUci": [
@@ -38713,7 +38787,7 @@
               "kind": "main_solution",
               "title": "The main idea",
               "texts": [
-                "Watch when c6 comes under attack and how the black king adjusts the opposition without having to abandon the defence."
+                "1...Ka7 leaves three squares between the kings on the seventh rank, with White to move. When the white king attacks c6 with 2.Kd7, the black king replies 2...Kb7; when it changes rank with 3.Kd6, 3...Kb6 follows. After each approach c6 stays protected, and it is White who has to move."
               ],
               "variations": [
                 {
@@ -38721,7 +38795,7 @@
                   "label": "1...Ka7",
                   "outcome": "accepted",
                   "texts": [
-                    "Watch when c6 comes under attack and how the black king adjusts the opposition without having to abandon the defence."
+                    "1...Ka7 leaves three squares between the kings on the seventh rank, with White to move. When the white king attacks c6 with 2.Kd7, the black king replies 2...Kb7; when it changes rank with 3.Kd6, 3...Kb6 follows. After each approach c6 stays protected, and it is White who has to move."
                   ],
                   "originFen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 7 1",
                   "movesUci": [
