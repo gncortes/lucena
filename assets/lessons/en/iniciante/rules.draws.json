@@ -1,6 +1,6 @@
 {
   "rot.ideia.ex1.e1": "The game is also drawn when neither side has enough pieces to give checkmate.",
-  "rot.ideia.ex1.e2": "Whoever is left with only king and knight, or only king and bishop, cannot give mate, whatever the colour.",
+  "rot.ideia.ex1.e2": "Whoever is left with only king and knight, or only king and bishop, cannot give mate.",
   "rot.ideia.ex1.e3": "Here Black has a knight and a pawn; you only have the king. If the pawn survives, it can become a queen.",
   "rot.ideia.ex1.p": "Make the move that secures the draw, or click {verResposta}",
   "rot.ideia.ex1.certo": "That's right! Without the pawn, Black is left with king and knight: a draw.",

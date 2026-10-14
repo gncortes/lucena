@@ -18,7 +18,7 @@
   "rot.ideia.ex2.revela": "A torre vai a a8 e dá xeque pela última fileira. É mate.",
   "rot.ideia.ex2.fora": "Esse lance não ataca o rei. Vamos voltar: o mate começa com um xeque.",
   "rot.ideia.ex2.volta": "Dê xeque-mate com a torre, ou clique em {verResposta}",
-  "rot.ideia.ex2.l1": "A torre ataca a fileira de cima, e os peões pretos em f7, g7 e h7 tapam as outras casas de fuga.",
+  "rot.ideia.ex2.l1": "A torre ataca a fileira de cima, e os peões pretos em f7, g7 e h7 fecham as outras casas de fuga.",
   "rot.ideia.ex2.l2": "E nenhuma peça preta consegue capturar a torre nem entrar no caminho. Fim de partida.",
   "rot.ideia.ex2.l3": "Guarde a ideia: xeque-mate é o xeque de que o rei não consegue sair.",
   "rot.ideia.ex2.l4": "Agora vou mostrar outros xeques, e um que parece mate mas não é.",
@@ -33,9 +33,9 @@
   "rot.demos.mateDama.l1": "A dama encosta no rei preto, em b7: xeque.",
   "rot.demos.mateDama.l2": "O rei preto não pode capturá-la: o rei branco, em c6, protege a dama.",
   "rot.demos.mateDama.l3": "E o rei preto não tem casa de fuga: a dama também alcança a7 e b8. Xeque-mate.",
-  "rot.demos.mateDama.l4": "Agora é a sua vez: nas próximas posições, dê xeque-mate em um lance.",
-  "rot.pratica.mateCanto.enunciado": "O rei branco em b6 alcança a7 e b7. Dê xeque-mate com a dama, em um lance.",
+  "rot.demos.mateDama.l4": "Agora é a sua vez: nas próximas posições, dê xeque-mate.",
+  "rot.pratica.mateCanto.enunciado": "O rei branco em b6 alcança a7 e b7. Dê xeque-mate com a dama.",
   "rot.pratica.mateCanto.fim": "Perfeito. A dama fecha a fileira de cima, e o rei branco fecha o resto.",
-  "rot.pratica.mateTorre.enunciado": "Agora com a torre. O seu rei em g6 alcança g7 e h7. Dê xeque-mate em um lance.",
+  "rot.pratica.mateTorre.enunciado": "Agora com a torre. O seu rei em g6 alcança g7 e h7. Dê xeque-mate.",
   "rot.pratica.mateTorre.fim": "Muito bem. Você já sabe o que é xeque e o que é xeque-mate."
 }

@@ -31,7 +31,7 @@
   "rot.demos.peaoAfoga.l1": "Mas é a vez das pretas, e o rei não tem lance: o peão ocupa a7 e alcança b8; o rei branco, b7.",
   "rot.demos.peaoAfoga.l2": "Sem xeque e sem lance: empate. O peão nunca chega a ser promovido.",
   "rot.demos.peaoAfoga.l3": "Agora é a sua vez: primeiro dando mate sem afogar, depois salvando o empate com as pretas.",
-  "rot.pratica.mateSemAfogar.enunciado": "Dê xeque-mate com a dama, em um lance, sem afogar o rei preto.",
+  "rot.pratica.mateSemAfogar.enunciado": "Dê xeque-mate com a dama, sem afogar o rei preto.",
   "rot.pratica.mateSemAfogar.fim": "Perfeito. O lance deu xeque, e por isso foi mate, não afogamento.",
   "rot.pratica.mateSemAfogar.err.c2c7": "Afogou: o rei preto ficou sem lance e sem xeque. Tente de novo.",
   "rot.pratica.mateSemAfogar.err.c2h2": "Afogou: o rei preto ficou sem lance e sem xeque. Tente de novo.",
