@@ -22,7 +22,7 @@
   "rot.ideia.ex2.fora": "The queen went to an empty square. Let's go back: capture one of the knights.",
   "rot.ideia.ex2.volta": "Capture the knight that is loose, or click {verResposta}",
   "rot.ideia.ex2.l1": "Before capturing, look at each enemy piece and see, by the way it moves, whether it reaches that square.",
-  "rot.ideia.ex2.l2": "Remember the idea: a loose piece can be captured without fear; a protected one, only after comparing values.",
+  "rot.ideia.ex2.l2": "Remember the idea: a loose piece can be captured without fear; a protected one, only if the trade pays off.",
   "rot.ideia.ex2.l3": "Now I will show the value of each piece and when a trade pays off.",
   "rot.demos.valores.e1": "To decide on a trade, count the value of the pieces.",
   "rot.demos.valores.l1": "The pawn is worth 1. The knight and the bishop are worth 3 each.",

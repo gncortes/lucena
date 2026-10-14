@@ -31,7 +31,7 @@
   "rot.demos.peaoAfoga.l1": "But it is Black's turn, and the king has no move: the pawn stands on a7 and reaches b8, and the white king reaches b7.",
   "rot.demos.peaoAfoga.l2": "No check and no move: a draw. The pawn never gets to become a queen.",
   "rot.demos.peaoAfoga.l3": "Now it's your turn: first giving mate without stalemating, then saving the draw with Black.",
-  "rot.pratica.mateSemAfogar.enunciado": "Give checkmate with the queen, in one move, without stalemating the black king.",
+  "rot.pratica.mateSemAfogar.enunciado": "Give checkmate with the queen, without stalemating the black king.",
   "rot.pratica.mateSemAfogar.fim": "Perfect. The move gave check, so it was mate, not stalemate.",
   "rot.pratica.mateSemAfogar.err.c2c7": "Stalemate: the black king has no move and no check. Try again.",
   "rot.pratica.mateSemAfogar.err.c2h2": "Stalemate: the black king has no move and no check. Try again.",
