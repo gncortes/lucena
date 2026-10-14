@@ -94,6 +94,21 @@ abstract final class ScriptMoves {
     return _setup(fen)?.board.pieceAt(move.from)?.color;
   }
 
+  /// O número do lance de [mover] na tarefa (a vez não passa, os lances só
+  /// se numeram a partir de 1), depois do lance [parentNumber] de
+  /// [parentSide] (nulo na posição de partida, ou se o lado não se sabe).
+  /// O lance das brancas sempre abre um número novo; o das pretas fica com o
+  /// das brancas que veio antes: "1.f3 1...e5 2.g4 2...Dh4#".
+  static int taskNumber({
+    required Side mover,
+    int? parentNumber,
+    Side? parentSide,
+  }) {
+    if (parentNumber == null || parentNumber == 0) return 1;
+    if (mover == Side.black && parentSide == Side.white) return parentNumber;
+    return parentNumber + 1;
+  }
+
   static Side _turnOf(String fen) =>
       fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
 

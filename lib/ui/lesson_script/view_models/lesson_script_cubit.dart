@@ -706,8 +706,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final from = parent?.fen ?? _gameRootFen;
     final played = ScriptMoves.play(from, uci, keepTurn: _task);
     if (played == null) return null;
-    // Na tarefa a vez não passa: os lances do aluno só se numeram, e a
-    // resposta do outro lado fica com o número do lance dele.
+    // Na tarefa a vez não passa: os lances só se numeram, e o das pretas
+    // fica com o número do lance das brancas que veio antes.
     final mover = _task
         ? ScriptMoves.moverOf(from, uci) ?? _example.student
         : _sideOf(from);
@@ -717,7 +717,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       uci: uci,
       san: played.san,
       number: _task
-          ? (parent?.number ?? 0) + (mover == _example.student ? 1 : 0)
+          ? ScriptMoves.taskNumber(
+              mover: mover,
+              parentNumber: parent?.number,
+              parentSide: parent?.side,
+            )
           : int.tryParse(from.split(' ').elementAtOrNull(5) ?? '') ?? 1,
       side: mover,
       fen: played.fen,
