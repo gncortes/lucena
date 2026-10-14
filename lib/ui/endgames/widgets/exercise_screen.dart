@@ -347,9 +347,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
     final strip = SizedBox(
       key: LessonScriptKeys.characterBar,
-      height: ScriptPage.stripHeight + ScriptPage.tailGap,
+      height: ScriptPage.stripHeight,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, ScriptPage.tailGap, 12, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: viktor == null ? null : header(context, viktor, 40),
       ),
     );
@@ -505,9 +505,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     return ScriptPage(
       pageKey: ExerciseKeys.page,
       speechBuilder: (_) => const SizedBox.shrink(),
-      strip: const SizedBox(
-        height: ScriptPage.stripHeight + ScriptPage.tailGap,
-      ),
+      strip: const SizedBox(height: ScriptPage.stripHeight),
       boardBuilder: (size) => KeyedSubtree(
         key: _boardAreaKey,
         child: _boardArea(context, state, const BoardSettings(), size: size),

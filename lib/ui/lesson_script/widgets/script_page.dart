@@ -23,9 +23,6 @@ class ScriptPage extends StatelessWidget {
   /// (protótipo, 50).
   static const stripHeight = 50.0;
 
-  /// A folga entre a ponta do balão e o retrato: 4 dp (T72, canvas `CompBalao`).
-  static const tailGap = 4.0;
-
   /// Na tela baixa, a folga mínima entre o tabuleiro e o rodapé; se faltar
   /// altura, o tabuleiro encolhe.
   static const compactGap = 8.0;
@@ -35,7 +32,7 @@ class ScriptPage extends StatelessWidget {
   /// O balão, com até quantas linhas ele pode ter (nulo: o padrão).
   final Widget Function(int? lines) speechBuilder;
 
-  /// A faixa do Viktor, já com a altura de [stripHeight] + [tailGap].
+  /// A faixa do Viktor, com a altura de [stripHeight].
   final Widget strip;
   final Widget Function(double size) boardBuilder;
   final Widget list;
@@ -53,9 +50,8 @@ class ScriptPage extends StatelessWidget {
         final above =
             metrics.top +
             metrics.minHeight(context) +
-            SpeechBalloon.tailHeight +
-            stripHeight +
-            tailGap;
+            SpeechBalloon.tailExtent +
+            stripHeight;
         final room = box.maxHeight - above - compactGap;
         final size = math.max(0.0, math.min(box.maxWidth, room));
         // A fala vai até 4 linhas, ou mais se couberem acima do tabuleiro
@@ -64,8 +60,7 @@ class ScriptPage extends StatelessWidget {
         final bubbleRoom =
             (box.maxHeight - size) / 2 -
             stripHeight -
-            tailGap -
-            SpeechBalloon.tailHeight -
+            SpeechBalloon.tailExtent -
             ScriptSpeechMetrics.minTop -
             2 * metrics.verticalPadding;
         final lines = metrics.compact

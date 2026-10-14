@@ -247,7 +247,7 @@ class ScriptSpeech extends StatelessWidget {
           minHeight:
               metrics.top +
               metrics.minHeight(context) +
-              SpeechBalloon.tailHeight,
+              SpeechBalloon.tailExtent,
         ),
         child: Align(
           alignment: Alignment.bottomCenter,

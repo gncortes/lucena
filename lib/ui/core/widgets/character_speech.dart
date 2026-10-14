@@ -194,10 +194,9 @@ class CharacterSpeech extends StatelessWidget {
   final Key? typingKey;
 
   static const avatarSize = 48.0;
-  static const gap = 4.0;
 
-  /// A altura da linha do retrato e da folga até a ponta.
-  static const avatarRow = avatarSize + gap;
+  /// A altura da linha do retrato (o vão até a ponta vem do balão).
+  static const avatarRow = avatarSize;
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +240,7 @@ class CharacterSpeech extends StatelessWidget {
             ? box.maxHeight -
                   avatarRow -
                   SpeechBalloon.defaultPadding.vertical -
-                  SpeechBalloon.tailHeight
+                  SpeechBalloon.tailExtent
             : 3 * line;
         final lines = (room / line).floor().clamp(1, 3);
         final tailX = SpeechBalloon.tailXFor(avatarSize);
@@ -282,7 +281,6 @@ class CharacterSpeech extends StatelessWidget {
                 alignment: AlignmentDirectional.centerStart,
                 child: balloon,
               ),
-              const SizedBox(height: gap),
               row,
             ],
           ),

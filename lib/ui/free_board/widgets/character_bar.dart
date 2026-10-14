@@ -132,7 +132,7 @@ class CharacterBar extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 4),
+            // O vão até a ponta vem do balão.
             Expanded(
               // Na entrada da partida, o balão chega por último.
               child: GameEntrance(
@@ -250,10 +250,11 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
         info.childPaintTransform,
         Offset(12, widget.top),
       );
-      // A ponta do balão fica em `top + 80`; o balão cresce para cima.
+      // A base do balão (com o vão de 6 até o retrato) fica em `top + 84`,
+      // e a ponta em `top + 78`; o balão cresce para cima.
       return Positioned(
         left: origin.dx,
-        bottom: info.overlaySize.height - (origin.dy + 80),
+        bottom: info.overlaySize.height - (origin.dy + 84),
         width: math.max(0, info.childSize.width - 24),
         child: Align(
           alignment: AlignmentDirectional.bottomStart,

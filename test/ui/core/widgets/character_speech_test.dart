@@ -99,7 +99,13 @@ void main() {
       tester,
     ) async {
       await pump(tester, text: 'Sua vez.', size: size);
-      final rect = tester.getRect(find.byKey(LessonKeys.practiceSpeech));
+      // A ponta é medida no Material; o vão de 6 fica fora dele.
+      final rect = tester.getRect(
+        find.descendant(
+          of: find.byKey(LessonKeys.practiceSpeech),
+          matching: find.byType(Material),
+        ),
+      );
       final avatar = tester.getRect(find.byKey(LessonKeys.practiceViktor));
       final shape =
           tester
@@ -113,8 +119,8 @@ void main() {
               as SpeechBalloonShape;
       final tip = shape.tipOf(rect);
       expect(tip.dx, closeTo(avatar.center.dx, 2));
-      // A pontinha fica a 4 dp do retrato.
-      expect(avatar.top - tip.dy, closeTo(4, 1));
+      // A pontinha fica a 6 dp do retrato.
+      expect(avatar.top - tip.dy, closeTo(6, 0.5));
     });
   }
 

@@ -260,9 +260,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
 
     final strip = SizedBox(
       key: LessonScriptKeys.characterBar,
-      height: ScriptPage.stripHeight + ScriptPage.tailGap,
+      height: ScriptPage.stripHeight,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, ScriptPage.tailGap, 12, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: viktor == null
             ? null
             : TeacherSpeech(

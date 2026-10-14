@@ -69,6 +69,63 @@ void main() {
     });
   }
 
+  for (final tail in [BalloonTail.up, BalloonTail.down, BalloonTail.start]) {
+    testWidgets('ponta ${tail.name}: a pontinha fica a 6 do retrato '
+        '(canvas CompBalao 3f3938b)', (tester) async {
+      tester.view
+        ..physicalSize = const Size(360, 740)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      const avatar = 44.0;
+      final balloon = SpeechBalloon(
+        tail: tail,
+        tailX: SpeechBalloon.tailXFor(avatar),
+        tailY: avatar / 2,
+        child: const Text('Olá'),
+      );
+      const portrait = SizedBox.square(key: _avatar, dimension: avatar);
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(16),
+              child: switch (tail) {
+                BalloonTail.start => Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    portrait,
+                    Expanded(child: balloon),
+                  ],
+                ),
+                BalloonTail.up => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [portrait, balloon],
+                ),
+                _ => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [balloon, portrait],
+                ),
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final rect = tester.getRect(_shaped);
+      final shape =
+          tester.widget<Material>(_shaped).shape! as SpeechBalloonShape;
+      final tip = shape.tipOf(rect);
+      final face = tester.getRect(find.byKey(_avatar));
+      final gap = switch (tail) {
+        BalloonTail.up => tip.dy - face.bottom,
+        BalloonTail.down => face.top - tip.dy,
+        _ => tip.dx - face.right,
+      };
+      expect(gap, SpeechBalloon.tailGap);
+      expect(SpeechBalloon.tailGap, 6);
+    });
+  }
+
   testWidgets('os 3 usos têm o mesmo fundo e sombra, e nenhum tem X', (
     tester,
   ) async {

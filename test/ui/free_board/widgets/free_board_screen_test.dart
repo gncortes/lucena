@@ -1503,7 +1503,7 @@ void main() {
         );
         final rect = tester.getRect(balloon);
         expect(rect.bottom, lessThanOrEqualTo(board.top));
-        // A ponta (18x10) no centro do retrato de 44, a 4 dp dele.
+        // A ponta (18x10) no centro do retrato de 44, a 6 dp dele.
         final shape =
             tester
                     .widget<Material>(
@@ -1514,12 +1514,17 @@ void main() {
                     )
                     .shape!
                 as SpeechBalloonShape;
-        final tip = shape.tipOf(rect);
+        // A ponta é medida no Material; o vão de 6 fica fora dele.
+        final tip = shape.tipOf(
+          tester.getRect(
+            find.descendant(of: balloon, matching: find.byType(Material)),
+          ),
+        );
         final avatar = tester.getRect(
           find.byKey(FreeBoardKeys.characterAvatar(talk.state.emotion)),
         );
         expect(tip.dx, closeTo(avatar.center.dx, 2));
-        expect(avatar.top - tip.dy, closeTo(4, 1));
+        expect(avatar.top - tip.dy, closeTo(6, 0.5));
 
         await tester.tap(balloon);
         await tester.pumpAndSettle();

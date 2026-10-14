@@ -248,9 +248,9 @@ class _Conversation extends StatelessWidget {
             controlsOnlyWithVoice: true,
           ),
         ),
-        // A ponta do balão fica a 4 do retrato.
+        // O vão de 6 da ponta ao retrato vem do balão.
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           child: balloon,
         ),
       ],

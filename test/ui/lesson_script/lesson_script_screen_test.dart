@@ -172,7 +172,7 @@ void main() {
         final pad = size.height < 700 ? 20.0 : 28.0;
         expect(
           short.height,
-          closeTo(lines + pad + SpeechBalloon.tailHeight, 1.5),
+          closeTo(lines + pad + SpeechBalloon.tailExtent, 1.5),
         );
         final boardTop = _rect(tester, LessonScriptKeys.board).top;
         await _tap(tester, LessonScriptKeys.primary);
@@ -185,11 +185,12 @@ void main() {
           ),
         );
         if (size == _tall) {
-          // Três linhas: o balão sobe no espaço de cima e o tabuleiro fica
-          // no centro.
+          // Três linhas: o balão sobe no espaço de cima até a folga mínima e
+          // o tabuleiro desce só o que falta (2,5 dp desde o vão de 6 entre a
+          // ponta e o retrato, canvas CompBalao 3f3938b).
           expect(grown.height, greaterThan(short.height));
           final page = _rect(tester, LessonScriptKeys.page);
-          expect(board.center.dy, closeTo(page.center.dy, 1));
+          expect(board.center.dy - page.center.dy, inInclusiveRange(0, 3));
           expect(grown.top, lessThan(short.top));
           expect(text.maxLines, isNull);
         } else {

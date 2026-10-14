@@ -476,7 +476,7 @@ void main() {
       final bar = tester.getRect(find.byType(AppBar));
       final balloon = tester.getRect(find.byKey(LessonScriptKeys.speech));
       expect(balloon.top - bar.bottom, closeTo(20, 1));
-      expect(balloon.height, closeTo(76 + 10, 1)); // 76 + a ponta
+      expect(balloon.height, closeTo(76 + 16, 1)); // 76 + a ponta e o vão
     });
 
     testWidgets('a folha: retrato de 56 e margem de 16', (tester) async {

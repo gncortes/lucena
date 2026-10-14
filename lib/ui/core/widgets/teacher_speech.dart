@@ -398,8 +398,8 @@ class TeacherSpeech extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // O vão de 6 da ponta ao retrato vem do balão.
           _headerRow(context, avatar),
-          SizedBox(height: lessonV2 ? 0 : 2),
           _closable(context),
         ],
       );
@@ -408,12 +408,15 @@ class TeacherSpeech extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         avatar,
-        const SizedBox(width: 14),
+        // O nome a 14 do retrato; o vão de 6 da ponta vem do balão.
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _header(context),
+              Padding(
+                padding: const EdgeInsetsDirectional.only(start: 14),
+                child: _header(context),
+              ),
               const SizedBox(height: 4),
               _closable(context),
             ],

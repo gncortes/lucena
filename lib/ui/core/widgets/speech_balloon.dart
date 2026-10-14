@@ -243,6 +243,14 @@ class SpeechBalloon extends StatelessWidget {
   /// A altura da ponta de cima e de baixo.
   static double get tailHeight => SpeechBalloonShape.tipSize.height;
 
+  /// O vão entre a pontinha e o retrato, em toda ponta (canvas `CompBalao`
+  /// 3f3938b: margem 16 = ponta 10 + vão 6). Fica por fora do balão.
+  static const tailGap = 6.0;
+
+  /// O que o balão ocupa além do corpo, com a ponta de cima ou de baixo: a
+  /// ponta e o vão até o retrato.
+  static double get tailExtent => tailHeight + tailGap;
+
   static const defaultPadding = EdgeInsetsDirectional.symmetric(
     horizontal: 16,
     vertical: 14,
@@ -268,6 +276,13 @@ class SpeechBalloon extends StatelessWidget {
     BalloonTail.start => EdgeInsetsDirectional.only(
       start: SpeechBalloonShape.sideSize.width,
     ),
+    BalloonTail.none => EdgeInsetsDirectional.zero,
+  };
+
+  EdgeInsetsDirectional get _gap => switch (tail) {
+    BalloonTail.up => const EdgeInsetsDirectional.only(top: tailGap),
+    BalloonTail.down => const EdgeInsetsDirectional.only(bottom: tailGap),
+    BalloonTail.start => const EdgeInsetsDirectional.only(start: tailGap),
     BalloonTail.none => EdgeInsetsDirectional.zero,
   };
 
@@ -322,6 +337,10 @@ class SpeechBalloon extends StatelessWidget {
           child: balloon,
         ),
       );
+    }
+    // O vão até o retrato fica fora do clique e da sombra.
+    if (tail != BalloonTail.none) {
+      balloon = Padding(padding: _gap, child: balloon);
     }
     if (!pop) return balloon;
     return SpeechPop(
