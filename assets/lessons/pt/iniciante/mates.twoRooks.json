@@ -60,5 +60,7 @@
   "rot.pratica.escada.err.a3a4": "É xeque, mas a fileira 3 ficou aberta, e o rei desce. Tente de novo.",
   "rot.pratica.longe.enunciado": "Dê xeque-mate. O rei está perto da torre de h1: leve-a ao outro lado, onde ele não chega.",
   "rot.pratica.longe.fim": "Muito bem. Torre longe do rei e escada até o mate.",
-  "rot.pratica.longe.err.h1h5": "Em h5, a torre fica ao lado do rei, e ele a captura. Tente de novo."
+  "rot.pratica.longe.err.h1h5": "Em h5, a torre fica ao lado do rei, e ele a captura. Tente de novo.",
+  "rot.pratica.maquina.enunciado": "Agora contra a máquina: parede, escada e torre longe do rei. Ela defende o melhor que pode.",
+  "rot.pratica.maquina.fim": "Você deu mate com duas torres contra a máquina."
 }

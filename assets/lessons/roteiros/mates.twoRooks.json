@@ -568,7 +568,7 @@
      "fen": "8/8/8/6k1/R7/8/4K3/7R w - - 0 1",
      "vira": false,
      "objetivo": "tarefa",
-     "fim": "etapa",
+     "fim": "proximo",
      "pratica": {
       "tipo": "lance",
       "pecas": [
@@ -617,6 +617,22 @@
       },
       "fim": "rot.pratica.longe.fim",
       "t": "rot.pratica.longe.enunciado"
+     },
+     "entrada": [],
+     "linha": []
+    },
+    {
+     "id": "maquina",
+     "fen": "8/8/8/3k4/8/8/8/R3K2R w - - 0 1",
+     "vira": false,
+     "objetivo": "mate",
+     "fim": "etapa",
+     "pratica": {
+      "tipo": "jogo",
+      "maquina": "b",
+      "limite": 40,
+      "fim": "rot.pratica.maquina.fim",
+      "t": "rot.pratica.maquina.enunciado"
      },
      "entrada": [],
      "linha": []

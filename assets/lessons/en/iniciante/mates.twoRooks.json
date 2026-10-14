@@ -60,5 +60,7 @@
   "rot.pratica.escada.err.a3a4": "It is check, but the 3rd rank is open, and the king comes down. Try again.",
   "rot.pratica.longe.enunciado": "Give checkmate. The king is near the rook on h1: take it to the other side, out of reach.",
   "rot.pratica.longe.fim": "Well done. Rook far from the king, then the ladder to mate.",
-  "rot.pratica.longe.err.h1h5": "On h5, the rook is next to the king, and it captures it. Try again."
+  "rot.pratica.longe.err.h1h5": "On h5, the rook is next to the king, and it captures it. Try again.",
+  "rot.pratica.maquina.enunciado": "Now against the machine: wall, ladder and rook away from the king. It defends as well as it can.",
+  "rot.pratica.maquina.fim": "You gave the two-rook mate against the machine."
 }
