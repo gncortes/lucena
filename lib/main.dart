@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'routing/launch_location.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
@@ -45,7 +46,6 @@ import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
-import 'routing/routes.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
@@ -88,28 +88,15 @@ class _LucenaAppState extends State<LucenaApp> {
     final endgames = await widget.dependencies.endgameProgressRepository.load();
     final stars = await widget.dependencies.starChallengeRepository.open();
     if (!mounted) return;
-    final resume = game != null && game.reopensOnLaunch;
-    final lesson = school.ongoing;
-    final endgameLesson = endgames.ongoing;
-    final exercise = endgames.openExercise;
     setState(() {
       _router = buildRouter(
-        initialLocation: conclusion != null
-            ? Routes.conclusion(conclusion)
-            : resume
-            ? Routes.freeBoard
-            : lesson != null && lesson.open
-            ? Routes.lesson(lesson.lessonId)
-            : endgameLesson != null && endgameLesson.open
-            ? Routes.endgameLessonSteps(
-                endgameLesson.lessonId,
-                part: endgameLesson.part,
-              )
-            : exercise != null
-            ? Routes.endgameExercise(exercise.$1, exercise.$2.exerciseId)
-            : stars != null
-            ? Routes.starChallenge(stars.piece.name, stars.level.name)
-            : Routes.home,
+        initialLocation: launchLocation(
+          conclusion: conclusion,
+          resumeGame: game != null && game.reopensOnLaunch,
+          school: school,
+          endgames: endgames,
+          stars: stars,
+        ),
       );
     });
   }
