@@ -18,7 +18,7 @@
   "rot.ideia.ex2.revela": "A torre de d1 captura o cavalo em d6. O rei preto fica sozinho.",
   "rot.ideia.ex2.err.a1a8.1": "É xeque, mas o rei sai, e o cavalo continua no jogo.",
   "rot.ideia.ex2.err.a1a8.2": "O rei preto vai para g7.",
-  "rot.ideia.ex2.err.a1a8.3": "Vamos voltar: primeiro capture o cavalo solto.",
+  "rot.ideia.ex2.err.a1a8.3": "Vamos voltar: primeiro capture o cavalo sem proteção.",
   "rot.ideia.ex2.fora": "Esse lance deixa o cavalo no jogo. Vamos voltar à posição.",
   "rot.ideia.ex2.volta": "Ache o melhor lance, ou clique em {verResposta}",
   "rot.ideia.ex2.l1": "Agora vou mostrar a escada de torres e como fugir do ataque do cavalo.",
