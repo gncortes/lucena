@@ -440,6 +440,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
           ? back
           : Expanded(child: Row(children: [?back, const Spacer(), controls])),
       leading: demo != null && demo.ended ? repeat : null,
+      hug: true,
       actions: controls == null ? [?secondary, ?primary] : const [],
     );
   }
