@@ -369,6 +369,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final demo = _inDemo;
     final game = _inGame;
     final right = _example.question?.rightStep;
+    final touch =
+        _practiceKind == PracticeKind.toque &&
+        (s.phase == ScriptPhase.praticaVez ||
+            s.phase == ScriptPhase.praticaFim);
     emit(
       s.copyWith(
         ready: true,
@@ -400,6 +404,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
             ? null
             : ScriptMoves.dests(s.fen, pieces: _movablePieces(s.phase)),
         stars: _starsLeft(s.phase),
+        touching: touch && s.phase == ScriptPhase.praticaVez,
+        touched: touch ? s.touched : const [],
+        touchMiss: touch ? s.touchMiss : null,
+        coordinates: !touch || _example.practice!.coordinates,
       ),
     );
   }
@@ -1595,27 +1603,73 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final fen = _example.fen;
     _resetGame(fen);
     _scene = const _Scene(track: 'pratica');
+    final touch = practice.kind == PracticeKind.toque;
     _publish(
       state.copyWith(
         phase: ScriptPhase.praticaVez,
         fen: fen,
         lastMove: null,
-        speech: [_say(practice.t)],
+        speech: [
+          _say(practice.t),
+          if (touch && practice.targets.isNotEmpty)
+            _touchAsk(practice.targets.first),
+        ],
         tone: ScriptTone.neutral,
         marks: const [],
         arrows: const [],
         primary: null,
         secondary: null,
-        movable: _studentTurn(fen),
+        movable: touch ? null : _studentTurn(fen),
         machineThinking: false,
         currentMoveId: null,
         transition: _transition(const [], fromFen: fromFen, jump: true),
+        touched: const [],
+        touchMiss: null,
       ),
     );
     if (practice.kind == PracticeKind.jogo &&
         _sideOf(fen) == practice.machine) {
       await _machineReply();
     }
+  }
+
+  /// "Clique na casa {casa}."
+  String _touchAsk(String square) =>
+      _say('ini.toque.pedido').replaceAll('{casa}', square);
+
+  /// Toque numa casa (prática do tipo toque): a pedida fica verde e vem a
+  /// próxima; outra fica vermelha e o pedido continua o mesmo.
+  Future<void> onSquare(String square) async {
+    if (!state.ready || !state.touching) return;
+    final targets = _example.practice!.targets;
+    final done = state.touched.length;
+    if (done >= targets.length) return;
+    final target = targets[done];
+    if (square != target) {
+      _publish(
+        state.copyWith(
+          speech: [
+            _say('ini.toque.errado')
+                .replaceAll('{clicada}', square)
+                .replaceAll('{casa}', target),
+          ],
+          tone: ScriptTone.bad,
+          touchMiss: square,
+        ),
+      );
+      return;
+    }
+    final touched = [...state.touched, square];
+    final base = state.copyWith(
+      touched: touched,
+      touchMiss: null,
+      tone: ScriptTone.good,
+    );
+    if (touched.length == targets.length) {
+      _publish(_finishTask(base, 'ini.toque.sucesso'));
+      return;
+    }
+    _publish(base.copyWith(speech: [_touchAsk(targets[touched.length])]));
   }
 
   /// O lance aparece, o Viktor diz [key] e a peça volta depois de
