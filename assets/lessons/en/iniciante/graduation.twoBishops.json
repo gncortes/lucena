@@ -1,10 +1,13 @@
 {
   "rot.ideia.ex1.e1": "Last lesson: two bishops against the king. One bishop alone cannot mate; the two together can.",
   "rot.ideia.ex1.e2": "The black king is in the corner. Your king guards a7 and b7, and the bishop on e5 guards b8.",
-  "rot.ideia.ex1.e3": "Only the check is missing. Look for the long diagonal, from the a8 corner to h1.",
+  "rot.ideia.ex1.e3": "Each bishop always stays on one color: the d1 bishop moves on light squares; the e5 one, on dark.",
+  "rot.ideia.ex1.e4": "Only the check is missing. Look for the long light-squared diagonal, from the a8 corner to h1.",
   "rot.ideia.ex1.p": "Give checkmate, or click {verResposta}",
   "rot.ideia.ex1.certo": "Checkmate! The f3 bishop attacks a8, the e5 bishop guards b8, and the king the rest.",
   "rot.ideia.ex1.revela": "The bishop goes to f3 and checks along the long diagonal. The king has no escape.",
+  "rot.ideia.ex1.err.b6a6.1": "Careful! Without check, the black king has no move at all. That is stalemate, and the game is a draw.",
+  "rot.ideia.ex1.err.b6a6.2": "Let's go back: give check, or the king is left without a move.",
   "rot.ideia.ex1.err.d1a4.1": "Careful! Without check, the black king has no move at all. That is stalemate, and the game is a draw.",
   "rot.ideia.ex1.err.d1a4.2": "Let's go back: give check, or the king is left without a move.",
   "rot.ideia.ex1.err.d1b3.1": "Careful! Without check, the black king has no move at all. That is stalemate, and the game is a draw.",
@@ -51,12 +54,12 @@
   "rot.demos.canto.l2": "The black king only has h7.",
   "rot.demos.canto.l3": "Check from the light-squared bishop. The c1 bishop guards h6.",
   "rot.demos.canto.l4": "The black king goes back to h8.",
-  "rot.demos.canto.l5": "Careful here: if the bishop went to h6, it would take g7 without check. No move: stalemate.",
-  "rot.demos.canto.l6": "So give check along the long diagonal. Checkmate!",
-  "rot.demos.canto.l7": "Now it's your turn: bishops together, king close, and always count the squares before each move.",
-  "rot.pratica.canto.enunciado": "Give checkmate. First take c8 with the light-squared bishop, then push the king into the corner.",
+  "rot.demos.canto.l5": "Careful here: the black king has no square left. Any move without check, like the bishop to h6, is stalemate.",
+  "rot.demos.canto.l6": "So give check with the dark-squared bishop, along the long diagonal. Checkmate!",
+  "rot.demos.canto.l7": "Now it's your turn: bishops together, king close, and always count the black king's free squares before each move.",
+  "rot.pratica.canto.enunciado": "Give checkmate. The black king escapes via b8 and c8. First take c8 with the light-squared bishop.",
   "rot.pratica.canto.fim": "Perfect. The two bishops drove the king into the corner and gave mate.",
   "rot.pratica.canto.err.e3f4": "Careful! Without check, the black king has no move: stalemate. Try again.",
-  "rot.pratica.centro.enunciado": "Start in the center: bishops side by side, king close, and drive the black king to a corner.",
-  "rot.pratica.centro.fim": "Well done. You finished the endgame course!"
+  "rot.pratica.centro.enunciado": "Start in the center: put the bishops side by side, bring your king and drive the black king to a corner.",
+  "rot.pratica.centro.fim": "Well done. You finished the beginner course!"
 }

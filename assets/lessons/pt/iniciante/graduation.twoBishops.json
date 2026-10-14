@@ -1,10 +1,13 @@
 {
   "rot.ideia.ex1.e1": "Última lição: dois bispos contra o rei. Um bispo sozinho não dá mate; os dois juntos, sim.",
   "rot.ideia.ex1.e2": "O rei preto está no canto. O seu rei guarda a7 e b7, e o bispo de e5 guarda b8.",
-  "rot.ideia.ex1.e3": "Falta o xeque. Procure a diagonal grande, que vai do canto a8 até h1.",
+  "rot.ideia.ex1.e3": "Cada bispo fica sempre na mesma cor: o de d1 anda nas casas claras; o de e5, nas escuras.",
+  "rot.ideia.ex1.e4": "Falta o xeque. Procure a diagonal grande, de casas claras, que vai do canto a8 até h1.",
   "rot.ideia.ex1.p": "Dê o xeque-mate, ou clique em {verResposta}",
   "rot.ideia.ex1.certo": "Xeque-mate! O bispo de f3 ataca a8, o de e5 guarda b8, e o rei guarda o resto.",
   "rot.ideia.ex1.revela": "O bispo vai a f3 e dá xeque pela diagonal grande. O rei não tem fuga.",
+  "rot.ideia.ex1.err.b6a6.1": "Cuidado! Sem xeque, o rei preto ficou sem nenhum lance. É afogamento, e o jogo empata.",
+  "rot.ideia.ex1.err.b6a6.2": "Vamos voltar: dê xeque, ou o rei fica sem lance.",
   "rot.ideia.ex1.err.d1a4.1": "Cuidado! Sem xeque, o rei preto ficou sem nenhum lance. É afogamento, e o jogo empata.",
   "rot.ideia.ex1.err.d1a4.2": "Vamos voltar: dê xeque, ou o rei fica sem lance.",
   "rot.ideia.ex1.err.d1b3.1": "Cuidado! Sem xeque, o rei preto ficou sem nenhum lance. É afogamento, e o jogo empata.",
@@ -51,12 +54,12 @@
   "rot.demos.canto.l2": "O rei preto só tem h7.",
   "rot.demos.canto.l3": "Xeque do bispo de casas claras. O bispo de c1 guarda h6.",
   "rot.demos.canto.l4": "O rei preto volta para h8.",
-  "rot.demos.canto.l5": "Cuidado aqui: se o bispo fosse a h6, tiraria g7 sem xeque. O rei ficaria sem lance: afogamento.",
-  "rot.demos.canto.l6": "Por isso, dê xeque pela diagonal grande. Xeque-mate!",
-  "rot.demos.canto.l7": "Agora é a sua vez: bispos juntos, rei perto, e sempre conte as casas antes de cada lance.",
-  "rot.pratica.canto.enunciado": "Dê xeque-mate. Primeiro tire c8 com o bispo de casas claras, depois empurre o rei ao canto.",
+  "rot.demos.canto.l5": "Cuidado aqui: o rei preto já não tem casa. Qualquer lance sem xeque, como o bispo a h6, afoga.",
+  "rot.demos.canto.l6": "Por isso, dê xeque com o bispo de casas escuras, pela diagonal grande. Xeque-mate!",
+  "rot.demos.canto.l7": "Sua vez: bispos juntos, rei perto. Antes de cada lance, conte as casas livres do rei preto.",
+  "rot.pratica.canto.enunciado": "Dê xeque-mate. O rei preto foge por b8 e c8. Primeiro tire c8 com o bispo de casas claras.",
   "rot.pratica.canto.fim": "Perfeito. Os dois bispos levaram o rei ao canto e deram o mate.",
   "rot.pratica.canto.err.e3f4": "Cuidado! Sem xeque, o rei preto fica sem lance: afogamento. Tente de novo.",
-  "rot.pratica.centro.enunciado": "Comece no centro: bispos lado a lado, rei perto, e leve o rei preto para um canto.",
-  "rot.pratica.centro.fim": "Muito bem. Você terminou o curso de finais!"
+  "rot.pratica.centro.enunciado": "Comece no centro: ponha os bispos lado a lado, traga o seu rei e leve o rei preto a um canto.",
+  "rot.pratica.centro.fim": "Muito bem. Você terminou o curso de iniciante!"
 }
