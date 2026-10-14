@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/animated_speech_switcher.dart';
 import '../../core/widgets/typing_dots.dart';
 
 /// As medidas do balão do Viktor (canvas `T70-balao`, variante A, Gabriel
@@ -224,14 +224,18 @@ class ScriptSpeech extends StatelessWidget {
                   plainOf(context, text),
                   lines: lines,
                 );
-                return SizedBox(
-                  width: double.infinity,
-                  child: ScriptSpeechText(
-                    text: text,
-                    style: style.copyWith(color: onColor),
-                    maxLines: metrics.clips ? metrics.maxLines : null,
-                    onMainLine: onMainLine,
-                    onShowAnswer: onShowAnswer,
+                // Fala nova: o texto troca em crossfade e a altura anima.
+                return AnimatedSpeechSwitcher(
+                  speech: text,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ScriptSpeechText(
+                      text: text,
+                      style: style.copyWith(color: onColor),
+                      maxLines: metrics.clips ? metrics.maxLines : null,
+                      onMainLine: onMainLine,
+                      onShowAnswer: onShowAnswer,
+                    ),
                   ),
                 );
               },
@@ -240,9 +244,8 @@ class ScriptSpeech extends StatelessWidget {
         ),
       ),
     );
-    return AnimatedSize(
-      duration: AppMotion.of(context).state,
-      alignment: Alignment.topCenter,
+    // A altura acompanha o texto, já animado dentro do balão.
+    return SpeechPop(
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: metrics.top + metrics.minHeight(context) + tailSize.height,

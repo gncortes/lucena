@@ -10,6 +10,7 @@ import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/exercise_actions.dart';
+import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
@@ -88,6 +89,8 @@ Future<_Setup> _open(
     ),
   );
   await tester.pump(const Duration(seconds: 1));
+  // O quadro seguinte termina o pop de entrada do balão.
+  await tester.pump(SpeechPop.duration);
   return _Setup(cubit, voice);
 }
 
@@ -472,8 +475,8 @@ void main() {
     expect(s.voice.spoken, isEmpty);
     expect(s.cubit.state.demo!.speaking, isFalse);
     final read = LessonScriptCubit.readTime(first.join(' '));
-    // O `_open` já passou 1 s.
-    await tester.pump(read - const Duration(milliseconds: 1100));
+    // O `_open` já passou 1,2 s (1 s e o pop do balão).
+    await tester.pump(read - const Duration(milliseconds: 1300));
     expect(s.cubit.state.speech, first);
     await tester.pump(const Duration(milliseconds: 200));
     expect(s.cubit.state.speech, isNot(first));
