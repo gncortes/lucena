@@ -162,7 +162,7 @@ void main() {
         expect(exercise.state.sayMove, (fenBefore: fen, uci: 'd2d3'));
         await exercise.askHint();
         expect(exercise.state.say, ExerciseSay.hint);
-        expect(exercise.state.sayTexts, ['Statement.', 'Generic hint.']);
+        expect(exercise.state.sayTexts, ['Generic hint.', 'Statement.']);
         expect(exercise.state.hint, isNull);
         expect(exercise.state.hints, 1);
         await exercise.askHint();
@@ -185,7 +185,7 @@ void main() {
       expect(exercise.state.turn, 1);
       expect(exercise.state.say, ExerciseSay.correct);
       await exercise.askHint();
-      expect(exercise.state.sayTexts, ['Statement.', 'Generic hint.']);
+      expect(exercise.state.sayTexts, ['Generic hint.', 'Statement.']);
       final fen = exercise.state.fen!;
       await exercise.play(move('g2f2'));
       await exercise.explaining;
@@ -198,7 +198,7 @@ void main() {
       expect(restored.state.mistakes, 2);
       expect(restored.state.say, ExerciseSay.goal);
       await restored.askHint();
-      expect(restored.state.sayTexts, ['Statement.', 'Generic hint.']);
+      expect(restored.state.sayTexts, ['Generic hint.', 'Statement.']);
     });
 
     test('lance ilegal não cria erro nem penalidade', () async {
@@ -220,7 +220,7 @@ void main() {
       expect(exercise.state.say, ExerciseSay.wrong);
       expect(exercise.state.sayTexts, isEmpty);
       await exercise.askHint();
-      expect(exercise.state.sayTexts, ['Statement.', 'Generic hint.']);
+      expect(exercise.state.sayTexts, ['Generic hint.', 'Statement.']);
     });
   });
 
@@ -280,7 +280,7 @@ void main() {
     final hint = exercise.askHint();
     feedback.result.completeError(StateError('Unavailable optional feedback'));
     await hint;
-    expect(exercise.state.sayTexts, ['The hard one.', 'Same idea.']);
+    expect(exercise.state.sayTexts, ['Same idea.', 'The hard one.']);
     expect(exercise.state.hints, 1);
     expect(exercise.state.hint, isNull);
   });
@@ -486,7 +486,7 @@ void main() {
     expect(exercise.state.hints, 1);
     expect(exercise.state.hint, isNull);
     expect(exercise.state.wrongMove, isNull);
-    expect(exercise.state.sayTexts, ['The hard one.', 'Same idea.']);
+    expect(exercise.state.sayTexts, ['Same idea.', 'The hard one.']);
     // A mesma dica de novo não custa outro ponto.
     await exercise.askHint();
     expect(exercise.state.hints, 1);

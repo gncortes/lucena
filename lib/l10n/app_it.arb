@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "No.",
   "exerciseYourTurnShort": "Tocca a lei.",
   "exerciseTryAnother": "Provi un'altra mossa.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Risolto, ma con un errore.",
   "exerciseNoMorePoints": "Non vale più punti",
   "exerciseFirstMoveZeroed": "Con l'errore alla prima mossa, questo esercizio non vale più punti.",

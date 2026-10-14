@@ -1201,6 +1201,7 @@
   "exerciseSayWrong": "[Ñö. one]",
   "exerciseYourTurnShort": "[Ýöûŕ tûŕñ. one]",
   "exerciseTryAnother": "[Tŕý åñöthéŕ mövé. one two]",
+  "exerciseSolvedCorrect": "[Çöŕŕéçt! one]",
   "exerciseSolvedWithMistake": "[Šölvéd, bût wîth å mîštåké. one two three]",
   "exerciseSolvedBut": "[Šölvéd, bût wîth {what}. one two three]",
   "exerciseSolvedMistakes": "{count, plural, one{[öñé mîštåké one two]} other{[{count} mîštåkéš one two]}}",

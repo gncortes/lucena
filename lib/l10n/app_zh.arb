@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "不对。",
   "exerciseYourTurnShort": "轮到你了。",
   "exerciseTryAnother": "请试试别的走法。",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "已解出，但有一处失误。",
   "exerciseNoMorePoints": "不再计分",
   "exerciseFirstMoveZeroed": "由于第一步走错，这道练习不再计分。",

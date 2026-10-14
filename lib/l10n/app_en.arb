@@ -6447,6 +6447,10 @@
   "@exerciseTryAnother": {
     "description": "Closes the balloon after a wrong move; the move goes back."
   },
+  "exerciseSolvedCorrect": "Correct!",
+  "@exerciseSolvedCorrect": {
+    "description": "The opening word of the teacher's balloon when the exercise is solved with no mistake or hint."
+  },
   "exerciseSolvedWithMistake": "Solved, but with a mistake.",
   "@exerciseSolvedWithMistake": {
     "description": "Opens the balloon when an exercise ends after mistakes, hints or the shown solution."

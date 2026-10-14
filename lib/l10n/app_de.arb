@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Nein.",
   "exerciseYourTurnShort": "Du bist am Zug.",
   "exerciseTryAnother": "Versuche einen anderen Zug.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Gelöst, aber mit einem Fehler.",
   "exerciseNoMorePoints": "Bringt keine Punkte mehr",
   "exerciseFirstMoveZeroed": "Wegen des Fehlers im ersten Zug bringt diese Aufgabe keine Punkte mehr.",

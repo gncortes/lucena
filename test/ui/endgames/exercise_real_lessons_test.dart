@@ -209,7 +209,7 @@ void main() {
       expect(state.cursorId, 'm0');
       expect(state.fen, state.review.first.fenAfter);
       expect(state.lastMove?.uci, 'd7c6');
-      expect(speech(tester), startsWith('Correto. O rei vai para c6.'));
+      expect(speech(tester), startsWith('Correto! O rei vai para c6.'));
       await expectNoNotation(tester);
       expect(state.say, ExerciseSay.solved);
     });
@@ -320,7 +320,7 @@ void main() {
     final cubit = await pump(tester, opposition, 'e09');
     await play(tester, cubit, 'd2d3');
     final said = speech(tester);
-    expect(said, startsWith('Não. O peão avança para d3.'));
+    expect(said, contains('O peão avança para d3.'));
     expect(said, endsWith('Tente outro lance.'));
     await expectNoNotation(tester);
     await tester.runAsync(() => cubit.askHint());
@@ -528,6 +528,60 @@ void main() {
       expect(tip.height, lessThanOrEqualTo(2 * 24 + 1));
     });
   });
+
+  testWidgets('Dica: a pista aparece no balão (antes do enunciado)', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, opposition, 'e09');
+    await tester.runAsync(cubit.askHint);
+    await tester.pumpAndSettle();
+    final said = speech(tester);
+    expect(said, startsWith('Primeiro a coluna do rei preto, de longe.'));
+    expect(said.indexOf('Jogue de brancas'), greaterThan(0));
+    expect(find.byKey(LessonScriptKeys.speech), findsOneWidget);
+    // A pista está na parte visível das 2 linhas.
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.byWidgetPredicate(
+        (w) => w is RichText && w.text.toPlainText().startsWith('Primeiro a'),
+      ),
+    );
+    final visibleEnd = paragraph
+        .getPositionForOffset(Offset(paragraph.size.width, 36))
+        .offset;
+    expect(visibleEnd, greaterThan('Primeiro a coluna do rei preto,'.length));
+  });
+
+  testWidgets('zerado no 1º lance: o aviso fica dentro das 2 linhas do balão', (
+    tester,
+  ) async {
+    final cubit = await pump(tester, kingPawn, 'e13');
+    await play(tester, cubit, 'b6b7');
+    const warning =
+        'Com erro no primeiro lance, este exercício não vale mais pontos.';
+    final said = speech(tester);
+    expect(said, startsWith('Não. $warning'));
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.byWidgetPredicate(
+        (w) => w is RichText && w.text.toPlainText().startsWith('Não.'),
+      ),
+    );
+    final visibleEnd = paragraph
+        .getPositionForOffset(Offset(paragraph.size.width, 36))
+        .offset;
+    expect(visibleEnd, greaterThanOrEqualTo('Não. $warning'.length - 1));
+  });
+
+  testWidgets(
+    'resolvido sem erro abre com "Correto!"; em andamento, "Correto."',
+    (tester) async {
+      final cubit = await pump(tester, kingPawn, 'e13');
+      await play(tester, cubit, 'd7c6');
+      expect(speech(tester), startsWith('Correto. '));
+      await play(tester, cubit, 'b6b7');
+      await play(tester, cubit, 'c6c7');
+      expect(speech(tester), startsWith('Correto! '));
+    },
+  );
 
   testWidgets('a estrela da AppBar é neutra, na cor do texto', (tester) async {
     await pump(tester, kingPawn, 'e13');

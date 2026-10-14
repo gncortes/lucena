@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Нет.",
   "exerciseYourTurnShort": "Ваш ход.",
   "exerciseTryAnother": "Попробуйте другой ход.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Решено, но с ошибкой.",
   "exerciseNoMorePoints": "Больше не приносит очков",
   "exerciseFirstMoveZeroed": "Из-за ошибки на первом ходу это упражнение больше не приносит очков.",

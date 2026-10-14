@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Hayır.",
   "exerciseYourTurnShort": "Sıra sizde.",
   "exerciseTryAnother": "Başka bir hamle deneyin.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Çözüldü, ama bir hatayla.",
   "exerciseNoMorePoints": "Artık puan getirmiyor",
   "exerciseFirstMoveZeroed": "İlk hamledeki hata yüzünden bu alıştırma artık puan getirmiyor.",

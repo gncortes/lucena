@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Tidak.",
   "exerciseYourTurnShort": "Giliran Anda.",
   "exerciseTryAnother": "Coba langkah lain.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Selesai, tetapi dengan satu kesalahan.",
   "exerciseNoMorePoints": "Tidak bernilai poin lagi",
   "exerciseFirstMoveZeroed": "Karena kesalahan di langkah pertama, latihan ini tidak bernilai poin lagi.",

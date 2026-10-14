@@ -496,9 +496,11 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         hints: !state.hintShown ? state.hints + 1 : state.hints,
         // A ajuda traz o enunciado e a pista, sem antecipar o lance.
         say: ExerciseSay.hint,
+        // A pista primeiro, para aparecer no balão cortado em 2 linhas; o
+        // enunciado fica depois, visível na folha.
         sayTexts: [
-          ?_statement(),
           ?(feedback ?? _hintText() ?? _pick('coach.hint')),
+          ?_statement(),
         ],
         emotion: Emotion.focused,
       ),

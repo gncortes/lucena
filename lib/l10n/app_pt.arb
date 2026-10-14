@@ -1237,6 +1237,7 @@
   "exerciseSayWrong": "Não.",
   "exerciseYourTurnShort": "Sua vez.",
   "exerciseTryAnother": "Tente outro lance.",
+  "exerciseSolvedCorrect": "Correto!",
   "exerciseSolvedWithMistake": "Resolvido, mas com um erro.",
   "exerciseSolvedBut": "Resolvido, mas com {what}.",
   "exerciseSolvedMistakes": "{count, plural, one{um erro} other{{count} erros}}",

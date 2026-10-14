@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "لا.",
   "exerciseYourTurnShort": "دورك.",
   "exerciseTryAnother": "جرّب نقلة أخرى.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "تم الحل، لكن مع خطأ.",
   "exerciseNoMorePoints": "لم يعد يستحق نقاطًا",
   "exerciseFirstMoveZeroed": "مع الخطأ في النقلة الأولى، لم يعد هذا التمرين يستحق نقاطًا.",

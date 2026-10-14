@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Nee.",
   "exerciseYourTurnShort": "U bent aan zet.",
   "exerciseTryAnother": "Probeer een andere zet.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Opgelost, maar met een fout.",
   "exerciseNoMorePoints": "Levert geen punten meer op",
   "exerciseFirstMoveZeroed": "Door de fout in de eerste zet levert deze oefening geen punten meer op.",

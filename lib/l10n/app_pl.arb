@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Nie.",
   "exerciseYourTurnShort": "Twój ruch.",
   "exerciseTryAnother": "Spróbuj innego posunięcia.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Rozwiązane, ale z błędem.",
   "exerciseNoMorePoints": "Nie daje już punktów",
   "exerciseFirstMoveZeroed": "Po błędzie w pierwszym posunięciu to zadanie nie daje już punktów.",

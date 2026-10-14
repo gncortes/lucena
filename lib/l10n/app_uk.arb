@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Ні.",
   "exerciseYourTurnShort": "Ваш хід.",
   "exerciseTryAnother": "Спробуйте інший хід.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Розв'язано, але з помилкою.",
   "exerciseNoMorePoints": "Більше не дає балів",
   "exerciseFirstMoveZeroed": "Через помилку на першому ході ця вправа більше не дає балів.",

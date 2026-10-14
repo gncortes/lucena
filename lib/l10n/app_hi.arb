@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "नहीं।",
   "exerciseYourTurnShort": "आपकी बारी।",
   "exerciseTryAnother": "कोई दूसरी चाल आज़माइए।",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "हल हुआ, लेकिन एक गलती के साथ।",
   "exerciseNoMorePoints": "अब अंक नहीं मिलेंगे",
   "exerciseFirstMoveZeroed": "पहली चाल में गलती के कारण इस अभ्यास पर अब अंक नहीं मिलेंगे।",

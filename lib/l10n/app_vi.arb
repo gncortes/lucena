@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Không.",
   "exerciseYourTurnShort": "Đến lượt bạn.",
   "exerciseTryAnother": "Hãy thử nước đi khác.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Đã giải, nhưng có một lỗi.",
   "exerciseNoMorePoints": "Không còn được tính điểm",
   "exerciseFirstMoveZeroed": "Vì sai ở nước đầu tiên, bài tập này không còn được tính điểm.",

@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "نه.",
   "exerciseYourTurnShort": "نوبت شماست.",
   "exerciseTryAnother": "حرکت دیگری را امتحان کنید.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "حل شد، اما با یک اشتباه.",
   "exerciseNoMorePoints": "دیگر امتیاز ندارد",
   "exerciseFirstMoveZeroed": "با اشتباه در حرکت اول، این تمرین دیگر امتیاز ندارد.",

@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "いいえ。",
   "exerciseYourTurnShort": "あなたの番です。",
   "exerciseTryAnother": "別の手を試してください。",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "解けましたが、ミスがありました。",
   "exerciseNoMorePoints": "もうポイントになりません",
   "exerciseFirstMoveZeroed": "最初の一手でミスをしたため、この問題はもうポイントになりません。",

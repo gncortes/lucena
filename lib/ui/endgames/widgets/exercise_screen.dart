@@ -280,12 +280,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
     final spoken = SpeechText.plainOf(context, texts.join(' '));
     // O cabeçalho da faixa e o da folha: o mesmo, com borrar e som.
-    Widget header(
-      BuildContext c,
-      Character teacher,
-      double avatar, {
-      bool sheet = false,
-    }) {
+    Widget header(BuildContext c, Character teacher, double avatar) {
       final headerHide = c.select(
         (SettingsCubit cubit) => cubit.state?.exerciseHiddenMoves ?? false,
       );
@@ -331,8 +326,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   title: l10n.teacherName(viktor.name),
                   texts: texts,
                   background: Theme.of(context).colorScheme.surfaceContainerLow,
-                  headerBuilder: (sheet) =>
-                      header(sheet, viktor, 56, sheet: true),
+                  headerBuilder: (sheet) => header(sheet, viktor, 56),
                   // Canvas `PropV2ExA7`: retrato de 56 e margem de 16.
                   horizontalPadding: 16,
                   headerHeight: 72,
@@ -438,14 +432,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           ..add(l10n.exerciseYourTurnShort);
       case ExerciseSay.wrong:
         final move = state.sayMove;
-        parts
-          ..add(l10n.exerciseSayWrong)
-          ..addAll(
-            state.sayTexts.isNotEmpty || move == null
-                ? state.sayTexts
-                : [sentence(move.fenBefore, move.uci, '?')],
-          );
+        // O aviso de zerado vem antes do porquê: cabe nas 2 linhas (ExA8).
+        parts.add(l10n.exerciseSayWrong);
         if (state.sayZeroed) parts.add(l10n.exerciseFirstMoveZeroed);
+        parts.addAll(
+          state.sayTexts.isNotEmpty || move == null
+              ? state.sayTexts
+              : [sentence(move.fenBefore, move.uci, '?')],
+        );
         parts.add(l10n.exerciseTryAnother);
       case ExerciseSay.solved:
         parts.add(_solvedLead(l10n, state));
@@ -486,7 +480,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   static String _solvedLead(AppLocalizations l10n, ExerciseState state) {
     final mistakes = state.mistakes;
     final hints = state.hints;
-    if (mistakes == 0 && hints == 0) return l10n.exerciseSayCorrect;
+    if (mistakes == 0 && hints == 0) return l10n.exerciseSolvedCorrect;
     if (mistakes == 1 && hints == 0) return l10n.exerciseSolvedWithMistake;
     final what = [
       if (mistakes > 0) l10n.exerciseSolvedMistakes(mistakes),

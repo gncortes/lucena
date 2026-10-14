@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "아닙니다.",
   "exerciseYourTurnShort": "당신 차례입니다.",
   "exerciseTryAnother": "다른 수를 시도해 보세요.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "풀었지만 실수가 있었습니다.",
   "exerciseNoMorePoints": "더 이상 점수가 없습니다",
   "exerciseFirstMoveZeroed": "첫 수에서 실수해서 이 문제는 더 이상 점수가 없습니다.",

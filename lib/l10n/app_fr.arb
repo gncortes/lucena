@@ -1238,6 +1238,7 @@
   "exerciseSayWrong": "Non.",
   "exerciseYourTurnShort": "À vous de jouer.",
   "exerciseTryAnother": "Essayez un autre coup.",
+  "exerciseSolvedCorrect": "Correct!",
   "exerciseSolvedWithMistake": "Résolu, mais avec une erreur.",
   "exerciseNoMorePoints": "Ne rapporte plus de points",
   "exerciseFirstMoveZeroed": "Avec l'erreur au premier coup, cet exercice ne rapporte plus de points.",
