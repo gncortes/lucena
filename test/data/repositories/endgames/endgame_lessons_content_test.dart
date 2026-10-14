@@ -244,6 +244,12 @@ void main() {
             for (final branch in line.branches)
               for (var k = 1; k <= branch.uci.length; k++)
                 'step.${step.id}.alt.${branch.id}.m$k',
+        // Erro comentado do pensar sem demo `err_`: o app lê a resposta do
+        // ramo em `step.<pensar>.alt.<uci>.m<k>` (BranchComments).
+        for (final step in lesson.lesson.steps)
+          if (step is ThinkStep)
+            for (final uci in step.mistakes.keys)
+              for (var k = 2; k <= 4; k++) 'step.${step.id}.alt.$uci.m$k',
       };
       // Também opcionais: resumo curto do passo (`step.<id>.short`), fala da
       // resposta do adversário (`step.<id>.r<n>`, `ex.<id>.r<n>`) e fala do

@@ -48,6 +48,9 @@ void main() {
     ),
     // 1.Re4 Rf8 2.Rf5 (2.g4? Rg7 =)
     ('intro', 'step.intro', 'g4f8', 2, '5k2/8/8/8/4K3/6P1/8/8 w - - 2 2'),
+    // 1.Re4 Re7 2.Rf5 (2.g4? Rf6 =; 2.Rf4? Rf6! =)
+    for (final branchId in ['g4e7', 'kf4e7'])
+      ('intro', 'step.intro', branchId, 2, '8/4k3/8/8/4K3/6P1/8/8 w - - 2 2'),
     // 1.Rf4 Re6 2.Re4 (2.e4? Rf6! =)
     ('diagonal', 'step.diagonal', 'e4', 2, '8/8/4k3/8/5K2/4P3/8/8 w - - 2 2'),
     // 1.Re2 Re7 2.Re3 (2.Rd3? Rd7 =; 2.Rf3? Rf7 =)

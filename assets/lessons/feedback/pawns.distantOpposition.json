@@ -6087,6 +6087,31 @@
                     "Seu peão avança antes de o rei conquistar uma casa-chave. O rei preto pode aproximar-se pelo centro enquanto seu rei continua em d3, sem apoio suficiente à frente do peão.",
                     "A continuação 1...Rf7 2.Re4 Rg6 permanece empatada. Seu peão já chegou a g4, mas o rei preto está diante dele em g6; o rei branco ainda precisa disputar a passagem. Avançar o peão não substituiu a preparação do rei."
                   ]
+                },
+                {
+                  "id": "d3d4",
+                  "label": "D",
+                  "outcome": "does_not_meet_goal",
+                  "texts": [
+                    "Se as brancas jogassem 1.Rd4?, as pretas responderiam com 1...Rf7! e segurariam o empate.",
+                    "O rei branco fica fora da coluna do rei preto, e a oposição distante não é das brancas. O rei preto segue rumo a g6 e chega diante do peão a tempo."
+                  ],
+                  "originFen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d3d4",
+                    "e8f7"
+                  ],
+                  "movesSan": [
+                    "1.Rd4",
+                    "1...Rf7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "distant/t_lesson",
+                  "playedTexts": [
+                    "Com 1.Rd4, as pretas encontram um recurso: 1...Rf7! segura o empate.",
+                    "O rei branco fica fora da coluna do rei preto, e a oposição distante não é das brancas. O rei preto segue rumo a g6 e chega diante do peão a tempo."
+                  ]
                 }
               ]
             }
@@ -6227,6 +6252,31 @@
                     "With 1.g4? you let the win slip: Black replies 1...Kf7 and holds the draw.",
                     "Your pawn advances before the king gains a key square. The black king can approach through the centre while your king remains on d3, without sufficient support ahead of the pawn.",
                     "The continuation 1...Kf7 2.Ke4 Kg6 remains drawn. Your pawn has already reached g4, but the black king is in front of it on g6; the white king still needs to contest passage. Advancing the pawn did not replace preparing the king."
+                  ]
+                },
+                {
+                  "id": "d3d4",
+                  "label": "D",
+                  "outcome": "does_not_meet_goal",
+                  "texts": [
+                    "If White played 1.Kd4?, Black would reply 1...Kf7! and hold the draw.",
+                    "The white king is off the black king’s file, and the distant opposition is not White’s. The black king heads for g6 and gets in front of the pawn in time."
+                  ],
+                  "originFen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d3d4",
+                    "e8f7"
+                  ],
+                  "movesSan": [
+                    "1.Kd4",
+                    "1...Kf7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "distant/t_lesson",
+                  "playedTexts": [
+                    "After 1.Kd4, Black finds a resource: 1...Kf7! holds the draw.",
+                    "The white king is off the black king’s file, and the distant opposition is not White’s. The black king heads for g6 and gets in front of the pawn in time."
                   ]
                 }
               ]
@@ -33484,7 +33534,7 @@
               "texts": [
                 "As casas-chave são casas que, ocupadas pelo rei, garantem a promoção do peão contra a melhor defesa. Para o peão de g3, são f5, g5 e h5. O problema é alcançar uma delas sem deixar o rei preto bloquear o caminho.",
                 "Para saber quem tem a oposição, com os reis na mesma coluna (ou na mesma fileira), conte as casas vazias entre eles. Se o número for ímpar (uma, três ou cinco) e for a vez do adversário, quem acabou de jogar tem a oposição. Com uma casa entre os reis, a oposição é direta; com três ou cinco, é distante.",
-                "Nesta posição, 1.Re4 deixa e5, e6 e e7 entre os reis, com as pretas na vez. Depois de 1...Rf7, 2.Rf5 alcança uma casa-chave. Se as pretas recuarem para f8, o plano é o mesmo: 1.Re4 Rf8 2.Rf5!, e o rei branco ocupa a casa-chave antes de o peão avançar. A contagem só ajuda quando leva o rei à casa de que ele precisa; os peões e as casas que eles controlam também contam.",
+                "Nesta posição, 1.Re4 deixa e5, e6 e e7 entre os reis, com as pretas na vez. Depois de 1...Rf7, 2.Rf5 alcança uma casa-chave. Se as pretas recuarem para f8, o plano é o mesmo: 1.Re4 Rf8 2.Rf5!, e o rei branco ocupa a casa-chave antes de o peão avançar. Se o rei preto esperar na coluna e, o plano também não muda: 1.Re4 Re7 2.Rf5!, e o rei branco ocupa a casa-chave; 2.Re5, de frente para o rei preto, também ganha. A contagem só ajuda quando leva o rei à casa de que ele precisa; os peões e as casas que eles controlam também contam.",
                 "{{Capablanca|jose-raul-capablanca}} enuncia a mesma regra ao contrário: com um número par de casas entre os reis, quem joga pode tomar a oposição."
               ],
               "variations": []
@@ -33502,7 +33552,7 @@
               "texts": [
                 "Key squares are squares which, once the king occupies them, guarantee the pawn’s promotion against the best defence. For the g3-pawn they are f5, g5 and h5. The problem is reaching one of them without letting the black king block the way.",
                 "To know who has the opposition, with the kings on the same file (or the same rank), count the empty squares between them. If the number is odd (one, three or five) and it is the opponent’s turn, the side that has just moved has the opposition. With one square between the kings the opposition is direct; with three or five it is distant.",
-                "In this position, 1.Ke4 leaves e5, e6 and e7 between the kings, with Black to move. After 1...Kf7, 2.Kf5 reaches a key square. If Black retreats to f8, the plan is the same: 1.Ke4 Kf8 2.Kf5!, and the white king occupies the key square before the pawn advances. Counting only helps when it takes the king to the square it needs; the pawns and the squares they control count too.",
+                "In this position, 1.Ke4 leaves e5, e6 and e7 between the kings, with Black to move. After 1...Kf7, 2.Kf5 reaches a key square. If Black retreats to f8, the plan is the same: 1.Ke4 Kf8 2.Kf5!, and the white king occupies the key square before the pawn advances. If the black king waits on the e-file, the plan does not change either: 1.Ke4 Ke7 2.Kf5!, and the white king occupies the key square; 2.Ke5, facing the black king, also wins. Counting only helps when it takes the king to the square it needs; the pawns and the squares they control count too.",
                 "{{Capablanca|jose-raul-capablanca}} states the same rule the other way round: with an even number of squares between the kings, the side to move can take the opposition."
               ],
               "variations": []
@@ -33571,13 +33621,13 @@
                       "1...Rf7. O rei preto não pode passar a vez, então sai da coluna e e vai para f7, a caminho de g6, diante do peão."
                     ],
                     "3": [
-                      "2.Rf5! O rei branco fica de frente para o rei preto, com uma casa entre eles: é a oposição direta, e f5 já é uma casa-chave; é o único lance que ganha. O natural 2.g4? seria um erro: 2...Rg6! e as pretas empatam."
+                      "2.Rf5! O rei branco fica de frente para o rei preto, com uma casa entre eles: é a oposição direta, e f5 já é uma casa-chave. É o único lance que ganha: depois de 2.g4? ou 2.Re5?, 2...Rg6! põe o rei preto diante do peão, e 2.Rf4? Rf6! entrega a oposição às pretas."
                     ],
                     "4": [
                       "2...Rg7. O rei preto cede de novo, agora para a coluna g, e tenta voltar para a frente do peão."
                     ],
                     "5": [
-                      "3.Rg5! O rei branco fica de frente outra vez, em outra casa-chave, e o peão coroa; é o único lance que ganha. O natural 3.g4? seria um erro: 3...Rf7! e as pretas empatam."
+                      "3.Rg5! O rei branco fica de frente outra vez e ocupa a casa-chave g5: as brancas ganham. É o único lance que ganha: depois de 3.g4?, 3...Rf7! toma a oposição, e depois de 3.Re6? ou 3.Re5?, 3...Rg6! põe o rei preto diante do peão."
                     ]
                   }
                 }
@@ -33639,13 +33689,13 @@
                       "1...Kf7. The black king cannot pass, so it leaves the e-file for f7, on its way to g6, in front of the pawn."
                     ],
                     "3": [
-                      "2.Kf5! The white king faces the black king with one square between them: this is direct opposition, and f5 is already a key square; it is the only winning move. The natural 2.g4? would be a mistake: 2...Kg6! and Black draws."
+                      "2.Kf5! The white king faces the black king with one square between them: this is direct opposition, and f5 is already a key square. It is the only winning move: after 2.g4? or 2.Ke5?, 2...Kg6! puts the black king in front of the pawn, and 2.Kf4? Kf6! hands the opposition to Black."
                     ],
                     "4": [
                       "2...Kg7. The black king gives way again, now to the g-file, and tries to get back in front of the pawn."
                     ],
                     "5": [
-                      "3.Kg5! The white king stands in front again, on another key square, and the pawn queens; it is the only winning move. The natural 3.g4? would be a mistake: 3...Kf7! and Black draws."
+                      "3.Kg5! The white king faces the black king again and takes the key square g5: White wins. It is the only winning move: after 3.g4?, 3...Kf7! takes the opposition, and after 3.Ke6? or 3.Ke5?, 3...Kg6! puts the black king in front of the pawn."
                     ]
                   }
                 }

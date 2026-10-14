@@ -19,7 +19,8 @@
           ],
           "refusals": {
             "d3e3": 3,
-            "g3g4": 3
+            "g3g4": 3,
+            "d3d4": 3
           },
           "mistakes": {
             "d3e3": {
@@ -27,6 +28,9 @@
             },
             "g3g4": {
               "say": "step.t_lesson.mistake.g3g4"
+            },
+            "d3d4": {
+              "say": "step.t_lesson.mistake.d3d4"
             }
           }
         },
@@ -82,6 +86,41 @@
                   "glyphs": [
                     "?",
                     null
+                  ],
+                  "result": "draw"
+                }
+              ]
+            },
+            {
+              "uci": [
+                "d3e4",
+                "e8e7",
+                "e4f5"
+              ],
+              "branches": [
+                {
+                  "id": "g4e7",
+                  "at": 2,
+                  "uci": [
+                    "g3g4",
+                    "e7f6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    null
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "kf4e7",
+                  "at": 2,
+                  "uci": [
+                    "e4f4",
+                    "e7f6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
                   ],
                   "result": "draw"
                 }
@@ -162,11 +201,50 @@
                   "result": "draw"
                 },
                 {
+                  "id": "ke5",
+                  "at": 2,
+                  "uci": [
+                    "e4e5",
+                    "f7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                },
+                {
                   "id": "g4late",
                   "at": 4,
                   "uci": [
                     "g3g4",
                     "g7f7"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "ke6",
+                  "at": 4,
+                  "uci": [
+                    "f5e6",
+                    "g7g6"
+                  ],
+                  "glyphs": [
+                    "?",
+                    "!"
+                  ],
+                  "result": "draw"
+                },
+                {
+                  "id": "ke5late",
+                  "at": 4,
+                  "uci": [
+                    "f5e5",
+                    "g7g6"
                   ],
                   "glyphs": [
                     "?",
