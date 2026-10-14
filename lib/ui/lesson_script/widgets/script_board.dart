@@ -93,7 +93,12 @@ class _ScriptBoardState extends State<ScriptBoard> {
   GameData _data(String fen, {bool interactive = true, String? last}) {
     final position = GameRules.fromFen(fen);
     final movable = widget.state.movable;
-    final live = interactive && position != null && movable != null;
+    // Os destinos vêm do estado: nas posições sem rei (curso de iniciante) o
+    // FEN não vira posição de xadrez e as regras não dão os lances.
+    final dests =
+        widget.state.dests ??
+        (position == null ? null : GameRules.legalMoves(position));
+    final live = interactive && dests != null && movable != null;
     return GameData(
       fen: fen,
       playerSide: !live
@@ -101,8 +106,9 @@ class _ScriptBoardState extends State<ScriptBoard> {
           : movable == Side.white
           ? PlayerSide.white
           : PlayerSide.black,
-      sideToMove: position?.turn ?? Side.white,
-      validMoves: live ? GameRules.legalMoves(position) : const {},
+      sideToMove:
+          position?.turn ?? (fen.contains(' b') ? Side.black : Side.white),
+      validMoves: live ? dests : const {},
       lastMove: last == null ? null : Move.parse(last),
       kingSquareInCheck: position == null
           ? null
@@ -131,11 +137,38 @@ class _ScriptBoardState extends State<ScriptBoard> {
   List<String> _fens(String fen, List<String> ucis) {
     final out = <String>[];
     var position = GameRules.fromFen(fen);
+    if (position == null) return _bareFens(fen, ucis);
     for (final uci in ucis) {
       final move = Move.parse(uci);
       if (position == null || move == null || !position.isLegal(move)) break;
       position = position.play(move);
       out.add(position.fen);
+    }
+    return out;
+  }
+
+  /// [_fens] sem rei: a peça só muda de casa no tabuleiro do FEN (o resto
+  /// do FEN fica igual, como no estado da lição).
+  List<String> _bareFens(String fen, List<String> ucis) {
+    final out = <String>[];
+    final space = fen.indexOf(' ');
+    final rest = space < 0 ? '' : fen.substring(space);
+    Board board;
+    try {
+      board = Board.parseFen(space < 0 ? fen : fen.substring(0, space));
+    } on FenException {
+      return out;
+    }
+    for (final uci in ucis) {
+      final move = Move.parse(uci);
+      if (move is! NormalMove) break;
+      final piece = board.pieceAt(move.from);
+      if (piece == null) break;
+      final promoted = move.promotion == null
+          ? piece
+          : Piece(color: piece.color, role: move.promotion!);
+      board = board.removePieceAt(move.from).setPieceAt(move.to, promoted);
+      out.add('${board.fen}$rest');
     }
     return out;
   }
