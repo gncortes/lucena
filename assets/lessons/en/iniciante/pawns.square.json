@@ -57,6 +57,6 @@
   "rot.demos.vez.l8": "Now it's your turn: draw the square before you move.",
   "rot.pratica.corrida.enunciado": "As White: the pawn's square has corners on g3, b3, b8 and g8. The black king is outside: run.",
   "rot.pratica.corrida.fim": "Well done. Outside the square, the king cannot catch up.",
-  "rot.pratica.alcance.enunciado": "As Black: the pawn's square has corners on b3, g3, g8 and b8. Get into it and catch the pawn.",
+  "rot.pratica.alcance.enunciado": "As Black: your king is already in the pawn's square. Stay inside as it shrinks, and catch the pawn.",
   "rot.pratica.alcance.fim": "Perfect. Inside the square, the king caught the pawn."
 }

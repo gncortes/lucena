@@ -1,7 +1,7 @@
 {
   "rot.ideia.ex1.e1": "King and pawn against king is the most important ending in chess. It comes up all the time.",
   "rot.ideia.ex1.e2": "Key squares: the square two ranks ahead of the pawn and its two neighbours on the same rank.",
-  "rot.ideia.ex1.e3": "If your king steps on a key square, the pawn promotes, whatever the other king does.",
+  "rot.ideia.ex1.e3": "If your king steps on a key square, the pawn almost always promotes, whatever the other king does.",
   "rot.ideia.ex1.e4": "Bring the king to a key square of the e3 pawn.",
   "rot.ideia.ex1.p": "Bring the king to a key square, or click {verResposta}",
   "rot.ideia.ex1.certo": "That's right! The king reached d5, a key square. The win is certain.",

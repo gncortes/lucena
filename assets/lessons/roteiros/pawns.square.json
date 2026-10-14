@@ -91,8 +91,8 @@
          "t": "rot.ideia.ex1.err.f1g2.1"
         },
         {
-         "fen": "6k1/8/8/p7/8/8/6K1/8 w - - 2 2",
-         "lance": "h8g8",
+         "fen": "7k/8/8/8/p7/8/6K1/8 w - - 0 2",
+         "lance": "a5a4",
          "t": "rot.ideia.ex1.err.f1g2.2"
         }
        ],
@@ -129,8 +129,8 @@
          "t": "rot.ideia.ex1.err.f1g1.1"
         },
         {
-         "fen": "6k1/8/8/p7/8/8/8/6K1 w - - 2 2",
-         "lance": "h8g8",
+         "fen": "7k/8/8/8/p7/8/8/6K1 w - - 0 2",
+         "lance": "a5a4",
          "t": "rot.ideia.ex1.err.f1g1.2"
         }
        ]

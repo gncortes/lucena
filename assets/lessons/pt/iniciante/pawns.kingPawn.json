@@ -1,7 +1,7 @@
 {
   "rot.ideia.ex1.e1": "Rei e peão contra rei é o final mais importante do xadrez. Ele aparece o tempo todo.",
   "rot.ideia.ex1.e2": "Casas-chave: a casa duas fileiras à frente do peão e as duas vizinhas dela, na mesma fileira.",
-  "rot.ideia.ex1.e3": "Se o seu rei pisar em uma casa-chave, o peão coroa, faça o que fizer o outro rei.",
+  "rot.ideia.ex1.e3": "Se o seu rei pisar em uma casa-chave, o peão quase sempre coroa, faça o que fizer o outro rei.",
   "rot.ideia.ex1.e4": "Leve o rei a uma casa-chave do peão de e3.",
   "rot.ideia.ex1.p": "Leve o rei a uma casa-chave, ou clique em {verResposta}",
   "rot.ideia.ex1.certo": "Isso mesmo! O rei chegou a d5, uma casa-chave. A vitória é certa.",
