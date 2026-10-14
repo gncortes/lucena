@@ -173,6 +173,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// Com a voz, o passo espera a fala acabar e só faz esta pausa depois.
   static const voicePause = Duration(milliseconds: 600);
 
+  /// O teto da espera pela voz: se o TTS travar falando (sem avisar o fim),
+  /// depois de quatro vezes o tempo de leitura o passo segue como se a fala
+  /// tivesse acabado.
+  static Duration speechCap(String text) => readTime(text) * 4;
+
   /// O tempo da máquina antes de responder, e de o lance errado da prática
   /// ser desfeito.
   static const machineDelay = Duration(milliseconds: 500);
@@ -230,6 +235,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   final Now _now;
   final DemoTimer _timer;
   Timer? _demoTimer;
+
+  /// O app está em segundo plano: a demonstração espera parada.
+  bool _background = false;
   bool _demoPlaying = true;
   String? _demoKey;
   int _demoTick = 0;
@@ -369,6 +377,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final demo = _inDemo;
     final game = _inGame;
     final right = _example.question?.rightStep;
+    final touch =
+        _practiceKind == PracticeKind.toque &&
+        (s.phase == ScriptPhase.praticaVez ||
+            s.phase == ScriptPhase.praticaFim);
     emit(
       s.copyWith(
         ready: true,
@@ -400,6 +412,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
             ? null
             : ScriptMoves.dests(s.fen, pieces: _movablePieces(s.phase)),
         stars: _starsLeft(s.phase),
+        touching: touch && s.phase == ScriptPhase.praticaVez,
+        touched: touch ? s.touched : const [],
+        touchMiss: touch ? s.touchMiss : null,
+        coordinates: !touch || _example.practice!.coordinates,
       ),
     );
   }
@@ -501,12 +517,21 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   /// Agenda o fim do passo com o tempo que falta (com a voz falando, espera
-  /// ela acabar: [demoVoice]).
+  /// ela acabar: [demoVoice], até o [speechCap]).
   void _demoRun() {
     _demoTimer?.cancel();
-    if (_demoSpeaking) {
+    if (_background) {
       _demoTimer = null;
       _demoRunStart = null;
+      return;
+    }
+    if (_demoSpeaking) {
+      _demoRunStart = null;
+      _demoTimer = _timer(speechCap(state.speech.join(' ')), () {
+        _demoTimer = null;
+        if (isClosed || !_inDemo || !_demoSpeaking) return;
+        demoVoice(speaking: false);
+      });
       return;
     }
     final left = _demoTotal - _demoElapsed;
@@ -556,6 +581,26 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _demoTimer?.cancel();
     _demoTimer = null;
     _demoPlaying = false;
+  }
+
+  /// O app foi para o segundo plano: tudo fica como está (a regra do
+  /// Gabriel); a demonstração para o relógio onde está, sem pausar.
+  void pauseForBackground() {
+    if (_background) return;
+    _background = true;
+    if (_demoRunStart != null) _demoElapsed = _demoSpent;
+    _demoRunStart = null;
+    _demoTimer?.cancel();
+    _demoTimer = null;
+  }
+
+  /// Voltou do segundo plano: a demonstração andando segue de onde estava.
+  void resumeFromBackground() {
+    if (!_background) return;
+    _background = false;
+    if (isClosed || !_inDemo || state.demo?.ended != false) return;
+    if (_demoPlaying) _demoRun();
+    _demoEmit();
   }
 
   /// ↻: recomeça a demonstração do exemplo, andando.
@@ -1595,27 +1640,73 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final fen = _example.fen;
     _resetGame(fen);
     _scene = const _Scene(track: 'pratica');
+    final touch = practice.kind == PracticeKind.toque;
     _publish(
       state.copyWith(
         phase: ScriptPhase.praticaVez,
         fen: fen,
         lastMove: null,
-        speech: [_say(practice.t)],
+        speech: [
+          _say(practice.t),
+          if (touch && practice.targets.isNotEmpty)
+            _touchAsk(practice.targets.first),
+        ],
         tone: ScriptTone.neutral,
         marks: const [],
         arrows: const [],
         primary: null,
         secondary: null,
-        movable: _studentTurn(fen),
+        movable: touch ? null : _studentTurn(fen),
         machineThinking: false,
         currentMoveId: null,
         transition: _transition(const [], fromFen: fromFen, jump: true),
+        touched: const [],
+        touchMiss: null,
       ),
     );
     if (practice.kind == PracticeKind.jogo &&
         _sideOf(fen) == practice.machine) {
       await _machineReply();
     }
+  }
+
+  /// "Clique na casa {casa}."
+  String _touchAsk(String square) =>
+      _say('ini.toque.pedido').replaceAll('{casa}', square);
+
+  /// Toque numa casa (prática do tipo toque): a pedida fica verde e vem a
+  /// próxima; outra fica vermelha e o pedido continua o mesmo.
+  Future<void> onSquare(String square) async {
+    if (!state.ready || !state.touching) return;
+    final targets = _example.practice!.targets;
+    final done = state.touched.length;
+    if (done >= targets.length) return;
+    final target = targets[done];
+    if (square != target) {
+      _publish(
+        state.copyWith(
+          speech: [
+            _say('ini.toque.errado')
+                .replaceAll('{clicada}', square)
+                .replaceAll('{casa}', target),
+          ],
+          tone: ScriptTone.bad,
+          touchMiss: square,
+        ),
+      );
+      return;
+    }
+    final touched = [...state.touched, square];
+    final base = state.copyWith(
+      touched: touched,
+      touchMiss: null,
+      tone: ScriptTone.good,
+    );
+    if (touched.length == targets.length) {
+      _publish(_finishTask(base, 'ini.toque.sucesso'));
+      return;
+    }
+    _publish(base.copyWith(speech: [_touchAsk(targets[touched.length])]));
   }
 
   /// O lance aparece, o Viktor diz [key] e a peça volta depois de

@@ -2,5 +2,8 @@
   "ini.fora": "Esse lance não leva a peça aonde pedi. Vamos voltar à posição.",
   "ini.lance.certo": "Isso mesmo!",
   "ini.lance.errado": "Esse não é o lance. Tente outro.",
-  "ini.estrelas.sucesso": "Todas as estrelas!"
+  "ini.estrelas.sucesso": "Todas as estrelas!",
+  "ini.toque.sucesso": "Todas as casas!",
+  "ini.toque.pedido": "Clique na casa {casa}.",
+  "ini.toque.errado": "Essa é a casa {clicada}. Procure a casa {casa}."
 }

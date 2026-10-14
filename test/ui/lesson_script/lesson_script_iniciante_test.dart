@@ -127,6 +127,40 @@ Map<String, dynamic> _pawnJson() {
   };
 }
 
+/// Toque nas casas (notation.coordinates, T71): só os reis, de enfeite.
+Map<String, dynamic> _touchJson({bool coordinates = false}) => {
+  'licao': 'notation.coordinates',
+  'parte': 'licao',
+  'etapas': [
+    {
+      'id': 'pratica',
+      'exemplos': [
+        {
+          'id': 'casas',
+          'fen': '4k3/8/8/8/8/8/8/4K3 w - - 0 1',
+          'vira': false,
+          'objetivo': 'tarefa',
+          'pratica': {
+            'tipo': 'toque',
+            't': 'casas.t',
+            'fim': 'casas.fim',
+            'alvos': ['e4', 'a1', 'e1'],
+            'coordenadas': coordinates,
+          },
+          'entrada': <dynamic>[],
+          'linha': <dynamic>[],
+          'fim': 'proximo',
+        },
+      ],
+    },
+  ],
+};
+
+const _touchTexts = {
+  'ini.toque.pedido': 'Clique na casa {casa}.',
+  'ini.toque.errado': 'Essa é a casa {clicada}. Procure a casa {casa}.',
+};
+
 class _Rig {
   _Rig._(this.cubit, this.source, this.undo);
 
@@ -150,7 +184,11 @@ class _Rig {
     await Future<void>.delayed(Duration.zero);
   }
 
-  static Future<_Rig> open(Map<String, dynamic> json, {int stage = 0}) async {
+  static Future<_Rig> open(
+    Map<String, dynamic> json, {
+    int stage = 0,
+    Map<String, String> texts = const {},
+  }) async {
     final source = FakeLessonSource();
     final undo = <Completer<void>>[];
     final script = LessonScript.fromJson(json);
@@ -160,7 +198,7 @@ class _Rig {
       scriptPath: 'roteiro.json',
       language: 'pt',
       // Sem falas: o balão mostra a chave.
-      scripts: FakeLessonScriptRepository(script, const {}),
+      scripts: FakeLessonScriptRepository(script, texts),
       kpk: FakeKpkRepository(FakeKpkOracle()),
       source: source,
       initialStage: stage,
@@ -491,5 +529,72 @@ void main() {
       (1, Side.white, 'Rd5'),
       (1, Side.black, 'exd5'),
     ]);
+  });
+
+  group('prática do tipo toque (coordenadas)', () {
+    Future<_Rig> touch({bool coordinates = false}) async {
+      final r = await _Rig.open(
+        _touchJson(coordinates: coordinates),
+        texts: _touchTexts,
+      );
+      for (var i = 0; i < 5 && r.s.phase != ScriptPhase.praticaVez; i++) {
+        await r.times(1);
+      }
+      expect(r.s.phase, ScriptPhase.praticaVez);
+      return r;
+    }
+
+    test(
+      'abre com o enunciado e o primeiro pedido; nenhuma peça anda',
+      () async {
+        final r = await touch();
+        expect(r.s.speech, ['casas.t', 'Clique na casa e4.']);
+        expect(r.s.touching, isTrue);
+        expect(r.s.touched, isEmpty);
+        expect(r.s.coordinates, isFalse);
+        expect(r.s.movable, isNull);
+        expect(r.s.dests, isNull);
+        await r.cubit.onMove('e1e2');
+        expect(r.s.fen, '4k3/8/8/8/8/8/8/4K3 w - - 0 1');
+      },
+    );
+
+    test('casa errada marca em vermelho e o pedido continua', () async {
+      final r = await touch();
+      await r.cubit.onSquare('d4');
+      expect(r.s.touchMiss, 'd4');
+      expect(r.s.tone, ScriptTone.bad);
+      expect(r.s.speech, ['Essa é a casa d4. Procure a casa e4.']);
+      expect(r.s.touched, isEmpty);
+      await r.cubit.onSquare('e4');
+      expect(r.s.touchMiss, isNull);
+      expect(r.s.touched, ['e4']);
+      expect(r.s.tone, ScriptTone.good);
+      expect(r.s.speech, ['Clique na casa a1.']);
+    });
+
+    test('a última casa (ocupada também conta) conclui a prática', () async {
+      final r = await touch(coordinates: true);
+      expect(r.s.coordinates, isTrue);
+      await r.cubit.onSquare('e4');
+      await r.cubit.onSquare('a1');
+      await r.cubit.onSquare('e1');
+      expect(r.s.touched, ['e4', 'a1', 'e1']);
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.touching, isFalse);
+      expect(r.s.speech, ['ini.toque.sucesso', 'casas.fim']);
+      expect(r.s.primary, ScriptAction.proximaParte);
+      // Depois do fim, o toque não conta mais.
+      await r.cubit.onSquare('h8');
+      expect(r.s.touchMiss, isNull);
+    });
+
+    test('fora da prática de toque, onSquare não faz nada', () async {
+      final r = await _Rig.open(_rookOnly('pratica', 'estrelas1'));
+      await r.cubit.onSquare('a6');
+      expect(r.s.touching, isFalse);
+      expect(r.s.coordinates, isTrue);
+      expect(r.s.touched, isEmpty);
+    });
   });
 }
