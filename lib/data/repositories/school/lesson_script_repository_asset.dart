@@ -5,8 +5,10 @@ import '../../services/asset_service.dart';
 import 'lesson_script_repository.dart';
 
 /// O roteiro em `assets/lessons/roteiros/<lição>.json`, as falas da lição em
-/// `assets/lessons/<idioma>/endgames/<lição>.json` e as genéricas em
-/// `assets/lessons/<idioma>/roteiro_generico.json`.
+/// `assets/lessons/<idioma>/endgames/<lição>.json` (aula de final) ou
+/// `assets/lessons/<idioma>/iniciante/<lição>.json` (curso de iniciante, T71)
+/// e as genéricas em `assets/lessons/<idioma>/roteiro_generico.json` e
+/// `roteiro_iniciante.json`.
 class AssetLessonScriptRepository implements LessonScriptRepository {
   AssetLessonScriptRepository(this._assets);
 
@@ -14,8 +16,12 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
       'assets/lessons/roteiros/$lessonId.json';
   static String lessonTextsPath(String lessonId, String language) =>
       'assets/lessons/$language/endgames/$lessonId.json';
+  static String beginnerTextsPath(String lessonId, String language) =>
+      'assets/lessons/$language/iniciante/$lessonId.json';
   static String genericPath(String language) =>
       'assets/lessons/$language/roteiro_generico.json';
+  static String beginnerGenericPath(String language) =>
+      'assets/lessons/$language/roteiro_iniciante.json';
 
   /// Os idiomas com falas. Outro idioma cai no inglês.
   static const languages = {'en', 'pt'};
@@ -41,11 +47,14 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
     });
   }
 
-  /// As genéricas do idioma sob as da lição.
+  /// As genéricas do idioma sob as da lição. A lição está numa das duas
+  /// pastas; a que falta não pesa.
   Future<Map<String, String>> _merged(String lessonId, String language) async =>
       {
         ...await _read(genericPath(language)),
+        ...await _read(beginnerGenericPath(language)),
         ...await _read(lessonTextsPath(lessonId, language)),
+        ...await _read(beginnerTextsPath(lessonId, language)),
       };
 
   Future<Map<String, String>> _read(String path) async {

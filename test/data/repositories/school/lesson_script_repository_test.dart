@@ -63,6 +63,27 @@ void main() {
   });
 
   test(
+    'curso de iniciante: as falas da pasta iniciante e as genéricas dele',
+    () async {
+      const piece = 'pieces.rook';
+      final repo = AssetLessonScriptRepository(
+        _Assets({
+          generic('pt'): jsonEncode({'g': 'G', 'ini.fora': 'genérica'}),
+          AssetLessonScriptRepository.beginnerGenericPath('pt'): jsonEncode({
+            'ini.fora': 'Fora',
+          }),
+          AssetLessonScriptRepository.beginnerTextsPath(piece, 'pt'):
+              jsonEncode({'rot.p': 'Pergunta'}),
+        }),
+      );
+      final texts = await repo.texts(piece, 'pt');
+      expect(texts.say('g'), 'G');
+      expect(texts.say('ini.fora'), 'Fora');
+      expect(texts.say('rot.p'), 'Pergunta');
+    },
+  );
+
+  test(
     'arquivo que falta não derruba; idioma sem falas cai no inglês',
     () async {
       final repo = AssetLessonScriptRepository(
