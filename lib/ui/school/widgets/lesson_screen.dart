@@ -3322,7 +3322,6 @@ class _LessonScreenState extends State<LessonScreen>
     final canHint =
         state.phase == StepPhase.active &&
         (step is MoveStep || step is PlayStep);
-    final moved = step is ThinkStep && state.fen != step.fen;
     Widget round(Key key, IconData icon, String tooltip, VoidCallback onTap) =>
         Padding(
           padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
@@ -3358,14 +3357,6 @@ class _LessonScreenState extends State<LessonScreen>
               Icons.lightbulb_outline,
               l10n.lessonMoreHint,
               cubit.moreHint,
-            ),
-          // Mexeu nas peças: de volta à posição do passo.
-          if (moved)
-            round(
-              LessonKeys.thinkReset,
-              Icons.undo,
-              l10n.lessonThinkReset,
-              cubit.resetThink,
             ),
           if (state.phase == StepPhase.waiting)
             Padding(

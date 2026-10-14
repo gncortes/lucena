@@ -78,7 +78,6 @@ abstract final class LessonKeys {
   static const appBarTitle = Key('lesson.appBar.title');
   static const appBarClose = Key('lesson.appBar.close');
   static const place = Key('lesson.appBar.place');
-  static const thinkReset = Key('lesson.think.reset');
   static const moreHintButton = Key('lesson.think.moreHint');
   static const demoBack = Key('lesson.demo.back');
   static const demoForward = Key('lesson.demo.forward');

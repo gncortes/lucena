@@ -1281,15 +1281,6 @@ class LessonCubit extends Cubit<LessonState> {
     await _save();
   }
 
-  /// "Voltar à posição": o tabuleiro do passo de pensar de novo.
-  void resetThink() {
-    final step = state.current;
-    if (step is! ThinkStep) {
-      return;
-    }
-    emit(state.copyWith(fen: step.fen, clearLastMove: true));
-  }
-
   // No passo de pensar, o lance do aluno é a resposta: o cronômetro para e
   // a explicação vem logo, com um "correto" se ele achou o lance da aula
   // (T59) ou, se errou, começando por que o lance dele não funciona.
