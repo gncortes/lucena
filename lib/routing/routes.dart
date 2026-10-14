@@ -184,6 +184,13 @@ abstract final class Routes {
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
   static String lesson(String id) => '/school/$id';
+
+  /// A aula da escola com roteiro (curso de iniciante, T71), na etapa
+  /// [stage].
+  static String lessonScript(String id, {int stage = 0}) => Uri(
+    path: '/school/$id/roteiro',
+    queryParameters: {'etapa': '$stage'},
+  ).toString();
   static const starChallenges = '/school/challenges';
   static String starChallenge(String piece, String level) =>
       '/school/challenges/$piece/$level';

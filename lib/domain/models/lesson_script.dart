@@ -6,10 +6,17 @@ import 'kpk_outcome.dart';
 /// O objetivo do aluno num exemplo do roteiro.
 enum ScriptGoal {
   ganhar,
-  empatar;
+  empatar,
 
-  static ScriptGoal parse(Object? value) =>
-      value == 'empatar' ? ScriptGoal.empatar : ScriptGoal.ganhar;
+  /// Sem adversário (curso de iniciante): mover a peça, achar a casa. A vez
+  /// não passa.
+  tarefa;
+
+  static ScriptGoal parse(Object? value) => switch (value) {
+    'empatar' => ScriptGoal.empatar,
+    'tarefa' => ScriptGoal.tarefa,
+    _ => ScriptGoal.ganhar,
+  };
 
   bool get wantsWin => this == ganhar;
 }
@@ -135,6 +142,18 @@ class FreePlaySpec {
   final String back;
 }
 
+/// Quem julga o lance da pergunta.
+enum ScriptJudge {
+  /// A tabela KPK: lance fora do roteiro é julgado e leva ao jogo livre.
+  kpk,
+
+  /// Só os lances do roteiro valem; o resto volta (curso de iniciante).
+  lista;
+
+  static ScriptJudge parse(Object? value) =>
+      value == 'lista' ? ScriptJudge.lista : ScriptJudge.kpk;
+}
+
 /// A pergunta de um exemplo: o aluno sugere o primeiro lance.
 class ScriptQuestion {
   const ScriptQuestion({
@@ -144,7 +163,11 @@ class ScriptQuestion {
     required this.reveal,
     required this.alternatives,
     required this.errors,
-    required this.free,
+    this.free,
+    this.judge = ScriptJudge.kpk,
+    this.pieces,
+    this.outside,
+    this.back,
   });
 
   factory ScriptQuestion.fromJson(Map<String, dynamic> json) => ScriptQuestion(
@@ -162,7 +185,13 @@ class ScriptQuestion {
           in (json['erros'] as Map? ?? const {}).entries)
         key as String: ScriptStep.list(value),
     },
-    free: FreePlaySpec.fromJson(json['livre'] as Map<String, dynamic>),
+    free: json['livre'] == null
+        ? null
+        : FreePlaySpec.fromJson(json['livre'] as Map<String, dynamic>),
+    judge: ScriptJudge.parse(json['juiz']),
+    pieces: _squares(json['pecas']),
+    outside: json['fora'] as String?,
+    back: json['volta'] as String?,
   );
 
   /// A fala da pergunta.
@@ -182,7 +211,19 @@ class ScriptQuestion {
 
   /// Os erros previstos, cada um com a refutação.
   final Map<String, List<ScriptStep>> errors;
-  final FreePlaySpec free;
+
+  /// O jogo livre depois de um erro; nulo no juiz [ScriptJudge.lista].
+  final FreePlaySpec? free;
+  final ScriptJudge judge;
+
+  /// As casas das peças que o aluno pode mover; nulo: todas do lado.
+  final List<String>? pieces;
+
+  /// Juiz lista: a fala do lance fora do roteiro (senão, `ini.fora`).
+  final String? outside;
+
+  /// Juiz lista: a fala da pergunta ao voltar de um erro ou de um fora.
+  final String? back;
 
   /// O lance [uci] está no roteiro (certo, alternativo ou erro).
   bool covers(String uci) =>
@@ -191,13 +232,56 @@ class ScriptQuestion {
       errors.containsKey(uci);
 }
 
-/// A prática da etapa 3: o aluno joga contra a máquina.
+List<String>? _squares(Object? json) =>
+    json == null ? null : [for (final s in json as List) s as String];
+
+/// O tipo da prática da etapa 3.
+enum PracticeKind {
+  /// Contra a máquina (o padrão).
+  jogo,
+
+  /// Pegar as estrelas com a peça, em qualquer ordem; o outro lado não joga.
+  estrelas,
+
+  /// Tocar nas casas pedidas, em ordem.
+  toque,
+
+  /// Achar o lance (mate em 1, captura...).
+  lance;
+
+  static PracticeKind parse(Object? value) =>
+      PracticeKind.values.asNameMap()[value] ?? PracticeKind.jogo;
+}
+
+/// Uma vez do aluno na prática do tipo lance: os lances aceitos e a resposta.
+class PracticeTurn {
+  const PracticeTurn({required this.right, this.reply});
+
+  factory PracticeTurn.fromJson(Map<String, dynamic> json) => PracticeTurn(
+    right: [for (final uci in json['certos'] as List) uci as String],
+    reply: json['resposta'] as String?,
+  );
+
+  final List<String> right;
+  final String? reply;
+}
+
+/// A prática da etapa 3: o aluno joga contra a máquina, pega estrelas, toca
+/// casas ou acha o lance.
 class PracticeSpec {
   const PracticeSpec({
     required this.t,
     required this.machine,
     required this.limit,
     this.end,
+    this.kind = PracticeKind.jogo,
+    this.pieces,
+    this.stars = const [],
+    this.minimum,
+    this.targets = const [],
+    this.coordinates = false,
+    this.line = const [],
+    this.errors = const {},
   });
 
   factory PracticeSpec.fromJson(Map<String, dynamic> json) => PracticeSpec(
@@ -205,7 +289,41 @@ class PracticeSpec {
     machine: json['maquina'] == 'b' ? Side.black : Side.white,
     limit: json['limite'] as int? ?? 40,
     end: json['fim'] as String?,
+    kind: PracticeKind.parse(json['tipo']),
+    pieces: _squares(json['pecas']),
+    stars: _squares(json['estrelas']) ?? const [],
+    minimum: json['minimo'] as int?,
+    targets: _squares(json['alvos']) ?? const [],
+    coordinates: json['coordenadas'] as bool? ?? false,
+    line: [
+      for (final turn
+          in (json['linha'] as List? ?? const []).cast<Map<String, dynamic>>())
+        PracticeTurn.fromJson(turn),
+    ],
+    errors: {
+      for (final MapEntry(:key, :value)
+          in (json['erros'] as Map? ?? const {}).entries)
+        key as String: value as String,
+    },
   );
+
+  final PracticeKind kind;
+
+  /// As casas das peças que o aluno pode mover; nulo: todas do lado.
+  final List<String>? pieces;
+
+  /// Estrelas: as casas delas e o menor número de lances (informativo).
+  final List<String> stars;
+  final int? minimum;
+
+  /// Toque: as casas a tocar, em ordem, e se o tabuleiro mostra as
+  /// coordenadas.
+  final List<String> targets;
+  final bool coordinates;
+
+  /// Lance: as vezes do aluno e a fala de cada erro (lance → chave).
+  final List<PracticeTurn> line;
+  final Map<String, String> errors;
 
   /// A chave da frase que fecha a posição quando o objetivo é cumprido,
   /// depois da genérica de sucesso.

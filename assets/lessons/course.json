@@ -48,7 +48,8 @@
                 "h8"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.rook.json"
         },
         {
           "id": "pieces.bishop",
@@ -93,7 +94,8 @@
                 "h5"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.bishop.json"
         },
         {
           "id": "pieces.queen",
@@ -124,7 +126,8 @@
                 "e1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.queen.json"
         },
         {
           "id": "pieces.king",
@@ -159,7 +162,8 @@
               "id": "active",
               "fen": "8/8/8/4K3/8/8/8/8 w - - 0 1"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.king.json"
         },
         {
           "id": "pieces.knight",
@@ -211,7 +215,8 @@
                 "g7"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.knight.json"
         },
         {
           "id": "pieces.pawn",
@@ -299,7 +304,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.pawn.json"
         },
         {
           "id": "rules.captureProtect",

@@ -39,6 +39,15 @@ void main() {
     expect(ids.toSet().length, ids.length);
   });
 
+  test('aula com roteiro (T71) aponta um arquivo que existe', () {
+    expect(course.lesson('pieces.rook')!.script, isNotNull);
+    for (final lesson in course.lessons) {
+      final script = lesson.script;
+      if (script == null) continue;
+      expect(io.File(script).existsSync(), isTrue, reason: lesson.id);
+    }
+  });
+
   test('as 39 aulas na ordem da trilha: as regras novas (T52) entre as '
       'peças, o en passant abrindo os peões, o valor das peças e os padrões '
       'de mate nos truques, e a formatura por último', () {
