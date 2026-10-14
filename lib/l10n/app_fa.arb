@@ -1218,5 +1218,9 @@
   "curiositiesTitle": "Curiosities",
   "curiositiesAbout": "About the position",
   "curiositiesReferences": "References",
-  "curiositiesQuoteBy": "— {author}"
+  "curiositiesQuoteBy": "— {author}",
+  "lessonNextStage": "Next stage",
+  "lessonBackToStart": "Back to the start",
+  "lessonPreviousStep": "Step back",
+  "lessonMoveList": "Moves"
 }

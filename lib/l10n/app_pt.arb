@@ -1217,5 +1217,9 @@
   "curiositiesTitle": "Curiosidades",
   "curiositiesAbout": "Sobre a posição",
   "curiositiesReferences": "Referências",
-  "curiositiesQuoteBy": "— {author}"
+  "curiositiesQuoteBy": "— {author}",
+  "lessonNextStage": "Próxima etapa",
+  "lessonBackToStart": "Voltar ao início",
+  "lessonPreviousStep": "Voltar um passo",
+  "lessonMoveList": "Lances"
 }

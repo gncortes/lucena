@@ -73,10 +73,9 @@ void main() {
     await AppRobot($).open(systemLocale: _english);
     final endgames = EndgamesRobot($);
     final lesson = await endgames.lesson(_lesson);
-    final part = lesson.lesson.parts.first;
-    await endgames.openFromHome();
-    await endgames.openLesson(_lesson);
-    await endgames.openSteps();
+    // A parte `distant` virou roteiro (tela própria): usa a diagonal.
+    final part = lesson.lesson.parts.firstWhere((p) => p.id == 'diagonal');
+    await _openPart(endgames, 'diagonal');
     await endgames.expectStep(_lesson, part.steps.first.id);
 
     // No pé da AppBar, a largura toda; sem contador "1/5", título no centro.

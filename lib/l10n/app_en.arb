@@ -6517,5 +6517,21 @@
     "placeholders": {
       "author": {"type": "String"}
     }
+  },
+  "lessonNextStage": "Next stage",
+  "@lessonNextStage": {
+    "description": "Button at the end of a lesson stage that opens the next stage."
+  },
+  "lessonBackToStart": "Back to the start",
+  "@lessonBackToStart": {
+    "description": "Button after a refuted move that returns to the question."
+  },
+  "lessonPreviousStep": "Step back",
+  "@lessonPreviousStep": {
+    "description": "Accessibility label of the round back button of the scripted lesson."
+  },
+  "lessonMoveList": "Moves",
+  "@lessonMoveList": {
+    "description": "Accessibility label of the move list below the board in the scripted lesson."
   }
 }

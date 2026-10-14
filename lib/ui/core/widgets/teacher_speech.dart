@@ -57,6 +57,7 @@ class TeacherSpeech extends StatelessWidget {
     this.part = TeacherSpeechPart.all,
     this.explanation,
     this.lessonV2 = false,
+    this.headerAvatar,
     this.lessonPromptBubble = false,
     this.onVariation,
     this.activeVariation,
@@ -81,6 +82,10 @@ class TeacherSpeech extends StatelessWidget {
   final Character teacher;
   final ExplanationPayload? explanation;
   final bool lessonV2;
+
+  /// Na lição V2, o retrato do cabeçalho maior que o padrão (28), com raio 6
+  /// (lição roteirizada, T70).
+  final double? headerAvatar;
 
   /// Pensar keeps its speech bubble; explanation sections remain unboxed.
   final bool lessonPromptBubble;
@@ -158,8 +163,10 @@ class TeacherSpeech extends StatelessWidget {
       character: teacher,
       emotion: emotion,
       // LICOES-V2 §9: retrato de 28 dp, raio 8, na linha de 48 dp.
-      size: lessonV2 ? 28 : (_compact(context) ? 32 : avatarSize),
-      radius: lessonV2 ? 8 : null,
+      size: lessonV2
+          ? (headerAvatar ?? 28)
+          : (_compact(context) ? 32 : avatarSize),
+      radius: lessonV2 ? (headerAvatar == null ? 8 : 6) : null,
     );
     if (part == TeacherSpeechPart.header) {
       // Só o cabeçalho: os botões de voz valem para a fala, mas quem a diz

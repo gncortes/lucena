@@ -71,7 +71,10 @@ import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/school/lesson_script_repository.dart';
+import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
+import '../data/repositories/tablebase/kpk_repository.dart';
 import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
 import '../ui/endgames/view_models/endgames_cubit.dart';
 import '../ui/endgames/view_models/exercise_cubit.dart';
@@ -89,6 +92,8 @@ import '../ui/school/widgets/star_challenge_screen.dart';
 import '../ui/school/widgets/star_challenges_screen.dart';
 import '../ui/school/view_models/lesson_cubit.dart';
 import '../ui/school/view_models/school_cubit.dart';
+import '../ui/lesson_script/view_models/lesson_script_cubit.dart';
+import '../ui/lesson_script/widgets/lesson_script_screen.dart';
 import '../ui/school/widgets/lesson_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
@@ -585,8 +590,65 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 },
                 routes: [
                   // A lição: a mesma tela das aulas da escola.
+                  // A lição roteirizada (T70): as três etapas da parte.
+                  _route(
+                    path: 'roteiro',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      final part = state.uri.queryParameters['part'] ?? '';
+                      final stage =
+                          int.tryParse(
+                            state.uri.queryParameters['etapa'] ?? '',
+                          ) ??
+                          0;
+                      final language = _language(context);
+                      final lessons = context.read<EndgameLessonRepository>();
+                      return BlocProvider(
+                        key: ValueKey('script.$id.$part'),
+                        create: (_) => LessonScriptCubit(
+                          lessonId: id,
+                          partId: part,
+                          scriptPath: AssetLessonScriptRepository.scriptPath(
+                            id,
+                          ),
+                          language: language,
+                          scripts: context.read<LessonScriptRepository>(),
+                          kpk: context.read<KpkRepository>(),
+                          source: EndgameLessonSource(
+                            lessons,
+                            context.read<EndgameProgressRepository>(),
+                          ),
+                          initialStage: stage,
+                        ),
+                        child: LessonScriptScreen(
+                          key: ValueKey('script.$id.$part'),
+                          title: lessons
+                              .texts(language)
+                              .then((texts) => texts.partTitle(id, part)),
+                        ),
+                      );
+                    },
+                  ),
                   _route(
                     path: 'lesson',
+                    // A parte com roteiro abre a tela roteirizada (cobre o
+                    // card da parte, a próxima parte e o revisar).
+                    redirect: (context, state) async {
+                      final id = state.pathParameters['lesson']!;
+                      final part = state.uri.queryParameters['part'];
+                      if (part == null) return null;
+                      final trail = await context
+                          .read<EndgameLessonRepository>()
+                          .trail();
+                      final script = trail
+                          .lesson(id)
+                          ?.lesson
+                          .part(part)
+                          ?.script;
+                      return script == null
+                          ? null
+                          : Routes.endgameLessonScript(id, part: part);
+                    },
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
                       final part = state.uri.queryParameters['part'];

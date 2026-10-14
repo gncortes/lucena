@@ -17,6 +17,8 @@ import 'data/repositories/endgames/endgame_lesson_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
+import 'data/repositories/school/lesson_script_repository.dart';
+import 'data/repositories/tablebase/kpk_repository.dart';
 import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
@@ -225,6 +227,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<EndgameLessonRepository>.value(
           value: dependencies.endgameLessonRepository,
+        ),
+        RepositoryProvider<LessonScriptRepository>.value(
+          value: dependencies.lessonScriptRepository,
+        ),
+        RepositoryProvider<KpkRepository>.value(
+          value: dependencies.kpkRepository,
         ),
         RepositoryProvider<ExerciseFeedbackRepository>.value(
           value: dependencies.exerciseFeedbackRepository,

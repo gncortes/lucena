@@ -10,6 +10,8 @@ import 'lesson_script_repository.dart';
 class AssetLessonScriptRepository implements LessonScriptRepository {
   AssetLessonScriptRepository(this._assets);
 
+  static String scriptPath(String lessonId) =>
+      'assets/lessons/roteiros/$lessonId.json';
   static String lessonTextsPath(String lessonId, String language) =>
       'assets/lessons/$language/endgames/$lessonId.json';
   static String genericPath(String language) =>

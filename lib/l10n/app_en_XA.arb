@@ -1217,5 +1217,9 @@
   "curiositiesTitle": "[Çûŕîöšîtîéš one two]",
   "curiositiesAbout": "[Åböût thé pöšîtîöñ one two]",
   "curiositiesReferences": "[Ŕéféŕéñçéš one]",
-  "curiositiesQuoteBy": "[— {author} one]"
+  "curiositiesQuoteBy": "[— {author} one]",
+  "lessonNextStage": "[Ñéxt štåĝé one]",
+  "lessonBackToStart": "[Båçk tö thé štåŕt one two]",
+  "lessonPreviousStep": "[Štép båçk one]",
+  "lessonMoveList": "[Mövéš one]"
 }

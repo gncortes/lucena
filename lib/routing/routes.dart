@@ -202,6 +202,16 @@ abstract final class Routes {
     path: '/endgames/$id/lesson',
     queryParameters: part == null ? null : {'part': part},
   ).toString();
+
+  /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
+  static String endgameLessonScript(
+    String id, {
+    required String part,
+    int stage = 0,
+  }) => Uri(
+    path: '/endgames/$id/roteiro',
+    queryParameters: {'part': part, 'etapa': '$stage'},
+  ).toString();
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';

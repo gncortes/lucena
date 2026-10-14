@@ -11,13 +11,15 @@ import 'robots/endgames_robot.dart';
 const _english = Locale('en', 'US');
 const _lesson = 'pawns.distantOpposition';
 
-/// O passo de pensar da primeira parte: o certo é d3e4; d3e3 é recusado.
-const _think = 't_lesson';
+/// O passo de pensar da parte da oposição na diagonal (a primeira, `distant`,
+/// virou roteiro e tem tela própria): o certo é f3f4; e3e4 é recusado.
+const _think = 't_diagonal';
 
-/// O passo de lance da primeira parte (o 6º): d3e3 aqui é o erro com a
-/// solução na explicação.
-const _convert = 'convert';
-const _wrong = 'd3e3';
+/// O passo de lance da mesma parte (o 6º): e3e4 aqui é o erro com a solução
+/// na explicação.
+const _convert = 'diagonalMove';
+const _wrong = 'e3e4';
+const _part = 'diagonal';
 
 /// T65 (LICOES-V2 §3–§6, contrato `T65-contrato-licoes-painel.md`): o painel
 /// da explicação depois do erro, a Solução vista e o Voltar. "Ver solução" e
@@ -77,7 +79,7 @@ void main() {
     expect(find.byKey(LessonKeys.seeSolution), findsNothing);
     expect(find.byKey(LessonKeys.solutionFooter), findsNothing);
     // O tabuleiro volta a aceitar o lance: o certo segue a lição.
-    await endgames.moveInLesson('d3e4');
+    await endgames.moveInLesson('f3f4');
     await $.pumpAndSettle();
     expect(find.byKey(LessonKeys.seeSolution), findsNothing);
   });
@@ -86,7 +88,7 @@ void main() {
 Future<void> _openFirstPart(EndgamesRobot endgames) async {
   await endgames.openFromHome();
   await endgames.openLesson(_lesson);
-  await endgames.openSteps();
+  await endgames.openPart(_part);
   await endgames.expectStep(_lesson, _think);
 }
 
@@ -104,9 +106,9 @@ Future<EndgamesRobot> _wrongAnswer(
   e2eNow.advance(const Duration(minutes: 5));
   await $.pump(const Duration(seconds: 1));
   await endgames.nextStep();
-  await endgames.expectStep(_lesson, 'intro');
+  await endgames.expectStep(_lesson, 'diagonal');
   await endgames.nextStep();
-  for (final demo in ['d_distant', 'err_distantKing', 'err_distantPawn']) {
+  for (final demo in ['d_diagonal', 'err_diagonalKing', 'err_diagonalCheck']) {
     await endgames.expectStep(_lesson, demo);
     await endgames.finishDemo();
     await endgames.nextStep();
