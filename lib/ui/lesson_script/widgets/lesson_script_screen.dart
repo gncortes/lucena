@@ -20,6 +20,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../view_models/lesson_script_cubit.dart';
 import 'curiosities_sheet.dart';
+import 'script_demo_controls.dart';
 import 'script_board.dart';
 import 'script_move_list.dart';
 import 'script_speech.dart';
@@ -368,26 +369,53 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
     final secondary = _action(context, cubit, state.secondary, primary: false);
     final primary = _action(context, cubit, state.primary, primary: true);
     final colors = Theme.of(context).colorScheme;
+    final demo = state.demo;
+    // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
+    // botões; no fim, só ↻ e o botão principal (canvas, E12).
+    final repeat = ScriptDemoButton(
+      buttonKey: LessonScriptKeys.demoRepeat,
+      icon: Icons.replay_rounded,
+      tooltip: context.l10n.lessonDemoReplay,
+      onPressed: () => unawaited(cubit.demoRepeat()),
+    );
+    final controls = demo == null || demo.ended || primary == null
+        ? null
+        : ScriptDemoControls(
+            playing: demo.playing,
+            progress: demo.progress,
+            remaining: demo.remaining,
+            tick: demo.tick,
+            canStepBack: demo.canStepBack,
+            mainTooltip: primary.label,
+            onRepeat: () => unawaited(cubit.demoRepeat()),
+            onStepBack: cubit.demoStepBack,
+            onToggle: cubit.demoToggle,
+            onNext: () => primary.onPressed?.call(),
+          );
+    final back = state.canBack
+        ? FloatingActionButton(
+            key: LessonScriptKeys.back,
+            heroTag: null,
+            shape: const CircleBorder(),
+            elevation: 2,
+            backgroundColor: colors.surface,
+            foregroundColor: colors.primary,
+            tooltip: context.l10n.lessonPreviousStep,
+            onPressed: cubit.back,
+            child: const Icon(Icons.arrow_back),
+          )
+        : null;
     return ExerciseActions(
       // Mesmo fundo da tela, só com a linha em cima (Gabriel, 14/10/2026;
       // canvas `T70-etapa1-estados`, F2).
       color: Theme.of(context).scaffoldBackgroundColor,
       // O voltar redondo da lição (`lesson_screen.dart`, Gabriel 14/10/2026):
       // só aparece quando há para onde voltar.
-      hint: state.canBack
-          ? FloatingActionButton(
-              key: LessonScriptKeys.back,
-              heroTag: null,
-              shape: const CircleBorder(),
-              elevation: 2,
-              backgroundColor: colors.surface,
-              foregroundColor: colors.primary,
-              tooltip: context.l10n.lessonPreviousStep,
-              onPressed: cubit.back,
-              child: const Icon(Icons.arrow_back),
-            )
-          : null,
-      actions: [?secondary, ?primary],
+      hint: controls == null
+          ? back
+          : Expanded(child: Row(children: [?back, const Spacer(), controls])),
+      leading: demo != null && demo.ended ? repeat : null,
+      actions: controls == null ? [?secondary, ?primary] : const [],
     );
   }
 }

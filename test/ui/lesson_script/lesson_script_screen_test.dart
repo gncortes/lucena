@@ -437,6 +437,38 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('rodapé da demonstração: ← sempre, ↻ ⏮ ⏸ e o ⏭ com anel; '
+      'no fim, só ↻ e Próxima etapa', (tester) async {
+    final s = await _open(tester, _tall, stage: 1);
+    expect(s.cubit.state.demo, isNotNull);
+    for (final key in [
+      LessonScriptKeys.back,
+      LessonScriptKeys.demoRepeat,
+      LessonScriptKeys.demoStepBack,
+      LessonScriptKeys.demoToggle,
+      LessonScriptKeys.demoRing,
+      LessonScriptKeys.primary,
+    ]) {
+      expect(find.byKey(key), findsOneWidget, reason: '$key');
+    }
+    expect(find.text('Continuar'), findsNothing);
+    // ⏸ pausa: o ícone vira ▶.
+    await _tap(tester, LessonScriptKeys.demoToggle);
+    expect(s.cubit.state.demo!.playing, isFalse);
+    expect(find.byIcon(Icons.play_arrow_rounded), findsOneWidget);
+    // ⏭ avança mesmo pausada.
+    final tick = s.cubit.state.demo!.tick;
+    await _tap(tester, LessonScriptKeys.primary);
+    expect(s.cubit.state.demo?.tick, isNot(tick));
+    await _until(tester, s, ScriptPhase.fimEtapa);
+    expect(s.cubit.state.demo?.ended, isTrue);
+    expect(find.byKey(LessonScriptKeys.demoRepeat), findsOneWidget);
+    expect(find.byKey(LessonScriptKeys.demoToggle), findsNothing);
+    expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
+    expect(find.text('Próxima etapa'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('fim da parte: Rever a ideia volta; Continuar conclui', (
     tester,
   ) async {
