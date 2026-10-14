@@ -7,6 +7,9 @@ abstract final class LessonScriptKeys {
 
   /// O tabuleiro de antes, enquanto se dissolve no novo (crossfade).
   static const crossfade = Key('lessonScript.crossfade');
+
+  /// As coordenadas desenhadas por cima das marcações do tabuleiro.
+  static const coordinates = Key('lessonScript.coordinates');
   static const speech = Key('lessonScript.speech');
   static const characterBar = Key('lessonScript.characterBar');
   static const soundButton = Key('lessonScript.soundButton');
