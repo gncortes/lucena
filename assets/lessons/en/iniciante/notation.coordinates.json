@@ -5,7 +5,7 @@
   "rot.ideia.ex1.p": "Move the rook to the right, to the e-file, or click {verResposta}",
   "rot.ideia.ex1.certo": "That's right! a, b, c, d, e: the fifth file.",
   "rot.ideia.ex1.revela": "The rook moves right to the e-file: a, b, c, d, e.",
-  "rot.ideia.ex1.fora": "The rook stopped on another file. Let's go back: count the letters starting from a.",
+  "rot.ideia.ex1.fora": "The rook did not stop on the e-file. Let's go back: count the letters starting from a.",
   "rot.ideia.ex1.volta": "Move the rook to the right, to the e-file, or click {verResposta}",
   "rot.ideia.ex1.l1": "The letters are written along the bottom edge of the board. Use them to check.",
   "rot.ideia.ex1.l2": "Remember the idea: the file is the letter, counted from left to right.",
