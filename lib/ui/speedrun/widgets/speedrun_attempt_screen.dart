@@ -47,10 +47,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     if (summary == null || run == null) {
       return Scaffold(
         key: SpeedrunKeys.attemptScreen,
-        appBar: LucenaAppBar(
-          centerTitle: true,
-          title: Text(l10n.speedrunTitle),
-        ),
+        appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
         body: state.all != null
             ? null
             : const Center(child: CircularProgressIndicator()),
@@ -68,7 +65,6 @@ class SpeedrunAttemptScreen extends StatelessWidget {
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
       appBar: LucenaAppBar(
-        centerTitle: true,
         title: Text(speedrunName(l10n, state.characters, speedrun)),
       ),
       bottomNavigationBar: completed

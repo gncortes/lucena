@@ -322,10 +322,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     if (!state.ready) {
       return Scaffold(
         key: FreeBoardKeys.screen,
-        appBar: LucenaAppBar(
-          centerTitle: true,
-          title: Text(context.l10n.freeBoardTitle),
-        ),
+        appBar: LucenaAppBar(title: Text(context.l10n.freeBoardTitle)),
       );
     }
     final training = state.mode.userSide != null;
@@ -345,7 +342,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
             pieceLetters: boardSettings.notation.pieceLetters(context.l10n),
           ),
         ),
-        centerTitle: true,
         title: Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),
       body: BoardViewport(

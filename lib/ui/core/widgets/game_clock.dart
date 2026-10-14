@@ -18,7 +18,7 @@ class PlayerEntry {
     this.running = false,
     this.clockKey,
     this.timeKey,
-    this.turnLabel,
+    this.isTurn = false,
     this.turnKey,
     this.portrait,
     this.detail,
@@ -34,8 +34,12 @@ class PlayerEntry {
   final Key? clockKey;
   final Key? timeKey;
 
-  /// Sem relógio, a etiqueta de quem joga ("Sua vez"). Nula: nada.
-  final String? turnLabel;
+  /// Sem relógio, é a vez deste lado: o retrato leva o anel primário de 2 px
+  /// (T73, D1; CompJogador, `marcaVez=anel`). Com relógio, quem marca a vez é
+  /// o relógio aceso.
+  final bool isTurn;
+
+  /// A key do anel da vez, para os testes lerem.
   final Key? turnKey;
 
   /// Retrato do personagem, quando existe; os demais jogadores usam o peão.
@@ -103,7 +107,7 @@ class PlayersRow extends StatelessWidget {
             label: character.name,
             child: Row(
               children: [
-                character.portrait!,
+                _withRing(character.portrait!, character),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ExcludeSemantics(
@@ -129,11 +133,6 @@ class PlayersRow extends StatelessWidget {
                           width: 96,
                         ),
                       ),
-                    )
-                  else if (player.turnLabel != null)
-                    TurnBadge(
-                      label: player.turnLabel!,
-                      labelKey: player.turnKey,
                     ),
                 ],
               ],
@@ -209,6 +208,29 @@ class PlayersRow extends StatelessWidget {
     );
   }
 
+  /// O anel da vez no retrato (sem relógio): 2 px primário, por cima do
+  /// retrato, sem mudar o tamanho dele.
+  Widget _withRing(Widget portrait, PlayerEntry player) {
+    if (player.time != null || !player.isTurn) return portrait;
+    return Builder(
+      builder: (context) => DecoratedBox(
+        key: player.turnKey,
+        position: DecorationPosition.foreground,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppShape.small),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: ringWidth,
+          ),
+        ),
+        child: portrait,
+      ),
+    );
+  }
+
+  /// Espessura do anel da vez.
+  static const ringWidth = 2.0;
+
   Widget _entering(Widget clock) => enterClocks
       ? GameEntrance(part: GameEntrancePart.clock, child: clock)
       : clock;
@@ -220,9 +242,11 @@ class PlayersRow extends StatelessWidget {
     bool mirrored = false,
   }) {
     final time = player.time;
-    final turn = player.turnLabel;
     final children = [
-      player.portrait ?? PlayerPortrait(side: player.side, board: board),
+      _withRing(
+        player.portrait ?? PlayerPortrait(side: player.side, board: board),
+        player,
+      ),
       const SizedBox(width: 12),
       if (showName)
         Expanded(
@@ -234,8 +258,7 @@ class PlayersRow extends StatelessWidget {
             ),
           ),
         ),
-      if (showName && detailed && (time != null || turn != null))
-        const SizedBox(width: 12),
+      if (showName && detailed && time != null) const SizedBox(width: 12),
       if (time != null)
         _entering(
           GameClock(
@@ -246,9 +269,7 @@ class PlayersRow extends StatelessWidget {
             running: player.running,
             width: compactClocks ? 96 : GameClock._width,
           ),
-        )
-      else if (turn != null)
-        TurnBadge(label: turn, labelKey: player.turnKey),
+        ),
     ];
     return Semantics(
       container: true,
@@ -288,37 +309,6 @@ class PlayerPortrait extends StatelessWidget {
           Icons.person,
           size: _size * 0.64,
           color: colors.onPrimaryContainer,
-        ),
-      ),
-    );
-  }
-}
-
-/// De quem é a vez, numa etiqueta na ponta da linha de quem joga.
-class TurnBadge extends StatelessWidget {
-  const TurnBadge({required this.label, this.labelKey, super.key});
-
-  final String label;
-  final Key? labelKey;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 180),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      child: Text(
-        label,
-        key: labelKey,
-        textAlign: TextAlign.center,
-        style: theme.textTheme.labelLarge?.copyWith(
-          color: colors.onSecondaryContainer,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );

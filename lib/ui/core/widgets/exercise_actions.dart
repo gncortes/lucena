@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'one_line.dart';
+import '../theme/app_button_text.dart';
+import 'round_footer_button.dart';
 
 /// Um botão do rodapé do exercício.
 class ExerciseAction {
@@ -19,8 +20,9 @@ class ExerciseAction {
   final bool primary;
 }
 
-/// A Dica de sempre à esquerda (T70, `exercise_screen.dart`): contorno com
-/// lâmpada, 48 dp.
+/// A Dica de sempre à esquerda: só a lâmpada, num botão redondo igual aos
+/// outros ícones do rodapé (T73). [label] (o que a dica custa agora) vai no
+/// tooltip e no rótulo de acessibilidade.
 class ExerciseHintButton extends StatelessWidget {
   const ExerciseHintButton({
     required this.label,
@@ -32,14 +34,10 @@ class ExerciseHintButton extends StatelessWidget {
   final VoidCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) => OutlinedButton.icon(
-    style: OutlinedButton.styleFrom(
-      minimumSize: const Size(0, 48),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-    ),
+  Widget build(BuildContext context) => RoundFooterButton(
+    icon: Icons.lightbulb_outline,
+    tooltip: label,
     onPressed: onPressed,
-    icon: const Icon(Icons.lightbulb_outline),
-    label: OneLine(label),
   );
 }
 
@@ -79,18 +77,18 @@ class ExerciseActions extends StatelessWidget {
   static const actionWidth = 124.0;
   static const gap = 8.0;
 
-  Widget _button(ExerciseAction action) {
+  Widget _button(BuildContext context, ExerciseAction action) {
     final style = ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
       // Com [hug], o botão do canvas: folga de 22 e letra 16.
       padding: WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: hug ? 22 : 8),
       ),
-      textStyle: hug
-          ? const WidgetStatePropertyAll(
-              TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            )
-          : null,
+      // Botão de rodapé: 16/24 (CompBotao); o de cartão fica 14/20.
+      textStyle: WidgetStatePropertyAll(
+        AppButtonText.footer(context)
+            ?.copyWith(fontWeight: hug ? FontWeight.w500 : null),
+      ),
     );
     final label = Text(action.label, maxLines: 2, textAlign: TextAlign.center);
     return action.primary
@@ -129,7 +127,7 @@ class ExerciseActions extends StatelessWidget {
                   minWidth: actionWidth,
                   maxWidth: actions[i].primary ? primaryMax : double.infinity,
                 ),
-                child: _button(actions[i]),
+                child: _button(context, actions[i]),
               ),
             ),
           ],
@@ -143,7 +141,7 @@ class ExerciseActions extends StatelessWidget {
     final buttons = <Widget>[
       for (var i = 0; i < actions.length; i++) ...[
         if (i > 0) const SizedBox(width: gap),
-        Expanded(child: _button(actions[i])),
+        Expanded(child: _button(context, actions[i])),
       ],
     ];
     final row = hug && actions.isNotEmpty ? _hugRow() : null;

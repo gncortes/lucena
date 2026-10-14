@@ -1,4 +1,3 @@
-import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -232,9 +231,7 @@ class _PositionCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
-    final turn = position.fen.split(' ')[1] == 'b' ? Side.black : Side.white;
     final goal = GoalStyle.of(context, position.goal);
     return PositionCard(
       key: CatalogKeys.position(position.id),
@@ -266,15 +263,6 @@ class _PositionCell extends StatelessWidget {
               onColor: goal.onContainer,
             ),
           ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          turn == Side.white
-              ? l10n.freeBoardWhiteToMove
-              : l10n.freeBoardBlackToMove,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colors.onSurfaceVariant,
-          ),
         ),
       ],
     );

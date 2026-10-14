@@ -513,7 +513,7 @@ class TeacherSpeech extends StatelessWidget {
           (_stacked ? theme.textTheme.titleMedium : theme.textTheme.labelLarge)
               ?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
               ),
     );
   }

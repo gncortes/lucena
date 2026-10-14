@@ -118,7 +118,6 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           return Scaffold(
             key: StarChallengeKeys.screen,
             appBar: LucenaAppBar(
-              centerTitle: true,
               toolbarHeight: (MediaQuery.textScalerOf(context).scale(44) + 16)
                   .clamp(72.0, double.infinity),
               title: piece == null ? null : _title(context, piece, level),

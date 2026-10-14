@@ -62,7 +62,6 @@ class _HistoryScreenState extends State<HistoryScreen>
       child: Scaffold(
         key: HistoryKeys.screen,
         appBar: LucenaAppBar(
-          centerTitle: true,
           leading: ContainerNavigation.canClose(context)
               ? BackButton(onPressed: () => ContainerNavigation.close(context))
               : null,

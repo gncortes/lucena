@@ -26,7 +26,9 @@ import '../../../domain/use_cases/variation_tree_builder.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/round_footer_button.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/viktor_sheet.dart';
 import '../../core/widgets/reference_link.dart';
@@ -3300,16 +3302,11 @@ class _LessonScreenState extends State<LessonScreen>
     Widget round(Key key, IconData icon, String tooltip, VoidCallback onTap) =>
         Padding(
           padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
-          child: FloatingActionButton(
+          child: RoundFooterButton(
             key: key,
-            heroTag: null,
-            shape: const CircleBorder(),
-            elevation: 2,
-            backgroundColor: colors.surface,
-            foregroundColor: colors.primary,
+            icon: icon,
             tooltip: tooltip,
             onPressed: onTap,
-            child: Icon(icon),
           ),
         );
     return _footer(
@@ -3586,7 +3583,7 @@ class _LessonScreenState extends State<LessonScreen>
                     foregroundColor: colors.onPrimary,
                     elevation: 2,
                     shape: const StadiumBorder(),
-                    textStyle: Theme.of(context).textTheme.labelLarge,
+                    textStyle: AppButtonText.footer(context),
                   ),
                   onPressed: cubit.next,
                   child: Text(
@@ -3909,7 +3906,7 @@ class _FooterAction extends StatelessWidget {
       // Sem contorno, como os outros botões da fileira.
       side: BorderSide.none,
       shape: const StadiumBorder(),
-      textStyle: Theme.of(context).textTheme.labelLarge,
+      textStyle: AppButtonText.footer(context),
     ),
     onPressed: onPressed,
     // The label wraps (font 2.0) instead of shrinking or overflowing.

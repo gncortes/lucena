@@ -36,10 +36,7 @@ class SpeedrunScreen extends StatelessWidget {
     if (summary == null) {
       return Scaffold(
         key: SpeedrunKeys.screen,
-        appBar: LucenaAppBar(
-          centerTitle: true,
-          title: Text(l10n.speedrunTitle),
-        ),
+        appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
         body: state.all != null
             ? null
             : const Center(child: CircularProgressIndicator()),
@@ -52,7 +49,6 @@ class SpeedrunScreen extends StatelessWidget {
     return Scaffold(
       key: SpeedrunKeys.screen,
       appBar: LucenaAppBar(
-        centerTitle: true,
         title: Text(
           speedrun.kind == SpeedrunKind.marathon
               ? l10n.marathonSection

@@ -242,14 +242,6 @@ class _Header extends StatelessWidget {
             backgroundColor: GoalStyle.of(context, state.goal).container,
             side: BorderSide.none,
           ),
-          Chip(
-            label: Text(
-              state.position.turn == Side.white
-                  ? l10n.freeBoardWhiteToMove
-                  : l10n.freeBoardBlackToMove,
-            ),
-            side: BorderSide.none,
-          ),
         ],
       ),
     );

@@ -380,7 +380,6 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       builder: (context, state) => Scaffold(
         key: BlindKeys.screen,
         appBar: LucenaAppBar(
-          centerTitle: true,
           toolbarHeight: 64,
           title: Text(l10n.blindTitleShort, overflow: TextOverflow.ellipsis),
           actions: [

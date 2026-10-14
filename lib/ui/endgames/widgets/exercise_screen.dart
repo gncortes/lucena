@@ -23,7 +23,6 @@ import '../../core/board/speech_flash.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/external_page_sheet.dart';
-import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -33,7 +32,9 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/exercise_cubit.dart';
 import 'endgame_ui.dart';
 import 'stars_row.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/widgets/exercise_actions.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 
@@ -646,27 +647,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (state.interactive)
-                        Flexible(
-                          child: OutlinedButton.icon(
-                            key: ExerciseKeys.hintButton,
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(0, 48),
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surface,
-                            ),
+                        KeyedSubtree(
+                          key: ExerciseKeys.hintButton,
+                          child: ExerciseHintButton(
+                            // O tooltip diz o que a dica custa agora: um
+                            // ponto, o último (o exercício deixa de pontuar)
+                            // ou nada.
+                            label: _hintLabel(l10n, state),
                             onPressed: cubit.askHint,
-                            icon: const Icon(Icons.lightbulb_outline),
-                            // O texto diz o que a dica custa agora: um ponto, o
-                            // último (o exercício deixa de pontuar) ou nada.
-                            label: OneLine(switch (_worth(
-                              state,
-                              state.exercise!,
-                            )) {
-                              0 => l10n.exerciseHintFree,
-                              1 => l10n.exerciseHintLast,
-                              _ => l10n.exerciseHint,
-                            }),
                           ),
                         ),
                       // Com a nota fechada, a posição vai para a análise do
@@ -842,14 +830,17 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final l10n = context.l10n;
     final lesson = state.lesson!;
     final next = state.nextExercise;
-    final style = FilledButton.styleFrom(minimumSize: const Size(140, 48));
+    final style = FilledButton.styleFrom(
+      minimumSize: const Size(140, 48),
+      textStyle: AppButtonText.footer(context),
+    );
     if (next != null) {
       return FilledButton(
         key: ExerciseKeys.nextButton,
         style: style,
         onPressed: () =>
             context.pushReplacement(Routes.endgameExercise(lesson.id, next)),
-        child: Text(l10n.exerciseNext, maxLines: 1),
+        child: Text(l10n.exerciseNext, textAlign: TextAlign.center),
       );
     }
     if (state.locked) {
@@ -858,7 +849,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         key: ExerciseKeys.backButton,
         style: style,
         onPressed: () => context.pop(),
-        child: Text(l10n.exerciseBack, maxLines: 1),
+        child: Text(l10n.exerciseBack, textAlign: TextAlign.center),
       );
     }
     // O último da série: a tela de resultado, que volta à aula.
@@ -867,7 +858,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       style: style,
       onPressed: () =>
           context.pushReplacement(Routes.endgameExercisesDone(lesson.id)),
-      child: Text(l10n.exerciseSeeResult, maxLines: 1),
+      child: Text(l10n.exerciseSeeResult, textAlign: TextAlign.center),
     );
   }
 
@@ -897,7 +888,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final lichess = state.locked ? _lichessButton(context, state) : null;
     final primary = _primaryButton(context, state);
     if (explain == null) {
-      return Row(children: [?lichess, const Spacer(), primary]);
+      return Row(
+        children: [
+          if (lichess != null) Flexible(child: lichess),
+          const Spacer(),
+          // Com fonte grande o texto de 16/24 quebra em vez de estourar.
+          Flexible(child: primary),
+        ],
+      );
     }
     final stacked = Column(
       key: ExerciseKeys.solvedStacked,
@@ -922,6 +920,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (lichess != null) return stacked;
     return _HalvesOrStack(gap: AppSpacing.sm, children: [explain, primary]);
   }
+
+  /// O que a dica custa agora (tooltip e rótulo de acessibilidade).
+  String _hintLabel(AppLocalizations l10n, ExerciseState state) =>
+      switch (_worth(state, state.exercise!)) {
+        0 => l10n.exerciseHintFree,
+        1 => l10n.exerciseHintLast,
+        _ => l10n.exerciseHint,
+      };
 
   Widget _actions(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
@@ -959,17 +965,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       child: Row(
         children: [
           if (state.interactive)
-            OutlinedButton.icon(
+            KeyedSubtree(
               key: ExerciseKeys.hintButton,
-              onPressed: cubit.askHint,
-              icon: const Icon(Icons.lightbulb_outline),
-              // O texto diz o que a dica custa agora: um ponto, o último
-              // (o exercício deixa de pontuar) ou nada.
-              label: Text(switch (_worth(state, state.exercise!)) {
-                0 => l10n.exerciseHintFree,
-                1 => l10n.exerciseHintLast,
-                _ => l10n.exerciseHint,
-              }),
+              child: ExerciseHintButton(
+                label: _hintLabel(l10n, state),
+                onPressed: cubit.askHint,
+              ),
             ),
           // Com a nota fechada, a posição vai para a análise do Lichess.
           if (state.locked && state.interactive) ...[

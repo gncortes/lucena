@@ -56,7 +56,6 @@ class MarathonAttemptView extends StatelessWidget {
     return Scaffold(
       key: SpeedrunKeys.attemptScreen,
       appBar: LucenaAppBar(
-        centerTitle: true,
         title: Text(
           endgameName(l10n, speedrun.stages.first.position.subcategory),
         ),
