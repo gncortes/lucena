@@ -9,7 +9,7 @@
   "rot.ideia.ex1.err.d1d7.2": "Let's go back: the check comes along the king's rank.",
   "rot.ideia.ex1.fora": "That move is not mate. Let's go back: look at the black king's rank.",
   "rot.ideia.ex1.volta": "Give checkmate with the rook, or click {verResposta}",
-  "rot.ideia.ex1.l1": "That is why players open a window for the king by advancing a pawn in front of it.",
+  "rot.ideia.ex1.l1": "To avoid this mate, players often open a window for the king by advancing a pawn in front of it.",
   "rot.ideia.ex1.l2": "Remember the pattern: king trapped behind its pawns and a check along the back rank.",
   "rot.ideia.ex2.e1": "The second is the supported queen: she checks right next to the king, protected by another piece.",
   "rot.ideia.ex2.e2": "The bishop on d3 aims at the pawn on h7. So does the queen on h5.",

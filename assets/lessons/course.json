@@ -1404,7 +1404,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.opposition.json"
         },
         {
           "id": "technique.zugzwang",
@@ -1452,7 +1453,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.zugzwang.json"
         },
         {
           "id": "technique.rookCut",
@@ -1497,7 +1499,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.rookCut.json"
         },
         {
           "id": "technique.rookMate",
@@ -1562,7 +1565,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/technique.rookMate.json"
         }
       ]
     },
