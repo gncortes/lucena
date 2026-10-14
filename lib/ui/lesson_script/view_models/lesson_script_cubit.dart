@@ -230,6 +230,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   final Now _now;
   final DemoTimer _timer;
   Timer? _demoTimer;
+
+  /// O app está em segundo plano: a demonstração espera parada.
+  bool _background = false;
   bool _demoPlaying = true;
   String? _demoKey;
   int _demoTick = 0;
@@ -517,6 +520,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _demoRunStart = null;
       return;
     }
+    if (_background) {
+      _demoTimer = null;
+      _demoRunStart = null;
+      return;
+    }
     final left = _demoTotal - _demoElapsed;
     _demoRunStart = _now();
     _demoTimer = _timer(left.isNegative ? Duration.zero : left, () {
@@ -564,6 +572,26 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _demoTimer?.cancel();
     _demoTimer = null;
     _demoPlaying = false;
+  }
+
+  /// O app foi para o segundo plano: tudo fica como está (a regra do
+  /// Gabriel); a demonstração para o relógio onde está, sem pausar.
+  void pauseForBackground() {
+    if (_background) return;
+    _background = true;
+    if (_demoRunStart != null) _demoElapsed = _demoSpent;
+    _demoRunStart = null;
+    _demoTimer?.cancel();
+    _demoTimer = null;
+  }
+
+  /// Voltou do segundo plano: a demonstração andando segue de onde estava.
+  void resumeFromBackground() {
+    if (!_background) return;
+    _background = false;
+    if (isClosed || !_inDemo || state.demo?.ended != false) return;
+    if (_demoPlaying) _demoRun();
+    _demoEmit();
   }
 
   /// ↻: recomeça a demonstração do exemplo, andando.

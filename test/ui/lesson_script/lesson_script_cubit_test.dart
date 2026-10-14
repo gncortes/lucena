@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
+import 'package:lucena/routing/launch_location.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
 import '../../../testing/fakes/fake_kpk_repository.dart';
@@ -820,6 +822,76 @@ void main() {
       final r = await _Rig.open();
       r.cubit.demoVoice(speaking: true);
       expect(r.s.demo, isNull);
+    });
+
+    test('segundo plano: o relógio para onde está e segue na volta, sem '
+        'pausar', () async {
+      final r = await _Rig.open(stage: 1);
+      final total = LessonScriptCubit.readTime('d1a');
+      r.now.advance(const Duration(seconds: 1));
+      r.cubit.pauseForBackground();
+      expect(r.pending, isEmpty);
+      // Uma hora no fundo não conta.
+      r.now.advance(const Duration(hours: 1));
+      r.cubit.pauseForBackground();
+      r.cubit.resumeFromBackground();
+      expect(r.s.speech, ['d1a']);
+      expect(r.s.demo!.playing, isTrue);
+      expect(r.s.demo!.remaining, total - const Duration(seconds: 1));
+      expect(r.pending.single.duration, total - const Duration(seconds: 1));
+      await r.elapse();
+      expect(r.s.speech, ['d1b']);
+    });
+
+    test('segundo plano com a demonstração pausada: volta pausada', () async {
+      final r = await _Rig.open(stage: 1);
+      r.cubit.demoToggle();
+      r.cubit.pauseForBackground();
+      r.cubit.resumeFromBackground();
+      expect(r.s.demo!.playing, isFalse);
+      expect(r.pending, isEmpty);
+    });
+
+    test('a voz que acaba no fundo só agenda na volta', () async {
+      final r = await _Rig.open(stage: 1);
+      r.cubit.demoVoice(speaking: true);
+      r.cubit.pauseForBackground();
+      r.cubit.demoVoice(speaking: false);
+      expect(r.pending, isEmpty);
+      r.cubit.resumeFromBackground();
+      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
+    });
+
+    test('segundo plano fora da demonstração não muda o estado', () async {
+      final r = await _Rig.open();
+      final before = r.s;
+      r.cubit.pauseForBackground();
+      r.cubit.resumeFromBackground();
+      expect(r.s, before);
+    });
+
+    test('fechar de verdade no meio da etapa 2: o app reabre no início da '
+        'parte', () async {
+      final r = await _Rig.open(stage: 1);
+      await r.elapse();
+      final saved = r.source.checkpoints.last;
+      expect(saved.lessonId, _lessonId);
+      expect(saved.part, _partId);
+      expect(saved.open, isTrue);
+      // O app reabre pela lição da parte, que manda ao roteiro na etapa 0.
+      final location = launchLocation(
+        endgames: EndgameProgress(ongoing: saved),
+      );
+      expect(Uri.parse(location).queryParameters['part'], _partId);
+      final route = Uri.parse(
+        Routes.endgameLessonScript(_lessonId, part: _partId),
+      );
+      final stage = int.parse(route.queryParameters['etapa']!);
+      expect(stage, 0);
+      final reopened = await _Rig.open(stage: stage);
+      expect(reopened.s.stageIndex, 0);
+      expect(reopened.s.phase, ScriptPhase.entrada);
+      expect(reopened.s.demo, isNull);
     });
 
     test('⏸ guarda o tempo decorrido; ▶ retoma com o que falta', () async {
