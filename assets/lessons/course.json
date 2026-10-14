@@ -1855,7 +1855,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookTwoBishops.json"
         },
         {
           "id": "minor.rookTwoKnights",
@@ -1872,7 +1873,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookTwoKnights.json"
         },
         {
           "id": "minor.rookBishopKnight",
@@ -1889,7 +1891,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookBishopKnight.json"
         },
         {
           "id": "minor.twoRooksVsKnight",
