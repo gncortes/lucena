@@ -151,4 +151,19 @@ void main() {
     expect(find.byKey(LessonKeys.practiceBack), findsNothing);
     expect(find.byKey(LessonKeys.practiceContinue), findsNothing);
   });
+
+  testWidgets('o balão mostra o nome da referência, sem a marcação', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const Size(360, 740),
+      comment: 'Estudo de {{Nikolai Grigoriev|nikolai-grigoriev}}, de 1930.',
+    );
+    expect(
+      find.textContaining('Nikolai Grigoriev, de 1930', findRichText: true),
+      findsWidgets,
+    );
+    expect(find.textContaining('{{', findRichText: true), findsNothing);
+  });
 }

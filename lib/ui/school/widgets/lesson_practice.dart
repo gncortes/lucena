@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/use_cases/wiki_markup.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_speech.dart';
@@ -65,7 +66,12 @@ class LessonPractice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final text = invite ? l10n.lessonPracticeInvite : comment;
+    final said = comment;
+    final text = invite
+        ? l10n.lessonPracticeInvite
+        : said == null
+        ? null
+        : WikiMarkup.parse(said).text;
     return ExerciseFrame(
       boardKey: LessonKeys.practiceBoard,
       board: board,
