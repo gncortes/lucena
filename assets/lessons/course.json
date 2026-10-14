@@ -367,7 +367,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.captureProtect.json"
         },
         {
           "id": "pieces.check",
@@ -424,7 +425,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.check.json"
         },
         {
           "id": "rules.outOfCheck",
@@ -487,7 +489,8 @@
                 "g1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.outOfCheck.json"
         },
         {
           "id": "rules.castling",
@@ -559,7 +562,8 @@
                 "e1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.castling.json"
         },
         {
           "id": "pieces.stalemate",
@@ -622,7 +626,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.stalemate.json"
         },
         {
           "id": "rules.draws",
@@ -681,7 +686,8 @@
               "id": "fifty",
               "fen": "8/8/8/4k3/8/8/8/R3K3 w - - 0 1"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.draws.json"
         }
       ]
     },
