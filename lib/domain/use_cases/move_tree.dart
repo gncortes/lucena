@@ -119,6 +119,9 @@ class MoveTree {
     var path = <String>[];
     final task = example.goal == ScriptGoal.tarefa;
 
+    /// Na tarefa: quantos lances do aluno há até cada lance (pelo id).
+    final studentMoves = <String, int>{};
+
     /// Anda por [steps] a partir de [fen]; devolve o caminho no fim.
     (List<String>, String) walk(
       List<ScriptStep> steps,
@@ -138,15 +141,24 @@ class MoveTree {
           var at = current;
           for (final uci in step.moves) {
             final played = ScriptMoves.play(at, uci, keepTurn: task);
+            // Na tarefa, o lance do outro lado (a captura de volta) fica com
+            // o número do lance do aluno que veio antes.
+            final mover = task ? ScriptMoves.moverOf(at, uci) : null;
+            final reply = mover != null && mover != example.student;
+            final before = trail.isEmpty
+                ? 0
+                : studentMoves[trail.join('-')] ?? trail.length;
             trail = [...trail, uci];
+            final count = before + (reply ? 0 : 1);
+            studentMoves[trail.join('-')] = count;
             into.add(
               MoveNode(
                 id: trail.join('-'),
                 uci: uci,
                 san: played?.san ?? uci,
                 // Na tarefa a vez não passa: os lances só se numeram.
-                number: task ? trail.length : _fullmoves(at),
-                side: task ? example.student : _turn(at),
+                number: task ? count : _fullmoves(at),
+                side: task ? (mover ?? example.student) : _turn(at),
                 variant: variant,
                 ref: ScriptRef(track, offset + i),
                 step: step,
