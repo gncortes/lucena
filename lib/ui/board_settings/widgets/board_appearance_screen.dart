@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -22,7 +23,7 @@ class BoardAppearanceScreen extends StatelessWidget {
     );
     return Scaffold(
       key: BoardSettingsKeys.appearanceScreen,
-      appBar: AppBar(title: Text(l10n.settingsBoardAppearance)),
+      appBar: LucenaAppBar(title: Text(l10n.settingsBoardAppearance)),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {

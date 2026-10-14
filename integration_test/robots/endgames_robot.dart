@@ -93,14 +93,29 @@ class EndgamesRobot {
     await $.pumpAndSettle();
   }
 
+  /// A parte [id] da aula aberta, pelo cartão dela (qualquer parte abre).
+  Future<void> openPart(String id) async {
+    await _show(EndgameLessonKeys.part(id)).tap();
+    await $(LessonKeys.screen).waitUntilVisible();
+    await $.pumpAndSettle();
+  }
+
   /// Faz a lição inteira: "continuar" nas falas, os lances ensinados nos
   /// passos de lance e, nos de jogar, os lances de [play] (por passo) contra
   /// a máquina dos cenários.
   Future<void> completeSteps(
     EndgameLesson lesson, {
     required Map<String, List<String>> play,
+  }) => completePart(lesson, lesson.lesson.steps, play: play);
+
+  /// Faz os passos [steps] da lição de [lesson], como [completeSteps], até a
+  /// tela do fim (da aula ou da parte).
+  Future<void> completePart(
+    EndgameLesson lesson,
+    List<LessonStep> steps, {
+    Map<String, List<String>> play = const {},
   }) async {
-    for (final step in lesson.lesson.steps) {
+    for (final step in steps) {
       await _step(LessonKeys.step(lesson.id, step.id));
       switch (step) {
         case MoveStep(:final line):
@@ -196,26 +211,19 @@ class EndgamesRobot {
       )
       .data!;
 
-  /// Resolvendo: sem folha da fala, o tabuleiro no centro da tela (ou logo
-  /// abaixo do enunciado, se ele for alto) e o cronômetro no canto inferior
-  /// de fim, abaixo do tabuleiro.
+  /// Resolvendo (D15 do Canvas V2): o tabuleiro fica no alto, como nos outros
+  /// estados da lição, com a folha do Viktor embaixo dele; o cronômetro vai no
+  /// rodapé, no canto de fim.
   Future<void> expectSolving() async {
     await $(LessonKeys.stepTimer).waitUntilVisible();
-    expect(find.byKey(LessonKeys.scroll), findsNothing);
     final board = $.tester.getRect(find.byKey(LessonKeys.board));
-    final prompt = $.tester.getRect(find.byKey(LessonKeys.prompt));
     final footer = $.tester.getRect(find.byKey(LessonKeys.footer));
     final screen = $.tester.getRect(find.byKey(LessonKeys.screen));
-    // No centro da tela (±24 px), a não ser que ali cobrisse o enunciado.
-    expect(board.top, greaterThanOrEqualTo(prompt.bottom));
+    expect(board.top, lessThan(screen.center.dy));
     expect(board.bottom, lessThanOrEqualTo(footer.top));
-    if (board.top > prompt.bottom + 9) {
-      expect(board.center.dy, closeTo(screen.center.dy, 24));
-    }
     expect(board.center.dx, closeTo(screen.center.dx, 2));
     final timer = $.tester.getRect(find.byKey(LessonKeys.stepTimer));
-    expect(timer.top, greaterThan(board.bottom));
-    expect(timer.bottom, greaterThan(screen.bottom - 120));
+    expect(timer.top, greaterThanOrEqualTo(footer.top));
     // No canto de fim: à direita, ou à esquerda em árabe.
     if (e2eVariant == E2EVariant.arabic) {
       expect(timer.left, lessThan(screen.left + 24));
@@ -229,7 +237,6 @@ class EndgamesRobot {
   Future<void> expectExplaining() async {
     await $(LessonKeys.scroll).waitUntilVisible();
     expect(find.byKey(LessonKeys.stepTimer), findsNothing);
-    expect(find.byKey(LessonKeys.prompt), findsNothing);
     final board = $.tester.getRect(find.byKey(LessonKeys.board));
     final speech = $.tester.getRect(find.byKey(LessonKeys.speech));
     expect(speech.top, greaterThan(board.bottom));
@@ -312,15 +319,12 @@ class EndgamesRobot {
   String? get earned =>
       $.tester.getSemantics(find.byKey(ExerciseKeys.stars)).label;
 
-  /// A seta da dica no tabuleiro do exercício.
-  void expectHintArrow(String uci) {
+  /// A dica do exercício (T65, b2d0607b): o Viktor dá a pista em texto, sem a
+  /// seta do lance no tabuleiro.
+  void expectHintWithoutArrow() {
     final board = _board(ExerciseKeys.board);
-    expect(
-      board.shapes.whereType<Arrow>().any(
-        (arrow) => '${arrow.orig.name}${arrow.dest.name}' == uci,
-      ),
-      isTrue,
-    );
+    expect(board.shapes.whereType<Arrow>(), isEmpty);
+    expect(exerciseSpeech, isNotEmpty);
   }
 
   /// A posição no tabuleiro do exercício (só as peças, sem a vez).

@@ -1,5 +1,3 @@
-import '../../../domain/models/explanation.dart';
-
 import 'dart:async';
 import 'dart:math';
 
@@ -9,34 +7,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/character.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/endgame_lesson.dart';
+import '../../../domain/use_cases/exercise_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
-import '../../../domain/use_cases/speech_links.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
-import '../../core/board/exercise_layout.dart';
-import '../../core/board/centered_board_layout.dart';
-import '../../core/board/speech_flash.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/external_page_sheet.dart';
-import '../../core/widgets/one_line.dart';
-import '../../core/widgets/position_board.dart';
-import '../../core/widgets/step_timer.dart';
-import '../../core/widgets/teacher_speech.dart';
-import '../../core/widgets/viktor_sheet.dart';
-import '../../settings/view_models/settings_cubit.dart';
-import '../view_models/exercise_cubit.dart';
-import 'endgame_ui.dart';
-import 'stars_row.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/exercise_actions.dart';
+import '../../core/widgets/external_page_sheet.dart';
+import '../../core/widgets/lesson_sound_dialog.dart';
+import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/position_board.dart';
+import '../../core/widgets/script_speech_sheet.dart';
+import '../../core/widgets/speech_balloon.dart';
+import '../../core/widgets/step_timer.dart';
+import '../../core/widgets/teacher_speech.dart';
+import '../../lesson_script/view_models/lesson_script_state.dart';
+import '../../lesson_script/widgets/script_move_list.dart';
+import '../../lesson_script/widgets/script_page.dart';
+import '../../lesson_script/widgets/script_speech.dart';
+import '../../school/widgets/variation_strip.dart' show HiddenMovesButton;
+import '../../settings/view_models/settings_cubit.dart';
+import '../../voice/widgets/auto_speak.dart';
+import '../view_models/exercise_cubit.dart';
+import 'endgame_ui.dart';
+import '../../../domain/use_cases/wiki_markup.dart';
+import 'move_sentence.dart';
+import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_spacing.dart';
 
-/// Um exercício: o Viktor dá o enunciado, o aluno acha os lances no
-/// tabuleiro; no fim, a solução, as estrelas ganhas e o próximo exercício.
+/// Um exercício (T72): como a lição roteirizada, o balão do Viktor em cima,
+/// o tabuleiro e, embaixo, a notação dos lances. O feedback do lance vem na
+/// fala do Viktor; no fim, a notação traz todas as variantes previstas.
 class ExerciseScreen extends StatefulWidget {
   const ExerciseScreen({
     this.lessonId,
@@ -59,29 +68,11 @@ class ExerciseScreen extends StatefulWidget {
 class _ExerciseScreenState extends State<ExerciseScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   ChessboardController? _board;
-  VariationCursor? _variation;
 
   late final _shake = AnimationController(
     vsync: this,
     duration: AppMotion.component,
   );
-
-  /// O lance errado fica um instante no tabuleiro, em vermelho.
-  // A casa ou o lance tocado na fala, por um instante no tabuleiro.
-  final _flash = SpeechFlash();
-
-  late final _wrongFlash = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1100),
-  );
-
-  // O layout: 0 resolvendo (tabuleiro no centro), 1 resolvido (no alto,
-  // com o resultado e a fala embaixo). Uma animação só leva de um ao outro.
-  late final _mode = AnimationController(
-    vsync: this,
-    duration: AppMotion.component,
-  );
-  double? _target;
 
   // O cronômetro: anda enquanto o aluno resolve; resolvido, fica parado no
   // tempo final.
@@ -89,7 +80,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   Timer? _ticker;
 
   bool _background = false;
-  final _sheetExpanded = ValueNotifier(false);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -118,46 +108,19 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         return;
       }
       final cubit = context.read<ExerciseCubit>();
-      if (cubit.state.layout == ExerciseLayoutMode.solving) {
+      if (cubit.state.phase != ExercisePhase.done) {
         _elapsed.value = cubit.elapsed;
       }
     });
-  }
-
-  /// Leva o tabuleiro ao layout do estado: animado, ou direto na abertura e
-  /// com "reduzir movimento".
-  void _setMode(
-    BuildContext context,
-    ExerciseState state, {
-    required bool animate,
-  }) {
-    final target = state.layout == ExerciseLayoutMode.solving ? 0.0 : 1.0;
-    if (target == _target) {
-      return;
-    }
-    _target = target;
-    if (!animate || AppMotion.of(context).disabled) {
-      _mode.value = target;
-      return;
-    }
-    _mode.animateTo(
-      target,
-      duration: AppMotion.of(context).component,
-      curve: AppMotion.enter,
-    );
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _ticker?.cancel();
-    _mode.dispose();
     _elapsed.dispose();
-    _sheetExpanded.dispose();
     _board?.dispose();
     _shake.dispose();
-    _wrongFlash.dispose();
-    _flash.dispose();
     super.dispose();
   }
 
@@ -183,30 +146,16 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   void _onState(BuildContext context, ExerciseState state) {
     final previous = _previous;
-    if (state.fen != previous.fen ||
-        state.speech != previous.speech ||
-        state.phase != previous.phase ||
-        state.exercise?.id != previous.exercise?.id) {
-      _variation = null;
-    }
     _previous = state;
-    if (state.speech == null || state.viktor == null) {
-      _sheetExpanded.value = false;
-    }
-    _setMode(context, state, animate: previous.ready);
     // Resolvendo: o cronômetro já com o tempo do exercício (ao reabrir o
     // app, o tabuleiro nasce aqui, antes do primeiro tique).
-    if (state.layout == ExerciseLayoutMode.solving) {
+    if (state.phase != ExercisePhase.done) {
       _elapsed.value = context.read<ExerciseCubit>().elapsed;
     }
     if (state.mistakes > previous.mistakes) {
       _shake.forward(from: 0);
-      _wrongFlash.forward(from: 0);
     }
     if (state.fen == null) {
-      return;
-    }
-    if (_variation != null) {
       return;
     }
     final board = _board;
@@ -225,9 +174,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<ExerciseCubit>();
-    final boardSettings = context.select(
-      (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
-    );
     return PopScope(
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) cubit.leave();
@@ -237,14 +183,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         builder: (context, state) {
           if (state.fen != null && _board == null) {
             _board = ChessboardController(game: _gameData(state));
-            _setMode(context, state, animate: false);
             _elapsed.value = cubit.elapsed;
           }
           final lesson = state.lesson;
           return Scaffold(
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
-            appBar: AppBar(
+            appBar: LucenaAppBar(
               title: lesson == null
                   ? null
                   : Text(
@@ -252,441 +197,312 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                       key: ExerciseKeys.counter,
                     ),
               // O que o exercício vale agora: dourada (3), prata (2) ou
-              // bronze (1); cada erro ou dica desce um degrau.
+              // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
+              // vazia até o fim.
               actions: [
                 if (state.exercise case final exercise?)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(end: 12),
                     child: Semantics(
-                      // Resolvido: o que ganhou de quanto valia (a estrela
-                      // grande some quando o Viktor explica).
-                      label: state.phase == ExercisePhase.done
-                          ? l10n.exerciseEarned(
-                              state.earned ?? 0,
-                              exercise.stars,
-                            )
-                          : l10n.exercisePoints(_worth(state, exercise)),
+                      label: _starLabel(l10n, state, exercise),
                       excludeSemantics: true,
-                      child: ValueStar(
+                      // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
+                      // ainda vale pontos, vazia se não.
+                      child: Icon(
+                        state.worth > 0
+                            ? Icons.star_rounded
+                            : Icons.star_outline_rounded,
                         key: ExerciseKeys.stars,
-                        points: _worth(state, exercise),
+                        size: 28,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
               ],
             ),
-            body: BoardViewport(
-              usefulHeight: BoardViewport.usefulHeightOf(context),
-              child: SafeArea(child: _body(context, state, boardSettings)),
-            ),
+            body: SafeArea(top: false, child: _body(context, state)),
           );
         },
       ),
     );
   }
 
-  /// O que o exercício vale agora: as estrelas dele menos erros e dicas, ou
-  /// o ganho, depois de resolvido.
-  static int _worth(ExerciseState state, Exercise exercise) =>
-      state.phase == ExercisePhase.done
-      ? (state.earned ?? 0)
-      : max(0, exercise.stars - state.mistakes - state.hints);
+  static String _starLabel(
+    AppLocalizations l10n,
+    ExerciseState state,
+    Exercise exercise,
+  ) {
+    if (state.zeroed) return l10n.exerciseNoMorePoints;
+    return state.phase == ExercisePhase.done
+        ? l10n.exerciseEarned(state.earned ?? 0, exercise.stars)
+        : l10n.exercisePoints(state.worth);
+  }
 
   /// O tabuleiro fica com chave: o voo da miniatura só continua se o widget
   /// for o mesmo entre o carregamento e o exercício aberto.
   static const _boardAreaKey = ValueKey('exercise.boardArea');
 
-  Widget _body(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings,
-  ) {
+  Widget _body(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
-    if (!state.ready) return _loading(context, state, boardSettings);
+    if (!state.ready) return _loading(context, state);
     final exercise = state.exercise;
     if (state.missing || exercise == null) {
       return Center(
         child: Text(l10n.exerciseMissing, key: ExerciseKeys.missing),
       );
     }
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        SizedBox.shrink(key: ExerciseKeys.open(state.lesson!.id, exercise.id)),
-        Positioned.fill(child: _area(context, state, boardSettings)),
-        PositionedDirectional(
-          start: 0,
-          end: 0,
-          bottom: 0,
-          child: ValueListenableBuilder(
-            valueListenable: _sheetExpanded,
-            builder: (context, expanded, _) => IgnorePointer(
-              ignoring: expanded,
-              child: ExcludeSemantics(
-                excluding: expanded,
-                child: AnimatedSlide(
-                  duration: AppMotion.of(context).component,
-                  offset: expanded ? const Offset(0, 1) : Offset.zero,
-                  child: AnimatedOpacity(
-                    duration: AppMotion.of(context).component,
-                    opacity: expanded ? 0 : 1,
-                    child: AnimatedSwitcher(
-                      duration: AppMotion.of(context).component,
-                      child: KeyedSubtree(
-                        key: ValueKey(state.phase == ExercisePhase.done),
-                        child: state.phase == ExercisePhase.done
-                            ? _actions(context, state)
-                            : _solvingFooter(context, state),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+    final boardSettings = context.select(
+      (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
-  }
-
-  /// O mesmo tabuleiro em todos os estados; dica e explicação apenas
-  /// sobrepõem uma folha expansível abaixo dele.
-  Widget _area(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings,
-  ) => LayoutBuilder(
-    builder: (context, box) {
-      final rect = ExerciseLayout.solvingRect(
-        Size(box.maxWidth, box.maxHeight),
-        footer: ViktorSheet.peekHeight,
-        centerY: BoardViewport.centerYOf(context),
-      );
-      final hasSpeech = state.viktor != null && state.speech != null;
-      return Stack(
-        children: [
-          Positioned.fromRect(
-            rect: rect,
-            child: KeyedSubtree(
-              key: _boardAreaKey,
-              child: _boardArea(
-                context,
-                state,
-                boardSettings,
-                size: rect.width,
-              ),
-            ),
-          ),
-          if (!hasSpeech && state.phase == ExercisePhase.active && state.ready)
-            PositionedDirectional(
-              start: 16,
-              end: 16,
-              top: rect.bottom + ExerciseLayout.gutter,
-              child: Text(
-                context.l10n.exerciseGoal(
-                  state.side == Side.white ? 'white' : 'black',
-                  state.exercise!.goal.name,
-                ),
-                key: ExerciseKeys.goal,
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w600),
-              ),
-            ),
-          // Resolvido sem fala (acerto limpo): o selo "Correto!" logo abaixo
-          // do tabuleiro, sem cobri-lo.
-          if (!hasSpeech && state.phase == ExercisePhase.done)
-            PositionedDirectional(
-              start: 16,
-              end: 16,
-              top: rect.bottom + ExerciseLayout.gutter,
-              child: Center(child: _correctBadge(context)),
-            ),
-          if (hasSpeech)
-            Positioned.fill(
-              child: ViktorSheet(
-                key: ExerciseKeys.viktorSheet,
-                top: rect.bottom + ExerciseLayout.gutter,
-                scrollKey: ExerciseKeys.scroll,
-                closeKey: ExerciseKeys.closeSheet,
-                onExpanded: (value) => _sheetExpanded.value = value,
-                children: [
-                  state.phase == ExercisePhase.done
-                      ? _result(context, state, boardSettings)
-                      : _prompt(context, state),
-                ],
-              ),
-            ),
-        ],
-      );
-    },
-  );
-
-  /// O selo de acerto: entra com fade e um leve rebote (parado com
-  /// "remover animações").
-  Widget _correctBadge(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final motion = AppMotion.of(context);
-    return Semantics(
-      liveRegion: true,
-      child: TweenAnimationBuilder<double>(
-        key: ExerciseKeys.correct,
-        tween: Tween(begin: 0, end: 1),
-        duration: motion.component,
-        curve: AppMotion.enter,
-        builder: (context, value, child) => Opacity(
-          opacity: value,
-          child: Transform.scale(scale: 0.8 + 0.2 * value, child: child),
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(AppShape.full),
-          ),
-          child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 16, 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  color: colors.primary,
-                  size: 24,
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Flexible(
-                  child: Text(
-                    context.l10n.exerciseCorrect,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: colors.onPrimaryContainer,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+    final hide = context.select(
+      (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
     );
-  }
-
-  void _showVariation(VariationCursor? cursor) {
-    _flash.clear();
-    setState(() => _variation = cursor);
-    final state = context.read<ExerciseCubit>().state;
-    if (cursor == null) {
-      _board?.updatePosition(
-        _gameData(state),
-        animate: true,
-        resetPremove: true,
+    final cubit = context.read<ExerciseCubit>();
+    final done = state.phase == ExercisePhase.done;
+    final nodes = done
+        ? state.review
+        : ExerciseReview.mainLine(
+            exercise,
+            state.played,
+            payload: state.explanationPayload,
+          );
+    final covered = done && hide
+        ? {
+            for (final node in nodes)
+              if (!state.seen.contains(node.id)) node.id,
+          }
+        : const <String>{};
+    final said = _speech(context, state, hide: hide && done);
+    final texts = [said.text, ?said.tip];
+    final metrics = ScriptSpeechMetrics.of(context);
+    final viktor = state.viktor;
+    final voice = TeacherSpeech.speechOf(context);
+    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
+    final spoken = SpeechText.plainOf(context, texts.join(' '));
+    // O cabeçalho da faixa e o da folha: o mesmo, com borrar e som.
+    Widget header(BuildContext c, Character teacher, double avatar) {
+      final headerHide = c.select(
+        (SettingsCubit cubit) => cubit.state?.exerciseHiddenMoves ?? false,
       );
-    } else {
-      final position = GameRules.fromFen(cursor.fen);
-      _board?.updatePosition(
-        GameData(
-          fen: cursor.fen,
-          playerSide: PlayerSide.none,
-          sideToMove: position?.turn ?? Side.white,
-          validMoves: const {},
-          lastMove: cursor.lastMove,
-          kingSquareInCheck: position == null
-              ? null
-              : GameRules.checkedKing(position),
-        ),
-        animate: true,
-        resetPremove: true,
+      return TeacherSpeech(
+        part: TeacherSpeechPart.header,
+        lessonV2: true,
+        headerAvatar: avatar,
+        avatarHeroTag: scriptViktorHeroTag,
+        teacher: teacher,
+        text: spoken,
+        speechContext: SpeechContext.teaching,
+        onSoundSettings: () => showLessonSoundDialog(c),
+        // Ao lado do som, com a lista completa: cobrir ou mostrar
+        // os lances ainda não vistos (T69).
+        headerAction: done && nodes.isNotEmpty
+            ? HiddenMovesButton(
+                buttonKey: ExerciseKeys.hiddenMovesToggle,
+                hidden: headerHide,
+                onPressed: () => c.read<SettingsCubit>().setExerciseHiddenMoves(
+                  hidden: !headerHide,
+                ),
+              )
+            : null,
       );
     }
-  }
 
-  /// A fala solicitada pelo estado fica na folha abaixo do tabuleiro.
-  void _onExplanationLink(
-    BuildContext context,
-    ExerciseState state,
-    SpeechLink link,
-  ) {
-    final cursor = link.isMove
-        ? state.explanationPayload?.cursorForNotation(
-            link.text,
-            preferred: _variation?.variation,
-          )
-        : null;
-    if (cursor != null) {
-      _showVariation(cursor);
-    } else {
-      _flash.toggle(
-        link,
-        fen: _variation?.fen ?? state.fen,
-        color: Theme.of(context).colorScheme.primary,
+    Widget speechOf(int? lines) {
+      Widget speech = ScriptSpeech(
+        texts: [said.text],
+        footnote: said.tip,
+        metrics: metrics,
+        lines: lines,
+        // Em andamento ou resolvido, o balão corta em 2 linhas com reticências
+        // na letra de sempre e o clique abre a fala inteira (canvas
+        // PropV2ExA4).
+        clipLines: ScriptSpeechMetrics.minLines,
+        onOpen: viktor == null
+            ? null
+            : () => unawaited(
+                showScriptSpeechSheet(
+                  context,
+                  viktor: viktor,
+                  title: l10n.teacherName(viktor.name),
+                  texts: texts,
+                  background: Theme.of(context).colorScheme.surfaceContainerLow,
+                  headerBuilder: (sheet) => header(sheet, viktor, 40),
+                ),
+              ),
       );
+      if (voice != null) {
+        speech = AutoSpeak(
+          speech: voice,
+          text: spoken,
+          auto: sound,
+          speakerId: 'master',
+          child: speech,
+        );
+      }
+      return speech;
     }
-  }
 
-  Widget _prompt(BuildContext context, ExerciseState state) {
-    final viktor = state.viktor;
-    if (viktor == null || state.speech == null) return const SizedBox.shrink();
-    final speech = state.speech;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: TeacherSpeech(
-        speechContext: SpeechContext.game,
-        teacher: viktor,
-        text: speech,
-        explanation:
-            state.explanationPayload ?? ExplanationPayload.context([?speech]),
-        emotion: state.emotion,
-        avatarSize: 40,
-        compactInSheet: false,
-        bubbleKey: ExerciseKeys.speech,
-        onLink: (link) => _flash.toggle(
-          link,
-          fen: state.fen,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        onSpoken: (link) => _flash.show(
-          link,
-          fen: state.fen,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        speaks: true,
+    final strip = SizedBox(
+      key: LessonScriptKeys.characterBar,
+      height: ScriptPage.stripHeight + ScriptPage.tailGap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, ScriptPage.tailGap, 12, 0),
+        child: viktor == null ? null : header(context, viktor, 40),
       ),
     );
-  }
-
-  /// Resolvido: as estrelas, a solução e a fala do Viktor (correção ou
-  /// explicação), rolando sob o tabuleiro.
-  Widget _result(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings,
-  ) {
-    final viktor = state.viktor;
     return Column(
       children: [
-        if (viktor != null && state.speech != null)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: TeacherSpeech(
-              speechContext: SpeechContext.teaching,
-              teacher: viktor,
-              text: state.speech,
-              explanation:
-                  state.explanationPayload ??
-                  ExplanationPayload.context([?state.speech]),
-              onVariation: _showVariation,
-              activeVariation: _variation,
-              emotion: state.emotion,
-              avatarSize: 56,
-              compactInSheet: false,
-              bubbleKey: ExerciseKeys.speech,
-              onLink: (link) => _onExplanationLink(context, state, link),
-              onSpoken: (link) => _flash.show(
-                link,
-                fen: _variation?.fen ?? state.fen,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              speaks: true,
+        Expanded(
+          child: ScriptPage(
+            pageKey: ExerciseKeys.page,
+            speechBuilder: speechOf,
+            strip: strip,
+            boardBuilder: (size) => KeyedSubtree(
+              key: _boardAreaKey,
+              child: _boardArea(context, state, boardSettings, size: size),
+            ),
+            list: ScriptMoveList(
+              moves: [for (final node in nodes) _entry(node)],
+              currentId: done ? state.cursorId : nodes.lastOrNull?.id,
+              covered: covered,
+              // A notação só leva a uma posição depois que o exercício
+              // acaba; antes, o tabuleiro é do aluno.
+              onTap: done ? (id) => cubit.goToReview(id, hide: hide) : (_) {},
+              onReveal: done ? (id) => cubit.goToReview(id, hide: hide) : null,
             ),
           ),
-        _belowBoard(context, state, boardSettings),
+        ),
+        _footer(context, state),
       ],
+    );
+  }
+
+  static ScriptMoveEntry _entry(ReviewNode node) => ScriptMoveEntry(
+    id: node.id,
+    san: node.san,
+    number: node.number,
+    side: node.side,
+    variant: node.depth > 0,
+    depth: node.depth,
+    startsVariant: node.startsVariant,
+    symbol: node.symbol,
+    result: node.result,
+  );
+
+  /// O que o balão diz: o resultado do lance (Correto./Não.), o porquê que a
+  /// aula escreveu (ou, sem ele, a frase gerada do lance: nunca notação) e o
+  /// que o aluno faz em seguida. A dica do borrar ([SpeechLine.tip]) vem à
+  /// parte, para o corte do balão não a esconder.
+  SpeechLine _speech(
+    BuildContext context,
+    ExerciseState state, {
+    required bool hide,
+  }) {
+    final l10n = context.l10n;
+    final parts = <String>[];
+    String sentence(String fenBefore, String uci, String symbol) =>
+        moveSentence(l10n, fenBefore: fenBefore, uci: uci, symbol: symbol);
+    switch (state.say) {
+      case ExerciseSay.goal:
+        parts.addAll(
+          state.sayTexts.isEmpty
+              ? [
+                  if (state.exercise != null)
+                    l10n.exerciseGoal(
+                      state.side == Side.white ? 'white' : 'black',
+                      state.exercise!.goal.name,
+                    ),
+                ]
+              : state.sayTexts,
+        );
+      case ExerciseSay.hint:
+        parts.addAll(state.sayTexts);
+      case ExerciseSay.correct:
+        final move = state.sayMove;
+        parts
+          ..add(l10n.exerciseSayCorrect)
+          ..addAll(
+            state.sayTexts.isNotEmpty || move == null
+                ? state.sayTexts
+                : [sentence(move.fenBefore, move.uci, '!')],
+          )
+          ..add(l10n.exerciseYourTurnShort);
+      case ExerciseSay.wrong:
+        final move = state.sayMove;
+        parts
+          ..add(l10n.exerciseSayWrong)
+          ..addAll(
+            state.sayTexts.isNotEmpty || move == null
+                ? state.sayTexts
+                : [sentence(move.fenBefore, move.uci, '?')],
+          );
+        if (state.sayZeroed) parts.add(l10n.exerciseFirstMoveZeroed);
+        parts.add(l10n.exerciseTryAnother);
+      case ExerciseSay.solved:
+        parts.add(_solvedLead(l10n, state));
+        _addNode(parts, l10n, state);
+      case ExerciseSay.node:
+        _addNode(parts, l10n, state);
+    }
+    // A primeira vez com os lances cobertos: como ver o resto.
+    final tip = hide && state.browsed == 0 && state.review.length > 1
+        ? l10n.exerciseRevealTip
+        : null;
+    return (text: WikiMarkup.plain(parts.join(' ')), tip: tip);
+  }
+
+  /// O comentário do lance do balão; sem ele, a frase gerada.
+  static void _addNode(
+    List<String> parts,
+    AppLocalizations l10n,
+    ExerciseState state,
+  ) {
+    final node = state.sayNode;
+    if (state.sayTexts.isNotEmpty) {
+      parts.addAll(state.sayTexts);
+    } else if (node != null) {
+      parts.add(
+        moveSentence(
+          l10n,
+          fenBefore: node.fenBefore,
+          uci: node.uci,
+          symbol: node.symbol,
+        ),
+      );
+    }
+  }
+
+  /// "Correto." sem erro nem dica; senão "Resolvido, mas com ..." com o que
+  /// houve (um erro, N erros, dicas).
+  static String _solvedLead(AppLocalizations l10n, ExerciseState state) {
+    final mistakes = state.mistakes;
+    final hints = state.hints;
+    if (mistakes == 0 && hints == 0) return l10n.exerciseSayCorrect;
+    if (mistakes == 1 && hints == 0) return l10n.exerciseSolvedWithMistake;
+    final what = [
+      if (mistakes > 0) l10n.exerciseSolvedMistakes(mistakes),
+      if (hints > 0) l10n.exerciseSolvedHints(hints),
+    ];
+    return l10n.exerciseSolvedBut(
+      what.length == 2 ? l10n.exerciseSolvedAnd(what[0], what[1]) : what.first,
     );
   }
 
   /// Enquanto o exercício carrega: o tabuleiro parado no centro (se a rota
   /// trouxe a posição), para a miniatura pousar nele.
-  Widget _loading(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings,
-  ) {
+  Widget _loading(BuildContext context, ExerciseState state) {
     if (widget.previewFen == null) return const SizedBox.shrink();
-    return _area(context, state, boardSettings);
-  }
-
-  /// Resolvendo: a dica (com o que ela custa) à esquerda e o cronômetro à
-  /// direita (os lados trocam em árabe).
-  Widget _solvingFooter(BuildContext context, ExerciseState state) {
-    final l10n = context.l10n;
-    final cubit = context.read<ExerciseCubit>();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              // As ações tomam o espaço que sobra, alinhadas ao início; o texto
-              // fica numa linha só e encolhe se faltar largura.
-              Expanded(
-                child: Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (state.interactive)
-                        Flexible(
-                          child: OutlinedButton.icon(
-                            key: ExerciseKeys.hintButton,
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(0, 48),
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surface,
-                            ),
-                            onPressed: cubit.askHint,
-                            icon: const Icon(Icons.lightbulb_outline),
-                            // O texto diz o que a dica custa agora: um ponto, o
-                            // último (o exercício deixa de pontuar) ou nada.
-                            label: OneLine(switch (_worth(
-                              state,
-                              state.exercise!,
-                            )) {
-                              0 => l10n.exerciseHintFree,
-                              1 => l10n.exerciseHintLast,
-                              _ => l10n.exerciseHint,
-                            }),
-                          ),
-                        ),
-                      // Com a nota fechada, a posição vai para a análise do
-                      // Lichess.
-                      if (state.locked && state.interactive) ...[
-                        const SizedBox(width: 8),
-                        Flexible(child: _lichessButton(context, state)),
-                      ],
-                      if (state.phase == ExercisePhase.waiting)
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(l10n.lessonThinking),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(AppShape.small),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
-                ),
-              ),
-            ],
-          ),
-        ],
+    return ScriptPage(
+      pageKey: ExerciseKeys.page,
+      speechBuilder: (_) => const SizedBox.shrink(),
+      strip: const SizedBox(
+        height: ScriptPage.stripHeight + ScriptPage.tailGap,
       ),
+      boardBuilder: (size) => KeyedSubtree(
+        key: _boardAreaKey,
+        child: _boardArea(context, state, const BoardSettings(), size: size),
+      ),
+      list: const SizedBox.shrink(),
     );
   }
 
@@ -704,7 +520,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final hint = state.hint;
     final wrong = state.wrongMove;
     return AnimatedBuilder(
-      animation: Listenable.merge([_shake, _wrongFlash]),
+      animation: _shake,
       builder: (context, child) => Transform.translate(
         offset: Offset(sin(_shake.value * pi * 4) * 8 * (1 - _shake.value), 0),
         child: child,
@@ -721,87 +537,36 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               )
             : Directionality(
                 textDirection: TextDirection.ltr,
-                child: AnimatedBuilder(
-                  animation: Listenable.merge([_wrongFlash, _flash]),
-                  builder: (context, _) => Chessboard(
-                    key: ExerciseKeys.board,
-                    size: size,
-                    controller: board,
-                    settings: boardSettings.chessground,
-                    orientation: state.side,
-                    shapes: {
-                      if (_variation == null && hint is NormalMove)
-                        Arrow(
-                          color: const Color(0xcc15781b),
-                          orig: hint.from,
-                          dest: hint.to,
+                // A seta vermelha do lance errado fica parada enquanto ele é
+                // comentado (canvas PropV2ExA3/A8).
+                child: Chessboard(
+                  key: ExerciseKeys.board,
+                  size: size,
+                  controller: board,
+                  settings: boardSettings.chessground,
+                  orientation: state.side,
+                  shapes: {
+                    if (hint is NormalMove)
+                      Arrow(
+                        color: AppColors.successColor.withValues(
+                          alpha: AppColors.boardMarkAlpha,
                         ),
-                      if (_variation == null &&
-                          wrong is NormalMove &&
-                          _wrongFlash.isAnimating)
-                        Arrow(
-                          color: const Color(0xccc62828),
-                          orig: wrong.from,
-                          dest: wrong.to,
+                        orig: hint.from,
+                        dest: hint.to,
+                      ),
+                    if (wrong is NormalMove)
+                      Arrow(
+                        color: AppColors.errorColor.withValues(
+                          alpha: AppColors.boardMarkAlpha,
                         ),
-                      ..._flash.shapesFor(_variation?.fen ?? state.fen),
-                    },
-                    onMove: (move, {viaDragAndDrop}) => _variation == null
-                        ? context.read<ExerciseCubit>().play(move)
-                        : null,
-                  ),
+                        orig: wrong.from,
+                        dest: wrong.to,
+                      ),
+                  },
+                  onMove: (move, {viaDragAndDrop}) =>
+                      context.read<ExerciseCubit>().play(move),
                 ),
               ),
-      ),
-    );
-  }
-
-  /// Depois de resolver: as estrelas ganhas em tamanho grande e a linha da
-  /// solução.
-  Widget _belowBoard(
-    BuildContext context,
-    ExerciseState state,
-    BoardSettings boardSettings,
-  ) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final exercise = state.exercise!;
-    if (state.phase != ExercisePhase.done) return const SizedBox.shrink();
-    final earned = state.earned ?? 0;
-    // Sem linha de "Solução": com o Viktor explicando, a fala já diz; sem
-    // fala, só a nota (a estrela).
-    if (state.speech != null) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Semantics(
-            label: l10n.exerciseEarned(earned, exercise.stars),
-            excludeSemantics: true,
-            // A estrela entra girando e com rebote ao resolver.
-            child: TweenAnimationBuilder<double>(
-              key: ExerciseKeys.earnedStar,
-              tween: Tween(begin: 0, end: 1),
-              duration: AppMotion.of(context).celebrate,
-              curve: AppMotion.pop,
-              builder: (context, value, child) => Transform.rotate(
-                angle: (1 - value) * pi,
-                child: Transform.scale(scale: value, child: child),
-              ),
-              child: ValueStar(points: earned, size: 56),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            l10n.exerciseEarned(earned, exercise.stars),
-            key: ExerciseKeys.earned,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -819,148 +584,109 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   /// O botão principal do resolvido: o próximo exercício, a volta à aula
   /// (treino avulso) ou o resultado (o último da série).
-  Widget _primaryButton(BuildContext context, ExerciseState state) {
+  ExerciseAction _primaryAction(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
     final lesson = state.lesson!;
     final next = state.nextExercise;
-    final style = FilledButton.styleFrom(minimumSize: const Size(140, 48));
     if (next != null) {
-      return FilledButton(
+      return ExerciseAction(
+        label: l10n.exerciseNext,
         key: ExerciseKeys.nextButton,
-        style: style,
+        primary: true,
         onPressed: () =>
             context.pushReplacement(Routes.endgameExercise(lesson.id, next)),
-        child: Text(l10n.exerciseNext, maxLines: 1),
       );
     }
     if (state.locked) {
       // Treino avulso: a nota já está fechada, volta à aula.
-      return FilledButton(
+      return ExerciseAction(
+        label: l10n.exerciseBack,
         key: ExerciseKeys.backButton,
-        style: style,
+        primary: true,
         onPressed: () => context.pop(),
-        child: Text(l10n.exerciseBack, maxLines: 1),
       );
     }
     // O último da série: a tela de resultado, que volta à aula.
-    return FilledButton(
+    return ExerciseAction(
+      label: l10n.exerciseSeeResult,
       key: ExerciseKeys.resultButton,
-      style: style,
+      primary: true,
       onPressed: () =>
           context.pushReplacement(Routes.endgameExercisesDone(lesson.id)),
-      child: Text(l10n.exerciseSeeResult, maxLines: 1),
     );
   }
 
-  /// "Ver explicação" (tonal, com o mesmo tamanho do principal) e o próximo
-  /// passo. Lado a lado, em metades iguais, quando os textos cabem inteiros
-  /// na fonte do aparelho; senão, um sobre o outro. O texto nunca encolhe:
-  /// antes ficava num `FittedBox` dentro de um `Flexible` que dividia a sobra
-  /// com um `Spacer`, e a letra chegava a ~10 px.
-  Widget _solvedButtons(BuildContext context, ExerciseState state) {
-    final l10n = context.l10n;
-    final cubit = context.read<ExerciseCubit>();
-    final explain = state.canExplain
-        ? FilledButton.tonalIcon(
-            key: ExerciseKeys.explainButton,
-            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
-            onPressed: cubit.showExplanation,
-            icon: const Icon(Icons.forum_outlined),
-            // Empilhado com fonte grande, quebra em duas linhas; lado a lado
-            // só fica quando cabe numa.
-            label: Text(
-              l10n.lessonSeeExplanation,
-              maxLines: 2,
-              textAlign: TextAlign.center,
-            ),
-          )
-        : null;
-    final lichess = state.locked ? _lichessButton(context, state) : null;
-    final primary = _primaryButton(context, state);
-    if (explain == null) {
-      return Row(children: [?lichess, const Spacer(), primary]);
-    }
-    final stacked = Column(
-      key: ExerciseKeys.solvedStacked,
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        explain,
-        const SizedBox(height: AppSpacing.sm),
-        if (lichess == null)
-          primary
-        else
-          Row(
-            children: [
-              Flexible(child: lichess),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(child: primary),
-            ],
-          ),
-      ],
-    );
-    // Com o Lichess (nota fechada), três botões não cabem numa linha.
-    if (lichess != null) return stacked;
-    return _HalvesOrStack(gap: AppSpacing.sm, children: [explain, primary]);
-  }
+  /// O que a dica custa agora (tooltip e rótulo de acessibilidade).
+  String _hintLabel(AppLocalizations l10n, ExerciseState state) =>
+      switch (state.worth) {
+        0 => l10n.exerciseHintFree,
+        1 => l10n.exerciseHintLast,
+        _ => l10n.exerciseHint,
+      };
 
-  Widget _actions(BuildContext context, ExerciseState state) {
+  /// O rodapé fixo, com a margem de 16 e o mesmo componente da lição.
+  /// Resolvendo: a dica à esquerda e o cronômetro à direita (sem pontos, só
+  /// "Ver solução"); resolvido: só o próximo exercício, à direita.
+  Widget _footer(BuildContext context, ExerciseState state) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<ExerciseCubit>();
+    if (!state.ready || state.exercise == null) {
+      return const SizedBox.shrink();
+    }
+    final color = theme.scaffoldBackgroundColor;
+    final hide = context.select(
+      (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
+    );
+    final lichess = state.locked ? _lichessButton(context, state) : null;
+    final Widget actions;
     if (state.phase == ExercisePhase.done) {
-      // Com fundo: o Patrol confere o painel pelo toque no centro dele.
-      return Container(
+      actions = ExerciseActions(
         key: ExerciseKeys.solved,
-        color: Colors.transparent,
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Nota fechada: este é treino livre.
-            if (state.locked)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  l10n.exerciseScoreLocked,
-                  key: ExerciseKeys.locked,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+        color: color,
+        hug: true,
+        divider: false,
+        hint: lichess,
+        actions: [_primaryAction(context, state)],
+      );
+    } else if (state.zeroed && state.interactive) {
+      actions = ExerciseActions(
+        key: ExerciseKeys.footer,
+        color: color,
+        hug: true,
+        divider: false,
+        hint: lichess,
+        actions: [
+          ExerciseAction(
+            label: l10n.lessonSeeSolution,
+            key: ExerciseKeys.showSolution,
+            primary: true,
+            onPressed: () => unawaited(cubit.showSolution(hidden: hide)),
+          ),
+        ],
+      );
+    } else {
+      actions = ExerciseActions(
+        key: ExerciseKeys.footer,
+        color: color,
+        divider: false,
+        hint: Expanded(
+          child: Row(
+            children: [
+              if (state.interactive)
+                KeyedSubtree(
+                  key: ExerciseKeys.hintButton,
+                  child: ExerciseHintButton(
+                    label: _hintLabel(l10n, state),
+                    onPressed: cubit.askHint,
                   ),
                 ),
-              ),
-            _solvedButtons(context, state),
-          ],
-        ),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      child: Row(
-        children: [
-          if (state.interactive)
-            OutlinedButton.icon(
-              key: ExerciseKeys.hintButton,
-              onPressed: cubit.askHint,
-              icon: const Icon(Icons.lightbulb_outline),
-              // O texto diz o que a dica custa agora: um ponto, o último
-              // (o exercício deixa de pontuar) ou nada.
-              label: Text(switch (_worth(state, state.exercise!)) {
-                0 => l10n.exerciseHintFree,
-                1 => l10n.exerciseHintLast,
-                _ => l10n.exerciseHint,
-              }),
-            ),
-          // Com a nota fechada, a posição vai para a análise do Lichess.
-          if (state.locked && state.interactive) ...[
-            const SizedBox(width: 8),
-            _lichessButton(context, state),
-          ],
-          if (state.phase == ExercisePhase.waiting)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+              // Com a nota fechada, a posição vai para a análise do Lichess.
+              if (lichess != null && state.interactive) ...[
+                const SizedBox(width: AppSpacing.sm),
+                Flexible(child: lichess),
+              ],
+              if (state.phase == ExercisePhase.waiting) ...[
                 const SizedBox.square(
                   dimension: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
@@ -968,75 +694,46 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 const SizedBox(width: 10),
                 Text(l10n.lessonThinking),
               ],
+              const Spacer(),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppShape.small),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    // Nota fechada: este é treino livre.
+    if (!state.locked) return actions;
+    return ColoredBox(
+      color: color,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Text(
+              l10n.exerciseScoreLocked,
+              key: ExerciseKeys.locked,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
+          ),
+          actions,
         ],
       ),
     );
   }
 }
 
-/// Dois botões em metades iguais lado a lado se a largura natural de cada um
-/// (intrínseca, medida nos próprios botões) cabe na metade; senão, um sobre
-/// o outro, inteiros.
-class _HalvesOrStack extends StatefulWidget {
-  const _HalvesOrStack({required this.children, required this.gap});
-
-  final List<Widget> children;
-  final double gap;
-
-  @override
-  State<_HalvesOrStack> createState() => _HalvesOrStackState();
-}
-
-class _HalvesOrStackState extends State<_HalvesOrStack> {
-  final _keys = [GlobalKey(), GlobalKey()];
-  bool? _fits;
-  double? _width;
-
-  void _measure() {
-    if (!mounted || _width == null) {
-      return;
-    }
-    var widest = 0.0;
-    for (final key in _keys) {
-      final box = key.currentContext?.findRenderObject();
-      if (box is! RenderBox) {
-        return;
-      }
-      widest = max(widest, box.getMaxIntrinsicWidth(double.infinity));
-    }
-    final fits = 2 * widest + widget.gap <= _width! + .5;
-    if (fits != _fits) setState(() => _fits = fits);
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, box) {
-      _width = box.maxWidth;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
-      final first = KeyedSubtree(key: _keys[0], child: widget.children[0]);
-      final second = KeyedSubtree(key: _keys[1], child: widget.children[1]);
-      if (_fits == false) {
-        return Column(
-          key: ExerciseKeys.solvedStacked,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            first,
-            SizedBox(height: widget.gap),
-            second,
-          ],
-        );
-      }
-      final row = Row(
-        children: [
-          Expanded(child: first),
-          SizedBox(width: widget.gap),
-          Expanded(child: second),
-        ],
-      );
-      // Antes da primeira medida, invisível: não pisca cortado.
-      return _fits == null ? Opacity(opacity: 0, child: row) : row;
-    },
-  );
-}
+/// A fala do balão: o texto e, à parte, a dica do borrar.
+typedef SpeechLine = ({String text, String? tip});

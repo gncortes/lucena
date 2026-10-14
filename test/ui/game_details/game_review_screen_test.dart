@@ -490,7 +490,7 @@ void main() {
   }
 
   testWidgets(
-    'o Viktor conta uma história; pronta a revisão, ela fica até o ✕',
+    'o Viktor conta uma história; pronta a revisão, ela fica sem ✕ no balão',
     (tester) async {
       final id = await progress.addAttempt(game);
       final cubit = await pump(tester, id);
@@ -514,9 +514,14 @@ void main() {
       expect(cubit.state.reviewing, isFalse);
       expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
 
-      await tester.tap(find.byKey(GameDetailsKeys.storyClose));
-      await tester.pumpAndSettle();
-      expect(find.byKey(GameDetailsKeys.story), findsNothing);
+      // Sem ✕ por cima da fala: o fechar é o da folha.
+      expect(
+        find.descendant(
+          of: find.byKey(GameDetailsKeys.story),
+          matching: find.byIcon(Icons.close_rounded),
+        ),
+        findsNothing,
+      );
     },
   );
 }

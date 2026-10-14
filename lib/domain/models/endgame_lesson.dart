@@ -152,7 +152,8 @@ class Reference {
 
   final String id;
 
-  /// `book`, `study`, `game`, `tablebase` ou `web`.
+  /// `book`, `study`, `game`, `tablebase`, `web` ou `player` (jogador: `name`,
+  /// `initials`, `dates`, `url`).
   final String kind;
 
   /// Os campos do tipo (`author`, `title`, `publisher`, `year`, `url`...).
@@ -162,10 +163,20 @@ class Reference {
 
   String get title => switch (kind) {
     'game' => '${fields['white']} – ${fields['black']}',
+    'player' => fields['name'] ?? id,
     _ => fields['title'] ?? id,
   };
 
   String? get url => fields['url'];
+
+  /// As iniciais do jogador (`player`): o campo `initials` ou as primeiras
+  /// letras do nome.
+  String get initials {
+    final given = fields['initials'];
+    if (given != null && given.isNotEmpty) return given;
+    final words = title.split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+    return words.take(2).map((w) => w.substring(0, 1).toUpperCase()).join();
+  }
 
   /// Fontes de produção ficam nos dados para rastreabilidade, mas não são
   /// mostradas como referências ao aluno.
@@ -295,9 +306,22 @@ class ExerciseCheckpoint {
     this.open = true,
     this.startedAt,
     this.pausedAt,
+    this.played = const [],
+    this.wrongs = const [],
+    this.firstMoveMistake = false,
   });
 
   final String exerciseId;
+
+  /// Os lances jogados até agora (UCI), do aluno e do outro lado, na ordem:
+  /// a lista de lances volta igual ao reabrir o exercício.
+  final List<String> played;
+
+  /// Os lances errados do aluno, como `vez:uci` (a vez é o índice, de 0).
+  final List<String> wrongs;
+
+  /// Errou o primeiro lance: o exercício não pontua mais.
+  final bool firstMoveMistake;
 
   /// Quando o exercício abriu: o cronômetro (T60) continua daqui.
   final DateTime? startedAt;
@@ -323,6 +347,9 @@ class ExerciseCheckpoint {
     'open': open,
     'startedAt': ?startedAt?.toUtc().toIso8601String(),
     'pausedAt': ?pausedAt?.toUtc().toIso8601String(),
+    if (played.isNotEmpty) 'played': played,
+    if (wrongs.isNotEmpty) 'wrongs': wrongs,
+    if (firstMoveMistake) 'firstMoveMistake': true,
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -339,12 +366,18 @@ class ExerciseCheckpoint {
       open: json['open'] as bool? ?? false,
       startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
       pausedAt: DateTime.tryParse(json['pausedAt'] as String? ?? ''),
+      played: [...?(json['played'] as List?)?.whereType<String>()],
+      wrongs: [...?(json['wrongs'] as List?)?.whereType<String>()],
+      firstMoveMistake: json['firstMoveMistake'] as bool? ?? false,
     );
   }
 
   @override
   bool operator ==(Object other) =>
       other is ExerciseCheckpoint &&
+      _sameList(other.played, played) &&
+      _sameList(other.wrongs, wrongs) &&
+      other.firstMoveMistake == firstMoveMistake &&
       other.exerciseId == exerciseId &&
       other.fen == fen &&
       other.turn == turn &&
@@ -366,7 +399,14 @@ class ExerciseCheckpoint {
     open,
     startedAt,
     pausedAt,
+    Object.hashAll(played),
+    Object.hashAll(wrongs),
+    firstMoveMistake,
   );
+
+  static bool _sameList(List<String> a, List<String> b) =>
+      a.length == b.length &&
+      Iterable<int>.generate(a.length).every((i) => a[i] == b[i]);
 }
 
 /// O progresso em todas as aulas de finais.

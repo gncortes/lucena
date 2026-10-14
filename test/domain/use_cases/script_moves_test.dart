@@ -1,0 +1,120 @@
+import 'package:dartchess/dartchess.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/script_moves.dart';
+
+Set<String> _names(Set<Square>? squares) => {
+  for (final square in squares ?? const <Square>{}) square.name,
+};
+
+void main() {
+  test('taskNumber: as brancas abrem número, as pretas ficam com o delas', () {
+    expect(ScriptMoves.taskNumber(mover: Side.white), 1);
+    expect(ScriptMoves.taskNumber(mover: Side.black), 1);
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.black,
+        parentNumber: 1,
+        parentSide: Side.white,
+      ),
+      1,
+    );
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.white,
+        parentNumber: 1,
+        parentSide: Side.black,
+      ),
+      2,
+    );
+    // A vez não passa: dois lances seguidos do mesmo lado sobem o número.
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.white,
+        parentNumber: 1,
+        parentSide: Side.white,
+      ),
+      2,
+    );
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.black,
+        parentNumber: 1,
+        parentSide: Side.black,
+      ),
+      2,
+    );
+  });
+
+  group('sem rei (lição de peça)', () {
+    const rook = '8/8/2P5/8/8/8/8/2R5 w - - 0 1';
+
+    test('os destinos seguem os ataques da peça', () {
+      final dests = ScriptMoves.dests(rook, pieces: ['c1']);
+      expect(dests.keys.map((s) => s.name), ['c1']);
+      expect(_names(dests[Square.c1]), {
+        'a1', 'b1', 'd1', 'e1', 'f1', 'g1', 'h1', //
+        'c2', 'c3', 'c4', 'c5',
+      });
+    });
+
+    test('peça fora da lista não mexe', () {
+      expect(ScriptMoves.dests(rook, pieces: ['c6']), isEmpty);
+      expect(ScriptMoves.legal(rook, 'c6c7', pieces: ['c1']), isNull);
+    });
+
+    test('jogar mantém a vez e anota o lance à mão', () {
+      final played = ScriptMoves.play(rook, 'c1d1', keepTurn: true)!;
+      expect(played.fen, '8/8/2P5/8/8/8/8/3R4 w - - 0 1');
+      expect(played.san, 'Rd1');
+    });
+
+    test('captura leva o x', () {
+      const fen = '8/8/2p5/8/8/8/8/2R5 w - - 0 1';
+      expect(ScriptMoves.play(fen, 'c1c6', keepTurn: true)!.san, 'Rxc6');
+    });
+
+    test('lance que a peça não faz é nulo', () {
+      expect(ScriptMoves.legal(rook, 'c1d2'), isNull);
+      expect(ScriptMoves.play(rook, 'c1c7'), isNull);
+    });
+  });
+
+  group('com rei (regras do xadrez)', () {
+    const king = 'k4r2/8/8/8/8/8/8/4K3 w - - 0 1';
+
+    test('o rei não pisa em casa atacada', () {
+      final dests = ScriptMoves.dests(king, pieces: ['e1']);
+      expect(_names(dests[Square.e1]), {'d1', 'd2', 'e2'});
+    });
+
+    test('tarefa: a vez não passa', () {
+      final played = ScriptMoves.play(king, 'e1d2', keepTurn: true)!;
+      expect(played.fen.split(' ')[1], 'w');
+      expect(played.san, 'Kd2');
+      final game = ScriptMoves.play(king, 'e1d2')!;
+      expect(game.fen.split(' ')[1], 'b');
+    });
+
+    test('peão que coroa sem escolher vira dama', () {
+      const fen = '4k3/6P1/8/8/8/8/8/4K3 w - - 0 1';
+      expect(ScriptMoves.legal(fen, 'g7g8'), 'g7g8q');
+    });
+  });
+
+  group('lance do outro lado na tarefa (captura de volta)', () {
+    test('com rei: a peça preta joga e a vez volta às brancas', () {
+      const fen = '4k3/8/4p3/3R4/8/8/8/4K3 w - - 0 1';
+      final played = ScriptMoves.play(fen, 'e6d5', keepTurn: true)!;
+      expect(played.san, 'exd5');
+      expect(played.fen, startsWith('4k3/8/8/3p4/8/8/8/4K3 w '));
+      expect(ScriptMoves.moverOf(fen, 'e6d5'), Side.black);
+    });
+
+    test('sem rei também', () {
+      const fen = '8/8/8/3R1r2/8/8/8/8 w - - 0 1';
+      final played = ScriptMoves.play(fen, 'f5d5', keepTurn: true)!;
+      expect(played.fen, '8/8/8/3r4/8/8/8/8 w - - 0 1');
+      expect(played.san, 'Rxd5');
+    });
+  });
+}

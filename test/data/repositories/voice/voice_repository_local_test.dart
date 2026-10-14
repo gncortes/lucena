@@ -41,7 +41,6 @@ void main() {
       enabled: true,
       speed: 1.2,
       teacherVoice: 'pt-br-x-a',
-      characterVoices: {'grandpa': 'pt-br-x-b'},
     );
     await reopen().save(settings);
     expect(await reopen().load(), settings);
@@ -54,11 +53,9 @@ void main() {
     expect(await reopen().load(), const VoiceSettings());
   });
 
-  test('os perfis do JSON: o Viktor e os oito adversários', () async {
+  test('os perfis do JSON: os oito adversários, sem o Viktor', () async {
     final profiles = await reopen().profiles();
-    expect(profiles.keys, hasLength(9));
-    for (final id in [
-      'master',
+    const ids = [
       'beachgoer',
       'grandpa',
       'snob',
@@ -67,12 +64,34 @@ void main() {
       'bodybuilder',
       'foodie',
       'youngster',
-    ]) {
-      expect(profiles[id], isNotNull, reason: id);
+    ];
+    expect(profiles.keys, unorderedEquals(ids));
+    final raw = jsonDecode(
+      io.File('assets/voices/profiles.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    for (final id in ids) {
       expect(io.File('assets/characters/$id.json').existsSync(), isTrue);
+      final entry = raw[id] as Map<String, dynamic>;
+      expect(['m', 'f'], contains(entry['genero']), reason: id);
+      expect(
+        ['crianca', 'jovem', 'adulto', 'idoso'],
+        contains(entry['idade']),
+        reason: id,
+      );
     }
-    // O Tito fala mais grave e mais devagar que a Zuri.
-    expect(profiles['grandpa']!.pitch, lessThan(profiles['prodigy']!.pitch));
-    expect(profiles['grandpa']!.rate, lessThan(profiles['prodigy']!.rate));
+    expect(profiles['grandpa']!.age, VoiceAge.elder);
+    expect(profiles['prodigy']!.gender, VoiceGender.female);
+    expect(profiles['prodigy']!.age, VoiceAge.child);
+  });
+
+  test('known.json: só "m" ou "f"', () async {
+    final raw = jsonDecode(
+      io.File('assets/voices/known.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    for (final e in raw.entries) {
+      expect(['m', 'f'], contains(e.value), reason: e.key);
+    }
+    final known = await reopen().knownGenders();
+    expect(known.length, raw.length);
   });
 }

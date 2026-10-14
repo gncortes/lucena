@@ -18,12 +18,14 @@ class ProgressRobot {
 
   final PatrolIntegrationTester $;
 
-  /// O rating de finais, a partir da tela inicial (e volta para ela): o
-  /// perfil tem o botão que abre a tela do rating (T59).
+  /// O rating de finais, lido no cartão do jogador da tela inicial (sem
+  /// partidas, a tela do rating só mostra o convite), depois de o número
+  /// terminar de contar.
   Future<int> rating() async {
-    await _openRating();
-    final value = $.tester.widget<Text>(find.byKey(RatingKeys.value)).data!;
     await _backHome();
+    await $(HomeKeys.ratingValue).scrollTo();
+    await $.pumpAndSettle();
+    final value = $.tester.widget<Text>(find.byKey(HomeKeys.ratingValue)).data!;
     return int.parse(value);
   }
 
@@ -51,6 +53,7 @@ class ProgressRobot {
   /// O aviso de conquista desbloqueada por cima da tela, com o nome dela;
   /// depois ele some sozinho.
   Future<void> expectAchievementToast(String title) async {
+    await ConclusionRobot($).seeResult();
     // O aviso não recebe toques: basta existir na tela.
     await $(AchievementsKeys.toast).waitUntilExists();
     expectText(
@@ -64,6 +67,7 @@ class ProgressRobot {
   /// Toca no aviso de conquista enquanto ele está na tela e espera o
   /// detalhe dela abrir (T51, A6).
   Future<void> tapAchievementToast() async {
+    await ConclusionRobot($).seeResult();
     await $(AchievementsKeys.toast).waitUntilVisible();
     await $.tester.tap(find.byKey(AchievementsKeys.toast));
     await $(AchievementsKeys.detail).waitUntilVisible();

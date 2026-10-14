@@ -64,11 +64,20 @@ class SpeedrunAttempts extends Table {
   TextColumn get speedrunId => text()();
   DateTimeColumn get startedAt => dateTime()();
   DateTimeColumn get abandonedAt => dateTime().nullable()();
+
+  /// A tentativa pode dar o bônus de rating da conclusão (versão 8). As de
+  /// antes da 8 ficam sem: o bônus não é retroativo.
+  BoolColumn get bonusEligible => boolean().withDefault(const Constant(true))();
 }
 
 /// O rating do jogador depois de cada partida que conta (contra o Maia ou o
-/// Stockfish). A última linha é o rating atual.
+/// Stockfish) e de cada bônus de speedrun. A última linha é o rating atual.
 @DataClassName('RatingRow')
+@TableIndex(
+  name: 'rating_history_speedrun_attempt',
+  columns: {#speedrunAttemptId},
+  unique: true,
+)
 class RatingHistory extends Table {
   IntColumn get id => integer().autoIncrement()();
 
@@ -78,6 +87,10 @@ class RatingHistory extends Table {
   RealColumn get rating => real()();
   RealColumn get deviation => real()();
   RealColumn get volatility => real()();
+
+  /// O bônus da conclusão desta tentativa de speedrun (versão 8). Uma linha
+  /// por tentativa: o índice único impede pagar duas vezes.
+  IntColumn get speedrunAttemptId => integer().nullable()();
 }
 
 /// As conquistas já mostradas ao jogador. Se ele tem ou não sai das partidas;
@@ -112,7 +125,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -139,6 +152,27 @@ class AppDatabase extends _$AppDatabase {
           unlockedAchievements,
           unlockedAchievements.speedrunAttemptId,
         );
+      }
+      // 7 -> 8: o bônus de rating do speedrun. As tentativas que já existiam
+      // não dão bônus (sem retroativo); quem cria as tabelas agora já cria
+      // com as colunas.
+      if (from >= 4 && from < 8) {
+        await migrator.addColumn(
+          speedrunAttempts,
+          speedrunAttempts.bonusEligible,
+        );
+        await customStatement(
+          'UPDATE speedrun_attempts SET bonus_eligible = 0',
+        );
+      }
+      if (from >= 5 && from < 8) {
+        await migrator.addColumn(
+          ratingHistory,
+          ratingHistory.speedrunAttemptId,
+        );
+      }
+      if (from < 8) {
+        await migrator.createIndex(ratingHistorySpeedrunAttempt);
       }
     },
   );

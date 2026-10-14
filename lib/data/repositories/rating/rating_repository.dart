@@ -12,9 +12,23 @@ abstract class RatingRepository {
   /// O rating de antes da primeira partida: o da faixa do perfil.
   Future<PlayerRating> start();
 
-  /// O rating depois de cada partida que contou, da mais antiga para a mais
-  /// recente.
+  /// O rating no instante [at]: o da última linha até ele; antes de qualquer
+  /// partida, o do início.
+  Future<PlayerRating> at(DateTime at);
+
+  /// O rating depois de cada partida que contou e de cada bônus de speedrun
+  /// ([RatingEntry.isBonus]), da mais antiga para a mais recente.
   Future<List<RatingEntry>> history();
+
+  /// Os bônus de speedrun já pagos, do mais antigo para o mais recente.
+  Future<List<SpeedrunBonus>> speedrunBonuses();
+
+  /// Soma [points] ao rating atual como o bônus da conclusão da tentativa
+  /// [attemptId]. Nulo se ela já tinha o seu: o bônus é pago uma vez só.
+  Future<SpeedrunBonus?> addSpeedrunBonus({
+    required int attemptId,
+    required int points,
+  });
 
   /// Conta a partida [game], gravada com o id [gameId], em que o jogador
   /// jogou com [userSide]; [drawGoal]: o objetivo era empatar. Devolve o

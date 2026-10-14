@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../theme/app_motion.dart';
+import '../theme/app_colors.dart';
 
 /// Uma chuva curta de confete, uma vez, para os grandes momentos (degrau
 /// concluído, formatura, recorde). Não pega toques. Com "remover animações",
@@ -67,7 +68,7 @@ class _CelebrationState extends State<Celebration>
     final palette = [
       colors.primary,
       colors.tertiary,
-      const Color(0xFFFFC107),
+      AppColors.confetti,
       colors.secondary,
     ];
     return IgnorePointer(

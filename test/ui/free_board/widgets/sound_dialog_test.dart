@@ -54,7 +54,7 @@ void main() {
     final (settings, _) = await open(tester, compact: true);
     final close = tester.getRect(find.byKey(GameSoundKeys.close));
     final dialog = tester.getRect(find.byKey(GameSoundKeys.dialog));
-    expect(close.size, const Size(44, 44));
+    expect(close.size, const Size(48, 48));
     expect(close.bottom, lessThan(dialog.top));
     await tester.tap(find.byKey(GameSoundKeys.close));
     await tester.pumpAndSettle();

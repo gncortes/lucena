@@ -21,8 +21,12 @@ class PositionBoard extends StatelessWidget {
     this.heroTag,
     this.lastMove,
     this.boardKey,
+    this.shapes = const {},
     super.key,
   });
+
+  /// Marcações desenhadas sobre o tabuleiro (anéis, setas).
+  final Set<Shape> shapes;
 
   /// O lance em destaque.
   final Move? lastMove;
@@ -100,6 +104,7 @@ class PositionBoard extends StatelessWidget {
         orientation: orientation ?? turn,
         fen: fen,
         lastMove: lastMove,
+        shapes: shapes,
         settings: StaticChessboardSettings(
           colorScheme: board.colors.scheme,
           pieceAssets: board.pieces.assets,

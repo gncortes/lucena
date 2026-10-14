@@ -2,6 +2,12 @@
 /// teste `test/ui/core/motion_usage_test.dart` acusa raio com número fora
 /// destes.
 abstract final class AppShape {
+  /// Barra de rolagem fina e alça do painel (LICOES-V2 §5, A10).
+  static const hairline = 2.0;
+
+  /// Destaque do lance no texto (LICOES-V2 §2, A5).
+  static const tiny = 4.0;
+
   /// Chips, caixas do relógio, barras finas, cantos do tabuleiro.
   static const small = 8.0;
 

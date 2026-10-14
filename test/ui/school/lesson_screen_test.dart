@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/board/speech_flash.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/theme/app_button.dart';
 import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -21,6 +22,7 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/sheet_settle.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -76,6 +78,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load(endgame ? 'rook.lucena' : 'pieces.rook', 'en');
+    await cubit.startStepClock();
     lessonCubit = cubit;
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
@@ -90,8 +93,20 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pumpAndSettle();
     return settings;
   }
+
+  testWidgets('o Continuar da lição é botão compacto de 48 (T73, D6)', (
+    tester,
+  ) async {
+    await pump(tester, intro: 'Short.');
+    final size = tester.getSize(find.byKey(LessonKeys.nextButton));
+    expect(size.height, kButtonHeightCompact);
+  });
 
   testWidgets('a fala longa fica inteira no balão e a tela rola até o fim '
       'dela, acima das ações', (tester) async {
@@ -334,6 +349,9 @@ void main() {
   Future<void> toStars(WidgetTester tester) async {
     await tester.tap(find.byKey(LessonKeys.nextButton));
     await tester.pumpAndSettle();
+    // A apresentação do passo (§8) termina antes do exercício.
+    await lessonCubit.startStepClock();
+    await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('pieces.rook', 'stars')), findsOneWidget);
   }
 
@@ -360,6 +378,19 @@ void main() {
     expect(find.byKey(LessonKeys.place), findsNothing);
     // A barra de passos da aula fica.
     expect(find.byKey(LessonKeys.progress), findsOneWidget);
+  });
+
+  testWidgets('barra contínua no pé da AppBar: 4 dp, cresce ao avançar', (
+    tester,
+  ) async {
+    await pump(tester, intro: 'Short.');
+    LinearProgressIndicator bar() =>
+        tester.widget<LinearProgressIndicator>(find.byKey(LessonKeys.progress));
+    final before = bar().value!;
+    expect(tester.getSize(find.byKey(LessonKeys.progress)).height, 4);
+    expect(tester.getTopLeft(find.byKey(LessonKeys.progress)).dy, 56);
+    await toStars(tester);
+    expect(bar().value!, greaterThan(before));
   });
 
   testWidgets('estrelas: arrastar a torre na diagonal não anda, ela volta e '
@@ -434,7 +465,7 @@ void main() {
       expect(lessonCubit.state.phase, StepPhase.failed);
       final back = find.byKey(LessonKeys.backButton);
       final review = find.byKey(LessonKeys.reviewPoint);
-      final solution = find.byKey(LessonKeys.nextButton);
+      final solution = find.byKey(LessonKeys.seeSolution);
       final retry = find.byKey(LessonKeys.retryButton);
       expect(tester.getRect(back).top, closeTo(tester.getRect(review).top, 1));
       expect(
@@ -448,6 +479,7 @@ void main() {
       expect(tester.widget<OutlinedButton>(review).onPressed, isNull);
       expect(tester.widget<FilledButton>(solution).onPressed, isNull);
       expect(find.byKey(LessonKeys.variationShow), findsNothing);
+      await settleSheet(tester);
       final board = tester.getRect(find.byKey(LessonKeys.board));
       final teacher = find.byWidgetPredicate(
         (widget) =>

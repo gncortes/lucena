@@ -6,6 +6,7 @@ import '../../../domain/models/app_accent.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_accent_ui.dart';
 import '../theme/app_motion.dart';
+import '../theme/app_colors.dart';
 
 /// As cores do app em bolinhas, numa linha: a escolhida ganha o anel e a
 /// marca.
@@ -99,7 +100,7 @@ class _Dot extends StatelessWidget {
               child: Icon(
                 Icons.check_rounded,
                 size: size * 0.45,
-                color: Colors.white,
+                color: AppColors.white,
               ),
             ),
           ),
