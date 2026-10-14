@@ -786,7 +786,8 @@ void main() {
       r.now.advance(const Duration(seconds: 1));
       r.cubit.demoVoice(speaking: true);
       expect(r.s.demo!.speaking, isTrue);
-      expect(r.pending, isEmpty);
+      // Só o teto de segurança contra o TTS travado.
+      expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
       r.cubit.demoVoice(speaking: false);
       expect(r.s.demo!.speaking, isFalse);
       expect(r.s.demo!.remaining, LessonScriptCubit.voicePause);
@@ -815,7 +816,35 @@ void main() {
       r.cubit.demoVoice(speaking: true);
       r.cubit.demoToggle();
       expect(r.s.demo!.playing, isTrue);
+      expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
+    });
+
+    test('TTS travado falando: no teto, o passo segue como se a voz tivesse '
+        'acabado', () async {
+      final r = await _Rig.open(stage: 1);
+      r.cubit.demoVoice(speaking: true);
+      await r.elapse();
+      expect(r.s.speech, ['d1a']);
+      expect(r.s.demo!.speaking, isFalse);
+      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
+      await r.elapse();
+      expect(r.s.speech, ['d1b']);
+      // O fim que chega atrasado não volta nada.
+      r.cubit.demoVoice(speaking: false);
+      expect(r.s.speech, ['d1b']);
+      expect(r.pending.single.duration, LessonScriptCubit.readTime('d1b'));
+    });
+
+    test('o teto não corre com a demonstração pausada nem no fundo', () async {
+      final r = await _Rig.open(stage: 1);
+      r.cubit.demoVoice(speaking: true);
+      r.cubit.demoToggle();
       expect(r.pending, isEmpty);
+      r.cubit.demoToggle();
+      r.cubit.pauseForBackground();
+      expect(r.pending, isEmpty);
+      r.cubit.resumeFromBackground();
+      expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
     });
 
     test('voz fora da demonstração não faz nada', () async {

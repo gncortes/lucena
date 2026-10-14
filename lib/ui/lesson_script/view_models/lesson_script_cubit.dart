@@ -173,6 +173,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// Com a voz, o passo espera a fala acabar e só faz esta pausa depois.
   static const voicePause = Duration(milliseconds: 600);
 
+  /// O teto da espera pela voz: se o TTS travar falando (sem avisar o fim),
+  /// depois de quatro vezes o tempo de leitura o passo segue como se a fala
+  /// tivesse acabado.
+  static Duration speechCap(String text) => readTime(text) * 4;
+
   /// O tempo da máquina antes de responder, e de o lance errado da prática
   /// ser desfeito.
   static const machineDelay = Duration(milliseconds: 500);
@@ -512,17 +517,21 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   /// Agenda o fim do passo com o tempo que falta (com a voz falando, espera
-  /// ela acabar: [demoVoice]).
+  /// ela acabar: [demoVoice], até o [speechCap]).
   void _demoRun() {
     _demoTimer?.cancel();
-    if (_demoSpeaking) {
+    if (_background) {
       _demoTimer = null;
       _demoRunStart = null;
       return;
     }
-    if (_background) {
-      _demoTimer = null;
+    if (_demoSpeaking) {
       _demoRunStart = null;
+      _demoTimer = _timer(speechCap(state.speech.join(' ')), () {
+        _demoTimer = null;
+        if (isClosed || !_inDemo || !_demoSpeaking) return;
+        demoVoice(speaking: false);
+      });
       return;
     }
     final left = _demoTotal - _demoElapsed;
