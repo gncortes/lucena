@@ -19,7 +19,7 @@ void main() {
     await board.move('g1', 'f3');
 
     await board.expectMoves(['e4', 'e5', 'Nf3']);
-    board.expectTurn('Black to move');
+    board.expectTurnRing(below: false);
     board.expectFen(
       'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2',
     );
@@ -66,7 +66,7 @@ void main() {
 
     board.expectFen(_initialFen);
     await board.expectMoves([]);
-    board.expectTurn('White to move');
+    board.expectTurnRing(below: true);
   });
 
   patrolTest('roque pequeno numa posição preparada', ($) async {

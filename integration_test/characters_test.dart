@@ -211,10 +211,11 @@ void main() {
     app
       ..expectDirection(TextDirection.rtl)
       ..expectBrightness(Brightness.dark);
-    // Da direita para a esquerda: o retrato fica à direita do balão.
+    // Da direita para a esquerda: o retrato, com a ponta do balão em cima
+    // dele (T72), fica no lado direito da tela.
     expect(
-      character.avatarRect().left,
-      greaterThan(character.bubbleRect().left),
+      character.avatarRect().center.dx,
+      greaterThan($.tester.getRect(find.byKey(FreeBoardKeys.board)).center.dx),
     );
     app.expectNoClippedText();
   });
