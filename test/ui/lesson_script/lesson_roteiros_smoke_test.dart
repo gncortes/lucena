@@ -170,12 +170,25 @@ class _Run {
                 .length;
             final uci = practice.line[turn].right.first;
             await act('lance $uci', () => cubit.onMove(uci));
+          case PracticeKind.toque:
+            final targets = practice.targets;
+            if (targets.isEmpty) {
+              problems.add('$where: toque sem alvos');
+              return false;
+            }
+            if (withErrors) {
+              final miss = targets.first == 'a1' ? 'h8' : 'a1';
+              await act('toque errado $miss', () => cubit.onSquare(miss));
+              if (s.touchMiss != miss) {
+                problems.add('$where: o toque errado $miss não marcou');
+              }
+            }
+            for (final square in targets) {
+              await act('toque $square', () => cubit.onSquare(square));
+            }
           case PracticeKind.jogo:
             final uci = practiceMove();
             await act('prática $uci', () => cubit.onMove(uci));
-          default:
-            problems.add('$where: prática ${practice.kind} sem caminho');
-            return false;
         }
       case ScriptPhase.livrePerdido || ScriptPhase.livreMantido:
         await act(

@@ -223,6 +223,19 @@ abstract class LessonScriptState with _$LessonScriptState {
     /// As estrelas que faltam pegar (prática do tipo estrelas).
     @Default(<String>[]) List<String> stars,
 
+    /// Prática do tipo toque: o tabuleiro aceita toque em qualquer casa
+    /// (`onSquare`); nenhuma peça anda.
+    @Default(false) bool touching,
+
+    /// As casas pedidas já tocadas (em verde) e a última casa tocada por
+    /// engano (em vermelho), na prática do tipo toque.
+    @Default(<String>[]) List<String> touched,
+    String? touchMiss,
+
+    /// O tabuleiro mostra as letras e os números na borda (a prática do tipo
+    /// toque pode tirar).
+    @Default(true) bool coordinates,
+
     /// A máquina está para responder.
     @Default(false) bool machineThinking,
 
