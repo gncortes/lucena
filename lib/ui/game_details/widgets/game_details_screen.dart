@@ -162,9 +162,12 @@ class _ReviewBodyState extends State<_ReviewBody> {
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
     ];
     if (state.shownPosition == null) {
-      return ListView(
-        padding: scrollPadding(context),
-        children: [summary, ...header, ...footer],
+      return ColoredBox(
+        color: Theme.of(context).colorScheme.surface,
+        child: ListView(
+          padding: scrollPadding(context),
+          children: [summary, ...header, ...footer],
+        ),
       );
     }
     return LayoutBuilder(
@@ -212,6 +215,7 @@ class _ReviewBodyState extends State<_ReviewBody> {
             Positioned.fill(
               child: ViktorSheet(
                 key: GameDetailsKeys.sheet,
+                color: Theme.of(context).colorScheme.surface,
                 top: boardArea,
                 scrollKey: GameDetailsKeys.panel,
                 closeKey: GameDetailsKeys.closeSheet,
@@ -299,7 +303,8 @@ class _Header extends StatelessWidget {
     };
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -508,7 +513,8 @@ class _MoveTable extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Card(
         margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        color: colors.surfaceContainerLow,
+        color: Colors.transparent,
+        elevation: 0,
         clipBehavior: Clip.antiAlias,
         child: LayoutBuilder(
           builder: (context, box) {

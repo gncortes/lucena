@@ -16,6 +16,7 @@ import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
@@ -403,6 +404,41 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+  });
+
+  group('avatares (T73, D9)', () {
+    Size avatarIn(WidgetTester tester, Key key) => tester.getSize(
+      find.descendant(
+        of: find.byKey(key),
+        matching: find.byType(CharacterAvatar),
+      ),
+    );
+
+    testWidgets('no confronto o adversário (avatar com moldura) tem 72', (
+      tester,
+    ) async {
+      await open(tester, moves: _longMoves, played: const Duration(minutes: 5));
+      final frame = find
+          .ancestor(
+            of: find.descendant(
+              of: find.byKey(ConclusionKeys.opponent),
+              matching: find.byType(CharacterAvatar),
+            ),
+            matching: find.byType(Container),
+          )
+          .first;
+      expect(tester.getSize(frame), const Size(72, 72));
+    });
+
+    testWidgets('na fala em cartão do adversário o avatar tem 56', (
+      tester,
+    ) async {
+      await open(tester, moves: _longMoves, played: const Duration(minutes: 5));
+      await tester.ensureVisible(find.byKey(ConclusionKeys.quickReview));
+      await tester.tap(find.byKey(ConclusionKeys.quickReview));
+      await settle(tester);
+      expect(avatarIn(tester, ConclusionKeys.comment), const Size(56, 56));
     });
   });
 

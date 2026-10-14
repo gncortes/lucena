@@ -10,6 +10,7 @@ import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 import 'sheet_close_button.dart';
 import 'speech_text_tap_notification.dart';
+import '../theme/app_colors.dart';
 
 /// Folha do Viktor sobre a área de jogo. O topo recolhido é explícito;
 /// abrir a folha nunca redimensiona ou desloca o tabuleiro atrás dela.
@@ -28,6 +29,7 @@ class ViktorSheet extends StatefulWidget {
     this.onMinimumChanged,
     this.collapsedInset,
     this.padding = const EdgeInsets.only(bottom: AppSpacing.sm),
+    this.color,
     super.key,
   });
 
@@ -89,6 +91,10 @@ class ViktorSheet extends StatefulWidget {
 
   final ValueChanged<double>? onMinimumChanged;
   final EdgeInsetsGeometry padding;
+
+  /// O fundo da folha; sem ele, `surfaceContainerLow`. A análise usa `surface`
+  /// (painel contínuo, D13).
+  final Color? color;
 
   @override
   State<ViktorSheet> createState() => _ViktorSheetState();
@@ -313,7 +319,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
               _scroll = scroll;
               return DecoratedBox(
                 decoration: BoxDecoration(
-                  color: colors.surfaceContainerLow,
+                  color: widget.color ?? colors.surfaceContainerLow,
                   borderRadius: radius,
                   boxShadow: [
                     BoxShadow(
@@ -387,10 +393,10 @@ class _ViktorSheetState extends State<ViktorSheet> {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: _expanded
-                                  ? [Colors.white, Colors.white]
+                                  ? [AppColors.white, AppColors.white]
                                   : [
-                                      Colors.white,
-                                      Colors.white,
+                                      AppColors.white,
+                                      AppColors.white,
                                       Colors.transparent,
                                       Colors.transparent,
                                     ],

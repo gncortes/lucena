@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import 'sheet_close_button.dart';
+import '../theme/app_colors.dart';
 
 /// Abre uma folha da lição roteirizada (a fala inteira e as Curiosidades)
 /// numa rota transparente que imita a bottom sheet: o fundo escurece, a folha
@@ -23,7 +24,7 @@ Future<void> showScriptSheet(
       opaque: false,
       barrierDismissible: true,
       barrierLabel: barrier,
-      barrierColor: Colors.black.withValues(alpha: 0.32),
+      barrierColor: AppColors.black.withValues(alpha: 0.32),
       transitionDuration: AppMotion.of(context).panel,
       reverseTransitionDuration: AppMotion.of(context).panel,
       pageBuilder: (context, _, _) => ScriptSheetFrame(

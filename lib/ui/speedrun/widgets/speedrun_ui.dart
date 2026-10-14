@@ -26,6 +26,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../history/widgets/history_labels.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_pace_chip.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O nome de um speedrun: contra quem (`Contra o Coco`), o nome do final
 /// (`Dama contra torre`), a série de exercícios ou a Jornada completa.
@@ -562,7 +563,9 @@ class SpeedrunOfferLine extends StatelessWidget {
 
   // O verde do "sobe" com o contraste de leitura (4,5:1) sobre o aviso.
   static Color _legible(Color color, Color background, Brightness brightness) {
-    final target = brightness == Brightness.dark ? Colors.white : Colors.black;
+    final target = brightness == Brightness.dark
+        ? AppColors.white
+        : AppColors.black;
     var result = color;
     for (var i = 0; i < 10 && _contrast(result, background) < 4.5; i++) {
       result = Color.lerp(result, target, 0.1)!;

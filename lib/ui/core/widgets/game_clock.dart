@@ -6,6 +6,7 @@ import '../../../domain/use_cases/clock_format.dart';
 import '../theme/app_shape.dart';
 import 'game_entrance.dart';
 import 'time_display.dart';
+import '../theme/app_colors.dart';
 
 /// Um jogador numa fileira de relógio: o retrato (o peão do lado), o nome e,
 /// na ponta, o relógio ou de quem é a vez. Só apresentação: quem usa dá os
@@ -341,8 +342,8 @@ class GameClock extends StatelessWidget {
 
   static const _width = 124.0;
   static const _height = 44.0;
-  static const _light = Color(0xFFFFFFFF);
-  static const _dark = Color(0xFF262421);
+  static const _light = AppColors.white;
+  static const _dark = AppColors.clockDark;
 
   @override
   Widget build(BuildContext context) {

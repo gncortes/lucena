@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../theme/app_shape.dart';
 import 'goal_style.dart';
+import '../theme/app_colors.dart';
 
 enum TimeDisplayType { clock, stopwatch, countdown, record, duration, pace }
 
@@ -71,8 +72,8 @@ class TimeDisplay extends StatelessWidget {
     final running =
         state == TimeDisplayState.active || state == TimeDisplayState.low;
     // Piece-side colors intentionally stay fixed across light/dark themes.
-    const light = Color(0xFFFFFFFF);
-    const dark = Color(0xFF262421);
+    const light = AppColors.white;
+    const dark = AppColors.clockDark;
     final darkTheme = theme.brightness == Brightness.dark;
     final (background, foreground, accent) = clock
         ? side == Side.white
@@ -105,8 +106,8 @@ class TimeDisplay extends StatelessWidget {
             // tempo em branco (T67d, variante B; 5,1:1 no claro).
             TimeDisplayState.highlight => (
               GoalStyle.of(context, PositionGoal.win).color,
-              darkTheme ? const Color(0xFF0B2E10) : const Color(0xFFFFFFFF),
-              darkTheme ? const Color(0xFF0B2E10) : const Color(0xFFFFFFFF),
+              darkTheme ? AppColors.clockOnGreen : AppColors.white,
+              darkTheme ? AppColors.clockOnGreen : AppColors.white,
             ),
           };
     final icon = switch (type) {

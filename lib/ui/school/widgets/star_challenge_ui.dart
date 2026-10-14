@@ -57,9 +57,9 @@ Color starColor(StarKind kind) => switch (kind) {
 /// A cor do selo de cada nível: verde, laranja, vermelho e, às cegas, roxo.
 Color levelColor(ChallengeLevel level) => switch (level) {
   ChallengeLevel.easy => AppColors.successColor,
-  ChallengeLevel.medium => const Color(0xffe65100),
+  ChallengeLevel.medium => AppColors.levelMedium,
   ChallengeLevel.hard => AppColors.errorColor,
-  ChallengeLevel.named => const Color(0xff6a1b9a),
+  ChallengeLevel.named => AppColors.levelNamed,
 };
 
 /// O fundo dos cartões da tela (o convite e o placar, D2 do canvas V2): no

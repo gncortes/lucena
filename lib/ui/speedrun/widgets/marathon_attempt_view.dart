@@ -29,6 +29,7 @@ import '../view_models/speedrun_cubit.dart';
 import 'speedrun_pace_chip.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O fim de uma tentativa da Maratona (artboards `MaratonaResumo` e
 /// `MaratonaFim*`, contrato da T67f):
@@ -419,7 +420,9 @@ class _Offer extends StatelessWidget {
 
   // O verde do "sobe" com o contraste de leitura (4,5:1) sobre o aviso.
   static Color _legible(Color color, Color background, Brightness brightness) {
-    final target = brightness == Brightness.dark ? Colors.white : Colors.black;
+    final target = brightness == Brightness.dark
+        ? AppColors.white
+        : AppColors.black;
     var result = color;
     for (var i = 0; i < 10 && _contrast(result, background) < 4.5; i++) {
       result = Color.lerp(result, target, 0.1)!;

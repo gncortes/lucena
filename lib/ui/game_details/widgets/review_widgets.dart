@@ -27,6 +27,7 @@ import '../view_models/game_details_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/progress_pill.dart';
+import '../../core/theme/app_colors.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -192,7 +193,8 @@ class ReviewSummary extends StatelessWidget {
     }
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -406,7 +408,8 @@ class ReviewLegend extends StatelessWidget {
     return Card(
       key: GameDetailsKeys.legend,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         child: Column(
@@ -518,14 +521,14 @@ class _AccuracyBox extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 96),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: light ? const Color(0xFFF2F2F0) : const Color(0xFF2B2B2B),
+        color: light ? AppColors.paper : AppColors.chessBlackColor,
         borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Text(
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: light ? const Color(0xFF1E1E1E) : Colors.white,
+          color: light ? AppColors.paperInk : AppColors.white,
           fontSize: 26,
           fontWeight: FontWeight.w800,
           fontFeatures: const [FontFeature.tabularFigures()],
@@ -709,14 +712,14 @@ class _ReviewBoardState extends State<ReviewBoard> {
       if (lines == null || lines.isEmpty || lines.first.moves.isEmpty) {
         return null;
       }
-      return _squares(lines.first.moves.first, const Color(0xCC3E7BC4));
+      return _squares(lines.first.moves.first, AppColors.markBlue);
     }
     final reviewed = state.shownReview;
     final best = reviewed?.best;
     if (reviewed == null || best == null || !reviewed.quality.isError) {
       return null;
     }
-    return _squares(best, const Color(0xCC5FA14A));
+    return _squares(best, AppColors.markGreen);
   }
 
   static (Square, Square, Color)? _squares(String uci, Color color) {
@@ -748,8 +751,8 @@ class _EvalBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final share = (whiteWin ?? 50) / 100;
-    final white = Container(color: const Color(0xFFF2F2F0));
-    final black = Container(color: const Color(0xFF3A3A3A));
+    final white = Container(color: AppColors.paper);
+    final black = Container(color: AppColors.graphite);
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppShape.small),
       child: SizedBox(
@@ -795,8 +798,8 @@ class _EvalBar extends StatelessWidget {
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: whiteAhead
-                              ? const Color(0xFF3A3A3A)
-                              : const Color(0xFFF2F2F0),
+                              ? AppColors.graphite
+                              : AppColors.paper,
                         ),
                       ),
                     ),
@@ -923,10 +926,6 @@ class MoveExplanation extends StatelessWidget {
       key: GameDetailsKeys.explanation,
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.medium),
-      ),
       child: Row(
         children: [
           if (leading != null) ...[leading, const SizedBox(width: 12)],
@@ -1187,8 +1186,8 @@ class EngineLinesPanel extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: line.score.whiteWinPercent >= 50
-                        ? const Color(0xFFF2F2F0)
-                        : const Color(0xFF2B2B2B),
+                        ? AppColors.paper
+                        : AppColors.chessBlackColor,
                     borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   child: Text(
@@ -1196,8 +1195,8 @@ class EngineLinesPanel extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       color: line.score.whiteWinPercent >= 50
-                          ? const Color(0xFF1E1E1E)
-                          : Colors.white,
+                          ? AppColors.paperInk
+                          : AppColors.white,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
@@ -1220,7 +1219,8 @@ class EngineLinesPanel extends StatelessWidget {
     return Card(
       key: GameDetailsKeys.engineLines,
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
         child: Column(
