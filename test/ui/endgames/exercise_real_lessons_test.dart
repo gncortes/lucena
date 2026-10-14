@@ -169,7 +169,7 @@ void main() {
     expect(said, contains('Esse lance não resolve o exercício.'));
     expect(
       said,
-      contains('Com erro no primeiro lance, este exercício não vale mais '),
+      contains('Com o erro no primeiro lance, este exercício não vale mais '),
     );
     expect(said, endsWith('Tente outro lance.'));
     await expectNoNotation(tester);
@@ -557,7 +557,7 @@ void main() {
     final cubit = await pump(tester, kingPawn, 'e13');
     await play(tester, cubit, 'b6b7');
     const warning =
-        'Com erro no primeiro lance, este exercício não vale mais pontos.';
+        'Com o erro no primeiro lance, este exercício não vale mais pontos.';
     final said = speech(tester);
     expect(said, startsWith('Não. $warning'));
     final paragraph = tester.renderObject<RenderParagraph>(

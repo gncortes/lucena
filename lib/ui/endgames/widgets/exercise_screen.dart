@@ -475,7 +475,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     }
   }
 
-  /// "Correto." sem erro nem dica; senão "Resolvido, mas com ..." com o que
+  /// "Correto!" sem erro nem dica; senão "Resolvido, mas com ..." com o que
   /// houve (um erro, N erros, dicas).
   static String _solvedLead(AppLocalizations l10n, ExerciseState state) {
     final mistakes = state.mistakes;
