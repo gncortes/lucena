@@ -174,14 +174,15 @@ class DemoControls extends StatelessWidget {
           LessonKeys.demoPause,
           state.demoPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
           state.demoPlaying ? l10n.lessonDemoPause : l10n.lessonDemoPlay,
-          cubit.demoTogglePause,
+          // Fora do roteiro o aluno joga: reproduzir não faz sentido.
+          state.offScript ? null : cubit.demoTogglePause,
         ),
         button(
           LessonKeys.demoForward,
           Icons.skip_next_rounded,
           l10n.lessonDemoForward,
-          // Fora do roteiro (pg. 2.5) segue ativo: volta ao roteiro e anda um.
-          cubit.demoForward,
+          // Fora do roteiro o aluno joga: o próximo passo fica desabilitado.
+          state.offScript ? null : cubit.demoForward,
           main: true,
           ring: ring,
         ),

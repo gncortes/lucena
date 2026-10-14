@@ -58,13 +58,14 @@ void main() {
     Size size = const Size(412, 917),
     int cp = 900,
     bool withEngine = true,
+    LessonStep? custom,
   }) async {
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = size;
     addTearDown(tester.view.reset);
     final step = trimmed
-        ? real.lesson.steps.firstWhere((s) => s.id == stepId)
+        ? custom ?? real.lesson.steps.firstWhere((s) => s.id == stepId)
         : null;
     final trail = !trimmed
         ? EndgameTrail(
@@ -325,4 +326,75 @@ void main() {
       expect(plain('encontram um recurso contra o seu plano'), findsNothing);
     });
   }
+
+  Future<LessonCubit> offScript(WidgetTester tester) async {
+    final cubit = await pump(tester, 'd_distant');
+    cubit.demoTogglePause();
+    for (var i = 0; i < 2; i++) {
+      final step = cubit.demoForward();
+      await tester.pump(const Duration(seconds: 1));
+      await step;
+    }
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    final played = cubit.play(Move.parse('e4d4')!);
+    await tester.pump(const Duration(seconds: 1));
+    await played;
+    for (var i = 0; i < 4; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    return cubit;
+  }
+
+  testWidgets('fora do roteiro: ⏭ e ▶ desabilitados; voltar reabilita', (
+    tester,
+  ) async {
+    final cubit = await offScript(tester);
+    expect(cubit.state.offScript, isTrue);
+    IconButton button(Key key) => tester.widget<IconButton>(find.byKey(key));
+    expect(button(LessonKeys.demoForward).onPressed, isNull);
+    expect(button(LessonKeys.demoPause).onPressed, isNull);
+    expect(button(LessonKeys.demoBack).onPressed, isNotNull);
+    await tester.tap(find.byKey(LessonKeys.demoBackToScript));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    expect(cubit.state.offScript, isFalse);
+    expect(button(LessonKeys.demoForward).onPressed, isNotNull);
+    expect(button(LessonKeys.demoPause).onPressed, isNotNull);
+  });
+
+  testWidgets(
+    'fora do roteiro, o afogamento encerra: frase e tabuleiro travado',
+    (tester) async {
+      const fen = '7k/5Q2/8/8/8/8/8/K7 w - - 0 1';
+      final cubit = await pump(
+        tester,
+        'x',
+        custom: const DemoStep(
+          id: 'x',
+          fen: fen,
+          line: [DemoMove(uci: 'f7f1')],
+        ),
+      );
+      cubit.demoTogglePause();
+      await tester.pumpAndSettle(const Duration(milliseconds: 100));
+      final played = cubit.play(Move.parse('f7g6')!);
+      await tester.pump(const Duration(seconds: 1));
+      await played;
+      for (var i = 0; i < 4; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 50)),
+        );
+        await tester.pump(const Duration(milliseconds: 300));
+      }
+      expect(cubit.state.note, LessonNote.gameStalemate);
+      expect(plain('Afogamento: empate.'), findsWidgets);
+      expect(find.byKey(LessonKeys.demoBackToScript), findsOneWidget);
+      // Nenhum lance novo entra.
+      final fenAfter = cubit.state.fen;
+      await cubit.play(Move.parse('h8g8')!);
+      expect(cubit.state.fen, fenAfter);
+    },
+  );
 }

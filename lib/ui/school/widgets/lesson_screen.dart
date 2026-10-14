@@ -384,6 +384,7 @@ class _LessonScreenState extends State<LessonScreen>
         position != null &&
         state.phase == StepPhase.active &&
         !state.typing &&
+        state.note?.isGameEnd != true &&
         position.turn == side;
     return GameData(
       fen: fen,
@@ -2729,6 +2730,16 @@ class _LessonScreenState extends State<LessonScreen>
       LessonNote.engineReply => l10n.lessonEngineReply(
         _sideWord(context, opponent),
       ),
+      LessonNote.gameMate => l10n.lessonGameMate(
+        _sideWord(
+          context,
+          (GameRules.fromFen(state.fen ?? '')?.turn ?? Side.white).opposite,
+        ),
+      ),
+      LessonNote.gameStalemate => l10n.lessonGameStalemate,
+      LessonNote.gameInsufficient => l10n.lessonGameInsufficient,
+      LessonNote.gameRepetition => l10n.lessonGameRepetition,
+      LessonNote.gameFifty => l10n.lessonGameFifty,
       LessonNote.alsoWins => l10n.lessonEngineAlsoWins,
       LessonNote.alsoHolds => l10n.lessonEngineAlsoHolds,
       LessonNote.alsoWinsShowMain => l10n.lessonEngineAlsoWinsShowMain,

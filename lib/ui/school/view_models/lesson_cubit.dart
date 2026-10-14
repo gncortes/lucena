@@ -22,6 +22,7 @@ import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/step_clock.dart';
 import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_sound.dart';
 import '../../../domain/models/haptic_event.dart';
 import '../../core/sound/game_haptics.dart';
@@ -71,6 +72,16 @@ enum LessonNote {
   alsoHolds,
   alsoWinsShowMain,
   alsoHoldsShowMain,
+
+  /// Fim de partida na demonstração fora do roteiro: o tabuleiro trava.
+  gameMate,
+  gameStalemate,
+  gameInsufficient,
+  gameRepetition,
+  gameFifty;
+
+  /// A partida acabou (o tabuleiro não aceita mais lance).
+  bool get isGameEnd => index >= gameMate.index;
 }
 
 /// Um lance do aluno com a resposta da máquina no prático (T70): a unidade do
@@ -2420,6 +2431,7 @@ class LessonCubit extends Cubit<LessonState> {
         position == null ||
         state.phase != StepPhase.active ||
         state.typing ||
+        state.note?.isGameEnd == true ||
         position.turn != step.side ||
         !position.isLegal(move)) {
       return;
@@ -2444,6 +2456,26 @@ class LessonCubit extends Cubit<LessonState> {
     final before = state;
     final index = state.step;
     final off = [...state.demoOff, move.uci];
+    final fromScript = state.offScript ? state.demoOffFrom : state.demoMove;
+    final endedNow = _gameNote(step, played.position, fromScript, off);
+    if (endedNow != null) {
+      _offNotes
+        ..length = (off.length - 1) ~/ 2
+        ..add(_OffNote(note: endedNow));
+      emit(
+        state.copyWith(
+          fen: played.position.fen,
+          lastMove: move,
+          demoOff: off,
+          demoOffFrom: fromScript,
+          demoPlaying: false,
+          clearHint: true,
+          note: endedNow,
+        ),
+      );
+      await _save();
+      return;
+    }
     emit(
       state.copyWith(
         fen: played.position.fen,
@@ -2481,9 +2513,12 @@ class LessonCubit extends Cubit<LessonState> {
       return;
     }
     unawaited(_sounds?.move(answered.san));
-    final note = answer.verdict == EngineVerdict.keeps
-        ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
-        : LessonNote.engineReply;
+    final replied = [...off, reply!.uci];
+    final note =
+        _gameNote(step, answered.position, fromScript, replied) ??
+        (answer.verdict == EngineVerdict.keeps
+            ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
+            : LessonNote.engineReply);
     _offNotes
       ..length = (off.length - 1) ~/ 2
       ..add(_OffNote(note: note));
@@ -2491,12 +2526,38 @@ class LessonCubit extends Cubit<LessonState> {
       state.copyWith(
         fen: answered.position.fen,
         lastMove: reply,
-        demoOff: [...off, reply!.uci],
+        demoOff: replied,
         typing: false,
         note: note,
       ),
     );
     await _save();
+  }
+
+  /// O fim de partida em [position], depois dos lances do roteiro até
+  /// [scriptPlies] e dos lances do aluno [off]; nulo se a partida continua.
+  LessonNote? _gameNote(
+    DemoStep step,
+    Position position,
+    int scriptPlies,
+    List<String> off,
+  ) {
+    final start = GameRules.fromFen(step.fen);
+    final script = [for (final m in step.line.take(scriptPlies)) m.uci];
+    final end = GameRules.endOf(
+      position,
+      repetitions: start == null
+          ? null
+          : GameRules.repetitionsOf(start, [...script, ...off]),
+    );
+    return switch (end?.reason) {
+      GameEndReason.checkmate => LessonNote.gameMate,
+      GameEndReason.stalemate => LessonNote.gameStalemate,
+      GameEndReason.insufficientMaterial => LessonNote.gameInsufficient,
+      GameEndReason.repetition => LessonNote.gameRepetition,
+      GameEndReason.fiftyMoves => LessonNote.gameFifty,
+      _ => null,
+    };
   }
 
   /// O ramo dos dados (`lines` do passo) que o lance do aluno segue na

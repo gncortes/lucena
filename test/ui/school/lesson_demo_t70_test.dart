@@ -354,12 +354,12 @@ void main() {
             greaterThanOrEqualTo(48),
           );
         }
-        // Fora do roteiro o ⏭ segue ativo (pg. 2.5).
+        // Fora do roteiro o ⏭ fica desabilitado: o aluno é quem joga.
         expect(
           tester
               .widget<IconButton>(find.byKey(LessonKeys.demoForward))
               .onPressed,
-          isNotNull,
+          isNull,
         );
         expect(find.byKey(LessonV2Keys.freeBoardInvite), findsNothing);
         expect(find.byKey(LessonV2Keys.openFreeBoard), findsNothing);

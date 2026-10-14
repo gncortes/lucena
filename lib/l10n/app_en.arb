@@ -6450,6 +6450,31 @@
   "@lessonEngineAlsoHolds": {
     "description": "Engine said the student move keeps the draw (demonstration)."
   },
+  "lessonGameStalemate": "Stalemate: it is a draw.",
+  "@lessonGameStalemate": {
+      "description": "Game end in the demonstration: stalemate."
+  },
+  "lessonGameInsufficient": "Insufficient material: it is a draw.",
+  "@lessonGameInsufficient": {
+      "description": "Game end in the demonstration: neither side can mate."
+  },
+  "lessonGameRepetition": "Threefold repetition: it is a draw.",
+  "@lessonGameRepetition": {
+      "description": "Game end in the demonstration: position repeated three times."
+  },
+  "lessonGameFifty": "Fifty-move rule: it is a draw.",
+  "@lessonGameFifty": {
+      "description": "Game end in the demonstration: fifty moves without capture or pawn move."
+  },
+  "lessonGameMate": "Checkmate: {side} win.",
+  "@lessonGameMate": {
+      "description": "Game end in the demonstration: checkmate; {side} is the winning side.",
+      "placeholders": {
+          "side": {
+              "type": "String"
+          }
+      }
+  },
   "lessonEngineAlsoWinsShowMain": "Well done: this path also wins. Now see the main line.",
   "@lessonEngineAlsoWinsShowMain": {
     "description": "Engine said the student move keeps the win (learning step)."
