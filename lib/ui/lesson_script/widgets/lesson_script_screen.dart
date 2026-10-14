@@ -53,6 +53,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   /// Na tela baixa, a folga mínima entre o tabuleiro e o rodapé.
   static const _compactGap = 4.0;
 
+  /// O voltar redondo (FAB padrão, 56 dp): a altura fixa do rodapé.
+  static const _fabSize = 56.0;
+
   Character? _viktor;
   bool _started = false;
 
@@ -467,8 +470,10 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       color: Theme.of(context).scaffoldBackgroundColor,
       // O voltar redondo da lição (`lesson_screen.dart`, Gabriel 14/10/2026):
       // só aparece quando há para onde voltar.
+      // Sem o voltar e sem botão, o rodapé guarda a altura do voltar: o
+      // tabuleiro não pula quando ele aparece (1º lance, troca de lado).
       hint: controls == null
-          ? back
+          ? back ?? const SizedBox(height: _fabSize)
           : Expanded(child: Row(children: [?back, const Spacer(), controls])),
       leading: demo != null && demo.ended ? repeat : null,
       hug: true,

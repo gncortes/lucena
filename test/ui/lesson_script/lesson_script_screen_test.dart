@@ -311,13 +311,18 @@ void main() {
     final oracle = FakeKpkOracle(byFen: {afterKc3: KpkOutcome.draw});
     final s = await _open(tester, _tall, oracle: oracle);
     await _until(tester, s, ScriptPhase.pergunta);
+    // O rodapé tem altura fixa: com ou sem o ◀, o tabuleiro não pula.
+    double footerTop() => tester.getTopLeft(find.byType(ExerciseActions)).dy;
+    final top = footerTop();
     await s.cubit.onMove('d3c3');
     await _settle(tester);
     expect(s.cubit.state.phase, ScriptPhase.refutacao);
+    expect(footerTop(), top);
     expect(find.text('Continuar'), findsOneWidget);
     await _tap(tester, LessonScriptKeys.primary);
     expect(s.cubit.state.phase, ScriptPhase.livrePerdido);
     expect(find.byKey(LessonScriptKeys.primary), findsNothing);
+    expect(footerTop(), top);
     expect(s.cubit.state.movable, isNotNull);
     expect(
       tester

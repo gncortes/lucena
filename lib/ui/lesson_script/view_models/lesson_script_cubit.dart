@@ -307,7 +307,15 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _exampleIndex = index;
     _example = _stageData.examples[index];
     _tree = MoveTree.build(_example);
-    final c = _example.curiosities;
+    // O livro aparece em todas as etapas (D2): o exemplo sem curiosidade
+    // próprio, como as posições da prática, usa a do exemplo mais perto
+    // antes dele no roteiro (ou depois, se não houver antes).
+    final all = [for (final stage in _script.stages) ...stage.examples];
+    final at = all.indexOf(_example);
+    final near = [...all.take(at).toList().reversed, ...all.skip(at + 1)];
+    final c =
+        _example.curiosities ??
+        near.map((e) => e.curiosities).nonNulls.firstOrNull;
     _curiosities = c == null
         ? null
         : ScriptCuriosities(
@@ -360,13 +368,19 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     }
   }
 
-  /// Mostra a fala de troca de lado na posição que acabou, já com o lado
-  /// novo (a tela gira o tabuleiro), e espera [switchDelay]. Falso se o aluno
+  /// Mostra a fala de troca de lado já na posição nova e virada: um
+  /// crossfade só, sem passar pela posição que acabou virada (canvas
+  /// `T70-etapa1-estados`, E13g3). Espera [switchDelay]. Falso se o aluno
   /// saiu dali no meio.
   Future<bool> _announceSwitch() async {
     final epoch = _epoch;
+    final from = state.fen;
+    _resetGame(_example.fen);
     _publish(
       state.copyWith(
+        fen: _example.fen,
+        lastMove: null,
+        currentMoveId: null,
         speech: [_say('gen.troca.${_example.student.name}')],
         tone: ScriptTone.neutral,
         marks: const [],
@@ -375,7 +389,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         secondary: null,
         movable: null,
         machineThinking: false,
-        transition: _transition(const [], fromFen: state.fen),
+        transition: _transition(const [], fromFen: from, jump: true),
       ),
     );
     await _delay(switchDelay);
