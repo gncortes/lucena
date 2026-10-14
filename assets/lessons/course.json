@@ -48,7 +48,8 @@
                 "h8"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pieces.rook.json"
         },
         {
           "id": "pieces.bishop",
