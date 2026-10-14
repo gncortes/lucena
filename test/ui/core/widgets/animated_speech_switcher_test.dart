@@ -79,6 +79,11 @@ void main() {
     await tester.pump();
     await tester.pump(AnimatedSpeechSwitcher.resize ~/ 2);
     expect(top(tester), inExclusiveRange(40, 100));
+    // A fala antiga não é cortada na altura da nova: só no balão que encolhe.
+    expect(
+      find.byWidgetPredicate((w) => w is Stack && w.clipBehavior == Clip.none),
+      findsOneWidget,
+    );
     await tester.pumpAndSettle();
     expect(top(tester), 40);
   });

@@ -35,9 +35,11 @@ class AnimatedSpeechSwitcher extends StatelessWidget {
       alignment: AlignmentDirectional.topStart,
       child: AnimatedSwitcher(
         duration: fade,
-        // A altura é a da fala nova; a antiga sai por cima, cortada.
+        // A altura é a da fala nova; a antiga sai por cima e só o
+        // AnimatedSize a corta, aos poucos, enquanto o balão encolhe.
         layoutBuilder: (current, previous) => Stack(
           alignment: AlignmentDirectional.topStart,
+          clipBehavior: Clip.none,
           children: [
             for (final old in previous)
               PositionedDirectional(top: 0, start: 0, end: 0, child: old),
