@@ -1617,7 +1617,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/rules.enPassant.json"
         },
         {
           "id": "pawns.kingPawn",
@@ -1661,7 +1662,8 @@
               "goal": "promote",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.kingPawn.json"
         },
         {
           "id": "pawns.square",
@@ -1713,7 +1715,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.square.json"
         },
         {
           "id": "pawns.rookPawn",
