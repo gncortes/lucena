@@ -303,32 +303,11 @@
   "speedrunTotalTime": "Tempo total",
   "teacherName": "Mestre {name}",
   "tourBack": "Voltar",
-  "tourBoardTitle": "Escolha o seu tabuleiro",
-  "tourEndgamesBody": "Mates básicos, finais de peões, de torre e de dama: cada posição tem um objetivo, vencer ou segurar o empate.",
-  "tourEndgamesTitle": "Finais",
-  "tourGoalBody": "O Lucena coloca-o em finais típicos contra o Maia, uma IA que joga como pessoas reais de cada rating. Tudo funciona offline.",
-  "tourGoalTitle": "Treine finais contra pessoas",
-  "tourJourneyBody": "Suba do Coco ao Stockfish. Vença todos os desafios contra um adversário para desbloquear o seguinte.",
-  "tourJourneyTitle": "A Jornada",
-  "tourLevelBody": "A Jornada começa no adversário certo para si, e os anteriores continuam abertos.",
-  "tourLevelSchool": "Começa com as aulas do Viktor e depois a Jornada no 1000",
   "tourLevelStart": "A Jornada começa no {rung}",
-  "tourLevelTitle": "Qual é o seu nível atual?",
-  "tourNext": "Seguinte",
-  "tourOpponentsBody": "Cada nível do Maia é uma personagem com personalidade própria, que comenta a partida em um balão de fala.",
-  "tourOpponentsTitle": "Os seus adversários",
-  "tourRatingBody": "Cada partida contra o Maia ou o Stockfish altera o seu rating de finais. Num speedrun, o rating chega de uma só vez, quando conclui.",
-  "tourRatingTitle": "O seu rating",
-  "tourRecordsBody": "Bata os seus tempos, desbloqueie conquistas e veja cada partida no histórico.",
-  "tourRecordsTitle": "Recordes e conquistas",
+  "tourNext": "Continuar",
   "tourSkip": "Saltar",
-  "tourSpeedrunBody": "Vença as etapas o mais depressa possível. Na primeira vez que concluir um speedrun, ganha rating, e quanto mais rápido o ritmo, mais ganha.",
-  "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Começar",
-  "tourStartLessons": "Começar as aulas",
   "tourStep": "Passo {step} de {total}",
-  "tourThemeBody": "Escolha o tema e a cor de que mais gosta. Pode mudar quando quiser nas Definições.",
-  "tourThemeTitle": "Deixe a app à sua maneira",
   "resultNextChallenge": "Próximo desafio",
   "reportRatingLabel": "Rating",
   "resultYouWon": "Venceu!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "Todas",
   "catalogDone": "{done} de {total} feitas",
   "tourNameLabel": "Como quer que lhe chame?",
-  "tourNameHelper": "Aparece no ecrã inicial. Pode mudar mais tarde no perfil.",
   "homePathsTitle": "O que quer fazer?",
   "homeLearn": "Aprender a jogar xadrez",
   "homeLearnBody": "Aulas com o Viktor: como as peças se movem, xeque, mate e os primeiros finais.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "Os peões pretos só atrapalham: não é possível capturá-los. O que apanha são as estrelas.",
   "settingsSound": "Sons",
   "settingsSoundHint": "Lances das peças e um aviso quando o seu tempo estiver a acabar",
-  "tourSoundTitle": "Com som ou sem som?",
-  "tourSoundBody": "Ouça as peças a cada lance e um aviso quando o relógio estiver a acabar.",
-  "tourSoundOn": "Com som",
-  "tourSoundOff": "Sem som",
   "reviewStart": "Rever com o Stockfish",
   "reviewRunning": "A analisar o lance {done} de {total}",
   "reviewAccuracy": "Precisão",
@@ -557,11 +531,6 @@
   "voiceGenderFemale": "Feminina",
   "voiceTeacherSample": "Olá! Sou o Viktor, o seu professor. Vamos dominar os finais juntos.",
   "voiceCharacterSample": "Olá! Sou o {name}. Vamos jogar?",
-  "tourVoiceTitle": "Quer que eu fale em voz alta?",
-  "tourVoiceBody": "Escolha a minha voz. Clique em uma delas para ouvir.",
-  "tourCharacterVoicesTitle": "As vozes dos adversários",
-  "tourCharacterVoicesBody": "Cada um já tem uma voz. Clique em um deles para mudar.",
-  "tourKeepVoices": "Manter assim",
   "lessonPrevious": "Passo anterior",
   "lessonFooterBack": "Voltar",
   "voiceSpeedValue": "{speed}×",
@@ -664,8 +633,6 @@
   "homeJourneyBodyPlayer": "Pratica os mates básicos e desafia cada adversário, do Coco ao Stockfish.",
   "homeLearnBodyPlayer": "Revê os fundamentos com o Viktor.",
   "homeSpeedrunBodyChallenge": "Vence toda a gente até ao Stockfish no menor tempo. Bate o teu recorde.",
-  "tourGoalsTitle": "O que queres fazer no Lucena?",
-  "tourGoalsBody": "Marca quantos quiseres. Podes mudar depois, nas Definições.",
   "homeOtherModes": "Outros modos",
   "homeCustomize": "Personalizar",
   "homeLayoutTitle": "Ecrã inicial",
@@ -683,7 +650,6 @@
   "allModesRatingBody": "O teu rating ao longo do tempo e cada partida que contou.",
   "allModesAchievementsBody": "As medalhas que já ganhaste e as que ainda esperam por ti.",
   "speechShowOnBoard": "Mostrar {square} no tabuleiro",
-  "tourDemoMate": "Mate!",
   "profileLevelBeginnerHint": "Estou a aprender as regras",
   "profileLevelCasualHint": "Jogo com amigos de vez em quando",
   "speedrunPaceLine": "Ritmo: {time}",
@@ -975,9 +941,8 @@
   "skillSchoolMinorMates": "Mates com torre e peças menores",
   "skillTacticsBasic": "Garfos, cravagens, espetos e ataques descobertos",
   "skillTacticsEndgame": "Tática nos finais",
-  "tourLevelTestTitle": "Fazer o teste para descobrir o meu nível",
-  "tourLevelTestBody": "20 perguntas, sem relógio, uns 8 a 12 minutos. No fim monto o teu plano de estudo.",
-  "tourLevelTakeTest": "Prefiro fazer o teste",
+  "tourLevelTestTitle": "Fazer o teste",
+  "tourLevelTestBody": "20 perguntas, sem relógio, uns 8 a 12 minutos.",
   "placementTake": "Fazer o teste de nível",
   "schoolPlacedSpeech": "Pelo teu teste, já dominas o início do curso. Vamos começar por: {lesson}.",
   "schoolReviewSkipped": "Rever as aulas anteriores",
@@ -988,7 +953,6 @@
   "endgamesTestPrompt": "Descobre que finais já dominas.",
   "endgamesNextTitle": "O teu próximo final",
   "endgamesThenTitle": "Depois",
-  "tourLevelByHandHint": "Escolhendo tu o nível, o rating fica certo, mas o estudo não fica personalizado. Só o teste mostra o que já dominas e o que falta.",
   "schoolKnownTitle": "Já sabes",
   "schoolKnownBody": "O teste mostrou que dominas estas aulas. Revê quando quiseres.",
   "endgamesForYou": "Para ti",
@@ -1224,5 +1188,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Os adversários ganham uma voz do aparelho sozinhos. A minha voz muda depois nas Configurações, e o seu nome, no perfil.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Ideia",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "eu explico,\nlance por lance",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Exemplos",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "eu mostro\nno tabuleiro",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Prática",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "você joga\nsozinho",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "máximo",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "Estou começando",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "As aulas do Viktor, do movimento das peças aos primeiros mates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Escolher minha faixa",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "Você indica a sua faixa de rating, e a Jornada começa no adversário certo.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

@@ -303,32 +303,11 @@
   "speedrunTotalTime": "الوقت الكلي",
   "teacherName": "المعلم {name}",
   "tourBack": "رجوع",
-  "tourBoardTitle": "اختر رقعتك",
-  "tourEndgamesBody": "كش مات أساسية، ونهايات البيادق والرخ والوزير: لكل وضعية هدف، الفوز أو الحفاظ على التعادل.",
-  "tourEndgamesTitle": "النهايات",
-  "tourGoalBody": "يضعك Lucena في نهايات نموذجية ضد Maia، وهو ذكاء اصطناعي يلعب مثل أشخاص حقيقيين من كل تصنيف. كل شيء يعمل دون اتصال.",
-  "tourGoalTitle": "تدرّب على النهايات ضد البشر",
-  "tourJourneyBody": "اصعد من Maia 1000 إلى Stockfish. أكمل كل تحديات المستوى لفتح المستوى التالي.",
-  "tourJourneyTitle": "الرحلة",
-  "tourLevelBody": "تبدأ الرحلة من المستوى المناسب لك، وتبقى المستويات الأدنى متاحة.",
-  "tourLevelSchool": "تبدأ بدروس فيكتور ثم الرحلة من 1000",
   "tourLevelStart": "تبدأ الرحلة من {rung}",
-  "tourLevelTitle": "ما مستواك الحالي؟",
   "tourNext": "التالي",
-  "tourOpponentsBody": "كل مستوى من Maia شخصية لها طابعها الخاص، تعلّق على المباراة في فقاعة كلام.",
-  "tourOpponentsTitle": "خصومك",
-  "tourRatingBody": "كل مباراة ضد Maia أو Stockfish تغيّر تصنيفك في النهايات. في السبيدران يأتي التصنيف دفعة واحدة عند الإكمال.",
-  "tourRatingTitle": "تصنيفك",
-  "tourRecordsBody": "حطّم أوقاتك، وافتح الإنجازات، وشاهد كل مباراة في السجل.",
-  "tourRecordsTitle": "الأرقام القياسية والإنجازات",
   "tourSkip": "تخطٍّ",
-  "tourSpeedrunBody": "اربح المراحل بأسرع ما يمكن. عند إكمال سبيدران للمرة الأولى تحصل على تصنيف، وكلما كان الإيقاع أسرع زاد التصنيف.",
-  "tourSpeedrunTitle": "سباق الوقت",
   "tourStart": "ابدأ",
-  "tourStartLessons": "ابدأ الدروس",
   "tourStep": "الخطوة {step} من {total}",
-  "tourThemeBody": "اختر المظهر واللون الذي تفضّله. يمكنك تغييرهما في أي وقت من الإعدادات.",
-  "tourThemeTitle": "اجعل التطبيق على ذوقك",
   "resultNextChallenge": "التحدي التالي",
   "reportRatingLabel": "التصنيف",
   "resultYouWon": "لقد فزت!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "الكل",
   "catalogDone": "{done} من {total} منجزة",
   "tourNameLabel": "بماذا أناديك؟",
-  "tourNameHelper": "يظهر في الشاشة الرئيسية. يمكنك تغييره لاحقًا من ملفك الشخصي.",
   "homePathsTitle": "ماذا تريد أن تفعل؟",
   "homeLearn": "تعلّم لعب الشطرنج",
   "homeLearnBody": "دروس مع فيكتور: كيف تتحرك القطع، والكش، وكش مات، وأولى النهايات.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "البيادق السوداء تعترض الطريق فقط: لا يمكن أسرها. ما تجمعه هو النجوم.",
   "settingsSound": "الأصوات",
   "settingsSoundHint": "نقلات القطع وتنبيه عندما يوشك وقتك على الانتهاء",
-  "tourSoundTitle": "مع الصوت أم بدونه؟",
-  "tourSoundBody": "اسمع القطع مع كل نقلة وتنبيهًا عندما توشك الساعة على الانتهاء.",
-  "tourSoundOn": "مع الصوت",
-  "tourSoundOff": "بدون صوت",
   "reviewStart": "مراجعة باستخدام Stockfish",
   "reviewRunning": "تحليل النقلة {done} من {total}",
   "reviewAccuracy": "الدقة",
@@ -557,11 +531,6 @@
   "voiceGenderFemale": "أنثوي",
   "voiceTeacherSample": "مرحبًا! أنا فيكتور، معلمك. لنتقن النهايات معًا.",
   "voiceCharacterSample": "مرحبًا! أنا {name}. هل نلعب؟",
-  "tourVoiceTitle": "هل تريدني أن أتحدث بصوت عالٍ؟",
-  "tourVoiceBody": "اختر صوتي. المس أحدها لتسمعه.",
-  "tourCharacterVoicesTitle": "أصوات خصومك",
-  "tourCharacterVoicesBody": "لكل واحد صوت بالفعل. المس أحدهم لتغييره.",
-  "tourKeepVoices": "أبقِه كما هو",
   "lessonPrevious": "الخطوة السابقة",
   "lessonFooterBack": "رجوع",
   "voiceSpeedValue": "{speed}×",
@@ -664,8 +633,6 @@
   "homeJourneyBodyPlayer": "تدرّب على كشّات المات الأساسية وتحدَّ كل خصم، من كوكو حتى Stockfish.",
   "homeLearnBodyPlayer": "راجع الأساسيات مع فيكتور.",
   "homeSpeedrunBodyChallenge": "اهزم الجميع حتى Stockfish في أقصر وقت. حطّم رقمك القياسي.",
-  "tourGoalsTitle": "ماذا تريد أن تفعل في Lucena؟",
-  "tourGoalsBody": "اختر ما تشاء. يمكنك تغيير ذلك لاحقًا من الإعدادات.",
   "homeOtherModes": "أوضاع أخرى",
   "homeCustomize": "تخصيص",
   "homeLayoutTitle": "الشاشة الرئيسية",
@@ -683,7 +650,6 @@
   "allModesRatingBody": "تصنيفك عبر الزمن وكل مباراة احتُسبت.",
   "allModesAchievementsBody": "الميداليات التي نلتها والتي تنتظرك.",
   "speechShowOnBoard": "إظهار {square} على الرقعة",
-  "tourDemoMate": "كش مات!",
   "profileLevelBeginnerHint": "أتعلم القواعد",
   "profileLevelCasualHint": "ألعب مع الأصدقاء أحيانًا",
   "speedrunPaceLine": "الإيقاع: {time}",
@@ -977,7 +943,6 @@
   "skillTacticsEndgame": "تكتيكات النهايات",
   "tourLevelTestTitle": "إجراء الاختبار لمعرفة مستواي",
   "tourLevelTestBody": "20 سؤالًا، بلا ساعة، من 8 إلى 12 دقيقة تقريبًا. في النهاية أُعدّ لك خطة الدراسة.",
-  "tourLevelTakeTest": "أفضّل إجراء الاختبار",
   "placementTake": "إجراء اختبار المستوى",
   "schoolPlacedSpeech": "بحسب اختبارك، أنت تتقن بداية الدورة. لنبدأ بـ: {lesson}.",
   "schoolReviewSkipped": "مراجعة الدروس السابقة",
@@ -988,7 +953,6 @@
   "endgamesTestPrompt": "اكتشف أي النهايات تتقنها بالفعل.",
   "endgamesNextTitle": "نهايتك التالية",
   "endgamesThenTitle": "بعد ذلك",
-  "tourLevelByHandHint": "إذا اخترت مستواك بنفسك، يُضبط تصنيفك، لكن الدراسة لن تكون مخصصة لك. الاختبار وحده يُظهر ما تتقنه وما ينقصك.",
   "schoolKnownTitle": "أنت تعرف هذا",
   "schoolKnownBody": "أظهر الاختبار أنك تتقن هذه الدروس. راجعها متى شئت.",
   "endgamesForYou": "لك",
@@ -1224,5 +1188,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

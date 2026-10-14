@@ -303,32 +303,11 @@
   "speedrunTotalTime": "총 시간",
   "teacherName": "{name} 선생님",
   "tourBack": "이전",
-  "tourBoardTitle": "체스판을 고르세요",
-  "tourEndgamesBody": "기본 메이트, 폰·룩·퀸 엔드게임: 각 포지션에는 승리 또는 무승부 지키기라는 목표가 있습니다.",
-  "tourEndgamesTitle": "엔드게임",
-  "tourGoalBody": "Lucena는 각 레이팅의 실제 사람처럼 두는 AI인 Maia를 상대로 전형적인 엔드게임을 연습하게 해 줍니다. 모든 기능이 오프라인에서 작동합니다.",
-  "tourGoalTitle": "사람을 상대로 엔드게임 훈련",
-  "tourJourneyBody": "Maia 1000부터 Stockfish까지 올라가세요. 레벨의 도전을 모두 완료하면 다음 레벨이 열립니다.",
-  "tourJourneyTitle": "여정",
-  "tourLevelBody": "여정은 알맞은 레벨에서 시작하며, 아래 레벨도 계속 플레이할 수 있습니다.",
-  "tourLevelSchool": "빅토르의 수업부터 시작해 1000에서 여정을 이어갑니다",
   "tourLevelStart": "여정은 {rung}부터 시작",
-  "tourLevelTitle": "현재 실력은 어느 정도인가요?",
   "tourNext": "다음",
-  "tourOpponentsBody": "Maia의 각 레벨은 고유한 성격을 지닌 캐릭터이며, 말풍선으로 대국에 대해 한마디합니다.",
-  "tourOpponentsTitle": "상대들",
-  "tourRatingBody": "Maia 또는 Stockfish와의 대국마다 엔드게임 레이팅이 변합니다. 스피드런에서는 완주할 때 한꺼번에 반영됩니다.",
-  "tourRatingTitle": "내 레이팅",
-  "tourRecordsBody": "자신의 기록을 경신하고, 업적을 달성하고, 모든 대국을 기록에서 확인하세요.",
-  "tourRecordsTitle": "기록과 업적",
   "tourSkip": "건너뛰기",
-  "tourSpeedrunBody": "최대한 빠르게 단계를 클리어하세요. 스피드런을 처음 완주하면 레이팅을 받고, 페이스가 빠를수록 더 많이 받습니다.",
-  "tourSpeedrunTitle": "스피드런",
   "tourStart": "시작",
-  "tourStartLessons": "수업 시작",
   "tourStep": "{total}단계 중 {step}단계",
-  "tourThemeBody": "마음에 드는 테마와 색상을 고르세요. 설정에서 언제든지 바꿀 수 있습니다.",
-  "tourThemeTitle": "나만의 앱으로 꾸며 보세요",
   "resultNextChallenge": "다음 도전",
   "reportRatingLabel": "레이팅",
   "resultYouWon": "승리했습니다!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "전체",
   "catalogDone": "{total}개 중 {done}개 완료",
   "tourNameLabel": "뭐라고 부르면 될까요?",
-  "tourNameHelper": "홈 화면에 표시됩니다. 나중에 프로필에서 바꿀 수 있습니다.",
   "homePathsTitle": "무엇을 하고 싶으세요?",
   "homeLearn": "체스 배우기",
   "homeLearnBody": "빅토르의 수업: 기물의 움직임, 체크, 체크메이트, 그리고 첫 엔드게임.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "검은 폰은 길을 막을 뿐 잡을 수 없습니다. 모으는 것은 별입니다.",
   "settingsSound": "소리",
   "settingsSoundHint": "기물의 움직임과 시간이 얼마 남지 않았을 때의 알림",
-  "tourSoundTitle": "소리를 켤까요?",
-  "tourSoundBody": "수를 둘 때마다 기물 소리가 나고, 시계가 거의 다 되면 알림이 울립니다.",
-  "tourSoundOn": "소리 켜기",
-  "tourSoundOff": "소리 끄기",
   "reviewStart": "Stockfish로 복기",
   "reviewRunning": "{total}수 중 {done}번째 수 분석 중",
   "reviewAccuracy": "정확도",
@@ -557,11 +531,6 @@
   "voiceGenderFemale": "여성",
   "voiceTeacherSample": "안녕하세요! 선생님 빅토르입니다. 함께 엔드게임을 정복해 봅시다.",
   "voiceCharacterSample": "안녕! 나는 {name}이야. 한 판 할까?",
-  "tourVoiceTitle": "소리 내어 말할까요?",
-  "tourVoiceBody": "제 목소리를 골라 주세요. 누르면 들을 수 있어요.",
-  "tourCharacterVoicesTitle": "상대들의 목소리",
-  "tourCharacterVoicesBody": "모두 이미 목소리가 있어요. 바꾸려면 상대를 누르세요.",
-  "tourKeepVoices": "이대로 두기",
   "lessonPrevious": "이전 단계",
   "lessonFooterBack": "뒤로",
   "voiceSpeedValue": "{speed}×",
@@ -664,8 +633,6 @@
   "homeJourneyBodyPlayer": "기본 체크메이트를 연습하고 코코부터 Stockfish까지 모든 상대에게 도전하세요.",
   "homeLearnBodyPlayer": "빅토르와 함께 기초를 다시 익혀 보세요.",
   "homeSpeedrunBodyChallenge": "Stockfish까지 모두를 가장 빠르게 이기세요. 기록을 깨 보세요.",
-  "tourGoalsTitle": "Lucena에서 무엇을 하고 싶나요?",
-  "tourGoalsBody": "원하는 만큼 선택하세요. 나중에 설정에서 바꿀 수 있어요.",
   "homeOtherModes": "다른 모드",
   "homeCustomize": "맞춤 설정",
   "homeLayoutTitle": "홈 화면",
@@ -683,7 +650,6 @@
   "allModesRatingBody": "시간에 따른 레이팅과 반영된 모든 대국.",
   "allModesAchievementsBody": "받은 메달과 아직 기다리는 메달.",
   "speechShowOnBoard": "{square}을(를) 보드에 표시",
-  "tourDemoMate": "체크메이트!",
   "profileLevelBeginnerHint": "규칙을 배우는 중이에요",
   "profileLevelCasualHint": "가끔 친구들과 둬요",
   "speedrunPaceLine": "시간: {time}",
@@ -977,7 +943,6 @@
   "skillTacticsEndgame": "엔드게임 전술",
   "tourLevelTestTitle": "테스트로 내 수준 알아보기",
   "tourLevelTestBody": "20문제, 시계 없음, 약 8~12분. 끝나면 학습 계획을 짜 드릴게요.",
-  "tourLevelTakeTest": "테스트를 볼래요",
   "placementTake": "레벨 테스트 보기",
   "schoolPlacedSpeech": "테스트 결과, 과정의 앞부분은 이미 알고 있어요. 여기서 시작해요: {lesson}.",
   "schoolReviewSkipped": "이전 수업 다시 보기",
@@ -988,7 +953,6 @@
   "endgamesTestPrompt": "어떤 엔드게임을 이미 아는지 알아보세요.",
   "endgamesNextTitle": "다음 엔드게임",
   "endgamesThenTitle": "그다음",
-  "tourLevelByHandHint": "직접 수준을 고르면 레이팅은 정해지지만, 학습은 맞춤이 되지 않아요. 무엇을 알고 무엇이 부족한지는 테스트만 보여 줘요.",
   "schoolKnownTitle": "이미 알고 있어요",
   "schoolKnownBody": "테스트 결과 이 수업들은 이미 알고 있어요. 원할 때 다시 볼 수 있어요.",
   "endgamesForYou": "추천",
@@ -1224,5 +1188,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

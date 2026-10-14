@@ -303,32 +303,11 @@
   "speedrunTotalTime": "Czas łączny",
   "teacherName": "Mistrz {name}",
   "tourBack": "Wstecz",
-  "tourBoardTitle": "Wybierz swoją szachownicę",
-  "tourEndgamesBody": "Podstawowe maty, końcówki pionkowe, wieżowe i hetmańskie: każda pozycja ma cel, wygrać lub utrzymać remis.",
-  "tourEndgamesTitle": "Końcówki",
-  "tourGoalBody": "Lucena stawia cię w typowych końcówkach przeciwko Maia, SI, która gra jak prawdziwi ludzie o danym rankingu. Wszystko działa offline.",
-  "tourGoalTitle": "Trenuj końcówki przeciwko ludziom",
-  "tourJourneyBody": "Wspinaj się od Maia 1000 do Stockfish. Ukończ wszystkie wyzwania poziomu, aby odblokować następny.",
-  "tourJourneyTitle": "Podróż",
-  "tourLevelBody": "Podróż zaczyna się na pasującym poziomie, a niższe poziomy nadal są dostępne.",
-  "tourLevelSchool": "Zaczynasz od lekcji z Viktorem, potem Podróż od 1000",
   "tourLevelStart": "Podróż zaczyna się od {rung}",
-  "tourLevelTitle": "Jaki jest twój obecny poziom?",
   "tourNext": "Dalej",
-  "tourOpponentsBody": "Każdy poziom Maia to postać z własną osobowością, która komentuje partię w dymku.",
-  "tourOpponentsTitle": "Twoi przeciwnicy",
-  "tourRatingBody": "Każda partia z Maią lub Stockfishem zmienia twój ranking w końcówkach. W speedrunie ranking przychodzi naraz, po ukończeniu.",
-  "tourRatingTitle": "Twój ranking",
-  "tourRecordsBody": "Pobijaj swoje czasy, odblokowuj osiągnięcia i przeglądaj każdą partię w historii.",
-  "tourRecordsTitle": "Rekordy i osiągnięcia",
   "tourSkip": "Pomiń",
-  "tourSpeedrunBody": "Wygrywaj etapy jak najszybciej. Za pierwsze ukończenie speedruna dostajesz ranking, a im szybsze tempo, tym więcej.",
-  "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Zaczynamy",
-  "tourStartLessons": "Zacznij lekcje",
   "tourStep": "Krok {step} z {total}",
-  "tourThemeBody": "Wybierz motyw i kolor, który lubisz najbardziej. Możesz je zmienić w każdej chwili w Ustawieniach.",
-  "tourThemeTitle": "Dopasuj aplikację do siebie",
   "resultNextChallenge": "Następne wyzwanie",
   "reportRatingLabel": "Ranking",
   "resultYouWon": "Wygrałeś!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "Wszystkie",
   "catalogDone": "{done} z {total} zrobione",
   "tourNameLabel": "Jak mam się do ciebie zwracać?",
-  "tourNameHelper": "Imię widać na ekranie głównym. Możesz je później zmienić w profilu.",
   "homePathsTitle": "Co chcesz zrobić?",
   "homeLearn": "Naucz się grać w szachy",
   "homeLearnBody": "Lekcje z Viktorem: jak poruszają się figury, szach, mat i pierwsze końcówki.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "Czarne piony tylko przeszkadzają: nie można ich bić. Zbierasz gwiazdki.",
   "settingsSound": "Dźwięki",
   "settingsSoundHint": "Ruchy figur i sygnał, gdy kończy ci się czas",
-  "tourSoundTitle": "Z dźwiękiem czy bez?",
-  "tourSoundBody": "Usłysz figury przy każdym ruchu i sygnał, gdy zegar dobiega końca.",
-  "tourSoundOn": "Z dźwiękiem",
-  "tourSoundOff": "Bez dźwięku",
   "reviewStart": "Analizuj ze Stockfishem",
   "reviewRunning": "Analiza ruchu {done} z {total}",
   "reviewAccuracy": "Dokładność",
@@ -557,11 +531,6 @@
   "voiceGenderFemale": "Żeński",
   "voiceTeacherSample": "Cześć! Jestem Viktor, twój nauczyciel. Opanujmy razem końcówki.",
   "voiceCharacterSample": "Cześć! Jestem {name}. Gramy?",
-  "tourVoiceTitle": "Czy mam mówić na głos?",
-  "tourVoiceBody": "Wybierz mój głos. Dotknij jednego, aby go usłyszeć.",
-  "tourCharacterVoicesTitle": "Głosy twoich przeciwników",
-  "tourCharacterVoicesBody": "Każdy ma już głos. Dotknij kogoś, aby go zmienić.",
-  "tourKeepVoices": "Zostaw tak",
   "lessonPrevious": "Poprzedni krok",
   "lessonFooterBack": "Wstecz",
   "voiceSpeedValue": "{speed}×",
@@ -664,8 +633,6 @@
   "homeJourneyBodyPlayer": "Ćwicz podstawowe maty i rzuć wyzwanie każdemu rywalowi, od Coco do Stockfisha.",
   "homeLearnBodyPlayer": "Powtórz podstawy z Viktorem.",
   "homeSpeedrunBodyChallenge": "Pokonaj wszystkich aż do Stockfisha w jak najkrótszym czasie. Pobij swój rekord.",
-  "tourGoalsTitle": "Co chcesz robić w Lucenie?",
-  "tourGoalsBody": "Zaznacz, ile chcesz. Możesz to później zmienić w Ustawieniach.",
   "homeOtherModes": "Inne tryby",
   "homeCustomize": "Dostosuj",
   "homeLayoutTitle": "Ekran główny",
@@ -683,7 +650,6 @@
   "allModesRatingBody": "Twój ranking w czasie i każda liczona partia.",
   "allModesAchievementsBody": "Medale, które zdobyłeś, i te, które czekają.",
   "speechShowOnBoard": "Pokaż {square} na szachownicy",
-  "tourDemoMate": "Mat!",
   "profileLevelBeginnerHint": "Uczę się zasad",
   "profileLevelCasualHint": "Gram czasem ze znajomymi",
   "speedrunPaceLine": "Tempo: {time}",
@@ -977,7 +943,6 @@
   "skillTacticsEndgame": "Taktyka w końcówkach",
   "tourLevelTestTitle": "Zrobić test i poznać mój poziom",
   "tourLevelTestBody": "20 pytań, bez zegara, około 8–12 minut. Na koniec ułożę twój plan nauki.",
-  "tourLevelTakeTest": "Wolę zrobić test",
   "placementTake": "Zrobić test poziomu",
   "schoolPlacedSpeech": "Według testu znasz już początek kursu. Zacznijmy od: {lesson}.",
   "schoolReviewSkipped": "Powtórz wcześniejsze lekcje",
@@ -988,7 +953,6 @@
   "endgamesTestPrompt": "Sprawdź, które końcówki już znasz.",
   "endgamesNextTitle": "Twoja następna końcówka",
   "endgamesThenTitle": "Potem",
-  "tourLevelByHandHint": "Wybierając poziom samodzielnie, ustawisz ranking, ale nauka nie będzie spersonalizowana. Tylko test pokaże, co już umiesz i czego brakuje.",
   "schoolKnownTitle": "To już umiesz",
   "schoolKnownBody": "Test pokazał, że znasz te lekcje. Wróć do nich, kiedy chcesz.",
   "endgamesForYou": "Dla ciebie",
@@ -1224,5 +1188,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

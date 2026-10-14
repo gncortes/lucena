@@ -303,32 +303,11 @@
   "speedrunTotalTime": "कुल समय",
   "teacherName": "गुरु {name}",
   "tourBack": "पीछे",
-  "tourBoardTitle": "अपना बोर्ड चुनें",
-  "tourEndgamesBody": "बुनियादी मात, प्यादे, हाथी और वज़ीर के एंडगेम: हर पोज़िशन का एक लक्ष्य है, जीतना या ड्रॉ बचाना।",
-  "tourEndgamesTitle": "एंडगेम",
-  "tourGoalBody": "Lucena आपको Maia के ख़िलाफ़ आम एंडगेम में रखता है, जो एक AI है और हर रेटिंग के असली लोगों की तरह खेलता है। सब कुछ ऑफ़लाइन चलता है।",
-  "tourGoalTitle": "इंसानों जैसे विरोधियों से एंडगेम का अभ्यास करें",
-  "tourJourneyBody": "Maia 1000 से Stockfish तक चढ़ें। अगला स्तर खोलने के लिए किसी स्तर की सभी चुनौतियाँ पूरी करें।",
-  "tourJourneyTitle": "यात्रा",
-  "tourLevelBody": "यात्रा मेल खाते स्तर से शुरू होती है, और नीचे वाले स्तर भी आप खेल सकते हैं।",
-  "tourLevelSchool": "पहले विक्टर के पाठ, फिर 1000 से यात्रा",
   "tourLevelStart": "यात्रा {rung} से शुरू होगी",
-  "tourLevelTitle": "आपका मौजूदा स्तर क्या है?",
   "tourNext": "आगे",
-  "tourOpponentsBody": "Maia का हर स्तर अपनी अलग शख़्सियत वाला किरदार है, जो बोलने वाले गुब्बारे में गेम पर टिप्पणी करता है।",
-  "tourOpponentsTitle": "आपके प्रतिद्वंद्वी",
-  "tourRatingBody": "Maia या Stockfish के विरुद्ध हर खेल आपकी एंडगेम रेटिंग बदलता है। स्पीडरन में रेटिंग पूरा करने पर एक साथ मिलती है।",
-  "tourRatingTitle": "आपकी रेटिंग",
-  "tourRecordsBody": "अपने समय को मात दें, उपलब्धियाँ अनलॉक करें और इतिहास में हर गेम देखें।",
-  "tourRecordsTitle": "रिकॉर्ड और उपलब्धियाँ",
   "tourSkip": "छोड़ें",
-  "tourSpeedrunBody": "चरणों को जितना तेज़ हो सके जीतें। स्पीडरन पहली बार पूरा करने पर आपको रेटिंग मिलती है, और गति जितनी तेज़, उतनी ज़्यादा।",
-  "tourSpeedrunTitle": "स्पीडरन",
   "tourStart": "शुरू करें",
-  "tourStartLessons": "पाठ शुरू करें",
   "tourStep": "चरण {step} / {total}",
-  "tourThemeBody": "अपनी पसंद की थीम और रंग चुनें। आप इन्हें सेटिंग में कभी भी बदल सकते हैं।",
-  "tourThemeTitle": "ऐप को अपने अंदाज़ में ढालें",
   "resultNextChallenge": "अगली चुनौती",
   "reportRatingLabel": "रेटिंग",
   "resultYouWon": "आप जीत गए!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "सभी",
   "catalogDone": "{total} में से {done} पूरी",
   "tourNameLabel": "मैं आपको क्या कहकर बुलाऊँ?",
-  "tourNameHelper": "यह होम स्क्रीन पर दिखता है। आप इसे बाद में प्रोफ़ाइल में बदल सकते हैं।",
   "homePathsTitle": "आप क्या करना चाहते हैं?",
   "homeLearn": "शतरंज खेलना सीखें",
   "homeLearnBody": "विक्टर के साथ पाठ: मोहरे कैसे चलते हैं, शह, मात और शुरुआती एंडगेम।",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "काले प्यादे सिर्फ़ रास्ते में हैं: उन्हें पकड़ा नहीं जा सकता। आप तारे इकट्ठा करते हैं।",
   "settingsSound": "ध्वनियाँ",
   "settingsSoundHint": "मोहरों की चालें और समय कम होने पर चेतावनी",
-  "tourSoundTitle": "आवाज़ के साथ या बिना?",
-  "tourSoundBody": "हर चाल पर मोहरों की आवाज़ और घड़ी का समय खत्म होने से पहले चेतावनी सुनें।",
-  "tourSoundOn": "आवाज़ के साथ",
-  "tourSoundOff": "बिना आवाज़",
   "reviewStart": "Stockfish के साथ समीक्षा करें",
   "reviewRunning": "{total} में से चाल {done} का विश्लेषण",
   "reviewAccuracy": "सटीकता",
@@ -557,11 +531,6 @@
   "voiceGenderFemale": "महिला",
   "voiceTeacherSample": "नमस्ते! मैं विक्टर हूँ, आपका शिक्षक। आइए मिलकर एंडगेम में महारत हासिल करें।",
   "voiceCharacterSample": "नमस्ते! मैं {name} हूँ। खेलें?",
-  "tourVoiceTitle": "क्या मैं ज़ोर से बोलूँ?",
-  "tourVoiceBody": "मेरी आवाज़ चुनें। सुनने के लिए किसी एक पर टैप करें।",
-  "tourCharacterVoicesTitle": "आपके प्रतिद्वंद्वियों की आवाज़ें",
-  "tourCharacterVoicesBody": "हर एक की पहले से एक आवाज़ है। बदलने के लिए किसी पर टैप करें।",
-  "tourKeepVoices": "ऐसे ही रखें",
   "lessonPrevious": "पिछला चरण",
   "lessonFooterBack": "वापस",
   "voiceSpeedValue": "{speed}×",
@@ -664,8 +633,6 @@
   "homeJourneyBodyPlayer": "बुनियादी मात का अभ्यास करें और कोको से Stockfish तक हर प्रतिद्वंद्वी को चुनौती दें।",
   "homeLearnBodyPlayer": "विक्टर के साथ बुनियादी बातें दोहराएँ।",
   "homeSpeedrunBodyChallenge": "Stockfish तक सबको सबसे कम समय में हराएँ। अपना रिकॉर्ड तोड़ें।",
-  "tourGoalsTitle": "आप Lucena में क्या करना चाहते हैं?",
-  "tourGoalsBody": "जितने चाहें चुनें। बाद में सेटिंग्स में बदल सकते हैं।",
   "homeOtherModes": "अन्य मोड",
   "homeCustomize": "अपने हिसाब से बदलें",
   "homeLayoutTitle": "होम स्क्रीन",
@@ -683,7 +650,6 @@
   "allModesRatingBody": "समय के साथ आपकी रेटिंग और गिनी गई हर बाज़ी।",
   "allModesAchievementsBody": "आपके जीते पदक और जो अभी बाकी हैं।",
   "speechShowOnBoard": "{square} को बोर्ड पर दिखाएँ",
-  "tourDemoMate": "शह और मात!",
   "profileLevelBeginnerHint": "मैं नियम सीख रहा हूँ",
   "profileLevelCasualHint": "कभी-कभी दोस्तों के साथ खेलता हूँ",
   "speedrunPaceLine": "समय: {time}",
@@ -977,7 +943,6 @@
   "skillTacticsEndgame": "एंडगेम टैक्टिक्स",
   "tourLevelTestTitle": "अपना स्तर जानने के लिए टेस्ट दें",
   "tourLevelTestBody": "20 सवाल, बिना घड़ी, लगभग 8 से 12 मिनट। आख़िर में मैं तुम्हारी पढ़ाई की योजना बनाऊँगा।",
-  "tourLevelTakeTest": "मैं टेस्ट देना चाहूँगा",
   "placementTake": "स्तर टेस्ट दें",
   "schoolPlacedSpeech": "तुम्हारे टेस्ट के हिसाब से तुम कोर्स की शुरुआत पहले से जानते हो। चलो यहाँ से शुरू करें: {lesson}।",
   "schoolReviewSkipped": "पिछले पाठ दोहराएँ",
@@ -988,7 +953,6 @@
   "endgamesTestPrompt": "जानो कौन से एंडगेम तुम्हें पहले से आते हैं।",
   "endgamesNextTitle": "तुम्हारा अगला एंडगेम",
   "endgamesThenTitle": "फिर",
-  "tourLevelByHandHint": "खुद स्तर चुनने पर रेटिंग तय हो जाती है, पर पढ़ाई तुम्हारे हिसाब से नहीं बनती। सिर्फ़ टेस्ट दिखाता है कि तुम्हें क्या आता है और क्या बाकी है।",
   "schoolKnownTitle": "यह तुम्हें आता है",
   "schoolKnownBody": "टेस्ट ने दिखाया कि ये पाठ तुम्हें आते हैं। जब चाहो दोहरा लो।",
   "endgamesForYou": "तुम्हारे लिए",
@@ -1224,5 +1188,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

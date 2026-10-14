@@ -1602,42 +1602,6 @@
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
   },
-  "tourBoardTitle": "Choose your board",
-  "@tourBoardTitle": {
-    "description": "Title of the tour step where the player picks board colors and pieces."
-  },
-  "tourEndgamesBody": "Basic mates, pawn endings, rook and queen endings: each position has a goal, win or hold the draw.",
-  "@tourEndgamesBody": {
-    "description": "Tour step text."
-  },
-  "tourEndgamesTitle": "Endgames",
-  "@tourEndgamesTitle": {
-    "description": "Tour step title."
-  },
-  "tourGoalBody": "Lucena puts you in typical endgames against the Maia, an AI that plays like real people of each rating. Everything works offline.",
-  "@tourGoalBody": {
-    "description": "Tour step text."
-  },
-  "tourGoalTitle": "Train endgames against people",
-  "@tourGoalTitle": {
-    "description": "Tour step title: the purpose of the app."
-  },
-  "tourJourneyBody": "Climb from Maia 1000 to Stockfish. Complete every challenge of a level to unlock the next one.",
-  "@tourJourneyBody": {
-    "description": "Tour step text."
-  },
-  "tourJourneyTitle": "The Journey",
-  "@tourJourneyTitle": {
-    "description": "Tour step title."
-  },
-  "tourLevelBody": "The Journey starts at the matching level, and you can still play the ones below.",
-  "@tourLevelBody": {
-    "description": "Text of the level step of the tour."
-  },
-  "tourLevelSchool": "You start with lessons with Viktor, then the Journey at 1000",
-  "@tourLevelSchool": {
-    "description": "Under the level choice when the beginner level is marked: the lessons come first."
-  },
   "tourLevelStart": "Journey starts at {rung}",
   "@tourLevelStart": {
     "description": "Under the level choice: where the Journey will start.",
@@ -1647,57 +1611,17 @@
       }
     }
   },
-  "tourLevelTitle": "What is your current level?",
-  "@tourLevelTitle": {
-    "description": "Last tour step: the player picks a rating band; the Journey starts at the matching level."
-  },
-  "tourNext": "Next",
+  "tourNext": "Continue",
   "@tourNext": {
     "description": "Button that goes to the next step of the tour."
-  },
-  "tourOpponentsBody": "Each Maia level is a character with its own personality, who comments the game in a speech bubble.",
-  "@tourOpponentsBody": {
-    "description": "Tour step text."
-  },
-  "tourOpponentsTitle": "Your opponents",
-  "@tourOpponentsTitle": {
-    "description": "Tour step title."
-  },
-  "tourRatingBody": "Every game against the Maia or Stockfish moves your endgame rating. In a speedrun, the rating comes all at once, when you finish.",
-  "@tourRatingBody": {
-    "description": "Tour step text."
-  },
-  "tourRatingTitle": "Your rating",
-  "@tourRatingTitle": {
-    "description": "Tour step title."
-  },
-  "tourRecordsBody": "Beat your own times, unlock achievements and see every game in the history.",
-  "@tourRecordsBody": {
-    "description": "Tour step text."
-  },
-  "tourRecordsTitle": "Records and achievements",
-  "@tourRecordsTitle": {
-    "description": "Tour step title."
   },
   "tourSkip": "Skip",
   "@tourSkip": {
     "description": "Button that skips the first-run tour."
   },
-  "tourSpeedrunBody": "Win the stages as fast as you can. The first time you finish a speedrun you earn rating, and the faster the pace, the more.",
-  "@tourSpeedrunBody": {
-    "description": "Tour step text."
-  },
-  "tourSpeedrunTitle": "Speedrun",
-  "@tourSpeedrunTitle": {
-    "description": "Tour step title."
-  },
   "tourStart": "Start",
   "@tourStart": {
     "description": "Last button of the tour: confirms the level and opens the app."
-  },
-  "tourStartLessons": "Start the lessons",
-  "@tourStartLessons": {
-    "description": "Last button of the tour when the beginner level is marked: opens the lessons."
   },
   "tourStep": "Step {step} of {total}",
   "@tourStep": {
@@ -1710,14 +1634,6 @@
         "type": "int"
       }
     }
-  },
-  "tourThemeBody": "Pick a theme and the color you like best. You can change them anytime in Settings.",
-  "@tourThemeBody": {
-    "description": "Explanation under the title of the theme step of the tour."
-  },
-  "tourThemeTitle": "Make it yours",
-  "@tourThemeTitle": {
-    "description": "Title of the tour step where the player picks light or dark theme and the app color."
   },
   "resultNextChallenge": "Next challenge",
   "@resultNextChallenge": {
@@ -1949,10 +1865,6 @@
   "tourNameLabel": "What should I call you?",
   "@tourNameLabel": {
     "description": "Label of the name field on the first step of the tour (asked by the teacher)."
-  },
-  "tourNameHelper": "It shows on the home screen. You can change it later in your profile.",
-  "@tourNameHelper": {
-    "description": "Helper text under the name field on the first step of the tour."
   },
   "homePathsTitle": "What do you want to do?",
   "@homePathsTitle": {
@@ -2598,22 +2510,6 @@
   "@settingsSoundHint": {
     "description": "Subtitle of the switch that turns the game sounds on or off."
   },
-  "tourSoundTitle": "Sound on or off?",
-  "@tourSoundTitle": {
-    "description": "Tour step where the user chooses whether the app plays sounds. Title."
-  },
-  "tourSoundBody": "Hear the pieces as they move and a warning when the clock is running out.",
-  "@tourSoundBody": {
-    "description": "Tour step where the user chooses whether the app plays sounds. Body."
-  },
-  "tourSoundOn": "With sound",
-  "@tourSoundOn": {
-    "description": "Tour choice: turn the game sounds on."
-  },
-  "tourSoundOff": "No sound",
-  "@tourSoundOff": {
-    "description": "Tour choice: turn the game sounds off."
-  },
   "reviewStart": "Review with Stockfish",
   "@reviewStart": {
     "description": "Game details: button that analyses every move of the game with the chess engine."
@@ -2925,26 +2821,6 @@
         "type": "String"
       }
     }
-  },
-  "tourVoiceTitle": "Shall I speak out loud?",
-  "@tourVoiceTitle": {
-    "description": "Voice (text-to-speech) feature: tourVoiceTitle"
-  },
-  "tourVoiceBody": "Pick my voice. Tap one to hear it.",
-  "@tourVoiceBody": {
-    "description": "Voice (text-to-speech) feature: tourVoiceBody"
-  },
-  "tourCharacterVoicesTitle": "Your opponents' voices",
-  "@tourCharacterVoicesTitle": {
-    "description": "Voice (text-to-speech) feature: tourCharacterVoicesTitle"
-  },
-  "tourCharacterVoicesBody": "Each one already has a voice. Tap one to change it.",
-  "@tourCharacterVoicesBody": {
-    "description": "Voice (text-to-speech) feature: tourCharacterVoicesBody"
-  },
-  "tourKeepVoices": "Keep as is",
-  "@tourKeepVoices": {
-    "description": "Voice (text-to-speech) feature: tourKeepVoices"
   },
   "lessonPrevious": "Previous step",
   "@lessonPrevious": {
@@ -3468,14 +3344,6 @@
   "@homeSpeedrunBodyChallenge": {
     "description": "Home path text for the speedrun, for expert and master players: a challenge."
   },
-  "tourGoalsTitle": "What do you want to do in Lucena?",
-  "@tourGoalsTitle": {
-    "description": "Tour step title: which paths the player wants on the home screen."
-  },
-  "tourGoalsBody": "Mark as many as you like. You can change this later in Settings.",
-  "@tourGoalsBody": {
-    "description": "Tour step hint: mark any number of paths; it can be changed later in Settings."
-  },
   "homeOtherModes": "Other modes",
   "@homeOtherModes": {
     "description": "Collapsed home section with the paths the player did not highlight."
@@ -3548,10 +3416,6 @@
         "type": "String"
       }
     }
-  },
-  "tourDemoMate": "Checkmate!",
-  "@tourDemoMate": {
-    "description": "Chip in the tour's speedrun demo when a stage ends in checkmate."
   },
   "profileLevelBeginnerHint": "I'm learning the rules",
   "profileLevelCasualHint": "I play with friends now and then",
@@ -5113,17 +4977,13 @@
   "@skillTacticsEndgame": {
     "description": "Placement test: name of the skill 'tactics.endgame' in the skill map (result screen, roadmap)."
   },
-  "tourLevelTestTitle": "Take the test to find my level",
+  "tourLevelTestTitle": "Take the test",
   "@tourLevelTestTitle": {
     "description": "Tour, level step: main card that opens the placement test."
   },
-  "tourLevelTestBody": "20 questions, no clock, about 8 to 12 minutes. At the end I build your study plan.",
+  "tourLevelTestBody": "20 questions, no clock, about 8 to 12 minutes.",
   "@tourLevelTestBody": {
     "description": "Tour, level step: under the test card title."
-  },
-  "tourLevelTakeTest": "I'd rather take the test",
-  "@tourLevelTakeTest": {
-    "description": "Tour, level step: after choosing by hand, a text button to go back to the test option."
   },
   "placementTake": "Take the level test",
   "@placementTake": {
@@ -5169,10 +5029,6 @@
   "endgamesThenTitle": "Then",
   "@endgamesThenTitle": {
     "description": "Endgames trail: label before the following roadmap lessons."
-  },
-  "tourLevelByHandHint": "Choosing your level yourself sets your rating, but you won't get a personalized study plan. Only the test shows what you already know and what is missing.",
-  "@tourLevelByHandHint": {
-    "description": "Tour, level step: warning above the six levels when the player chooses by hand instead of taking the test."
   },
   "schoolKnownTitle": "You already know these",
   "@schoolKnownTitle": {
@@ -6543,5 +6399,53 @@
   "lessonMoveList": "Moves",
   "@lessonMoveList": {
     "description": "Accessibility label of the move list below the board in the scripted lesson."
+  },
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
   }
 }

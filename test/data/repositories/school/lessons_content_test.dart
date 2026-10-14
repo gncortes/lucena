@@ -298,7 +298,7 @@ void main() {
         'school.welcomeBack',
         'school.graduated',
         'tour.level',
-        'tour.level.beginner',
+        'tour.voice.none',
       ]) {
         expect(all[key], isNotNull, reason: '$language $key');
       }

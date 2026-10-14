@@ -2,47 +2,65 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/app_accent.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/app_language.dart';
-import 'package:lucena/domain/models/app_settings.dart';
-import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/onboarding.dart';
-import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/rating_level.dart';
-import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
+import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
-import 'package:lucena/ui/core/theme/app_theme.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/tour/widgets/tour_screen.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
-import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
+import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 
-import 'package:lucena/domain/models/voice.dart';
-import 'package:lucena/ui/core/keys/voice_keys.dart';
-import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+const _longSpeech =
+    'Bem-vindo, meu aluno. Eu sou o Viktor e vou lhe mostrar, passo a passo, '
+    'como se ganha um final de partida com calma e com método, do começo até '
+    'o último lance, sem pressa nenhuma.';
+
+final _texts = LessonTexts.fromJson({
+  'tour.board': _longSpeech,
+  'tour.voice': 'Escolha a minha voz.',
+  'tour.voice.none': 'Só o seu nome, então.',
+  'tour.school': 'Cada lição tem três etapas.',
+  'tour.help': 'Ficou difícil? Peça ajuda.',
+  'tour.play': 'Depois, jogue contra os adversários.',
+  'tour.level': 'Escolha o seu nível.',
+});
 
 void main() {
   late FakeSettingsRepository settings;
   late FakeVoiceRepository voice;
+  late FakeOnboardingRepository onboarding;
+  late FakeProfileRepository profile;
 
-  /// Abre o tour no passo [step] (o app fechado no meio volta nele).
+  /// Abre o tour no passo [step] (o app fechado no meio volta nele), em PT-BR.
   Future<void> pumpTour(
     WidgetTester tester, {
-    TourStep step = TourStep.goal,
-    Locale locale = const Locale('en'),
-    FakeProfileRepository? profile,
-    FakeVoiceRepository? withVoice,
+    TourStep step = TourStep.board,
+    Size size = const Size(412, 915),
+    bool voices = true,
   }) async {
-    final voiceRepository = voice = withVoice ?? FakeVoiceRepository();
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = size;
+    addTearDown(tester.view.reset);
+    final voiceRepository = voice = FakeVoiceRepository(
+      voices: voices ? null : const [],
+    );
     final speech = SpeechCubit(
       voiceRepository,
       characters: FakeCharacterRepository(),
@@ -56,388 +74,351 @@ void main() {
     );
     addTearDown(settingsCubit.close);
     await settingsCubit.load();
-    // Um tour novo a cada chamada, sem o estado do anterior.
-    await tester.pumpWidget(const SizedBox());
+    onboarding = FakeOnboardingRepository(Onboarding(step: step.index));
+    profile = FakeProfileRepository();
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: Routes.home,
+          builder: (_, _) => BlocProvider(
+            create: (_) => TourCubit(
+              onboarding: onboarding,
+              profile: profile,
+              characters: FakeCharacterRepository(),
+              lessons: FakeLessonRepository(texts: _texts),
+              voice: voices ? voiceRepository : null,
+            )..load('pt'),
+            child: const TourScreen(),
+          ),
+        ),
+        GoRoute(
+          path: Routes.school,
+          builder: (_, _) => const Scaffold(body: Text('rota-aulas')),
+        ),
+      ],
+    );
     await tester.pumpWidget(
       TestApp(
-        locale: locale,
+        locale: const Locale('pt'),
         settingsCubit: settingsCubit,
         speechCubit: speech,
-        child: BlocProvider(
-          create: (_) => TourCubit(
-            onboarding: FakeOnboardingRepository(Onboarding(step: step.index)),
-            profile: profile ?? FakeProfileRepository(),
-            characters: FakeCharacterRepository(),
-            lessons: FakeLessonRepository(),
-            voice: voiceRepository,
-          )..load(locale.languageCode),
-          child: const TourScreen(),
-        ),
+        router: router,
+        child: const SizedBox(),
       ),
     );
     await tester.pumpAndSettle();
   }
 
-  ThemeData theme(WidgetTester tester) =>
-      Theme.of(tester.element(find.byKey(TourKeys.screen)));
+  Rect rect(WidgetTester tester, Finder finder) => tester.getRect(finder);
 
-  testWidgets('Próximo e Pular só habilitam após selecionar uma faixa', (
-    tester,
-  ) async {
-    await pumpTour(tester, step: TourStep.level);
-    expect(
-      tester
-          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
-          .onPressed,
-      isNull,
-    );
-    expect(
-      tester
-          .widget<ButtonStyleButton>(find.byKey(TourKeys.skipButton))
-          .onPressed,
-      isNull,
-    );
-    await tester.tap(find.byKey(TourKeys.chooseByHand));
-    await tester.pumpAndSettle();
-    expect(find.byKey(TourKeys.startRung), findsNothing);
-    expect(
-      tester
-          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
-          .onPressed,
-      isNull,
-    );
-    await tester.ensureVisible(find.byKey(TourKeys.level(RatingLevel.casual)));
-    await tester.tap(find.byKey(TourKeys.level(RatingLevel.casual)));
-    await tester.pumpAndSettle();
-    expect(
-      tester
-          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
-          .onPressed,
-      isNotNull,
-    );
-    expect(
-      tester
-          .widget<ButtonStyleButton>(find.byKey(TourKeys.skipButton))
-          .onPressed,
-      isNotNull,
-    );
-    await tester.tap(find.byKey(TourKeys.nextButton));
-    await tester.pumpAndSettle();
-    expect(find.byKey(TourKeys.step(TourStep.goals)), findsOneWidget);
-  });
+  Finder avatarImage() => find
+      .descendant(of: find.byKey(TourKeys.viktor), matching: find.byType(Image))
+      .first;
 
-  testWidgets('Pular antes do nível abre a escolha em vez de sair', (
-    tester,
-  ) async {
-    await pumpTour(tester);
-    await tester.tap(find.byKey(TourKeys.skipButton));
-    await tester.pumpAndSettle();
-    expect(find.byKey(TourKeys.step(TourStep.level)), findsOneWidget);
-    expect(
-      tester
-          .widget<FloatingActionButton>(find.byKey(TourKeys.nextButton))
-          .onPressed,
-      isNull,
-    );
-    expect(tester.takeException(), isNull);
-  });
+  const sizes = [Size(412, 915), Size(360, 640)];
 
-  testWidgets('os passos em ordem e o nível no fim, em português', (
-    tester,
-  ) async {
-    await pumpTour(tester, step: TourStep.voice, locale: const Locale('pt'));
+  group('layout, em 412x915 e 360x640', () {
+    for (final size in sizes) {
+      for (final step in TourStep.values) {
+        testWidgets(
+          '${step.name} em ${size.width.toInt()}x${size.height.toInt()} '
+          'cabe, com o botão de 52 a 16 dos lados e 24 do fundo',
+          (tester) async {
+            await pumpTour(tester, step: step, size: size);
+            expect(tester.takeException(), isNull);
+            expect(find.byKey(TourKeys.step(step)), findsOneWidget);
 
-    // A voz é o primeiro passo: sem voltar, com pular.
-    expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
-    expect(find.byKey(TourKeys.backButton), findsNothing);
-    expect(find.byKey(TourKeys.skipButton), findsOneWidget);
-    // Com uma voz escolhida, vem o passo das vozes dos adversários.
-    await tester.tap(find.byKey(VoiceKeys.voice('pt-br-a')));
-    await tester.pumpAndSettle();
-    // Até o nível, o penúltimo passo.
-    for (var step = 1; step <= TourStep.level.index; step++) {
-      await tester.tap(find.byKey(TourKeys.nextButton));
-      await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.values[step])), findsOneWidget);
-    }
-    expect(find.text('Qual é o seu nível atual?'), findsOneWidget);
-    // O teste vem primeiro; a lista das faixas, atrás do botão discreto.
-    expect(find.byKey(TourKeys.takeTestCard), findsOneWidget);
-    expect(find.byKey(TourKeys.level(RatingLevel.advanced)), findsNothing);
-    await tester.tap(find.byKey(TourKeys.chooseByHand));
-    await tester.pumpAndSettle();
-    // Na mão, o aviso: sem o teste, o estudo não fica personalizado.
-    expect(find.byKey(TourKeys.byHandHint), findsOneWidget);
-    await tester.ensureVisible(
-      find.byKey(TourKeys.level(RatingLevel.advanced)),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(TourKeys.level(RatingLevel.advanced)));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.byKey(TourKeys.startRung), 100);
-    expect(find.text('A Jornada começa no Maia 1800'), findsOneWidget);
-    expect(find.byKey(TourKeys.skipButton), findsOneWidget);
+            // Progresso: 4 dp, largura toda, colado na base da barra (y 56).
+            final progress = rect(tester, find.byKey(TourKeys.progress));
+            expect(progress.height, 4);
+            expect(progress.left, 0);
+            expect(progress.width, size.width);
+            expect(progress.top, closeTo(56, 1));
+            final bar = tester.widget<LinearProgressIndicator>(
+              find.descendant(
+                of: find.byKey(TourKeys.progress),
+                matching: find.byType(LinearProgressIndicator),
+              ),
+            );
+            expect(bar.value, closeTo((step.index + 1) / 6, 0.001));
 
-    // Iniciante: no último passo, os caminhos dele e o botão das aulas.
-    await tester.ensureVisible(
-      find.byKey(TourKeys.level(RatingLevel.beginner)),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(TourKeys.level(RatingLevel.beginner)));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(TourKeys.nextButton));
-    await tester.pumpAndSettle();
-    expect(find.byKey(TourKeys.step(TourStep.goals)), findsOneWidget);
-    expect(find.text('O que você quer fazer no Lucena?'), findsOneWidget);
-    expect(find.byKey(TourKeys.startButton), findsOneWidget);
-    expect(find.byKey(TourKeys.skipButton), findsNothing);
-    expect(find.text('Começar as aulas'), findsOneWidget);
-    expect(find.byKey(TourKeys.viktor), findsOneWidget);
-    expect(find.text('Mestre Viktor'), findsOneWidget);
-    // Os cartões na ordem do iniciante: Aprender primeiro, marcado.
-    final learn = tester.getRect(find.byKey(TourKeys.goal(HomePath.learn)));
-    final journey = tester.getRect(find.byKey(TourKeys.goal(HomePath.journey)));
-    expect(learn.top, lessThan(journey.top));
-    // Desmarcar as aulas: o botão deixa de abrir as aulas.
-    await tester.ensureVisible(find.byKey(TourKeys.goal(HomePath.learn)));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(TourKeys.goal(HomePath.learn)));
-    await tester.pumpAndSettle();
-    expect(find.text('Começar as aulas'), findsNothing);
-  });
+            // Retrato do Viktor: 64, a 16 da esquerda.
+            final avatar = rect(tester, avatarImage());
+            expect(avatar.width, 64);
+            expect(avatar.left, closeTo(16, 1));
 
-  testWidgets('nas boas-vindas, o campo do nome grava o apelido no perfil', (
-    tester,
-  ) async {
-    final profile = FakeProfileRepository();
-    await pumpTour(tester, locale: const Locale('pt'), profile: profile);
+            // Balão a 16 dos lados.
+            final balloon = rect(tester, find.byKey(TourKeys.speech));
+            expect(balloon.left, closeTo(16, 1));
+            expect(size.width - balloon.right, closeTo(16, 1));
 
-    expect(find.text('Como devo chamar você?'), findsOneWidget);
-    // Vazio, o apelido padrão fica à vista.
-    expect(find.text('Jogador'), findsOneWidget);
-    await tester.enterText(find.byKey(TourKeys.nameField), 'Gabriel');
-    await tester.pumpAndSettle();
+            // Botão de baixo.
+            final button = rect(
+              tester,
+              find.byKey(
+                step.isLast ? TourKeys.startButton : TourKeys.nextButton,
+              ),
+            );
+            expect(button.height, 52);
+            expect(button.left, closeTo(16, 1));
+            expect(size.width - button.right, closeTo(16, 1));
+            expect(size.height - button.bottom, closeTo(24, 1));
 
-    expect((await profile.load()).nickname, 'Gabriel');
-
-    // Ir e voltar não apaga o que foi escrito.
-    await tester.tap(find.byKey(TourKeys.nextButton));
-    await tester.pumpAndSettle();
-    expect(find.byKey(TourKeys.nameField), findsNothing);
-    await tester.tap(find.byKey(TourKeys.backButton));
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<TextField>(find.byKey(TourKeys.nameField)).controller!.text,
-      'Gabriel',
-    );
-  });
-
-  testWidgets('o nome passa do tamanho máximo: o campo corta', (tester) async {
-    final profile = FakeProfileRepository();
-    await pumpTour(tester, profile: profile);
-
-    await tester.enterText(find.byKey(TourKeys.nameField), 'a' * 40);
-    await tester.pumpAndSettle();
-
-    expect(
-      (await profile.load()).nickname,
-      'a' * UserProfile.maxNicknameLength,
-    );
-  });
-
-  testWidgets('a aparência vem logo depois das boas-vindas: tema e depois '
-      'tabuleiro', (tester) async {
-    await pumpTour(tester, locale: const Locale('pt'));
-
-    await tester.tap(find.byKey(TourKeys.nextButton));
-    await tester.pumpAndSettle();
-    expect(find.text('Deixe o app com a sua cara'), findsOneWidget);
-    expect(find.textContaining('nas Configurações'), findsOneWidget);
-
-    await tester.tap(find.byKey(TourKeys.nextButton));
-    await tester.pumpAndSettle();
-    expect(find.text('Escolha o seu tabuleiro'), findsOneWidget);
-    expect(find.byKey(TourKeys.boardPreview), findsOneWidget);
-  });
-
-  testWidgets('no passo do tema, a cor de fábrica vem marcada e escolher '
-      'outra muda o app na hora e grava', (tester) async {
-    await pumpTour(tester, step: TourStep.theme);
-
-    expect(tester.widget<Text>(find.byKey(TourKeys.accentValue)).data, 'Blue');
-
-    await tester.tap(find.byKey(TourKeys.accent(AppAccent.pink)));
-    await tester.pumpAndSettle();
-
-    expect(tester.widget<Text>(find.byKey(TourKeys.accentValue)).data, 'Pink');
-    expect(
-      theme(tester).colorScheme.primary,
-      AppTheme.of(Brightness.light, accent: AppAccent.pink).colorScheme.primary,
-    );
-    expect(settings.saved, [const AppSettings(accent: AppAccent.pink)]);
-  });
-
-  testWidgets('no passo do tema, escolher escuro grava o tema', (tester) async {
-    await pumpTour(tester, step: TourStep.theme);
-
-    await tester.tap(find.byKey(TourKeys.themeMode(AppThemeMode.dark)));
-    await tester.pumpAndSettle();
-
-    expect(settings.saved, [const AppSettings(themeMode: AppThemeMode.dark)]);
-  });
-
-  testWidgets('no passo do tabuleiro, cores e peças mudam a amostra e ficam '
-      'gravadas', (tester) async {
-    await pumpTour(tester, step: TourStep.board);
-
-    await tester.tap(find.byKey(TourKeys.boardColors(BoardColors.green)));
-    await tester.pumpAndSettle();
-    // As peças ficam abaixo da amostra e das cores; a fileira rola de lado.
-    await tester.scrollUntilVisible(
-      find.byKey(TourKeys.boardPieces(PieceStyle.cburnett)),
-      100,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.ensureVisible(
-      find.byKey(TourKeys.boardPieces(PieceStyle.merida)),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(TourKeys.boardPieces(PieceStyle.merida)));
-    await tester.pumpAndSettle();
-
-    final preview = tester
-        .widget<StaticChessboard>(find.byKey(TourKeys.boardPreview))
-        .settings;
-    expect(preview.colorScheme, BoardColors.green.scheme);
-    expect(preview.pieceAssets, PieceStyle.merida.assets);
-    expect(
-      settings.saved.last,
-      const AppSettings(
-        board: BoardSettings(
-          colors: BoardColors.green,
-          pieces: PieceStyle.merida,
-        ),
-      ),
-    );
-  });
-
-  testWidgets('os passos de aparência cabem em tela pequena e em árabe', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(320, 568);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-
-    for (final step in [TourStep.theme, TourStep.board]) {
-      await pumpTour(tester, step: step, locale: const Locale('ar'));
-      expect(find.byKey(TourKeys.step(step)), findsOneWidget);
-      expect(tester.takeException(), isNull);
+            // O fim da tela rola até acima do botão.
+            final scroll = tester.state<ScrollableState>(
+              find
+                  .descendant(
+                    of: find.byKey(TourKeys.scroll),
+                    matching: find.byType(Scrollable),
+                  )
+                  .first,
+            );
+            scroll.position.jumpTo(scroll.position.maxScrollExtent);
+            await tester.pump();
+            expect(tester.takeException(), isNull);
+            final scrollBox = rect(tester, find.byKey(TourKeys.scroll));
+            expect(scrollBox.bottom, lessThanOrEqualTo(button.top + 1));
+          },
+        );
+      }
     }
   });
 
-  testWidgets('no passo do som, o som vem ligado e escolher "sem som" grava '
-      'a escolha', (tester) async {
-    await pumpTour(tester, step: TourStep.sound);
-    expect(find.byKey(TourKeys.step(TourStep.sound)), findsOneWidget);
-    expect(find.text('Sound on or off?'), findsOneWidget);
-    ListTile option({required bool enabled}) =>
-        tester.widget<ListTile>(find.byKey(TourKeys.sound(enabled: enabled)));
-    expect(option(enabled: true).selected, isTrue);
-
-    await tester.tap(find.byKey(TourKeys.sound(enabled: false)));
-    await tester.pumpAndSettle();
-
-    expect(option(enabled: false).selected, isTrue);
-    expect(settings.saved.last.sound, isFalse);
-  });
-
-  group('a voz', () {
-    testWidgets('o Viktor pede a voz dele: ouvir não grava; escolher liga a '
-        'voz e vem o passo dos adversários', (tester) async {
-      await pumpTour(tester, step: TourStep.voice, locale: const Locale('pt'));
-      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
-      // Só as vozes do Brasil: o português do app é o pt-BR.
-      expect(find.text('Voz 1'), findsOneWidget);
-      expect(find.text('Voz 3'), findsOneWidget);
-
-      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-c')));
-      await tester.pumpAndSettle();
-      expect(voice.spoken.single.$2.voice.id, 'pt-br-c');
-      expect(voice.settings.enabled, isTrue);
-      expect(voice.settings.teacherVoice, 'pt-br-c');
-
+  group('barra do alto', () {
+    testWidgets('Voltar some no primeiro passo e deixa o espaço de 56; Pular '
+        'fica no mesmo lugar nos dois primeiros', (tester) async {
+      await pumpTour(tester);
+      expect(find.byKey(TourKeys.backButton), findsNothing);
+      expect(rect(tester, find.byKey(TourKeys.backSlot)).width, 56);
+      final skip1 = rect(tester, find.byKey(TourKeys.skipButton));
+      // O texto de "Pular" fica a 16 da direita (o botão tem 12 por dentro).
+      expect(412 - skip1.right, closeTo(4, 1));
       await tester.tap(find.byKey(TourKeys.nextButton));
       await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.backButton), findsOneWidget);
+      final skip2 = rect(tester, find.byKey(TourKeys.skipButton));
+      expect(skip2.right, skip1.right);
       expect(
-        find.byKey(TourKeys.step(TourStep.characterVoices)),
-        findsOneWidget,
+        tester.getSize(find.byKey(TourKeys.backButton)).shortestSide,
+        greaterThanOrEqualTo(48),
       );
-      expect(find.text('Manter assim'), findsOneWidget);
+      expect(
+        tester.getSize(find.byKey(TourKeys.skipButton)).height,
+        greaterThanOrEqualTo(48),
+      );
     });
 
-    testWidgets('o passo da voz ensina a ter vozes melhores e abre os ajustes '
-        'de voz do aparelho', (tester) async {
-      await pumpTour(tester, step: TourStep.voice, locale: const Locale('pt'));
-      await tester.scrollUntilVisible(find.byKey(VoiceKeys.openSystem), 100);
-      expect(find.byKey(VoiceKeys.betterVoices), findsOneWidget);
-      await tester.tap(find.byKey(VoiceKeys.openSystem));
+    testWidgets('no último passo não há Pular e há Voltar', (tester) async {
+      await pumpTour(tester, step: TourStep.level);
+      expect(find.byKey(TourKeys.skipButton), findsNothing);
+      expect(find.byKey(TourKeys.backButton), findsOneWidget);
+    });
+
+    testWidgets('Continuar e Voltar andam pelos passos', (tester) async {
+      await pumpTour(tester);
+      await tester.tap(find.byKey(TourKeys.nextButton));
       await tester.pumpAndSettle();
-      expect(voice.systemOpened, 1);
+      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.backButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.board)), findsOneWidget);
     });
 
-    testWidgets('"sem voz" desliga a voz e pula as vozes dos adversários', (
+    testWidgets('Pular leva ao último passo', (tester) async {
+      await pumpTour(tester);
+      await tester.tap(find.byKey(TourKeys.skipButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.level)), findsOneWidget);
+    });
+  });
+
+  group('a conversa', () {
+    testWidgets('o balão fica logo abaixo do retrato, com a ponta para cima', (
       tester,
     ) async {
-      await pumpTour(
-        tester,
-        step: TourStep.voice,
-        withVoice: FakeVoiceRepository(
-          settings: const VoiceSettings(enabled: true),
+      await pumpTour(tester);
+      final avatar = rect(tester, avatarImage());
+      final balloon = rect(tester, find.byKey(TourKeys.speech));
+      expect(balloon.top, greaterThanOrEqualTo(avatar.bottom));
+      expect(balloon.top - avatar.bottom, lessThanOrEqualTo(16));
+    });
+
+    testWidgets('clicar no balão abre a fala inteira; o X fecha', (
+      tester,
+    ) async {
+      await pumpTour(tester, size: const Size(360, 640));
+      await tester.tap(find.byKey(TourKeys.speech));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(LessonScriptKeys.speechSheet),
+          matching: find.textContaining('último lance', findRichText: true),
         ),
+        findsOneWidget,
       );
+      await tester.tap(find.byKey(LessonScriptKeys.speechSheetClose));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonScriptKeys.speechSheet), findsNothing);
+    });
+  });
+
+  group('passo 1, tabuleiro', () {
+    testWidgets('a amostra tem 216 e fica centrada', (tester) async {
+      await pumpTour(tester);
+      final preview = rect(tester, find.byKey(TourKeys.boardPreview));
+      expect(preview.width, 216);
+      expect(preview.center.dx, closeTo(206, 1));
+    });
+
+    testWidgets('cores e peças mudam a amostra e ficam gravadas', (
+      tester,
+    ) async {
+      await pumpTour(tester);
+      await tester.tap(find.byKey(TourKeys.boardColors(BoardColors.green)));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.byKey(TourKeys.boardPieces(PieceStyle.merida)),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.boardPieces(PieceStyle.merida)));
+      await tester.pumpAndSettle();
+      final preview = tester
+          .widget<StaticChessboard>(find.byKey(TourKeys.boardPreview))
+          .settings;
+      expect(preview.colorScheme, BoardColors.green.scheme);
+      expect(preview.pieceAssets, PieceStyle.merida.assets);
+      expect(settings.saved.last.board.colors, BoardColors.green);
+      expect(settings.saved.last.board.pieces, PieceStyle.merida);
+    });
+
+    testWidgets('a cor escolhida vale nos tabuleiros dos passos 3 e 4', (
+      tester,
+    ) async {
+      await pumpTour(tester);
+      await tester.tap(find.byKey(TourKeys.boardColors(BoardColors.green)));
+      await tester.pumpAndSettle();
+      // Voz, depois aulas (passo 3).
+      for (var i = 0; i < 2; i++) {
+        await tester.tap(find.byKey(TourKeys.nextButton));
+        await tester.pumpAndSettle();
+      }
+      Object scheme() => tester
+          .widget<StaticChessboard>(find.byType(StaticChessboard))
+          .settings
+          .colorScheme;
+      expect(scheme(), BoardColors.green.scheme);
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pumpAndSettle();
+      expect(scheme(), BoardColors.green.scheme);
+    });
+  });
+
+  group('passo 2, voz e nome', () {
+    testWidgets('o campo do nome grava o apelido no perfil', (tester) async {
+      await pumpTour(tester, step: TourStep.voice);
+      await tester.enterText(find.byKey(TourKeys.nameField), 'Ana');
+      await tester.pumpAndSettle();
+      expect((await profile.load()).nickname, 'Ana');
+    });
+
+    testWidgets('escolher uma voz grava e liga; "sem voz" desliga; sem tom', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.voice);
+      expect(find.byKey(TourKeys.voiceHint), findsOneWidget);
+      expect(find.byKey(VoiceKeys.tone(null)), findsNothing);
+      await tester.ensureVisible(find.byKey(VoiceKeys.voice('pt-br-c')));
+      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-c')));
+      await tester.pumpAndSettle();
+      expect(voice.settings.enabled, isTrue);
+      expect(voice.settings.teacherVoice, 'pt-br-c');
+      await tester.ensureVisible(find.byKey(VoiceKeys.none));
       await tester.tap(find.byKey(VoiceKeys.none));
       await tester.pumpAndSettle();
       expect(voice.settings.enabled, isFalse);
-
-      await tester.tap(find.byKey(TourKeys.nextButton));
-      await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.goal)), findsOneWidget);
-      // Voltando, o passo pulado continua pulado.
-      await tester.tap(find.byKey(TourKeys.backButton));
-      await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
     });
 
-    testWidgets('sem voz no idioma, os dois passos somem', (tester) async {
-      await pumpTour(tester, step: TourStep.sound, locale: const Locale('ja'));
-      await tester.tap(find.byKey(TourKeys.nextButton));
-      await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.rating)), findsOneWidget);
+    testWidgets('sem vozes no idioma: só o nome, e a fala é a do nome', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.voice, voices: false);
+      expect(find.byKey(TourKeys.nameField), findsOneWidget);
+      expect(find.byKey(VoiceKeys.none), findsNothing);
+      expect(find.textContaining('Só o seu nome'), findsWidgets);
+    });
+  });
+
+  group('passos 3 a 5', () {
+    testWidgets('aulas: três etapas e tabuleiro de 176 centrado', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.school);
+      expect(find.byKey(TourKeys.stages), findsOneWidget);
+      final board = rect(tester, find.byType(PositionBoard));
+      expect(board.width, 176);
+      expect(board.center.dx, closeTo(206, 1));
+      expect(find.text('Ideia'), findsOneWidget);
+      expect(find.text('Exemplos'), findsOneWidget);
+      expect(find.text('Prática'), findsOneWidget);
     });
 
-    testWidgets('as vozes dos adversários: tocar num abre a escolha, que '
-        'grava e deixa ouvir na fala dele', (tester) async {
-      await pumpTour(
-        tester,
-        step: TourStep.characterVoices,
-        locale: const Locale('pt'),
-        withVoice: FakeVoiceRepository(
-          settings: const VoiceSettings(enabled: true),
-        ),
+    testWidgets('ajuda: tabuleiro de 200 centrado e "Ver resposta" de 48', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.help);
+      expect(find.byKey(TourKeys.helpButtons), findsOneWidget);
+      final board = rect(tester, find.byType(PositionBoard));
+      expect(board.width, 200);
+      expect(board.center.dx, closeTo(206, 1));
+      expect(find.text('Ver resposta'), findsOneWidget);
+      expect(
+        rect(tester, find.byKey(TourKeys.helpButtons)).height,
+        greaterThanOrEqualTo(48),
       );
-      final first = FakeCharacterRepository.sampleCharacters.firstWhere(
-        (c) => c.id != 'master',
-      );
-      await tester.tap(find.byKey(VoiceKeys.character(first.id)));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-b')));
-      await tester.pumpAndSettle();
-      expect(voice.settings.characterVoices[first.id], 'pt-br-b');
-      expect(voice.spoken.last.$1, contains(first.name));
+    });
 
-      await tester.tap(find.byKey(VoiceKeys.appChoice));
+    testWidgets('partidas: os adversários e o chip do rating do perfil', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.play);
+      expect(find.byKey(TourKeys.opponents), findsOneWidget);
+      expect(find.byKey(TourKeys.ratingChip), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('passo 6, nível', () {
+    testWidgets('abre com "Estou começando" marcado, Começar liberado; 48+', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      final start = tester.widget<FilledButton>(
+        find.byKey(TourKeys.startButton),
+      );
+      expect(start.onPressed, isNotNull);
+      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
+      for (final choice in TourLevelChoice.values) {
+        final card = find.byKey(TourKeys.levelOption(choice));
+        await tester.ensureVisible(card);
+        expect(tester.getSize(card).height, greaterThanOrEqualTo(48));
+      }
+    });
+
+    testWidgets('Começar grava "começando" e leva às aulas', (tester) async {
+      await pumpTour(tester, step: TourStep.level);
+      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
+      expect(find.textContaining('A Jornada começa no'), findsNothing);
+      final start = tester.widget<FilledButton>(
+        find.byKey(TourKeys.startButton),
+      );
+      expect(start.onPressed, isNotNull);
+      expect(onboarding.saved.selectedRating, isNull);
+      await tester.tap(find.byKey(TourKeys.startButton));
       await tester.pumpAndSettle();
-      expect(voice.settings.characterVoices, isEmpty);
+      expect(onboarding.saved.selectedRating, RatingLevel.beginner.rating);
+      expect(find.text('rota-aulas'), findsOneWidget);
+      expect(onboarding.saved.done, isTrue);
     });
   });
 }

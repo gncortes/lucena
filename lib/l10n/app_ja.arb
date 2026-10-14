@@ -303,32 +303,11 @@
   "speedrunTotalTime": "合計タイム",
   "teacherName": "{name}先生",
   "tourBack": "戻る",
-  "tourBoardTitle": "盤を選びましょう",
-  "tourEndgamesBody": "基本メイト、ポーン・ルーク・クイーンのエンドゲーム。各局面には「勝つ」か「引き分けを守る」の目標があります。",
-  "tourEndgamesTitle": "エンドゲーム",
-  "tourGoalBody": "Lucenaでは、各レーティングの実際の人間のように指すAI「Maia」を相手に、典型的なエンドゲームを練習できます。すべてオフラインで動作します。",
-  "tourGoalTitle": "人間相手にエンドゲームを練習",
-  "tourJourneyBody": "Maia 1000からStockfishまで登りつめましょう。レベル内のチャレンジをすべてクリアすると次のレベルが解放されます。",
-  "tourJourneyTitle": "ジャーニー",
-  "tourLevelBody": "ジャーニーは合ったレベルから始まります。下のレベルもプレイできます。",
-  "tourLevelSchool": "まずヴィクトルのレッスン、その後1000からジャーニー",
   "tourLevelStart": "ジャーニーは{rung}から開始",
-  "tourLevelTitle": "現在のレベルは？",
   "tourNext": "次へ",
-  "tourOpponentsBody": "Maiaの各レベルは個性あるキャラクターで、吹き出しで対局にコメントします。",
-  "tourOpponentsTitle": "対戦相手たち",
-  "tourRatingBody": "MaiaまたはStockfishとの対局ごとに、エンドゲームのレーティングが変わります。スピードランでは、完走したときにまとめて反映されます。",
-  "tourRatingTitle": "あなたのレーティング",
-  "tourRecordsBody": "自分のタイムを更新し、実績を解除し、すべての対局を履歴で振り返りましょう。",
-  "tourRecordsTitle": "記録と実績",
   "tourSkip": "スキップ",
-  "tourSpeedrunBody": "できるだけ速くステージをクリアしましょう。スピードランを初めて完走するとレーティングがもらえ、ペースが速いほど多くなります。",
-  "tourSpeedrunTitle": "スピードラン",
   "tourStart": "はじめる",
-  "tourStartLessons": "レッスンを始める",
   "tourStep": "ステップ {step}/{total}",
-  "tourThemeBody": "好きなテーマと色を選んでください。設定からいつでも変更できます。",
-  "tourThemeTitle": "自分好みにしましょう",
   "resultNextChallenge": "次の挑戦",
   "reportRatingLabel": "レーティング",
   "resultYouWon": "勝ちました！",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "すべて",
   "catalogDone": "{done}/{total} クリア",
   "tourNameLabel": "何とお呼びしましょうか？",
-  "tourNameHelper": "ホーム画面に表示されます。あとでプロフィールから変更できます。",
   "homePathsTitle": "何をしますか？",
   "homeLearn": "チェスを学ぶ",
   "homeLearnBody": "ヴィクトルのレッスン：駒の動かし方、チェック、チェックメイト、最初のエンドゲーム。",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "黒のポーンは邪魔なだけで、取ることはできない。集めるのは星だ。",
   "settingsSound": "サウンド",
   "settingsSoundHint": "駒の動きと、残り時間が少なくなったときの警告",
-  "tourSoundTitle": "サウンドはオンにしますか？",
-  "tourSoundBody": "一手ごとの駒の音と、時計の残り時間が少なくなったときの警告が鳴ります。",
-  "tourSoundOn": "サウンドあり",
-  "tourSoundOff": "サウンドなし",
   "reviewStart": "Stockfishで振り返る",
   "reviewRunning": "{total}手中{done}手目を解析中",
   "reviewAccuracy": "精度",
@@ -557,11 +531,6 @@
   "voiceGenderFemale": "女性",
   "voiceTeacherSample": "こんにちは！先生のヴィクトルです。一緒にエンドゲームをマスターしましょう。",
   "voiceCharacterSample": "やあ！{name}だよ。対局しよう！",
-  "tourVoiceTitle": "声に出して話しましょうか？",
-  "tourVoiceBody": "私の声を選んでください。タップすると聞けます。",
-  "tourCharacterVoicesTitle": "対戦相手の声",
-  "tourCharacterVoicesBody": "それぞれすでに声があります。変えたい相手をタップしてください。",
-  "tourKeepVoices": "このままにする",
   "lessonPrevious": "前のステップ",
   "lessonFooterBack": "戻る",
   "voiceSpeedValue": "{speed}×",
@@ -664,8 +633,6 @@
   "homeJourneyBodyPlayer": "基本のチェックメイトを練習し、ココからStockfishまで全員に挑もう。",
   "homeLearnBodyPlayer": "ヴィクトルと基本をおさらいしよう。",
   "homeSpeedrunBodyChallenge": "Stockfishまで全員を最短時間で倒そう。自己記録を更新しよう。",
-  "tourGoalsTitle": "Lucenaで何をしたいですか？",
-  "tourGoalsBody": "好きなだけ選んでください。あとで設定から変更できます。",
   "homeOtherModes": "その他のモード",
   "homeCustomize": "カスタマイズ",
   "homeLayoutTitle": "ホーム画面",
@@ -683,7 +650,6 @@
   "allModesRatingBody": "レーティングの推移と、反映されたすべての対局。",
   "allModesAchievementsBody": "獲得したメダルと、まだ待っているメダル。",
   "speechShowOnBoard": "{square}を盤上に表示",
-  "tourDemoMate": "チェックメイト！",
   "profileLevelBeginnerHint": "ルールを覚えているところ",
   "profileLevelCasualHint": "ときどき友だちと指す",
   "speedrunPaceLine": "持ち時間: {time}",
@@ -977,7 +943,6 @@
   "skillTacticsEndgame": "エンドゲームのタクティクス",
   "tourLevelTestTitle": "テストを受けてレベルを知る",
   "tourLevelTestBody": "20問、時計なし、約8〜12分。最後にあなたの学習プランを作ります。",
-  "tourLevelTakeTest": "テストを受けたい",
   "placementTake": "レベルテストを受ける",
   "schoolPlacedSpeech": "テストの結果、コースの最初の部分はもう身についています。ここから始めましょう：{lesson}。",
   "schoolReviewSkipped": "前のレッスンを見直す",
@@ -988,7 +953,6 @@
   "endgamesTestPrompt": "どのエンドゲームがもう身についているか確かめよう。",
   "endgamesNextTitle": "次のエンドゲーム",
   "endgamesThenTitle": "その後",
-  "tourLevelByHandHint": "自分でレベルを選ぶとレーティングは設定されますが、学習は個別化されません。何ができて何が足りないかは、テストでしか分かりません。",
   "schoolKnownTitle": "もう知っている",
   "schoolKnownBody": "テストで、これらのレッスンは身についていると分かりました。いつでも見直せます。",
   "endgamesForYou": "あなた向け",
@@ -1224,5 +1188,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }
