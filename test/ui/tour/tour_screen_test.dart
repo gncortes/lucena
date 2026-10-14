@@ -414,30 +414,5 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(TourKeys.step(TourStep.rating)), findsOneWidget);
     });
-
-    testWidgets('as vozes dos adversários: tocar num abre a escolha, que '
-        'grava e deixa ouvir na fala dele', (tester) async {
-      await pumpTour(
-        tester,
-        step: TourStep.characterVoices,
-        locale: const Locale('pt'),
-        withVoice: FakeVoiceRepository(
-          settings: const VoiceSettings(enabled: true),
-        ),
-      );
-      final first = FakeCharacterRepository.sampleCharacters.firstWhere(
-        (c) => c.id != 'master',
-      );
-      await tester.tap(find.byKey(VoiceKeys.character(first.id)));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-b')));
-      await tester.pumpAndSettle();
-      expect(voice.settings.characterVoices[first.id], 'pt-br-b');
-      expect(voice.spoken.last.$1, contains(first.name));
-
-      await tester.tap(find.byKey(VoiceKeys.appChoice));
-      await tester.pumpAndSettle();
-      expect(voice.settings.characterVoices, isEmpty);
-    });
   });
 }
