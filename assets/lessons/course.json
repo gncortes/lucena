@@ -1111,7 +1111,8 @@
               "fen": "r1bqkb1r/pppp1Qpp/2n2n2/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 4",
               "side": "white"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.scholarsMate.json"
         },
         {
           "id": "tricks.defendScholar",
@@ -1153,7 +1154,8 @@
               "fen": "r1bqkb1r/pppp1p1p/2n2np1/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 5",
               "side": "black"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.defendScholar.json"
         },
         {
           "id": "tricks.foolsMate",
@@ -1200,7 +1202,8 @@
                 "h4e1"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tricks.foolsMate.json"
         },
         {
           "id": "tactics.matePatterns",
@@ -1272,7 +1275,8 @@
               ],
               "side": "white"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/tactics.matePatterns.json"
         },
         {
           "id": "tricks.principles",
