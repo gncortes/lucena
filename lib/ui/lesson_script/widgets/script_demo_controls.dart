@@ -30,10 +30,14 @@ class ScriptDemoControls extends StatelessWidget {
     required this.onStepBack,
     required this.onToggle,
     required this.onNext,
+    this.speaking = false,
     super.key,
   });
 
   final bool playing;
+
+  /// A voz do Viktor está falando: o anel espera parado (sem ficar cinza).
+  final bool speaking;
 
   /// O quanto do passo já passou (0 a 1) quando o estado saiu.
   final double progress;
@@ -92,6 +96,7 @@ class ScriptDemoControls extends StatelessWidget {
               children: [
                 _DemoRing(
                   playing: playing,
+                  speaking: speaking,
                   progress: progress,
                   remaining: remaining,
                   tick: tick,
@@ -157,10 +162,11 @@ class ScriptDemoButton extends StatelessWidget {
 
 /// O anel do tempo em volta do ⏭: trilho claro e o arco, que enche de
 /// [progress] até o fim em [remaining] enquanto toca e recomeça a cada
-/// [tick]. Pausado, para e fica cinza.
+/// [tick]. Pausado, para e fica cinza; com a voz falando, só para.
 class _DemoRing extends StatefulWidget {
   const _DemoRing({
     required this.playing,
+    required this.speaking,
     required this.progress,
     required this.remaining,
     required this.tick,
@@ -170,6 +176,7 @@ class _DemoRing extends StatefulWidget {
   static const stroke = 3.0;
 
   final bool playing;
+  final bool speaking;
   final double progress;
   final Duration remaining;
   final int tick;
@@ -197,6 +204,7 @@ class _DemoRingState extends State<_DemoRing>
     super.didUpdateWidget(old);
     if (old.tick != widget.tick ||
         old.playing != widget.playing ||
+        old.speaking != widget.speaking ||
         old.progress != widget.progress ||
         old.remaining != widget.remaining) {
       _run();
@@ -207,7 +215,9 @@ class _DemoRingState extends State<_DemoRing>
     _controller
       ..stop()
       ..value = widget.progress.clamp(0.0, 1.0);
-    if (!widget.playing || AppMotion.reduced(context)) return;
+    if (!widget.playing || widget.speaking || AppMotion.reduced(context)) {
+      return;
+    }
     if (widget.remaining <= Duration.zero) {
       _controller.value = 1;
       return;

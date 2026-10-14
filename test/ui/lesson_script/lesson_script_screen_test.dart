@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
+import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/exercise_actions.dart';
@@ -28,9 +29,10 @@ const _tall = Size(412, 915);
 const _short = Size(360, 640);
 
 class _Setup {
-  _Setup(this.cubit);
+  _Setup(this.cubit, this.voice);
 
   final LessonScriptCubit cubit;
+  final FakeVoiceRepository voice;
 }
 
 Future<_Setup> _open(
@@ -40,18 +42,18 @@ Future<_Setup> _open(
   Map<String, String>? texts,
   int stage = 0,
   FakeKpkOracle? oracle,
+  bool voiceOn = false,
 }) async {
   tester.view
     ..physicalSize = size
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  final speech = SpeechCubit(
-    FakeVoiceRepository(settings: const VoiceSettings(enabled: false)),
-  );
+  final voice = FakeVoiceRepository(settings: VoiceSettings(enabled: voiceOn));
+  final speech = SpeechCubit(voice);
   addTearDown(speech.close);
   await speech.load();
   final settings = SettingsCubit(
-    FakeSettingsRepository(const AppSettings(sound: false)),
+    FakeSettingsRepository(AppSettings(sound: voiceOn)),
     languages: AppLanguage.selectable,
   );
   addTearDown(settings.close);
@@ -86,7 +88,7 @@ Future<_Setup> _open(
     ),
   );
   await tester.pump(const Duration(seconds: 1));
-  return _Setup(cubit);
+  return _Setup(cubit, voice);
 }
 
 Rect _rect(WidgetTester tester, Key key) => tester.getRect(find.byKey(key));
@@ -435,6 +437,48 @@ void main() {
     // Sem rótulo de posição (Gabriel, 14/10/2026).
     expect(find.textContaining('Posição'), findsNothing);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('demonstração com voz: o passo espera o Viktor acabar de '
+      'falar e só faz a pausa depois', (tester) async {
+    final s = await _open(tester, _tall, stage: 1, voiceOn: true);
+    // A tela alta junta os trechos curtos num balão só.
+    final first = s.cubit.state.speech;
+    expect(s.voice.spoken.last.$1, first.join(' '));
+    expect(s.cubit.state.demo!.speaking, isTrue);
+    // Bem mais que o tempo de leitura: a voz ainda fala, o passo espera.
+    await tester.pump(LessonScriptCubit.readTime(first.join(' ')) * 3);
+    expect(s.cubit.state.speech, first);
+    s.voice.emit(const TtsFinished());
+    await tester.pump();
+    expect(s.cubit.state.demo!.speaking, isFalse);
+    expect(s.cubit.state.demo!.remaining, LessonScriptCubit.voicePause);
+    await tester.pump(LessonScriptCubit.voicePause);
+    await tester.pump();
+    final next = s.cubit.state.speech;
+    expect(next, isNot(first));
+    expect(s.voice.spoken.last.$1, next.join(' '));
+    // O fim da etapa não tem relógio: a voz fala e nada espera por ela.
+    expect(s.cubit.state.demo!.ended, isTrue);
+    expect(s.cubit.state.demo!.speaking, isFalse);
+    s.voice.emit(const TtsFinished());
+    await _settle(tester);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('demonstração sem voz: vale o tempo de leitura', (tester) async {
+    final s = await _open(tester, _tall, stage: 1);
+    final first = s.cubit.state.speech;
+    expect(s.voice.spoken, isEmpty);
+    expect(s.cubit.state.demo!.speaking, isFalse);
+    final read = LessonScriptCubit.readTime(first.join(' '));
+    // O `_open` já passou 1 s.
+    await tester.pump(read - const Duration(milliseconds: 1100));
+    expect(s.cubit.state.speech, first);
+    await tester.pump(const Duration(milliseconds: 200));
+    expect(s.cubit.state.speech, isNot(first));
+    expect(s.cubit.state.demo!.ended, isTrue);
+    await _settle(tester);
   });
 
   testWidgets('rodapé da demonstração: ← sempre, ↻ ⏮ ⏸ e o ⏭ com anel; '
