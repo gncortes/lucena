@@ -393,4 +393,46 @@ void main() {
       expect(r.s.moves.last.san, 'bxa8=Q');
     });
   });
+
+  test('tarefa com a captura de volta das pretas na lista', () async {
+    const start = '4k3/8/4p3/8/8/8/8/3RK3 w - - 0 1';
+    final r = await _Rig.open({
+      'licao': 'rules.test',
+      'parte': 'licao',
+      'etapas': [
+        {
+          'id': 'ideia',
+          'exemplos': [
+            {
+              'id': 'x1',
+              'fen': start,
+              'vira': false,
+              'objetivo': 'tarefa',
+              'entrada': [
+                {'fen': start, 't': 'a'},
+                {
+                  'fen': '4k3/8/4p3/3R4/8/8/8/4K3 w - - 1 1',
+                  'lance': 'd1d5',
+                  't': 'b',
+                },
+                {
+                  'fen': '4k3/8/8/3p4/8/8/8/4K3 w - - 0 1',
+                  'lance': 'e6d5',
+                  't': 'c',
+                },
+              ],
+              'linha': <dynamic>[],
+              'fim': 'etapa',
+            },
+          ],
+        },
+      ],
+    });
+    await r.times(2);
+    expect(r.s.lastMove, 'e6d5');
+    expect(r.s.moves.map((m) => (m.number, m.side, m.san)), [
+      (1, Side.white, 'Rd5'),
+      (1, Side.black, 'exd5'),
+    ]);
+  });
 }
