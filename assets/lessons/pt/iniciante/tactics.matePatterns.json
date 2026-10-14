@@ -9,7 +9,7 @@
   "rot.ideia.ex1.err.d1d7.2": "Vamos voltar: o xeque vem pela fileira do rei.",
   "rot.ideia.ex1.fora": "Esse lance não é mate. Vamos voltar: olhe a fileira do rei preto.",
   "rot.ideia.ex1.volta": "Dê xeque-mate com a torre, ou clique em {verResposta}",
-  "rot.ideia.ex1.l1": "Por isso se abre uma janela para o rei, avançando um peão da frente dele.",
+  "rot.ideia.ex1.l1": "Para evitar esse mate, é comum abrir uma janela para o rei, avançando um peão da frente dele.",
   "rot.ideia.ex1.l2": "Guarde o desenho: rei preso atrás dos peões e xeque pela fileira de trás.",
   "rot.ideia.ex2.e1": "O segundo é a dama apoiada: ela dá xeque colada no rei, protegida por outra peça.",
   "rot.ideia.ex2.e2": "O bispo em d3 mira o peão de h7. A dama em h5 também.",
