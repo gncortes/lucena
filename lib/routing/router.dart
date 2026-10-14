@@ -131,6 +131,20 @@ import '../domain/use_cases/game_intro.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
 /// árvore de rotas entram junto, para o botão de voltar funcionar.
+/// A lição da parte [part] da aula [id]: se a parte tem roteiro, a rota da
+/// tela de roteiro (o card da parte, a próxima parte, o revisar e o app que
+/// reabre nela); senão, nula (fica na lição).
+Future<String?> scriptPartRedirect(
+  EndgameLessonRepository lessons,
+  String id,
+  String? part,
+) async {
+  if (part == null) return null;
+  final trail = await lessons.trail();
+  final script = trail.lesson(id)?.lesson.part(part)?.script;
+  return script == null ? null : Routes.endgameLessonScript(id, part: part);
+}
+
 GoRouter buildRouter({String initialLocation = Routes.home}) {
   return GoRouter(
     initialLocation: initialLocation,
@@ -490,6 +504,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       language: language,
                       scripts: context.read<LessonScriptRepository>(),
                       kpk: context.read<KpkRepository>(),
+                      opponent: context.read<OpponentRepository>(),
                       source: SchoolLessonSource(
                         lessons,
                         context.read<SchoolProgressRepository>(),
@@ -659,6 +674,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           language: language,
                           scripts: context.read<LessonScriptRepository>(),
                           kpk: context.read<KpkRepository>(),
+                          opponent: context.read<OpponentRepository>(),
                           source: EndgameLessonSource(
                             lessons,
                             context.read<EndgameProgressRepository>(),
@@ -678,22 +694,11 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     path: 'lesson',
                     // A parte com roteiro abre a tela roteirizada (cobre o
                     // card da parte, a próxima parte e o revisar).
-                    redirect: (context, state) async {
-                      final id = state.pathParameters['lesson']!;
-                      final part = state.uri.queryParameters['part'];
-                      if (part == null) return null;
-                      final trail = await context
-                          .read<EndgameLessonRepository>()
-                          .trail();
-                      final script = trail
-                          .lesson(id)
-                          ?.lesson
-                          .part(part)
-                          ?.script;
-                      return script == null
-                          ? null
-                          : Routes.endgameLessonScript(id, part: part);
-                    },
+                    redirect: (context, state) => scriptPartRedirect(
+                      context.read<EndgameLessonRepository>(),
+                      state.pathParameters['lesson']!,
+                      state.uri.queryParameters['part'],
+                    ),
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
                       final part = state.uri.queryParameters['part'];

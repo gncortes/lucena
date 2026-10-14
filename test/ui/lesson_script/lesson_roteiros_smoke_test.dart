@@ -182,9 +182,15 @@ class _Run {
               if (s.touchMiss != miss) {
                 problems.add('$where: o toque errado $miss não marcou');
               }
+              if (s.touched.isNotEmpty) {
+                problems.add('$where: o toque errado $miss avançou a prática');
+              }
             }
             for (final square in targets) {
               await act('toque $square', () => cubit.onSquare(square));
+              if (s.touchMiss != null) {
+                problems.add('$where: o toque certo $square não limpou o erro');
+              }
             }
           case PracticeKind.jogo:
             final uci = practiceMove();

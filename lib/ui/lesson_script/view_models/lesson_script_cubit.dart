@@ -37,6 +37,7 @@ import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/tablebase/kpk_repository.dart';
 import '../../../domain/models/endgame_lesson.dart';
+import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../domain/models/kpk_outcome.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/lesson_script.dart';
@@ -143,7 +144,7 @@ class _GameNode {
   /// resto é empate.
   String? get result => switch (end) {
     null => null,
-    FreeEnd.coroa => side == Side.white ? '1–0' : '0–1',
+    FreeEnd.coroa || FreeEnd.mate => side == Side.white ? '1–0' : '0–1',
     _ => '½–½',
   };
 }
@@ -161,6 +162,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     ScriptDelay? delay,
     this._now = const SystemNow(),
     this._timer = Timer.new,
+    this._opponent,
   }) : _delay = delay ?? ((duration) => Future<void>.delayed(duration)),
        super(const LessonScriptState());
 
@@ -173,10 +175,18 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// Com a voz, o passo espera a fala acabar e só faz esta pausa depois.
   static const voicePause = Duration(milliseconds: 600);
 
+  /// O teto da espera pela voz: se o TTS travar falando (sem avisar o fim),
+  /// depois de quatro vezes o tempo de leitura o passo segue como se a fala
+  /// tivesse acabado.
+  static Duration speechCap(String text) => readTime(text) * 4;
+
   /// O tempo da máquina antes de responder, e de o lance errado da prática
   /// ser desfeito.
   static const machineDelay = Duration(milliseconds: 500);
   static const undoDelay = Duration(milliseconds: 800);
+
+  /// O tempo que o Stockfish pensa no objetivo `mate`.
+  static const engineTime = Duration(milliseconds: 400);
 
   /// O tempo da fala de troca de lado: o tabuleiro gira (600 ms) e o aluno lê.
   static const switchDelay = Duration(milliseconds: 1600);
@@ -197,6 +207,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   final KpkRepository _kpk;
   final LessonSource _source;
   final ScriptDelay _delay;
+
+  /// O motor que defende no objetivo `mate` (sem ele, a máquina joga o
+  /// primeiro lance legal).
+  final OpponentRepository? _opponent;
 
   late LessonScript _script;
   late ScriptTexts _texts;
@@ -230,6 +244,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   final Now _now;
   final DemoTimer _timer;
   Timer? _demoTimer;
+
+  /// O app está em segundo plano: a demonstração espera parada.
+  bool _background = false;
   bool _demoPlaying = true;
   String? _demoKey;
   int _demoTick = 0;
@@ -509,12 +526,21 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   /// Agenda o fim do passo com o tempo que falta (com a voz falando, espera
-  /// ela acabar: [demoVoice]).
+  /// ela acabar: [demoVoice], até o [speechCap]).
   void _demoRun() {
     _demoTimer?.cancel();
-    if (_demoSpeaking) {
+    if (_background) {
       _demoTimer = null;
       _demoRunStart = null;
+      return;
+    }
+    if (_demoSpeaking) {
+      _demoRunStart = null;
+      _demoTimer = _timer(speechCap(state.speech.join(' ')), () {
+        _demoTimer = null;
+        if (isClosed || !_inDemo || !_demoSpeaking) return;
+        demoVoice(speaking: false);
+      });
       return;
     }
     final left = _demoTotal - _demoElapsed;
@@ -564,6 +590,26 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _demoTimer?.cancel();
     _demoTimer = null;
     _demoPlaying = false;
+  }
+
+  /// O app foi para o segundo plano: tudo fica como está (a regra do
+  /// Gabriel); a demonstração para o relógio onde está, sem pausar.
+  void pauseForBackground() {
+    if (_background) return;
+    _background = true;
+    if (_demoRunStart != null) _demoElapsed = _demoSpent;
+    _demoRunStart = null;
+    _demoTimer?.cancel();
+    _demoTimer = null;
+  }
+
+  /// Voltou do segundo plano: a demonstração andando segue de onde estava.
+  void resumeFromBackground() {
+    if (!_background) return;
+    _background = false;
+    if (isClosed || !_inDemo || state.demo?.ended != false) return;
+    if (_demoPlaying) _demoRun();
+    _demoEmit();
   }
 
   /// ↻: recomeça a demonstração do exemplo, andando.
@@ -691,7 +737,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// O fim da partida no lance do tabuleiro, marcado nele (a lista mostra o
   /// resultado); nulo se ela segue.
   FreeEnd? _markResult(int limit) {
-    final end = FreePlayReferee.check(_pathFens(), limit: limit);
+    final end = FreePlayReferee.check(
+      _pathFens(),
+      limit: limit,
+      mate: _mateGoal,
+    );
     _cursorNode?.end = end;
     return end;
   }
@@ -1278,6 +1328,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   bool get _wantsWin => _example.goal.wantsWin;
+  bool get _mateGoal => _example.goal == ScriptGoal.mate;
+
+  /// O fim cumpre o objetivo: no `mate`, só o mate.
+  bool _meets(FreeEnd end) =>
+      _mateGoal ? end == FreeEnd.mate : end.meets(_wantsWin);
   String get _goalName => _example.goal.name;
 
   Future<void> _answer(String uci) async {
@@ -1476,9 +1531,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final text = free?.ends[end.name] ?? 'gen.fim.${end.name}';
     // Cumpriu o objetivo: o Viktor volta à ideia. Não cumpriu: diz o que a
     // posição dá e convida a ver a linha principal (Gabriel, 14/10/2026).
-    final next = kept && end.meets(_wantsWin)
+    final next = kept && _meets(end)
         ? 'gen.voltaIdeia'
-        : end.meets(_wantsWin)
+        : _meets(end)
         ? null
         : 'gen.verLinha.$_goalName';
     return base.copyWith(
@@ -1502,7 +1557,12 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (isClosed || epoch != _epoch) return;
     final from = _gameFen;
     final position = GameRules.fromFen(from);
-    final uci = position == null ? null : MachineMove.choose(_oracle, position);
+    final uci = position == null
+        ? null
+        : _mateGoal
+        ? await _engineMove(position)
+        : MachineMove.choose(_oracle, position);
+    if (isClosed || epoch != _epoch) return;
     final node = uci == null ? null : _playGame(uci);
     if (node == null) {
       emit(
@@ -1536,6 +1596,23 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       return;
     }
     _publish(base.copyWith(movable: _sideOf(node.fen)));
+  }
+
+  /// O lance do Stockfish (no máximo, como no app) em [position]. Se o motor
+  /// falhar, o primeiro lance legal, para a prática não travar.
+  Future<String?> _engineMove(Position position) async {
+    try {
+      final move = await _opponent?.pickMove(position, thinkTime: engineTime);
+      if (move != null) return move.uci;
+    } on Object {
+      // Segue com o lance legal abaixo.
+    }
+    final moves = [
+      for (final MapEntry(key: from, value: targets)
+          in position.legalMoves.entries)
+        for (final to in targets.squares) NormalMove(from: from, to: to).uci,
+    ]..sort();
+    return moves.firstOrNull;
   }
 
   /// Toque num lance da partida (jogo livre ou prática): o tabuleiro volta a
@@ -1801,12 +1878,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   Future<void> _practiceMove(Position position, Move move) async {
     final uci = move.uci;
     final from = state.fen;
-    final verdict = JudgeMove.judge(
-      _oracle,
-      position,
-      move,
-      wantsWin: _wantsWin,
-    );
+    // No `mate` não há tabela: o lance não é julgado, a partida corre.
+    final verdict = _mateGoal
+        ? MoveVerdict.keeps
+        : JudgeMove.judge(_oracle, position, move, wantsWin: _wantsWin);
     final after = position.playUnchecked(move);
     if (verdict == MoveVerdict.loses) {
       final epoch = ++_epoch;
@@ -1844,8 +1919,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final base = state.copyWith(
       fen: _gameFen,
       lastMove: uci,
-      speech: [_say('gen.pratica.certo')],
-      tone: ScriptTone.good,
+      speech: _mateGoal ? state.speech : [_say('gen.pratica.certo')],
+      tone: _mateGoal ? ScriptTone.neutral : ScriptTone.good,
       movable: null,
       transition: _transition([uci], fromFen: from),
     );
@@ -1864,7 +1939,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   LessonScriptState _finishPractice(LessonScriptState base, FreeEnd end) {
-    final met = end.meets(_wantsWin);
+    final met = _meets(end);
     final last = _exampleIndex == _stageData.examples.length - 1;
     return base.copyWith(
       phase: ScriptPhase.praticaFim,

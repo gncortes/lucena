@@ -238,6 +238,7 @@ class _LessonScreenState extends State<LessonScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _previous.ready) return;
       final state = context.read<LessonCubit>().state;
+      if (state.toScript) return _openScript(state);
       if (state.ready) _syncSheet(state, _previous);
     });
   }
