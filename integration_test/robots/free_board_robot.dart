@@ -316,6 +316,12 @@ class FreeBoardRobot {
     expect(below ? dy > board.bottom : dy < board.top, isTrue);
   }
 
+  /// O anel da vez no retrato de [side] (o lado que tem a vez): fica embaixo
+  /// do tabuleiro quando [side] é o lado de baixo, e em cima quando o
+  /// tabuleiro está virado e [side] é o jogador de cima.
+  void expectTurnRingOf(Side side) =>
+      expectTurnRing(below: side == _chessboard.orientation);
+
   /// O fim da partida de dois (sem máquina), no painel embaixo do
   /// tabuleiro. Contra a máquina, o fim é a conclusão (`ConclusionRobot`).
   Future<void> expectEnd({
