@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/achievement.dart';
 import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/filled_segments.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -14,6 +13,7 @@ import '../view_models/achievements_cubit.dart';
 import 'achievement_detail.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
+import '../../core/widgets/progress_pill.dart';
 
 /// As conquistas: a barra do progresso geral, o filtro (todas, conquistadas,
 /// faltando e o histórico) e a lista por grupo, com as obtidas em cor e a
@@ -118,11 +118,9 @@ class _Overall extends StatelessWidget {
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.sm),
-          LinearProgressIndicator(
+          ProgressPill(
             key: AchievementsKeys.progressBar,
             value: total == 0 ? 0 : done / total,
-            minHeight: AppSpacing.sm,
-            borderRadius: BorderRadius.circular(AppShape.full),
           ),
         ],
       ),
@@ -248,10 +246,7 @@ class _AchievementRow extends StatelessWidget {
                 Text(achievement.description(l10n, state.characters)),
                 if (progress != null) ...[
                   const SizedBox(height: AppSpacing.xs),
-                  LinearProgressIndicator(
-                    value: progress.fraction,
-                    borderRadius: BorderRadius.circular(AppShape.full),
-                  ),
+                  ProgressPill(value: progress.fraction),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     progress.label(l10n),

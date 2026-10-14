@@ -26,6 +26,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/progress_pill.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -104,13 +105,7 @@ class ReviewSummary extends StatelessWidget {
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppShape.small),
-            child: LinearProgressIndicator(
-              value: state.reviewProgress,
-              minHeight: 8,
-            ),
-          ),
+          ProgressPill(value: state.reviewProgress),
         ],
       );
     } else if (review == null) {

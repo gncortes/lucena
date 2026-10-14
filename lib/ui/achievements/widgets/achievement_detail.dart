@@ -11,6 +11,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
+import '../../core/widgets/progress_pill.dart';
 
 /// Abre o detalhe de [achievement] num painel inferior. Obtida ([unlocked]),
 /// mostra a data e a hora e, quando a origem foi gravada, o botão para a
@@ -224,7 +225,7 @@ class _AchievementDetailState extends State<AchievementDetail>
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.sm),
-            LinearProgressIndicator(value: progress.fraction),
+            ProgressPill(value: progress.fraction),
           ],
           if (source case (final route, final speedrun)) ...[
             const SizedBox(height: AppSpacing.xl),
