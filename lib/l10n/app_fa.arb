@@ -1214,5 +1214,9 @@
   "lessonShowSpeech": "Show Viktor's message",
   "lessonBranchMoveFallback": "After this move, the opponent finds a resource.",
   "lessonPracticeInvite": "Now practice: let's see if you got the idea.",
-  "lessonPracticeStart": "Let's practice"
+  "lessonPracticeStart": "Let's practice",
+  "curiositiesTitle": "Curiosities",
+  "curiositiesAbout": "About the position",
+  "curiositiesReferences": "References",
+  "curiositiesQuoteBy": "— {author}"
 }

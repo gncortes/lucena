@@ -6498,5 +6498,24 @@
   "lessonPracticeStart": "Let's practice",
   "@lessonPracticeStart": {
     "description": "Primary button of the practice invite."
+  },
+  "curiositiesTitle": "Curiosities",
+  "@curiositiesTitle": {
+    "description": "Title of the Curiosities sheet opened by the book icon in the lesson."
+  },
+  "curiositiesAbout": "About the position",
+  "@curiositiesAbout": {
+    "description": "Section label of the short text about the position."
+  },
+  "curiositiesReferences": "References",
+  "@curiositiesReferences": {
+    "description": "Section label of the references list at the bottom of the Curiosities sheet."
+  },
+  "curiositiesQuoteBy": "— {author}",
+  "@curiositiesQuoteBy": {
+    "description": "Author line under a quote. {author} is a name.",
+    "placeholders": {
+      "author": {"type": "String"}
+    }
   }
 }

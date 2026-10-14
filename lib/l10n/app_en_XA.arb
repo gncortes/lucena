@@ -1213,5 +1213,9 @@
   "lessonShowSpeech": "[Šhöw Vîktöŕ'š méššåĝé one two three]",
   "lessonBranchMoveFallback": "[Åftéŕ thîš mövé, thé öppöñéñt fîñdš å ŕéšöûŕçé. one two three four]",
   "lessonPracticeInvite": "[Ñöw pŕåçtîšé thé îdéå ýöû håvé jûšt šééñ. one two three four]",
-  "lessonPracticeStart": "[Lét'š pŕåçtîçé one two]"
+  "lessonPracticeStart": "[Lét'š pŕåçtîçé one two]",
+  "curiositiesTitle": "[Çûŕîöšîtîéš one two]",
+  "curiositiesAbout": "[Åböût thé pöšîtîöñ one two]",
+  "curiositiesReferences": "[Ŕéféŕéñçéš one]",
+  "curiositiesQuoteBy": "[— {author} one]"
 }

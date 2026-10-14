@@ -548,12 +548,18 @@
         "url": "https://lichess.org/study/AAAAAAAA"
        },
        {
-        "id": "ph_jogador",
+        "id": "capablanca_jogador",
         "kind": "player",
-        "name": "Lorem Ipsum",
-        "initials": "LI",
-        "dates": "1900-1990",
-        "url": "https://en.wikipedia.org/wiki/Lorem_ipsum"
+        "name": "José Raúl Capablanca",
+        "initials": "JC",
+        "dates": "1888–1942",
+        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+       },
+       {
+        "id": "wiki_oposicao",
+        "kind": "web",
+        "title": "Opposition (chess)",
+        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
         "id": "ph_livro",
@@ -873,12 +879,18 @@
         "url": "https://lichess.org/study/AAAAAAAA"
        },
        {
-        "id": "ph_jogador",
+        "id": "capablanca_jogador",
         "kind": "player",
-        "name": "Lorem Ipsum",
-        "initials": "LI",
-        "dates": "1900-1990",
-        "url": "https://en.wikipedia.org/wiki/Lorem_ipsum"
+        "name": "José Raúl Capablanca",
+        "initials": "JC",
+        "dates": "1888–1942",
+        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+       },
+       {
+        "id": "wiki_oposicao",
+        "kind": "web",
+        "title": "Opposition (chess)",
+        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
         "id": "ph_livro",
@@ -1150,12 +1162,18 @@
         "url": "https://lichess.org/study/AAAAAAAA"
        },
        {
-        "id": "ph_jogador",
+        "id": "capablanca_jogador",
         "kind": "player",
-        "name": "Lorem Ipsum",
-        "initials": "LI",
-        "dates": "1900-1990",
-        "url": "https://en.wikipedia.org/wiki/Lorem_ipsum"
+        "name": "José Raúl Capablanca",
+        "initials": "JC",
+        "dates": "1888–1942",
+        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+       },
+       {
+        "id": "wiki_oposicao",
+        "kind": "web",
+        "title": "Opposition (chess)",
+        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
         "id": "ph_livro",
@@ -1398,12 +1416,18 @@
         "url": "https://lichess.org/study/AAAAAAAA"
        },
        {
-        "id": "ph_jogador",
+        "id": "capablanca_jogador",
         "kind": "player",
-        "name": "Lorem Ipsum",
-        "initials": "LI",
-        "dates": "1900-1990",
-        "url": "https://en.wikipedia.org/wiki/Lorem_ipsum"
+        "name": "José Raúl Capablanca",
+        "initials": "JC",
+        "dates": "1888–1942",
+        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+       },
+       {
+        "id": "wiki_oposicao",
+        "kind": "web",
+        "title": "Opposition (chess)",
+        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
         "id": "ph_livro",
@@ -1555,12 +1579,18 @@
         "url": "https://lichess.org/study/AAAAAAAA"
        },
        {
-        "id": "ph_jogador",
+        "id": "capablanca_jogador",
         "kind": "player",
-        "name": "Lorem Ipsum",
-        "initials": "LI",
-        "dates": "1900-1990",
-        "url": "https://en.wikipedia.org/wiki/Lorem_ipsum"
+        "name": "José Raúl Capablanca",
+        "initials": "JC",
+        "dates": "1888–1942",
+        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+       },
+       {
+        "id": "wiki_oposicao",
+        "kind": "web",
+        "title": "Opposition (chess)",
+        "url": "https://en.wikipedia.org/wiki/Opposition_(chess)"
        },
        {
         "id": "ph_livro",

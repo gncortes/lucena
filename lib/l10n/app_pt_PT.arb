@@ -1214,5 +1214,9 @@
   "lessonShowSpeech": "Mostrar a fala do Viktor",
   "lessonBranchMoveFallback": "Com este lance, o adversário encontra um recurso.",
   "lessonPracticeInvite": "Agora pratique a ideia que você acabou de ver.",
-  "lessonPracticeStart": "Vamos praticar"
+  "lessonPracticeStart": "Vamos praticar",
+  "curiositiesTitle": "Curiosities",
+  "curiositiesAbout": "About the position",
+  "curiositiesReferences": "References",
+  "curiositiesQuoteBy": "— {author}"
 }
