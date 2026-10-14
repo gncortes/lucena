@@ -15,7 +15,6 @@ void main() {
   Future<void> tourAs(PatrolIntegrationTester $, RatingLevel level) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.passVoice();
     await tour.nextUntilLevel();
     await tour.chooseLevel(level);
     await tour.start();

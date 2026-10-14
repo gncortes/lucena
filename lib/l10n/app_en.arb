@@ -2772,10 +2772,6 @@
   "@voiceTeacher": {
     "description": "Voice (text-to-speech) feature: voiceTeacher"
   },
-  "voiceCharacters": "Opponents' voices",
-  "@voiceCharacters": {
-    "description": "Voice (text-to-speech) feature: voiceCharacters"
-  },
   "voiceNumber": "Voice {number}",
   "@voiceNumber": {
     "description": "Voice (text-to-speech) feature: voiceNumber",
@@ -2788,10 +2784,6 @@
   "voiceNone": "No voice",
   "@voiceNone": {
     "description": "Voice (text-to-speech) feature: voiceNone"
-  },
-  "voiceAppChoice": "Chosen by the app",
-  "@voiceAppChoice": {
-    "description": "Voice (text-to-speech) feature: voiceAppChoice"
   },
   "voiceUnavailable": "This device has no offline voice for this language. Open the device's voice settings, tap the gear next to the engine (Samsung or Google) and download one in “Install voice data”.",
   "@voiceUnavailable": {
@@ -2812,15 +2804,6 @@
   "voiceTeacherSample": "Hello! I'm Viktor, your teacher. Let's master the endgames together.",
   "@voiceTeacherSample": {
     "description": "Voice (text-to-speech) feature: voiceTeacherSample"
-  },
-  "voiceCharacterSample": "Hi! I'm {name}. Ready to play?",
-  "@voiceCharacterSample": {
-    "description": "Voice (text-to-speech) feature: voiceCharacterSample",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
   },
   "lessonPrevious": "Previous step",
   "@lessonPrevious": {

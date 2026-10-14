@@ -13,6 +13,7 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
@@ -327,7 +328,9 @@ void main() {
     ) async {
       await pumpTour(tester, step: TourStep.voice);
       expect(find.byKey(TourKeys.voiceHint), findsOneWidget);
-      expect(find.byKey(VoiceKeys.tone(null)), findsNothing);
+      for (final tone in VoiceTone.values) {
+        expect(find.byKey(VoiceKeys.tone(tone)), findsNothing);
+      }
       await tester.ensureVisible(find.byKey(VoiceKeys.voice('pt-br-c')));
       await tester.tap(find.byKey(VoiceKeys.voice('pt-br-c')));
       await tester.pumpAndSettle();

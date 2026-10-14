@@ -74,8 +74,6 @@ class VoiceSettingsScreen extends StatelessWidget {
                   ),
                   header(l10n.voiceTeacher),
                   const TeacherVoiceList(),
-                  header(l10n.voiceCharacters),
-                  const CharacterVoiceList(),
                   help,
                 ],
               ],

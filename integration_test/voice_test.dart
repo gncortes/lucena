@@ -24,22 +24,15 @@ void main() {
     final tour = TourRobot($);
     final voice = VoiceRobot($);
     await app.open(systemLocale: _english, tour: true);
-    // A voz é o primeiro passo.
-    await tour.expectStep(TourStep.voice);
+    // A voz é o segundo passo, depois do tabuleiro.
+    await tour.openVoice();
 
     // Tocar numa voz liga a voz e o Viktor fala nela.
     await voice.choose(_voice(1));
     expect(voice.lastSpoken.$2, _voice(1));
 
     await tour.next();
-    await tour.expectStep(TourStep.characterVoices);
-    await voice.openCharacter('beachgoer');
-    await voice.choose(_voice(0));
-    expect(voice.lastSpoken.$1, contains('Coco'));
-    expect(voice.lastSpoken.$2, _voice(0));
-    await voice.closeSheet();
-    await tour.next();
-    await tour.expectStep(TourStep.goal);
+    await tour.expectStep(TourStep.school);
 
     // Fechar à força: a escolha continua.
     await app.restart();
@@ -56,10 +49,10 @@ void main() {
     final tour = TourRobot($);
     final voice = VoiceRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.expectStep(TourStep.voice);
+    await tour.openVoice();
     await voice.chooseNone();
     await tour.next();
-    await tour.expectStep(TourStep.goal);
+    await tour.expectStep(TourStep.school);
   });
 
   patrolTest('lição: o botão de som abre o som da lição; ligar a voz ali faz '

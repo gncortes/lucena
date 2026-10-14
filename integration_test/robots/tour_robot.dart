@@ -1,19 +1,16 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/app_accent.dart';
-import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
-import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'settings_robot.dart';
-import 'variant.dart';
 
 /// O tour da primeira abertura.
 class TourRobot {
@@ -58,12 +55,11 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
-  /// O tour abre na voz do Viktor: segue sem escolher voz (ela fica
-  /// desligada e as vozes dos adversários são puladas) até as boas-vindas.
-  Future<void> passVoice() async {
-    await expectStep(TourStep.voice);
+  /// O tour abre no tabuleiro: avança até o passo da voz (o nome do jogador).
+  Future<void> openVoice() async {
+    await expectStep(TourStep.board);
     await next();
-    await expectStep(TourStep.goal);
+    await expectStep(TourStep.voice);
   }
 
   /// Avança até o passo [step].
@@ -74,30 +70,7 @@ class TourRobot {
   }
 
   /// Avança até o passo do nível.
-  Future<void> nextUntilLevel() async {
-    while (find.byKey(TourKeys.step(TourStep.level)).evaluate().isEmpty) {
-      await next();
-    }
-  }
-
-  /// No passo do som: com som ou sem som.
-  Future<void> chooseSound({required bool enabled}) =>
-      _tap(TourKeys.sound(enabled: enabled));
-
-  /// No passo do tema: claro, escuro ou o do aparelho.
-  Future<void> chooseThemeMode(AppThemeMode mode) =>
-      _tap(TourKeys.themeMode(mode));
-
-  /// No passo do tema: a cor do app.
-  Future<void> chooseAccent(AppAccent accent) => _tap(TourKeys.accent(accent));
-
-  /// O nome da cor do app marcada no passo do tema.
-  void expectAccentValue(String text) {
-    expectText(
-      $.tester.widget<Text>(find.byKey(TourKeys.accentValue)).data,
-      text,
-    );
-  }
+  Future<void> nextUntilLevel() => nextUntil(TourStep.level);
 
   /// No passo do tabuleiro: as cores e as peças.
   Future<void> chooseBoardColors(BoardColors colors) =>
@@ -129,48 +102,43 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
+  /// No passo do nível: "Estou começando" é o cartão do iniciante; as outras
+  /// faixas vêm da folha de "Escolher minha faixa" (marca e confirma).
   Future<void> chooseLevel(RatingLevel level) async {
-    // O teste vem primeiro; a lista das faixas fica atrás do botão.
-    if (find.byKey(TourKeys.level(level)).evaluate().isEmpty) {
-      await $(TourKeys.chooseByHand).scrollTo().tap();
-      await $.pumpAndSettle();
+    if (level == RatingLevel.beginner) {
+      await _tap(TourKeys.levelOption(TourLevelChoice.beginner));
+      return;
     }
-    await $(TourKeys.level(level)).scrollTo().tap();
+    await _tap(TourKeys.levelOption(TourLevelChoice.band));
+    await $(ProfileKeys.levelSheet).waitUntilVisible();
+    await $(ProfileKeys.levelOption(level))
+        .scrollTo(
+          view: find.descendant(
+            of: find.byKey(ProfileKeys.levelSheet),
+            matching: find.byType(Scrollable),
+          ),
+        )
+        .tap();
+    await $(ProfileKeys.levelConfirmButton).tap();
     await $.pumpAndSettle();
   }
 
   /// No passo do nível: abre o teste de nível.
-  Future<void> takeTest() async {
-    await $(TourKeys.takeTestCard).scrollTo().tap();
-    await $.pumpAndSettle();
-  }
+  Future<void> takeTest() => _tap(TourKeys.levelOption(TourLevelChoice.test));
 
-  /// Termina o tour. No passo do nível, passa antes pelo dos caminhos (com
-  /// a sugestão do nível marcada).
+  /// No passo do nível: "Começar". Sem escolha, vale "Estou começando".
   Future<void> start() async {
-    if (find.byKey(TourKeys.startButton).evaluate().isEmpty) {
-      await next();
-      await expectStep(TourStep.goals);
-    }
-    await $(TourKeys.startButton).tap();
-    await $.pumpAndSettle();
-  }
-
-  /// No passo dos caminhos, marca ou desmarca [path].
-  Future<void> toggleGoal(HomePath path) async {
-    await $(TourKeys.goal(path)).scrollTo().tap();
-    await $.pumpAndSettle();
+    await _tap(TourKeys.startButton);
   }
 
   /// Pula o tour. Pular exige um nível escolhido: sem ele, o botão leva ao
-  /// passo do nível, onde escolhemos [level] e pulamos de novo.
+  /// passo do nível, onde escolhemos [level] e começamos.
   Future<void> skip({RatingLevel level = RatingLevel.intermediate}) async {
     await $(TourKeys.skipButton).tap();
     await $.pumpAndSettle();
     if (find.byKey(TourKeys.step(TourStep.level)).evaluate().isNotEmpty) {
       await chooseLevel(level);
-      await $(TourKeys.skipButton).tap();
-      await $.pumpAndSettle();
+      await start();
     }
   }
 
