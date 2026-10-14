@@ -101,7 +101,10 @@ class _LucenaAppState extends State<LucenaApp> {
             : lesson != null && lesson.open
             ? Routes.lesson(lesson.lessonId)
             : endgameLesson != null && endgameLesson.open
-            ? Routes.endgameLessonSteps(endgameLesson.lessonId)
+            ? Routes.endgameLessonSteps(
+                endgameLesson.lessonId,
+                part: endgameLesson.part,
+              )
             : exercise != null
             ? Routes.endgameExercise(exercise.$1, exercise.$2.exerciseId)
             : stars != null
