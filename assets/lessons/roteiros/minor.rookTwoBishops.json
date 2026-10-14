@@ -197,6 +197,40 @@
          "salto": true,
          "t": "rot.ideia.ex2.err.a7a8.3"
         }
+       ],
+       "c1a3": [
+        {
+         "fen": "6k1/R7/8/8/8/B2B4/8/4K3 b - - 1 1",
+         "setas": [
+          [
+           "c1",
+           "a3",
+           "r"
+          ]
+         ],
+         "lance": "c1a3",
+         "t": "rot.ideia.ex2.err.c1a3.1"
+        },
+        {
+         "fen": "7k/R7/8/8/8/B2B4/8/4K3 w - - 2 2",
+         "lance": "g8h8",
+         "t": "rot.ideia.ex2.err.c1a3.2"
+        },
+        {
+         "fen": "R6k/8/8/8/8/B2B4/8/4K3 b - - 3 2",
+         "lance": "a7a8",
+         "t": "rot.ideia.ex2.err.c1a3.3"
+        },
+        {
+         "fen": "R7/6k1/8/8/8/B2B4/8/4K3 w - - 4 3",
+         "lance": "h8g7",
+         "t": "rot.ideia.ex2.err.c1a3.4"
+        },
+        {
+         "fen": "6k1/R7/8/8/8/3B4/8/2B1K3 w - - 0 1",
+         "salto": true,
+         "t": "rot.ideia.ex2.err.c1a3.5"
+        }
        ]
       },
       "fora": "rot.ideia.ex2.fora",

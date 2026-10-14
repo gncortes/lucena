@@ -32,10 +32,10 @@
   "rot.demos.afogamento.e1": "Now a danger. Count the black king's squares: your king guards g7 and h7. Only g8 is left.",
   "rot.demos.afogamento.l1": "If the knight went to f6, it would take g8 without check. The black king would have no move: stalemate.",
   "rot.demos.afogamento.l2": "The rook solves it: it gives check and takes g8 at the same time. Checkmate!",
-  "rot.demos.afogamento.l3": "Now it's your turn: trap the king with the rook, take squares with the knight and count squares before the mate.",
+  "rot.demos.afogamento.l3": "Now it's your turn: cut the king off with the rook, take squares with the knight and count squares before the mate.",
   "rot.pratica.preparar.enunciado": "Give checkmate. The black king has a7 and b8. First attack a7 with the knight, then the rook.",
   "rot.pratica.preparar.fim": "Perfect. The knight took a7, and the rook gave mate.",
   "rot.pratica.preparar.err.h1h8": "It is check, but the king escapes through a7. Try again.",
-  "rot.pratica.centro.enunciado": "The black king is in the center. Trap it with the rook, bring your king close and use the knight.",
+  "rot.pratica.centro.enunciado": "The black king is in the center. Cut it off with the rook, bring your king close and use the knight.",
   "rot.pratica.centro.fim": "Well done. You knew how to use the knight."
 }

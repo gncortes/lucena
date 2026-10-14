@@ -32,10 +32,10 @@
   "rot.demos.afogamento.e1": "Agora um perigo. Conte as casas do rei preto: o seu rei guarda g7 e h7. Só sobra g8.",
   "rot.demos.afogamento.l1": "Se o cavalo fosse a f6, tiraria g8 sem dar xeque. O rei preto ficaria sem lance: afogamento.",
   "rot.demos.afogamento.l2": "A torre resolve: dá xeque e tira g8 ao mesmo tempo. Xeque-mate!",
-  "rot.demos.afogamento.l3": "Agora é a sua vez: prenda o rei com a torre, tire casas com o cavalo e conte as casas antes do mate.",
+  "rot.demos.afogamento.l3": "Agora é a sua vez: corte o rei com a torre, tire casas com o cavalo e conte as casas antes do mate.",
   "rot.pratica.preparar.enunciado": "Dê xeque-mate. O rei preto tem a7 e b8. Primeiro ataque a7 com o cavalo, depois a torre.",
   "rot.pratica.preparar.fim": "Perfeito. O cavalo tirou a7, e a torre deu o mate.",
   "rot.pratica.preparar.err.h1h8": "É xeque, mas o rei escapa por a7. Tente de novo.",
-  "rot.pratica.centro.enunciado": "O rei preto está no centro. Prenda-o com a torre, aproxime o seu rei e use o cavalo.",
+  "rot.pratica.centro.enunciado": "O rei preto está no centro. Corte-o com a torre, aproxime o seu rei e use o cavalo.",
   "rot.pratica.centro.fim": "Muito bem. Você soube usar o cavalo."
 }
