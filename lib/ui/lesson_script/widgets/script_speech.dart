@@ -8,8 +8,10 @@ import '../../core/theme/app_shape.dart';
 import '../../core/widgets/typing_dots.dart';
 
 /// As medidas do balão do Viktor (canvas `T70-balao`, variante A, Gabriel
-/// 14/10/2026): 15 sp, folga 14×16 e 24 dp abaixo da barra em 412×915; 14 sp,
-/// folga 10×14 e 12 dp em 360×640 (tela baixa).
+/// 14/10/2026): 15 sp, folga 14×16 e 24 dp abaixo da barra em 412×915; na
+/// tela baixa (360×640), 12 sp, folga 10×14, 12 dp e no máximo 2 linhas com
+/// reticências (o tabuleiro fica o maior possível; a fala inteira abre no
+/// clique).
 class ScriptSpeechMetrics {
   const ScriptSpeechMetrics._({
     required this.compact,
@@ -25,11 +27,11 @@ class ScriptSpeechMetrics {
     final compact = MediaQuery.sizeOf(context).height < 700;
     return ScriptSpeechMetrics._(
       compact: compact,
-      fontSize: compact ? 14 : 15,
+      fontSize: compact ? minFontSize : 15,
       verticalPadding: compact ? 10 : 14,
       horizontalPadding: compact ? 14 : 16,
       top: compact ? 12 : 24,
-      maxLines: compact ? 3 : 4,
+      maxLines: compact ? minLines : 4,
     );
   }
 
@@ -52,8 +54,13 @@ class ScriptSpeechMetrics {
   /// O espaço entre a barra de cima e o balão.
   final double top;
 
-  /// Até quantas linhas a área cresce (4 em 412×915, 3 em 360×640).
+  /// Até quantas linhas a fala vai na letra de sempre (4 em 412×915); a
+  /// tela pode dar mais quando cabem acima do tabuleiro centralizado. Na tela
+  /// baixa é o corte: 2 linhas e reticências.
   final int maxLines;
+
+  /// A tela baixa corta a fala em [maxLines] linhas, com reticências.
+  bool get clips => compact;
 
   TextStyle style(BuildContext context) =>
       Theme.of(context).textTheme.bodyLarge!
@@ -77,15 +84,22 @@ class ScriptSpeechMetrics {
     width - 2 * margin - 2 * horizontalPadding,
     ScriptSpeech.plainOf(context, texts.join('\n')),
     style(context),
+    maxLines,
   );
 
   /// A letra da fala na largura [textWidth]: a de sempre se o texto cabe em
-  /// [maxLines] linhas; senão, diminui de meio em meio ponto até caber (no
-  /// mínimo [minFontSize]).
-  TextStyle fittedStyle(BuildContext context, double textWidth, String text) {
+  /// [lines] linhas (padrão [maxLines]); senão, diminui de meio em meio ponto
+  /// até caber (no mínimo [minFontSize]).
+  TextStyle fittedStyle(
+    BuildContext context,
+    double textWidth,
+    String text, {
+    int? lines,
+  }) {
     var fitted = style(context);
+    final limit = lines ?? maxLines;
     while (fitted.fontSize! > minFontSize &&
-        !_fits(context, textWidth, text, fitted)) {
+        !_fits(context, textWidth, text, fitted, limit)) {
       fitted = fitted.copyWith(fontSize: fitted.fontSize! - 0.5);
     }
     return fitted;
@@ -96,12 +110,13 @@ class ScriptSpeechMetrics {
     double textWidth,
     String text,
     TextStyle style,
+    int lines,
   ) {
     final painter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
-      maxLines: maxLines,
+      maxLines: lines,
     )..layout(maxWidth: textWidth);
     final fits = !painter.didExceedMaxLines;
     painter.dispose();
@@ -110,37 +125,66 @@ class ScriptSpeechMetrics {
 }
 
 /// O balão do Viktor, embaixo da barra de cima. A área guarda duas linhas; o
-/// balão cresce para cima primeiro, no espaço sob a barra (três linhas não
-/// mexem o tabuleiro), e só depois empurra o resto, com `AnimatedSize`. Além
-/// de [ScriptSpeechMetrics.maxLines] linhas, a letra diminui (Gabriel,
-/// 14/10/2026; canvas `T70-etapa1-estados`).
+/// balão cresce para cima primeiro, no espaço sob a barra, e só depois
+/// empurra o resto, com `AnimatedSize`. Além de [lines] linhas, a letra
+/// diminui; na tela baixa, corta em 2 linhas com reticências. O clique no
+/// balão abre a fala inteira, sempre ([onOpen]; Gabriel, 14/10/2026; canvas
+/// `T70-etapa1-estados`).
 class ScriptSpeech extends StatelessWidget {
   const ScriptSpeech({
     required this.texts,
     required this.metrics,
+    this.lines,
     this.typing = false,
     this.onMainLine,
+    this.onShowAnswer,
+    this.onOpen,
     super.key,
   });
 
   final List<String> texts;
   final ScriptSpeechMetrics metrics;
 
+  /// Até quantas linhas a fala vai antes de a letra diminuir; nulo,
+  /// [ScriptSpeechMetrics.maxLines]. A tela dá mais quando cabem acima do
+  /// tabuleiro centralizado.
+  final int? lines;
+
   /// O clique em "Ver linha principal" dentro da fala: o mesmo do botão.
   final VoidCallback? onMainLine;
 
-  /// A marca na fala que vira o rótulo do botão "Ver linha principal",
-  /// sublinhado e clicável (Gabriel, 14/10/2026).
+  /// O clique em "Ver resposta" dentro da fala: o mesmo do botão.
+  final VoidCallback? onShowAnswer;
+
+  /// O clique no balão: abre a fala inteira.
+  final VoidCallback? onOpen;
+
+  /// As marcas na fala que viram o rótulo do botão, sublinhado e clicável
+  /// (Gabriel, 14/10/2026): todo botão citado na fala é link.
   static const mainLineMark = '{linhaPrincipal}';
+  static const showAnswerMark = '{verResposta}';
 
-  /// A fala sem a marca, para medir e para a voz.
-  static String plain(String text, String label) =>
-      text.replaceAll(mainLineMark, label);
+  /// Uma marca e o ponto logo depois dela (o link não leva ponto colado).
+  static final markPattern = RegExp(r'\{(linhaPrincipal|verResposta)\}\.?');
 
-  /// [plain] com o rótulo do idioma da tela.
+  /// A fala sem as marcas, para medir e para a voz.
+  static String plain(
+    String text, {
+    required String mainLine,
+    required String showAnswer,
+  }) => text.replaceAllMapped(
+    markPattern,
+    (m) => m.group(1) == 'verResposta' ? showAnswer : mainLine,
+  );
+
+  /// [plain] com os rótulos do idioma da tela.
   static String plainOf(BuildContext context, String text) =>
-      text.contains(mainLineMark)
-      ? plain(text, context.l10n.lessonMainLine)
+      markPattern.hasMatch(text)
+      ? plain(
+          text,
+          mainLine: context.l10n.lessonMainLine,
+          showAnswer: context.l10n.lessonShowAnswer,
+        )
       : text;
 
   /// A máquina pensa: um balão pequeno só com os três pontinhos.
@@ -178,13 +222,16 @@ class ScriptSpeech extends StatelessWidget {
                   context,
                   box.maxWidth,
                   plainOf(context, text),
+                  lines: lines,
                 );
                 return SizedBox(
                   width: double.infinity,
-                  child: _SpeechText(
+                  child: ScriptSpeechText(
                     text: text,
                     style: style.copyWith(color: onColor),
+                    maxLines: metrics.clips ? metrics.maxLines : null,
                     onMainLine: onMainLine,
+                    onShowAnswer: onShowAnswer,
                   ),
                 );
               },
@@ -214,7 +261,10 @@ class ScriptSpeech extends StatelessWidget {
             // (Gabriel, 14/10/2026; canvas `T70-etapa1-estados`, E4b).
             child: Stack(
               children: [
-                Visibility.maintain(visible: !typing, child: speech),
+                Visibility.maintain(
+                  visible: !typing,
+                  child: _open(context, speech),
+                ),
                 if (typing)
                   PositionedDirectional(
                     start: 0,
@@ -246,6 +296,22 @@ class ScriptSpeech extends StatelessWidget {
     );
   }
 
+  /// O balão inteiro abre a fala inteira; os links dentro dele ganham o
+  /// clique (o reconhecedor do texto entra primeiro na disputa).
+  Widget _open(BuildContext context, Widget child) {
+    final onOpen = this.onOpen;
+    if (onOpen == null) return child;
+    return Semantics(
+      button: true,
+      onTapHint: context.l10n.lessonFullSpeech,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onOpen,
+        child: child,
+      ),
+    );
+  }
+
   /// Balão e bico numa forma só: a sombra contorna os dois. Sempre branco
   /// (protótipo); o certo e o errado vão na fala.
   Widget _bubble(BuildContext context, Widget child) => Semantics(
@@ -263,67 +329,99 @@ class ScriptSpeech extends StatelessWidget {
   );
 }
 
-/// O texto da fala; a marca [ScriptSpeech.mainLineMark] vira o rótulo do
-/// botão, sublinhado na cor primária, e o clique faz o mesmo que o botão.
-class _SpeechText extends StatefulWidget {
-  const _SpeechText({required this.text, required this.style, this.onMainLine});
+/// O texto da fala; as marcas [ScriptSpeech.mainLineMark] e
+/// [ScriptSpeech.showAnswerMark] viram o rótulo do botão, sublinhado na cor
+/// primária, sem o ponto colado depois, e o clique faz o mesmo que o botão.
+/// Com [maxLines], corta com reticências.
+class ScriptSpeechText extends StatefulWidget {
+  const ScriptSpeechText({
+    required this.text,
+    required this.style,
+    this.maxLines,
+    this.onMainLine,
+    this.onShowAnswer,
+    super.key,
+  });
 
   final String text;
   final TextStyle style;
+  final int? maxLines;
   final VoidCallback? onMainLine;
+  final VoidCallback? onShowAnswer;
 
   @override
-  State<_SpeechText> createState() => _SpeechTextState();
+  State<ScriptSpeechText> createState() => _ScriptSpeechTextState();
 }
 
-class _SpeechTextState extends State<_SpeechText> {
-  late final _tap = TapGestureRecognizer()
+class _ScriptSpeechTextState extends State<ScriptSpeechText> {
+  late final _mainLine = TapGestureRecognizer()
     ..onTap = () => widget.onMainLine?.call();
+  late final _showAnswer = TapGestureRecognizer()
+    ..onTap = () => widget.onShowAnswer?.call();
 
   @override
   void dispose() {
-    _tap.dispose();
+    _mainLine.dispose();
+    _showAnswer.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final parts = widget.text.split(ScriptSpeech.mainLineMark);
-    if (parts.length == 1) return Text(widget.text, style: widget.style);
-    final label = context.l10n.lessonMainLine;
+    final overflow = widget.maxLines == null ? null : TextOverflow.ellipsis;
+    final matches = ScriptSpeech.markPattern.allMatches(widget.text).toList();
+    if (matches.isEmpty) {
+      return Text(
+        widget.text,
+        style: widget.style,
+        maxLines: widget.maxLines,
+        overflow: overflow,
+      );
+    }
+    final l10n = context.l10n;
+    final primary = Theme.of(context).colorScheme.primary;
     final link = widget.style.copyWith(
-      color: Theme.of(context).colorScheme.primary,
+      color: primary,
       fontWeight: FontWeight.w500,
       decoration: TextDecoration.underline,
-      decorationColor: Theme.of(context).colorScheme.primary,
+      decorationColor: primary,
     );
+    final spans = <InlineSpan>[];
+    var at = 0;
+    for (final m in matches) {
+      spans.add(TextSpan(text: widget.text.substring(at, m.start)));
+      final answer = m.group(1) == 'verResposta';
+      final onTap = answer ? widget.onShowAnswer : widget.onMainLine;
+      spans.add(
+        TextSpan(
+          text: answer ? l10n.lessonShowAnswer : l10n.lessonMainLine,
+          style: link,
+          recognizer: onTap == null
+              ? null
+              : answer
+              ? _showAnswer
+              : _mainLine,
+        ),
+      );
+      at = m.end;
+    }
+    spans.add(TextSpan(text: widget.text.substring(at)));
     return Text.rich(
-      TextSpan(
-        style: widget.style,
-        children: [
-          for (var i = 0; i < parts.length; i++) ...[
-            if (i > 0)
-              TextSpan(
-                text: label,
-                style: link,
-                recognizer: widget.onMainLine == null ? null : _tap,
-              ),
-            TextSpan(text: parts[i]),
-          ],
-        ],
-      ),
+      TextSpan(style: widget.style, children: spans),
+      maxLines: widget.maxLines,
+      overflow: overflow,
     );
   }
 }
 
 /// O contorno do balão: retângulo arredondado com o bico embaixo, centrado
-/// no retrato do Viktor (44 dp com 12 de margem: centro a 22 dp do balão).
+/// no retrato do Viktor (40 dp com 12 de margem: centro a 20 dp do balão).
 class _SpeechBorder extends ShapeBorder {
   const _SpeechBorder({required this.textDirection});
 
   final TextDirection textDirection;
 
-  static const _tailStart = 22.0 - 8.0;
+  static const _tailStart = 20.0 - 8.0;
 
   @override
   EdgeInsetsGeometry get dimensions => EdgeInsets.zero;

@@ -114,9 +114,10 @@ class _ScriptBoardState extends State<ScriptBoard> {
   void didUpdateWidget(ScriptBoard old) {
     super.didUpdateWidget(old);
     final s = widget.state;
-    if (s.orientation != old.state.orientation) unawaited(_flip(s.orientation));
+    final flipping = s.orientation != old.state.orientation;
+    if (flipping) unawaited(_flip(s.orientation));
     if (s.transition.id != old.state.transition.id || s.fen != old.state.fen) {
-      unawaited(_apply(s));
+      unawaited(_apply(s, flipping: flipping));
     } else if (!_busy) {
       _controller.updatePosition(
         _data(s.fen, last: s.lastMove),
@@ -161,10 +162,33 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   Future<void> _wait(Duration duration) => Future<void>.delayed(duration);
 
-  Future<void> _apply(LessonScriptState s) async {
+  Future<void> _apply(LessonScriptState s, {bool flipping = false}) async {
     final run = ++_run;
     final t = s.transition;
     final from = t.fromFen;
+    // A troca de lado é a meia-volta à vista (E7d, E12d2): a posição nova
+    // entra de uma vez e gira, sem esmaecer (Gabriel, 14/10/2026).
+    if (flipping && t.kind == TransitionKind.jump) {
+      final start = t.ucis.isEmpty ? s.fen : (from ?? s.fen);
+      setState(() {
+        _busy = true;
+        _shapes = false;
+        _opacity = 1;
+      });
+      _controller.updatePosition(
+        _data(start, interactive: false),
+        animate: false,
+        resetPremove: true,
+      );
+      if (t.ucis.isEmpty) {
+        await _finish(run, s, ScriptBoard.flip);
+      } else {
+        await _wait(ScriptBoard.flip);
+        if (!_alive(run)) return;
+        await _play(run, s, start, t.ucis, fade: true);
+      }
+      return;
+    }
     switch (t.kind) {
       case TransitionKind.none:
         _busy = false;

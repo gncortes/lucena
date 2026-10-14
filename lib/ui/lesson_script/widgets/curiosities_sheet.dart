@@ -5,6 +5,7 @@ import '../../../domain/models/lesson_script.dart';
 import '../../core/keys/curiosities_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/external_page_sheet.dart';
+import 'script_sheet_route.dart';
 
 /// Abre a folha Curiosidades do exemplo (o livro da barra da lição): o texto
 /// sobre a posição, a citação (se houver) e, no fim, as referências. Visual do
@@ -20,14 +21,11 @@ Future<void> showCuriositiesSheet(
   required ScriptTexts texts,
   List<Reference> lessonRefs = const [],
 }) {
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    showDragHandle: true,
-    constraints: BoxConstraints(
-      maxHeight: MediaQuery.sizeOf(context).height * 0.92,
-    ),
+  // O ✕ fora da folha, como na fala inteira (Gabriel, 14/10/2026).
+  return showScriptSheet(
+    context,
+    maxHeightFactor: 0.82,
+    closeKey: CuriositiesKeys.close,
     builder: (context) => CuriositiesSheet(
       curiosities: curiosities,
       texts: texts,
@@ -64,28 +62,21 @@ class CuriositiesSheet extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsetsDirectional.only(start: 24, end: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.curiositiesTitle,
-                  key: CuriositiesKeys.title,
-                  style: theme.textTheme.titleLarge,
-                ),
-              ),
-              IconButton(
-                key: CuriositiesKeys.close,
-                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                icon: const Icon(Icons.close_rounded),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
-            ],
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 20, 24, 0),
+          child: Text(
+            l10n.curiositiesTitle,
+            key: CuriositiesKeys.title,
+            style: theme.textTheme.titleLarge,
           ),
         ),
         Flexible(
           child: SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 8, 24, 24),
+            padding: EdgeInsetsDirectional.fromSTEB(
+              24,
+              8,
+              24,
+              24 + MediaQuery.viewPaddingOf(context).bottom,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

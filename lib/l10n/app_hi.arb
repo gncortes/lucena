@@ -1192,6 +1192,7 @@
   "lessonYourTurnPlay": "Your turn: play with {side}.",
   "lessonShowAnswer": "Show answer",
   "lessonMainLine": "मुख्य लाइन",
+  "lessonFullSpeech": "पूरी बात देखें",
   "lessonAlreadySeen": "Already seen",
   "lessonSeeFullExplanation": "See the full explanation",
   "lessonSeeFullStatement": "See the full prompt",

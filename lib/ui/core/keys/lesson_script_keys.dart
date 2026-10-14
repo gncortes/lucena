@@ -13,6 +13,17 @@ abstract final class LessonScriptKeys {
   static const bookButton = Key('lessonScript.bookButton');
   static const moveList = Key('lessonScript.moveList');
   static const page = Key('lessonScript.page');
+
+  /// A fala inteira do Viktor (o clique no balão) e o ✕ dela.
+  static const speechSheet = Key('lessonScript.speechSheet');
+  static const speechSheetClose = Key('lessonScript.speechSheetClose');
+
+  /// O rodapé da demonstração (etapa 2): repetir, lance anterior, tocar ou
+  /// pausar, e o anel do botão principal.
+  static const demoRepeat = Key('lessonScript.demoRepeat');
+  static const demoStepBack = Key('lessonScript.demoStepBack');
+  static const demoToggle = Key('lessonScript.demoToggle');
+  static const demoRing = Key('lessonScript.demoRing');
   static const back = Key('lessonScript.back');
 
   /// Continuar, Próxima etapa, Voltar ao início.

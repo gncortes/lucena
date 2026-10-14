@@ -1192,6 +1192,7 @@
   "lessonYourTurnPlay": "Your turn: play with {side}.",
   "lessonShowAnswer": "Show answer",
   "lessonMainLine": "Biến chính",
+  "lessonFullSpeech": "Xem toàn bộ lời thoại",
   "lessonAlreadySeen": "Already seen",
   "lessonSeeFullExplanation": "See the full explanation",
   "lessonSeeFullStatement": "See the full prompt",

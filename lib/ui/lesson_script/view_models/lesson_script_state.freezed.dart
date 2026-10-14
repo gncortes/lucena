@@ -27,7 +27,8 @@ mixin _$LessonScriptState {
  Side? get movable;/// A máquina está para responder.
  bool get machineThinking;/// Os lances já vistos, na ordem da lista, e o atual.
  List<ScriptMoveEntry> get moves; String? get currentMoveId; ScriptTransition get transition;/// A folha Curiosidades do exemplo; nula se não tem (esconde o livro).
- ScriptCuriosities? get curiosities;/// Preenchido quando a parte foi concluída (`finishPart`).
+ ScriptCuriosities? get curiosities;/// A demonstração automática (etapa 2); nula fora dela.
+ ScriptDemo? get demo;/// Preenchido quando a parte foi concluída (`finishPart`).
  LessonOutcome? get outcome;
 /// Create a copy of LessonScriptState
 /// with the given fields replaced by the non-null parameter values.
@@ -40,20 +41,20 @@ $LessonScriptStateCopyWith<LessonScriptState> get copyWith => _$LessonScriptStat
 @override
 bool operator ==(Object other) {
   final _this = this as LessonScriptState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonScriptState&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&(identical(other.stageIndex, _this.stageIndex) || other.stageIndex == _this.stageIndex)&&(identical(other.stageCount, _this.stageCount) || other.stageCount == _this.stageCount)&&(identical(other.stageId, _this.stageId) || other.stageId == _this.stageId)&&(identical(other.exampleIndex, _this.exampleIndex) || other.exampleIndex == _this.exampleIndex)&&(identical(other.exampleCount, _this.exampleCount) || other.exampleCount == _this.exampleCount)&&(identical(other.phase, _this.phase) || other.phase == _this.phase)&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.lastMove, _this.lastMove) || other.lastMove == _this.lastMove)&&const DeepCollectionEquality().equals(other.speech, _this.speech)&&(identical(other.tone, _this.tone) || other.tone == _this.tone)&&const DeepCollectionEquality().equals(other.marks, _this.marks)&&const DeepCollectionEquality().equals(other.arrows, _this.arrows)&&(identical(other.primary, _this.primary) || other.primary == _this.primary)&&(identical(other.secondary, _this.secondary) || other.secondary == _this.secondary)&&(identical(other.canBack, _this.canBack) || other.canBack == _this.canBack)&&(identical(other.movable, _this.movable) || other.movable == _this.movable)&&(identical(other.machineThinking, _this.machineThinking) || other.machineThinking == _this.machineThinking)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&(identical(other.currentMoveId, _this.currentMoveId) || other.currentMoveId == _this.currentMoveId)&&(identical(other.transition, _this.transition) || other.transition == _this.transition)&&(identical(other.curiosities, _this.curiosities) || other.curiosities == _this.curiosities)&&(identical(other.outcome, _this.outcome) || other.outcome == _this.outcome));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonScriptState&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&(identical(other.stageIndex, _this.stageIndex) || other.stageIndex == _this.stageIndex)&&(identical(other.stageCount, _this.stageCount) || other.stageCount == _this.stageCount)&&(identical(other.stageId, _this.stageId) || other.stageId == _this.stageId)&&(identical(other.exampleIndex, _this.exampleIndex) || other.exampleIndex == _this.exampleIndex)&&(identical(other.exampleCount, _this.exampleCount) || other.exampleCount == _this.exampleCount)&&(identical(other.phase, _this.phase) || other.phase == _this.phase)&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.orientation, _this.orientation) || other.orientation == _this.orientation)&&(identical(other.lastMove, _this.lastMove) || other.lastMove == _this.lastMove)&&const DeepCollectionEquality().equals(other.speech, _this.speech)&&(identical(other.tone, _this.tone) || other.tone == _this.tone)&&const DeepCollectionEquality().equals(other.marks, _this.marks)&&const DeepCollectionEquality().equals(other.arrows, _this.arrows)&&(identical(other.primary, _this.primary) || other.primary == _this.primary)&&(identical(other.secondary, _this.secondary) || other.secondary == _this.secondary)&&(identical(other.canBack, _this.canBack) || other.canBack == _this.canBack)&&(identical(other.movable, _this.movable) || other.movable == _this.movable)&&(identical(other.machineThinking, _this.machineThinking) || other.machineThinking == _this.machineThinking)&&const DeepCollectionEquality().equals(other.moves, _this.moves)&&(identical(other.currentMoveId, _this.currentMoveId) || other.currentMoveId == _this.currentMoveId)&&(identical(other.transition, _this.transition) || other.transition == _this.transition)&&(identical(other.curiosities, _this.curiosities) || other.curiosities == _this.curiosities)&&(identical(other.demo, _this.demo) || other.demo == _this.demo)&&(identical(other.outcome, _this.outcome) || other.outcome == _this.outcome));
 }
 
 
 @override
 int get hashCode {
   final _this = this as LessonScriptState;
-  return Object.hashAll([runtimeType,_this.ready,_this.stageIndex,_this.stageCount,_this.stageId,_this.exampleIndex,_this.exampleCount,_this.phase,_this.fen,_this.orientation,_this.lastMove,const DeepCollectionEquality().hash(_this.speech),_this.tone,const DeepCollectionEquality().hash(_this.marks),const DeepCollectionEquality().hash(_this.arrows),_this.primary,_this.secondary,_this.canBack,_this.movable,_this.machineThinking,const DeepCollectionEquality().hash(_this.moves),_this.currentMoveId,_this.transition,_this.curiosities,_this.outcome]);
+  return Object.hashAll([runtimeType,_this.ready,_this.stageIndex,_this.stageCount,_this.stageId,_this.exampleIndex,_this.exampleCount,_this.phase,_this.fen,_this.orientation,_this.lastMove,const DeepCollectionEquality().hash(_this.speech),_this.tone,const DeepCollectionEquality().hash(_this.marks),const DeepCollectionEquality().hash(_this.arrows),_this.primary,_this.secondary,_this.canBack,_this.movable,_this.machineThinking,const DeepCollectionEquality().hash(_this.moves),_this.currentMoveId,_this.transition,_this.curiosities,_this.demo,_this.outcome]);
 }
 
 @override
 String toString() {
   final _this = this as LessonScriptState;
-  return 'LessonScriptState(ready: ${_this.ready}, stageIndex: ${_this.stageIndex}, stageCount: ${_this.stageCount}, stageId: ${_this.stageId}, exampleIndex: ${_this.exampleIndex}, exampleCount: ${_this.exampleCount}, phase: ${_this.phase}, fen: ${_this.fen}, orientation: ${_this.orientation}, lastMove: ${_this.lastMove}, speech: ${_this.speech}, tone: ${_this.tone}, marks: ${_this.marks}, arrows: ${_this.arrows}, primary: ${_this.primary}, secondary: ${_this.secondary}, canBack: ${_this.canBack}, movable: ${_this.movable}, machineThinking: ${_this.machineThinking}, moves: ${_this.moves}, currentMoveId: ${_this.currentMoveId}, transition: ${_this.transition}, curiosities: ${_this.curiosities}, outcome: ${_this.outcome})';
+  return 'LessonScriptState(ready: ${_this.ready}, stageIndex: ${_this.stageIndex}, stageCount: ${_this.stageCount}, stageId: ${_this.stageId}, exampleIndex: ${_this.exampleIndex}, exampleCount: ${_this.exampleCount}, phase: ${_this.phase}, fen: ${_this.fen}, orientation: ${_this.orientation}, lastMove: ${_this.lastMove}, speech: ${_this.speech}, tone: ${_this.tone}, marks: ${_this.marks}, arrows: ${_this.arrows}, primary: ${_this.primary}, secondary: ${_this.secondary}, canBack: ${_this.canBack}, movable: ${_this.movable}, machineThinking: ${_this.machineThinking}, moves: ${_this.moves}, currentMoveId: ${_this.currentMoveId}, transition: ${_this.transition}, curiosities: ${_this.curiosities}, demo: ${_this.demo}, outcome: ${_this.outcome})';
 }
 
 
@@ -64,7 +65,7 @@ abstract mixin class $LessonScriptStateCopyWith<$Res>  {
   factory $LessonScriptStateCopyWith(LessonScriptState value, $Res Function(LessonScriptState) _then) = _$LessonScriptStateCopyWithImpl;
 @useResult
 $Res call({
- bool ready, int stageIndex, int stageCount, String stageId, int exampleIndex, int exampleCount, ScriptPhase phase, String fen, Side orientation, String? lastMove, List<String> speech, ScriptTone tone, List<String> marks, List<ScriptArrow> arrows, ScriptAction? primary, ScriptAction? secondary, bool canBack, Side? movable, bool machineThinking, List<ScriptMoveEntry> moves, String? currentMoveId, ScriptTransition transition, ScriptCuriosities? curiosities, LessonOutcome? outcome
+ bool ready, int stageIndex, int stageCount, String stageId, int exampleIndex, int exampleCount, ScriptPhase phase, String fen, Side orientation, String? lastMove, List<String> speech, ScriptTone tone, List<String> marks, List<ScriptArrow> arrows, ScriptAction? primary, ScriptAction? secondary, bool canBack, Side? movable, bool machineThinking, List<ScriptMoveEntry> moves, String? currentMoveId, ScriptTransition transition, ScriptCuriosities? curiosities, ScriptDemo? demo, LessonOutcome? outcome
 });
 
 
@@ -81,7 +82,7 @@ class _$LessonScriptStateCopyWithImpl<$Res>
 
 /// Create a copy of LessonScriptState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? ready = null,Object? stageIndex = null,Object? stageCount = null,Object? stageId = null,Object? exampleIndex = null,Object? exampleCount = null,Object? phase = null,Object? fen = null,Object? orientation = null,Object? lastMove = freezed,Object? speech = null,Object? tone = null,Object? marks = null,Object? arrows = null,Object? primary = freezed,Object? secondary = freezed,Object? canBack = null,Object? movable = freezed,Object? machineThinking = null,Object? moves = null,Object? currentMoveId = freezed,Object? transition = null,Object? curiosities = freezed,Object? outcome = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? ready = null,Object? stageIndex = null,Object? stageCount = null,Object? stageId = null,Object? exampleIndex = null,Object? exampleCount = null,Object? phase = null,Object? fen = null,Object? orientation = null,Object? lastMove = freezed,Object? speech = null,Object? tone = null,Object? marks = null,Object? arrows = null,Object? primary = freezed,Object? secondary = freezed,Object? canBack = null,Object? movable = freezed,Object? machineThinking = null,Object? moves = null,Object? currentMoveId = freezed,Object? transition = null,Object? curiosities = freezed,Object? demo = freezed,Object? outcome = freezed,}) {
   return _then(LessonScriptState(
 ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
 as bool,stageIndex: null == stageIndex ? _self.stageIndex : stageIndex // ignore: cast_nullable_to_non_nullable
@@ -106,7 +107,8 @@ as bool,moves: null == moves ? _self.moves : moves // ignore: cast_nullable_to_n
 as List<ScriptMoveEntry>,currentMoveId: freezed == currentMoveId ? _self.currentMoveId : currentMoveId // ignore: cast_nullable_to_non_nullable
 as String?,transition: null == transition ? _self.transition : transition // ignore: cast_nullable_to_non_nullable
 as ScriptTransition,curiosities: freezed == curiosities ? _self.curiosities : curiosities // ignore: cast_nullable_to_non_nullable
-as ScriptCuriosities?,outcome: freezed == outcome ? _self.outcome : outcome // ignore: cast_nullable_to_non_nullable
+as ScriptCuriosities?,demo: freezed == demo ? _self.demo : demo // ignore: cast_nullable_to_non_nullable
+as ScriptDemo?,outcome: freezed == outcome ? _self.outcome : outcome // ignore: cast_nullable_to_non_nullable
 as LessonOutcome?,
   ));
 }
@@ -192,10 +194,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool ready,  int stageIndex,  int stageCount,  String stageId,  int exampleIndex,  int exampleCount,  ScriptPhase phase,  String fen,  Side orientation,  String? lastMove,  List<String> speech,  ScriptTone tone,  List<String> marks,  List<ScriptArrow> arrows,  ScriptAction? primary,  ScriptAction? secondary,  bool canBack,  Side? movable,  bool machineThinking,  List<ScriptMoveEntry> moves,  String? currentMoveId,  ScriptTransition transition,  ScriptCuriosities? curiosities,  LessonOutcome? outcome)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool ready,  int stageIndex,  int stageCount,  String stageId,  int exampleIndex,  int exampleCount,  ScriptPhase phase,  String fen,  Side orientation,  String? lastMove,  List<String> speech,  ScriptTone tone,  List<String> marks,  List<ScriptArrow> arrows,  ScriptAction? primary,  ScriptAction? secondary,  bool canBack,  Side? movable,  bool machineThinking,  List<ScriptMoveEntry> moves,  String? currentMoveId,  ScriptTransition transition,  ScriptCuriosities? curiosities,  ScriptDemo? demo,  LessonOutcome? outcome)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LessonScriptState() when $default != null:
-return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_that.exampleIndex,_that.exampleCount,_that.phase,_that.fen,_that.orientation,_that.lastMove,_that.speech,_that.tone,_that.marks,_that.arrows,_that.primary,_that.secondary,_that.canBack,_that.movable,_that.machineThinking,_that.moves,_that.currentMoveId,_that.transition,_that.curiosities,_that.outcome);case _:
+return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_that.exampleIndex,_that.exampleCount,_that.phase,_that.fen,_that.orientation,_that.lastMove,_that.speech,_that.tone,_that.marks,_that.arrows,_that.primary,_that.secondary,_that.canBack,_that.movable,_that.machineThinking,_that.moves,_that.currentMoveId,_that.transition,_that.curiosities,_that.demo,_that.outcome);case _:
   return orElse();
 
 }
@@ -213,10 +215,10 @@ return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool ready,  int stageIndex,  int stageCount,  String stageId,  int exampleIndex,  int exampleCount,  ScriptPhase phase,  String fen,  Side orientation,  String? lastMove,  List<String> speech,  ScriptTone tone,  List<String> marks,  List<ScriptArrow> arrows,  ScriptAction? primary,  ScriptAction? secondary,  bool canBack,  Side? movable,  bool machineThinking,  List<ScriptMoveEntry> moves,  String? currentMoveId,  ScriptTransition transition,  ScriptCuriosities? curiosities,  LessonOutcome? outcome)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool ready,  int stageIndex,  int stageCount,  String stageId,  int exampleIndex,  int exampleCount,  ScriptPhase phase,  String fen,  Side orientation,  String? lastMove,  List<String> speech,  ScriptTone tone,  List<String> marks,  List<ScriptArrow> arrows,  ScriptAction? primary,  ScriptAction? secondary,  bool canBack,  Side? movable,  bool machineThinking,  List<ScriptMoveEntry> moves,  String? currentMoveId,  ScriptTransition transition,  ScriptCuriosities? curiosities,  ScriptDemo? demo,  LessonOutcome? outcome)  $default,) {final _that = this;
 switch (_that) {
 case _LessonScriptState():
-return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_that.exampleIndex,_that.exampleCount,_that.phase,_that.fen,_that.orientation,_that.lastMove,_that.speech,_that.tone,_that.marks,_that.arrows,_that.primary,_that.secondary,_that.canBack,_that.movable,_that.machineThinking,_that.moves,_that.currentMoveId,_that.transition,_that.curiosities,_that.outcome);case _:
+return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_that.exampleIndex,_that.exampleCount,_that.phase,_that.fen,_that.orientation,_that.lastMove,_that.speech,_that.tone,_that.marks,_that.arrows,_that.primary,_that.secondary,_that.canBack,_that.movable,_that.machineThinking,_that.moves,_that.currentMoveId,_that.transition,_that.curiosities,_that.demo,_that.outcome);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -233,10 +235,10 @@ return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool ready,  int stageIndex,  int stageCount,  String stageId,  int exampleIndex,  int exampleCount,  ScriptPhase phase,  String fen,  Side orientation,  String? lastMove,  List<String> speech,  ScriptTone tone,  List<String> marks,  List<ScriptArrow> arrows,  ScriptAction? primary,  ScriptAction? secondary,  bool canBack,  Side? movable,  bool machineThinking,  List<ScriptMoveEntry> moves,  String? currentMoveId,  ScriptTransition transition,  ScriptCuriosities? curiosities,  LessonOutcome? outcome)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool ready,  int stageIndex,  int stageCount,  String stageId,  int exampleIndex,  int exampleCount,  ScriptPhase phase,  String fen,  Side orientation,  String? lastMove,  List<String> speech,  ScriptTone tone,  List<String> marks,  List<ScriptArrow> arrows,  ScriptAction? primary,  ScriptAction? secondary,  bool canBack,  Side? movable,  bool machineThinking,  List<ScriptMoveEntry> moves,  String? currentMoveId,  ScriptTransition transition,  ScriptCuriosities? curiosities,  ScriptDemo? demo,  LessonOutcome? outcome)?  $default,) {final _that = this;
 switch (_that) {
 case _LessonScriptState() when $default != null:
-return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_that.exampleIndex,_that.exampleCount,_that.phase,_that.fen,_that.orientation,_that.lastMove,_that.speech,_that.tone,_that.marks,_that.arrows,_that.primary,_that.secondary,_that.canBack,_that.movable,_that.machineThinking,_that.moves,_that.currentMoveId,_that.transition,_that.curiosities,_that.outcome);case _:
+return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_that.exampleIndex,_that.exampleCount,_that.phase,_that.fen,_that.orientation,_that.lastMove,_that.speech,_that.tone,_that.marks,_that.arrows,_that.primary,_that.secondary,_that.canBack,_that.movable,_that.machineThinking,_that.moves,_that.currentMoveId,_that.transition,_that.curiosities,_that.demo,_that.outcome);case _:
   return null;
 
 }
@@ -248,7 +250,7 @@ return $default(_that.ready,_that.stageIndex,_that.stageCount,_that.stageId,_tha
 
 
 class _LessonScriptState implements LessonScriptState {
-  const _LessonScriptState({this.ready = false, this.stageIndex = 0, this.stageCount = 1, this.stageId = '', this.exampleIndex = 0, this.exampleCount = 1, this.phase = ScriptPhase.entrada, this.fen = '', this.orientation = Side.white, this.lastMove,  List<String> speech = const <String>[], this.tone = ScriptTone.neutral,  List<String> marks = const <String>[],  List<ScriptArrow> arrows = const <ScriptArrow>[], this.primary, this.secondary, this.canBack = false, this.movable, this.machineThinking = false,  List<ScriptMoveEntry> moves = const <ScriptMoveEntry>[], this.currentMoveId, this.transition = const ScriptTransition(id: 0), this.curiosities, this.outcome}): _speech = speech,_marks = marks,_arrows = arrows,_moves = moves;
+  const _LessonScriptState({this.ready = false, this.stageIndex = 0, this.stageCount = 1, this.stageId = '', this.exampleIndex = 0, this.exampleCount = 1, this.phase = ScriptPhase.entrada, this.fen = '', this.orientation = Side.white, this.lastMove,  List<String> speech = const <String>[], this.tone = ScriptTone.neutral,  List<String> marks = const <String>[],  List<ScriptArrow> arrows = const <ScriptArrow>[], this.primary, this.secondary, this.canBack = false, this.movable, this.machineThinking = false,  List<ScriptMoveEntry> moves = const <ScriptMoveEntry>[], this.currentMoveId, this.transition = const ScriptTransition(id: 0), this.curiosities, this.demo, this.outcome}): _speech = speech,_marks = marks,_arrows = arrows,_moves = moves;
   
 
 /// Falso até o roteiro, as falas e a tabela carregarem.
@@ -312,6 +314,8 @@ class _LessonScriptState implements LessonScriptState {
 @override@JsonKey() final  ScriptTransition transition;
 /// A folha Curiosidades do exemplo; nula se não tem (esconde o livro).
 @override final  ScriptCuriosities? curiosities;
+/// A demonstração automática (etapa 2); nula fora dela.
+@override final  ScriptDemo? demo;
 /// Preenchido quando a parte foi concluída (`finishPart`).
 @override final  LessonOutcome? outcome;
 
@@ -325,18 +329,18 @@ _$LessonScriptStateCopyWith<_LessonScriptState> get copyWith => __$LessonScriptS
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonScriptState&&(identical(other.ready, ready) || other.ready == ready)&&(identical(other.stageIndex, stageIndex) || other.stageIndex == stageIndex)&&(identical(other.stageCount, stageCount) || other.stageCount == stageCount)&&(identical(other.stageId, stageId) || other.stageId == stageId)&&(identical(other.exampleIndex, exampleIndex) || other.exampleIndex == exampleIndex)&&(identical(other.exampleCount, exampleCount) || other.exampleCount == exampleCount)&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.lastMove, lastMove) || other.lastMove == lastMove)&&const DeepCollectionEquality().equals(other.speech, _speech)&&(identical(other.tone, tone) || other.tone == tone)&&const DeepCollectionEquality().equals(other.marks, _marks)&&const DeepCollectionEquality().equals(other.arrows, _arrows)&&(identical(other.primary, primary) || other.primary == primary)&&(identical(other.secondary, secondary) || other.secondary == secondary)&&(identical(other.canBack, canBack) || other.canBack == canBack)&&(identical(other.movable, movable) || other.movable == movable)&&(identical(other.machineThinking, machineThinking) || other.machineThinking == machineThinking)&&const DeepCollectionEquality().equals(other.moves, _moves)&&(identical(other.currentMoveId, currentMoveId) || other.currentMoveId == currentMoveId)&&(identical(other.transition, transition) || other.transition == transition)&&(identical(other.curiosities, curiosities) || other.curiosities == curiosities)&&(identical(other.outcome, outcome) || other.outcome == outcome));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonScriptState&&(identical(other.ready, ready) || other.ready == ready)&&(identical(other.stageIndex, stageIndex) || other.stageIndex == stageIndex)&&(identical(other.stageCount, stageCount) || other.stageCount == stageCount)&&(identical(other.stageId, stageId) || other.stageId == stageId)&&(identical(other.exampleIndex, exampleIndex) || other.exampleIndex == exampleIndex)&&(identical(other.exampleCount, exampleCount) || other.exampleCount == exampleCount)&&(identical(other.phase, phase) || other.phase == phase)&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.orientation, orientation) || other.orientation == orientation)&&(identical(other.lastMove, lastMove) || other.lastMove == lastMove)&&const DeepCollectionEquality().equals(other.speech, _speech)&&(identical(other.tone, tone) || other.tone == tone)&&const DeepCollectionEquality().equals(other.marks, _marks)&&const DeepCollectionEquality().equals(other.arrows, _arrows)&&(identical(other.primary, primary) || other.primary == primary)&&(identical(other.secondary, secondary) || other.secondary == secondary)&&(identical(other.canBack, canBack) || other.canBack == canBack)&&(identical(other.movable, movable) || other.movable == movable)&&(identical(other.machineThinking, machineThinking) || other.machineThinking == machineThinking)&&const DeepCollectionEquality().equals(other.moves, _moves)&&(identical(other.currentMoveId, currentMoveId) || other.currentMoveId == currentMoveId)&&(identical(other.transition, transition) || other.transition == transition)&&(identical(other.curiosities, curiosities) || other.curiosities == curiosities)&&(identical(other.demo, demo) || other.demo == demo)&&(identical(other.outcome, outcome) || other.outcome == outcome));
 }
 
 
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,ready,stageIndex,stageCount,stageId,exampleIndex,exampleCount,phase,fen,orientation,lastMove,const DeepCollectionEquality().hash(_speech),tone,const DeepCollectionEquality().hash(_marks),const DeepCollectionEquality().hash(_arrows),primary,secondary,canBack,movable,machineThinking,const DeepCollectionEquality().hash(_moves),currentMoveId,transition,curiosities,outcome]);
+    return Object.hashAll([runtimeType,ready,stageIndex,stageCount,stageId,exampleIndex,exampleCount,phase,fen,orientation,lastMove,const DeepCollectionEquality().hash(_speech),tone,const DeepCollectionEquality().hash(_marks),const DeepCollectionEquality().hash(_arrows),primary,secondary,canBack,movable,machineThinking,const DeepCollectionEquality().hash(_moves),currentMoveId,transition,curiosities,demo,outcome]);
 }
 
 @override
 String toString() {
-    return 'LessonScriptState(ready: $ready, stageIndex: $stageIndex, stageCount: $stageCount, stageId: $stageId, exampleIndex: $exampleIndex, exampleCount: $exampleCount, phase: $phase, fen: $fen, orientation: $orientation, lastMove: $lastMove, speech: $speech, tone: $tone, marks: $marks, arrows: $arrows, primary: $primary, secondary: $secondary, canBack: $canBack, movable: $movable, machineThinking: $machineThinking, moves: $moves, currentMoveId: $currentMoveId, transition: $transition, curiosities: $curiosities, outcome: $outcome)';
+    return 'LessonScriptState(ready: $ready, stageIndex: $stageIndex, stageCount: $stageCount, stageId: $stageId, exampleIndex: $exampleIndex, exampleCount: $exampleCount, phase: $phase, fen: $fen, orientation: $orientation, lastMove: $lastMove, speech: $speech, tone: $tone, marks: $marks, arrows: $arrows, primary: $primary, secondary: $secondary, canBack: $canBack, movable: $movable, machineThinking: $machineThinking, moves: $moves, currentMoveId: $currentMoveId, transition: $transition, curiosities: $curiosities, demo: $demo, outcome: $outcome)';
 }
 
 
@@ -347,7 +351,7 @@ abstract mixin class _$LessonScriptStateCopyWith<$Res> implements $LessonScriptS
   factory _$LessonScriptStateCopyWith(_LessonScriptState value, $Res Function(_LessonScriptState) _then) = __$LessonScriptStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool ready, int stageIndex, int stageCount, String stageId, int exampleIndex, int exampleCount, ScriptPhase phase, String fen, Side orientation, String? lastMove, List<String> speech, ScriptTone tone, List<String> marks, List<ScriptArrow> arrows, ScriptAction? primary, ScriptAction? secondary, bool canBack, Side? movable, bool machineThinking, List<ScriptMoveEntry> moves, String? currentMoveId, ScriptTransition transition, ScriptCuriosities? curiosities, LessonOutcome? outcome
+ bool ready, int stageIndex, int stageCount, String stageId, int exampleIndex, int exampleCount, ScriptPhase phase, String fen, Side orientation, String? lastMove, List<String> speech, ScriptTone tone, List<String> marks, List<ScriptArrow> arrows, ScriptAction? primary, ScriptAction? secondary, bool canBack, Side? movable, bool machineThinking, List<ScriptMoveEntry> moves, String? currentMoveId, ScriptTransition transition, ScriptCuriosities? curiosities, ScriptDemo? demo, LessonOutcome? outcome
 });
 
 
@@ -364,7 +368,7 @@ class __$LessonScriptStateCopyWithImpl<$Res>
 
 /// Create a copy of LessonScriptState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? ready = null,Object? stageIndex = null,Object? stageCount = null,Object? stageId = null,Object? exampleIndex = null,Object? exampleCount = null,Object? phase = null,Object? fen = null,Object? orientation = null,Object? lastMove = freezed,Object? speech = null,Object? tone = null,Object? marks = null,Object? arrows = null,Object? primary = freezed,Object? secondary = freezed,Object? canBack = null,Object? movable = freezed,Object? machineThinking = null,Object? moves = null,Object? currentMoveId = freezed,Object? transition = null,Object? curiosities = freezed,Object? outcome = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? ready = null,Object? stageIndex = null,Object? stageCount = null,Object? stageId = null,Object? exampleIndex = null,Object? exampleCount = null,Object? phase = null,Object? fen = null,Object? orientation = null,Object? lastMove = freezed,Object? speech = null,Object? tone = null,Object? marks = null,Object? arrows = null,Object? primary = freezed,Object? secondary = freezed,Object? canBack = null,Object? movable = freezed,Object? machineThinking = null,Object? moves = null,Object? currentMoveId = freezed,Object? transition = null,Object? curiosities = freezed,Object? demo = freezed,Object? outcome = freezed,}) {
   return _then(_LessonScriptState(
 ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
 as bool,stageIndex: null == stageIndex ? _self.stageIndex : stageIndex // ignore: cast_nullable_to_non_nullable
@@ -389,7 +393,8 @@ as bool,moves: null == moves ? _self._moves : moves // ignore: cast_nullable_to_
 as List<ScriptMoveEntry>,currentMoveId: freezed == currentMoveId ? _self.currentMoveId : currentMoveId // ignore: cast_nullable_to_non_nullable
 as String?,transition: null == transition ? _self.transition : transition // ignore: cast_nullable_to_non_nullable
 as ScriptTransition,curiosities: freezed == curiosities ? _self.curiosities : curiosities // ignore: cast_nullable_to_non_nullable
-as ScriptCuriosities?,outcome: freezed == outcome ? _self.outcome : outcome // ignore: cast_nullable_to_non_nullable
+as ScriptCuriosities?,demo: freezed == demo ? _self.demo : demo // ignore: cast_nullable_to_non_nullable
+as ScriptDemo?,outcome: freezed == outcome ? _self.outcome : outcome // ignore: cast_nullable_to_non_nullable
 as LessonOutcome?,
   ));
 }
