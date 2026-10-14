@@ -145,7 +145,7 @@ class ScriptMoveList extends StatelessWidget {
             ),
           ),
         Semantics(
-          label: entry.san,
+          label: localizedSan(context.l10n, entry.san),
           button: true,
           selected: selected,
           excludeSemantics: true,

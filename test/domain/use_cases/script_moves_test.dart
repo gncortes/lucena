@@ -7,6 +7,44 @@ Set<String> _names(Set<Square>? squares) => {
 };
 
 void main() {
+  test('taskNumber: as brancas abrem número, as pretas ficam com o delas', () {
+    expect(ScriptMoves.taskNumber(mover: Side.white), 1);
+    expect(ScriptMoves.taskNumber(mover: Side.black), 1);
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.black,
+        parentNumber: 1,
+        parentSide: Side.white,
+      ),
+      1,
+    );
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.white,
+        parentNumber: 1,
+        parentSide: Side.black,
+      ),
+      2,
+    );
+    // A vez não passa: dois lances seguidos do mesmo lado sobem o número.
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.white,
+        parentNumber: 1,
+        parentSide: Side.white,
+      ),
+      2,
+    );
+    expect(
+      ScriptMoves.taskNumber(
+        mover: Side.black,
+        parentNumber: 1,
+        parentSide: Side.black,
+      ),
+      2,
+    );
+  });
+
   group('sem rei (lição de peça)', () {
     const rook = '8/8/2P5/8/8/8/8/2R5 w - - 0 1';
 

@@ -11,6 +11,7 @@ import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/domain/use_cases/judge_move.dart';
 import 'package:lucena/domain/use_cases/kpk_oracle.dart';
 import 'package:lucena/domain/use_cases/machine_move.dart';
 import 'package:lucena/domain/use_cases/move_tree.dart';
@@ -211,6 +212,17 @@ class _Run {
       case ScriptPhase.praticaFim when s.primary == ScriptAction.voltarInicio:
         problems.add('$where: a prática não cumpriu o objetivo');
         return false;
+      case ScriptPhase.praticaFim
+          when example.practice?.kind == PracticeKind.jogo &&
+              !s.machineThinking:
+        // A partida contra a máquina fecha com o resultado na lista.
+        final last = s.moves.where((m) => m.id == s.currentMoveId).firstOrNull;
+        if (!_results.contains(last?.result)) {
+          problems.add(
+            '$where: fim sem resultado (${last?.san} ${last?.result})',
+          );
+        }
+        await act(s.primary!.name, () => cubit.onAction(s.primary!));
       default:
         final action = s.primary;
         if (action == null) return false;
@@ -226,10 +238,18 @@ class _Run {
 String _mateMove(Position position, Set<String> seen) {
   final us = position.turn;
   final candidates = <(int, String)>[];
+  final pawnMoves = <(int, String)>[];
   for (final MapEntry(key: from, value: targets)
       in position.legalMoves.entries) {
+    final pawn = position.board.roleAt(from) == Role.pawn;
     for (final to in targets.squares) {
-      final move = NormalMove(from: from, to: to);
+      final promotes =
+          pawn && (to.rank == Rank.first || to.rank == Rank.eighth);
+      final move = NormalMove(
+        from: from,
+        to: to,
+        promotion: promotes ? Role.queen : null,
+      );
       final next = position.play(move);
       if (next.isCheckmate) return move.uci;
       if (next.isStalemate) continue;
@@ -239,13 +259,28 @@ String _mateMove(Position position, Set<String> seen) {
         ),
       );
       if (hangs) continue;
+      // Com peão: coroar quando der; senão, avançar quando ele não cai.
+      if (pawn) pawnMoves.add((promotes ? 0 : 1, move.uci));
       final key = next.fen.split(' ').take(4).join(' ');
+      // Peão parado: o rei vai apoiá-lo.
+      final escort = [
+        for (final p
+            in next.board.pawns.intersect(next.board.bySide(us)).squares)
+          _distance(next.board.kingOf(us)!, p),
+      ].fold(0, (a, b) => a + b);
       final score =
           _kingRoom(next, us) * 10 +
           _distance(next.board.kingOf(us)!, next.board.kingOf(us.opposite)!) +
+          escort * 20 +
           (seen.contains(key) ? 1000 : 0);
       candidates.add((score, move.uci));
     }
+  }
+  if (pawnMoves.isNotEmpty) {
+    pawnMoves.sort((a, b) => a.$1.compareTo(b.$1));
+    final uci = pawnMoves.first.$2;
+    seen.add(position.play(Move.parse(uci)!).fen.split(' ').take(4).join(' '));
+    return uci;
   }
   candidates.sort((a, b) {
     final byScore = a.$1.compareTo(b.$1);
@@ -520,7 +555,40 @@ void main() {
           },
         );
       }
-      for (final (stage, index, example) in _freeQuestions(id)) {
+      final free = _freeQuestions(id);
+      if (free.isNotEmpty) {
+        // O jogo livre de um erro previsto sempre diz que o resultado se
+        // perdeu: a tabela tem que concordar, e o certo e os alternativos
+        // têm que manter.
+        test('jogo livre: os erros perdem pela tabela; certo e alternativos '
+            'mantêm', () {
+          final wrong = <String>[];
+          for (final (_, _, example) in free) {
+            final question = example.question!;
+            final from = GameRules.fromFen(example.questionFen)!;
+            final wantsWin = example.goal.wantsWin;
+            MoveVerdict verdict(String uci) => JudgeMove.ofOutcome(
+              _kpk.evaluate(from.playUnchecked(Move.parse(uci)!)),
+              wantsWin: wantsWin,
+            );
+            for (final uci in question.errors.keys) {
+              if (verdict(uci) != MoveVerdict.loses) {
+                wrong.add('${example.id}: erro $uci mantém');
+              }
+            }
+            for (final uci in [
+              ...question.right,
+              ...question.alternatives.keys,
+            ]) {
+              if (verdict(uci) != MoveVerdict.keeps) {
+                wrong.add('${example.id}: $uci perde');
+              }
+            }
+          }
+          expect(wrong, isEmpty);
+        });
+      }
+      for (final (stage, index, example) in free) {
         for (final (n, uci) in _offLine(example).indexed) {
           test('jogo livre: ${example.id} $uci', () async {
             final (run, _) = await _open(id);

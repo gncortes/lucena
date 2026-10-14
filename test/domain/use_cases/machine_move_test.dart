@@ -106,5 +106,13 @@ void main() {
         isTrue,
       );
     }, skip: skip);
+
+    test('depois da coroação, o lado sem a dama captura a dama solta', () {
+      final oracle = KpkTableOracle(bin.readAsBytesSync());
+      // Brancas coroaram em a8; o rei preto em b7 a captura.
+      expect(choose(oracle, 'Q7/1k6/8/8/8/3K4/8/8 b - - 0 1'), 'b7a8');
+      // Pretas coroaram em a1; o rei branco em b2 a captura.
+      expect(choose(oracle, '8/8/8/3k4/8/8/1K6/q7 w - - 0 1'), 'b2a1');
+    }, skip: skip);
   });
 }
