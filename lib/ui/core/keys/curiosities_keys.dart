@@ -10,6 +10,4 @@ abstract final class CuriositiesKeys {
   static const references = Key('curiosities.references');
 
   static Key reference(String id) => Key('curiosities.reference.$id');
-  static Key playerAvatar(String id) => Key('curiosities.player.$id');
-  static Key source(String id) => Key('curiosities.source.$id');
 }

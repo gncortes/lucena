@@ -36,6 +36,9 @@ enum ScriptAction {
   /// Mostra a resposta da pergunta.
   verResposta,
 
+  /// Sai do jogo livre e mostra a linha principal a partir da pergunta.
+  linhaPrincipal,
+
   /// Volta à etapa 1 (fim da prática).
   reverIdeia,
 
@@ -91,7 +94,11 @@ class ScriptMoveEntry {
     required this.number,
     required this.side,
     required this.variant,
-  });
+    int? depth,
+    this.startsVariant = false,
+    this.symbol,
+    this.result,
+  }) : depth = depth ?? (variant ? 1 : 0);
 
   /// A chave `LessonScriptKeys.move(id)`; é o que `goToMove` recebe.
   final String id;
@@ -103,6 +110,19 @@ class ScriptMoveEntry {
 
   /// Variante (alternativo), em linha cinza recuada.
   final bool variant;
+
+  /// Quantos parênteses envolvem o lance (0 = linha principal). No jogo
+  /// livre, cada lance diferente num ponto já jogado abre uma sublinha.
+  final int depth;
+
+  /// Abre uma sublinha logo depois de outra, no mesmo nível: `) (`.
+  final bool startsVariant;
+
+  /// "?" (erro) ou "!" (o lance certo), colado ao lance.
+  final String? symbol;
+
+  /// O resultado depois do lance que acabou a partida (½–½, 1–0, 0–1).
+  final String? result;
 }
 
 /// A folha Curiosidades já com as falas e as referências resolvidas.

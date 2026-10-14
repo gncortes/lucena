@@ -6380,6 +6380,10 @@
     }
   },
   "lessonShowAnswer": "Show answer",
+  "lessonMainLine": "See main line",
+  "@lessonMainLine": {
+    "description": "Button in the scripted lesson's free play that leaves the game and shows the main line from the question position."
+  },
   "@lessonShowAnswer": {
     "description": "Link and button that reveal the correct move of a think step."
   },
@@ -6452,28 +6456,28 @@
   },
   "lessonGameStalemate": "Stalemate: it is a draw.",
   "@lessonGameStalemate": {
-      "description": "Game end in the demonstration: stalemate."
+    "description": "Game end in the demonstration: stalemate."
   },
   "lessonGameInsufficient": "Insufficient material: it is a draw.",
   "@lessonGameInsufficient": {
-      "description": "Game end in the demonstration: neither side can mate."
+    "description": "Game end in the demonstration: neither side can mate."
   },
   "lessonGameRepetition": "Threefold repetition: it is a draw.",
   "@lessonGameRepetition": {
-      "description": "Game end in the demonstration: position repeated three times."
+    "description": "Game end in the demonstration: position repeated three times."
   },
   "lessonGameFifty": "Fifty-move rule: it is a draw.",
   "@lessonGameFifty": {
-      "description": "Game end in the demonstration: fifty moves without capture or pawn move."
+    "description": "Game end in the demonstration: fifty moves without capture or pawn move."
   },
   "lessonGameMate": "Checkmate: {side} win.",
   "@lessonGameMate": {
-      "description": "Game end in the demonstration: checkmate; {side} is the winning side.",
-      "placeholders": {
-          "side": {
-              "type": "String"
-          }
+    "description": "Game end in the demonstration: checkmate; {side} is the winning side.",
+    "placeholders": {
+      "side": {
+        "type": "String"
       }
+    }
   },
   "lessonEngineAlsoWinsShowMain": "Well done: this path also wins. Now see the main line.",
   "@lessonEngineAlsoWinsShowMain": {
@@ -6511,11 +6515,13 @@
   "@curiositiesReferences": {
     "description": "Section label of the references list at the bottom of the Curiosities sheet."
   },
-  "curiositiesQuoteBy": "— {author}",
-  "@curiositiesQuoteBy": {
-    "description": "Author line under a quote. {author} is a name.",
+  "curiositiesQuoted": "“{text}”",
+  "@curiositiesQuoted": {
+    "description": "A quote in the Curiosities sheet, wrapped in the language's quotation marks. {text} is the quote.",
     "placeholders": {
-      "author": {"type": "String"}
+      "text": {
+        "type": "String"
+      }
     }
   },
   "lessonNextStage": "Next stage",

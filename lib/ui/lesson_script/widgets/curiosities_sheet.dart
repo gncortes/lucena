@@ -4,13 +4,13 @@ import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson_script.dart';
 import '../../core/keys/curiosities_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/widgets/external_page_sheet.dart';
 
 /// Abre a folha Curiosidades do exemplo (o livro da barra da lição): o texto
-/// sobre a posição, a citação (se houver) e, no fim, as referências. Toda
-/// referência com link abre dentro do app ([showExternalPage]); a de jogador
-/// mostra o círculo com as iniciais e leva à Wikipédia.
+/// sobre a posição, a citação (se houver) e, no fim, as referências. Visual do
+/// canvas `T70-curiosidades`, variante A (Gabriel, 14/10/2026): rótulos em
+/// caixa-alta, citação com barra lateral e referências em linhas com filete.
+/// Toda referência com link abre dentro do app ([showExternalPage]).
 ///
 /// [texts] resolve as chaves de fala de [curiosities]; [lessonRefs] são as
 /// referências da lição, para os ids que a folha cita.
@@ -98,7 +98,7 @@ class CuriositiesSheet extends StatelessWidget {
                 ),
                 if (quote != null) ...[
                   const SizedBox(height: 24),
-                  _QuoteCard(
+                  _Quote(
                     text: texts.say(quote),
                     author: curiosities.quoteAuthor,
                   ),
@@ -110,7 +110,11 @@ class CuriositiesSheet extends StatelessWidget {
                   Column(
                     key: CuriositiesKeys.references,
                     children: [
-                      for (final ref in refs) _ReferenceTile(reference: ref),
+                      for (final (i, ref) in refs.indexed)
+                        _ReferenceRow(
+                          reference: ref,
+                          last: i == refs.length - 1,
+                        ),
                     ],
                   ),
                 ],
@@ -123,6 +127,7 @@ class CuriositiesSheet extends StatelessWidget {
   }
 }
 
+/// O rótulo de seção: caixa-alta, pequeno, em cinza.
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
 
@@ -134,18 +139,21 @@ class _SectionLabel extends StatelessWidget {
     return Semantics(
       header: true,
       child: Text(
-        text,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.primary,
-          letterSpacing: 0.4,
+        text.toUpperCase(),
+        style: theme.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.8,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
   }
 }
 
-class _QuoteCard extends StatelessWidget {
-  const _QuoteCard({required this.text, this.author});
+/// A citação: barra azul de 4 dp à esquerda, texto em itálico e o autor
+/// embaixo, em cinza.
+class _Quote extends StatelessWidget {
+  const _Quote({required this.text, this.author});
 
   final String text;
   final String? author;
@@ -155,54 +163,50 @@ class _QuoteCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final author = this.author;
-    return DecoratedBox(
+    return Container(
       key: CuriositiesKeys.quote,
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 0, 4),
       decoration: BoxDecoration(
-        color: colors.primaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Icon(
-              Icons.format_quote_rounded,
-              size: 32,
-              color: colors.onPrimaryContainer.withValues(alpha: 0.6),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              text,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontStyle: FontStyle.italic,
-                height: 1.5,
-                color: colors.onPrimaryContainer,
-              ),
-            ),
-            if (author != null && author.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: Text(
-                  context.l10n.curiositiesQuoteBy(author),
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: colors.onPrimaryContainer,
-                  ),
-                ),
-              ),
-            ],
-          ],
+        border: BorderDirectional(
+          start: BorderSide(color: colors.primary, width: 4),
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            context.l10n.curiositiesQuoted(text),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontSize: 17,
+              height: 26 / 17,
+              fontStyle: FontStyle.italic,
+              color: colors.onSurface,
+            ),
+          ),
+          if (author != null && author.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              author,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 13,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
 }
 
-class _ReferenceTile extends StatelessWidget {
-  const _ReferenceTile({required this.reference});
+/// Uma referência: ícone neutro do tipo, título, a linha de detalhe (autor,
+/// ano, datas, domínio) e o ícone de abrir; filete em cima (e embaixo na
+/// última).
+class _ReferenceRow extends StatelessWidget {
+  const _ReferenceRow({required this.reference, required this.last});
 
   final Reference reference;
+  final bool last;
 
   @override
   Widget build(BuildContext context) {
@@ -211,143 +215,79 @@ class _ReferenceTile extends StatelessWidget {
     final l10n = context.l10n;
     final url = reference.url;
     final uri = url == null ? null : Uri.tryParse(url);
-    final isPlayer = reference.kind == 'player';
-    final title = switch (reference.kind) {
-      'book' => l10n.endgameReferenceBook(
-        reference['author'] ?? '',
-        reference.title,
-        reference['publisher'] ?? '',
-        reference['year'] ?? '',
+    final (title, details) = switch (reference.kind) {
+      'book' => (reference.title, [reference['author'], reference['year']]),
+      'study' => (reference.title, [reference['author']]),
+      'game' => (
+        l10n.endgameReferenceGame(
+          reference['white'] ?? '',
+          reference['black'] ?? '',
+          reference['event'] ?? '',
+          reference['year'] ?? '',
+        ),
+        const <String?>[],
       ),
-      'study' => l10n.endgameReferenceStudy(
-        reference['author'] ?? '',
-        reference.title,
-      ),
-      'game' => l10n.endgameReferenceGame(
-        reference['white'] ?? '',
-        reference['black'] ?? '',
-        reference['event'] ?? '',
-        reference['year'] ?? '',
-      ),
-      _ => reference.title,
+      'player' => (reference.title, [reference['dates']]),
+      _ => (reference.title, const <String?>[]),
     };
-    final dates = reference['dates'];
-    final leading = isPlayer
-        ? CircleAvatar(
-            key: CuriositiesKeys.playerAvatar(reference.id),
-            radius: 22,
-            backgroundColor: colors.tertiaryContainer,
-            foregroundColor: colors.onTertiaryContainer,
-            child: Text(
-              reference.initials,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: colors.onTertiaryContainer,
-              ),
-            ),
-          )
-        : CircleAvatar(
-            radius: 22,
-            backgroundColor: colors.secondaryContainer,
-            foregroundColor: colors.onSecondaryContainer,
-            child: Icon(_icon(reference.kind), size: 22),
-          );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          key: CuriositiesKeys.reference(reference.id),
-          onTap: uri == null ? null : () => showExternalPage(context, uri),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 64),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  leading,
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(title, style: theme.textTheme.bodyMedium),
-                        if (isPlayer && dates != null && dates.isNotEmpty)
-                          Text(
-                            dates,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
+    final detail = [
+      for (final d in details)
+        if (d != null && d.isNotEmpty) d,
+      if (uri != null) ExternalPageSheet.domainOf(uri),
+    ].join(' · ');
+    final line = BorderSide(color: colors.outlineVariant);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border(top: line, bottom: last ? line : BorderSide.none),
+      ),
+      child: InkWell(
+        key: CuriositiesKeys.reference(reference.id),
+        onTap: uri == null ? null : () => showExternalPage(context, uri),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 64),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                Icon(
+                  reference.kind == 'book'
+                      ? Icons.menu_book_outlined
+                      : Icons.link_rounded,
+                  size: 24,
+                  color: colors.onSurfaceVariant,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 15,
+                          height: 20 / 15,
+                        ),
+                      ),
+                      if (detail.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          detail,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: 13,
+                            color: colors.onSurfaceVariant,
                           ),
-                        if (uri != null) ...[
-                          const SizedBox(height: 8),
-                          _SourceChip(reference: reference, uri: uri),
-                        ],
+                        ),
                       ],
-                    ),
+                    ],
                   ),
-                  if (uri != null) ...[
-                    const SizedBox(width: 8),
-                    Icon(Icons.open_in_new, size: 18, color: colors.primary),
-                  ],
+                ),
+                if (uri != null) ...[
+                  const SizedBox(width: 16),
+                  Icon(Icons.open_in_new, size: 20, color: colors.primary),
                 ],
-              ),
+              ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  static IconData _icon(String kind) => switch (kind) {
-    'book' => Icons.menu_book_outlined,
-    'study' => Icons.library_books_outlined,
-    'game' => Icons.sports_esports_outlined,
-    'tablebase' => Icons.table_chart_outlined,
-    _ => Icons.link,
-  };
-}
-
-/// O chip com o domínio da página (`lichess.org`, `en.wikipedia.org`).
-class _SourceChip extends StatelessWidget {
-  const _SourceChip({required this.reference, required this.uri});
-
-  final Reference reference;
-  final Uri uri;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final host = uri.host.toLowerCase();
-    final icon = host.endsWith('wikipedia.org')
-        ? Icons.public
-        : host.endsWith('lichess.org')
-        ? Icons.sports_esports_outlined
-        : Icons.language;
-    return DecoratedBox(
-      key: CuriositiesKeys.source(reference.id),
-      decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: colors.onSecondaryContainer),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                ExternalPageSheet.domainOf(uri),
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onSecondaryContainer,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

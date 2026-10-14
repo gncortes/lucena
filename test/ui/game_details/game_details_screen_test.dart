@@ -254,6 +254,13 @@ void main() {
     expect(find.byKey(GameDetailsKeys.screen), findsOneWidget);
     expect(plain(tester, GameDetailsKeys.opponent), 'Coco (1000)');
     expect(plain(tester, GameDetailsKeys.result), 'Win · Checkmate');
+    // O placar fecha a lista de lances, só com a notação.
+    await tester.scrollUntilVisible(
+      find.byKey(GameDetailsKeys.score),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(plain(tester, GameDetailsKeys.score), '1–0');
     final after = (await rating.history()).single.rating.rounded;
     expect(find.text('$after'), findsOneWidget);
   });

@@ -367,7 +367,10 @@ void main() {
       expect(r.s.fen, afterKd4Ke7);
       expect(r.s.movable, Side.white);
       expect(r.s.primary, isNull);
-      expect(r.s.secondary, isNull);
+      // Todo jogo livre tem Linha principal, também depois do erro previsto.
+      expect(r.s.secondary, ScriptAction.linhaPrincipal);
+      await r.cubit.onMove('g3g4');
+      expect(r.s.secondary, ScriptAction.linhaPrincipal);
     });
 
     test('a máquina responde sem comentar o lance do aluno', () async {
@@ -408,7 +411,7 @@ void main() {
     });
 
     test(
-      'fim do jogo livre perdido: Voltar ao início, sem a volta à ideia',
+      'fim do jogo livre perdido: um botão só, Ver linha principal',
       () async {
         final r = await refuted();
         await r.times(2);
@@ -419,14 +422,13 @@ void main() {
           await r.anyMove();
         }
         expect(r.s.phase, ScriptPhase.livreFim);
-        expect(r.s.speech, hasLength(1));
-        expect(r.s.primary, ScriptAction.voltarInicio);
+        // Não cumpriu: o Viktor convida a ver a linha principal.
+        expect(r.s.speech.last, startsWith('verLinha.ganhar'));
+        expect(r.s.primary, ScriptAction.linhaPrincipal);
+        expect(r.s.secondary, isNull);
         expect(r.s.movable, isNull);
-        await r.cubit.onAction(ScriptAction.voltarInicio);
-        expect(r.s.phase, ScriptPhase.pergunta);
-        expect(r.s.speech, ['back']);
-        expect(r.s.fen, exampleOneFen);
-        expect(r.s.movable, Side.white);
+        await r.cubit.onAction(ScriptAction.linhaPrincipal);
+        expect(r.s.phase, ScriptPhase.linha);
         expect(r.s.transition.kind, TransitionKind.jump);
       },
     );
@@ -447,6 +449,7 @@ void main() {
         await r.next();
         expect(r.s.phase, ScriptPhase.livrePerdido);
         expect(r.s.speech, ['free']);
+        expect(r.s.secondary, ScriptAction.linhaPrincipal);
         r.cubit.back();
         expect(r.s.phase, ScriptPhase.pergunta);
       },
@@ -477,6 +480,44 @@ void main() {
       },
     );
 
+    test(
+      'a fala do lance só vem com a resposta; antes, os pontinhos',
+      () async {
+        Completer<void>? gate;
+        final r = await _Rig.open(
+          delay: (_) => gate?.future ?? Future<void>.value(),
+        );
+        await r.times(3);
+        await r.cubit.onMove('d3e3');
+        expect(r.s.speech, ['foraMantem.ganhar']);
+        gate = Completer<void>();
+        final move = r.anyMove();
+        await Future<void>.delayed(Duration.zero);
+        // Pensando: a fala anterior fica (o balão mostra os pontinhos).
+        expect(r.s.machineThinking, isTrue);
+        expect(r.s.speech, ['foraMantem.ganhar']);
+        gate.complete();
+        await move;
+        expect(r.s.machineThinking, isFalse);
+        expect(r.s.speech, ['segueBem.ganhar']);
+      },
+    );
+
+    test('Linha principal sai do jogo livre e mostra a linha', () async {
+      final r = await _Rig.open();
+      await r.times(3);
+      await r.cubit.onMove('d3e3');
+      expect(r.s.secondary, ScriptAction.linhaPrincipal);
+      await r.anyMove();
+      expect(r.s.secondary, ScriptAction.linhaPrincipal);
+      await r.cubit.onAction(ScriptAction.linhaPrincipal);
+      expect(r.s.phase, ScriptPhase.linha);
+      expect(r.s.transition.kind, TransitionKind.jump);
+      r.cubit.back();
+      expect(r.s.phase, ScriptPhase.pergunta);
+      expect(r.s.fen, exampleOneFen);
+    });
+
     test('◀ no jogo livre mantido volta à pergunta', () async {
       final r = await _Rig.open();
       await r.times(3);
@@ -498,9 +539,10 @@ void main() {
         await r.cubit.onMove('g3g2');
         expect(r.s.phase, ScriptPhase.livreFim);
         expect(r.s.speech, ['fin.cap', 'voltaIdeia']);
-        expect(r.s.primary, ScriptAction.continuar);
+        expect(r.s.primary, ScriptAction.linhaPrincipal);
+        expect(r.s.secondary, isNull);
         expect(r.s.movable, isNull);
-        await r.next();
+        await r.cubit.onAction(ScriptAction.linhaPrincipal);
         expect(r.s.phase, ScriptPhase.linha);
         expect(r.s.speech, ['ok']);
         expect(r.s.transition.kind, TransitionKind.jump);
@@ -523,7 +565,7 @@ void main() {
     });
 
     test(
-      'fim sem o resultado: Voltar ao início, sem a volta à ideia',
+      'fim sem o resultado: Ver linha principal, sem a volta à ideia',
       () async {
         final r = await _Rig.open(json: _captureJson());
         await r.cubit.onMove('g3g2');
@@ -533,7 +575,7 @@ void main() {
         await r.next();
         expect(r.s.phase, ScriptPhase.livreFim);
         expect(r.s.speech, ['fin.cap']);
-        expect(r.s.primary, ScriptAction.voltarInicio);
+        expect(r.s.primary, ScriptAction.linhaPrincipal);
       },
     );
   });
@@ -709,6 +751,45 @@ void main() {
         expect(r.s.outcome?.nextPart, 'next');
       },
     );
+
+    test('troca de lado: Viktor anuncia e o tabuleiro gira antes', () async {
+      final json = _practiceJson();
+      final second =
+          (((json['etapas'] as List).first as Map)['exemplos'] as List)[1]
+              as Map<String, dynamic>;
+      second['fen'] = '4k3/8/8/8/8/8/6p1/4K3 b - - 0 1';
+      second['vira'] = true;
+      second['pratica'] = {
+        ...(second['pratica'] as Map<String, dynamic>),
+        'maquina': 'w',
+      };
+      final r = await _Rig.open(json: json);
+      await r.cubit.onMove('g7g8');
+      final seen = <LessonScriptState>[];
+      final sub = r.cubit.stream.listen(seen.add);
+      await r.next();
+      await sub.cancel();
+      final notice = seen.firstWhere((s) => s.speech.join().contains('troca'));
+      expect(notice.speech.single, endsWith('troca.black'));
+      expect(notice.orientation, Side.black);
+      expect(notice.movable, isNull);
+      expect(notice.primary, isNull);
+      expect(r.s.exampleIndex, 1);
+      expect(r.s.phase, ScriptPhase.praticaVez);
+      expect(r.s.speech, ['p2.t']);
+      expect(r.s.orientation, Side.black);
+      expect(r.s.movable, Side.black);
+    });
+
+    test('mesmo lado: sem anúncio de troca', () async {
+      final r = await _Rig.open(json: _practiceJson());
+      await r.cubit.onMove('g7g8');
+      final seen = <LessonScriptState>[];
+      final sub = r.cubit.stream.listen(seen.add);
+      await r.next();
+      await sub.cancel();
+      expect(seen.where((s) => s.speech.join().contains('troca')), isEmpty);
+    });
 
     test('Rever a ideia volta à primeira etapa', () async {
       final r = await _Rig.open(json: _practiceJson());

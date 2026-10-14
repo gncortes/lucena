@@ -8,8 +8,10 @@ import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
@@ -129,33 +131,53 @@ void main() {
           tester.getSize(find.byKey(LessonScriptKeys.bookButton)).width,
           greaterThanOrEqualTo(48),
         );
-        // Balão colado na barra (56 dp), com 8 de margem.
-        expect(_rect(tester, LessonScriptKeys.speech).top, closeTo(56 + 8, 1));
+        // Balão abaixo da barra (56 dp), com ao menos 2 dp de folga.
+        final speech = _rect(tester, LessonScriptKeys.speech);
+        expect(speech.top, greaterThanOrEqualTo(56 + 2 - 0.5));
+        // Tabuleiro centralizado na altura quando cabe; na tela baixa, logo
+        // abaixo da fala.
+        final board = _rect(tester, LessonScriptKeys.board);
+        final page = _rect(tester, LessonScriptKeys.page);
+        if (size == _tall) {
+          expect(board.center.dy, closeTo(page.center.dy, 1));
+        } else {
+          expect(board.top, greaterThan(speech.bottom));
+        }
         expect(find.text('Continuar'), findsOneWidget);
         expect(find.text('Ver resposta'), findsNothing);
-        expect(
-          tester
-              .widget<IconButton>(find.byKey(LessonScriptKeys.back))
-              .onPressed,
-          isNull,
-        );
+        // Sem passo anterior, o botão voltar não aparece.
+        expect(find.byKey(LessonScriptKeys.back), findsNothing);
         expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
+        // Rodapé com o fundo da tela, só com a linha em cima (F2).
+        expect(
+          tester.widget<ExerciseActions>(find.byType(ExerciseActions)).color,
+          Theme.of(tester.element(find.byKey(LessonScriptKeys.screen)))
+              .scaffoldBackgroundColor,
+        );
       });
 
-      testWidgets('balão: duas linhas no mínimo; o resto desce só além', (
+      testWidgets('balão: duas linhas no mínimo; sobe antes de empurrar', (
         tester,
       ) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
         final short = _rect(tester, LessonScriptKeys.speech);
         final lines = size.height < 700 ? 2 * 14 * 1.25 : 2 * 15 * 1.25;
-        final pad = size.height < 700 ? 16.0 : 20.0;
+        final pad = size.height < 700 ? 20.0 : 28.0;
         expect(short.height, closeTo(lines + pad, 1.5));
-        final listTop = _rect(tester, LessonScriptKeys.board).top;
+        final boardTop = _rect(tester, LessonScriptKeys.board).top;
         await _tap(tester, LessonScriptKeys.primary);
         final grown = _rect(tester, LessonScriptKeys.speech);
         expect(grown.height, greaterThan(short.height));
-        // Três linhas: o balão cresce e empurra o tabuleiro.
-        expect(_rect(tester, LessonScriptKeys.board).top, greaterThan(listTop));
+        // Três linhas: na tela alta o balão sobe no espaço de cima e o
+        // tabuleiro fica no centro; na baixa, não há espaço e ele desce.
+        final board = _rect(tester, LessonScriptKeys.board);
+        if (size == _tall) {
+          final page = _rect(tester, LessonScriptKeys.page);
+          expect(board.center.dy, closeTo(page.center.dy, 1));
+          expect(grown.top, lessThan(short.top));
+        } else {
+          expect(board.top, greaterThan(boardTop));
+        }
         expect(tester.takeException(), isNull);
       });
 
@@ -226,7 +248,9 @@ void main() {
     expect(find.byKey(LessonScriptKeys.primary), findsNothing);
     expect(s.cubit.state.movable, isNotNull);
     expect(
-      tester.widget<IconButton>(find.byKey(LessonScriptKeys.back)).onPressed,
+      tester
+          .widget<FloatingActionButton>(find.byKey(LessonScriptKeys.back))
+          .onPressed,
       isNotNull,
     );
     await tester.tap(find.byKey(LessonScriptKeys.back));
@@ -235,7 +259,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('fim do jogo livre perdido: Voltar ao início volta à pergunta', (
+  testWidgets('fim do jogo livre: um botão só, Ver linha principal', (
     tester,
   ) async {
     const fen = '8/8/8/8/8/6k1/6P1/4K3 b - - 0 1';
@@ -255,7 +279,7 @@ void main() {
               'id': 'c1',
               'fen': fen,
               'vira': true,
-              'objetivo': 'empatar',
+              'objetivo': 'ganhar',
               'entrada': <dynamic>[],
               'pergunta': {
                 't': 'q',
@@ -280,15 +304,24 @@ void main() {
     };
     final s = await _open(tester, _tall, json: json);
     expect(s.cubit.state.phase, ScriptPhase.pergunta);
+    // Fora do roteiro: o rei preto captura o peão na hora, e o objetivo
+    // (ganhar) não se cumpre.
     await s.cubit.onMove('g3g2');
     await _settle(tester);
-    expect(s.cubit.state.phase, ScriptPhase.refutacao);
-    await _tap(tester, LessonScriptKeys.primary);
     expect(s.cubit.state.phase, ScriptPhase.livreFim);
-    expect(find.text('Voltar ao início'), findsOneWidget);
-    await _tap(tester, LessonScriptKeys.primary);
-    expect(s.cubit.state.phase, ScriptPhase.pergunta);
-    expect(s.cubit.state.speech, ['back']);
+    expect(find.byKey(LessonScriptKeys.mainLine), findsOneWidget);
+    expect(find.text('Voltar ao início'), findsNothing);
+    // O Viktor convida a ver a linha principal; o rótulo na fala é clicável
+    // e faz o mesmo que o botão.
+    final link = find.textRange.ofSubstring(
+      'Ver linha principal',
+      descendentOf: find.byKey(LessonScriptKeys.speech),
+    );
+    expect(link, findsOneWidget);
+    await tester.tapOnText(link);
+    await _settle(tester);
+    // A linha principal a partir do lance certo.
+    expect(s.cubit.state.speech.first, 'ok');
     expect(tester.takeException(), isNull);
   });
 
@@ -298,6 +331,31 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
     expect(find.text('cur.t'), findsOneWidget);
+  });
+
+  testWidgets('o botão ao lado do som esconde e mostra as marcações', (
+    tester,
+  ) async {
+    await _open(tester, _tall);
+    bool shown() =>
+        tester.widget<ScriptBoard>(find.byType(ScriptBoard)).showMarks;
+    expect(shown(), isTrue);
+    expect(
+      tester.getSize(find.byKey(LessonScriptKeys.marksToggle)).width,
+      greaterThanOrEqualTo(48),
+    );
+    await _tap(tester, LessonScriptKeys.marksToggle);
+    expect(shown(), isFalse);
+    expect(
+      tester
+          .element(find.byType(LessonScriptScreen))
+          .read<SettingsCubit>()
+          .state
+          ?.lessonMarks,
+      isFalse,
+    );
+    await _tap(tester, LessonScriptKeys.marksToggle);
+    expect(shown(), isTrue);
   });
 
   testWidgets('etapa de demonstrações segue sozinha até Próxima etapa', (
@@ -311,6 +369,8 @@ void main() {
     expect(s.cubit.state.stageId, 'pratica');
     expect(s.cubit.state.phase, ScriptPhase.praticaVez);
     expect(find.text('p.t'), findsOneWidget);
+    // Sem rótulo de posição (Gabriel, 14/10/2026).
+    expect(find.textContaining('Posição'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

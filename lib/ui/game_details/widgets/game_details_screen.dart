@@ -158,7 +158,7 @@ class _ReviewBodyState extends State<_ReviewBody> {
     );
     final header = [_Header(state: state, attempt: attempt)];
     final footer = [
-      _MoveTable(state: state),
+      _MoveTable(state: state, score: _score(attempt)),
       ReviewLegend(state: state, whiteName: whiteName, blackName: blackName),
     ];
     if (state.shownPosition == null) {
@@ -230,6 +230,17 @@ class _ReviewBodyState extends State<_ReviewBody> {
       },
     );
   }
+}
+
+/// O placar da partida (1–0, 0–1, ½–½); sem o lado do jogador, só o empate.
+String? _score(Attempt attempt) {
+  final user = attempt.userSide;
+  return switch (attempt.outcome) {
+    AttemptOutcome.draw => '½–½',
+    _ when user == null => null,
+    final outcome =>
+      (outcome == AttemptOutcome.win) == (user == Side.white) ? '1–0' : '0–1',
+  };
 }
 
 /// Contra quem, o final, a data, o ritmo, o resultado e o rating.
@@ -403,11 +414,12 @@ class _Header extends StatelessWidget {
 /// Os lances em tabela (número, brancas, pretas), cada um com o tempo que
 /// levou. Tocar num lance mostra a posição depois dele. A variante feita no
 /// tabuleiro entra entre parênteses, menor e em itálico, logo abaixo da
-/// linha do lance que ela troca.
+/// linha do lance que ela troca. No fim, o placar.
 class _MoveTable extends StatelessWidget {
-  const _MoveTable({required this.state});
+  const _MoveTable({required this.state, this.score});
 
   final GameDetailsState state;
+  final String? score;
 
   TextStyle _moveStyle(BuildContext context, int index) {
     final theme = Theme.of(context);
@@ -575,6 +587,20 @@ class _MoveTable extends StatelessWidget {
                   ),
                   if (row == variationRow) variation,
                 ],
+                if (score case final score?)
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(16 + numberWidth, 6, 8, 12),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        score,
+                        key: GameDetailsKeys.score,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             );
           },

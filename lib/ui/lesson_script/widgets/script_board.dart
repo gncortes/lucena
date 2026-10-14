@@ -35,12 +35,16 @@ class ScriptBoard extends StatefulWidget {
     required this.size,
     required this.settings,
     required this.onMove,
+    this.showMarks = true,
     super.key,
   });
 
   /// O tempo de cada lance rápido (`seq`) e do esmaecer do corte.
   static const seqStep = AppMotion.component;
   static const fade = AppMotion.state;
+
+  /// O giro do tabuleiro quando o aluno troca de lado.
+  static const flip = AppMotion.screen;
 
   /// O tempo até as setas aparecerem depois de um lance (o lance mais 120 ms de respiro; protótipo, 420 ms).
   static final shapesDelay = Duration(
@@ -51,6 +55,9 @@ class ScriptBoard extends StatefulWidget {
   final double size;
   final BoardSettings settings;
   final ValueChanged<String> onMove;
+
+  /// A preferência do botão ao lado do som: sem ela, nem setas nem círculos.
+  final bool showMarks;
 
   @override
   State<ScriptBoard> createState() => _ScriptBoardState();
@@ -63,6 +70,11 @@ class _ScriptBoardState extends State<ScriptBoard> {
   bool _shapes = true;
   double _opacity = 1;
   Side _orientation = Side.white;
+
+  /// Meia volta enquanto o tabuleiro gira; no fim, a orientação troca e o
+  /// giro volta a zero sem animar (as peças ficam de pé).
+  double _turns = 0;
+  bool _spinning = false;
 
   @override
   void initState() {
@@ -102,7 +114,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
   void didUpdateWidget(ScriptBoard old) {
     super.didUpdateWidget(old);
     final s = widget.state;
-    if (s.orientation != old.state.orientation) _orientation = s.orientation;
+    if (s.orientation != old.state.orientation) unawaited(_flip(s.orientation));
     if (s.transition.id != old.state.transition.id || s.fen != old.state.fen) {
       unawaited(_apply(s));
     } else if (!_busy) {
@@ -128,6 +140,24 @@ class _ScriptBoardState extends State<ScriptBoard> {
   }
 
   bool _alive(int run) => mounted && run == _run;
+
+  Future<void> _flip(Side side) async {
+    if (AppMotion.reduced(context)) {
+      setState(() => _orientation = side);
+      return;
+    }
+    setState(() {
+      _spinning = true;
+      _turns = 0.5;
+    });
+    await _wait(ScriptBoard.flip);
+    if (!mounted || widget.state.orientation != side) return;
+    setState(() {
+      _spinning = false;
+      _turns = 0;
+      _orientation = side;
+    });
+  }
 
   Future<void> _wait(Duration duration) => Future<void>.delayed(duration);
 
@@ -233,7 +263,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   Set<Shape> _shapeSet(ColorScheme colors) {
     final s = widget.state;
-    if (!_shapes) return const {};
+    if (!_shapes || !widget.showMarks) return const {};
     return {
       for (final ScriptArrow arrow in s.arrows)
         Arrow(
@@ -249,6 +279,15 @@ class _ScriptBoardState extends State<ScriptBoard> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    return AnimatedRotation(
+      turns: _turns,
+      duration: _spinning ? ScriptBoard.flip : Duration.zero,
+      curve: AppMotion.move,
+      child: _faded(colors),
+    );
+  }
+
+  Widget _faded(ColorScheme colors) {
     return AnimatedOpacity(
       opacity: _opacity,
       duration: ScriptBoard.fade,

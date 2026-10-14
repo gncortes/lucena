@@ -13,4 +13,11 @@ abstract final class LessonTextColors {
   /// Fundo do lance que está no tabuleiro: `primary` translúcido.
   static Color activeMoveBackground(ColorScheme colors) => colors.primary
       .withValues(alpha: colors.brightness == Brightness.dark ? .22 : .14);
+
+  /// O lance com "?" na lista (canvas `T70-etapa1-estados`, Gabriel
+  /// 14/10/2026).
+  static const mistake = Color(0xFF9A4A00);
+
+  /// O lance com "!" na lista.
+  static const goodMove = Color(0xFF3B6E1C);
 }

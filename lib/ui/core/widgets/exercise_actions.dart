@@ -52,6 +52,7 @@ class ExerciseActions extends StatelessWidget {
     this.actions = const [],
     this.fill = false,
     this.padding = const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 16),
+    this.color,
     super.key,
   }) : assert(actions.length <= 2);
 
@@ -59,6 +60,9 @@ class ExerciseActions extends StatelessWidget {
   final List<ExerciseAction> actions;
   final bool fill;
   final EdgeInsetsGeometry padding;
+
+  /// O fundo do rodapé; sem ele, branco (pg. 3.1/4.7).
+  final Color? color;
 
   /// A largura de cada botão à direita (pg. 4.7).
   static const actionWidth = 124.0;
@@ -101,7 +105,7 @@ class ExerciseActions extends StatelessWidget {
     // Rodapé sobre superfície branca com divisória em cima (pg. 3.1/4.7).
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceContainerLowest,
+        color: color ?? colors.surfaceContainerLowest,
         border: Border(top: BorderSide(color: colors.outlineVariant)),
       ),
       child: Padding(

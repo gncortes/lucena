@@ -41,6 +41,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
   /// A altura da faixa do Viktor: retrato 44 e 3 dp de folga (protótipo, 50).
   static const _stripHeight = 50.0;
 
+  /// A folga entre o bico do balão e o retrato (Gabriel, 14/10/2026).
+  static const _tailGap = 6.0;
+
   /// A altura mínima da lista de lances (§8 do contrato).
   static const _listMin = 88.0;
 
@@ -109,7 +112,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
                 key: LessonScriptKeys.bookButton,
                 tooltip: context.l10n.curiositiesTitle,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-                icon: const Icon(Icons.menu_book_outlined),
+                icon: const Icon(Icons.auto_stories_outlined),
                 onPressed: () => _openCuriosities(context, state.curiosities!),
               ),
           ],
@@ -151,8 +154,16 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
     final settings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
-    final text = state.speech.join(' ');
-    Widget speech = ScriptSpeech(texts: state.speech, metrics: metrics);
+    final marks = context.select(
+      (SettingsCubit c) => c.state?.lessonMarks ?? true,
+    );
+    final text = ScriptSpeech.plainOf(context, state.speech.join(' '));
+    Widget speech = ScriptSpeech(
+      texts: state.speech,
+      metrics: metrics,
+      typing: state.machineThinking,
+      onMainLine: () => unawaited(cubit.onAction(ScriptAction.linhaPrincipal)),
+    );
     final voice = TeacherSpeech.speechOf(context);
     if (voice != null) {
       final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
@@ -164,54 +175,90 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
         child: speech,
       );
     }
+    final strip = SizedBox(
+      key: LessonScriptKeys.characterBar,
+      height: _stripHeight + _tailGap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, _tailGap, 12, 0),
+        child: _viktor == null
+            ? null
+            : TeacherSpeech(
+                part: TeacherSpeechPart.header,
+                lessonV2: true,
+                headerAvatar: 44,
+                teacher: _viktor!,
+                text: text,
+                speechContext: SpeechContext.teaching,
+                onSoundSettings: () => showLessonSoundDialog(context),
+                // Ao lado do som: mostrar ou esconder as marcações.
+                headerAction: IconButton(
+                  key: LessonScriptKeys.marksToggle,
+                  tooltip: marks
+                      ? context.l10n.lessonHideMarks
+                      : context.l10n.lessonShowMarks,
+                  isSelected: marks,
+                  icon: const Icon(Icons.layers_clear_outlined),
+                  selectedIcon: const Icon(Icons.layers_outlined),
+                  onPressed: () => context.read<SettingsCubit>().setLessonMarks(
+                    shown: !marks,
+                  ),
+                ),
+              ),
+      ),
+    );
+    Widget board(double size) => ScriptBoard(
+      state: state,
+      size: size,
+      settings: settings,
+      showMarks: marks,
+      onMove: (uci) => unawaited(cubit.onMove(uci)),
+    );
     return Column(
       children: [
-        speech,
-        SizedBox(
-          key: LessonScriptKeys.characterBar,
-          height: _stripHeight,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: _viktor == null
-                ? null
-                : TeacherSpeech(
-                    part: TeacherSpeechPart.header,
-                    lessonV2: true,
-                    headerAvatar: 44,
-                    teacher: _viktor!,
-                    text: text,
-                    speechContext: SpeechContext.teaching,
-                    onSoundSettings: () => showLessonSoundDialog(context),
-                  ),
-          ),
-        ),
         Expanded(
           child: LayoutBuilder(
             builder: (context, box) {
-              // O tabuleiro cabe na largura e deixa a lista com ao menos
-              // 88 dp; a sobra de altura é da lista.
+              // O tabuleiro cabe na largura e deixa, acima, a fala de duas
+              // linhas com o retrato e, abaixo, a lista com ao menos 88 dp.
+              final above =
+                  metrics.top +
+                  metrics.minHeight(context) +
+                  ScriptSpeech.tailSize.height +
+                  _stripHeight +
+                  _tailGap;
               final size = math.max(
                 0.0,
-                math.min(box.maxWidth, box.maxHeight - _listMin),
+                math.min(box.maxWidth, box.maxHeight - above - _listMin),
               );
-              return Column(
-                children: [
-                  Center(
-                    child: ScriptBoard(
-                      state: state,
-                      size: size,
-                      settings: settings,
-                      onMove: (uci) => unawaited(cubit.onMove(uci)),
-                    ),
+              // Centralizado na altura sempre que dá; a fala sobe no espaço
+              // de cima e só empurra o tabuleiro quando não cabe ali. A
+              // tela toda rola, sem barra, quando a lista passa do fundo
+              // (Gabriel, 14/10/2026; canvas `T70-etapa1-estados`, R1/R2).
+              return SingleChildScrollView(
+                key: LessonScriptKeys.page,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: box.maxHeight),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: (box.maxHeight - size) / 2,
+                        ),
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(children: [speech, strip]),
+                        ),
+                      ),
+                      Center(child: board(size)),
+                      ScriptMoveList(
+                        moves: state.moves,
+                        currentId: state.currentMoveId,
+                        onTap: cubit.goToMove,
+                      ),
+                    ],
                   ),
-                  Expanded(
-                    child: ScriptMoveList(
-                      moves: state.moves,
-                      currentId: state.currentMoveId,
-                      onTap: cubit.goToMove,
-                    ),
-                  ),
-                ],
+                ),
               );
             },
           ),
@@ -243,6 +290,10 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
         l10n.lessonShowAnswer,
         LessonScriptKeys.showAnswer,
       ),
+      ScriptAction.linhaPrincipal => (
+        l10n.lessonMainLine,
+        LessonScriptKeys.mainLine,
+      ),
       ScriptAction.reverIdeia => (
         l10n.lessonReviewIdea,
         LessonScriptKeys.reviewIdea,
@@ -267,19 +318,26 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
   ) {
     final secondary = _action(context, cubit, state.secondary, primary: false);
     final primary = _action(context, cubit, state.primary, primary: true);
+    final colors = Theme.of(context).colorScheme;
     return ExerciseActions(
-      hint: Tooltip(
-        message: context.l10n.lessonPreviousStep,
-        child: IconButton.outlined(
-          key: LessonScriptKeys.back,
-          style: IconButton.styleFrom(
-            fixedSize: const Size.square(56),
-            backgroundColor: Theme.of(context).colorScheme.surface,
-          ),
-          icon: const Icon(Icons.arrow_back),
-          onPressed: state.canBack ? cubit.back : null,
-        ),
-      ),
+      // Mesmo fundo da tela, só com a linha em cima (Gabriel, 14/10/2026;
+      // canvas `T70-etapa1-estados`, F2).
+      color: Theme.of(context).scaffoldBackgroundColor,
+      // O voltar redondo da lição (`lesson_screen.dart`, Gabriel 14/10/2026):
+      // só aparece quando há para onde voltar.
+      hint: state.canBack
+          ? FloatingActionButton(
+              key: LessonScriptKeys.back,
+              heroTag: null,
+              shape: const CircleBorder(),
+              elevation: 2,
+              backgroundColor: colors.surface,
+              foregroundColor: colors.primary,
+              tooltip: context.l10n.lessonPreviousStep,
+              onPressed: cubit.back,
+              child: const Icon(Icons.arrow_back),
+            )
+          : null,
       actions: [?secondary, ?primary],
     );
   }

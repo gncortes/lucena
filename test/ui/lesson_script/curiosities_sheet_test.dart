@@ -121,21 +121,25 @@ void main() {
     await open(tester, full);
     expect(find.byKey(CuriositiesKeys.sheet), findsOneWidget);
     expect(find.text('Curiosidades'), findsOneWidget);
-    expect(find.text('Sobre a posição'), findsOneWidget);
     expect(find.text('Texto sobre a posição.'), findsOneWidget);
-    expect(find.text('Uma citação inesquecível.'), findsOneWidget);
-    expect(find.text('— Fulano'), findsOneWidget);
-    expect(find.text('Referências'), findsOneWidget);
-    // Rola até o fim: o jogador mostra as iniciais, o nome e as datas.
+    // Variante A do canvas: aspas da língua, autor sem travessão, rótulos
+    // em caixa-alta.
+    expect(find.text('“Uma citação inesquecível.”'), findsOneWidget);
+    expect(find.text('Fulano'), findsOneWidget);
+    expect(find.text('SOBRE A POSIÇÃO'), findsOneWidget);
+    expect(find.text('REFERÊNCIAS'), findsOneWidget);
+    // Rola até o fim: título e a linha de detalhe com o domínio.
     await tester.scrollUntilVisible(
-      find.byKey(CuriositiesKeys.playerAvatar('pl')),
+      find.byKey(CuriositiesKeys.reference('pl')),
       200,
       scrollable: find.byType(Scrollable).last,
     );
-    expect(find.text('JC'), findsOneWidget);
     expect(find.text('José Capablanca'), findsOneWidget);
-    expect(find.text('1888–1942'), findsOneWidget);
-    expect(find.text('Autor. Livro. Editora, 1900.'), findsOneWidget);
+    expect(find.text('1888–1942 · en.wikipedia.org'), findsOneWidget);
+    expect(find.text('Livro'), findsOneWidget);
+    expect(find.text('Autor · 1900'), findsOneWidget);
+    expect(find.text('Oposição (xadrez)'), findsOneWidget);
+    expect(find.text('en.wikipedia.org'), findsOneWidget);
   });
 
   testWidgets('toque na referência abre a página dentro do app', (
@@ -165,7 +169,6 @@ void main() {
     await tester.tap(find.byKey(CuriositiesKeys.reference('bk')));
     await tester.pumpAndSettle();
     expect(pages.opened, isEmpty);
-    expect(find.byKey(CuriositiesKeys.source('bk')), findsNothing);
   });
 
   testWidgets('sem citação nem referências só mostra o texto', (tester) async {
@@ -173,7 +176,7 @@ void main() {
     expect(find.byKey(CuriositiesKeys.about), findsOneWidget);
     expect(find.byKey(CuriositiesKeys.quote), findsNothing);
     expect(find.byKey(CuriositiesKeys.references), findsNothing);
-    expect(find.text('Referências'), findsNothing);
+    expect(find.text('REFERÊNCIAS'), findsNothing);
   });
 
   testWidgets('o X fecha a folha', (tester) async {

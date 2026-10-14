@@ -12,6 +12,9 @@ abstract final class GameDetailsKeys {
   static const closeSheet = Key('gameDetails.sheet.close');
   static const opponent = Key('gameDetails.opponent');
   static const result = Key('gameDetails.result');
+
+  /// O placar no fim da lista de lances (1–0, 0–1, ½–½).
+  static const score = Key('gameDetails.score');
   static const notFound = Key('gameDetails.notFound');
   static const loading = Key('gameDetails.loading');
 
