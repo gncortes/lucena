@@ -1966,7 +1966,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/graduation.twoBishops.json"
         }
       ]
     }
