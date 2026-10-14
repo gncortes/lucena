@@ -56,6 +56,8 @@ void main() {
     bool trimmed = true,
     String part = 'distant',
     Size size = const Size(412, 917),
+    int cp = 900,
+    bool withEngine = true,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -106,12 +108,16 @@ void main() {
       replyDelay: Duration.zero,
       typingDelay: Duration.zero,
       practiceV2: true,
-      engine: EngineFallback(
-        evaluate: (position, pov) async => const Evaluation(centipawns: 900),
-        bestMove: (position) async => position.legalMoves.entries
-            .map((e) => NormalMove(from: e.key, to: e.value.squares.first))
-            .first,
-      ),
+      engine: !withEngine
+          ? null
+          : EngineFallback(
+              evaluate: (position, pov) async => Evaluation(centipawns: cp),
+              bestMove: (position) async => position.legalMoves.entries
+                  .map(
+                    (e) => NormalMove(from: e.key, to: e.value.squares.first),
+                  )
+                  .first,
+            ),
     );
     addTearDown(cubit.close);
     await cubit.load(lessonId, 'pt', part: trimmed ? null : part);
@@ -267,4 +273,56 @@ void main() {
     await movePractice(tester, cubit, 'e5f5');
     expect(plain('Assim se converte'), findsWidgets);
   });
+
+  Future<void> settle(WidgetTester tester) async {
+    for (var i = 0; i < 6; i++) {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 40)),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+  }
+
+  for (final c in [
+    ('t_carlsenSo', 'defend', 'f6e5', 'Com 55...Re5? você deixa escapar'),
+    ('t_euwe', 'lateral', 'c4d5', 'Com 49.Rd5? você deixa escapar'),
+    ('t_useReserve', 'useReserve', 'h5h6', 'Com 4.h6? você deixa escapar'),
+    ('t_fixedTarget', 'fixedTarget', 'd7c6', 'Com 1.Rc6? você deixa escapar'),
+    ('t_synchronize', 'synchronize', 'f5e4', 'Com 4.Re4? você deixa escapar'),
+  ]) {
+    testWidgets('erro no pensar da ${c.$1}: textos da variante do feedback', (
+      tester,
+    ) async {
+      final cubit = await pump(
+        tester,
+        c.$1,
+        trimmed: false,
+        part: c.$2,
+        withEngine: false,
+      );
+      final f = cubit.play(Move.parse(c.$3)!);
+      await tester.pump(const Duration(seconds: 1));
+      await f;
+      await settle(tester);
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonKeys.variationStrip), findsOneWidget);
+      expect(plain(c.$4), findsWidgets);
+      expect(plain('o adversário encontra um recurso'), findsNothing);
+    });
+  }
+
+  for (final c in [
+    ('grigorievMove', 'waiting', 'a8b8', 'Com 1.Rb8? você deixa escapar'),
+    ('fixedTargetMove', 'fixedTarget', 'd7c6', 'Com 1.Rc6? você deixa escapar'),
+  ]) {
+    testWidgets('prático errado ${c.$1}: texto escrito do feedback', (
+      tester,
+    ) async {
+      final cubit = await pump(tester, c.$1, cp: 0);
+      await settle(tester);
+      await movePractice(tester, cubit, c.$3);
+      expect(plain(c.$4), findsWidgets);
+      expect(plain('encontram um recurso contra o seu plano'), findsNothing);
+    });
+  }
 }

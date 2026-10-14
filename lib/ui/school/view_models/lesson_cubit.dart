@@ -661,7 +661,7 @@ class LessonState {
     engineErrors: engineErrors ?? this.engineErrors,
     engineLine: engineLine ?? this.engineLine,
     practiceGate: practiceGate ?? this.practiceGate,
-    practiceComment: clearPracticeComment
+    practiceComment: clearPracticeComment || clearNote
         ? null
         : practiceComment ?? this.practiceComment,
     practiceHint: practiceHint ?? this.practiceHint,
@@ -1532,9 +1532,10 @@ class LessonCubit extends Cubit<LessonState> {
   /// não há. A continuação é a da demo errada da parte cuja posição é a de
   /// depois do lance; sem ela, a variação do feedback; sem as duas, só o
   /// lance. [fallback] é o comentário neutro do lance do aluno.
-  ({List<String> ucis, List<String> texts}) thinkBranch(
+  ({List<String> ucis, List<String> texts, bool refuted}) thinkBranch(
     String uci, {
     required String fallback,
+    bool played = true,
   }) {
     final steps = state.lesson?.steps ?? const <LessonStep>[];
     final current = state.current;
@@ -1543,10 +1544,11 @@ class LessonCubit extends Cubit<LessonState> {
         index >= 0 && index < steps.length && steps[index] is ThinkStep
         ? steps[index] as ThinkStep
         : null;
-    if (think == null) return (ucis: [uci], texts: [fallback]);
+    if (think == null) return (ucis: [uci], texts: [fallback], refuted: false);
     var ucis = [uci];
     String? demoId;
     String? altId;
+    List<String> variationTexts = const [];
     final position = GameRules.fromFen(think.fen);
     final move = Move.parse(uci);
     final after = position == null || move == null
@@ -1568,28 +1570,36 @@ class LessonCubit extends Cubit<LessonState> {
           variation.firstUci == uci &&
           variation.movesUci.isNotEmpty) {
         altId = variation.id;
+        variationTexts = played && variation.playedTexts.isNotEmpty
+            ? variation.playedTexts
+            : variation.texts;
         if (demoId == null) ucis = List.of(variation.movesUci);
         break;
       }
     }
     final say = _mistakeText(think.mistakes[uci]?.say);
+    // O texto escrito vence: fala do erro, da demo ou da alternativa; depois
+    // o do feedback da variante; o neutro só quando não há nada escrito.
+    final fromFeedback = variationTexts.join('\n\n');
     final texts = [
       for (var ply = 1; ply <= ucis.length; ply++)
         _withoutMove(
           BranchComments.at(
-            texts: state.texts,
-            lessonId: _lessonId,
-            ply: ply,
-            mistakeSay: say,
-            demoId: demoId,
-            altStepId: think.id,
-            altId: altId,
-            fallback: fallback,
-          ),
+                texts: state.texts,
+                lessonId: _lessonId,
+                ply: ply,
+                mistakeSay: say,
+                demoId: demoId,
+                altStepId: think.id,
+                altId: altId,
+              ) ??
+              (ply == 1
+                  ? (fromFeedback.isEmpty ? fallback : fromFeedback)
+                  : null),
           ply,
         ),
     ];
-    return (ucis: ucis, texts: texts);
+    return (ucis: ucis, texts: texts, refuted: demoId != null);
   }
 
   /// O comentário do lance sem o lance no começo (`1...Re7. O rei…`): a faixa
@@ -2006,6 +2016,9 @@ class LessonCubit extends Cubit<LessonState> {
     }
     unawaited(_sounds?.move(answered.san));
     final keeps = answer.verdict == EngineVerdict.keeps;
+    // O texto escrito do feedback para este lance vence a nota do motor.
+    final written = keeps ? null : await _writtenMistake(move);
+    if (isClosed || _closing || state.step != index) return;
     final note = keeps
         ? (_mustWin ? LessonNote.alsoWins : LessonNote.alsoHolds)
         : LessonNote.engineReply;
@@ -2016,6 +2029,7 @@ class LessonCubit extends Cubit<LessonState> {
         typing: false,
         moves: [...state.moves, move.uci, reply!.uci],
         note: note,
+        practiceComment: written,
         practiceUndo: [
           ...state.practiceUndo,
           _offPair(before, reply: reply.uci, note: note),
@@ -2027,6 +2041,32 @@ class LessonCubit extends Cubit<LessonState> {
       ),
     );
     await _save();
+  }
+
+  /// O comentário escrito do feedback para o lance errado [move] da decisão
+  /// atual (`playedTexts` da variante dele), ou `null` se não há.
+  Future<String?> _writtenMistake(Move move) async {
+    final repository = _feedback;
+    final decision = _decision;
+    if (repository is! ExplanationRepository || decision == null) return null;
+    try {
+      final payload = await repository!.findPayload(
+        lessonId: _lessonId,
+        exerciseId: decision.id,
+        kind: decision.kind,
+        turn: decision.turn,
+        fen: decision.fen,
+        language: _language,
+        state: ExplanationState.incorrect,
+        playedUci: move.uci,
+      );
+      for (final v in payload?.variations ?? const <ExplanationVariation>[]) {
+        if (v.parentId != null || v.firstUci != move.uci) continue;
+        final texts = v.playedTexts.isNotEmpty ? v.playedTexts : v.texts;
+        if (texts.isNotEmpty) return texts.join('\n\n');
+      }
+    } catch (_) {}
+    return null;
   }
 
   PracticePair _offPair(

@@ -76,6 +76,15 @@ class _LessonScreenState extends State<LessonScreen>
   bool _autoUser = false;
   bool _wrongBranch = false;
   String? _wrongHandled;
+
+  /// O ramo do erro abriu antes de o feedback da variante chegar: reabre
+  /// quando ele chegar, com os textos escritos.
+  bool _wrongNoData = false;
+
+  bool _hasVariationFor(LessonState state, String uci) =>
+      (state.explanation?.variations ?? const []).any(
+        (v) => v.parentId == null && v.firstUci == uci && v.movesUci.isNotEmpty,
+      );
   final _lineTrees = Expando<VariationTree>();
   final _lineTexts = Expando<List<String>>();
 
@@ -426,6 +435,18 @@ class _LessonScreenState extends State<LessonScreen>
           }
         });
       }
+    }
+    if (_wrongNoData &&
+        _wrongBranch &&
+        _variation.value != null &&
+        state.explanation != previous.explanation &&
+        state.thinkPlayed != null &&
+        _hasVariationFor(state, state.thinkPlayed!)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !context.read<LessonCubit>().isClosed) {
+          _enterWrongBranch(context.read<LessonCubit>().state, reopen: true);
+        }
+      });
     }
     // Resolvendo: o cronômetro já com o tempo do passo (ao reabrir o app, o
     // tabuleiro nasce aqui, antes do primeiro tique). Saindo para a fala, ele
@@ -2808,6 +2829,7 @@ class _LessonScreenState extends State<LessonScreen>
     List<String> ucis,
     List<String> texts, {
     required bool wrong,
+    bool refuted = true,
   }) {
     final think = _thinkOf(state);
     final start = think == null ? null : GameRules.fromFen(think.fen);
@@ -2839,7 +2861,10 @@ class _LessonScreenState extends State<LessonScreen>
     _lineTexts[line] = texts;
     _wrongBranch = wrong;
     _showLine(context, SpeechLineCursor(line, 1));
-    if (wrong && moves.length > 1) {
+    // Abre no lance que tem comentário: o do aluno, se o seguinte não tem.
+    if (wrong &&
+        moves.length > 1 &&
+        (refuted || (texts.length > 1 && texts[1].isNotEmpty))) {
       final motion = AppMotion.of(context);
       if (motion.disabled) {
         _goTo(const TreePosition.main(2));
@@ -2864,9 +2889,10 @@ class _LessonScreenState extends State<LessonScreen>
 
   /// O erro com ramo: abre o modo variante na linha do aluno e a refutação
   /// anda sozinha (crit. 4–5).
-  void _enterWrongBranch(LessonState state) {
+  void _enterWrongBranch(LessonState state, {bool reopen = false}) {
     final played = state.thinkPlayed;
-    if (played == null || _variation.value != null) return;
+    if (played == null || (_variation.value != null && !reopen)) return;
+    _wrongNoData = !_hasVariationFor(state, played);
     final engine = state.engineLine.isNotEmpty;
     final think = _thinkOf(state);
     final opponent = (think?.side ?? Side.white).opposite;
@@ -2882,7 +2908,13 @@ class _LessonScreenState extends State<LessonScreen>
             l10n.lessonEngineReply(_sideWord(context, opponent)),
           ]
         : branch.texts;
-    _openThinkLine(state, ucis, texts, wrong: true);
+    _openThinkLine(
+      state,
+      ucis,
+      texts,
+      wrong: true,
+      refuted: engine || branch.refuted,
+    );
   }
 
   /// Toque numa alternativa que falha (estado correto): o ramo abre no modo
@@ -2893,6 +2925,7 @@ class _LessonScreenState extends State<LessonScreen>
     final branch = cubit.thinkBranch(
       uci,
       fallback: context.l10n.lessonBranchMoveFallback,
+      played: false,
     );
     final ucis = branch.ucis;
     final texts = branch.texts;
