@@ -35,6 +35,7 @@ class ScriptBoard extends StatefulWidget {
     required this.size,
     required this.settings,
     required this.onMove,
+    this.onSquare,
     this.showMarks = true,
     super.key,
   });
@@ -55,6 +56,9 @@ class ScriptBoard extends StatefulWidget {
   final double size;
   final BoardSettings settings;
   final ValueChanged<String> onMove;
+
+  /// Toque numa casa (qualquer uma, até vazia) na prática do tipo toque.
+  final ValueChanged<String>? onSquare;
 
   /// A preferência do botão ao lado do som: sem ela, nem setas nem círculos.
   final bool showMarks;
@@ -320,8 +324,17 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   Set<Shape> _shapeSet(ColorScheme colors) {
     final s = widget.state;
-    if (!_shapes || !widget.showMarks) return const {};
+    // As casas da prática de toque: a resposta ao clique, não uma marca do
+    // professor (aparecem mesmo com as marcas desligadas).
+    final touch = {
+      for (final square in s.touched)
+        Circle(color: ScriptShapes.green, orig: Square.fromName(square)),
+      if (s.touchMiss case final miss?)
+        Circle(color: ScriptShapes.red, orig: Square.fromName(miss)),
+    };
+    if (!_shapes || !widget.showMarks) return touch;
     return {
+      ...touch,
       for (final ScriptArrow arrow in s.arrows)
         Arrow(
           color: ScriptShapes.arrow(colors, arrow.color),
@@ -331,6 +344,17 @@ class _ScriptBoardState extends State<ScriptBoard> {
       for (final mark in s.marks)
         Circle(color: ScriptShapes.green, orig: Square.fromName(mark)),
     };
+  }
+
+  /// As coordenadas: a prática de toque pode escondê-las (`coordenadas`
+  /// falso) ou mostrá-las enquanto o aluno procura a casa; fora dela, vale a
+  /// preferência do aluno.
+  ChessboardSettings get _boardSettings {
+    final base = widget.settings.chessground;
+    final s = widget.state;
+    if (!s.coordinates) return base.copyWith(enableCoordinates: false);
+    if (s.touching) return base.copyWith(enableCoordinates: true);
+    return base;
   }
 
   @override
@@ -355,10 +379,13 @@ class _ScriptBoardState extends State<ScriptBoard> {
           key: LessonScriptKeys.board,
           size: widget.size,
           controller: _controller,
-          settings: widget.settings.chessground,
+          settings: _boardSettings,
           orientation: _orientation,
           shapes: _shapeSet(colors),
           onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
+          onTouchedSquare: widget.state.touching && widget.onSquare != null
+              ? (square) => widget.onSquare!(square.name)
+              : null,
         ),
       ),
     );
