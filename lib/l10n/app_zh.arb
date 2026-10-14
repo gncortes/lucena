@@ -303,32 +303,11 @@
   "speedrunTotalTime": "总用时",
   "teacherName": "{name}老师",
   "tourBack": "上一步",
-  "tourBoardTitle": "选择你的棋盘",
-  "tourEndgamesBody": "基本杀法、兵残局、车残局和后残局：每个局面都有一个目标，取胜或守和。",
-  "tourEndgamesTitle": "残局",
-  "tourGoalBody": "Lucena让你在典型残局中对阵Maia——一个像各等级分真人一样下棋的AI。全部功能均可离线使用。",
-  "tourGoalTitle": "与真人风格的对手练习残局",
-  "tourJourneyBody": "从Maia 1000一路攀登到Stockfish。完成一个等级的所有挑战即可解锁下一级。",
-  "tourJourneyTitle": "征程",
-  "tourLevelBody": "征程会从匹配的等级开始，较低的等级依然可以下。",
-  "tourLevelSchool": "先上维克多的课，再从1000开始旅程",
   "tourLevelStart": "征程从{rung}开始",
-  "tourLevelTitle": "你目前的水平如何？",
   "tourNext": "下一步",
-  "tourOpponentsBody": "Maia的每个等级都是一个个性鲜明的角色，会在对话气泡里点评对局。",
-  "tourOpponentsTitle": "你的对手",
-  "tourRatingBody": "每局对阵 Maia 或 Stockfish 的对局都会改变你的残局等级分。在速通中，等级分会在完成时一次性计入。",
-  "tourRatingTitle": "你的等级分",
-  "tourRecordsBody": "刷新你的用时，解锁成就，并在记录中查看每一局。",
-  "tourRecordsTitle": "纪录与成就",
   "tourSkip": "跳过",
-  "tourSpeedrunBody": "尽可能快地通过各个阶段。首次完成速通即可获得等级分，节奏越快，获得越多。",
-  "tourSpeedrunTitle": "速通",
   "tourStart": "开始",
-  "tourStartLessons": "开始上课",
   "tourStep": "第 {step} 步，共 {total} 步",
-  "tourThemeBody": "选择你最喜欢的主题和颜色。之后可以随时在设置中更改。",
-  "tourThemeTitle": "打造你的专属风格",
   "resultNextChallenge": "下一个挑战",
   "reportRatingLabel": "等级分",
   "resultYouWon": "你赢了！",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "全部",
   "catalogDone": "已完成 {done}/{total}",
   "tourNameLabel": "我该怎么称呼你？",
-  "tourNameHelper": "它会显示在主屏幕上。之后可以在个人资料中修改。",
   "homePathsTitle": "你想做什么？",
   "homeLearn": "学下国际象棋",
   "homeLearnBody": "跟维克多上课：棋子的走法、将军、将杀和最初的残局。",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "黑兵只是挡路，不能吃掉。你要收集的是星星。",
   "settingsSound": "声音",
   "settingsSoundHint": "棋子走动的声音，以及时间快用完时的提示",
-  "tourSoundTitle": "要开启声音吗？",
-  "tourSoundBody": "每走一步都能听到棋子的声音，棋钟快到时还会有提示。",
-  "tourSoundOn": "开启声音",
-  "tourSoundOff": "关闭声音",
   "reviewStart": "用 Stockfish 复盘",
   "reviewRunning": "正在分析第 {done} 步，共 {total} 步",
   "reviewAccuracy": "准确率",
@@ -554,11 +528,6 @@
   "voiceGenderMale": "男声",
   "voiceGenderFemale": "女声",
   "voiceTeacherSample": "你好！我是你的老师维克多。我们一起掌握残局吧。",
-  "tourVoiceTitle": "要我大声说出来吗？",
-  "tourVoiceBody": "选择我的声音。点按即可试听。",
-  "tourCharacterVoicesTitle": "对手们的声音",
-  "tourCharacterVoicesBody": "每个人都已有声音。点按某人即可更换。",
-  "tourKeepVoices": "保持不变",
   "lessonPrevious": "上一步",
   "lessonFooterBack": "返回",
   "voiceSpeedValue": "{speed}×",
@@ -661,8 +630,6 @@
   "homeJourneyBodyPlayer": "练习基本杀法，挑战从可可到 Stockfish 的每一位对手。",
   "homeLearnBodyPlayer": "和维克托一起复习基础。",
   "homeSpeedrunBodyChallenge": "用最短时间一路击败所有人直到 Stockfish。打破你的纪录。",
-  "tourGoalsTitle": "你想在 Lucena 做什么？",
-  "tourGoalsBody": "想选几个都可以。之后可以在设置中更改。",
   "homeOtherModes": "其他模式",
   "homeCustomize": "自定义",
   "homeLayoutTitle": "主屏幕",
@@ -680,7 +647,6 @@
   "allModesRatingBody": "你的等级分走势和每一局计入的对局。",
   "allModesAchievementsBody": "你已获得的奖章，以及还在等你的奖章。",
   "speechShowOnBoard": "在棋盘上显示 {square}",
-  "tourDemoMate": "将死！",
   "profileLevelBeginnerHint": "我在学规则",
   "profileLevelCasualHint": "偶尔和朋友下棋",
   "speedrunPaceLine": "用时：{time}",
@@ -974,7 +940,6 @@
   "skillTacticsEndgame": "残局战术",
   "tourLevelTestTitle": "做测试，了解我的水平",
   "tourLevelTestBody": "20 道题，不计时，约 8 到 12 分钟。最后我会为你制定学习路线。",
-  "tourLevelTakeTest": "我还是做测试吧",
   "placementTake": "做水平测试",
   "schoolPlacedSpeech": "根据测试，你已经掌握了课程的开头。我们从这里开始：{lesson}。",
   "schoolReviewSkipped": "复习之前的课",
@@ -985,7 +950,6 @@
   "endgamesTestPrompt": "看看你已经掌握了哪些残局。",
   "endgamesNextTitle": "你的下一个残局",
   "endgamesThenTitle": "然后",
-  "tourLevelByHandHint": "自己选择水平会设定等级分，但学习不会个性化。只有测试能看出你已经掌握什么、还缺什么。",
   "schoolKnownTitle": "你已经会了",
   "schoolKnownBody": "测试表明你已掌握这些课。随时可以复习。",
   "endgamesForYou": "为你推荐",
@@ -1221,5 +1185,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

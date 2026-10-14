@@ -303,32 +303,11 @@
   "speedrunTotalTime": "Toplam süre",
   "teacherName": "Usta {name}",
   "tourBack": "Geri",
-  "tourBoardTitle": "Tahtanı seç",
-  "tourEndgamesBody": "Temel matlar, piyon, kale ve vezir oyun sonları: her pozisyonun bir hedefi var, kazanmak ya da beraberliği korumak.",
-  "tourEndgamesTitle": "Oyun sonları",
-  "tourGoalBody": "Lucena seni Maia'ya karşı tipik oyun sonlarına sokar; Maia, her puan seviyesindeki gerçek insanlar gibi oynayan bir yapay zekâdır. Her şey çevrimdışı çalışır.",
-  "tourGoalTitle": "İnsanlara karşı oyun sonu çalış",
-  "tourJourneyBody": "Maia 1000'den Stockfish'e tırman. Sonrakinin kilidini açmak için bir seviyedeki tüm görevleri tamamla.",
-  "tourJourneyTitle": "Yolculuk",
-  "tourLevelBody": "Yolculuk sana uygun seviyeden başlar ve alttaki seviyeleri yine de oynayabilirsin.",
-  "tourLevelSchool": "Önce Viktor ile dersler, sonra 1000'de Yolculuk",
   "tourLevelStart": "Yolculuk {rung} ile başlar",
-  "tourLevelTitle": "Şu anki seviyen ne?",
   "tourNext": "İleri",
-  "tourOpponentsBody": "Her Maia seviyesi, oyunu bir konuşma balonunda yorumlayan, kendine has kişiliği olan bir karakterdir.",
-  "tourOpponentsTitle": "Rakiplerin",
-  "tourRatingBody": "Maia veya Stockfish’e karşı oynadığın her oyun oyun sonu reytingini değiştirir. Speedrun’da reyting, bitirdiğinde tek seferde gelir.",
-  "tourRatingTitle": "Puanın",
-  "tourRecordsBody": "Kendi sürelerini geç, başarımların kilidini aç ve her oyunu geçmişte gör.",
-  "tourRecordsTitle": "Rekorlar ve başarımlar",
   "tourSkip": "Atla",
-  "tourSpeedrunBody": "Aşamaları olabildiğince hızlı kazan. Bir speedrun’ı ilk kez bitirdiğinde reyting kazanırsın; tempo ne kadar hızlıysa o kadar çok.",
-  "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Başla",
-  "tourStartLessons": "Derslere başla",
   "tourStep": "Adım {step}/{total}",
-  "tourThemeBody": "En sevdiğin temayı ve rengi seç. İstediğin zaman Ayarlar'dan değiştirebilirsin.",
-  "tourThemeTitle": "Uygulamayı kendine göre ayarla",
   "resultNextChallenge": "Sonraki görev",
   "reportRatingLabel": "Puan",
   "resultYouWon": "Kazandın!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "Tümü",
   "catalogDone": "{done}/{total} tamam",
   "tourNameLabel": "Sana nasıl hitap edeyim?",
-  "tourNameHelper": "Ana ekranda görünür. Daha sonra profilinden değiştirebilirsin.",
   "homePathsTitle": "Ne yapmak istersin?",
   "homeLearn": "Satranç oynamayı öğren",
   "homeLearnBody": "Viktor ile dersler: taşların hareketleri, şah, mat ve ilk oyun sonları.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "Siyah piyonlar sadece yolu kapatır: alınamazlar. Topladığın şey yıldızlardır.",
   "settingsSound": "Sesler",
   "settingsSoundHint": "Taş hamleleri ve süren azalınca bir uyarı",
-  "tourSoundTitle": "Sesli mi, sessiz mi?",
-  "tourSoundBody": "Her hamlede taşları ve saat bitmek üzereyken bir uyarı duy.",
-  "tourSoundOn": "Sesli",
-  "tourSoundOff": "Sessiz",
   "reviewStart": "Stockfish ile incele",
   "reviewRunning": "{total} hamlenin {done}. hamlesi analiz ediliyor",
   "reviewAccuracy": "Doğruluk",
@@ -554,11 +528,6 @@
   "voiceGenderMale": "Erkek",
   "voiceGenderFemale": "Kadın",
   "voiceTeacherSample": "Merhaba! Ben Viktor, öğretmeninim. Oyun sonlarını birlikte öğrenelim.",
-  "tourVoiceTitle": "Sesli konuşayım mı?",
-  "tourVoiceBody": "Sesimi seç. Dinlemek için birine dokun.",
-  "tourCharacterVoicesTitle": "Rakiplerinin sesleri",
-  "tourCharacterVoicesBody": "Her birinin zaten bir sesi var. Değiştirmek için birine dokun.",
-  "tourKeepVoices": "Böyle kalsın",
   "lessonPrevious": "Önceki adım",
   "lessonFooterBack": "Geri",
   "voiceSpeedValue": "{speed}×",
@@ -661,8 +630,6 @@
   "homeJourneyBodyPlayer": "Temel matları çalış ve Coco'dan Stockfish'e her rakibe meydan oku.",
   "homeLearnBodyPlayer": "Temelleri Viktor ile tekrar et.",
   "homeSpeedrunBodyChallenge": "Stockfish'e kadar herkesi en kısa sürede yen. Rekorunu kır.",
-  "tourGoalsTitle": "Lucena'da ne yapmak istiyorsun?",
-  "tourGoalsBody": "İstediğin kadar işaretle. Sonra Ayarlar'dan değiştirebilirsin.",
   "homeOtherModes": "Diğer modlar",
   "homeCustomize": "Özelleştir",
   "homeLayoutTitle": "Ana ekran",
@@ -680,7 +647,6 @@
   "allModesRatingBody": "Zaman içindeki puanın ve sayılan her oyun.",
   "allModesAchievementsBody": "Kazandığın madalyalar ve seni bekleyenler.",
   "speechShowOnBoard": "{square} tahtada göster",
-  "tourDemoMate": "Mat!",
   "profileLevelBeginnerHint": "Kuralları öğreniyorum",
   "profileLevelCasualHint": "Arada bir arkadaşlarla oynarım",
   "speedrunPaceLine": "Süre: {time}",
@@ -974,7 +940,6 @@
   "skillTacticsEndgame": "Oyun sonu taktikleri",
   "tourLevelTestTitle": "Seviyemi bulmak için testi çöz",
   "tourLevelTestBody": "20 soru, saat yok, yaklaşık 8-12 dakika. Sonunda çalışma planını hazırlarım.",
-  "tourLevelTakeTest": "Testi çözmeyi tercih ederim",
   "placementTake": "Seviye testini çöz",
   "schoolPlacedSpeech": "Testine göre kursun başını zaten biliyorsun. Şununla başlayalım: {lesson}.",
   "schoolReviewSkipped": "Önceki dersleri gözden geçir",
@@ -985,7 +950,6 @@
   "endgamesTestPrompt": "Hangi oyun sonlarını bildiğini keşfet.",
   "endgamesNextTitle": "Sıradaki oyun sonun",
   "endgamesThenTitle": "Sonra",
-  "tourLevelByHandHint": "Seviyeni kendin seçersen puanın ayarlanır ama çalışma kişiselleşmez. Neyi bildiğini ve neyin eksik olduğunu yalnızca test gösterir.",
   "schoolKnownTitle": "Bunları zaten biliyorsun",
   "schoolKnownBody": "Test bu dersleri bildiğini gösterdi. İstediğin zaman gözden geçir.",
   "endgamesForYou": "Senin için",
@@ -1221,5 +1185,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

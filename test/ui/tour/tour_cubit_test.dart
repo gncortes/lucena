@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
@@ -12,26 +11,28 @@ import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_home_layout_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
-import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
+import '../../../testing/fakes/fake_school_repositories.dart';
+import '../../../testing/fakes/fake_voice_repository.dart';
 
 void main() {
   late FakeOnboardingRepository onboarding;
   late FakeProfileRepository profile;
   late FakeHomeLayoutRepository home;
 
-  TourCubit cubit() {
+  TourCubit cubit({bool voices = true}) {
     final cubit = TourCubit(
       home: home,
       onboarding: onboarding,
       profile: profile,
       characters: FakeCharacterRepository(),
+      voice: voices ? FakeVoiceRepository() : null,
       lessons: FakeLessonRepository(
         texts: LessonTexts.fromJson({
-          'tour.goal': 'Welcome, my student.',
+          'tour.board': 'Welcome, my student.',
+          'tour.voice': 'Pick my voice.',
+          'tour.voice.none': 'Tell me your name.',
           'tour.level': 'Choose your level.',
-          'tour.level.beginner': 'Then we start from the beginning.',
-          'tour.goals': 'What do you want to do here?',
         }),
       ),
     );
@@ -45,51 +46,179 @@ void main() {
     home = FakeHomeLayoutRepository();
   });
 
-  // Vai até o passo do nível (o penúltimo).
   Future<void> toLevel(TourCubit tour) async {
     while (tour.state.step != TourStep.level) {
       await tour.next();
     }
   }
 
+  test('são seis passos, na ordem, e nenhum some', () async {
+    expect(TourStep.values, [
+      TourStep.board,
+      TourStep.voice,
+      TourStep.school,
+      TourStep.help,
+      TourStep.play,
+      TourStep.level,
+    ]);
+    final tour = cubit(voices: false);
+    await tour.load('en');
+    final seen = [tour.state.step];
+    while (tour.state.step != TourStep.level) {
+      await tour.next();
+      seen.add(tour.state.step);
+    }
+    expect(seen, TourStep.values);
+    expect(TourStep.level.isLast, isTrue);
+  });
+
+  test('Voltar não existe no primeiro passo e volta nos outros', () async {
+    final tour = cubit();
+    await tour.load('en');
+    expect(tour.state.hasPrevious, isFalse);
+    await tour.back();
+    expect(tour.state.step, TourStep.board);
+    await tour.next();
+    expect(tour.state.hasPrevious, isTrue);
+    expect(tour.state.forward, isTrue);
+    await tour.back();
+    expect(tour.state.step, TourStep.board);
+    expect(tour.state.forward, isFalse);
+  });
+
+  test('Pular sem nível leva ao último passo; não é escolha', () async {
+    final tour = cubit();
+    await tour.load('en');
+    await tour.skip();
+    expect(tour.state.step, TourStep.level);
+    await tour.skip();
+    expect(tour.state.step, TourStep.level);
+    expect(tour.state.levelChosen, isFalse);
+    expect(onboarding.saved.selectedRating, isNull);
+    expect(onboarding.saved.done, isFalse);
+    expect(profile.saved, isEmpty);
+    expect(home.layout, isNull);
+  });
+
+  test('Pular com nível termina e grava o degrau', () async {
+    final tour = cubit();
+    await tour.load('en');
+    await tour.skip();
+    await tour.setLevel(RatingLevel.intermediate);
+    await tour.skip();
+    expect(tour.state.finished, isTrue);
+    expect(onboarding.saved.done, isTrue);
+    expect(onboarding.saved.startRung, '1400');
+    expect(home.layout, HomeSuggestion.of(RatingLevel.intermediate));
+    expect(home.seen, isTrue);
+  });
+
   test(
-    'default, abrir faixas, Próximo, Pular e finish não são escolha',
+    'abre com começando marcado; Começar grava beginner e vai às aulas',
     () async {
       final tour = cubit();
       await tour.load('en');
-      await tour.skip();
-      expect(tour.state.step, TourStep.level);
-      await tour.next();
-      await tour.finish();
-      await tour.chooseByHand();
-      await tour.next();
-      await tour.skip();
-      expect(tour.state.step, TourStep.level);
+      await toLevel(tour);
       expect(tour.state.levelChosen, isFalse);
-      expect(onboarding.saved.selectedRating, isNull);
-      expect(onboarding.saved.done, isFalse);
-      expect(profile.saved, isEmpty);
-      expect(home.layout, isNull);
+      expect(tour.state.choice, TourLevelChoice.beginner);
+      await tour.finish();
+      expect(tour.state.finished, isTrue);
+      expect(tour.state.toSchool, isTrue);
+      expect(onboarding.saved.selectedRating, RatingLevel.beginner.rating);
+      expect(onboarding.saved.done, isTrue);
     },
   );
 
-  test('retomada fria preserva faixa explícita, origem e passo', () async {
+  test('o cartão marcado: nenhum, começando, faixa ou teste', () async {
+    final tour = cubit();
+    await tour.load('en');
+    expect(tour.state.choice, TourLevelChoice.beginner);
+    await tour.setLevel(RatingLevel.beginner);
+    expect(tour.state.choice, TourLevelChoice.beginner);
+    await tour.setLevel(RatingLevel.expert);
+    expect(tour.state.choice, TourLevelChoice.band);
+    profile.profile = profile.profile.copyWith(rating: 1530);
+    await tour.usePlacement();
+    expect(tour.state.choice, TourLevelChoice.test);
+    await tour.setLevel(RatingLevel.advanced);
+    expect(tour.state.choice, TourLevelChoice.band);
+  });
+
+  test('o teste usado marca o cartão e não avança o passo', () async {
     final tour = cubit();
     await tour.load('en');
     await toLevel(tour);
-    await tour.setLevel(RatingLevel.expert);
-    await tour.next();
-    final reopened = cubit();
-    await reopened.load('en');
-    expect(reopened.state.step, TourStep.goals);
-    expect(reopened.state.levelChosen, isTrue);
-    expect(reopened.state.byHand, isTrue);
-    expect(reopened.state.rating, RatingLevel.expert.rating);
-    await reopened.finish();
-    expect(profile.profile.rating, RatingLevel.expert.rating);
+    profile.profile = profile.profile.copyWith(rating: 1530);
+    await tour.usePlacement();
+    expect(tour.state.step, TourStep.level);
+    expect(tour.state.level, RatingLevel.intermediate);
+    expect(tour.state.placed, 1530);
+    expect(tour.state.startRung, '1600');
+    await tour.finish();
+    expect(profile.profile.rating, 1530);
+    expect(onboarding.saved.startRung, '1600');
   });
 
-  test('rating exato usado no teste sobrevive à retomada', () async {
+  test('começando leva às aulas; as outras faixas, à tela inicial', () async {
+    final tour = cubit();
+    await tour.load('en');
+    await tour.setLevel(RatingLevel.beginner);
+    expect(tour.state.toSchool, isTrue);
+    expect(tour.state.startRung, '1000');
+    await tour.setLevel(RatingLevel.intermediate);
+    expect(tour.state.toSchool, isFalse);
+    await tour.setLevel(RatingLevel.beginner);
+    await tour.finish();
+    expect(tour.state.finished, isTrue);
+    expect(tour.state.toSchool, isTrue);
+    expect(onboarding.saved.startRung, '1000');
+    expect((await profile.load()).level, RatingLevel.beginner);
+    expect(home.layout, HomeSuggestion.of(RatingLevel.beginner));
+    expect(home.seen, isTrue);
+  });
+
+  test('a fala é a do passo; sem voz no idioma, a do nome', () async {
+    final tour = cubit();
+    await tour.load('en');
+    expect(tour.state.viktor!.name, 'Viktor');
+    expect(tour.state.speech, 'Welcome, my student.');
+    await tour.next();
+    expect(tour.state.speech, 'Pick my voice.');
+    onboarding.saved = const Onboarding();
+    final mute = cubit(voices: false);
+    await mute.load('en');
+    expect(mute.state.hasVoices, isFalse);
+    await mute.next();
+    expect(mute.state.speech, 'Tell me your name.');
+    await mute.next();
+    expect(mute.state.speech, isNull);
+  });
+
+  test(
+    'cada passo é gravado e volta ao reabrir, com a faixa marcada',
+    () async {
+      final tour = cubit();
+      await tour.load('en');
+      await tour.next();
+      await tour.next();
+      final reopened = cubit();
+      await reopened.load('en');
+      expect(reopened.state.step, TourStep.school);
+
+      await toLevel(reopened);
+      await reopened.setLevel(RatingLevel.expert);
+      final again = cubit();
+      await again.load('en');
+      expect(again.state.step, TourStep.level);
+      expect(again.state.levelChosen, isTrue);
+      expect(again.state.choice, TourLevelChoice.band);
+      expect(again.state.rating, RatingLevel.expert.rating);
+      await again.finish();
+      expect(profile.profile.rating, RatingLevel.expert.rating);
+    },
+  );
+
+  test('o teste usado sobrevive à retomada', () async {
     final tour = cubit();
     await tour.load('en');
     await toLevel(tour);
@@ -97,18 +226,17 @@ void main() {
     await tour.usePlacement();
     final reopened = cubit();
     await reopened.load('en');
-    expect(reopened.state.step, TourStep.goals);
+    expect(reopened.state.step, TourStep.level);
     expect(reopened.state.placed, 1530);
-    expect(reopened.state.levelChosen, isTrue);
-    await reopened.finish();
-    expect(profile.profile.rating, 1530);
+    expect(reopened.state.choice, TourLevelChoice.test);
   });
 
-  test('replay exige nova escolha e retoma sem apagar done legado', () async {
+  test('replay exige nova escolha e não apaga o done legado', () async {
     onboarding.saved = const Onboarding(done: true, selectedRating: 1530);
     final tour = cubit();
     await tour.load('en');
     expect(tour.state.levelChosen, isFalse);
+    expect(tour.state.step, TourStep.board);
     expect(onboarding.saved.done, isTrue);
     await tour.skip();
     await tour.setLevel(RatingLevel.advanced);
@@ -116,38 +244,39 @@ void main() {
     await reopened.load('en');
     expect(reopened.state.step, TourStep.level);
     expect(reopened.state.rating, RatingLevel.advanced.rating);
-    expect(reopened.state.levelChosen, isTrue);
     expect(onboarding.saved.done, isTrue);
   });
 
-  test('passo legado posterior sem escolha volta ao nível', () async {
-    onboarding.saved = Onboarding(step: TourStep.goals.index);
+  test('rever o tour já visto começa do primeiro passo', () async {
+    onboarding.saved = const Onboarding(done: true, step: 4);
     final tour = cubit();
     await tour.load('en');
-    expect(tour.state.step, TourStep.level);
-    expect(tour.state.levelChosen, isFalse);
-  });
-
-  test('gravações lentas respeitam última seleção antes de concluir', () async {
-    final delayed = _DelayedOnboarding();
-    onboarding = delayed;
-    final tour = cubit();
-    await tour.load('en');
-    await toLevel(tour);
-    delayed.gate = Completer<void>();
-    final first = tour.setLevel(RatingLevel.intermediate);
-    final last = tour.setLevel(RatingLevel.expert);
-    final finish = tour.finish();
-    expect(tour.state.finished, isFalse);
-    delayed.gate!.complete();
-    await Future.wait([first, last, finish]);
-    expect(delayed.saved.selectedRating, RatingLevel.expert.rating);
-    expect(delayed.saved.done, isTrue);
-    expect(profile.profile.rating, RatingLevel.expert.rating);
+    expect(tour.state.step, TourStep.board);
   });
 
   test(
-    'resultado tardio do teste não sobrescreve escolha manual posterior',
+    'gravações lentas respeitam a última seleção antes de concluir',
+    () async {
+      final delayed = _DelayedOnboarding();
+      onboarding = delayed;
+      final tour = cubit();
+      await tour.load('en');
+      await toLevel(tour);
+      delayed.gate = Completer<void>();
+      final first = tour.setLevel(RatingLevel.intermediate);
+      final last = tour.setLevel(RatingLevel.expert);
+      final finish = tour.finish();
+      expect(tour.state.finished, isFalse);
+      delayed.gate!.complete();
+      await Future.wait([first, last, finish]);
+      expect(delayed.saved.selectedRating, RatingLevel.expert.rating);
+      expect(delayed.saved.done, isTrue);
+      expect(profile.profile.rating, RatingLevel.expert.rating);
+    },
+  );
+
+  test(
+    'resultado tardio do teste não sobrescreve a faixa escolhida depois',
     () async {
       final delayed = _DelayedProfile();
       profile = delayed;
@@ -160,40 +289,24 @@ void main() {
       delayed.gate!.complete(const UserProfile(rating: 1530));
       await placement;
       expect(tour.state.step, TourStep.level);
-      expect(tour.state.byHand, isTrue);
+      expect(tour.state.choice, TourLevelChoice.band);
       expect(tour.state.rating, RatingLevel.expert.rating);
       expect(onboarding.saved.selectedRating, RatingLevel.expert.rating);
     },
   );
 
-  test('cada passo é gravado e volta ao reabrir', () async {
-    final tour = cubit();
-    await tour.load('en');
-    await tour.next();
-    await tour.next();
-
-    final reopened = cubit();
-    await reopened.load('en');
-    expect(reopened.state.step, TourStep.board);
-  });
-
-  test('o nome do primeiro passo vai para o perfil na hora, já limpo, e '
-      'continua ao reabrir e ao terminar', () async {
+  test('o nome vai para o perfil na hora, já limpo, e continua ao reabrir '
+      'e ao terminar', () async {
     final tour = cubit();
     await tour.load('en');
     expect(tour.state.nickname, '');
-
     await tour.setNickname('  Ana   Clara ');
     expect(tour.state.nickname, 'Ana Clara');
     expect((await profile.load()).nickname, 'Ana Clara');
-
-    // Fechou o app no meio: o tour reabre com o nome.
     final reopened = cubit();
     await reopened.load('en');
     expect(reopened.state.nickname, 'Ana Clara');
-
-    // Terminar grava a faixa sem perder o nome; pular também não o apaga.
-    reopened.setLevel(RatingLevel.intermediate);
+    await reopened.setLevel(RatingLevel.intermediate);
     await reopened.finish();
     final saved = await profile.load();
     expect(saved.nickname, 'Ana Clara');
@@ -205,183 +318,7 @@ void main() {
     await tour.load('en');
     await tour.setNickname('Ana');
     await tour.setNickname('');
-    await tour.skip();
-
     expect((await profile.load()).nickname, '');
-  });
-
-  test('escolher 1400 no fim: perfil e degrau de início', () async {
-    final tour = cubit();
-    await tour.load('en');
-    await toLevel(tour);
-    tour.setLevel(RatingLevel.intermediate);
-    expect(tour.state.startRung, '1400');
-    await tour.next();
-    expect(tour.state.step, TourStep.goals);
-    expect(tour.state.step.isLast, isTrue);
-    await tour.finish();
-
-    expect(tour.state.finished, isTrue);
-    expect(onboarding.saved.done, isTrue);
-    expect(onboarding.saved.startRung, '1400');
-    expect((await profile.load()).level, RatingLevel.intermediate);
-  });
-
-  test('pular exige escolha e grava o degrau escolhido', () async {
-    final tour = cubit();
-    await tour.load('en');
-    await tour.skip();
-    expect(tour.state.step, TourStep.level);
-    expect(onboarding.saved.done, isFalse);
-    await tour.setLevel(RatingLevel.intermediate);
-    await tour.skip();
-    expect(onboarding.saved.done, isTrue);
-    expect(onboarding.saved.startRung, '1400');
-  });
-
-  test('rever o tour já visto começa do primeiro passo', () async {
-    onboarding.saved = const Onboarding(done: true, step: 5);
-    final tour = cubit();
-    await tour.load('en');
-    expect(tour.state.step, TourStep.goal);
-  });
-
-  test('iniciante começa no Maia 1000', () async {
-    final tour = cubit();
-    await tour.load('en');
-    tour.setLevel(RatingLevel.beginner);
-    expect(tour.state.startRung, '1000');
-  });
-
-  test('o Viktor conduz: fala de cada passo e sentido da troca', () async {
-    final tour = cubit();
-    await tour.load('en');
-    expect(tour.state.viktor!.name, 'Viktor');
-    expect(tour.state.speech, 'Welcome, my student.');
-    await tour.next();
-    expect(tour.state.forward, isTrue);
-    await tour.back();
-    expect(tour.state.forward, isFalse);
-  });
-
-  test('iniciante: o Viktor convida e o tour termina nas aulas', () async {
-    final tour = cubit();
-    await tour.load('en');
-    await toLevel(tour);
-    tour.setLevel(RatingLevel.intermediate);
-    expect(tour.state.toSchool, isFalse);
-    expect(tour.state.speech, 'Choose your level.');
-    tour.setLevel(RatingLevel.beginner);
-    expect(tour.state.toSchool, isTrue);
-    expect(tour.state.speech, 'Then we start from the beginning.');
-    await tour.next();
-    expect(tour.state.speech, 'What do you want to do here?');
-    await tour.finish();
-    expect(tour.state.finished, isTrue);
-    expect(onboarding.saved.startRung, '1000');
-    expect((await profile.load()).level, RatingLevel.beginner);
-  });
-
-  group('o que o jogador quer fazer', () {
-    test('os caminhos vêm na ordem e com as marcas da sugestão do nível; '
-        'trocar o nível troca a sugestão', () async {
-      final tour = cubit();
-      await tour.load('en');
-      tour.setLevel(RatingLevel.master);
-      expect(tour.state.paths.first, HomePath.speedrun);
-      expect(tour.state.goals, {
-        HomePath.speedrun,
-        HomePath.forYou,
-        HomePath.endgames,
-        HomePath.train,
-      });
-      tour.setLevel(RatingLevel.beginner);
-      expect(tour.state.goals, {HomePath.learn, HomePath.journey});
-    });
-
-    test('o último marcado não sai', () async {
-      final tour = cubit();
-      await tour.load('en');
-      tour.setLevel(RatingLevel.beginner);
-      tour.toggleGoal(HomePath.learn);
-      tour.toggleGoal(HomePath.journey);
-      expect(tour.state.goals, {HomePath.journey});
-    });
-
-    test('ao terminar, a tela inicial fica com os marcados, na ordem do '
-        'nível', () async {
-      final tour = cubit();
-      await tour.load('en');
-      await toLevel(tour);
-      tour.setLevel(RatingLevel.casual);
-      await tour.next();
-      tour.toggleGoal(HomePath.speedrun);
-      await tour.finish();
-
-      final layout = home.layout!;
-      expect(layout.shown, [
-        HomePath.journey,
-        HomePath.forYou,
-        HomePath.endgames,
-        HomePath.train,
-        HomePath.speedrun,
-      ]);
-      expect(layout.custom, isTrue);
-      // Quem acabou de fazer o tour não precisa do aviso.
-      expect(home.seen, isTrue);
-    });
-
-    test('iniciante que desmarca as aulas não vai para elas', () async {
-      final tour = cubit();
-      await tour.load('en');
-      tour.setLevel(RatingLevel.beginner);
-      tour.toggleGoal(HomePath.learn);
-      expect(tour.state.toSchool, isFalse);
-    });
-
-    test('pular grava a sugestão do nível, que segue o nível', () async {
-      final tour = cubit();
-      await tour.load('en');
-      await tour.setLevel(RatingLevel.casual);
-      await tour.skip();
-      expect(home.layout, HomeSuggestion.of(RatingLevel.casual));
-      expect(home.layout!.custom, isFalse);
-      expect(home.seen, isTrue);
-    });
-  });
-
-  group('teste de nível', () {
-    test(
-      'voltou do teste: a faixa e o rating do teste, e o tour segue',
-      () async {
-        final tour = cubit();
-        await tour.load('en');
-        await toLevel(tour);
-        // O teste já gravou o rating no perfil.
-        profile.profile = profile.profile.copyWith(rating: 1530);
-        await tour.usePlacement();
-        expect(tour.state.step, TourStep.goals);
-        expect(tour.state.level, RatingLevel.intermediate);
-        expect(tour.state.placed, 1530);
-        expect(tour.state.startRung, '1600');
-        await tour.finish();
-        expect(profile.profile.rating, 1530);
-        expect(onboarding.saved.startRung, '1600');
-      },
-    );
-
-    test('escolher a faixa na mão depois do teste vale a faixa', () async {
-      final tour = cubit();
-      await tour.load('en');
-      await toLevel(tour);
-      profile.profile = profile.profile.copyWith(rating: 1530);
-      await tour.usePlacement();
-      tour.setLevel(RatingLevel.advanced);
-      expect(tour.state.placed, isNull);
-      expect(tour.state.byHand, isTrue);
-      await tour.finish();
-      expect(profile.profile.rating, RatingLevel.advanced.rating);
-    });
   });
 }
 
