@@ -35,7 +35,6 @@ class ScriptBoard extends StatefulWidget {
     required this.size,
     required this.settings,
     required this.onMove,
-    this.onSquare,
     this.showMarks = true,
     super.key,
   });
@@ -56,10 +55,6 @@ class ScriptBoard extends StatefulWidget {
   final double size;
   final BoardSettings settings;
   final ValueChanged<String> onMove;
-
-  /// A casa tocada (em minúsculas) na prática de achar a casa
-  /// ([LessonScriptState.touching]); vale para casa vazia ou ocupada.
-  final ValueChanged<String>? onSquare;
 
   /// A preferência do botão ao lado do som: sem ela, nem setas nem círculos.
   final bool showMarks;
@@ -325,24 +320,16 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   Set<Shape> _shapeSet(ColorScheme colors) {
     final s = widget.state;
-    if (!_shapes) return const {};
+    if (!_shapes || !widget.showMarks) return const {};
     return {
-      if (widget.showMarks) ...{
-        for (final ScriptArrow arrow in s.arrows)
-          Arrow(
-            color: ScriptShapes.arrow(colors, arrow.color),
-            orig: Square.fromName(arrow.from),
-            dest: Square.fromName(arrow.to),
-          ),
-        for (final mark in s.marks)
-          Circle(color: ScriptShapes.green, orig: Square.fromName(mark)),
-      },
-      // O acerto e o erro do toque ficam na casa, como as marcas, mesmo com
-      // as marcações escondidas (são a resposta ao aluno).
-      for (final square in s.touched)
-        Circle(color: ScriptShapes.green, orig: Square.fromName(square)),
-      if (s.touchMiss case final miss?)
-        Circle(color: ScriptShapes.red, orig: Square.fromName(miss)),
+      for (final ScriptArrow arrow in s.arrows)
+        Arrow(
+          color: ScriptShapes.arrow(colors, arrow.color),
+          orig: Square.fromName(arrow.from),
+          dest: Square.fromName(arrow.to),
+        ),
+      for (final mark in s.marks)
+        Circle(color: ScriptShapes.green, orig: Square.fromName(mark)),
     };
   }
 
@@ -368,15 +355,10 @@ class _ScriptBoardState extends State<ScriptBoard> {
           key: LessonScriptKeys.board,
           size: widget.size,
           controller: _controller,
-          settings: widget.state.coordinates
-              ? widget.settings.chessground
-              : widget.settings.chessground.copyWith(enableCoordinates: false),
+          settings: widget.settings.chessground,
           orientation: _orientation,
           shapes: _shapeSet(colors),
           onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
-          onTouchedSquare: (square) {
-            if (widget.state.touching) widget.onSquare?.call(square.name);
-          },
         ),
       ),
     );
