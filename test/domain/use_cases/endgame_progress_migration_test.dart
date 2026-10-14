@@ -36,6 +36,52 @@ void main() {
     expect(second.stars, {'e14': 3, 'e16': 1});
   });
 
+  test('aprovada antes: a Parte 1 continua aprovada, a Parte 2 não', () {
+    const progress = EndgameProgress(
+      lessons: {
+        _first: EndgameLessonProgress(
+          lessonDone: true,
+          stars: {'e09': 1, 'e11': 2, 'e13': 2, 'e14': 2, 'e15': 1, 'e16': 1},
+        ),
+      },
+    );
+    final migrated = EndgameProgressMigration.apply(progress);
+    final first = migrated.of(_first);
+    final second = migrated.of(_second);
+    expect(first.approved, isTrue);
+    expect(first.lessonDone, isTrue);
+    expect(first.stars, {'e09': 1, 'e11': 2, 'e13': 2});
+    expect(second.approved, isFalse);
+    expect(second.stars, {'e14': 2, 'e15': 1, 'e16': 1});
+    expect(EndgameLessonProgress.fromJson(first.toJson()).approved, isTrue);
+  });
+
+  test('não aprovada antes: nenhuma das partes fica aprovada', () {
+    const progress = EndgameProgress(
+      lessons: {
+        _first: EndgameLessonProgress(
+          lessonDone: true,
+          stars: {'e09': 1, 'e11': 2, 'e13': 2, 'e14': 1},
+        ),
+      },
+    );
+    final migrated = EndgameProgressMigration.apply(progress);
+    expect(migrated.of(_first).approved, isFalse);
+    expect(migrated.of(_second).approved, isFalse);
+    const lowScore = EndgameProgress(
+      lessons: {
+        _first: EndgameLessonProgress(
+          lessonDone: true,
+          stars: {'e09': 0, 'e11': 1, 'e13': 1, 'e14': 1, 'e15': 1, 'e16': 1},
+        ),
+      },
+    );
+    expect(
+      EndgameProgressMigration.apply(lowScore).of(_first).approved,
+      isFalse,
+    );
+  });
+
   test('lição em andamento: cada capítulo vai para a parte dele', () {
     const progress = EndgameProgress(
       lessons: {

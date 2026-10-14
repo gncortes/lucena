@@ -215,6 +215,7 @@ class Reference {
 class EndgameLessonProgress {
   const EndgameLessonProgress({
     this.lessonDone = false,
+    this.approved = false,
     this.parts = const {},
     this.stars = const {},
     this.exercise,
@@ -223,6 +224,10 @@ class EndgameLessonProgress {
   /// A lição inteira (todas as partes) foi concluída. Num progresso gravado
   /// antes das partes (T51), é o que diz que todas estão feitas.
   final bool lessonDone;
+
+  /// A aula já estava aprovada antes de ganhar exercícios novos (T74): a
+  /// aprovação vale mesmo com eles ainda sem resolver.
+  final bool approved;
 
   /// As partes concluídas, pelo id.
   final Set<String> parts;
@@ -258,12 +263,14 @@ class EndgameLessonProgress {
 
   EndgameLessonProgress copyWith({
     bool? lessonDone,
+    bool? approved,
     Set<String>? parts,
     Map<String, int>? stars,
     ExerciseCheckpoint? exercise,
     bool clearExercise = false,
   }) => EndgameLessonProgress(
     lessonDone: lessonDone ?? this.lessonDone,
+    approved: approved ?? this.approved,
     parts: parts ?? this.parts,
     stars: stars ?? this.stars,
     exercise: clearExercise ? null : exercise ?? this.exercise,
@@ -271,6 +278,7 @@ class EndgameLessonProgress {
 
   Map<String, dynamic> toJson() => {
     'lessonDone': lessonDone,
+    if (approved) 'approved': true,
     'parts': parts.toList()..sort(),
     'stars': stars,
     'exercise': ?exercise?.toJson(),
@@ -280,6 +288,7 @@ class EndgameLessonProgress {
     if (json is! Map<String, dynamic>) return const EndgameLessonProgress();
     return EndgameLessonProgress(
       lessonDone: json['lessonDone'] as bool? ?? false,
+      approved: json['approved'] as bool? ?? false,
       parts: {
         for (final part in json['parts'] as List? ?? const [])
           if (part is String) part,

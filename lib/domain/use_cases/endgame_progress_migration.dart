@@ -43,6 +43,17 @@ class EndgameProgressMigration {
   /// Os exercícios da lição antiga que foram para a Parte 2.
   static const secondExercises = {'e14', 'e15', 'e16'};
 
+  /// Os exercícios da lição antiga e a nota mínima dela: com todos resolvidos
+  /// e a nota atingida, ela estava aprovada.
+  static const oldExercises = {'e09', 'e11', 'e13', 'e14', 'e15', 'e16'};
+  static const oldPassScore = 9;
+
+  static bool _wasApproved(EndgameLessonProgress old) =>
+      old.lessonDone &&
+      oldExercises.every(old.stars.containsKey) &&
+      oldExercises.fold<int>(0, (sum, id) => sum + (old.stars[id] ?? 0)) >=
+          oldPassScore;
+
   /// Aplica a migração; devolve o mesmo objeto se não há o que mudar.
   static EndgameProgress apply(EndgameProgress progress) {
     if (progress.lessons.containsKey(secondId)) return progress;
@@ -57,6 +68,7 @@ class EndgameProgressMigration {
         exercise != null && secondExercises.contains(exercise.exerciseId);
     final first = EndgameLessonProgress(
       lessonDone: old.lessonDone,
+      approved: _wasApproved(old),
       parts: done.intersection(firstParts),
       stars: {
         for (final e in old.stars.entries)

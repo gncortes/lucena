@@ -210,7 +210,7 @@
   "practice": "Now the real ending: king on e1, pawn on f3, and the black king on c8. Bring the king in front of the pawn, take the opposition when you need it and queen the pawn. Pick your pace and go.",
   "key.grigoriev": "A study by {{Nikolai Grigoriev|nikolai-grigoriev}}, from 1933. Black keeps the advance of the d5 pawn in reserve, a move to change the turn whenever convenient. White needs waiting moves that still work after the reserve is spent.",
   "part.refresher.title": "Before moving on",
-  "part.refresher.summary": "A reminder from Part 1 before the spare tempi.",
+  "part.refresher.summary": "Whoever takes the distant opposition pushes the enemy king back and reaches the pawn's key squares.",
   "step.refresher": "In Part 1 you learned that the king takes the opposition from afar, closes the distance and only then pushes the pawn; now we will see what happens when it is the turn to move, and not the position of the kings, that decides the ending.",
   "ex.e20": "Play as White and find the best move. Both kings are on the kingside, far from the queenside pawns, and the b6 pawn can still advance. Choose the king route that saves the game.",
   "ex.e20.hint": "Do not rush for the pawn: take the king up one file and keep it side by side with the black king, always with one square between them.",

@@ -56,11 +56,13 @@ abstract final class EndgameLessonRules {
       );
 
   /// A aula está aprovada: a lição feita, todos os exercícios resolvidos e
-  /// a nota no mínimo. É o que libera o passo final.
+  /// a nota no mínimo. É o que libera o passo final. Quem já tinha a aula
+  /// aprovada antes de ela ganhar exercícios novos continua aprovado.
   static bool passed(EndgameLesson lesson, EndgameLessonProgress progress) =>
       progress.lessonDone &&
-      allSolved(lesson, progress) &&
-      progress.scoreOf(lesson) >= lesson.passScore;
+      (progress.approved ||
+          (allSolved(lesson, progress) &&
+              progress.scoreOf(lesson) >= lesson.passScore));
 
   /// O progresso sem o que aponta para exercício que a aula não tem mais
   /// (estrela ou exercício aberto de um id cortado). O mesmo objeto se não

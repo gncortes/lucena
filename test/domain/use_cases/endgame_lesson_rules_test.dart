@@ -64,6 +64,18 @@ void main() {
     expect(EndgameLessonRules.passed(lucena, noLesson), isFalse);
   });
 
+  test('aprovada antes de ganhar exercícios novos continua aprovada', () {
+    const before = EndgameLessonProgress(
+      lessonDone: true,
+      approved: true,
+      stars: {'e01': 1},
+    );
+    expect(EndgameLessonRules.allSolved(lucena, before), isFalse);
+    expect(EndgameLessonRules.passed(lucena, before), isTrue);
+    const notDone = EndgameLessonProgress(approved: true);
+    expect(EndgameLessonRules.passed(lucena, notDone), isFalse);
+  });
+
   test('estrela de exercício que saiu da aula não conta na nota', () {
     const progress = EndgameLessonProgress(
       lessonDone: true,
