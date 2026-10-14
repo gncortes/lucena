@@ -137,8 +137,11 @@ class MoveTree {
   static Side _turn(String fen) =>
       fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
 
-  /// O tabuleiro e a vez de [fen] (o que conta para achar a posição).
-  static String _key(String fen) => fen.split(' ').take(2).join(' ');
+  /// O tabuleiro e a vez de [fen] (o que conta para achar a posição); na
+  /// tarefa ([board]), só o tabuleiro: a vez da FEN do roteiro pode passar
+  /// ou não.
+  static String _key(String fen, {bool board = false}) =>
+      fen.split(' ').take(board ? 1 : 2).join(' ');
 
   static MoveTree build(ScriptExample example) {
     final nodes = <MoveNode>[];
@@ -157,11 +160,13 @@ class MoveTree {
     /// já jogado do caminho ou a um lance dele, que entra na lista. Devolve
     /// o caminho novo e o lance que entrou, se entrou.
     (List<String>, String?) land(List<String> trail, String fen) {
-      final target = _key(fen);
+      final target = _key(fen, board: task);
       for (var n = trail.length; n >= 0; n--) {
         final prefix = trail.sublist(0, n);
         final at = fenOf[prefix.join('-')];
-        if (at != null && _key(at) == target) return (prefix, null);
+        if (at != null && _key(at, board: task) == target) {
+          return (prefix, null);
+        }
       }
       for (var n = trail.length; n >= 0; n--) {
         final prefix = trail.sublist(0, n);
@@ -173,7 +178,7 @@ class MoveTree {
           for (final to in tos) {
             final uci = NormalMove(from: from, to: to).uci;
             final played = ScriptMoves.play(at, uci, keepTurn: task);
-            if (played != null && _key(played.fen) == target) {
+            if (played != null && _key(played.fen, board: task) == target) {
               return (prefix, uci);
             }
           }
