@@ -6,10 +6,20 @@ abstract final class FreePlayReferee {
   /// O fim de [fens] (as posições do jogo, da primeira à atual). [limit] é o
   /// limite em lances completos (cada um com um lance de cada lado). Nulo
   /// enquanto o jogo continua.
-  static FreeEnd? check(List<String> fens, {required int limit}) {
+  ///
+  /// Com [mate] (objetivo `mate`, sem peão em jogo), o fim é o xeque-mate, e
+  /// não a falta de peão.
+  static FreeEnd? check(
+    List<String> fens, {
+    required int limit,
+    bool mate = false,
+  }) {
     final current = GameRules.fromFen(fens.last);
     if (current == null) return null;
-    if (current.board.pawns.isEmpty) {
+    if (mate) {
+      if (current.isCheckmate) return FreeEnd.mate;
+      if (current.isInsufficientMaterial) return FreeEnd.insuficiente;
+    } else if (current.board.pawns.isEmpty) {
       return current.board.occupied.size > 2
           ? FreeEnd.coroa
           : FreeEnd.capturado;

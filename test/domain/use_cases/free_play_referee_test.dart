@@ -50,6 +50,55 @@ void main() {
     const a = '4k3/8/8/8/8/3K2P1/8/8 w - - 0 1';
     expect(check([a, a, a]), FreeEnd.repeticao);
   });
+
+  group('objetivo mate', () {
+    const rooks = 'k7/7R/8/8/8/8/8/K5R1 w - - 0 1';
+    test('sem peão não é coroa: o jogo segue', () {
+      expect(FreePlayReferee.check([rooks], limit: 40, mate: true), isNull);
+    });
+
+    test('mate', () {
+      expect(
+        FreePlayReferee.check(
+          [rooks, 'k5R1/7R/8/8/8/8/8/K7 b - - 1 1'],
+          limit: 40,
+          mate: true,
+        ),
+        FreeEnd.mate,
+      );
+    });
+
+    test('afogado, insuficiente e limite', () {
+      expect(
+        FreePlayReferee.check(
+          ['k7/2Q5/1K6/8/8/8/8/8 b - - 1 1'],
+          limit: 40,
+          mate: true,
+        ),
+        FreeEnd.afogado,
+      );
+      expect(
+        FreePlayReferee.check(
+          ['8/1k6/8/8/8/8/K7/8 w - - 0 2'],
+          limit: 40,
+          mate: true,
+        ),
+        FreeEnd.insuficiente,
+      );
+      expect(
+        FreePlayReferee.check(
+          [
+            rooks,
+            'k7/7R/8/8/8/8/8/1K4R1 b - - 1 1',
+            '1k6/7R/8/8/8/8/8/1K4R1 w - - 2 2',
+          ],
+          limit: 1,
+          mate: true,
+        ),
+        FreeEnd.limite,
+      );
+    });
+  });
 }
 
 /// 81 posições diferentes de rei e peão (peão em h2), nenhuma três vezes.

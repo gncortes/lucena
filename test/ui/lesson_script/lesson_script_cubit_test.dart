@@ -4,7 +4,9 @@ import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/routing/launch_location.dart';
@@ -15,6 +17,7 @@ import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
 import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/script_fixture.dart';
 
 const _lessonId = 'pawns.test';
@@ -96,6 +99,7 @@ class _Rig {
     int stage = 0,
     ScriptDelay? delay,
     List<Reference> refs = const [],
+    OpponentRepository? opponent,
   }) async {
     final source = FakeLessonSource(refs: refs);
     final kpk = oracle ?? FakeKpkOracle();
@@ -120,6 +124,7 @@ class _Rig {
         timers.add(timer);
         return timer;
       },
+      opponent: opponent,
     );
     addTearDown(cubit.close);
     await cubit.start();
@@ -204,6 +209,33 @@ Map<String, dynamic> _practiceJson({String fen = _promoteFen}) => {
 };
 
 const _promoteFen = '4k3/6P1/8/8/8/8/8/4K3 w - - 0 1';
+
+/// Uma prática `jogo` com o objetivo `mate` em [fen] (as brancas são do
+/// aluno; o motor defende as pretas).
+Map<String, dynamic> _mateJson(String fen) => {
+  'licao': _lessonId,
+  'parte': _partId,
+  'etapas': [
+    {
+      'id': 'pratica',
+      'exemplos': [
+        {
+          'id': 'pm',
+          'fen': fen,
+          'vira': false,
+          'objetivo': 'mate',
+          'pratica': {'tipo': 'jogo', 't': 'pm.t', 'maquina': 'b'},
+          'entrada': <dynamic>[],
+          'linha': <dynamic>[],
+          'fim': 'proximo',
+        },
+      ],
+    },
+  ],
+};
+
+/// Duas torres: `g1g8` é mate.
+const _rooksFen = 'k7/7R/8/8/8/8/8/K5R1 w - - 0 1';
 
 void main() {
   group('entrada', () {
@@ -1314,6 +1346,75 @@ void main() {
         ]);
         final demo = await _Rig.open(stage: 1);
         expect(demo.s.curiosities, isNull);
+      },
+    );
+  });
+
+  group('objetivo mate (contra o motor)', () {
+    test('o mate cumpre o objetivo e fecha a prática', () async {
+      final engine = FakeOpponentRepository();
+      final r = await _Rig.open(json: _mateJson(_rooksFen), opponent: engine);
+      expect(r.s.phase, ScriptPhase.praticaVez);
+      expect(r.s.speech, ['pm.t']);
+      expect(r.s.movable, Side.white);
+      await r.cubit.onMove('g1g8');
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.speech, ['sucesso.mate']);
+      expect(r.s.tone, ScriptTone.good);
+      expect(r.s.primary, ScriptAction.proximaParte);
+      expect(r.s.moves.last.result, '1–0');
+      expect(engine.requests, isEmpty);
+    });
+
+    test('sem julgamento: o lance passa e o Stockfish responde', () async {
+      final engine = FakeOpponentRepository();
+      final r = await _Rig.open(json: _mateJson(_rooksFen), opponent: engine);
+      await r.cubit.onMove('a1b1');
+      expect(engine.requests, ['k7/7R/8/8/8/8/8/1K4R1 b - - 1 1']);
+      expect(engine.kinds, [OpponentKind.stockfish]);
+      expect(engine.thinkTimes, [LessonScriptCubit.engineTime]);
+      expect(r.s.phase, ScriptPhase.praticaVez);
+      expect(r.s.lastMove, 'a8b8');
+      expect(r.s.speech, ['pm.t']);
+      expect(r.s.tone, ScriptTone.neutral);
+      expect(r.s.movable, Side.white);
+    });
+
+    test('afogamento é fracasso: volta ao início', () async {
+      final r = await _Rig.open(
+        json: _mateJson('k7/8/1K6/8/8/8/8/2Q5 w - - 0 1'),
+        opponent: FakeOpponentRepository(),
+      );
+      await r.cubit.onMove('c1c7');
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.speech, ['fim.afogado']);
+      expect(r.s.primary, ScriptAction.voltarInicio);
+      expect(r.s.moves.last.result, '½–½');
+    });
+
+    test('o motor captura a última peça: material insuficiente', () async {
+      final r = await _Rig.open(
+        json: _mateJson('k7/1R6/8/8/8/8/8/K7 w - - 0 1'),
+        opponent: FakeOpponentRepository(),
+      );
+      await r.cubit.onMove('a1a2');
+      expect(r.s.lastMove, 'a8b7');
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.speech, ['fim.insuficiente']);
+      expect(r.s.primary, ScriptAction.voltarInicio);
+    });
+
+    test(
+      'o motor falha: a máquina joga um lance legal e a prática segue',
+      () async {
+        final engine = FakeOpponentRepository()..failNext = true;
+        final r = await _Rig.open(json: _mateJson(_rooksFen), opponent: engine);
+        await r.cubit.onMove('a1b1');
+        expect(r.s.lastMove, 'a8b8');
+        expect(r.s.movable, Side.white);
+        final none = await _Rig.open(json: _mateJson(_rooksFen));
+        await none.cubit.onMove('a1b1');
+        expect(none.s.lastMove, 'a8b8');
       },
     );
   });

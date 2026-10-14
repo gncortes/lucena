@@ -8,12 +8,17 @@ enum ScriptGoal {
   ganhar,
   empatar,
 
+  /// Dar mate contra o motor (prática `jogo`): só o mate conta; afogamento,
+  /// repetição, limite e material insuficiente são fracasso.
+  mate,
+
   /// Sem adversário (curso de iniciante): mover a peça, achar a casa. A vez
   /// não passa.
   tarefa;
 
   static ScriptGoal parse(Object? value) => switch (value) {
     'empatar' => ScriptGoal.empatar,
+    'mate' => ScriptGoal.mate,
     'tarefa' => ScriptGoal.tarefa,
     _ => ScriptGoal.ganhar,
   };
