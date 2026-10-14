@@ -738,7 +738,8 @@
                 "d5"
               ]
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/notation.coordinates.json"
         },
         {
           "id": "notation.moves",
