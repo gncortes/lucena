@@ -54,6 +54,7 @@ class ExerciseActions extends StatelessWidget {
     this.padding = const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 16),
     this.color,
     this.leading,
+    this.hug = false,
     super.key,
   }) : assert(actions.length <= 2);
 
@@ -64,6 +65,11 @@ class ExerciseActions extends StatelessWidget {
   final Widget? leading;
   final List<ExerciseAction> actions;
   final bool fill;
+
+  /// Os botões crescem até caber o rótulo numa linha só (se houver espaço),
+  /// com [actionWidth] de mínimo (lição roteirizada, canvas `T70-etapa1-estados`: "Ver linha
+  /// principal" não quebra).
+  final bool hug;
   final EdgeInsetsGeometry padding;
 
   /// O fundo do rodapé; sem ele, branco (pg. 3.1/4.7).
@@ -101,9 +107,23 @@ class ExerciseActions extends StatelessWidget {
     final buttons = <Widget>[
       for (var i = 0; i < actions.length; i++) ...[
         if (i > 0) const SizedBox(width: gap),
-        Expanded(child: _button(actions[i])),
+        if (hug)
+          // Numa linha enquanto couber; numa tela estreita, o contorno quebra
+          // em duas e o principal fica inteiro.
+          Flexible(
+            flex: actions[i].primary ? 0 : 1,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: actionWidth),
+              child: _button(actions[i]),
+            ),
+          )
+        else
+          Expanded(child: _button(actions[i])),
       ],
     ];
+    final row = hug
+        ? Row(mainAxisSize: MainAxisSize.min, children: buttons)
+        : null;
     final maxWidth =
         actions.length * actionWidth + (actions.length - 1).clamp(0, 1) * gap;
     final colors = Theme.of(context).colorScheme;
@@ -131,19 +151,23 @@ class ExerciseActions extends StatelessWidget {
                       start: hint == null ? 0 : gap,
                     ),
                     child: leading == null
-                        ? ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: maxWidth),
-                            child: Row(children: buttons),
-                          )
+                        ? row ??
+                              ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: maxWidth),
+                                child: Row(children: buttons),
+                              )
                         : Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               leading!,
                               const SizedBox(width: gap),
-                              ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: maxWidth),
-                                child: Row(children: buttons),
-                              ),
+                              row ??
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: maxWidth,
+                                    ),
+                                    child: Row(children: buttons),
+                                  ),
                             ],
                           ),
                   ),
