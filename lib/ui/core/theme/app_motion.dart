@@ -49,6 +49,10 @@ abstract final class AppMotion {
   /// o "emphasized" puro; esta é a aproximação do próprio Flutter.
   static const move = Curves.easeInOutCubicEmphasized;
 
+  /// Algo muda de tamanho aos poucos (balão que cresce ou encolhe): suave e
+  /// simétrica, sem o arranque do [move], para o que está em volta não pular.
+  static const resize = Curves.easeInOut;
+
   /// Progresso contínuo (anel de tempo, barra que anda sozinha).
   static const linear = Easing.linear;
 
