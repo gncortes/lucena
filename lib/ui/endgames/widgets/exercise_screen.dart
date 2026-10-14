@@ -330,34 +330,48 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           bottom: 0,
           child: ValueListenableBuilder(
             valueListenable: _sheetExpanded,
-            builder: (context, expanded, _) => IgnorePointer(
-              ignoring: expanded,
-              child: ExcludeSemantics(
-                excluding: expanded,
-                child: AnimatedSlide(
-                  duration: AppMotion.of(context).component,
-                  offset: expanded ? const Offset(0, 1) : Offset.zero,
-                  child: AnimatedOpacity(
+            builder: (context, sheetExpanded, _) {
+              // Resolvido: o rodapé fica fixo também com a folha aberta
+              // inteira (o texto rola acima dele, sobre o mesmo fundo).
+              final solved = state.phase == ExercisePhase.done;
+              final expanded = sheetExpanded && !solved;
+              return IgnorePointer(
+                ignoring: expanded,
+                child: ExcludeSemantics(
+                  excluding: expanded,
+                  child: AnimatedSlide(
                     duration: AppMotion.of(context).component,
-                    opacity: expanded ? 0 : 1,
-                    child: SizeReporter(
-                      onSize: (size) {
-                        if (mounted) _footerHeight.value = size.height;
-                      },
-                      child: AnimatedSwitcher(
-                        duration: AppMotion.of(context).component,
-                        child: KeyedSubtree(
-                          key: ValueKey(state.phase == ExercisePhase.done),
-                          child: state.phase == ExercisePhase.done
-                              ? _actions(context, state)
-                              : _solvingFooter(context, state),
+                    offset: expanded ? const Offset(0, 1) : Offset.zero,
+                    child: AnimatedOpacity(
+                      duration: AppMotion.of(context).component,
+                      opacity: expanded ? 0 : 1,
+                      child: SizeReporter(
+                        onSize: (size) {
+                          if (mounted) _footerHeight.value = size.height;
+                        },
+                        child: ColoredBox(
+                          key: ExerciseKeys.footerSurface,
+                          color: solved && sheetExpanded
+                              ? Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerLow
+                              : Colors.transparent,
+                          child: AnimatedSwitcher(
+                            duration: AppMotion.of(context).component,
+                            child: KeyedSubtree(
+                              key: ValueKey(solved),
+                              child: solved
+                                  ? _actions(context, state)
+                                  : _solvingFooter(context, state),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ],
@@ -899,9 +913,15 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       return Row(
         children: [
           if (lichess != null) Flexible(child: lichess),
-          const Spacer(),
-          // Com fonte grande o texto de 16/24 quebra em vez de estourar.
-          Flexible(child: primary),
+          // Canvas CompRodapeExercicio: o botão sozinho (140 dp) fica na
+          // ponta, com a margem de 16 do rodapé. Com fonte grande o texto
+          // de 16/24 quebra em vez de estourar.
+          Expanded(
+            child: Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: primary,
+            ),
+          ),
         ],
       );
     }

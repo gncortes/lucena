@@ -8,6 +8,7 @@ import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/ui/core/widgets/sound_off_icon.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
@@ -410,7 +411,6 @@ void main() {
   Widget v2Speech(
     String text, {
     ValueChanged<SpeechLink>? onLink,
-    bool prompt = false,
     ThemeMode themeMode = ThemeMode.light,
   }) => TestApp(
     themeMode: themeMode,
@@ -420,7 +420,6 @@ void main() {
         text: null,
         speechContext: SpeechContext.teaching,
         lessonV2: true,
-        lessonPromptBubble: prompt,
         onLink: onLink ?? (_) {},
         explanation: ExplanationPayload(
           positionId: 'v2',
@@ -707,9 +706,9 @@ void main() {
   });
 
   testWidgets('editorial opening has no bold first paragraph', (tester) async {
-    for (final prompt in [false, true]) {
+    for (final _ in [false]) {
       await tester.pumpWidget(
-        v2Speech('Before 1.Kh2 after.\n\nSecond paragraph.', prompt: prompt),
+        v2Speech('Before 1.Kh2 after.\n\nSecond paragraph.'),
       );
       await tester.pumpAndSettle();
       final rich = richWith(tester, 'Before');
@@ -1464,4 +1463,57 @@ void main() {
       await tester.pumpAndSettle();
     });
   });
+
+  Widget plainSpeech(SpeechContext context) => TeacherSpeech(
+    teacher: FakeCharacterRepository.viktor,
+    text: 'Plain text.',
+    speechContext: context,
+  );
+
+  for (final context in SpeechContext.values) {
+    testWidgets('outside a sheet the speech is the single white SpeechBalloon '
+        '($context)', (tester) async {
+      await tester.pumpWidget(
+        TestApp(child: Scaffold(body: plainSpeech(context))),
+      );
+      await tester.pumpAndSettle();
+      final balloon = find.byType(SpeechBalloon);
+      expect(balloon, findsOneWidget);
+      final material = tester.widget<Material>(
+        find.descendant(of: balloon, matching: find.byType(Material)).first,
+      );
+      expect(
+        material.color,
+        Theme.of(tester.element(balloon)).colorScheme.surfaceContainerLowest,
+      );
+    });
+
+    testWidgets('inside a ViktorSheet the text sits on the surface, with no '
+        'balloon, card or border ($context)', (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Scaffold(
+            body: ViktorSheet(top: 300, children: [plainSpeech(context)]),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(SpeechBalloon), findsNothing);
+      expect(find.text('Plain text.'), findsOneWidget);
+      final decorated = find.ancestor(
+        of: find.text('Plain text.'),
+        matching: find.byWidgetPredicate(
+          (w) =>
+              (w is DecoratedBox &&
+                  (w.decoration as BoxDecoration).color != null &&
+                  w.decoration is BoxDecoration &&
+                  w.position == DecorationPosition.background &&
+                  w.key != ViktorSheetKeys.sheet &&
+                  (w.decoration as BoxDecoration).borderRadius == null) ||
+              w is Card,
+        ),
+      );
+      expect(decorated, findsNothing);
+    });
+  }
 }

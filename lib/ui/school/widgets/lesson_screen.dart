@@ -2530,13 +2530,6 @@ class _LessonScreenState extends State<LessonScreen>
     return TeacherSpeech(
       part: part,
       lessonV2: true,
-      // Pensar e passos de lance: a fala fica no balão cinza (PropV2LicaoPratica).
-      lessonPromptBubble:
-          step != null &&
-          prompting &&
-          (state.explanation == null ||
-              state.explanation?.state == ExplanationState.intro) &&
-          _authoredVariation == null,
       onSoundSettings: () => showLessonSoundDialog(context),
       teacher: viktor,
       explanation: prompting && state.explanation == null

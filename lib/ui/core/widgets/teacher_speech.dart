@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show Bidi;
 
+import 'speech_balloon.dart';
 import 'speech_text_tap_notification.dart';
 import 'explanation_cards.dart';
 import '../../../domain/models/explanation.dart';
@@ -60,7 +61,6 @@ class TeacherSpeech extends StatelessWidget {
     this.lessonV2 = false,
     this.headerAvatar,
     this.avatarHeroTag,
-    this.lessonPromptBubble = false,
     this.onVariation,
     this.activeVariation,
     required this.teacher,
@@ -76,8 +76,6 @@ class TeacherSpeech extends StatelessWidget {
     this.onSpoken,
     this.headerAction,
     this.onSoundSettings,
-    this.onClose,
-    this.closeKey,
     super.key,
   });
 
@@ -93,8 +91,6 @@ class TeacherSpeech extends StatelessWidget {
   /// lição roteirizada, T70).
   final Object? avatarHeroTag;
 
-  /// Pensar keeps its speech bubble; explanation sections remain unboxed.
-  final bool lessonPromptBubble;
   final ValueChanged<VariationCursor?>? onVariation;
   final VariationCursor? activeVariation;
 
@@ -115,10 +111,6 @@ class TeacherSpeech extends StatelessWidget {
 
   /// Lesson V2 opens its dedicated sound panel without changing preferences.
   final VoidCallback? onSoundSettings;
-
-  /// Um ✕ no canto do balão, que fecha a fala (ex.: a história da revisão).
-  final VoidCallback? onClose;
-  final Key? closeKey;
 
   /// A fala. Nula: só o retrato e o nome. Pode trazer nomes marcados
   /// (`{{Andersson|ulf-andersson}}`, ver [WikiMarkup]): na tela, sublinhados
@@ -152,7 +144,8 @@ class TeacherSpeech extends StatelessWidget {
   /// Ensino (balão embaixo do retrato) ou partida (balão ao lado).
   final SpeechContext speechContext;
 
-  bool get _stacked => speechContext == SpeechContext.teaching;
+  bool _stackedIn(BuildContext context) =>
+      speechContext == SpeechContext.teaching || ViktorSheet.insideOf(context);
 
   /// A fala aparece aos poucos, como quem fala. Um toque mostra tudo.
   final bool typed;
@@ -160,8 +153,6 @@ class TeacherSpeech extends StatelessWidget {
   /// Com a voz ligada, a fala nova sai em voz alta sozinha. O botão de
   /// áudio aparece sempre que há voz no idioma.
   final bool speaks;
-
-  static const _tail = Size(18, 9);
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +187,7 @@ class TeacherSpeech extends StatelessWidget {
       child: content,
     );
     final settings = _settingsOf(context);
-    if (!_stacked || settings == null) return speakingContent;
+    if (!_stackedIn(context) || settings == null) return speakingContent;
     return BlocListener<SettingsCubit, AppSettings?>(
       bloc: settings,
       listenWhen: (before, after) =>
@@ -215,7 +206,7 @@ class TeacherSpeech extends StatelessWidget {
   }
 
   bool _soundEnabled(BuildContext context) {
-    if (!_stacked) return true;
+    if (!_stackedIn(context)) return true;
     try {
       return context.watch<SettingsCubit>().state?.sound ?? true;
     } on ProviderNotFoundException {
@@ -389,7 +380,7 @@ class TeacherSpeech extends StatelessWidget {
                     icon: const Icon(Icons.volume_up_outlined),
                     selectedIcon: const SoundOffIcon(),
                     onPressed: () async {
-                      if (_stacked &&
+                      if (_stackedIn(context) &&
                           !(_settingsOf(context)?.state?.sound ?? true)) {
                         return;
                       }
@@ -400,7 +391,7 @@ class TeacherSpeech extends StatelessWidget {
                       await speech.setEnabled(enabled: true);
                       if (!context.mounted ||
                           !speech.state.settings.enabled ||
-                          (_stacked &&
+                          (_stackedIn(context) &&
                               !(_settingsOf(context)?.state?.sound ?? true))) {
                         return;
                       }
@@ -449,12 +440,12 @@ class TeacherSpeech extends StatelessWidget {
         ],
       );
     }
-    if (_stacked) {
+    if (_stackedIn(context)) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _headerRow(context, avatar),
-          SizedBox(height: lessonV2 && !lessonPromptBubble ? 0 : 2),
+          SizedBox(height: lessonV2 ? 0 : 2),
           _closable(context),
         ],
       );
@@ -510,7 +501,9 @@ class TeacherSpeech extends StatelessWidget {
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       style:
-          (_stacked ? theme.textTheme.titleMedium : theme.textTheme.labelLarge)
+          (_stackedIn(context)
+                  ? theme.textTheme.titleMedium
+                  : theme.textTheme.labelLarge)
               ?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w500,
@@ -518,54 +511,8 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
-  /// O balão e, com [onClose], o ✕ no canto de cima, por cima do balão.
-  Widget _closable(BuildContext context) {
-    final onClose = this.onClose;
-    Widget speech = _speech(context);
-    if (lessonPromptBubble && _plain != null) {
-      speech = Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
-        child: speech,
-      );
-    }
-    if (onClose == null || _plain == null) return speech;
-    final colors = Theme.of(context).colorScheme;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        speech,
-        PositionedDirectional(
-          // No ensino, a ponta do balão fica em cima: o ✕ desce com ela.
-          top: (_stacked ? _tail.height : 0) - 20,
-          end: -14,
-          child: IconButton(
-            key: closeKey,
-            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: onClose,
-            icon: Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest,
-                shape: BoxShape.circle,
-                border: Border.all(color: colors.surface, width: 2),
-              ),
-              child: Icon(
-                Icons.close_rounded,
-                size: 16,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  /// O balão (ou, na folha, o texto direto). Sem ✕: a folha tem o dela.
+  Widget _closable(BuildContext context) => _speech(context);
 
   /// O balão, que troca de fala com uma transição suave.
   Widget _speech(BuildContext context) {
@@ -771,7 +718,6 @@ class TeacherSpeech extends StatelessWidget {
   }) {
     final text = marked.text;
     final theme = Theme.of(context);
-    final color = theme.colorScheme.surfaceContainerHighest;
     final language = Localizations.localeOf(context).languageCode;
     // Os nomes com página na Wikipedia; chave sem página: texto normal.
     final wiki = wikiOf(context);
@@ -794,7 +740,7 @@ class TeacherSpeech extends StatelessWidget {
               ))
                 link,
           ];
-    final section = lessonV2;
+    final section = lessonV2 || ViktorSheet.insideOf(context);
     final colors = theme.colorScheme;
     // Corpo da lição V2 (LICOES-V2 §2): 16/24, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
@@ -953,88 +899,63 @@ class TeacherSpeech extends StatelessWidget {
           ]
         : null;
     final activeLink = links.where(isActiveMove).firstOrNull;
-    final bubble = Container(
-      width: double.infinity,
-      padding: section
-          ? EdgeInsets.zero
-          : const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-      decoration: section
-          ? null
-          : BoxDecoration(
-              color: color,
-              borderRadius: _stacked
-                  ? BorderRadius.circular(AppShape.large)
-                  : const BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(AppShape.large),
-                      bottomStart: Radius.circular(AppShape.large),
-                      bottomEnd: Radius.circular(AppShape.large),
-                      topStart: Radius.circular(AppShape.small),
-                    ),
-            ),
-      child: Semantics(
-        liveRegion: true,
-        label: context.l10n.characterSays(teacher.name, text),
-        excludeSemantics: true,
-        // Com leitor de tela: uma ação por casa ou lance.
-        customSemanticsActions: {
-          for (final (mark, url) in pages)
-            CustomSemanticsAction(
-              label: context.l10n.wikiOpen(mark.text),
-            ): () =>
-                showExternalPage(context, url),
-          for (final link in links)
-            CustomSemanticsAction(
-              label: context.l10n.speechShowOnBoard(link.text),
-            ): () =>
-                fire(link),
-        },
-        child: _VoiceLinks(
-          text: text,
-          links: links,
-          onLink: onSpoken,
-          child: _withBackdrop(
-            words,
-            activeLink == null
-                ? null
-                : (
-                    offsets.toDrawn(activeLink.start),
-                    offsets.toDrawn(activeLink.end),
-                  ),
-            LessonTextColors.activeMoveBackground(colors),
-            typed
-                ? _typed(
-                    context,
-                    text,
-                    words,
-                    tappable,
-                    offsets.toDrawn,
-                    snap: snap,
-                  )
-                : tappable == null
-                ? words
-                : _LinkTapper(text: words, onTapAt: tappable, snap: snap),
-          ),
+    final content = Semantics(
+      liveRegion: true,
+      label: context.l10n.characterSays(teacher.name, text),
+      excludeSemantics: true,
+      // Com leitor de tela: uma ação por casa ou lance.
+      customSemanticsActions: {
+        for (final (mark, url) in pages)
+          CustomSemanticsAction(label: context.l10n.wikiOpen(mark.text)): () =>
+              showExternalPage(context, url),
+        for (final link in links)
+          CustomSemanticsAction(
+            label: context.l10n.speechShowOnBoard(link.text),
+          ): () =>
+              fire(link),
+      },
+      child: _VoiceLinks(
+        text: text,
+        links: links,
+        onLink: onSpoken,
+        child: _withBackdrop(
+          words,
+          activeLink == null
+              ? null
+              : (
+                  offsets.toDrawn(activeLink.start),
+                  offsets.toDrawn(activeLink.end),
+                ),
+          LessonTextColors.activeMoveBackground(colors),
+          typed
+              ? _typed(
+                  context,
+                  text,
+                  words,
+                  tappable,
+                  offsets.toDrawn,
+                  snap: snap,
+                )
+              : tappable == null
+              ? words
+              : _LinkTapper(text: words, onTapAt: tappable, snap: snap),
         ),
       ),
     );
-    if (section ||
-        !_stacked ||
-        _compact(context) ||
-        part == TeacherSpeechPart.bubble) {
-      return bubble;
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // A ponta do balão, embaixo do meio do retrato.
-        Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: (avatarSize - _tail.width) / 2,
-          ),
-          child: CustomPaint(size: _tail, painter: _TailPainter(color)),
-        ),
-        bubble,
-      ],
+    if (section) return SizedBox(width: double.infinity, child: content);
+    // O balão único do app (branco, ponta e animação de `SpeechBalloon`): a
+    // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
+    final stacked = _stackedIn(context);
+    return SpeechBalloon(
+      pop: false,
+      tail: _compact(context) || part == TeacherSpeechPart.bubble
+          ? BalloonTail.none
+          : stacked
+          ? BalloonTail.up
+          : BalloonTail.start,
+      tailX: SpeechBalloon.tailXFor(avatarSize),
+      tailY: avatarSize / 2,
+      child: content,
     );
   }
 }
@@ -1121,25 +1042,6 @@ class _RevealOnChangeState extends State<_RevealOnChange> {
 }
 
 /// A ponta do balão: um triângulo virado para cima.
-class _TailPainter extends CustomPainter {
-  const _TailPainter(this.color);
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) => canvas.drawPath(
-    Path()
-      ..moveTo(0, size.height)
-      ..lineTo(size.width / 2, 0)
-      ..lineTo(size.width, size.height)
-      ..close(),
-    Paint()..color = color,
-  );
-
-  @override
-  bool shouldRepaint(_TailPainter old) => old.color != color;
-}
-
 /// A fala aparecendo aos poucos. O texto já ocupa o lugar todo (o balão não
 /// pula nem muda de tamanho) e é revelado letra a letra por um recorte; um
 /// toque mostra tudo. Com as animações desligadas no aparelho, aparece de uma

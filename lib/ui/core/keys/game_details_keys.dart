@@ -39,7 +39,6 @@ abstract final class GameDetailsKeys {
   static const story = Key('gameDetails.review.story');
 
   /// O ✕ no balão da história, que a fecha.
-  static const storyClose = Key('gameDetails.review.story.close');
   static const reviewSummary = Key('gameDetails.review.summary');
   static const accuracyWhite = Key('gameDetails.review.accuracy.white');
   static const accuracyBlack = Key('gameDetails.review.accuracy.black');

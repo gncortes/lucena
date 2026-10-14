@@ -318,7 +318,6 @@ class _StoryTellerState extends State<_StoryTeller> {
   /// Já houve revisão rodando nesta tela (abrir uma partida já revisada
   /// não conta história).
   late bool _told = widget.running;
-  bool _closed = false;
 
   @override
   void initState() {
@@ -331,7 +330,6 @@ class _StoryTellerState extends State<_StoryTeller> {
     super.didUpdateWidget(old);
     if (widget.running && !old.running) {
       _told = true;
-      _closed = false;
       _start();
     } else if (!widget.running && old.running) {
       _timer?.cancel();
@@ -354,7 +352,7 @@ class _StoryTellerState extends State<_StoryTeller> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_told || _closed) return const SizedBox.shrink();
+    if (!_told) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TeacherSpeech(
@@ -364,13 +362,6 @@ class _StoryTellerState extends State<_StoryTeller> {
         avatarSize: 40,
         speechContext: SpeechContext.teaching,
         typed: true,
-        closeKey: GameDetailsKeys.storyClose,
-        onClose: () async {
-          _timer?.cancel();
-          setState(() => _closed = true);
-          final text = widget.stories[_index % widget.stories.length];
-          await TeacherSpeech.speechOf(context)?.stopIf(text);
-        },
       ),
     );
   }

@@ -17,10 +17,12 @@ Future<T?> showLucenaSheet<T>(
   Key? closeKey,
   Color? color,
   VoidCallback? onClose,
+  bool enableDrag = true,
 }) {
   return showModalBottomSheet<T>(
     context: context,
     isScrollControlled: true,
+    enableDrag: enableDrag,
     useSafeArea: true,
     backgroundColor: Colors.transparent,
     elevation: 0,

@@ -1,5 +1,6 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -292,6 +293,54 @@ void main() {
   testWidgets('exercício que não existe', (tester) async {
     await pump(tester, 'e99');
     expect(find.byKey(ExerciseKeys.missing), findsOneWidget);
+  });
+
+  testWidgets('resolvido com a correção do Viktor: botão com margem 16, texto '
+      'direto na folha (sem balão) e botão visível com a folha aberta', (
+    tester,
+  ) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(400, 900);
+    addTearDown(tester.view.reset);
+    await pump(tester, 'e03');
+    await move(tester, 'c1', 'c2');
+    await move(tester, 'c1', 'c4');
+    expect(find.byKey(ExerciseKeys.explainButton), findsNothing);
+
+    Rect next() => tester.getRect(find.byKey(ExerciseKeys.nextButton));
+    expect(next().right, closeTo(400 - 16, 1));
+    expect(next().height, greaterThanOrEqualTo(48));
+
+    // Fora de balão e de card: nenhum SpeechBalloon em volta do texto.
+    expect(
+      find.ancestor(
+        of: find.byKey(ExerciseKeys.speech),
+        matching: find.byType(SpeechBalloon),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(ExerciseKeys.scroll),
+        matching: find.byType(SpeechBalloon),
+      ),
+      findsNothing,
+    );
+
+    // Folha aberta inteira: o botão continua à vista e tocável.
+    await tester.tap(find.byKey(ExerciseKeys.scroll), warnIfMissed: false);
+    await tester.pumpAndSettle();
+    expect(find.byKey(ExerciseKeys.closeSheet), findsOneWidget);
+    expect(next().right, closeTo(400 - 16, 1));
+    expect(next().bottom, lessThanOrEqualTo(900));
+    expect(
+      tester
+          .hitTestOnBinding(next().center)
+          .path
+          .any((entry) => entry.target is RenderObject),
+      isTrue,
+    );
   });
 
   testWidgets('T60: resolvendo, sem o Viktor em cima (só quando fala), o '

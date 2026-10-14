@@ -40,6 +40,11 @@ class ViktorSheet extends StatefulWidget {
           ?.expanded ??
       true;
 
+  /// Se [context] está dentro de uma [ViktorSheet]. Dentro da folha a fala
+  /// vai direto na superfície: sem balão, card, borda nem ponta.
+  static bool insideOf(BuildContext context) =>
+      context.getInheritedWidgetOfExactType<_ViktorSheetPresentation>() != null;
+
   /// Baixa a folha até a borda do tabuleiro (a posição recolhida), sem mexer
   /// no que está nela. Sem [ViktorSheet] acima de [context], não faz nada.
   static void collapse(BuildContext context) => context

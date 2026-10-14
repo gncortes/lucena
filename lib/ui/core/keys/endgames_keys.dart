@@ -143,6 +143,7 @@ abstract final class ExerciseKeys {
   static const correct = Key('exercise.correct');
 
   /// O rodapé de resolvido com os botões empilhados (tela estreita).
+  static const footerSurface = Key('exercise.footerSurface');
   static const solvedStacked = Key('exercise.solvedStacked');
   static const resultButton = Key('exercise.result');
   static const backButton = Key('exercise.back');
