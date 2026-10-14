@@ -1,7 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/lesson_sound_keys.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -53,6 +56,54 @@ void main() {
     await voice.chooseNone();
     await tour.next();
     await tour.expectStep(TourStep.school);
+  });
+
+  patrolTest('Configurações > Voz: sem a seção das vozes dos adversários; '
+      'cada adversário recebe uma voz sozinho, diferente da do Viktor', (
+    $,
+  ) async {
+    final app = AppRobot($);
+    final voice = VoiceRobot($);
+    await app.open(systemLocale: _english);
+    await HomeRobot($).openSettings();
+    await voice.openSettings();
+
+    // Só a voz do professor: nada de lista de vozes por adversário.
+    await $(VoiceKeys.voice(_voice(0))).scrollTo();
+    expect(find.text("Opponents' voices"), findsNothing);
+    expect(find.text('Chosen by the app'), findsNothing);
+    expect(find.byKey(VoiceKeys.keep), findsNothing);
+
+    // A atribuição é automática: todos os adversários têm voz, e nenhum fala
+    // com a do Viktor (há mais de uma voz no idioma).
+    final speech = $.tester
+        .element(find.byKey(VoiceKeys.settingsSection))
+        .read<SpeechCubit>();
+    final state = speech.state;
+    final teacher = state.voiceOf(SpeechCubit.teacherId, 'en');
+    expect(teacher, isNotNull);
+    expect(state.characters, isNotEmpty);
+    for (final character in state.characters) {
+      final assigned = state.voiceOf(character.id, 'en');
+      expect(assigned, isNotNull, reason: character.id);
+      expect(
+        assigned!.voice.id,
+        isNot(teacher!.voice.id),
+        reason: character.id,
+      );
+    }
+
+    // Trocar a voz do Viktor muda a dele sem deixar um adversário com ela.
+    await voice.choose(_voice(1));
+    final changed = speech.state.voiceOf(SpeechCubit.teacherId, 'en')!;
+    expect(changed.voice.id, _voice(1));
+    for (final character in speech.state.characters) {
+      expect(
+        speech.state.voiceOf(character.id, 'en')!.voice.id,
+        isNot(changed.voice.id),
+        reason: character.id,
+      );
+    }
   });
 
   patrolTest('lição: o botão de som abre o som da lição; ligar a voz ali faz '

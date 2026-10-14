@@ -1,7 +1,11 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
@@ -24,6 +28,35 @@ class TourRobot {
     await $(TourKeys.step(step)).waitUntilExists();
     await $.pumpAndSettle();
   }
+
+  TourCubit get cubit =>
+      $.tester.element(find.byKey(TourKeys.screen)).read<TourCubit>();
+
+  /// A barra de progresso da barra do app: (passo + 1) de 6.
+  void expectProgress(TourStep step) {
+    final bar = $.tester.widget<LinearProgressIndicator>(
+      find.descendant(
+        of: find.byKey(TourKeys.progress),
+        matching: find.byType(LinearProgressIndicator),
+      ),
+    );
+    expect(
+      bar.value,
+      closeTo((step.index + 1) / TourStep.values.length, 0.001),
+    );
+  }
+
+  /// "Começar" (último passo) ou "Continuar" estão habilitados.
+  void expectPrimaryEnabled({required bool last}) {
+    final button = $.tester.widget<FilledButton>(
+      find.byKey(last ? TourKeys.startButton : TourKeys.nextButton),
+    );
+    expect(button.onPressed, isNotNull);
+  }
+
+  /// O que o tour gravou nas preferências do aparelho.
+  Future<Onboarding> savedOnboarding() =>
+      LocalOnboardingRepository(PreferencesService()).load();
 
   void expectNotOpen() => expect(find.byKey(TourKeys.screen), findsNothing);
 
@@ -121,6 +154,19 @@ class TourRobot {
         .tap();
     await $(ProfileKeys.levelConfirmButton).tap();
     await $.pumpAndSettle();
+  }
+
+  /// No passo do nível: abre a folha das faixas, sem escolher nenhuma.
+  Future<void> openBandSheet() async {
+    await _tap(TourKeys.levelOption(TourLevelChoice.band));
+    await $(ProfileKeys.levelSheet).waitUntilVisible();
+  }
+
+  /// Fecha a folha das faixas tocando fora dela, sem confirmar.
+  Future<void> dismissBandSheet() async {
+    await $.tester.tapAt(const Offset(20, 100));
+    await $.pumpAndSettle();
+    expect(find.byKey(ProfileKeys.levelSheet), findsNothing);
   }
 
   /// No passo do nível: abre o teste de nível.
