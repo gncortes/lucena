@@ -534,6 +534,8 @@ class _PacePicker extends StatelessWidget {
     final setup = state.setup;
     // Relógio ligado com um tempo que não é de nenhum ritmo nomeado.
     final custom = setup.clock && selected == null;
+    // Sem relógio, os ritmos ficam à vista, mas desabilitados.
+    final enabled = setup.clock;
     final customTime = setup.userTime == setup.opponentTime
         ? paceShort(l10n, setup.userTime)
         : '${paceShort(l10n, setup.userTime)} / '
@@ -562,7 +564,7 @@ class _PacePicker extends StatelessWidget {
                     l10n.paceChip(pace.id, pace.category.label(l10n)),
                   ),
                   selected: pace == selected,
-                  onSelected: (_) => cubit.setPace(pace),
+                  onSelected: enabled ? (_) => cubit.setPace(pace) : null,
                 ),
               ChoiceChip(
                 key: GameSetupKeys.customPace,
@@ -573,18 +575,20 @@ class _PacePicker extends StatelessWidget {
                       : l10n.setupPaceCustom,
                 ),
                 selected: custom,
-                onSelected: (_) async {
-                  final choice = await showCustomPaceSheet(
-                    context,
-                    user: setup.userTime,
-                    opponent: setup.opponentTime,
-                  );
-                  if (choice == null) return;
-                  await cubit.setTimes(
-                    user: choice.user,
-                    opponent: choice.opponent,
-                  );
-                },
+                onSelected: enabled
+                    ? (_) async {
+                        final choice = await showCustomPaceSheet(
+                          context,
+                          user: setup.userTime,
+                          opponent: setup.opponentTime,
+                        );
+                        if (choice == null) return;
+                        await cubit.setTimes(
+                          user: choice.user,
+                          opponent: choice.opponent,
+                        );
+                      }
+                    : null,
               ),
             ],
           ),
