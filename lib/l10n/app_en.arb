@@ -6479,7 +6479,7 @@
   "@exerciseFirstMoveZeroed": {
     "description": "Added to the balloon when the student errs on the first move."
   },
-  "exerciseRevealTip": "Click the covered moves to see the rest of the solution.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "@exerciseRevealTip": {
     "description": "Balloon tip shown the first time the full notation appears with the hide-moves button on."
   },

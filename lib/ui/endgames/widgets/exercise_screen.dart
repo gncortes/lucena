@@ -280,7 +280,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
     final spoken = SpeechText.plainOf(context, texts.join(' '));
     // O cabeçalho da faixa e o da folha: o mesmo, com borrar e som.
-    Widget header(BuildContext c, Character teacher, double avatar) {
+    Widget header(
+      BuildContext c,
+      Character teacher,
+      double avatar, {
+      bool sheet = false,
+    }) {
       final headerHide = c.select(
         (SettingsCubit cubit) => cubit.state?.exerciseHiddenMoves ?? false,
       );
@@ -326,7 +331,11 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   title: l10n.teacherName(viktor.name),
                   texts: texts,
                   background: Theme.of(context).colorScheme.surfaceContainerLow,
-                  headerBuilder: (sheet) => header(sheet, viktor, 40),
+                  headerBuilder: (sheet) =>
+                      header(sheet, viktor, 56, sheet: true),
+                  // Canvas `PropV2ExA7`: retrato de 56 e margem de 16.
+                  horizontalPadding: 16,
+                  headerHeight: 72,
                 ),
               ),
       );

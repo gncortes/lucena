@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Selesai, tetapi dengan satu kesalahan.",
   "exerciseNoMorePoints": "Tidak bernilai poin lagi",
   "exerciseFirstMoveZeroed": "Karena kesalahan di langkah pertama, latihan ini tidak bernilai poin lagi.",
-  "exerciseRevealTip": "Klik langkah yang tertutup untuk melihat sisa solusinya.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Raja → [{square}].}queen{Menteri → [{square}].}rook{Benteng → [{square}].}bishop{Gajah → [{square}].}knight{Kuda → [{square}].}pawn{Pion → [{square}].} other{Pion → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Raja × [{square}].}queen{Menteri × [{square}].}rook{Benteng × [{square}].}bishop{Gajah × [{square}].}knight{Kuda × [{square}].}pawn{Pion × [{square}].} other{Pion × [{square}].}}",
   "exerciseMovePromote": "Pion → [{square}] = {promo, select, queen{Menteri}rook{Benteng}bishop{Gajah}knight{Kuda} other{Menteri}}.",

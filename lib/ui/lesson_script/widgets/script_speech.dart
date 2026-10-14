@@ -26,10 +26,14 @@ class ScriptSpeechMetrics {
     final compact = MediaQuery.sizeOf(context).height < 700;
     return ScriptSpeechMetrics._(
       compact: compact,
-      fontSize: compact ? minFontSize : 16,
+      // Canvas `PropV2ExA4P360`: em 360 a letra segue 16; a tela baixa
+      // reduz só os espaçamentos.
+      fontSize: 16,
       verticalPadding: compact ? 10 : 14,
       horizontalPadding: compact ? 14 : 16,
-      top: compact ? 12 : 24,
+      // Canvas `PropV2ExA4`: 20 dp entre a barra de cima e o balão de 2 linhas
+      // (min-height 105,5 = 20 + 76 + ponta).
+      top: compact ? 12 : 20,
       maxLines: compact ? minLines : 4,
     );
   }
@@ -203,7 +207,7 @@ class ScriptSpeech extends StatelessWidget {
         builder: (context, box) {
           // Cortada em [clipLines] linhas, a fala mantém a letra e termina em
           // reticências; sem corte, a letra diminui até caber.
-          final style = clipLines != null
+          final style = clipLines != null || metrics.compact
               ? metrics.style(context)
               : metrics.fittedStyle(
                   context,

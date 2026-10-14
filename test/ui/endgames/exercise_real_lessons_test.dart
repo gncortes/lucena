@@ -2,6 +2,7 @@ import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
@@ -15,11 +16,13 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/exercise_review.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/exercise_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -42,6 +45,7 @@ void main() {
   late AssetExerciseFeedbackRepository feedback;
 
   setUpAll(() async {
+    await Goldens.loadFonts();
     final repo = AssetEndgameLessonRepository(
       _Assets(),
       school: AssetLessonRepository(_Assets()),
@@ -252,7 +256,7 @@ void main() {
       expect(covered.state.seen, {first.id});
       expect(
         speech(tester),
-        contains('Clique nos lances cobertos para ver o resto da solução.'),
+        contains('Clique nos lances cobertos para vê-los.'),
       );
       await expectNoNotation(tester);
     });
@@ -428,6 +432,101 @@ void main() {
       find.ancestor(of: sheet, matching: find.byType(Material)).first,
     );
     expect(material.color, Theme.of(context).colorScheme.surfaceContainerLow);
+  });
+
+  group('geometria do canvas (PropV2ExA4, A4P360, A7)', () {
+    testWidgets(
+      '360×640: a letra do balão continua 16 e o tabuleiro deixa 8 dp '
+      'até o rodapé',
+      (tester) async {
+        await pump(
+          tester,
+          kingPawn,
+          'e13',
+          size: const Size(360, 640),
+          extraTexts: {'$kingPawn.ex.e13': 'Jogue.'},
+        );
+        final text = tester.widget<Text>(
+          find
+              .descendant(
+                of: find.byKey(LessonScriptKeys.speech),
+                matching: find.byType(Text),
+              )
+              .first,
+        );
+        expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 16);
+        final board = tester.getRect(find.byKey(ExerciseKeys.board));
+        final footer = tester.getRect(find.byKey(ExerciseKeys.footer));
+        expect(footer.top - board.bottom, greaterThanOrEqualTo(8 - 1));
+        expect(board.width, lessThanOrEqualTo(360));
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('360×740: 20 dp entre a barra de cima e o balão de 2 linhas', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        kingPawn,
+        'e13',
+        size: const Size(360, 740),
+        extraTexts: {'$kingPawn.ex.e13': 'Jogue.'},
+      );
+      final bar = tester.getRect(find.byType(AppBar));
+      final balloon = tester.getRect(find.byKey(LessonScriptKeys.speech));
+      expect(balloon.top - bar.bottom, closeTo(20, 1));
+      expect(balloon.height, closeTo(76 + 10, 1)); // 76 + a ponta
+    });
+
+    testWidgets('a folha: retrato de 56 e margem de 16', (tester) async {
+      await pump(tester, kingPawn, 'e13');
+      await tester.tap(find.byKey(LessonScriptKeys.speech));
+      await tester.pumpAndSettle();
+      final avatar = tester.getRect(
+        find
+            .descendant(
+              of: find.byKey(LessonScriptKeys.speechSheet),
+              matching: find.byType(CharacterAvatar),
+            )
+            .first,
+      );
+      expect(avatar.width, closeTo(56, 1));
+      expect(avatar.left, closeTo(16, 1));
+    });
+
+    testWidgets('360×640: a nota do borrar tem no máximo 2 linhas', (
+      tester,
+    ) async {
+      final cubit = await pump(
+        tester,
+        kingPawn,
+        'e13',
+        size: const Size(360, 640),
+        hide: true,
+      );
+      await tester.runAsync(() => cubit.showSolution(hidden: true));
+      await tester.pumpAndSettle();
+      final tip = tester.getRect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is RichText &&
+              widget.text.toPlainText() ==
+                  'Clique nos lances cobertos para vê-los.',
+        ),
+      );
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is RichText &&
+              widget.text.toPlainText() ==
+                  'Clique nos lances cobertos para vê-los.',
+        ),
+      );
+      // Com a fonte real (Roboto), não a Ahem dos testes.
+      expect(paragraph.size.height, lessThanOrEqualTo(2 * 24 + 1));
+      expect(tip.height, lessThanOrEqualTo(2 * 24 + 1));
+    });
   });
 
   testWidgets('a estrela da AppBar é neutra, na cor do texto', (tester) async {

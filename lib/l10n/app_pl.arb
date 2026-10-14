@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Rozwiązane, ale z błędem.",
   "exerciseNoMorePoints": "Nie daje już punktów",
   "exerciseFirstMoveZeroed": "Po błędzie w pierwszym posunięciu to zadanie nie daje już punktów.",
-  "exerciseRevealTip": "Kliknij zakryte posunięcia, aby zobaczyć resztę rozwiązania.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Król → [{square}].}queen{Hetman → [{square}].}rook{Wieża → [{square}].}bishop{Goniec → [{square}].}knight{Skoczek → [{square}].}pawn{Pionek → [{square}].} other{Pionek → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Król × [{square}].}queen{Hetman × [{square}].}rook{Wieża × [{square}].}bishop{Goniec × [{square}].}knight{Skoczek × [{square}].}pawn{Pionek × [{square}].} other{Pionek × [{square}].}}",
   "exerciseMovePromote": "Pionek → [{square}] = {promo, select, queen{Hetman}rook{Wieża}bishop{Goniec}knight{Skoczek} other{Hetman}}.",

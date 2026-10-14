@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Resuelto, pero con un error.",
   "exerciseNoMorePoints": "Ya no vale puntos",
   "exerciseFirstMoveZeroed": "Con el error en la primera jugada, este ejercicio ya no vale puntos.",
-  "exerciseRevealTip": "Haz clic en las jugadas cubiertas para ver el resto de la solución.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Rey → [{square}].}queen{Dama → [{square}].}rook{Torre → [{square}].}bishop{Alfil → [{square}].}knight{Caballo → [{square}].}pawn{Peón → [{square}].} other{Peón → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Rey × [{square}].}queen{Dama × [{square}].}rook{Torre × [{square}].}bishop{Alfil × [{square}].}knight{Caballo × [{square}].}pawn{Peón × [{square}].} other{Peón × [{square}].}}",
   "exerciseMovePromote": "Peón → [{square}] = {promo, select, queen{Dama}rook{Torre}bishop{Alfil}knight{Caballo} other{Dama}}.",

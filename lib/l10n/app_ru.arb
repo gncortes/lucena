@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Решено, но с ошибкой.",
   "exerciseNoMorePoints": "Больше не приносит очков",
   "exerciseFirstMoveZeroed": "Из-за ошибки на первом ходу это упражнение больше не приносит очков.",
-  "exerciseRevealTip": "Нажмите на закрытые ходы, чтобы увидеть остальную часть решения.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Король → [{square}].}queen{Ферзь → [{square}].}rook{Ладья → [{square}].}bishop{Слон → [{square}].}knight{Конь → [{square}].}pawn{Пешка → [{square}].} other{Пешка → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Король × [{square}].}queen{Ферзь × [{square}].}rook{Ладья × [{square}].}bishop{Слон × [{square}].}knight{Конь × [{square}].}pawn{Пешка × [{square}].} other{Пешка × [{square}].}}",
   "exerciseMovePromote": "Пешка → [{square}] = {promo, select, queen{Ферзь}rook{Ладья}bishop{Слон}knight{Конь} other{Ферзь}}.",

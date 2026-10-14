@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Đã giải, nhưng có một lỗi.",
   "exerciseNoMorePoints": "Không còn được tính điểm",
   "exerciseFirstMoveZeroed": "Vì sai ở nước đầu tiên, bài tập này không còn được tính điểm.",
-  "exerciseRevealTip": "Nhấp vào các nước đi đang bị che để xem phần còn lại của lời giải.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Vua → [{square}].}queen{Hậu → [{square}].}rook{Xe → [{square}].}bishop{Tượng → [{square}].}knight{Mã → [{square}].}pawn{Tốt → [{square}].} other{Tốt → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Vua × [{square}].}queen{Hậu × [{square}].}rook{Xe × [{square}].}bishop{Tượng × [{square}].}knight{Mã × [{square}].}pawn{Tốt × [{square}].} other{Tốt × [{square}].}}",
   "exerciseMovePromote": "Tốt → [{square}] = {promo, select, queen{Hậu}rook{Xe}bishop{Tượng}knight{Mã} other{Hậu}}.",

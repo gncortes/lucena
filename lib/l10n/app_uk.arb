@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Розв'язано, але з помилкою.",
   "exerciseNoMorePoints": "Більше не дає балів",
   "exerciseFirstMoveZeroed": "Через помилку на першому ході ця вправа більше не дає балів.",
-  "exerciseRevealTip": "Натисніть на закриті ходи, щоб побачити решту розв'язання.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Король → [{square}].}queen{Ферзь → [{square}].}rook{Тура → [{square}].}bishop{Слон → [{square}].}knight{Кінь → [{square}].}pawn{Пішак → [{square}].} other{Пішак → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Король × [{square}].}queen{Ферзь × [{square}].}rook{Тура × [{square}].}bishop{Слон × [{square}].}knight{Кінь × [{square}].}pawn{Пішак × [{square}].} other{Пішак × [{square}].}}",
   "exerciseMovePromote": "Пішак → [{square}] = {promo, select, queen{Ферзь}rook{Тура}bishop{Слон}knight{Кінь} other{Ферзь}}.",

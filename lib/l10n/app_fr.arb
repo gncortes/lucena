@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Résolu, mais avec une erreur.",
   "exerciseNoMorePoints": "Ne rapporte plus de points",
   "exerciseFirstMoveZeroed": "Avec l'erreur au premier coup, cet exercice ne rapporte plus de points.",
-  "exerciseRevealTip": "Cliquez sur les coups masqués pour voir la suite de la solution.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Roi → [{square}].}queen{Dame → [{square}].}rook{Tour → [{square}].}bishop{Fou → [{square}].}knight{Cavalier → [{square}].}pawn{Pion → [{square}].} other{Pion → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Roi × [{square}].}queen{Dame × [{square}].}rook{Tour × [{square}].}bishop{Fou × [{square}].}knight{Cavalier × [{square}].}pawn{Pion × [{square}].} other{Pion × [{square}].}}",
   "exerciseMovePromote": "Pion → [{square}] = {promo, select, queen{Dame}rook{Tour}bishop{Fou}knight{Cavalier} other{Dame}}.",

@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Gelöst, aber mit einem Fehler.",
   "exerciseNoMorePoints": "Bringt keine Punkte mehr",
   "exerciseFirstMoveZeroed": "Wegen des Fehlers im ersten Zug bringt diese Aufgabe keine Punkte mehr.",
-  "exerciseRevealTip": "Klicke auf die verdeckten Züge, um den Rest der Lösung zu sehen.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{König → [{square}].}queen{Dame → [{square}].}rook{Turm → [{square}].}bishop{Läufer → [{square}].}knight{Springer → [{square}].}pawn{Bauer → [{square}].} other{Bauer → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{König × [{square}].}queen{Dame × [{square}].}rook{Turm × [{square}].}bishop{Läufer × [{square}].}knight{Springer × [{square}].}pawn{Bauer × [{square}].} other{Bauer × [{square}].}}",
   "exerciseMovePromote": "Bauer → [{square}] = {promo, select, queen{Dame}rook{Turm}bishop{Läufer}knight{Springer} other{Dame}}.",

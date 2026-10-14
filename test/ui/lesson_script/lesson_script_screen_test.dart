@@ -167,7 +167,8 @@ void main() {
           'na tela baixa, corta em 2 linhas', (tester) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
         final short = _rect(tester, LessonScriptKeys.speech);
-        final lines = size.height < 700 ? 2 * 12 * 1.5 : 2 * 16 * 1.5;
+        // A letra é 16 também na tela baixa (canvas `PropV2ExA4P360`).
+        const lines = 2 * 16 * 1.5;
         final pad = size.height < 700 ? 20.0 : 28.0;
         expect(
           short.height,
@@ -192,14 +193,32 @@ void main() {
           expect(grown.top, lessThan(short.top));
           expect(text.maxLines, isNull);
         } else {
-          // Tela baixa: 2 linhas com reticências, letra 12; o tabuleiro não
+          // Tela baixa: 2 linhas com reticências, letra 16; o tabuleiro não
           // se mexe (a fala inteira abre no clique).
           expect(grown.height, closeTo(short.height, 0.5));
           expect(board.top, closeTo(boardTop, 0.5));
           expect(text.maxLines, 2);
           expect(text.overflow, TextOverflow.ellipsis);
-          expect(text.style?.fontSize, 12);
+          expect(text.style?.fontSize, 16);
         }
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('o tabuleiro deixa 8 dp até o rodapé e a letra do balão é 16 '
+          '(canvas PropV2ExA4P360)', (tester) async {
+        await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
+        final board = _rect(tester, LessonScriptKeys.board);
+        final page = _rect(tester, LessonScriptKeys.page);
+        expect(page.bottom - board.bottom, greaterThanOrEqualTo(8 - 0.5));
+        final text = tester.widget<Text>(
+          find
+              .descendant(
+                of: find.byKey(LessonScriptKeys.speech),
+                matching: find.byType(Text),
+              )
+              .first,
+        );
+        expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 16);
         expect(tester.takeException(), isNull);
       });
 

@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "풀었지만 실수가 있었습니다.",
   "exerciseNoMorePoints": "더 이상 점수가 없습니다",
   "exerciseFirstMoveZeroed": "첫 수에서 실수해서 이 문제는 더 이상 점수가 없습니다.",
-  "exerciseRevealTip": "가려진 수를 클릭하면 나머지 풀이를 볼 수 있습니다.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{킹 → [{square}].}queen{퀸 → [{square}].}rook{룩 → [{square}].}bishop{비숍 → [{square}].}knight{나이트 → [{square}].}pawn{폰 → [{square}].} other{폰 → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{킹 × [{square}].}queen{퀸 × [{square}].}rook{룩 × [{square}].}bishop{비숍 × [{square}].}knight{나이트 × [{square}].}pawn{폰 × [{square}].} other{폰 × [{square}].}}",
   "exerciseMovePromote": "폰 → [{square}] = {promo, select, queen{퀸}rook{룩}bishop{비숍}knight{나이트} other{퀸}}.",

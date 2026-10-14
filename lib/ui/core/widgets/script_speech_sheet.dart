@@ -22,6 +22,8 @@ Future<void> showScriptSpeechSheet(
   VoidCallback? onShowAnswer,
   WidgetBuilder? headerBuilder,
   Color? background,
+  double horizontalPadding = 24,
+  double headerHeight = 56,
 }) {
   return showScriptSheet(
     context,
@@ -42,6 +44,8 @@ Future<void> showScriptSpeechSheet(
         onMainLine: closeThen(onMainLine),
         onShowAnswer: closeThen(onShowAnswer),
         headerBuilder: headerBuilder,
+        horizontalPadding: horizontalPadding,
+        headerHeight: headerHeight,
       );
     },
   );
@@ -56,6 +60,8 @@ class ScriptSpeechSheet extends StatelessWidget {
     this.onMainLine,
     this.onShowAnswer,
     this.headerBuilder,
+    this.horizontalPadding = 24,
+    this.headerHeight = 56,
     super.key,
   });
 
@@ -68,6 +74,10 @@ class ScriptSpeechSheet extends StatelessWidget {
   /// O cabeçalho no lugar do retrato e do nome (o exercício leva o mesmo da
   /// faixa, com borrar e som).
   final WidgetBuilder? headerBuilder;
+
+  /// A margem dos lados do cabeçalho e do texto (canvas `PropV2ExA7`: 16).
+  final double horizontalPadding;
+  final double headerHeight;
 
   /// A folga embaixo do texto, acima da barra do sistema.
   static const bottomGap = 48.0;
@@ -83,9 +93,14 @@ class ScriptSpeechSheet extends StatelessWidget {
       children: [
         // Cabeçalho de 56 dp: retrato 40 (raio 6) e o nome, como na faixa.
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            8,
+            horizontalPadding,
+            0,
+          ),
           child: SizedBox(
-            height: 56,
+            height: headerHeight,
             child: headerBuilder != null
                 ? headerBuilder!(context)
                 : Row(
@@ -116,9 +131,9 @@ class ScriptSpeechSheet extends StatelessWidget {
         Flexible(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
-              24,
+              horizontalPadding,
               8,
-              24,
+              horizontalPadding,
               bottomGap + MediaQuery.viewPaddingOf(context).bottom,
             ),
             child: SpeechText(

@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "حل شد، اما با یک اشتباه.",
   "exerciseNoMorePoints": "دیگر امتیاز ندارد",
   "exerciseFirstMoveZeroed": "با اشتباه در حرکت اول، این تمرین دیگر امتیاز ندارد.",
-  "exerciseRevealTip": "روی حرکت‌های پوشیده کلیک کنید تا بقیهٔ راه‌حل را ببینید.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{شاه → [{square}].}queen{وزیر → [{square}].}rook{رخ → [{square}].}bishop{فیل → [{square}].}knight{اسب → [{square}].}pawn{پیاده → [{square}].} other{پیاده → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{شاه × [{square}].}queen{وزیر × [{square}].}rook{رخ × [{square}].}bishop{فیل × [{square}].}knight{اسب × [{square}].}pawn{پیاده × [{square}].} other{پیاده × [{square}].}}",
   "exerciseMovePromote": "پیاده → [{square}] = {promo, select, queen{وزیر}rook{رخ}bishop{فیل}knight{اسب} other{وزیر}}.",

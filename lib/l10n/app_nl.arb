@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Opgelost, maar met een fout.",
   "exerciseNoMorePoints": "Levert geen punten meer op",
   "exerciseFirstMoveZeroed": "Door de fout in de eerste zet levert deze oefening geen punten meer op.",
-  "exerciseRevealTip": "Klik op de afgedekte zetten om de rest van de oplossing te zien.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Koning → [{square}].}queen{Dame → [{square}].}rook{Toren → [{square}].}bishop{Loper → [{square}].}knight{Paard → [{square}].}pawn{Pion → [{square}].} other{Pion → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Koning × [{square}].}queen{Dame × [{square}].}rook{Toren × [{square}].}bishop{Loper × [{square}].}knight{Paard × [{square}].}pawn{Pion × [{square}].} other{Pion × [{square}].}}",
   "exerciseMovePromote": "Pion → [{square}] = {promo, select, queen{Dame}rook{Toren}bishop{Loper}knight{Paard} other{Dame}}.",

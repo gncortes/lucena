@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "解けましたが、ミスがありました。",
   "exerciseNoMorePoints": "もうポイントになりません",
   "exerciseFirstMoveZeroed": "最初の一手でミスをしたため、この問題はもうポイントになりません。",
-  "exerciseRevealTip": "隠れた手をクリックすると、解答の続きが見られます。",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{キング → [{square}].}queen{クイーン → [{square}].}rook{ルーク → [{square}].}bishop{ビショップ → [{square}].}knight{ナイト → [{square}].}pawn{ポーン → [{square}].} other{ポーン → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{キング × [{square}].}queen{クイーン × [{square}].}rook{ルーク × [{square}].}bishop{ビショップ × [{square}].}knight{ナイト × [{square}].}pawn{ポーン × [{square}].} other{ポーン × [{square}].}}",
   "exerciseMovePromote": "ポーン → [{square}] = {promo, select, queen{クイーン}rook{ルーク}bishop{ビショップ}knight{ナイト} other{クイーン}}.",

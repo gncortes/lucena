@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "हल हुआ, लेकिन एक गलती के साथ।",
   "exerciseNoMorePoints": "अब अंक नहीं मिलेंगे",
   "exerciseFirstMoveZeroed": "पहली चाल में गलती के कारण इस अभ्यास पर अब अंक नहीं मिलेंगे।",
-  "exerciseRevealTip": "समाधान का बाकी हिस्सा देखने के लिए ढकी हुई चालों पर क्लिक कीजिए।",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{राजा → [{square}].}queen{वज़ीर → [{square}].}rook{हाथी → [{square}].}bishop{ऊँट → [{square}].}knight{घोड़ा → [{square}].}pawn{प्यादा → [{square}].} other{प्यादा → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{राजा × [{square}].}queen{वज़ीर × [{square}].}rook{हाथी × [{square}].}bishop{ऊँट × [{square}].}knight{घोड़ा × [{square}].}pawn{प्यादा × [{square}].} other{प्यादा × [{square}].}}",
   "exerciseMovePromote": "प्यादा → [{square}] = {promo, select, queen{वज़ीर}rook{हाथी}bishop{ऊँट}knight{घोड़ा} other{वज़ीर}}.",

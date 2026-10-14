@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "已解出，但有一处失误。",
   "exerciseNoMorePoints": "不再计分",
   "exerciseFirstMoveZeroed": "由于第一步走错，这道练习不再计分。",
-  "exerciseRevealTip": "点击被遮住的走法，查看解答的其余部分。",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{王 → [{square}].}queen{后 → [{square}].}rook{车 → [{square}].}bishop{象 → [{square}].}knight{马 → [{square}].}pawn{兵 → [{square}].} other{兵 → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{王 × [{square}].}queen{后 × [{square}].}rook{车 × [{square}].}bishop{象 × [{square}].}knight{马 × [{square}].}pawn{兵 × [{square}].} other{兵 × [{square}].}}",
   "exerciseMovePromote": "兵 → [{square}] = {promo, select, queen{后}rook{车}bishop{象}knight{马} other{后}}.",

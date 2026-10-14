@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Çözüldü, ama bir hatayla.",
   "exerciseNoMorePoints": "Artık puan getirmiyor",
   "exerciseFirstMoveZeroed": "İlk hamledeki hata yüzünden bu alıştırma artık puan getirmiyor.",
-  "exerciseRevealTip": "Çözümün geri kalanını görmek için kapalı hamlelere tıklayın.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{Şah → [{square}].}queen{Vezir → [{square}].}rook{Kale → [{square}].}bishop{Fil → [{square}].}knight{At → [{square}].}pawn{Piyon → [{square}].} other{Piyon → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{Şah × [{square}].}queen{Vezir × [{square}].}rook{Kale × [{square}].}bishop{Fil × [{square}].}knight{At × [{square}].}pawn{Piyon × [{square}].} other{Piyon × [{square}].}}",
   "exerciseMovePromote": "Piyon → [{square}] = {promo, select, queen{Vezir}rook{Kale}bishop{Fil}knight{At} other{Vezir}}.",

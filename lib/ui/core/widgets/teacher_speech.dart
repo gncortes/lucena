@@ -434,7 +434,12 @@ class TeacherSpeech extends StatelessWidget {
       ],
     );
     if (!lessonV2) return row;
-    return SizedBox(key: ViktorSheetKeys.header, height: 48, child: row);
+    final avatarSize = headerAvatar ?? 0;
+    return SizedBox(
+      key: ViktorSheetKeys.header,
+      height: avatarSize > 48 ? avatarSize : 48,
+      child: row,
+    );
   }
 
   Widget _name(BuildContext context) {

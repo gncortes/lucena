@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "Resolvido, mas com um erro.",
   "exerciseNoMorePoints": "Já não vale pontos",
   "exerciseFirstMoveZeroed": "Com o erro no primeiro lance, este exercício já não vale pontos.",
-  "exerciseRevealTip": "Clique nos lances cobertos para ver o resto da solução.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{O rei vai para [{square}].}queen{A dama vai para [{square}].}rook{A torre vai para [{square}].}bishop{O bispo vai para [{square}].}knight{O cavalo vai para [{square}].}pawn{O peão avança para [{square}].} other{O peão avança para [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{O rei captura em [{square}].}queen{A dama captura em [{square}].}rook{A torre captura em [{square}].}bishop{O bispo captura em [{square}].}knight{O cavalo captura em [{square}].}pawn{O peão captura em [{square}].} other{O peão captura em [{square}].}}",
   "exerciseMovePromote": "O peão vai a [{square}] e é promovido a {promo, select, queen{dama}rook{torre}bishop{bispo}knight{cavalo} other{dama}}.",

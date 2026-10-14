@@ -1208,7 +1208,7 @@
   "exerciseSolvedAnd": "[{first} åñd {second} one two]",
   "exerciseNoMorePoints": "[Ñö löñĝéŕ wöŕth pöîñtš one two three]",
   "exerciseFirstMoveZeroed": "[Wîth å mîštåké öñ thé fîŕšt mövé, thîš éxéŕçîšé îš ñö löñĝéŕ wöŕth pöîñtš. one two three four five six seven]",
-  "exerciseRevealTip": "[Çlîçk thé çövéŕéd mövéš tö šéé thé ŕéšt öf thé šölûtîöñ. one two three four five]",
+  "exerciseRevealTip": "[Çlîçk thé çövéŕéd mövéš tö šéé thém. one two three four]",
   "exerciseMoveGo": "{piece, select, king{[Thé kîñĝ ĝöéš tö [{square}]. one two three]} queen{[Thé qûééñ ĝöéš tö [{square}]. one two three]} rook{[Thé ŕöök ĝöéš tö [{square}]. one two three]} bishop{[Thé bîšhöp ĝöéš tö [{square}]. one two three]} knight{[Thé kñîĝht ĝöéš tö [{square}]. one two three]} pawn{[Thé påwñ ådvåñçéš tö [{square}]. one two three]} other{[Thé påwñ ådvåñçéš tö [{square}]. one two three]}}",
   "exerciseMoveCapture": "{piece, select, king{[Thé kîñĝ çåptûŕéš öñ [{square}]. one two three]} queen{[Thé qûééñ çåptûŕéš öñ [{square}]. one two three]} rook{[Thé ŕöök çåptûŕéš öñ [{square}]. one two three]} bishop{[Thé bîšhöp çåptûŕéš öñ [{square}]. one two three]} knight{[Thé kñîĝht çåptûŕéš öñ [{square}]. one two three]} pawn{[Thé påwñ çåptûŕéš öñ [{square}]. one two three]} other{[Thé påwñ çåptûŕéš öñ [{square}]. one two three]}}",
   "exerciseMovePromote": "[Thé påwñ ĝöéš tö [{square}] åñd îš pŕömötéd tö {promo, select, queen{qûééñ} rook{ŕöök} bishop{bîšhöp} knight{kñîĝht} other{qûééñ}}. one two three four five six seven eight nine ten one]",

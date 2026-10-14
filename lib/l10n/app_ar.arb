@@ -1241,7 +1241,7 @@
   "exerciseSolvedWithMistake": "تم الحل، لكن مع خطأ.",
   "exerciseNoMorePoints": "لم يعد يستحق نقاطًا",
   "exerciseFirstMoveZeroed": "مع الخطأ في النقلة الأولى، لم يعد هذا التمرين يستحق نقاطًا.",
-  "exerciseRevealTip": "انقر على النقلات المغطاة لترى بقية الحل.",
+  "exerciseRevealTip": "Click the covered moves to see them.",
   "exerciseMoveGo": "{piece, select, king{الملك → [{square}].}queen{الوزير → [{square}].}rook{الرخ → [{square}].}bishop{الفيل → [{square}].}knight{الحصان → [{square}].}pawn{البيدق → [{square}].} other{البيدق → [{square}].}}",
   "exerciseMoveCapture": "{piece, select, king{الملك × [{square}].}queen{الوزير × [{square}].}rook{الرخ × [{square}].}bishop{الفيل × [{square}].}knight{الحصان × [{square}].}pawn{البيدق × [{square}].} other{البيدق × [{square}].}}",
   "exerciseMovePromote": "البيدق → [{square}] = {promo, select, queen{الوزير}rook{الرخ}bishop{الفيل}knight{الحصان} other{الوزير}}.",
