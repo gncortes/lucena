@@ -29,24 +29,28 @@ class AnimatedSpeechSwitcher extends StatelessWidget {
     final keyed = KeyedSubtree(key: ValueKey(speech), child: child);
     // Sem animação, troca seca (o AnimatedSize de duração zero não aguenta).
     if (AppMotion.reduced(context)) return keyed;
-    return AnimatedSize(
-      duration: resize,
-      curve: AppMotion.resize,
-      alignment: AlignmentDirectional.topStart,
-      child: AnimatedSwitcher(
-        duration: fade,
-        // A altura é a da fala nova; a antiga sai por cima e só o
-        // AnimatedSize a corta, aos poucos, enquanto o balão encolhe.
-        layoutBuilder: (current, previous) => Stack(
-          alignment: AlignmentDirectional.topStart,
-          clipBehavior: Clip.none,
-          children: [
-            for (final old in previous)
-              PositionedDirectional(top: 0, start: 0, end: 0, child: old),
-            ?current,
-          ],
+    // O corte vai na borda que anima (o AnimatedSize só corta o filho maior
+    // que ele, e o filho já tem a altura da fala nova).
+    return ClipRect(
+      child: AnimatedSize(
+        duration: resize,
+        curve: AppMotion.resize,
+        alignment: AlignmentDirectional.topStart,
+        child: AnimatedSwitcher(
+          duration: fade,
+          // A altura é a da fala nova; a antiga sai por cima e é cortada
+          // aos poucos, na borda do balão que encolhe.
+          layoutBuilder: (current, previous) => Stack(
+            alignment: AlignmentDirectional.topStart,
+            clipBehavior: Clip.none,
+            children: [
+              for (final old in previous)
+                PositionedDirectional(top: 0, start: 0, end: 0, child: old),
+              ?current,
+            ],
+          ),
+          child: keyed,
         ),
-        child: keyed,
       ),
     );
   }

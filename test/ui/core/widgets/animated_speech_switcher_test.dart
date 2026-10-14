@@ -79,7 +79,9 @@ void main() {
     await tester.pump();
     await tester.pump(AnimatedSpeechSwitcher.resize ~/ 2);
     expect(top(tester), inExclusiveRange(40, 100));
-    // A fala antiga não é cortada na altura da nova: só no balão que encolhe.
+    // A fala antiga é cortada na borda que anima, não na altura da nova.
+    final clip = tester.getRect(find.byType(ClipRect).last);
+    expect(clip.height, inExclusiveRange(40, 100));
     expect(
       find.byWidgetPredicate((w) => w is Stack && w.clipBehavior == Clip.none),
       findsOneWidget,
