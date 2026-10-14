@@ -41,9 +41,9 @@
   "rot.demos.rei.l4": "Agora é a sua vez: nas próximas posições, você dá o mate com a dama.",
   "rot.pratica.borda.enunciado": "Dê xeque-mate. O rei preto está na borda da esquerda: o xeque vem pela coluna a.",
   "rot.pratica.borda.fim": "Perfeito. O rei fecha a frente, e a dama dá o xeque pela borda.",
-  "rot.pratica.rei.enunciado": "Dê xeque-mate. Leve o rei branco bem à frente do rei preto; depois, xeque pela borda.",
+  "rot.pratica.rei.enunciado": "Leve o rei à frente do rei preto, na coluna g ou h. Depois, a dama dá xeque na fileira 8.",
   "rot.pratica.rei.fim": "Muito bem. Primeiro o rei, depois a dama: esse é o mate com dama.",
   "rot.pratica.rei.err.g5f6": "Em f6, o rei preto ainda tem duas casas. Fique bem à frente dele. Tente de novo.",
-  "rot.pratica.maquina.enunciado": "Agora contra a máquina: caixa com a dama, rei por perto e mate. Cuidado com o afogamento.",
+  "rot.pratica.maquina.enunciado": "Contra a máquina: a dama a um salto de cavalo empurra o rei; depois, o seu rei vem e dá o mate.",
   "rot.pratica.maquina.fim": "Você deu mate com dama contra a máquina."
 }

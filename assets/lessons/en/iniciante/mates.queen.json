@@ -41,9 +41,9 @@
   "rot.demos.rei.l4": "Now it's your turn: in the next positions, you give mate with the queen.",
   "rot.pratica.borda.enunciado": "Give checkmate. The black king is on the left edge: the check comes along the a-file.",
   "rot.pratica.borda.fim": "Perfect. The king covers the front, and the queen checks along the edge.",
-  "rot.pratica.rei.enunciado": "Give checkmate. Put the white king right in front of the black king; then check on the edge.",
+  "rot.pratica.rei.enunciado": "Bring the king in front of the black king, on the g- or h-file. Then the queen checks on the 8th rank.",
   "rot.pratica.rei.fim": "Well done. First the king, then the queen: that is the queen mate.",
   "rot.pratica.rei.err.g5f6": "On f6, the black king still has two squares. Stand right in front of it. Try again.",
-  "rot.pratica.maquina.enunciado": "Now against the machine: box with the queen, king close, then mate. Beware of stalemate.",
+  "rot.pratica.maquina.enunciado": "Against the machine: the queen a knight's jump away pushes the king; then your king comes and you mate.",
   "rot.pratica.maquina.fim": "You gave the queen mate against the machine."
 }
