@@ -41,7 +41,7 @@
   "rot.pratica.fileira.enunciado": "Corte o rei preto com a torre, na fileira logo abaixo dele.",
   "rot.pratica.fileira.fim": "Muito bem. A cerca logo abaixo do rei.",
   "rot.pratica.fileira.err.a1a6": "É xeque, mas o rei desce. Tente de novo.",
-  "rot.pratica.coluna.enunciado": "Feche a coluna logo à direita do rei. Quando ele recuar, traga a torre uma coluna mais perto.",
+  "rot.pratica.coluna.enunciado": "Feche a coluna logo à direita do rei. Quando ele se afastar, traga a torre uma coluna mais perto.",
   "rot.pratica.coluna.fim": "Perfeito. A cerca avançou, e o rei ficou com menos espaço.",
   "rot.pratica.coluna.err.h1c1": "É xeque, mas o rei só muda de coluna. Tente de novo."
 }
