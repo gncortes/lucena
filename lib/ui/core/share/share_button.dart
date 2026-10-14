@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/share/share_repository.dart';
+import '../theme/app_button.dart';
 import 'share_cubit.dart';
 
 /// A imagem do que está dentro do [RepaintBoundary] de [boundary], em PNG.
@@ -140,7 +141,9 @@ class ShareButton extends StatelessWidget {
     create: (context) => ShareCubit(context.read<ShareRepository>()),
     child: BlocBuilder<ShareCubit, bool>(
       builder: (context, sharing) => FilledButton.tonalIcon(
-        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeight),
+        ),
         icon: const Icon(Icons.share_rounded),
         label: Text(label),
         onPressed: sharing

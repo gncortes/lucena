@@ -22,6 +22,8 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/speech_flash.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_timer.dart';
@@ -739,7 +741,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                     shapes: {
                       if (_variation == null && hint is NormalMove)
                         Arrow(
-                          color: const Color(0xcc15781b),
+                          color: AppColors.successColor.withValues(
+                            alpha: AppColors.boardMarkAlpha,
+                          ),
                           orig: hint.from,
                           dest: hint.to,
                         ),
@@ -747,7 +751,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                           wrong is NormalMove &&
                           _wrongFlash.isAnimating)
                         Arrow(
-                          color: const Color(0xccc62828),
+                          color: AppColors.errorColor.withValues(
+                            alpha: AppColors.boardMarkAlpha,
+                          ),
                           orig: wrong.from,
                           dest: wrong.to,
                         ),
@@ -831,7 +837,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final lesson = state.lesson!;
     final next = state.nextExercise;
     final style = FilledButton.styleFrom(
-      minimumSize: const Size(140, 48),
+      minimumSize: const Size(140, kButtonHeightCompact),
       textStyle: AppButtonText.footer(context),
     );
     if (next != null) {
@@ -873,7 +879,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final explain = state.canExplain
         ? FilledButton.tonalIcon(
             key: ExerciseKeys.explainButton,
-            style: FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(0, kButtonHeightCompact),
+            ),
             onPressed: cubit.showExplanation,
             icon: const Icon(Icons.forum_outlined),
             // Empilhado com fonte grande, quebra em duas linhas; lado a lado

@@ -8,6 +8,7 @@ import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
 
@@ -24,11 +25,8 @@ Future<void> showAchievementDetail(
   AchievementProgress? progress,
   String? speedrunId,
 }) async {
-  final route = await showModalBottomSheet<String>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  final route = await showLucenaSheet<String>(
+    context,
     builder: (context) => SafeArea(
       top: false,
       child: AchievementDetail(

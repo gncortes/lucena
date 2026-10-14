@@ -1165,17 +1165,21 @@ void main() {
               final close = tester.getRect(
                 find.byKey(FreeBoardKeys.confirmationClose),
               );
-              expect(close.size, const Size(44, 44));
-              expect(sheet.top - close.bottom, closeTo(12, 1));
+              // O ✕ padrão das folhas (T73, D7): 48, 20 acima da folha, a 12 da borda.
+              expect(close.size, const Size(48, 48));
+              expect(sheet.top - close.bottom, closeTo(20, 1));
               if (locale.languageCode == 'ar') {
-                expect(close.left, closeTo(16, 1));
+                expect(close.left, closeTo(12, 1));
               } else {
-                expect(close.right, closeTo(size.width - 16, 1));
+                expect(close.right, closeTo(size.width - 12, 1));
               }
               expect(
                 tester
                     .widget<IconButton>(
-                      find.byKey(FreeBoardKeys.confirmationClose),
+                      find.descendant(
+                        of: find.byKey(FreeBoardKeys.confirmationClose),
+                        matching: find.byType(IconButton),
+                      ),
                     )
                     .tooltip,
                 isNotEmpty,
@@ -1218,12 +1222,12 @@ void main() {
               expect(cubit.state.drawOffer, DrawOffer.none);
               expect(cubit.state.position.fen, fen);
               expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
-              // O X também, mesmo tocado na borda da área de 48.
+              // O X também.
               await openSheet(tester, name, opener);
               final x = tester.getRect(
                 find.byKey(FreeBoardKeys.confirmationClose),
               );
-              await tester.tapAt(Offset(x.center.dx, x.top - 1.5));
+              await tester.tapAt(x.center);
               await tester.pumpAndSettle();
               expect(find.byKey(sheetKey), findsNothing);
               expect(cubit.state.end, isNull);
@@ -1565,7 +1569,7 @@ void main() {
       await tester.pumpAndSettle();
       final close = tester.getRect(find.byKey(FreeBoardKeys.confirmationClose));
       final sheet = tester.getRect(find.byKey(FreeBoardKeys.resignSheet));
-      expect(close.size, const Size(44, 44));
+      expect(close.size, const Size(48, 48));
       expect(close.bottom, lessThan(sheet.top));
       await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
       await tester.pumpAndSettle();

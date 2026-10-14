@@ -13,14 +13,15 @@ import '../../../domain/use_cases/subcategory_material.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/info_chip.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../journey/widgets/trail_widgets.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../../routing/routes.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../history/widgets/history_labels.dart';
 import '../view_models/speedrun_cubit.dart';
@@ -425,53 +426,10 @@ class SpeedrunHeader extends StatelessWidget {
                       key: SpeedrunKeys.paceBadge,
                     ),
                     if (level != null)
-                      SpeedrunChip(
-                        icon: Icons.signal_cellular_alt,
-                        label: level,
-                      ),
+                      InfoChip(icon: Icons.signal_cellular_alt, label: level),
                   ],
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Um chip contornado: o do nível e o da data. O do ritmo é o SpeedrunPaceChip.
-class SpeedrunChip extends StatelessWidget {
-  const SpeedrunChip({required this.icon, required this.label, super.key});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final color = colors.onSurfaceVariant;
-    return Container(
-      // 28 no artboard; o texto maior (fonte 2,0) cresce a caixa.
-      constraints: const BoxConstraints(minHeight: 28),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(AppShape.small),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ExcludeSemantics(child: Icon(icon, size: 16, color: color)),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontSize: 13,
-                color: color,
-              ),
             ),
           ),
         ],
@@ -544,7 +502,7 @@ class SpeedrunActionBar extends StatelessWidget {
           child: FilledButton.icon(
             key: buttonKey,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             icon: Icon(icon),
             label: Text(label),

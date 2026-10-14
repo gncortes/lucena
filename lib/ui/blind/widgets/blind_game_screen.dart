@@ -25,7 +25,10 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/position_board.dart';
+import '../../core/widgets/sheet_close_button.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/blind_game_cubit.dart';
 import '../../core/theme/app_motion.dart';
@@ -523,7 +526,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                         _BottomSheetFrame(
                           child: FilledButton(
                             style: FilledButton.styleFrom(
-                              minimumSize: const Size.fromHeight(52),
+                              minimumSize: const Size.fromHeight(kButtonHeight),
                             ),
                             onPressed: () => Navigator.of(context).maybePop(),
                             child: Text(l10n.tourBack),
@@ -937,7 +940,7 @@ class _IntroPanel extends StatelessWidget {
           FilledButton(
             key: BlindKeys.start,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: cubit.start,
             child: Text(l10n.blindStart),
@@ -1373,26 +1376,15 @@ class _BlindModalFrame extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Padding(
-        padding: const EdgeInsets.only(right: 12, bottom: 12),
+        // Sempre à direita, também nos idiomas da direita para a esquerda
+        // (comportamento já testado do X externo do diálogo).
+        padding: const EdgeInsets.only(
+          right: SheetCloseButton.margin,
+          bottom: SheetCloseButton.gap,
+        ),
         child: Align(
           alignment: Alignment.centerRight,
-          child: Material(
-            color: Colors.white,
-            elevation: 2,
-            shape: const CircleBorder(),
-            child: IconButton(
-              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-              style: IconButton.styleFrom(
-                foregroundColor: Colors.black87,
-                fixedSize: const Size.square(44),
-                minimumSize: const Size.square(44),
-                maximumSize: const Size.square(44),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              icon: const Icon(Icons.close_rounded),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
+          child: SheetCloseButton(onPressed: () => Navigator.of(context).pop()),
         ),
       ),
       Flexible(child: child),
@@ -1418,12 +1410,8 @@ class _BlindDialogFrame extends StatelessWidget {
 void _showHelp(BuildContext context) {
   final l10n = context.l10n;
   final theme = Theme.of(context);
-  showModalBottomSheet<void>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    showDragHandle: false,
-    useSafeArea: true,
-    isScrollControlled: true,
+  showLucenaSheet<void>(
+    context,
     builder: (context) {
       Widget item(IconData icon, String text) => Padding(
         padding: const EdgeInsets.only(bottom: 14),
@@ -1436,40 +1424,29 @@ void _showHelp(BuildContext context) {
           ],
         ),
       );
-      return _BlindModalFrame(
-        child: Material(
-          color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppShape.large),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              key: BlindKeys.helpSheet,
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.blindHelpIntro,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  item(Icons.extension_outlined, l10n.blindHelpPieces),
-                  item(Icons.keyboard_outlined, l10n.blindHelpTyped),
-                  item(Icons.mic_none, l10n.blindHelpVoice),
-                  item(
-                    Icons.record_voice_over_outlined,
-                    l10n.blindHelpCommands,
-                  ),
-                  item(Icons.touch_app_outlined, l10n.blindHelpTouch),
-                ],
+      return SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          key: BlindKeys.helpSheet,
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                l10n.blindHelpIntro,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              item(Icons.extension_outlined, l10n.blindHelpPieces),
+              item(Icons.keyboard_outlined, l10n.blindHelpTyped),
+              item(Icons.mic_none, l10n.blindHelpVoice),
+              item(Icons.record_voice_over_outlined, l10n.blindHelpCommands),
+              item(Icons.touch_app_outlined, l10n.blindHelpTouch),
+            ],
           ),
         ),
       );

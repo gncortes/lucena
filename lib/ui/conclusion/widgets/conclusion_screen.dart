@@ -25,6 +25,7 @@ import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/share/share_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -345,6 +346,8 @@ class _Body extends StatelessWidget {
           teacher: opponent,
           text: comment,
           emotion: state.emotion,
+          // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
+          avatarSize: CharacterAvatar.speech,
         ),
       if (feedback.isNotEmpty)
         ReportPanel(
@@ -524,15 +527,18 @@ class _Header extends StatelessWidget {
                       child: _Player(
                         key: ConclusionKeys.opponent,
                         avatar: opponent == null
-                            ? const ColoredBox(
-                                color: Color(0xFF312E2B),
-                                child: Icon(
+                            ? ColoredBox(
+                                color: AppColors.chessBlackColor,
+                                child: const Icon(
                                   Icons.smart_toy_outlined,
-                                  color: Colors.white,
+                                  color: AppColors.chessWhiteColor,
                                   size: 32,
                                 ),
                               )
-                            : CharacterAvatar(character: opponent, size: 64),
+                            : CharacterAvatar(
+                                character: opponent,
+                                size: CharacterAvatar.versus,
+                              ),
                         name: opponentName,
                         winner: winner == userSide.opposite,
                       ),

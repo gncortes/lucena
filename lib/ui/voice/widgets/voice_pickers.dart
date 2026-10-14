@@ -6,6 +6,7 @@ import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import '../view_models/speech_cubit.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/sound_off_icon.dart';
@@ -247,10 +248,8 @@ class CharacterVoiceList extends StatelessWidget {
                   null => null,
                 },
                 selected: false,
-                onTap: () => showModalBottomSheet<void>(
-                  context: context,
-                  showDragHandle: true,
-                  isScrollControlled: true,
+                onTap: () => showLucenaSheet<void>(
+                  context,
                   builder: (_) => BlocProvider.value(
                     value: context.read<SpeechCubit>(),
                     child: CharacterVoiceSheet(character: character),

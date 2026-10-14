@@ -6,6 +6,7 @@ import '../../../domain/models/character.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/lesson_cubit.dart';
@@ -158,7 +159,7 @@ class LessonFinished extends StatelessWidget {
                         FilledButton.icon(
                           key: LessonKeys.exercisesButton,
                           style: FilledButton.styleFrom(
-                            minimumSize: const Size(220, 52),
+                            minimumSize: const Size(220, kButtonHeight),
                           ),
                           icon: const Icon(Icons.star_rounded),
                           label: Text(l10n.lessonToExercises),
@@ -168,7 +169,7 @@ class LessonFinished extends StatelessWidget {
                         FilledButton.icon(
                           key: LessonKeys.nextLessonButton,
                           style: FilledButton.styleFrom(
-                            minimumSize: const Size(220, 52),
+                            minimumSize: const Size(220, kButtonHeight),
                           ),
                           icon: const Icon(Icons.arrow_forward_rounded),
                           label: Text(
@@ -180,7 +181,7 @@ class LessonFinished extends StatelessWidget {
                         OutlinedButton(
                           key: LessonKeys.trailButton,
                           style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(220, 48),
+                            minimumSize: const Size(220, kButtonHeight),
                           ),
                           onPressed: () => context.go(Routes.school),
                           child: Text(l10n.lessonBackToSchool),

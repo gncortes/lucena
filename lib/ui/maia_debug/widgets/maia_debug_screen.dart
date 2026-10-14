@@ -7,6 +7,7 @@ import '../../../domain/models/maia_timing.dart';
 import '../../../domain/models/move_prediction.dart';
 import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../view_models/maia_debug_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/theme/app_shape.dart';
@@ -98,7 +99,7 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
           FilledButton(
             key: MaiaDebugKeys.evaluate,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: running ? null : cubit.evaluate,
             child: Text(l10n.maiaDebugEvaluate),
@@ -107,7 +108,7 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
           OutlinedButton.icon(
             key: MaiaDebugKeys.measure,
             style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(kButtonHeightCompact),
             ),
             onPressed: running ? null : cubit.measure,
             icon: const Icon(Icons.speed),

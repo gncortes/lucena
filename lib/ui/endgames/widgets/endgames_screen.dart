@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../placement/widgets/placement_prompt.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../../../routing/routes.dart';
@@ -76,7 +78,7 @@ class EndgamesScreen extends StatelessWidget {
                 FilledButton.icon(
                   key: EndgamesKeys.continueButton,
                   style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
+                    minimumSize: const Size.fromHeight(kButtonHeight),
                   ),
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(
@@ -410,7 +412,7 @@ class _LessonTile extends StatelessWidget {
               Icon(
                 Icons.star_rounded,
                 size: 18,
-                color: score > 0 ? const Color(0xfff2b705) : colors.outline,
+                color: score > 0 ? AppColors.goldColor : colors.outline,
               ),
               const SizedBox(width: 2),
               Text(
