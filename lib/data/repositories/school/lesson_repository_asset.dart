@@ -76,7 +76,8 @@ class AssetLessonRepository implements LessonRepository {
           for (final part in parts.cast<Map<String, dynamic>>())
             LessonPart(
               id: part['id'] as String,
-              steps: steps(part['steps'] as List),
+              steps: steps(part['steps'] as List? ?? const []),
+              script: part['roteiro'] as String?,
             ),
         ],
       );

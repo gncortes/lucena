@@ -38,16 +38,7 @@ void main() {
 
   // passo, fala, id do ramo, FEN do ponto de partida (depois de `at` lances).
   final expected = [
-    ('intro', 'step.intro', 'g4', 2, '8/5k2/8/8/4K3/6P1/8/8 w - - 2 2'),
-    (
-      'convert',
-      'step.convert.done',
-      'g4',
-      4,
-      '8/5k2/8/4K3/8/6P1/8/8 w - - 4 3',
-    ),
-    // 1.Re4 Rf8 2.Rf5 (2.g4? Rg7 =)
-    ('intro', 'step.intro', 'g4f8', 2, '5k2/8/8/8/4K3/6P1/8/8 w - - 2 2'),
+    // Os ramos de `intro` e `convert` saíram com a parte `distant` (T70).
     // 1.Rf4 Re6 2.Re4 (2.e4? Rf6! =)
     ('diagonal', 'step.diagonal', 'e4', 2, '8/8/4k3/8/5K2/4P3/8/8 w - - 2 2'),
     // 1.Re2 Re7 2.Re3 (2.Rd3? Rd7 =; 2.Rf3? Rf7 =)

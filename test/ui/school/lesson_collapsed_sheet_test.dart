@@ -72,7 +72,7 @@ void main() {
       replyDelay: Duration.zero,
     );
     addTearDown(cubit.close);
-    await cubit.load(lessonId, 'pt');
+    await cubit.load(lessonId, 'pt', part: 'diagonal');
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,

@@ -11,6 +11,8 @@ import 'package:lucena/domain/models/wiki_links.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/wiki_markup.dart';
 
+import '../../../../testing/script_fixture.dart';
+
 /// As aulas de finais de verdade (`assets/lessons/endgames`): o que o
 /// `build_aula.py` conferiu com a tabela de finais, aqui conferido de novo
 /// com as regras do app, sem rede, para o CI.
@@ -236,6 +238,14 @@ void main() {
           'ex.${exercise.id}.solution',
         ],
         for (final position in lesson.keyPositions) 'key.${position.id}',
+        // Parte em roteiro (T70): as falas do próprio roteiro (as genéricas
+        // moram em `roteiro_generico.json`).
+        for (final part in lesson.lesson.parts)
+          if (part.script != null)
+            ...scriptTexts(
+              jsonDecode(io.File(part.script!).readAsStringSync())
+                  as Map<String, dynamic>,
+            ).keys.where((key) => !key.startsWith('gen.')),
       };
       // O comentário por lance do ramo (`...alt.<id>.m<k>`) é opcional.
       final optional = {

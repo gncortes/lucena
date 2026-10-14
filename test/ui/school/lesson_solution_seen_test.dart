@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io' as io;
-
-import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -437,53 +433,6 @@ void main() {
       expect(find.byKey(LessonKeys.screen), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
-
-    testWidgets(
-      'aula distantOpposition (passo 6): Solução vista, Voltar abre o passo 5',
-      (tester) async {
-        final real = AssetLessonRepository.parseLesson(
-          jsonDecode(
-            io.File('assets/lessons/endgames/pawns.distantOpposition.json')
-                .readAsStringSync(),
-          ) as Map<String, dynamic>,
-        );
-        final cubit = build(
-          FakeSchoolProgressRepository(),
-          useCourse: Course(
-            modules: [
-              CourseModule(id: 'pawns', lessons: [real]),
-            ],
-          ),
-        );
-        await tester.runAsync(() async {
-          await cubit.load('pawns.distantOpposition', 'en', part: 'distant');
-          while (cubit.state.step < 5) {
-            final cur = cubit.state.current;
-            if (cur is DemoStep) {
-              for (var k = 0; k < cur.line.length; k++) {
-                await cubit.demoForward();
-              }
-            }
-            final before = cubit.state.step;
-            await cubit.next();
-            if (cubit.state.step == before) break;
-          }
-          for (var i = 0; i < 4; i++) {
-            await cubit.play(move('d3e3'));
-          }
-        });
-        expect(cubit.state.phase, StepPhase.failed);
-        await show(tester, cubit, const Size(412, 917));
-        await tester.tap(find.byKey(LessonKeys.seeSolution));
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(LessonKeys.backButton));
-        await tester.pumpAndSettle();
-        expect(cubit.state.step, 4);
-        await tester.pump(const Duration(seconds: 30));
-        await tester.pumpAndSettle();
-        expect(find.byKey(LessonKeys.screen), findsOneWidget);
-      },
-    );
 
     testWidgets('Continuar no erro avança para o próximo passo', (
       tester,

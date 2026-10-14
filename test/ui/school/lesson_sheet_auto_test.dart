@@ -15,7 +15,6 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
-import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
 import 'package:lucena/ui/school/widgets/lesson_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -31,10 +30,9 @@ class _Assets extends AssetService {
   Future<String> loadString(String path) => io.File(path).readAsString();
 }
 
-/// Folha automática do Viktor na lição real da oposição distante (360x780):
-/// texto novo abre a folha com ele todo, ela recolhe sozinha, passo revisto
-/// não anima e o lance jogado não deixa o enunciado antigo numa altura
-/// intermediária.
+/// Folha automática do Viktor numa parte real da lição da oposição distante
+/// (360x780). A parte `distant` virou roteiro (T70) e saiu daqui: os casos de
+/// texto novo longo, passo revisto e lance jogado dependiam dos passos dela.
 void main() {
   const lessonId = 'pawns.distantOpposition';
   late EndgameLesson real;
@@ -96,7 +94,7 @@ void main() {
       replyDelay: replyDelay,
     );
     addTearDown(cubit.close);
-    await cubit.load(lessonId, 'pt');
+    await cubit.load(lessonId, 'pt', part: 'diagonal');
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -128,58 +126,7 @@ void main() {
     }
   }
 
-  Future<void> play(WidgetTester tester, LessonCubit cubit, String uci) =>
-      tester.runAsync(() async {
-        await cubit.play(Move.parse(uci)!);
-        await Future<void>.delayed(const Duration(milliseconds: 50));
-      });
-
   const oldText = 'Pense com calma';
-
-  /// Joga o lance certo do passo de pensar: a explicação (passo novo e longo)
-  /// é o texto que abre a folha. Devolve o topo da folha recolhida.
-  Future<double> toExplanation(WidgetTester tester, LessonCubit cubit) async {
-    // O pensar também abre a folha (A1): espera ela recolher.
-    await frames(tester, 14000);
-    final collapsed = top(tester);
-    await play(tester, cubit, 'd3e4');
-    expect(cubit.state.step, 1);
-    return collapsed;
-  }
-
-  testWidgets('A: texto novo abre a folha com ele todo e recolhe no tempo', (
-    tester,
-  ) async {
-    final cubit = await pump(tester);
-    final collapsed = await toExplanation(tester, cubit);
-    await frames(tester, 1500);
-    final opened = top(tester);
-    expect(opened, lessThan(collapsed - 40));
-    // A altura é a do conteúdo (limite: os 76 dp livres no alto).
-    expect(opened, greaterThanOrEqualTo(ViktorSheet.openGap));
-    // Antes do tempo de leitura continua aberta (o estado correto tem fala
-    // curta: o tempo de leitura é menor que o da explicação inteira).
-    await frames(tester, 300);
-    expect(top(tester), closeTo(opened, 1));
-    await frames(tester, 12000);
-    expect(top(tester), closeTo(collapsed, 1));
-  });
-
-  testWidgets('A: interagir com a folha cancela o recolhimento', (
-    tester,
-  ) async {
-    final cubit = await pump(tester);
-    final collapsed = await toExplanation(tester, cubit);
-    await frames(tester, 1500);
-    final opened = top(tester);
-    expect(opened, lessThan(collapsed - 40));
-    final gesture = await tester.startGesture(
-      tester.getCenter(find.byKey(LessonKeys.scroll)),
-    );
-    await gesture.up();
-    await frames(tester, 14000);
-    expect(top(tester), closeTo(opened, 1));
-  });
 
   testWidgets('A: texto que cabe na folha recolhida não abre', (tester) async {
     await pump(tester, shortText: true);
@@ -187,47 +134,6 @@ void main() {
     final collapsed = top(tester);
     await frames(tester, 2000);
     expect(top(tester), closeTo(collapsed, 1));
-  });
-
-  testWidgets('A: sem animações, abre e recolhe sem transição', (tester) async {
-    final cubit = await pump(tester, disableAnimations: true);
-    final collapsed = await toExplanation(tester, cubit);
-    final seen = <double>{};
-    for (var i = 0; i < 40; i++) {
-      await tester.pump(const Duration(milliseconds: 16));
-      seen.add(top(tester).roundToDouble());
-    }
-    // Só a folha recolhida e a aberta: nenhuma altura no meio.
-    expect(seen.length, lessThanOrEqualTo(2), reason: '$seen');
-    expect(top(tester), lessThan(collapsed - 40));
-    await frames(tester, 13000);
-    expect(top(tester), closeTo(collapsed, 1));
-  });
-
-  testWidgets('B: avançar e voltar a um passo visto não anima a folha', (
-    tester,
-  ) async {
-    final cubit = await pump(tester);
-    final collapsed = await toExplanation(tester, cubit);
-    await frames(tester, 1500);
-    expect(top(tester), lessThan(collapsed - 40));
-    await tester.runAsync(cubit.back);
-    final seen = <double>{};
-    for (var i = 0; i < 40; i++) {
-      await tester.pump(const Duration(milliseconds: 16));
-      seen.add(top(tester).roundToDouble());
-    }
-    expect(cubit.state.step, 0);
-    expect(seen.length, lessThanOrEqualTo(1), reason: '$seen');
-    await frames(tester, 14000);
-    await tester.runAsync(cubit.next);
-    seen.clear();
-    for (var i = 0; i < 40; i++) {
-      await tester.pump(const Duration(milliseconds: 16));
-      seen.add(top(tester).roundToDouble());
-    }
-    expect(cubit.state.step, 1);
-    expect(seen.length, lessThanOrEqualTo(1), reason: '$seen');
   });
 
   /// Anda um passo e confere, quadro a quadro, que o texto antigo só aparece
@@ -280,20 +186,4 @@ void main() {
       () => find.textContaining(oldText, findRichText: true),
     );
   });
-
-  testWidgets(
-    'C: passo novo com a folha aberta pela leitura sem quadro no meio',
-    (tester) async {
-      final cubit = await pump(tester);
-      await toExplanation(tester, cubit);
-      await frames(tester, 1500);
-      Finder old() => find.byKey(LessonKeys.correctTitle);
-      expect(old(), findsOneWidget);
-      await expectNoIntermediate(
-        tester,
-        () => tester.runAsync(cubit.next),
-        old,
-      );
-    },
-  );
 }

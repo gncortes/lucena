@@ -95,10 +95,14 @@ class Lesson {
 /// Uma parte curta de uma aula (T51): título e resumo vêm das falas
 /// (`part.<id>.title`); termina numa prática do aluno.
 class LessonPart {
-  const LessonPart({required this.id, required this.steps});
+  const LessonPart({required this.id, required this.steps, this.script});
 
   final String id;
   final List<LessonStep> steps;
+
+  /// O caminho do asset do roteiro (T70, `LessonScript`) quando a parte é
+  /// tocada pela tela de roteiro, no lugar dos [steps]. Nulo: parte comum.
+  final String? script;
 
   /// O tempo estimado, em minutos: uns 3 de pensar, mais meio minuto por
   /// conversa, uns segundos por lance mostrado e um minuto por prática.
