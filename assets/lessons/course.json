@@ -1833,7 +1833,8 @@
               "goal": "mate",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/minor.rookKnight.json"
         },
         {
           "id": "minor.rookTwoBishops",
