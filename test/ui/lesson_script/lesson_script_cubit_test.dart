@@ -1343,22 +1343,17 @@ void main() {
       expect(cur.references.last.kind, 'player');
     });
 
-    test('id que a aula não tem fica de fora; exemplo sem curiosidade usa a '
-        'da aula (o livro em todas as etapas, D2)', () async {
-      final r = await _Rig.open();
-      expect(r.s.curiosities!.references.map((e) => e.title), ['Ada Lovelace']);
-      final demo = await _Rig.open(stage: 1);
-      expect(demo.s.curiosities!.text, 'cur.t');
-    });
-
-    test('prática sem curiosidade própria mantém o livro', () async {
-      // Só a 2ª posição tem; a 1ª, sem nada antes, usa a de depois.
-      final json = _practiceJson();
-      final examples = ((json['etapas'] as List).single as Map)['exemplos'];
-      (examples as List).last['curiosidades'] = {'t': 'cur.t'};
-      final r = await _Rig.open(json: json);
-      expect(r.s.curiosities!.text, 'cur.t');
-    });
+    test(
+      'id que a aula não tem fica de fora; exemplo sem curiosidade, nulo',
+      () async {
+        final r = await _Rig.open();
+        expect(r.s.curiosities!.references.map((e) => e.title), [
+          'Ada Lovelace',
+        ]);
+        final demo = await _Rig.open(stage: 1);
+        expect(demo.s.curiosities, isNull);
+      },
+    );
   });
 
   group('objetivo mate (contra o motor)', () {

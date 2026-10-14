@@ -307,15 +307,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _exampleIndex = index;
     _example = _stageData.examples[index];
     _tree = MoveTree.build(_example);
-    // O livro aparece em todas as etapas (D2): o exemplo sem curiosidade
-    // próprio, como as posições da prática, usa a do exemplo mais perto
-    // antes dele no roteiro (ou depois, se não houver antes).
-    final all = [for (final stage in _script.stages) ...stage.examples];
-    final at = all.indexOf(_example);
-    final near = [...all.take(at).toList().reversed, ...all.skip(at + 1)];
-    final c =
-        _example.curiosities ??
-        near.map((e) => e.curiosities).nonNulls.firstOrNull;
+    // Só a posição com curiosidade própria mostra o livro; sem ela, é só
+    // um exemplo (Gabriel, 14/10/2026).
+    final c = _example.curiosities;
     _curiosities = c == null
         ? null
         : ScriptCuriosities(
