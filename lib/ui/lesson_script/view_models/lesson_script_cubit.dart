@@ -763,11 +763,20 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   ) {
     for (var i = stop - 1; i >= 0; i--) {
       final step = steps[i];
-      if (!step.hasMove) continue;
+      // O salto sem lance cai num lance já visto (ou no começo).
+      final landing = _isScriptTrack(track) ? _nodeStep(track, steps, i) : step;
+      if (!step.hasMove && _tree.anchors(landing)) {
+        final id = _tree.anchorOf(landing);
+        return (uci: id == null ? null : _tree.node(id)?.uci, nodeId: id);
+      }
+      if (!step.hasMove && _tree.of(landing).isEmpty) continue;
       final nodes = _isScriptTrack(track)
           ? _tree.of(_nodeStep(track, steps, i))
           : const <MoveNode>[];
-      return (uci: step.moves.last, nodeId: nodes.lastOrNull?.id);
+      return (
+        uci: step.hasMove ? step.moves.last : nodes.lastOrNull?.uci,
+        nodeId: nodes.lastOrNull?.id,
+      );
     }
     if (track != ScriptTracks.entry && _isScriptTrack(track)) {
       return _lastMove(
@@ -877,8 +886,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         tone: ScriptTone.neutral,
         marks: const [],
         arrows: const [],
-        primary: null,
-        secondary: ScriptAction.verResposta,
+        // Ver resposta é o botão cheio (canvas E2a).
+        primary: ScriptAction.verResposta,
+        secondary: null,
         movable: _sideOf(fen),
         machineThinking: false,
         currentMoveId: move.nodeId,

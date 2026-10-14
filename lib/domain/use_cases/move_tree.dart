@@ -90,10 +90,28 @@ class MoveNode {
 /// A árvore de lances de um exemplo (T70): só passos com `lance`/`seq`. O
 /// alternativo vira variante; os erros e o jogo livre ficam de fora.
 class MoveTree {
-  const MoveTree(this.nodes);
+  const MoveTree(
+    this.nodes, [
+    this._anchors = const {},
+    this._repeats = const {},
+  ]);
 
   /// Na ordem da lista: a entrada, o lance certo, as variantes, a linha.
   final List<MoveNode> nodes;
+
+  /// Onde cai cada passo de salto sem lance: o nó da posição dele (nulo: a
+  /// posição de partida).
+  final Map<ScriptStep, String?> _anchors;
+
+  /// Os passos que repetem um lance já na lista (depois de um salto): os nós
+  /// que eles jogam de novo.
+  final Map<ScriptStep, List<String>> _repeats;
+
+  /// O passo [step] é um salto que a árvore situou.
+  bool anchors(ScriptStep step) => _anchors.containsKey(step);
+
+  /// O nó em que o salto [step] cai (nulo: a posição de partida).
+  String? anchorOf(ScriptStep step) => _anchors[step];
 
   MoveNode? node(String id) {
     for (final node in nodes) {
@@ -103,10 +121,15 @@ class MoveTree {
   }
 
   /// Os nós que o passo [step] joga (um por lance do `seq`).
-  List<MoveNode> of(ScriptStep step) => [
-    for (final node in nodes)
-      if (identical(node.step, step)) node,
-  ];
+  List<MoveNode> of(ScriptStep step) {
+    final own = [
+      for (final node in nodes)
+        if (identical(node.step, step)) node,
+    ];
+    final again = _repeats[step];
+    if (again == null) return own;
+    return [...again.map(node).nonNulls, ...own];
+  }
 
   static int _fullmoves(String fen) =>
       int.tryParse(fen.split(' ').elementAtOrNull(5) ?? '') ?? 1;
@@ -114,10 +137,50 @@ class MoveTree {
   static Side _turn(String fen) =>
       fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
 
+  /// O tabuleiro e a vez de [fen] (o que conta para achar a posição).
+  static String _key(String fen) => fen.split(' ').take(2).join(' ');
+
   static MoveTree build(ScriptExample example) {
     final nodes = <MoveNode>[];
     var path = <String>[];
     final task = example.goal == ScriptGoal.tarefa;
+    final anchors = Map<ScriptStep, String?>.identity();
+    final repeats = Map<ScriptStep, List<String>>.identity();
+
+    /// A posição depois de cada lance (pelo id; '' é a de partida), se ele é
+    /// variante e o primeiro filho de cada lance (a linha principal).
+    final fenOf = <String, String>{'': example.fen};
+    final variantOf = <String, bool>{};
+    final mainChild = <String, String>{};
+
+    /// Um salto sem lance (T70, "volte um lance; imagine..."): cai num lance
+    /// já jogado do caminho ou a um lance dele, que entra na lista. Devolve
+    /// o caminho novo e o lance que entrou, se entrou.
+    (List<String>, String?) land(List<String> trail, String fen) {
+      final target = _key(fen);
+      for (var n = trail.length; n >= 0; n--) {
+        final prefix = trail.sublist(0, n);
+        final at = fenOf[prefix.join('-')];
+        if (at != null && _key(at) == target) return (prefix, null);
+      }
+      for (var n = trail.length; n >= 0; n--) {
+        final prefix = trail.sublist(0, n);
+        final at = fenOf[prefix.join('-')];
+        if (at == null) continue;
+        for (final MapEntry(key: from, value: tos) in ScriptMoves.dests(
+          at,
+        ).entries) {
+          for (final to in tos) {
+            final uci = NormalMove(from: from, to: to).uci;
+            final played = ScriptMoves.play(at, uci, keepTurn: task);
+            if (played != null && _key(played.fen) == target) {
+              return (prefix, uci);
+            }
+          }
+        }
+      }
+      return (trail, null);
+    }
 
     /// Na tarefa: quantos lances do aluno há até cada lance (pelo id).
     final studentMoves = <String, int>{};
@@ -137,9 +200,20 @@ class MoveTree {
       for (var i = 0; i < steps.length; i++) {
         final step = steps[i];
         if (variant && step.jump) break;
-        if (step.hasMove) {
+        var moves = step.moves;
+        if (step.jump && !step.hasMove) {
+          final (landed, implied) = land(trail, step.fen);
+          trail = landed;
+          current = fenOf[landed.join('-')] ?? current;
+          if (implied == null) {
+            anchors[step] = landed.isEmpty ? null : landed.join('-');
+          } else {
+            moves = [implied];
+          }
+        }
+        if (moves.isNotEmpty) {
           var at = current;
-          for (final uci in step.moves) {
+          for (final uci in moves) {
             final played = ScriptMoves.play(at, uci, keepTurn: task);
             // Na tarefa, o lance do outro lado (a captura de volta) fica com
             // o número do lance do aluno que veio antes.
@@ -148,6 +222,21 @@ class MoveTree {
             final before = trail.isEmpty
                 ? 0
                 : studentMoves[trail.join('-')] ?? trail.length;
+            final parent = trail.join('-');
+            final again = [...trail, uci].join('-');
+            if (fenOf[again] case final seen?) {
+              // O lance já está na lista (a linha voltou por um salto).
+              (repeats[step] ??= []).add(again);
+              trail = [...trail, uci];
+              at = seen;
+              continue;
+            }
+            // Outro lance onde a linha já seguiu (ou dentro de uma variante)
+            // é variante: a lista abre o parêntese.
+            final branch =
+                variant ||
+                (variantOf[parent] ?? false) ||
+                (mainChild[parent] ?? uci) != uci;
             trail = [...trail, uci];
             final count = before + (reply ? 0 : 1);
             studentMoves[trail.join('-')] = count;
@@ -159,12 +248,16 @@ class MoveTree {
                 // Na tarefa a vez não passa: os lances só se numeram.
                 number: task ? count : _fullmoves(at),
                 side: task ? (mover ?? example.student) : _turn(at),
-                variant: variant,
+                variant: branch,
                 ref: ScriptRef(track, offset + i),
                 step: step,
               ),
             );
             at = played?.fen ?? at;
+            final id = trail.join('-');
+            fenOf[id] = at;
+            variantOf[id] = branch;
+            if (!branch) mainChild[parent] ??= uci;
           }
         }
         current = step.fen;
@@ -185,7 +278,7 @@ class MoveTree {
     final question = example.question;
     if (question == null) {
       walk(example.line, ScriptTracks.main, 0, entryFen, path, false, nodes);
-      return MoveTree(nodes);
+      return MoveTree(nodes, anchors, repeats);
     }
     final main = <MoveNode>[];
     walk(
@@ -215,6 +308,6 @@ class MoveTree {
       ..addAll(head)
       ..addAll(variants)
       ..addAll(rest);
-    return MoveTree(nodes);
+    return MoveTree(nodes, anchors, repeats);
   }
 }
