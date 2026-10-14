@@ -170,6 +170,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   static Duration readTime(String text) =>
       Duration(milliseconds: min(max(2500, text.length * 65) + 600, 8000));
 
+  /// Com a voz, o passo espera a fala acabar e só faz esta pausa depois.
+  static const voicePause = Duration(milliseconds: 600);
+
   /// O tempo da máquina antes de responder, e de o lance errado da prática
   /// ser desfeito.
   static const machineDelay = Duration(milliseconds: 500);
@@ -235,6 +238,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// O tempo do passo já decorrido antes de [_demoRunStart].
   Duration _demoElapsed = Duration.zero;
   DateTime? _demoRunStart;
+
+  /// A voz do Viktor está dizendo a fala do passo: o relógio espera.
+  bool _demoSpeaking = false;
 
   Map<String, ScriptRef> get _seen =>
       _seenBy.putIfAbsent('$_stage/$_exampleIndex', () => {});
@@ -475,6 +481,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _demoTimer = null;
       _demoElapsed = Duration.zero;
       _demoRunStart = null;
+      _demoSpeaking = false;
       _demoTotal = readTime(s.speech.join(' '));
       if (_demoPlaying && !ended) _demoRun();
     }
@@ -489,12 +496,19 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       remaining: remaining,
       tick: _demoTick,
       canStepBack: _stepBackIndex(s.fen) >= 0,
+      speaking: _demoSpeaking,
     );
   }
 
-  /// Agenda o fim do passo com o tempo que falta.
+  /// Agenda o fim do passo com o tempo que falta (com a voz falando, espera
+  /// ela acabar: [demoVoice]).
   void _demoRun() {
     _demoTimer?.cancel();
+    if (_demoSpeaking) {
+      _demoTimer = null;
+      _demoRunStart = null;
+      return;
+    }
     final left = _demoTotal - _demoElapsed;
     _demoRunStart = _now();
     _demoTimer = _timer(left.isNegative ? Duration.zero : left, () {
@@ -503,6 +517,22 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       final action = state.primary;
       if (action != null) unawaited(onAction(action));
     });
+  }
+
+  /// A voz do Viktor começou ([speaking]) ou acabou de dizer a fala do passo
+  /// em tela (a tela conta). Falando, o relógio para; quando ela acaba, o
+  /// passo só espera [voicePause]. Sem voz, vale o [readTime].
+  void demoVoice({required bool speaking}) {
+    if (!_inDemo || state.demo?.ended != false) return;
+    if (speaking == _demoSpeaking) return;
+    _demoElapsed = speaking ? _demoSpent : Duration.zero;
+    _demoRunStart = null;
+    _demoSpeaking = speaking;
+    if (!speaking) _demoTotal = voicePause;
+    _demoTimer?.cancel();
+    _demoTimer = null;
+    _demoEmit();
+    if (_demoPlaying) _demoRun();
   }
 
   /// Emite o estado da demonstração de novo (pausa, retomada).

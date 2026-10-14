@@ -18,6 +18,7 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
+import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/lesson_script_cubit.dart';
 import 'curiosities_sheet.dart';
 import 'script_demo_controls.dart';
@@ -213,6 +214,18 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
           speakerId: 'master',
           child: speech,
         );
+        // Na demonstração, o passo espera a voz dizer a fala dele; sem som
+        // ou sem voz, vale o tempo de leitura.
+        speech = BlocListener<SpeechCubit, SpeechState>(
+          bloc: voice,
+          listenWhen: (a, b) =>
+              a.speaking != b.speaking || a.settings != b.settings,
+          listener: (context, speaking) => cubit.demoVoice(
+            speaking:
+                sound && speaking.settings.enabled && speaking.isSpeaking(text),
+          ),
+          child: speech,
+        );
       }
       return speech;
     }
@@ -393,6 +406,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
         ? null
         : ScriptDemoControls(
             playing: demo.playing,
+            speaking: demo.speaking,
             progress: demo.progress,
             remaining: demo.remaining,
             tick: demo.tick,

@@ -135,6 +135,7 @@ class ScriptDemo {
     required this.remaining,
     required this.tick,
     required this.canStepBack,
+    this.speaking = false,
   });
 
   /// Andando (⏸ na tela) ou pausada (▶).
@@ -155,6 +156,9 @@ class ScriptDemo {
 
   /// O ⏮ (lance anterior) está ativo.
   final bool canStepBack;
+
+  /// A voz do Viktor está dizendo a fala: o anel espera parado.
+  final bool speaking;
 }
 
 /// A folha Curiosidades já com as falas e as referências resolvidas.

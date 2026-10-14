@@ -779,6 +779,49 @@ void main() {
       expect(r.pending, isEmpty);
     });
 
+    test('voz: falando, o relógio para; no fim, só a pausa', () async {
+      final r = await _Rig.open(stage: 1);
+      r.now.advance(const Duration(seconds: 1));
+      r.cubit.demoVoice(speaking: true);
+      expect(r.s.demo!.speaking, isTrue);
+      expect(r.pending, isEmpty);
+      r.cubit.demoVoice(speaking: false);
+      expect(r.s.demo!.speaking, isFalse);
+      expect(r.s.demo!.remaining, LessonScriptCubit.voicePause);
+      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
+      await r.elapse();
+      expect(r.s.speech, ['d1b']);
+      // Passo novo: sem voz, volta o tempo de leitura.
+      expect(r.s.demo!.speaking, isFalse);
+      expect(r.pending.single.duration, LessonScriptCubit.readTime('d1b'));
+    });
+
+    test('voz com a demonstração pausada: no fim, espera o ▶', () async {
+      final r = await _Rig.open(stage: 1);
+      r.cubit.demoVoice(speaking: true);
+      r.cubit.demoToggle();
+      expect(r.s.demo!.playing, isFalse);
+      r.cubit.demoVoice(speaking: false);
+      expect(r.pending, isEmpty);
+      r.cubit.demoToggle();
+      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
+    });
+
+    test('▶ com a voz falando não agenda o passo', () async {
+      final r = await _Rig.open(stage: 1);
+      r.cubit.demoToggle();
+      r.cubit.demoVoice(speaking: true);
+      r.cubit.demoToggle();
+      expect(r.s.demo!.playing, isTrue);
+      expect(r.pending, isEmpty);
+    });
+
+    test('voz fora da demonstração não faz nada', () async {
+      final r = await _Rig.open();
+      r.cubit.demoVoice(speaking: true);
+      expect(r.s.demo, isNull);
+    });
+
     test('⏸ guarda o tempo decorrido; ▶ retoma com o que falta', () async {
       final r = await _Rig.open(stage: 1);
       final total = LessonScriptCubit.readTime('d1a');
