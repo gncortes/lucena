@@ -41,7 +41,7 @@
   "rot.pratica.fileira.enunciado": "Cut off the black king with the rook, on the rank just below it.",
   "rot.pratica.fileira.fim": "Well done. The fence just below the king.",
   "rot.pratica.fileira.err.a1a6": "It is check, but the king comes down. Try again.",
-  "rot.pratica.coluna.enunciado": "Close the file just to the king's right. When it steps back, bring the rook one file closer.",
+  "rot.pratica.coluna.enunciado": "Close the file just to the king's right. When it moves away, bring the rook one file closer.",
   "rot.pratica.coluna.fim": "Perfect. The fence moved up, and the king has less room.",
   "rot.pratica.coluna.err.h1c1": "It is check, but the king just changes file. Try again."
 }
