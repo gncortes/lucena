@@ -32,7 +32,7 @@ class SpeedrunHistoryScreen extends StatelessWidget {
     final speedrun = state.speedrun;
     return Scaffold(
       key: SpeedrunKeys.historyScreen,
-      appBar: LucenaAppBar(title: Text(l10n.historyTitle), centerTitle: true),
+      appBar: LucenaAppBar(title: Text(l10n.historyTitle)),
       body: speedrun == null
           ? (state.loaded
                 ? null

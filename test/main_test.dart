@@ -427,7 +427,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
-    expect(textOf(tester, FreeBoardKeys.turn), 'Brancas jogam');
+    expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
+    expect(find.text('Brancas jogam'), findsNothing);
   });
 
   group('partida em andamento', () {

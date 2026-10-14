@@ -263,6 +263,32 @@ void main() {
     expect(find.byKey(ExerciseKeys.hintButton), findsNothing);
   });
 
+  testWidgets('T73: a dica é só o ícone da lâmpada, num botão redondo, e o '
+      'custo vai no tooltip', (tester) async {
+    await pump(tester, 'e03');
+    final hint = find.byKey(ExerciseKeys.hintButton);
+    expect(
+      find.descendant(of: hint, matching: find.byType(Text)),
+      findsNothing,
+    );
+    expect(
+      find.descendant(of: hint, matching: find.byIcon(Icons.lightbulb_outline)),
+      findsOneWidget,
+    );
+    final size = tester.getSize(hint);
+    expect(size.width, size.height);
+    expect(size.width, greaterThanOrEqualTo(48));
+    final tooltip = tester
+        .widget<FloatingActionButton>(
+          find.descendant(
+            of: hint,
+            matching: find.byType(FloatingActionButton),
+          ),
+        )
+        .tooltip;
+    expect(tooltip, contains('point'));
+  });
+
   testWidgets('exercício que não existe', (tester) async {
     await pump(tester, 'e99');
     expect(find.byKey(ExerciseKeys.missing), findsOneWidget);

@@ -507,7 +507,8 @@ void main() {
     ) async {
       await pump(tester, size: size, systemBars: true);
       final before = tester.getRect(find.byKey(BlindKeys.emptyBoard));
-      expect(tester.widget<AppBar>(find.byType(AppBar)).centerTitle, isTrue);
+      // T73, D2: a barra tem ação, então o título fica à esquerda.
+      expect(tester.widget<AppBar>(find.byType(AppBar)).centerTitle, isFalse);
       expect(
         tester.getCenter(find.byType(SegmentedButton<BlindView>)).dx,
         closeTo(size.width / 2, 1),

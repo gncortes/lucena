@@ -223,6 +223,24 @@ void main() {
     return text.text.toPlainText();
   }
 
+  // A vez sem relógio é o anel primário de 2 px no retrato de quem joga (T73,
+  // D1): um só na tela, e nenhum chip de texto.
+  void expectRing(WidgetTester tester) {
+    expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
+    final box = tester.widget<DecoratedBox>(find.byKey(FreeBoardKeys.turn));
+    final border = (box.decoration as BoxDecoration).border! as Border;
+    expect(border.top.width, 2);
+    expect(
+      border.top.color,
+      Theme.of(tester.element(find.byKey(FreeBoardKeys.turn)))
+          .colorScheme
+          .primary,
+    );
+    expect(find.text('Your turn'), findsNothing);
+    expect(find.text('White to move'), findsNothing);
+    expect(find.text('Black to move'), findsNothing);
+  }
+
   String boardFen(WidgetTester tester) =>
       tester.widget<Chessboard>(find.byKey(FreeBoardKeys.board)).controller.fen;
 
@@ -245,7 +263,7 @@ void main() {
     await pumpScreen(tester);
 
     expect(boardFen(tester), GameRules.initial.fen);
-    expect(textOf(tester, FreeBoardKeys.turn), 'White to move');
+    expectRing(tester);
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
   });
 
@@ -278,7 +296,7 @@ void main() {
     await move(tester, 'e2', 'e4');
 
     expect(cubit.state.moves, ['e4']);
-    expect(textOf(tester, FreeBoardKeys.turn), 'Black to move');
+    expectRing(tester);
     expect(find.byKey(FreeBoardKeys.move(0)), findsOneWidget);
     expect(find.byKey(FreeBoardKeys.noMoves), findsNothing);
     expect(boardFen(tester), cubit.state.position.fen);
@@ -305,7 +323,7 @@ void main() {
 
     expect(boardFen(tester), GameRules.initial.fen);
     expect(cubit.state.moves, isEmpty);
-    expect(textOf(tester, FreeBoardKeys.turn), 'White to move');
+    expectRing(tester);
   });
 
   testWidgets('a lista mostra a peça em figurino no lugar da letra', (
@@ -455,7 +473,7 @@ void main() {
 
     expect(boardFen(tester), GameRules.initial.fen);
     expect(find.byKey(FreeBoardKeys.noMoves), findsOneWidget);
-    expect(textOf(tester, FreeBoardKeys.turn), 'White to move');
+    expectRing(tester);
   });
 
   testWidgets('no fim, o botão do painel começa outra partida', (tester) async {
@@ -2138,7 +2156,7 @@ void main() {
       opponent.hold();
 
       // A vez do jogador, na linha dele, embaixo do tabuleiro.
-      expect(textOf(tester, FreeBoardKeys.turn), 'Your turn');
+      expectRing(tester);
       expect(
         tester.getCenter(find.byKey(FreeBoardKeys.turn)).dy,
         greaterThan(boardRect(tester).bottom),
@@ -2147,7 +2165,7 @@ void main() {
       await tester.pump();
 
       // A vez da máquina, na linha dela, em cima do tabuleiro.
-      expect(textOf(tester, FreeBoardKeys.turn), 'Black to move');
+      expectRing(tester);
       expect(
         tester.getCenter(find.byKey(FreeBoardKeys.turn)).dy,
         lessThan(boardRect(tester).top),

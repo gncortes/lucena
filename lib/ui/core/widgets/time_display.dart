@@ -243,7 +243,8 @@ class TimeDisplay extends StatelessWidget {
             border: clock
                 ? Border.all(
                     width: 2,
-                    color: running ? colors.onSurface : colors.outlineVariant,
+                    // O relógio aceso (a vez) leva a borda primária de 2 px (T73, D1).
+                    color: running ? colors.primary : colors.outlineVariant,
                   )
                 : state == TimeDisplayState.active
                 ? Border.all(color: colors.outlineVariant)
