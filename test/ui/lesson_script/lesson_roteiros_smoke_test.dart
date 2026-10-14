@@ -234,9 +234,9 @@ class _Run {
 
 /// O aluno das práticas de mate (sem motor): dá mate se puder (em 1 ou em
 /// 2); com peão, coroa ou avança quando ele não cai; senão, entre os lances
-/// que não afogam nem deixam peça sem defesa ao alcance do rei, o que deixa o
-/// rei com menos casas livres na pior resposta dele e o próprio rei mais perto
-/// dele.
+/// que não afogam nem deixam peça sem defesa ao alcance do rei, o que captura
+/// peça, deixa o rei com menos casas livres na pior resposta dele e o próprio
+/// rei mais perto dele.
 String _mateMove(Position position, Set<String> seen) {
   final us = position.turn;
   final safe = <(NormalMove, Position)>[];
@@ -277,6 +277,7 @@ String _mateMove(Position position, Set<String> seen) {
         room * 30 +
         _distance(next.board.kingOf(us)!, theirKing) * 3 +
         escort * 60 +
+        next.board.bySide(us.opposite).squares.length * 500 +
         (seen.contains(key) ? 3000 : 0);
     candidates.add((score, move.uci));
   }
