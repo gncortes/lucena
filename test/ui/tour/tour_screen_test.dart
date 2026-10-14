@@ -22,6 +22,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena/ui/tour/widgets/tour_screen.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
@@ -325,6 +326,55 @@ void main() {
       await tester.enterText(find.byKey(TourKeys.nameField), 'Ana');
       await tester.pumpAndSettle();
       expect((await profile.load()).nickname, 'Ana');
+    });
+
+    testWidgets('instalação nova: "Sem voz" marcado e o cabeçalho sem a '
+        'velocidade e sem o botão de som (PropV2TourBVoz)', (tester) async {
+      await pumpTour(tester, step: TourStep.voice);
+      expect(voice.settings.enabled, isFalse);
+      final none = tester.widget<VoiceCard>(find.byKey(VoiceKeys.none));
+      expect(none.selected, isTrue);
+      final header = find.byKey(TourKeys.viktor);
+      expect(
+        find.descendant(
+          of: header,
+          matching: find.byKey(VoiceKeys.speedButton),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.descendant(
+          of: header,
+          matching: find.byKey(VoiceKeys.speakButton),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('escolhida a Voz 1, o cabeçalho mostra "1×" e o botão de som '
+        '(PropV2TourBVozEscolhida)', (tester) async {
+      await pumpTour(tester, step: TourStep.voice);
+      await tester.ensureVisible(find.byKey(VoiceKeys.voice('pt-br-a')));
+      await tester.tap(find.byKey(VoiceKeys.voice('pt-br-a')));
+      await tester.pumpAndSettle();
+      expect(voice.settings.enabled, isTrue);
+      final header = find.byKey(TourKeys.viktor);
+      final speed = find.descendant(
+        of: header,
+        matching: find.byKey(VoiceKeys.speedButton),
+      );
+      expect(speed, findsOneWidget);
+      expect(
+        find.descendant(of: speed, matching: find.text('1×')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: header,
+          matching: find.byKey(VoiceKeys.speakButton),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('escolher uma voz grava e liga; "sem voz" desliga; sem tom', (

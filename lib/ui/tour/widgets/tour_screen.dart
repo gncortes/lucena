@@ -245,6 +245,7 @@ class _Conversation extends StatelessWidget {
             text: speech,
             avatarSize: 64,
             speaks: true,
+            controlsOnlyWithVoice: true,
           ),
         ),
         // A ponta do balão fica a 4 do retrato.

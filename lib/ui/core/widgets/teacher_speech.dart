@@ -72,6 +72,7 @@ class TeacherSpeech extends StatelessWidget {
     this.bubbleKey,
     this.typed = false,
     this.speaks = false,
+    this.controlsOnlyWithVoice = false,
     this.onLink,
     this.onSpoken,
     this.headerAction,
@@ -160,6 +161,10 @@ class TeacherSpeech extends StatelessWidget {
   /// Com a voz ligada, a fala nova sai em voz alta sozinha. O botão de
   /// áudio aparece sempre que há voz no idioma.
   final bool speaks;
+
+  /// Sem voz escolhida, o cabeçalho fica sem a velocidade e sem o botão de
+  /// som (tour, PropV2TourBVoz); com voz, mostra os dois.
+  final bool controlsOnlyWithVoice;
 
   static const _tail = Size(18, 9);
 
@@ -339,6 +344,9 @@ class TeacherSpeech extends StatelessWidget {
             }
             // Sem voz no idioma, o botão de som continua à vista: o toque
             // leva aos ajustes de voz, onde se instala uma.
+            if (controlsOnlyWithVoice && !state.settings.enabled) {
+              return const SizedBox.shrink();
+            }
             if (!state.availableFor(language)) {
               return IconButton(
                 key: VoiceKeys.speakButton,
