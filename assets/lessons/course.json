@@ -1758,7 +1758,8 @@
               "goal": "promote",
               "opponent": "stockfish"
             }
-          ]
+          ],
+          "roteiro": "assets/lessons/roteiros/pawns.rookTwoPawns.json"
         }
       ]
     },
