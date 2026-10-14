@@ -303,32 +303,11 @@
   "speedrunTotalTime": "Общее время",
   "teacherName": "Мастер {name}",
   "tourBack": "Назад",
-  "tourBoardTitle": "Выберите доску",
-  "tourEndgamesBody": "Базовые маты, пешечные, ладейные и ферзевые эндшпили: у каждой позиции своя цель — выиграть или удержать ничью.",
-  "tourEndgamesTitle": "Эндшпили",
-  "tourGoalBody": "Lucena ставит вас в типичные эндшпили против Maia — ИИ, который играет как реальные люди с каждым рейтингом. Всё работает офлайн.",
-  "tourGoalTitle": "Тренируйте эндшпили против людей",
-  "tourJourneyBody": "Поднимитесь от Maia 1000 до Stockfish. Пройдите все задания уровня, чтобы открыть следующий.",
-  "tourJourneyTitle": "Путь",
-  "tourLevelBody": "Путь начнётся с подходящего уровня, а уровни ниже останутся открытыми.",
-  "tourLevelSchool": "Сначала уроки с Виктором, потом Путешествие с 1000",
   "tourLevelStart": "Путь начнётся с {rung}",
-  "tourLevelTitle": "Какой у вас сейчас уровень?",
   "tourNext": "Далее",
-  "tourOpponentsBody": "Каждый уровень Maia — персонаж со своим характером, который комментирует партию в облачке.",
-  "tourOpponentsTitle": "Ваши соперники",
-  "tourRatingBody": "Каждая партия против Maia или Stockfish меняет ваш рейтинг в эндшпилях. В спидране рейтинг начисляется сразу, когда вы его завершаете.",
-  "tourRatingTitle": "Ваш рейтинг",
-  "tourRecordsBody": "Бейте свои рекорды, открывайте достижения и смотрите каждую партию в истории.",
-  "tourRecordsTitle": "Рекорды и достижения",
   "tourSkip": "Пропустить",
-  "tourSpeedrunBody": "Проходите этапы как можно быстрее. За первое завершение спидрана вы получаете рейтинг, и чем быстрее темп, тем больше.",
-  "tourSpeedrunTitle": "Спидран",
   "tourStart": "Начать",
-  "tourStartLessons": "Начать уроки",
   "tourStep": "Шаг {step} из {total}",
-  "tourThemeBody": "Выберите тему и цвет, который вам больше нравится. Их можно изменить в любой момент в Настройках.",
-  "tourThemeTitle": "Настройте приложение под себя",
   "resultNextChallenge": "Следующее испытание",
   "reportRatingLabel": "Рейтинг",
   "resultYouWon": "Вы победили!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "Все",
   "catalogDone": "{done} из {total} пройдено",
   "tourNameLabel": "Как мне вас называть?",
-  "tourNameHelper": "Имя отображается на главном экране. Позже его можно изменить в профиле.",
   "homePathsTitle": "Чем хотите заняться?",
   "homeLearn": "Научиться играть в шахматы",
   "homeLearnBody": "Уроки с Виктором: как ходят фигуры, шах, мат и первые эндшпили.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "Чёрные пешки только мешают: их нельзя взять. Вы собираете звёзды.",
   "settingsSound": "Звуки",
   "settingsSoundHint": "Ходы фигур и сигнал, когда время на исходе",
-  "tourSoundTitle": "Со звуком или без?",
-  "tourSoundBody": "Слушайте фигуры при каждом ходе и сигнал, когда время на часах заканчивается.",
-  "tourSoundOn": "Со звуком",
-  "tourSoundOff": "Без звука",
   "reviewStart": "Разбор со Stockfish",
   "reviewRunning": "Анализ хода {done} из {total}",
   "reviewAccuracy": "Точность",
@@ -554,11 +528,6 @@
   "voiceGenderMale": "Мужской",
   "voiceGenderFemale": "Женский",
   "voiceTeacherSample": "Здравствуйте! Я Виктор, ваш учитель. Давайте вместе освоим эндшпили.",
-  "tourVoiceTitle": "Мне говорить вслух?",
-  "tourVoiceBody": "Выберите мой голос. Нажмите на голос, чтобы послушать.",
-  "tourCharacterVoicesTitle": "Голоса ваших соперников",
-  "tourCharacterVoicesBody": "У каждого уже есть голос. Нажмите на соперника, чтобы сменить его.",
-  "tourKeepVoices": "Оставить так",
   "lessonPrevious": "Предыдущий шаг",
   "lessonFooterBack": "Назад",
   "voiceSpeedValue": "{speed}×",
@@ -661,8 +630,6 @@
   "homeJourneyBodyPlayer": "Отработай базовые маты и брось вызов каждому сопернику, от Коко до Stockfish.",
   "homeLearnBodyPlayer": "Повтори основы с Виктором.",
   "homeSpeedrunBodyChallenge": "Обыграй всех до Stockfish за минимальное время. Побей свой рекорд.",
-  "tourGoalsTitle": "Чем ты хочешь заниматься в Lucena?",
-  "tourGoalsBody": "Отметь сколько хочешь. Позже это можно изменить в настройках.",
   "homeOtherModes": "Другие режимы",
   "homeCustomize": "Настроить",
   "homeLayoutTitle": "Главный экран",
@@ -680,7 +647,6 @@
   "allModesRatingBody": "Твой рейтинг во времени и каждая засчитанная партия.",
   "allModesAchievementsBody": "Медали, которые ты уже получил, и те, что ещё ждут.",
   "speechShowOnBoard": "Показать {square} на доске",
-  "tourDemoMate": "Мат!",
   "profileLevelBeginnerHint": "Я изучаю правила",
   "profileLevelCasualHint": "Иногда играю с друзьями",
   "speedrunPaceLine": "Контроль: {time}",
@@ -974,7 +940,6 @@
   "skillTacticsEndgame": "Тактика в эндшпиле",
   "tourLevelTestTitle": "Пройти тест и узнать свой уровень",
   "tourLevelTestBody": "20 вопросов, без часов, примерно 8–12 минут. В конце я составлю твой план занятий.",
-  "tourLevelTakeTest": "Лучше пройти тест",
   "placementTake": "Пройти тест уровня",
   "schoolPlacedSpeech": "По тесту ты уже знаешь начало курса. Начнём с урока: {lesson}.",
   "schoolReviewSkipped": "Повторить прошлые уроки",
@@ -985,7 +950,6 @@
   "endgamesTestPrompt": "Узнай, какие эндшпили ты уже знаешь.",
   "endgamesNextTitle": "Твой следующий эндшпиль",
   "endgamesThenTitle": "Потом",
-  "tourLevelByHandHint": "Если выбрать уровень самому, рейтинг будет верным, но план занятий не станет персональным. Только тест покажет, что ты уже знаешь и чего не хватает.",
   "schoolKnownTitle": "Ты это уже знаешь",
   "schoolKnownBody": "Тест показал, что ты знаешь эти уроки. Повтори их, когда захочешь.",
   "endgamesForYou": "Для тебя",
@@ -1221,5 +1185,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

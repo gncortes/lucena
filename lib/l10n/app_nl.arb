@@ -303,32 +303,11 @@
   "speedrunTotalTime": "Totale tijd",
   "teacherName": "Meester {name}",
   "tourBack": "Terug",
-  "tourBoardTitle": "Kies je bord",
-  "tourEndgamesBody": "Basismatten, pionneneindspelen, toren- en dame-eindspelen: elke stelling heeft een doel, winnen of remise houden.",
-  "tourEndgamesTitle": "Eindspelen",
-  "tourGoalBody": "Lucena zet je in typische eindspelen tegen Maia, een AI die speelt als echte mensen van elke rating. Alles werkt offline.",
-  "tourGoalTitle": "Train eindspelen tegen mensen",
-  "tourJourneyBody": "Klim van Maia 1000 naar Stockfish. Voltooi alle uitdagingen van een niveau om het volgende te ontgrendelen.",
-  "tourJourneyTitle": "De Reis",
-  "tourLevelBody": "De Reis begint op het passende niveau, en de niveaus daaronder blijven speelbaar.",
-  "tourLevelSchool": "Je begint met de lessen van Viktor, daarna de Reis op 1000",
   "tourLevelStart": "De Reis begint bij {rung}",
-  "tourLevelTitle": "Wat is je huidige niveau?",
   "tourNext": "Volgende",
-  "tourOpponentsBody": "Elk Maia-niveau is een personage met een eigen persoonlijkheid, dat de partij becommentarieert in een tekstballon.",
-  "tourOpponentsTitle": "Je tegenstanders",
-  "tourRatingBody": "Elke partij tegen Maia of Stockfish verandert je eindspelrating. Bij een speedrun komt de rating in één keer, als je afrondt.",
-  "tourRatingTitle": "Jouw rating",
-  "tourRecordsBody": "Verbeter je tijden, ontgrendel prestaties en bekijk elke partij in de geschiedenis.",
-  "tourRecordsTitle": "Records en prestaties",
   "tourSkip": "Overslaan",
-  "tourSpeedrunBody": "Win de etappes zo snel als je kunt. De eerste keer dat je een speedrun afrondt, verdien je rating, en hoe sneller het tempo, hoe meer.",
-  "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Beginnen",
-  "tourStartLessons": "Begin de lessen",
   "tourStep": "Stap {step} van {total}",
-  "tourThemeBody": "Kies het thema en de kleur die je het mooist vindt. Je kunt ze altijd wijzigen in Instellingen.",
-  "tourThemeTitle": "Maak de app van jou",
   "resultNextChallenge": "Volgende uitdaging",
   "reportRatingLabel": "Rating",
   "resultYouWon": "Je hebt gewonnen!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "Alle",
   "catalogDone": "{done} van {total} gedaan",
   "tourNameLabel": "Hoe zal ik je noemen?",
-  "tourNameHelper": "Je naam staat op het startscherm. Je kunt hem later wijzigen in je profiel.",
   "homePathsTitle": "Wat wil je doen?",
   "homeLearn": "Leren schaken",
   "homeLearnBody": "Lessen met Viktor: hoe de stukken bewegen, schaak, schaakmat en de eerste eindspelen.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "De zwarte pionnen staan alleen in de weg: je kunt ze niet slaan. Je verzamelt de sterren.",
   "settingsSound": "Geluiden",
   "settingsSoundHint": "Zetten van de stukken en een waarschuwing als je tijd bijna op is",
-  "tourSoundTitle": "Met of zonder geluid?",
-  "tourSoundBody": "Hoor de stukken bij elke zet en een waarschuwing als de klok bijna afloopt.",
-  "tourSoundOn": "Met geluid",
-  "tourSoundOff": "Zonder geluid",
   "reviewStart": "Analyseren met Stockfish",
   "reviewRunning": "Zet {done} van {total} analyseren",
   "reviewAccuracy": "Nauwkeurigheid",
@@ -554,11 +528,6 @@
   "voiceGenderMale": "Mannelijk",
   "voiceGenderFemale": "Vrouwelijk",
   "voiceTeacherSample": "Hallo! Ik ben Viktor, je leraar. Laten we samen de eindspelen beheersen.",
-  "tourVoiceTitle": "Zal ik hardop praten?",
-  "tourVoiceBody": "Kies mijn stem. Tik op een stem om hem te horen.",
-  "tourCharacterVoicesTitle": "De stemmen van je tegenstanders",
-  "tourCharacterVoicesBody": "Iedereen heeft al een stem. Tik op iemand om die te wijzigen.",
-  "tourKeepVoices": "Zo laten",
   "lessonPrevious": "Vorige stap",
   "lessonFooterBack": "Terug",
   "voiceSpeedValue": "{speed}×",
@@ -661,8 +630,6 @@
   "homeJourneyBodyPlayer": "Oefen de basismatten en daag elke tegenstander uit, van Coco tot Stockfish.",
   "homeLearnBodyPlayer": "Herhaal de basis met Viktor.",
   "homeSpeedrunBodyChallenge": "Versla iedereen tot Stockfish in de kortste tijd. Verbeter je record.",
-  "tourGoalsTitle": "Wat wil je doen in Lucena?",
-  "tourGoalsBody": "Kies er zoveel als je wilt. Je kunt het later wijzigen in Instellingen.",
   "homeOtherModes": "Andere modi",
   "homeCustomize": "Aanpassen",
   "homeLayoutTitle": "Startscherm",
@@ -680,7 +647,6 @@
   "allModesRatingBody": "Je rating door de tijd en elke partij die telde.",
   "allModesAchievementsBody": "De medailles die je al hebt en die nog wachten.",
   "speechShowOnBoard": "{square} op het bord tonen",
-  "tourDemoMate": "Mat!",
   "profileLevelBeginnerHint": "Ik leer de regels",
   "profileLevelCasualHint": "Ik speel af en toe met vrienden",
   "speedrunPaceLine": "Tempo: {time}",
@@ -974,7 +940,6 @@
   "skillTacticsEndgame": "Tactiek in het eindspel",
   "tourLevelTestTitle": "De test doen om mijn niveau te ontdekken",
   "tourLevelTestBody": "20 vragen, zonder klok, ongeveer 8 tot 12 minuten. Aan het eind maak ik je studieplan.",
-  "tourLevelTakeTest": "Liever de test doen",
   "placementTake": "De niveautest doen",
   "schoolPlacedSpeech": "Volgens je test beheers je het begin van de cursus al. We beginnen met: {lesson}.",
   "schoolReviewSkipped": "Eerdere lessen bekijken",
@@ -985,7 +950,6 @@
   "endgamesTestPrompt": "Ontdek welke eindspelen je al beheerst.",
   "endgamesNextTitle": "Je volgende eindspel",
   "endgamesThenTitle": "Daarna",
-  "tourLevelByHandHint": "Kies je zelf je niveau, dan klopt je rating, maar je krijgt geen persoonlijk studieplan. Alleen de test laat zien wat je al kunt en wat ontbreekt.",
   "schoolKnownTitle": "Ken je al",
   "schoolKnownBody": "De test liet zien dat je deze lessen beheerst. Bekijk ze wanneer je wilt.",
   "endgamesForYou": "Voor jou",
@@ -1221,5 +1185,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

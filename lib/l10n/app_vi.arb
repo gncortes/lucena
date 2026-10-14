@@ -303,32 +303,11 @@
   "speedrunTotalTime": "Tổng thời gian",
   "teacherName": "Thầy {name}",
   "tourBack": "Quay lại",
-  "tourBoardTitle": "Chọn bàn cờ của bạn",
-  "tourEndgamesBody": "Chiếu hết cơ bản, tàn cuộc Tốt, Xe và Hậu: mỗi thế cờ có một mục tiêu, thắng hoặc giữ hòa.",
-  "tourEndgamesTitle": "Tàn cuộc",
-  "tourGoalBody": "Lucena đưa bạn vào các tàn cuộc điển hình với Maia, một AI chơi như người thật ở từng mức Elo. Mọi thứ đều chạy ngoại tuyến.",
-  "tourGoalTitle": "Luyện tàn cuộc với người thật",
-  "tourJourneyBody": "Leo từ Maia 1000 lên Stockfish. Hoàn thành mọi thử thách của một cấp để mở khóa cấp tiếp theo.",
-  "tourJourneyTitle": "Hành trình",
-  "tourLevelBody": "Hành trình bắt đầu ở cấp phù hợp, và bạn vẫn chơi được các cấp thấp hơn.",
-  "tourLevelSchool": "Bạn bắt đầu với các bài học của Viktor, rồi Hành trình ở 1000",
   "tourLevelStart": "Hành trình bắt đầu ở {rung}",
-  "tourLevelTitle": "Trình độ hiện tại của bạn?",
   "tourNext": "Tiếp",
-  "tourOpponentsBody": "Mỗi cấp độ của Maia là một nhân vật có cá tính riêng, bình luận ván cờ qua bong bóng thoại.",
-  "tourOpponentsTitle": "Đối thủ của bạn",
-  "tourRatingBody": "Mỗi ván đấu với Maia hoặc Stockfish đều thay đổi rating tàn cuộc của bạn. Trong speedrun, rating được cộng một lần khi bạn hoàn thành.",
-  "tourRatingTitle": "Elo của bạn",
-  "tourRecordsBody": "Phá thời gian của chính bạn, mở khóa thành tích và xem lại mọi ván trong lịch sử.",
-  "tourRecordsTitle": "Kỷ lục và thành tích",
   "tourSkip": "Bỏ qua",
-  "tourSpeedrunBody": "Vượt các chặng nhanh nhất có thể. Lần đầu hoàn thành một speedrun, bạn nhận rating, và nhịp càng nhanh càng được nhiều.",
-  "tourSpeedrunTitle": "Speedrun",
   "tourStart": "Bắt đầu",
-  "tourStartLessons": "Bắt đầu học",
   "tourStep": "Bước {step}/{total}",
-  "tourThemeBody": "Chọn giao diện và màu bạn thích nhất. Bạn có thể đổi bất cứ lúc nào trong Cài đặt.",
-  "tourThemeTitle": "Tùy chỉnh ứng dụng theo ý bạn",
   "resultNextChallenge": "Thử thách tiếp theo",
   "reportRatingLabel": "Hệ số",
   "resultYouWon": "Bạn đã thắng!",
@@ -370,7 +349,6 @@
   "profileRatingPeriodAll": "Tất cả",
   "catalogDone": "Đã xong {done}/{total}",
   "tourNameLabel": "Tôi nên gọi bạn là gì?",
-  "tourNameHelper": "Tên này hiển thị trên màn hình chính. Bạn có thể đổi sau trong hồ sơ.",
   "homePathsTitle": "Bạn muốn làm gì?",
   "homeLearn": "Học chơi cờ vua",
   "homeLearnBody": "Học cùng Viktor: cách các quân cờ di chuyển, chiếu, chiếu hết và những tàn cuộc đầu tiên.",
@@ -484,10 +462,6 @@
   "starChallengeObstacles": "Các tốt đen chỉ cản đường: không thể bắt chúng. Thứ bạn thu là các ngôi sao.",
   "settingsSound": "Âm thanh",
   "settingsSoundHint": "Tiếng quân cờ và cảnh báo khi bạn sắp hết giờ",
-  "tourSoundTitle": "Bật hay tắt âm thanh?",
-  "tourSoundBody": "Nghe tiếng quân cờ ở mỗi nước đi và cảnh báo khi đồng hồ sắp hết.",
-  "tourSoundOn": "Bật âm thanh",
-  "tourSoundOff": "Tắt âm thanh",
   "reviewStart": "Xem lại với Stockfish",
   "reviewRunning": "Đang phân tích nước {done} trên {total}",
   "reviewAccuracy": "Độ chính xác",
@@ -554,11 +528,6 @@
   "voiceGenderMale": "Nam",
   "voiceGenderFemale": "Nữ",
   "voiceTeacherSample": "Xin chào! Tôi là Viktor, thầy của bạn. Cùng nhau làm chủ tàn cuộc nhé.",
-  "tourVoiceTitle": "Bạn có muốn tôi đọc thành tiếng không?",
-  "tourVoiceBody": "Hãy chọn giọng của tôi. Chạm vào một giọng để nghe.",
-  "tourCharacterVoicesTitle": "Giọng của các đối thủ",
-  "tourCharacterVoicesBody": "Mỗi người đã có một giọng. Chạm vào một người để đổi.",
-  "tourKeepVoices": "Giữ nguyên",
   "lessonPrevious": "Bước trước",
   "lessonFooterBack": "Quay lại",
   "voiceSpeedValue": "{speed}×",
@@ -661,8 +630,6 @@
   "homeJourneyBodyPlayer": "Luyện các thế chiếu hết cơ bản và thách đấu mọi đối thủ, từ Coco đến Stockfish.",
   "homeLearnBodyPlayer": "Ôn lại những điều cơ bản cùng Viktor.",
   "homeSpeedrunBodyChallenge": "Đánh bại tất cả đến Stockfish trong thời gian ngắn nhất. Phá kỷ lục của bạn.",
-  "tourGoalsTitle": "Bạn muốn làm gì trong Lucena?",
-  "tourGoalsBody": "Chọn bao nhiêu tùy thích. Bạn có thể đổi sau trong Cài đặt.",
   "homeOtherModes": "Chế độ khác",
   "homeCustomize": "Tùy chỉnh",
   "homeLayoutTitle": "Màn hình chính",
@@ -680,7 +647,6 @@
   "allModesRatingBody": "Điểm xếp hạng của bạn theo thời gian và mọi ván được tính.",
   "allModesAchievementsBody": "Những huy chương bạn đã có và những cái đang chờ.",
   "speechShowOnBoard": "Hiện {square} trên bàn cờ",
-  "tourDemoMate": "Chiếu hết!",
   "profileLevelBeginnerHint": "Tôi đang học luật chơi",
   "profileLevelCasualHint": "Thỉnh thoảng chơi với bạn bè",
   "speedrunPaceLine": "Nhịp: {time}",
@@ -974,7 +940,6 @@
   "skillTacticsEndgame": "Chiến thuật tàn cuộc",
   "tourLevelTestTitle": "Làm bài kiểm tra để biết trình độ",
   "tourLevelTestBody": "20 câu hỏi, không tính giờ, khoảng 8 đến 12 phút. Cuối cùng tôi lập lộ trình học cho bạn.",
-  "tourLevelTakeTest": "Tôi muốn làm bài kiểm tra",
   "placementTake": "Làm bài kiểm tra trình độ",
   "schoolPlacedSpeech": "Theo bài kiểm tra, bạn đã nắm phần đầu khóa học. Ta bắt đầu từ: {lesson}.",
   "schoolReviewSkipped": "Xem lại các bài trước",
@@ -985,7 +950,6 @@
   "endgamesTestPrompt": "Khám phá những thế cờ tàn bạn đã nắm vững.",
   "endgamesNextTitle": "Thế cờ tàn tiếp theo",
   "endgamesThenTitle": "Sau đó",
-  "tourLevelByHandHint": "Tự chọn trình độ thì điểm được đặt, nhưng lộ trình học sẽ không được cá nhân hóa. Chỉ bài kiểm tra mới cho thấy bạn đã nắm gì và còn thiếu gì.",
   "schoolKnownTitle": "Bạn đã biết",
   "schoolKnownBody": "Bài kiểm tra cho thấy bạn đã nắm các bài này. Xem lại khi nào bạn muốn.",
   "endgamesForYou": "Cho bạn",
@@ -1221,5 +1185,53 @@
   "lessonNextStage": "Next stage",
   "lessonBackToStart": "Back to the start",
   "lessonPreviousStep": "Step back",
-  "lessonMoveList": "Moves"
+  "lessonMoveList": "Moves",
+  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "@tourVoiceHint": {
+    "description": "Note under the voice choice in the tour."
+  },
+  "tourStageIdea": "Idea",
+  "@tourStageIdea": {
+    "description": "Tour, lessons step: first stage."
+  },
+  "tourStageIdeaBody": "I explain,\nmove by move",
+  "@tourStageIdeaBody": {
+    "description": "Tour, lessons step: what happens in the first stage."
+  },
+  "tourStageExamples": "Examples",
+  "@tourStageExamples": {
+    "description": "Tour, lessons step: second stage."
+  },
+  "tourStageExamplesBody": "I show\non the board",
+  "@tourStageExamplesBody": {
+    "description": "Tour, lessons step: what happens in the second stage."
+  },
+  "tourStagePractice": "Practice",
+  "@tourStagePractice": {
+    "description": "Tour, lessons step: third stage."
+  },
+  "tourStagePracticeBody": "you play\nalone",
+  "@tourStagePracticeBody": {
+    "description": "Tour, lessons step: what happens in the third stage."
+  },
+  "tourStockfishMax": "maximum",
+  "@tourStockfishMax": {
+    "description": "Tour, games step: rating label under the Stockfish square."
+  },
+  "tourLevelBeginnerTitle": "I'm just starting",
+  "@tourLevelBeginnerTitle": {
+    "description": "Tour, level step: first card title."
+  },
+  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
+  "@tourLevelBeginnerBody": {
+    "description": "Tour, level step: first card text."
+  },
+  "tourLevelBandTitle": "Choose my level",
+  "@tourLevelBandTitle": {
+    "description": "Tour, level step: third card title."
+  },
+  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
+  "@tourLevelBandBody": {
+    "description": "Tour, level step: third card text."
+  }
 }

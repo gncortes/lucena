@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
@@ -23,10 +24,11 @@ void main() {
     final tour = TourRobot($);
     final placement = PlacementRobot($);
     await app.open(systemLocale: _english, tour: true);
-    await tour.passVoice();
     await tour.nextUntilLevel();
-    // O teste vem primeiro; a lista das faixas, atrás do botão discreto.
-    expect(find.byKey(TourKeys.takeTestCard), findsOneWidget);
+    expect(
+      find.byKey(TourKeys.levelOption(TourLevelChoice.test)),
+      findsOneWidget,
+    );
 
     await tour.takeTest();
     await placement.expectIntro();
@@ -48,20 +50,21 @@ void main() {
     await placement.expectResult();
     await placement.useLevel();
 
-    await tour.expectStep(TourStep.goals);
+    await tour.expectStep(TourStep.level);
     await tour.start();
   });
 
   patrolTest('no teste, "prefiro informar meu rating" volta ao tour com a '
-      'lista das faixas e o aviso', ($) async {
+      'folha das faixas', ($) async {
     final tour = TourRobot($);
+    final placement = PlacementRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.passVoice();
     await tour.nextUntilLevel();
-    await $(TourKeys.chooseByHand).scrollTo().tap();
+    await tour.takeTest();
+    await placement.expectIntro();
+    await $(PlacementKeys.chooseByHand).scrollTo().tap();
     await $.pumpAndSettle();
-    await $(TourKeys.byHandHint).waitUntilVisible();
-    await $(TourKeys.takeTest).scrollTo();
+    await $(ProfileKeys.levelSheet).waitUntilVisible();
   });
 
   patrolTest('perfil: refazer o teste; a escola e a trilha de finais passam '

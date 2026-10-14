@@ -320,12 +320,3 @@ class VoiceTonePicker extends StatelessWidget {
     );
   }
 }
-
-/// Provisório, só até o merge do tour reescrito (T72): o passo antigo das
-/// vozes dos adversários ainda a usa. Não mostra nada: o app escolhe a voz.
-class CharacterVoiceList extends StatelessWidget {
-  const CharacterVoiceList({super.key});
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
-}

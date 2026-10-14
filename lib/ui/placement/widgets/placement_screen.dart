@@ -1,6 +1,9 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/app_bar_progress.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,18 +58,9 @@ class PlacementScreen extends StatelessWidget {
               // Quanto do questionário já foi: uma barra contínua na base
               // da barra do app, que anda a cada resposta.
               bottom: state.view == PlacementView.question
-                  ? PreferredSize(
-                      preferredSize: const Size.fromHeight(4),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(end: (state.number - 1) / 20),
-                        duration: AppMotion.of(context).component,
-                        curve: AppMotion.enter,
-                        builder: (context, value, _) => LinearProgressIndicator(
-                          key: PlacementKeys.progress,
-                          value: value,
-                          minHeight: 4,
-                        ),
-                      ),
+                  ? AppBarProgress(
+                      key: PlacementKeys.progress,
+                      value: (state.number - 1) / 20,
                     )
                   : null,
             ),

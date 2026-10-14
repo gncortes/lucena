@@ -91,9 +91,6 @@ void main() {
       'MediaQuery.disableAnimationsOf(context)':
           'sem animação os pontinhos ficam parados, não só mais curtos',
     },
-    'lib/ui/tour/widgets/tour_demos.dart': {
-      'const Duration(milliseconds:': 'coreografia das demonstrações do tour',
-    },
   };
 
   test('durações, curvas e "remover animações" só pelos tokens', () {
