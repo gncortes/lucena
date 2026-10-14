@@ -298,7 +298,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
       }
       final colors = Theme.of(context).colorScheme;
       const radius = BorderRadius.vertical(
-        top: Radius.circular(AppShape.large),
+        top: Radius.circular(AppShape.extraLarge),
       );
       return Stack(
         children: [

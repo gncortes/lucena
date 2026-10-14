@@ -13,12 +13,14 @@ import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -156,7 +158,7 @@ class _Body extends StatelessWidget {
                 text: _speech(),
                 explanation: ExplanationPayload.context([?_speech()]),
                 emotion: state.passed ? Emotion.happy : Emotion.calm,
-                avatarSize: 48,
+                avatarSize: CharacterAvatar.speech,
                 bubbleKey: EndgameLessonKeys.speech,
                 speaks: true,
               ),
@@ -644,7 +646,7 @@ class _ContinueBar extends StatelessWidget {
           child: FilledButton(
             key: EndgameLessonKeys.continueButton,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: onPressed,
             child: Text(label),
@@ -688,7 +690,7 @@ class _ExercisesCard extends StatelessWidget {
           FilledButton.icon(
             key: EndgameLessonKeys.startExercises,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             icon: const Icon(Icons.play_arrow_rounded),
             label: Text(l10n.endgameExercisesStart),
@@ -920,7 +922,7 @@ class _FinalCardState extends State<_FinalCard> {
               FilledButton.icon(
                 key: EndgameLessonKeys.speedrunButton,
                 style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
+                  minimumSize: const Size.fromHeight(kButtonHeight),
                 ),
                 icon: const Icon(Icons.timer_outlined),
                 label: Text(l10n.endgameSpeedrunChallenge),
@@ -933,7 +935,7 @@ class _FinalCardState extends State<_FinalCard> {
             OutlinedButton.icon(
               key: EndgameLessonKeys.trainButton,
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               icon: const Icon(Icons.fitness_center),
               label: Text(l10n.endgameTrain),

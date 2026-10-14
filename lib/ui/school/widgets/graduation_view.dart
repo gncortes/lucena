@@ -7,6 +7,7 @@ import '../../../domain/models/character.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -451,7 +452,7 @@ class _Actions extends StatelessWidget {
               OutlinedButton.icon(
                 key: LessonKeys.clockGameButton,
                 style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(48),
+                  minimumSize: const Size.fromHeight(kButtonHeight),
                 ),
                 icon: const Icon(Icons.av_timer_outlined),
                 label: Text(l10n.lessonPlayWithClock),
@@ -473,7 +474,7 @@ class _Actions extends StatelessWidget {
               FilledButton.icon(
                 key: LessonKeys.journeyButton,
                 style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: const Size.fromHeight(kButtonHeight),
                 ),
                 icon: const Icon(Icons.hiking_rounded),
                 label: Text(l10n.lessonToJourney),

@@ -10,6 +10,7 @@ import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -750,7 +751,7 @@ class PartFinished extends StatelessWidget {
                     child: OutlinedButton.icon(
                       key: LessonKeys.reviewPartButton,
                       style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       onPressed: () => context.pushReplacement(
                         Routes.endgameLessonSteps(lessonId, part: part.id),
@@ -764,7 +765,7 @@ class PartFinished extends StatelessWidget {
                     child: FilledButton.icon(
                       key: LessonKeys.nextPartButton,
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       // Na última etapa, o teste final (pela introdução).
                       onPressed: () => context.pushReplacement(

@@ -17,9 +17,11 @@ import '../../core/board/centered_board_layout.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/game_entrance.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
@@ -35,6 +37,7 @@ import 'sound_dialog.dart';
 import 'clock_sheet.dart';
 import '../../core/widgets/versus_intro.dart';
 import 'move_list.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -533,11 +536,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                     ? null
                                     : state.mode.level,
                                 opponentAvatar: character == null
-                                    ? const ColoredBox(
-                                        color: Color(0xFF312E2B),
-                                        child: Icon(
+                                    ? ColoredBox(
+                                        color: AppColors.chessBlackColor,
+                                        child: const Icon(
                                           Icons.smart_toy_outlined,
-                                          color: Colors.white,
+                                          color: AppColors.chessWhiteColor,
                                           size: 32,
                                         ),
                                       )
@@ -743,7 +746,7 @@ class _SeeResultBar extends StatelessWidget {
                 onPressed: onPressed,
                 // CompBotao: 52 de altura, seta antes do texto (18), 14/500.
                 style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: const Size.fromHeight(kButtonHeight),
                 ),
                 icon: const Icon(Icons.arrow_forward),
                 label: Text(context.l10n.gameSeeResult),
@@ -987,158 +990,85 @@ Future<bool?> _showGameConfirmation(
   required String cancel,
   IconData? icon,
   bool destructive = false,
-}) => showModalBottomSheet<bool>(
-  context: context,
-  // Scrim do canvas: 32% de preto (padrao do M3), nao os 54% do Flutter.
-  barrierColor: Colors.black.withValues(alpha: 0.32),
-  backgroundColor: Colors.transparent,
-  useSafeArea: true,
-  isScrollControlled: true,
-  builder: (context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    const buttonHeight = 52.0;
-    const pill = StadiumBorder();
-    final confirmStyle = FilledButton.styleFrom(
-      minimumSize: const Size.fromHeight(buttonHeight),
-      shape: pill,
-      backgroundColor: destructive ? colors.error : null,
-      foregroundColor: destructive ? colors.onError : null,
-    );
-    void confirm() => Navigator.of(context).pop(true);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // O X fica no canto final: espelha nos idiomas da direita para a
-        // esquerda. O círculo tem 44 (12 acima da folha, 16 da borda) e a
-        // área de toque, 48.
-        Padding(
-          padding: const EdgeInsetsDirectional.only(end: 14, bottom: 10),
-          child: Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              excludeFromSemantics: true,
-              onTap: () => Navigator.of(context).pop(false),
-              child: SizedBox.square(
-                dimension: kMinInteractiveDimension,
-                child: Center(
-                  child: Material(
-                    color: Colors.white,
-                    elevation: 4,
-                    shape: const CircleBorder(),
-                    child: IconButton(
-                      key: FreeBoardKeys.confirmationClose,
-                      style: IconButton.styleFrom(
-                        minimumSize: const Size(44, 44),
-                        maximumSize: const Size(44, 44),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      constraints: const BoxConstraints.tightFor(
-                        width: 44,
-                        height: 44,
-                      ),
-                      color: Colors.black87,
-                      tooltip: MaterialLocalizations.of(context)
-                          .closeButtonTooltip,
-                      onPressed: () => Navigator.of(context).pop(false),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Flexible(
-          child: Material(
-            key: sheetKey,
-            color: colors.surfaceContainerLow,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppShape.extraLarge),
-            ),
-            child: SafeArea(
-              top: false,
-              // Com fonte grande, a folha rola: os dois botões continuam ao
-              // alcance.
-              child: SingleChildScrollView(
+}) async {
+  final confirmed = await showLucenaSheet<bool>(
+    context,
+    sheetKey: sheetKey,
+    closeKey: FreeBoardKeys.confirmationClose,
+    builder: (context) {
+      final theme = Theme.of(context);
+      final colors = theme.colorScheme;
+      const pill = StadiumBorder();
+      final confirmStyle = FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(kButtonHeight),
+        shape: pill,
+        backgroundColor: destructive ? colors.error : null,
+        foregroundColor: destructive ? colors.onError : null,
+      );
+      void confirm() => Navigator.of(context).pop(true);
+      return SafeArea(
+        top: false,
+        // Com fonte grande, a folha rola: os dois botões continuam ao alcance.
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 4,
                   children: [
-                    // A alça, 32×4 numa faixa de 48.
-                    SizedBox(
-                      height: 48,
-                      child: Center(
-                        child: Container(
-                          width: 32,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: colors.onSurfaceVariant.withValues(
-                              alpha: .4,
-                            ),
-                            borderRadius: BorderRadius.circular(AppShape.full),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: 4,
-                        children: [
-                          Text(title, style: theme.textTheme.titleLarge),
-                          Text(
-                            hint,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        spacing: 8,
-                        children: [
-                          if (icon == null)
-                            FilledButton(
-                              key: confirmKey,
-                              style: confirmStyle,
-                              onPressed: confirm,
-                              child: Text(action, textAlign: TextAlign.center),
-                            )
-                          else
-                            FilledButton.icon(
-                              key: confirmKey,
-                              style: confirmStyle,
-                              icon: Icon(icon),
-                              onPressed: confirm,
-                              label: Text(action, textAlign: TextAlign.center),
-                            ),
-                          OutlinedButton(
-                            key: cancelKey,
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(buttonHeight),
-                              shape: pill,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(false),
-                            child: Text(cancel, textAlign: TextAlign.center),
-                          ),
-                        ],
+                    Text(title, style: theme.textTheme.titleLarge),
+                    Text(
+                      hint,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 8,
+                  children: [
+                    if (icon == null)
+                      FilledButton(
+                        key: confirmKey,
+                        style: confirmStyle,
+                        onPressed: confirm,
+                        child: Text(action, textAlign: TextAlign.center),
+                      )
+                    else
+                      FilledButton.icon(
+                        key: confirmKey,
+                        style: confirmStyle,
+                        icon: Icon(icon),
+                        onPressed: confirm,
+                        label: Text(action, textAlign: TextAlign.center),
+                      ),
+                    OutlinedButton(
+                      key: cancelKey,
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(kButtonHeight),
+                        shape: pill,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: Text(cancel, textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-      ],
-    );
-  },
-);
+      );
+    },
+  );
+  // Fechar de qualquer jeito que não seja a ação devolve falso.
+  return confirmed ?? false;
+}

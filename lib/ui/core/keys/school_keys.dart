@@ -76,6 +76,7 @@ abstract final class LessonKeys {
 
   /// T51: o passo de pensar, a demonstração e o fim de uma parte.
   static const appBarTitle = Key('lesson.appBar.title');
+  static const appBarClose = Key('lesson.appBar.close');
   static const place = Key('lesson.appBar.place');
   static const thinkReset = Key('lesson.think.reset');
   static const moreHintButton = Key('lesson.think.moreHint');

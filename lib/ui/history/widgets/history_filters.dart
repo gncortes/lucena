@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/lucena_sheet.dart';
 
 /// Um chip da faixa de filtros: [name] é o grupo (`period`, `result`...),
 /// [label] o que ele diz e [active] se há um valor escolhido.
@@ -178,17 +180,9 @@ Future<Map<String, String?>?> showHistoryFilterSheet(
   required Map<String, String?> initial,
   required int Function(Map<String, String?> draft) count,
   required String Function(int count) applyLabel,
-}) => showModalBottomSheet<Map<String, String?>>(
-  context: context,
-  showDragHandle: true,
-  isScrollControlled: true,
-  useSafeArea: true,
-  backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.vertical(
-      top: Radius.circular(AppShape.extraLarge),
-    ),
-  ),
+}) => showLucenaSheet<Map<String, String?>>(
+  context,
+  color: Theme.of(context).colorScheme.surfaceContainerLowest,
   builder: (_) => _FilterSheet(
     groups: groups,
     initial: initial,
@@ -309,7 +303,7 @@ class _FilterSheetState extends State<_FilterSheet> {
             child: FilledButton(
               key: HistoryKeys.filterApply,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: shown == 0
                   ? null

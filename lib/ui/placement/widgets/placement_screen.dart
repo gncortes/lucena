@@ -15,6 +15,8 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -151,7 +153,7 @@ class _Intro extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.resume,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: cubit.start,
               child: Text(l10n.placementResume(state.number)),
@@ -160,7 +162,7 @@ class _Intro extends StatelessWidget {
             OutlinedButton(
               key: PlacementKeys.restart,
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: cubit.restart,
               child: Text(l10n.placementRestart),
@@ -169,7 +171,7 @@ class _Intro extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.start,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: cubit.start,
               child: Text(l10n.placementStart),
@@ -291,7 +293,7 @@ class _Answers extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.confirm,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: state.selected.isEmpty ? null : cubit.confirmSquares,
               child: Text(l10n.placementConfirm),
@@ -318,7 +320,7 @@ class _Option extends StatelessWidget {
     return OutlinedButton(
       key: PlacementKeys.option(option),
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(56),
+        minimumSize: const Size.fromHeight(kButtonHeight),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         backgroundColor: colors.surfaceContainerLow,
         foregroundColor: colors.onSurface,
@@ -367,8 +369,8 @@ class _OptionBadge extends StatelessWidget {
       _ => null,
     };
     final side = switch (option) {
-      'whiteWins' => Colors.white,
-      'blackWins' => Colors.black,
+      'whiteWins' => AppColors.chessWhiteColor,
+      'blackWins' => AppColors.chessBlackColor,
       _ => null,
     };
     // Só o sinal, sem fundo; o lado que ganha é uma bolinha da cor dele.

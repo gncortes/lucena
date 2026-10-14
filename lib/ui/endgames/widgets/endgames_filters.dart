@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/endgames_cubit.dart';
 
@@ -61,11 +63,8 @@ class EndgamesFilterButton extends StatelessWidget {
 /// de baixo fecha mostrando quantas aulas sobraram.
 Future<void> showEndgamesFilterSheet(BuildContext context) {
   final cubit = context.read<EndgamesCubit>();
-  return showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  return showLucenaSheet<void>(
+    context,
     builder: (_) => BlocProvider.value(
       value: cubit,
       child: const SafeArea(top: false, child: _FilterSheet()),
@@ -176,7 +175,7 @@ class _FilterSheet extends StatelessWidget {
               child: FilledButton(
                 key: EndgamesKeys.filtersApply,
                 style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(52),
+                  minimumSize: const Size.fromHeight(kButtonHeight),
                 ),
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(l10n.endgamesFiltersShow(shown)),

@@ -9,6 +9,7 @@ import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../view_models/profile_cubit.dart';
 import 'rating_level_sheet.dart';
 import 'rating_level_ui.dart';
@@ -134,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 OutlinedButton.icon(
                   key: ProfileKeys.ratingCard,
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
+                    minimumSize: const Size.fromHeight(kButtonHeight),
                   ),
                   onPressed: () => context.push(Routes.rating),
                   icon: const Icon(Icons.show_chart_rounded),
