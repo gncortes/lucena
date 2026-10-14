@@ -129,20 +129,23 @@ void main() {
     },
   );
 
-  test('o cartão marcado: nenhum, começando, faixa ou teste', () async {
-    final tour = cubit();
-    await tour.load('en');
-    expect(tour.state.choice, TourLevelChoice.beginner);
-    await tour.setLevel(RatingLevel.beginner);
-    expect(tour.state.choice, TourLevelChoice.beginner);
-    await tour.setLevel(RatingLevel.expert);
-    expect(tour.state.choice, TourLevelChoice.band);
-    profile.profile = profile.profile.copyWith(rating: 1530);
-    await tour.usePlacement();
-    expect(tour.state.choice, TourLevelChoice.test);
-    await tour.setLevel(RatingLevel.advanced);
-    expect(tour.state.choice, TourLevelChoice.band);
-  });
+  test(
+    'o cartão marcado: começando de início, depois faixa ou teste',
+    () async {
+      final tour = cubit();
+      await tour.load('en');
+      expect(tour.state.choice, TourLevelChoice.beginner);
+      await tour.setLevel(RatingLevel.beginner);
+      expect(tour.state.choice, TourLevelChoice.beginner);
+      await tour.setLevel(RatingLevel.expert);
+      expect(tour.state.choice, TourLevelChoice.band);
+      profile.profile = profile.profile.copyWith(rating: 1530);
+      await tour.usePlacement();
+      expect(tour.state.choice, TourLevelChoice.test);
+      await tour.setLevel(RatingLevel.advanced);
+      expect(tour.state.choice, TourLevelChoice.band);
+    },
+  );
 
   test('o teste usado marca o cartão e não avança o passo', () async {
     final tour = cubit();

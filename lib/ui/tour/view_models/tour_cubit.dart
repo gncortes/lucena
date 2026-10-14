@@ -88,8 +88,8 @@ class TourState {
   /// O rating que vai para o perfil: o do teste ou o da faixa marcada.
   int get rating => placed ?? level.rating;
 
-  /// O cartão marcado no último passo; nenhum, sem escolha gravada.
-  TourLevelChoice? get choice {
+  /// O cartão marcado no último passo; sem escolha gravada, "começando".
+  TourLevelChoice get choice {
     if (placed != null) return TourLevelChoice.test;
     // Sem escolha, o passo abre com "Estou começando" marcado.
     if (!levelChosen) return TourLevelChoice.beginner;
@@ -145,7 +145,7 @@ class TourCubit extends Cubit<TourState> {
     this._home,
   }) : super(const TourState());
 
-  // Os caminhos escolhidos vão para a tela inicial.
+  // A sugestão da tela inicial vem da faixa escolhida.
   final HomeLayoutRepository? _home;
 
   final OnboardingRepository _onboarding;

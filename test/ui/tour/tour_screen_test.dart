@@ -5,6 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/character.dart';
+import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
@@ -55,6 +58,7 @@ void main() {
     TourStep step = TourStep.board,
     Size size = const Size(412, 915),
     bool voices = true,
+    List<Character>? characters,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
@@ -85,7 +89,7 @@ void main() {
             create: (_) => TourCubit(
               onboarding: onboarding,
               profile: profile,
-              characters: FakeCharacterRepository(),
+              characters: FakeCharacterRepository(characters: characters),
               lessons: FakeLessonRepository(texts: _texts),
               voice: voices ? voiceRepository : null,
             )..load('pt'),
@@ -381,13 +385,48 @@ void main() {
       );
     });
 
-    testWidgets('partidas: os adversários e o chip do rating do perfil', (
-      tester,
-    ) async {
-      await pumpTour(tester, step: TourStep.play);
-      expect(find.byKey(TourKeys.opponents), findsOneWidget);
-      expect(find.byKey(TourKeys.ratingChip), findsOneWidget);
-      expect(tester.takeException(), isNull);
+    testWidgets('partidas: os 4 personagens de menor nível, o Stockfish e o '
+        'rating do perfil', (tester) async {
+      Character at(String id, String name, int level) => Character(
+        id: id,
+        level: level,
+        name: name,
+        tagline: const {},
+        personality: const {},
+        traits: const [],
+        avatar: FakeCharacterRepository.magician.avatar,
+      );
+      await pumpTour(
+        tester,
+        step: TourStep.play,
+        characters: [
+          at('e', 'Eva', 2200),
+          at('b', 'Bia', 1200),
+          FakeCharacterRepository.viktor,
+          at('d', 'Davi', 1800),
+          at('a', 'Ana', 1000),
+          at('c', 'Caio', 1500),
+        ],
+      );
+      Finder inRow(String text) => find.descendant(
+        of: find.byKey(TourKeys.opponents),
+        matching: find.text(text),
+      );
+      for (final name in ['Ana', 'Bia', 'Caio', 'Davi']) {
+        expect(inRow(name), findsOneWidget, reason: name);
+      }
+      expect(inRow('Eva'), findsNothing);
+      expect(inRow('Viktor'), findsNothing);
+      expect(inRow('1000'), findsOneWidget);
+      expect(inRow('1800'), findsOneWidget);
+      expect(inRow('Stockfish'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(TourKeys.ratingChip),
+          matching: find.text('Rating ${UserProfile.defaultRating}'),
+        ),
+        findsOneWidget,
+      );
     });
   });
 
@@ -422,6 +461,30 @@ void main() {
       expect(onboarding.saved.selectedRating, RatingLevel.beginner.rating);
       expect(find.text('rota-aulas'), findsOneWidget);
       expect(onboarding.saved.done, isTrue);
+    });
+
+    testWidgets('a faixa escolhida pela folha marca o cartão e mostra onde a '
+        'Jornada começa', (tester) async {
+      await pumpTour(tester, step: TourStep.level);
+      final band = find.byKey(TourKeys.levelOption(TourLevelChoice.band));
+      await tester.ensureVisible(band);
+      await tester.tap(band);
+      await tester.pumpAndSettle();
+      final option = find.byKey(ProfileKeys.levelOption(RatingLevel.expert));
+      await tester.ensureVisible(option);
+      await tester.tap(option);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: band,
+          matching: find.textContaining('A Jornada começa no '),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
+      expect(onboarding.saved.selectedRating, RatingLevel.expert.rating);
     });
   });
 }

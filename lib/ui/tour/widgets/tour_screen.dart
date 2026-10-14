@@ -118,6 +118,9 @@ class TourScreen extends StatelessWidget {
                       children: [
                         _Conversation(state: state),
                         ClipRect(
+                          // Corta só os lados (a troca desliza); a sombra dos
+                          // botões passa da borda de baixo.
+                          clipper: _SideClipper(),
                           child: AnimatedSwitcher(
                             duration: AppMotion.of(context).component,
                             switchInCurve: AppMotion.enter,
@@ -169,6 +172,16 @@ class TourScreen extends StatelessWidget {
       },
     );
   }
+}
+
+/// Recorta só os lados do passo: em cima e embaixo sobra 16 dp para a sombra.
+class _SideClipper extends CustomClipper<Rect> {
+  @override
+  Rect getClip(Size size) =>
+      Rect.fromLTRB(0, -16, size.width, size.height + 16);
+
+  @override
+  bool shouldReclip(_SideClipper oldClipper) => false;
 }
 
 /// A lateral das ilustrações (canvas: 20).
@@ -322,7 +335,7 @@ class _BoardStep extends StatelessWidget {
             board: board.copyWith(coordinates: false),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 2),
         AppearanceSectionTitle(l10n.boardColors),
         BoardColorsCarousel(
           selected: board.colors,
@@ -801,7 +814,7 @@ class _Opponent extends StatelessWidget {
   }
 }
 
-/// 6. O nível: três cartões. Nenhum vem marcado antes da escolha.
+/// 6. O nível: três cartões. "Estou começando" já vem marcado até a escolha.
 class _LevelStep extends StatelessWidget {
   const _LevelStep({required this.state});
 
@@ -918,11 +931,11 @@ class _LevelCard extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
               child: Row(
                 children: [
                   Icon(icon, size: 28, color: colors.primary),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
