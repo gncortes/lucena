@@ -20,11 +20,14 @@ Future<void> showScriptSpeechSheet(
   required List<String> texts,
   VoidCallback? onMainLine,
   VoidCallback? onShowAnswer,
+  WidgetBuilder? headerBuilder,
+  Color? background,
 }) {
   return showScriptSheet(
     context,
     maxHeightFactor: 0.7,
     closeKey: LessonScriptKeys.speechSheetClose,
+    color: background,
     builder: (sheetContext) {
       VoidCallback? closeThen(VoidCallback? action) => action == null
           ? null
@@ -38,6 +41,7 @@ Future<void> showScriptSpeechSheet(
         texts: texts,
         onMainLine: closeThen(onMainLine),
         onShowAnswer: closeThen(onShowAnswer),
+        headerBuilder: headerBuilder,
       );
     },
   );
@@ -51,6 +55,7 @@ class ScriptSpeechSheet extends StatelessWidget {
     required this.texts,
     this.onMainLine,
     this.onShowAnswer,
+    this.headerBuilder,
     super.key,
   });
 
@@ -59,6 +64,10 @@ class ScriptSpeechSheet extends StatelessWidget {
   final List<String> texts;
   final VoidCallback? onMainLine;
   final VoidCallback? onShowAnswer;
+
+  /// O cabeçalho no lugar do retrato e do nome (o exercício leva o mesmo da
+  /// faixa, com borrar e som).
+  final WidgetBuilder? headerBuilder;
 
   /// A folga embaixo do texto, acima da barra do sistema.
   static const bottomGap = 48.0;
@@ -77,29 +86,31 @@ class ScriptSpeechSheet extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
           child: SizedBox(
             height: 56,
-            child: Row(
-              children: [
-                Hero(
-                  tag: scriptViktorHeroTag,
-                  child: CharacterAvatar(
-                    character: viktor,
-                    size: 40,
-                    radius: 6,
+            child: headerBuilder != null
+                ? headerBuilder!(context)
+                : Row(
+                    children: [
+                      Hero(
+                        tag: scriptViktorHeroTag,
+                        child: CharacterAvatar(
+                          character: viktor,
+                          size: 40,
+                          radius: 6,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: colors.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
         Flexible(

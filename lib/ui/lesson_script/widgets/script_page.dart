@@ -85,7 +85,12 @@ class ScriptPage extends StatelessWidget {
               children: [
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    minHeight: (box.maxHeight - size) / 2,
+                    // Tela baixa: o tabuleiro encosta no rodapé (a folga de
+                    // [compactGap]) e a lista fica toda abaixo da dobra, sem a
+                    // primeira linha cortada pelo meio.
+                    minHeight: metrics.compact
+                        ? math.max(0, box.maxHeight - size - compactGap)
+                        : (box.maxHeight - size) / 2,
                   ),
                   child: Align(
                     alignment: Alignment.bottomCenter,

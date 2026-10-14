@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Pion × [{square}] = {promo, select, queen{Dame}rook{Toren}bishop{Loper}knight{Paard} other{Dame}}.",
   "exerciseNodeGoodTail": "Deze zet hoort bij de oplossing.",
   "exerciseNodeBadTail": "Deze zet lost de oefening niet op.",
-  "exerciseNodeLosesTail": "Deze zet is een zware fout."
+  "exerciseNodeLosesTail": "Deze zet is een zware fout.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

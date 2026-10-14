@@ -6451,11 +6451,31 @@
   "@exerciseSolvedWithMistake": {
     "description": "Opens the balloon when an exercise ends after mistakes, hints or the shown solution."
   },
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "@exerciseSolvedBut": {
+    "description": "Opens the balloon when an exercise ends after several mistakes or hints.",
+    "placeholders": {"what": {"type": "String"}}
+  },
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "@exerciseSolvedMistakes": {
+    "description": "How many mistakes, inside the solved balloon.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "@exerciseSolvedHints": {
+    "description": "How many hints, inside the solved balloon.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "exerciseSolvedAnd": "{first} and {second}",
+  "@exerciseSolvedAnd": {
+    "description": "Joins mistakes and hints inside the solved balloon.",
+    "placeholders": {"first": {"type": "String"}, "second": {"type": "String"}}
+  },
   "exerciseNoMorePoints": "No longer worth points",
   "@exerciseNoMorePoints": {
     "description": "Accessibility label of the empty star in the app bar when the exercise no longer scores."
   },
-  "exerciseFirstMoveZeroed": "With the mistake on the first move, this exercise is no longer worth points.",
+  "exerciseFirstMoveZeroed": "With a mistake on the first move, this exercise is no longer worth points.",
   "@exerciseFirstMoveZeroed": {
     "description": "Added to the balloon when the student errs on the first move."
   },

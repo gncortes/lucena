@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Pedone × [{square}] = {promo, select, queen{Donna}rook{Torre}bishop{Alfiere}knight{Cavallo} other{Donna}}.",
   "exerciseNodeGoodTail": "Questa mossa fa parte della soluzione.",
   "exerciseNodeBadTail": "Questa mossa non risolve l’esercizio.",
-  "exerciseNodeLosesTail": "Questa mossa è un errore grave."
+  "exerciseNodeLosesTail": "Questa mossa è un errore grave.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

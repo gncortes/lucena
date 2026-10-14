@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "پیاده × [{square}] = {promo, select, queen{وزیر}rook{رخ}bishop{فیل}knight{اسب} other{وزیر}}.",
   "exerciseNodeGoodTail": "این حرکت بخشی از راه‌حل است.",
   "exerciseNodeBadTail": "این حرکت تمرین را حل نمی‌کند.",
-  "exerciseNodeLosesTail": "این حرکت اشتباه بزرگی است."
+  "exerciseNodeLosesTail": "این حرکت اشتباه بزرگی است.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

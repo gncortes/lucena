@@ -54,6 +54,7 @@ class ExerciseActions extends StatelessWidget {
     this.color,
     this.leading,
     this.hug = false,
+    this.divider = true,
     super.key,
   }) : assert(actions.length <= 2);
 
@@ -69,6 +70,10 @@ class ExerciseActions extends StatelessWidget {
   /// com [actionWidth] de mínimo (lição roteirizada, canvas `T70-etapa1-estados`: "Ver linha
   /// principal" não quebra).
   final bool hug;
+
+  /// A linha divisória em cima do rodapé (o exercício a dispensa: canvas
+  /// `PropV2ExA`).
+  final bool divider;
 
   /// Margem lateral de 16, igual à das outras telas (Gabriel, 14/10/2026).
   final EdgeInsetsGeometry padding;
@@ -155,7 +160,9 @@ class ExerciseActions extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: color ?? colors.surfaceContainerLowest,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
+        border: divider
+            ? Border(top: BorderSide(color: colors.outlineVariant))
+            : null,
       ),
       child: Padding(
         padding: padding,

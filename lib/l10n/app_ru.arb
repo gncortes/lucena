@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Пешка × [{square}] = {promo, select, queen{Ферзь}rook{Ладья}bishop{Слон}knight{Конь} other{Ферзь}}.",
   "exerciseNodeGoodTail": "Этот ход входит в решение.",
   "exerciseNodeBadTail": "Этот ход не решает упражнение.",
-  "exerciseNodeLosesTail": "Этот ход — грубая ошибка."
+  "exerciseNodeLosesTail": "Этот ход — грубая ошибка.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

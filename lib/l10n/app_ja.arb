@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "ポーン × [{square}] = {promo, select, queen{クイーン}rook{ルーク}bishop{ビショップ}knight{ナイト} other{クイーン}}.",
   "exerciseNodeGoodTail": "この手は解答の一部です。",
   "exerciseNodeBadTail": "この手では問題は解けません。",
-  "exerciseNodeLosesTail": "この手は重大なミスです。"
+  "exerciseNodeLosesTail": "この手は重大なミスです。",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

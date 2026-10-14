@@ -145,13 +145,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       }
       var next = state.copyWith(explanationPayload: payload);
       if (state.phase == ExercisePhase.done) {
+        final review = ExerciseReview.full(
+          exercise,
+          state.played,
+          payload: payload,
+          wrongs: state.wrongs,
+        );
         next = next.copyWith(
-          review: ExerciseReview.full(
-            exercise,
-            state.played,
-            payload: payload,
-            wrongs: state.wrongs,
-          ),
+          review: review,
+          // O erro do aluno segue à vista, mesmo se a aula já o previa.
+          seen: {
+            ...state.seen,
+            ...ExerciseReview.wrongNodeIds(review, state.wrongs),
+          },
         );
       }
       super.emit(next);
@@ -301,8 +307,10 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         phase: turn.reply == null
             ? ExercisePhase.active
             : ExercisePhase.waiting,
-        // O porquê do lance, se a aula o escreveu; senão, só "Correto.".
+        // O porquê do lance, se a aula o escreveu; senão, a tela diz o lance
+        // com a frase gerada.
         say: ExerciseSay.correct,
+        sayMove: (fenBefore: position.fen, uci: move.uci),
         sayTexts: ExerciseReview.commentFor(
           state.explanationPayload,
           position.fen,
@@ -347,6 +355,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         ],
         firstMoveMistake: state.firstMoveMistake || first,
         say: ExerciseSay.wrong,
+        sayMove: (fenBefore: fen, uci: move.uci),
         sayTexts: why,
         sayZeroed: first && !state.firstMoveMistake,
         emotion: Emotion.focused,
@@ -375,6 +384,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       );
       if (found == null ||
           found.isEmpty ||
+          ExerciseReview.hasNotation(found) ||
           isClosed ||
           revision != _loadRevision ||
           !state.interactive ||
@@ -386,6 +396,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       emit(
         state.copyWith(
           say: ExerciseSay.wrong,
+          sayMove: state.sayMove,
           sayTexts: [found],
           sayZeroed: state.sayZeroed,
           wrongs: [
@@ -465,6 +476,10 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         // Existing conceptual hint stays available if optional data fails.
       }
     }
+    // O balão nunca mostra notação: o porquê com lances escritos fica de fora.
+    if (feedback != null && ExerciseReview.hasNotation(feedback)) {
+      feedback = null;
+    }
     if (isClosed ||
         revision != _loadRevision ||
         !state.interactive ||
@@ -493,7 +508,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
 
   /// "Ver solução": joga a linha até o fim, com 0 pontos. O aluno vê a
   /// notação completa e o balão comenta o último lance.
-  Future<void> showSolution() async {
+  Future<void> showSolution({bool hidden = false}) async {
     if (!state.interactive) {
       return;
     }
@@ -516,6 +531,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       history: history,
       earned: 0,
       solutionShown: true,
+      hidden: hidden,
     );
   }
 
@@ -552,6 +568,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required List<String> history,
     required int earned,
     bool solutionShown = false,
+    bool hidden = false,
   }) async {
     final lesson = state.lesson!;
     final exercise = state.exercise!;
@@ -578,7 +595,21 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       payload: state.explanationPayload,
       wrongs: state.wrongs,
     );
-    final cursor = review.where((node) => node.depth == 0).lastOrNull;
+    final main = review.where((node) => node.depth == 0).toList();
+    final wrongIds = ExerciseReview.wrongNodeIds(review, state.wrongs);
+    // Onde a lista para: o erro do aluno, se houve; depois de "Ver solução",
+    // a posição final (com o borrar ligado, o 1º lance que ela mostrou); senão
+    // o lance-chave, o primeiro lance do aluno (canvas PropV2ExA4/5/9/10).
+    ReviewNode? cursor;
+    if (solutionShown) {
+      cursor = hidden && main.isNotEmpty
+          ? main[state.played.length.clamp(0, main.length - 1)]
+          : main.lastOrNull;
+    } else if (wrongIds.isNotEmpty) {
+      cursor = review.firstWhere((node) => node.id == wrongIds.first);
+    } else {
+      cursor = main.firstOrNull;
+    }
     final corrected =
         state.mistakes > 0 ||
         state.hints > 0 ||
@@ -586,8 +617,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         solutionShown;
     emit(
       state.copyWith(
-        fen: fen,
-        lastMove: lastMove,
+        fen: cursor?.fenAfter ?? fen,
+        lastMove: cursor == null ? lastMove : Move.parse(cursor.uci),
         turn: state.turn + 1,
         played: history,
         clearHint: true,
@@ -599,34 +630,23 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         cursorId: cursor?.id,
         seen: {
           ?cursor?.id,
-          // O que o aluno jogou ou viu no tabuleiro conta como visto; só as
-          // variantes e o que a solução mostrou depois ficam por ver.
-          for (final node
-              in review
-                  .where((node) => node.depth == 0)
-                  .take(solutionShown ? state.played.length : history.length))
+          // O que o aluno jogou ou viu no tabuleiro conta como visto, e o
+          // lance errado dele também (mesmo sendo uma variante prevista); só
+          // as outras variantes e o que a solução mostrou ficam por ver.
+          for (final node in main.take(
+            solutionShown ? state.played.length : history.length,
+          ))
             node.id,
+          ...wrongIds,
         },
         browsed: 0,
         say: solutionShown ? ExerciseSay.node : ExerciseSay.solved,
         sayNode: cursor,
-        sayTexts: cursor == null ? const [] : _nodeTexts(cursor, review),
+        sayTexts: cursor?.comments ?? const [],
         sayZeroed: corrected,
         emotion: earned == exercise.stars ? Emotion.happy : Emotion.calm,
       ),
     );
-  }
-
-  /// O que o Viktor diz de um lance: o que a aula escreveu dele; no último
-  /// da linha principal, a solução escrita.
-  List<String> _nodeTexts(ReviewNode node, List<ReviewNode> review) {
-    if (node.comments.isNotEmpty) return node.comments;
-    final main = review.where((each) => each.depth == 0).lastOrNull;
-    final solution = state.explanation;
-    if (main != null && main.id == node.id && solution != null) {
-      return [solution];
-    }
-    return const [];
   }
 
   /// O aluno foi a um lance da notação (depois de acabar): o tabuleiro vai à
@@ -653,7 +673,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         seen: {...state.seen, node.id},
         say: ExerciseSay.node,
         sayNode: node,
-        sayTexts: _nodeTexts(node, state.review),
+        sayTexts: node.comments,
         browsed: state.browsed + 1,
         clearWrongMove: true,
       ),
@@ -706,8 +726,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   String? _statement() =>
       state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}');
 
-  String? _hintText() =>
-      state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}.hint');
+  String? _hintText() => ExerciseReview.plainParagraphs(
+    state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}.hint'),
+  );
 
   String? _pick(String key) {
     final index = _said[key] ?? 0;

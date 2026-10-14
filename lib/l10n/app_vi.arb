@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Tốt × [{square}] = {promo, select, queen{Hậu}rook{Xe}bishop{Tượng}knight{Mã} other{Hậu}}.",
   "exerciseNodeGoodTail": "Nước đi này thuộc về lời giải.",
   "exerciseNodeBadTail": "Nước đi này không giải được bài tập.",
-  "exerciseNodeLosesTail": "Nước đi này là một sai lầm nghiêm trọng."
+  "exerciseNodeLosesTail": "Nước đi này là một sai lầm nghiêm trọng.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

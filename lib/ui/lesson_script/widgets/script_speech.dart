@@ -135,6 +135,7 @@ class ScriptSpeech extends StatelessWidget {
     required this.metrics,
     this.lines,
     this.clipLines,
+    this.footnote,
     this.typing = false,
     this.onMainLine,
     this.onShowAnswer,
@@ -154,6 +155,10 @@ class ScriptSpeech extends StatelessWidget {
   /// baixa (o exercício resolvido, canvas `PropV2ExA4`); o clique abre a fala
   /// inteira. Nulo, só a tela baixa corta.
   final int? clipLines;
+
+  /// Uma linha à parte embaixo da fala cortada, que o corte não esconde (a
+  /// dica do borrar do exercício, canvas `PropV2ExA10`).
+  final String? footnote;
 
   /// O clique em "Ver linha principal" dentro da fala: o mesmo do botão.
   final VoidCallback? onMainLine;
@@ -184,7 +189,7 @@ class ScriptSpeech extends StatelessWidget {
     final speech = SpeechBalloon(
       key: LessonScriptKeys.speech,
       // Fala nova: o texto troca em crossfade e a altura anima.
-      speech: text,
+      speech: footnote == null ? text : '$text\n$footnote',
       tailX: SpeechBalloon.tailXFor(portrait),
       minHeight: metrics.minHeight(context),
       pop: false,
@@ -196,21 +201,37 @@ class ScriptSpeech extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, box) {
-          final style = metrics.fittedStyle(
-            context,
-            box.maxWidth,
-            SpeechText.plainOf(context, text),
-            lines: clipLines ?? lines,
+          // Cortada em [clipLines] linhas, a fala mantém a letra e termina em
+          // reticências; sem corte, a letra diminui até caber.
+          final style = clipLines != null
+              ? metrics.style(context)
+              : metrics.fittedStyle(
+                  context,
+                  box.maxWidth,
+                  SpeechText.plainOf(context, text),
+                  lines: lines,
+                );
+          final speech = SpeechText(
+            text: text,
+            style: style.copyWith(color: onColor),
+            maxLines: clipLines ?? (metrics.clips ? metrics.maxLines : null),
+            onMainLine: onMainLine,
+            onShowAnswer: onShowAnswer,
           );
           return SizedBox(
             width: double.infinity,
-            child: SpeechText(
-              text: text,
-              style: style.copyWith(color: onColor),
-              maxLines: clipLines ?? (metrics.clips ? metrics.maxLines : null),
-              onMainLine: onMainLine,
-              onShowAnswer: onShowAnswer,
-            ),
+            child: footnote == null
+                ? speech
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      speech,
+                      SpeechText(
+                        text: footnote!,
+                        style: style.copyWith(color: onColor),
+                      ),
+                    ],
+                  ),
           );
         },
       ),

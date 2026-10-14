@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "兵 × [{square}] = {promo, select, queen{后}rook{车}bishop{象}knight{马} other{后}}.",
   "exerciseNodeGoodTail": "这一步是解答的一部分。",
   "exerciseNodeBadTail": "这一步不能解出这道练习。",
-  "exerciseNodeLosesTail": "这一步是严重的失误。"
+  "exerciseNodeLosesTail": "这一步是严重的失误。",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

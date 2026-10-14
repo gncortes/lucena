@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "प्यादा × [{square}] = {promo, select, queen{वज़ीर}rook{हाथी}bishop{ऊँट}knight{घोड़ा} other{वज़ीर}}.",
   "exerciseNodeGoodTail": "यह चाल समाधान का हिस्सा है।",
   "exerciseNodeBadTail": "यह चाल अभ्यास को हल नहीं करती।",
-  "exerciseNodeLosesTail": "यह चाल एक गंभीर गलती है।"
+  "exerciseNodeLosesTail": "यह चाल एक गंभीर गलती है।",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

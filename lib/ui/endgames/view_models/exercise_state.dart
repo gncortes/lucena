@@ -60,6 +60,7 @@ class ExerciseState {
     this.sayTexts = const [],
     this.sayZeroed = false,
     this.sayNode,
+    this.sayMove,
     this.explanationPayload,
     this.hintShown = false,
     this.emotion = Emotion.calm,
@@ -116,6 +117,10 @@ class ExerciseState {
   final List<String> sayTexts;
   final bool sayZeroed;
   final ReviewNode? sayNode;
+
+  /// O lance que o balão comenta ao dizer "Correto." ou "Não.": a posição de
+  /// antes e o lance, para a frase gerada quando a aula não o comentou.
+  final ({String fenBefore, String uci})? sayMove;
   final ExplanationPayload? explanationPayload;
   final bool hintShown;
   final Emotion emotion;
@@ -203,6 +208,7 @@ class ExerciseState {
     List<String>? sayTexts,
     bool? sayZeroed,
     ReviewNode? sayNode,
+    ({String fenBefore, String uci})? sayMove,
     ExplanationPayload? explanationPayload,
     bool? hintShown,
     Emotion? emotion,
@@ -235,6 +241,7 @@ class ExerciseState {
     sayTexts: sayTexts ?? this.sayTexts,
     sayZeroed: sayZeroed ?? (say != null ? false : this.sayZeroed),
     sayNode: say == null ? this.sayNode : sayNode,
+    sayMove: say == null ? this.sayMove : sayMove,
     explanationPayload: explanationPayload ?? this.explanationPayload,
     hintShown: hintShown ?? (clearHint ? false : this.hintShown),
     emotion: emotion ?? this.emotion,

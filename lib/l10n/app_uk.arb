@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Пішак × [{square}] = {promo, select, queen{Ферзь}rook{Тура}bishop{Слон}knight{Кінь} other{Ферзь}}.",
   "exerciseNodeGoodTail": "Цей хід входить у розв’язання.",
   "exerciseNodeBadTail": "Цей хід не розв’язує вправу.",
-  "exerciseNodeLosesTail": "Цей хід — груба помилка."
+  "exerciseNodeLosesTail": "Цей хід — груба помилка.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

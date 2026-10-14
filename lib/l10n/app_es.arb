@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Peón × [{square}] = {promo, select, queen{Dama}rook{Torre}bishop{Alfil}knight{Caballo} other{Dama}}.",
   "exerciseNodeGoodTail": "Esa jugada forma parte de la solución.",
   "exerciseNodeBadTail": "Esa jugada no resuelve el ejercicio.",
-  "exerciseNodeLosesTail": "Esa jugada es un error grave."
+  "exerciseNodeLosesTail": "Esa jugada es un error grave.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

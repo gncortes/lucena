@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Pionek × [{square}] = {promo, select, queen{Hetman}rook{Wieża}bishop{Goniec}knight{Skoczek} other{Hetman}}.",
   "exerciseNodeGoodTail": "To posunięcie należy do rozwiązania.",
   "exerciseNodeBadTail": "To posunięcie nie rozwiązuje zadania.",
-  "exerciseNodeLosesTail": "To posunięcie to poważny błąd."
+  "exerciseNodeLosesTail": "To posunięcie to poważny błąd.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

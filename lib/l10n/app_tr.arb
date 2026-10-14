@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Piyon × [{square}] = {promo, select, queen{Vezir}rook{Kale}bishop{Fil}knight{At} other{Vezir}}.",
   "exerciseNodeGoodTail": "Bu hamle çözümün bir parçasıdır.",
   "exerciseNodeBadTail": "Bu hamle alıştırmayı çözmez.",
-  "exerciseNodeLosesTail": "Bu hamle ağır bir hatadır."
+  "exerciseNodeLosesTail": "Bu hamle ağır bir hatadır.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

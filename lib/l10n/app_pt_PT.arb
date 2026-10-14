@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "O peão captura em [{square}] e é promovido a {promo, select, queen{dama}rook{torre}bishop{bispo}knight{cavalo} other{dama}}.",
   "exerciseNodeGoodTail": "Esse lance faz parte da solução.",
   "exerciseNodeBadTail": "Esse lance não resolve o exercício.",
-  "exerciseNodeLosesTail": "Esse lance é um erro grave."
+  "exerciseNodeLosesTail": "Esse lance é um erro grave.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

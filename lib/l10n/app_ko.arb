@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "폰 × [{square}] = {promo, select, queen{퀸}rook{룩}bishop{비숍}knight{나이트} other{퀸}}.",
   "exerciseNodeGoodTail": "이 수는 풀이의 일부입니다.",
   "exerciseNodeBadTail": "이 수는 문제를 풀지 못합니다.",
-  "exerciseNodeLosesTail": "이 수는 심각한 실수입니다."
+  "exerciseNodeLosesTail": "이 수는 심각한 실수입니다.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Pion × [{square}] = {promo, select, queen{Menteri}rook{Benteng}bishop{Gajah}knight{Kuda} other{Menteri}}.",
   "exerciseNodeGoodTail": "Langkah itu bagian dari solusi.",
   "exerciseNodeBadTail": "Langkah itu tidak menyelesaikan latihan.",
-  "exerciseNodeLosesTail": "Langkah itu adalah kesalahan serius."
+  "exerciseNodeLosesTail": "Langkah itu adalah kesalahan serius.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

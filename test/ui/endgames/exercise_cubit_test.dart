@@ -12,6 +12,7 @@ import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asse
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
+import 'package:lucena/domain/use_cases/exercise_review.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -95,7 +96,8 @@ void main() {
     expect(main.length, resumed.state.played.length);
     // As variantes escritas entram na notação.
     expect(resumed.state.review.any((node) => node.depth > 0), isTrue);
-    expect(resumed.state.cursorId, main.last.id);
+    // A lista para no lance-chave: o primeiro lance do aluno.
+    expect(resumed.state.cursorId, main.first.id);
   });
 
   group('porquê do erro, escrito na aula', () {
@@ -150,22 +152,27 @@ void main() {
         expect(exercise.state.fen, fen);
         expect(exercise.state.mistakes, 1);
         await exercise.explaining;
-        expect(exercise.state.sayTexts, [exact(fen, 'd2d3', language)]);
+        // O texto da aula traz lances escritos: o balão não o mostra (a tela
+        // diz o lance com a frase gerada).
+        expect(
+          ExerciseReview.hasNotation(exact(fen, 'd2d3', language)),
+          isTrue,
+        );
+        expect(exercise.state.sayTexts, isEmpty);
+        expect(exercise.state.sayMove, (fenBefore: fen, uci: 'd2d3'));
         await exercise.askHint();
         expect(exercise.state.say, ExerciseSay.hint);
-        expect(exercise.state.sayTexts, [
-          'Statement.',
-          exact(fen, 'd2d3', language),
-        ]);
+        expect(exercise.state.sayTexts, ['Statement.', 'Generic hint.']);
         expect(exercise.state.hint, isNull);
         expect(exercise.state.hints, 1);
         await exercise.askHint();
         expect(exercise.state.hints, 1);
         await exercise.play(move('d2d4'));
         await exercise.explaining;
-        // O porquê escrito na própria explicação tem precedência.
         expect(exercise.state.say, ExerciseSay.wrong);
-        expect(exercise.state.sayTexts.join(' '), contains('1.d4'));
+        for (final text in exercise.state.sayTexts) {
+          expect(ExerciseReview.hasNotation(text), isFalse);
+        }
         expect(exercise.state.sayTexts.join(' '), isNot(contains('Statement')));
       });
     }
@@ -182,7 +189,8 @@ void main() {
       final fen = exercise.state.fen!;
       await exercise.play(move('g2f2'));
       await exercise.explaining;
-      expect(exercise.state.sayTexts, [exact(fen, 'g2f2', 'en')]);
+      expect(exercise.state.sayTexts, isEmpty);
+      expect(exercise.state.sayMove, (fenBefore: fen, uci: 'g2f2'));
       final restored = cubit(lessons: lessons, feedback: feedback);
       await restored.load(lessonId, 'e09', 'en');
       expect(restored.state.fen, fen);
@@ -399,7 +407,10 @@ void main() {
     expect(state.earned, 3);
     expect(state.say, ExerciseSay.solved);
     expect(state.sayZeroed, isFalse);
-    expect(state.sayTexts, ['Same bridge.']);
+    // A solução escrita (com lances) não vai ao balão: sem comentário do
+    // lance, a tela diz a frase gerada.
+    expect(state.sayTexts, isEmpty);
+    expect(state.sayNode?.id, state.cursorId);
     expect(state.solutionShown, isFalse);
     expect(state.locked, isFalse);
     expect(state.emotion, Emotion.happy);
@@ -521,9 +532,9 @@ void main() {
     expect(side.firstWhere((node) => node.uci == 'c1c5').symbol, '!');
     expect(side.firstWhere((node) => node.uci == 'c1c2').symbol, '?');
     expect(side.where((node) => node.startsVariant).length, 1);
-    // O balão comenta o último lance, com a solução escrita.
+    // Depois de Ver solução, o tabuleiro vai à posição final.
     expect(state.say, ExerciseSay.node);
-    expect(state.sayTexts, ['Bridge, then the king walks out.']);
+    expect(state.sayTexts, isEmpty);
     expect(progress.saved.of('rook.lucena').stars, {'e02': 0});
     expect(progress.saved.of('rook.lucena').exercise, isNull);
     // Depois de terminar, não joga mais.

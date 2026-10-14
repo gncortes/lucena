@@ -273,64 +273,10 @@ class TeacherSpeech extends StatelessWidget {
                   soundEnabled &&
                   state.settings.enabled &&
                   state.availableFor(language);
-              final colors = Theme.of(context).colorScheme;
-              return IconButton(
-                key: VoiceKeys.speakButton,
-                color: colors.onSurfaceVariant,
-                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-                tooltip: audible
-                    ? context.l10n.lessonSoundOn(
-                        context.l10n.voiceSpeedValue(state.settings.speed),
-                      )
-                    : context.l10n.lessonSoundOff,
+              return LessonVoiceButton(
+                audible: audible,
+                speed: state.settings.speed,
                 onPressed: onSoundSettings,
-                icon: SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      if (audible)
-                        const Icon(Icons.volume_up_outlined)
-                      else
-                        const SoundOffIcon(),
-                      if (audible)
-                        PositionedDirectional(
-                          start: -4,
-                          top: -4,
-                          child: ExcludeSemantics(
-                            child: Container(
-                              height: 16,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colors.primary,
-                                borderRadius: BorderRadius.circular(
-                                  AppShape.full,
-                                ),
-                              ),
-                              child: Text(
-                                context.l10n.voiceSpeedValue(
-                                  state.settings.speed,
-                                ),
-                                // Decorative badge: the button tooltip exposes
-                                // the full speed using the user's text scale.
-                                textScaler: TextScaler.noScaling,
-                                style: TextStyle(
-                                  color: colors.onPrimary,
-                                  fontSize: 10,
-                                  height: 1.6,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
               );
             }
             // Sem voz no idioma, o botão de som continua à vista: o toque
@@ -1493,4 +1439,75 @@ class _BackdropPainter extends CustomPainter {
   @override
   bool shouldRepaint(_BackdropPainter old) =>
       old.color != color || !listEquals(old.rects, rects);
+}
+
+/// O botão de som do cabeçalho da fala (lição V2, exercício): o alto-falante
+/// com a velocidade na etiqueta, ou o som desligado.
+class LessonVoiceButton extends StatelessWidget {
+  const LessonVoiceButton({
+    required this.audible,
+    required this.speed,
+    required this.onPressed,
+    super.key,
+  });
+
+  final bool audible;
+  final double speed;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    return IconButton(
+      key: VoiceKeys.speakButton,
+      color: colors.onSurfaceVariant,
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      tooltip: audible
+          ? l10n.lessonSoundOn(l10n.voiceSpeedValue(speed))
+          : l10n.lessonSoundOff,
+      onPressed: onPressed,
+      icon: SizedBox(
+        width: 32,
+        height: 32,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            if (audible)
+              const Icon(Icons.volume_up_outlined)
+            else
+              const SoundOffIcon(),
+            if (audible)
+              PositionedDirectional(
+                start: -4,
+                top: -4,
+                child: ExcludeSemantics(
+                  child: Container(
+                    height: 16,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: colors.primary,
+                      borderRadius: BorderRadius.circular(AppShape.full),
+                    ),
+                    child: Text(
+                      l10n.voiceSpeedValue(speed),
+                      // Decorative badge: the button tooltip exposes
+                      // the full speed using the user's text scale.
+                      textScaler: TextScaler.noScaling,
+                      style: TextStyle(
+                        color: colors.onPrimary,
+                        fontSize: 10,
+                        height: 1.6,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

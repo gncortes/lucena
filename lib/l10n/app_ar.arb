@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "البيدق × [{square}] = {promo, select, queen{الوزير}rook{الرخ}bishop{الفيل}knight{الحصان} other{الوزير}}.",
   "exerciseNodeGoodTail": "هذه النقلة جزء من الحل.",
   "exerciseNodeBadTail": "هذه النقلة لا تحل التمرين.",
-  "exerciseNodeLosesTail": "هذه النقلة خطأ فادح."
+  "exerciseNodeLosesTail": "هذه النقلة خطأ فادح.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

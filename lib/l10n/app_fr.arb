@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Pion × [{square}] = {promo, select, queen{Dame}rook{Tour}bishop{Fou}knight{Cavalier} other{Dame}}.",
   "exerciseNodeGoodTail": "Ce coup fait partie de la solution.",
   "exerciseNodeBadTail": "Ce coup ne résout pas l’exercice.",
-  "exerciseNodeLosesTail": "Ce coup est une grave erreur."
+  "exerciseNodeLosesTail": "Ce coup est une grave erreur.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

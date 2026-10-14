@@ -17,6 +17,7 @@ Future<void> showScriptSheet(
   required double maxHeightFactor,
   Key? closeKey,
   String? closeTooltip,
+  Color? color,
 }) {
   final barrier = MaterialLocalizations.of(context).modalBarrierDismissLabel;
   return Navigator.of(context).push<void>(
@@ -31,6 +32,7 @@ Future<void> showScriptSheet(
         maxHeightFactor: maxHeightFactor,
         closeKey: closeKey,
         closeTooltip: closeTooltip,
+        color: color,
         child: builder(context),
       ),
       transitionsBuilder: (context, animation, _, child) => SlideTransition(
@@ -55,10 +57,14 @@ class ScriptSheetFrame extends StatelessWidget {
     required this.maxHeightFactor,
     this.closeKey,
     this.closeTooltip,
+    this.color,
     super.key,
   });
 
   final Widget child;
+
+  /// O fundo da folha (padrão: a superfície mais clara).
+  final Color? color;
 
   /// A altura máxima da folha, em fração da tela (sem o ✕).
   final double maxHeightFactor;
@@ -100,7 +106,7 @@ class ScriptSheetFrame extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(maxHeight: height * maxHeightFactor),
               child: Material(
-                color: colors.surfaceContainerLowest,
+                color: color ?? colors.surfaceContainerLowest,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(
                     top: Radius.circular(AppShape.extraLarge),

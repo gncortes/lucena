@@ -1248,5 +1248,9 @@
   "exerciseMovePromoteCapture": "Bauer × [{square}] = {promo, select, queen{Dame}rook{Turm}bishop{Läufer}knight{Springer} other{Dame}}.",
   "exerciseNodeGoodTail": "Dieser Zug gehört zur Lösung.",
   "exerciseNodeBadTail": "Dieser Zug löst die Aufgabe nicht.",
-  "exerciseNodeLosesTail": "Dieser Zug ist ein schwerer Fehler."
+  "exerciseNodeLosesTail": "Dieser Zug ist ein schwerer Fehler.",
+  "exerciseSolvedBut": "Solved, but with {what}.",
+  "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
+  "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
+  "exerciseSolvedAnd": "{first} and {second}"
 }

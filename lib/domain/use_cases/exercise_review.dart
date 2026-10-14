@@ -87,6 +87,68 @@ typedef ReviewWrong = ({int turn, String uci, List<String> comments});
 abstract final class ExerciseReview {
   static String _key(String fen) => fen.split(' ').take(3).join(' ');
 
+  /// Número do lance seguido de um lance (`1.Rc6`, `1...Rb8`, `1.d3?`) ou um
+  /// lance com a peça (`Rxb7`, `Cf3`): notação, que o balão nunca mostra.
+  static final _notation = RegExp(
+    r'\d+\s?(?:\.{1,3}|…)\s?(?:[KQRBNDTC]?x?[a-h][1-8]|O-O)|'
+    r'(?<![\p{L}\d])[KQRBNDTC]x?[a-h][1-8](?![\p{L}\d])',
+    unicode: true,
+  );
+
+  /// O texto traz notação de lances (que não vai ao balão).
+  static bool hasNotation(String text) => _notation.hasMatch(text);
+
+  /// Os textos sem notação: um comentário com lances escritos fica de fora e
+  /// o balão usa a frase gerada do lance.
+  static List<String> withoutNotation(List<String> texts) => [
+    for (final text in texts)
+      if (!hasNotation(text)) text,
+  ];
+
+  /// O texto sem os parágrafos com notação (e sem o título que ficou sem
+  /// lista, como "Também não funcionam:"). Nulo se nada sobra.
+  static String? plainParagraphs(String? text) {
+    if (text == null) return null;
+    final kept = [
+      for (final paragraph in text.split(RegExp(r'\n\s*\n')))
+        if (paragraph.trim().isNotEmpty && !hasNotation(paragraph))
+          paragraph.trim(),
+    ];
+    while (kept.isNotEmpty && kept.last.endsWith(':')) {
+      kept.removeLast();
+    }
+    return kept.isEmpty ? null : kept.join('\n\n');
+  }
+
+  /// Os lances da notação que o aluno errou (na ordem da lista): o do erro
+  /// escrito por ele ou, se a aula já previa o lance, a variante igual.
+  static List<String> wrongNodeIds(
+    List<ReviewNode> review,
+    List<ReviewWrong> wrongs,
+  ) {
+    final students = [
+      for (final node in review)
+        if (node.depth == 0 && node.symbol == '!') node,
+    ];
+    final ids = <String>{};
+    for (final wrong in wrongs) {
+      if (wrong.turn >= students.length) continue;
+      final before = students[wrong.turn].fenBefore;
+      for (final node in review) {
+        if (node.depth > 0 &&
+            node.uci == wrong.uci &&
+            _key(node.fenBefore) == _key(before)) {
+          ids.add(node.id);
+          break;
+        }
+      }
+    }
+    return [
+      for (final node in review)
+        if (ids.contains(node.id)) node.id,
+    ];
+  }
+
   /// Resultado de uma posição que acabou, em notação de livro.
   static String? resultOf(Position position) {
     final end = GameRules.endOf(position);
@@ -171,9 +233,12 @@ abstract final class ExerciseReview {
         final move = Move.parse(each);
         if (move == null || !position!.isLegal(move)) break;
         if (_key(position.fen) == _key(fenBefore) && each == uci) {
-          final texts = variation.explanationByPly[index + 1];
-          if (texts != null && texts.isNotEmpty) return texts;
-          if (variation.texts.isNotEmpty) return variation.texts;
+          final texts = withoutNotation(
+            variation.explanationByPly[index + 1] ?? const [],
+          );
+          if (texts.isNotEmpty) return texts;
+          final own = withoutNotation(variation.texts);
+          if (own.isNotEmpty) return own;
         }
         position = position.play(move);
       }
@@ -245,7 +310,9 @@ abstract final class ExerciseReview {
             fenAfter: position.fen,
             symbol: index == 0 ? firstSymbol : null,
             previousId: index == 0 ? anchor.previousId : line.last.id,
-            comments: byPly[index + 1] ?? (index == 0 ? texts : const []),
+            comments: withoutNotation(
+              byPly[index + 1] ?? (index == 0 ? texts : const []),
+            ),
           ),
         );
       }
@@ -331,8 +398,8 @@ abstract final class ExerciseReview {
             ucis: [wrong.uci],
             prefix: 'w',
             firstSymbol: '?',
-            texts: wrong.comments.isNotEmpty
-                ? wrong.comments
+            texts: withoutNotation(wrong.comments).isNotEmpty
+                ? withoutNotation(wrong.comments)
                 : commentFor(payload, anchor.fenBefore, wrong.uci),
           );
           attach(anchor, line);
