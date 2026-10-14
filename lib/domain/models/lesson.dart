@@ -43,11 +43,16 @@ class CourseModule {
 
 /// Uma aula: uma conversa com o Viktor, passo a passo.
 class Lesson {
-  const Lesson({required this.id, required this.steps, this.parts = const []});
+  const Lesson({
+    required this.id,
+    required this.steps,
+    this.parts = const [],
+    this.script,
+  });
 
   /// Uma aula dividida em partes curtas (T51): os passos são os das partes,
   /// em ordem.
-  Lesson.parted({required this.id, required this.parts})
+  Lesson.parted({required this.id, required this.parts, this.script})
     : steps = [for (final part in parts) ...part.steps];
 
   /// `pieces.rook`, `mates.queen`... Estável entre versões: o progresso é
@@ -60,6 +65,11 @@ class Lesson {
   /// As partes. Vazia: aula no formato antigo, lida como uma parte só
   /// ([sections]).
   final List<LessonPart> parts;
+
+  /// O roteiro da aula inteira (curso de iniciante, T71): o asset em
+  /// `assets/lessons/roteiros/`. Com ele, a aula abre a tela roteirizada e
+  /// os [steps] ficam de reserva.
+  final String? script;
 
   /// O id da parte única de uma aula no formato antigo.
   static const wholeId = 'main';

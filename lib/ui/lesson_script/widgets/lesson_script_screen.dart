@@ -83,6 +83,17 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
     final outcome = state.outcome;
     if (outcome == null) return;
     final cubit = context.read<LessonScriptCubit>();
+    // Escola (curso de iniciante, T71): a próxima aula do curso, ou a
+    // escola na última.
+    if (!cubit.endgame) {
+      final lesson = outcome.next;
+      if (lesson == null || outcome.last) {
+        context.go(Routes.school);
+      } else {
+        context.pushReplacement(Routes.lesson(lesson));
+      }
+      return;
+    }
     final next = outcome.nextPart;
     if (next == null) {
       context.go(Routes.endgameLesson(cubit.lessonId));

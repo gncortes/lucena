@@ -211,6 +211,14 @@ abstract class LessonScriptState with _$LessonScriptState {
     /// O lado que pode mexer peças agora. Nulo: o tabuleiro não aceita toque.
     Side? movable,
 
+    /// Os destinos que o tabuleiro aceita de cada peça, quando [movable] não
+    /// é nulo. Vale também sem rei (lições de peça do curso de iniciante), em
+    /// que o `GameRules` não monta a posição.
+    Map<Square, Set<Square>>? dests,
+
+    /// As estrelas que faltam pegar (prática do tipo estrelas).
+    @Default(<String>[]) List<String> stars,
+
     /// A máquina está para responder.
     @Default(false) bool machineThinking,
 

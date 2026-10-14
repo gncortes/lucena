@@ -29,7 +29,7 @@ void main() {
     expect(q.rightStep.move, 'd3e4');
     expect(q.errors.keys, ['d3d4']);
     expect(q.errors['d3d4'], hasLength(2));
-    expect(q.free.ends['capturado'], 'fin.cap');
+    expect(q.free!.ends['capturado'], 'fin.cap');
     expect(ex1.end, ScriptEnd.proximo);
   });
 

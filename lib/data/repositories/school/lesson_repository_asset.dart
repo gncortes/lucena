@@ -82,7 +82,11 @@ class AssetLessonRepository implements LessonRepository {
         ],
       );
     }
-    return Lesson(id: id, steps: steps(lesson['steps'] as List));
+    return Lesson(
+      id: id,
+      steps: steps(lesson['steps'] as List),
+      script: lesson['roteiro'] as String?,
+    );
   }
 
   /// As vezes do aluno de um passo de lance: os aceitos e a resposta. O

@@ -1,7 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 
 import '../models/lesson_script.dart';
-import 'game_rules.dart';
+import 'script_moves.dart';
 
 /// De onde vêm os passos de um trecho do exemplo (T70).
 abstract final class ScriptTracks {
@@ -108,9 +108,16 @@ class MoveTree {
       if (identical(node.step, step)) node,
   ];
 
+  static int _fullmoves(String fen) =>
+      int.tryParse(fen.split(' ').elementAtOrNull(5) ?? '') ?? 1;
+
+  static Side _turn(String fen) =>
+      fen.split(' ').elementAtOrNull(1) == 'b' ? Side.black : Side.white;
+
   static MoveTree build(ScriptExample example) {
     final nodes = <MoveNode>[];
     var path = <String>[];
+    final task = example.goal == ScriptGoal.tarefa;
 
     /// Anda por [steps] a partir de [fen]; devolve o caminho no fim.
     (List<String>, String) walk(
@@ -128,26 +135,24 @@ class MoveTree {
         final step = steps[i];
         if (variant && step.jump) break;
         if (step.hasMove) {
-          var position = GameRules.fromFen(current);
+          var at = current;
           for (final uci in step.moves) {
-            final move = Move.parse(uci);
-            final played = position == null || move == null
-                ? null
-                : GameRules.play(position, move);
+            final played = ScriptMoves.play(at, uci, keepTurn: task);
             trail = [...trail, uci];
             into.add(
               MoveNode(
                 id: trail.join('-'),
                 uci: uci,
                 san: played?.san ?? uci,
-                number: position?.fullmoves ?? 1,
-                side: position?.turn ?? Side.white,
+                // Na tarefa a vez não passa: os lances só se numeram.
+                number: task ? trail.length : _fullmoves(at),
+                side: task ? example.student : _turn(at),
                 variant: variant,
                 ref: ScriptRef(track, offset + i),
                 step: step,
               ),
             );
-            position = played?.position;
+            at = played?.fen ?? at;
           }
         }
         current = step.fen;

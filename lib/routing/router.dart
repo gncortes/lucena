@@ -470,8 +470,53 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ],
               ),
+              // A aula com roteiro (curso de iniciante, T71): a tela
+              // roteirizada, com o progresso da escola.
+              _route(
+                path: ':lesson/roteiro',
+                builder: (context, state) {
+                  final id = state.pathParameters['lesson']!;
+                  final stage =
+                      int.tryParse(state.uri.queryParameters['etapa'] ?? '') ??
+                      0;
+                  final language = _language(context);
+                  final lessons = context.read<LessonRepository>();
+                  return BlocProvider(
+                    key: ValueKey('script.$id'),
+                    create: (_) => LessonScriptCubit(
+                      lessonId: id,
+                      partId: id,
+                      scriptPath: AssetLessonScriptRepository.scriptPath(id),
+                      language: language,
+                      scripts: context.read<LessonScriptRepository>(),
+                      kpk: context.read<KpkRepository>(),
+                      source: SchoolLessonSource(
+                        lessons,
+                        context.read<SchoolProgressRepository>(),
+                      ),
+                      initialStage: stage,
+                    ),
+                    child: LessonScriptScreen(
+                      key: ValueKey('script.$id'),
+                      title: lessons
+                          .texts(language)
+                          .then((texts) => texts.lessonTitle(id)),
+                    ),
+                  );
+                },
+              ),
               _route(
                 path: ':lesson',
+                // A aula com roteiro abre a tela roteirizada.
+                redirect: (context, state) async {
+                  final id = state.pathParameters['lesson']!;
+                  final course = await context
+                      .read<LessonRepository>()
+                      .course();
+                  return course.lesson(id)?.script == null
+                      ? null
+                      : Routes.lessonScript(id);
+                },
                 builder: (context, state) {
                   final id = state.pathParameters['lesson']!;
                   return BlocProvider(
