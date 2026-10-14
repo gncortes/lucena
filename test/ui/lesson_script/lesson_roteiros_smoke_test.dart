@@ -11,6 +11,7 @@ import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/domain/use_cases/judge_move.dart';
 import 'package:lucena/domain/use_cases/kpk_oracle.dart';
 import 'package:lucena/domain/use_cases/machine_move.dart';
 import 'package:lucena/domain/use_cases/move_tree.dart';
@@ -211,6 +212,17 @@ class _Run {
       case ScriptPhase.praticaFim when s.primary == ScriptAction.voltarInicio:
         problems.add('$where: a prática não cumpriu o objetivo');
         return false;
+      case ScriptPhase.praticaFim
+          when example.practice?.kind == PracticeKind.jogo &&
+              !s.machineThinking:
+        // A partida contra a máquina fecha com o resultado na lista.
+        final last = s.moves.where((m) => m.id == s.currentMoveId).firstOrNull;
+        if (!_results.contains(last?.result)) {
+          problems.add(
+            '$where: fim sem resultado (${last?.san} ${last?.result})',
+          );
+        }
+        await act(s.primary!.name, () => cubit.onAction(s.primary!));
       default:
         final action = s.primary;
         if (action == null) return false;
@@ -220,40 +232,88 @@ class _Run {
   }
 }
 
-/// O aluno das práticas de mate (sem motor): dá mate se puder; senão, entre
-/// os lances que não afogam nem deixam peça sem defesa ao alcance do rei, o
-/// que deixa o rei com menos casas livres e o próprio rei mais perto dele.
+/// O aluno das práticas de mate (sem motor): dá mate se puder (em 1 ou em
+/// 2); com peão, coroa ou avança quando ele não cai; senão, entre os lances
+/// que não afogam nem deixam peça sem defesa ao alcance do rei, o que captura
+/// peça, deixa o rei com menos casas livres na pior resposta dele e o próprio
+/// rei mais perto dele.
 String _mateMove(Position position, Set<String> seen) {
   final us = position.turn;
-  final candidates = <(int, String)>[];
-  for (final MapEntry(key: from, value: targets)
-      in position.legalMoves.entries) {
-    for (final to in targets.squares) {
-      final move = NormalMove(from: from, to: to);
-      final next = position.play(move);
-      if (next.isCheckmate) return move.uci;
-      if (next.isStalemate) continue;
-      final hangs = next.legalMoves.entries.any(
-        (entry) => entry.value.squares.any(
-          (square) => next.board.sideAt(square) == us,
-        ),
-      );
-      if (hangs) continue;
-      final key = next.fen.split(' ').take(4).join(' ');
-      final score =
-          _kingRoom(next, us) * 10 +
-          _distance(next.board.kingOf(us)!, next.board.kingOf(us.opposite)!) +
-          (seen.contains(key) ? 1000 : 0);
-      candidates.add((score, move.uci));
+  final safe = <(NormalMove, Position)>[];
+  for (final (move, next) in _moves(position)) {
+    if (next.isCheckmate) return move.uci;
+    if (next.isStalemate || _hangs(next, us)) continue;
+    safe.add((move, next));
+  }
+  // Mate em 2: toda resposta deixa um mate.
+  for (final (move, next) in safe) {
+    final replies = _moves(next).toList();
+    if (replies.every((r) => _moves(r.$2).any((m) => m.$2.isCheckmate))) {
+      return _remember(position, move.uci, seen);
     }
+  }
+  final pawnMoves = [
+    for (final (move, _) in safe)
+      if (position.board.roleAt(move.from) == Role.pawn)
+        (move.promotion != null ? 0 : 1, move.uci),
+  ]..sort((a, b) => a.$1.compareTo(b.$1));
+  if (pawnMoves.isNotEmpty) {
+    return _remember(position, pawnMoves.first.$2, seen);
+  }
+  final candidates = <(int, String)>[];
+  for (final (move, next) in safe) {
+    final theirKing = next.board.kingOf(us.opposite)!;
+    // A pior resposta: a que deixa o rei com mais casas.
+    var room = 0;
+    for (final (_, reply) in _moves(next)) {
+      room = max(room, _kingRoom(reply, us));
+    }
+    final escort = [
+      for (final p in next.board.pawns.intersect(next.board.bySide(us)).squares)
+        _distance(next.board.kingOf(us)!, p),
+    ].fold(0, (a, b) => a + b);
+    final key = next.fen.split(' ').take(4).join(' ');
+    final score =
+        room * 30 +
+        _distance(next.board.kingOf(us)!, theirKing) * 3 +
+        escort * 60 +
+        next.board.bySide(us.opposite).squares.length * 500 +
+        (seen.contains(key) ? 3000 : 0);
+    candidates.add((score, move.uci));
   }
   candidates.sort((a, b) {
     final byScore = a.$1.compareTo(b.$1);
     return byScore != 0 ? byScore : a.$2.compareTo(b.$2);
   });
-  final best = candidates.first.$2;
-  seen.add(position.play(Move.parse(best)!).fen.split(' ').take(4).join(' '));
-  return best;
+  return _remember(position, candidates.first.$2, seen);
+}
+
+/// Os lances legais (coroação com dama) e a posição depois de cada um.
+Iterable<(NormalMove, Position)> _moves(Position position) sync* {
+  for (final MapEntry(key: from, value: targets)
+      in position.legalMoves.entries) {
+    final pawn = position.board.roleAt(from) == Role.pawn;
+    for (final to in targets.squares) {
+      final promotes =
+          pawn && (to.rank == Rank.first || to.rank == Rank.eighth);
+      final move = NormalMove(
+        from: from,
+        to: to,
+        promotion: promotes ? Role.queen : null,
+      );
+      yield (move, position.play(move));
+    }
+  }
+}
+
+/// O adversário captura alguma peça de [us] em [next].
+bool _hangs(Position next, Side us) => next.legalMoves.entries.any(
+  (entry) => entry.value.squares.any((sq) => next.board.sideAt(sq) == us),
+);
+
+String _remember(Position position, String uci, Set<String> seen) {
+  seen.add(position.play(Move.parse(uci)!).fen.split(' ').take(4).join(' '));
+  return uci;
 }
 
 /// As casas que o rei de quem defende alcança sem passar por casa atacada.
@@ -520,7 +580,40 @@ void main() {
           },
         );
       }
-      for (final (stage, index, example) in _freeQuestions(id)) {
+      final free = _freeQuestions(id);
+      if (free.isNotEmpty) {
+        // O jogo livre de um erro previsto sempre diz que o resultado se
+        // perdeu: a tabela tem que concordar, e o certo e os alternativos
+        // têm que manter.
+        test('jogo livre: os erros perdem pela tabela; certo e alternativos '
+            'mantêm', () {
+          final wrong = <String>[];
+          for (final (_, _, example) in free) {
+            final question = example.question!;
+            final from = GameRules.fromFen(example.questionFen)!;
+            final wantsWin = example.goal.wantsWin;
+            MoveVerdict verdict(String uci) => JudgeMove.ofOutcome(
+              _kpk.evaluate(from.playUnchecked(Move.parse(uci)!)),
+              wantsWin: wantsWin,
+            );
+            for (final uci in question.errors.keys) {
+              if (verdict(uci) != MoveVerdict.loses) {
+                wrong.add('${example.id}: erro $uci mantém');
+              }
+            }
+            for (final uci in [
+              ...question.right,
+              ...question.alternatives.keys,
+            ]) {
+              if (verdict(uci) != MoveVerdict.keeps) {
+                wrong.add('${example.id}: $uci perde');
+              }
+            }
+          }
+          expect(wrong, isEmpty);
+        });
+      }
+      for (final (stage, index, example) in free) {
         for (final (n, uci) in _offLine(example).indexed) {
           test('jogo livre: ${example.id} $uci', () async {
             final (run, _) = await _open(id);

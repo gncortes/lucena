@@ -189,6 +189,7 @@ class MoveTree {
 
     /// Na tarefa: quantos lances do aluno há até cada lance (pelo id).
     final studentMoves = <String, int>{};
+    final moverSides = <String, Side>{};
 
     /// Anda por [steps] a partir de [fen]; devolve o caminho no fim.
     (List<String>, String) walk(
@@ -220,14 +221,18 @@ class MoveTree {
           var at = current;
           for (final uci in moves) {
             final played = ScriptMoves.play(at, uci, keepTurn: task);
-            // Na tarefa, o lance do outro lado (a captura de volta) fica com
-            // o número do lance do aluno que veio antes.
+            // Na tarefa, o lance das pretas fica com o número do lance das
+            // brancas que veio antes (a captura de volta, ou a resposta ao
+            // aluno de pretas).
             final mover = task ? ScriptMoves.moverOf(at, uci) : null;
-            final reply = mover != null && mover != example.student;
-            final before = trail.isEmpty
-                ? 0
-                : studentMoves[trail.join('-')] ?? trail.length;
             final parent = trail.join('-');
+            final count = ScriptMoves.taskNumber(
+              mover: mover ?? example.student,
+              parentNumber: trail.isEmpty
+                  ? null
+                  : studentMoves[parent] ?? trail.length,
+              parentSide: moverSides[parent],
+            );
             final again = [...trail, uci].join('-');
             if (fenOf[again] case final seen?) {
               // O lance já está na lista (a linha voltou por um salto).
@@ -243,8 +248,8 @@ class MoveTree {
                 (variantOf[parent] ?? false) ||
                 (mainChild[parent] ?? uci) != uci;
             trail = [...trail, uci];
-            final count = before + (reply ? 0 : 1);
             studentMoves[trail.join('-')] = count;
+            moverSides[trail.join('-')] = mover ?? example.student;
             into.add(
               MoveNode(
                 id: trail.join('-'),

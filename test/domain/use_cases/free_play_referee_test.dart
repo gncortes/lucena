@@ -16,6 +16,42 @@ void main() {
     expect(check([start, '4k1Q1/8/8/8/8/3K4/8/8 b - - 0 1']), FreeEnd.coroa);
   });
 
+  group('coroação com a dama solta', () {
+    // Brancas coroaram em a8 (o peão saiu de a7).
+    const before = '8/Pk6/8/8/8/3K4/8/8 w - - 0 1';
+
+    test('o rei pode capturar a dama de graça: a partida segue', () {
+      expect(check([before, 'Q7/1k6/8/8/8/3K4/8/8 b - - 0 1']), isNull);
+      expect(check([before, '1Q6/k7/8/8/8/3K4/8/8 b - - 0 1']), isNull);
+    });
+
+    test('o rei captura a dama: só os reis, é insuficiente (não "o peão '
+        'caiu")', () {
+      expect(
+        check([
+          before,
+          'Q7/1k6/8/8/8/3K4/8/8 b - - 0 1',
+          'k7/8/8/8/8/3K4/8/8 w - - 0 2',
+        ]),
+        FreeEnd.insuficiente,
+      );
+    });
+
+    test('a dama protegida pelo rei: coroou', () {
+      expect(
+        check([
+          '8/kP6/2K5/8/8/8/8/8 w - - 0 1',
+          '1Q6/k1K5/8/8/8/8/8/8 b - - 0 1',
+        ]),
+        FreeEnd.coroa,
+      );
+    });
+
+    test('o rei que tinha de capturar não está ao lado: coroou', () {
+      expect(check([start, '4k1Q1/8/8/8/8/3K4/8/8 b - - 0 1']), FreeEnd.coroa);
+    });
+  });
+
   test('capturado: só os reis', () {
     expect(check([start, '8/8/8/8/8/3K4/8/4k3 w - - 0 1']), FreeEnd.capturado);
   });

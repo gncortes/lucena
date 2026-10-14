@@ -15,7 +15,9 @@
 //  - lista de lances: `moves` (só os já vistos) e `currentMoveId`;
 //  - `curiosities` (nula = sem o ícone do livro), `machineThinking`,
 //    `outcome` (preenchido depois de `proximaParte`: navegar para a próxima
-//    parte, `outcome.nextPart`).
+//    parte, `outcome.nextPart`);
+//  - prática de toque: `touching`, `touched` (verde), `touchMiss` (vermelho)
+//    e `coordinates`; demonstração: `demo`.
 //
 // Métodos:
 //  - `start()`: carrega e abre a etapa pedida;
@@ -26,7 +28,12 @@
 //  - `back()`: o ◀;
 //  - `goToMove(id)`: toque num lance já visto da lista;
 //  - `setSpeechFits(fn)`: a tela diz se uma lista de balões cabe na área
-//    (junta trechos curtos); `null` desliga a junção.
+//    (junta trechos curtos); `null` desliga a junção;
+//  - `onSquare(casa)`: clique numa casa na prática de toque;
+//  - `demoToggle()`, `demoRepeat()`, `demoStepBack()`, `demoVoice(speaking:)`:
+//    a demonstração;
+//  - `pauseForBackground()`/`resumeFromBackground()`: o app vai ao fundo e
+//    volta (a demonstração espera).
 import 'dart:async';
 import 'dart:math';
 
@@ -494,6 +501,14 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       ? _demoElapsed
       : _demoElapsed + _now().difference(_demoRunStart!);
 
+  /// Para o relógio do passo onde está (pausa, voz, segundo plano).
+  void _demoHold() {
+    _demoElapsed = _demoSpent;
+    _demoRunStart = null;
+    _demoTimer?.cancel();
+    _demoTimer = null;
+  }
+
   /// O estado da demonstração para [s]; num passo novo, zera o relógio e,
   /// andando, agenda o próximo.
   ScriptDemo _demoState(LessonScriptState s) {
@@ -559,12 +574,12 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   void demoVoice({required bool speaking}) {
     if (!_inDemo || state.demo?.ended != false) return;
     if (speaking == _demoSpeaking) return;
-    _demoElapsed = speaking ? _demoSpent : Duration.zero;
-    _demoRunStart = null;
+    _demoHold();
     _demoSpeaking = speaking;
-    if (!speaking) _demoTotal = voicePause;
-    _demoTimer?.cancel();
-    _demoTimer = null;
+    if (!speaking) {
+      _demoElapsed = Duration.zero;
+      _demoTotal = voicePause;
+    }
     _demoEmit();
     if (_demoPlaying) _demoRun();
   }
@@ -585,10 +600,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   void _demoPause() {
-    _demoElapsed = _demoSpent;
-    _demoRunStart = null;
-    _demoTimer?.cancel();
-    _demoTimer = null;
+    _demoHold();
     _demoPlaying = false;
   }
 
@@ -597,10 +609,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   void pauseForBackground() {
     if (_background) return;
     _background = true;
-    if (_demoRunStart != null) _demoElapsed = _demoSpent;
-    _demoRunStart = null;
-    _demoTimer?.cancel();
-    _demoTimer = null;
+    _demoHold();
   }
 
   /// Voltou do segundo plano: a demonstração andando segue de onde estava.
@@ -697,8 +706,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final from = parent?.fen ?? _gameRootFen;
     final played = ScriptMoves.play(from, uci, keepTurn: _task);
     if (played == null) return null;
-    // Na tarefa a vez não passa: os lances do aluno só se numeram, e a
-    // resposta do outro lado fica com o número do lance dele.
+    // Na tarefa a vez não passa: os lances só se numeram, e o das pretas
+    // fica com o número do lance das brancas que veio antes.
     final mover = _task
         ? ScriptMoves.moverOf(from, uci) ?? _example.student
         : _sideOf(from);
@@ -708,7 +717,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       uci: uci,
       san: played.san,
       number: _task
-          ? (parent?.number ?? 0) + (mover == _example.student ? 1 : 0)
+          ? ScriptMoves.taskNumber(
+              mover: mover,
+              parentNumber: parent?.number,
+              parentSide: parent?.side,
+            )
           : int.tryParse(from.split(' ').elementAtOrNull(5) ?? '') ?? 1,
       side: mover,
       fen: played.fen,
