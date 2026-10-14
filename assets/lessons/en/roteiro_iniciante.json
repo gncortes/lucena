@@ -2,5 +2,8 @@
   "ini.fora": "That move does not take the piece where I asked. Let's go back to the position.",
   "ini.lance.certo": "That's right!",
   "ini.lance.errado": "That is not the move. Try another.",
-  "ini.estrelas.sucesso": "All the stars!"
+  "ini.estrelas.sucesso": "All the stars!",
+  "ini.toque.sucesso": "All the squares!",
+  "ini.toque.pedido": "Click on the {casa} square.",
+  "ini.toque.errado": "That is the {clicada} square. Look for the {casa} square."
 }
