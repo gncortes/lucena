@@ -549,6 +549,18 @@ void main() {
         .getPositionForOffset(Offset(paragraph.size.width, 36))
         .offset;
     expect(visibleEnd, greaterThan('Primeiro a coluna do rei preto,'.length));
+    // Na folha, uma linha em branco entre a pista e o enunciado.
+    await tester.tap(find.byKey(LessonScriptKeys.speech));
+    await tester.pumpAndSettle();
+    final sheetText = find.descendant(
+      of: find.byKey(LessonScriptKeys.speechSheet),
+      matching: find.byWidgetPredicate(
+        (w) => w is RichText && w.text.toPlainText().startsWith('Primeiro a'),
+      ),
+    );
+    final full = tester.widget<RichText>(sheetText).text.toPlainText();
+    expect(full, contains('\n\nJogue de brancas'));
+    expect(full.split('\n\n').first, isNot(contains('Jogue de brancas')));
   });
 
   testWidgets('zerado no 1º lance: o aviso fica dentro das 2 linhas do balão', (

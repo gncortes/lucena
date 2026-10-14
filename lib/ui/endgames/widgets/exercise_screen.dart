@@ -273,7 +273,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           }
         : const <String>{};
     final said = _speech(context, state, hide: hide && done);
-    final texts = [said.text, ?said.tip];
+    final texts = [...said.paragraphs, ?said.tip];
     final metrics = ScriptSpeechMetrics.of(context);
     final viktor = state.viktor;
     final voice = TeacherSpeech.speechOf(context);
@@ -451,7 +451,14 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final tip = hide && state.browsed == 0 && state.review.length > 1
         ? l10n.exerciseRevealTip
         : null;
-    return (text: WikiMarkup.plain(parts.join(' ')), tip: tip);
+    return (
+      text: WikiMarkup.plain(parts.join(' ')),
+      // Na folha da dica, uma linha em branco entre a pista e o enunciado.
+      paragraphs: state.say == ExerciseSay.hint
+          ? [for (final part in parts) WikiMarkup.plain(part)]
+          : [WikiMarkup.plain(parts.join(' '))],
+      tip: tip,
+    );
   }
 
   /// O comentário do lance do balão; sem ele, a frase gerada.
@@ -738,5 +745,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   }
 }
 
-/// A fala do balão: o texto e, à parte, a dica do borrar.
-typedef SpeechLine = ({String text, String? tip});
+/// A fala do balão: o texto, os parágrafos da folha e, à parte, a dica do
+/// borrar.
+typedef SpeechLine = ({String text, List<String> paragraphs, String? tip});
