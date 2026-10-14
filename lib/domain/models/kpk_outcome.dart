@@ -56,7 +56,13 @@ enum FreeEnd {
   repeticao,
 
   /// Chegou ao limite de lances.
-  limite;
+  limite,
+
+  /// Xeque-mate (objetivo `mate`).
+  mate,
+
+  /// Só sobrou material que não dá mate (objetivo `mate`).
+  insuficiente;
 
   /// O fim cumpre o objetivo do aluno: quem quer ganhar precisa coroar; quem
   /// quer empatar cumpre com qualquer outro fim.

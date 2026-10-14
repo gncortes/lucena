@@ -504,6 +504,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       language: language,
                       scripts: context.read<LessonScriptRepository>(),
                       kpk: context.read<KpkRepository>(),
+                      opponent: context.read<OpponentRepository>(),
                       source: SchoolLessonSource(
                         lessons,
                         context.read<SchoolProgressRepository>(),
@@ -673,6 +674,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           language: language,
                           scripts: context.read<LessonScriptRepository>(),
                           kpk: context.read<KpkRepository>(),
+                          opponent: context.read<OpponentRepository>(),
                           source: EndgameLessonSource(
                             lessons,
                             context.read<EndgameProgressRepository>(),
