@@ -1,3 +1,5 @@
+import 'package:dartchess/dartchess.dart';
+
 import '../models/kpk_outcome.dart';
 import 'game_rules.dart';
 
@@ -20,9 +22,18 @@ abstract final class FreePlayReferee {
       if (current.isCheckmate) return FreeEnd.mate;
       if (current.isInsufficientMaterial) return FreeEnd.insuficiente;
     } else if (current.board.pawns.isEmpty) {
-      return current.board.occupied.size > 2
-          ? FreeEnd.coroa
-          : FreeEnd.capturado;
+      if (current.board.occupied.size <= 2) {
+        // Só os reis: o peão caiu, ou a peça coroada foi capturada.
+        final before = fens.length < 2
+            ? null
+            : GameRules.fromFen(fens[fens.length - 2]);
+        return before == null || before.board.pawns.isNotEmpty
+            ? FreeEnd.capturado
+            : FreeEnd.insuficiente;
+      }
+      // A coroação só fecha a partida se a peça nova não cai de graça no
+      // lance seguinte; senão, a partida segue.
+      if (!hangingPromotion(current)) return FreeEnd.coroa;
     }
     if (current.isStalemate) return FreeEnd.afogado;
     final key = _key(fens.last);
@@ -31,6 +42,21 @@ abstract final class FreePlayReferee {
     }
     if (fens.length - 1 >= limit * 2) return FreeEnd.limite;
     return null;
+  }
+
+  /// A peça coroada (a única além dos reis) pode ser capturada pelo lado
+  /// que joga agora.
+  static bool hangingPromotion(Position position) {
+    final board = position.board;
+    if (board.pawns.isNotEmpty || board.occupied.size != 3) return false;
+    final piece = board.occupied.squares.firstWhere(
+      (sq) => board.roleAt(sq) != Role.king,
+    );
+    if (board.sideAt(piece) == position.turn) return false;
+    for (final MapEntry(:value) in position.legalMoves.entries) {
+      if (value.has(piece)) return true;
+    }
+    return false;
   }
 
   /// Peças, vez, roque e en passant: o que faz duas posições serem a mesma.
