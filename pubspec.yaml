@@ -80,6 +80,8 @@ flutter:
     # As aulas de finais (geradas) e as falas delas
     - assets/lessons/endgames/
     - assets/lessons/feedback/
+    - assets/lessons/roteiros/
+    - assets/tablebase/
     - assets/lessons/en/endgames/
     - assets/lessons/pt/endgames/
     # Teste de nível (T52): mapa de habilidades e banco de perguntas
