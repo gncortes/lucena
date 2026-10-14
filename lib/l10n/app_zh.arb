@@ -1192,6 +1192,7 @@
   "lessonYourTurnPlay": "Your turn: play with {side}.",
   "lessonShowAnswer": "Show answer",
   "lessonMainLine": "主线",
+  "lessonFullSpeech": "查看完整讲解",
   "lessonAlreadySeen": "Already seen",
   "lessonSeeFullExplanation": "See the full explanation",
   "lessonSeeFullStatement": "See the full prompt",

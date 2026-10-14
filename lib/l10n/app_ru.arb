@@ -1192,6 +1192,7 @@
   "lessonYourTurnPlay": "Your turn: play with {side}.",
   "lessonShowAnswer": "Show answer",
   "lessonMainLine": "Главный вариант",
+  "lessonFullSpeech": "Показать всю реплику",
   "lessonAlreadySeen": "Already seen",
   "lessonSeeFullExplanation": "See the full explanation",
   "lessonSeeFullStatement": "See the full prompt",

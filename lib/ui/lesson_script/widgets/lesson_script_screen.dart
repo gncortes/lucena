@@ -23,6 +23,7 @@ import 'curiosities_sheet.dart';
 import 'script_board.dart';
 import 'script_move_list.dart';
 import 'script_speech.dart';
+import 'script_speech_sheet.dart';
 
 /// A tela da lição roteirizada (T70): as três etapas da parte são variações
 /// desta mesma tela. De cima para baixo: a barra, o balão do Viktor, a faixa
@@ -38,14 +39,15 @@ class LessonScriptScreen extends StatefulWidget {
 }
 
 class _LessonScriptScreenState extends State<LessonScriptScreen> {
-  /// A altura da faixa do Viktor: retrato 44 e 3 dp de folga (protótipo, 50).
+  /// A altura da faixa do Viktor: retrato 40, nos botões de 48 dp do lado
+  /// (protótipo, 50).
   static const _stripHeight = 50.0;
 
   /// A folga entre o bico do balão e o retrato (Gabriel, 14/10/2026).
   static const _tailGap = 6.0;
 
-  /// A altura mínima da lista de lances (§8 do contrato).
-  static const _listMin = 88.0;
+  /// Na tela baixa, a folga mínima entre o tabuleiro e o rodapé.
+  static const _compactGap = 4.0;
 
   Character? _viktor;
   bool _started = false;
@@ -158,35 +160,64 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
       (SettingsCubit c) => c.state?.lessonMarks ?? true,
     );
     final text = ScriptSpeech.plainOf(context, state.speech.join(' '));
-    Widget speech = ScriptSpeech(
-      texts: state.speech,
-      metrics: metrics,
-      typing: state.machineThinking,
-      onMainLine: () => unawaited(cubit.onAction(ScriptAction.linhaPrincipal)),
-    );
+    // Todo botão citado na fala é link e faz o mesmo que ele, enquanto o
+    // botão está no rodapé (Gabriel, 14/10/2026).
+    VoidCallback? link(ScriptAction action) =>
+        state.primary == action || state.secondary == action
+        ? () => unawaited(cubit.onAction(action))
+        : null;
+    final onMainLine = link(ScriptAction.linhaPrincipal);
+    final onShowAnswer = link(ScriptAction.verResposta);
+    final viktor = _viktor;
+    // O clique no balão abre a fala inteira, sempre.
+    final onOpen = viktor == null || state.machineThinking
+        ? null
+        : () => unawaited(
+            showScriptSpeechSheet(
+              context,
+              viktor: viktor,
+              texts: state.speech,
+              onMainLine: onMainLine,
+              onShowAnswer: onShowAnswer,
+            ),
+          );
     final voice = TeacherSpeech.speechOf(context);
-    if (voice != null) {
-      final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
-      speech = AutoSpeak(
-        speech: voice,
-        text: text,
-        auto: sound,
-        speakerId: 'master',
-        child: speech,
+    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
+    Widget speechOf(int? lines) {
+      Widget speech = ScriptSpeech(
+        texts: state.speech,
+        metrics: metrics,
+        lines: lines,
+        typing: state.machineThinking,
+        onMainLine: onMainLine,
+        onShowAnswer: onShowAnswer,
+        onOpen: onOpen,
       );
+      if (voice != null) {
+        speech = AutoSpeak(
+          speech: voice,
+          text: text,
+          auto: sound,
+          speakerId: 'master',
+          child: speech,
+        );
+      }
+      return speech;
     }
+
     final strip = SizedBox(
       key: LessonScriptKeys.characterBar,
       height: _stripHeight + _tailGap,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, _tailGap, 12, 0),
-        child: _viktor == null
+        child: viktor == null
             ? null
             : TeacherSpeech(
                 part: TeacherSpeechPart.header,
                 lessonV2: true,
-                headerAvatar: 44,
-                teacher: _viktor!,
+                headerAvatar: 40,
+                avatarHeroTag: scriptViktorHeroTag,
+                teacher: viktor,
                 text: text,
                 speechContext: SpeechContext.teaching,
                 onSoundSettings: () => showLessonSoundDialog(context),
@@ -218,18 +249,36 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
         Expanded(
           child: LayoutBuilder(
             builder: (context, box) {
-              // O tabuleiro cabe na largura e deixa, acima, a fala de duas
-              // linhas com o retrato e, abaixo, a lista com ao menos 88 dp.
+              // O tabuleiro tem um tamanho só: a largura cheia, desde que
+              // caiba com a fala de duas linhas e o retrato acima; nunca
+              // encolhe para centralizar nem para mostrar a lista. Na tela
+              // baixa, o maior possível, e a lista fica abaixo da dobra
+              // (Gabriel, 14/10/2026; canvas `T70-etapa1-estados`).
               final above =
                   metrics.top +
                   metrics.minHeight(context) +
                   ScriptSpeech.tailSize.height +
                   _stripHeight +
                   _tailGap;
-              final size = math.max(
-                0.0,
-                math.min(box.maxWidth, box.maxHeight - above - _listMin),
-              );
+              final room =
+                  box.maxHeight - above - (metrics.compact ? _compactGap : 0);
+              final size = math.max(0.0, math.min(box.maxWidth, room));
+              // A fala vai até 4 linhas, ou mais se couberem acima do
+              // tabuleiro centralizado; depois a letra desce até 12 sp e,
+              // só então, o tabuleiro desce o necessário.
+              final bubbleRoom =
+                  (box.maxHeight - size) / 2 -
+                  _stripHeight -
+                  _tailGap -
+                  ScriptSpeech.tailSize.height -
+                  ScriptSpeechMetrics.minTop -
+                  2 * metrics.verticalPadding;
+              final lines = metrics.compact
+                  ? null
+                  : math.max(
+                      metrics.maxLines,
+                      (bubbleRoom / metrics.lineExtent(context)).floor(),
+                    );
               // Centralizado na altura sempre que dá; a fala sobe no espaço
               // de cima e só empurra o tabuleiro quando não cabe ali. A
               // tela toda rola, sem barra, quando a lista passa do fundo
@@ -247,7 +296,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen> {
                         ),
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          child: Column(children: [speech, strip]),
+                          child: Column(children: [speechOf(lines), strip]),
                         ),
                       ),
                       Center(child: board(size)),

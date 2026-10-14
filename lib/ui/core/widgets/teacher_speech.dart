@@ -58,6 +58,7 @@ class TeacherSpeech extends StatelessWidget {
     this.explanation,
     this.lessonV2 = false,
     this.headerAvatar,
+    this.avatarHeroTag,
     this.lessonPromptBubble = false,
     this.onVariation,
     this.activeVariation,
@@ -86,6 +87,10 @@ class TeacherSpeech extends StatelessWidget {
   /// Na lição V2, o retrato do cabeçalho maior que o padrão (28), com raio 6
   /// (lição roteirizada, T70).
   final double? headerAvatar;
+
+  /// Com valor, o retrato voa como `Hero` com esta tag (a fala inteira da
+  /// lição roteirizada, T70).
+  final Object? avatarHeroTag;
 
   /// Pensar keeps its speech bubble; explanation sections remain unboxed.
   final bool lessonPromptBubble;
@@ -159,7 +164,7 @@ class TeacherSpeech extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatar = CharacterAvatar(
+    Widget avatar = CharacterAvatar(
       character: teacher,
       emotion: emotion,
       // LICOES-V2 §9: retrato de 28 dp, raio 8, na linha de 48 dp.
@@ -168,6 +173,7 @@ class TeacherSpeech extends StatelessWidget {
           : (_compact(context) ? 32 : avatarSize),
       radius: lessonV2 ? (headerAvatar == null ? 8 : 6) : null,
     );
+    if (avatarHeroTag case final tag?) avatar = Hero(tag: tag, child: avatar);
     if (part == TeacherSpeechPart.header) {
       // Só o cabeçalho: os botões de voz valem para a fala, mas quem a diz
       // sozinho é o balão (sem repetir a voz).
