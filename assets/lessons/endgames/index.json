@@ -23,6 +23,7 @@
       "lessons": [
         "pawns.keySquares",
         "pawns.distantOpposition",
+        "pawns.waitingMoves",
         "pawns.triangulation",
         "pawns.rookPawnDraw",
         "pawns.race",

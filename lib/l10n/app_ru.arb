@@ -896,6 +896,7 @@
   "skillPawnsRookPawnDraw": "Крайняя пешка: ничья в углу",
   "skillPawnsKeySquares": "Ключевые поля",
   "skillPawnsDistantOpposition": "Дальняя и диагональная оппозиция",
+  "skillPawnsWaitingMoves": "Оппозиция: выжидательные ходы",
   "skillPawnsRace": "Пешечные гонки",
   "skillPawnsTriangulation": "Треугольник",
   "skillPawnsReti": "Манёвр Рети",

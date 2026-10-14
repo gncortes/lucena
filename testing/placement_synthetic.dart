@@ -53,6 +53,7 @@ const endgameLessons = [
   'mates.bishopKnight.full',
   'pawns.keySquares',
   'pawns.distantOpposition',
+  'pawns.waitingMoves',
   'queen.vsPawn',
   'queen.vsRook.philidor',
   'queen.vsRook.approach',
@@ -282,6 +283,14 @@ const _nodes = <(String, String, String, List<String>, List<String>, bool)>[
     'intermediate',
     ['pawns.opposition'],
     ['pawns.distantOpposition:endgame'],
+    false,
+  ),
+  (
+    'pawns.waitingMoves',
+    'pawns',
+    'advanced',
+    ['pawns.distantOpposition'],
+    ['pawns.waitingMoves:endgame'],
     false,
   ),
   (

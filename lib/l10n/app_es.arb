@@ -896,6 +896,7 @@
   "skillPawnsRookPawnDraw": "Peón de torre: las tablas en la esquina",
   "skillPawnsKeySquares": "Casillas clave",
   "skillPawnsDistantOpposition": "Oposición a distancia y diagonal",
+  "skillPawnsWaitingMoves": "Oposición: jugadas de espera",
   "skillPawnsRace": "Carreras de peones",
   "skillPawnsTriangulation": "Triangulación",
   "skillPawnsReti": "La maniobra de Réti",

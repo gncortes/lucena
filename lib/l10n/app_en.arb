@@ -4792,6 +4792,10 @@
   "@skillPawnsDistantOpposition": {
     "description": "Placement test: name of the skill 'pawns.distantOpposition' in the skill map (result screen, roadmap)."
   },
+  "skillPawnsWaitingMoves": "Opposition: waiting moves",
+  "@skillPawnsWaitingMoves": {
+    "description": "Placement test: name of the skill 'pawns.waitingMoves' (Part 2 of distant opposition: spare tempi and waiting moves) in the skill map."
+  },
   "skillPawnsRace": "Pawn races",
   "@skillPawnsRace": {
     "description": "Placement test: name of the skill 'pawns.race' in the skill map (result screen, roadmap)."

@@ -112,6 +112,7 @@ Map<String, String> skillNames(AppLocalizations l10n) => {
   'pawns.rookPawnDraw': l10n.skillPawnsRookPawnDraw,
   'pawns.keySquares': l10n.skillPawnsKeySquares,
   'pawns.distantOpposition': l10n.skillPawnsDistantOpposition,
+  'pawns.waitingMoves': l10n.skillPawnsWaitingMoves,
   'pawns.race': l10n.skillPawnsRace,
   'pawns.triangulation': l10n.skillPawnsTriangulation,
   'pawns.reti': l10n.skillPawnsReti,

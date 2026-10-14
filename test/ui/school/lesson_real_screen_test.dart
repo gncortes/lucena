@@ -34,9 +34,12 @@ class _Assets extends AssetService {
 /// T70: a lição REAL da oposição distante (asset e falas em PT-BR): tocar na
 /// citação da fala abre o modo variante com o ramo recuado e o `=`.
 void main() {
-  const lessonId = 'pawns.distantOpposition';
+  const firstId = 'pawns.distantOpposition';
+  const secondId = 'pawns.waitingMoves';
 
+  late Map<String, EndgameLesson> lessonsById;
   late EndgameLesson real;
+  var lessonId = firstId;
   late LessonTexts texts;
 
   setUpAll(() async {
@@ -44,7 +47,11 @@ void main() {
       _Assets(),
       school: AssetLessonRepository(_Assets()),
     );
-    real = (await repo.trail()).lessons.firstWhere((l) => l.id == lessonId);
+    final all = (await repo.trail()).lessons;
+    lessonsById = {
+      for (final l in all.where((l) => l.id == firstId || l.id == secondId))
+        l.id: l,
+    };
     texts = await repo.texts('pt');
   });
 
@@ -57,7 +64,10 @@ void main() {
     int cp = 900,
     bool withEngine = true,
     LessonStep? custom,
+    String id = firstId,
   }) async {
+    lessonId = id;
+    real = lessonsById[id]!;
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = size;
@@ -173,6 +183,9 @@ void main() {
     ('t_fixedTarget', 'fixedTarget', 'd7c6', 'Com 1.Rc6? você deixa escapar'),
     ('t_synchronize', 'synchronize', 'f5e4', 'Com 4.Re4? você deixa escapar'),
   ]) {
+    final id = const {'t_carlsenSo', 't_euwe'}.contains(c.$1)
+        ? firstId
+        : secondId;
     testWidgets('erro no pensar da ${c.$1}: textos da variante do feedback', (
       tester,
     ) async {
@@ -182,6 +195,7 @@ void main() {
         trimmed: false,
         part: c.$2,
         withEngine: false,
+        id: id,
       );
       final f = cubit.play(Move.parse(c.$3)!);
       await tester.pump(const Duration(seconds: 1));
@@ -201,7 +215,7 @@ void main() {
     testWidgets('prático errado ${c.$1}: texto escrito do feedback', (
       tester,
     ) async {
-      final cubit = await pump(tester, c.$1, cp: 0);
+      final cubit = await pump(tester, c.$1, cp: 0, id: secondId);
       await settle(tester);
       await movePractice(tester, cubit, c.$3);
       expect(plain(c.$4), findsWidgets);

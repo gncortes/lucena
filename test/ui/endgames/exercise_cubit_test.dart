@@ -58,7 +58,7 @@ void main() {
 
   test('e14: a notação do exercício traz as decisões escritas na aula, e a '
       'retomada guarda os lances jogados', () async {
-    const id = 'pawns.distantOpposition';
+    const id = 'pawns.waitingMoves';
     final parsed = AssetEndgameLessonRepository.parseLesson(
       jsonDecode(
         io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
