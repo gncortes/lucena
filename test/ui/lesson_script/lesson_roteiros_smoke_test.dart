@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
@@ -11,6 +12,7 @@ import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/kpk_oracle.dart';
 import 'package:lucena/domain/use_cases/machine_move.dart';
+import 'package:lucena/domain/use_cases/move_tree.dart';
 import 'package:lucena/domain/use_cases/script_moves.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
@@ -192,7 +194,8 @@ class _Run {
   }
 }
 
-Future<_Run> _drive(String id, {required bool withErrors}) async {
+/// Abre a lição [id] no cubit, com os assets de verdade.
+Future<(_Run, FakeLessonSource)> _open(String id) async {
   final repository = AssetLessonScriptRepository(AssetService(_DiskBundle()));
   final path = AssetLessonScriptRepository.scriptPath(id);
   final script = await repository.script(path);
@@ -218,6 +221,11 @@ Future<_Run> _drive(String id, {required bool withErrors}) async {
   addTearDown(sub.cancel);
   await cubit.start();
   run.check(cubit.state);
+  return (run, source);
+}
+
+Future<_Run> _drive(String id, {required bool withErrors}) async {
+  final (run, source) = await _open(id);
   for (var i = 0; i < 600; i++) {
     if (!await run.step(withErrors: withErrors)) break;
     await Future<void>.delayed(Duration.zero);
@@ -227,9 +235,171 @@ Future<_Run> _drive(String id, {required bool withErrors}) async {
   }
   expect(
     source.completed,
-    run.s.outcome == null ? isEmpty : ['$id/${script.partId}'],
+    run.s.outcome == null ? isEmpty : ['$id/${run.script.partId}'],
   );
   return run;
+}
+
+/// Os lances do aluno na pergunta que entram no jogo livre: os erros, os
+/// alternativos e um lance legal fora do roteiro, se sobra algum.
+List<String> _offLine(ScriptExample example) {
+  final question = example.question!;
+  final position = GameRules.fromFen(example.questionFen)!;
+  final legal = [
+    for (final MapEntry(key: from, value: targets)
+        in position.legalMoves.entries)
+      for (final to in targets.squares) '${from.name}${to.name}',
+  ]..sort();
+  final fora = legal.where((uci) => !question.covers(uci));
+  return [
+    ...question.errors.keys,
+    ...question.alternatives.keys,
+    if (fora.isNotEmpty) fora.first,
+  ];
+}
+
+/// As perguntas com jogo livre (lições com a tabela KPK).
+List<(int, int, ScriptExample)> _freeQuestions(String id) {
+  final script = LessonScript.fromJson(
+    jsonDecode(
+      io.File(AssetLessonScriptRepository.scriptPath(id)).readAsStringSync(),
+    ) as Map<String, dynamic>,
+  );
+  return [
+    for (final (s, stage) in script.stages.indexed)
+      for (final (e, example) in stage.examples.indexed)
+        if (example.question?.free != null) (s, e, example),
+  ];
+}
+
+const _results = {'½–½', '1–0', '0–1'};
+
+/// Da pergunta, joga [uci] e segue até o jogo livre acabar e a linha
+/// principal voltar (ou, sem jogo livre, até sair do exemplo). Com [branch],
+/// no meio da partida volta a um lance da máquina e joga outro lance.
+Future<({bool ended, bool branched})> _freeGame(
+  _Run run,
+  ScriptExample example,
+  String uci, {
+  required bool branch,
+}) async {
+  final cubit = run.cubit;
+  final index = run.s.exampleIndex;
+  final err = example.question!.errors.containsKey(uci);
+  await run.act('livre $uci', () => cubit.onMove(uci));
+  var branched = false;
+  for (var i = 0; i < 400; i++) {
+    final s = run.s;
+    if (s.exampleIndex != index || s.phase == ScriptPhase.fimExemplo) {
+      return (ended: false, branched: branched);
+    }
+    switch (s.phase) {
+      case ScriptPhase.pergunta:
+        return (ended: false, branched: branched);
+      case ScriptPhase.livrePerdido || ScriptPhase.livreMantido:
+        if (s.movable == null) {
+          run.problems.add('${run.where}: jogo livre parado sem vez');
+          return (ended: false, branched: branched);
+        }
+        final game = s.moves.where((m) => m.id.startsWith('g:')).toList();
+        final machine = example.student.opposite;
+        if (branch && !branched && game.length >= 4) {
+          branched = true;
+          await _branch(run, game, machine);
+          continue;
+        }
+        await run.act('aluno', () => cubit.onMove(run.practiceMove()));
+      case ScriptPhase.livreFim:
+        final game = s.moves.where((m) => m.id.startsWith('g:')).toList();
+        final last = game.where((m) => m.id == s.currentMoveId).firstOrNull;
+        if (!_results.contains(last?.result)) {
+          run.problems.add(
+            '${run.where}: fim sem resultado (${last?.san} ${last?.result})',
+          );
+        }
+        final marked = [
+          for (final (i, m) in game.indexed)
+            if (m.symbol == '?') i,
+        ];
+        if (!(err
+            ? marked.length == 1 && marked.single == 0
+            : marked.isEmpty)) {
+          run.problems.add('${run.where}: "?" fora do erro previsto ($marked)');
+        }
+        if (s.primary != ScriptAction.linhaPrincipal) {
+          run.problems.add('${run.where}: fim sem a linha principal');
+          return (ended: false, branched: branched);
+        }
+        await run.act(
+          'linha principal',
+          () => cubit.onAction(ScriptAction.linhaPrincipal),
+        );
+        final back = run.s;
+        final main = ScriptTracks.steps(example, ScriptTracks.main).first;
+        if (back.phase != ScriptPhase.linha &&
+            back.phase != ScriptPhase.fimExemplo) {
+          run.problems.add('${run.where}: a linha principal não voltou');
+        } else if (back.fen != main.fen) {
+          run.problems.add('${run.where}: a linha voltou em ${back.fen}');
+        }
+        if (back.moves.any((m) => m.id.startsWith('g:'))) {
+          run.problems.add('${run.where}: a partida ficou na lista');
+        }
+        return (ended: true, branched: branched);
+      default:
+        final action = s.primary;
+        if (action == null) {
+          run.problems.add('${run.where}: sem botão para seguir');
+          return (ended: false, branched: branched);
+        }
+        await run.act(action.name, () => cubit.onAction(action));
+    }
+  }
+  run.problems.add('${run.where}: o jogo livre não acabou');
+  return (ended: false, branched: branched);
+}
+
+/// Volta a um lance da máquina já jogado, joga outro lance e confere a
+/// sublinha logo depois do lance trocado.
+Future<void> _branch(_Run run, List<ScriptMoveEntry> game, Side machine) async {
+  // O lance do aluno que será trocado e o da máquina antes dele.
+  final i = game.lastIndexWhere(
+    (m) => m.side != machine && m.depth == 0,
+    game.length - 2,
+  );
+  if (i < 1 || game[i - 1].side != machine) {
+    run.problems.add('${run.where}: sem lance da máquina para voltar');
+    return;
+  }
+  final replaced = game[i];
+  await run.act(
+    'volta a ${game[i - 1].san}',
+    () => run.cubit.goToMove(game[i - 1].id),
+  );
+  if (run.s.movable == null) {
+    run.problems.add('${run.where}: voltar ao lance não deu a vez ao aluno');
+    return;
+  }
+  final position = GameRules.fromFen(run.s.fen)!;
+  final other =
+      [
+            for (final MapEntry(key: from, value: targets)
+                in position.legalMoves.entries)
+              for (final to in targets.squares) '${from.name}${to.name}',
+          ]
+          .where((uci) => ScriptMoves.play(run.s.fen, uci)?.san != replaced.san)
+          .firstOrNull;
+  if (other == null) return;
+  await run.act('outro lance $other', () => run.cubit.onMove(other));
+  final entries = run.s.moves.where((m) => m.id.startsWith('g:')).toList();
+  final at = entries.indexWhere((m) => m.id == replaced.id);
+  final next = at < 0 ? null : entries.elementAtOrNull(at + 1);
+  if (next == null || next.depth != 1 || !next.startsVariant) {
+    run.problems.add(
+      '${run.where}: a sublinha não abriu logo depois de ${replaced.san} '
+      '(${next?.san} depth ${next?.depth})',
+    );
+  }
 }
 
 void main() {
@@ -253,6 +423,34 @@ void main() {
             );
           },
         );
+      }
+      for (final (stage, index, example) in _freeQuestions(id)) {
+        for (final (n, uci) in _offLine(example).indexed) {
+          test('jogo livre: ${example.id} $uci', () async {
+            final (run, _) = await _open(id);
+            for (var i = 0; i < 200; i++) {
+              final s = run.s;
+              if (s.stageIndex == stage &&
+                  s.exampleIndex == index &&
+                  s.phase == ScriptPhase.pergunta) {
+                break;
+              }
+              if (!await run.step(withErrors: false)) break;
+            }
+            expect(run.s.phase, ScriptPhase.pergunta);
+            final game = await _freeGame(run, example, uci, branch: n == 0);
+            // O erro previsto sempre acaba em jogo livre (a pergunta tem um).
+            if (example.question!.errors.containsKey(uci)) {
+              expect(game.ended, isTrue, reason: 'o jogo livre não acabou');
+            }
+            if (n == 0) expect(game.branched, isTrue);
+            expect(
+              run.problems,
+              isEmpty,
+              reason: 'caminho:\n${run.trail.takeLast(12).join('\n')}',
+            );
+          });
+        }
       }
     });
   }
