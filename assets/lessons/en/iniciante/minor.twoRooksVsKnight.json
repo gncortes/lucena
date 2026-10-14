@@ -10,7 +10,7 @@
   "rot.ideia.ex1.err.a7a8.3": "Let's go back: one rook stays on the seventh, and the other gives the check.",
   "rot.ideia.ex1.fora": "That move does not give mate. Let's go back to the position.",
   "rot.ideia.ex1.volta": "Give checkmate, or click {verResposta}",
-  "rot.ideia.ex1.l1": "Remember: before the check, see whether the knight can block the rank or capture a rook.",
+  "rot.ideia.ex1.l1": "Remember: before the check, see whether the knight can block the check or capture a rook.",
   "rot.ideia.ex2.e1": "Look at the knight on d6: no black piece protects it. The black king is far away.",
   "rot.ideia.ex2.e2": "An unprotected piece gets captured. Without the knight, the easy two-rook mate is left.",
   "rot.ideia.ex2.p": "Find the best move, or click {verResposta}",

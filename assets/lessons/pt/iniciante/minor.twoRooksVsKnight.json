@@ -10,7 +10,7 @@
   "rot.ideia.ex1.err.a7a8.3": "Vamos voltar: uma torre fica na sétima, e a outra dá o xeque.",
   "rot.ideia.ex1.fora": "Esse lance não dá o mate. Vamos voltar à posição.",
   "rot.ideia.ex1.volta": "Dê o xeque-mate, ou clique em {verResposta}",
-  "rot.ideia.ex1.l1": "Guarde: antes do xeque, veja se o cavalo pode tapar a fileira ou capturar uma torre.",
+  "rot.ideia.ex1.l1": "Guarde: antes do xeque, veja se o cavalo pode cobrir o xeque ou capturar uma torre.",
   "rot.ideia.ex2.e1": "Olhe o cavalo em d6: nenhuma peça preta o protege. O rei preto está longe.",
   "rot.ideia.ex2.e2": "Peça sem proteção se captura. Sem o cavalo, sobra o mate fácil de duas torres.",
   "rot.ideia.ex2.p": "Ache o melhor lance, ou clique em {verResposta}",
