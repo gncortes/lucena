@@ -5,7 +5,7 @@
   "rot.ideia.ex1.p": "Leve a torre para a direita, até a coluna e, ou clique em {verResposta}",
   "rot.ideia.ex1.certo": "Isso mesmo! a, b, c, d, e: a quinta coluna.",
   "rot.ideia.ex1.revela": "A torre anda para a direita até a coluna e: a, b, c, d, e.",
-  "rot.ideia.ex1.fora": "A torre parou em outra coluna. Vamos voltar: conte as letras a partir de a.",
+  "rot.ideia.ex1.fora": "A torre não parou na coluna e. Vamos voltar: conte as letras a partir de a.",
   "rot.ideia.ex1.volta": "Leve a torre para a direita, até a coluna e, ou clique em {verResposta}",
   "rot.ideia.ex1.l1": "As letras ficam escritas na borda de baixo do tabuleiro. Use-as para conferir.",
   "rot.ideia.ex1.l2": "Guarde a ideia: a coluna é a letra, contada da esquerda para a direita.",
