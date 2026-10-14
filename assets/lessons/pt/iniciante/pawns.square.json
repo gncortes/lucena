@@ -57,6 +57,6 @@
   "rot.demos.vez.l8": "Agora é a sua vez: desenhe o quadrado antes de jogar.",
   "rot.pratica.corrida.enunciado": "De brancas: o quadrado do peão tem quinas em g3, b3, b8 e g8. O rei preto está fora: corra.",
   "rot.pratica.corrida.fim": "Muito bem. Fora do quadrado, o rei não alcança.",
-  "rot.pratica.alcance.enunciado": "De pretas: o quadrado do peão tem quinas em b3, g3, g8 e b8. Entre nele e alcance o peão.",
+  "rot.pratica.alcance.enunciado": "De pretas: o seu rei já está no quadrado do peão. Fique dentro dele, que encolhe, e alcance o peão.",
   "rot.pratica.alcance.fim": "Perfeito. Dentro do quadrado, o rei alcançou o peão."
 }
