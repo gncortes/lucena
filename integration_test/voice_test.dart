@@ -11,6 +11,7 @@ import 'package:patrol/patrol.dart';
 import 'robots/app_robot.dart';
 import 'robots/endgames_robot.dart';
 import 'robots/home_robot.dart';
+import 'robots/sheet_robot.dart';
 import 'robots/tour_robot.dart';
 import 'robots/variant.dart';
 import 'robots/voice_robot.dart';
@@ -126,8 +127,18 @@ void main() {
     // diálogo do som da lição (Canvas V2), onde a voz do Viktor liga.
     expect(voice.spokenCount, 0);
     await voice.tapSpeak();
-    await $(LessonSoundKeys.dialog).waitUntilVisible();
+    final sheet = SheetRobot(
+      $,
+      surface: LessonSoundKeys.dialog,
+      close: LessonSoundKeys.close,
+    );
+    await sheet.expectOpen();
     expect(voice.spokenCount, 0);
+    // O ✕ fecha a folha sem ligar nada; a lição segue.
+    await sheet.closeWithX();
+    expect(voice.spokenCount, 0);
+    await voice.tapSpeak();
+    await sheet.expectOpen();
     await $(LessonSoundKeys.teacherVoice).tap();
     await $.pumpAndSettle();
     await $(LessonSoundKeys.close).tap();
