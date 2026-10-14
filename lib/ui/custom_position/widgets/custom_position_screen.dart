@@ -16,6 +16,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/custom_position_cubit.dart';
 import '../../core/theme/app_motion.dart';
@@ -148,7 +149,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                         child: FilledButton(
                           key: CustomPositionKeys.continueButton,
                           style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
+                            minimumSize: const Size.fromHeight(kButtonHeight),
                           ),
                           onPressed: state.position == null
                               ? null

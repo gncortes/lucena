@@ -11,6 +11,8 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
@@ -94,7 +96,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                       child: FilledButton(
                         key: GameSetupKeys.startButton,
                         style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(52),
+                          minimumSize: const Size.fromHeight(kButtonHeight),
                         ),
                         onPressed: state.canStart
                             ? () => _start(context, state)
@@ -297,7 +299,9 @@ class _SidePicker extends StatelessWidget {
                   height: 14,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: side == Side.white ? Colors.white : Colors.black,
+                    color: side == Side.white
+                        ? AppColors.chessWhiteColor
+                        : AppColors.chessBlackColor,
                     border: Border.all(
                       color: Theme.of(context).colorScheme.outline,
                     ),

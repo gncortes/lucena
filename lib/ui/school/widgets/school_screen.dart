@@ -10,6 +10,8 @@ import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
 import '../../core/widgets/figurine.dart';
@@ -96,7 +98,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   FilledButton.icon(
                     key: SchoolKeys.continueButton,
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
+                      minimumSize: const Size.fromHeight(kButtonHeight),
                     ),
                     icon: const Icon(Icons.play_arrow_rounded),
                     label: Text(
@@ -114,7 +116,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   FilledButton.tonalIcon(
                     key: SchoolKeys.endgamesButton,
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
+                      minimumSize: const Size.fromHeight(kButtonHeight),
                     ),
                     icon: const Icon(Icons.auto_stories_outlined),
                     label: Text(l10n.endgamesTitle),
@@ -623,7 +625,7 @@ class _ChallengesCard extends StatelessWidget {
                 ),
                 child: const Icon(
                   Icons.star_rounded,
-                  color: Color(0xfff2b705),
+                  color: AppColors.goldColor,
                   size: 38,
                 ),
               ),

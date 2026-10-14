@@ -11,14 +11,15 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import 'journey_ui.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
@@ -67,7 +68,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                 child: FilledButton.icon(
                   key: JourneyKeys.play,
                   style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
+                    minimumSize: const Size.fromHeight(kButtonHeight),
                   ),
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.journeyPlay),
@@ -123,12 +124,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                           alignment: WrapAlignment.center,
                           children: [
                             _GoalChip(challenge: challenge),
-                            _Chip(
+                            InfoChip(
                               icon: switch (challenge.time) {
                                 final time? => paceIcon(PaceCategory.of(time)),
                                 null => Icons.timer_off_outlined,
                               },
-                              text: switch (challenge.time) {
+                              label: switch (challenge.time) {
                                 final time? => l10n.speedrunTimeControl(
                                   time.initial.inMinutes,
                                   time.increment.inSeconds,
@@ -244,50 +245,11 @@ class _GoalChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = GoalStyle.of(context, challenge.goal);
-    return _Chip(
+    return InfoChip(
       icon: style.icon,
-      text: goalLabel(context.l10n, challenge.goal),
+      label: goalLabel(context.l10n, challenge.goal),
       background: style.container,
       foreground: style.onContainer,
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({
-    required this.icon,
-    required this.text,
-    this.background,
-    this.foreground,
-  });
-
-  final IconData icon;
-  final String text;
-  final Color? background;
-  final Color? foreground;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final foreground = this.foreground ?? colors.onSecondaryContainer;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: background ?? colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.full),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: foreground),
-          const SizedBox(width: 6),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.labelLarge
-                ?.copyWith(color: foreground, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
     );
   }
 }

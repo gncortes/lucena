@@ -14,6 +14,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_history_cubit.dart';
@@ -148,53 +149,15 @@ class _Header extends StatelessWidget {
                   children: [
                     SpeedrunPaceChip(speedrun.time),
                     if (speedrun.kind == SpeedrunKind.marathon)
-                      _Chip(
+                      InfoChip(
                         icon: Icons.all_inclusive,
                         label: l10n.marathonSection,
                       ),
                     if (level != null)
-                      _Chip(icon: Icons.signal_cellular_alt, label: level),
+                      InfoChip(icon: Icons.signal_cellular_alt, label: level),
                   ],
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final color = colors.onSurfaceVariant;
-    return Container(
-      constraints: const BoxConstraints(minHeight: 28),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(AppShape.small),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontSize: 13,
-                color: color,
-              ),
             ),
           ),
         ],

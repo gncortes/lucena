@@ -25,6 +25,9 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/blind_game_cubit.dart';
@@ -260,41 +263,32 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final l10n = context.l10n;
     final language = Localizations.localeOf(context).toLanguageTag();
     final options = cubit.state.options;
-    final chosen = await showDialog<Move>(
-      context: context,
+    final chosen = await showLucenaSheet<Move>(
+      context,
       builder: (context) => BlocListener<BlindGameCubit, BlindState>(
         bloc: cubit,
-        // Respondeu por voz: o diálogo fecha sozinho.
+        // Respondeu por voz: a folha fecha sozinha.
         listenWhen: (a, b) => b.phase != BlindPhase.confirming,
         listener: (context, _) => Navigator.of(context).maybePop(),
-        child: _BlindDialogFrame(
-          child: SimpleDialog(
-            insetPadding: EdgeInsets.zero,
-            title: Text(l10n.blindStatusWhich),
-            children: [
-              for (final option in options)
-                SimpleDialogOption(
-                  key: BlindKeys.option(option.san),
-                  onPressed: () => Navigator.pop(context, option.move),
-                  child: Text(
-                    _capitalized(SpokenText.san(option.san, language)),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16, top: 8),
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
+        child: _BlindSheetBody(
+          title: l10n.blindStatusWhich,
+          children: [
+            for (final option in options)
+              InkWell(
+                key: BlindKeys.option(option.san),
+                onTap: () => Navigator.pop(context, option.move),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
                     child: Text(
-                      MaterialLocalizations.of(context).cancelButtonLabel,
+                      _capitalized(SpokenText.san(option.san, language)),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -309,25 +303,28 @@ class _BlindGameScreenState extends State<BlindGameScreen>
   Future<void> _resign(BuildContext context) async {
     final cubit = context.read<BlindGameCubit>();
     final l10n = context.l10n;
-    final sure = await showDialog<bool>(
-      context: context,
-      builder: (context) => _BlindDialogFrame(
-        child: AlertDialog(
-          insetPadding: EdgeInsets.zero,
-          title: Text(l10n.gameResignTitle),
-          content: Text(l10n.gameResignHint),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+    final sure = await showLucenaSheet<bool>(
+      context,
+      builder: (context) => _BlindSheetBody(
+        title: l10n.gameResignTitle,
+        message: l10n.gameResignHint,
+        actions: [
+          FilledButton(
+            key: BlindKeys.resignConfirm,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
-            FilledButton(
-              key: BlindKeys.resignConfirm,
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(l10n.gameResign),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.gameResign),
+          ),
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
-          ],
-        ),
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+          ),
+        ],
       ),
     );
     if (sure == true) await cubit.resign();
@@ -336,27 +333,30 @@ class _BlindGameScreenState extends State<BlindGameScreen>
   Future<void> _askMic(BuildContext context) async {
     final l10n = context.l10n;
     final cubit = context.read<BlindGameCubit>();
-    final allow = await showDialog<bool>(
-      context: context,
-      builder: (context) => _BlindDialogFrame(
-        child: AlertDialog(
-          insetPadding: EdgeInsets.zero,
-          icon: const Icon(Icons.mic_none),
-          title: Text(l10n.blindMicTitle),
-          content: Text(l10n.blindMicBody),
-          actions: [
-            TextButton(
-              key: BlindKeys.micDeny,
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n.blindMicDeny),
+    final allow = await showLucenaSheet<bool>(
+      context,
+      builder: (context) => _BlindSheetBody(
+        icon: Icons.mic_none,
+        title: l10n.blindMicTitle,
+        message: l10n.blindMicBody,
+        actions: [
+          FilledButton(
+            key: BlindKeys.micAllow,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
-            FilledButton(
-              key: BlindKeys.micAllow,
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(l10n.blindMicAllow),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.blindMicAllow),
+          ),
+          OutlinedButton(
+            key: BlindKeys.micDeny,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
-          ],
-        ),
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.blindMicDeny),
+          ),
+        ],
       ),
     );
     if (allow ?? false) {
@@ -523,7 +523,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                         _BottomSheetFrame(
                           child: FilledButton(
                             style: FilledButton.styleFrom(
-                              minimumSize: const Size.fromHeight(52),
+                              minimumSize: const Size.fromHeight(kButtonHeight),
                             ),
                             onPressed: () => Navigator.of(context).maybePop(),
                             child: Text(l10n.tourBack),
@@ -937,7 +937,7 @@ class _IntroPanel extends StatelessWidget {
           FilledButton(
             key: BlindKeys.start,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: cubit.start,
             child: Text(l10n.blindStart),
@@ -1361,69 +1361,78 @@ class _Pill extends StatelessWidget {
   );
 }
 
-/// O X externo cancela o modal; nunca confirma um lance ou uma desistência.
-class _BlindModalFrame extends StatelessWidget {
-  const _BlindModalFrame({required this.child});
+/// O corpo das folhas das Às cegas (T73, 3.2): título, texto e ações no padrão
+/// das folhas. O ✕ por fora (de [showLucenaSheet]) cancela; nunca confirma um
+/// lance ou uma desistência.
+class _BlindSheetBody extends StatelessWidget {
+  const _BlindSheetBody({
+    required this.title,
+    this.icon,
+    this.message,
+    this.children = const [],
+    this.actions = const [],
+  });
 
-  final Widget child;
+  final String title;
+  final IconData? icon;
+  final String? message;
+  final List<Widget> children;
+  final List<Widget> actions;
 
   @override
-  Widget build(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(right: 12, bottom: 12),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Material(
-            color: Colors.white,
-            elevation: 2,
-            shape: const CircleBorder(),
-            child: IconButton(
-              tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-              style: IconButton.styleFrom(
-                foregroundColor: Colors.black87,
-                fixedSize: const Size.square(44),
-                minimumSize: const Size.square(44),
-                maximumSize: const Size.square(44),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              icon: const Icon(Icons.close_rounded),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-        ),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SingleChildScrollView(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.xl,
+        0,
+        AppSpacing.xl,
+        AppSpacing.xl,
       ),
-      Flexible(child: child),
-    ],
-  );
-}
-
-class _BlindDialogFrame extends StatelessWidget {
-  const _BlindDialogFrame({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Dialog(
-    backgroundColor: Colors.transparent,
-    elevation: 0,
-    insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-    child: IntrinsicHeight(child: _BlindModalFrame(child: child)),
-  );
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 32, color: theme.colorScheme.primary),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+          Text(
+            title,
+            textAlign: icon != null ? TextAlign.center : null,
+            style: theme.textTheme.titleLarge,
+          ),
+          if (message != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message!,
+              textAlign: icon != null ? TextAlign.center : null,
+              style: theme.textTheme.bodyMedium,
+            ),
+          ],
+          if (children.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            ...children,
+          ],
+          if (actions.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.lg),
+            for (final action in actions) ...[
+              action,
+              if (action != actions.last) const SizedBox(height: AppSpacing.sm),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
 }
 
 /// Como falar e digitar os lances, na notação do idioma do app.
 void _showHelp(BuildContext context) {
   final l10n = context.l10n;
   final theme = Theme.of(context);
-  showModalBottomSheet<void>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    showDragHandle: false,
-    useSafeArea: true,
-    isScrollControlled: true,
+  showLucenaSheet<void>(
+    context,
     builder: (context) {
       Widget item(IconData icon, String text) => Padding(
         padding: const EdgeInsets.only(bottom: 14),
@@ -1436,40 +1445,29 @@ void _showHelp(BuildContext context) {
           ],
         ),
       );
-      return _BlindModalFrame(
-        child: Material(
-          color: theme.colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppShape.large),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              key: BlindKeys.helpSheet,
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.blindHelpIntro,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  item(Icons.extension_outlined, l10n.blindHelpPieces),
-                  item(Icons.keyboard_outlined, l10n.blindHelpTyped),
-                  item(Icons.mic_none, l10n.blindHelpVoice),
-                  item(
-                    Icons.record_voice_over_outlined,
-                    l10n.blindHelpCommands,
-                  ),
-                  item(Icons.touch_app_outlined, l10n.blindHelpTouch),
-                ],
+      return SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          key: BlindKeys.helpSheet,
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                l10n.blindHelpIntro,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              item(Icons.extension_outlined, l10n.blindHelpPieces),
+              item(Icons.keyboard_outlined, l10n.blindHelpTyped),
+              item(Icons.mic_none, l10n.blindHelpVoice),
+              item(Icons.record_voice_over_outlined, l10n.blindHelpCommands),
+              item(Icons.touch_app_outlined, l10n.blindHelpTouch),
+            ],
           ),
         ),
       );

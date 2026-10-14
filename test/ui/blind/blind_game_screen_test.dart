@@ -12,6 +12,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/blind/widgets/blind_game_screen.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -389,14 +390,14 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.resign));
     await tester.pumpAndSettle();
     final close = find.byTooltip('Close');
-    expect(tester.getSize(close), const Size.square(44));
+    expect(tester.getSize(close), const Size.square(40));
     expect(
       tester.getRect(close).bottom,
-      lessThan(tester.getRect(find.byType(AlertDialog)).top),
+      lessThan(tester.getRect(find.byKey(SheetKeys.surface)).top),
     );
     await tester.tap(close);
     await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byKey(SheetKeys.surface), findsNothing);
     expect(cubit.state.phase, BlindPhase.playerTurn);
     expect(cubit.state.position!.fen, before);
   });
@@ -419,10 +420,10 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.resign));
     await tester.pumpAndSettle();
     final close = find.byTooltip('Close');
-    expect(tester.getSize(close), const Size.square(44));
+    expect(tester.getSize(close), const Size.square(40));
     expect(
       tester.getCenter(close).dx,
-      greaterThan(tester.getCenter(find.byType(AlertDialog)).dx),
+      greaterThan(tester.getCenter(find.byKey(SheetKeys.surface)).dx),
     );
     await tester.tap(close);
     await tester.pumpAndSettle();
@@ -438,10 +439,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     await tester.tap(find.byKey(BlindKeys.mic));
     await tester.pumpAndSettle();
-    expect(find.byType(SimpleDialog), findsOneWidget);
+    expect(find.byKey(SheetKeys.surface), findsOneWidget);
     await tester.tap(find.byTooltip('Close'));
     await tester.pumpAndSettle();
-    expect(find.byType(SimpleDialog), findsNothing);
+    expect(find.byKey(SheetKeys.surface), findsNothing);
     expect(cubit.state.phase, BlindPhase.playerTurn);
     expect(cubit.state.position!.fen, before);
   });
@@ -848,7 +849,7 @@ void main() {
     expect(find.byKey(BlindKeys.helpSheet), findsOneWidget);
     expect(find.textContaining('K king, Q queen'), findsOneWidget);
     final close = find.byTooltip('Close');
-    expect(tester.getSize(close), const Size.square(44));
+    expect(tester.getSize(close), const Size.square(40));
     expect(
       tester.getRect(close).bottom,
       lessThan(tester.getRect(find.byKey(BlindKeys.helpSheet)).top),

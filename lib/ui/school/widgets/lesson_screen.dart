@@ -26,7 +26,9 @@ import '../../../domain/use_cases/variation_tree_builder.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import '../../../routing/routes.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/round_footer_button.dart';
 import '../../core/widgets/script_speech_sheet.dart';
@@ -1095,6 +1097,11 @@ class _LessonScreenState extends State<LessonScreen>
           return Scaffold(
             key: LessonKeys.screen,
             appBar: LucenaAppBar(
+              // Conclusão (parte, aula, capítulo, formatura): ✕ em vez da seta
+              // (T73, D12; canvas 5f86692). Mesmo destino: voltar.
+              leading: state.finished || state.courseFinished
+                  ? const CloseButton(key: LessonKeys.appBarClose)
+                  : null,
               // Só o título (da parte, na aula em partes, ou da aula),
               // centralizado: sem contador "1/5" no canto (Gabriel,
               // 2026-10-13). Na escola, o iniciante não vê quantas faltam.
@@ -2256,7 +2263,12 @@ class _LessonScreenState extends State<LessonScreen>
           ),
       if (marked)
         for (final mark in state.marks)
-          Circle(color: const Color(0xcc15781b), orig: Square.fromName(mark)),
+          Circle(
+            color: AppColors.successColor.withValues(
+              alpha: AppColors.boardMarkAlpha,
+            ),
+            orig: Square.fromName(mark),
+          ),
       for (final star in state.stars)
         CustomShape(
           orig: Square.fromName(star),
@@ -2264,11 +2276,23 @@ class _LessonScreenState extends State<LessonScreen>
           child: StarShape(key: LessonKeys.star(star)),
         ),
       if (hint is NormalMove)
-        Arrow(color: const Color(0xcc15781b), orig: hint.from, dest: hint.to),
+        Arrow(
+          color: AppColors.successColor.withValues(
+            alpha: AppColors.boardMarkAlpha,
+          ),
+          orig: hint.from,
+          dest: hint.to,
+        ),
       // Solução vista: a seta verde (a da dica) no lance certo.
       if (state.solutionSeen)
         if (state.solutionMove case final NormalMove move)
-          Arrow(color: const Color(0xcc15781b), orig: move.from, dest: move.to),
+          Arrow(
+            color: AppColors.successColor.withValues(
+              alpha: AppColors.boardMarkAlpha,
+            ),
+            orig: move.from,
+            dest: move.to,
+          ),
     };
     // Cada passo novo: o tabuleiro "pousa" (o controle volta do zero ao
     // trocar de passo, sem refazer o tabuleiro).
@@ -3218,7 +3242,7 @@ class _LessonScreenState extends State<LessonScreen>
                 OutlinedButton.icon(
                   key: LessonV2Keys.openFreeBoard,
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
+                    minimumSize: const Size.fromHeight(kButtonHeight),
                   ),
                   onPressed: () => context.push(
                     Routes.setup(
@@ -3339,7 +3363,7 @@ class _LessonScreenState extends State<LessonScreen>
           if (moved)
             round(
               LessonKeys.thinkReset,
-              Icons.replay,
+              Icons.undo,
               l10n.lessonThinkReset,
               cubit.resetThink,
             ),
@@ -3457,7 +3481,7 @@ class _LessonScreenState extends State<LessonScreen>
         bool tonal = false,
       }) {
         final style = FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: const Size.fromHeight(kButtonHeight),
           padding: const EdgeInsets.symmetric(horizontal: 8),
           textStyle: Theme.of(context).textTheme.labelLarge,
         );
@@ -3575,7 +3599,7 @@ class _LessonScreenState extends State<LessonScreen>
                 child: FilledButton(
                   key: LessonKeys.nextButton,
                   style: FilledButton.styleFrom(
-                    minimumSize: const Size(0, 56),
+                    minimumSize: const Size(0, kButtonHeightCompact),
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.lg,
                     ),
@@ -3639,7 +3663,7 @@ class _LessonScreenState extends State<LessonScreen>
   }
 
   ButtonStyle _footerButtonStyle(BuildContext context) => ButtonStyle(
-    minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+    minimumSize: const WidgetStatePropertyAll(Size(0, kButtonHeightCompact)),
     padding: const WidgetStatePropertyAll(
       EdgeInsets.symmetric(horizontal: AppSpacing.sm),
     ),
@@ -3898,7 +3922,7 @@ class _FooterAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FilledButton(
     style: FilledButton.styleFrom(
-      minimumSize: const Size(0, 56),
+      minimumSize: const Size(0, kButtonHeightCompact),
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       backgroundColor: background,
       foregroundColor: foreground,

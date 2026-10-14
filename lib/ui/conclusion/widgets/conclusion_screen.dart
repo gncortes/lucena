@@ -25,6 +25,7 @@ import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/share/share_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -49,6 +50,7 @@ import '../../core/pace/pace_ui.dart';
 import '../../speedrun/widgets/speedrun_ui.dart';
 import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
+import '../../core/widgets/progress_pill.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o
@@ -345,6 +347,8 @@ class _Body extends StatelessWidget {
           teacher: opponent,
           text: comment,
           emotion: state.emotion,
+          // Fala em cartão fora do tabuleiro: 56 (T73, D9; canvas 96d710e).
+          avatarSize: CharacterAvatar.speech,
         ),
       if (feedback.isNotEmpty)
         ReportPanel(
@@ -524,15 +528,18 @@ class _Header extends StatelessWidget {
                       child: _Player(
                         key: ConclusionKeys.opponent,
                         avatar: opponent == null
-                            ? const ColoredBox(
-                                color: Color(0xFF312E2B),
-                                child: Icon(
+                            ? ColoredBox(
+                                color: AppColors.chessBlackColor,
+                                child: const Icon(
                                   Icons.smart_toy_outlined,
-                                  color: Colors.white,
+                                  color: AppColors.chessWhiteColor,
                                   size: 32,
                                 ),
                               )
-                            : CharacterAvatar(character: opponent, size: 64),
+                            : CharacterAvatar(
+                                character: opponent,
+                                size: CharacterAvatar.versus,
+                              ),
                         name: opponentName,
                         winner: winner == userSide.opposite,
                       ),
@@ -1435,7 +1442,6 @@ class _AnalysisRunning extends StatelessWidget {
   final double board;
 
   static const titleHeight = 44.0;
-  static const _barHeight = 6.0;
 
   @override
   Widget build(BuildContext context) {
@@ -1452,14 +1458,10 @@ class _AnalysisRunning extends StatelessWidget {
           child: _ReviewBoard(state: state, size: board),
         ),
         const SizedBox(height: AppSpacing.md),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppShape.full),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(end: total == 0 ? 0 : state.reviewDone / total),
-            duration: AppMotion.of(context).state,
-            builder: (context, value, _) =>
-                LinearProgressIndicator(value: value, minHeight: _barHeight),
-          ),
+        TweenAnimationBuilder<double>(
+          tween: Tween(end: total == 0 ? 0 : state.reviewDone / total),
+          duration: AppMotion.of(context).state,
+          builder: (context, value, _) => ProgressPill(value: value),
         ),
       ],
     );

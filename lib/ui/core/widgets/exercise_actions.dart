@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_button.dart';
 import '../theme/app_button_text.dart';
 import 'round_footer_button.dart';
 
@@ -79,7 +80,7 @@ class ExerciseActions extends StatelessWidget {
 
   Widget _button(BuildContext context, ExerciseAction action) {
     final style = ButtonStyle(
-      minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+      minimumSize: const WidgetStatePropertyAll(Size(0, kButtonHeightCompact)),
       // Com [hug], o botão do canvas: folga de 22 e letra 16.
       padding: WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: hug ? 22 : 8),

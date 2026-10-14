@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/board/speech_flash.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/theme/app_button.dart';
 import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -98,6 +99,14 @@ void main() {
     await tester.pumpAndSettle();
     return settings;
   }
+
+  testWidgets('o Continuar da lição é botão compacto de 48 (T73, D6)', (
+    tester,
+  ) async {
+    await pump(tester, intro: 'Short.');
+    final size = tester.getSize(find.byKey(LessonKeys.nextButton));
+    expect(size.height, kButtonHeightCompact);
+  });
 
   testWidgets('a fala longa fica inteira no balão e a tela rola até o fim '
       'dela, acima das ações', (tester) async {

@@ -15,9 +15,11 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/run_clock.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
@@ -68,7 +70,7 @@ class MarathonAttemptView extends StatelessWidget {
                 child: FilledButton.icon(
                   key: SpeedrunKeys.retry,
                   style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
+                    minimumSize: const Size.fromHeight(kButtonHeight),
                   ),
                   icon: const Icon(Icons.replay),
                   label: Text(l10n.speedrunRetry),
@@ -512,57 +514,15 @@ class _Chips extends StatelessWidget {
       runSpacing: AppSpacing.sm,
       children: [
         SpeedrunPaceChip(speedrun.time),
-        _Chip(icon: Icons.all_inclusive, label: l10n.marathonSection),
+        InfoChip(icon: Icons.all_inclusive, label: l10n.marathonSection),
         if (endedAt != null)
-          _Chip(
+          InfoChip(
             icon: Icons.calendar_today,
             label: HistoryLabels.capitalize(
               DateFormat.MMMd(locale).add_Hm().format(endedAt.toLocal()),
             ),
           ),
       ],
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Container(
-      // 28 no artboard; o texto maior (fonte 2,0) cresce a caixa.
-      constraints: const BoxConstraints(minHeight: 28),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(AppShape.small),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 6,
-        children: [
-          ExcludeSemantics(
-            child: Icon(icon, size: 16, color: colors.onSurfaceVariant),
-          ),
-          Flexible(
-            child: Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

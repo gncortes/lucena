@@ -20,6 +20,7 @@ import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
@@ -253,7 +254,7 @@ class _Chips extends StatelessWidget {
       children: [
         SpeedrunPaceChip(speedrun.time),
         if (endedAt != null)
-          SpeedrunChip(
+          InfoChip(
             icon: Icons.calendar_today,
             label: HistoryLabels.capitalize(
               DateFormat.MMMd(locale).add_Hm().format(endedAt.toLocal()),

@@ -12,6 +12,7 @@ import 'package:lucena/ui/core/pace/pace_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
+import 'package:lucena/ui/core/theme/app_shape.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_history_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_history_screen.dart';
@@ -493,7 +494,8 @@ void main() {
       final decoration = chip.decoration! as BoxDecoration;
       expect(decoration.color, isNull);
       expect(decoration.border, isNotNull);
-      expect(decoration.borderRadius, BorderRadius.circular(8));
+      // Pílula de 28 (T73, D15: InfoChip).
+      expect(decoration.borderRadius, BorderRadius.circular(AppShape.full));
       final bonus = tester.widget<Text>(
         find.descendant(
           of: find.byKey(SpeedrunKeys.historyBonus),

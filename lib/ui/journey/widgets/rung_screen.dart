@@ -92,6 +92,7 @@ class RungScreen extends StatelessWidget {
                               speechContext: SpeechContext.teaching,
                               teacher: teacher,
                               text: reunion,
+                              avatarSize: CharacterAvatar.speech,
                             ),
                           ],
                         ),

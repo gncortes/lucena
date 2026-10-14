@@ -14,6 +14,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
@@ -25,6 +26,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/progress_pill.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -103,13 +105,7 @@ class ReviewSummary extends StatelessWidget {
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppShape.small),
-            child: LinearProgressIndicator(
-              value: state.reviewProgress,
-              minHeight: 8,
-            ),
-          ),
+          ProgressPill(value: state.reviewProgress),
         ],
       );
     } else if (review == null) {
@@ -227,7 +223,7 @@ class ReviewSummary extends StatelessWidget {
       (ReviewSpeed.deep, GameDetailsKeys.reviewDeep, l10n.reviewDeep),
     ];
     final style = FilledButton.styleFrom(
-      minimumSize: const Size.fromHeight(46),
+      minimumSize: const Size.fromHeight(kButtonHeight),
       padding: const EdgeInsets.symmetric(horizontal: 10),
     );
     // A próxima a fazer fica em destaque.

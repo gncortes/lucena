@@ -15,6 +15,7 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/time_display.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -212,14 +213,18 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     return switch (state.phase) {
       ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
-        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeight),
+        ),
         icon: const Icon(Icons.play_arrow_rounded),
         label: label(l10n.starChallengeGo),
         onPressed: cubit.start,
       ),
       ChallengePhase.finished => FilledButton.icon(
         key: StarChallengeKeys.retryButton,
-        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeight),
+        ),
         icon: const Icon(Icons.replay_rounded),
         label: label(l10n.starChallengePlayAgain),
         onPressed: cubit.retry,

@@ -14,6 +14,14 @@ class CharacterAvatar extends StatelessWidget {
     super.key,
   });
 
+  /// Os tamanhos do retrato (T73, D9; canvas 96d710e): fala em cartão fora do
+  /// tabuleiro, linha da lição, jogador em linha, tour e confronto (VS).
+  static const speech = 56.0;
+  static const lessonRow = 40.0;
+  static const player = 44.0;
+  static const tour = 64.0;
+  static const versus = 72.0;
+
   final Character character;
   final double size;
 

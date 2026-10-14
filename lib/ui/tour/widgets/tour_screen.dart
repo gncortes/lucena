@@ -16,6 +16,7 @@ import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/app_bar_progress.dart';
@@ -263,9 +264,8 @@ class _TourFooter extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: FilledButton(
             key: last ? TourKeys.startButton : TourKeys.nextButton,
-            // T73 lote 2: trocar pelo tema global.
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: last ? cubit.finish : cubit.next,
             child: Text(last ? l10n.tourStart : l10n.tourNext),
@@ -653,7 +653,9 @@ class _HelpStep extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(0, kButtonHeightCompact),
+                ),
                 onPressed: () {},
                 icon: const Icon(Icons.visibility),
                 label: Text(l10n.lessonShowAnswer),

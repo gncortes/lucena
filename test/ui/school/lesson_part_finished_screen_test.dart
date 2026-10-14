@@ -99,6 +99,22 @@ void main() {
     expect(cubit.state.partNumber, 2);
     expect(cubit.state.finished, isFalse);
     expect(find.byKey(LessonKeys.progress), findsOneWidget);
+    // Durante a aula, seta; sem ✕ (T73, D12).
+    expect(find.byKey(LessonKeys.appBarClose), findsNothing);
+
+    // Na conclusão (T73, D12): ✕ no lugar da seta.
+    await cubit.next();
+    await tester.pumpAndSettle();
+    expect(cubit.state.finished, isTrue);
+    expect(find.byKey(LessonKeys.appBarClose), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(AppBar),
+        matching: find.byIcon(Icons.close),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.arrow_back), findsNothing);
     addTearDown(() => tester.pumpWidget(const SizedBox()));
   });
 }
