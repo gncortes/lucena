@@ -1,3 +1,7 @@
+import '../data/repositories/school/lesson_script_repository.dart';
+import '../data/repositories/school/lesson_script_repository_asset.dart';
+import '../data/repositories/tablebase/kpk_repository.dart';
+
 import 'package:flutter/foundation.dart';
 
 import '../data/repositories/draw/draw_offer_repository.dart';
@@ -126,6 +130,8 @@ class Dependencies {
     required this.schoolProgressRepository,
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
+    required this.lessonScriptRepository,
+    required this.kpkRepository,
     required this.endgameProgressRepository,
     this.exerciseFeedbackRepository = const EmptyExerciseFeedbackRepository(),
     required this.drawOfferRepository,
@@ -194,6 +200,8 @@ class Dependencies {
         assets,
         school: lessons,
       ),
+      lessonScriptRepository: AssetLessonScriptRepository(assets),
+      kpkRepository: AssetKpkRepository(assets),
       endgameProgressRepository: LocalEndgameProgressRepository(preferences),
       exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
       drawOfferRepository: DeviceDrawOfferRepository(
@@ -240,6 +248,8 @@ class Dependencies {
   final SchoolProgressRepository schoolProgressRepository;
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
+  final LessonScriptRepository lessonScriptRepository;
+  final KpkRepository kpkRepository;
   final EndgameProgressRepository endgameProgressRepository;
   final ExerciseFeedbackRepository exerciseFeedbackRepository;
   final DrawOfferRepository drawOfferRepository;

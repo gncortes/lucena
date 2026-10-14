@@ -19,10 +19,45 @@ void main() {
     await board.move('g1', 'f3');
 
     await board.expectMoves(['e4', 'e5', 'Nf3']);
-    board.expectTurn('Black to move');
+    board.expectTurnRing(below: false);
     board.expectFen(
       'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2',
     );
+  });
+
+  patrolTest('tabuleiro virado: o anel da vez segue o retrato de quem joga, '
+      'inclusive o de cima', ($) async {
+    final board = FreeBoardRobot($);
+    await AppRobot($).open(systemLocale: const Locale('en', 'US'));
+    await board.open();
+    board.expectOrientation(Side.white);
+    board.expectTurnRingOf(Side.white);
+
+    // Virado: as pretas embaixo e a vez das brancas, que agora ficam em cima.
+    await board.flip();
+    board.expectOrientation(Side.black);
+    board.expectTurnRing(below: false);
+    board.expectTurnRingOf(Side.white);
+
+    // O lance das brancas passa o anel ao retrato de baixo (as pretas).
+    await board.move('e2', 'e4');
+    board.expectTurnRing(below: true);
+    board.expectTurnRingOf(Side.black);
+
+    // Desvirado de novo: a vez das pretas fica em cima.
+    await board.flip();
+    board.expectOrientation(Side.white);
+    board.expectTurnRing(below: false);
+  });
+
+  patrolTest('jogando de pretas: o jogador fica embaixo e o anel dele '
+      'acende na vez dele', ($) async {
+    final board = FreeBoardRobot($);
+    await AppRobot($).open(systemLocale: const Locale('en', 'US'));
+    await board.openAt(_initialFen, user: Side.black);
+    board.expectOrientation(Side.black);
+    // Vez das brancas (a máquina ou o outro lado): anel em cima.
+    board.expectTurnRing(below: false);
   });
 
   patrolTest('rever a partida: tocar num lance mostra aquele momento, sem '
@@ -66,7 +101,7 @@ void main() {
 
     board.expectFen(_initialFen);
     await board.expectMoves([]);
-    board.expectTurn('White to move');
+    board.expectTurnRing(below: true);
   });
 
   patrolTest('roque pequeno numa posição preparada', ($) async {

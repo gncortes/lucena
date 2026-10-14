@@ -1,10 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../../../domain/models/app_accent.dart';
-import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/models/home_layout.dart';
-import '../../../domain/models/rating_level.dart';
 import '../../tour/view_models/tour_cubit.dart';
 
 abstract final class TourKeys {
@@ -13,38 +9,29 @@ abstract final class TourKeys {
   static const nextButton = Key('tour.next');
   static const backButton = Key('tour.back');
   static const startButton = Key('tour.start');
-  static const startRung = Key('tour.startRung');
 
-  /// No passo do nível: o cartão do teste, "Prefiro escolher minha faixa" e,
-  /// com a lista aberta, a volta ao teste.
-  static const takeTestCard = Key('tour.takeTestCard');
-  static const chooseByHand = Key('tour.chooseByHand');
-  static const takeTest = Key('tour.takeTest');
-  static const byHandHint = Key('tour.byHandHint');
+  /// No primeiro passo, o vazio de 56 dp no lugar de "Voltar" (o "Pular" fica
+  /// no mesmo lugar nos dois primeiros passos).
+  static const backSlot = Key('tour.backSlot');
+
+  /// A barra de progresso colada na base da barra do app.
   static const progress = Key('tour.progress');
-  static const stepCounter = Key('tour.stepCounter');
+
+  /// O retrato do Viktor com o nome e o som (o cabeçalho).
   static const viktor = Key('tour.viktor');
+
+  /// O balão da fala; o clique abre a fala inteira.
   static const speech = Key('tour.speech');
 
   /// A tela do tour, que rola inteira.
   static const scroll = Key('tour.scroll');
 
-  /// No primeiro passo: o nome do jogador.
+  /// No passo da voz: o nome do jogador e a nota embaixo.
   static const nameField = Key('tour.name');
+  static const voiceHint = Key('tour.voiceHint');
 
   /// O passo aberto.
   static Key step(TourStep step) => Key('tour.step.${step.name}');
-
-  /// No passo do tema: claro, escuro ou o do aparelho, e a cor do app.
-  static Key themeMode(AppThemeMode mode) =>
-      Key('tour.theme.mode.${mode.code}');
-  static Key accent(AppAccent accent) =>
-      Key('tour.theme.accent.${accent.code}');
-  static const accentValue = Key('tour.theme.accent.value');
-
-  /// No passo do som: com som ou sem som.
-  static Key sound({required bool enabled}) =>
-      Key('tour.sound.${enabled ? 'on' : 'off'}');
 
   /// No passo do tabuleiro: a amostra, as cores e as peças.
   static const boardPreview = Key('tour.board.preview');
@@ -53,12 +40,17 @@ abstract final class TourKeys {
   static Key boardPieces(PieceStyle pieces) =>
       Key('tour.board.pieces.${pieces.code}');
 
-  /// Uma faixa no passo do nível.
-  static Key level(RatingLevel level) => Key('tour.level.${level.name}');
+  /// No passo das aulas: as três etapas.
+  static const stages = Key('tour.stages');
 
-  /// A demonstração animada de um passo (toque: de novo).
-  static const demo = Key('tour.demo');
+  /// No passo da ajuda: a lâmpada e "Ver resposta".
+  static const helpButtons = Key('tour.helpButtons');
 
-  /// Um caminho no passo do que o jogador quer fazer.
-  static Key goal(HomePath path) => Key('tour.goal.${path.name}');
+  /// No passo das partidas: os cinco adversários e o chip do rating.
+  static const opponents = Key('tour.opponents');
+  static const ratingChip = Key('tour.ratingChip');
+
+  /// Um dos três cartões do último passo.
+  static Key levelOption(TourLevelChoice choice) =>
+      Key('tour.levelOption.${choice.name}');
 }

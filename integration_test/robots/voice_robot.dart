@@ -26,18 +26,6 @@ class VoiceRobot {
     await $.pumpAndSettle();
   }
 
-  /// Abre a escolha da voz de um adversário.
-  Future<void> openCharacter(String characterId) async {
-    await $(VoiceKeys.character(characterId)).scrollTo().tap();
-    await $(VoiceKeys.appChoice).waitUntilVisible();
-  }
-
-  /// Fecha a folha de escolha.
-  Future<void> closeSheet() async {
-    await $.tester.tapAt(const Offset(20, 80));
-    await $.pumpAndSettle();
-  }
-
   /// O botão de áudio do balão.
   Future<void> tapSpeak() async {
     await $(VoiceKeys.speakButton).scrollTo().tap();

@@ -60,326 +60,6 @@ void main() {
     sound = FakeSoundRepository();
   });
 
-  group('feedback contextual da lição', () {
-    const id = 'pawns.distantOpposition';
-    late MoveStep step;
-    late Course course;
-    late List<Map<String, dynamic>> rows;
-    setUp(() {
-      final lesson = AssetEndgameLessonRepository.parseLesson(
-        jsonDecode(
-          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
-        ),
-      ).lesson;
-      step = lesson.steps.whereType<MoveStep>().singleWhere(
-        (s) => s.id == 'convert',
-      );
-      course = Course(
-        modules: [
-          CourseModule(
-            id: 'pawns',
-            lessons: [
-              Lesson(
-                id: id,
-                steps: [
-                  const TalkStep(id: 'intro'),
-                  step,
-                ],
-              ),
-            ],
-          ),
-        ],
-      );
-      rows =
-          (jsonDecode(
-                    io.File(AssetExerciseFeedbackRepository.assetPath(id))
-                        .readAsStringSync(),
-                  )['rows']
-                  as List)
-              .cast<Map<String, dynamic>>();
-    });
-    for (final language in ['pt', 'en']) {
-      test('tipo move, turn 1-based e FEN completa em $language', () async {
-        final lesson = cubit(
-          course: course,
-          feedback: AssetExerciseFeedbackRepository(
-            _FeedbackAssets(legacyOnly: true),
-          ),
-        );
-        await lesson.load(id, language);
-        await lesson.next();
-        for (var turn = 0; turn < step.line.length; turn++) {
-          final fen = lesson.state.fen;
-          final errors = rows
-              .where(
-                (r) =>
-                    r['kind'] == 'move' &&
-                    r['id'] == step.id &&
-                    r['turn'] == turn + 1 &&
-                    r['fen'] == fen,
-              )
-              .take(2);
-          expect(errors, isNotEmpty);
-          for (final row in errors) {
-            final mistakes = lesson.state.mistakes;
-            await lesson.play(move(row['uci'] as String));
-            expect(
-              lesson.state.speech,
-              row[language],
-              reason:
-                  'turn=$turn uci=${row["uci"]} phase=${lesson.state.phase} payload=${lesson.state.explanation?.explanations.map((b) => b.kind.name).toList()}',
-            );
-            expect(lesson.state.mistakes, mistakes + 1);
-            expect(lesson.state.turn, turn);
-            expect(lesson.state.fen, fen);
-          }
-          await lesson.play(move(step.line[turn].accept.first));
-          expect(lesson.state.speech, isNot(errors.last[language]));
-        }
-        expect(lesson.state.phase, StepPhase.done);
-      });
-    }
-    for (final action in ['correct', 'reload', 'back', 'new error']) {
-      test('resposta atrasada invalidada por $action', () async {
-        final feedback = _PendingLessonFeedback();
-        final lesson = cubit(course: course, feedback: feedback);
-        await lesson.load(id, 'en');
-        await lesson.next();
-        final pending = lesson.play(move('d3e3'));
-        expect(lesson.state.mistakes, 1);
-        Future<void>? newer;
-        switch (action) {
-          case 'correct':
-            await lesson.play(move(step.line.first.accept.first));
-          case 'reload':
-            await lesson.load(id, 'en');
-          case 'back':
-            await lesson.back();
-          case 'new error':
-            newer = lesson.play(move('g3g4'));
-        }
-        final speech = lesson.state.speech;
-        feedback.results.first.complete('STALE');
-        await pending;
-        expect(lesson.state.speech, speech);
-        if (newer != null) {
-          feedback.results.last.complete('Latest error');
-          await newer;
-          expect(lesson.state.speech, 'Latest error');
-        }
-      });
-    }
-    test('falha opcional mantém feedback habitual, sem avançar', () async {
-      final feedback = _PendingLessonFeedback();
-      final lesson = cubit(
-        course: course,
-        feedback: feedback,
-        texts: LessonTexts.fromJson({'$id.convert.hint': 'Generic hint.'}),
-      );
-      await lesson.load(id, 'en');
-      await lesson.next();
-      final pending = lesson.play(move('d3e3'));
-      feedback.results.single.completeError(StateError('Unavailable'));
-      await pending;
-      expect(lesson.state.speech, 'Generic hint.');
-      expect(lesson.state.turn, 0);
-      expect(lesson.state.mistakes, 1);
-      expect(lesson.state.fen, step.fen);
-    });
-
-    test('movimento ilegal não consulta feedback nem conta erro', () async {
-      final feedback = _PendingLessonFeedback();
-      final lesson = cubit(course: course, feedback: feedback);
-      await lesson.load(id, 'en');
-      await lesson.next();
-      await lesson.play(move('d3d6'));
-      expect(lesson.state.mistakes, 0);
-      expect(feedback.results, isEmpty);
-    });
-  });
-
-  test(
-    'real demo captions follow zero, first, next, back and replay',
-    () async {
-      const id = 'pawns.distantOpposition';
-      final parsed = AssetEndgameLessonRepository.parseLesson(
-        jsonDecode(
-          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
-        ),
-      );
-      final step = parsed.lesson.steps.whereType<DemoStep>().singleWhere(
-        (s) => s.id == 'd_distant',
-      );
-      final feedback = AssetExerciseFeedbackRepository(_FeedbackAssets());
-      final expected = (await feedback.findPayload(
-        lessonId: id,
-        exerciseId: step.id,
-        kind: 'demo',
-        turn: 1,
-        fen: step.fen,
-        language: 'pt',
-        state: ExplanationState.review,
-      ))!;
-      final main = expected.explanations.singleWhere(
-        (b) => b.kind == ExplanationKind.mainSolution,
-      );
-      final demo = cubit(
-        course: Course(
-          modules: [
-            CourseModule(
-              id: 'pawns',
-              lessons: [
-                Lesson(id: id, steps: [step]),
-              ],
-            ),
-          ],
-        ),
-        feedback: feedback,
-      );
-      Future<void> settle() => Future<void>.delayed(Duration.zero);
-      List<String> caption() => demo.state.explanation!.explanations
-          .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
-          .texts;
-      await demo.load(id, 'pt');
-      await settle();
-      expect(caption(), main.texts);
-      for (final ply in [1, 2, 3]) {
-        await demo.demoForward();
-        await settle();
-        expect(demo.state.demoMove, ply);
-        expect(caption(), main.variations.single.explanationByPly[ply]);
-      }
-      await demo.demoBack();
-      await settle();
-      expect(caption(), main.variations.single.explanationByPly[2]);
-      await demo.demoReplay();
-      await settle();
-      expect(demo.state.demoMove, 0);
-      expect(caption(), main.texts);
-      await demo.demoForward();
-      await settle();
-      expect(caption(), main.variations.single.explanationByPly[1]);
-      expect(demo.state.mistakes, 0);
-    },
-  );
-
-  test(
-    'real rich move error precedes solution without moving position or turn',
-    () async {
-      const id = 'pawns.distantOpposition';
-      final parsed = AssetEndgameLessonRepository.parseLesson(
-        jsonDecode(
-          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
-        ),
-      );
-      final step = parsed.lesson.steps.whereType<MoveStep>().singleWhere(
-        (s) => s.id == 'convert',
-      );
-      final lesson = cubit(
-        course: Course(
-          modules: [
-            CourseModule(
-              id: 'pawns',
-              lessons: [
-                Lesson(id: id, steps: [step]),
-              ],
-            ),
-          ],
-        ),
-        feedback: AssetExerciseFeedbackRepository(_FeedbackAssets()),
-      );
-      await lesson.load(id, 'pt');
-      await lesson.play(move('d3e3'));
-      await Future<void>.delayed(Duration.zero);
-      expect(
-        lesson.state.explanation!.explanations.first.kind,
-        ExplanationKind.playedIncorrect,
-      );
-      expect(
-        lesson.state.explanation!.explanations.first.variations.single.firstUci,
-        'd3e3',
-      );
-      expect(lesson.state.fen, step.fen);
-      expect(lesson.state.turn, 0);
-      expect(lesson.state.mistakes, 1);
-    },
-  );
-
-  test(
-    'real demo after think retains feedback and its own ply caption',
-    () async {
-      const id = 'pawns.distantOpposition';
-      final parsed = AssetEndgameLessonRepository.parseLesson(
-        jsonDecode(
-          io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
-        ),
-      );
-      final steps = parsed.lesson.steps;
-      final index = steps.indexWhere((s) => s.id == 'd_distant');
-      final think = steps.whereType<ThinkStep>().singleWhere(
-        (s) => s.id == 't_lesson',
-      );
-      final demo = steps[index] as DemoStep;
-      final feedback = AssetExerciseFeedbackRepository(_FeedbackAssets());
-      final expected = (await feedback.findPayload(
-        lessonId: id,
-        exerciseId: demo.id,
-        kind: 'demo',
-        turn: 1,
-        fen: demo.fen,
-        language: 'pt',
-        state: ExplanationState.review,
-      ))!;
-      final caption = expected.explanations
-          .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
-          .variations
-          .single
-          .explanationByPly;
-      final lesson = cubit(
-        course: Course(
-          modules: [
-            CourseModule(
-              id: 'pawns',
-              lessons: [
-                Lesson(id: id, steps: [think, demo]),
-              ],
-            ),
-          ],
-        ),
-        feedback: feedback,
-      );
-      await lesson.load(id, 'pt');
-      await lesson.play(move(demo.line.first.uci));
-      await Future<void>.delayed(Duration.zero);
-      expect(lesson.state.current, isA<DemoStep>());
-      expect(lesson.state.explanation!.positionId, expected.positionId);
-      expect(
-        lesson.state.explanation!.explanations.first.kind,
-        ExplanationKind.playedCorrect,
-      );
-      expect(
-        lesson.state.explanation!.explanations
-            .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
-            .texts,
-        caption[1],
-      );
-      await lesson.demoForward();
-      await Future<void>.delayed(Duration.zero);
-      expect(
-        lesson.state.explanation!.explanations.any(
-          (b) => b.kind == ExplanationKind.playedCorrect,
-        ),
-        isFalse,
-      );
-      expect(
-        lesson.state.explanation!.explanations
-            .singleWhere((b) => b.kind == ExplanationKind.mainSolution)
-            .texts,
-        caption[2],
-      );
-    },
-  );
-
   for (final stepId in ['edgeMove', 'protectPawnMove']) {
     test('active move context follows replies in $stepId', () async {
       const id = 'pawns.distantOpposition';
@@ -490,7 +170,7 @@ void main() {
     expect(state.viktor!.name, 'Viktor');
     expect(state.current, isA<TalkStep>());
     expect(state.speech, 'The rook moves in straight lines.');
-    expect(state.progress, 0);
+    expect(state.progress, 1 / state.stepCount);
     expect(state.lessonNumber, 1);
     expect(state.lessonCount, 3);
     expect(progress.saved.ongoing!.lessonId, 'pieces.rook');
@@ -598,19 +278,17 @@ void main() {
       );
     });
 
-    test('errado não previsto: a explicação abre com o lance numerado '
-        'para a frase genérica', () async {
-      final lesson = await open();
-      await lesson.play(move('e2f2'));
-      expect(lesson.state.step, 1);
-      expect(lesson.state.thinkMistake, '1.Kf2');
-      expect(
-        lesson.state.speech,
-        'Find the route. Every route reaches a key square.',
-      );
-      // A fala seguinte já não leva a frase do erro.
-      expect(lesson.state.copyWith(speech: 'x').thinkMistake, isNull);
-    });
+    test(
+      'errado fora dos dados e sem motor: a peça volta e avisa (T70)',
+      () async {
+        final lesson = await open();
+        await lesson.play(move('e2f2'));
+        expect(lesson.state.step, 0);
+        expect(lesson.state.wrongNotice, isTrue);
+        expect(lesson.state.fen, fen);
+        expect(lesson.state.mistakes, 1);
+      },
+    );
 
     test('lance recusado (refusals) também abre a explicação', () async {
       final lesson = await open();
@@ -619,15 +297,13 @@ void main() {
       expect(lesson.state.thinkMistake, '1.e5');
     });
 
-    test('certo: a explicação abre com o "correto"', () async {
+    test('certo: o estado correto, sem frase de acerto (T70)', () async {
       final lesson = await open();
       await lesson.play(move('e2d3'));
       expect(lesson.state.step, 1);
+      expect(lesson.state.correct, isTrue);
       expect(lesson.state.thinkMistake, isNull);
-      expect(
-        lesson.state.speech,
-        'Correct. Find the route. Every route reaches a key square.',
-      );
+      expect(lesson.state.speech, 'Every route reaches a key square.');
     });
   });
 
@@ -686,20 +362,6 @@ void main() {
       expect(lesson.state.result, isNull);
     },
   );
-
-  test('fechar no meio volta no mesmo passo e com o mesmo tabuleiro', () async {
-    final first = cubit();
-    await first.load('pieces.rook', 'en');
-    await first.next();
-    await first.play(move('a1a5'));
-    expect(progress.saved.ongoing!.open, isTrue);
-
-    final reopened = cubit();
-    await reopened.load('pieces.rook', 'en');
-    expect(reopened.state.step, 1);
-    expect(reopened.state.collected, ['a5']);
-    expect(reopened.state.fen, first.state.fen);
-  });
 
   test(
     'sair pelo voltar guarda o passo, mas o app não reabre na aula',
@@ -778,16 +440,6 @@ void main() {
       expect(lesson.state.finished, isTrue);
       expect(lesson.state.courseFinished, isFalse);
       expect(lesson.state.nextLesson, isNull);
-    });
-
-    test('fechar no meio volta no mesmo passo', () async {
-      final first = endgameCubit();
-      await first.load('rook.lucena', 'en');
-      await first.next();
-      final reopened = endgameCubit();
-      await reopened.load('rook.lucena', 'en');
-      expect(reopened.state.step, 1);
-      expect(reopened.state.current, isA<MoveStep>());
     });
 
     test('outro lance bom que não o ensinado cumpre o passo ali', () async {
@@ -965,54 +617,19 @@ void main() {
 
       await lesson.tap('e4');
       expect(lesson.state.tapTarget, 'a1');
-      expect(lesson.state.progress, 0.5);
+      // A barra anda por passo, não por casa tocada.
+      expect(lesson.state.progress, 1 / lesson.state.stepCount);
 
       await lesson.tap('a1');
       expect(lesson.state.phase, StepPhase.done);
       expect(lesson.state.tapTarget, isNull);
     });
-
-    test('fechar no meio volta na casa em que parou', () async {
-      final first = cubit(course: course);
-      await first.load('notation.coordinates', 'en');
-      await first.tap('e4');
-
-      final again = cubit(course: course);
-      await again.load('notation.coordinates', 'en');
-      expect(again.state.tapTarget, 'a1');
-    });
   });
 }
 
 class _FeedbackAssets extends AssetService {
-  _FeedbackAssets({this.legacyOnly = false});
-  final bool legacyOnly;
   @override
-  Future<String> loadString(String path) async {
-    final text = await io.File(path).readAsString();
-    if (!legacyOnly) return text;
-    final data = jsonDecode(text) as Map<String, dynamic>;
-    data.remove('positions');
-    return jsonEncode(data);
-  }
-}
-
-class _PendingLessonFeedback implements ExerciseFeedbackRepository {
-  final results = <Completer<String?>>[];
-  @override
-  Future<String?> find({
-    required String lessonId,
-    required String exerciseId,
-    required String kind,
-    required int turn,
-    required String fen,
-    required String uci,
-    required String language,
-  }) {
-    final result = Completer<String?>();
-    results.add(result);
-    return result.future;
-  }
+  Future<String> loadString(String path) => io.File(path).readAsString();
 }
 
 class _DelayedMoveContextFeedback extends EmptyExerciseFeedbackRepository

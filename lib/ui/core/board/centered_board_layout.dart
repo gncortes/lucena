@@ -671,7 +671,7 @@ class BoardOptionsPanel extends StatelessWidget {
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppShape.large),
+          top: Radius.circular(AppShape.extraLarge),
         ),
       ),
       clipBehavior: Clip.antiAlias,

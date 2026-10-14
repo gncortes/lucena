@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/custom_position_cubit.dart';
 import '../../core/theme/app_motion.dart';
@@ -111,7 +113,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
       builder: (context, state) {
         return Scaffold(
           key: CustomPositionKeys.screen,
-          appBar: AppBar(
+          appBar: LucenaAppBar(
             title: Text(l10n.customPositionTitle),
             actions: [
               IconButton(
@@ -147,7 +149,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                         child: FilledButton(
                           key: CustomPositionKeys.continueButton,
                           style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
+                            minimumSize: const Size.fromHeight(kButtonHeight),
                           ),
                           onPressed: state.position == null
                               ? null

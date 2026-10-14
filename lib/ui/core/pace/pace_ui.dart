@@ -5,7 +5,9 @@ import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../keys/pace_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_button.dart';
 import '../theme/app_shape.dart';
+import '../widgets/lucena_sheet.dart';
 
 /// O nome de cada categoria de ritmo.
 extension PaceCategoryUi on PaceCategory {
@@ -45,11 +47,8 @@ Future<PaceChoice?> showPaceSheet(
   required TimeControl? current,
   bool allowNoClock = false,
 }) {
-  return showModalBottomSheet<PaceChoice>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  return showLucenaSheet<PaceChoice>(
+    context,
     builder: (context) =>
         _PaceSheet(current: current, allowNoClock: allowNoClock),
   );
@@ -129,7 +128,7 @@ class _PaceSheetState extends State<_PaceSheet> {
             FilledButton(
               key: PaceKeys.confirm,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: () => Navigator.of(context).pop(PaceChoice(_selected)),
               child: Text(l10n.commonConfirm),

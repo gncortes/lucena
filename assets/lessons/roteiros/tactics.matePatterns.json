@@ -1,0 +1,383 @@
+{
+ "licao": "tactics.matePatterns",
+ "parte": "licao",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "ex1",
+     "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+       "t": "rot.ideia.ex1.e1"
+      },
+      {
+       "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+       "marcas": [
+        "f7",
+        "g7",
+        "h7"
+       ],
+       "t": "rot.ideia.ex1.e2"
+      },
+      {
+       "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+       "setas": [
+        [
+         "a8",
+         "h8",
+         "g"
+        ]
+       ],
+       "t": "rot.ideia.ex1.e3"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "d1"
+      ],
+      "certos": [
+       "d1d8"
+      ],
+      "certo": {
+       "fen": "3R2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 1 1",
+       "setas": [
+        [
+         "d8",
+         "g8",
+         "r"
+        ]
+       ],
+       "lance": "d1d8",
+       "t": "rot.ideia.ex1.certo"
+      },
+      "revela": {
+       "fen": "3R2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 1 1",
+       "setas": [
+        [
+         "d8",
+         "g8",
+         "r"
+        ]
+       ],
+       "lance": "d1d8",
+       "t": "rot.ideia.ex1.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "d1d7": [
+        {
+         "fen": "6k1/3R1ppp/8/8/8/8/5PPP/6K1 b - - 1 1",
+         "marcas": [
+          "g8"
+         ],
+         "lance": "d1d7",
+         "t": "rot.ideia.ex1.err.d1d7.1"
+        },
+        {
+         "fen": "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+         "salto": true,
+         "t": "rot.ideia.ex1.err.d1d7.2"
+        }
+       ]
+      },
+      "fora": "rot.ideia.ex1.fora",
+      "volta": "rot.ideia.ex1.volta",
+      "t": "rot.ideia.ex1.p"
+     },
+     "linha": [
+      {
+       "fen": "3R2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 1 1",
+       "marcas": [
+        "h7"
+       ],
+       "t": "rot.ideia.ex1.l1"
+      },
+      {
+       "fen": "3R2k1/5ppp/8/8/8/8/5PPP/6K1 b - - 1 1",
+       "t": "rot.ideia.ex1.l2"
+      }
+     ]
+    },
+    {
+     "id": "ex2",
+     "fen": "5rk1/5ppp/8/7Q/8/3B4/8/6K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "5rk1/5ppp/8/7Q/8/3B4/8/6K1 w - - 0 1",
+       "t": "rot.ideia.ex2.e1"
+      },
+      {
+       "fen": "5rk1/5ppp/8/7Q/8/3B4/8/6K1 w - - 0 1",
+       "setas": [
+        [
+         "d3",
+         "h7",
+         "r"
+        ],
+        [
+         "h5",
+         "h7",
+         "r"
+        ]
+       ],
+       "t": "rot.ideia.ex2.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "h5"
+      ],
+      "certos": [
+       "h5h7"
+      ],
+      "certo": {
+       "fen": "5rk1/5ppQ/8/8/8/3B4/8/6K1 b - - 0 1",
+       "setas": [
+        [
+         "d3",
+         "h7",
+         "g"
+        ]
+       ],
+       "lance": "h5h7",
+       "t": "rot.ideia.ex2.certo"
+      },
+      "revela": {
+       "fen": "5rk1/5ppQ/8/8/8/3B4/8/6K1 b - - 0 1",
+       "setas": [
+        [
+         "d3",
+         "h7",
+         "g"
+        ]
+       ],
+       "lance": "h5h7",
+       "t": "rot.ideia.ex2.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "h5f7": [
+        {
+         "fen": "5rk1/5Qpp/8/8/8/3B4/8/6K1 b - - 0 1",
+         "marcas": [
+          "f7"
+         ],
+         "lance": "h5f7",
+         "t": "rot.ideia.ex2.err.h5f7.1"
+        },
+        {
+         "fen": "6k1/5rpp/8/8/8/3B4/8/6K1 w - - 0 2",
+         "lance": "f8f7",
+         "t": "rot.ideia.ex2.err.h5f7.2"
+        },
+        {
+         "fen": "5rk1/5ppp/8/7Q/8/3B4/8/6K1 w - - 0 1",
+         "salto": true,
+         "t": "rot.ideia.ex2.err.h5f7.3"
+        }
+       ]
+      },
+      "fora": "rot.ideia.ex2.fora",
+      "volta": "rot.ideia.ex2.volta",
+      "t": "rot.ideia.ex2.p"
+     },
+     "linha": [
+      {
+       "fen": "5rk1/5ppQ/8/8/8/3B4/8/6K1 b - - 0 1",
+       "marcas": [
+        "f8",
+        "f7",
+        "g7"
+       ],
+       "t": "rot.ideia.ex2.l1"
+      },
+      {
+       "fen": "5rk1/5ppQ/8/8/8/3B4/8/6K1 b - - 0 1",
+       "t": "rot.ideia.ex2.l2"
+      },
+      {
+       "fen": "5rk1/5ppQ/8/8/8/3B4/8/6K1 b - - 0 1",
+       "t": "rot.ideia.ex2.l3"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "sufocado",
+     "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1",
+       "marcas": [
+        "g8",
+        "g7",
+        "h7"
+       ],
+       "t": "rot.demos.sufocado.e1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "6rk/5Npp/8/8/8/8/8/6K1 b - - 1 1",
+       "setas": [
+        [
+         "f7",
+         "h8",
+         "r"
+        ]
+       ],
+       "lance": "g5f7",
+       "t": "rot.demos.sufocado.l1"
+      },
+      {
+       "fen": "6rk/5Npp/8/8/8/8/8/6K1 b - - 1 1",
+       "t": "rot.demos.sufocado.l2"
+      }
+     ]
+    },
+    {
+     "id": "arabe",
+     "fen": "7k/1R6/5N2/p7/8/8/8/6K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "7k/1R6/5N2/p7/8/8/8/6K1 w - - 0 1",
+       "marcas": [
+        "f6"
+       ],
+       "t": "rot.demos.arabe.e1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "7k/7R/5N2/p7/8/8/8/6K1 b - - 1 1",
+       "setas": [
+        [
+         "f6",
+         "h7",
+         "g"
+        ]
+       ],
+       "lance": "b7h7",
+       "t": "rot.demos.arabe.l1"
+      },
+      {
+       "fen": "7k/7R/5N2/p7/8/8/8/6K1 b - - 1 1",
+       "marcas": [
+        "g8",
+        "g7"
+       ],
+       "t": "rot.demos.arabe.l2"
+      },
+      {
+       "fen": "7k/7R/5N2/p7/8/8/8/6K1 b - - 1 1",
+       "t": "rot.demos.arabe.l3"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "sufocado",
+     "fen": "6rk/6pp/3N4/8/8/8/8/6K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d6"
+      ],
+      "linha": [
+       {
+        "certos": [
+         "d6f7"
+        ]
+       }
+      ],
+      "fim": "rot.pratica.sufocado.fim",
+      "t": "rot.pratica.sufocado.enunciado",
+      "erros": {}
+     },
+     "entrada": [],
+     "linha": []
+    },
+    {
+     "id": "arabe",
+     "fen": "7k/R7/5N2/8/8/8/8/6K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "proximo",
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "a7"
+      ],
+      "linha": [
+       {
+        "certos": [
+         "a7h7"
+        ]
+       }
+      ],
+      "erros": {
+       "a7a8": "rot.pratica.arabe.err.a7a8"
+      },
+      "fim": "rot.pratica.arabe.fim",
+      "t": "rot.pratica.arabe.enunciado"
+     },
+     "entrada": [],
+     "linha": []
+    },
+    {
+     "id": "corredor",
+     "fen": "3r2k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "tarefa",
+     "fim": "etapa",
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d1"
+      ],
+      "linha": [
+       {
+        "certos": [
+         "d1d8"
+        ]
+       }
+      ],
+      "fim": "rot.pratica.corredor.fim",
+      "t": "rot.pratica.corredor.enunciado",
+      "erros": {}
+     },
+     "entrada": [],
+     "linha": []
+    }
+   ]
+  }
+ ]
+}

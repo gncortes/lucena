@@ -254,17 +254,22 @@ void main() {
         expect(
           block.title,
           language == 'pt'
-              ? 'Por que a tentativa anterior falha'
-              : 'Why the previous attempt fails',
+              ? 'Por que o lance anterior não funciona'
+              : 'Why the previous move does not work',
         );
         final variant = block.variations.single;
         expect(variant.outcomeText, variant.texts.first);
+        // A frase de punição é própria de cada posição e cita a resposta
+        // numerada que pune o lance anterior (rodada 2 da oposição).
+        expect(variant.outcomeText, contains(RegExp(r'\d+\.(\.\.)?[A-Za-h]')));
         expect(
           variant.outcomeText,
-          startsWith(
-            language == 'pt'
-                ? 'Refutação da tentativa anterior:'
-                : 'Refutation of the previous attempt:',
+          isNot(
+            startsWith(
+              language == 'pt'
+                  ? 'É esta resposta que pune o lance anterior'
+                  : 'This is the reply that punishes the previous move',
+            ),
           ),
         );
       }

@@ -1,6 +1,10 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/app_bar_progress.dart';
+
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -11,6 +15,8 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -44,7 +50,7 @@ class PlacementScreen extends StatelessWidget {
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
       appBar: state.view == PlacementView.result
           ? null
-          : AppBar(
+          : LucenaAppBar(
               title: state.view == PlacementView.question
                   ? Text(
                       l10n.placementQuestionOf(state.number),
@@ -54,18 +60,9 @@ class PlacementScreen extends StatelessWidget {
               // Quanto do questionário já foi: uma barra contínua na base
               // da barra do app, que anda a cada resposta.
               bottom: state.view == PlacementView.question
-                  ? PreferredSize(
-                      preferredSize: const Size.fromHeight(4),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(end: (state.number - 1) / 20),
-                        duration: AppMotion.of(context).component,
-                        curve: AppMotion.enter,
-                        builder: (context, value, _) => LinearProgressIndicator(
-                          key: PlacementKeys.progress,
-                          value: value,
-                          minHeight: 4,
-                        ),
-                      ),
+                  ? AppBarProgress(
+                      key: PlacementKeys.progress,
+                      value: (state.number - 1) / 20,
                     )
                   : null,
             ),
@@ -156,7 +153,7 @@ class _Intro extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.resume,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: cubit.start,
               child: Text(l10n.placementResume(state.number)),
@@ -165,7 +162,7 @@ class _Intro extends StatelessWidget {
             OutlinedButton(
               key: PlacementKeys.restart,
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: cubit.restart,
               child: Text(l10n.placementRestart),
@@ -174,7 +171,7 @@ class _Intro extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.start,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: cubit.start,
               child: Text(l10n.placementStart),
@@ -296,7 +293,7 @@ class _Answers extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.confirm,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: state.selected.isEmpty ? null : cubit.confirmSquares,
               child: Text(l10n.placementConfirm),
@@ -323,7 +320,7 @@ class _Option extends StatelessWidget {
     return OutlinedButton(
       key: PlacementKeys.option(option),
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(56),
+        minimumSize: const Size.fromHeight(kButtonHeight),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         backgroundColor: colors.surfaceContainerLow,
         foregroundColor: colors.onSurface,
@@ -372,8 +369,8 @@ class _OptionBadge extends StatelessWidget {
       _ => null,
     };
     final side = switch (option) {
-      'whiteWins' => Colors.white,
-      'blackWins' => Colors.black,
+      'whiteWins' => AppColors.chessWhiteColor,
+      'blackWins' => AppColors.chessBlackColor,
       _ => null,
     };
     // Só o sinal, sem fundo; o lado que ganha é uma bolinha da cor dele.

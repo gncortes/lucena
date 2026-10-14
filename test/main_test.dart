@@ -1,4 +1,5 @@
 import 'package:lucena/ui/core/widgets/rating_sparkline.dart';
+import 'package:lucena/ui/core/keys/history_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
@@ -334,7 +335,9 @@ void main() {
     await tester.tap(find.byKey(HomeKeys.playerCard));
     await tester.pumpAndSettle();
     expect(find.byKey(RatingKeys.screen), findsOneWidget);
-    expect(textOf(tester, RatingKeys.value), '1150');
+    // Sem partida nenhuma, o Histórico mostra só o convite (sem cartão).
+    expect(find.byKey(HistoryKeys.screen), findsOneWidget);
+    expect(find.byKey(HistoryKeys.empty), findsOneWidget);
 
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
@@ -424,7 +427,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
-    expect(textOf(tester, FreeBoardKeys.turn), 'Brancas jogam');
+    expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
+    expect(find.text('Brancas jogam'), findsNothing);
   });
 
   group('partida em andamento', () {

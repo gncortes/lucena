@@ -88,8 +88,8 @@ void main() {
       position: 'basic.queen.0001',
     );
 
-    // Sem relógio, a linha do jogador diz que é a vez dele.
-    board.expectTurn('Your turn');
+    // Sem relógio, a vez dele é o anel no retrato do jogador.
+    board.expectTurnRing(below: true);
     await board.move('h1', 'h8', settle: false);
 
     await ProgressRobot($).expectAchievementToast('First endgame');

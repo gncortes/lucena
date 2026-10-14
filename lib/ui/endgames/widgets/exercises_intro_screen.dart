@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,6 +8,7 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -57,7 +59,7 @@ class ExercisesIntroScreen extends StatelessWidget {
     ];
     return Scaffold(
       key: ExercisesIntroKeys.screen,
-      appBar: AppBar(title: Text(l10n.endgameFinalTest)),
+      appBar: LucenaAppBar(title: Text(l10n.endgameFinalTest)),
       body: SafeArea(
         child: lesson == null
             ? const SizedBox.shrink()
@@ -223,7 +225,7 @@ class ExercisesIntroScreen extends StatelessWidget {
                     child: FilledButton.icon(
                       key: ExercisesIntroKeys.start,
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       icon: const Icon(Icons.play_arrow_rounded),
                       onPressed: next == null

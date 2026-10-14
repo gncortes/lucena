@@ -4,8 +4,10 @@ import '../../../domain/models/clock.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/lucena_sheet.dart';
 
 /// O ritmo montado à mão: o tempo de cada lado.
 class CustomPace {
@@ -43,11 +45,8 @@ Future<CustomPace?> showCustomPaceSheet(
   required TimeControl user,
   required TimeControl opponent,
 }) {
-  return showModalBottomSheet<CustomPace>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  return showLucenaSheet<CustomPace>(
+    context,
     builder: (context) => SafeArea(
       top: false,
       child: _CustomPaceSheet(user: user, opponent: opponent),
@@ -149,7 +148,7 @@ class _CustomPaceSheetState extends State<_CustomPaceSheet> {
           child: FilledButton(
             key: GameSetupKeys.customConfirm,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: () => Navigator.of(
               context,

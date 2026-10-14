@@ -11,6 +11,8 @@ import 'package:lucena/domain/models/wiki_links.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/wiki_markup.dart';
 
+import '../../../../testing/script_fixture.dart';
+
 /// As aulas de finais de verdade (`assets/lessons/endgames`): o que o
 /// `build_aula.py` conferiu com a tabela de finais, aqui conferido de novo
 /// com as regras do app, sem rede, para o CI.
@@ -226,6 +228,9 @@ void main() {
           if (step is DemoStep)
             for (var move = 1; move <= step.line.length; move++)
               'step.${step.id}.m$move',
+          for (final line in step.lines)
+            for (final branch in line.branches)
+              'step.${step.id}.alt.${branch.id}',
         ],
         for (final exercise in lesson.exercises) ...[
           'ex.${exercise.id}',
@@ -233,10 +238,50 @@ void main() {
           'ex.${exercise.id}.solution',
         ],
         for (final position in lesson.keyPositions) 'key.${position.id}',
+        // Parte em roteiro (T70): as falas do próprio roteiro (as genéricas
+        // moram em `roteiro_generico.json`).
+        for (final part in lesson.lesson.parts)
+          if (part.script != null)
+            ...scriptTexts(
+              jsonDecode(io.File(part.script!).readAsStringSync())
+                  as Map<String, dynamic>,
+            ).keys.where((key) => !key.startsWith('gen.')),
       };
+      // O comentário por lance do ramo (`...alt.<id>.m<k>`) é opcional.
+      final optional = {
+        for (final step in lesson.lesson.steps)
+          for (final line in step.lines)
+            for (final branch in line.branches)
+              for (var k = 1; k <= branch.uci.length; k++)
+                'step.${step.id}.alt.${branch.id}.m$k',
+      };
+      // Também opcionais: resumo curto do passo (`step.<id>.short`), fala da
+      // resposta do adversário (`step.<id>.r<n>`, `ex.<id>.r<n>`) e fala do
+      // erro comentado (`step.<id>.mistake.<uci>`).
+      final stepIds = {for (final step in lesson.lesson.steps) step.id};
+      final exerciseIds = {
+        for (final exercise in lesson.exercises) exercise.id,
+      };
+      final optionalPattern = RegExp(
+        r'^(step\.([^.]+)\.(short|r\d+|mistake\.[a-h][1-8][a-h][1-8][qrbn]?)'
+        r'|ex\.([^.]+)\.r\d+)$',
+      );
+      bool isOptional(String key) {
+        if (optional.contains(key)) return true;
+        final match = optionalPattern.firstMatch(key);
+        if (match == null) return false;
+        return match.group(2) != null
+            ? stepIds.contains(match.group(2))
+            : exerciseIds.contains(match.group(4));
+      }
+
       for (final language in ['pt', 'en']) {
         final all = texts(language, lesson.id);
-        expect(all.keys.toSet(), expected, reason: '$language ${lesson.id}');
+        expect(
+          all.keys.where((key) => !isOptional(key)).toSet(),
+          expected,
+          reason: '$language ${lesson.id}',
+        );
         for (final MapEntry(:key, :value) in all.entries) {
           final text = value is List ? value.join(' ') : '$value';
           expect(
