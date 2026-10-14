@@ -472,7 +472,7 @@
         {
           "type": "think",
           "id": "t_carlsenSo",
-          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
           "hints": 3,
           "ask": "plan",
           "side": "black",
@@ -488,7 +488,7 @@
         {
           "type": "talk",
           "id": "defend",
-          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
           "side": "black",
           "ref": "carlsenSo2017",
           "marks": [
@@ -503,7 +503,7 @@
         {
           "type": "demo",
           "id": "d_carlsenSo",
-          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+          "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
           "side": "black",
           "goal": "draw",
           "ref": "carlsenSo2017",
@@ -619,7 +619,7 @@
         {
           "type": "think",
           "id": "t_euwe",
-          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
           "hints": 3,
           "ask": "plan",
           "ref": "euweWhitaker1928",
@@ -634,7 +634,7 @@
         {
           "type": "talk",
           "id": "lateral",
-          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
           "ref": "euweWhitaker1928",
           "marks": [
             "c5",
@@ -648,7 +648,7 @@
         {
           "type": "demo",
           "id": "d_euwe",
-          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+          "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
           "goal": "win",
           "ref": "euweWhitaker1928",
           "line": [
@@ -2486,12 +2486,12 @@
     },
     {
       "id": "carlsenSo",
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
       "ref": "carlsenSo2017"
     },
     {
       "id": "euweWhitaker",
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
       "ref": "euweWhitaker1928"
     }
   ],

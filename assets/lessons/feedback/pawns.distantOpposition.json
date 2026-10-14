@@ -7639,7 +7639,7 @@
       "kind": "think",
       "id": "t_carlsenSo",
       "turn": 1,
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
       "explanations": {
         "pt": {
           "positionId": "defend/t_carlsenSo",
@@ -7674,7 +7674,7 @@
                     "Seu rei recua na coluna f e deixa f4, f5 e f6 entre os reis, com as brancas na vez. A oposição distante obriga o atacante a mostrar sua rota antes de você ajustar a defesa de h6.",
                     "Se as brancas continuarem com 56.Rf4, procurando entrar pela quinta fileira, você responde com 56...Rf6 e, mesmo depois do xeque 57.g5+, conserva o empate: o recuo inicial permitiu reajustar o rei à nova posição branca. Compare a posição completa dos peões e a vez de jogar, em vez de concluir que todo xeque de peão ganha."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6f7",
                     "f3f4",
@@ -7706,9 +7706,9 @@
                   "texts": [
                     "Se as pretas jogassem 55...Re5?, as brancas responderiam com 56.Re3 e ganhariam.",
                     "O rei preto abandona a coluna f. As brancas podem responder em e3 e depois ocupar f4, combinando oposição e espaço para apoiar os peões de g4 e h4.",
-                    "Depois de 56.Re3, Rf6 mantém a vitória. O rei branco não se apressa a empurrar os peões: melhora a própria posição enquanto o rei preto precisa voltar. Centralizar o defensor cedo demais não preservou uma barreira útil."
+                    "Depois de 56.Re3, voltar com 56...Rf6 já não salva as pretas: as brancas seguem vencendo. O rei branco não se apressa a empurrar os peões: melhora a própria posição enquanto o rei preto precisa voltar. Centralizar o defensor cedo demais não deixou uma barreira útil."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6e5",
                     "f3e3",
@@ -7725,7 +7725,7 @@
                   "playedTexts": [
                     "Com 55...Re5? você deixa escapar o empate: as brancas respondem com 56.Re3 e ganham.",
                     "Seu rei abandona a coluna f. As brancas podem responder em e3 e depois ocupar f4, combinando oposição e espaço para apoiar os peões de g4 e h4.",
-                    "Depois de 56.Re3, Rf6 mantém a vitória. O rei branco não se apressa a empurrar os peões: melhora a própria posição enquanto o rei preto precisa voltar. Centralizar o defensor cedo demais não preservou uma barreira útil."
+                    "Depois de 56.Re3, voltar com 56...Rf6 já não salva a sua defesa: as brancas seguem vencendo. O rei branco não se apressa a empurrar os peões: melhora a própria posição enquanto o seu rei precisa voltar. Centralizar o rei cedo demais não deixou uma barreira útil."
                   ]
                 },
                 {
@@ -7735,9 +7735,9 @@
                   "texts": [
                     "Se as pretas jogassem 55...Rg6?, as brancas responderiam com 56.Re4 e ganhariam.",
                     "O rei preto fica perto de h6, mas deixa ao rei branco a aproximação por e4 e d5. Defender só pela proximidade do peão não impede o contorno pela outra ala.",
-                    "A linha 56.Re4 Rf6 57.Rf4 conserva a vitória branca. O rei preto volta à coluna f, mas o branco já se aproximou da região dos peões de g4 e h4. O desvio inicial não ganhou um tempo útil para montar a defesa."
+                    "Na linha 56.Re4 Rf6 57.Rf4, as brancas seguem vencendo. O rei preto volta à coluna f, mas o rei branco já se aproximou da região dos peões de g4 e h4. O desvio inicial não ganhou um tempo útil para montar a defesa."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6g6",
                     "f3e4",
@@ -7756,7 +7756,7 @@
                   "playedTexts": [
                     "Com 55...Rg6? você deixa escapar o empate: as brancas respondem com 56.Re4 e ganham.",
                     "Seu rei fica perto de h6, mas deixa ao rei branco a aproximação por e4 e d5. Defender só pela proximidade do peão não impede o contorno pela outra ala.",
-                    "A linha 56.Re4 Rf6 57.Rf4 conserva a vitória branca. Seu rei volta à coluna f, mas o branco já se aproximou da região dos peões de g4 e h4. O desvio inicial não ganhou um tempo útil para montar a defesa."
+                    "Na linha 56.Re4 Rf6 57.Rf4, as brancas seguem vencendo. Seu rei volta à coluna f, mas o rei branco já se aproximou da região dos peões de g4 e h4. O desvio inicial não ganhou um tempo útil para montar a defesa."
                   ]
                 },
                 {
@@ -7767,7 +7767,7 @@
                     "Se as pretas jogassem o natural 55...Re6?, as brancas responderiam com 56.Re4! e ganhariam: o rei branco fica de frente para o rei preto, com e5 entre eles e as pretas na vez.",
                     "Depois de 56...Rf6, 57.Rd5 entra pela coluna d, que o rei preto deixou ao mudar de coluna. Defender exige controlar as entradas úteis, e não simplesmente ficar perto do rei adversário."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6e6",
                     "f3e4",
@@ -7825,7 +7825,7 @@
                     "Your king retreats along the f-file, leaving f4, f5 and f6 between the kings, with White to move. Distant opposition makes the attacker reveal its route before you adjust the defence of h6.",
                     "If White continues 56.Kf4, looking to enter on the fifth rank, you reply 56...Kf6 and, even after the check 57.g5+, you hold the draw: the initial retreat let your king readjust to White's new position. Compare the whole pawn position and whose move it is, rather than concluding that every pawn check wins."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6f7",
                     "f3f4",
@@ -7857,9 +7857,9 @@
                   "texts": [
                     "If Black played 55...Ke5?, White would reply 56.Ke3 and win.",
                     "The black king leaves the f-file. White can reply on e3 and then occupy f4, combining opposition and space to support the pawns on g4 and h4.",
-                    "After 56.Ke3, Kf6 keeps the win. The white king does not rush to push the pawns: it improves its own position while the black king has to return. Centralizing the defender too early did not preserve a useful barrier."
+                    "After 56.Ke3, going back with 56...Kf6 no longer saves Black: White keeps the win. The white king does not rush to push the pawns: it improves its own position while the black king has to return. Centralizing the defender too early did not preserve a useful barrier."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6e5",
                     "f3e3",
@@ -7876,7 +7876,7 @@
                   "playedTexts": [
                     "With 55...Ke5? you let the draw slip: White replies 56.Ke3 and wins.",
                     "Your king leaves the f-file. White can reply on e3 and then occupy f4, combining opposition and space to support the pawns on g4 and h4.",
-                    "After 56.Ke3, Kf6 keeps the win. The white king does not rush to push the pawns: it improves its own position while the black king has to return. Centralizing the defender too early did not preserve a useful barrier."
+                    "After 56.Ke3, going back with 56...Kf6 no longer saves your defence: White keeps the win. The white king does not rush to push the pawns: it improves its own position while your king has to return. Centralizing your king too early did not preserve a useful barrier."
                   ]
                 },
                 {
@@ -7886,9 +7886,9 @@
                   "texts": [
                     "If Black played 55...Kg6?, White would reply 56.Ke4 and win.",
                     "The black king stays close to h6 but allows the white king to approach through e4 and d5. Defending only by staying close to the pawn does not prevent outflanking on the other wing.",
-                    "The line 56.Ke4 Kf6 57.Kf4 keeps the win. Your black king returns to the f-file, but White has already approached the area of the g4- and h4-pawns. The initial detour did not gain a useful tempo for establishing the defence."
+                    "In the line 56.Ke4 Kf6 57.Kf4, White keeps the win. The black king returns to the f-file, but the white king has already approached the area of the g4- and h4-pawns. The initial detour did not gain a useful tempo for establishing the defence."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6g6",
                     "f3e4",
@@ -7907,7 +7907,7 @@
                   "playedTexts": [
                     "With 55...Kg6? you let the draw slip: White replies 56.Ke4 and wins.",
                     "Your king stays close to h6 but allows the white king to approach through e4 and d5. Defending only by staying close to the pawn does not prevent outflanking on the other wing.",
-                    "The line 56.Ke4 Kf6 57.Kf4 keeps the win. Your black king returns to the f-file, but White has already approached the area of the g4- and h4-pawns. The initial detour did not gain a useful tempo for establishing the defence."
+                    "In the line 56.Ke4 Kf6 57.Kf4, White keeps the win. Your king returns to the f-file, but the white king has already approached the area of the g4- and h4-pawns. The initial detour did not gain a useful tempo for establishing the defence."
                   ]
                 },
                 {
@@ -7918,7 +7918,7 @@
                     "If Black played the natural 55...Ke6?, White would reply 56.Ke4! and win: the white king faces the black king, with e5 between them and Black to move.",
                     "After 56...Kf6, 57.Kd5 gets in along the d-file, which the black king left when it changed file. Defending means controlling the useful entries, not simply staying close to the enemy king."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6e6",
                     "f3e4",
@@ -8739,7 +8739,7 @@
       "kind": "think",
       "id": "t_euwe",
       "turn": 1,
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
       "explanations": {
         "pt": {
           "positionId": "lateral/t_euwe",
@@ -8772,7 +8772,7 @@
                     "Com 49.Rb5 você mantém a vitória e aproxima o rei do peão preto de a5, que é o alvo concreto.",
                     "Se as pretas jogarem 49...Re5, tentando aproximar o rei do peão de c2, você responde com 50.Rxa5, captura o peão e conserva a vitória. A oposição lateral era um meio de abrir a entrada do rei; quando a captura está disponível, manter uma formação geométrica deixa de ser a prioridade."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c4b5",
                     "f5e5",
@@ -8804,7 +8804,7 @@
                     "O peão branco mudaria a estrutura sem preparar a captura de a5. O rei preto se aproximaria por e4 e d3, criando contrajogo contra o peão branco antes que a corrida fosse decidida a favor das brancas.",
                     "Depois de 49...Re6, 50.Rb5 Rd6 permanece empatado. O rei branco chega perto de a5, mas o avanço do peão de c2 mudou a coordenação antes dessa aproximação. As pretas conservaram tempo para defender a posição, de modo que a semelhança visual com a entrada vencedora não garante o mesmo resultado."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c2c3",
                     "f5e6",
@@ -8834,7 +8834,7 @@
                     "Se as brancas jogassem 49.Rd5?, as pretas responderiam com 49...a4 e segurariam o empate.",
                     "Centralizar o rei é tentador, mas o rei branco deixaria de atacar a5, e o avanço preto a a4 criaria uma corrida que a centralização não vence. Para ganhar, era preciso combinar a aproximação ao alvo com a restrição do rei defensor."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c4d5",
                     "a5a4"
@@ -8859,7 +8859,7 @@
                     "Se as brancas continuassem com 50.c4?, as pretas ganhariam. A continuação seria 50.c4 a3.",
                     "Agora o objetivo imediato das brancas é salvar o empate. É tentador pôr o próprio peão para correr, mas 50.c4 perde: depois de 50...a3, o passado preto está perto da promoção e seu rei de d5 está afastado. Antes de iniciar uma corrida, compare o avanço dos peões e o alcance dos reis."
                   ],
-                  "originFen": "8/8/8/3K1k2/p7/8/2P5/8 w - - 0 2",
+                  "originFen": "8/8/8/3K1k2/p7/8/2P5/8 w - - 0 50",
                   "movesUci": [
                     "c2c4",
                     "a4a3"
@@ -8909,7 +8909,7 @@
                     "With 49.Kb5 you keep the win and bring the king closer to the black a5-pawn, the concrete target.",
                     "If Black plays 49...Ke5, trying to bring the king closer to the c2-pawn, you reply 50.Kxa5, capture the pawn and keep the win. Lateral opposition was a means of opening the way for your king; once the capture is available, keeping a geometric formation is no longer the priority."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c4b5",
                     "f5e5",
@@ -8941,7 +8941,7 @@
                     "The white pawn would change the structure without preparing the capture of a5. The black king would approach via e4 and d3, creating counterplay against the white pawn before the race was decided in White's favour.",
                     "After 49...Ke6, 50.Kb5 Kd6 remains drawn. The white king reaches the vicinity of a5, but advancing the c2-pawn changed the coordination before this approach. Black kept time to defend the position, so the visual similarity to the winning entry does not guarantee the same result."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c2c3",
                     "f5e6",
@@ -8971,7 +8971,7 @@
                     "If White played 49.Kd5?, Black would reply 49...a4 and hold the draw.",
                     "Centralizing the king is tempting, but the white king would stop attacking a5, and Black's advance to a4 would create a race that centralization does not win. Winning required combining the approach to the target with restricting the defending king."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c4d5",
                     "a5a4"
@@ -8996,7 +8996,7 @@
                     "If White continued with 50.c4?, Black would win. The line would be 50.c4 a3.",
                     "White’s immediate task is now to save the draw. Sending your own pawn forward is tempting, but 50.c4 loses: after 50...a3, Black’s passer is close to promotion and your king on d5 is far away. Before starting a race, compare the pawns’ progress and the kings’ reach."
                   ],
-                  "originFen": "8/8/8/3K1k2/p7/8/2P5/8 w - - 0 2",
+                  "originFen": "8/8/8/3K1k2/p7/8/2P5/8 w - - 0 50",
                   "movesUci": [
                     "c2c4",
                     "a4a3"
@@ -15602,8 +15602,8 @@
               "kind": "context",
               "title": "A posição",
               "texts": [
-                "A espera cumpriu seu objetivo; na linha, o defensor saiu de a7 e foi a b7. Agora identifique a passagem útil, o alvo ameaçado e a resposta preta.",
-                "Compare os finais já vistos: 3.Rd7 Rb6 4.Rd6 e 3.Rd6 Rb6. Os reis chegam às mesmas casas; quem deverá ceder em cada caso? Se preferir outra espera, explique o que ela ainda precisa conquistar para conservar a vitória."
+                "A espera funcionou: o rei preto saiu de a7 e foi a b7. Agora seu rei precisa alcançar a sexta fileira, perto de c6, com as pretas na vez.",
+                "Compare dois caminhos: ir à sexta fileira já neste lance ou passar antes pela sétima. Nos dois, os reis chegam às mesmas casas; o que muda é quem precisa jogar quando ficam frente a frente. Conte os tempos antes de escolher."
               ],
               "variations": []
             },
@@ -15777,8 +15777,8 @@
               "kind": "context",
               "title": "The position",
               "texts": [
-                "Waiting has achieved its purpose; in the line, the defender left a7 for b7. Now identify the useful entry, the threatened target and Black’s reply.",
-                "Compare the endings already shown: 3.Kd7 Kb6 4.Kd6 and 3.Kd6 Kb6. The kings reach the same squares; who must give way in each case? If you prefer another wait, explain what it still needs to achieve to preserve the win."
+                "The wait worked: the black king left a7 for b7. Now your king must reach the sixth rank, near c6, with Black to move.",
+                "Compare two routes: going to the sixth rank on this move, or passing through the seventh first. Either way the kings reach the same squares; what changes is who has to move when they stand face to face. Count the tempi before you choose."
               ],
               "variations": []
             },
@@ -34279,7 +34279,7 @@
       "kind": "talk",
       "id": "defend",
       "turn": 1,
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
       "explanations": {
         "pt": {
           "positionId": "defend/defend",
@@ -34325,7 +34325,7 @@
       "kind": "demo",
       "id": "d_carlsenSo",
       "turn": 1,
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
       "explanations": {
         "pt": {
           "positionId": "defend/d_carlsenSo",
@@ -34357,7 +34357,7 @@
                     "Esta continuação mantém o empate.",
                     "Seu rei recua na coluna f e deixa f4, f5 e f6 entre os reis, com as brancas na vez. A oposição distante obriga o atacante a mostrar sua rota antes de você ajustar a defesa de h6. Por exemplo: 55...Rf7 56.Re3 Re7 57.Rd3 Rd7 58.Rc4 Re6."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6f7",
                     "f3e3",
@@ -34435,7 +34435,7 @@
                     "This continuation keeps the draw.",
                     "Your king retreats along the f-file, leaving f4, f5 and f6 between the kings, with White to move. Distant opposition makes the attacker reveal its route before you adjust the defence of h6. For example: 55...Kf7 56.Ke3 Ke7 57.Kd3 Kd7 58.Kc4 Ke6."
                   ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 1",
+                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
                   "movesUci": [
                     "f6f7",
                     "f3e3",
@@ -34745,7 +34745,7 @@
       "kind": "talk",
       "id": "lateral",
       "turn": 1,
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
       "explanations": {
         "pt": {
           "positionId": "lateral/lateral",
@@ -34787,7 +34787,7 @@
       "kind": "demo",
       "id": "d_euwe",
       "turn": 1,
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
       "explanations": {
         "pt": {
           "positionId": "lateral/d_euwe",
@@ -34819,7 +34819,7 @@
                     "Esta continuação mantém a vitória.",
                     "Seu rei ataca a5 e fica na mesma fileira do rei preto de f5, com três casas entre eles. A captura fica preparada sem permitir uma corrida equivalente contra c2. Por exemplo: 49.Rb5 Re5 50.Rxa5 Rd4 51.Rb4 Rd5 52.Rb5."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c4b5",
                     "f5e5",
@@ -34897,7 +34897,7 @@
                     "This continuation keeps the win.",
                     "Your king attacks a5 and reaches the same rank as the black king on f5, with three squares between them. The capture is prepared without allowing an equivalent race against c2. For example: 49.Kb5 Ke5 50.Kxa5 Kd4 51.Kb4 Kd5 52.Kb5."
                   ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 1",
+                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
                   "movesUci": [
                     "c4b5",
                     "f5e5",
