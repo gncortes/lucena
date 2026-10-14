@@ -152,7 +152,8 @@ class Reference {
 
   final String id;
 
-  /// `book`, `study`, `game`, `tablebase` ou `web`.
+  /// `book`, `study`, `game`, `tablebase`, `web` ou `player` (jogador: `name`,
+  /// `initials`, `dates`, `url`).
   final String kind;
 
   /// Os campos do tipo (`author`, `title`, `publisher`, `year`, `url`...).
@@ -162,10 +163,20 @@ class Reference {
 
   String get title => switch (kind) {
     'game' => '${fields['white']} – ${fields['black']}',
+    'player' => fields['name'] ?? id,
     _ => fields['title'] ?? id,
   };
 
   String? get url => fields['url'];
+
+  /// As iniciais do jogador (`player`): o campo `initials` ou as primeiras
+  /// letras do nome.
+  String get initials {
+    final given = fields['initials'];
+    if (given != null && given.isNotEmpty) return given;
+    final words = title.split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+    return words.take(2).map((w) => w.substring(0, 1).toUpperCase()).join();
+  }
 
   /// Fontes de produção ficam nos dados para rastreabilidade, mas não são
   /// mostradas como referências ao aluno.

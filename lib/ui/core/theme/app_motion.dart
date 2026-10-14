@@ -17,6 +17,9 @@ abstract final class AppMotion {
   /// Cartão que expande, painel que abre, balão que troca de fala.
   static const component = Durations.medium2;
 
+  /// Folha que sobe por cima do tabuleiro na apresentação do passo.
+  static const panel = Durations.medium1;
+
   /// Entrada de tela, versus, conclusão.
   static const screen = Durations.long2;
 
@@ -25,6 +28,16 @@ abstract final class AppMotion {
 
   /// Atraso entre itens em cascata.
   static const stagger = Durations.short1;
+
+  /// Revelar um lance oculto da faixa de variantes (T69, "desliza para fora").
+  static const reveal = Duration(milliseconds: 240);
+
+  /// Os três pontinhos de "digitando" (T70): ciclo e defasagem entre pontos.
+  static const typingCycle = Duration(milliseconds: 1200);
+  static const typingStagger = Durations.short3;
+
+  /// Curva da revelação.
+  static const revealCurve = Curves.easeOutCubic;
 
   /// Algo aparece ou entra na tela.
   static const enter = Easing.emphasizedDecelerate;
@@ -51,6 +64,10 @@ abstract final class AppMotion {
       MediaQuery.disableAnimationsOf(context)
       ? MotionDurations.none
       : MotionDurations.standard;
+
+  /// "Remover animações" está ligado: o que se move fica parado.
+  static bool reduced(BuildContext context) =>
+      MediaQuery.disableAnimationsOf(context);
 }
 
 /// As durações de [AppMotion] já ajustadas para "remover animações".
@@ -59,6 +76,7 @@ class MotionDurations {
     required this.tap,
     required this.state,
     required this.component,
+    required this.panel,
     required this.screen,
     required this.celebrate,
     required this.stagger,
@@ -68,6 +86,7 @@ class MotionDurations {
     tap: AppMotion.tap,
     state: AppMotion.state,
     component: AppMotion.component,
+    panel: AppMotion.panel,
     screen: AppMotion.screen,
     celebrate: AppMotion.celebrate,
     stagger: AppMotion.stagger,
@@ -77,6 +96,7 @@ class MotionDurations {
     tap: Duration.zero,
     state: Duration.zero,
     component: Duration.zero,
+    panel: Duration.zero,
     screen: Duration.zero,
     celebrate: Duration.zero,
     stagger: Duration.zero,
@@ -85,6 +105,7 @@ class MotionDurations {
   final Duration tap;
   final Duration state;
   final Duration component;
+  final Duration panel;
   final Duration screen;
   final Duration celebrate;
   final Duration stagger;

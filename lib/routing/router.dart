@@ -21,6 +21,7 @@ import '../data/repositories/settings/settings_repository.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
+import '../domain/use_cases/engine_fallback.dart';
 import '../domain/use_cases/game_rules.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
@@ -70,7 +71,10 @@ import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/school/lesson_script_repository.dart';
+import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
+import '../data/repositories/tablebase/kpk_repository.dart';
 import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
 import '../ui/endgames/view_models/endgames_cubit.dart';
 import '../ui/endgames/view_models/exercise_cubit.dart';
@@ -88,6 +92,8 @@ import '../ui/school/widgets/star_challenge_screen.dart';
 import '../ui/school/widgets/star_challenges_screen.dart';
 import '../ui/school/view_models/lesson_cubit.dart';
 import '../ui/school/view_models/school_cubit.dart';
+import '../ui/lesson_script/view_models/lesson_script_cubit.dart';
+import '../ui/lesson_script/widgets/lesson_script_screen.dart';
 import '../ui/school/widgets/lesson_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
@@ -102,8 +108,10 @@ import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
 import '../ui/journey/widgets/rung_screen.dart';
 import '../ui/speedrun/view_models/speedrun_cubit.dart';
+import '../ui/speedrun/view_models/speedrun_history_cubit.dart';
 import '../ui/speedrun/widgets/speedrun_attempt_screen.dart';
 import '../ui/speedrun/widgets/speedrun_list_screen.dart';
+import '../ui/speedrun/widgets/speedrun_history_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
@@ -477,8 +485,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       progress: context.read<SchoolProgressRepository>(),
                       characters: context.read<CharacterRepository>(),
                       opponent: context.read<OpponentRepository>(),
+                      engine: _engineFallback(context),
+                      practiceV2: true,
                     )..load(id, _language(context)),
-                    child: LessonScreen(key: ValueKey('lesson.$id')),
+                    child: LessonScreen(
+                      key: ValueKey('lesson.$id'),
+                      engine: _engineFallback(context),
+                    ),
                   );
                 },
               ),
@@ -577,8 +590,65 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 },
                 routes: [
                   // A lição: a mesma tela das aulas da escola.
+                  // A lição roteirizada (T70): as três etapas da parte.
+                  _route(
+                    path: 'roteiro',
+                    builder: (context, state) {
+                      final id = state.pathParameters['lesson']!;
+                      final part = state.uri.queryParameters['part'] ?? '';
+                      final stage =
+                          int.tryParse(
+                            state.uri.queryParameters['etapa'] ?? '',
+                          ) ??
+                          0;
+                      final language = _language(context);
+                      final lessons = context.read<EndgameLessonRepository>();
+                      return BlocProvider(
+                        key: ValueKey('script.$id.$part'),
+                        create: (_) => LessonScriptCubit(
+                          lessonId: id,
+                          partId: part,
+                          scriptPath: AssetLessonScriptRepository.scriptPath(
+                            id,
+                          ),
+                          language: language,
+                          scripts: context.read<LessonScriptRepository>(),
+                          kpk: context.read<KpkRepository>(),
+                          source: EndgameLessonSource(
+                            lessons,
+                            context.read<EndgameProgressRepository>(),
+                          ),
+                          initialStage: stage,
+                        ),
+                        child: LessonScriptScreen(
+                          key: ValueKey('script.$id.$part'),
+                          title: lessons
+                              .texts(language)
+                              .then((texts) => texts.partTitle(id, part)),
+                        ),
+                      );
+                    },
+                  ),
                   _route(
                     path: 'lesson',
+                    // A parte com roteiro abre a tela roteirizada (cobre o
+                    // card da parte, a próxima parte e o revisar).
+                    redirect: (context, state) async {
+                      final id = state.pathParameters['lesson']!;
+                      final part = state.uri.queryParameters['part'];
+                      if (part == null) return null;
+                      final trail = await context
+                          .read<EndgameLessonRepository>()
+                          .trail();
+                      final script = trail
+                          .lesson(id)
+                          ?.lesson
+                          .part(part)
+                          ?.script;
+                      return script == null
+                          ? null
+                          : Routes.endgameLessonScript(id, part: part);
+                    },
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
                       final part = state.uri.queryParameters['part'];
@@ -595,8 +665,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           ),
                           characters: context.read<CharacterRepository>(),
                           opponent: context.read<OpponentRepository>(),
+                          engine: _engineFallback(context),
+                          practiceV2: true,
                         )..load(id, _language(context), part: part),
-                        child: LessonScreen(key: ValueKey('lesson.$id.$part')),
+                        child: LessonScreen(
+                          key: ValueKey('lesson.$id.$part'),
+                          engine: _engineFallback(context),
+                        ),
                       );
                     },
                   ),
@@ -752,6 +827,27 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ),
                 routes: [
+                  // Antes de `:attempt`, que pegaria "history" como id.
+                  _route(
+                    path: 'history',
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => SpeedrunHistoryCubit(
+                        journey: context.read<JourneyRepository>(),
+                        speedruns: context.read<SpeedrunRepository>(),
+                        rating: context.read<RatingRepository>(),
+                        characters: context.read<CharacterRepository>(),
+                        now: context.read<Now>(),
+                      )..load(state.pathParameters['speedrun']!),
+                      child: Builder(
+                        builder: (context) => ReloadOnReturn(
+                          onReturn: () => context
+                              .read<SpeedrunHistoryCubit>()
+                              .load(state.pathParameters['speedrun']!),
+                          child: const SpeedrunHistoryScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
                   _route(
                     path: ':attempt',
                     builder: (context, state) => BlocProvider(
@@ -975,6 +1071,7 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   settings: context.read<SettingsRepository>(),
   characters: context.read<CharacterRepository>(),
   profile: context.read<ProfileRepository>(),
+  rating: context.read<RatingRepository>(),
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18
@@ -1064,3 +1161,18 @@ bool? _endgamesFilter(GoRouterState state) =>
       'forYou' => false,
       _ => null,
     };
+
+/// O motor da lição para o lance fora dos dados (T70, crit. 8): o Stockfish
+/// avalia e responde com a melhor jogada.
+EngineFallback _engineFallback(BuildContext context) {
+  final evaluation = context.read<EvaluationRepository>();
+  final opponent = context.read<OpponentRepository>();
+  return EngineFallback(
+    evaluate: (position, pov) => evaluation.evaluate(position, pov: pov),
+    bestMove: (position) => opponent.pickMove(
+      position,
+      thinkTime: const Duration(milliseconds: 500),
+      kind: OpponentKind.stockfish,
+    ),
+  );
+}

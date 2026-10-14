@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,6 +27,7 @@ import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/size_reporter.dart';
 import '../../core/widgets/viktor_sheet.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/exercise_cubit.dart';
@@ -91,6 +93,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   bool _background = false;
   final _sheetExpanded = ValueNotifier(false);
 
+  /// Altura do rodapé de ações (dica, cronômetro, próximo): a fala termina
+  /// acima dele.
+  final _footerHeight = ValueNotifier<double>(0);
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final background = state != AppLifecycleState.resumed;
@@ -154,6 +160,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     _mode.dispose();
     _elapsed.dispose();
     _sheetExpanded.dispose();
+    _footerHeight.dispose();
     _board?.dispose();
     _shake.dispose();
     _wrongFlash.dispose();
@@ -244,7 +251,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           return Scaffold(
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
-            appBar: AppBar(
+            appBar: LucenaAppBar(
               title: lesson == null
                   ? null
                   : Text(
@@ -330,13 +337,18 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   child: AnimatedOpacity(
                     duration: AppMotion.of(context).component,
                     opacity: expanded ? 0 : 1,
-                    child: AnimatedSwitcher(
-                      duration: AppMotion.of(context).component,
-                      child: KeyedSubtree(
-                        key: ValueKey(state.phase == ExercisePhase.done),
-                        child: state.phase == ExercisePhase.done
-                            ? _actions(context, state)
-                            : _solvingFooter(context, state),
+                    child: SizeReporter(
+                      onSize: (size) {
+                        if (mounted) _footerHeight.value = size.height;
+                      },
+                      child: AnimatedSwitcher(
+                        duration: AppMotion.of(context).component,
+                        child: KeyedSubtree(
+                          key: ValueKey(state.phase == ExercisePhase.done),
+                          child: state.phase == ExercisePhase.done
+                              ? _actions(context, state)
+                              : _solvingFooter(context, state),
+                        ),
                       ),
                     ),
                   ),
@@ -403,17 +415,24 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             ),
           if (hasSpeech)
             Positioned.fill(
-              child: ViktorSheet(
-                key: ExerciseKeys.viktorSheet,
-                top: rect.bottom + ExerciseLayout.gutter,
-                scrollKey: ExerciseKeys.scroll,
-                closeKey: ExerciseKeys.closeSheet,
-                onExpanded: (value) => _sheetExpanded.value = value,
-                children: [
-                  state.phase == ExercisePhase.done
-                      ? _result(context, state, boardSettings)
-                      : _prompt(context, state),
-                ],
+              child: ValueListenableBuilder(
+                valueListenable: _footerHeight,
+                // A fala rola por baixo dos botões e termina acima deles:
+                // o respiro inferior é a altura do rodapé.
+                builder: (context, footer, _) => ViktorSheet(
+                  key: ExerciseKeys.viktorSheet,
+                  top: rect.bottom + ExerciseLayout.gutter,
+                  scrollKey: ExerciseKeys.scroll,
+                  closeKey: ExerciseKeys.closeSheet,
+                  onExpanded: (value) => _sheetExpanded.value = value,
+                  collapsedInset: footer,
+                  padding: EdgeInsets.only(bottom: footer + AppSpacing.md),
+                  children: [
+                    state.phase == ExercisePhase.done
+                        ? _result(context, state, boardSettings)
+                        : _prompt(context, state),
+                  ],
+                ),
               ),
             ),
         ],

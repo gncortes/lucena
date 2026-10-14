@@ -1,0 +1,21 @@
+{
+  "gen.foraPerde.ganhar": "This move lets the win slip. Play on and see why.",
+  "gen.foraPerde.empatar": "This move loses. Play on and see why.",
+  "gen.foraMantem.ganhar": "This move also works; play it to the end.",
+  "gen.foraMantem.empatar": "This move also holds the draw; play it to the end.",
+  "gen.segueBem.ganhar": "Still winning.",
+  "gen.segueBem.empatar": "Still holding.",
+  "gen.estragou.ganhar": "That move let the win slip.",
+  "gen.estragou.empatar": "That move let the draw slip.",
+  "gen.voltaIdeia": "Let's go back to the starting position: I want to show you the main idea.",
+  "gen.fim.coroa": "The pawn promoted.",
+  "gen.fim.capturado": "The pawn fell: it is a draw.",
+  "gen.fim.afogado": "Stalemate: it is a draw.",
+  "gen.fim.repeticao": "The position repeated: it is a draw.",
+  "gen.fim.limite": "We reached the move limit.",
+  "gen.pratica.certo": "Correct. Your move.",
+  "gen.pratica.errado.ganhar": "This move lets the win slip. Try another.",
+  "gen.pratica.errado.empatar": "This move loses. Try another.",
+  "gen.pratica.sucesso.ganhar": "You won! You used the opposition all the way.",
+  "gen.pratica.sucesso.empatar": "Draw secured! The opposition saved Black."
+}

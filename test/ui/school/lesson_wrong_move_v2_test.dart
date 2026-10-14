@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
-import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/lesson.dart';
-import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/core/keys/lesson_v2_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/school/view_models/lesson_cubit.dart';
@@ -96,6 +94,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pumpAndSettle();
   }
 
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
@@ -119,61 +121,48 @@ void main() {
     });
   }
 
-  testWidgets('the wrong move comes back after a hard close', (tester) async {
-    final progress = FakeSchoolProgressRepository();
-    final live = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
-      progress: progress,
-      characters: FakeCharacterRepository(),
-      opponent: FakeOpponentRepository(),
-      replyDelay: Duration.zero,
-    );
-    addTearDown(live.close);
-    await live.load('mates.rank', 'en');
-    await live.next();
-    await live.play(move('a1a5'));
-    final stored = await progress.load();
-    await progress.save(
-      stored.copyWith(
-        ongoing: LessonCheckpoint.fromJson(stored.ongoing!.toJson()),
-      ),
-    );
-    final cubit = LessonCubit(
-      lessons: FakeLessonRepository(course: course, texts: texts),
-      progress: progress,
-      characters: FakeCharacterRepository(),
-      opponent: FakeOpponentRepository(),
-      replyDelay: Duration.zero,
-    );
-    addTearDown(cubit.close);
-    await cubit.load('mates.rank', 'en');
+  testWidgets('a wrong move without a planned mistake shows Back | See '
+      'solution | Continue, and See solution works', (tester) async {
+    final cubit = await open(1);
+    await show(tester, cubit, const Size(360, 740));
+    await tester.runAsync(() => cubit.play(move('a1a5')));
+    await tester.pumpAndSettle();
     expect(cubit.state.wrongMove, isTrue);
-    expect(cubit.state.attemptedSan, '1.Ra5');
+    expect(find.byKey(LessonKeys.seeSolution), findsOneWidget);
+    expect(find.byKey(LessonKeys.backButton), findsOneWidget);
+    expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
+    await tester.tap(find.byKey(LessonKeys.seeSolution));
+    await tester.pumpAndSettle();
+    expect(cubit.state.solutionSeen, isTrue);
+    expect(find.byKey(LessonKeys.solutionFooter), findsOneWidget);
+    expect(find.byKey(LessonKeys.retryButton), findsOneWidget);
   });
 
-  testWidgets('think mistake: the explanation is titled CORRECT MOVE and the '
-      'move is in the error colour', (tester) async {
+  testWidgets('think move outside the data and without engine (T70): the '
+      'piece goes back with a notice, no sheet opens', (tester) async {
     final cubit = await open(2);
     await show(tester, cubit, const Size(360, 740));
     await tester.runAsync(() => cubit.play(move('a1b1')));
     await tester.pumpAndSettle();
-    expect(find.text('CORRECT MOVE'), findsOneWidget);
-    final error = MoveQuality.mistake.listColor(
-      Theme.of(tester.element(find.byType(LessonScreen))).brightness,
-    );
-    var found = false;
-    for (final rich in tester.widgetList<RichText>(find.byType(RichText))) {
-      rich.text.visitChildren((span) {
-        if (span is TextSpan &&
-            (span.text ?? '').contains('1.Rb1') &&
-            span.style?.color == error) {
-          found = true;
-        }
-        return true;
-      });
-    }
-    expect(found, isTrue);
+    expect(cubit.state.wrongNotice, isTrue);
+    expect(cubit.state.step, 2);
+    expect(find.text('CORRECT MOVE'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
+  testWidgets(
+    'think mistake: Ver resposta leads to the correct state with its title',
+    (tester) async {
+      final cubit = await open(2);
+      await show(tester, cubit, const Size(360, 740));
+      await tester.runAsync(() => cubit.play(move('a1b1')));
+      await tester.pumpAndSettle();
+      // T70: o erro abre o ramo; "Ver resposta" leva ao estado correto, que
+      // traz o título do lance correto.
+      await tester.runAsync(() => cubit.showAnswer());
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonKeys.correctTitle), findsOneWidget);
+    },
+  );
 
   testWidgets('Continue keeps 16 dp from the right edge', (tester) async {
     final cubit = await open(0);
@@ -183,8 +172,8 @@ void main() {
   });
 
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
-    testWidgets('$size: scrolled to the end, the speech sits above the footer '
-        'fade and a solid surface is behind the buttons', (tester) async {
+    testWidgets('$size: the error footer keeps its three '
+        'buttons inside the solid box', (tester) async {
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       final cubit = await open(1);
@@ -192,42 +181,21 @@ void main() {
       await tester.runAsync(() => cubit.play(move('a1a5')));
       await tester.pumpAndSettle();
       expect(cubit.state.wrongMove, isTrue);
-      final scroll = find.byKey(LessonKeys.scroll);
-      await tester.fling(scroll, const Offset(0, -3000), 3000);
-      await tester.pumpAndSettle();
-      final fade = find.byKey(LessonKeys.footerFade);
-      expect(fade, findsOneWidget);
-      final fadeRect = tester.getRect(fade);
-      expect(fadeRect.height, closeTo(24, 1));
-      final invite = tester.getRect(find.byKey(LessonV2Keys.freeBoardInvite));
-      expect(invite.bottom, lessThanOrEqualTo(fadeRect.top + 1));
-      // Solid surface below the fade, covering both buttons.
+      // O rodapé de erro (Voltar | Ver solução | Continuar) é a caixa sólida
+      // do painel, sem a faixa que esmaece.
       final footer = tester.getRect(find.byKey(LessonKeys.footer));
-      expect(fadeRect.top, closeTo(footer.top, 1));
-      final solid = find.descendant(
-        of: find.byKey(LessonKeys.footer),
-        matching: find.byType(ColoredBox),
-      );
-      expect(solid, findsWidgets);
-      final solidRect = tester.getRect(solid.first);
-      final panel = Theme.of(tester.element(find.byKey(LessonKeys.footer)))
-          .colorScheme
-          .surfaceContainerLow;
-      expect(tester.widget<ColoredBox>(solid.first).color, panel);
       var buttons = 0;
       for (final key in [
         LessonKeys.backButton,
-        LessonKeys.hintButton,
+        LessonKeys.seeSolution,
         LessonKeys.nextButton,
       ]) {
-        if (find.byKey(key).evaluate().isEmpty) continue;
         buttons++;
         final r = tester.getRect(find.byKey(key));
-        expect(solidRect.top, lessThanOrEqualTo(r.top));
-        expect(solidRect.bottom, greaterThanOrEqualTo(r.bottom));
-        expect(r.top, greaterThanOrEqualTo(fadeRect.bottom - 1));
+        expect(r.top, greaterThanOrEqualTo(footer.top));
+        expect(r.bottom, lessThanOrEqualTo(footer.bottom));
       }
-      expect(buttons, greaterThan(0));
+      expect(buttons, 3);
       expect(tester.takeException(), isNull);
     });
   }

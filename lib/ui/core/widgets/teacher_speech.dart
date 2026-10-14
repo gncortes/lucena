@@ -1,5 +1,7 @@
+import 'dart:math' as math;
 import 'dart:ui' show BoxHeightStyle;
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show Bidi;
 
@@ -7,6 +9,7 @@ import 'speech_text_tap_notification.dart';
 import 'explanation_cards.dart';
 import '../../../domain/models/explanation.dart';
 import 'viktor_sheet.dart';
+import '../keys/viktor_sheet_keys.dart';
 
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +17,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/app_settings.dart';
-import '../../../domain/models/game_review.dart';
-import '../review/move_quality_ui.dart';
 import '../../../domain/models/wiki_links.dart';
 import '../../../domain/use_cases/speech_links.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
@@ -30,6 +31,7 @@ import 'character_avatar.dart';
 import 'external_page_sheet.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import '../theme/lesson_text_colors.dart';
 
 /// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
 enum SpeechContext {
@@ -55,6 +57,7 @@ class TeacherSpeech extends StatelessWidget {
     this.part = TeacherSpeechPart.all,
     this.explanation,
     this.lessonV2 = false,
+    this.headerAvatar,
     this.lessonPromptBubble = false,
     this.onVariation,
     this.activeVariation,
@@ -79,6 +82,10 @@ class TeacherSpeech extends StatelessWidget {
   final Character teacher;
   final ExplanationPayload? explanation;
   final bool lessonV2;
+
+  /// Na lição V2, o retrato do cabeçalho maior que o padrão (28), com raio 6
+  /// (lição roteirizada, T70).
+  final double? headerAvatar;
 
   /// Pensar keeps its speech bubble; explanation sections remain unboxed.
   final bool lessonPromptBubble;
@@ -155,18 +162,16 @@ class TeacherSpeech extends StatelessWidget {
     final avatar = CharacterAvatar(
       character: teacher,
       emotion: emotion,
-      size: _compact(context) ? 32 : avatarSize,
+      // LICOES-V2 §9: retrato de 28 dp, raio 8, na linha de 48 dp.
+      size: lessonV2
+          ? (headerAvatar ?? 28)
+          : (_compact(context) ? 32 : avatarSize),
+      radius: lessonV2 ? (headerAvatar == null ? 8 : 6) : null,
     );
     if (part == TeacherSpeechPart.header) {
       // Só o cabeçalho: os botões de voz valem para a fala, mas quem a diz
       // sozinho é o balão (sem repetir a voz).
-      return Row(
-        children: [
-          avatar,
-          const SizedBox(width: 10),
-          Expanded(child: _header(context)),
-        ],
-      );
+      return _headerRow(context, avatar);
     }
     final speech = speechOf(context);
     final text = _plain;
@@ -268,6 +273,7 @@ class TeacherSpeech extends StatelessWidget {
               final colors = Theme.of(context).colorScheme;
               return IconButton(
                 key: VoiceKeys.speakButton,
+                color: colors.onSurfaceVariant,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 tooltip: audible
                     ? context.l10n.lessonSoundOn(
@@ -432,7 +438,7 @@ class TeacherSpeech extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           avatar,
-          const SizedBox(width: 10),
+          SizedBox(width: lessonV2 ? 8 : 10),
           Expanded(child: _closable(context)),
         ],
       );
@@ -441,14 +447,8 @@ class TeacherSpeech extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              avatar,
-              const SizedBox(width: 10),
-              Expanded(child: _header(context)),
-            ],
-          ),
-          SizedBox(height: lessonV2 && !lessonPromptBubble ? 8 : 2),
+          _headerRow(context, avatar),
+          SizedBox(height: lessonV2 && !lessonPromptBubble ? 0 : 2),
           _closable(context),
         ],
       );
@@ -472,8 +472,33 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
+  /// Retrato, nome e botões. Na lição V2 é a linha de 48 dp do canvas
+  /// (`cabecalho(c, 'linha')`): retrato 28, 8 dp, nome, som na ponta.
+  Widget _headerRow(BuildContext context, Widget avatar) {
+    final row = Row(
+      children: [
+        avatar,
+        SizedBox(width: lessonV2 ? 8 : 10),
+        Expanded(child: _header(context)),
+      ],
+    );
+    if (!lessonV2) return row;
+    return SizedBox(key: ViktorSheetKeys.header, height: 48, child: row);
+  }
+
   Widget _name(BuildContext context) {
     final theme = Theme.of(context);
+    if (lessonV2) {
+      return Text(
+        context.l10n.teacherName(teacher.name),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+    }
     return Text(
       context.l10n.teacherName(teacher.name),
       maxLines: 1,
@@ -547,12 +572,16 @@ class TeacherSpeech extends StatelessWidget {
         activeCursor: activeVariation,
         hasInlineNavigation: (text, variation, origin) =>
             onVariation != null &&
+            // O rótulo real é "A"/"B": vale o primeiro lance da variação.
+            variation.movesSan.isNotEmpty &&
             SpeechLinks.find(
-              variation.label,
+              variation.movesSan.first,
               SpeechLinks.lettersFor(
                 Localizations.localeOf(context).languageCode,
               ),
-            ).any((link) => link.isMove && link.text == variation.label) &&
+            ).any(
+              (link) => link.isMove && link.text == variation.movesSan.first,
+            ) &&
             SpeechLinks.find(
               WikiMarkup.plain(text),
               SpeechLinks.lettersFor(
@@ -589,7 +618,6 @@ class TeacherSpeech extends StatelessWidget {
             context,
             WikiMarkup.parse(text),
             useBubbleKey: paragraphIndex++ == 0,
-            emphasizeFirstParagraph: lessonV2 && !lessonPromptBubble,
             originOf: originOf,
             onLinkOverride: (link) {
               final origin = originOf(link);
@@ -676,10 +704,18 @@ class TeacherSpeech extends StatelessWidget {
     String text,
     Text words,
     bool Function(int)? onTapAt,
-    int Function(int) toDrawn,
-  ) {
+    int Function(int) toDrawn, {
+    List<(int, int)>? snap,
+  }) {
     final speech = speechOf(context);
-    if (speech == null) return _TypedText(text: words, onTapAt: onTapAt);
+    if (speech == null) {
+      return _TypedText(
+        key: ValueKey(text),
+        text: words,
+        onTapAt: onTapAt,
+        snap: snap,
+      );
+    }
     final language = Localizations.localeOf(context).toLanguageTag();
     final state = speech.state;
     // Vai falar sozinho: o texto anda no passo da voz, não no da leitura.
@@ -694,8 +730,11 @@ class TeacherSpeech extends StatelessWidget {
           a.isSpeaking(text) != b.isSpeaking(text) ||
           (b.isSpeaking(text) && a.revealed != b.revealed),
       builder: (context, state) => _TypedText(
+        // Fala nova no mesmo lugar (explicação seguinte): digita de novo.
+        key: ValueKey(text),
         text: words,
         onTapAt: onTapAt,
+        snap: snap,
         paced: paced,
         speaking: state.isSpeaking(text),
         // The voice counts in the source text; the clip, in the drawn one.
@@ -709,11 +748,18 @@ class TeacherSpeech extends StatelessWidget {
     );
   }
 
+  /// O destaque do lance que está no tabuleiro, pintado atrás do texto.
+  Widget _withBackdrop(
+    Text words,
+    (int, int)? range,
+    Color color,
+    Widget child,
+  ) => _MoveBackdrop(text: words, range: range, color: color, child: child);
+
   Widget _bubble(
     BuildContext context,
     MarkedText marked, {
     bool useBubbleKey = true,
-    bool emphasizeFirstParagraph = false,
     ValueChanged<SpeechLink>? onLinkOverride,
     ExplanationVariation? Function(SpeechLink)? originOf,
   }) {
@@ -743,21 +789,31 @@ class TeacherSpeech extends StatelessWidget {
                 link,
           ];
     final section = lessonV2;
+    final colors = theme.colorScheme;
+    // Corpo da lição V2 (LICOES-V2 §2): 16/24, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
       fontSize: section ? 16 : null,
       height: section ? 1.5 : null,
+      fontWeight: section ? FontWeight.w400 : null,
+      color: section ? colors.onSurface : null,
     );
-    // As casas e os lances em seminegrito, na cor primária: tocáveis sem
-    // parecer link de site.
+    // As casas e os lances na cor primária: tocáveis sem parecer link de
+    // site. Na lição V2 o lance é peso 500, mesmo com `?`/`!` (o símbolo
+    // carrega o resultado); fora dela, seminegrito.
     final linkStyle = TextStyle(
-      color: theme.colorScheme.primary,
-      fontWeight: FontWeight.w700,
+      color: colors.primary,
+      fontWeight: section ? FontWeight.w500 : FontWeight.w700,
+    );
+    // A casa citada (variante A): um tom mais claro que o do lance.
+    final squareStyle = linkStyle.copyWith(
+      color: LessonTextColors.square(colors),
     );
     // Os nomes, sublinhados como link de site: abrem a Wikipedia.
     final pageStyle = TextStyle(
-      color: theme.colorScheme.primary,
+      color: colors.primary,
+      fontWeight: FontWeight.w400,
       decoration: TextDecoration.underline,
-      decorationColor: theme.colorScheme.primary,
+      decorationColor: colors.primary,
     );
     bool isActiveMove(SpeechLink link) {
       final active = activeVariation;
@@ -774,51 +830,12 @@ class TeacherSpeech extends StatelessWidget {
           cursor.ply == active.ply;
     }
 
-    Color moveColor(SpeechLink link) {
-      if (!lessonV2) return theme.colorScheme.primary;
-      // Contrato §3.4: a cor da qualidade é a da lista (MoveQualityUi).
-      final notation = link.text;
-      final quality = notation.endsWith('??')
-          ? MoveQuality.blunder
-          : notation.endsWith('?!')
-          ? MoveQuality.inaccuracy
-          : notation.endsWith('?')
-          ? MoveQuality.mistake
-          : notation.endsWith('!!')
-          ? MoveQuality.great
-          : notation.endsWith('!')
-          ? MoveQuality.best
-          : null;
-      return quality?.listColor(theme.brightness) ?? theme.colorScheme.primary;
-    }
-
-    final firstParagraphEnd = text.contains('\n\n')
-        ? text.indexOf('\n\n')
-        : text.length;
+    // Parágrafos da mesma ideia viram um só fluxo (0 dp entre eles): o par de
+    // quebras vira espaço, de mesmo tamanho para não mexer nos deslocamentos.
     Iterable<InlineSpan> plainSpans(String value, int offset) sync* {
-      if (!lessonV2) {
-        yield TextSpan(text: value);
-        return;
-      }
-      final paragraphs = value.split('\n\n');
-      var consumed = 0;
-      for (final (index, paragraph) in paragraphs.indexed) {
-        if (index > 0) {
-          yield const TextSpan(text: '\n');
-          yield const TextSpan(
-            text: '\n',
-            style: TextStyle(fontSize: 8, height: 1),
-          );
-        }
-        yield TextSpan(
-          text: paragraph,
-          style:
-              emphasizeFirstParagraph && offset + consumed < firstParagraphEnd
-              ? const TextStyle(fontWeight: FontWeight.w500)
-              : null,
-        );
-        consumed += paragraph.length + 2;
-      }
+      yield TextSpan(
+        text: lessonV2 ? value.replaceAll('\n\n', ' \u200B') : value,
+      );
     }
 
     final spans = [
@@ -826,12 +843,7 @@ class TeacherSpeech extends StatelessWidget {
         (
           link.start,
           link.end,
-          linkStyle.copyWith(
-            color: moveColor(link),
-            backgroundColor: isActiveMove(link)
-                ? theme.colorScheme.primaryContainer
-                : null,
-          ),
+          link.isMove || !lessonV2 ? linkStyle : squareStyle,
         ),
       for (final (mark, _) in pages) (mark.start, mark.end, pageStyle),
     ]..sort((a, b) => a.$1.compareTo(b.$1));
@@ -901,6 +913,13 @@ class TeacherSpeech extends StatelessWidget {
           );
     // O toque numa letra: o trecho que a contém (ou que termina nela). Diz
     // se havia trecho ali.
+    // Tocar numa casa abre o destaque dela e baixa o painel até a borda do
+    // tabuleiro (A11); o lance só chama [onLink].
+    void fire(SpeechLink link) {
+      if (lessonV2 && !link.isMove) ViktorSheet.collapse(context);
+      onLink!(link);
+    }
+
     bool tapAt(int drawn) {
       final offset = offsets.toSource(drawn);
       for (final (mark, url) in pages) {
@@ -911,7 +930,7 @@ class TeacherSpeech extends StatelessWidget {
       }
       for (final link in links) {
         if (offset >= link.start && offset <= link.end) {
-          onLink!(link);
+          fire(link);
           return true;
         }
       }
@@ -919,6 +938,15 @@ class TeacherSpeech extends StatelessWidget {
     }
 
     final tappable = spans.isEmpty ? null : tapAt;
+    // Alvo de toque de 48 dp (A6): o toque perto do glifo vale no link mais
+    // próximo. Só na lição V2.
+    final snap = lessonV2
+        ? [
+            for (final link in links)
+              (offsets.toDrawn(link.start), offsets.toDrawn(link.end)),
+          ]
+        : null;
+    final activeLink = links.where(isActiveMove).firstOrNull;
     final bubble = Container(
       width: double.infinity,
       padding: section
@@ -952,17 +980,34 @@ class TeacherSpeech extends StatelessWidget {
             CustomSemanticsAction(
               label: context.l10n.speechShowOnBoard(link.text),
             ): () =>
-                onLink!(link),
+                fire(link),
         },
         child: _VoiceLinks(
           text: text,
           links: links,
           onLink: onSpoken,
-          child: typed
-              ? _typed(context, text, words, tappable, offsets.toDrawn)
-              : tappable == null
-              ? words
-              : _LinkTapper(text: words, onTapAt: tappable),
+          child: _withBackdrop(
+            words,
+            activeLink == null
+                ? null
+                : (
+                    offsets.toDrawn(activeLink.start),
+                    offsets.toDrawn(activeLink.end),
+                  ),
+            LessonTextColors.activeMoveBackground(colors),
+            typed
+                ? _typed(
+                    context,
+                    text,
+                    words,
+                    tappable,
+                    offsets.toDrawn,
+                    snap: snap,
+                  )
+                : tappable == null
+                ? words
+                : _LinkTapper(text: words, onTapAt: tappable, snap: snap),
+          ),
         ),
       ),
     );
@@ -1096,7 +1141,9 @@ class _TailPainter extends CustomPainter {
 class _TypedText extends StatefulWidget {
   const _TypedText({
     required this.text,
+    super.key,
     this.onTapAt,
+    this.snap,
     this.paced = false,
     this.speaking = false,
     this.revealed,
@@ -1107,6 +1154,10 @@ class _TypedText extends StatefulWidget {
   /// Um toque numa letra já à vista: a posição dela. Devolve se havia uma
   /// casa ou um lance ali.
   final bool Function(int)? onTapAt;
+
+  /// Os trechos (casas e lances) onde o toque perto vale, em posições do
+  /// texto desenhado; ver [_tapNear].
+  final List<(int, int)>? snap;
 
   /// A voz vai falar: o texto anda no passo de quem fala.
   final bool paced;
@@ -1217,7 +1268,7 @@ class _TypedTextState extends State<_TypedText>
     if (AppMotion.of(context).disabled) {
       return onTapAt == null
           ? widget.text
-          : _LinkTapper(text: widget.text, onTapAt: onTapAt);
+          : _LinkTapper(text: widget.text, onTapAt: onTapAt, snap: widget.snap);
     }
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1233,6 +1284,7 @@ class _TypedTextState extends State<_TypedText>
                   painter,
                   details.localPosition,
                   (offset) => offset < shown && onTapAt(offset),
+                  snap: widget.snap,
                 )) {
               return;
             }
@@ -1270,7 +1322,38 @@ class _TypedTextState extends State<_TypedText>
 /// O toque do dedo erra por pouco uma casa curta como "a7": vale a casa ou o
 /// lance no ponto tocado ou, se não houver, o mais perto dele (até uns 20 px
 /// para os lados ou meia linha para cima e para baixo).
-bool _tapNear(TextPainter painter, Offset at, bool Function(int) onTapAt) {
+bool _tapNear(
+  TextPainter painter,
+  Offset at,
+  bool Function(int) onTapAt, {
+  List<(int, int)>? snap,
+}) {
+  if (snap != null) {
+    // LICOES-V2 §2 (A6): alvo de pelo menos 48×48 dp em volta do centro da
+    // caixa do glifo, sem mudar a altura da linha. Vale o link de menor
+    // distância ao centro.
+    (int, int)? best;
+    var bestDistance = double.infinity;
+    for (final range in snap) {
+      for (final box in painter.getBoxesForSelection(
+        TextSelection(baseOffset: range.$1, extentOffset: range.$2),
+      )) {
+        final rect = box.toRect();
+        final target = Rect.fromCenter(
+          center: rect.center,
+          width: math.max(rect.width, 48),
+          height: math.max(rect.height, 48),
+        );
+        if (!target.contains(at)) continue;
+        final distance = (at - rect.center).distance;
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = range;
+        }
+      }
+    }
+    if (best != null && onTapAt(best.$1)) return true;
+  }
   const near = [
     Offset.zero,
     Offset(-10, 0),
@@ -1287,10 +1370,11 @@ bool _tapNear(TextPainter painter, Offset at, bool Function(int) onTapAt) {
 }
 
 class _LinkTapper extends StatelessWidget {
-  const _LinkTapper({required this.text, required this.onTapAt});
+  const _LinkTapper({required this.text, required this.onTapAt, this.snap});
 
   final Text text;
   final bool Function(int) onTapAt;
+  final List<(int, int)>? snap;
 
   @override
   Widget build(BuildContext context) {
@@ -1317,7 +1401,7 @@ class _LinkTapper extends StatelessWidget {
                 minWidth: constraints.minWidth,
                 maxWidth: constraints.maxWidth,
               );
-          if (!_tapNear(painter, details.localPosition, onTapAt)) {
+          if (!_tapNear(painter, details.localPosition, onTapAt, snap: snap)) {
             SpeechTextTapNotification().dispatch(context);
           }
           painter.dispose();
@@ -1408,4 +1492,89 @@ class _RevealClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(_RevealClipper old) =>
       old.count != count || old.painter != painter;
+}
+
+/// O destaque do lance que está no tabuleiro (LICOES-V2 §2, A5): fundo
+/// translúcido com cantos de 4 dp, 2 dp de folga nos lados, pintado atrás do
+/// texto com as caixas da seleção (`TextStyle.background` não tem canto) e
+/// sem mexer na métrica da linha.
+class _MoveBackdrop extends StatelessWidget {
+  const _MoveBackdrop({
+    required this.text,
+    required this.range,
+    required this.color,
+    required this.child,
+  });
+
+  final Text text;
+
+  /// Nulo: sem destaque. A árvore é a mesma com ou sem ele, para o texto que
+  /// aparece aos poucos não recomeçar quando o destaque entra e sai.
+  final (int, int)? range;
+  final Color color;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final range = this.range;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var style = DefaultTextStyle.of(context).style.merge(text.style);
+        if (MediaQuery.boldTextOf(context)) {
+          style = style.merge(const TextStyle(fontWeight: FontWeight.bold));
+        }
+        final painter =
+            TextPainter(
+              text: TextSpan(
+                style: style,
+                children: [text.textSpan ?? TextSpan(text: text.data)],
+              ),
+              textDirection: text.textDirection ?? Directionality.of(context),
+              textScaler: MediaQuery.textScalerOf(context),
+              locale: Localizations.maybeLocaleOf(context),
+            )..layout(
+              minWidth: constraints.minWidth,
+              maxWidth: constraints.maxWidth,
+            );
+        final rects = range == null
+            ? const <Rect>[]
+            : [
+                for (final box in painter.getBoxesForSelection(
+                  TextSelection(baseOffset: range.$1, extentOffset: range.$2),
+                ))
+                  box.toRect(),
+              ];
+        painter.dispose();
+        return CustomPaint(
+          painter: range == null ? null : _BackdropPainter(rects, color),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
+class _BackdropPainter extends CustomPainter {
+  const _BackdropPainter(this.rects, this.color);
+
+  final List<Rect> rects;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    for (final rect in rects) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTRB(rect.left - 2, rect.top, rect.right + 2, rect.bottom),
+          const Radius.circular(AppShape.tiny),
+        ),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_BackdropPainter old) =>
+      old.color != color || !listEquals(old.rects, rects);
 }

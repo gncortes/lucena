@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/use_cases/home_suggestion.dart';
@@ -24,7 +25,7 @@ class HomeLayoutScreen extends StatelessWidget {
     final layout = state.layout;
     return Scaffold(
       key: HomeLayoutKeys.screen,
-      appBar: AppBar(title: Text(l10n.homeLayoutTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.homeLayoutTitle)),
       bottomNavigationBar: layout == null
           ? null
           : SafeArea(

@@ -141,6 +141,10 @@ abstract final class Routes {
   static const speedruns = '/speedruns';
   static String speedrun(String id) => '/speedruns/$id';
 
+  /// O histórico de um speedrun: o [id] já com o ritmo
+  /// (`SpeedrunPaces.idFor`).
+  static String speedrunHistory(String id) => '/speedruns/$id/history';
+
   ///
   /// [game] (o instante em que uma etapa terminou) faz a tentativa ser lida de
   /// novo ao voltar do tabuleiro, mesmo que a tela dela já esteja aberta.
@@ -197,6 +201,16 @@ abstract final class Routes {
   static String endgameLessonSteps(String id, {String? part}) => Uri(
     path: '/endgames/$id/lesson',
     queryParameters: part == null ? null : {'part': part},
+  ).toString();
+
+  /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
+  static String endgameLessonScript(
+    String id, {
+    required String part,
+    int stage = 0,
+  }) => Uri(
+    path: '/endgames/$id/roteiro',
+    queryParameters: {'part': part, 'etapa': '$stage'},
   ).toString();
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>

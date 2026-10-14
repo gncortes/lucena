@@ -117,6 +117,35 @@ void main() {
     });
   }
 
+  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+    testWidgets('$size: a fala rola até terminar acima do rodapé', (
+      tester,
+    ) async {
+      tester.view
+        ..physicalSize = size
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await pump(tester, 'e03');
+      await tester.tap(find.byKey(ExerciseKeys.hintButton));
+      await tester.pumpAndSettle();
+      final scrollable = find.descendant(
+        of: find.byKey(ExerciseKeys.scroll),
+        matching: find.byType(Scrollable),
+      );
+      final position = tester.state<ScrollableState>(scrollable.first).position;
+      position.jumpTo(position.maxScrollExtent);
+      await tester.pumpAndSettle();
+      final lastText = find
+          .descendant(
+            of: find.byKey(ExerciseKeys.scroll),
+            matching: find.byType(RichText),
+          )
+          .last;
+      final footerTop = tester.getRect(find.byKey(ExerciseKeys.hintButton)).top;
+      expect(tester.getRect(lastText).bottom, lessThanOrEqualTo(footerTop));
+    });
+  }
+
   testWidgets('o enunciado, as estrelas e a dica conceitual sem resposta', (
     tester,
   ) async {

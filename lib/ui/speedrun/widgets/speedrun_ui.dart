@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
@@ -8,13 +11,20 @@ import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../domain/use_cases/subcategory_material.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../journey/widgets/trail_widgets.dart';
+import '../../../domain/use_cases/speedrun_category.dart';
+import '../../../routing/routes.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../history/widgets/history_labels.dart';
 import '../view_models/speedrun_cubit.dart';
+import 'speedrun_pace_chip.dart';
 
 /// O nome de um speedrun: contra quem (`Contra o Coco`), o nome do final
 /// (`Dama contra torre`), a série de exercícios ou a Jornada completa.
@@ -188,8 +198,8 @@ enum SpeedrunStageStatus {
 }
 
 /// Uma etapa na trilha, no formato da Jornada: o retrato do adversário num
-/// círculo, ligado aos vizinhos por uma linha, com o nome, a etapa e o melhor
-/// tempo dela. Com uma tentativa em andamento, as etapas vencidas levam o
+/// círculo, ligado aos vizinhos por uma linha, com o nome, a etapa e, na ponta,
+/// o tempo dela. Com uma tentativa em andamento, as etapas vencidas levam o
 /// selo de feito e a da vez fica maior e em destaque; a última é o chefe
 /// final.
 class SpeedrunStageRow extends StatelessWidget {
@@ -200,7 +210,8 @@ class SpeedrunStageRow extends StatelessWidget {
     required this.last,
     required this.status,
     this.trailing,
-    this.losses = 0,
+    this.note,
+    this.noteKey,
     super.key,
   });
 
@@ -213,8 +224,10 @@ class SpeedrunStageRow extends StatelessWidget {
   /// O que vai na ponta da linha: o tempo da etapa.
   final Widget? trailing;
 
-  /// As derrotas nesta etapa (a etapa perdida é jogada de novo).
-  final int losses;
+  /// A nota depois de "Etapa N de M" ("perdeu aqui"): a etapa onde a
+  /// tentativa parou.
+  final String? note;
+  final Key? noteKey;
 
   // O meio da coluna dos retratos, por onde passa a linha.
   static const _railX = 52.0;
@@ -234,9 +247,11 @@ class SpeedrunStageRow extends StatelessWidget {
     final height = current ? 108.0 : 84.0;
     final doneColor = ChangeColors.of(context, up: true);
     final first = index == 0;
-    return SizedBox(
-      height: height,
+    return ConstrainedBox(
+      // 84/108 no artboard; o texto maior (fonte 2,0) cresce a linha.
+      constraints: BoxConstraints(minHeight: height),
       child: Stack(
+        fit: StackFit.passthrough,
         children: [
           // A linha da trilha, atrás dos retratos: só a metade de baixo na
           // primeira etapa e só a de cima na última. Até a etapa da vez, ela
@@ -244,22 +259,31 @@ class SpeedrunStageRow extends StatelessWidget {
           PositionedDirectional(
             start: _railX - 2,
             width: 4,
-            top: first ? height / 2 : 0,
-            bottom: height / 2,
-            child: ColoredBox(
-              color: done || current ? doneColor : colors.outlineVariant,
+            top: 0,
+            bottom: 0,
+            child: Column(
+              children: [
+                Expanded(
+                  child: first
+                      ? const SizedBox.shrink()
+                      : ColoredBox(
+                          color: done || current
+                              ? doneColor
+                              : colors.outlineVariant,
+                          child: const SizedBox.expand(),
+                        ),
+                ),
+                Expanded(
+                  child: last
+                      ? const SizedBox.shrink()
+                      : ColoredBox(
+                          color: done ? doneColor : colors.outlineVariant,
+                          child: const SizedBox.expand(),
+                        ),
+                ),
+              ],
             ),
           ),
-          if (!last)
-            PositionedDirectional(
-              start: _railX - 2,
-              width: 4,
-              top: height / 2,
-              bottom: 0,
-              child: ColoredBox(
-                color: done ? doneColor : colors.outlineVariant,
-              ),
-            ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -279,71 +303,62 @@ class SpeedrunStageRow extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  // A linha tem altura fixa (a trilha passa no meio dela):
-                  // se o texto não couber (árabe, letra grande), ele encolhe
-                  // um pouco em vez de estourar.
-                  child: LayoutBuilder(
-                    builder: (context, box) => FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: AlignmentDirectional.centerStart,
-                      child: SizedBox(
-                        width: box.maxWidth,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              opponentName(l10n, characters, stage.opponent),
-                              style:
-                                  (current
-                                          ? theme.textTheme.titleLarge
-                                          : theme.textTheme.titleMedium)
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: ahead
-                                            ? colors.onSurfaceVariant
-                                            : null,
-                                      ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              [
-                                l10n.speedrunStageOf(
+                  // A linha cresce com o texto (fonte grande, árabe); a
+                  // trilha acompanha.
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          opponentName(l10n, characters, stage.opponent),
+                          style:
+                              (current
+                                      ? theme.textTheme.titleLarge
+                                      : theme.textTheme.titleMedium)
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: ahead
+                                        ? colors.onSurfaceVariant
+                                        : null,
+                                  ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          key: noteKey,
+                          note != null
+                              ? l10n.speedrunStageNote(
                                   index + 1,
                                   speedrun.stages.length,
-                                ),
-                                // Quando o final muda de etapa para etapa, o nome
-                                // dele vem junto.
-                                if (speedrun.kind != SpeedrunKind.ending &&
-                                    speedrun.kind != SpeedrunKind.marathon)
-                                  endgameName(l10n, stage.position.subcategory),
-                              ].join(' · '),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                            if (losses > 0)
-                              Text(
-                                l10n.speedrunLosses(losses),
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: colors.error,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            if (current || last) ...[
-                              const SizedBox(height: 6),
-                              TrailBadge(
-                                text: current
-                                    ? l10n.speedrunNow
-                                    : l10n.journeyBoss,
-                                color: current
-                                    ? colors.primary
-                                    : colors.tertiary,
-                              ),
-                            ],
-                          ],
+                                  note!,
+                                )
+                              : [
+                                  l10n.speedrunStageOf(
+                                    index + 1,
+                                    speedrun.stages.length,
+                                  ),
+                                  // Quando o final muda de etapa para etapa, o nome
+                                  // dele vem junto.
+                                  if (speedrun.kind != SpeedrunKind.ending &&
+                                      speedrun.kind != SpeedrunKind.marathon)
+                                    endgameName(
+                                      l10n,
+                                      stage.position.subcategory,
+                                    ),
+                                ].join(' · '),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
                         ),
-                      ),
+                        if (last) ...[
+                          const SizedBox(height: 6),
+                          TrailBadge(
+                            text: l10n.journeyBoss,
+                            color: colors.tertiary,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -355,5 +370,251 @@ class SpeedrunStageRow extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// A peça, o nome do final, o ritmo e o nível: o cabeçalho do detalhe, do
+/// resumo e do histórico (artboards `SpeedrunDetalhe` e `SpeedrunHistorico`).
+/// Na Maratona, o nome é só o do final (o título da tela já diz "Maratona").
+class SpeedrunHeader extends StatelessWidget {
+  const SpeedrunHeader({
+    required this.speedrun,
+    required this.characters,
+    super.key,
+  });
+
+  final Speedrun speedrun;
+  final List<Character> characters;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final level = switch (SpeedrunCategories.of(speedrun)) {
+      SpeedrunCategory.beginner => l10n.profileLevelBeginner,
+      SpeedrunCategory.intermediate => l10n.profileLevelIntermediate,
+      SpeedrunCategory.advanced => l10n.profileLevelAdvanced,
+      null => null,
+    };
+    final name = speedrun.kind == SpeedrunKind.marathon
+        ? endgameName(l10n, speedrun.stages.first.position.subcategory)
+        : speedrunName(l10n, characters, speedrun);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Row(
+        children: [
+          SpeedrunPicture(speedrun, characters: characters, size: 72),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    SpeedrunPaceChip(
+                      speedrun.time,
+                      key: SpeedrunKeys.paceBadge,
+                    ),
+                    if (level != null)
+                      SpeedrunChip(
+                        icon: Icons.signal_cellular_alt,
+                        label: level,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Um chip contornado: o do nível e o da data. O do ritmo é o SpeedrunPaceChip.
+class SpeedrunChip extends StatelessWidget {
+  const SpeedrunChip({required this.icon, required this.label, super.key});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final color = colors.onSurfaceVariant;
+    return Container(
+      // 28 no artboard; o texto maior (fonte 2,0) cresce a caixa.
+      constraints: const BoxConstraints(minHeight: 28),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: colors.outlineVariant),
+        borderRadius: BorderRadius.circular(AppShape.small),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ExcludeSemantics(child: Icon(icon, size: 16, color: color)),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontSize: 13,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Começa uma tentativa nova de [speedrun], no ritmo dele, e abre a primeira
+/// etapa. Com [replace], a tela de onde se chamou (o resumo) sai da pilha; sem
+/// ele, ao voltar da partida o speedrun é lido de novo.
+Future<void> startSpeedrun(
+  BuildContext context,
+  Speedrun speedrun, {
+  bool replace = false,
+}) async {
+  final cubit = context.read<SpeedrunCubit>();
+  final started = await cubit.startWith(speedrun.time);
+  if (started == null || !context.mounted) return;
+  final (paced, attempt) = started;
+  final route = Routes.challengeGame(
+    paced.stages.first,
+    speedrunId: paced.id,
+    attemptId: attempt,
+    stage: 0,
+  );
+  if (replace) {
+    context.pushReplacement(route);
+    return;
+  }
+  await context.push(route);
+  if (context.mounted) await cubit.load(speedrunId: speedrun.id);
+}
+
+/// O rodapé fixo das telas do speedrun: fundo da tela, borda de cima e um
+/// botão de 52 (como o da conclusão da partida).
+class SpeedrunActionBar extends StatelessWidget {
+  const SpeedrunActionBar({
+    required this.buttonKey,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    super.key,
+  });
+
+  final Key buttonKey;
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screen,
+            AppSpacing.sm,
+            AppSpacing.screen,
+            AppSpacing.sm,
+          ),
+          child: FilledButton.icon(
+            key: buttonKey,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(52),
+            ),
+            icon: Icon(icon),
+            label: Text(label),
+            onPressed: onPressed,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "+N de rating ao concluir" sobre o aviso azul: o "+N de rating" em verde
+/// com o ícone, o resto no [style]. (Mesma linha do aviso da Maratona.)
+class SpeedrunOfferLine extends StatelessWidget {
+  const SpeedrunOfferLine({
+    required this.points,
+    required this.style,
+    super.key,
+  });
+
+  final int points;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final background = theme.colorScheme.secondaryContainer;
+    final color = _legible(
+      ChangeColors.of(context, up: true),
+      background,
+      theme.brightness,
+    );
+    final full = l10n.speedrunRatingBonusAtFinish(points);
+    final short = l10n.speedrunRatingBonusShort(points);
+    final at = full.indexOf(short);
+    if (at < 0) return Text(full, style: style);
+    final strong = style?.copyWith(fontWeight: FontWeight.w700, color: color);
+    return Text.rich(
+      TextSpan(
+        style: style,
+        children: [
+          TextSpan(text: full.substring(0, at)),
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: ExcludeSemantics(
+              child: Icon(Icons.trending_up, size: 16, color: color),
+            ),
+          ),
+          const WidgetSpan(child: SizedBox(width: AppSpacing.xs)),
+          TextSpan(text: HistoryLabels.ltr(short), style: strong),
+          TextSpan(text: full.substring(at + short.length)),
+        ],
+      ),
+    );
+  }
+
+  // O verde do "sobe" com o contraste de leitura (4,5:1) sobre o aviso.
+  static Color _legible(Color color, Color background, Brightness brightness) {
+    final target = brightness == Brightness.dark ? Colors.white : Colors.black;
+    var result = color;
+    for (var i = 0; i < 10 && _contrast(result, background) < 4.5; i++) {
+      result = Color.lerp(result, target, 0.1)!;
+    }
+    return result;
+  }
+
+  static double _contrast(Color a, Color b) {
+    final la = a.computeLuminance();
+    final lb = b.computeLuminance();
+    return (math.max(la, lb) + 0.05) / (math.min(la, lb) + 0.05);
   }
 }

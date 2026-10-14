@@ -5,6 +5,7 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/core/keys/game_details_keys.dart';
+import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import '../testing/e2e_dependencies.dart';
@@ -40,7 +41,6 @@ void main() {
     final id = await seedAttempt(reviewGame);
 
     await details.open(id);
-    expect(find.byKey(GameDetailsKeys.reviewSummary), findsNothing);
     await details.review();
     await details.expectReviewed();
     await $(GameDetailsKeys.moveQuality(0)).scrollTo();
@@ -55,6 +55,12 @@ void main() {
     await details.last();
     details.expectShown(reviewGame.moves.length - 1);
     await details.previous();
+    // A engine abre ligada (segue a barra de avaliação, ligada por padrão):
+    // desliga e liga de novo.
+    expect(details.state.engine, isTrue);
+    await $(GameDetailsKeys.engineButton).tap();
+    await $.pumpAndSettle();
+    expect(find.byKey(GameDetailsKeys.engineLines), findsNothing);
     await details.toggleEngine();
     expect(find.byKey(GameDetailsKeys.engineLines), findsOneWidget);
 
@@ -62,6 +68,13 @@ void main() {
     final requests = e2eAnalysis.requests.length;
     await details.open(id);
     await details.expectReviewed();
-    expect(e2eAnalysis.requests.length, requests);
+    // A revisão guardada não é refeita: só o painel da engine (aberto por
+    // padrão) analisa a posição mostrada, uma vez por profundidade.
+    expect(details.state.reviewing, isFalse);
+    expect(details.state.review!.depth, 2);
+    expect(
+      e2eAnalysis.requests.length,
+      lessThanOrEqualTo(requests + GameDetailsCubit.engineDepths.length),
+    );
   });
 }

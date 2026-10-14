@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/endgame_difficulty.dart';
@@ -28,7 +29,7 @@ class CatalogScreen extends StatelessWidget {
     final categories = state.categories;
     return Scaffold(
       key: CatalogKeys.screen,
-      appBar: AppBar(title: Text(context.l10n.catalogTitle)),
+      appBar: LucenaAppBar(title: Text(context.l10n.catalogTitle)),
       body: Column(
         children: [
           const GoalFilterBar(),

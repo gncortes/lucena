@@ -15,4 +15,8 @@ abstract class SpeedrunRepository {
   /// As tentativas de [speedrunId], da mais antiga para a mais recente, com as
   /// partidas de cada uma.
   Future<List<SpeedrunAttempt>> attempts(String speedrunId);
+
+  /// Todas as tentativas, de qualquer speedrun, da mais antiga para a mais
+  /// recente, com as partidas de cada uma.
+  Future<List<SpeedrunAttempt>> allAttempts();
 }
