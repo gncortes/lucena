@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
+import 'dart:math';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
+import '../../../testing/fakes/fake_opponent_repository.dart';
 
 /// Teste de fumaça (T71): cada roteiro de `assets/lessons/roteiros/`, com as
 /// falas e a tabela KPK de verdade, do começo ao fim pelo caminho certo e,
@@ -104,11 +106,16 @@ class _Run {
     await action();
   }
 
-  /// Um lance do aluno na prática contra a máquina: o melhor pela tabela.
+  /// Um lance do aluno na prática contra a máquina: o melhor pela tabela;
+  /// no objetivo `mate`, o que encurrala o rei ([_mateMove]).
   String practiceMove() {
     final position = GameRules.fromFen(s.fen)!;
+    if (example.goal == ScriptGoal.mate) return _mateMove(position, seen);
     return MachineMove.choose(_kpk, position)!;
   }
+
+  /// As posições da prática de mate já vistas (para não repetir).
+  final seen = <String>{};
 
   /// O caminho mais curto da peça até a estrela mais perto (busca em
   /// largura com a vez parada, como na tarefa).
@@ -213,6 +220,73 @@ class _Run {
   }
 }
 
+/// O aluno das práticas de mate (sem motor): dá mate se puder; senão, entre
+/// os lances que não afogam nem deixam peça sem defesa ao alcance do rei, o
+/// que deixa o rei com menos casas livres e o próprio rei mais perto dele.
+String _mateMove(Position position, Set<String> seen) {
+  final us = position.turn;
+  final candidates = <(int, String)>[];
+  for (final MapEntry(key: from, value: targets)
+      in position.legalMoves.entries) {
+    for (final to in targets.squares) {
+      final move = NormalMove(from: from, to: to);
+      final next = position.play(move);
+      if (next.isCheckmate) return move.uci;
+      if (next.isStalemate) continue;
+      final hangs = next.legalMoves.entries.any(
+        (entry) => entry.value.squares.any(
+          (square) => next.board.sideAt(square) == us,
+        ),
+      );
+      if (hangs) continue;
+      final key = next.fen.split(' ').take(4).join(' ');
+      final score =
+          _kingRoom(next, us) * 10 +
+          _distance(next.board.kingOf(us)!, next.board.kingOf(us.opposite)!) +
+          (seen.contains(key) ? 1000 : 0);
+      candidates.add((score, move.uci));
+    }
+  }
+  candidates.sort((a, b) {
+    final byScore = a.$1.compareTo(b.$1);
+    return byScore != 0 ? byScore : a.$2.compareTo(b.$2);
+  });
+  final best = candidates.first.$2;
+  seen.add(position.play(Move.parse(best)!).fen.split(' ').take(4).join(' '));
+  return best;
+}
+
+/// As casas que o rei de quem defende alcança sem passar por casa atacada.
+int _kingRoom(Position position, Side attacker) {
+  final board = position.board;
+  final king = board.kingOf(attacker.opposite)!;
+  final occupied = board.occupied.withoutSquare(king);
+  var attacked = SquareSet.empty;
+  for (final square in board.bySide(attacker).squares) {
+    attacked = attacked.union(switch (board.roleAt(square)!) {
+      Role.king => kingAttacks(square),
+      Role.queen => queenAttacks(square, occupied),
+      Role.rook => rookAttacks(square, occupied),
+      Role.bishop => bishopAttacks(square, occupied),
+      Role.knight => knightAttacks(square),
+      Role.pawn => pawnAttacks(attacker, square),
+    });
+  }
+  final room = <Square>{king};
+  final queue = [king];
+  while (queue.isNotEmpty) {
+    for (final next in kingAttacks(queue.removeLast()).squares) {
+      if (attacked.has(next) || room.contains(next)) continue;
+      room.add(next);
+      queue.add(next);
+    }
+  }
+  return room.length;
+}
+
+int _distance(Square a, Square b) =>
+    max((a.file - b.file).abs(), (a.rank - b.rank).abs());
+
 /// Abre a lição [id] no cubit, com os assets de verdade.
 Future<(_Run, FakeLessonSource)> _open(String id) async {
   final repository = AssetLessonScriptRepository(AssetService(_DiskBundle()));
@@ -227,6 +301,9 @@ Future<(_Run, FakeLessonSource)> _open(String id) async {
     scripts: repository,
     kpk: FakeKpkRepository(_kpk),
     source: source,
+    // No objetivo `mate`, o motor de mentira: dá mate se puder, senão o
+    // primeiro lance em ordem.
+    opponent: FakeOpponentRepository(),
     delay: (_) => Future.value(),
     // A demonstração não anda sozinha: o teste clica.
     timer: (_, _) => Timer(const Duration(days: 1), () {}),
