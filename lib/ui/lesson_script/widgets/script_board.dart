@@ -27,8 +27,13 @@ abstract final class ScriptShapes {
 }
 
 /// O tabuleiro da lição roteirizada: mostra a posição do estado, anima o que
-/// a [LessonScriptState.transition] pede (lance, lances rápidos, corte com
-/// esmaecer, volta) e só desenha setas e marcas quando a peça já chegou.
+/// a [LessonScriptState.transition] pede (lance, lances rápidos, posição nova
+/// em crossfade, volta) e só desenha setas e marcas quando a peça já chegou.
+///
+/// Posição nova que não vem de lance (exemplo, parte, demonstração, troca de
+/// lado, voltar ao início) é sempre [TransitionKind.jump] ou uma troca de
+/// orientação: o tabuleiro de antes se dissolve direto no novo, sem vão vazio
+/// nem giro (Gabriel, 14/10/2026). Lance da mesma linha desliza a peça.
 class ScriptBoard extends StatefulWidget {
   const ScriptBoard({
     required this.state,
@@ -40,12 +45,9 @@ class ScriptBoard extends StatefulWidget {
     super.key,
   });
 
-  /// O tempo de cada lance rápido (`seq`) e do esmaecer do corte.
+  /// O tempo de cada lance rápido (`seq`) e do crossfade da posição nova.
   static const seqStep = AppMotion.component;
-  static const fade = AppMotion.state;
-
-  /// O giro do tabuleiro quando o aluno troca de lado.
-  static const flip = AppMotion.screen;
+  static const fade = AppMotion.component;
 
   /// O tempo até as setas aparecerem depois de um lance (o lance mais 120 ms de respiro; protótipo, 420 ms).
   static final shapesDelay = Duration(
@@ -72,13 +74,14 @@ class _ScriptBoardState extends State<ScriptBoard> {
   int _run = 0;
   bool _busy = false;
   bool _shapes = true;
-  double _opacity = 1;
   Side _orientation = Side.white;
 
-  /// Meia volta enquanto o tabuleiro gira; no fim, a orientação troca e o
-  /// giro volta a zero sem animar (as peças ficam de pé).
-  double _turns = 0;
-  bool _spinning = false;
+  /// As marcas desenhadas no último quadro (o crossfade as leva junto).
+  Set<Shape> _drawn = const {};
+
+  /// O tabuleiro de antes, por cima do novo, enquanto se dissolve.
+  StaticChessboard? _ghost;
+  int _ghostId = 0;
 
   @override
   void initState() {
@@ -125,9 +128,14 @@ class _ScriptBoardState extends State<ScriptBoard> {
     super.didUpdateWidget(old);
     final s = widget.state;
     final flipping = s.orientation != old.state.orientation;
-    if (flipping) unawaited(_flip(s.orientation));
-    if (s.transition.id != old.state.transition.id || s.fen != old.state.fen) {
-      unawaited(_apply(s, flipping: flipping));
+    final moved =
+        s.transition.id != old.state.transition.id || s.fen != old.state.fen;
+    if (flipping || (moved && s.transition.kind == TransitionKind.jump)) {
+      _crossfade();
+      _orientation = s.orientation;
+    }
+    if (moved) {
+      unawaited(_apply(s));
     } else if (!_busy) {
       _controller.updatePosition(
         _data(s.fen, last: s.lastMove),
@@ -179,53 +187,28 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   bool _alive(int run) => mounted && run == _run;
 
-  Future<void> _flip(Side side) async {
-    if (AppMotion.reduced(context)) {
-      setState(() => _orientation = side);
-      return;
-    }
-    setState(() {
-      _spinning = true;
-      _turns = 0.5;
-    });
-    await _wait(ScriptBoard.flip);
-    if (!mounted || widget.state.orientation != side) return;
-    setState(() {
-      _spinning = false;
-      _turns = 0;
-      _orientation = side;
-    });
+  /// Põe por cima uma cópia fixa do que está na tela, que se dissolve no
+  /// tabuleiro novo embaixo (sem movimento reduzido, troca seca).
+  void _crossfade() {
+    if (AppMotion.reduced(context)) return;
+    final game = _controller.game;
+    _ghostId++;
+    _ghost = StaticChessboard(
+      size: widget.size,
+      orientation: _orientation,
+      fen: game.fen,
+      lastMove: game.lastMove,
+      shapes: _drawn,
+      settings: StaticChessboardSettings.fromBoardSettings(_boardSettings),
+    );
   }
 
   Future<void> _wait(Duration duration) => Future<void>.delayed(duration);
 
-  Future<void> _apply(LessonScriptState s, {bool flipping = false}) async {
+  Future<void> _apply(LessonScriptState s) async {
     final run = ++_run;
     final t = s.transition;
     final from = t.fromFen;
-    // A troca de lado é a meia-volta à vista (E7d, E12d2): a posição nova
-    // entra de uma vez e gira, sem esmaecer (Gabriel, 14/10/2026).
-    if (flipping && t.kind == TransitionKind.jump) {
-      final start = t.ucis.isEmpty ? s.fen : (from ?? s.fen);
-      setState(() {
-        _busy = true;
-        _shapes = false;
-        _opacity = 1;
-      });
-      _controller.updatePosition(
-        _data(start, interactive: false),
-        animate: false,
-        resetPremove: true,
-      );
-      if (t.ucis.isEmpty) {
-        await _finish(run, s, ScriptBoard.flip);
-      } else {
-        await _wait(ScriptBoard.flip);
-        if (!_alive(run)) return;
-        await _play(run, s, start, t.ucis, fade: true);
-      }
-      return;
-    }
     switch (t.kind) {
       case TransitionKind.none:
         _busy = false;
@@ -234,10 +217,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
           animate: false,
           resetPremove: true,
         );
-        setState(() {
-          _shapes = true;
-          _opacity = 1;
-        });
+        setState(() => _shapes = true);
       case TransitionKind.move || TransitionKind.back:
         _controller.updatePosition(
           _data(s.fen, interactive: false, last: s.lastMove),
@@ -248,20 +228,17 @@ class _ScriptBoardState extends State<ScriptBoard> {
       case TransitionKind.seq:
         await _play(run, s, from ?? s.fen, t.ucis, fade: false);
       case TransitionKind.jump:
+        // A posição nova entra já embaixo da cópia que se dissolve.
+        final start = t.ucis.isEmpty ? s.fen : (from ?? s.fen);
         setState(() {
           _busy = true;
           _shapes = false;
-          _opacity = 0;
         });
-        await _wait(ScriptBoard.fade);
-        if (!_alive(run)) return;
-        final start = t.ucis.isEmpty ? s.fen : (from ?? s.fen);
         _controller.updatePosition(
           _data(start, interactive: false),
           animate: false,
           resetPremove: true,
         );
-        setState(() => _opacity = 1);
         if (t.ucis.isEmpty) {
           await _finish(run, s, ScriptBoard.fade);
         } else {
@@ -359,39 +336,42 @@ class _ScriptBoardState extends State<ScriptBoard> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    // No giro, os cantos do tabuleiro saem do quadrado: o corte os segura
-    // dentro dele (nada passa por cima da linha do Viktor nem do balão).
-    return ClipRect(
-      clipBehavior: _spinning ? Clip.hardEdge : Clip.none,
-      child: AnimatedRotation(
-        turns: _turns,
-        duration: _spinning ? ScriptBoard.flip : Duration.zero,
-        curve: AppMotion.move,
-        child: _faded(colors),
-      ),
-    );
-  }
-
-  Widget _faded(ColorScheme colors) {
-    return AnimatedOpacity(
-      opacity: _opacity,
-      duration: ScriptBoard.fade,
-      // O tabuleiro não espelha em idiomas da direita para a esquerda.
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Chessboard(
-          key: LessonScriptKeys.board,
-          size: widget.size,
-          controller: _controller,
-          settings: _boardSettings,
-          orientation: _orientation,
-          shapes: _shapeSet(colors),
-          onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
-          onTouchedSquare: widget.state.touching && widget.onSquare != null
-              ? (square) => widget.onSquare!(square.name)
-              : null,
-        ),
+    _drawn = _shapeSet(Theme.of(context).colorScheme);
+    final ghost = _ghost;
+    // O tabuleiro não espelha em idiomas da direita para a esquerda.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Stack(
+        children: [
+          Chessboard(
+            key: LessonScriptKeys.board,
+            size: widget.size,
+            controller: _controller,
+            settings: _boardSettings,
+            orientation: _orientation,
+            shapes: _drawn,
+            onMove: (move, {viaDragAndDrop}) => widget.onMove(move.uci),
+            onTouchedSquare: widget.state.touching && widget.onSquare != null
+                ? (square) => widget.onSquare!(square.name)
+                : null,
+          ),
+          if (ghost != null)
+            Positioned.fill(
+              child: IgnorePointer(
+                key: LessonScriptKeys.crossfade,
+                child: TweenAnimationBuilder<double>(
+                  // Cópia nova, animação nova (troca antes do fim recomeça).
+                  key: ValueKey(_ghostId),
+                  tween: Tween(begin: 1, end: 0),
+                  duration: ScriptBoard.fade,
+                  onEnd: () => setState(() => _ghost = null),
+                  builder: (_, opacity, child) =>
+                      Opacity(opacity: opacity, child: child),
+                  child: ghost,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

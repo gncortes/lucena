@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 abstract final class LessonScriptKeys {
   static const screen = Key('lessonScript.screen');
   static const board = Key('lessonScript.board');
+
+  /// O tabuleiro de antes, enquanto se dissolve no novo (crossfade).
+  static const crossfade = Key('lessonScript.crossfade');
   static const speech = Key('lessonScript.speech');
   static const characterBar = Key('lessonScript.characterBar');
   static const soundButton = Key('lessonScript.soundButton');

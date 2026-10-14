@@ -3,6 +3,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 
@@ -179,39 +180,107 @@ void main() {
     });
   });
 
-  testWidgets('na meia-volta, o tabuleiro gira cortado no quadrado', (
-    tester,
-  ) async {
-    Widget at(Side side) => MaterialApp(
+  group('crossfade', () {
+    const start = '4k3/8/8/8/8/8/8/4K3 w - - 0 1';
+    const other = '8/8/4k3/8/8/4K3/6P1/8 w - - 0 1';
+
+    Widget at(LessonScriptState state) => MaterialApp(
       home: Scaffold(
         body: ScriptBoard(
-          state: LessonScriptState(
-            ready: true,
-            fen: '4k3/8/8/8/8/8/8/4K3 w - - 0 1',
-            orientation: side,
-          ),
+          state: state,
           size: size,
           settings: const BoardSettings(),
           onMove: (_) {},
         ),
       ),
     );
-    Clip clip() => tester
-        .widget<ClipRect>(
-          find
-              .ancestor(
-                of: find.byType(AnimatedRotation),
-                matching: find.byType(ClipRect),
-              )
-              .first,
+
+    LessonScriptState scene(
+      String fen,
+      TransitionKind kind, {
+      int id = 1,
+      Side side = Side.white,
+      List<String> ucis = const [],
+    }) => LessonScriptState(
+      ready: true,
+      fen: fen,
+      orientation: side,
+      transition: ScriptTransition(
+        id: id,
+        kind: kind,
+        fromFen: start,
+        ucis: ucis,
+      ),
+    );
+
+    double ghostOpacity(WidgetTester tester) => tester
+        .widget<Opacity>(
+          find.descendant(
+            of: find.byKey(LessonScriptKeys.crossfade),
+            matching: find.byType(Opacity),
+          ),
         )
-        .clipBehavior;
-    await tester.pumpWidget(at(Side.white));
-    expect(clip(), Clip.none);
-    await tester.pumpWidget(at(Side.black));
-    await tester.pump(ScriptBoard.flip ~/ 2);
-    expect(clip(), Clip.hardEdge);
-    await tester.pumpAndSettle();
-    expect(clip(), Clip.none);
+        .opacity;
+
+    Chessboard board(WidgetTester tester) =>
+        tester.widget<Chessboard>(find.byKey(LessonScriptKeys.board));
+
+    testWidgets('posição nova: o antigo se dissolve sobre o novo, sem vão', (
+      tester,
+    ) async {
+      await tester.pumpWidget(at(scene(start, TransitionKind.none, id: 0)));
+      expect(find.byKey(LessonScriptKeys.crossfade), findsNothing);
+      await tester.pumpWidget(at(scene(other, TransitionKind.jump)));
+      await tester.pump(ScriptBoard.fade ~/ 2);
+      // O novo já está embaixo, inteiro; o antigo vai pela metade.
+      expect(board(tester).controller.game.fen, other);
+      expect(
+        tester.widget<StaticChessboard>(find.byType(StaticChessboard)).fen,
+        start,
+      );
+      expect(ghostOpacity(tester), closeTo(0.5, 0.05));
+      expect(find.byType(AnimatedRotation), findsNothing);
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonScriptKeys.crossfade), findsNothing);
+    });
+
+    testWidgets('troca de lado: crossfade, já com as pretas embaixo', (
+      tester,
+    ) async {
+      await tester.pumpWidget(at(scene(start, TransitionKind.none, id: 0)));
+      await tester.pumpWidget(
+        at(scene(other, TransitionKind.jump, side: Side.black)),
+      );
+      await tester.pump(ScriptBoard.fade ~/ 2);
+      expect(board(tester).orientation, Side.black);
+      expect(
+        tester
+            .widget<StaticChessboard>(find.byType(StaticChessboard))
+            .orientation,
+        Side.white,
+      );
+      expect(ghostOpacity(tester), closeTo(0.5, 0.05));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LessonScriptKeys.crossfade), findsNothing);
+    });
+
+    testWidgets('lance da mesma linha: a peça desliza, sem crossfade', (
+      tester,
+    ) async {
+      await tester.pumpWidget(at(scene(start, TransitionKind.none, id: 0)));
+      await tester.pumpWidget(
+        at(
+          scene(
+            '4k3/8/8/8/8/8/3K4/8 b - - 1 1',
+            TransitionKind.move,
+            ucis: const ['e1d2'],
+          ),
+        ),
+      );
+      await tester.pump(ScriptBoard.fade ~/ 2);
+      expect(find.byKey(LessonScriptKeys.crossfade), findsNothing);
+      await tester.pump(ScriptBoard.shapesDelay);
+      await tester.pumpAndSettle();
+    });
   });
 }
