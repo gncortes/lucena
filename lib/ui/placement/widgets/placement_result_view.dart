@@ -15,6 +15,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O fim do teste: a faixa (com o intervalo numa régua), o mapa do que o
 /// jogador domina e do que falta, os três primeiros passos do roteiro e, fixo
@@ -459,8 +460,8 @@ Color _color(ColorScheme colors, NodeState state) => switch (state) {
 
 // "Para estudar": âmbar, um aviso sem cara de erro.
 Color _amber(ColorScheme colors) => colors.brightness == Brightness.dark
-    ? Colors.amber.shade300
-    : Colors.amber.shade900;
+    ? AppColors.amberLight
+    : AppColors.amberDark;
 
 String _label(AppLocalizations l10n, NodeState state) => switch (state) {
   NodeState.mastered => l10n.placementMastered,

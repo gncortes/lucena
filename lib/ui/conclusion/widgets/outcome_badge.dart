@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O que o ícone animado desenha.
 enum OutcomeMark { check, cross, record }
@@ -207,7 +208,7 @@ class _MarkPainter extends CustomPainter {
     final origin = center - Offset(radius, radius);
     Offset at(double x, double y) => origin + Offset(w * x, w * y);
     final stroke = Paint()
-      ..color = Colors.white
+      ..color = AppColors.white
       ..style = PaintingStyle.stroke
       ..strokeWidth = w * 0.11
       ..strokeCap = StrokeCap.round
@@ -250,7 +251,7 @@ class _MarkPainter extends CustomPainter {
           fontFamily: icon.fontFamily,
           package: icon.fontPackage,
           fontSize: radius * 1.25 * scale,
-          color: Colors.white,
+          color: AppColors.white,
         ),
       ),
     )..layout();

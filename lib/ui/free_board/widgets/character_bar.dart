@@ -21,6 +21,7 @@ import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/sound_off_icon.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
 /// última fala, que aparece letra por letra. O relógio dele fica na linha de
@@ -398,7 +399,7 @@ class _NameTag extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0x00000000), Color(0xB3000000)],
+            colors: [AppColors.clear, AppColors.scrimBottom],
           ),
         ),
         child: Text(
@@ -408,7 +409,7 @@ class _NameTag extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelMedium
-              ?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+              ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
         ),
       ),
     );

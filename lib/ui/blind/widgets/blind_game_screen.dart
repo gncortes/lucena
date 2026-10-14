@@ -37,6 +37,7 @@ import '../../../domain/models/clock_settings.dart';
 import '../../core/widgets/game_clock.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../core/widgets/versus_intro.dart';
+import '../../core/theme/app_colors.dart';
 
 /// As frases do modo às cegas no idioma da tela.
 BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
@@ -654,10 +655,10 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                 opponentName: state.kind.label(l10n, level: state.level),
                 opponentRating: state.level,
                 opponentAvatar: const ColoredBox(
-                  color: Color(0xFF312E2B),
+                  color: AppColors.inkWarm,
                   child: Icon(
                     Icons.record_voice_over_outlined,
-                    color: Colors.white,
+                    color: AppColors.white,
                     size: 32,
                   ),
                 ),
@@ -863,14 +864,14 @@ class _BottomSheetFrame extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.light
-                ? Colors.white
+                ? AppColors.white
                 : colors.surfaceContainerLow,
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(AppShape.large),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: AppColors.black.withValues(alpha: 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, -2),
               ),
@@ -1022,7 +1023,7 @@ class _TalkBarState extends State<_TalkBar> {
       shaderCallback: (bounds) => const LinearGradient(
         begin: AlignmentDirectional.centerStart,
         end: AlignmentDirectional.centerEnd,
-        colors: [Colors.white, Colors.white, Colors.transparent],
+        colors: [AppColors.white, AppColors.white, Colors.transparent],
         stops: [0, 0.88, 1],
       ).createShader(bounds, textDirection: Directionality.of(context)),
       blendMode: BlendMode.dstIn,
@@ -1254,8 +1255,8 @@ class _TalkBarState extends State<_TalkBar> {
               key: BlindKeys.typeSend,
               tooltip: l10n.blindTypeSend,
               icon: Icons.send,
-              color: Colors.green.shade600,
-              foreground: Colors.white,
+              color: AppColors.greenBlind,
+              foreground: AppColors.white,
               onPressed: canPlay ? _send : null,
             );
     }
@@ -1672,7 +1673,7 @@ class _MicButtonState extends State<_MicButton> {
             color: !enabled
                 ? colors.surfaceContainerHighest
                 : listening
-                ? Colors.green.shade600
+                ? AppColors.greenBlind
                 : colors.primary,
           ),
           child: Icon(
@@ -1681,7 +1682,7 @@ class _MicButtonState extends State<_MicButton> {
             color: !enabled
                 ? colors.onSurfaceVariant
                 : listening
-                ? Colors.white
+                ? AppColors.white
                 : colors.onPrimary,
           ),
         ),
