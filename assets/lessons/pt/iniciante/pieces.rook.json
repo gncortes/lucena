@@ -17,7 +17,7 @@
   "rot.ideia.ex1.l5": "Cada lance segue uma linha só. Para mudar de direção, a torre precisa de outro lance.",
   "rot.ideia.ex1.l6": "Guarde a ideia: a torre anda em linha reta, quantas casas quiser.",
   "rot.ideia.ex1.l7": "Agora vamos ver o que acontece quando há uma peça no caminho.",
-  "rot.ideia.ex2.e1": "Agora há um peão branco em c6, na coluna da torre.",
+  "rot.ideia.ex2.e1": "Agora há um peão branco em c6, na coluna da torre. Por enquanto, ele é só um obstáculo.",
   "rot.ideia.ex2.e2": "A torre não pula peças: o peão fecha o caminho dela pela coluna c.",
   "rot.ideia.ex2.e3": "Ela sobe até c5, logo abaixo do peão, e para ali.",
   "rot.ideia.ex2.e4": "Também não pode parar em c6: a casa já tem uma peça do seu próprio lado.",
@@ -54,7 +54,7 @@
   "rot.ideia.ex2.l5": "Ela chega a c5, mas o peão continua na frente.",
   "rot.ideia.ex2.l6": "Ainda faltariam três lances para dar a volta. Sair logo da coluna c é mais rápido.",
   "rot.ideia.ex2.l7": "Guarde a ideia: se uma peça fecha a linha, a torre procura outra linha livre.",
-  "rot.ideia.ex2.l8": "Você já viu as duas regras da torre: linha reta e caminho livre. Agora vou mostrá-las em outras posições.",
+  "rot.ideia.ex2.l8": "Você já viu as duas regras da torre: linha reta e caminho livre. Agora, outras posições.",
   "rot.demos.cantoACanto.e1": "Veja a torre no canto, em h8.",
   "rot.demos.cantoACanto.e2": "Ela vai até o canto oposto, a1, em só dois lances.",
   "rot.demos.cantoACanto.l1": "Primeiro ela cruza a oitava fileira inteira, até a8.",
@@ -69,10 +69,10 @@
   "rot.demos.contorno.l1": "Ela sai da coluna h e vai para g1.",
   "rot.demos.contorno.l2": "Sobe pela coluna g, que está livre.",
   "rot.demos.contorno.l3": "E dá um passo para o lado, até h8.",
-  "rot.demos.contorno.l4": "Sempre há um caminho: saia da linha fechada, ande pela linha livre e só então vá para a casa do alvo.",
+  "rot.demos.contorno.l4": "Sempre há um caminho: saia da linha fechada, ande pela linha livre e só então vá até o alvo.",
   "rot.demos.contorno.l5": "Agora é a sua vez: nas próximas posições, leve a torre até as estrelas.",
   "rot.pratica.estrelas1.enunciado": "Leve a torre até as três estrelas, parando em cada uma, na ordem que quiser.",
   "rot.pratica.estrelas1.fim": "Perfeito. Viu como ela cruza o tabuleiro em um lance só?",
   "rot.pratica.estrelas2.enunciado": "Agora o peão em f6 está no caminho. Leve a torre até as estrelas.",
-  "rot.pratica.estrelas2.fim": "Muito bem. Você já sabe mover a torre: linha reta, caminho livre e, se algo fecha a passagem, um contorno."
+  "rot.pratica.estrelas2.fim": "Muito bem. Você já sabe mover a torre: linha reta, caminho livre e, se algo fecha, um contorno."
 }
