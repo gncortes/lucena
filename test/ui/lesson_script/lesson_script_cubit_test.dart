@@ -534,11 +534,24 @@ void main() {
           await r.anyMove();
         }
         expect(r.s.phase, ScriptPhase.livreFim);
-        // Não cumpriu: o Viktor convida a ver a linha principal.
-        expect(r.s.speech.last, startsWith('verLinha.ganhar'));
+        // Primeiro a fala do fim, sozinha; o convite vem no passo seguinte.
+        expect(r.s.speech, hasLength(1));
+        expect(r.s.speech.single, startsWith('fim.'));
+        expect(r.s.primary, ScriptAction.continuar);
+        expect(r.s.secondary, isNull);
+        await r.next();
+        expect(r.s.phase, ScriptPhase.livreFim);
+        // Não cumpriu: o Viktor convida a ver a linha principal, num passo
+        // só com a frase do link.
+        expect(r.s.speech, [startsWith('verLinha.ganhar')]);
         expect(r.s.primary, ScriptAction.linhaPrincipal);
         expect(r.s.secondary, isNull);
         expect(r.s.movable, isNull);
+        // ◀ volta à fala do fim.
+        r.cubit.back();
+        expect(r.s.speech.single, startsWith('fim.'));
+        expect(r.s.primary, ScriptAction.continuar);
+        await r.next();
         await r.cubit.onAction(ScriptAction.linhaPrincipal);
         expect(r.s.phase, ScriptPhase.linha);
         expect(r.s.transition.kind, TransitionKind.jump);
@@ -1296,7 +1309,7 @@ void main() {
       expect(game(r).last.result, isNotNull);
       await r.cubit.goToMove(last.id);
       expect(r.s.phase, ScriptPhase.livreFim);
-      expect(r.s.primary, ScriptAction.linhaPrincipal);
+      expect(r.s.primary, ScriptAction.continuar);
       expect(r.s.movable, isNull);
     });
 

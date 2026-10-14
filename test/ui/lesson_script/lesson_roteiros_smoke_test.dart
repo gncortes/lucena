@@ -482,6 +482,11 @@ Future<({bool ended, bool branched})> _freeGame(
             : marked.isEmpty)) {
           run.problems.add('${run.where}: "?" fora do erro previsto ($marked)');
         }
+        if (s.primary == ScriptAction.continuar) {
+          // A fala do fim; o convite com o link vem no passo seguinte.
+          await run.act('continuar', () => cubit.onAction(s.primary!));
+          continue;
+        }
         if (s.primary != ScriptAction.linhaPrincipal) {
           run.problems.add('${run.where}: fim sem a linha principal');
           return (ended: false, branched: branched);
