@@ -29,6 +29,9 @@ abstract class LessonSource {
 
   Future<void> saveCheckpoint(LessonCheckpoint checkpoint);
 
+  /// Descarta o ponto de retomada (ele aponta para o que não existe mais).
+  Future<void> clearCheckpoint();
+
   /// Sair pelo voltar: o passo fica guardado, mas o app não reabre na aula.
   Future<void> leave();
 
@@ -104,6 +107,12 @@ class SchoolLessonSource implements LessonSource {
   }
 
   @override
+  Future<void> clearCheckpoint() async {
+    final progress = await _progress.load();
+    await _progress.save(progress.copyWith(clearOngoing: true));
+  }
+
+  @override
   Future<void> leave() async {
     final progress = await _progress.load();
     final ongoing = progress.ongoing;
@@ -176,6 +185,12 @@ class EndgameLessonSource implements LessonSource {
   Future<void> saveCheckpoint(LessonCheckpoint checkpoint) async {
     final progress = await _progress.load();
     await _progress.save(progress.copyWith(ongoing: checkpoint));
+  }
+
+  @override
+  Future<void> clearCheckpoint() async {
+    final progress = await _progress.load();
+    await _progress.save(progress.copyWith(clearOngoing: true));
   }
 
   @override

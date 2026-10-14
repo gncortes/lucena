@@ -407,8 +407,25 @@ class _LessonScreenState extends State<LessonScreen>
   // O estado anterior, para saber o que mudou.
   LessonState _previous = const LessonState();
 
+  /// A parte (ou a aula) é tocada pela tela de roteiro: troca a rota.
+  void _openScript(LessonState state) {
+    final id = state.lesson?.id;
+    if (id == null) return;
+    final part = state.part;
+    final route = state.endgame && part != null
+        ? Routes.endgameLessonScript(id, part: part.id)
+        : Routes.lessonScript(id);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.pushReplacement(route);
+    });
+  }
+
   void _onState(BuildContext context, LessonState state) {
     final previous = _previous;
+    if (state.toScript) {
+      _openScript(state);
+      return;
+    }
     var cleared = false;
     // O 1º estado (o anterior ainda é o vazio) só povoa a tela: não há
     // variante aberta para fechar.
@@ -1141,7 +1158,7 @@ class _LessonScreenState extends State<LessonScreen>
     BoardSettings boardSettings,
   ) {
     final l10n = context.l10n;
-    if (!state.ready) return const SizedBox.shrink();
+    if (!state.ready || state.toScript) return const SizedBox.shrink();
     if (state.missing) {
       return Center(child: Text(l10n.lessonMissing, key: LessonKeys.missing));
     }

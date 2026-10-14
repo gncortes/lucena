@@ -394,6 +394,63 @@ void main() {
     });
   });
 
+  test('tarefa com resposta (perpétuo): a resposta é das pretas, com o '
+      'número do lance do aluno, e a linha segue até o fim', () async {
+    final r = await _Rig.open({
+      'licao': 'rules.test',
+      'parte': 'licao',
+      'etapas': [
+        {
+          'id': 'pratica',
+          'exemplos': [
+            {
+              'id': 'perpetuo',
+              'fen': '1k6/1p6/8/8/8/7r/PPP3q1/1K1Q4 w - - 0 1',
+              'vira': false,
+              'objetivo': 'tarefa',
+              'pratica': {
+                'tipo': 'lance',
+                'pecas': ['d1'],
+                'linha': [
+                  {
+                    'certos': ['d1d8'],
+                    'resposta': 'b8a7',
+                  },
+                  {
+                    'certos': ['d8a5'],
+                    'resposta': 'a7b8',
+                  },
+                  {
+                    'certos': ['a5d8'],
+                  },
+                ],
+                't': 'p.t',
+                'fim': 'p.fim',
+                'erros': <String, dynamic>{},
+              },
+              'entrada': <dynamic>[],
+              'linha': <dynamic>[],
+              'fim': 'etapa',
+            },
+          ],
+        },
+      ],
+    });
+    await r.cubit.onMove('d1d8');
+    expect(r.s.lastMove, 'b8a7');
+    await r.cubit.onMove('d8a5');
+    expect(r.s.lastMove, 'a7b8');
+    await r.cubit.onMove('a5d8');
+    expect(r.s.phase, ScriptPhase.praticaFim);
+    expect(r.s.moves.map((m) => (m.number, m.side, m.san)), [
+      (1, Side.white, 'Qd8+'),
+      (1, Side.black, 'Ka7'),
+      (2, Side.white, 'Qa5+'),
+      (2, Side.black, 'Kb8'),
+      (3, Side.white, 'Qd8+'),
+    ]);
+  });
+
   test('tarefa com a captura de volta das pretas na lista', () async {
     const start = '4k3/8/4p3/8/8/8/8/3RK3 w - - 0 1';
     final r = await _Rig.open({

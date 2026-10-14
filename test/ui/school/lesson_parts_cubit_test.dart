@@ -402,4 +402,83 @@ void main() {
       expect(cubit.state.current?.id, 'end');
     },
   );
+
+  group('P1: reabrir numa parte que virou roteiro', () {
+    EndgameTrail trailWith(List<LessonPart> parts) => EndgameTrail(
+      modules: [
+        EndgameModule(
+          id: 'rook',
+          lessons: [
+            EndgameLesson(
+              id: 'rook.lucena',
+              module: 'rook',
+              lesson: Lesson.parted(id: 'rook.lucena', parts: parts),
+              exercises: const [],
+              passScore: 0,
+              keyPositions: const [],
+              practice: const Practice(fen: fen, goal: PositionGoal.win),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    Future<LessonCubit> reopen(List<LessonPart> parts) async {
+      final cubit = LessonCubit(
+        source: EndgameLessonSource(
+          FakeEndgameLessonRepository(trail: trailWith(parts), texts: texts),
+          progress,
+        ),
+        characters: FakeCharacterRepository(),
+        opponent: FakeOpponentRepository(),
+        now: now,
+        replyDelay: Duration.zero,
+      );
+      addTearDown(cubit.close);
+      // O app reabre sem a parte: ela vem do checkpoint.
+      await cubit.load('rook.lucena', 'en');
+      return cubit;
+    }
+
+    setUp(() {
+      progress.saved = const EndgameProgress(
+        ongoing: LessonCheckpoint(
+          lessonId: 'rook.lucena',
+          part: 'roteiro',
+          step: 3,
+        ),
+      );
+    });
+
+    test(
+      'a parte com roteiro manda para a tela de roteiro, sem erro',
+      () async {
+        final cubit = await reopen(const [
+          LessonPart(
+            id: 'bridge',
+            steps: [TalkStep(id: 'end', fen: fen)],
+          ),
+          LessonPart(id: 'roteiro', steps: [], script: 'roteiro.json'),
+        ]);
+        expect(cubit.state.toScript, isTrue);
+        expect(cubit.state.part?.id, 'roteiro');
+        expect(cubit.state.lesson?.id, 'rook.lucena');
+        // O roteiro retoma pelo checkpoint dele: não se descarta.
+        expect(progress.saved.ongoing?.part, 'roteiro');
+      },
+    );
+
+    test('a parte sem passos nem roteiro descarta o checkpoint', () async {
+      final cubit = await reopen(const [
+        LessonPart(
+          id: 'bridge',
+          steps: [TalkStep(id: 'end', fen: fen)],
+        ),
+        LessonPart(id: 'roteiro', steps: []),
+      ]);
+      expect(cubit.state.missing, isTrue);
+      expect(cubit.state.toScript, isFalse);
+      expect(progress.saved.ongoing, isNull);
+    });
+  });
 }

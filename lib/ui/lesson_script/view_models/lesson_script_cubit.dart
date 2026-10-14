@@ -643,20 +643,20 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final from = parent?.fen ?? _gameRootFen;
     final played = ScriptMoves.play(from, uci, keepTurn: _task);
     if (played == null) return null;
-    var depth = 1;
-    for (var id = _cursor; id != null; id = _game[id]!.parent) {
-      depth++;
-    }
+    // Na tarefa a vez não passa: os lances do aluno só se numeram, e a
+    // resposta do outro lado fica com o número do lance dele.
+    final mover = _task
+        ? ScriptMoves.moverOf(from, uci) ?? _example.student
+        : _sideOf(from);
     final node = _GameNode(
       id: 'g:${++_gameSeq}',
       parent: _cursor,
       uci: uci,
       san: played.san,
-      // Na tarefa a vez não passa: os lances só se numeram.
       number: _task
-          ? depth
+          ? (parent?.number ?? 0) + (mover == _example.student ? 1 : 0)
           : int.tryParse(from.split(' ').elementAtOrNull(5) ?? '') ?? 1,
-      side: _task ? _example.student : _sideOf(from),
+      side: mover,
       fen: played.fen,
       symbol: symbol,
     );

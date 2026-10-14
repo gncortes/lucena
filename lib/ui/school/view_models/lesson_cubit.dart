@@ -122,6 +122,7 @@ class LessonState {
   const LessonState({
     this.ready = false,
     this.missing = false,
+    this.toScript = false,
     this.lesson,
     this.texts = LessonTexts.empty,
     this.viktor,
@@ -312,6 +313,10 @@ class LessonState {
 
   /// A aula pedida não existe no curso.
   final bool missing;
+
+  /// A parte aberta ([part]; nula: a aula [lesson] inteira) toca na tela de
+  /// roteiro (T70/T71): a tela da lição troca de rota.
+  final bool toScript;
   final Lesson? lesson;
   final LessonTexts texts;
 
@@ -999,7 +1004,7 @@ class LessonCubit extends Cubit<LessonState> {
     if (isClosed || revision != _loadRevision) {
       return;
     }
-    if (full == null || full.steps.isEmpty) {
+    if (full == null) {
       emit(const LessonState(ready: true, missing: true));
       return;
     }
@@ -1020,6 +1025,31 @@ class LessonCubit extends Cubit<LessonState> {
           full.part(savedPart ?? '') ??
           full.parts.first;
       lesson = full.only(opened);
+    }
+    // A parte (ou a aula) virou roteiro: quem toca é a tela de roteiro (o
+    // app reabria aqui pelo checkpoint e ficava em branco).
+    // Na escola, os passos de uma aula com roteiro ficam de reserva.
+    final script = opened == null
+        ? full.script != null && full.steps.isEmpty
+        : opened.script != null;
+    if (script) {
+      emit(
+        LessonState(
+          ready: true,
+          toScript: true,
+          lesson: full,
+          part: opened,
+          endgame: _source.endgame,
+        ),
+      );
+      return;
+    }
+    if (lesson.steps.isEmpty) {
+      // Sem passos nem roteiro: o checkpoint não serve mais.
+      if (saved != null) await _source.clearCheckpoint();
+      if (isClosed || revision != _loadRevision) return;
+      emit(const LessonState(ready: true, missing: true));
+      return;
     }
     Character? viktor;
     for (final character in characters) {

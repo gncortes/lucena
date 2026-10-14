@@ -43,6 +43,9 @@ class FakeLessonSource implements LessonSource {
       checkpoints.add(checkpoint);
 
   @override
+  Future<void> clearCheckpoint() async => checkpoints.clear();
+
+  @override
   Future<void> leave() async {}
 
   @override
