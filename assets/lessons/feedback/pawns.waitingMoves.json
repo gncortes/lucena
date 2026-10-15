@@ -1,6 +1,6 @@
 {
   "lesson": "pawns.waitingMoves",
-  "scope": "alternativas naturais erradas das73decisões; três refutações das decisões removidas de e09 arquivadas no baseline",
+  "scope": "alternativas naturais erradas das33decisões; três refutações das decisões removidas de e09 arquivadas no baseline",
   "ui_contract": "move.hint automático após erro; ex.hint somente solicitado; sem alteração de schema/UI",
   "limitations": [
     "Uma única chave hint por prática/exercício contém os blocos por decisão; navegação individual é handoff opcional.",
@@ -1394,6 +1394,356 @@
       "access": "hint exibido no erro e disponível sob demanda"
     },
     {
+      "id": "e20",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+      "uci": "f4g3",
+      "pt": "Com o lance do rei para g3 você deixa escapar o empate: as pretas respondem com o lance do rei para g5 e ganham. O rei preto fica de frente para o seu, com a vez das brancas, e passa: escolta o peão de h ou vai buscar o peão de a4.",
+      "en": "With the king move to g3 you let the draw slip: Black replies with the king move to g5 and wins. The black king faces yours, with White to move, and gets through: it escorts the h-pawn or goes for the a4 pawn.",
+      "pv": [
+        {
+          "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+          "uci": "f4g3",
+          "san": "Kg3",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/7p/p6k/P7/6K1/8/8 b - - 1 1",
+          "uci": "h5g5",
+          "san": "Kg5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/7p/p5k1/P7/6K1/8/8 w - - 2 2",
+          "uci": "g3f3",
+          "san": "Kf3",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/7p/p5k1/P7/5K2/8/8 b - - 3 2",
+          "uci": "g5f5",
+          "san": "Kf5",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 11
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e20.1",
+        "uci": "f4g3"
+      },
+      "text_key": "ex.e20.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e20",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+      "uci": "f4e4",
+      "pt": "Com o lance do rei para e4 você deixa escapar o empate: as pretas respondem com o lance do rei para g5 e ganham. Seu rei não chega ao peão de a5, e o rei preto escolta o peão de h até a coroação.",
+      "en": "With the king move to e4 you let the draw slip: Black replies with the king move to g5 and wins. Your king does not reach the a5 pawn, and the black king escorts the h-pawn to promotion.",
+      "pv": [
+        {
+          "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+          "uci": "f4e4",
+          "san": "Ke4",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/7p/p6k/P3K3/8/8/8 b - - 1 1",
+          "uci": "h5g5",
+          "san": "Kg5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/7p/p5k1/P3K3/8/8/8 w - - 2 2",
+          "uci": "e4f3",
+          "san": "Kf3",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/7p/p5k1/P7/5K2/8/8 b - - 3 2",
+          "uci": "g5f5",
+          "san": "Kf5",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 3
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e20.1",
+        "uci": "f4e4"
+      },
+      "text_key": "ex.e20.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e20",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+      "uci": "f4e5",
+      "pt": "Com o lance do rei para e5 você deixa escapar o empate: as pretas respondem com o lance do rei para g5 e ganham. Seu rei se afastou do peão de h, e o rei preto o escolta até a coroação.",
+      "en": "With the king move to e5 you let the draw slip: Black replies with the king move to g5 and wins. Your king moved away from the h-pawn, and the black king escorts it to promotion.",
+      "pv": [
+        {
+          "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+          "uci": "f4e5",
+          "san": "Ke5",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/7p/p3K2k/P7/8/8/8 b - - 1 1",
+          "uci": "h5g5",
+          "san": "Kg5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/7p/p3K1k1/P7/8/8/8 w - - 2 2",
+          "uci": "e5e4",
+          "san": "Ke4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/7p/p5k1/P3K3/8/8/8 b - - 3 2",
+          "uci": "g5g4",
+          "san": "Kg4",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 3
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e20.1",
+        "uci": "f4e5"
+      },
+      "text_key": "ex.e20.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e20",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+      "uci": "f5g6",
+      "pt": "Com o lance do rei para g6 você deixa escapar o empate: as pretas respondem com o lance do peão para h5 e ganham. O peão avança, e o rei preto passa por g3 enquanto o seu rei está do lado errado.",
+      "en": "With the king move to g6 you let the draw slip: Black replies with the pawn move to h5 and wins. The pawn advances, and the black king passes through g3 while your king is on the wrong side.",
+      "pv": [
+        {
+          "fen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+          "uci": "f5g6",
+          "san": "Kg6",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/6Kp/p7/P6k/8/8/8 b - - 3 2",
+          "uci": "h6h5",
+          "san": "h5",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/6K1/p6p/P6k/8/8/8 w - - 0 3",
+          "uci": "g6f5",
+          "san": "Kf5",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/p4K1p/P6k/8/8/8 b - - 1 3",
+          "uci": "h4g3",
+          "san": "Kg3",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 1
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e20.2",
+        "uci": "f5g6"
+      },
+      "text_key": "ex.e20.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e20",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+      "uci": "f4f5",
+      "pt": "Com o lance do rei para f5 você deixa escapar o empate: as pretas respondem com o lance do rei para g3 e ganham. O rei preto passa por trás do seu rei e escolta o peão de h.",
+      "en": "With the king move to f5 you let the draw slip: Black replies with the king move to g3 and wins. The black king slips behind your king and escorts the h-pawn.",
+      "pv": [
+        {
+          "fen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+          "uci": "f4f5",
+          "san": "Kf5",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/p4K1p/P6k/8/8/8 b - - 1 3",
+          "uci": "h4g3",
+          "san": "Kg3",
+          "fullmove": 3,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/8/p4K1p/P7/6k1/8/8 w - - 2 4",
+          "uci": "f5e4",
+          "san": "Ke4",
+          "fullmove": 4,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/p6p/P3K3/6k1/8/8 b - - 3 4",
+          "uci": "h5h4",
+          "san": "h4",
+          "fullmove": 4,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 3
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e20.3",
+        "uci": "f4f5"
+      },
+      "text_key": "ex.e20.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e21",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/1p6/1P6/8/1k1K4/8/8 w - - 0 2",
+      "uci": "d3d4",
+      "pt": "Com o lance do rei para d4 você deixa escapar o empate: as pretas respondem com o lance do rei para b4 e ganham. O peão de b5 cai, e o peão de b6 coroa com o rei preto na frente.",
+      "en": "With the king move to d4 you let the draw slip: Black replies with the king move to b4 and wins. The b5 pawn falls, and the b6 pawn promotes with the black king in front.",
+      "pv": [
+        {
+          "fen": "8/8/1p6/1P6/8/1k1K4/8/8 w - - 0 2",
+          "uci": "d3d4",
+          "san": "Kd4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/1p6/1P6/3K4/1k6/8/8 b - - 1 2",
+          "uci": "b3b4",
+          "san": "Kb4",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/1p6/1P6/1k1K4/8/8/8 w - - 2 3",
+          "uci": "d4d3",
+          "san": "Kd3",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/1p6/1P6/1k6/3K4/8/8 b - - 3 3",
+          "uci": "b4b5",
+          "san": "Kxb5",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 3
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e21.2",
+        "uci": "d3d4"
+      },
+      "text_key": "ex.e21.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e22",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/7k/p6P/6K1/P7/8/8/8 w - - 0 1",
+      "uci": "g5h5",
+      "pt": "Com o lance do rei para h5 você deixa escapar a vitória: as pretas respondem com o lance do peão para a5 e seguram o empate. Elas gastam o lance de reserva na hora certa, e o seu rei precisa se mover: o peão de h6 não coroa.",
+      "en": "With the king move to h5 you let the win slip: Black replies with the pawn move to a5 and holds the draw. Black spends the reserve move at the right moment, and your king has to move: the h6 pawn does not promote.",
+      "pv": [
+        {
+          "fen": "8/7k/p6P/6K1/P7/8/8/8 w - - 0 1",
+          "uci": "g5h5",
+          "san": "Kh5",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/7k/p6P/7K/P7/8/8/8 b - - 1 1",
+          "uci": "a6a5",
+          "san": "a5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/7k/7P/p6K/P7/8/8/8 w - - 0 2",
+          "uci": "h5g4",
+          "san": "Kg4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/7k/7P/p7/P5K1/8/8/8 b - - 1 2",
+          "uci": "h7h6",
+          "san": "Kxh6",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e22.1",
+        "uci": "g5h5"
+      },
+      "text_key": "ex.e22.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
       "id": "e14",
       "kind": "exercise",
       "turn": 1,
@@ -1646,6 +1996,56 @@
     {
       "id": "e14",
       "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/3k4/p5p1/P5P1/3K4/8/8 w - - 2 2",
+      "uci": "d3c3",
+      "pt": "Com o lance do rei para c3 você deixa escapar a vitória: as pretas respondem com o lance do rei para c5 e ganham. O rei preto fica com a oposição, passa por b4 e captura o peão de a4.",
+      "en": "With the king move to c3 you let the win slip: Black replies with the king move to c5 and wins. The black king keeps the opposition, passes through b4 and captures the a4 pawn.",
+      "pv": [
+        {
+          "fen": "8/8/3k4/p5p1/P5P1/3K4/8/8 w - - 2 2",
+          "uci": "d3c3",
+          "san": "Kc3",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/3k4/p5p1/P5P1/2K5/8/8 b - - 3 2",
+          "uci": "d6c5",
+          "san": "Kc5",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/8/p1k3p1/P5P1/2K5/8/8 w - - 4 3",
+          "uci": "c3c2",
+          "san": "Kc2",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/p1k3p1/P5P1/8/2K5/8 b - - 5 3",
+          "uci": "c5b4",
+          "san": "Kb4",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 9
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e14.2",
+        "uci": "d3c3"
+      },
+      "text_key": "ex.e14.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e14",
+      "kind": "exercise",
       "turn": 3,
       "fen": "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 4 3",
       "uci": "d4c4",
@@ -1744,289 +2144,39 @@
       "access": "dica sob demanda, exercício silencioso"
     },
     {
-      "id": "e15",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
-      "uci": "b2b4",
-      "pt": "Com o lance do peão para b4 você deixa escapar a vitória: as pretas respondem com o lance do peão para b5 e ganham. Depois do seu lance, o número de casas vazias entre os peões deve ser par; aqui sobra uma só.",
-      "en": "With the pawn move to b4 you let the win slip: Black replies with the pawn move to b5 and wins. After your move, the number of empty squares between the pawns must be even; here only one is left.",
-      "pv": [
-        {
-          "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
-          "uci": "b2b4",
-          "san": "b4",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/1p6/5pK1/1P2kP2/8/8/8 b - - 0 1",
-          "uci": "b6b5",
-          "san": "b5",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/1p3pK1/1P2kP2/8/8/8 w - - 0 2",
-          "uci": "g5h4",
-          "san": "Kh4",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/1p3p2/1P2kP1K/8/8/8 b - - 1 2",
-          "uci": "e4f4",
-          "san": "Kxf4",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.1",
-        "uci": "b2b4"
-      },
-      "text_key": "ex.e15.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e15",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
-      "uci": "g5h4",
-      "pt": "Com o lance do rei para h4 você deixa escapar a vitória: as pretas respondem com a captura do peão de f4 e ganham. O rei precisa continuar protegendo o peão de f4; um lance de rei o abandona.",
-      "en": "With the king move to h4 you let the win slip: Black replies with the f4 pawn capture and wins. The king must keep protecting the f4 pawn; a king move abandons it.",
-      "pv": [
-        {
-          "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
-          "uci": "g5h4",
-          "san": "Kh4",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/1p6/5p2/4kP1K/8/1P6/8 b - - 1 1",
-          "uci": "e4f4",
-          "san": "Kxf4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/1p6/5p2/5k1K/8/1P6/8 w - - 0 2",
-          "uci": "h4h3",
-          "san": "Kh3",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/1p6/5p2/5k2/7K/1P6/8 b - - 1 2",
-          "uci": "f4f3",
-          "san": "Kf3",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.1",
-        "uci": "g5h4"
-      },
-      "text_key": "ex.e15.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e15",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
-      "uci": "g5f6",
-      "pt": "Com o lance do rei para f6 você deixa escapar a vitória: as pretas respondem com a captura do peão de f4 e ganham. O rei precisa continuar protegendo o peão de f4; um lance de rei o abandona.",
-      "en": "With the king move to f6 you let the win slip: Black replies with the f4 pawn capture and wins. The king must keep protecting the f4 pawn; a king move abandons it.",
-      "pv": [
-        {
-          "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
-          "uci": "g5f6",
-          "san": "Kf6",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/1p3K2/5p2/4kP2/8/1P6/8 b - - 1 1",
-          "uci": "e4f4",
-          "san": "Kxf4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/1p3K2/5p2/5k2/8/1P6/8 w - - 0 2",
-          "uci": "f6e6",
-          "san": "Ke6",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/1p2K3/5p2/5k2/8/1P6/8 b - - 1 2",
-          "uci": "f4e4",
-          "san": "Ke4",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.1",
-        "uci": "g5f6"
-      },
-      "text_key": "ex.e15.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e15",
-      "kind": "exercise",
-      "turn": 2,
-      "fen": "8/8/8/1p3pK1/4kP2/1P6/8/8 w - - 0 2",
-      "uci": "g5h4",
-      "pt": "Com o lance do rei para h4 você deixa escapar a vitória: as pretas respondem com a captura do peão de f4 e ganham. O rei precisa continuar protegendo o peão de f4; o lance de peão para b4 é que fecha o espaço.",
-      "en": "With the king move to h4 you let the win slip: Black replies with the f4 pawn capture and wins. The king must keep protecting the f4 pawn; it is the pawn move to b4 that closes the gap.",
-      "pv": [
-        {
-          "fen": "8/8/8/1p3pK1/4kP2/1P6/8/8 w - - 0 2",
-          "uci": "g5h4",
-          "san": "Kh4",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/1p3p2/4kP1K/1P6/8/8 b - - 1 2",
-          "uci": "e4f4",
-          "san": "Kxf4",
-          "fullmove": 2,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/1p3p2/5k1K/1P6/8/8 w - - 0 3",
-          "uci": "h4h3",
-          "san": "Kh3",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/1p3p2/5k2/1P5K/8/8 b - - 1 3",
-          "uci": "f4e3",
-          "san": "Ke3",
-          "fullmove": 3,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.2",
-        "uci": "g5h4"
-      },
-      "text_key": "ex.e15.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e15",
-      "kind": "exercise",
-      "turn": 2,
-      "fen": "8/8/8/1p3pK1/4kP2/1P6/8/8 w - - 0 2",
-      "uci": "g5f6",
-      "pt": "Com o lance do rei para f6 você deixa escapar a vitória: as pretas respondem com a captura do peão de f4 e ganham. O rei precisa continuar protegendo o peão de f4; o lance de peão para b4 é que fecha o espaço.",
-      "en": "With the king move to f6 you let the win slip: Black replies with the f4 pawn capture and wins. The king must keep protecting the f4 pawn; it is the pawn move to b4 that closes the gap.",
-      "pv": [
-        {
-          "fen": "8/8/8/1p3pK1/4kP2/1P6/8/8 w - - 0 2",
-          "uci": "g5f6",
-          "san": "Kf6",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/5K2/1p3p2/4kP2/1P6/8/8 b - - 1 2",
-          "uci": "e4f4",
-          "san": "Kxf4",
-          "fullmove": 2,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/5K2/1p3p2/5k2/1P6/8/8 w - - 0 3",
-          "uci": "f6g6",
-          "san": "Kg6",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/6K1/1p3p2/5k2/1P6/8/8 b - - 1 3",
-          "uci": "f4e4",
-          "san": "Ke4",
-          "fullmove": 3,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.2",
-        "uci": "g5f6"
-      },
-      "text_key": "ex.e15.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e15",
+      "id": "e14",
       "kind": "exercise",
       "turn": 3,
-      "fen": "8/8/8/1p3pK1/1P1k1P2/8/8/8 w - - 1 3",
-      "uci": "g5f6",
-      "pt": "Com o lance do rei para f6 você deixa escapar a vitória: as pretas respondem com o lance do rei para c3 e seguram o empate. O peão de f5 ficou sem defesa: o rei branco deve capturá-lo de imediato.",
-      "en": "With the king move to f6 you let the win slip: Black replies with the king move to c3 and holds the draw. The f5 pawn is undefended: the white king must capture it at once.",
+      "fen": "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 4 3",
+      "uci": "d4c5",
+      "pt": "Com o lance do rei para c5 você deixa escapar a vitória: as pretas respondem com o lance do rei para e5 e seguram o empate. Cada rei vai buscar um peão, e os dois chegam ao mesmo tempo.",
+      "en": "With the king move to c5 you let the win slip: Black replies with the king move to e5 and holds the draw. Each king goes for a pawn, and both arrive at the same time.",
       "pv": [
         {
-          "fen": "8/8/8/1p3pK1/1P1k1P2/8/8/8 w - - 1 3",
-          "uci": "g5f6",
-          "san": "Kf6",
+          "fen": "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 4 3",
+          "uci": "d4c5",
+          "san": "Kc5",
           "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/5K2/1p3p2/1P1k1P2/8/8/8 b - - 2 3",
-          "uci": "d4c3",
-          "san": "Kc3",
+          "fen": "8/8/4k3/p1K3p1/P5P1/8/8/8 b - - 5 3",
+          "uci": "e6e5",
+          "san": "Ke5",
           "fullmove": 3,
           "turn": "black"
         },
         {
-          "fen": "8/8/5K2/1p3p2/1P3P2/2k5/8/8 w - - 3 4",
-          "uci": "f6f5",
-          "san": "Kxf5",
+          "fen": "8/8/8/p1K1k1p1/P5P1/8/8/8 w - - 6 4",
+          "uci": "c5c4",
+          "san": "Kc4",
           "fullmove": 4,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1p3K2/1P3P2/2k5/8/8 b - - 0 4",
-          "uci": "c3b4",
-          "san": "Kxb4",
+          "fen": "8/8/8/p3k1p1/P1K3P1/8/8/8 b - - 7 4",
+          "uci": "e5e4",
+          "san": "Ke4",
           "fullmove": 4,
           "turn": "black"
         }
@@ -2037,8 +2187,58 @@
       },
       "evidence": {
         "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.3",
-        "uci": "g5f6"
+        "site": "exercise/e14.3",
+        "uci": "d4c5"
+      },
+      "text_key": "ex.e14.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e15",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+      "uci": "f2f3",
+      "pt": "Com o lance do peão para f3 você deixa escapar a vitória: as pretas respondem com o lance do peão para f4 e ganham. Sobrou uma casa vazia na coluna f, e é o seu rei que precisa se mover: o peão de b4 cai.",
+      "en": "With the pawn move to f3 you let the win slip: Black replies with the pawn move to f4 and wins. One empty square was left on the f-file, and it is your king that has to move: the b4 pawn falls.",
+      "pv": [
+        {
+          "fen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+          "uci": "f2f3",
+          "san": "f3",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/Kp3p2/1Pk5/5P2/8/8 b - - 0 1",
+          "uci": "f5f4",
+          "san": "f4",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/8/Kp6/1Pk2p2/5P2/8/8 w - - 0 2",
+          "uci": "a5a6",
+          "san": "Ka6",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/K7/1p6/1Pk2p2/5P2/8/8 b - - 1 2",
+          "uci": "c4b4",
+          "san": "Kxb4",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 1
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e15.1",
+        "uci": "f2f3"
       },
       "text_key": "ex.e15.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2046,38 +2246,288 @@
     {
       "id": "e15",
       "kind": "exercise",
-      "turn": 3,
-      "fen": "8/8/8/1p3pK1/1P1k1P2/8/8/8 w - - 1 3",
-      "uci": "g5h4",
-      "pt": "Com o lance do rei para h4 você deixa escapar a vitória: as pretas respondem com o lance do rei para d3 e ganham. O peão de f5 ficou sem defesa: o rei branco deve capturá-lo de imediato.",
-      "en": "With the king move to h4 you let the win slip: Black replies with the king move to d3 and wins. The f5 pawn is undefended: the white king must capture it at once.",
+      "turn": 1,
+      "fen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+      "uci": "a5b6",
+      "pt": "Com o lance do rei para b6 você deixa escapar a vitória: as pretas respondem com o lance do peão para f4 e ganham. Seu rei abandonou o peão de b4 antes de gastar o lance de peão que ainda tinha; o rei preto captura em b4.",
+      "en": "With the king move to b6 you let the win slip: Black replies with the pawn move to f4 and wins. Your king abandoned the b4 pawn before spending the pawn move it still had; the black king captures on b4.",
       "pv": [
         {
-          "fen": "8/8/8/1p3pK1/1P1k1P2/8/8/8 w - - 1 3",
-          "uci": "g5h4",
-          "san": "Kh4",
+          "fen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+          "uci": "a5b6",
+          "san": "Kb6",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/1K6/1p3p2/1Pk5/8/5P2/8 b - - 1 1",
+          "uci": "f5f4",
+          "san": "f4",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/1K6/1p6/1Pk2p2/8/5P2/8 w - - 0 2",
+          "uci": "b6a5",
+          "san": "Ka5",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/Kp6/1Pk2p2/8/5P2/8 b - - 1 2",
+          "uci": "f4f3",
+          "san": "f3",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 1
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e15.1",
+        "uci": "a5b6"
+      },
+      "text_key": "ex.e15.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e15",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
+      "uci": "a5b6",
+      "pt": "Com o lance do rei para b6 você deixa escapar a vitória: as pretas respondem com o lance do rei para e3 e seguram o empate. O rei preto captura o peão de f4 enquanto o seu captura o de b5, e sobra um peão de cada lado.",
+      "en": "With the king move to b6 you let the win slip: Black replies with the king move to e3 and holds the draw. The black king captures the f4 pawn while yours captures the b5 pawn, and one pawn is left on each side.",
+      "pv": [
+        {
+          "fen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
+          "uci": "a5b6",
+          "san": "Kb6",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/1K6/1p3p2/1P1k1P2/8/8/8 b - - 2 2",
+          "uci": "d4e3",
+          "san": "Ke3",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/1K6/1p3p2/1P3P2/4k3/8/8 w - - 3 3",
+          "uci": "b6b5",
+          "san": "Kxb5",
           "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1p3p2/1P1k1P1K/8/8/8 b - - 2 3",
-          "uci": "d4d3",
-          "san": "Kd3",
+          "fen": "8/8/8/1K3p2/1P3P2/4k3/8/8 b - - 0 3",
+          "uci": "e3f4",
+          "san": "Kxf4",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e15.2",
+        "uci": "a5b6"
+      },
+      "text_key": "ex.e15.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e16",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+      "uci": "h7g7",
+      "pt": "Com o lance do rei para g7 você deixa escapar o empate: as pretas respondem com o lance do peão para b4 e ganham. Elas fixaram o seu peão de b3 primeiro e ficam com o último tempo: o rei preto captura em g3, e o peão de g coroa.",
+      "en": "With the king move to g7 you let the draw slip: Black replies with the pawn move to b4 and wins. Black fixed your b3 pawn first and keeps the last tempo: the black king captures on g3, and the g-pawn promotes.",
+      "pv": [
+        {
+          "fen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+          "uci": "h7g7",
+          "san": "Kg7",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/6K1/8/1p4pk/8/1P4P1/8/8 b - - 1 1",
+          "uci": "b5b4",
+          "san": "b4",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/6K1/8/6pk/1p6/1P4P1/8/8 w - - 0 2",
+          "uci": "g7f6",
+          "san": "Kf6",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/5K2/6pk/1p6/1P4P1/8/8 b - - 1 2",
+          "uci": "h5g4",
+          "san": "Kg4",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 1
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e16.1",
+        "uci": "h7g7"
+      },
+      "text_key": "ex.e16.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e16",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
+      "uci": "h7g8",
+      "pt": "Com o lance do rei para g8 você deixa escapar o empate: as pretas respondem com o lance do rei para g6 e ganham. Seu rei se afastou, e o rei preto passa por f5 e e4 até capturar o peão de g3.",
+      "en": "With the king move to g8 you let the draw slip: Black replies with the king move to g6 and wins. Your king moved away, and the black king passes through f5 and e4 until it captures the g3 pawn.",
+      "pv": [
+        {
+          "fen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
+          "uci": "h7g8",
+          "san": "Kg8",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "6K1/8/8/1p5k/1P4p1/6P1/8/8 b - - 1 2",
+          "uci": "h5g6",
+          "san": "Kg6",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "6K1/8/6k1/1p6/1P4p1/6P1/8/8 w - - 2 3",
+          "uci": "g8f8",
+          "san": "Kf8",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "5K2/8/6k1/1p6/1P4p1/6P1/8/8 b - - 3 3",
+          "uci": "g6f5",
+          "san": "Kf5",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 9
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e16.2",
+        "uci": "h7g8"
+      },
+      "text_key": "ex.e16.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e16",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
+      "uci": "g7f7",
+      "pt": "Com o lance do rei para f7 você deixa escapar o empate: as pretas respondem com o lance do rei para f5 e ganham. O rei preto chega a e4 e f3 e captura o peão de g3; o seu rei, do outro lado, não alcança o peão de g4.",
+      "en": "With the king move to f7 you let the draw slip: Black replies with the king move to f5 and wins. The black king reaches e4 and f3 and captures the g3 pawn; your king, on the other side, cannot reach the g4 pawn.",
+      "pv": [
+        {
+          "fen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
+          "uci": "g7f7",
+          "san": "Kf7",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/5K2/8/1p4k1/1P4p1/6P1/8/8 b - - 3 3",
+          "uci": "g5f5",
+          "san": "Kf5",
           "fullmove": 3,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1p3p2/1P3P1K/3k4/8/8 w - - 3 4",
-          "uci": "h4g3",
-          "san": "Kg3",
+          "fen": "8/5K2/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+          "uci": "f7e7",
+          "san": "Ke7",
           "fullmove": 4,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1p3p2/1P3P2/3k2K1/8/8 b - - 4 4",
-          "uci": "d3c3",
-          "san": "Kc3",
+          "fen": "8/4K3/8/1p3k2/1P4p1/6P1/8/8 b - - 5 4",
+          "uci": "f5e4",
+          "san": "Ke4",
           "fullmove": 4,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "loss",
+        "dtz_successor": 7
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e16.3",
+        "uci": "g7f7"
+      },
+      "text_key": "ex.e16.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e16",
+      "kind": "exercise",
+      "turn": 4,
+      "fen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+      "uci": "h7g7",
+      "pt": "Com o lance do rei para g7 você deixa escapar o empate: as pretas respondem com o lance do rei para e4 e ganham. O rei preto chega a f3 e captura o peão de g3, e o seu rei fica longe do peão de g4.",
+      "en": "With the king move to g7 you let the draw slip: Black replies with the king move to e4 and wins. The black king reaches f3 and captures the g3 pawn, and your king stays far from the g4 pawn.",
+      "pv": [
+        {
+          "fen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+          "uci": "h7g7",
+          "san": "Kg7",
+          "fullmove": 4,
+          "turn": "white"
+        },
+        {
+          "fen": "8/6K1/8/1p3k2/1P4p1/6P1/8/8 b - - 5 4",
+          "uci": "f5e4",
+          "san": "Ke4",
+          "fullmove": 4,
+          "turn": "black"
+        },
+        {
+          "fen": "8/6K1/8/1p6/1P2k1p1/6P1/8/8 w - - 6 5",
+          "uci": "g7f6",
+          "san": "Kf6",
+          "fullmove": 5,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/5K2/1p6/1P2k1p1/6P1/8/8 b - - 7 5",
+          "uci": "e4f3",
+          "san": "Kf3",
+          "fullmove": 5,
           "turn": "black"
         }
       ],
@@ -2087,546 +2537,146 @@
       },
       "evidence": {
         "file": "variantes-naturais-depois.json",
-        "site": "exercise/e15.3",
-        "uci": "g5h4"
-      },
-      "text_key": "ex.e15.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
-      "uci": "f7e6",
-      "pt": "Com o lance do rei para e6 você deixa escapar o empate: as pretas respondem com o lance do peão para a4 e ganham. O primeiro lance deve fixar o peão de a5; do contrário, o lance de peão preto dá às pretas o último tempo de reserva.",
-      "en": "With the king move to e6 you let the draw slip: Black replies with the pawn move to a4 and wins. The first move must fix the a5 pawn; otherwise Black's pawn move gives Black the last reserve tempo.",
-      "pv": [
-        {
-          "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
-          "uci": "f7e6",
-          "san": "Ke6",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/4K2p/p5k1/8/P6P/8/8 b - - 1 1",
-          "uci": "a5a4",
-          "san": "a4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/4K2p/6k1/p7/P6P/8/8 w - - 0 2",
-          "uci": "e6e7",
-          "san": "Ke7",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/4K3/7p/6k1/p7/P6P/8/8 b - - 1 2",
-          "uci": "h6h5",
-          "san": "h5",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.1",
-        "uci": "f7e6"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
-      "uci": "h3h4",
-      "pt": "Com o xeque do peão para h4 você deixa escapar o empate: as pretas respondem com a captura do peão em h4 e ganham. O peão de h3 não pode avançar; o primeiro lance deve fixar o peão de a5.",
-      "en": "With the pawn check on h4 you let the draw slip: Black replies with the pawn capture on h4 and wins. The h3 pawn cannot advance; the first move must fix the a5 pawn.",
-      "pv": [
-        {
-          "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
-          "uci": "h3h4",
-          "san": "h4+",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/5K2/7p/p5k1/7P/P7/8/8 b - - 0 1",
-          "uci": "g5h4",
-          "san": "Kxh4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/5K2/7p/p7/7k/P7/8/8 w - - 0 2",
-          "uci": "f7e6",
-          "san": "Ke6",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/4K2p/p7/7k/P7/8/8 b - - 1 2",
-          "uci": "h6h5",
-          "san": "h5",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.1",
-        "uci": "h3h4"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 2,
-      "fen": "8/5K2/8/p5kp/P7/7P/8/8 w - - 0 2",
-      "uci": "f7g7",
-      "pt": "Com o lance do rei para g7 você deixa escapar o empate: as pretas respondem com o lance do peão para h4 e ganham. O rei branco precisa seguir o compasso do rei preto; a casa certa é e6.",
-      "en": "With the king move to g7 you let the draw slip: Black replies with the pawn move to h4 and wins. The white king must keep the black king's pace; the right square is e6.",
-      "pv": [
-        {
-          "fen": "8/5K2/8/p5kp/P7/7P/8/8 w - - 0 2",
-          "uci": "f7g7",
-          "san": "Kg7",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/6K1/8/p5kp/P7/7P/8/8 b - - 1 2",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 2,
-          "turn": "black"
-        },
-        {
-          "fen": "8/6K1/8/p5k1/P6p/7P/8/8 w - - 0 3",
-          "uci": "g7f7",
-          "san": "Kf7",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/5K2/8/p5k1/P6p/7P/8/8 b - - 1 3",
-          "uci": "g5f4",
-          "san": "Kf4",
-          "fullmove": 3,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.2",
-        "uci": "f7g7"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 2,
-      "fen": "8/5K2/8/p5kp/P7/7P/8/8 w - - 0 2",
-      "uci": "h3h4",
-      "pt": "Com o xeque do peão para h4 você deixa escapar o empate: as pretas respondem com a captura do peão em h4 e ganham. O peão de h3 não pode avançar: o rei branco precisa seguir o compasso do rei preto.",
-      "en": "With the pawn check on h4 you let the draw slip: Black replies with the pawn capture on h4 and wins. The h3 pawn cannot advance: the white king must keep the black king's pace.",
-      "pv": [
-        {
-          "fen": "8/5K2/8/p5kp/P7/7P/8/8 w - - 0 2",
-          "uci": "h3h4",
-          "san": "h4+",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/5K2/8/p5kp/P6P/8/8/8 b - - 0 2",
-          "uci": "g5h4",
-          "san": "Kxh4",
-          "fullmove": 2,
-          "turn": "black"
-        },
-        {
-          "fen": "8/5K2/8/p6p/P6k/8/8/8 w - - 0 3",
-          "uci": "f7e6",
-          "san": "Ke6",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/4K3/p6p/P6k/8/8/8 b - - 1 3",
-          "uci": "h4g4",
-          "san": "Kg4",
-          "fullmove": 3,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.2",
-        "uci": "h3h4"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 3,
-      "fen": "8/8/4K3/p6p/P6k/7P/8/8 w - - 2 3",
-      "uci": "e6d6",
-      "pt": "Com o lance do rei para d6 você deixa escapar o empate: as pretas respondem com a captura do peão de h3 e ganham. O rei branco precisa ficar no compasso do rei preto; fora dele, o peão de h corre.",
-      "en": "With the king move to d6 you let the draw slip: Black replies with the h3 pawn capture and wins. The white king must stay in step with the black king; otherwise the h-pawn runs.",
-      "pv": [
-        {
-          "fen": "8/8/4K3/p6p/P6k/7P/8/8 w - - 2 3",
-          "uci": "e6d6",
-          "san": "Kd6",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/3K4/p6p/P6k/7P/8/8 b - - 3 3",
-          "uci": "h4h3",
-          "san": "Kxh3",
-          "fullmove": 3,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/3K4/p6p/P7/7k/8/8 w - - 0 4",
-          "uci": "d6c5",
-          "san": "Kc5",
-          "fullmove": 4,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p1K4p/P7/7k/8/8 b - - 1 4",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 4,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.3",
-        "uci": "e6d6"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 3,
-      "fen": "8/8/4K3/p6p/P6k/7P/8/8 w - - 2 3",
-      "uci": "e6f6",
-      "pt": "Com o lance do rei para f6 você deixa escapar o empate: as pretas respondem com a captura do peão de h3 e ganham. O rei branco precisa ficar no compasso do rei preto; fora dele, o peão de h corre.",
-      "en": "With the king move to f6 you let the draw slip: Black replies with the h3 pawn capture and wins. The white king must stay in step with the black king; otherwise the h-pawn runs.",
-      "pv": [
-        {
-          "fen": "8/8/4K3/p6p/P6k/7P/8/8 w - - 2 3",
-          "uci": "e6f6",
-          "san": "Kf6",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/5K2/p6p/P6k/7P/8/8 b - - 3 3",
-          "uci": "h4h3",
-          "san": "Kxh3",
-          "fullmove": 3,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/5K2/p6p/P7/7k/8/8 w - - 0 4",
-          "uci": "f6e5",
-          "san": "Ke5",
-          "fullmove": 4,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p3K2p/P7/7k/8/8 b - - 1 4",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 4,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.3",
-        "uci": "e6f6"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 4,
-      "fen": "8/8/8/p3K2p/P7/7k/8/8 w - - 0 4",
-      "uci": "e5e4",
-      "pt": "Com o lance do rei para e4 você deixa escapar o empate: as pretas respondem com o lance do rei para g3 e ganham. O rei branco precisa se aproximar do peão de h5 passando por f4, no compasso do rei preto.",
-      "en": "With the king move to e4 you let the draw slip: Black replies with the king move to g3 and wins. The white king must approach the h5 pawn via f4, in step with the black king.",
-      "pv": [
-        {
-          "fen": "8/8/8/p3K2p/P7/7k/8/8 w - - 0 4",
-          "uci": "e5e4",
-          "san": "Ke4",
-          "fullmove": 4,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p6p/P3K3/7k/8/8 b - - 1 4",
-          "uci": "h3g3",
-          "san": "Kg3",
-          "fullmove": 4,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/p6p/P3K3/6k1/8/8 w - - 2 5",
-          "uci": "e4d3",
-          "san": "Kd3",
-          "fullmove": 5,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p6p/P7/3K2k1/8/8 b - - 3 5",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 5,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 3
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
         "site": "exercise/e16.4",
-        "uci": "e5e4"
+        "uci": "h7g7"
       },
       "text_key": "ex.e16.hint",
       "access": "dica sob demanda, exercício silencioso"
     },
     {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 4,
-      "fen": "8/8/8/p3K2p/P7/7k/8/8 w - - 0 4",
-      "uci": "e5d4",
-      "pt": "Com o lance do rei para d4 você deixa escapar o empate: as pretas respondem com o lance do peão para h4 e ganham. O rei branco precisa se aproximar do peão de h5 passando por f4, no compasso do rei preto.",
-      "en": "With the king move to d4 you let the draw slip: Black replies with the pawn move to h4 and wins. The white king must approach the h5 pawn via f4, in step with the black king.",
-      "pv": [
-        {
-          "fen": "8/8/8/p3K2p/P7/7k/8/8 w - - 0 4",
-          "uci": "e5d4",
-          "san": "Kd4",
-          "fullmove": 4,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p6p/P2K4/7k/8/8 b - - 1 4",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 4,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/p7/P2K3p/7k/8/8 w - - 0 5",
-          "uci": "d4d3",
-          "san": "Kd3",
-          "fullmove": 5,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p7/P6p/3K3k/8/8 b - - 1 5",
-          "uci": "h3g3",
-          "san": "Kg3",
-          "fullmove": 5,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.4",
-        "uci": "e5d4"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 5,
-      "fen": "8/8/8/p6p/P4K2/8/6k1/8 w - - 2 5",
-      "uci": "f4e3",
-      "pt": "Com o lance do rei para e3 você deixa escapar o empate: as pretas respondem com o lance do peão para h4 e ganham. Cada casa do rei branco precisa corresponder à do rei preto; a casa certa é g5.",
-      "en": "With the king move to e3 you let the draw slip: Black replies with the pawn move to h4 and wins. Each white king square must correspond to the black king's; the right square is g5.",
-      "pv": [
-        {
-          "fen": "8/8/8/p6p/P4K2/8/6k1/8 w - - 2 5",
-          "uci": "f4e3",
-          "san": "Ke3",
-          "fullmove": 5,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p6p/P7/4K3/6k1/8 b - - 3 5",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 5,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/p7/P6p/4K3/6k1/8 w - - 0 6",
-          "uci": "e3d2",
-          "san": "Kd2",
-          "fullmove": 6,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p7/P6p/8/3K2k1/8 b - - 1 6",
-          "uci": "h4h3",
-          "san": "h3",
-          "fullmove": 6,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.5",
-        "uci": "f4e3"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e16",
-      "kind": "exercise",
-      "turn": 6,
-      "fen": "8/8/8/p5Kp/P7/6k1/8/8 w - - 4 6",
-      "uci": "g5f6",
-      "pt": "Com o lance do rei para f6 você deixa escapar o empate: as pretas respondem com o lance do peão para h4 e ganham. Só a captura imediata do peão de h5 segura o empate; qualquer desvio deixa o peão de h correr.",
-      "en": "With the king move to f6 you let the draw slip: Black replies with the pawn move to h4 and wins. Only the immediate capture of the h5 pawn holds the draw; any detour lets the h-pawn run.",
-      "pv": [
-        {
-          "fen": "8/8/8/p5Kp/P7/6k1/8/8 w - - 4 6",
-          "uci": "g5f6",
-          "san": "Kf6",
-          "fullmove": 6,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/5K2/p6p/P7/6k1/8/8 b - - 5 6",
-          "uci": "h5h4",
-          "san": "h4",
-          "fullmove": 6,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/5K2/p7/P6p/6k1/8/8 w - - 0 7",
-          "uci": "f6e5",
-          "san": "Ke5",
-          "fullmove": 7,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/p3K3/P6p/6k1/8/8 b - - 1 7",
-          "uci": "h4h3",
-          "san": "h3",
-          "fullmove": 7,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "loss",
-        "dtz_successor": 1
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e16.6",
-        "uci": "g5f6"
-      },
-      "text_key": "ex.e16.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e23",
+      "id": "e17",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
+      "fen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
       "uci": "d5c4",
-      "pt": "Com o lance do rei para c4 você deixa escapar a vitória: as pretas respondem com a captura do peão de e4 e seguram o empate. Qualquer lance de rei deixa o peão de e4 sem defesa; só um lance de peão passa a vez.",
-      "en": "With the king move to c4 you let the win slip: Black replies with the e4 pawn capture and holds the draw. Any king move leaves the e4 pawn undefended; only a pawn move passes the turn.",
+      "pt": "Com o lance do rei para c4 você deixa escapar a vitória: as pretas respondem com o lance do rei para c6 e seguram o empate. O rei preto toma a oposição, e o seu peão não passa.",
+      "en": "With the king move to c4 you let the win slip: Black replies with the king move to c6 and holds the draw. The black king takes the opposition, and your pawn does not get through.",
       "pv": [
         {
-          "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
+          "fen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
           "uci": "d5c4",
           "san": "Kc4",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/2K1Pk2/1P6/8/8 b - - 1 1",
-          "uci": "f4e4",
-          "san": "Kxe4",
+          "fen": "8/3k4/1p6/8/1PK5/8/8/8 b - - 1 1",
+          "uci": "d7c6",
+          "san": "Kc6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/4p3/2K1k3/1P6/8/8 w - - 0 2",
-          "uci": "b3b4",
-          "san": "b4",
+          "fen": "8/8/1pk5/8/1PK5/8/8/8 w - - 2 2",
+          "uci": "b4b5",
+          "san": "b5+",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/1PK1k3/8/8/8 b - - 0 2",
-          "uci": "e4f3",
-          "san": "Kf3",
+          "fen": "8/8/1pk5/1P6/2K5/8/8/8 b - - 0 2",
+          "uci": "c6d6",
+          "san": "Kd6",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e17.1",
+        "uci": "d5c4"
+      },
+      "text_key": "ex.e17.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e17",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+      "uci": "d5e5",
+      "pt": "Com o lance do rei para e5 você deixa escapar a vitória: as pretas respondem com o lance do peão para b5 e seguram o empate. Foram elas que gastaram o lance de reserva na hora certa, e agora é o seu rei que precisa se mover.",
+      "en": "With the king move to e5 you let the win slip: Black replies with the pawn move to b5 and holds the draw. It was Black who spent the reserve move at the right moment, and now it is your king that has to move.",
+      "pv": [
+        {
+          "fen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+          "uci": "d5e5",
+          "san": "Ke5",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/3k4/1p6/4K3/1P6/8/8/8 b - - 1 1",
+          "uci": "b6b5",
+          "san": "b5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/3k4/8/1p2K3/1P6/8/8/8 w - - 0 2",
+          "uci": "e5d4",
+          "san": "Kd4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/3k4/8/1p6/1P1K4/8/8/8 b - - 1 2",
+          "uci": "d7c6",
+          "san": "Kc6",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "variantes-naturais-depois.json",
+        "site": "exercise/e17.1",
+        "uci": "d5e5"
+      },
+      "text_key": "ex.e17.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e23",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+      "uci": "d6e7",
+      "pt": "Com o lance do rei para e7 você deixa escapar a vitória: as pretas respondem com a captura do peão de e5 e seguram o empate. Seu rei abandonou o peão sem antes gastar o lance de reserva do peão de h.",
+      "en": "With the king move to e7 you let the win slip: Black replies with the capture of the e5 pawn and holds the draw. Your king abandoned the pawn without first spending the h-pawn's reserve move.",
+      "pv": [
+        {
+          "fen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+          "uci": "d6e7",
+          "san": "Ke7",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/4K3/4p3/4Pk2/8/7P/8/8 b - - 1 1",
+          "uci": "f5e5",
+          "san": "Kxe5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/4K3/4p3/4k3/8/7P/8/8 w - - 0 2",
+          "uci": "h3h4",
+          "san": "h4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/4K3/4p3/4k3/7P/8/8/8 b - - 0 2",
+          "uci": "e5f4",
+          "san": "Kf4",
           "fullmove": 2,
           "turn": "black"
         }
@@ -2638,7 +2688,7 @@
       "evidence": {
         "file": "variantes-naturais-depois.json",
         "site": "exercise/e23.1",
-        "uci": "d5c4"
+        "uci": "d6e7"
       },
       "text_key": "ex.e23.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2647,36 +2697,36 @@
       "id": "e23",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-      "uci": "d5c5",
-      "pt": "Com o lance do rei para c5 você deixa escapar a vitória: as pretas respondem com a captura do peão de e4 e seguram o empate. Qualquer lance de rei deixa o peão de e4 sem defesa; só um lance de peão passa a vez.",
-      "en": "With the king move to c5 you let the win slip: Black replies with the e4 pawn capture and holds the draw. Any king move leaves the e4 pawn undefended; only a pawn move passes the turn.",
+      "fen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+      "uci": "d6c5",
+      "pt": "Com o lance do rei para c5 você deixa escapar a vitória: as pretas respondem com a captura do peão de e5 e seguram o empate. O peão de h ainda tinha um lance de reserva para passar a vez.",
+      "en": "With the king move to c5 you let the win slip: Black replies with the capture of the e5 pawn and holds the draw. The h-pawn still had a reserve move to pass the turn.",
       "pv": [
         {
-          "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-          "uci": "d5c5",
+          "fen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+          "uci": "d6c5",
           "san": "Kc5",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/2K1p3/4Pk2/1P6/8/8 b - - 1 1",
-          "uci": "f4e4",
-          "san": "Kxe4",
+          "fen": "8/8/4p3/2K1Pk2/8/7P/8/8 b - - 1 1",
+          "uci": "f5e5",
+          "san": "Kxe5",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/2K1p3/4k3/1P6/8/8 w - - 0 2",
-          "uci": "b3b4",
-          "san": "b4",
+          "fen": "8/8/4p3/2K1k3/8/7P/8/8 w - - 0 2",
+          "uci": "h3h4",
+          "san": "h4",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/2K1p3/1P2k3/8/8/8 b - - 0 2",
-          "uci": "e4d3",
-          "san": "Kd3",
+          "fen": "8/8/4p3/2K1k3/7P/8/8/8 b - - 0 2",
+          "uci": "e5e4",
+          "san": "Ke4",
           "fullmove": 2,
           "turn": "black"
         }
@@ -2688,47 +2738,26 @@
       "evidence": {
         "file": "variantes-naturais-depois.json",
         "site": "exercise/e23.1",
-        "uci": "d5c5"
+        "uci": "d6c5"
       },
       "text_key": "ex.e23.hint",
       "access": "dica sob demanda, exercício silencioso"
     },
     {
-      "id": "e23",
+      "id": "e24",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-      "uci": "d5c6",
-      "pt": "Com o lance do rei para c6 você deixa escapar a vitória: as pretas respondem com a captura do peão de e4 e seguram o empate. Qualquer lance de rei deixa o peão de e4 sem defesa; só um lance de peão passa a vez.",
-      "en": "With the king move to c6 you let the win slip: Black replies with the e4 pawn capture and holds the draw. Any king move leaves the e4 pawn undefended; only a pawn move passes the turn.",
+      "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+      "uci": "d6c7",
+      "pt": "Com o lance do rei para c7 você deixa escapar a vitória: o rei preto fica sem lances e não está em xeque. É afogamento, empate. Deixe a casa b8 livre para ele.",
+      "en": "With the king move to c7 you let the win slip: the black king has no moves and is not in check. It is stalemate, a draw. Leave the b8 square free for it.",
       "pv": [
         {
-          "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-          "uci": "d5c6",
-          "san": "Kc6",
+          "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+          "uci": "d6c7",
+          "san": "Kc7",
           "fullmove": 1,
           "turn": "white"
-        },
-        {
-          "fen": "8/8/2K5/4p3/4Pk2/1P6/8/8 b - - 1 1",
-          "uci": "f4e4",
-          "san": "Kxe4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/2K5/4p3/4k3/1P6/8/8 w - - 0 2",
-          "uci": "b3b4",
-          "san": "b4",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/2K5/4p3/1P2k3/8/8/8 b - - 0 2",
-          "uci": "e4d3",
-          "san": "Kd3",
-          "fullmove": 2,
-          "turn": "black"
         }
       ],
       "objective": {
@@ -2737,47 +2766,47 @@
       },
       "evidence": {
         "file": "variantes-naturais-depois.json",
-        "site": "exercise/e23.1",
-        "uci": "d5c6"
+        "site": "exercise/e24.1",
+        "uci": "d6c7"
       },
-      "text_key": "ex.e23.hint",
+      "text_key": "ex.e24.hint",
       "access": "dica sob demanda, exercício silencioso"
     },
     {
-      "id": "e23",
+      "id": "e24",
       "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-      "uci": "d5d6",
-      "pt": "Com o lance do rei para d6 você deixa escapar a vitória: as pretas respondem com a captura do peão de e4 e seguram o empate. Qualquer lance de rei deixa o peão de e4 sem defesa; só um lance de peão passa a vez.",
-      "en": "With the king move to d6 you let the win slip: Black replies with the e4 pawn capture and holds the draw. Any king move leaves the e4 pawn undefended; only a pawn move passes the turn.",
+      "turn": 2,
+      "fen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+      "uci": "c6b5",
+      "pt": "Com o lance do rei para b5 você deixa escapar a vitória: as pretas respondem com o lance do rei para b7 e seguram o empate. O rei preto fica na frente do peão, e o seu rei já não protege a casa b8.",
+      "en": "With the king move to b5 you let the win slip: Black replies with the king move to b7 and holds the draw. The black king stands in front of the pawn, and your king no longer guards the b8 square.",
       "pv": [
         {
-          "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-          "uci": "d5d6",
-          "san": "Kd6",
-          "fullmove": 1,
+          "fen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+          "uci": "c6b5",
+          "san": "Kb5",
+          "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/3K4/4p3/4Pk2/1P6/8/8 b - - 1 1",
-          "uci": "f4e4",
-          "san": "Kxe4",
-          "fullmove": 1,
+          "fen": "1k6/8/1P6/1K6/8/8/8/8 b - - 3 2",
+          "uci": "b8b7",
+          "san": "Kb7",
+          "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/8/3K4/4p3/4k3/1P6/8/8 w - - 0 2",
-          "uci": "b3b4",
-          "san": "b4",
-          "fullmove": 2,
+          "fen": "8/1k6/1P6/1K6/8/8/8/8 w - - 4 3",
+          "uci": "b5a4",
+          "san": "Ka4",
+          "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/3K4/4p3/1P2k3/8/8/8 b - - 0 2",
-          "uci": "e4d3",
-          "san": "Kd3",
-          "fullmove": 2,
+          "fen": "8/1k6/1P6/8/K7/8/8/8 b - - 5 3",
+          "uci": "b7b6",
+          "san": "Kxb6",
+          "fullmove": 3,
           "turn": "black"
         }
       ],
@@ -2787,60 +2816,10 @@
       },
       "evidence": {
         "file": "variantes-naturais-depois.json",
-        "site": "exercise/e23.1",
-        "uci": "d5d6"
+        "site": "exercise/e24.2",
+        "uci": "c6b5"
       },
-      "text_key": "ex.e23.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e23",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-      "uci": "d5e6",
-      "pt": "Com o lance do rei para e6 você deixa escapar a vitória: as pretas respondem com a captura do peão de e4 e seguram o empate. Qualquer lance de rei deixa o peão de e4 sem defesa; só um lance de peão passa a vez.",
-      "en": "With the king move to e6 you let the win slip: Black replies with the e4 pawn capture and holds the draw. Any king move leaves the e4 pawn undefended; only a pawn move passes the turn.",
-      "pv": [
-        {
-          "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
-          "uci": "d5e6",
-          "san": "Ke6",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/4K3/4p3/4Pk2/1P6/8/8 b - - 1 1",
-          "uci": "f4e4",
-          "san": "Kxe4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/4K3/4p3/4k3/1P6/8/8 w - - 0 2",
-          "uci": "b3b4",
-          "san": "b4",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/4K3/4p3/1P2k3/8/8/8 b - - 0 2",
-          "uci": "e4d3",
-          "san": "Kd3",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "draw",
-        "dtz_successor": 0
-      },
-      "evidence": {
-        "file": "variantes-naturais-depois.json",
-        "site": "exercise/e23.1",
-        "uci": "d5e6"
-      },
-      "text_key": "ex.e23.hint",
+      "text_key": "ex.e24.hint",
       "access": "dica sob demanda, exercício silencioso"
     }
   ],
@@ -11089,6 +11068,684 @@
     },
     {
       "kind": "exercise",
+      "id": "e20",
+      "turn": 1,
+      "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e20.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O rei vai para f5, ao lado do rei preto, com uma casa entre eles: o rei preto não avança. É o único lance que empata."
+              ],
+              "variations": [
+                {
+                  "id": "f4f5",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4f5",
+                    "h5h4",
+                    "f5f4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "O rei vai para f5, ao lado do rei preto, com uma casa entre eles: o rei preto não avança. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "1.Rf5",
+                    "1...Rh4",
+                    "2.Rf4"
+                  ]
+                },
+                {
+                  "id": "f4g3",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4g3",
+                    "h5g5",
+                    "g3f3",
+                    "g5f5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "Com o lance do rei para g3 você deixa escapar o empate: as pretas respondem com o lance do rei para g5 e ganham. O rei preto fica de frente para o seu, com a vez das brancas, e passa: escolta o peão de h ou vai buscar o peão de a4."
+                  ],
+                  "movesSan": [
+                    "1.Rg3",
+                    "1...Rg5",
+                    "2.Rf3",
+                    "2...Rf5"
+                  ]
+                },
+                {
+                  "id": "f4e4",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4e4",
+                    "h5g5",
+                    "e4f3",
+                    "g5f5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "Com o lance do rei para e4 você deixa escapar o empate: as pretas respondem com o lance do rei para g5 e ganham. Seu rei não chega ao peão de a5, e o rei preto escolta o peão de h até a coroação."
+                  ],
+                  "movesSan": [
+                    "1.Re4",
+                    "1...Rg5",
+                    "2.Rf3",
+                    "2...Rf5"
+                  ]
+                },
+                {
+                  "id": "f4e5",
+                  "label": "D",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4e5",
+                    "h5g5",
+                    "e5e4",
+                    "g5g4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "Com o lance do rei para e5 você deixa escapar o empate: as pretas respondem com o lance do rei para g5 e ganham. Seu rei se afastou do peão de h, e o rei preto o escolta até a coroação."
+                  ],
+                  "movesSan": [
+                    "1.Re5",
+                    "1...Rg5",
+                    "2.Re4",
+                    "2...Rg4"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e20.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The king goes to f5, beside the black king, with one square between them: the black king cannot advance. It is the only move that draws."
+              ],
+              "variations": [
+                {
+                  "id": "f4f5",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4f5",
+                    "h5h4",
+                    "f5f4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "The king goes to f5, beside the black king, with one square between them: the black king cannot advance. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "1.Kf5",
+                    "1...Kh4",
+                    "2.Kf4"
+                  ]
+                },
+                {
+                  "id": "f4g3",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4g3",
+                    "h5g5",
+                    "g3f3",
+                    "g5f5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "With the king move to g3 you let the draw slip: Black replies with the king move to g5 and wins. The black king faces yours, with White to move, and gets through: it escorts the h-pawn or goes for the a4 pawn."
+                  ],
+                  "movesSan": [
+                    "1.Kg3",
+                    "1...Kg5",
+                    "2.Kf3",
+                    "2...Kf5"
+                  ]
+                },
+                {
+                  "id": "f4e4",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4e4",
+                    "h5g5",
+                    "e4f3",
+                    "g5f5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "With the king move to e4 you let the draw slip: Black replies with the king move to g5 and wins. Your king does not reach the a5 pawn, and the black king escorts the h-pawn to promotion."
+                  ],
+                  "movesSan": [
+                    "1.Ke4",
+                    "1...Kg5",
+                    "2.Kf3",
+                    "2...Kf5"
+                  ]
+                },
+                {
+                  "id": "f4e5",
+                  "label": "D",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "f4e5",
+                    "h5g5",
+                    "e5e4",
+                    "g5g4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.1",
+                  "texts": [
+                    "With the king move to e5 you let the draw slip: Black replies with the king move to g5 and wins. Your king moved away from the h-pawn, and the black king escorts it to promotion."
+                  ],
+                  "movesSan": [
+                    "1.Ke5",
+                    "1...Kg5",
+                    "2.Ke4",
+                    "2...Kg4"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e20",
+      "turn": 2,
+      "fen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e20.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O rei desce para f4, acompanhando o rei preto na mesma fileira. É o único lance que empata."
+              ],
+              "variations": [
+                {
+                  "id": "f5f4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "f5f4",
+                    "h6h5",
+                    "f4f3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.2",
+                  "texts": [
+                    "O rei desce para f4, acompanhando o rei preto na mesma fileira. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "2.Rf4",
+                    "2...h5",
+                    "3.Rf3"
+                  ]
+                },
+                {
+                  "id": "f5g6",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "f5g6",
+                    "h6h5",
+                    "g6f5",
+                    "h4g3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.2",
+                  "texts": [
+                    "Com o lance do rei para g6 você deixa escapar o empate: as pretas respondem com o lance do peão para h5 e ganham. O peão avança, e o rei preto passa por g3 enquanto o seu rei está do lado errado."
+                  ],
+                  "movesSan": [
+                    "2.Rg6",
+                    "2...h5",
+                    "3.Rf5",
+                    "3...Rg3"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e20.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The king goes down to f4, following the black king on the same rank. It is the only move that draws."
+              ],
+              "variations": [
+                {
+                  "id": "f5f4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "f5f4",
+                    "h6h5",
+                    "f4f3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.2",
+                  "texts": [
+                    "The king goes down to f4, following the black king on the same rank. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "2.Kf4",
+                    "2...h5",
+                    "3.Kf3"
+                  ]
+                },
+                {
+                  "id": "f5g6",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/7p/p4K2/P6k/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "f5g6",
+                    "h6h5",
+                    "g6f5",
+                    "h4g3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.2",
+                  "texts": [
+                    "With the king move to g6 you let the draw slip: Black replies with the pawn move to h5 and wins. The pawn advances, and the black king passes through g3 while your king is on the wrong side."
+                  ],
+                  "movesSan": [
+                    "2.Kg6",
+                    "2...h5",
+                    "3.Kf5",
+                    "3...Kg3"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e20",
+      "turn": 3,
+      "fen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e20.3",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O rei desce para f3 e segue lado a lado com o rei preto; o peão de h não passa. É o único lance que empata."
+              ],
+              "variations": [
+                {
+                  "id": "f4f3",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+                  "movesUci": [
+                    "f4f3",
+                    "h4h3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.3",
+                  "texts": [
+                    "O rei desce para f3 e segue lado a lado com o rei preto; o peão de h não passa. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "3.Rf3",
+                    "3...Rh3"
+                  ]
+                },
+                {
+                  "id": "f4f5",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+                  "movesUci": [
+                    "f4f5",
+                    "h4g3",
+                    "f5e4",
+                    "h5h4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.3",
+                  "texts": [
+                    "Com o lance do rei para f5 você deixa escapar o empate: as pretas respondem com o lance do rei para g3 e ganham. O rei preto passa por trás do seu rei e escolta o peão de h."
+                  ],
+                  "movesSan": [
+                    "3.Rf5",
+                    "3...Rg3",
+                    "4.Re4",
+                    "4...h4"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e20.3",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The king goes down to f3 and stays side by side with the black king; the h-pawn does not get through. It is the only move that draws."
+              ],
+              "variations": [
+                {
+                  "id": "f4f3",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+                  "movesUci": [
+                    "f4f3",
+                    "h4h3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.3",
+                  "texts": [
+                    "The king goes down to f3 and stays side by side with the black king; the h-pawn does not get through. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "3.Kf3",
+                    "3...Kh3"
+                  ]
+                },
+                {
+                  "id": "f4f5",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/p6p/P4K1k/8/8/8 w - - 0 3",
+                  "movesUci": [
+                    "f4f5",
+                    "h4g3",
+                    "f5e4",
+                    "h5h4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e20.3",
+                  "texts": [
+                    "With the king move to f5 you let the draw slip: Black replies with the king move to g3 and wins. The black king slips behind your king and escorts the h-pawn."
+                  ],
+                  "movesSan": [
+                    "3.Kf5",
+                    "3...Kg3",
+                    "4.Ke4",
+                    "4...h4"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e21",
+      "turn": 1,
+      "fen": "8/1p6/8/8/1P6/1k1K4/8/8 w - - 0 1",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e21.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O avanço salva o peão de b4, que o rei preto atacava, e fixa a estrutura depois da resposta das pretas. É o único lance que empata."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e21.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The advance saves the b4 pawn, which the black king was attacking, and fixes the structure after Black's reply. It is the only move that draws."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e21",
+      "turn": 2,
+      "fen": "8/8/1p6/1P6/8/1k1K4/8/8 w - - 0 2",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e21.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Seu rei recua à segunda fileira e fica pronto para a oposição."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e21.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Your king steps back to the second rank, ready for the opposition."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e21",
+      "turn": 3,
+      "fen": "8/8/1p6/1P6/2k5/8/3K4/8 w - - 2 3",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e21.3",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Seu rei fica diante do rei preto, com uma casa entre eles, e impede que ele entre."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e21.3",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Your king stands in front of the black king, with one square between them, and stops it from entering."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e21",
+      "turn": 4,
+      "fen": "8/8/1p6/1P6/1k6/8/2K5/8 w - - 4 4",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e21.4",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Seu rei fica de novo em oposição ao rei preto, agora na coluna b: mesmo que o peão de b5 caia, o empate continua."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e21.4",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Your king is again in opposition to the black king, now on the b-file: even if the b5 pawn falls, the draw holds."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e22",
+      "turn": 1,
+      "fen": "8/7k/p6P/6K1/P7/8/8/8 w - - 0 1",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e22.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O avanço fixa o peão adversário e tira das pretas o lance de peão que serviria para passar a vez. É o único lance que ganha."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e22.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The advance fixes the enemy pawn and takes away the pawn move Black would use to pass the turn. It is the only winning move."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
       "id": "e14",
       "turn": 1,
       "fen": "8/3k4/8/p5p1/P5P1/4K3/8/8 w - - 0 1",
@@ -11282,6 +11939,30 @@
                   "validated": true,
                   "explanationByPly": {},
                   "contextId": "exercise/e14.2"
+                },
+                {
+                  "id": "d3c3",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/3k4/p5p1/P5P1/3K4/8/8 w - - 2 2",
+                  "movesUci": [
+                    "d3c3",
+                    "d6c5",
+                    "c3c2",
+                    "c5b4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e14.2",
+                  "texts": [
+                    "Com o lance do rei para c3 você deixa escapar a vitória: as pretas respondem com o lance do rei para c5 e ganham. O rei preto fica com a oposição, passa por b4 e captura o peão de a4."
+                  ],
+                  "movesSan": [
+                    "2.Rc3",
+                    "2...Rc5",
+                    "3.Rc2",
+                    "3...Rb4"
+                  ]
                 }
               ]
             }
@@ -11344,6 +12025,30 @@
                   "validated": true,
                   "explanationByPly": {},
                   "contextId": "exercise/e14.2"
+                },
+                {
+                  "id": "d3c3",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/3k4/p5p1/P5P1/3K4/8/8 w - - 2 2",
+                  "movesUci": [
+                    "d3c3",
+                    "d6c5",
+                    "c3c2",
+                    "c5b4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e14.2",
+                  "texts": [
+                    "With the king move to c3 you let the win slip: Black replies with the king move to c5 and wins. The black king keeps the opposition, passes through b4 and captures the a4 pawn."
+                  ],
+                  "movesSan": [
+                    "2.Kc3",
+                    "2...Kc5",
+                    "3.Kc2",
+                    "3...Kb4"
+                  ]
                 }
               ]
             }
@@ -11412,6 +12117,30 @@
                   "validated": true,
                   "explanationByPly": {},
                   "contextId": "exercise/e14.3"
+                },
+                {
+                  "id": "d4c5",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 4 3",
+                  "movesUci": [
+                    "d4c5",
+                    "e6e5",
+                    "c5c4",
+                    "e5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e14.3",
+                  "texts": [
+                    "Com o lance do rei para c5 você deixa escapar a vitória: as pretas respondem com o lance do rei para e5 e seguram o empate. Cada rei vai buscar um peão, e os dois chegam ao mesmo tempo."
+                  ],
+                  "movesSan": [
+                    "3.Rc5",
+                    "3...Re5",
+                    "4.Rc4",
+                    "4...Re4"
+                  ]
                 }
               ]
             }
@@ -11472,6 +12201,30 @@
                   "validated": true,
                   "explanationByPly": {},
                   "contextId": "exercise/e14.3"
+                },
+                {
+                  "id": "d4c5",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 4 3",
+                  "movesUci": [
+                    "d4c5",
+                    "e6e5",
+                    "c5c4",
+                    "e5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e14.3",
+                  "texts": [
+                    "With the king move to c5 you let the win slip: Black replies with the king move to e5 and holds the draw. Each king goes for a pawn, and both arrive at the same time."
+                  ],
+                  "movesSan": [
+                    "3.Kc5",
+                    "3...Ke5",
+                    "4.Kc4",
+                    "4...Ke4"
+                  ]
                 }
               ]
             }
@@ -11483,7 +12236,7 @@
       "kind": "exercise",
       "id": "e15",
       "turn": 1,
-      "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
+      "fen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
       "explanations": {
         "pt": {
           "positionId": "exercise/e15.1",
@@ -11494,9 +12247,80 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O peão avança uma casa e deixa duas casas vazias, um número par. b4 deixaria uma só. É o único lance que ganha."
+                "O peão de f fecha o espaço na coluna f: sem lances de peão, as pretas precisam mover o rei e abandonar o peão de b5. É o único lance que ganha."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "f2f4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+                  "movesUci": [
+                    "f2f4",
+                    "c4d4",
+                    "a5b5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.1",
+                  "texts": [
+                    "O peão de f fecha o espaço na coluna f: sem lances de peão, as pretas precisam mover o rei e abandonar o peão de b5. É o único lance que ganha."
+                  ],
+                  "movesSan": [
+                    "1.f4",
+                    "1...Rd4",
+                    "2.Rxb5"
+                  ]
+                },
+                {
+                  "id": "f2f3",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+                  "movesUci": [
+                    "f2f3",
+                    "f5f4",
+                    "a5a6",
+                    "c4b4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.1",
+                  "texts": [
+                    "Com o lance do peão para f3 você deixa escapar a vitória: as pretas respondem com o lance do peão para f4 e ganham. Sobrou uma casa vazia na coluna f, e é o seu rei que precisa se mover: o peão de b4 cai."
+                  ],
+                  "movesSan": [
+                    "1.f3",
+                    "1...f4",
+                    "2.Ra6",
+                    "2...Rxb4"
+                  ]
+                },
+                {
+                  "id": "a5b6",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+                  "movesUci": [
+                    "a5b6",
+                    "f5f4",
+                    "b6a5",
+                    "f4f3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.1",
+                  "texts": [
+                    "Com o lance do rei para b6 você deixa escapar a vitória: as pretas respondem com o lance do peão para f4 e ganham. Seu rei abandonou o peão de b4 antes de gastar o lance de peão que ainda tinha; o rei preto captura em b4."
+                  ],
+                  "movesSan": [
+                    "1.Rb6",
+                    "1...f4",
+                    "2.Ra5",
+                    "2...f3"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -11509,9 +12333,80 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The pawn advances one square and leaves two empty squares, an even number. b4 would leave only one. It is the only winning move."
+                "The f-pawn closes the gap on the f-file: with no pawn moves, Black has to move the king and abandon the b5 pawn. It is the only winning move."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "f2f4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+                  "movesUci": [
+                    "f2f4",
+                    "c4d4",
+                    "a5b5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.1",
+                  "texts": [
+                    "The f-pawn closes the gap on the f-file: with no pawn moves, Black has to move the king and abandon the b5 pawn. It is the only winning move."
+                  ],
+                  "movesSan": [
+                    "1.f4",
+                    "1...Kd4",
+                    "2.Kxb5"
+                  ]
+                },
+                {
+                  "id": "f2f3",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+                  "movesUci": [
+                    "f2f3",
+                    "f5f4",
+                    "a5a6",
+                    "c4b4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.1",
+                  "texts": [
+                    "With the pawn move to f3 you let the win slip: Black replies with the pawn move to f4 and wins. One empty square was left on the f-file, and it is your king that has to move: the b4 pawn falls."
+                  ],
+                  "movesSan": [
+                    "1.f3",
+                    "1...f4",
+                    "2.Ka6",
+                    "2...Kxb4"
+                  ]
+                },
+                {
+                  "id": "a5b6",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
+                  "movesUci": [
+                    "a5b6",
+                    "f5f4",
+                    "b6a5",
+                    "f4f3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.1",
+                  "texts": [
+                    "With the king move to b6 you let the win slip: Black replies with the pawn move to f4 and wins. Your king abandoned the b4 pawn before spending the pawn move it still had; the black king captures on b4."
+                  ],
+                  "movesSan": [
+                    "1.Kb6",
+                    "1...f4",
+                    "2.Ka5",
+                    "2...f3"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11521,7 +12416,7 @@
       "kind": "exercise",
       "id": "e15",
       "turn": 2,
-      "fen": "8/8/8/1p3pK1/4kP2/1P6/8/8 w - - 0 2",
+      "fen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
       "explanations": {
         "pt": {
           "positionId": "exercise/e15.2",
@@ -11532,9 +12427,54 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "Com uma só casa vazia entre os peões, o peão avança e fecha o espaço. Agora as pretas estão em zugzwang. É o único lance que ganha."
+                "A captura do peão de b5 é o único lance que ganha: o seu peão de b coroa com a ajuda do rei."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "a5b5",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
+                  "movesUci": [
+                    "a5b5",
+                    "d4d5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.2",
+                  "texts": [
+                    "A captura do peão de b5 é o único lance que ganha: o seu peão de b coroa com a ajuda do rei."
+                  ],
+                  "movesSan": [
+                    "2.Rxb5",
+                    "2...Rd5"
+                  ]
+                },
+                {
+                  "id": "a5b6",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
+                  "movesUci": [
+                    "a5b6",
+                    "d4e3",
+                    "b6b5",
+                    "e3f4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.2",
+                  "texts": [
+                    "Com o lance do rei para b6 você deixa escapar a vitória: as pretas respondem com o lance do rei para e3 e seguram o empate. O rei preto captura o peão de f4 enquanto o seu captura o de b5, e sobra um peão de cada lado."
+                  ],
+                  "movesSan": [
+                    "2.Rb6",
+                    "2...Re3",
+                    "3.Rxb5",
+                    "3...Rxf4"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -11547,47 +12487,54 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "With a single empty square between the pawns, the pawn advances and closes the gap. Now Black is in zugzwang. It is the only winning move."
+                "Capturing the b5 pawn is the only winning move: your b-pawn promotes with the king's help."
               ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e15",
-      "turn": 3,
-      "fen": "8/8/8/1p3pK1/1P1k1P2/8/8/8 w - - 1 3",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e15.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O rei preto abandonou o peão de f5. Seu rei o captura e ganha o final. É o único lance que ganha."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e15.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The black king abandoned the f5 pawn. Your king captures it and wins the ending. It is the only winning move."
-              ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "a5b5",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
+                  "movesUci": [
+                    "a5b5",
+                    "d4d5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.2",
+                  "texts": [
+                    "Capturing the b5 pawn is the only winning move: your b-pawn promotes with the king's help."
+                  ],
+                  "movesSan": [
+                    "2.Kxb5",
+                    "2...Kd5"
+                  ]
+                },
+                {
+                  "id": "a5b6",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/8/Kp3p2/1P1k1P2/8/8/8 w - - 1 2",
+                  "movesUci": [
+                    "a5b6",
+                    "d4e3",
+                    "b6b5",
+                    "e3f4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e15.2",
+                  "texts": [
+                    "With the king move to b6 you let the win slip: Black replies with the king move to e3 and holds the draw. The black king captures the f4 pawn while yours captures the b5 pawn, and one pawn is left on each side."
+                  ],
+                  "movesSan": [
+                    "2.Kb6",
+                    "2...Ke3",
+                    "3.Kxb5",
+                    "3...Kxf4"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11597,7 +12544,7 @@
       "kind": "exercise",
       "id": "e16",
       "turn": 1,
-      "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
+      "fen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
       "explanations": {
         "pt": {
           "positionId": "exercise/e16.1",
@@ -11608,9 +12555,56 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O peão de a4 fixa o peão de a5: as pretas já não têm lance de peão na coluna a. É o único lance que empata."
+                "O peão de b4 fixa o peão de b5 antes de o rei agir: as pretas ficam sem lance de reserva na coluna b. É o único lance que empata."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "b3b4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+                  "movesUci": [
+                    "b3b4",
+                    "g5g4",
+                    "h7g7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.1",
+                  "texts": [
+                    "O peão de b4 fixa o peão de b5 antes de o rei agir: as pretas ficam sem lance de reserva na coluna b. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "1.b4",
+                    "1...g4",
+                    "2.Rg7"
+                  ]
+                },
+                {
+                  "id": "h7g7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+                  "movesUci": [
+                    "h7g7",
+                    "b5b4",
+                    "g7f6",
+                    "h5g4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.1",
+                  "texts": [
+                    "Com o lance do rei para g7 você deixa escapar o empate: as pretas respondem com o lance do peão para b4 e ganham. Elas fixaram o seu peão de b3 primeiro e ficam com o último tempo: o rei preto captura em g3, e o peão de g coroa."
+                  ],
+                  "movesSan": [
+                    "1.Rg7",
+                    "1...b4",
+                    "2.Rf6",
+                    "2...Rg4"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -11623,9 +12617,56 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The a4 pawn fixes the a5 pawn: Black has no pawn move left on the a-file. It is the only drawing move."
+                "The b4 pawn fixes the b5 pawn before the king acts: Black is left without a reserve move on the b-file. It is the only move that draws."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "b3b4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+                  "movesUci": [
+                    "b3b4",
+                    "g5g4",
+                    "h7g7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.1",
+                  "texts": [
+                    "The b4 pawn fixes the b5 pawn before the king acts: Black is left without a reserve move on the b-file. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "1.b4",
+                    "1...g4",
+                    "2.Kg7"
+                  ]
+                },
+                {
+                  "id": "h7g7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+                  "movesUci": [
+                    "h7g7",
+                    "b5b4",
+                    "g7f6",
+                    "h5g4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.1",
+                  "texts": [
+                    "With the king move to g7 you let the draw slip: Black replies with the pawn move to b4 and wins. Black fixed your b3 pawn first and keeps the last tempo: the black king captures on g3, and the g-pawn promotes."
+                  ],
+                  "movesSan": [
+                    "1.Kg7",
+                    "1...b4",
+                    "2.Kf6",
+                    "2...Kg4"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11635,7 +12676,7 @@
       "kind": "exercise",
       "id": "e16",
       "turn": 2,
-      "fen": "8/5K2/8/p5kp/P7/7P/8/8 w - - 0 2",
+      "fen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
       "explanations": {
         "pt": {
           "positionId": "exercise/e16.2",
@@ -11646,9 +12687,56 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O rei branco vai para e6, no compasso do rei preto, a caminho do peão de h5. É o único lance que empata."
+                "O rei vai para g7, perto dos peões da coluna g, e fecha o caminho do rei preto por f6 e g6. É o único lance que empata."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "h7g7",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
+                  "movesUci": [
+                    "h7g7",
+                    "h5g5",
+                    "g7h7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.2",
+                  "texts": [
+                    "O rei vai para g7, perto dos peões da coluna g, e fecha o caminho do rei preto por f6 e g6. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "2.Rg7",
+                    "2...Rg5",
+                    "3.Rh7"
+                  ]
+                },
+                {
+                  "id": "h7g8",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
+                  "movesUci": [
+                    "h7g8",
+                    "h5g6",
+                    "g8f8",
+                    "g6f5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.2",
+                  "texts": [
+                    "Com o lance do rei para g8 você deixa escapar o empate: as pretas respondem com o lance do rei para g6 e ganham. Seu rei se afastou, e o rei preto passa por f5 e e4 até capturar o peão de g3."
+                  ],
+                  "movesSan": [
+                    "2.Rg8",
+                    "2...Rg6",
+                    "3.Rf8",
+                    "3...Rf5"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -11661,9 +12749,56 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The white king goes to e6, in step with the black king, on its way to the h5 pawn. It is the only drawing move."
+                "The king goes to g7, close to the g-file pawns, and blocks the black king's path through f6 and g6. It is the only move that draws."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "h7g7",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
+                  "movesUci": [
+                    "h7g7",
+                    "h5g5",
+                    "g7h7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.2",
+                  "texts": [
+                    "The king goes to g7, close to the g-file pawns, and blocks the black king's path through f6 and g6. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "2.Kg7",
+                    "2...Kg5",
+                    "3.Kh7"
+                  ]
+                },
+                {
+                  "id": "h7g8",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/7K/8/1p5k/1P4p1/6P1/8/8 w - - 0 2",
+                  "movesUci": [
+                    "h7g8",
+                    "h5g6",
+                    "g8f8",
+                    "g6f5"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.2",
+                  "texts": [
+                    "With the king move to g8 you let the draw slip: Black replies with the king move to g6 and wins. Your king moved away, and the black king passes through f5 and e4 until it captures the g3 pawn."
+                  ],
+                  "movesSan": [
+                    "2.Kg8",
+                    "2...Kg6",
+                    "3.Kf8",
+                    "3...Kf5"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11673,7 +12808,7 @@
       "kind": "exercise",
       "id": "e16",
       "turn": 3,
-      "fen": "8/8/4K3/p6p/P6k/7P/8/8 w - - 2 3",
+      "fen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
       "explanations": {
         "pt": {
           "positionId": "exercise/e16.3",
@@ -11684,9 +12819,56 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O rei branco se aproxima por e5 ou f5; os dois lances empatam. O que importa é o compasso com o rei preto."
+                "O rei vai para h7 e espera: quando o rei preto for para f5, o seu rei alcança o peão de g4 por h6 e g5. É o único lance que empata."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "g7h7",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
+                  "movesUci": [
+                    "g7h7",
+                    "g5f5",
+                    "h7h6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.3",
+                  "texts": [
+                    "O rei vai para h7 e espera: quando o rei preto for para f5, o seu rei alcança o peão de g4 por h6 e g5. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "3.Rh7",
+                    "3...Rf5",
+                    "4.Rh6"
+                  ]
+                },
+                {
+                  "id": "g7f7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
+                  "movesUci": [
+                    "g7f7",
+                    "g5f5",
+                    "f7e7",
+                    "f5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.3",
+                  "texts": [
+                    "Com o lance do rei para f7 você deixa escapar o empate: as pretas respondem com o lance do rei para f5 e ganham. O rei preto chega a e4 e f3 e captura o peão de g3; o seu rei, do outro lado, não alcança o peão de g4."
+                  ],
+                  "movesSan": [
+                    "3.Rf7",
+                    "3...Rf5",
+                    "4.Re7",
+                    "4...Re4"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -11699,9 +12881,56 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The white king approaches via e5 or f5; both moves draw. What matters is keeping pace with the black king."
+                "The king goes to h7 and waits: when the black king goes to f5, your king reaches the g4 pawn via h6 and g5. It is the only move that draws."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "g7h7",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
+                  "movesUci": [
+                    "g7h7",
+                    "g5f5",
+                    "h7h6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.3",
+                  "texts": [
+                    "The king goes to h7 and waits: when the black king goes to f5, your king reaches the g4 pawn via h6 and g5. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "3.Kh7",
+                    "3...Kf5",
+                    "4.Kh6"
+                  ]
+                },
+                {
+                  "id": "g7f7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/6K1/8/1p4k1/1P4p1/6P1/8/8 w - - 2 3",
+                  "movesUci": [
+                    "g7f7",
+                    "g5f5",
+                    "f7e7",
+                    "f5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.3",
+                  "texts": [
+                    "With the king move to f7 you let the draw slip: Black replies with the king move to f5 and wins. The black king reaches e4 and f3 and captures the g3 pawn; your king, on the other side, cannot reach the g4 pawn."
+                  ],
+                  "movesSan": [
+                    "3.Kf7",
+                    "3...Kf5",
+                    "4.Ke7",
+                    "4...Ke4"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11711,7 +12940,7 @@
       "kind": "exercise",
       "id": "e16",
       "turn": 4,
-      "fen": "8/8/8/p3K2p/P7/7k/8/8 w - - 0 4",
+      "fen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
       "explanations": {
         "pt": {
           "positionId": "exercise/e16.4",
@@ -11722,9 +12951,54 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O rei branco passa por f4 e continua no compasso do rei preto. É o único lance que empata."
+                "O rei vai para h6, atrás do peão de g4: enquanto o rei preto captura o peão de g3, o seu captura o de g4. É o único lance que empata."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "h7h6",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+                  "movesUci": [
+                    "h7h6",
+                    "f5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.4",
+                  "texts": [
+                    "O rei vai para h6, atrás do peão de g4: enquanto o rei preto captura o peão de g3, o seu captura o de g4. É o único lance que empata."
+                  ],
+                  "movesSan": [
+                    "4.Rh6",
+                    "4...Re4"
+                  ]
+                },
+                {
+                  "id": "h7g7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+                  "movesUci": [
+                    "h7g7",
+                    "f5e4",
+                    "g7f6",
+                    "e4f3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.4",
+                  "texts": [
+                    "Com o lance do rei para g7 você deixa escapar o empate: as pretas respondem com o lance do rei para e4 e ganham. O rei preto chega a f3 e captura o peão de g3, e o seu rei fica longe do peão de g4."
+                  ],
+                  "movesSan": [
+                    "4.Rg7",
+                    "4...Re4",
+                    "5.Rf6",
+                    "5...Rf3"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -11737,9 +13011,54 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The white king passes through f4 and keeps pace with the black king. It is the only drawing move."
+                "The king goes to h6, after the g4 pawn: while the black king captures the g3 pawn, yours captures the one on g4. It is the only move that draws."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "h7h6",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+                  "movesUci": [
+                    "h7h6",
+                    "f5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.4",
+                  "texts": [
+                    "The king goes to h6, after the g4 pawn: while the black king captures the g3 pawn, yours captures the one on g4. It is the only move that draws."
+                  ],
+                  "movesSan": [
+                    "4.Kh6",
+                    "4...Ke4"
+                  ]
+                },
+                {
+                  "id": "h7g7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/7K/8/1p3k2/1P4p1/6P1/8/8 w - - 4 4",
+                  "movesUci": [
+                    "h7g7",
+                    "f5e4",
+                    "g7f6",
+                    "e4f3"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e16.4",
+                  "texts": [
+                    "With the king move to g7 you let the draw slip: Black replies with the king move to e4 and wins. The black king reaches f3 and captures the g3 pawn, and your king stays far from the g4 pawn."
+                  ],
+                  "movesSan": [
+                    "4.Kg7",
+                    "4...Ke4",
+                    "5.Kf6",
+                    "5...Kf3"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11747,12 +13066,12 @@
     },
     {
       "kind": "exercise",
-      "id": "e16",
-      "turn": 5,
-      "fen": "8/8/8/p6p/P4K2/8/6k1/8 w - - 2 5",
+      "id": "e17",
+      "turn": 1,
+      "fen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
       "explanations": {
         "pt": {
-          "positionId": "exercise/e16.5",
+          "positionId": "exercise/e17.1",
           "state": "review",
           "explanations": [
             {
@@ -11760,14 +13079,83 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O rei branco vai para g5, de olho no peão de h5. É o único lance que empata."
+                "O peão avança para b5 e passa a vez: os reis ficam como estavam, com a oposição para você, e o peão de b6 fica fixado. É o único lance que ganha."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "b4b5",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "b4b5",
+                    "d7c7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e17.1",
+                  "texts": [
+                    "O peão avança para b5 e passa a vez: os reis ficam como estavam, com a oposição para você, e o peão de b6 fica fixado. É o único lance que ganha."
+                  ],
+                  "movesSan": [
+                    "1.b5",
+                    "1...Rc7"
+                  ]
+                },
+                {
+                  "id": "d5c4",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d5c4",
+                    "d7c6",
+                    "b4b5",
+                    "c6d6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e17.1",
+                  "texts": [
+                    "Com o lance do rei para c4 você deixa escapar a vitória: as pretas respondem com o lance do rei para c6 e seguram o empate. O rei preto toma a oposição, e o seu peão não passa."
+                  ],
+                  "movesSan": [
+                    "1.Rc4",
+                    "1...Rc6",
+                    "2.b5+",
+                    "2...Rd6"
+                  ]
+                },
+                {
+                  "id": "d5e5",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d5e5",
+                    "b6b5",
+                    "e5d4",
+                    "d7c6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e17.1",
+                  "texts": [
+                    "Com o lance do rei para e5 você deixa escapar a vitória: as pretas respondem com o lance do peão para b5 e seguram o empate. Foram elas que gastaram o lance de reserva na hora certa, e agora é o seu rei que precisa se mover."
+                  ],
+                  "movesSan": [
+                    "1.Re5",
+                    "1...b5",
+                    "2.Rd4",
+                    "2...Rc6"
+                  ]
+                }
+              ]
             }
           ]
         },
         "en": {
-          "positionId": "exercise/e16.5",
+          "positionId": "exercise/e17.1",
           "state": "review",
           "explanations": [
             {
@@ -11775,9 +13163,78 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The white king goes to g5, eyeing the h5 pawn. It is the only drawing move."
+                "The pawn advances to b5 and passes the turn: the kings stay as they were, with the opposition for you, and the b6 pawn is fixed. It is the only winning move."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "b4b5",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "b4b5",
+                    "d7c7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e17.1",
+                  "texts": [
+                    "The pawn advances to b5 and passes the turn: the kings stay as they were, with the opposition for you, and the b6 pawn is fixed. It is the only winning move."
+                  ],
+                  "movesSan": [
+                    "1.b5",
+                    "1...Kc7"
+                  ]
+                },
+                {
+                  "id": "d5c4",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d5c4",
+                    "d7c6",
+                    "b4b5",
+                    "c6d6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e17.1",
+                  "texts": [
+                    "With the king move to c4 you let the win slip: Black replies with the king move to c6 and holds the draw. The black king takes the opposition, and your pawn does not get through."
+                  ],
+                  "movesSan": [
+                    "1.Kc4",
+                    "1...Kc6",
+                    "2.b5+",
+                    "2...Kd6"
+                  ]
+                },
+                {
+                  "id": "d5e5",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d5e5",
+                    "b6b5",
+                    "e5d4",
+                    "d7c6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e17.1",
+                  "texts": [
+                    "With the king move to e5 you let the win slip: Black replies with the pawn move to b5 and holds the draw. It was Black who spent the reserve move at the right moment, and now it is your king that has to move."
+                  ],
+                  "movesSan": [
+                    "1.Ke5",
+                    "1...b5",
+                    "2.Kd4",
+                    "2...Kc6"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -11785,12 +13242,12 @@
     },
     {
       "kind": "exercise",
-      "id": "e16",
-      "turn": 6,
-      "fen": "8/8/8/p5Kp/P7/6k1/8/8 w - - 4 6",
+      "id": "e23",
+      "turn": 1,
+      "fen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
       "explanations": {
         "pt": {
-          "positionId": "exercise/e16.6",
+          "positionId": "exercise/e23.1",
           "state": "review",
           "explanations": [
             {
@@ -11798,14 +13255,83 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "O rei branco captura o peão de h5, e o empate está garantido: o peão de a5 está fixado. É o único lance que empata."
+                "O peão de h avança e passa a vez: o rei preto precisa abandonar o peão de e6. É o único lance que ganha."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "h3h4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+                  "movesUci": [
+                    "h3h4",
+                    "f5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e23.1",
+                  "texts": [
+                    "O peão de h avança e passa a vez: o rei preto precisa abandonar o peão de e6. É o único lance que ganha."
+                  ],
+                  "movesSan": [
+                    "1.h4",
+                    "1...Re4"
+                  ]
+                },
+                {
+                  "id": "d6e7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6e7",
+                    "f5e5",
+                    "h3h4",
+                    "e5f4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e23.1",
+                  "texts": [
+                    "Com o lance do rei para e7 você deixa escapar a vitória: as pretas respondem com a captura do peão de e5 e seguram o empate. Seu rei abandonou o peão sem antes gastar o lance de reserva do peão de h."
+                  ],
+                  "movesSan": [
+                    "1.Re7",
+                    "1...Rxe5",
+                    "2.h4",
+                    "2...Rf4"
+                  ]
+                },
+                {
+                  "id": "d6c5",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6c5",
+                    "f5e5",
+                    "h3h4",
+                    "e5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e23.1",
+                  "texts": [
+                    "Com o lance do rei para c5 você deixa escapar a vitória: as pretas respondem com a captura do peão de e5 e seguram o empate. O peão de h ainda tinha um lance de reserva para passar a vez."
+                  ],
+                  "movesSan": [
+                    "1.Rc5",
+                    "1...Rxe5",
+                    "2.h4",
+                    "2...Re4"
+                  ]
+                }
+              ]
             }
           ]
         },
         "en": {
-          "positionId": "exercise/e16.6",
+          "positionId": "exercise/e23.1",
           "state": "review",
           "explanations": [
             {
@@ -11813,9 +13339,330 @@
               "kind": "main_solution",
               "title": "",
               "texts": [
-                "The white king captures the h5 pawn, and the draw is secured: the a5 pawn is fixed. It is the only drawing move."
+                "The h-pawn advances and passes the turn: the black king has to abandon the e6 pawn. It is the only winning move."
               ],
-              "variations": []
+              "variations": [
+                {
+                  "id": "h3h4",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+                  "movesUci": [
+                    "h3h4",
+                    "f5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e23.1",
+                  "texts": [
+                    "The h-pawn advances and passes the turn: the black king has to abandon the e6 pawn. It is the only winning move."
+                  ],
+                  "movesSan": [
+                    "1.h4",
+                    "1...Ke4"
+                  ]
+                },
+                {
+                  "id": "d6e7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6e7",
+                    "f5e5",
+                    "h3h4",
+                    "e5f4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e23.1",
+                  "texts": [
+                    "With the king move to e7 you let the win slip: Black replies with the capture of the e5 pawn and holds the draw. Your king abandoned the pawn without first spending the h-pawn's reserve move."
+                  ],
+                  "movesSan": [
+                    "1.Ke7",
+                    "1...Kxe5",
+                    "2.h4",
+                    "2...Kf4"
+                  ]
+                },
+                {
+                  "id": "d6c5",
+                  "label": "C",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6c5",
+                    "f5e5",
+                    "h3h4",
+                    "e5e4"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e23.1",
+                  "texts": [
+                    "With the king move to c5 you let the win slip: Black replies with the capture of the e5 pawn and holds the draw. The h-pawn still had a reserve move to pass the turn."
+                  ],
+                  "movesSan": [
+                    "1.Kc5",
+                    "1...Kxe5",
+                    "2.h4",
+                    "2...Ke4"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e24",
+      "turn": 1,
+      "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e24.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O rei vai para c6 e deixa a casa b8 livre para o rei preto: sem afogamento, o peão avança em seguida. É o único lance que ganha."
+              ],
+              "variations": [
+                {
+                  "id": "d6c6",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6c6",
+                    "a8b8",
+                    "b6b7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.1",
+                  "texts": [
+                    "O rei vai para c6 e deixa a casa b8 livre para o rei preto: sem afogamento, o peão avança em seguida. É o único lance que ganha."
+                  ],
+                  "movesSan": [
+                    "1.Rc6",
+                    "1...Rb8",
+                    "2.b7"
+                  ]
+                },
+                {
+                  "id": "d6c7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6c7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.1",
+                  "texts": [
+                    "Com o lance do rei para c7 você deixa escapar a vitória: o rei preto fica sem lances e não está em xeque. É afogamento, empate. Deixe a casa b8 livre para ele."
+                  ],
+                  "movesSan": [
+                    "1.Rc7"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e24.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The king goes to c6 and leaves the b8 square free for the black king: with no stalemate, the pawn advances next. It is the only winning move."
+              ],
+              "variations": [
+                {
+                  "id": "d6c6",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6c6",
+                    "a8b8",
+                    "b6b7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.1",
+                  "texts": [
+                    "The king goes to c6 and leaves the b8 square free for the black king: with no stalemate, the pawn advances next. It is the only winning move."
+                  ],
+                  "movesSan": [
+                    "1.Kc6",
+                    "1...Kb8",
+                    "2.b7"
+                  ]
+                },
+                {
+                  "id": "d6c7",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+                  "movesUci": [
+                    "d6c7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.1",
+                  "texts": [
+                    "With the king move to c7 you let the win slip: the black king has no moves and is not in check. It is stalemate, a draw. Leave the b8 square free for it."
+                  ],
+                  "movesSan": [
+                    "1.Kc7"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e24",
+      "turn": 2,
+      "fen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e24.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O peão avança para b7 com o rei preto fora do canto; em seguida o seu rei protege b8. É o único lance que ganha."
+              ],
+              "variations": [
+                {
+                  "id": "b6b7",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "b6b7",
+                    "b8a7",
+                    "c6c7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.2",
+                  "texts": [
+                    "O peão avança para b7 com o rei preto fora do canto; em seguida o seu rei protege b8. É o único lance que ganha."
+                  ],
+                  "movesSan": [
+                    "2.b7",
+                    "2...Ra7",
+                    "3.Rc7"
+                  ]
+                },
+                {
+                  "id": "c6b5",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "c6b5",
+                    "b8b7",
+                    "b5a4",
+                    "b7b6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.2",
+                  "texts": [
+                    "Com o lance do rei para b5 você deixa escapar a vitória: as pretas respondem com o lance do rei para b7 e seguram o empate. O rei preto fica na frente do peão, e o seu rei já não protege a casa b8."
+                  ],
+                  "movesSan": [
+                    "2.Rb5",
+                    "2...Rb7",
+                    "3.Ra4",
+                    "3...Rxb6"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e24.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The pawn advances to b7 with the black king out of the corner; next your king guards b8. It is the only winning move."
+              ],
+              "variations": [
+                {
+                  "id": "b6b7",
+                  "label": "A",
+                  "outcome": "accepted",
+                  "originFen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "b6b7",
+                    "b8a7",
+                    "c6c7"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.2",
+                  "texts": [
+                    "The pawn advances to b7 with the black king out of the corner; next your king guards b8. It is the only winning move."
+                  ],
+                  "movesSan": [
+                    "2.b7",
+                    "2...Ka7",
+                    "3.Kc7"
+                  ]
+                },
+                {
+                  "id": "c6b5",
+                  "label": "B",
+                  "outcome": "does_not_meet_goal",
+                  "originFen": "1k6/8/1PK5/8/8/8/8/8 w - - 2 2",
+                  "movesUci": [
+                    "c6b5",
+                    "b8b7",
+                    "b5a4",
+                    "b7b6"
+                  ],
+                  "validated": true,
+                  "explanationByPly": {},
+                  "contextId": "exercise/e24.2",
+                  "texts": [
+                    "With the king move to b5 you let the win slip: Black replies with the king move to b7 and holds the draw. The black king stands in front of the pawn, and your king no longer guards the b8 square."
+                  ],
+                  "movesSan": [
+                    "2.Kb5",
+                    "2...Kb7",
+                    "3.Ka4",
+                    "3...Kxb6"
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -14738,500 +16585,6 @@
                 "First: what is the target? Look for the key square, the pawn to protect or capture, and the entry the opponent threatens.",
                 "Second: what can change the move order? Compare both sides’ reserves and the effect of saving, spending or removing a pawn advance.",
                 "Third: which relationship between the kings will be useful after the reply? Choose between approaching, waiting and outflanking according to the concrete consequence, respecting pawn-controlled squares."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e20",
-      "turn": 1,
-      "fen": "8/8/1p6/8/8/P7/8/5k1K w - - 0 1",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e20.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei sobe pela coluna h. É o único lance que empata: os outros deixam o rei preto passar à frente."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e20.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king climbs the h-file. It is the only move that draws: the others let the black king get ahead."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e20",
-      "turn": 2,
-      "fen": "8/8/1p6/8/8/P7/5k1K/8 w - - 2 2",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e20.2",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei acompanha o rei preto, mantendo os dois lado a lado, com uma casa entre eles."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e20.2",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king follows the black king, keeping the two side by side with one square between them."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e20",
-      "turn": 3,
-      "fen": "8/8/1p6/8/8/P4k1K/8/8 w - - 4 3",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e20.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei continua ao lado do rei preto, na mesma fileira."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e20.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king stays beside the black king, on the same rank."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e20",
-      "turn": 4,
-      "fen": "8/8/1p6/8/5k1K/P7/8/8 w - - 6 4",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e20.4",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei chega à quinta fileira sem deixar o rei preto passar à frente, e o empate está garantido."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e20.4",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king reaches the fifth rank without letting the black king get ahead, and the draw is secured."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e21",
-      "turn": 1,
-      "fen": "8/1p6/8/8/1P6/1k1K4/8/8 w - - 0 1",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e21.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O avanço trava a estrutura e obriga as pretas a gastar o lance de peão que guardavam. É o único lance que empata."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e21.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The advance locks the structure and forces Black to spend the pawn move it was saving. It is the only move that draws."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e21",
-      "turn": 2,
-      "fen": "8/8/1p6/1P6/8/1k1K4/8/8 w - - 0 2",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e21.2",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei recua à segunda fileira e fica pronto para a oposição."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e21.2",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king steps back to the second rank, ready for the opposition."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e21",
-      "turn": 3,
-      "fen": "8/8/1p6/1P6/2k5/8/3K4/8 w - - 2 3",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e21.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei fica diante do rei preto, com uma casa entre eles, e impede que ele entre."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e21.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king stands in front of the black king, with one square between them, and stops it from entering."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e21",
-      "turn": 4,
-      "fen": "8/8/1p6/1P6/1k6/8/2K5/8 w - - 4 4",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e21.4",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Seu rei fica de novo em oposição ao rei preto, agora na coluna b: mesmo que o peão de b5 caia, o empate continua."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e21.4",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "Your king is again in opposition to the black king, now on the b-file: even if the b5 pawn falls, the draw holds."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e22",
-      "turn": 1,
-      "fen": "8/7k/p6P/6K1/P7/8/8/8 w - - 0 1",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e22.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O avanço fixa o peão adversário e tira das pretas o lance de peão que serviria para passar a vez. É o único lance que ganha."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e22.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The advance fixes the enemy pawn and takes away the pawn move Black would use to pass the turn. It is the only winning move."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e17",
-      "turn": 1,
-      "fen": "8/5k2/8/3P1K2/8/8/8/8 w - - 0 1",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e17.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O peão passa a vez às pretas sem mexer nos reis: é o tempo de reserva, e a oposição continua sua. É o único lance que ganha."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e17.1",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The pawn passes the turn to Black without moving the kings: it is the reserve tempo, and the opposition stays yours. It is the only winning move."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e17",
-      "turn": 2,
-      "fen": "4k3/8/3P4/5K2/8/8/8/8 w - - 1 2",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e17.2",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O rei branco avança para a frente do peão e o escolta; as pretas não conseguem detê-lo. É o único lance que ganha."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e17.2",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The white king steps ahead of the pawn and escorts it; Black cannot stop it. It is the only winning move."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e17",
-      "turn": 3,
-      "fen": "3k4/8/3PK3/8/8/8/8/8 w - - 3 3",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e17.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O peão chega à sétima fileira, protegido pelo rei. É o único lance que ganha."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e17.3",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The pawn reaches the seventh rank, protected by the king. It is the only winning move."
-              ],
-              "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "exercise",
-      "id": "e17",
-      "turn": 4,
-      "fen": "8/2kP4/4K3/8/8/8/8/8 w - - 1 4",
-      "explanations": {
-        "pt": {
-          "positionId": "exercise/e17.4",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "O rei branco protege o peão e a coroação é certa. É o único lance que ganha."
-              ],
-              "variations": []
-            }
-          ]
-        },
-        "en": {
-          "positionId": "exercise/e17.4",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "",
-              "texts": [
-                "The white king protects the pawn and the promotion is certain. It is the only winning move."
               ],
               "variations": []
             }

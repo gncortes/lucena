@@ -695,7 +695,7 @@
    "exemplos": [
     {
      "id": "ataque",
-     "fen": "7K/8/6k1/6p1/8/5P2/6P1/8 w - - 0 1",
+     "fen": "1K6/8/2k5/1p6/8/2P5/1P6/8 w - - 0 1",
      "vira": false,
      "objetivo": "ganhar",
      "fim": "proximo",
@@ -707,39 +707,59 @@
       "linha": [
        {
         "certos": [
-         "g2g3"
+         "b2b3"
         ],
-        "resposta": "g6h5"
+        "resposta": "b5b4"
        },
        {
         "certos": [
-         "h8g8"
+         "c3c4"
         ],
-        "resposta": "g5g4"
+        "resposta": "c6b6"
        },
        {
         "certos": [
-         "f3f4"
+         "b8c8",
+         "b8a8"
+        ],
+        "resposta": "b6a5"
+       },
+       {
+        "certos": [
+         "c8c7",
+         "c8d7",
+         "c8d8",
+         "c8b8",
+         "a8b8"
         ]
        }
       ],
       "fim": "rot.waiting.pratica.ataque.fim",
       "erros": {
-       "h8g8": "rot.waiting.pratica.ataque.err.h8g8",
-       "f3f4": "rot.waiting.pratica.ataque.err.f3f4",
-       "g2g4": "rot.waiting.pratica.ataque.err.g2g4"
+       "c3c4": "rot.waiting.pratica.ataque.err.c3c4",
+       "b2b4": "rot.waiting.pratica.ataque.err.b2b4",
+       "b8a7": "rot.waiting.pratica.ataque.err.b8a7",
+       "b8a8": "rot.waiting.pratica.ataque.err.b8a8",
+       "b8c8": "rot.waiting.pratica.ataque.err.b8c8"
       },
       "errosPos": {
-       "7K/8/8/6pk/8/5PP1/8/8 w - - 2 2": {
-        "h8g7": "rot.waiting.pratica.ataque.v2.err.h8g7",
-        "h8h7": "rot.waiting.pratica.ataque.v2.err.h8h7",
-        "f3f4": "rot.waiting.pratica.ataque.v2.err.f3f4",
-        "g3g4": "rot.waiting.pratica.ataque.v2.err.g3g4"
+       "1K6/8/2k5/8/1p6/1PP5/8/8 w - - 0 2": {
+        "c3b4": "rot.waiting.pratica.ataque.v2.err.c3b4",
+        "b8c8": "rot.waiting.pratica.ataque.v2.err.b8c8",
+        "b8a7": "rot.waiting.pratica.ataque.v2.err.b8a7",
+        "b8a8": "rot.waiting.pratica.ataque.v2.err.b8a8"
        },
-       "6K1/8/8/7k/6p1/5PP1/8/8 w - - 0 3": {
-        "f3g4": "rot.waiting.pratica.ataque.v3.err.f3g4",
-        "g8g7": "rot.waiting.pratica.ataque.v3.err.g8g7",
-        "g8f7": "rot.waiting.pratica.ataque.v3.err.g8f7"
+       "1K6/8/1k6/8/1pP5/1P6/8/8 w - - 1 3": {
+        "c4c5": "rot.waiting.pratica.ataque.v3.err.c4c5"
+       },
+       "2K5/8/8/k7/1pP5/1P6/8/8 w - - 3 4": {
+        "c8b7": "rot.waiting.pratica.ataque.v4a.err.c8b7",
+        "c4c5": "rot.waiting.pratica.ataque.v4a.err.c4c5"
+       },
+       "K7/8/8/k7/1pP5/1P6/8/8 w - - 3 4": {
+        "a8a7": "rot.waiting.pratica.ataque.v4b.err.a8a7",
+        "a8b7": "rot.waiting.pratica.ataque.v4b.err.a8b7",
+        "c4c5": "rot.waiting.pratica.ataque.v4b.err.c4c5"
        }
       }
      }

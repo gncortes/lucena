@@ -30,36 +30,29 @@
     {
       "id": "e20",
       "stars": 1,
-      "fen": "8/8/1p6/8/8/P7/8/5k1K w - - 0 1",
+      "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "fixedTarget",
       "line": [
         {
-          "teach": "h1h2",
+          "teach": "f4f5",
           "accept": [
-            "h1h2"
+            "f4f5"
           ],
-          "reply": "f1f2"
+          "reply": "h5h4"
         },
         {
-          "teach": "h2h3",
+          "teach": "f5f4",
           "accept": [
-            "h2h3"
+            "f5f4"
           ],
-          "reply": "f2f3"
+          "reply": "h6h5"
         },
         {
-          "teach": "h3h4",
+          "teach": "f4f3",
           "accept": [
-            "h3h4"
-          ],
-          "reply": "f3f4"
-        },
-        {
-          "teach": "h4h5",
-          "accept": [
-            "h4h5"
+            "f4f3"
           ]
         }
       ]
@@ -150,29 +143,22 @@
     {
       "id": "e15",
       "stars": 1,
-      "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
+      "fen": "8/8/8/Kp3p2/1Pk5/8/5P2/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "secondReserve",
       "line": [
         {
-          "teach": "b2b3",
+          "teach": "f2f4",
           "accept": [
-            "b2b3"
+            "f2f4"
           ],
-          "reply": "b6b5"
+          "reply": "c4d4"
         },
         {
-          "teach": "b3b4",
+          "teach": "a5b5",
           "accept": [
-            "b3b4"
-          ],
-          "reply": "e4d4"
-        },
-        {
-          "teach": "g5f5",
-          "accept": [
-            "g5f5"
+            "a5b5"
           ]
         }
       ]
@@ -180,51 +166,36 @@
     {
       "id": "e16",
       "stars": 3,
-      "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
+      "fen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "fixedTarget",
       "line": [
         {
-          "teach": "a3a4",
+          "teach": "b3b4",
           "accept": [
-            "a3a4"
+            "b3b4"
           ],
-          "reply": "h6h5"
+          "reply": "g5g4"
         },
         {
-          "teach": "f7e6",
+          "teach": "h7g7",
           "accept": [
-            "f7e6"
+            "h7g7"
           ],
-          "reply": "g5h4"
+          "reply": "h5g5"
         },
         {
-          "teach": "e6e5",
+          "teach": "g7h7",
           "accept": [
-            "e6e5",
-            "e6f5"
+            "g7h7"
           ],
-          "reply": "h4h3"
+          "reply": "g5f5"
         },
         {
-          "teach": "e5f4",
+          "teach": "h7h6",
           "accept": [
-            "e5f4"
-          ],
-          "reply": "h3g2"
-        },
-        {
-          "teach": "f4g5",
-          "accept": [
-            "f4g5"
-          ],
-          "reply": "g2g3"
-        },
-        {
-          "teach": "g5h5",
-          "accept": [
-            "g5h5"
+            "h7h6"
           ]
         }
       ]
@@ -232,36 +203,15 @@
     {
       "id": "e17",
       "stars": 1,
-      "fen": "8/5k2/8/3P1K2/8/8/8/8 w - - 0 1",
+      "fen": "8/3k4/1p6/3K4/1P6/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "reserve",
       "line": [
         {
-          "teach": "d5d6",
+          "teach": "b4b5",
           "accept": [
-            "d5d6"
-          ],
-          "reply": "f7e8"
-        },
-        {
-          "teach": "f5e6",
-          "accept": [
-            "f5e6"
-          ],
-          "reply": "e8d8"
-        },
-        {
-          "teach": "d6d7",
-          "accept": [
-            "d6d7"
-          ],
-          "reply": "d8c7"
-        },
-        {
-          "teach": "e6e7",
-          "accept": [
-            "e6e7"
+            "b4b5"
           ]
         }
       ]
@@ -269,15 +219,15 @@
     {
       "id": "e23",
       "stars": 1,
-      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
+      "fen": "8/8/3Kp3/4Pk2/8/7P/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "reserve",
       "line": [
         {
-          "teach": "b3b4",
+          "teach": "h3h4",
           "accept": [
-            "b3b4"
+            "h3h4"
           ]
         }
       ]

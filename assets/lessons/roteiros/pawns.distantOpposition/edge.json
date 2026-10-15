@@ -44,6 +44,13 @@
               "marcas": [
                 "b6"
               ]
+            },
+            {
+              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
+              "t": "rot.edge.ideia.ex1.e6",
+              "marcas": [
+                "c6"
+              ]
             }
           ],
           "pergunta": {
@@ -489,8 +496,75 @@
               ]
             },
             {
-              "fen": "8/1k3K2/2p5/2p5/p1P5/P7/8/8 b - - 5 3",
-              "t": "rot.edge.ideia.ex2.l.7b"
+              "fen": "8/k4K2/2p5/2p5/p1P5/P7/8/8 w - - 6 4",
+              "t": "rot.edge.ideia.ex2.l.7b",
+              "lance": "b7a7",
+              "marcas": [
+                "b7",
+                "c7",
+                "d7",
+                "e7"
+              ]
+            },
+            {
+              "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 b - - 7 4",
+              "t": "rot.edge.ideia.ex2.l.7c",
+              "lance": "f7e7",
+              "marcas": [
+                "b7",
+                "c7",
+                "d7"
+              ]
+            },
+            {
+              "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 b - - 7 4",
+              "t": "rot.edge.ideia.ex2.l.15",
+              "marcas": [
+                "g7"
+              ]
+            },
+            {
+              "fen": "8/1k2K3/2p5/2p5/p1P5/P7/8/8 w - - 8 5",
+              "t": "rot.edge.ideia.ex2.l.7d",
+              "lance": "a7b7",
+              "marcas": [
+                "c6"
+              ]
+            },
+            {
+              "fen": "8/1k1K4/2p5/2p5/p1P5/P7/8/8 b - - 9 5",
+              "t": "rot.edge.ideia.ex2.l.7e",
+              "lance": "e7d7",
+              "marcas": [
+                "c7"
+              ]
+            },
+            {
+              "fen": "8/k2K4/2p5/2p5/p1P5/P7/8/8 w - - 10 6",
+              "t": "rot.edge.ideia.ex2.l.7f",
+              "lance": "b7a7",
+              "marcas": [
+                "b6",
+                "d6"
+              ]
+            },
+            {
+              "fen": "8/k7/2K5/2p5/p1P5/P7/8/8 b - - 0 6",
+              "t": "rot.edge.ideia.ex2.l.7g",
+              "lance": "d7c6"
+            },
+            {
+              "fen": "8/8/k1K5/2p5/p1P5/P7/8/8 w - - 1 7",
+              "t": "rot.edge.ideia.ex2.l.7h",
+              "lance": "a7a6",
+              "marcas": [
+                "b5"
+              ]
+            },
+            {
+              "fen": "8/8/k7/2K5/p1P5/P7/8/8 b - - 0 7",
+              "t": "rot.edge.ideia.ex2.l.7i",
+              "lance": "c6c5"
             },
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
@@ -507,10 +581,6 @@
               "marcas": [
                 "b5"
               ]
-            },
-            {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.ideia.ex2.l.15"
             }
           ]
         }
@@ -613,55 +683,43 @@
               ]
             },
             {
-              "fen": "8/8/4K3/2k4p/p6P/P7/8/8 w - - 2 2",
-              "lance": "c6c5",
+              "fen": "8/8/8/4K2p/p1k4P/P7/8/8 w - - 4 3",
+              "seq": [
+                "c6c5",
+                "e6e5",
+                "c5c4"
+              ],
               "t": "rot.edge.demos.escolha.3",
               "marcas": [
                 "a3"
               ]
             },
             {
-              "fen": "8/8/8/2k1K2p/p6P/P7/8/8 b - - 3 2",
-              "lance": "e6e5",
-              "t": "rot.edge.demos.escolha.4"
-            },
-            {
-              "fen": "8/8/8/4K2p/p1k4P/P7/8/8 w - - 4 3",
-              "lance": "c5c4",
-              "t": "rot.edge.demos.escolha.5"
-            },
-            {
-              "fen": "8/8/8/7p/p1k1K2P/P7/8/8 b - - 5 3",
-              "lance": "e5e4",
-              "t": "rot.edge.demos.escolha.6"
-            },
-            {
-              "fen": "8/8/8/7p/p3K2P/Pk6/8/8 w - - 6 4",
-              "lance": "c4b3",
-              "t": "rot.edge.demos.escolha.7",
+              "fen": "8/8/8/7p/p6P/Pk1K4/8/8 b - - 7 4",
+              "seq": [
+                "e5e4",
+                "c4b3",
+                "e4d3"
+              ],
+              "t": "rot.edge.demos.escolha.4",
               "marcas": [
                 "a3"
               ]
             },
             {
-              "fen": "8/8/8/7p/p6P/Pk1K4/8/8 b - - 7 4",
-              "lance": "e4d3",
-              "t": "rot.edge.demos.escolha.8"
-            },
-            {
               "fen": "8/8/8/7p/p6P/k2K4/8/8 w - - 0 5",
               "lance": "b3a3",
-              "t": "rot.edge.demos.escolha.9"
+              "t": "rot.edge.demos.escolha.5"
             },
             {
               "fen": "8/8/2k2K2/7p/p6P/P7/8/8 w - - 0 1",
               "salto": true,
-              "t": "rot.edge.demos.escolha.10"
+              "t": "rot.edge.demos.escolha.6"
             },
             {
               "fen": "8/8/2k3K1/7p/p6P/P7/8/8 b - - 1 1",
               "lance": "f6g6",
-              "t": "rot.edge.demos.escolha.11",
+              "t": "rot.edge.demos.escolha.7",
               "marcas": [
                 "d6",
                 "e6",
@@ -669,27 +727,125 @@
               ]
             },
             {
-              "fen": "8/3k4/6K1/7p/p6P/P7/8/8 w - - 2 2",
-              "lance": "c6d7",
-              "t": "rot.edge.demos.escolha.12"
-            },
-            {
-              "fen": "8/3k4/8/7K/p6P/P7/8/8 b - - 0 2",
-              "lance": "g6h5",
-              "t": "rot.edge.demos.escolha.13",
+              "fen": "8/4k3/8/7K/p6P/P7/8/8 w - - 1 3",
+              "seq": [
+                "c6d7",
+                "g6h5",
+                "d7e7"
+              ],
+              "t": "rot.edge.demos.escolha.8",
               "marcas": [
                 "h5"
               ]
             },
             {
-              "fen": "8/4k3/8/7K/p6P/P7/8/8 w - - 1 3",
-              "lance": "d7e7",
-              "t": "rot.edge.demos.escolha.14"
-            },
-            {
               "fen": "8/4k3/6K1/8/p6P/P7/8/8 b - - 2 3",
               "lance": "h5g6",
-              "t": "rot.edge.demos.escolha.15"
+              "t": "rot.edge.demos.escolha.9"
+            }
+          ]
+        },
+        {
+          "id": "oitava",
+          "fen": "3k4/4p3/4P3/2K5/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "3k4/4p3/4P3/2K5/8/8/8/8 w - - 0 1",
+              "t": "rot.edge.demos.oitava.1",
+              "marcas": [
+                "d7",
+                "f7",
+                "e7"
+              ]
+            },
+            {
+              "fen": "3k4/4p3/4P3/2K5/8/8/8/8 w - - 0 1",
+              "t": "rot.edge.demos.oitava.2",
+              "marcas": [
+                "d7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "3k4/4p3/1K2P3/8/8/8/8/8 b - - 1 1",
+              "lance": "c5b6",
+              "t": "rot.edge.demos.oitava.3",
+              "marcas": [
+                "c7"
+              ]
+            },
+            {
+              "fen": "3k4/4p3/1K2P3/8/8/8/8/8 b - - 1 1",
+              "t": "rot.edge.demos.oitava.4",
+              "marcas": [
+                "c6",
+                "c8"
+              ]
+            },
+            {
+              "fen": "2k5/4p3/1K2P3/8/8/8/8/8 w - - 2 2",
+              "lance": "d8c8",
+              "t": "rot.edge.demos.oitava.5"
+            },
+            {
+              "fen": "2k5/4p3/2K1P3/8/8/8/8/8 b - - 3 2",
+              "lance": "b6c6",
+              "t": "rot.edge.demos.oitava.6",
+              "marcas": [
+                "c7"
+              ]
+            },
+            {
+              "fen": "3k4/1K2p3/4P3/8/8/8/8/8 b - - 5 3",
+              "seq": [
+                "c8d8",
+                "c6b7"
+              ],
+              "t": "rot.edge.demos.oitava.7",
+              "marcas": [
+                "b7"
+              ]
+            },
+            {
+              "fen": "4k3/2K1p3/4P3/8/8/8/8/8 b - - 7 4",
+              "seq": [
+                "d8e8",
+                "b7c7"
+              ],
+              "t": "rot.edge.demos.oitava.8"
+            },
+            {
+              "fen": "5k2/2K1p3/4P3/8/8/8/8/8 w - - 8 5",
+              "lance": "e8f8",
+              "t": "rot.edge.demos.oitava.9",
+              "marcas": [
+                "d7",
+                "f7"
+              ]
+            },
+            {
+              "fen": "5k2/3Kp3/4P3/8/8/8/8/8 b - - 9 5",
+              "lance": "c7d7",
+              "t": "rot.edge.demos.oitava.10",
+              "marcas": [
+                "e7"
+              ]
+            },
+            {
+              "fen": "8/4K1k1/4P3/8/8/8/8/8 b - - 0 6",
+              "seq": [
+                "f8g7",
+                "d7e7"
+              ],
+              "t": "rot.edge.demos.oitava.11"
+            },
+            {
+              "fen": "8/4K1k1/4P3/8/8/8/8/8 b - - 0 6",
+              "t": "rot.edge.demos.oitava.12"
             }
           ]
         },
@@ -732,6 +888,10 @@
             {
               "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
               "t": "rot.edge.demos.contagem.ponte"
+            },
+            {
+              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
+              "t": "rot.edge.demos.contagem.ponte2"
             }
           ]
         }
@@ -742,7 +902,7 @@
       "exemplos": [
         {
           "id": "ataque",
-          "fen": "8/8/8/4K2k/8/1p5p/1P5P/8 w - - 0 1",
+          "fen": "4k3/1p1p4/1P1P4/5K2/8/8/8/8 w - - 0 1",
           "vira": false,
           "objetivo": "casa",
           "fim": "proximo",
@@ -752,31 +912,35 @@
             "limite": 40,
             "fim": "rot.edge.pratica.ataque.fim",
             "erros": {
-              "e5d5": "rot.edge.pratica.ataque.err.d5",
-              "e5d6": "rot.edge.pratica.ataque.err.sobe",
-              "e5e6": "rot.edge.pratica.ataque.err.sobe",
-              "e5f6": "rot.edge.pratica.ataque.err.sobe",
-              "e5d4": "rot.edge.pratica.ataque.err.desce",
-              "e5e4": "rot.edge.pratica.ataque.err.desce",
-              "e5f4": "rot.edge.pratica.ataque.err.desce"
+              "f5f6": "rot.edge.pratica.ataque.err.cedo",
+              "f5e5": "rot.edge.pratica.ataque.err.porta",
+              "f5g5": "rot.edge.pratica.ataque.err.porta",
+              "f5e4": "rot.edge.pratica.ataque.err.desce",
+              "f5f4": "rot.edge.pratica.ataque.err.desce",
+              "f5g4": "rot.edge.pratica.ataque.err.desce"
             },
             "errosPos": {
-              "8/8/8/5K2/7k/1p5p/1P5P/8 w - - 2 2": {
-                "f5e4": "rot.edge.pratica.ataque.err.par",
-                "f5e5": "rot.edge.pratica.ataque.err.fora",
-                "f5e6": "rot.edge.pratica.ataque.err.fora",
-                "f5f6": "rot.edge.pratica.ataque.err.fora",
-                "f5g6": "rot.edge.pratica.ataque.err.fora"
+              "5k2/1p1p4/1P1P2K1/8/8/8/8/8 w - - 2 2": {
+                "g6g5": "rot.edge.pratica.ataque.err.solta",
+                "g6f5": "rot.edge.pratica.ataque.err.solta",
+                "g6h5": "rot.edge.pratica.ataque.err.solta",
+                "g6h6": "rot.edge.pratica.ataque.err.solta",
+                "g6h7": "rot.edge.pratica.ataque.err.solta"
+              },
+              "6k1/1p1p4/1P1P1K2/8/8/8/8/8 w - - 4 3": {
+                "f6e5": "rot.edge.pratica.ataque.err.solta",
+                "f6g5": "rot.edge.pratica.ataque.err.solta",
+                "f6f5": "rot.edge.pratica.ataque.err.solta"
               }
             }
           },
           "casas": [
-            "f4"
+            "d7"
           ]
         },
         {
           "id": "defesa",
-          "fen": "8/8/8/1K4k1/1p4p1/1P4P1/8/8 b - - 0 1",
+          "fen": "8/4pk2/K3p3/2p1P3/2P5/8/8/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
@@ -786,33 +950,30 @@
             "limite": 40,
             "fim": "rot.edge.pratica.defesa.fim",
             "erros": {
-              "g5f6": "rot.edge.pratica.defesa.err.longe",
-              "g5g6": "rot.edge.pratica.defesa.err.longe",
-              "g5h5": "rot.edge.pratica.defesa.err.longe",
-              "g5h6": "rot.edge.pratica.defesa.err.longe"
+              "f7g6": "rot.edge.pratica.defesa.err.longe",
+              "f7g7": "rot.edge.pratica.defesa.err.longe",
+              "f7g8": "rot.edge.pratica.defesa.err.longe",
+              "f7f8": "rot.edge.pratica.defesa.err.f8"
             },
             "errosPos": {
-              "8/8/8/5k2/1K4p1/1P4P1/8/8 b - - 1 1": {
-                "f5e6": "rot.edge.pratica.defesa.err.p2",
-                "f5e5": "rot.edge.pratica.defesa.err.p2",
-                "f5f6": "rot.edge.pratica.defesa.err.p2",
-                "f5g5": "rot.edge.pratica.defesa.err.p2",
-                "f5g6": "rot.edge.pratica.defesa.err.p2"
+              "4k3/4p3/4p3/K1p1P3/2P5/8/8/8 b - - 2 2": {
+                "e8f7": "rot.edge.pratica.defesa.err.longe",
+                "e8f8": "rot.edge.pratica.defesa.err.longe"
               },
-              "8/8/8/8/4k1p1/KP4P1/8/8 b - - 3 2": {
-                "e4d5": "rot.edge.pratica.defesa.err.p3",
-                "e4e3": "rot.edge.pratica.defesa.err.p3",
-                "e4d4": "rot.edge.pratica.defesa.err.p3",
-                "e4e5": "rot.edge.pratica.defesa.err.p3",
-                "e4f5": "rot.edge.pratica.defesa.err.p3",
-                "e4d3": "rot.edge.pratica.defesa.err.p3"
+              "8/3kp3/4p3/1Kp1P3/2P5/8/8/8 b - - 4 3": {
+                "d7e8": "rot.edge.pratica.defesa.err.longe"
               },
-              "8/8/8/8/1P4p1/K4kP1/8/8 b - - 0 4": {
-                "f3f2": "rot.edge.pratica.defesa.err.p4",
-                "f3g2": "rot.edge.pratica.defesa.err.p4",
-                "f3e2": "rot.edge.pratica.defesa.err.p4",
-                "f3e3": "rot.edge.pratica.defesa.err.p4",
-                "f3e4": "rot.edge.pratica.defesa.err.p4"
+              "8/2k1p3/4p3/2K1P3/2P5/8/8/8 b - - 0 4": {
+                "c7d7": "rot.edge.pratica.defesa.err.b6",
+                "c7c8": "rot.edge.pratica.defesa.err.b6",
+                "c7b8": "rot.edge.pratica.defesa.err.b6",
+                "c7d8": "rot.edge.pratica.defesa.err.b6"
+              },
+              "8/1k2p3/4p3/1K2P3/2P5/8/8/8 b - - 2 5": {
+                "b7c8": "rot.edge.pratica.defesa.err.b6",
+                "b7b8": "rot.edge.pratica.defesa.err.b6",
+                "b7a7": "rot.edge.pratica.defesa.err.b6",
+                "b7a8": "rot.edge.pratica.defesa.err.b6"
               }
             }
           }
