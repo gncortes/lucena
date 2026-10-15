@@ -473,6 +473,14 @@ List<(int, int, ScriptExample)> _freeQuestions(String id) {
   ];
 }
 
+/// Quantas peças há no tabuleiro da [fen].
+int _pieces(String fen) => fen
+    .split(' ')
+    .first
+    .split('')
+    .where((c) => RegExp('[a-zA-Z]').hasMatch(c))
+    .length;
+
 const _results = {'½–½', '1–0', '0–1'};
 
 /// Da pergunta, joga [uci] e segue até o jogo livre acabar e a linha
@@ -641,6 +649,9 @@ void main() {
             'mantêm', () {
           final wrong = <String>[];
           for (final (_, _, example) in free) {
+            // A tabela local só cobre rei e peão contra rei; com mais
+            // peças quem confere é o check_roteiro (tablebase).
+            if (_pieces(example.questionFen) != 3) continue;
             final question = example.question!;
             final from = GameRules.fromFen(example.questionFen)!;
             final wantsWin = example.goal.wantsWin;
