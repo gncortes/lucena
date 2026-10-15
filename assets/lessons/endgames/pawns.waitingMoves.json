@@ -143,22 +143,22 @@
     {
       "id": "e15",
       "stars": 1,
-      "fen": "8/8/p7/5Kp1/6Pk/8/P7/8 w - - 0 1",
+      "fen": "8/8/1k5p/3p4/1K1P4/8/7P/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "secondReserve",
       "line": [
         {
-          "teach": "a2a3",
+          "teach": "h2h3",
           "accept": [
-            "a2a3"
+            "h2h3"
           ],
-          "reply": "a6a5"
+          "reply": "h6h5"
         },
         {
-          "teach": "a3a4",
+          "teach": "h3h4",
           "accept": [
-            "a3a4"
+            "h3h4"
           ]
         }
       ]
