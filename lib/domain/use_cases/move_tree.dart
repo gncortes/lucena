@@ -12,11 +12,24 @@ abstract final class ScriptTracks {
 
   static String alt(String uci) => '$altPrefix$uci';
 
+  /// A fala do lance certo quando ele vem depois de um alternativo: não é o
+  /// "certo" (o aluno não jogou esse lance), e sim a linha principal com a
+  /// mesma ideia (Gabriel, 14/10/2026). `rot.x.certo` → `rot.x.principal`;
+  /// sem a específica, [ScriptTexts] usa a genérica.
+  static String principal(String rightKey) {
+    const suffix = '.certo';
+    final base = rightKey.endsWith(suffix)
+        ? rightKey.substring(0, rightKey.length - suffix.length)
+        : rightKey;
+    return '$base${ScriptTexts.principalSuffix}';
+  }
+
   /// Os passos da trilha [key] do exemplo [example]:
   /// - `entrada`: a conversa antes da pergunta;
   /// - `main`: o lance certo e a linha (sem pergunta, só a linha);
   /// - `reveal`: "Ver resposta" e a linha;
-  /// - `alt:<uci>`: a explicação do alternativo, o lance certo e a linha.
+  /// - `alt:<uci>`: a explicação do alternativo, o lance certo (com a fala
+  ///   de [principal]) e a linha.
   static List<ScriptStep> steps(ScriptExample example, String key) {
     final question = example.question;
     if (key == entry) return example.entry;
@@ -26,7 +39,7 @@ abstract final class ScriptTracks {
       final uci = key.substring(altPrefix.length);
       return [
         ...question.alternatives[uci] ?? const [],
-        question.rightStep,
+        question.rightStep.withText(principal(question.rightStep.t)),
         ...example.line,
       ];
     }

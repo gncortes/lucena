@@ -309,6 +309,7 @@
   "rot.ideia.ex2.revela": "The best is to bring the king to e7: the distant opposition now belongs to Black.",
   "rot.ideia.ex2.alt.e8f7.1": "Exactly! With the king on f7, Black holds the draw.",
   "rot.ideia.ex2.alt.e8f7.2": "Let's follow the main line, with the king on e7, which wins the distant opposition.",
+  "rot.ideia.ex2.principal": "Your move works too. In the main line, the king goes to the white king's file and also takes the distant opposition.",
   "rot.ideia.ex2.err.e8f8.1": "This move loses: now White can win.",
   "rot.ideia.ex2.err.e8f8.2": "The white king advances and gains ground toward the key squares.",
   "rot.ideia.ex2.err.e8d8.1": "This move loses: now White can win.",

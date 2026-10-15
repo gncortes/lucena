@@ -7,8 +7,10 @@ import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asse
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/wiki_links.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/domain/use_cases/move_tree.dart';
 import 'package:lucena/domain/use_cases/wiki_markup.dart';
 
 import '../../../../testing/script_fixture.dart';
@@ -254,6 +256,18 @@ void main() {
             for (final branch in line.branches)
               for (var k = 1; k <= branch.uci.length; k++)
                 'step.${step.id}.alt.${branch.id}.m$k',
+        // A linha principal depois de um alternativo: sem a específica, vale
+        // a genérica `gen.principal`.
+        for (final part in lesson.lesson.parts)
+          if (part.script != null)
+            for (final stage in LessonScript.fromJson(
+              jsonDecode(io.File(part.script!).readAsStringSync())
+                  as Map<String, dynamic>,
+            ).stages)
+              for (final example in stage.examples)
+                if (example.question case final question?)
+                  if (question.alternatives.isNotEmpty)
+                    ScriptTracks.principal(question.rightStep.t),
       };
       // Também opcionais: resumo curto do passo (`step.<id>.short`), fala da
       // resposta do adversário (`step.<id>.r<n>`, `ex.<id>.r<n>`) e fala do

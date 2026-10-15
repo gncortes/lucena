@@ -8,6 +8,7 @@
   "gen.estragou.ganhar": "Esse lance deixou a vitória escapar.",
   "gen.estragou.empatar": "Esse lance deixou o empate escapar.",
   "gen.voltaIdeia": "Vamos voltar à posição inicial: quero lhe mostrar a ideia principal.",
+  "gen.principal": "O seu lance também funciona. Veja agora a linha principal, com a mesma ideia.",
   "gen.verLinha.ganhar": "No começo, havia vitória. Clique em {linhaPrincipal} e eu lhe mostro.",
   "gen.verLinha.empatar": "No começo, havia empate. Clique em {linhaPrincipal} e eu lhe mostro.",
   "gen.fim.coroa": "O peão coroou.",

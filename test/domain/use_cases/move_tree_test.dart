@@ -94,6 +94,28 @@ void main() {
     expect(ScriptTracks.steps(ex2, ScriptTracks.reveal).first, q.reveal);
     final alt = ScriptTracks.steps(ex2, ScriptTracks.alt('e8f7'));
     expect(alt.first.t, 'altA');
-    expect(alt[2], q.rightStep);
+    // Depois do alternativo, o mesmo lance certo com a fala da linha
+    // principal, nunca a do "certo".
+    expect(alt[2].fen, q.rightStep.fen);
+    expect(alt[2].move, q.rightStep.move);
+    expect(alt[2].t, '${q.rightStep.t}.principal');
+  });
+
+  test('ScriptTracks.principal troca o .certo por .principal', () {
+    expect(
+      ScriptTracks.principal('rot.ideia.ex2.certo'),
+      'rot.ideia.ex2.principal',
+    );
+    expect(ScriptTracks.principal('okB'), 'okB.principal');
+  });
+
+  test('a fala da linha principal cai na genérica sem a específica', () {
+    const texts = ScriptTexts({
+      'gen.principal': 'genérica',
+      'rot.a.principal': 'específica',
+    });
+    expect(texts.say('rot.a.principal'), 'específica');
+    expect(texts.say('rot.b.principal'), 'genérica');
+    expect(texts.say('rot.b.certo'), 'rot.b.certo');
   });
 }

@@ -112,6 +112,17 @@ class ScriptStep {
   List<String> get moves => [?move, ...seq];
 
   bool get hasMove => move != null || seq.isNotEmpty;
+
+  /// O mesmo passo com outra fala.
+  ScriptStep withText(String key) => ScriptStep(
+    fen: fen,
+    t: key,
+    move: move,
+    seq: seq,
+    jump: jump,
+    marks: marks,
+    arrows: arrows,
+  );
 }
 
 /// O jogo livre que segue um erro (E4).
@@ -508,6 +519,15 @@ class ScriptTexts {
 
   bool has(String key) => _texts.containsKey(key);
 
+  /// O fim da chave da linha principal depois de um alternativo.
+  static const principalSuffix = '.principal';
+
+  /// A fala genérica dessa linha, quando a lição não tem a própria.
+  static const genericPrincipal = 'gen.principal';
+
   /// A fala de [key]. Sem ela, a própria chave (o dado está incompleto).
-  String say(String key) => _texts[key] ?? key;
+  String say(String key) =>
+      _texts[key] ??
+      (key.endsWith(principalSuffix) ? _texts[genericPrincipal] : null) ??
+      key;
 }

@@ -732,11 +732,24 @@ void main() {
         expect(r.s.fen, exampleTwoFen);
         expect(r.s.transition.kind, TransitionKind.jump);
         await r.next();
-        expect(r.s.speech, ['okB']);
+        // O aluno não jogou o lance principal: nada de "certo", e sim a
+        // linha principal com a mesma ideia (Gabriel, 14/10/2026).
+        expect(r.s.speech, ['principal']);
         expect(r.s.lastMove, 'e8e7');
         await r.next();
         expect(r.s.phase, ScriptPhase.fimEtapa);
         expect(r.s.primary, ScriptAction.proximaEtapa);
+      },
+    );
+
+    test(
+      'o lance principal jogado pelo aluno continua com o "certo"',
+      () async {
+        final r = await secondExample();
+        await r.next();
+        await r.cubit.onMove('e8e7');
+        expect(r.s.speech, ['okB']);
+        expect(r.s.lastMove, 'e8e7');
       },
     );
 
