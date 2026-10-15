@@ -59,106 +59,6 @@
    "access": "dica sob demanda, exercício silencioso"
   },
   {
-   "id": "e25",
-   "kind": "exercise",
-   "turn": 1,
-   "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
-   "uci": "h7h6",
-   "pt": "Em h6, o seu rei fica na borda: o rei branco entra em f5, uma casa-chave, e as brancas ganham.",
-   "en": "On h6, your king stays on the edge: the white king enters f5, a key square, and White wins.",
-   "pv": [
-    {
-     "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
-     "uci": "h7h6",
-     "san": "Kh6",
-     "fullmove": 1,
-     "turn": "black"
-    },
-    {
-     "fen": "8/8/7k/8/4K3/6P1/8/8 w - - 1 2",
-     "uci": "e4f5",
-     "san": "Kf5",
-     "fullmove": 2,
-     "turn": "white"
-    },
-    {
-     "fen": "8/8/7k/5K2/8/6P1/8/8 b - - 2 2",
-     "uci": "h6g7",
-     "san": "Kg7",
-     "fullmove": 2,
-     "turn": "black"
-    },
-    {
-     "fen": "8/6k1/8/5K2/8/6P1/8/8 w - - 3 3",
-     "uci": "f5g5",
-     "san": "Kg5",
-     "fullmove": 3,
-     "turn": "white"
-    }
-   ],
-   "objective": {
-    "result_mover": "loss",
-    "dtm_successor": 39
-   },
-   "evidence": {
-    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
-    "site": "exercise/e25.1",
-    "uci": "h7h6"
-   },
-   "text_key": "ex.e25.hint",
-   "access": "dica sob demanda, exercício silencioso"
-  },
-  {
-   "id": "e25",
-   "kind": "exercise",
-   "turn": 1,
-   "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
-   "uci": "h7g7",
-   "pt": "Em g7, o seu rei fica atrás: o rei branco entra em f5, uma casa-chave, antes de o seu rei se aproximar. As brancas ganham.",
-   "en": "On g7, your king stays behind: the white king enters f5, a key square, before your king gets close. White wins.",
-   "pv": [
-    {
-     "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
-     "uci": "h7g7",
-     "san": "Kg7",
-     "fullmove": 1,
-     "turn": "black"
-    },
-    {
-     "fen": "8/6k1/8/8/4K3/6P1/8/8 w - - 1 2",
-     "uci": "e4f5",
-     "san": "Kf5",
-     "fullmove": 2,
-     "turn": "white"
-    },
-    {
-     "fen": "8/6k1/8/5K2/8/6P1/8/8 b - - 2 2",
-     "uci": "g7h6",
-     "san": "Kh6",
-     "fullmove": 2,
-     "turn": "black"
-    },
-    {
-     "fen": "8/8/7k/5K2/8/6P1/8/8 w - - 3 3",
-     "uci": "g3g4",
-     "san": "g4",
-     "fullmove": 3,
-     "turn": "white"
-    }
-   ],
-   "objective": {
-    "result_mover": "loss",
-    "dtm_successor": 41
-   },
-   "evidence": {
-    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
-    "site": "exercise/e25.1",
-    "uci": "h7g7"
-   },
-   "text_key": "ex.e25.hint",
-   "access": "dica sob demanda, exercício silencioso"
-  },
-  {
    "id": "e09",
    "kind": "exercise",
    "turn": 1,
@@ -1606,6 +1506,104 @@
     "uci": "d7e7"
    },
    "text_key": "ex.e22.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e25",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
+   "uci": "e8d8",
+   "pt": "Em d8, o seu rei fica longe de c6: o rei branco entra nessa casa-chave, e as brancas ganham.",
+   "en": "On d8, your king is too far from c6: the white king enters that key square, and White wins.",
+   "pv": [
+    {
+     "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
+     "uci": "e8d8",
+     "san": "Kd8",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "3k4/8/8/1K6/3P4/8/8/8 w - - 1 2",
+     "uci": "b5c6",
+     "san": "Kc6",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "3k4/8/2K5/8/3P4/8/8/8 b - - 2 2",
+     "uci": "d8c8",
+     "san": "Kc8",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "2k5/8/2K5/8/3P4/8/8/8 w - - 3 3",
+     "uci": "d4d5",
+     "san": "d5",
+     "fullmove": 3,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss"
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200)",
+    "site": "exercise/e25.1",
+    "uci": "e8d8"
+   },
+   "text_key": "ex.e25.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e25",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
+   "uci": "e8e7",
+   "pt": "Em e7, o seu rei não fica vizinho de c6: o rei branco entra nessa casa-chave, e as brancas ganham.",
+   "en": "On e7, your king is not next to c6: the white king enters that key square, and White wins.",
+   "pv": [
+    {
+     "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
+     "uci": "e8e7",
+     "san": "Ke7",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/4k3/8/1K6/3P4/8/8/8 w - - 1 2",
+     "uci": "b5c6",
+     "san": "Kc6",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/4k3/2K5/8/3P4/8/8/8 b - - 2 2",
+     "uci": "e7e6",
+     "san": "Ke6",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/2K1k3/8/3P4/8/8/8 w - - 3 3",
+     "uci": "d4d5",
+     "san": "d5+",
+     "fullmove": 3,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss"
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200)",
+    "site": "exercise/e25.1",
+    "uci": "e8e7"
+   },
+   "text_key": "ex.e25.hint",
    "access": "dica sob demanda, exercício silencioso"
   }
  ]

@@ -41,6 +41,10 @@
             {
               "fen": "8/8/4k3/8/8/2KP4/8/8 w - - 0 1",
               "t": "rot.diagonal.ideia.ex1.e3b"
+            },
+            {
+              "fen": "8/8/4k3/8/8/2KP4/8/8 w - - 0 1",
+              "t": "rot.diagonal.ideia.ex1.e3c"
             }
           ],
           "pergunta": {
@@ -374,6 +378,18 @@
               "t": "rot.diagonal.ideia.ex1.l14c"
             },
             {
+              "fen": "8/8/8/8/2k5/5P2/1K6/8 w - - 2 2",
+              "seq": [
+                "c1b2",
+                "b4c4"
+              ],
+              "marcas": [
+                "c4",
+                "e5"
+              ],
+              "t": "rot.diagonal.ideia.ex1.l14e"
+            },
+            {
               "fen": "8/8/8/8/1k6/5P2/8/2K5 w - - 0 1",
               "marcas": [
                 "e5",
@@ -387,7 +403,21 @@
                   "r"
                 ]
               ],
-              "t": "rot.diagonal.ideia.ex1.l14d"
+              "t": "rot.diagonal.ideia.ex1.l14d",
+              "salto": true
+            },
+            {
+              "fen": "8/8/8/8/2k5/4KP2/8/8 b - - 3 2",
+              "seq": [
+                "c1d2",
+                "b4c4",
+                "d2e3"
+              ],
+              "marcas": [
+                "e3",
+                "f4"
+              ],
+              "t": "rot.diagonal.ideia.ex1.l14f"
             },
             {
               "fen": "8/8/4k3/8/2K5/3P4/8/8 b - - 1 1",
@@ -965,6 +995,10 @@
               },
               "8/8/4K3/2k5/8/3P4/8/8 w - - 6 4": {
                 "d3d4": "rot.diagonal.pratica.ataque.v13.err.d3d4"
+              },
+              "3k4/8/2KP4/8/8/8/8/8 w - -": {
+                "c6d5": "rot.diagonal.pratica.ataque.v14.err.c6d5",
+                "c6c5": "rot.diagonal.pratica.ataque.v14.err.c6c5"
               }
             }
           }
