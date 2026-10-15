@@ -7,13 +7,14 @@ import '../../services/stockfish_service.dart';
 /// O juiz de reserva da tela de roteiro (T76): o Stockfish do app numa
 /// profundidade fixa, para a posição que nem a tabela KPK nem a do roteiro
 /// cobrem. Mate é vitória ou derrota; fora disso, vantagem acima de [limit]
-/// centipeões. A profundidade e o limite saem da validação de
-/// `tools/script_tables.py --validate` (Stockfish × tablebase nas posições
-/// das tabelas dos roteiros).
+/// centipeões. A profundidade e o limite saem da validação com a tablebase
+/// (`tools/script_tables.py --validate`; em 15/10/2026, 600 finais de peões
+/// de 4 a 7 peças: profundidade 20 e limite 150 erram 1, 16 erra 3, 12 erra
+/// 28).
 class StockfishJudgeRepository implements PositionJudge {
   StockfishJudgeRepository(this._stockfish);
 
-  static const depth = 16;
+  static const depth = 20;
   static const limit = 150;
 
   final StockfishService _stockfish;
