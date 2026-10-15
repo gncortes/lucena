@@ -110,10 +110,33 @@ void main() {
     );
   });
 
+  test('aula escondida não reabre: a da Escola e a de final', () {
+    const school = SchoolProgress(
+      ongoing: LessonCheckpoint(lessonId: 'pieces.rook', step: 0),
+    );
+    expect(
+      launchLocation(
+        school: school,
+        endgames: ongoing('roteiro'),
+        showSchool: false,
+        visibleEndgameLessons: {'pawns.distantOpposition'},
+      ),
+      Routes.home,
+    );
+    expect(
+      launchLocation(
+        endgames: ongoing(null),
+        visibleEndgameLessons: {'rook.lucena'},
+      ),
+      Routes.endgameLessonSteps('rook.lucena'),
+    );
+  });
+
   test('o app e o router usam estas funções', () {
     final main = io.File('lib/main.dart').readAsStringSync();
     final router = io.File('lib/routing/router.dart').readAsStringSync();
     expect(main, contains('initialLocation: launchLocation('));
+    expect(main, contains('visibleEndgameLessons: VisibleLessons.'));
     expect(
       RegExp(r"path: 'lesson',[\s\S]{0,200}scriptPartRedirect\(")
           .hasMatch(router),

@@ -88,6 +88,7 @@ import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
 import '../domain/models/star_challenge.dart';
 import '../ui/school/view_models/star_challenge_cubit.dart';
+import '../domain/use_cases/visible_lessons.dart';
 import '../ui/school/widgets/star_challenge_screen.dart';
 import '../ui/school/widgets/star_challenges_screen.dart';
 import '../ui/school/view_models/lesson_cubit.dart';
@@ -422,6 +423,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
           _route(
             path: 'school',
+            // Escola escondida (VisibleLessons): a lista e as aulas dela
+            // levam à tela inicial; os desafios de estrelas continuam.
+            redirect: (context, state) =>
+                VisibleLessons.school ||
+                    state.uri.path.startsWith(Routes.starChallenges)
+                ? null
+                : Routes.home,
             builder: (context, state) => BlocProvider(
               create: (_) => SchoolCubit(
                 lessons: context.read<LessonRepository>(),

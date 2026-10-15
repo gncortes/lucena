@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/keys/lesson_sound_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
@@ -113,6 +114,7 @@ void main() {
     }
   });
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('lição: o botão de som abre o som da lição; ligar a voz ali faz '
       'a fala sair sozinha', ($) async {
     final app = AppRobot($);
@@ -174,5 +176,5 @@ void main() {
     await endgames.openSteps();
     await $.pump(const Duration(seconds: 1));
     expect(voice.spokenCount, before);
-  });
+  }, skip: !VisibleLessons.endgameLessonIds.contains('rook.philidor'));
 }

@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/all_modes_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -52,7 +53,7 @@ class AllModesScreen extends StatelessWidget {
       (
         l10n.allModesLearnSection,
         [
-          path(HomePath.learn),
+          if (VisibleLessons.school) path(HomePath.learn),
           (
             id: 'stars',
             icon: Icons.star_outline_rounded,

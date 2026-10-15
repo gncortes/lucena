@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -18,7 +19,10 @@ const _move = 'supportMove';
 /// T60: na lição, o aluno resolve com um cronômetro que conta para cima, sem
 /// limite, e o tabuleiro no alto (D15 do Canvas V2); respondido o passo, o
 /// Viktor fala. O tempo de pensar não se escolhe mais.
+final _hidden = !VisibleLessons.endgameLessonIds.contains(_lesson);
+
 void main() {
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('passo de pensar: sem seletor de tempo, tabuleiro no alto e '
       'cronômetro no canto contando; 6 minutos depois, só ele mudou', (
     $,
@@ -41,8 +45,9 @@ void main() {
     expect(endgames.speech, speech);
     expect(find.byKey(LessonKeys.moreHintButton), findsOneWidget);
     expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('dica e "Ver explicação" funcionam desde o começo; a explicação '
       'abre a folha da fala embaixo do tabuleiro', ($) async {
     await AppRobot($).open(systemLocale: _english);
@@ -59,8 +64,9 @@ void main() {
     await endgames.nextStep();
     await endgames.expectStep(_lesson, 'goal');
     await endgames.expectExplaining();
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('passo de lance respondido: o cronômetro para, o tabuleiro fica '
       'no mesmo lugar e o Viktor fala', ($) async {
     await AppRobot($).open(systemLocale: _english);
@@ -91,8 +97,9 @@ void main() {
     await endgames.expectExplaining();
     // D15: o tabuleiro não pula entre resolver e explicar.
     expect(endgames.boardRect.top, closeTo(solving.top, 1));
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('sair do app no meio do passo e voltar: o cronômetro continua '
       'do tempo certo', ($) async {
     final app = AppRobot($);
@@ -110,7 +117,7 @@ void main() {
     await endgames.expectStep(_lesson, 't_support');
     await endgames.expectSolving();
     expect(endgames.stepTimer, matches(RegExp(r'^2:0\d$')));
-  });
+  }, skip: _hidden);
 
   patrolTest('Configurações → Jogo: o tempo de pensar não existe mais', (
     $,

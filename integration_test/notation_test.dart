@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/lesson.dart';
@@ -34,6 +35,7 @@ Future<void> _seedPieces() =>
 void main() {
   // As aulas de notação e de mate têm roteiro (T71): abrem na tela
   // roteirizada, com o balão do Viktor.
+  // Escola escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('coordenadas e mate de duas torres abrem na tela roteirizada', (
     $,
   ) async {
@@ -52,5 +54,5 @@ void main() {
     await school.openScriptLesson('mates.twoRooks');
     await $(LessonScriptKeys.speech).waitUntilVisible();
     await $(LessonScriptKeys.board).waitUntilVisible();
-  });
+  }, skip: !VisibleLessons.school);
 }

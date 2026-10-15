@@ -46,6 +46,8 @@ import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/pace/pace_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/endgames/visible_endgame_lesson_repository.dart';
+import 'package:lucena/data/repositories/school/visible_lesson_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository_asset.dart';
 import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
@@ -264,14 +266,14 @@ Future<Dependencies> e2eDependencies() async {
     unlockRepository: LocalUnlockRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
-    lessonRepository: lessons,
+    lessonRepository: VisibleLessonRepository(lessons),
     schoolProgressRepository: LocalSchoolProgressRepository(
       PreferencesService(),
     ),
     starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
-    endgameLessonRepository: AssetEndgameLessonRepository(
-      const AssetService(),
-      school: lessons,
+    // Só as aulas liberadas, como no app (VisibleLessons).
+    endgameLessonRepository: VisibleEndgameLessonRepository(
+      AssetEndgameLessonRepository(const AssetService(), school: lessons),
     ),
     lessonScriptRepository: AssetLessonScriptRepository(const AssetService()),
     kpkRepository: AssetKpkRepository(const AssetService()),

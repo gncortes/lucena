@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
@@ -52,7 +53,10 @@ void main() {
 
     // Começar sem tocar em nada vale "Estou começando".
     await tour.start();
-    await SchoolRobot($).expectTrail();
+    // Com a Escola escondida (VisibleLessons), o tour leva à tela inicial.
+    VisibleLessons.school
+        ? await SchoolRobot($).expectTrail()
+        : await HomeRobot($).expectVisible();
 
     final saved = await tour.savedOnboarding();
     expect(saved.done, isTrue);

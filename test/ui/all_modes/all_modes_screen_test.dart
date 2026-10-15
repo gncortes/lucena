@@ -61,7 +61,6 @@ void main() {
     );
     await tester.pumpAndSettle();
     for (final mode in [
-      'learn',
       'stars',
       'forYou',
       'endgames',
@@ -78,6 +77,8 @@ void main() {
       expect(find.byKey(AllModesKeys.item(mode)), findsOneWidget, reason: mode);
     }
     expect(find.text('Às cegas'), findsOneWidget);
+    // A Escola escondida (VisibleLessons) não aparece.
+    expect(find.byKey(AllModesKeys.item('learn')), findsNothing);
   });
 
   testWidgets('quem já joga vê Jogar primeiro; o iniciante, Aprender', (
@@ -104,10 +105,10 @@ void main() {
     }
 
     const master = UserProfile(rating: 2400);
-    expect(await top(master, 'journey'), lessThan(await top(master, 'learn')));
+    expect(await top(master, 'journey'), lessThan(await top(master, 'stars')));
     const beginner = UserProfile(rating: 800);
     expect(
-      await top(beginner, 'learn'),
+      await top(beginner, 'stars'),
       lessThan(await top(beginner, 'journey')),
     );
   });

@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
@@ -14,6 +15,7 @@ import 'robots/tour_robot.dart';
 const _english = Locale('en', 'US');
 
 void main() {
+  // Escola escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('tour: o Viktor fala em cada passo e o iniciante vai às aulas', (
     $,
   ) async {
@@ -32,10 +34,11 @@ void main() {
     final school = SchoolRobot($);
     await school.expectTrail();
     expect(find.byKey(SchoolKeys.continueButton), findsOneWidget);
-  });
+  }, skip: !VisibleLessons.school);
 
   // As aulas do curso agora têm roteiro (T71): a rota troca pela tela
   // roteirizada, sem os passos da lição de reserva.
+  // Escola escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('aula da torre: abre a tela roteirizada; o balão não tem X, o '
       'toque abre a fala inteira e o X da folha fecha', ($) async {
     await AppRobot($).open(systemLocale: _english);
@@ -49,8 +52,9 @@ void main() {
     await school.scriptContinue();
     await school.expectScriptSpeechSheet();
     expect(find.byKey(LessonScriptKeys.screen), findsOneWidget);
-  });
+  }, skip: !VisibleLessons.school);
 
+  // Escola escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('fechar à força no meio da aula: reabre na tela roteirizada', (
     $,
   ) async {
@@ -64,5 +68,5 @@ void main() {
     await app.restart();
     await $(LessonScriptKeys.screen).waitUntilVisible();
     await $(LessonScriptKeys.speech).waitUntilVisible();
-  });
+  }, skip: !VisibleLessons.school);
 }

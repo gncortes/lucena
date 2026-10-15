@@ -4,7 +4,6 @@ import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
-import 'robots/school_robot.dart';
 import 'robots/star_challenge_robot.dart';
 
 const _english = Locale('en', 'US');
@@ -14,9 +13,8 @@ void main() {
     $,
   ) async {
     await AppRobot($).open(systemLocale: _english);
-    await SchoolRobot($).openFromHome();
     final challenge = StarChallengeRobot($);
-    await challenge.openFromSchool();
+    await challenge.openFromAllModes();
     await challenge.openChallenge('rook', 'easy');
 
     await challenge.go();

@@ -50,8 +50,10 @@ void main() {
     tester,
   ) async {
     await pump(tester);
-    // A sugestão do iniciante: já é ela, nada a restaurar.
-    expect(checked(tester, HomePath.learn), isTrue);
+    // A sugestão do iniciante: já é ela, nada a restaurar. A Escola
+    // escondida (VisibleLessons) não está na lista.
+    expect(find.byKey(HomeLayoutKeys.item(HomePath.learn)), findsNothing);
+    expect(checked(tester, HomePath.journey), isTrue);
     expect(checked(tester, HomePath.speedrun), isFalse);
     expect(
       tester.widget<OutlinedButton>(find.byKey(HomeLayoutKeys.restore)).enabled,
@@ -67,7 +69,7 @@ void main() {
     // Arrastar o Speedrun (o último) para o topo.
     final handle = find.byKey(HomeLayoutKeys.handle(HomePath.speedrun));
     final first = tester.getCenter(
-      find.byKey(HomeLayoutKeys.item(HomePath.learn)),
+      find.byKey(HomeLayoutKeys.item(HomePath.journey)),
     );
     final start = tester.getCenter(handle);
     final gesture = await tester.startGesture(start);
@@ -89,8 +91,10 @@ void main() {
 
   testWidgets('o último marcado não pode ser desmarcado', (tester) async {
     await pump(tester);
-    await tester.tap(find.byKey(HomeLayoutKeys.check(HomePath.learn)));
-    await tester.pumpAndSettle();
+    for (final path in [HomePath.forYou, HomePath.endgames]) {
+      await tester.tap(find.byKey(HomeLayoutKeys.check(path)));
+      await tester.pumpAndSettle();
+    }
     final journey = tester.widget<CheckboxListTile>(
       find.byKey(HomeLayoutKeys.check(HomePath.journey)),
     );

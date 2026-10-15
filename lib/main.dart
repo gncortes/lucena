@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
 import 'routing/launch_location.dart';
+import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
@@ -96,6 +97,8 @@ class _LucenaAppState extends State<LucenaApp> {
           school: school,
           endgames: endgames,
           stars: stars,
+          showSchool: VisibleLessons.school,
+          visibleEndgameLessons: VisibleLessons.endgameLessonIds,
         ),
       );
     });

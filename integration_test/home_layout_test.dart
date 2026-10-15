@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -20,6 +21,7 @@ void main() {
     await tour.start();
   }
 
+  // Escola escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('tour como mestre: o Speedrun primeiro e as aulas fora do '
       'destaque', ($) async {
     await tourAs($, RatingLevel.master);
@@ -30,8 +32,9 @@ void main() {
     expect(find.byKey(HomeKeys.schoolButton), findsNothing);
     await $(HomeKeys.otherModes).scrollTo().tap();
     await $(HomeKeys.schoolButton).scrollTo();
-  });
+  }, skip: !VisibleLessons.school);
 
+  // Escola escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('tour como iniciante: Aprender e Jornada em destaque', ($) async {
     await tourAs($, RatingLevel.beginner);
     // O iniciante termina o tour nas aulas; a tela inicial fica embaixo.
@@ -39,7 +42,7 @@ void main() {
     await $(HomeKeys.schoolButton).waitUntilExists();
     await $(HomeKeys.journeyButton).waitUntilExists();
     expect(find.byKey(HomeKeys.speedrunButton), findsNothing);
-  });
+  }, skip: !VisibleLessons.school);
 
   patrolTest('personalizar, fechar o app e reabrir mantém a escolha', (
     $,
