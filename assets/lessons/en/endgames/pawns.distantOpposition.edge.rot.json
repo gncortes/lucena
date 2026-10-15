@@ -92,7 +92,7 @@
   "rot.edge.pratica.defesa.err.g6h6.1": "1...Kh6? goes to the sixth rank, but hands the opposition to White: the draw slips away.",
   "rot.edge.pratica.defesa.err.g6h6.2": "2.Kd6! Three squares between the kings and Black is to move: White has the opposition.",
   "rot.edge.pratica.defesa.err.g6f7.1": "1...Kf7? faces the white king, but is far from g6: the draw slips away.",
-  "rot.edge.pratica.defesa.err.g6f7.2": "2.Kd6! If 2...Kg6, 3.Ke6!, with the pawn on f6 between the kings: White has the opposition.",
+  "rot.edge.pratica.defesa.err.g6f7.2": "2.Kd6 If 2...Kg6, 3.Ke6, with the pawn on f6 between the kings: White has the opposition.",
   "rot.edge.pratica.defesa.err.g6h5.1": "1...Kh5? moves your king away from the seventh rank: the draw slips away.",
   "rot.edge.pratica.defesa.err.g6h5.2": "2.Ke7! If 2...Kg6, 3.Ke6!, with the pawn on f6 between the kings: White has the opposition.",
   "rot.edge.pratica.defesa.err.g6g7.1": "1...Kg7? leaves two squares between the kings, an even number: the draw slips away.",
