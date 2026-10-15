@@ -2018,9 +2018,14 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       walk = played.fen;
       fens.add(walk);
     }
-    final custom = _example.practice!.errors[uci];
+    // A fala do roteiro cita o lance numerado: vale só no primeiro lance da
+    // prática. Em duas partes, `.1` (o que o lance perde) entra com o erro e
+    // `.2` (o porquê, com a resposta) entra com a resposta e fica até o fim.
+    final custom = from == _example.fen ? _example.practice!.errors[uci] : null;
+    final split = custom != null && _texts.has('$custom.1');
+    final why = split && _texts.has('$custom.2') ? _say('$custom.2') : null;
     final intro = custom != null
-        ? _say(custom)
+        ? _say(split ? '$custom.1' : custom)
         : labels.length < 2
         ? _say('gen.pratica.errado.$_goalName')
         : _say('gen.pratica.refuta.$_goalName')
@@ -2049,6 +2054,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         state.copyWith(
           fen: fens[i + 1],
           lastMove: plies[i],
+          speech: i == 1 && why != null ? [why] : state.speech,
           transition: _transition([plies[i]], fromFen: fens[i]),
         ),
       );
@@ -2058,7 +2064,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _publish(
       state.copyWith(
         phase: ScriptPhase.praticaFim,
-        speech: [intro],
+        speech: [why ?? intro],
         tone: ScriptTone.bad,
         primary: ScriptAction.tentarDeNovo,
         secondary: null,

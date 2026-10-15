@@ -1274,7 +1274,17 @@
       "t": "rot.pratica.ataque.enunciado",
       "maquina": "b",
       "limite": 40,
-      "fim": "rot.pratica.ataque.fim"
+      "fim": "rot.pratica.ataque.fim",
+      "erros": {
+       "f3e3": "rot.pratica.ataque.err.f3e3",
+       "f3f4": "rot.pratica.ataque.err.f3f4",
+       "f3g4": "rot.pratica.ataque.err.f3g4",
+       "f3g3": "rot.pratica.ataque.err.f3g3",
+       "f3g2": "rot.pratica.ataque.err.f3g2",
+       "f3f2": "rot.pratica.ataque.err.f3f2",
+       "f3e2": "rot.pratica.ataque.err.f3e2",
+       "b3b4": "rot.pratica.ataque.err.b3b4"
+      }
      }
     },
     {
@@ -1287,7 +1297,16 @@
       "t": "rot.pratica.defesa.enunciado",
       "maquina": "w",
       "limite": 40,
-      "fim": "rot.pratica.defesa.fim"
+      "fim": "rot.pratica.defesa.fim",
+      "erros": {
+       "b7c7": "rot.pratica.defesa.err.b7c7",
+       "b7b6": "rot.pratica.defesa.err.b7b6",
+       "b7b8": "rot.pratica.defesa.err.b7b8",
+       "b7c8": "rot.pratica.defesa.err.b7c8",
+       "b7a8": "rot.pratica.defesa.err.b7a8",
+       "b7a7": "rot.pratica.defesa.err.b7a7",
+       "b7a6": "rot.pratica.defesa.err.b7a6"
+      }
      }
     }
    ]

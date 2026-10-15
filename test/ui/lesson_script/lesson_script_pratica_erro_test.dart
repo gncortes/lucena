@@ -50,10 +50,14 @@ Map<String, String> _texts() {
   final generic = jsonDecode(
     io.File('assets/lessons/pt/roteiro_generico.json').readAsStringSync(),
   ) as Map<String, dynamic>;
+  final lesson = jsonDecode(
+    io.File('assets/lessons/pt/endgames/pawns.distantOpposition.json')
+        .readAsStringSync(),
+  ) as Map<String, dynamic>;
   return {
     for (final e in generic.entries) e.key: e.value as String,
-    'rot.pratica.ataque.enunciado': 'Enunciado',
-    'rot.pratica.ataque.fim': 'Fim',
+    for (final e in lesson.entries)
+      if (e.key.startsWith('rot.pratica.')) e.key: e.value as String,
   };
 }
 
@@ -110,8 +114,9 @@ void main() {
     expect(s.fen, startsWith('4k3/8/8/8/8/1P2K3/8/8 b'));
     expect(s.lastMove, 'f3e3');
     expect(s.tone, ScriptTone.bad);
-    expect(s.speech.single, startsWith('Com 1.Re3?, as pretas respondem com '));
-    expect(s.speech.single, contains('1...R'));
+    // A fala do roteiro em duas partes: primeiro o que o lance perde.
+    expect(s.speech.single, _texts()['rot.pratica.ataque.err.f3e3.1']);
+    expect(s.speech.single, startsWith('Com 1.Re3?'));
     expect(s.primary, isNull);
     expect(s.movable, isNull);
     expect(s.moves.first.san, 'Ke3');
@@ -131,7 +136,9 @@ void main() {
     expect(s.primary, ScriptAction.tentarDeNovo);
     expect(s.secondary, isNull);
     expect(s.moves.length, inInclusiveRange(2, 4));
-    expect(s.speech.single, startsWith('Com 1.Re3?'));
+    // Com a resposta, o porquê, que fica até o "Tentar de novo".
+    expect(s.speech.single, _texts()['rot.pratica.ataque.err.f3e3.2']);
+    expect(s.speech.single, contains('1...Rd7'));
 
     // Tentar de novo: a posição de antes, com a vez do aluno.
     await cubit.onAction(ScriptAction.tentarDeNovo);
@@ -147,6 +154,48 @@ void main() {
     await cubit.onMove('f3e4');
     expect(cubit.state.tone, isNot(ScriptTone.bad));
     expect(cubit.state.moves.first.san, 'Ke4');
+  });
+
+  test(
+    'a fala do roteiro vale só no primeiro lance; depois, a genérica',
+    () async {
+      final cubit = _cubit(_Waits(), instant: true);
+      await cubit.start();
+      await cubit.onMove('f3e4');
+      await Future<void>.delayed(Duration.zero);
+      expect(cubit.state.fen, startsWith('3k4/8/8/8/4K3/1P6/8/8 w'));
+      // b3b4 está nos erros do roteiro, mas a fala dele cita o 1º lance.
+      await cubit.onMove('b3b4');
+      expect(cubit.state.phase, ScriptPhase.praticaFim);
+      expect(cubit.state.speech.single, startsWith('Com 2.b4?, as pretas'));
+    },
+  );
+
+  test('cada erro previsto da prática tem as duas falas, em pt e en', () {
+    final script = LessonScript.fromJson(
+      jsonDecode(
+        io.File('assets/lessons/roteiros/pawns.distantOpposition.json')
+            .readAsStringSync(),
+      ) as Map<String, dynamic>,
+    );
+    for (final language in ['pt', 'en']) {
+      final texts = jsonDecode(
+        io.File(
+          'assets/lessons/$language/endgames/pawns.distantOpposition.json',
+        ).readAsStringSync(),
+      ) as Map<String, dynamic>;
+      var count = 0;
+      for (final stage in script.stages) {
+        for (final example in stage.examples) {
+          for (final key in example.practice?.errors.values ?? <String>[]) {
+            expect(texts['$key.1'], isA<String>(), reason: '$language $key.1');
+            expect(texts['$key.2'], isA<String>(), reason: '$language $key.2');
+            count++;
+          }
+        }
+      }
+      expect(count, 15);
+    }
   });
 
   test('um lance certo não aciona a refutação', () async {
@@ -202,7 +251,7 @@ void main() {
     expect(cubit.state.phase, ScriptPhase.praticaFim);
     expect(find.byKey(LessonScriptKeys.primary), findsOneWidget);
     expect(find.text('Tentar de novo'), findsOneWidget);
-    expect(find.textContaining('Com 1.Re3?'), findsOneWidget);
+    expect(find.textContaining('1...Rd7'), findsOneWidget);
     expect(
       tester.getSize(find.byKey(LessonScriptKeys.primary)).height,
       greaterThanOrEqualTo(48),

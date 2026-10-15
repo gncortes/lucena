@@ -268,6 +268,21 @@ void main() {
                 if (example.question case final question?)
                   if (question.alternatives.isNotEmpty)
                     ScriptTracks.principal(question.rightStep.t),
+        // O erro previsto da prática: a chave inteira ou as duas partes
+        // (`.1` no lance, `.2` com a resposta).
+        for (final part in lesson.lesson.parts)
+          if (part.script != null)
+            for (final stage in LessonScript.fromJson(
+              jsonDecode(io.File(part.script!).readAsStringSync())
+                  as Map<String, dynamic>,
+            ).stages)
+              for (final example in stage.examples)
+                for (final key
+                    in example.practice?.errors.values ?? <String>[]) ...[
+                  key,
+                  '$key.1',
+                  '$key.2',
+                ],
       };
       // Também opcionais: resumo curto do passo (`step.<id>.short`), fala da
       // resposta do adversário (`step.<id>.r<n>`, `ex.<id>.r<n>`) e fala do
