@@ -1,0 +1,706 @@
+{
+ "licao": "pawns.distantOpposition",
+ "parte": "capablanca",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "ex1",
+     "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "curiosidades": {
+      "t": "rot.capablanca.ideia.ex1.curiosidades",
+      "citacao": {
+       "t": "rot.capablanca.ideia.ex1.citacao",
+       "autor": "José Raúl Capablanca"
+      },
+      "referencias": [
+       {
+        "id": "capablancaEx27",
+        "kind": "book",
+        "author": "José Raúl Capablanca",
+        "title": "Chess Fundamentals",
+        "publisher": "Harcourt, Brace & World",
+        "year": 1921,
+        "where": "capítulo II, seção 13, The Opposition, exemplo 27 (Project Gutenberg, eBook 33870)",
+        "url": "https://www.gutenberg.org/cache/epub/33870/pg33870-images.html"
+       },
+       {
+        "id": "wikiCapablanca",
+        "kind": "web",
+        "title": "Wikipedia: José Raúl Capablanca",
+        "url": "https://en.wikipedia.org/wiki/Jos%C3%A9_Ra%C3%BAl_Capablanca"
+       }
+      ]
+     },
+     "entrada": [
+      {
+       "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+       "t": "rot.capablanca.ideia.ex1.e1",
+       "marcas": [
+        "b4",
+        "b5",
+        "h4",
+        "h5"
+       ]
+      },
+      {
+       "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+       "t": "rot.capablanca.ideia.ex1.e2"
+      },
+      {
+       "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+       "t": "rot.capablanca.ideia.ex1.e3"
+      },
+      {
+       "fen": "4k3/8/8/1p5p/1P5P/8/8/4K3 w - - 0 1",
+       "t": "rot.capablanca.ideia.ex1.e4"
+      }
+     ],
+     "pergunta": {
+      "t": "rot.capablanca.ideia.ex1.p",
+      "certos": [
+       "e1e2"
+      ],
+      "certo": {
+       "fen": "4k3/8/8/1p5p/1P5P/8/4K3/8 b - - 1 1",
+       "lance": "e1e2",
+       "marcas": [
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "e7"
+       ],
+       "t": "rot.capablanca.ideia.ex1.certo"
+      },
+      "revela": {
+       "fen": "4k3/8/8/1p5p/1P5P/8/4K3/8 b - - 1 1",
+       "lance": "e1e2",
+       "marcas": [
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "e7"
+       ],
+       "t": "rot.capablanca.ideia.ex1.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "e1d2": [
+        {
+         "fen": "4k3/8/8/1p5p/1P5P/8/3K4/8 b - - 1 1",
+         "t": "rot.capablanca.ideia.ex1.err.e1d2.1",
+         "lance": "e1d2",
+         "setas": [
+          [
+           "e1",
+           "d2",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "3k4/8/8/1p5p/1P5P/8/3K4/8 w - - 2 2",
+         "t": "rot.capablanca.ideia.ex1.err.e1d2.2",
+         "lance": "e8d8"
+        }
+       ],
+       "e1f2": [
+        {
+         "fen": "4k3/8/8/1p5p/1P5P/8/5K2/8 b - - 1 1",
+         "t": "rot.capablanca.ideia.ex1.err.e1f2.1",
+         "lance": "e1f2",
+         "setas": [
+          [
+           "e1",
+           "f2",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "5k2/8/8/1p5p/1P5P/8/5K2/8 w - - 2 2",
+         "t": "rot.capablanca.ideia.ex1.err.e1f2.2",
+         "lance": "e8f8"
+        }
+       ],
+       "e1d1": [
+        {
+         "fen": "4k3/8/8/1p5p/1P5P/8/8/3K4 b - - 1 1",
+         "t": "rot.capablanca.ideia.ex1.err.e1d1.1",
+         "lance": "e1d1",
+         "setas": [
+          [
+           "e1",
+           "d1",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "8/3k4/8/1p5p/1P5P/8/8/3K4 w - - 2 2",
+         "t": "rot.capablanca.ideia.ex1.err.e1d1.2",
+         "lance": "e8d7"
+        }
+       ],
+       "e1f1": [
+        {
+         "fen": "4k3/8/8/1p5p/1P5P/8/8/5K2 b - - 1 1",
+         "t": "rot.capablanca.ideia.ex1.err.e1f1.1",
+         "lance": "e1f1",
+         "setas": [
+          [
+           "e1",
+           "f1",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "8/5k2/8/1p5p/1P5P/8/8/5K2 w - - 2 2",
+         "t": "rot.capablanca.ideia.ex1.err.e1f1.2",
+         "lance": "e8f7"
+        }
+       ]
+      },
+      "juiz": "lista",
+      "volta": "rot.capablanca.ideia.ex1.volta"
+     },
+     "linha": [
+      {
+       "fen": "4k3/8/8/1p5p/1P5P/8/4K3/8 b - - 1 1",
+       "t": "rot.capablanca.ideia.ex1.l1",
+       "marcas": [
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "e7"
+       ]
+      },
+      {
+       "fen": "8/4k3/8/1p5p/1P5P/8/4K3/8 w - - 2 2",
+       "t": "rot.capablanca.ideia.ex1.l2",
+       "lance": "e8e7"
+      },
+      {
+       "fen": "8/4k3/8/1p5p/1P5P/4K3/8/8 b - - 3 2",
+       "t": "rot.capablanca.ideia.ex1.l3",
+       "lance": "e2e3",
+       "marcas": [
+        "e4",
+        "e5",
+        "e6"
+       ]
+      },
+      {
+       "fen": "8/8/4k3/1p5p/1P5P/4K3/8/8 w - - 4 3",
+       "t": "rot.capablanca.ideia.ex1.l4",
+       "lance": "e7e6"
+      },
+      {
+       "fen": "8/8/4k3/1p5p/1P2K2P/8/8/8 b - - 5 3",
+       "t": "rot.capablanca.ideia.ex1.l5",
+       "lance": "e3e4",
+       "marcas": [
+        "e4",
+        "e6"
+       ]
+      },
+      {
+       "fen": "8/8/5k2/1p5p/1P2K2P/8/8/8 w - - 6 4",
+       "t": "rot.capablanca.ideia.ex1.l6",
+       "lance": "e6f6",
+       "marcas": [
+        "f5"
+       ]
+      },
+      {
+       "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
+       "t": "rot.capablanca.ideia.ex1.l7",
+       "lance": "e4f4",
+       "marcas": [
+        "f4",
+        "f6"
+       ]
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex1.l8",
+       "lance": "f6g6",
+       "marcas": [
+        "g5",
+        "h5"
+       ]
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex1.l9"
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex1.l10"
+      }
+     ]
+    },
+    {
+     "id": "ex2",
+     "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex2.e1",
+       "marcas": [
+        "g6",
+        "h5"
+       ]
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex2.e2"
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex2.e3"
+      }
+     ],
+     "pergunta": {
+      "t": "rot.capablanca.ideia.ex2.p",
+      "certos": [
+       "f4e5"
+      ],
+      "certo": {
+       "fen": "8/8/6k1/1p2K2p/1P5P/8/8/8 b - - 9 5",
+       "lance": "f4e5",
+       "setas": [
+        [
+         "e5",
+         "b5",
+         "g"
+        ]
+       ],
+       "t": "rot.capablanca.ideia.ex2.certo"
+      },
+      "revela": {
+       "fen": "8/8/6k1/1p2K2p/1P5P/8/8/8 b - - 9 5",
+       "lance": "f4e5",
+       "setas": [
+        [
+         "e5",
+         "b5",
+         "g"
+        ]
+       ],
+       "t": "rot.capablanca.ideia.ex2.revela"
+      },
+      "alternativos": {
+       "f4e4": [
+        {
+         "fen": "8/8/6k1/1p5p/1P2K2P/8/8/8 b - - 9 5",
+         "lance": "f4e4",
+         "setas": [
+          [
+           "e4",
+           "d5",
+           "g"
+          ]
+         ],
+         "t": "rot.capablanca.ideia.ex2.alt.f4e4.1"
+        },
+        {
+         "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+         "salto": true,
+         "t": "rot.capablanca.ideia.ex2.alt.f4e4.2"
+        }
+       ]
+      },
+      "erros": {
+       "f4e3": [
+        {
+         "fen": "8/8/6k1/1p5p/1P5P/4K3/8/8 b - - 9 5",
+         "t": "rot.capablanca.ideia.ex2.err.f4e3.1",
+         "lance": "f4e3",
+         "setas": [
+          [
+           "f4",
+           "e3",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "8/8/8/1p3k1p/1P5P/4K3/8/8 w - - 10 6",
+         "t": "rot.capablanca.ideia.ex2.err.f4e3.2",
+         "lance": "g6f5"
+        }
+       ],
+       "f4g3": [
+        {
+         "fen": "8/8/6k1/1p5p/1P5P/6K1/8/8 b - - 9 5",
+         "t": "rot.capablanca.ideia.ex2.err.f4g3.1",
+         "lance": "f4g3",
+         "setas": [
+          [
+           "f4",
+           "g3",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "8/8/8/1p3k1p/1P5P/6K1/8/8 w - - 10 6",
+         "t": "rot.capablanca.ideia.ex2.err.f4g3.2",
+         "lance": "g6f5"
+        }
+       ],
+       "f4f3": [
+        {
+         "fen": "8/8/6k1/1p5p/1P5P/5K2/8/8 b - - 9 5",
+         "t": "rot.capablanca.ideia.ex2.err.f4f3.1",
+         "lance": "f4f3",
+         "setas": [
+          [
+           "f4",
+           "f3",
+           "r"
+          ]
+         ]
+        },
+        {
+         "fen": "8/8/8/1p3k1p/1P5P/5K2/8/8 w - - 10 6",
+         "t": "rot.capablanca.ideia.ex2.err.f4f3.2",
+         "lance": "g6f5"
+        }
+       ]
+      },
+      "juiz": "lista",
+      "volta": "rot.capablanca.ideia.ex2.volta"
+     },
+     "linha": [
+      {
+       "fen": "8/8/6k1/1p2K2p/1P5P/8/8/8 b - - 9 5",
+       "t": "rot.capablanca.ideia.ex2.l1",
+       "marcas": [
+        "f5",
+        "g5"
+       ]
+      },
+      {
+       "fen": "8/6k1/8/1p2K2p/1P5P/8/8/8 w - - 10 6",
+       "t": "rot.capablanca.ideia.ex2.l2",
+       "lance": "g6g7"
+      },
+      {
+       "fen": "8/6k1/8/1p1K3p/1P5P/8/8/8 b - - 11 6",
+       "t": "rot.capablanca.ideia.ex2.l3",
+       "lance": "e5d5"
+      },
+      {
+       "fen": "8/8/5k2/1p1K3p/1P5P/8/8/8 w - - 12 7",
+       "t": "rot.capablanca.ideia.ex2.l4",
+       "lance": "g7f6"
+      },
+      {
+       "fen": "8/8/5k2/1pK4p/1P5P/8/8/8 b - - 13 7",
+       "t": "rot.capablanca.ideia.ex2.l5",
+       "lance": "d5c5"
+      },
+      {
+       "fen": "8/8/8/1pK1k2p/1P5P/8/8/8 w - - 14 8",
+       "t": "rot.capablanca.ideia.ex2.l6",
+       "lance": "f6e5"
+      },
+      {
+       "fen": "8/8/8/1K2k2p/1P5P/8/8/8 b - - 0 8",
+       "t": "rot.capablanca.ideia.ex2.l7",
+       "lance": "c5b5"
+      },
+      {
+       "fen": "8/8/K7/1P5p/4k2P/8/8/8 b - - 0 10",
+       "t": "rot.capablanca.ideia.ex2.l8",
+       "seq": [
+        "e5d5",
+        "b5a6",
+        "d5e4",
+        "b4b5"
+       ]
+      },
+      {
+       "fen": "1Q6/8/K7/7p/7k/8/8/8 b - - 0 13",
+       "t": "rot.capablanca.ideia.ex2.l9",
+       "seq": [
+        "e4f3",
+        "b5b6",
+        "f3g3",
+        "b6b7",
+        "g3h4",
+        "b7b8q"
+       ]
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex2.l10",
+       "salto": true
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex2.l11"
+      },
+      {
+       "fen": "8/8/6k1/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.ideia.ex2.ponte"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "outroLado",
+     "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
+       "t": "rot.capablanca.demos.outroLado.1"
+      },
+      {
+       "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
+       "t": "rot.capablanca.demos.outroLado.2",
+       "marcas": [
+        "b5",
+        "h5"
+       ]
+      }
+     ],
+     "linha": [
+      {
+       "fen": "8/8/4k3/1p5p/1P3K1P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.demos.outroLado.3",
+       "lance": "f6e6"
+      },
+      {
+       "fen": "8/8/4k3/1p4Kp/1P5P/8/8/8 b - - 9 5",
+       "t": "rot.capablanca.demos.outroLado.4",
+       "lance": "f4g5",
+       "marcas": [
+        "h5"
+       ]
+      },
+      {
+       "fen": "8/8/8/1p2k1Kp/1P5P/8/8/8 w - - 10 6",
+       "t": "rot.capablanca.demos.outroLado.5",
+       "lance": "e6e5"
+      },
+      {
+       "fen": "8/8/8/1p2k2K/1P5P/8/8/8 b - - 0 6",
+       "t": "rot.capablanca.demos.outroLado.6",
+       "lance": "g5h5"
+      },
+      {
+       "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
+       "t": "rot.capablanca.demos.outroLado.7",
+       "salto": true
+      }
+     ]
+    },
+    {
+     "id": "passar",
+     "fen": "8/8/5k2/1p1K3p/1P5P/8/8/8 b - - 7 4",
+     "vira": true,
+     "objetivo": "empatar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "8/8/5k2/1p1K3p/1P5P/8/8/8 b - - 7 4",
+       "t": "rot.capablanca.demos.passar.1",
+       "marcas": [
+        "d5"
+       ]
+      },
+      {
+       "fen": "8/8/5k2/1p1K3p/1P5P/8/8/8 b - - 7 4",
+       "t": "rot.capablanca.demos.passar.2"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "8/8/8/1p1K1k1p/1P5P/8/8/8 w - - 8 5",
+       "t": "rot.capablanca.demos.passar.3",
+       "lance": "f6f5"
+      },
+      {
+       "fen": "8/8/8/1pK2k1p/1P5P/8/8/8 b - - 9 5",
+       "t": "rot.capablanca.demos.passar.4",
+       "lance": "d5c5"
+      },
+      {
+       "fen": "8/8/8/1pK4p/1P4kP/8/8/8 w - - 10 6",
+       "t": "rot.capablanca.demos.passar.5",
+       "lance": "f5g4"
+      },
+      {
+       "fen": "8/8/8/1K5p/1P4kP/8/8/8 b - - 0 6",
+       "t": "rot.capablanca.demos.passar.6",
+       "lance": "c5b5"
+      },
+      {
+       "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
+       "t": "rot.capablanca.demos.passar.7",
+       "lance": "g4h4"
+      },
+      {
+       "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
+       "t": "rot.capablanca.demos.passar.8"
+      },
+      {
+       "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
+       "t": "rot.capablanca.demos.passar.ponte"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "colunas",
+     "fen": "3k4/8/8/p5p1/P5P1/8/8/3K4 w - - 0 1",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "pratica": {
+      "tipo": "lance",
+      "t": "rot.capablanca.pratica.colunas.enunciado",
+      "maquina": "b",
+      "limite": 40,
+      "linha": [
+       {
+        "certos": [
+         "d1d2"
+        ],
+        "resposta": "d8d7"
+       },
+       {
+        "certos": [
+         "d2d3"
+        ],
+        "resposta": "d7d6"
+       },
+       {
+        "certos": [
+         "d3d4"
+        ],
+        "resposta": "d6e6"
+       },
+       {
+        "certos": [
+         "d4e4"
+        ],
+        "resposta": "e6f6"
+       },
+       {
+        "certos": [
+         "e4d5",
+         "e4d4"
+        ]
+       }
+      ],
+      "erros": {
+       "d1c2": "rot.capablanca.pratica.colunas.err.d1c2",
+       "d1e2": "rot.capablanca.pratica.colunas.err.d1e2",
+       "d1c1": "rot.capablanca.pratica.colunas.err.d1c1",
+       "d1e1": "rot.capablanca.pratica.colunas.err.d1e1"
+      },
+      "errosPos": {
+       "8/3k4/8/p5p1/P5P1/8/3K4/8 w - - 2 2": {
+        "d2e3": "rot.capablanca.pratica.colunas.v1.err.d2e3",
+        "d2c3": "rot.capablanca.pratica.colunas.v1.err.d2c3"
+       },
+       "8/8/3k4/p5p1/P5P1/3K4/8/8 w - - 4 3": {
+        "d3e4": "rot.capablanca.pratica.colunas.v2.err.d3e4",
+        "d3c4": "rot.capablanca.pratica.colunas.v2.err.d3c4"
+       },
+       "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 6 4": {
+        "d4c5": "rot.capablanca.pratica.colunas.v3.err.d4c5",
+        "d4c4": "rot.capablanca.pratica.colunas.v3.err.d4c4"
+       },
+       "8/8/5k2/p5p1/P3K1P1/8/8/8 w - - 8 5": {
+        "e4f3": "rot.capablanca.pratica.colunas.v4.err.e4f3"
+       }
+      },
+      "fim": "rot.capablanca.pratica.colunas.fim"
+     }
+    },
+    {
+     "id": "pretas",
+     "fen": "5k2/8/8/1p5p/1P5P/8/8/5K2 b - - 0 1",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "pratica": {
+      "tipo": "lance",
+      "t": "rot.capablanca.pratica.pretas.enunciado",
+      "maquina": "w",
+      "limite": 40,
+      "linha": [
+       {
+        "certos": [
+         "f8f7"
+        ],
+        "resposta": "f1f2"
+       },
+       {
+        "certos": [
+         "f7f6"
+        ],
+        "resposta": "f2f3"
+       },
+       {
+        "certos": [
+         "f6f5"
+        ],
+        "resposta": "f3e3"
+       },
+       {
+        "certos": [
+         "f5g4",
+         "f5e5"
+        ]
+       }
+      ],
+      "erros": {
+       "f8e7": "rot.capablanca.pratica.pretas.err.f8e7",
+       "f8g7": "rot.capablanca.pratica.pretas.err.f8g7",
+       "f8e8": "rot.capablanca.pratica.pretas.err.f8e8",
+       "f8g8": "rot.capablanca.pratica.pretas.err.f8g8"
+      },
+      "errosPos": {
+       "8/5k2/8/1p5p/1P5P/8/5K2/8 b - - 2 2": {
+        "f7e6": "rot.capablanca.pratica.pretas.v1.err.f7e6",
+        "f7g6": "rot.capablanca.pratica.pretas.v1.err.f7g6"
+       },
+       "8/8/5k2/1p5p/1P5P/5K2/8/8 b - - 4 3": {
+        "f6e5": "rot.capablanca.pratica.pretas.v2.err.f6e5"
+       }
+      },
+      "fim": "rot.capablanca.pratica.pretas.fim"
+     }
+    }
+   ]
+  }
+ ]
+}
