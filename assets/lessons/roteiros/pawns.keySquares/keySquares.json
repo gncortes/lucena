@@ -862,6 +862,19 @@
        "t": "rot.keySquares.demos.regra.torre"
       },
       {
+       "fen": "k7/P7/1K6/8/8/8/8/8 w - - 1 3",
+       "seq": [
+        "a5a6",
+        "a8b8",
+        "a6a7",
+        "b8a8"
+       ],
+       "marcas": [
+        "a8"
+       ],
+       "t": "rot.keySquares.demos.regra.torre2"
+      },
+      {
        "fen": "8/3p4/5k2/8/8/8/8/2K5 w - - 0 1",
        "salto": true,
        "marcas": [
@@ -870,6 +883,17 @@
         "e5"
        ],
        "t": "rot.keySquares.demos.regra.preto"
+      },
+      {
+       "fen": "8/3p4/8/4k3/8/8/3K4/8 w - - 2 2",
+       "seq": [
+        "c1d2",
+        "f6e5"
+       ],
+       "marcas": [
+        "e5"
+       ],
+       "t": "rot.keySquares.demos.regra.preto2"
       }
      ]
     },

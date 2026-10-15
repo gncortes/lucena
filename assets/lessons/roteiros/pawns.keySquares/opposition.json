@@ -1152,9 +1152,9 @@
        },
        "8/8/4k3/6K1/8/5P2/8/8 w - - 4 3": {
         "g5f4": "rot.opposition.pratica.ataque.err.oposicao.f6",
-        "g5h4": "rot.opposition.pratica.ataque.err.fecha.f5.f3",
+        "g5h4": "rot.opposition.pratica.ataque.err.sai.f5.f3",
         "g5h5": "rot.opposition.pratica.ataque.err.oposicao.f5",
-        "g5h6": "rot.opposition.pratica.ataque.err.fecha.f5.f3"
+        "g5h6": "rot.opposition.pratica.ataque.err.sai.f5.f3"
        },
        "8/4k3/8/5K2/8/5P2/8/8 w - - 4 3": {
         "f3f4": "rot.opposition.pratica.ataque.err.oposicaoPa.f7",
@@ -1187,13 +1187,13 @@
         "f3f4": "rot.opposition.pratica.ataque.err.oposicaoPa.g7",
         "g5f4": "rot.opposition.pratica.ataque.err.oposicao.f6",
         "g5g4": "rot.opposition.pratica.ataque.err.oposicao.g6",
-        "g5h4": "rot.opposition.pratica.ataque.err.fecha.f6.f3",
-        "g5h5": "rot.opposition.pratica.ataque.err.fecha.f6.f3",
+        "g5h4": "rot.opposition.pratica.ataque.err.sai.f6.f3",
+        "g5h5": "rot.opposition.pratica.ataque.err.sai.f6.f3",
         "g5h6": "rot.opposition.pratica.ataque.err.oposicao.f6"
        },
        "8/5k2/8/4K3/8/5P2/8/8 w - - 6 4": {
-        "e5d4": "rot.opposition.pratica.ataque.err.fecha.f6.f3",
-        "e5d5": "rot.opposition.pratica.ataque.err.fecha.f6.f3",
+        "e5d4": "rot.opposition.pratica.ataque.err.sai.f6.f3",
+        "e5d5": "rot.opposition.pratica.ataque.err.sai.f6.f3",
         "e5d6": "rot.opposition.pratica.ataque.err.oposicao.f6",
         "e5e4": "rot.opposition.pratica.ataque.err.oposicao.e6",
         "e5f4": "rot.opposition.pratica.ataque.err.oposicao.f6",
