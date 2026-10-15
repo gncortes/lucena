@@ -203,6 +203,7 @@
   "rot.opposition.pratica.ataque.err.frente.f8.2": "The black king goes to f8, in front of the pawn, and blocks its path.",
   "rot.opposition.pratica.ataque.enunciado": "Play as White and take the pawn to promotion.",
   "rot.opposition.pratica.ataque.fim": "With the opposition, your king opened the way and led the pawn to victory.",
+  "rot.opposition.pratica.ataque.fim.repeticao": "The position repeated: it is a draw. To win, your king has to move forward, not back and forth.",
   "rot.opposition.pratica.defesa.err.f8e7.1": "Your king goes to e7 and leaves g6 free.",
   "rot.opposition.pratica.defesa.err.f8e7.2": "The white king steps into g6, a key square, and the pawn will promote.",
   "rot.opposition.pratica.defesa.err.f8e8.1": "Your king goes to e8 and leaves g6 free.",

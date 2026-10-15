@@ -304,6 +304,7 @@ class PracticeSpec {
     this.line = const [],
     this.errors = const {},
     this.errorsAt = const {},
+    this.ends = const {},
   });
 
   factory PracticeSpec.fromJson(Map<String, dynamic> json) => PracticeSpec(
@@ -311,6 +312,11 @@ class PracticeSpec {
     machine: json['maquina'] == 'b' ? Side.black : Side.white,
     limit: json['limite'] as int? ?? 40,
     end: json['fim'] as String?,
+    ends: {
+      for (final MapEntry(:key, :value)
+          in (json['fins'] as Map? ?? const {}).entries)
+        key as String: value as String,
+    },
     kind: PracticeKind.parse(json['tipo']),
     pieces: _squares(json['pecas']),
     stars: _squares(json['estrelas']) ?? const [],
@@ -342,6 +348,10 @@ class PracticeSpec {
   static String fen4(String fen) => fen.split(' ').take(4).join(' ');
 
   final PracticeKind kind;
+
+  /// A fala de cada fim do jogo livre da prática, pelo nome do [FreeEnd] (como
+  /// em [FreePlaySpec.ends]). O que falta vem da genérica `gen.fim.*`.
+  final Map<String, String> ends;
 
   /// As casas das peças que o aluno pode mover; nulo: todas do lado.
   final List<String>? pieces;

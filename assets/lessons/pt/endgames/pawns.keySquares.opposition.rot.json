@@ -203,6 +203,7 @@
   "rot.opposition.pratica.ataque.err.frente.f8.2": "O rei preto vai a f8, à frente do peão, e fecha o caminho dele.",
   "rot.opposition.pratica.ataque.enunciado": "Jogue de brancas e leve o peão à coroação.",
   "rot.opposition.pratica.ataque.fim": "Com a oposição, o seu rei abriu caminho e levou o peão à vitória.",
+  "rot.opposition.pratica.ataque.fim.repeticao": "A posição se repetiu: é empate. Para ganhar, o seu rei precisa avançar, e não ir e voltar.",
   "rot.opposition.pratica.defesa.err.f8e7.1": "O seu rei vai a e7 e deixa g6 livre.",
   "rot.opposition.pratica.defesa.err.f8e7.2": "O rei branco entra em g6, uma casa-chave, e o peão vai coroar.",
   "rot.opposition.pratica.defesa.err.f8e8.1": "O seu rei vai a e8 e deixa g6 livre.",

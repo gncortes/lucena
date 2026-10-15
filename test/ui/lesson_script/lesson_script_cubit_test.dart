@@ -1393,6 +1393,62 @@ void main() {
     );
   });
 
+  group('fins da prática', () {
+    // O motor de teste joga o primeiro lance legal; o rei preto vai a a1 e
+    // fica indo e voltando entre a1 e a2 enquanto o branco faz o mesmo.
+    Map<String, dynamic> repetitionJson({Map<String, dynamic>? ends}) => {
+      'licao': _lessonId,
+      'parte': _partId,
+      'etapas': [
+        {
+          'id': 'pratica',
+          'exemplos': [
+            {
+              'id': 'pr',
+              'fen': '8/8/8/7P/8/k7/8/6K1 w - - 0 1',
+              'vira': false,
+              'objetivo': 'ganhar',
+              'pratica': {
+                'tipo': 'jogo',
+                't': 'pr.t',
+                'maquina': 'b',
+                'limite': 40,
+                'fins': ?ends,
+              },
+              'entrada': <dynamic>[],
+              'linha': <dynamic>[],
+              'fim': 'proximo',
+            },
+          ],
+        },
+      ],
+    };
+
+    Future<_Rig> repeat(Map<String, dynamic>? ends) async {
+      final r = await _Rig.open(
+        json: repetitionJson(ends: ends),
+        opponent: FakeOpponentRepository(),
+      );
+      for (var i = 0; i < 20 && r.s.phase == ScriptPhase.praticaVez; i++) {
+        await r.cubit.onMove(i.isEven ? 'g1h1' : 'h1g1');
+      }
+      return r;
+    }
+
+    test('repetição com fins.repeticao: fala própria', () async {
+      final r = await repeat({'repeticao': 'pr.fim.rep'});
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.speech, ['pr.fim.rep']);
+      expect(r.s.primary, ScriptAction.voltarInicio);
+    });
+
+    test('repetição sem fins: a genérica', () async {
+      final r = await repeat(null);
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.speech, ['fim.repeticao']);
+    });
+  });
+
   group('objetivo mate (contra o motor)', () {
     test('o mate cumpre o objetivo e fecha a prática', () async {
       final engine = FakeOpponentRepository();

@@ -2202,7 +2202,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     return base.copyWith(
       phase: ScriptPhase.praticaFim,
       speech: [
-        _say(met ? 'gen.pratica.sucesso.$_goalName' : 'gen.fim.${end.name}'),
+        _say(
+          met
+              ? 'gen.pratica.sucesso.$_goalName'
+              : _example.practice!.ends[end.name] ?? 'gen.fim.${end.name}',
+        ),
         if (met && _example.practice!.end != null)
           _say(_example.practice!.end!),
       ],

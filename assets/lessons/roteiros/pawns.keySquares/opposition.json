@@ -1129,6 +1129,9 @@
       "maquina": "b",
       "limite": 40,
       "fim": "rot.opposition.pratica.ataque.fim",
+      "fins": {
+       "repeticao": "rot.opposition.pratica.ataque.fim.repeticao"
+      },
       "erros": {
        "f3f4": "rot.opposition.pratica.ataque.err.f3f4",
        "g3f2": "rot.opposition.pratica.ataque.err.g3f2",

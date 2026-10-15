@@ -51,6 +51,21 @@ void main() {
     expect(practice[0].practice!.limit, 40);
   });
 
+  test('prática: fins opcionais por tipo de fim', () {
+    Map<String, dynamic> json(Map<String, dynamic> extra) => {
+      't': 'p.t',
+      'maquina': 'b',
+      ...extra,
+    };
+    final withEnds = PracticeSpec.fromJson(
+      json({
+        'fins': {'repeticao': 'p.fim.rep', 'limite': 'p.fim.lim'},
+      }),
+    );
+    expect(withEnds.ends, {'repeticao': 'p.fim.rep', 'limite': 'p.fim.lim'});
+    expect(PracticeSpec.fromJson(json({})).ends, isEmpty);
+  });
+
   test('curiosidades: id e jogador em linha', () {
     final cur = script.stages[0].examples[0].curiosities!;
     expect(cur.quoteAuthor, 'Alguém');
