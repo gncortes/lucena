@@ -10,10 +10,10 @@ import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/lesson_cubit.dart';
@@ -737,55 +737,25 @@ class PartFinished extends StatelessWidget {
                 ),
               ),
             ),
-            // Fixos embaixo: rever esta etapa ou seguir.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screen,
-                AppSpacing.sm,
-                AppSpacing.screen,
-                AppSpacing.md,
+            // Fixos embaixo: rever esta etapa ou seguir. Na última, o teste
+            // final, sem ícone; o rótulo de 3 palavras empilha os botões.
+            ActionsFooter(
+              secondaryKey: LessonKeys.reviewPartButton,
+              secondaryIcon: Icons.replay,
+              secondaryLabel: l10n.lessonReviewPart,
+              onSecondary: () => context.pushReplacement(
+                Routes.endgameLessonSteps(lessonId, part: part.id),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      key: LessonKeys.reviewPartButton,
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      onPressed: () => context.pushReplacement(
-                        Routes.endgameLessonSteps(lessonId, part: part.id),
-                      ),
-                      icon: const Icon(Icons.replay),
-                      label: Text(l10n.lessonReviewPart),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: FilledButton.icon(
-                      key: LessonKeys.nextPartButton,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      // Na última etapa, o teste final (pela introdução).
-                      onPressed: () => context.pushReplacement(
-                        next == null
-                            ? Routes.endgameExercisesIntro(lessonId)
-                            : Routes.endgameLessonSteps(lessonId, part: next),
-                      ),
-                      icon: Icon(
-                        next == null
-                            ? Icons.quiz_outlined
-                            : Icons.arrow_forward_rounded,
-                      ),
-                      label: Text(
-                        next == null
-                            ? l10n.lessonToFinalTest
-                            : l10n.lessonPartNext,
-                      ),
-                    ),
-                  ),
-                ],
+              primaryKey: LessonKeys.nextPartButton,
+              primaryIcon: next == null ? null : Icons.arrow_forward_rounded,
+              primaryLabel: next == null
+                  ? l10n.lessonToFinalTest
+                  : l10n.lessonPartNext,
+              // Na última etapa, o teste final (pela introdução).
+              onPrimary: () => context.pushReplacement(
+                next == null
+                    ? Routes.endgameExercisesIntro(lessonId)
+                    : Routes.endgameLessonSteps(lessonId, part: next),
               ),
             ),
           ],
