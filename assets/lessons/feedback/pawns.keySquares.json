@@ -3,7 +3,7 @@
  "scope": "lances naturais errados (Maia >= 10% em algum nível) que mudam o resultado nas vezes dos exercícios do teste: e14, e22, e09, e12, e20, e10",
  "ui_contract": "ex.hint somente solicitado; sem alteração de schema/UI",
  "limitations": [
-  "O texto cita a variante numerada; o balão e a dica do exercício filtram texto com notação (ExerciseReview.hasNotation), então a refutação só aparece onde a notação é exibida.",
+  "Texto sem notação, em palavras, para o balão e a dica (ExerciseReview.hasNotation descarta notação); a variante numerada fica só em pv.",
   "Resultados conferidos na tabela KPK (assets/tablebase/kpk.bin); dtm_successor é a distância ao mate da KPK, não DTZ.",
   "A resposta citada é a que o app joga (MachineMove); o resto da linha é jogo correto de exemplo."
  ],
@@ -14,8 +14,8 @@
    "turn": 1,
    "fen": "8/8/8/6p1/7k/8/6K1/8 b - - 0 1",
    "uci": "g5g4",
-   "pt": "Com 58...g4? você deixa escapar a vitória: as brancas respondem com 59.Rh2 e seguram o empate. O peão saiu na frente do rei: o rei branco se planta diante dele, e o rei preto não chega mais às casas-chave. A continuação seria 58...g4 59.Rh2 g3+ 60.Rg2.",
-   "en": "With 58...g4? you let the win slip: White replies 59.Kh2 and holds the draw. The pawn went ahead of the king: the white king plants itself in front of it, and the black king can no longer reach the key squares. The line would be 58...g4 59.Kh2 g3+ 60.Kg2.",
+   "pt": "O peão saiu na frente do rei: o rei branco volta a h2 e fica diante dele. As brancas empatam.",
+   "en": "The pawn went ahead of the king: the white king returns to h2 and stands in front of it. White draws.",
    "pv": [
     {
      "fen": "8/8/8/6p1/7k/8/6K1/8 b - - 0 1",
@@ -64,8 +64,8 @@
    "turn": 1,
    "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
    "uci": "c8b7",
-   "pt": "Com 57...Rb7? você deixa escapar o empate: as brancas respondem com 58.Rb5 e ganham. Na sétima fileira, quando o rei branco sobe, os reis ficam frente a frente com as pretas na vez: a oposição é das brancas, e o rei branco entra nas casas-chave. A continuação seria 57...Rb7 58.Rb5 Rb8 59.Ra6.",
-   "en": "With 57...Kb7? you let the draw slip: White replies 58.Kb5 and wins. On the seventh rank, when the white king comes up, the kings face each other with Black to move: White has the opposition, and the white king enters the key squares. The line would be 57...Kb7 58.Kb5 Kb8 59.Ka6.",
+   "pt": "Na sétima fileira, o rei branco vai a b5 e fica de frente para o seu, com as pretas na vez. As brancas ganham.",
+   "en": "On the seventh rank, the white king goes to b5 and faces yours, with Black to move. White wins.",
    "pv": [
     {
      "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
@@ -114,8 +114,8 @@
    "turn": 1,
    "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
    "uci": "c8c7",
-   "pt": "Com 57...Rc7? você deixa escapar o empate: as brancas respondem com 58.Rc5 e ganham. Na sétima fileira, quando o rei branco sobe, os reis ficam frente a frente com as pretas na vez: a oposição é das brancas, e o rei branco entra nas casas-chave. A continuação seria 57...Rc7 58.Rc5 Rb8 59.Rb6.",
-   "en": "With 57...Kc7? you let the draw slip: White replies 58.Kc5 and wins. On the seventh rank, when the white king comes up, the kings face each other with Black to move: White has the opposition, and the white king enters the key squares. The line would be 57...Kc7 58.Kc5 Kb8 59.Kb6.",
+   "pt": "Na sétima fileira, o rei branco vai a c5 e fica de frente para o seu, com as pretas na vez. As brancas ganham.",
+   "en": "On the seventh rank, the white king goes to c5 and faces yours, with Black to move. White wins.",
    "pv": [
     {
      "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
@@ -164,8 +164,8 @@
    "turn": 2,
    "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
    "uci": "b8a8",
-   "pt": "Com 58...Ra8? você deixa escapar o empate: as brancas respondem com 59.Rb6 e ganham. Sem ocupar c7, o rei preto deixa b6 livre: o rei branco chega a uma casa-chave. A continuação seria 58...Ra8 59.Rb6 Rb8 60.b5.",
-   "en": "With 58...Ka8? you let the draw slip: White replies 59.Kb6 and wins. Without occupying c7, the black king leaves b6 free: the white king reaches a key square. The line would be 58...Ka8 59.Kb6 Kb8 60.b5.",
+   "pt": "Longe de c7, o rei preto deixa b6 livre: o rei branco chega a essa casa-chave. As brancas ganham.",
+   "en": "Away from c7, the black king leaves b6 free: the white king reaches that key square. White wins.",
    "pv": [
     {
      "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
@@ -214,8 +214,8 @@
    "turn": 2,
    "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
    "uci": "b8c8",
-   "pt": "Com 58...Rc8? você deixa escapar o empate: as brancas respondem com 59.Rb6 e ganham. Sem ocupar c7, o rei preto deixa b6 livre: o rei branco chega a uma casa-chave. A continuação seria 58...Rc8 59.Rb6 Rb8 60.b5.",
-   "en": "With 58...Kc8? you let the draw slip: White replies 59.Kb6 and wins. Without occupying c7, the black king leaves b6 free: the white king reaches a key square. The line would be 58...Kc8 59.Kb6 Kb8 60.b5.",
+   "pt": "Sem ocupar c7, o rei preto deixa b6 livre: o rei branco chega a essa casa-chave. As brancas ganham.",
+   "en": "Without occupying c7, the black king leaves b6 free: the white king reaches that key square. White wins.",
    "pv": [
     {
      "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
@@ -264,8 +264,8 @@
    "turn": 2,
    "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
    "uci": "b8b7",
-   "pt": "Com 58...Rb7? você deixa escapar o empate: as brancas respondem com 59.Rb5 e ganham. Em b7, depois que o rei branco vai a b5, os reis ficam frente a frente com as pretas na vez: a oposição é das brancas, e o rei branco entra nas casas-chave. A continuação seria 58...Rb7 59.Rb5 Rb8 60.Ra6.",
-   "en": "With 58...Kb7? you let the draw slip: White replies 59.Kb5 and wins. On b7, after the white king goes to b5, the kings face each other with Black to move: White has the opposition, and the white king enters the key squares. The line would be 58...Kb7 59.Kb5 Kb8 60.Ka6.",
+   "pt": "Em b7, o rei branco vai a b5 e fica de frente para o seu, com as pretas na vez. As brancas ganham.",
+   "en": "On b7, the white king goes to b5 and faces yours, with Black to move. White wins.",
    "pv": [
     {
      "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
@@ -314,8 +314,8 @@
    "turn": 3,
    "fen": "8/2k5/8/1PK5/8/8/8/8 b - - 0 3",
    "uci": "c7b8",
-   "pt": "Com 59...Rb8? você deixa escapar o empate: as brancas respondem com 60.Rb6 e ganham. Recuar para b8 deixa b6 livre: com o rei branco na sexta fileira, na frente do peão, as brancas ganham. A continuação seria 59...Rb8 60.Rb6 Ra8 61.Rc7.",
-   "en": "With 59...Kb8? you let the draw slip: White replies 60.Kb6 and wins. Retreating to b8 leaves b6 free: with the white king on the sixth rank, in front of the pawn, White wins. The line would be 59...Kb8 60.Kb6 Ka8 61.Kc7.",
+   "pt": "Recuar para b8 deixa b6 livre: o rei branco entra na frente do peão, na sexta fileira. As brancas ganham.",
+   "en": "Retreating to b8 leaves b6 free: the white king steps in front of the pawn, on the sixth rank. White wins.",
    "pv": [
     {
      "fen": "8/2k5/8/1PK5/8/8/8/8 b - - 0 3",
@@ -364,8 +364,8 @@
    "turn": 4,
    "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
    "uci": "b7c8",
-   "pt": "Com 60...Rc8? você deixa escapar o empate: as brancas respondem com 61.Rc6 e ganham. O rei preto sai da frente do peão: o rei branco chega a c6, ao lado dele, e o peão avança com apoio até coroar. A continuação seria 60...Rc8 61.Rc6 Rb8 62.b7.",
-   "en": "With 60...Kc8? you let the draw slip: White replies 61.Kc6 and wins. The black king leaves the square in front of the pawn: the white king reaches c6, beside it, and the pawn advances with support until it queens. The line would be 60...Kc8 61.Kc6 Kb8 62.b7.",
+   "pt": "O rei preto sai da frente do peão: o rei branco vai a c6, ao lado dele, e o peão coroa.",
+   "en": "The black king leaves the front of the pawn: the white king goes to c6, beside it, and the pawn queens.",
    "pv": [
     {
      "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
@@ -414,8 +414,8 @@
    "turn": 4,
    "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
    "uci": "b7a6",
-   "pt": "Com 60...Ra6? você deixa escapar o empate: as brancas respondem com 61.Rc6 e ganham. O rei preto sai da frente do peão: o rei branco chega a c6, ao lado dele, e o peão avança com apoio até coroar. A continuação seria 60...Ra6 61.Rc6 Ra5 62.b7.",
-   "en": "With 60...Ka6? you let the draw slip: White replies 61.Kc6 and wins. The black king leaves the square in front of the pawn: the white king reaches c6, beside it, and the pawn advances with support until it queens. The line would be 60...Ka6 61.Kc6 Ka5 62.b7.",
+   "pt": "O rei preto sai da frente do peão: o rei branco vai a c6, ao lado dele, e o peão coroa.",
+   "en": "The black king leaves the front of the pawn: the white king goes to c6, beside it, and the pawn queens.",
    "pv": [
     {
      "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
@@ -464,8 +464,8 @@
    "turn": 2,
    "fen": "7k/8/7K/6P1/8/8/8/8 w - - 2 2",
    "uci": "h6h5",
-   "pt": "Com 2.Rh5? você deixa escapar a vitória: as pretas respondem com 2...Rg7 e seguram o empate. O rei branco recuou e deixou g7 livre: o rei preto volta a g7, na frente do peão, e empata. A continuação seria 2.Rh5 Rg7 3.g6 Rg8.",
-   "en": "With 2.Kh5? you let the win slip: Black replies 2...Kg7 and holds the draw. The white king retreated and left g7 free: the black king returns to g7, in front of the pawn, and draws. The line would be 2.Kh5 Kg7 3.g6 Kg8.",
+   "pt": "O rei branco recuou e deixou g7 livre: o rei preto vai a g7, na frente do peão. As pretas empatam.",
+   "en": "The white king retreated and left g7 free: the black king goes to g7, in front of the pawn. Black draws.",
    "pv": [
     {
      "fen": "7k/8/7K/6P1/8/8/8/8 w - - 2 2",
@@ -514,8 +514,8 @@
    "turn": 3,
    "fen": "6k1/8/6PK/8/8/8/8/8 w - - 1 3",
    "uci": "h6g5",
-   "pt": "Com 3.Rg5? você deixa escapar a vitória: as pretas respondem com 3...Rg7 e seguram o empate. O rei branco saiu de h6 e deixou g7 livre: o rei preto se planta em g7, na frente do peão, e o rei branco não consegue mais tirá-lo de lá. A continuação seria 3.Rg5 Rg7 4.Rf5 Rg8.",
-   "en": "With 3.Kg5? you let the win slip: Black replies 3...Kg7 and holds the draw. The white king left h6 and g7 free: the black king plants itself on g7, in front of the pawn, and the white king can no longer drive it away. The line would be 3.Kg5 Kg7 4.Kf5 Kg8.",
+   "pt": "O rei branco saiu de h6 e deixou g7 livre: o rei preto vai a g7, na frente do peão. As pretas empatam.",
+   "en": "The white king left h6 and g7 free: the black king goes to g7, in front of the pawn. Black draws.",
    "pv": [
     {
      "fen": "6k1/8/6PK/8/8/8/8/8 w - - 1 3",
@@ -564,8 +564,8 @@
    "turn": 1,
    "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
    "uci": "f2f4",
-   "pt": "Com 1.f4? você deixa escapar a vitória: as pretas respondem com 1...Re6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 1.f4 Re6 2.Rc5 Rf5.",
-   "en": "With 1.f4? you let the win slip: Black replies 1...Ke6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 1.f4 Ke6 2.Kc5 Kf5.",
+   "pt": "O peão saiu na frente do rei: o rei preto vai a e6 e chega antes às casas-chave. As pretas empatam.",
+   "en": "The pawn went ahead of the king: the black king goes to e6 and reaches the key squares first. Black draws.",
    "pv": [
     {
      "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
@@ -614,8 +614,8 @@
    "turn": 1,
    "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
    "uci": "f2f3",
-   "pt": "Com 1.f3? você deixa escapar a vitória: as pretas respondem com 1...Re6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 1.f3 Re6 2.Rc5 Re5.",
-   "en": "With 1.f3? you let the win slip: Black replies 1...Ke6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 1.f3 Ke6 2.Kc5 Ke5.",
+   "pt": "O peão saiu na frente do rei: o rei preto vai a e6 e chega antes às casas-chave. As pretas empatam.",
+   "en": "The pawn went ahead of the king: the black king goes to e6 and reaches the key squares first. Black draws.",
    "pv": [
     {
      "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
@@ -664,8 +664,8 @@
    "turn": 1,
    "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
    "uci": "c3c4",
-   "pt": "Com 1.c4? você deixa escapar a vitória: as pretas respondem com 1...Re7 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 1.c4 Re7 2.Rc2 Rd6.",
-   "en": "With 1.c4? you let the win slip: Black replies 1...Ke7 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 1.c4 Ke7 2.Kc2 Kd6.",
+   "pt": "O peão saiu na frente do rei: o rei preto vai a e7 e chega a tempo de se pôr diante dele. As pretas empatam.",
+   "en": "The pawn went ahead of the king: the black king goes to e7 and arrives in time to block it. Black draws.",
    "pv": [
     {
      "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
@@ -714,8 +714,8 @@
    "turn": 1,
    "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
    "uci": "d1d2",
-   "pt": "Com 1.Rd2? você deixa escapar a vitória: as pretas respondem com 1...Re7 e seguram o empate. Pela coluna d, o rei branco fica frente a frente com o rei preto: as pretas tomam a oposição e não deixam o rei branco chegar às casas-chave. A continuação seria 1.Rd2 Re7 2.Rd3 Rd7.",
-   "en": "With 1.Kd2? you let the win slip: Black replies 1...Ke7 and holds the draw. Down the d-file, the white king ends up face to face with the black king: Black takes the opposition and keeps the white king away from the key squares. The line would be 1.Kd2 Ke7 2.Kd3 Kd7.",
+   "pt": "Pela coluna d, o rei preto fica de frente para o seu e toma a oposição. As pretas empatam.",
+   "en": "Along the d-file, the black king faces yours and takes the opposition. Black draws.",
    "pv": [
     {
      "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
@@ -764,8 +764,8 @@
    "turn": 1,
    "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
    "uci": "d1e2",
-   "pt": "Com 1.Re2? você deixa escapar a vitória: as pretas respondem com 1...Re7 e seguram o empate. Pela coluna d, o rei branco fica frente a frente com o rei preto: as pretas tomam a oposição e não deixam o rei branco chegar às casas-chave. A continuação seria 1.Re2 Re7 2.Rd3 Rd7.",
-   "en": "With 1.Ke2? you let the win slip: Black replies 1...Ke7 and holds the draw. Down the d-file, the white king ends up face to face with the black king: Black takes the opposition and keeps the white king away from the key squares. The line would be 1.Ke2 Ke7 2.Kd3 Kd7.",
+   "pt": "Por esse caminho, o rei preto fica de frente para o seu na coluna d e toma a oposição. As pretas empatam.",
+   "en": "By this route, the black king faces yours on the d-file and takes the opposition. Black draws.",
    "pv": [
     {
      "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
@@ -814,8 +814,8 @@
    "turn": 2,
    "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
    "uci": "c2d3",
-   "pt": "Com 2.Rd3? você deixa escapar a vitória: as pretas respondem com 2...Rd7 e seguram o empate. Pela coluna d, o rei branco fica frente a frente com o rei preto: as pretas tomam a oposição e não deixam o rei branco chegar às casas-chave. A continuação seria 2.Rd3 Rd7 3.Rc4 Rc6.",
-   "en": "With 2.Kd3? you let the win slip: Black replies 2...Kd7 and holds the draw. Down the d-file, the white king ends up face to face with the black king: Black takes the opposition and keeps the white king away from the key squares. The line would be 2.Kd3 Kd7 3.Kc4 Kc6.",
+   "pt": "Em d3, o rei preto vai a d7 e fica de frente para o seu: a oposição é das pretas. As pretas empatam.",
+   "en": "On d3, the black king goes to d7 and faces yours: Black has the opposition. Black draws.",
    "pv": [
     {
      "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
@@ -864,8 +864,8 @@
    "turn": 2,
    "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
    "uci": "c3c4",
-   "pt": "Com 2.c4? você deixa escapar a vitória: as pretas respondem com 2...Rd6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 2.c4 Rd6 3.Rb3 Rc5.",
-   "en": "With 2.c4? you let the win slip: Black replies 2...Kd6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 2.c4 Kd6 3.Kb3 Kc5.",
+   "pt": "O peão saiu na frente do rei: o rei preto vai a d6 e depois a c5, diante dele. As pretas empatam.",
+   "en": "The pawn went ahead of the king: the black king goes to d6 and then to c5, in front of it. Black draws.",
    "pv": [
     {
      "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
@@ -914,8 +914,8 @@
    "turn": 3,
    "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
    "uci": "b3c4",
-   "pt": "Com 3.Rc4? você deixa escapar a vitória: as pretas respondem com 3...Rc6 e seguram o empate. Em c4, os reis ficam frente a frente com as brancas na vez: a oposição é das pretas, e o rei branco não passa. A continuação seria 3.Rc4 Rc6 4.Rb4 Rb6.",
-   "en": "With 3.Kc4? you let the win slip: Black replies 3...Kc6 and holds the draw. On c4, the kings face each other with White to move: Black has the opposition, and the white king cannot get through. The line would be 3.Kc4 Kc6 4.Kb4 Kb6.",
+   "pt": "Em c4, o rei preto vai a c6 e fica de frente para o seu, com as brancas na vez. As pretas empatam.",
+   "en": "On c4, the black king goes to c6 and faces yours, with White to move. Black draws.",
    "pv": [
     {
      "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
@@ -964,8 +964,8 @@
    "turn": 3,
    "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
    "uci": "c3c4",
-   "pt": "Com 3.c4? você deixa escapar a vitória: as pretas respondem com 3...Rc5 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 3.c4 Rc5 4.Ra4 Rxc4.",
-   "en": "With 3.c4? you let the win slip: Black replies 3...Kc5 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 3.c4 Kc5 4.Ka4 Kxc4.",
+   "pt": "O peão saiu na frente do rei: o rei preto vai a c5, diante dele, e as brancas não passam. As pretas empatam.",
+   "en": "The pawn went ahead of the king: the black king goes to c5, in front of it, and White cannot get through. Black draws.",
    "pv": [
     {
      "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
@@ -1014,8 +1014,8 @@
    "turn": 4,
    "fen": "8/8/2k5/8/1K6/2P5/8/8 w - - 6 4",
    "uci": "c3c4",
-   "pt": "Com 4.c4? você deixa escapar a vitória: as pretas respondem com 4...Rb6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 4.c4 Rb6 5.Rc3 Rc5.",
-   "en": "With 4.c4? you let the win slip: Black replies 4...Kb6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 4.c4 Kb6 5.Kc3 Kc5.",
+   "pt": "O peão saiu na frente do rei: o rei preto vai a b6 e depois a c5, diante dele. As pretas empatam.",
+   "en": "The pawn went ahead of the king: the black king goes to b6 and then to c5, in front of it. Black draws.",
    "pv": [
     {
      "fen": "8/8/2k5/8/1K6/2P5/8/8 w - - 6 4",
@@ -1064,8 +1064,8 @@
    "turn": 1,
    "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
    "uci": "a6a5",
-   "pt": "Com 1...Ra5? você deixa escapar o empate: as brancas respondem com 2.Rc5 e ganham. Em a5, o rei preto não vigia c4 nem c5: o rei branco passa à frente do peão, e o peão avança com o rei ao lado. A continuação seria 1...Ra5 2.Rc5 Ra4 3.b4.",
-   "en": "With 1...Ka5? you let the draw slip: White replies 2.Kc5 and wins. On a5, the black king watches neither c4 nor c5: the white king gets ahead of the pawn, and the pawn advances with the king beside it. The line would be 1...Ka5 2.Kc5 Ka4 3.b4.",
+   "pt": "Em a5, o rei preto não vigia c4 nem c5: o rei branco vai a c5 e passa à frente do peão. As brancas ganham.",
+   "en": "On a5, the black king watches neither c4 nor c5: the white king goes to c5 and gets ahead of the pawn. White wins.",
    "pv": [
     {
      "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
@@ -1114,8 +1114,8 @@
    "turn": 1,
    "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
    "uci": "a6b6",
-   "pt": "Com 1...Rb6? você deixa escapar o empate: as brancas respondem com 2.Rc4 e ganham. Recuar para b6 deixa o rei branco chegar a c4, uma casa-chave. A continuação seria 1...Rb6 2.Rc4 Rc6 3.b3.",
-   "en": "With 1...Kb6? you let the draw slip: White replies 2.Kc4 and wins. Retreating to b6 lets the white king reach c4, a key square. The line would be 1...Kb6 2.Kc4 Kc6 3.b3.",
+   "pt": "Recuar para b6 deixa c4 livre: o rei branco chega a essa casa-chave. As brancas ganham.",
+   "en": "Retreating to b6 leaves c4 free: the white king reaches that key square. White wins.",
    "pv": [
     {
      "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
@@ -1164,8 +1164,8 @@
    "turn": 1,
    "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
    "uci": "a6b7",
-   "pt": "Com 1...Rb7? você deixa escapar o empate: as brancas respondem com 2.Rc5 e ganham. Recuar para b7 deixa o rei branco à vontade: ele passa à frente do peão, por c5, e o peão avança com apoio. A continuação seria 1...Rb7 2.Rc5 Ra6 3.b3.",
-   "en": "With 1...Kb7? you let the draw slip: White replies 2.Kc5 and wins. Retreating to b7 leaves the white king free: it gets ahead of the pawn via c5, and the pawn advances with support. The line would be 1...Kb7 2.Kc5 Ka6 3.b3.",
+   "pt": "Recuar para b7 deixa o caminho livre: o rei branco vai a c5 e passa à frente do peão. As brancas ganham.",
+   "en": "Retreating to b7 leaves the road open: the white king goes to c5 and gets ahead of the pawn. White wins.",
    "pv": [
     {
      "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
