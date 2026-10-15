@@ -237,6 +237,12 @@
           "vira": false,
           "objetivo": "ganhar",
           "fim": "etapa",
+          "curiosidades": {
+            "t": "rot.edge.ideia.ex2.curiosidades",
+            "referencias": [
+              "brandonEdge"
+            ]
+          },
           "entrada": [
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
@@ -538,7 +544,6 @@
           "linha": [
             {
               "fen": "8/8/2pK4/k1p5/p1P5/P7/8/8 b - - 1 1",
-              "t": "rot.edge.demos.aproximar.2",
               "lance": "e5d6",
               "setas": [
                 [
@@ -546,7 +551,8 @@
                   "c5",
                   "r"
                 ]
-              ]
+              ],
+              "t": "rot.edge.demos.aproximar.2"
             },
             {
               "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 2 2",
@@ -557,10 +563,6 @@
                 "c6",
                 "d6"
               ]
-            },
-            {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 2 2",
-              "t": "rot.edge.demos.aproximar.4"
             },
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
@@ -590,28 +592,24 @@
           ],
           "linha": [
             {
-              "fen": "8/2k1K3/2p5/2p5/p1P5/P7/8/8 w - - 1 2",
+              "fen": "8/2k5/2p1K3/2p5/p1P5/P7/8/8 b - - 2 2",
               "t": "rot.edge.demos.erroDefesa.2",
-              "lance": "b6c7",
+              "seq": [
+                "b6c7",
+                "e7e6"
+              ],
               "marcas": [
                 "c7",
-                "e7"
+                "e6"
               ]
             },
             {
-              "fen": "8/2k5/2p1K3/2p5/p1P5/P7/8/8 b - - 2 2",
-              "t": "rot.edge.demos.erroDefesa.3",
-              "lance": "e7e6"
-            },
-            {
-              "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 w - - 3 3",
-              "t": "rot.edge.demos.erroDefesa.4",
-              "lance": "c7b6"
-            },
-            {
               "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 b - - 4 3",
-              "t": "rot.edge.demos.erroDefesa.5",
-              "lance": "e6d6",
+              "t": "rot.edge.demos.erroDefesa.4",
+              "seq": [
+                "c7b6",
+                "e6d6"
+              ],
               "marcas": [
                 "b6",
                 "c6",
@@ -619,14 +617,12 @@
               ]
             },
             {
-              "fen": "8/1k6/2pK4/2p5/p1P5/P7/8/8 w - - 5 4",
-              "t": "rot.edge.demos.erroDefesa.6",
-              "lance": "b6b7"
-            },
-            {
               "fen": "8/1k6/2p5/2K5/p1P5/P7/8/8 b - - 0 4",
-              "t": "rot.edge.demos.erroDefesa.7",
-              "lance": "d6c5"
+              "t": "rot.edge.demos.erroDefesa.6",
+              "seq": [
+                "b6b7",
+                "d6c5"
+              ]
             },
             {
               "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
@@ -650,7 +646,7 @@
       "exemplos": [
         {
           "id": "ataque",
-          "fen": "8/8/5p2/3K1p1k/5P1p/7P/8/8 w - - 0 1",
+          "fen": "8/8/5p1k/3K1p2/5P1p/7P/8/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
@@ -662,15 +658,25 @@
             "erros": {
               "d5e6": "rot.edge.pratica.ataque.err.d5e6",
               "d5c6": "rot.edge.pratica.ataque.err.d5c6",
-              "d5d6": "rot.edge.pratica.ataque.err.d5d6",
-              "d5d4": "rot.edge.pratica.ataque.err.d5d4",
-              "d5c4": "rot.edge.pratica.ataque.err.d5c4"
+              "d5c5": "rot.edge.pratica.ataque.err.d5c5",
+              "d5d4": "rot.edge.pratica.ataque.err.recua",
+              "d5c4": "rot.edge.pratica.ataque.err.recua"
+            },
+            "errosPos": {
+              "8/7k/3K1p2/5p2/5P1p/7P/8/8 w - - 2 2": {
+                "d6e6": "rot.edge.pratica.ataque.err.d6e6",
+                "d6e7": "rot.edge.pratica.ataque.err.d6e7"
+              },
+              "8/3K2k1/5p2/5p2/5P1p/7P/8/8 w - - 4 3": {
+                "d7e8": "rot.edge.pratica.ataque.err.d7e8",
+                "d7e6": "rot.edge.pratica.ataque.err.d7e6"
+              }
             }
           }
         },
         {
           "id": "defesa",
-          "fen": "8/3K4/5pk1/5p2/5P1p/7P/8/8 b - - 0 1",
+          "fen": "8/8/3K4/5pk1/5p2/5P1p/7P/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
@@ -680,10 +686,29 @@
             "limite": 40,
             "fim": "rot.edge.pratica.defesa.fim",
             "erros": {
-              "g6h6": "rot.edge.pratica.defesa.err.g6h6",
-              "g6f7": "rot.edge.pratica.defesa.err.g6f7",
-              "g6h5": "rot.edge.pratica.defesa.err.g6h5",
-              "g6g7": "rot.edge.pratica.defesa.err.g6g7"
+              "g5g6": "rot.edge.pratica.defesa.err.par",
+              "g5f6": "rot.edge.pratica.defesa.err.f6",
+              "g5h5": "rot.edge.pratica.defesa.err.fora",
+              "g5h4": "rot.edge.pratica.defesa.err.fora"
+            },
+            "errosPos": {
+              "8/8/7k/2K2p2/5p2/5P1p/7P/8 b - - 2 2": {
+                "h6g6": "rot.edge.pratica.defesa.err.fora",
+                "h6g7": "rot.edge.pratica.defesa.err.fora",
+                "h6h7": "rot.edge.pratica.defesa.err.fora",
+                "h6h5": "rot.edge.pratica.defesa.err.par"
+              },
+              "8/8/8/3K1pk1/5p2/5P1p/7P/8 b - - 4 3": {
+                "g5h4": "rot.edge.pratica.defesa.err.fora",
+                "g5f6": "rot.edge.pratica.defesa.err.fora",
+                "g5g6": "rot.edge.pratica.defesa.err.fora",
+                "g5h6": "rot.edge.pratica.defesa.err.fora"
+              },
+              "8/8/8/2K2p1k/5p2/5P1p/7P/8 b - - 6 4": {
+                "h5h4": "rot.edge.pratica.defesa.err.fora",
+                "h5g6": "rot.edge.pratica.defesa.err.fora",
+                "h5h6": "rot.edge.pratica.defesa.err.fora"
+              }
             }
           }
         }
