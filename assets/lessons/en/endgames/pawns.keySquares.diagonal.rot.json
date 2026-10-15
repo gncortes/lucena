@@ -139,9 +139,9 @@
   "rot.diagonal.pratica.ataque.v6.err.d4d5.2": "The black king goes to d7, in front of the pawn, and your king cannot drive it away.",
   "rot.diagonal.pratica.ataque.v7.err.d4d5.1": "Pushing the pawn now is too early: your king still needs to get in front of it.",
   "rot.diagonal.pratica.ataque.v7.err.d4d5.2": "The black king goes to c7 and faces yours: the direct opposition belongs to Black.",
-  "rot.diagonal.pratica.ataque.v8.err.d5d6.1": "Pushing the pawn now hands the opposition back to Black: the win slips away.",
+  "rot.diagonal.pratica.ataque.v8.err.d5d6.1": "Pushing the pawn now hands the opposition to Black: the win slips away.",
   "rot.diagonal.pratica.ataque.v8.err.d5d6.2": "The black king goes to e8 and faces yours: the direct opposition belongs to Black.",
-  "rot.diagonal.pratica.ataque.v9.err.d5d6.1": "Pushing the pawn now hands the opposition back to Black: the win slips away.",
+  "rot.diagonal.pratica.ataque.v9.err.d5d6.1": "Pushing the pawn now hands the opposition to Black: the win slips away.",
   "rot.diagonal.pratica.ataque.v9.err.d5d6.2": "The black king goes to c8 and faces yours: the direct opposition belongs to Black.",
   "rot.diagonal.pratica.ataque.v10.err.d6d7.1": "Pushing the pawn now is too early: the black king gets in front of it.",
   "rot.diagonal.pratica.ataque.v10.err.d6d7.2": "The black king goes to d8, in front of the pawn. If your king goes to d6, the black king has no move, and it is stalemate.",
@@ -181,10 +181,10 @@
   "rot.diagonal.pratica.ataque.err.conv.e6.2": "The black king goes to e8, facing yours, with White to move: the opposition is Black's, and it is a draw.",
   "rot.diagonal.pratica.ataque.err.conv.c6.1": "Going to c6, your king leaves d7 and lets the black king come back in front of the pawn.",
   "rot.diagonal.pratica.ataque.err.conv.c6.2": "The black king goes to c8, facing yours, with White to move: the opposition is Black's, and it is a draw.",
-  "rot.diagonal.pratica.ataque.err.conv.sai6.1": "Your king leaves e6, and the black king gains time.",
+  "rot.diagonal.pratica.ataque.err.conv.sai6.1": "Leaving e6, your king frees d7, and the black king returns in front of the pawn.",
   "rot.diagonal.pratica.ataque.err.conv.sai6.2": "The black king goes to d7, in front of the pawn, and shuts c6 and e6: it is a draw.",
   "rot.diagonal.pratica.ataque.err.conv.e4.1": "Going to e4, your king drops back and leaves d6 free.",
   "rot.diagonal.pratica.ataque.err.conv.e4.2": "The black king goes to d6, in front of the pawn, and it is a draw.",
-  "rot.diagonal.ideia.ex1.l14c": "In this position, the white king could go to b3, facing the black king. But b3 is far from d5, e5 and f5: that opposition does not help, and it is a draw.",
-  "rot.diagonal.ideia.ex1.l14d": "The winning move is to go to d3: on the diagonal with the black king and on the way to the key squares."
+  "rot.diagonal.ideia.ex1.l14c": "In this position, the white king could go to b2, facing the black king. But b2 is far from e5, f5 and g5: that opposition does not help, and it is a draw.",
+  "rot.diagonal.ideia.ex1.l14d": "The winning move is to go to d2: on the diagonal with the black king and on the way to e5, f5 and g5."
 }

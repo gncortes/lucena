@@ -32,9 +32,9 @@
       {
        "fen": "8/2k5/8/8/2PK4/8/8/8 w - - 0 1",
        "marcas": [
-        "c5",
-        "c6",
-        "c7"
+        "a5",
+        "b5",
+        "c5"
        ],
        "t": "rot.opposition.ideia.ex1.e3"
       },

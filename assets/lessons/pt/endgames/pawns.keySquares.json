@@ -12,10 +12,10 @@
   "ex.e23.hint": "Antes de correr para as casas-chave, pense em qual rei fica com a oposição depois do seu lance.",
   "ex.e23.solution": "1.Rb3! O rei branco fica de frente para o rei preto, com uma casa entre eles e as pretas na vez: a oposição é sua. Depois de 1...Rc5, 2.Rc3! Depois de 2...Rd5, 3.Rd3! Depois de 3...Re5, 4.Re3! A cada passo para o lado, o rei branco toma de novo a oposição, e o rei preto não passa. Em zugzwang, ele precisa ceder d4 ou f4, e o rei branco entra em uma casa-chave. 1.Rc3? Rc5! dá a oposição às pretas, e é empate.",
   "ex.e12": "Jogue de brancas e encontre o melhor lance. Os reis estão na mesma coluna, e o peão está ao lado do seu rei.",
-  "ex.e12.hint": "As casas-chave do peão de d4 são c6, d6 e e6. Se os reis ficam de frente, com uma casa entre eles e a vez do rei preto, é ele quem cede: pense em como chegar a essa situação.",
+  "ex.e12.hint": "Pense em qual rei vai ter de ceder caminho depois do seu lance.",
   "ex.e12.solution": "1.Re5! toma a oposição direta: os reis ficam de frente, com e6 no meio, e é o rei preto que precisa ceder, seja qual for o lance dele. Depois de 1...Rd8, 2.Rd6 (2.Re6 também ganha) leva o rei a uma casa-chave, e o peão coroa. 1.d5? e 1.Rd5? só empatam: com 1.d5? Rd6 o rei preto fica diante do peão, e com 1.Rd5? Rd7 as pretas tomam a oposição.",
   "ex.e24": "Jogue de pretas e encontre o melhor lance. Agora o peão é seu, e ele anda rumo à 1ª fileira.",
-  "ex.e24.hint": "As casas-chave do peão de e6 são d4, e4 e f4. Primeiro o rei, depois o peão.",
+  "ex.e24.hint": "Peão preto anda rumo à 1ª fileira: conte duas fileiras à frente dele. Primeiro o rei, depois o peão.",
   "ex.e24.solution": "1...Rd4! O rei preto entra em d4, uma casa-chave, e a vitória está garantida, qualquer que seja a defesa. Depois de 2.Rd7, que ataca o peão, 2...e5 o põe a salvo, ao lado do rei. 1...e5? avança o peão cedo: as casas-chave descem para d3, e3 e f3, o rei branco vai a d5 e é empate.",
   "ex.e15": "Os peões estão travados, e o seu rei está mais longe do que o preto. Ache o lance que ganha.",
   "ex.e15.hint": "Peão travado também tem casas-chave. Para o seu rei, são as da sexta fileira ao lado do peão de b6: a6, c6, d6 e e6. Para o rei preto, as da quinta: a5, c5, d5 e e5. Ganha quem chegar antes, e o caminho mais curto é a diagonal.",
@@ -37,5 +37,5 @@
   "ex.e20.r1": "1...Rf6. O rei preto se aproxima do peão e quer fechar o caminho do seu rei até e4, f4 e g4.",
   "ex.e22": "Jogue de pretas e encontre o melhor lance. O rei branco está mais perto do peão, mas ainda não chegou às casas-chave.",
   "ex.e22.hint": "As casas-chave do peão de b2 são a4, b4 e c4, e o rei branco já ameaça uma delas. O seu rei precisa chegar a tempo de fechar todas.",
-  "ex.e22.solution": "1...Rb5! Só desta casa o seu rei vigia a4, b4 e c4 de uma vez. Depois de 2.Rd3, 2...Rb4! O seu rei fica em uma casa-chave, na frente do peão, e o rei branco não tem por onde passar: é empate. 1...Ra5? não vigia c4 nem c5: depois de 2.Rc5, o rei branco passa à frente do peão e as brancas ganham."
+  "ex.e22.solution": "1...Rb5! Só desta casa o seu rei vigia a4, b4 e c4 de uma vez: o rei branco não tem como entrar em nenhuma casa-chave, e é empate. 1...Ra5? não vigia c4: o rei branco pode entrar nessa casa-chave, e as brancas ganham."
 }

@@ -12,10 +12,10 @@
   "ex.e23.hint": "Before running to the key squares, think about which king keeps the opposition after your move.",
   "ex.e23.solution": "1.Kb3! The white king faces the black king, with one square between them and Black to move: the opposition is yours. After 1...Kc5, 2.Kc3! After 2...Kd5, 3.Kd3! After 3...Ke5, 4.Ke3! At each step to the side, the white king takes the opposition again, and the black king does not get through. In zugzwang, it must give up d4 or f4, and the white king enters a key square. 1.Kc3? Kc5! gives Black the opposition, and it is a draw.",
   "ex.e12": "Play White and find the best move. The kings are on the same file, and the pawn stands beside your king.",
-  "ex.e12.hint": "The key squares of the d4-pawn are c6, d6 and e6. If the kings face each other, with one square between them and Black to move, the black king is the one that gives way: think how to reach that situation.",
+  "ex.e12.hint": "Think about which king will have to give way after your move.",
   "ex.e12.solution": "1.Ke5! takes the direct opposition: the kings face each other, with e6 between them, and the black king has to give way, whatever move it makes. After 1...Kd8, 2.Kd6 (2.Ke6 also wins) takes the king to a key square, and the pawn queens. 1.d5? and 1.Kd5? only draw: after 1.d5? Kd6 the black king stands in front of the pawn, and after 1.Kd5? Kd7 Black takes the opposition.",
   "ex.e24": "Play Black and find the best move. Now the pawn is yours, and it runs toward the 1st rank.",
-  "ex.e24.hint": "The key squares of the e6-pawn are d4, e4 and f4. First the king, then the pawn.",
+  "ex.e24.hint": "The black pawn runs toward the 1st rank: count two ranks ahead of it. First the king, then the pawn.",
   "ex.e24.solution": "1...Kd4! The black king steps onto d4, a key square, and the win is guaranteed, whatever the defense. After 2.Kd7, which attacks the pawn, 2...e5 puts it safe, beside the king. 1...e5? advances the pawn too early: the key squares drop to d3, e3 and f3, the white king goes to d5 and it is a draw.",
   "ex.e15": "The pawns are blocked, and your king is further away than Black's. Find the winning move.",
   "ex.e15.hint": "A blocked pawn has key squares too. For your king they are the squares on the sixth rank beside the b6-pawn: a6, c6, d6 and e6. For the black king, the ones on the fifth: a5, c5, d5 and e5. Whoever gets there first wins, and the shortest road is the diagonal.",
@@ -37,5 +37,5 @@
   "ex.e20.r1": "1...Kf6. The black king approaches the pawn and wants to close your king's path to e4, f4 and g4.",
   "ex.e22": "Play Black and find the best move. The white king is closer to the pawn, but has not reached the key squares yet.",
   "ex.e22.hint": "The key squares of the b2-pawn are a4, b4 and c4, and the white king already threatens one of them. Your king must arrive in time to shut them all.",
-  "ex.e22.solution": "1...Kb5! Only from this square does your king watch a4, b4 and c4 at once. After 2.Kd3, 2...Kb4! Your king stands on a key square, in front of the pawn, and the white king has no way through: it is a draw. 1...Ka5? does not watch c4 or c5: after 2.Kc5, the white king gets ahead of the pawn and White wins."
+  "ex.e22.solution": "1...Kb5! Only from this square does your king watch a4, b4 and c4 at once: the white king has no way to enter a key square, and it is a draw. 1...Ka5? does not watch c4: the white king can step onto that key square, and White wins."
 }

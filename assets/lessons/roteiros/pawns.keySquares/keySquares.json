@@ -819,6 +819,15 @@
         "c4",
         "d4"
        ],
+       "t": "rot.keySquares.demos.regra.1b"
+      },
+      {
+       "fen": "8/8/8/1k6/8/4K3/2P5/8 w - - 0 1",
+       "marcas": [
+        "b4",
+        "c4",
+        "d4"
+       ],
        "t": "rot.keySquares.demos.regra.2"
       }
      ],
