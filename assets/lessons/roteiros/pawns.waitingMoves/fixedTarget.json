@@ -683,8 +683,7 @@
               ],
               "t": "rot.fixedTarget.demos.compasso.2",
               "marcas": [
-                "f1",
-                "h2"
+                "f1"
               ]
             },
             {
@@ -800,7 +799,7 @@
         },
         {
           "id": "sincronizar",
-          "fen": "8/8/7p/7P/p1K5/8/k7/8 w - - 0 1",
+          "fen": "8/8/1p6/p7/P7/4k3/2K5/8 w - - 0 1",
           "vira": false,
           "objetivo": "empatar",
           "fim": "etapa",
@@ -813,44 +812,29 @@
             "linha": [
               {
                 "certos": [
-                  "c4c3"
+                  "c2c3"
                 ],
-                "resposta": "a4a3"
+                "resposta": "e3e2"
               },
               {
                 "certos": [
                   "c3c2"
-                ],
-                "resposta": "a2a1"
-              },
-              {
-                "certos": [
-                  "c2c1",
-                  "c2b3"
                 ]
               }
             ],
             "erros": {
-              "c4b4": "rot.fixedTarget.pratica.sincronizar.err.c4b4",
-              "c4d3": "rot.fixedTarget.pratica.sincronizar.err.c4d3",
-              "c4d4": "rot.fixedTarget.pratica.sincronizar.err.c4d4",
-              "c4b5": "rot.fixedTarget.pratica.sincronizar.err.c4b5",
-              "c4c5": "rot.fixedTarget.pratica.sincronizar.err.c4c5",
-              "c4d5": "rot.fixedTarget.pratica.sincronizar.err.c4d5"
+              "c2b3": "rot.fixedTarget.pratica.sincronizar.err.c2b3",
+              "c2b2": "rot.fixedTarget.pratica.sincronizar.err.c2b2",
+              "c2b1": "rot.fixedTarget.pratica.sincronizar.err.c2b1",
+              "c2c1": "rot.fixedTarget.pratica.sincronizar.err.c2c1",
+              "c2d1": "rot.fixedTarget.pratica.sincronizar.err.c2d1"
             },
             "errosPos": {
-              "8/8/7p/7P/8/p1K5/k7/8 w - - 0 2": {
-                "c3d2": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3d2",
-                "c3d3": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3d3",
+              "8/8/1p6/p7/P7/2K5/4k3/8 w - - 2 2": {
                 "c3d4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3d4",
-                "c3b4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3b4",
-                "c3c4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3c4"
-              },
-              "8/8/7p/7P/8/p7/2K5/k7 w - - 2 3": {
-                "c2c3": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2c3",
-                "c2d1": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2d1",
-                "c2d2": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2d2",
-                "c2d3": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2d3"
+                "c3c4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3c4",
+                "c3b3": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3b3",
+                "c3b2": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3b2"
               }
             }
           }
