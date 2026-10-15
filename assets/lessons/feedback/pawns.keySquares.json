@@ -1,0 +1,1212 @@
+{
+ "lesson": "pawns.keySquares",
+ "scope": "lances naturais errados (Maia >= 10% em algum nível) que mudam o resultado nas vezes dos exercícios do teste: e14, e22, e09, e12, e20, e10",
+ "ui_contract": "ex.hint somente solicitado; sem alteração de schema/UI",
+ "limitations": [
+  "O texto cita a variante numerada; o balão e a dica do exercício filtram texto com notação (ExerciseReview.hasNotation), então a refutação só aparece onde a notação é exibida.",
+  "Resultados conferidos na tabela KPK (assets/tablebase/kpk.bin); dtm_successor é a distância ao mate da KPK, não DTZ.",
+  "A resposta citada é a que o app joga (MachineMove); o resto da linha é jogo correto de exemplo."
+ ],
+ "rows": [
+  {
+   "id": "e14",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "8/8/8/6p1/7k/8/6K1/8 b - - 0 1",
+   "uci": "g5g4",
+   "pt": "Com 58...g4? você deixa escapar a vitória: as brancas respondem com 59.Rh2 e seguram o empate. O peão saiu na frente do rei: o rei branco se planta diante dele, e o rei preto não chega mais às casas-chave. A continuação seria 58...g4 59.Rh2 g3+ 60.Rg2.",
+   "en": "With 58...g4? you let the win slip: White replies 59.Kh2 and holds the draw. The pawn went ahead of the king: the white king plants itself in front of it, and the black king can no longer reach the key squares. The line would be 58...g4 59.Kh2 g3+ 60.Kg2.",
+   "pv": [
+    {
+     "fen": "8/8/8/6p1/7k/8/6K1/8 b - - 0 1",
+     "uci": "g5g4",
+     "san": "g4",
+     "fullmove": 58,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/8/6pk/8/6K1/8 w - - 0 2",
+     "uci": "g2h2",
+     "san": "Kh2",
+     "fullmove": 59,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/8/8/6pk/8/7K/8 b - - 1 2",
+     "uci": "g4g3",
+     "san": "g3+",
+     "fullmove": 59,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/8/7k/6p1/7K/8 w - - 0 3",
+     "uci": "h2g2",
+     "san": "Kg2",
+     "fullmove": 60,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e14.1",
+    "uci": "g5g4"
+   },
+   "text_key": "ex.e14.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
+   "uci": "c8b7",
+   "pt": "Com 57...Rb7? você deixa escapar o empate: as brancas respondem com 58.Rb5 e ganham. Na sétima fileira, quando o rei branco sobe, os reis ficam frente a frente com as pretas na vez: a oposição é das brancas, e o rei branco entra nas casas-chave. A continuação seria 57...Rb7 58.Rb5 Rb8 59.Ra6.",
+   "en": "With 57...Kb7? you let the draw slip: White replies 58.Kb5 and wins. On the seventh rank, when the white king comes up, the kings face each other with Black to move: White has the opposition, and the white king enters the key squares. The line would be 57...Kb7 58.Kb5 Kb8 59.Ka6.",
+   "pv": [
+    {
+     "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
+     "uci": "c8b7",
+     "san": "Kb7",
+     "fullmove": 57,
+     "turn": "black"
+    },
+    {
+     "fen": "8/1k6/8/8/1PK5/8/8/8 w - - 1 2",
+     "uci": "c4b5",
+     "san": "Kb5",
+     "fullmove": 58,
+     "turn": "white"
+    },
+    {
+     "fen": "8/1k6/8/1K6/1P6/8/8/8 b - - 2 2",
+     "uci": "b7b8",
+     "san": "Kb8",
+     "fullmove": 58,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/8/1K6/1P6/8/8/8 w - - 3 3",
+     "uci": "b5a6",
+     "san": "Ka6",
+     "fullmove": 59,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 19
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.1",
+    "uci": "c8b7"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
+   "uci": "c8c7",
+   "pt": "Com 57...Rc7? você deixa escapar o empate: as brancas respondem com 58.Rc5 e ganham. Na sétima fileira, quando o rei branco sobe, os reis ficam frente a frente com as pretas na vez: a oposição é das brancas, e o rei branco entra nas casas-chave. A continuação seria 57...Rc7 58.Rc5 Rb8 59.Rb6.",
+   "en": "With 57...Kc7? you let the draw slip: White replies 58.Kc5 and wins. On the seventh rank, when the white king comes up, the kings face each other with Black to move: White has the opposition, and the white king enters the key squares. The line would be 57...Kc7 58.Kc5 Kb8 59.Kb6.",
+   "pv": [
+    {
+     "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 0 1",
+     "uci": "c8c7",
+     "san": "Kc7",
+     "fullmove": 57,
+     "turn": "black"
+    },
+    {
+     "fen": "8/2k5/8/8/1PK5/8/8/8 w - - 1 2",
+     "uci": "c4c5",
+     "san": "Kc5",
+     "fullmove": 58,
+     "turn": "white"
+    },
+    {
+     "fen": "8/2k5/8/2K5/1P6/8/8/8 b - - 2 2",
+     "uci": "c7b8",
+     "san": "Kb8",
+     "fullmove": 58,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/8/2K5/1P6/8/8/8 w - - 3 3",
+     "uci": "c5b6",
+     "san": "Kb6",
+     "fullmove": 59,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 21
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.1",
+    "uci": "c8c7"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
+   "uci": "b8a8",
+   "pt": "Com 58...Ra8? você deixa escapar o empate: as brancas respondem com 59.Rb6 e ganham. Sem ocupar c7, o rei preto deixa b6 livre: o rei branco chega a uma casa-chave. A continuação seria 58...Ra8 59.Rb6 Rb8 60.b5.",
+   "en": "With 58...Ka8? you let the draw slip: White replies 59.Kb6 and wins. Without occupying c7, the black king leaves b6 free: the white king reaches a key square. The line would be 58...Ka8 59.Kb6 Kb8 60.b5.",
+   "pv": [
+    {
+     "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
+     "uci": "b8a8",
+     "san": "Ka8",
+     "fullmove": 58,
+     "turn": "black"
+    },
+    {
+     "fen": "k7/8/8/2K5/1P6/8/8/8 w - - 3 3",
+     "uci": "c5b6",
+     "san": "Kb6",
+     "fullmove": 59,
+     "turn": "white"
+    },
+    {
+     "fen": "k7/8/1K6/8/1P6/8/8/8 b - - 4 3",
+     "uci": "a8b8",
+     "san": "Kb8",
+     "fullmove": 59,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/1K6/8/1P6/8/8/8 w - - 5 4",
+     "uci": "b4b5",
+     "san": "b5",
+     "fullmove": 60,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 11
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.2",
+    "uci": "b8a8"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
+   "uci": "b8c8",
+   "pt": "Com 58...Rc8? você deixa escapar o empate: as brancas respondem com 59.Rb6 e ganham. Sem ocupar c7, o rei preto deixa b6 livre: o rei branco chega a uma casa-chave. A continuação seria 58...Rc8 59.Rb6 Rb8 60.b5.",
+   "en": "With 58...Kc8? you let the draw slip: White replies 59.Kb6 and wins. Without occupying c7, the black king leaves b6 free: the white king reaches a key square. The line would be 58...Kc8 59.Kb6 Kb8 60.b5.",
+   "pv": [
+    {
+     "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
+     "uci": "b8c8",
+     "san": "Kc8",
+     "fullmove": 58,
+     "turn": "black"
+    },
+    {
+     "fen": "2k5/8/8/2K5/1P6/8/8/8 w - - 3 3",
+     "uci": "c5b6",
+     "san": "Kb6",
+     "fullmove": 59,
+     "turn": "white"
+    },
+    {
+     "fen": "2k5/8/1K6/8/1P6/8/8/8 b - - 4 3",
+     "uci": "c8b8",
+     "san": "Kb8",
+     "fullmove": 59,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/1K6/8/1P6/8/8/8 w - - 5 4",
+     "uci": "b4b5",
+     "san": "b5",
+     "fullmove": 60,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 11
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.2",
+    "uci": "b8c8"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
+   "uci": "b8b7",
+   "pt": "Com 58...Rb7? você deixa escapar o empate: as brancas respondem com 59.Rb5 e ganham. Em b7, depois que o rei branco vai a b5, os reis ficam frente a frente com as pretas na vez: a oposição é das brancas, e o rei branco entra nas casas-chave. A continuação seria 58...Rb7 59.Rb5 Rb8 60.Ra6.",
+   "en": "With 58...Kb7? you let the draw slip: White replies 59.Kb5 and wins. On b7, after the white king goes to b5, the kings face each other with Black to move: White has the opposition, and the white king enters the key squares. The line would be 58...Kb7 59.Kb5 Kb8 60.Ka6.",
+   "pv": [
+    {
+     "fen": "1k6/8/8/2K5/1P6/8/8/8 b - - 2 2",
+     "uci": "b8b7",
+     "san": "Kb7",
+     "fullmove": 58,
+     "turn": "black"
+    },
+    {
+     "fen": "8/1k6/8/2K5/1P6/8/8/8 w - - 3 3",
+     "uci": "c5b5",
+     "san": "Kb5",
+     "fullmove": 59,
+     "turn": "white"
+    },
+    {
+     "fen": "8/1k6/8/1K6/1P6/8/8/8 b - - 4 3",
+     "uci": "b7b8",
+     "san": "Kb8",
+     "fullmove": 59,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/8/1K6/1P6/8/8/8 w - - 5 4",
+     "uci": "b5a6",
+     "san": "Ka6",
+     "fullmove": 60,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 19
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.2",
+    "uci": "b8b7"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 3,
+   "fen": "8/2k5/8/1PK5/8/8/8/8 b - - 0 3",
+   "uci": "c7b8",
+   "pt": "Com 59...Rb8? você deixa escapar o empate: as brancas respondem com 60.Rb6 e ganham. Recuar para b8 deixa b6 livre: com o rei branco na sexta fileira, na frente do peão, as brancas ganham. A continuação seria 59...Rb8 60.Rb6 Ra8 61.Rc7.",
+   "en": "With 59...Kb8? you let the draw slip: White replies 60.Kb6 and wins. Retreating to b8 leaves b6 free: with the white king on the sixth rank, in front of the pawn, White wins. The line would be 59...Kb8 60.Kb6 Ka8 61.Kc7.",
+   "pv": [
+    {
+     "fen": "8/2k5/8/1PK5/8/8/8/8 b - - 0 3",
+     "uci": "c7b8",
+     "san": "Kb8",
+     "fullmove": 59,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/8/1PK5/8/8/8/8 w - - 1 4",
+     "uci": "c5b6",
+     "san": "Kb6",
+     "fullmove": 60,
+     "turn": "white"
+    },
+    {
+     "fen": "1k6/8/1K6/1P6/8/8/8/8 b - - 2 4",
+     "uci": "b8a8",
+     "san": "Ka8",
+     "fullmove": 60,
+     "turn": "black"
+    },
+    {
+     "fen": "k7/8/1K6/1P6/8/8/8/8 w - - 3 5",
+     "uci": "b6c7",
+     "san": "Kc7",
+     "fullmove": 61,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 9
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.3",
+    "uci": "c7b8"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 4,
+   "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
+   "uci": "b7c8",
+   "pt": "Com 60...Rc8? você deixa escapar o empate: as brancas respondem com 61.Rc6 e ganham. O rei preto sai da frente do peão: o rei branco chega a c6, ao lado dele, e o peão avança com apoio até coroar. A continuação seria 60...Rc8 61.Rc6 Rb8 62.b7.",
+   "en": "With 60...Kc8? you let the draw slip: White replies 61.Kc6 and wins. The black king leaves the square in front of the pawn: the white king reaches c6, beside it, and the pawn advances with support until it queens. The line would be 60...Kc8 61.Kc6 Kb8 62.b7.",
+   "pv": [
+    {
+     "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
+     "uci": "b7c8",
+     "san": "Kc8",
+     "fullmove": 60,
+     "turn": "black"
+    },
+    {
+     "fen": "2k5/8/1P6/2K5/8/8/8/8 w - - 1 5",
+     "uci": "c5c6",
+     "san": "Kc6",
+     "fullmove": 61,
+     "turn": "white"
+    },
+    {
+     "fen": "2k5/8/1PK5/8/8/8/8/8 b - - 2 5",
+     "uci": "c8b8",
+     "san": "Kb8",
+     "fullmove": 61,
+     "turn": "black"
+    },
+    {
+     "fen": "1k6/8/1PK5/8/8/8/8/8 w - - 3 6",
+     "uci": "b6b7",
+     "san": "b7",
+     "fullmove": 62,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 7
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.4",
+    "uci": "b7c8"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e09",
+   "kind": "exercise",
+   "turn": 4,
+   "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
+   "uci": "b7a6",
+   "pt": "Com 60...Ra6? você deixa escapar o empate: as brancas respondem com 61.Rc6 e ganham. O rei preto sai da frente do peão: o rei branco chega a c6, ao lado dele, e o peão avança com apoio até coroar. A continuação seria 60...Ra6 61.Rc6 Ra5 62.b7.",
+   "en": "With 60...Ka6? you let the draw slip: White replies 61.Kc6 and wins. The black king leaves the square in front of the pawn: the white king reaches c6, beside it, and the pawn advances with support until it queens. The line would be 60...Ka6 61.Kc6 Ka5 62.b7.",
+   "pv": [
+    {
+     "fen": "8/1k6/1P6/2K5/8/8/8/8 b - - 0 4",
+     "uci": "b7a6",
+     "san": "Ka6",
+     "fullmove": 60,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/kP6/2K5/8/8/8/8 w - - 1 5",
+     "uci": "c5c6",
+     "san": "Kc6",
+     "fullmove": 61,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/kPK5/8/8/8/8/8 b - - 2 5",
+     "uci": "a6a5",
+     "san": "Ka5",
+     "fullmove": 61,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/1PK5/k7/8/8/8/8 w - - 3 6",
+     "uci": "b6b7",
+     "san": "b7",
+     "fullmove": 62,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 5
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e09.4",
+    "uci": "b7a6"
+   },
+   "text_key": "ex.e09.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e12",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "7k/8/7K/6P1/8/8/8/8 w - - 2 2",
+   "uci": "h6h5",
+   "pt": "Com 2.Rh5? você deixa escapar a vitória: as pretas respondem com 2...Rg7 e seguram o empate. O rei branco recuou e deixou g7 livre: o rei preto volta a g7, na frente do peão, e empata. A continuação seria 2.Rh5 Rg7 3.g6 Rg8.",
+   "en": "With 2.Kh5? you let the win slip: Black replies 2...Kg7 and holds the draw. The white king retreated and left g7 free: the black king returns to g7, in front of the pawn, and draws. The line would be 2.Kh5 Kg7 3.g6 Kg8.",
+   "pv": [
+    {
+     "fen": "7k/8/7K/6P1/8/8/8/8 w - - 2 2",
+     "uci": "h6h5",
+     "san": "Kh5",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "7k/8/8/6PK/8/8/8/8 b - - 3 2",
+     "uci": "h8g7",
+     "san": "Kg7",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/6k1/8/6PK/8/8/8/8 w - - 4 3",
+     "uci": "g5g6",
+     "san": "g6",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/6k1/6P1/7K/8/8/8/8 b - - 0 3",
+     "uci": "g7g8",
+     "san": "Kg8",
+     "fullmove": 3,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e12.2",
+    "uci": "h6h5"
+   },
+   "text_key": "ex.e12.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e12",
+   "kind": "exercise",
+   "turn": 3,
+   "fen": "6k1/8/6PK/8/8/8/8/8 w - - 1 3",
+   "uci": "h6g5",
+   "pt": "Com 3.Rg5? você deixa escapar a vitória: as pretas respondem com 3...Rg7 e seguram o empate. O rei branco saiu de h6 e deixou g7 livre: o rei preto se planta em g7, na frente do peão, e o rei branco não consegue mais tirá-lo de lá. A continuação seria 3.Rg5 Rg7 4.Rf5 Rg8.",
+   "en": "With 3.Kg5? you let the win slip: Black replies 3...Kg7 and holds the draw. The white king left h6 and g7 free: the black king plants itself on g7, in front of the pawn, and the white king can no longer drive it away. The line would be 3.Kg5 Kg7 4.Kf5 Kg8.",
+   "pv": [
+    {
+     "fen": "6k1/8/6PK/8/8/8/8/8 w - - 1 3",
+     "uci": "h6g5",
+     "san": "Kg5",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "6k1/8/6P1/6K1/8/8/8/8 b - - 2 3",
+     "uci": "g8g7",
+     "san": "Kg7",
+     "fullmove": 3,
+     "turn": "black"
+    },
+    {
+     "fen": "8/6k1/6P1/6K1/8/8/8/8 w - - 3 4",
+     "uci": "g5f5",
+     "san": "Kf5",
+     "fullmove": 4,
+     "turn": "white"
+    },
+    {
+     "fen": "8/6k1/6P1/5K2/8/8/8/8 b - - 4 4",
+     "uci": "g7g8",
+     "san": "Kg8",
+     "fullmove": 4,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e12.3",
+    "uci": "h6g5"
+   },
+   "text_key": "ex.e12.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e20",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
+   "uci": "f2f4",
+   "pt": "Com 1.f4? você deixa escapar a vitória: as pretas respondem com 1...Re6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 1.f4 Re6 2.Rc5 Rf5.",
+   "en": "With 1.f4? you let the win slip: Black replies 1...Ke6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 1.f4 Ke6 2.Kc5 Kf5.",
+   "pv": [
+    {
+     "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
+     "uci": "f2f4",
+     "san": "f4",
+     "fullmove": 1,
+     "turn": "white"
+    },
+    {
+     "fen": "8/5k2/2K5/8/5P2/8/8/8 b - - 0 1",
+     "uci": "f7e6",
+     "san": "Ke6",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/2K1k3/8/5P2/8/8/8 w - - 1 2",
+     "uci": "c6c5",
+     "san": "Kc5",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/4k3/2K5/5P2/8/8/8 b - - 2 2",
+     "uci": "e6f5",
+     "san": "Kf5",
+     "fullmove": 2,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e20.1",
+    "uci": "f2f4"
+   },
+   "text_key": "ex.e20.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e20",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
+   "uci": "f2f3",
+   "pt": "Com 1.f3? você deixa escapar a vitória: as pretas respondem com 1...Re6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 1.f3 Re6 2.Rc5 Re5.",
+   "en": "With 1.f3? you let the win slip: Black replies 1...Ke6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 1.f3 Ke6 2.Kc5 Ke5.",
+   "pv": [
+    {
+     "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
+     "uci": "f2f3",
+     "san": "f3",
+     "fullmove": 1,
+     "turn": "white"
+    },
+    {
+     "fen": "8/5k2/2K5/8/8/5P2/8/8 b - - 0 1",
+     "uci": "f7e6",
+     "san": "Ke6",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/2K1k3/8/8/5P2/8/8 w - - 1 2",
+     "uci": "c6c5",
+     "san": "Kc5",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/4k3/2K5/8/5P2/8/8 b - - 2 2",
+     "uci": "e6e5",
+     "san": "Ke5",
+     "fullmove": 2,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e20.1",
+    "uci": "f2f3"
+   },
+   "text_key": "ex.e20.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+   "uci": "c3c4",
+   "pt": "Com 1.c4? você deixa escapar a vitória: as pretas respondem com 1...Re7 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 1.c4 Re7 2.Rc2 Rd6.",
+   "en": "With 1.c4? you let the win slip: Black replies 1...Ke7 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 1.c4 Ke7 2.Kc2 Kd6.",
+   "pv": [
+    {
+     "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+     "uci": "c3c4",
+     "san": "c4",
+     "fullmove": 1,
+     "turn": "white"
+    },
+    {
+     "fen": "5k2/8/8/8/2P5/8/8/3K4 b - - 0 1",
+     "uci": "f8e7",
+     "san": "Ke7",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/4k3/8/8/2P5/8/8/3K4 w - - 1 2",
+     "uci": "d1c2",
+     "san": "Kc2",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/4k3/8/8/2P5/8/2K5/8 b - - 2 2",
+     "uci": "e7d6",
+     "san": "Kd6",
+     "fullmove": 2,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.1",
+    "uci": "c3c4"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+   "uci": "d1d2",
+   "pt": "Com 1.Rd2? você deixa escapar a vitória: as pretas respondem com 1...Re7 e seguram o empate. Pela coluna d, o rei branco fica frente a frente com o rei preto: as pretas tomam a oposição e não deixam o rei branco chegar às casas-chave. A continuação seria 1.Rd2 Re7 2.Rd3 Rd7.",
+   "en": "With 1.Kd2? you let the win slip: Black replies 1...Ke7 and holds the draw. Down the d-file, the white king ends up face to face with the black king: Black takes the opposition and keeps the white king away from the key squares. The line would be 1.Kd2 Ke7 2.Kd3 Kd7.",
+   "pv": [
+    {
+     "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+     "uci": "d1d2",
+     "san": "Kd2",
+     "fullmove": 1,
+     "turn": "white"
+    },
+    {
+     "fen": "5k2/8/8/8/8/2P5/3K4/8 b - - 1 1",
+     "uci": "f8e7",
+     "san": "Ke7",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/4k3/8/8/8/2P5/3K4/8 w - - 2 2",
+     "uci": "d2d3",
+     "san": "Kd3",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/4k3/8/8/8/2PK4/8/8 b - - 3 2",
+     "uci": "e7d7",
+     "san": "Kd7",
+     "fullmove": 2,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.1",
+    "uci": "d1d2"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+   "uci": "d1e2",
+   "pt": "Com 1.Re2? você deixa escapar a vitória: as pretas respondem com 1...Re7 e seguram o empate. Pela coluna d, o rei branco fica frente a frente com o rei preto: as pretas tomam a oposição e não deixam o rei branco chegar às casas-chave. A continuação seria 1.Re2 Re7 2.Rd3 Rd7.",
+   "en": "With 1.Ke2? you let the win slip: Black replies 1...Ke7 and holds the draw. Down the d-file, the white king ends up face to face with the black king: Black takes the opposition and keeps the white king away from the key squares. The line would be 1.Ke2 Ke7 2.Kd3 Kd7.",
+   "pv": [
+    {
+     "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
+     "uci": "d1e2",
+     "san": "Ke2",
+     "fullmove": 1,
+     "turn": "white"
+    },
+    {
+     "fen": "5k2/8/8/8/8/2P5/4K3/8 b - - 1 1",
+     "uci": "f8e7",
+     "san": "Ke7",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/4k3/8/8/8/2P5/4K3/8 w - - 2 2",
+     "uci": "e2d3",
+     "san": "Kd3",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/4k3/8/8/8/2PK4/8/8 b - - 3 2",
+     "uci": "e7d7",
+     "san": "Kd7",
+     "fullmove": 2,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.1",
+    "uci": "d1e2"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
+   "uci": "c2d3",
+   "pt": "Com 2.Rd3? você deixa escapar a vitória: as pretas respondem com 2...Rd7 e seguram o empate. Pela coluna d, o rei branco fica frente a frente com o rei preto: as pretas tomam a oposição e não deixam o rei branco chegar às casas-chave. A continuação seria 2.Rd3 Rd7 3.Rc4 Rc6.",
+   "en": "With 2.Kd3? you let the win slip: Black replies 2...Kd7 and holds the draw. Down the d-file, the white king ends up face to face with the black king: Black takes the opposition and keeps the white king away from the key squares. The line would be 2.Kd3 Kd7 3.Kc4 Kc6.",
+   "pv": [
+    {
+     "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
+     "uci": "c2d3",
+     "san": "Kd3",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/4k3/8/8/8/2PK4/8/8 b - - 3 2",
+     "uci": "e7d7",
+     "san": "Kd7",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/3k4/8/8/8/2PK4/8/8 w - - 4 3",
+     "uci": "d3c4",
+     "san": "Kc4",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/3k4/8/8/2K5/2P5/8/8 b - - 5 3",
+     "uci": "d7c6",
+     "san": "Kc6",
+     "fullmove": 3,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.2",
+    "uci": "c2d3"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
+   "uci": "c3c4",
+   "pt": "Com 2.c4? você deixa escapar a vitória: as pretas respondem com 2...Rd6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 2.c4 Rd6 3.Rb3 Rc5.",
+   "en": "With 2.c4? you let the win slip: Black replies 2...Kd6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 2.c4 Kd6 3.Kb3 Kc5.",
+   "pv": [
+    {
+     "fen": "8/4k3/8/8/8/2P5/2K5/8 w - - 2 2",
+     "uci": "c3c4",
+     "san": "c4",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/4k3/8/8/2P5/8/2K5/8 b - - 0 2",
+     "uci": "e7d6",
+     "san": "Kd6",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/3k4/8/2P5/8/2K5/8 w - - 1 3",
+     "uci": "c2b3",
+     "san": "Kb3",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/3k4/8/2P5/1K6/8/8 b - - 2 3",
+     "uci": "d6c5",
+     "san": "Kc5",
+     "fullmove": 3,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.2",
+    "uci": "c3c4"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 3,
+   "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
+   "uci": "b3c4",
+   "pt": "Com 3.Rc4? você deixa escapar a vitória: as pretas respondem com 3...Rc6 e seguram o empate. Em c4, os reis ficam frente a frente com as brancas na vez: a oposição é das pretas, e o rei branco não passa. A continuação seria 3.Rc4 Rc6 4.Rb4 Rb6.",
+   "en": "With 3.Kc4? you let the win slip: Black replies 3...Kc6 and holds the draw. On c4, the kings face each other with White to move: Black has the opposition, and the white king cannot get through. The line would be 3.Kc4 Kc6 4.Kb4 Kb6.",
+   "pv": [
+    {
+     "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
+     "uci": "b3c4",
+     "san": "Kc4",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/3k4/8/2K5/2P5/8/8 b - - 5 3",
+     "uci": "d6c6",
+     "san": "Kc6",
+     "fullmove": 3,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/2k5/8/2K5/2P5/8/8 w - - 6 4",
+     "uci": "c4b4",
+     "san": "Kb4",
+     "fullmove": 4,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/2k5/8/1K6/2P5/8/8 b - - 7 4",
+     "uci": "c6b6",
+     "san": "Kb6",
+     "fullmove": 4,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.3",
+    "uci": "b3c4"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 3,
+   "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
+   "uci": "c3c4",
+   "pt": "Com 3.c4? você deixa escapar a vitória: as pretas respondem com 3...Rc5 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 3.c4 Rc5 4.Ra4 Rxc4.",
+   "en": "With 3.c4? you let the win slip: Black replies 3...Kc5 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 3.c4 Kc5 4.Ka4 Kxc4.",
+   "pv": [
+    {
+     "fen": "8/8/3k4/8/8/1KP5/8/8 w - - 4 3",
+     "uci": "c3c4",
+     "san": "c4",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/3k4/8/2P5/1K6/8/8 b - - 0 3",
+     "uci": "d6c5",
+     "san": "Kc5",
+     "fullmove": 3,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/2k5/2P5/1K6/8/8 w - - 1 4",
+     "uci": "b3a4",
+     "san": "Ka4",
+     "fullmove": 4,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/8/2k5/K1P5/8/8/8 b - - 2 4",
+     "uci": "c5c4",
+     "san": "Kxc4",
+     "fullmove": 4,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.3",
+    "uci": "c3c4"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e10",
+   "kind": "exercise",
+   "turn": 4,
+   "fen": "8/8/2k5/8/1K6/2P5/8/8 w - - 6 4",
+   "uci": "c3c4",
+   "pt": "Com 4.c4? você deixa escapar a vitória: as pretas respondem com 4...Rb6 e seguram o empate. O peão saiu na frente do rei, e o rei adversário se planta diante dele; o seu rei não chega mais às casas-chave. A continuação seria 4.c4 Rb6 5.Rc3 Rc5.",
+   "en": "With 4.c4? you let the win slip: Black replies 4...Kb6 and holds the draw. The pawn went ahead of the king, and the enemy king plants itself in front of it; your king can no longer reach the key squares. The line would be 4.c4 Kb6 5.Kc3 Kc5.",
+   "pv": [
+    {
+     "fen": "8/8/2k5/8/1K6/2P5/8/8 w - - 6 4",
+     "uci": "c3c4",
+     "san": "c4",
+     "fullmove": 4,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/2k5/8/1KP5/8/8/8 b - - 0 4",
+     "uci": "c6b6",
+     "san": "Kb6",
+     "fullmove": 4,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/1k6/8/1KP5/8/8/8 w - - 1 5",
+     "uci": "b4c3",
+     "san": "Kc3",
+     "fullmove": 5,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/1k6/8/2P5/2K5/8/8 b - - 2 5",
+     "uci": "b6c5",
+     "san": "Kc5",
+     "fullmove": 5,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e10.4",
+    "uci": "c3c4"
+   },
+   "text_key": "ex.e10.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e22",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+   "uci": "a6a5",
+   "pt": "Com 1...Ra5? você deixa escapar o empate: as brancas respondem com 2.Rc5 e ganham. Em a5, o rei preto não vigia c4 nem c5: o rei branco passa à frente do peão, e o peão avança com o rei ao lado. A continuação seria 1...Ra5 2.Rc5 Ra4 3.b4.",
+   "en": "With 1...Ka5? you let the draw slip: White replies 2.Kc5 and wins. On a5, the black king watches neither c4 nor c5: the white king gets ahead of the pawn, and the pawn advances with the king beside it. The line would be 1...Ka5 2.Kc5 Ka4 3.b4.",
+   "pv": [
+    {
+     "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+     "uci": "a6a5",
+     "san": "Ka5",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/k7/3K4/8/1P6/8 w - - 1 2",
+     "uci": "d4c5",
+     "san": "Kc5",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/8/k1K5/8/8/1P6/8 b - - 2 2",
+     "uci": "a5a4",
+     "san": "Ka4",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/2K5/k7/8/1P6/8 w - - 3 3",
+     "uci": "b2b4",
+     "san": "b4",
+     "fullmove": 3,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 23
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e22.1",
+    "uci": "a6a5"
+   },
+   "text_key": "ex.e22.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e22",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+   "uci": "a6b6",
+   "pt": "Com 1...Rb6? você deixa escapar o empate: as brancas respondem com 2.Rc4 e ganham. Recuar para b6 deixa o rei branco chegar a c4, uma casa-chave. A continuação seria 1...Rb6 2.Rc4 Rc6 3.b3.",
+   "en": "With 1...Kb6? you let the draw slip: White replies 2.Kc4 and wins. Retreating to b6 lets the white king reach c4, a key square. The line would be 1...Kb6 2.Kc4 Kc6 3.b3.",
+   "pv": [
+    {
+     "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+     "uci": "a6b6",
+     "san": "Kb6",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/1k6/8/3K4/8/1P6/8 w - - 1 2",
+     "uci": "d4c4",
+     "san": "Kc4",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/1k6/8/2K5/8/1P6/8 b - - 2 2",
+     "uci": "b6c6",
+     "san": "Kc6",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/2k5/8/2K5/8/1P6/8 w - - 3 3",
+     "uci": "b2b3",
+     "san": "b3",
+     "fullmove": 3,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 27
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e22.1",
+    "uci": "a6b6"
+   },
+   "text_key": "ex.e22.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e22",
+   "kind": "exercise",
+   "turn": 1,
+   "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+   "uci": "a6b7",
+   "pt": "Com 1...Rb7? você deixa escapar o empate: as brancas respondem com 2.Rc5 e ganham. Recuar para b7 deixa o rei branco à vontade: ele passa à frente do peão, por c5, e o peão avança com apoio. A continuação seria 1...Rb7 2.Rc5 Ra6 3.b3.",
+   "en": "With 1...Kb7? you let the draw slip: White replies 2.Kc5 and wins. Retreating to b7 leaves the white king free: it gets ahead of the pawn via c5, and the pawn advances with support. The line would be 1...Kb7 2.Kc5 Ka6 3.b3.",
+   "pv": [
+    {
+     "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+     "uci": "a6b7",
+     "san": "Kb7",
+     "fullmove": 1,
+     "turn": "black"
+    },
+    {
+     "fen": "8/1k6/8/8/3K4/8/1P6/8 w - - 1 2",
+     "uci": "d4c5",
+     "san": "Kc5",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/1k6/8/2K5/8/8/1P6/8 b - - 2 2",
+     "uci": "b7a6",
+     "san": "Ka6",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/k7/2K5/8/8/1P6/8 w - - 3 3",
+     "uci": "b2b3",
+     "san": "b3",
+     "fullmove": 3,
+     "turn": "white"
+    }
+   ],
+   "objective": {
+    "result_mover": "loss",
+    "dtm_successor": 23
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e22.1",
+    "uci": "a6b7"
+   },
+   "text_key": "ex.e22.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  }
+ ]
+}

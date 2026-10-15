@@ -43,21 +43,29 @@
             "g4f3",
             "g4f4",
             "g4h4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e22",
+      "stars": 1,
+      "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "capitulo": "keySquares",
+      "line": [
+        {
+          "teach": "a6b5",
+          "accept": [
+            "a6b5"
           ],
-          "reply": "h2h3"
+          "reply": "d4d3"
         },
         {
-          "teach": "g5g4",
+          "teach": "b5b4",
           "accept": [
-            "f3f4",
-            "g5g4"
-          ],
-          "reply": "h3h2"
-        },
-        {
-          "teach": "f3f2",
-          "accept": [
-            "f3f2"
+            "b5b4"
           ]
         }
       ]
@@ -211,7 +219,7 @@
       "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
       "goal": "win",
       "origin": "wikiKpk",
-      "capitulo": "keySquares",
+      "capitulo": "opposition",
       "line": [
         {
           "teach": "d1c2",
@@ -285,7 +293,7 @@
       ]
     }
   ],
-  "passScore": 5,
+  "passScore": 6,
   "keyPositions": [
     {
       "id": "count",
@@ -399,5 +407,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 15
+  "maxScore": 16
 }
