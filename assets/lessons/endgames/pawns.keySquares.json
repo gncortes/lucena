@@ -183,6 +183,29 @@
       ]
     },
     {
+      "id": "e20",
+      "stars": 2,
+      "capitulo": "diagonal",
+      "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c6d5",
+          "accept": [
+            "c6d5"
+          ],
+          "reply": "f7f6"
+        },
+        {
+          "teach": "d5e4",
+          "accept": [
+            "d5e4"
+          ]
+        }
+      ]
+    },
+    {
       "id": "e10",
       "stars": 3,
       "fen": "5k2/8/8/8/8/2P5/8/3K4 w - - 0 1",
@@ -376,5 +399,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 13
+  "maxScore": 15
 }

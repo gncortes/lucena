@@ -655,8 +655,8 @@ void main() {
     final s = await _open(tester, _tall, json: demoToPractice());
     await _until(tester, s, ScriptPhase.fimEtapa);
     final board = tester.widget<ScriptBoard>(find.byType(ScriptBoard));
-    expect(board.state.fen, '8/8/8/4k3/8/4K3/6P1/8 w - - 4 3');
-    expect(board.state.lastMove, 'e6e5');
+    expect(board.state.fen, '8/8/8/3k4/8/3K4/5P2/8 w - - 4 3');
+    expect(board.state.lastMove, 'd6d5');
     final list = tester.widget<ScriptMoveList>(find.byType(ScriptMoveList));
     expect(list.currentId, list.moves.last.id);
     expect(list.moves, hasLength(4));

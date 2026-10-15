@@ -10,7 +10,7 @@ import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
 
 /// Posição final da demonstração do erro do atacante (depois de 2.Re3 Re5).
-const _finalFen = '8/8/8/4k3/8/4K3/6P1/8 w - - 4 3';
+const _finalFen = '8/8/8/3k4/8/3K4/5P2/8 w - - 4 3';
 
 const _roteiro = 'assets/lessons/roteiros/pawns.distantOpposition/distant.json';
 
@@ -66,13 +66,13 @@ void main() {
         final s = cubit.state;
         expect(s.speech.last, 'rot.distant.demos.erroAtacante.ponte');
         expect(s.fen, _finalFen);
-        expect(s.lastMove, 'e6e5');
+        expect(s.lastMove, 'd6d5');
         expect(s.currentMoveId, s.moves.last.id);
-        expect(s.moves.map((m) => m.san), ['Ke2', 'Ke6', 'Ke3', 'Ke5']);
+        expect(s.moves.map((m) => m.san), ['Kd2', 'Kd6', 'Kd3', 'Kd5']);
       },
     );
 
-    test('depois do último lance nenhuma posição volta à de Re2', () async {
+    test('depois do último lance nenhuma posição volta à de Rd2', () async {
       final cubit = await _open(demoToPractice());
       final fens = <String>[];
       for (

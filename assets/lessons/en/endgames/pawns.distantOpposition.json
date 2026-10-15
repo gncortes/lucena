@@ -45,5 +45,9 @@
   "coach.allPartsDone": "Now you know how to win the opposition and take your king to the key squares. Shall we go to the final test?",
   "part.means.title": "Choose the target",
   "part.means.summary": "Taking the opposition is not the goal: if your king can reach one of the pawn’s key squares directly, go there, even without the opposition.",
-  "key.means": "The opposition is a means, not the goal: here taking it only draws. What wins is taking the king straight to the deciding squares in front of the pawn."
+  "key.means": "The opposition is a means, not the goal: here taking it only draws. What wins is taking the king straight to the deciding squares in front of the pawn.",
+  "ex.e21": "Play White and find the best move. Both kings are far from the pawn, and the black king is already in the centre.",
+  "ex.e21.hint": "The pawn's key squares are a4, b4 and c4. Ask yourself what matters more here: taking the opposition or getting close to those squares.",
+  "ex.e21.solution": "1.Kc2! The king heads for b3, next to all three key squares. After 1...Kd4, 2.Kb3! The black king cannot guard a4, b4 and c4 at the same time, and the white king gets into one of them. 1.Ke2? takes the direct opposition but moves the king away from the pawn: after 1...Kd4, the black king reaches the key squares first, and it is a draw. 2.b3? also draws, because the pawn advances before the king. The opposition is a means; the goal is the key square.",
+  "ex.e21.r1": "1...Kd4. The black king approaches c4 and wants to reach the key squares before yours."
 }

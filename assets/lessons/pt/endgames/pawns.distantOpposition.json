@@ -45,5 +45,9 @@
   "coach.allPartsDone": "Agora você sabe ganhar a oposição para levar o rei às casas-chave. Vamos ao teste final?",
   "part.means.title": "Escolher o objetivo",
   "part.means.summary": "Tomar a oposição não é o objetivo: se o seu rei alcança direto uma casa-chave do peão, vá até ela, mesmo sem a oposição.",
-  "key.means": "A oposição é um meio, não o fim: aqui tomá-la só empata. O que ganha é levar o rei direto para as casas que decidem, na frente do peão."
+  "key.means": "A oposição é um meio, não o fim: aqui tomá-la só empata. O que ganha é levar o rei direto para as casas que decidem, na frente do peão.",
+  "ex.e21": "Jogue de brancas e encontre o melhor lance. Os dois reis estão longe do peão, e o rei preto já está no centro.",
+  "ex.e21.hint": "As casas-chave do peão são a4, b4 e c4. Pergunte-se o que importa mais aqui: tomar a oposição ou chegar perto dessas casas.",
+  "ex.e21.solution": "1.Rc2! O rei vai rumo a b3, ao lado das três casas-chave. Depois de 1...Rd4, 2.Rb3! O rei preto não consegue guardar a4, b4 e c4 ao mesmo tempo, e o rei branco entra em uma delas. 1.Re2? toma a oposição direta, mas afasta o rei do peão: depois de 1...Rd4, o rei preto chega antes às casas-chave, e é empate. 2.b3? também empata, porque o peão avança antes do rei. A oposição é um meio; o objetivo é a casa-chave.",
+  "ex.e21.r1": "1...Rd4. O rei preto se aproxima de c4 e quer chegar antes do seu às casas-chave."
 }

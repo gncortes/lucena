@@ -386,7 +386,8 @@ void main() {
       expect(r.s.moves, isEmpty);
     });
 
-    test('salto "imagine g4": o lance atual é o g4, na variante', () async {
+    test('variante "e se f4?": os lances ficam na variante e o salto volta '
+        'à linha', () async {
       final json = jsonDecode(
         io.File('assets/lessons/roteiros/pawns.distantOpposition/distant.json')
             .readAsStringSync(),
@@ -398,18 +399,19 @@ void main() {
       await r.cubit.onMove('d3e4');
       for (
         var i = 0;
-        i < 30 && !r.s.speech.contains('rot.distant.ideia.ex1.l14');
+        i < 30 && !r.s.speech.contains('rot.distant.ideia.ex1.l9');
         i++
       ) {
         await r.next();
       }
-      expect(r.s.speech, contains('rot.distant.ideia.ex1.l14'));
-      expect(r.s.currentMoveId, 'd3e4-e8f7-g3g4');
-      final g4 = r.s.moves.firstWhere((m) => m.id == 'd3e4-e8f7-g3g4');
-      expect(g4.variant, isTrue);
+      expect(r.s.speech, contains('rot.distant.ideia.ex1.l9'));
+      expect(r.s.currentMoveId, 'd3e4-e8f7-e4f4-f7f6');
+      expect(r.s.lastMove, 'f7f6');
+      final f4 = r.s.moves.firstWhere((m) => m.id == 'd3e4-e8f7-e4f4');
+      expect(f4.variant, isTrue);
       await r.next();
-      expect(r.s.currentMoveId, 'd3e4-e8f7-g3g4-f7g6');
-      expect(r.s.lastMove, 'f7g6');
+      expect(r.s.speech, contains('rot.distant.ideia.ex1.l10'));
+      expect(r.s.currentMoveId, 'd3e4-e8f7-e4f5');
     });
 
     test('toque num lance da lista leva ao passo dele', () async {

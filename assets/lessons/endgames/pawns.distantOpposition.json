@@ -160,6 +160,29 @@
       ]
     },
     {
+      "id": "e21",
+      "stars": 2,
+      "capitulo": "means",
+      "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "d1c2",
+          "accept": [
+            "d1c2"
+          ],
+          "reply": "e4d4"
+        },
+        {
+          "teach": "c2b3",
+          "accept": [
+            "c2b3"
+          ]
+        }
+      ]
+    },
+    {
       "id": "e19",
       "stars": 3,
       "fen": "2K5/8/1k6/8/8/p7/P7/8 w - - 0 1",
@@ -303,5 +326,5 @@
       "url": "https://lichess.org/study/A4ujYOer"
     }
   ],
-  "maxScore": 10
+  "maxScore": 12
 }

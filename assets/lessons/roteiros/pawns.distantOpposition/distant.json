@@ -30,13 +30,6 @@
               "marcas": [
                 "g6"
               ],
-              "setas": [
-                [
-                  "e8",
-                  "g6",
-                  "b"
-                ]
-              ],
               "t": "rot.distant.ideia.ex1.e6"
             }
           ],
@@ -47,16 +40,8 @@
             "certo": {
               "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
               "marcas": [
-                "f5",
-                "g5",
-                "h5"
-              ],
-              "setas": [
-                [
-                  "e4",
-                  "f5",
-                  "g"
-                ]
+                "e4",
+                "e8"
               ],
               "lance": "d3e4",
               "t": "rot.distant.ideia.ex1.certo"
@@ -64,39 +49,88 @@
             "revela": {
               "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
               "marcas": [
-                "f5",
-                "g5",
-                "h5"
-              ],
-              "setas": [
-                [
-                  "e4",
-                  "f5",
-                  "g"
-                ]
+                "e4",
+                "e8"
               ],
               "lance": "d3e4",
               "t": "rot.distant.ideia.ex1.revela"
             },
             "alternativos": {},
             "erros": {
-              "d3d4": [
+              "d3c2": [
                 {
-                  "fen": "4k3/8/8/8/3K4/6P1/8/8 b - - 1 1",
+                  "fen": "4k3/8/8/8/8/6P1/2K5/8 b - - 1 1",
                   "setas": [
                     [
                       "d3",
-                      "d4",
+                      "c2",
                       "r"
                     ]
                   ],
-                  "lance": "d3d4",
-                  "t": "rot.distant.ideia.ex1.err.d3d4.1"
+                  "lance": "d3c2",
+                  "t": "rot.distant.ideia.ex1.err.d3c2.1"
                 },
                 {
-                  "fen": "8/5k2/8/8/3K4/6P1/8/8 w - - 2 2",
+                  "fen": "8/5k2/8/8/8/6P1/2K5/8 w - - 2 2",
                   "lance": "e8f7",
-                  "t": "rot.distant.ideia.ex1.err.d3d4.2"
+                  "t": "rot.distant.ideia.ex1.err.d3c2.2"
+                }
+              ],
+              "d3d2": [
+                {
+                  "fen": "4k3/8/8/8/8/6P1/3K4/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "d3",
+                      "d2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "d3d2",
+                  "t": "rot.distant.ideia.ex1.err.d3d2.1"
+                },
+                {
+                  "fen": "8/5k2/8/8/8/6P1/3K4/8 w - - 2 2",
+                  "lance": "e8f7",
+                  "t": "rot.distant.ideia.ex1.err.d3d2.2"
+                }
+              ],
+              "d3e2": [
+                {
+                  "fen": "4k3/8/8/8/8/6P1/4K3/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "d3",
+                      "e2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "d3e2",
+                  "t": "rot.distant.ideia.ex1.err.d3e2.1"
+                },
+                {
+                  "fen": "8/5k2/8/8/8/6P1/4K3/8 w - - 2 2",
+                  "lance": "e8f7",
+                  "t": "rot.distant.ideia.ex1.err.d3e2.2"
+                }
+              ],
+              "d3c3": [
+                {
+                  "fen": "4k3/8/8/8/8/2K3P1/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "d3",
+                      "c3",
+                      "r"
+                    ]
+                  ],
+                  "lance": "d3c3",
+                  "t": "rot.distant.ideia.ex1.err.d3c3.1"
+                },
+                {
+                  "fen": "8/5k2/8/8/8/2K3P1/8/8 w - - 2 2",
+                  "lance": "e8f7",
+                  "t": "rot.distant.ideia.ex1.err.d3c3.2"
                 }
               ],
               "d3c4": [
@@ -137,80 +171,23 @@
                   "t": "rot.distant.ideia.ex1.err.d3e3.2"
                 }
               ],
-              "d3c3": [
+              "d3d4": [
                 {
-                  "fen": "4k3/8/8/8/8/2K3P1/8/8 b - - 1 1",
+                  "fen": "4k3/8/8/8/3K4/6P1/8/8 b - - 1 1",
                   "setas": [
                     [
                       "d3",
-                      "c3",
+                      "d4",
                       "r"
                     ]
                   ],
-                  "lance": "d3c3",
-                  "t": "rot.distant.ideia.ex1.err.d3c3.1"
+                  "lance": "d3d4",
+                  "t": "rot.distant.ideia.ex1.err.d3d4.1"
                 },
                 {
-                  "fen": "8/5k2/8/8/8/2K3P1/8/8 w - - 2 2",
+                  "fen": "8/5k2/8/8/3K4/6P1/8/8 w - - 2 2",
                   "lance": "e8f7",
-                  "t": "rot.distant.ideia.ex1.err.d3c3.2"
-                }
-              ],
-              "d3e2": [
-                {
-                  "fen": "4k3/8/8/8/8/6P1/4K3/8 b - - 1 1",
-                  "setas": [
-                    [
-                      "d3",
-                      "e2",
-                      "r"
-                    ]
-                  ],
-                  "lance": "d3e2",
-                  "t": "rot.distant.ideia.ex1.err.d3e2.1"
-                },
-                {
-                  "fen": "8/5k2/8/8/8/6P1/4K3/8 w - - 2 2",
-                  "lance": "e8f7",
-                  "t": "rot.distant.ideia.ex1.err.d3e2.2"
-                }
-              ],
-              "d3d2": [
-                {
-                  "fen": "4k3/8/8/8/8/6P1/3K4/8 b - - 1 1",
-                  "setas": [
-                    [
-                      "d3",
-                      "d2",
-                      "r"
-                    ]
-                  ],
-                  "lance": "d3d2",
-                  "t": "rot.distant.ideia.ex1.err.d3d2.1"
-                },
-                {
-                  "fen": "8/5k2/8/8/8/6P1/3K4/8 w - - 2 2",
-                  "lance": "e8f7",
-                  "t": "rot.distant.ideia.ex1.err.d3d2.2"
-                }
-              ],
-              "d3c2": [
-                {
-                  "fen": "4k3/8/8/8/8/6P1/2K5/8 b - - 1 1",
-                  "setas": [
-                    [
-                      "d3",
-                      "c2",
-                      "r"
-                    ]
-                  ],
-                  "lance": "d3c2",
-                  "t": "rot.distant.ideia.ex1.err.d3c2.1"
-                },
-                {
-                  "fen": "8/5k2/8/8/8/6P1/2K5/8 w - - 2 2",
-                  "lance": "e8f7",
-                  "t": "rot.distant.ideia.ex1.err.d3c2.2"
+                  "t": "rot.distant.ideia.ex1.err.d3d4.2"
                 }
               ],
               "g3g4": [
@@ -262,81 +239,65 @@
             },
             {
               "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "marcas": [
-                "e5",
-                "e6",
-                "e7"
-              ],
+              "t": "rot.distant.ideia.ex1.l3"
+            },
+            {
+              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
               "t": "rot.distant.ideia.ex1.l4"
             },
             {
               "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "marcas": [
-                "e5",
-                "e6",
-                "e7"
-              ],
               "t": "rot.distant.ideia.ex1.l5"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l6"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l6b",
-              "marcas": [
-                "e5",
-                "e6",
-                "e7"
-              ]
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l7"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l8"
             },
             {
               "fen": "8/5k2/8/8/4K3/6P1/8/8 w - - 2 2",
               "lance": "e8f7",
-              "t": "rot.distant.ideia.ex1.l9"
+              "t": "rot.distant.ideia.ex1.l6"
+            },
+            {
+              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 3 2",
+              "marcas": [
+                "f5"
+              ],
+              "lance": "e4f5",
+              "t": "rot.distant.ideia.ex1.l7"
             },
             {
               "fen": "8/5k2/8/8/4K3/6P1/8/8 w - - 2 2",
-              "marcas": [
-                "g6"
-              ],
               "setas": [
                 [
-                  "f7",
-                  "g6",
-                  "b"
+                  "e4",
+                  "f4",
+                  "r"
                 ]
               ],
+              "salto": true,
+              "t": "rot.distant.ideia.ex1.l8"
+            },
+            {
+              "fen": "8/8/5k2/8/5K2/6P1/8/8 w - - 4 3",
+              "marcas": [
+                "f4",
+                "f6"
+              ],
+              "seq": [
+                "e4f4",
+                "f7f6"
+              ],
+              "t": "rot.distant.ideia.ex1.l9"
+            },
+            {
+              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 3 2",
+              "salto": true,
               "t": "rot.distant.ideia.ex1.l10"
             },
             {
-              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 3 2",
-              "lance": "e4f5",
+              "fen": "8/6k1/8/5K2/8/6P1/8/8 w - - 4 3",
+              "lance": "f7g7",
               "t": "rot.distant.ideia.ex1.l11"
             },
             {
-              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 3 2",
-              "marcas": [
-                "f5",
-                "f7"
-              ],
-              "t": "rot.distant.ideia.ex1.l12"
-            },
-            {
-              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 3 2",
-              "t": "rot.distant.ideia.ex1.l13"
-            },
-            {
-              "fen": "8/5k2/8/8/4K1P1/8/8/8 b - - 0 2",
+              "fen": "8/6k1/8/5K2/8/6P1/8/8 w - - 4 3",
               "setas": [
                 [
                   "g3",
@@ -344,40 +305,24 @@
                   "r"
                 ]
               ],
-              "salto": true,
-              "t": "rot.distant.ideia.ex1.l14"
+              "t": "rot.distant.ideia.ex1.l12"
             },
             {
-              "fen": "8/8/6k1/8/4K1P1/8/8/8 w - - 1 3",
+              "fen": "8/5k2/8/5K2/6P1/8/8/8 w - - 1 4",
               "marcas": [
-                "g6"
+                "f5",
+                "f7"
               ],
-              "lance": "f7g6",
-              "t": "rot.distant.ideia.ex1.l15"
-            },
-            {
-              "fen": "8/8/6k1/8/5KP1/8/8/8 b - - 2 3",
-              "lance": "e4f4",
-              "t": "rot.distant.ideia.ex1.l16"
-            },
-            {
-              "fen": "8/8/5k2/8/5KP1/8/8/8 w - - 3 4",
-              "marcas": [
-                "f4",
-                "f6"
+              "seq": [
+                "g3g4",
+                "g7f7"
               ],
-              "lance": "g6f6",
-              "t": "rot.distant.ideia.ex1.l17"
-            },
-            {
-              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 3 2",
-              "salto": true,
-              "t": "rot.distant.ideia.ex1.l22"
+              "t": "rot.distant.ideia.ex1.l13"
             },
             {
               "fen": "8/6k1/8/5K2/8/6P1/8/8 w - - 4 3",
-              "lance": "f7g7",
-              "t": "rot.distant.ideia.ex1.l23"
+              "salto": true,
+              "t": "rot.distant.ideia.ex1.l14"
             },
             {
               "fen": "8/6k1/8/6K1/8/6P1/8/8 b - - 5 3",
@@ -385,61 +330,98 @@
                 "g5"
               ],
               "lance": "f5g5",
-              "t": "rot.distant.ideia.ex1.l24"
+              "t": "rot.distant.ideia.ex1.l15"
             },
             {
-              "fen": "8/6k1/8/6K1/8/6P1/8/8 b - - 5 3",
-              "t": "rot.distant.ideia.ex1.l25"
+              "fen": "8/5k2/8/6K1/8/6P1/8/8 w - - 6 4",
+              "lance": "g7f7",
+              "t": "rot.distant.ideia.ex1.l16"
+            },
+            {
+              "fen": "8/5k2/8/6K1/8/6P1/8/8 w - - 6 4",
+              "t": "rot.distant.ideia.ex1.l17"
+            },
+            {
+              "fen": "8/5k2/7K/8/8/6P1/8/8 b - - 7 4",
+              "lance": "g5h6",
+              "t": "rot.distant.ideia.ex1.l18"
             },
             {
               "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "salto": true,
-              "t": "rot.distant.ideia.ex1.l26"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "marcas": [
-                "e4",
-                "e8"
+              "setas": [
+                [
+                  "e8",
+                  "f8",
+                  "r"
+                ]
               ],
-              "t": "rot.distant.ideia.ex1.l27"
+              "salto": true,
+              "t": "rot.distant.ideia.ex1.l19"
             },
             {
-              "fen": "8/4k3/8/8/4K3/6P1/8/8 w - - 2 2",
-              "lance": "e8e7",
-              "t": "rot.distant.ideia.ex1.l28"
+              "fen": "5k2/8/8/5K2/8/6P1/8/8 b - - 3 2",
+              "marcas": [
+                "f5"
+              ],
+              "seq": [
+                "e8f8",
+                "e4f5"
+              ],
+              "t": "rot.distant.ideia.ex1.l20"
+            },
+            {
+              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
+              "setas": [
+                [
+                  "e8",
+                  "e7",
+                  "r"
+                ]
+              ],
+              "salto": true,
+              "t": "rot.distant.ideia.ex1.l21"
+            },
+            {
+              "fen": "8/4k3/8/4K3/8/6P1/8/8 b - - 3 2",
+              "marcas": [
+                "e5",
+                "e7"
+              ],
+              "seq": [
+                "e8e7",
+                "e4e5"
+              ],
+              "t": "rot.distant.ideia.ex1.l22"
+            },
+            {
+              "fen": "8/4k3/8/4K3/8/6P1/8/8 b - - 3 2",
+              "t": "rot.distant.ideia.ex1.l23"
             },
             {
               "fen": "8/6k1/8/6K1/8/6P1/8/8 b - - 7 4",
+              "marcas": [
+                "g5"
+              ],
               "seq": [
-                "e4e5",
                 "e7f7",
                 "e5f5",
                 "f7g7",
                 "f5g5"
               ],
-              "t": "rot.distant.ideia.ex1.l29",
-              "marcas": [
-                "g5"
-              ]
+              "t": "rot.distant.ideia.ex1.l24"
             },
             {
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
               "salto": true,
-              "t": "rot.distant.ideia.ex1.l34"
+              "t": "rot.distant.ideia.ex1.l25"
             },
             {
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-              "marcas": [
-                "f5",
-                "g5",
-                "h5"
-              ],
-              "t": "rot.distant.ideia.ex1.l35"
+              "t": "rot.distant.ideia.ex1.l26"
             },
             {
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-              "t": "rot.distant.ideia.ex1.l36"
+              "t": "rot.distant.ideia.ex1.l27"
             }
           ]
         },
@@ -456,23 +438,16 @@
             },
             {
               "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
-              "t": "rot.distant.ideia.ex2.e2"
-            },
-            {
-              "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
               "marcas": [
                 "f5",
                 "g5",
                 "h5"
               ],
-              "t": "rot.distant.ideia.ex2.e4"
+              "t": "rot.distant.ideia.ex2.e2"
             },
             {
               "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
-              "marcas": [
-                "e8"
-              ],
-              "t": "rot.distant.ideia.ex2.e5"
+              "t": "rot.distant.ideia.ex2.e3"
             }
           ],
           "pergunta": {
@@ -587,83 +562,12 @@
           "linha": [
             {
               "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
-              "marcas": [
-                "e4",
-                "e5",
-                "e6"
-              ],
               "t": "rot.distant.ideia.ex2.l1"
             },
             {
-              "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
-              "t": "rot.distant.ideia.ex2.l2"
-            },
-            {
-              "fen": "8/4k3/8/8/4K3/6P1/8/8 b - - 2 2",
-              "lance": "e3e4",
-              "t": "rot.distant.ideia.ex2.l3"
-            },
-            {
-              "fen": "8/8/4k3/8/4K3/6P1/8/8 w - - 3 3",
-              "marcas": [
-                "e4",
-                "e6"
-              ],
-              "lance": "e7e6",
-              "t": "rot.distant.ideia.ex2.l4"
-            },
-            {
-              "fen": "8/8/4k3/8/5K2/6P1/8/8 b - - 4 3",
-              "lance": "e4f4",
-              "t": "rot.distant.ideia.ex2.l5"
-            },
-            {
-              "fen": "8/8/5k2/8/5K2/6P1/8/8 w - - 5 4",
-              "marcas": [
-                "f4",
-                "f6"
-              ],
-              "lance": "e6f6",
-              "t": "rot.distant.ideia.ex2.l6"
-            },
-            {
-              "fen": "8/8/5k2/8/5KP1/8/8/8 b - - 0 4",
-              "lance": "g3g4",
-              "t": "rot.distant.ideia.ex2.l7"
-            },
-            {
-              "fen": "8/8/6k1/8/5KP1/8/8/8 w - - 1 5",
-              "marcas": [
-                "g6"
-              ],
-              "lance": "f6g6",
-              "t": "rot.distant.ideia.ex2.l8"
-            },
-            {
-              "fen": "8/8/6k1/8/5KP1/8/8/8 w - - 1 5",
-              "marcas": [
-                "f5",
-                "g5",
-                "h5"
-              ],
-              "t": "rot.distant.ideia.ex2.l9"
-            },
-            {
-              "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
-              "salto": true,
-              "t": "rot.distant.ideia.ex2.l10"
-            },
-            {
               "fen": "8/4k3/8/8/5K2/6P1/8/8 b - - 2 2",
-              "setas": [
-                [
-                  "f4",
-                  "f5",
-                  "r"
-                ]
-              ],
               "lance": "e3f4",
-              "t": "rot.distant.ideia.ex2.l11"
+              "t": "rot.distant.ideia.ex2.l2"
             },
             {
               "fen": "8/8/5k2/8/5K2/6P1/8/8 w - - 3 3",
@@ -672,31 +576,33 @@
                 "f6"
               ],
               "lance": "e7f6",
-              "t": "rot.distant.ideia.ex2.l12"
+              "t": "rot.distant.ideia.ex2.l3"
             },
             {
-              "fen": "8/8/5k2/8/5K2/6P1/8/8 w - - 3 3",
-              "t": "rot.distant.ideia.ex2.l13"
-            },
-            {
-              "fen": "8/5k2/8/8/5K2/6P1/8/8 w - - 3 3",
+              "fen": "8/4k3/8/8/5K2/6P1/8/8 b - - 2 2",
               "setas": [
                 [
-                  "f4",
-                  "f5",
-                  "g"
+                  "e7",
+                  "f7",
+                  "r"
                 ]
               ],
               "salto": true,
-              "t": "rot.distant.ideia.ex2.l14"
+              "t": "rot.distant.ideia.ex2.l4"
+            },
+            {
+              "fen": "8/5k2/8/8/5K2/6P1/8/8 w - - 3 3",
+              "marcas": [
+                "f5",
+                "f6"
+              ],
+              "lance": "e7f7",
+              "t": "rot.distant.ideia.ex2.l5"
             },
             {
               "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 4 3",
-              "marcas": [
-                "f5"
-              ],
               "lance": "f4f5",
-              "t": "rot.distant.ideia.ex2.l15"
+              "t": "rot.distant.ideia.ex2.l6"
             },
             {
               "fen": "8/8/5k2/8/5K2/6P1/8/8 w - - 3 3",
@@ -705,19 +611,54 @@
                 "f6"
               ],
               "salto": true,
-              "t": "rot.distant.ideia.ex2.l16"
+              "t": "rot.distant.ideia.ex2.l7"
+            },
+            {
+              "fen": "8/8/5k2/8/5KP1/8/8/8 b - - 0 3",
+              "lance": "g3g4",
+              "t": "rot.distant.ideia.ex2.l8"
+            },
+            {
+              "fen": "8/8/6k1/8/5KP1/8/8/8 w - - 1 4",
+              "lance": "f6g6",
+              "t": "rot.distant.ideia.ex2.l9"
+            },
+            {
+              "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
+              "setas": [
+                [
+                  "e3",
+                  "e4",
+                  "r"
+                ]
+              ],
+              "salto": true,
+              "t": "rot.distant.ideia.ex2.l10"
+            },
+            {
+              "fen": "8/8/4k3/8/4K3/6P1/8/8 w - - 3 3",
+              "marcas": [
+                "e4",
+                "e6"
+              ],
+              "seq": [
+                "e3e4",
+                "e7e6"
+              ],
+              "t": "rot.distant.ideia.ex2.l11"
+            },
+            {
+              "fen": "8/8/4k3/8/4K3/6P1/8/8 w - - 3 3",
+              "t": "rot.distant.ideia.ex2.l12"
             },
             {
               "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
               "salto": true,
-              "t": "rot.distant.ideia.ex2.l17"
+              "t": "rot.distant.ideia.ex2.l13"
             },
             {
               "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
-              "marcas": [
-                "g6"
-              ],
-              "t": "rot.distant.ideia.ex2.l18"
+              "t": "rot.distant.ideia.ex2.l14"
             },
             {
               "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
@@ -731,428 +672,272 @@
       "id": "demos",
       "exemplos": [
         {
-          "id": "fileiraAbaixo",
-          "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
+          "id": "cincoCasas",
+          "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.1",
-              "marcas": [
-                "g2"
-              ]
-            },
-            {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.2",
+              "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
               "marcas": [
                 "f4",
                 "g4",
                 "h4"
-              ]
+              ],
+              "t": "rot.distant.demos.cincoCasas.1"
+            },
+            {
+              "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
+              "t": "rot.distant.demos.cincoCasas.2"
             }
           ],
           "linha": [
             {
-              "fen": "8/4k3/8/8/8/4K3/6P1/8 b - - 1 1",
-              "t": "rot.distant.demos.fileiraAbaixo.3",
-              "lance": "d2e3",
+              "fen": "4k3/8/8/8/8/8/4K1P1/8 b - - 1 1",
               "marcas": [
-                "e3",
-                "e7"
-              ]
+                "e2",
+                "e8"
+              ],
+              "lance": "e1e2",
+              "t": "rot.distant.demos.cincoCasas.3"
             },
             {
-              "fen": "8/4k3/8/8/8/4K3/6P1/8 b - - 1 1",
-              "t": "rot.distant.demos.fileiraAbaixo.4",
+              "fen": "8/4k3/8/8/8/8/4K1P1/8 w - - 2 2",
+              "lance": "e8e7",
+              "t": "rot.distant.demos.cincoCasas.4"
+            },
+            {
+              "fen": "8/4k3/8/8/8/4K3/6P1/8 b - - 3 2",
+              "lance": "e2e3",
+              "t": "rot.distant.demos.cincoCasas.5"
+            },
+            {
+              "fen": "8/8/4k3/8/8/4K3/6P1/8 w - - 4 3",
+              "lance": "e7e6",
+              "t": "rot.distant.demos.cincoCasas.6"
+            },
+            {
+              "fen": "8/8/4k3/8/4K3/8/6P1/8 b - - 5 3",
               "marcas": [
                 "e4",
-                "e5",
                 "e6"
-              ]
+              ],
+              "lance": "e3e4",
+              "t": "rot.distant.demos.cincoCasas.7"
             },
             {
-              "fen": "8/5k2/8/8/8/4K3/6P1/8 w - - 2 2",
-              "t": "rot.distant.demos.fileiraAbaixo.5",
-              "lance": "e7f7"
+              "fen": "8/8/4k3/8/4K3/8/6P1/8 b - - 5 3",
+              "t": "rot.distant.demos.cincoCasas.8"
             },
             {
-              "fen": "8/5k2/8/8/5K2/8/6P1/8 b - - 3 2",
-              "t": "rot.distant.demos.fileiraAbaixo.6",
-              "lance": "e3f4",
+              "fen": "8/8/5k2/8/4K3/8/6P1/8 w - - 6 4",
+              "lance": "e6f6",
+              "t": "rot.distant.demos.cincoCasas.9"
+            },
+            {
+              "fen": "8/8/5k2/8/5K2/8/6P1/8 b - - 7 4",
               "marcas": [
                 "f4"
-              ]
-            },
-            {
-              "fen": "8/8/6k1/8/5K2/8/6P1/8 w - - 4 3",
-              "t": "rot.distant.demos.fileiraAbaixo.7",
-              "lance": "f7g6",
-              "setas": [
-                [
-                  "g6",
-                  "g4",
-                  "b"
-                ]
-              ]
-            },
-            {
-              "fen": "8/8/6k1/8/6K1/8/6P1/8 b - - 5 3",
-              "t": "rot.distant.demos.fileiraAbaixo.8",
-              "lance": "f4g4",
-              "marcas": [
-                "g4",
-                "g6"
-              ]
-            },
-            {
-              "fen": "8/8/6k1/8/6K1/8/6P1/8 b - - 5 3",
-              "t": "rot.distant.demos.fileiraAbaixo.9"
-            },
-            {
-              "fen": "6k1/8/6K1/8/8/8/6P1/8 w - - 14 8",
-              "seq": [
-                "g6h7",
-                "g4h5",
-                "h7g7",
-                "h5g5",
-                "g7h7",
-                "g5f6",
-                "h7h8",
-                "f6g6",
-                "h8g8"
               ],
-              "t": "rot.distant.demos.fileiraAbaixo.10"
+              "lance": "e4f4",
+              "t": "rot.distant.demos.cincoCasas.10"
             },
             {
-              "fen": "6Q1/5K1k/8/8/8/8/8/8 b - - 0 14",
-              "t": "rot.distant.demos.fileiraAbaixo.10b",
-              "seq": [
-                "g2g3",
-                "g8h8",
-                "g3g4",
-                "h8g8",
-                "g4g5",
-                "g8h8",
-                "g6f7",
-                "h8h7",
-                "g5g6",
-                "h7h8",
-                "g6g7",
-                "h8h7",
-                "g7g8q"
-              ]
+              "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
+              "salto": true,
+              "t": "rot.distant.demos.cincoCasas.11"
             },
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.16",
-              "salto": true
-            },
-            {
-              "fen": "8/4k3/8/8/6P1/8/3K4/8 b - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.17",
-              "lance": "g2g4",
-              "setas": [
-                [
-                  "g2",
-                  "g4",
-                  "r"
-                ]
-              ]
-            },
-            {
-              "fen": "8/4k3/8/8/6P1/8/3K4/8 b - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.18",
-              "marcas": [
-                "f6",
-                "g6",
-                "h6"
-              ]
-            },
-            {
-              "fen": "8/8/5k2/8/6P1/8/3K4/8 w - - 1 2",
-              "t": "rot.distant.demos.fileiraAbaixo.19",
-              "lance": "e7f6"
-            },
-            {
-              "fen": "8/8/5k2/8/6P1/4K3/8/8 b - - 2 2",
-              "t": "rot.distant.demos.fileiraAbaixo.20",
-              "lance": "d2e3"
-            },
-            {
-              "fen": "8/8/8/6k1/6P1/4K3/8/8 w - - 3 3",
-              "t": "rot.distant.demos.fileiraAbaixo.21",
-              "lance": "f6g5",
-              "marcas": [
-                "g5"
-              ]
-            },
-            {
-              "fen": "8/8/8/6k1/6P1/5K2/8/8 b - - 4 3",
-              "t": "rot.distant.demos.fileiraAbaixo.22",
-              "lance": "e3f3"
-            },
-            {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.23",
-              "salto": true
-            },
-            {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
-              "t": "rot.distant.demos.fileiraAbaixo.24",
-              "marcas": [
-                "f4",
-                "g4",
-                "h4"
-              ]
+              "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
+              "t": "rot.distant.demos.cincoCasas.12"
             }
           ]
         },
         {
           "id": "tempo",
-          "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
+          "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
+              "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
               "t": "rot.distant.demos.tempo.1"
             },
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
+              "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
+              "marcas": [
+                "e4",
+                "f4",
+                "g4"
+              ],
               "t": "rot.distant.demos.tempo.2"
             }
           ],
           "linha": [
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.29"
-            },
-            {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.24"
-            },
-            {
-              "fen": "8/8/4k3/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.3",
-              "lance": "e7e6",
+              "fen": "8/8/2k5/8/8/8/2K2P2/8 w - - 1 2",
               "marcas": [
-                "f4",
-                "g4",
-                "h4"
-              ]
+                "c2",
+                "c6"
+              ],
+              "lance": "d7c6",
+              "t": "rot.distant.demos.tempo.3"
             },
             {
-              "fen": "8/8/4k3/8/8/8/3K2P1/8 w - - 1 2",
+              "fen": "8/8/2k5/8/8/8/2K2P2/8 w - - 1 2",
               "t": "rot.distant.demos.tempo.4"
             },
             {
-              "fen": "8/8/4k3/8/8/4K3/6P1/8 b - - 2 2",
-              "t": "rot.distant.demos.tempo.5",
-              "lance": "d2e3"
+              "fen": "8/8/2k5/8/8/3K4/5P2/8 b - - 2 2",
+              "lance": "c2d3",
+              "t": "rot.distant.demos.tempo.5"
             },
             {
-              "fen": "8/8/4k3/8/8/4K3/6P1/8 b - - 2 2",
-              "t": "rot.distant.demos.tempo.25",
-              "marcas": [
-                "e4",
-                "e5"
-              ]
-            },
-            {
-              "fen": "8/8/8/4k3/8/4K3/6P1/8 w - - 3 3",
-              "t": "rot.distant.demos.tempo.6",
-              "lance": "e6e5",
-              "marcas": [
-                "e3",
-                "e5"
-              ]
-            },
-            {
-              "fen": "8/8/5k2/8/5KP1/8/8/8 w - - 5 7",
-              "seq": [
-                "e3f3",
-                "e5f5",
-                "g2g4",
-                "f5g5",
-                "f3g3",
-                "g5g6",
-                "g3f4",
-                "g6f6"
-              ],
-              "t": "rot.distant.demos.tempo.7",
-              "marcas": [
-                "f4",
-                "f6"
-              ]
-            },
-            {
-              "fen": "8/8/5k2/8/5KP1/8/8/8 w - - 5 7",
-              "t": "rot.distant.demos.tempo.15"
-            },
-            {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.26",
-              "salto": true
-            },
-            {
-              "fen": "8/8/3k4/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.27",
-              "lance": "e7d6"
-            },
-            {
-              "fen": "8/8/3k4/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.28",
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
               "marcas": [
                 "d3",
-                "d4",
                 "d5"
-              ]
+              ],
+              "lance": "c6d5",
+              "t": "rot.distant.demos.tempo.6"
             },
             {
-              "fen": "8/8/3k4/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.30"
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
+              "t": "rot.distant.demos.tempo.7"
             },
             {
-              "fen": "8/8/3k4/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.31"
-            },
-            {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.16",
-              "salto": true
-            },
-            {
-              "fen": "8/5k2/8/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.17",
-              "lance": "e7f7",
+              "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
               "setas": [
                 [
+                  "d7",
                   "e7",
-                  "f7",
                   "r"
                 ]
-              ]
+              ],
+              "salto": true,
+              "t": "rot.distant.demos.tempo.8"
             },
             {
-              "fen": "8/5k2/8/8/8/8/3K2P1/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.18",
+              "fen": "8/8/5k2/8/4K3/8/5P2/8 b - - 4 3",
               "marcas": [
-                "f4",
-                "g4",
-                "h4"
-              ]
+                "e4"
+              ],
+              "seq": [
+                "d7e7",
+                "c2d3",
+                "e7f6",
+                "d3e4"
+              ],
+              "t": "rot.distant.demos.tempo.9"
             },
             {
-              "fen": "8/5k2/8/8/8/4K3/6P1/8 b - - 2 2",
-              "t": "rot.distant.demos.tempo.19",
-              "lance": "d2e3"
+              "fen": "8/8/5k2/8/4K3/8/5P2/8 b - - 4 3",
+              "t": "rot.distant.demos.tempo.10"
             },
             {
-              "fen": "8/8/6k1/8/8/4K3/6P1/8 w - - 3 3",
-              "t": "rot.distant.demos.tempo.20",
-              "lance": "f7g6"
+              "fen": "8/3k4/8/8/8/8/2K2P2/8 w - - 0 1",
+              "salto": true,
+              "t": "rot.distant.demos.tempo.11"
             },
             {
-              "fen": "8/8/6k1/8/5K2/8/6P1/8 b - - 4 3",
-              "t": "rot.distant.demos.tempo.21",
-              "lance": "e3f4",
+              "fen": "8/3k4/8/8/8/3K4/5P2/8 b - - 1 1",
               "marcas": [
-                "f4"
-              ]
+                "d3",
+                "d7"
+              ],
+              "lance": "c2d3",
+              "t": "rot.distant.demos.tempo.12"
             },
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.22",
-              "salto": true
+              "fen": "8/3k4/8/8/8/3K4/5P2/8 b - - 1 1",
+              "t": "rot.distant.demos.tempo.13"
             },
             {
-              "fen": "8/4k3/8/8/8/8/3K2P1/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.23"
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
+              "marcas": [
+                "d3",
+                "d5"
+              ],
+              "salto": true,
+              "t": "rot.distant.demos.tempo.14"
+            },
+            {
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
+              "t": "rot.distant.demos.tempo.15"
             }
           ]
         },
         {
           "id": "erroAtacante",
-          "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
+          "fen": "8/3k4/8/8/8/8/2K2P2/8 w - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
           "entrada": [
             {
-              "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
-              "t": "rot.distant.demos.erroAtacante.1",
-              "lance": "d2e2",
+              "fen": "8/3k4/8/8/8/8/3K1P2/8 b - - 1 1",
               "setas": [
                 [
+                  "c2",
                   "d2",
-                  "e2",
                   "r"
                 ]
-              ]
+              ],
+              "lance": "c2d2",
+              "t": "rot.distant.demos.erroAtacante.1"
             },
             {
-              "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
-              "t": "rot.distant.demos.erroAtacante.2",
+              "fen": "8/3k4/8/8/8/8/3K1P2/8 b - - 1 1",
               "marcas": [
-                "e3",
-                "e4",
-                "e5",
-                "e6"
-              ]
+                "d3",
+                "d4",
+                "d5",
+                "d6"
+              ],
+              "t": "rot.distant.demos.erroAtacante.2"
             }
           ],
           "linha": [
             {
-              "fen": "8/4k3/8/8/8/8/4K1P1/8 b - - 1 1",
+              "fen": "8/3k4/8/8/8/8/3K1P2/8 b - - 1 1",
               "t": "rot.distant.demos.erroAtacante.3"
             },
             {
-              "fen": "8/8/4k3/8/8/8/4K1P1/8 w - - 2 2",
-              "t": "rot.distant.demos.erroAtacante.4",
-              "lance": "e7e6",
+              "fen": "8/8/3k4/8/8/8/3K1P2/8 w - - 2 2",
               "marcas": [
-                "e3",
-                "e4",
-                "e5"
-              ]
+                "d2",
+                "d6"
+              ],
+              "lance": "d7d6",
+              "t": "rot.distant.demos.erroAtacante.4"
             },
             {
-              "fen": "8/8/4k3/8/8/8/4K1P1/8 w - - 2 2",
+              "fen": "8/8/3k4/8/8/8/3K1P2/8 w - - 2 2",
               "t": "rot.distant.demos.erroAtacante.5"
             },
             {
-              "fen": "8/8/4k3/8/8/4K3/6P1/8 b - - 3 2",
-              "t": "rot.distant.demos.erroAtacante.6",
-              "lance": "e2e3"
+              "fen": "8/8/3k4/8/8/3K4/5P2/8 b - - 3 2",
+              "lance": "d2d3",
+              "t": "rot.distant.demos.erroAtacante.6"
             },
             {
-              "fen": "8/8/8/4k3/8/4K3/6P1/8 w - - 4 3",
-              "t": "rot.distant.demos.erroAtacante.7",
-              "lance": "e6e5",
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 4 3",
               "marcas": [
-                "e3",
-                "e5"
-              ]
+                "d3",
+                "d5"
+              ],
+              "lance": "d6d5",
+              "t": "rot.distant.demos.erroAtacante.7"
             },
             {
-              "fen": "8/8/8/4k3/8/4K3/6P1/8 w - - 4 3",
-              "t": "rot.distant.demos.erroAtacante.14",
-              "marcas": [
-                "e3",
-                "e5"
-              ]
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 4 3",
+              "t": "rot.distant.demos.erroAtacante.8"
             },
             {
-              "fen": "8/8/8/4k3/8/4K3/6P1/8 w - - 4 3",
-              "t": "rot.distant.demos.erroAtacante.ponte",
-              "marcas": [
-                "e3",
-                "e5"
-              ]
+              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 4 3",
+              "t": "rot.distant.demos.erroAtacante.ponte"
             }
           ]
         }
@@ -1174,19 +959,36 @@
             "fim": "rot.distant.pratica.ataque.fim",
             "erros": {
               "f3e3": "rot.distant.pratica.ataque.err.f3e3",
+              "f3e2": "rot.distant.pratica.ataque.err.f3e2",
               "f3f4": "rot.distant.pratica.ataque.err.f3f4",
               "f3g4": "rot.distant.pratica.ataque.err.f3g4",
               "f3g3": "rot.distant.pratica.ataque.err.f3g3",
               "f3g2": "rot.distant.pratica.ataque.err.f3g2",
               "f3f2": "rot.distant.pratica.ataque.err.f3f2",
-              "f3e2": "rot.distant.pratica.ataque.err.f3e2",
               "b3b4": "rot.distant.pratica.ataque.err.b3b4"
+            },
+            "errosPos": {
+              "8/3k4/8/3K4/8/1P6/8/8 w - - 4 3": {
+                "d5c4": "rot.distant.pratica.ataque.v1.err.d5c4"
+              },
+              "2k5/8/8/8/3K4/1P6/8/8 w - - 4 3": {
+                "b3b4": "rot.distant.pratica.ataque.v2.err.b3b4"
+              },
+              "1k6/8/8/8/2K5/1P6/8/8 w - - 6 4": {
+                "b3b4": "rot.distant.pratica.ataque.v3.err.b3b4"
+              },
+              "8/1k6/8/2K5/1P6/8/8/8 w - - 1 5": {
+                "b4b5": "rot.distant.pratica.ataque.v4.err.b4b5"
+              },
+              "8/k7/2K5/1P6/8/8/8/8 w - - 1 8": {
+                "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
+              }
             }
           }
         },
         {
           "id": "defesa",
-          "fen": "8/1k6/8/8/8/8/2K3P1/8 b - - 0 1",
+          "fen": "4k3/8/8/8/8/8/1P6/3K4 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
@@ -1196,13 +998,10 @@
             "limite": 40,
             "fim": "rot.distant.pratica.defesa.fim",
             "erros": {
-              "b7c7": "rot.distant.pratica.defesa.err.b7c7",
-              "b7b6": "rot.distant.pratica.defesa.err.b7b6",
-              "b7b8": "rot.distant.pratica.defesa.err.b7b8",
-              "b7c8": "rot.distant.pratica.defesa.err.b7c8",
-              "b7a8": "rot.distant.pratica.defesa.err.b7a8",
-              "b7a7": "rot.distant.pratica.defesa.err.b7a7",
-              "b7a6": "rot.distant.pratica.defesa.err.b7a6"
+              "e8d8": "rot.distant.pratica.defesa.err.e8d8",
+              "e8e7": "rot.distant.pratica.defesa.err.e8e7",
+              "e8f7": "rot.distant.pratica.defesa.err.e8f7",
+              "e8f8": "rot.distant.pratica.defesa.err.e8f8"
             }
           }
         }

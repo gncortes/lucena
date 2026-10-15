@@ -30,5 +30,9 @@
   "practice": "Now the real ending: king on d2, pawn on g2, and the black king waiting. Count the key squares, lead with the king and queen the pawn. Pick your pace and go.",
   "part.diagonal.title": "Diagonal opposition",
   "part.diagonal.summary": "If going straight ahead hands the opposition to the other king, come in on the diagonal with one square between the kings; on the reply, stand face to face and he gives way.",
-  "key.diagonal": "The opposition works along the diagonal too: the white king stands on the same diagonal as the black king and, step by step, turns it into face-to-face opposition."
+  "key.diagonal": "The opposition works along the diagonal too: the white king stands on the same diagonal as the black king and, step by step, turns it into face-to-face opposition.",
+  "ex.e20": "Play White and find the best move. The kings are on different files, and the black king watches the pawn's path.",
+  "ex.e20.hint": "The pawn's key squares are e4, f4 and g4. Your king does not need to go to the black king's file: the opposition also works on a diagonal.",
+  "ex.e20.solution": "1.Kd5! The kings stand on a diagonal, with e6 between them, and Black to move: the diagonal opposition is yours. After 1...Kf6, 2.Ke4! The white king reaches e4, a key square, and the pawn will promote. Any other first move lets the black king get there first and draws; pushing the pawn, with 1.f3? or 1.f4?, too, because the pawn goes ahead of the king.",
+  "ex.e20.r1": "1...Kf6. The black king approaches the pawn and wants to close your king's path to e4, f4 and g4."
 }

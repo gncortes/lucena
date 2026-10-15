@@ -5,8 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/use_cases/move_tree.dart';
 
-/// O ex1 da oposição distante tem saltos sem lance: "imagine g4" (vai a uma
-/// posição a um lance da linha), a volta a 2.Rf5 e a volta a 1.Re4.
+/// O ex1 da oposição distante tem saltos sem lance: a volta de "e se f4?" a
+/// 1...Rf7, a volta a 2.Rf5 e as voltas a 1.Re4 para as outras defesas.
 void main() {
   final real = LessonScript.fromJson(
     jsonDecode(
@@ -18,16 +18,15 @@ void main() {
   final tree = MoveTree.build(ex1);
   MoveNode at(String id) => tree.node(id)!;
 
-  test('"imagine g4" vira a variante de 2.Rf5, com 2...Rg6 nela', () {
-    final g4 = at('d3e4-e8f7-g3g4');
-    expect(g4.san, 'g4');
-    expect(g4.number, 2);
-    expect(g4.variant, isTrue);
-    expect(at('d3e4-e8f7-g3g4-f7g6').variant, isTrue);
+  test('"e se f4?": 2.Rf4 e 2...Rf6 ficam na variante de 2.Rf5', () {
+    final f4 = at('d3e4-e8f7-e4f4');
+    expect(f4.san, 'Kf4');
+    expect(f4.number, 2);
+    expect(f4.variant, isTrue);
+    expect(at('d3e4-e8f7-e4f4-f7f6').variant, isTrue);
     expect(at('d3e4-e8f7-e4f5').variant, isFalse);
-    // O passo do salto joga o g4: é o lance atual dele.
-    expect(tree.of(ex1.line[13]).map((n) => n.id), ['d3e4-e8f7-g3g4']);
-    expect(tree.of(ex1.line[14]).single.id, 'd3e4-e8f7-g3g4-f7g6');
+    // O passo da variante joga os dois lances; o último é o atual.
+    expect(tree.of(ex1.line[8]).last.id, 'd3e4-e8f7-e4f4-f7f6');
   });
 
   test('a volta a 2.Rf5 não repete o lance e segue a principal', () {
@@ -37,8 +36,9 @@ void main() {
     expect(tree.of(kg7.step).map((n) => n.id), contains(kg7.id));
   });
 
-  test('a volta a 1.Re4 abre 1...Re7 como irmão de 1...Rf7', () {
+  test('as voltas a 1.Re4 abrem 1...Rf8 e 1...Re7 como irmãos de 1...Rf7', () {
     expect(at('d3e4-e8f7').variant, isFalse);
     expect(at('d3e4-e8e7').variant, isTrue);
+    expect(at('d3e4-e8f8').variant, isTrue);
   });
 }

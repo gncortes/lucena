@@ -30,5 +30,9 @@
   "practice": "Agora o final de verdade: rei em d2, peão em g2, e o rei preto esperando. Conte as casas-chave, leve o rei na frente e coroe. Escolha o ritmo e vá.",
   "part.diagonal.title": "Oposição diagonal",
   "part.diagonal.summary": "Se ir de frente dá a oposição ao outro rei, entre pela diagonal com uma casa entre os reis; na resposta, fique de frente e ele cede.",
-  "key.diagonal": "A oposição também vale pela diagonal: o rei branco fica na mesma diagonal do rei preto e, passo a passo, a transforma em oposição frente a frente."
+  "key.diagonal": "A oposição também vale pela diagonal: o rei branco fica na mesma diagonal do rei preto e, passo a passo, a transforma em oposição frente a frente.",
+  "ex.e20": "Jogue de brancas e encontre o melhor lance. Os reis estão em colunas diferentes, e o rei preto vigia o caminho do peão.",
+  "ex.e20.hint": "As casas-chave do peão são e4, f4 e g4. Seu rei não precisa ir à coluna do rei preto: a oposição também vale em diagonal.",
+  "ex.e20.solution": "1.Rd5! Os reis ficam em diagonal, com e6 entre eles, e as pretas na vez: a oposição diagonal é sua. Depois de 1...Rf6, 2.Re4! O rei branco chega a e4, uma casa-chave, e o peão vai coroar. Qualquer outro primeiro lance deixa o rei preto chegar antes e empata; avançar o peão, com 1.f3? ou 1.f4?, também, porque o peão sai na frente do rei.",
+  "ex.e20.r1": "1...Rf6. O rei preto se aproxima do peão e quer fechar o caminho do seu rei até e4, f4 e g4."
 }

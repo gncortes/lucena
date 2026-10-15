@@ -204,7 +204,7 @@ void main() {
           }
         }
       }
-      expect(count, 15);
+      expect(count, 12);
     }
   });
 
