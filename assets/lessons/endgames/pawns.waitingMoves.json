@@ -29,7 +29,7 @@
   "exercises": [
     {
       "id": "e20",
-      "stars": 2,
+      "stars": 3,
       "fen": "8/8/8/4p3/1p6/1P6/3K2k1/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
@@ -59,7 +59,7 @@
     },
     {
       "id": "e21",
-      "stars": 2,
+      "stars": 3,
       "fen": "8/1p6/8/8/1P6/1k1K4/8/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
@@ -90,22 +90,6 @@
           "teach": "c2b2",
           "accept": [
             "c2b2"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e22",
-      "stars": 2,
-      "fen": "8/7k/p6P/6K1/P7/8/8/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "capitulo": "fixedTarget",
-      "line": [
-        {
-          "teach": "a4a5",
-          "accept": [
-            "a4a5"
           ]
         }
       ]
@@ -142,7 +126,7 @@
     },
     {
       "id": "e15",
-      "stars": 1,
+      "stars": 2,
       "fen": "8/8/1k5p/3p4/1K1P4/8/7P/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -242,7 +226,7 @@
       ]
     }
   ],
-  "passScore": 9,
+  "passScore": 10,
   "keyPositions": [
     {
       "id": "grigoriev",
