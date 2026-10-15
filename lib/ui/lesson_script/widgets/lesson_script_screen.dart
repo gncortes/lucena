@@ -407,8 +407,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           )
         : null;
     return ExerciseActions(
-      // Mesmo fundo da tela, só com a linha em cima (Gabriel, 14/10/2026;
-      // canvas `T70-etapa1-estados`, F2).
+      // Mesmo fundo da tela, sem linha em cima (Gabriel, 14/10/2026).
       color: Theme.of(context).scaffoldBackgroundColor,
       // O voltar redondo da lição (`lesson_screen.dart`, Gabriel 14/10/2026):
       // só aparece quando há para onde voltar.
