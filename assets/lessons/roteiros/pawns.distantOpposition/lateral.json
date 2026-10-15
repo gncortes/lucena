@@ -628,14 +628,12 @@
        ]
       },
       {
-       "fen": "8/8/8/pK2k3/8/8/2P5/8 w - - 4 50",
-       "t": "rot.lateral.demos.euwe.6",
-       "lance": "f5e5"
-      },
-      {
        "fen": "8/8/8/K3k3/8/8/2P5/8 b - - 0 50",
-       "t": "rot.lateral.demos.euwe.7",
-       "lance": "b5a5"
+       "t": "rot.lateral.demos.euwe.6",
+       "seq": [
+        "f5e5",
+        "b5a5"
+       ]
       },
       {
        "fen": "8/8/8/K7/3k4/8/2P5/8 w - - 1 51",
@@ -655,14 +653,12 @@
        ]
       },
       {
-       "fen": "8/8/8/3k4/1K6/8/2P5/8 w - - 3 52",
-       "t": "rot.lateral.demos.euwe.10",
-       "lance": "d4d5"
-      },
-      {
        "fen": "8/8/8/1K1k4/8/8/2P5/8 b - - 4 52",
        "t": "rot.lateral.demos.euwe.11",
-       "lance": "b4b5",
+       "seq": [
+        "d4d5",
+        "b4b5"
+       ],
        "marcas": [
         "b5",
         "d5"
@@ -692,27 +688,15 @@
        "salto": true
       },
       {
-       "fen": "8/8/8/p1K2k2/8/8/2P5/8 b - - 3 49",
+       "fen": "8/8/8/p1K1k3/8/8/2P5/8 w - - 4 50",
        "t": "rot.lateral.demos.euwe.15",
-       "lance": "c4c5",
+       "seq": [
+        "c4c5",
+        "f5e5"
+       ],
        "marcas": [
         "d5",
         "e5"
-       ],
-       "setas": [
-        [
-         "c4",
-         "c5",
-         "r"
-        ]
-       ]
-      },
-      {
-       "fen": "8/8/8/p1K1k3/8/8/2P5/8 w - - 4 50",
-       "t": "rot.lateral.demos.euwe.16",
-       "lance": "f5e5",
-       "marcas": [
-        "d5"
        ]
       },
       {
@@ -780,24 +764,20 @@
        ]
       },
       {
-       "fen": "8/5k2/7p/8/6PP/4K3/8/8 b - - 4 56",
-       "t": "rot.lateral.demos.carlsenSo.5",
-       "lance": "f3e3"
-      },
-      {
        "fen": "8/4k3/7p/8/6PP/4K3/8/8 w - - 5 57",
-       "t": "rot.lateral.demos.carlsenSo.6",
-       "lance": "f7e7"
-      },
-      {
-       "fen": "8/4k3/7p/8/6PP/3K4/8/8 b - - 6 57",
-       "t": "rot.lateral.demos.carlsenSo.7",
-       "lance": "e3d3"
+       "t": "rot.lateral.demos.carlsenSo.5",
+       "seq": [
+        "f3e3",
+        "f7e7"
+       ]
       },
       {
        "fen": "8/3k4/7p/8/6PP/3K4/8/8 w - - 7 58",
-       "t": "rot.lateral.demos.carlsenSo.8",
-       "lance": "e7d7"
+       "t": "rot.lateral.demos.carlsenSo.7",
+       "seq": [
+        "e3d3",
+        "e7d7"
+       ]
       },
       {
        "fen": "8/3k4/7p/8/2K3PP/8/8/8 b - - 8 58",
@@ -813,14 +793,12 @@
        ]
       },
       {
-       "fen": "8/8/4k2p/8/3K2PP/8/8/8 b - - 10 59",
-       "t": "rot.lateral.demos.carlsenSo.11",
-       "lance": "c4d4"
-      },
-      {
        "fen": "8/8/3k3p/8/3K2PP/8/8/8 w - - 11 60",
-       "t": "rot.lateral.demos.carlsenSo.12",
-       "lance": "e6d6",
+       "t": "rot.lateral.demos.carlsenSo.11",
+       "seq": [
+        "c4d4",
+        "e6d6"
+       ],
        "marcas": [
         "d4",
         "d6"
@@ -846,24 +824,11 @@
        "salto": true
       },
       {
-       "fen": "8/8/6kp/8/6PP/5K2/8/8 w - - 3 56",
-       "t": "rot.lateral.demos.carlsenSo.16",
-       "lance": "f6g6",
-       "setas": [
-        [
-         "f6",
-         "g6",
-         "r"
-        ]
-       ]
-      },
-      {
        "fen": "8/8/6kp/8/4K1PP/8/8/8 b - - 4 56",
        "t": "rot.lateral.demos.carlsenSo.17",
-       "lance": "f3e4",
-       "marcas": [
-        "d5",
-        "f5"
+       "seq": [
+        "f6g6",
+        "f3e4"
        ]
       },
       {
@@ -872,24 +837,11 @@
        "salto": true
       },
       {
-       "fen": "8/8/7p/4k3/6PP/5K2/8/8 w - - 3 56",
-       "t": "rot.lateral.demos.carlsenSo.19",
-       "lance": "f6e5",
-       "setas": [
-        [
-         "f6",
-         "e5",
-         "r"
-        ]
-       ]
-      },
-      {
        "fen": "8/8/7p/4k3/6PP/4K3/8/8 b - - 4 56",
        "t": "rot.lateral.demos.carlsenSo.20",
-       "lance": "f3e3",
-       "marcas": [
-        "e3",
-        "e5"
+       "seq": [
+        "f6e5",
+        "f3e3"
        ]
       },
       {
@@ -940,12 +892,19 @@
         "e2e4": "rot.lateral.pratica.ataque.v3.err.e2e4",
         "d4e3": "rot.lateral.pratica.ataque.v3.err.d4e3"
        },
-       "8/8/4k3/8/3K4/4P3/8/8 w - - 1 5": {
-        "e3e4": "rot.lateral.pratica.ataque.v4.err.e3e4"
-       },
        "8/8/8/4k3/8/3K4/4P3/8 w - - 8 5": {
         "e2e4": "rot.lateral.pratica.ataque.v4.err.e2e4",
         "e2e3": "rot.lateral.pratica.ataque.v4.err.e2e3"
+       },
+       "8/8/5k2/8/3K4/4P3/8/8 w - - 2 5": {
+        "e3e4": "rot.lateral.pratica.ataque.v4.err.e3e4",
+        "d4e4": "rot.lateral.pratica.ataque.v4.err.d4e4"
+       },
+       "8/4k3/8/3K4/8/4P3/8/8 w - - 4 6": {
+        "e3e4": "rot.lateral.pratica.ataque.v5.err.e3e4"
+       },
+       "8/3k4/8/4K3/8/4P3/8/8 w - - 6 7": {
+        "e3e4": "rot.lateral.pratica.ataque.v6.err.e3e4"
        }
       }
      }
@@ -969,6 +928,13 @@
        "b7a8": "rot.lateral.pratica.defesa.err.b7a8",
        "b7a7": "rot.lateral.pratica.defesa.err.b7a7",
        "b7a6": "rot.lateral.pratica.defesa.err.b7a6"
+      },
+      "errosPos": {
+       "8/8/2k5/5K2/8/8/3P4/8 b - - 1 2": {
+        "c6c5": "rot.lateral.pratica.defesa.v1.err.c6c5",
+        "c6d6": "rot.lateral.pratica.defesa.v1.err.c6d6",
+        "c6d7": "rot.lateral.pratica.defesa.v1.err.c6d7"
+       }
       }
      }
     }
