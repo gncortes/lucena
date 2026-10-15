@@ -173,7 +173,10 @@ void main() {
       // b3b4 está nos erros do roteiro, mas a fala dele cita o 1º lance.
       await cubit.onMove('b3b4');
       expect(cubit.state.phase, ScriptPhase.praticaFim);
-      expect(cubit.state.speech.single, startsWith('Com 2.b4?, as pretas'));
+      expect(
+        cubit.state.speech.single,
+        startsWith('Esse lance deixa a vitória escapar. Veja como as pretas'),
+      );
     },
   );
 

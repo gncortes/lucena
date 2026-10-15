@@ -150,6 +150,15 @@
       {
        "fen": "8/8/8/3K4/5k2/8/3P4/8 b - - 1 1",
        "marcas": [
+        "c3",
+        "e3"
+       ],
+       "t": "rot.keySquares.ideia.ex0.l0"
+      },
+      {
+       "fen": "8/8/8/3K4/5k2/8/3P4/8 b - - 1 1",
+       "marcas": [
+        "e3",
         "e4",
         "e5"
        ],
@@ -177,7 +186,19 @@
       },
       {
        "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
+       "t": "rot.keySquares.ideia.ex1.e1b"
+      },
+      {
+       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
        "t": "rot.keySquares.ideia.ex1.e2"
+      },
+      {
+       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
+       "t": "rot.keySquares.ideia.ex1.e2b"
+      },
+      {
+       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
+       "t": "rot.keySquares.ideia.ex1.e2c"
       },
       {
        "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
@@ -407,61 +428,48 @@
        "t": "rot.keySquares.ideia.ex1.l1"
       },
       {
-       "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
-       "lance": "d6e7",
+       "fen": "8/8/3k4/5K2/8/4P3/8/8 b - - 1 1",
        "t": "rot.keySquares.ideia.ex1.l2"
       },
       {
-       "fen": "8/4k3/8/4K3/8/4P3/8/8 b - - 3 2",
-       "lance": "f5e5",
+       "fen": "8/8/8/3k1K2/8/4P3/8/8 w - - 2 2",
+       "lance": "d6d5",
        "marcas": [
-        "d6",
-        "e6",
-        "f6"
+        "e4"
        ],
        "t": "rot.keySquares.ideia.ex1.l3"
       },
       {
-       "fen": "8/5k2/3K4/8/8/4P3/8/8 b - - 5 3",
-       "seq": [
-        "e7f7",
-        "e5d6"
+       "fen": "8/8/8/3k4/5K2/4P3/8/8 b - - 3 2",
+       "lance": "f5f4",
+       "marcas": [
+        "e3"
        ],
        "t": "rot.keySquares.ideia.ex1.l4"
       },
       {
-       "fen": "8/5K1k/8/8/8/4P3/8/8 w - - 10 6",
-       "seq": [
-        "f7g8",
-        "d6e7",
-        "g8h8",
-        "e7f7",
-        "h8h7"
-       ],
-       "marcas": [
-        "e8"
-       ],
+       "fen": "8/8/8/3k4/5K2/4P3/8/8 b - - 3 2",
        "t": "rot.keySquares.ideia.ex1.l5"
       },
       {
-       "fen": "4Q3/5K1k/8/8/8/8/8/8 b - - 0 10",
-       "seq": [
-        "e3e4",
-        "h7h8",
-        "e4e5",
-        "h8h7",
-        "e5e6",
-        "h7h8",
-        "e6e7",
-        "h8h7",
-        "e7e8q"
+       "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
+       "salto": true,
+       "setas": [
+        [
+         "d6",
+         "e7",
+         "b"
+        ]
        ],
        "t": "rot.keySquares.ideia.ex1.l6"
       },
       {
        "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
-       "salto": true,
        "t": "rot.keySquares.ideia.ex1.l7"
+      },
+      {
+       "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
+       "t": "rot.keySquares.ideia.ex1.l8"
       },
       {
        "fen": "8/4k3/8/5K2/4P3/8/8/8 b - - 0 2",
@@ -478,12 +486,12 @@
          "r"
         ]
        ],
-       "t": "rot.keySquares.ideia.ex1.l8"
+       "t": "rot.keySquares.ideia.ex1.l9"
       },
       {
        "fen": "8/5k2/8/5K2/4P3/8/8/8 w - - 1 3",
        "lance": "e7f7",
-       "t": "rot.keySquares.ideia.ex1.l9"
+       "t": "rot.keySquares.ideia.ex1.l10"
       },
       {
        "fen": "8/4k3/8/4K3/4P3/8/8/8 w - - 3 4",
@@ -496,11 +504,11 @@
         "e6",
         "f6"
        ],
-       "t": "rot.keySquares.ideia.ex1.l10"
+       "t": "rot.keySquares.ideia.ex1.l11"
       },
       {
        "fen": "8/4k3/8/4K3/4P3/8/8/8 w - - 3 4",
-       "t": "rot.keySquares.ideia.ex1.l11"
+       "t": "rot.keySquares.ideia.ex1.l12"
       },
       {
        "fen": "8/8/3k4/5K2/8/4P3/8/8 b - - 1 1",
@@ -510,7 +518,7 @@
         "e5",
         "f5"
        ],
-       "t": "rot.keySquares.ideia.ex1.l12"
+       "t": "rot.keySquares.ideia.ex1.l13"
       }
      ]
     },
@@ -754,36 +762,25 @@
       {
        "fen": "8/8/3k4/8/4K3/3P4/8/8 b - - 2 2",
        "lance": "f4e4",
+       "marcas": [
+        "d5",
+        "e5"
+       ],
        "t": "rot.keySquares.ideia.ex2.l2"
       },
       {
-       "fen": "8/8/4k3/8/4K3/3P4/8/8 w - - 3 3",
-       "lance": "d6e6",
-       "marcas": [
-        "d5",
-        "e5",
-        "f5"
-       ],
+       "fen": "8/8/3k4/8/4K3/3P4/8/8 b - - 2 2",
        "t": "rot.keySquares.ideia.ex2.l3"
       },
       {
-       "fen": "8/8/4k3/8/3PK3/8/8/8 b - - 0 3",
-       "lance": "d3d4",
+       "fen": "8/8/3k4/8/5K2/3P4/8/8 w - - 1 2",
+       "salto": true,
        "marcas": [
-        "c6",
-        "d6",
-        "e6"
+        "c5",
+        "d5",
+        "e5"
        ],
        "t": "rot.keySquares.ideia.ex2.l4"
-      },
-      {
-       "fen": "8/8/3k4/8/3PK3/8/8/8 w - - 1 4",
-       "lance": "e6d6",
-       "t": "rot.keySquares.ideia.ex2.l5"
-      },
-      {
-       "fen": "8/8/3k4/8/3PK3/8/8/8 w - - 1 4",
-       "t": "rot.keySquares.ideia.ex2.l6"
       }
      ]
     }
@@ -830,53 +827,21 @@
        "t": "rot.keySquares.demos.regra.3"
       },
       {
-       "fen": "8/8/2k5/8/2K5/8/2P5/8 b - - 3 2",
-       "seq": [
-        "b5c6",
-        "d4c4"
-       ],
+       "fen": "8/8/8/8/1k1K4/8/2P5/8 w - - 2 2",
+       "lance": "b5b4",
        "t": "rot.keySquares.demos.regra.4"
       },
       {
-       "fen": "8/3k4/1K6/8/8/8/2P5/8 b - - 9 5",
-       "seq": [
-        "c6d6",
-        "c4b5",
-        "d6c7",
-        "b5c5",
-        "c7d7",
-        "c5b6"
+       "fen": "8/8/8/8/1k6/3K4/2P5/8 b - - 3 2",
+       "lance": "d4d3",
+       "marcas": [
+        "c2"
        ],
        "t": "rot.keySquares.demos.regra.5"
       },
       {
-       "fen": "6k1/3K4/8/8/8/8/2P5/8 w - - 14 8",
-       "seq": [
-        "d7e8",
-        "b6c7",
-        "e8f8",
-        "c7d7",
-        "f8g8"
-       ],
-       "marcas": [
-        "c8"
-       ],
+       "fen": "8/8/8/8/1k6/3K4/2P5/8 b - - 3 2",
        "t": "rot.keySquares.demos.regra.6"
-      },
-      {
-       "fen": "2Q3k1/3K4/8/8/8/8/8/8 b - - 0 12",
-       "seq": [
-        "c2c4",
-        "g8h8",
-        "c4c5",
-        "h8g8",
-        "c5c6",
-        "g8h8",
-        "c6c7",
-        "h8g8",
-        "c7c8q"
-       ],
-       "t": "rot.keySquares.demos.regra.7"
       }
      ]
     },
@@ -951,44 +916,37 @@
    "exemplos": [
     {
      "id": "ataque",
-     "fen": "8/8/5k2/8/8/3K4/5P2/8 w - - 0 1",
+     "fen": "8/2k5/8/8/3PK3/8/8/8 w - - 0 1",
      "vira": false,
-     "objetivo": "ganhar",
-     "fim": "proximo",
+     "objetivo": "casa",
+     "casas": [
+      "c6",
+      "d6",
+      "e6"
+     ],
+     "fim": "etapa",
      "pratica": {
       "t": "rot.keySquares.pratica.ataque.enunciado",
       "maquina": "b",
       "limite": 40,
       "fim": "rot.keySquares.pratica.ataque.fim",
       "erros": {
-       "d3c2": "rot.keySquares.pratica.ataque.err.d3c2",
-       "d3c3": "rot.keySquares.pratica.ataque.err.d3c3",
-       "d3c4": "rot.keySquares.pratica.ataque.err.d3c4",
-       "d3d2": "rot.keySquares.pratica.ataque.err.d3d2",
-       "d3d4": "rot.keySquares.pratica.ataque.err.d3d4",
-       "d3e2": "rot.keySquares.pratica.ataque.err.d3e2",
-       "d3e3": "rot.keySquares.pratica.ataque.err.d3e3",
-       "f2f3": "rot.keySquares.pratica.ataque.err.f2f3",
-       "f2f4": "rot.keySquares.pratica.ataque.err.f2f4"
-      }
-     }
-    },
-    {
-     "id": "defesa",
-     "fen": "2k5/8/8/4K3/2P5/8/8/8 b - - 0 1",
-     "vira": true,
-     "objetivo": "empatar",
-     "fim": "etapa",
-     "pratica": {
-      "t": "rot.keySquares.pratica.defesa.enunciado",
-      "maquina": "w",
-      "limite": 40,
-      "fim": "rot.keySquares.pratica.defesa.fim",
-      "erros": {
-       "c8b7": "rot.keySquares.pratica.defesa.err.c8b7",
-       "c8b8": "rot.keySquares.pratica.defesa.err.c8b8",
-       "c8d8": "rot.keySquares.pratica.defesa.err.c8d8",
-       "c8d7": "rot.keySquares.pratica.defesa.err.c8d7"
+       "d4d5": "rot.keySquares.pratica.ataque.err.peao.d6",
+       "e4d3": "rot.keySquares.pratica.ataque.err.recua",
+       "e4d5": "rot.keySquares.pratica.ataque.err.d5",
+       "e4e3": "rot.keySquares.pratica.ataque.err.recua",
+       "e4f3": "rot.keySquares.pratica.ataque.err.recua",
+       "e4f4": "rot.keySquares.pratica.ataque.err.lado",
+       "e4f5": "rot.keySquares.pratica.ataque.err.f5"
+      },
+      "errosPos": {
+       "8/8/2k5/4K3/3P4/8/8/8 w - - 2 2": {
+        "d4d5": "rot.keySquares.pratica.ataque.err.peao.d7",
+        "e5e4": "rot.keySquares.pratica.ataque.err.e4",
+        "e5f4": "rot.keySquares.pratica.ataque.err.f4",
+        "e5f5": "rot.keySquares.pratica.ataque.err.longe",
+        "e5f6": "rot.keySquares.pratica.ataque.err.longe"
+       }
       }
      }
     }
