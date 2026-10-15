@@ -524,13 +524,13 @@
     },
     {
      "id": "ex2",
-     "fen": "8/3k4/8/8/5K2/3P4/8/8 b - - 0 1",
+     "fen": "8/2k5/8/8/5K2/3P4/8/8 b - - 0 1",
      "vira": true,
      "objetivo": "empatar",
      "fim": "etapa",
      "entrada": [
       {
-       "fen": "8/3k4/8/8/5K2/3P4/8/8 b - - 0 1",
+       "fen": "8/2k5/8/8/5K2/3P4/8/8 b - - 0 1",
        "marcas": [
         "c5",
         "d5",
@@ -539,7 +539,7 @@
        "t": "rot.keySquares.ideia.ex2.e1"
       },
       {
-       "fen": "8/3k4/8/8/5K2/3P4/8/8 b - - 0 1",
+       "fen": "8/2k5/8/8/5K2/3P4/8/8 b - - 0 1",
        "marcas": [
         "e5"
        ],
@@ -548,11 +548,11 @@
      ],
      "pergunta": {
       "certos": [
-       "d7d6"
+       "c7d6"
       ],
       "certo": {
        "fen": "8/8/3k4/8/5K2/3P4/8/8 w - - 1 2",
-       "lance": "d7d6",
+       "lance": "c7d6",
        "marcas": [
         "c5",
         "d5",
@@ -560,7 +560,7 @@
        ],
        "setas": [
         [
-         "d7",
+         "c7",
          "d6",
          "g"
         ]
@@ -569,7 +569,7 @@
       },
       "revela": {
        "fen": "8/8/3k4/8/5K2/3P4/8/8 w - - 1 2",
-       "lance": "d7d6",
+       "lance": "c7d6",
        "marcas": [
         "c5",
         "d5",
@@ -577,7 +577,7 @@
        ],
        "setas": [
         [
-         "d7",
+         "c7",
          "d6",
          "g"
         ]
@@ -586,18 +586,84 @@
       },
       "alternativos": {},
       "erros": {
-       "d7c6": [
+       "c7b6": [
         {
-         "fen": "8/8/2k5/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7c6",
+         "fen": "8/8/1k6/8/5K2/3P4/8/8 w - - 1 2",
+         "lance": "c7b6",
          "setas": [
           [
-           "d7",
+           "c7",
+           "b6",
+           "r"
+          ]
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7b6.1"
+        },
+        {
+         "fen": "8/8/1k6/4K3/8/3P4/8/8 b - - 2 2",
+         "lance": "f4e5",
+         "marcas": [
+          "e5"
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7b6.2"
+        }
+       ],
+       "c7b7": [
+        {
+         "fen": "8/1k6/8/8/5K2/3P4/8/8 w - - 1 2",
+         "lance": "c7b7",
+         "setas": [
+          [
+           "c7",
+           "b7",
+           "r"
+          ]
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7b7.1"
+        },
+        {
+         "fen": "8/1k6/8/4K3/8/3P4/8/8 b - - 2 2",
+         "lance": "f4e5",
+         "marcas": [
+          "e5"
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7b7.2"
+        }
+       ],
+       "c7b8": [
+        {
+         "fen": "1k6/8/8/8/5K2/3P4/8/8 w - - 1 2",
+         "lance": "c7b8",
+         "setas": [
+          [
+           "c7",
+           "b8",
+           "r"
+          ]
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7b8.1"
+        },
+        {
+         "fen": "1k6/8/8/4K3/8/3P4/8/8 b - - 2 2",
+         "lance": "f4e5",
+         "marcas": [
+          "e5"
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7b8.2"
+        }
+       ],
+       "c7c6": [
+        {
+         "fen": "8/8/2k5/8/5K2/3P4/8/8 w - - 1 2",
+         "lance": "c7c6",
+         "setas": [
+          [
+           "c7",
            "c6",
            "r"
           ]
          ],
-         "t": "rot.keySquares.ideia.ex2.err.d7c6.1"
+         "t": "rot.keySquares.ideia.ex2.err.c7c6.1"
         },
         {
          "fen": "8/8/2k5/4K3/8/3P4/8/8 b - - 2 2",
@@ -605,43 +671,21 @@
          "marcas": [
           "e5"
          ],
-         "t": "rot.keySquares.ideia.ex2.err.d7c6.2"
+         "t": "rot.keySquares.ideia.ex2.err.c7c6.2"
         }
        ],
-       "d7c7": [
-        {
-         "fen": "8/2k5/8/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7c7",
-         "setas": [
-          [
-           "d7",
-           "c7",
-           "r"
-          ]
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7c7.1"
-        },
-        {
-         "fen": "8/2k5/8/4K3/8/3P4/8/8 b - - 2 2",
-         "lance": "f4e5",
-         "marcas": [
-          "e5"
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7c7.2"
-        }
-       ],
-       "d7c8": [
+       "c7c8": [
         {
          "fen": "2k5/8/8/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7c8",
+         "lance": "c7c8",
          "setas": [
           [
-           "d7",
+           "c7",
            "c8",
            "r"
           ]
          ],
-         "t": "rot.keySquares.ideia.ex2.err.d7c8.1"
+         "t": "rot.keySquares.ideia.ex2.err.c7c8.1"
         },
         {
          "fen": "2k5/8/8/4K3/8/3P4/8/8 b - - 2 2",
@@ -649,21 +693,43 @@
          "marcas": [
           "e5"
          ],
-         "t": "rot.keySquares.ideia.ex2.err.d7c8.2"
+         "t": "rot.keySquares.ideia.ex2.err.c7c8.2"
         }
        ],
-       "d7d8": [
+       "c7d7": [
         {
-         "fen": "3k4/8/8/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7d8",
+         "fen": "8/3k4/8/8/5K2/3P4/8/8 w - - 1 2",
+         "lance": "c7d7",
          "setas": [
           [
+           "c7",
            "d7",
+           "r"
+          ]
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7d7.1"
+        },
+        {
+         "fen": "8/3k4/8/4K3/8/3P4/8/8 b - - 2 2",
+         "lance": "f4e5",
+         "marcas": [
+          "e5"
+         ],
+         "t": "rot.keySquares.ideia.ex2.err.c7d7.2"
+        }
+       ],
+       "c7d8": [
+        {
+         "fen": "3k4/8/8/8/5K2/3P4/8/8 w - - 1 2",
+         "lance": "c7d8",
+         "setas": [
+          [
+           "c7",
            "d8",
            "r"
           ]
          ],
-         "t": "rot.keySquares.ideia.ex2.err.d7d8.1"
+         "t": "rot.keySquares.ideia.ex2.err.c7d8.1"
         },
         {
          "fen": "3k4/8/8/4K3/8/3P4/8/8 b - - 2 2",
@@ -671,70 +737,7 @@
          "marcas": [
           "e5"
          ],
-         "t": "rot.keySquares.ideia.ex2.err.d7d8.2"
-        }
-       ],
-       "d7e7": [
-        {
-         "fen": "8/4k3/8/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7e7",
-         "setas": [
-          [
-           "d7",
-           "e7",
-           "r"
-          ]
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7e7.1"
-        },
-        {
-         "fen": "8/4k3/8/4K3/8/3P4/8/8 b - - 2 2",
-         "lance": "f4e5",
-         "marcas": [
-          "e5"
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7e7.2"
-        }
-       ],
-       "d7e8": [
-        {
-         "fen": "4k3/8/8/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7e8",
-         "setas": [
-          [
-           "d7",
-           "e8",
-           "r"
-          ]
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7e8.1"
-        },
-        {
-         "fen": "4k3/8/8/4K3/8/3P4/8/8 b - - 2 2",
-         "lance": "f4e5",
-         "marcas": [
-          "e5"
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7e8.2"
-        }
-       ],
-       "d7e6": [
-        {
-         "fen": "8/8/4k3/8/5K2/3P4/8/8 w - - 1 2",
-         "lance": "d7e6",
-         "setas": [
-          [
-           "d7",
-           "e6",
-           "r"
-          ]
-         ],
-         "t": "rot.keySquares.ideia.ex2.err.d7e6.1"
-        },
-        {
-         "fen": "8/8/4k3/8/4K3/3P4/8/8 b - - 2 2",
-         "lance": "f4e4",
-         "t": "rot.keySquares.ideia.ex2.err.d7e6.2"
+         "t": "rot.keySquares.ideia.ex2.err.c7d8.2"
         }
        ]
       },
@@ -827,21 +830,28 @@
        "t": "rot.keySquares.demos.regra.3"
       },
       {
-       "fen": "8/8/8/8/1k1K4/8/2P5/8 w - - 2 2",
-       "lance": "b5b4",
-       "t": "rot.keySquares.demos.regra.4"
-      },
-      {
        "fen": "8/8/8/8/1k6/3K4/2P5/8 b - - 3 2",
-       "lance": "d4d3",
+       "seq": [
+        "b5b4",
+        "d4d3"
+       ],
        "marcas": [
         "c2"
        ],
-       "t": "rot.keySquares.demos.regra.5"
+       "t": "rot.keySquares.demos.regra.4"
       },
       {
-       "fen": "8/8/8/8/1k6/3K4/2P5/8 b - - 3 2",
-       "t": "rot.keySquares.demos.regra.6"
+       "fen": "8/6k1/8/2P5/4K3/8/8/8 w - - 0 1",
+       "salto": true,
+       "marcas": [
+        "b6",
+        "c6",
+        "d6",
+        "b7",
+        "c7",
+        "d7"
+       ],
+       "t": "rot.keySquares.demos.regra.quinta"
       }
      ]
     },
@@ -886,22 +896,18 @@
        "t": "rot.keySquares.demos.cedo.3"
       },
       {
-       "fen": "8/8/8/6k1/6P1/4K3/8/8 w - - 3 3",
+       "fen": "8/8/8/6k1/6P1/5K2/8/8 b - - 4 3",
        "seq": [
         "d2e3",
-        "f6g5"
+        "f6g5",
+        "e3f3"
        ],
-       "t": "rot.keySquares.demos.cedo.4"
-      },
-      {
-       "fen": "8/8/8/6k1/6P1/5K2/8/8 b - - 4 3",
-       "lance": "e3f3",
        "marcas": [
         "f6",
         "g6",
         "h6"
        ],
-       "t": "rot.keySquares.demos.cedo.5"
+       "t": "rot.keySquares.demos.cedo.4"
       },
       {
        "fen": "8/8/8/6k1/6P1/5K2/8/8 b - - 4 3",
@@ -916,37 +922,59 @@
    "exemplos": [
     {
      "id": "ataque",
-     "fen": "8/2k5/8/8/3PK3/8/8/8 w - - 0 1",
+     "fen": "8/6k1/8/8/4K3/6P1/8/8 w - - 0 1",
      "vira": false,
      "objetivo": "casa",
      "casas": [
-      "c6",
-      "d6",
-      "e6"
+      "f5",
+      "g5",
+      "h5"
      ],
-     "fim": "etapa",
+     "fim": "proximo",
      "pratica": {
       "t": "rot.keySquares.pratica.ataque.enunciado",
       "maquina": "b",
       "limite": 40,
       "fim": "rot.keySquares.pratica.ataque.fim",
       "erros": {
-       "d4d5": "rot.keySquares.pratica.ataque.err.peao.d6",
-       "e4d3": "rot.keySquares.pratica.ataque.err.recua",
+       "e4d3": "rot.keySquares.pratica.ataque.err.recua.f6",
+       "e4d4": "rot.keySquares.pratica.ataque.err.lado",
        "e4d5": "rot.keySquares.pratica.ataque.err.d5",
-       "e4e3": "rot.keySquares.pratica.ataque.err.recua",
-       "e4f3": "rot.keySquares.pratica.ataque.err.recua",
-       "e4f4": "rot.keySquares.pratica.ataque.err.lado",
-       "e4f5": "rot.keySquares.pratica.ataque.err.f5"
-      },
-      "errosPos": {
-       "8/8/2k5/4K3/3P4/8/8/8 w - - 2 2": {
-        "d4d5": "rot.keySquares.pratica.ataque.err.peao.d7",
-        "e5e4": "rot.keySquares.pratica.ataque.err.e4",
-        "e5f4": "rot.keySquares.pratica.ataque.err.f4",
-        "e5f5": "rot.keySquares.pratica.ataque.err.longe",
-        "e5f6": "rot.keySquares.pratica.ataque.err.longe"
+       "e4e3": "rot.keySquares.pratica.ataque.err.recua.g6",
+       "e4e5": "rot.keySquares.pratica.ataque.err.e5",
+       "e4f3": "rot.keySquares.pratica.ataque.err.recua.f7",
+       "e4f4": "rot.keySquares.pratica.ataque.err.f4",
+       "g3g4": "rot.keySquares.pratica.ataque.err.peao"
+      }
+     }
+    },
+    {
+     "id": "defesa",
+     "fen": "8/3k4/8/K7/8/2P5/8/8 b - - 0 1",
+     "vira": true,
+     "objetivo": "empatar",
+     "fim": "etapa",
+     "pratica": {
+      "tipo": "lance",
+      "t": "rot.keySquares.pratica.defesa.enunciado",
+      "maquina": "w",
+      "limite": 40,
+      "fim": "rot.keySquares.pratica.defesa.fim",
+      "linha": [
+       {
+        "certos": [
+         "d7c6"
+        ]
        }
+      ],
+      "erros": {
+       "d7c7": "rot.keySquares.pratica.defesa.err.c7",
+       "d7c8": "rot.keySquares.pratica.defesa.err.recua",
+       "d7d6": "rot.keySquares.pratica.defesa.err.d6",
+       "d7d8": "rot.keySquares.pratica.defesa.err.recua",
+       "d7e6": "rot.keySquares.pratica.defesa.err.e6",
+       "d7e7": "rot.keySquares.pratica.defesa.err.lado",
+       "d7e8": "rot.keySquares.pratica.defesa.err.recua"
       }
      }
     }
