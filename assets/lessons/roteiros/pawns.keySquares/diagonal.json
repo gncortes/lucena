@@ -356,6 +356,10 @@
             },
             {
               "fen": "8/8/4k3/8/2K5/3P4/8/8 b - - 1 1",
+              "t": "rot.diagonal.ideia.ex1.l14b"
+            },
+            {
+              "fen": "8/8/4k3/8/2K5/3P4/8/8 b - - 1 1",
               "t": "rot.diagonal.ideia.ex1.l15"
             }
           ]
@@ -826,7 +830,25 @@
               "t": "rot.diagonal.demos.defesa.7"
             },
             {
-              "fen": "8/8/8/2k5/8/2K5/3P4/8 b - - 2 2",
+              "fen": "8/8/8/3k4/8/2K5/3P4/8 b - - 2 2",
+              "marcas": [
+                "c3",
+                "d5"
+              ],
+              "salto": true,
+              "t": "rot.diagonal.demos.defesa.8"
+            },
+            {
+              "fen": "8/8/8/2k5/8/2K5/3P4/8 w - - 3 3",
+              "marcas": [
+                "c3",
+                "c5"
+              ],
+              "lance": "d5c5",
+              "t": "rot.diagonal.demos.defesa.9"
+            },
+            {
+              "fen": "8/8/8/2k5/8/2K5/3P4/8 w - - 3 3",
               "t": "rot.diagonal.demos.defesa.ponte"
             }
           ]
@@ -869,7 +891,8 @@
                 "d3d4": "rot.diagonal.pratica.ataque.v3.err.d3d4"
               },
               "8/8/4k3/8/2K5/3P4/8/8 w - - 6 4": {
-                "d3d4": "rot.diagonal.pratica.ataque.v4.err.d3d4"
+                "d3d4": "rot.diagonal.pratica.ataque.v4.err.d3d4",
+                "c4d4": "rot.diagonal.pratica.ataque.v4.err.c4d4"
               },
               "8/2k5/8/3K4/8/3P4/8/8 w - - 8 5": {
                 "d3d4": "rot.diagonal.pratica.ataque.v5.err.d3d4"
@@ -918,7 +941,8 @@
             },
             "errosPos": {
               "8/8/4k3/8/8/5K2/3P4/8 b - - 2 2": {
-                "e6e5": "rot.diagonal.pratica.defesa.v1.err.e6e5"
+                "e6e5": "rot.diagonal.pratica.defesa.v1.err.e6e5",
+                "e6d6": "rot.diagonal.pratica.defesa.v1.err.e6d6"
               },
               "8/8/8/3k4/8/4K3/3P4/8 b - - 4 3": {
                 "d5c4": "rot.diagonal.pratica.defesa.v2.err.d5c4"

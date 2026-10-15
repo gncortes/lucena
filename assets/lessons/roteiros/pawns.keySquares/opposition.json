@@ -938,7 +938,8 @@
         "url": "https://en.wikipedia.org/wiki/King_and_pawn_versus_king_endgame"
        }
       ]
-     }
+     },
+     "ref": "wikiKpk"
     },
     {
      "id": "vezBrancas",
@@ -1058,54 +1059,55 @@
        "fen": "2k5/2P5/2K5/8/8/8/8/8 b - - 2 10",
        "t": "rot.opposition.demos.vezBrancas.14"
       }
-     ]
+     ],
+     "ref": "wikiKpk"
     },
     {
      "id": "longe",
-     "fen": "3k4/8/8/8/2PK4/8/8/8 b - - 0 1",
+     "fen": "5k2/8/8/8/2P1K3/8/8/8 b - - 0 1",
      "vira": true,
      "objetivo": "empatar",
      "fim": "etapa",
      "entrada": [
       {
-       "fen": "3k4/8/8/8/2PK4/8/8/8 b - - 0 1",
+       "fen": "5k2/8/8/8/2P1K3/8/8/8 b - - 0 1",
        "marcas": [
-        "d4",
-        "d8"
+        "e4",
+        "f8"
        ],
        "t": "rot.opposition.demos.longe.1"
       }
      ],
      "linha": [
       {
-       "fen": "2k5/8/8/8/2PK4/8/8/8 w - - 1 2",
-       "lance": "d8c8",
+       "fen": "4k3/8/8/8/2P1K3/8/8/8 w - - 1 2",
+       "lance": "f8e8",
        "marcas": [
-        "c8"
+        "e8"
        ],
        "t": "rot.opposition.demos.longe.2"
       },
       {
-       "fen": "8/2k5/8/2K5/2P5/8/8/8 w - - 3 3",
+       "fen": "8/4k3/8/4K3/2P5/8/8/8 w - - 3 3",
        "seq": [
-        "d4c5",
-        "c8c7"
+        "e4e5",
+        "e8e7"
        ],
        "marcas": [
-        "c5",
-        "c7"
+        "e5",
+        "e7"
        ],
        "t": "rot.opposition.demos.longe.3"
       },
       {
-       "fen": "8/1k6/8/1K6/2P5/8/8/8 w - - 5 4",
+       "fen": "8/3k4/8/3K4/2P5/8/8/8 w - - 5 4",
        "seq": [
-        "c5b5",
-        "c7b7"
+        "e5d5",
+        "e7d7"
        ],
        "marcas": [
-        "b5",
-        "b7"
+        "d5",
+        "d7"
        ],
        "t": "rot.opposition.demos.longe.4"
       }
