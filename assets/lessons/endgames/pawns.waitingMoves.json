@@ -113,27 +113,6 @@
           "teach": "a4a5",
           "accept": [
             "a4a5"
-          ],
-          "reply": "h7h8"
-        },
-        {
-          "teach": "g5g6",
-          "accept": [
-            "g5g6"
-          ],
-          "reply": "h8g8"
-        },
-        {
-          "teach": "g6f6",
-          "accept": [
-            "g6f6"
-          ],
-          "reply": "g8h7"
-        },
-        {
-          "teach": "f6e7",
-          "accept": [
-            "f6e7"
           ]
         }
       ]
@@ -141,209 +120,22 @@
     {
       "id": "e14",
       "stars": 3,
-      "fen": "8/8/8/3p4/1k6/1P6/K1P5/8 w - - 0 1",
+      "fen": "8/3k4/8/p5p1/P5P1/4K3/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "grigoriev1933",
+      "origin": "own",
       "capitulo": "waiting",
       "line": [
         {
-          "teach": "a2a1",
+          "teach": "e3d3",
           "accept": [
-            "a2a1"
+            "e3d3"
           ],
-          "reply": "b4c3"
+          "reply": "d7d6"
         },
         {
-          "teach": "a1b1",
+          "teach": "d3d4",
           "accept": [
-            "a1b1"
-          ],
-          "reply": "c3b4"
-        },
-        {
-          "teach": "b1c1",
-          "accept": [
-            "b1a1",
-            "b1a2",
-            "b1c1"
-          ],
-          "reply": "b4c3"
-        },
-        {
-          "teach": "c1d1",
-          "accept": [
-            "c1b1",
-            "c1d1"
-          ],
-          "reply": "d5d4"
-        },
-        {
-          "teach": "d1c1",
-          "accept": [
-            "d1c1"
-          ],
-          "reply": "d4d3"
-        },
-        {
-          "teach": "c2d3",
-          "accept": [
-            "c2d3"
-          ],
-          "reply": "c3d3"
-        },
-        {
-          "teach": "c1b2",
-          "accept": [
-            "c1b2"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e15",
-      "stars": 3,
-      "fen": "8/8/8/2p5/8/7K/1PP2k2/8 w - - 0 1",
-      "goal": "win",
-      "origin": "grigoriev1932",
-      "capitulo": "secondReserve",
-      "line": [
-        {
-          "teach": "h3g4",
-          "accept": [
-            "h3g4"
-          ],
-          "reply": "f2e3"
-        },
-        {
-          "teach": "c2c3",
-          "accept": [
-            "c2c3"
-          ],
-          "reply": "e3e4"
-        },
-        {
-          "teach": "g4g5",
-          "accept": [
-            "g4g5"
-          ],
-          "reply": "e4e5"
-        },
-        {
-          "teach": "g5g6",
-          "accept": [
-            "g5g4",
-            "g5g6"
-          ],
-          "reply": "e5e6"
-        },
-        {
-          "teach": "g6g7",
-          "accept": [
-            "g6g5",
-            "g6g7"
-          ],
-          "reply": "e6e7"
-        },
-        {
-          "teach": "c3c4",
-          "accept": [
-            "c3c4",
-            "g7g6"
-          ],
-          "reply": "e7e6"
-        },
-        {
-          "teach": "g7f8",
-          "accept": [
-            "g7f8"
-          ],
-          "reply": "e6e5"
-        },
-        {
-          "teach": "f8e7",
-          "accept": [
-            "f8e7"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e16",
-      "stars": 3,
-      "fen": "4k3/7p/4p3/4P2P/8/8/8/4K3 w - - 0 1",
-      "goal": "draw",
-      "origin": "grigoriev1929",
-      "capitulo": "fixedTarget",
-      "line": [
-        {
-          "teach": "e1f2",
-          "accept": [
-            "e1f2"
-          ],
-          "reply": "e8d7"
-        },
-        {
-          "teach": "h5h6",
-          "accept": [
-            "h5h6"
-          ],
-          "reply": "d7c6"
-        },
-        {
-          "teach": "f2g3",
-          "accept": [
-            "f2g3"
-          ],
-          "reply": "c6d5"
-        },
-        {
-          "teach": "g3h4",
-          "accept": [
-            "g3h4"
-          ],
-          "reply": "d5d4"
-        },
-        {
-          "teach": "h4h5",
-          "accept": [
-            "h4h5"
-          ],
-          "reply": "d4e4"
-        },
-        {
-          "teach": "h5g4",
-          "accept": [
-            "h5g4"
-          ],
-          "reply": "e4e5"
-        },
-        {
-          "teach": "g4g5",
-          "accept": [
-            "g4g5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "e17",
-      "stars": 1,
-      "fen": "8/8/4k3/8/8/2K5/4P3/8 w - - 0 1",
-      "goal": "win",
-      "origin": "own",
-      "capitulo": "reserve",
-      "line": [
-        {
-          "teach": "c3d4",
-          "accept": [
-            "c3d4"
-          ],
-          "reply": "e6d6"
-        },
-        {
-          "teach": "e2e3",
-          "accept": [
-            "e2e3"
+            "d3d4"
           ],
           "reply": "d6e6"
         },
@@ -351,13 +143,125 @@
           "teach": "d4e4",
           "accept": [
             "d4e4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e15",
+      "stars": 1,
+      "fen": "8/8/1p6/5pK1/4kP2/8/1P6/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "capitulo": "secondReserve",
+      "line": [
+        {
+          "teach": "b2b3",
+          "accept": [
+            "b2b3"
           ],
-          "reply": "e6f7"
+          "reply": "b6b5"
         },
         {
-          "teach": "e4e5",
+          "teach": "b3b4",
           "accept": [
-            "e4e5"
+            "b3b4"
+          ],
+          "reply": "e4d4"
+        },
+        {
+          "teach": "g5f5",
+          "accept": [
+            "g5f5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e16",
+      "stars": 3,
+      "fen": "8/5K2/7p/p5k1/8/P6P/8/8 w - - 0 1",
+      "goal": "draw",
+      "origin": "own",
+      "capitulo": "fixedTarget",
+      "line": [
+        {
+          "teach": "a3a4",
+          "accept": [
+            "a3a4"
+          ],
+          "reply": "h6h5"
+        },
+        {
+          "teach": "f7e6",
+          "accept": [
+            "f7e6"
+          ],
+          "reply": "g5h4"
+        },
+        {
+          "teach": "e6e5",
+          "accept": [
+            "e6e5",
+            "e6f5"
+          ],
+          "reply": "h4h3"
+        },
+        {
+          "teach": "e5f4",
+          "accept": [
+            "e5f4"
+          ],
+          "reply": "h3g2"
+        },
+        {
+          "teach": "f4g5",
+          "accept": [
+            "f4g5"
+          ],
+          "reply": "g2g3"
+        },
+        {
+          "teach": "g5h5",
+          "accept": [
+            "g5h5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e17",
+      "stars": 1,
+      "fen": "8/5k2/8/3P1K2/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "capitulo": "reserve",
+      "line": [
+        {
+          "teach": "d5d6",
+          "accept": [
+            "d5d6"
+          ],
+          "reply": "f7e8"
+        },
+        {
+          "teach": "f5e6",
+          "accept": [
+            "f5e6"
+          ],
+          "reply": "e8d8"
+        },
+        {
+          "teach": "d6d7",
+          "accept": [
+            "d6d7"
+          ],
+          "reply": "d8c7"
+        },
+        {
+          "teach": "e6e7",
+          "accept": [
+            "e6e7"
           ]
         }
       ]
@@ -409,7 +313,7 @@
       ]
     }
   ],
-  "passScore": 10,
+  "passScore": 9,
   "keyPositions": [
     {
       "id": "grigoriev",
@@ -479,5 +383,5 @@
       "url": "https://lichess.org/study/0iaDBwxT/cyXVejzu"
     }
   ],
-  "maxScore": 17
+  "maxScore": 15
 }

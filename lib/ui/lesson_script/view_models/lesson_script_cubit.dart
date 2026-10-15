@@ -1905,7 +1905,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (played == null) return;
     final epoch = ++_epoch;
     final before = state;
-    final speech = [_say(key)];
+    // Fala em duas partes (`.1` o que o lance perde, `.2` o porquê), como na
+    // prática contra a máquina; sem partes, a chave inteira.
+    final speech = _texts.has('$key.1')
+        ? [_say('$key.1'), if (_texts.has('$key.2')) _say('$key.2')]
+        : [_say(key)];
     emit(
       state.copyWith(
         fen: played.fen,

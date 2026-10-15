@@ -646,8 +646,10 @@
        "e5f4": "rot.reserve.pratica.ataque.err.e5f4"
       },
       "errosPos": {
-       "4k3/8/6P1/4K3/8/8/8/8 w - - 1 2": {
-        "e5f6": "rot.reserve.pratica.ataque.v2.err.e5f6",
+       "5k2/8/6P1/4K3/8/8/8/8 w - - 1 2": {
+        "e5d6": "rot.reserve.pratica.ataque.v2.err.e5d6",
+        "e5e6": "rot.reserve.pratica.ataque.v2.err.e5e6",
+        "e5f5": "rot.reserve.pratica.ataque.v2.err.e5f5",
         "g6g7": "rot.reserve.pratica.ataque.v2.err.g6g7"
        },
        "5k2/8/4K1P1/8/8/8/8/8 w - - 3 3": {
@@ -657,7 +659,9 @@
        "6k1/8/5KP1/8/8/8/8/8 w - - 5 4": {
         "f6g5": "rot.reserve.pratica.ataque.v4.err.f6g5",
         "f6f5": "rot.reserve.pratica.ataque.v4.err.f6f5",
-        "f6e7": "rot.reserve.pratica.ataque.v4.err.f6e7"
+        "f6e7": "rot.reserve.pratica.ataque.v4.err.f6e7",
+        "f6e6": "rot.reserve.pratica.ataque.v4.err.f6e6",
+        "f6e5": "rot.reserve.pratica.ataque.v4.err.f6e5"
        }
       }
      }

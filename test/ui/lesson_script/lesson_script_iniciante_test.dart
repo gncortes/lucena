@@ -430,6 +430,21 @@ void main() {
       expect(r.s.phase, ScriptPhase.praticaFim);
       expect(r.s.moves.last.san, 'bxa8=Q');
     });
+
+    test('erro com fala em duas partes (.1 e .2) diz as duas', () async {
+      final r = await _Rig.open(
+        _pawnJson(),
+        texts: const {'promove.err.1': 'perde', 'promove.err.2': 'porque'},
+      );
+      await r.cubit.onMove('e5d6');
+      await r.cubit.onMove('d6d7');
+      await r.cubit.onMove('d7d8q');
+      await r.cubit.onAction(ScriptAction.continuar);
+      unawaited(r.cubit.onMove('b7a8r'));
+      await Future<void>.delayed(Duration.zero);
+      expect(r.s.speech, ['perde', 'porque']);
+      await r.release();
+    });
   });
 
   test('tarefa com resposta (perpétuo): a resposta é das pretas, com o '

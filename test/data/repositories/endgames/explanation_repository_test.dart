@@ -163,10 +163,10 @@ void main() {
       final solutions = review.explanations
           .where((b) => b.kind == ExplanationKind.mainSolution)
           .toList();
-      expect(solutions.length, 7);
+      expect(solutions.length, 3);
       expect(
         solutions.map((b) => b.id),
-        List.generate(7, (i) => 'exercise/e14.${i + 1}:main_solution'),
+        List.generate(3, (i) => 'exercise/e14.${i + 1}:main_solution'),
       );
       final blockIds = review.explanations.map((b) => b.id).toList();
       final variants = review.explanations.expand((b) => b.variations).toList();
@@ -262,10 +262,13 @@ void main() {
           expect(variant.outcomeText, variant.texts.first);
           // A frase de punição é própria de cada posição e cita a resposta
           // numerada que pune o lance anterior (rodada 2 da oposição).
-          expect(
-            variant.outcomeText,
-            contains(RegExp(r'\d+\.(\.\.)?[A-Za-h]')),
-          );
+          // Na waitingMoves o texto é em prosa, sem notação (regra do app).
+          if (lessonId == 'pawns.distantOpposition') {
+            expect(
+              variant.outcomeText,
+              contains(RegExp(r'\d+\.(\.\.)?[A-Za-h]')),
+            );
+          }
           expect(
             variant.outcomeText,
             isNot(
