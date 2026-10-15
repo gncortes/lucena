@@ -81,7 +81,7 @@ void main() {
     expect(orphans, isEmpty);
   });
 
-  test('as 39 aulas na ordem da trilha: as regras novas (T52) entre as '
+  test('as 37 aulas na ordem da trilha: as regras novas (T52) entre as '
       'peças, o en passant abrindo os peões, o valor das peças e os padrões '
       'de mate nos truques, e a formatura por último', () {
     expect(course.lessons.map((lesson) => lesson.id), [
@@ -108,12 +108,10 @@ void main() {
       'tricks.foolsMate',
       'tactics.matePatterns',
       'tricks.principles',
-      'technique.opposition',
       'technique.zugzwang',
       'technique.rookCut',
       'technique.rookMate',
       'rules.enPassant',
-      'pawns.kingPawn',
       'pawns.square',
       'pawns.rookPawn',
       'pawns.rookTwoPawns',
@@ -195,8 +193,7 @@ void main() {
       }
     });
 
-    test('a oposição e o afogamento também com as pretas', () {
-      expect(step('technique.opposition', 'defend').side, Side.black);
+    test('o afogamento também com as pretas', () {
       expect(step('pieces.stalemate', 'save').side, Side.black);
     });
   });

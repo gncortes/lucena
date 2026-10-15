@@ -45,11 +45,19 @@ final _kpk = KpkTableOracle(io.File(AssetKpkRepository.path).readAsBytesSync());
 /// Fala que vazou a chave ou um marcador que a tela não troca.
 final _rawKey = RegExp(r'\b(rot|ini|gen)\.[A-Za-z]');
 
+/// Os roteiros como `<lição>` (Escola) ou `<lição>/<capítulo>` (aula de
+/// final, T76), o caminho sem a pasta e sem o `.json`.
 List<String> _roteiros() => [
-  for (final file in io.Directory('assets/lessons/roteiros').listSync())
+  for (final file in io.Directory(
+    'assets/lessons/roteiros',
+  ).listSync(recursive: true))
     if (file.path.endsWith('.json'))
-      file.uri.pathSegments.last.replaceAll('.json', ''),
+      file.path
+          .replaceFirst('assets/lessons/roteiros/', '')
+          .replaceAll('.json', ''),
 ]..sort();
+
+String _lessonOf(String key) => key.split('/').first;
 
 class _Run {
   _Run(this.cubit, this.script, this.switching);
@@ -348,9 +356,10 @@ int _distance(Square a, Square b) =>
     max((a.file - b.file).abs(), (a.rank - b.rank).abs());
 
 /// Abre a lição [id] no cubit, com os assets de verdade.
-Future<(_Run, FakeLessonSource)> _open(String id) async {
+Future<(_Run, FakeLessonSource)> _open(String key) async {
+  final id = _lessonOf(key);
   final repository = AssetLessonScriptRepository(AssetService(_DiskBundle()));
-  final path = AssetLessonScriptRepository.scriptPath(id);
+  final path = AssetLessonScriptRepository.scriptPath(key);
   final script = await repository.script(path);
   final source = FakeLessonSource();
   final cubit = LessonScriptCubit(
@@ -380,8 +389,9 @@ Future<(_Run, FakeLessonSource)> _open(String id) async {
   return (run, source);
 }
 
-Future<_Run> _drive(String id, {required bool withErrors}) async {
-  final (run, source) = await _open(id);
+Future<_Run> _drive(String key, {required bool withErrors}) async {
+  final (run, source) = await _open(key);
+  final id = _lessonOf(key);
   for (var i = 0; i < 600; i++) {
     if (!await run.step(withErrors: withErrors)) break;
     await Future<void>.delayed(Duration.zero);

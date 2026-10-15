@@ -31,7 +31,7 @@ const _start = '4k3/8/8/8/8/1P3K2/8/8 w - - 0 1';
 
 Map<String, dynamic> _json() {
   final json = jsonDecode(
-    io.File('assets/lessons/roteiros/pawns.distantOpposition.json')
+    io.File('assets/lessons/roteiros/pawns.distantOpposition/distant.json')
         .readAsStringSync(),
   ) as Map<String, dynamic>;
   final stages = (json['etapas'] as List).cast<Map<String, dynamic>>();
@@ -174,7 +174,7 @@ void main() {
   test('cada erro previsto da prática tem as duas falas, em pt e en', () {
     final script = LessonScript.fromJson(
       jsonDecode(
-        io.File('assets/lessons/roteiros/pawns.distantOpposition.json')
+        io.File('assets/lessons/roteiros/pawns.distantOpposition/distant.json')
             .readAsStringSync(),
       ) as Map<String, dynamic>,
     );

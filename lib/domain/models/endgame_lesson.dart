@@ -420,7 +420,17 @@ class ExerciseCheckpoint {
 
 /// O progresso em todas as aulas de finais.
 class EndgameProgress {
-  const EndgameProgress({this.lessons = const {}, this.ongoing});
+  const EndgameProgress({
+    this.lessons = const {},
+    this.ongoing,
+    this.chaptersMigrated = true,
+  });
+
+  /// O progresso já está na estrutura de capítulos da T76 (`diagonal` em
+  /// `pawns.keySquares`, `means` na Parte 1, `e17` na Parte 2). Progresso novo
+  /// nasce migrado; o gravado antes não traz o campo (ver
+  /// `EndgameProgressMigration`).
+  final bool chaptersMigrated;
 
   /// Por id de aula.
   final Map<String, EndgameLessonProgress> lessons;
@@ -445,15 +455,18 @@ class EndgameProgress {
       EndgameProgress(
         lessons: {...lessons, lessonId: progress},
         ongoing: ongoing,
+        chaptersMigrated: chaptersMigrated,
       );
 
   EndgameProgress copyWith({
     Map<String, EndgameLessonProgress>? lessons,
     LessonCheckpoint? ongoing,
     bool clearOngoing = false,
+    bool? chaptersMigrated,
   }) => EndgameProgress(
     lessons: lessons ?? this.lessons,
     ongoing: clearOngoing ? null : ongoing ?? this.ongoing,
+    chaptersMigrated: chaptersMigrated ?? this.chaptersMigrated,
   );
 
   Map<String, dynamic> toJson() => {
@@ -461,6 +474,7 @@ class EndgameProgress {
       for (final MapEntry(:key, :value) in lessons.entries) key: value.toJson(),
     },
     'ongoing': ?ongoing?.toJson(),
+    if (chaptersMigrated) 'chapters': true,
   };
 
   static EndgameProgress fromJson(Object? json) {
@@ -472,6 +486,7 @@ class EndgameProgress {
           key: EndgameLessonProgress.fromJson(value),
       },
       ongoing: LessonCheckpoint.fromJson(json['ongoing']),
+      chaptersMigrated: json['chapters'] as bool? ?? false,
     );
   }
 }

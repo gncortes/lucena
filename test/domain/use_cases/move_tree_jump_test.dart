@@ -10,7 +10,7 @@ import 'package:lucena/domain/use_cases/move_tree.dart';
 void main() {
   final real = LessonScript.fromJson(
     jsonDecode(
-      File('assets/lessons/roteiros/pawns.distantOpposition.json')
+      File('assets/lessons/roteiros/pawns.distantOpposition/distant.json')
           .readAsStringSync(),
     ) as Map<String, dynamic>,
   );

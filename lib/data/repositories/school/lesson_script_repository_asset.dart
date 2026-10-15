@@ -4,10 +4,15 @@ import '../../../domain/models/lesson_script.dart';
 import '../../services/asset_service.dart';
 import 'lesson_script_repository.dart';
 
-/// O roteiro em `assets/lessons/roteiros/<lição>.json`, as falas da lição em
+/// O roteiro em `assets/lessons/roteiros/<lição>.json` (aula da Escola) ou, nas
+/// aulas de final, em `roteiros/<lição>/<capítulo>.json` (campo `roteiro` da
+/// parte), as falas da lição em
 /// `assets/lessons/<idioma>/endgames/<lição>.json` (aula de final) ou
 /// `assets/lessons/<idioma>/iniciante/<lição>.json` (curso de iniciante, T71)
-/// e as genéricas em `assets/lessons/<idioma>/roteiro_generico.json` e
+/// mais as falas à parte de cada capítulo, em
+/// `assets/lessons/<idioma>/endgames/<lição>.<capítulo>.rot.json` (T76:
+/// quem escreve um capítulo entrega só as chaves dele; o capítulo existe se a
+/// lição o lista em `parts`), e as genéricas em `assets/lessons/<idioma>/roteiro_generico.json` e
 /// `roteiro_iniciante.json`.
 class AssetLessonScriptRepository implements LessonScriptRepository {
   AssetLessonScriptRepository(this._assets);
@@ -16,6 +21,11 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
       'assets/lessons/roteiros/$lessonId.json';
   static String lessonTextsPath(String lessonId, String language) =>
       'assets/lessons/$language/endgames/$lessonId.json';
+  static String chapterTextsPath(
+    String lessonId,
+    String partId,
+    String language,
+  ) => 'assets/lessons/$language/endgames/$lessonId.$partId.rot.json';
   static String beginnerTextsPath(String lessonId, String language) =>
       'assets/lessons/$language/iniciante/$lessonId.json';
   static String genericPath(String language) =>
@@ -54,8 +64,33 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
         ...await _read(genericPath(language)),
         ...await _read(beginnerGenericPath(language)),
         ...await _read(lessonTextsPath(lessonId, language)),
+        ...await _chapters(lessonId, language),
         ...await _read(beginnerTextsPath(lessonId, language)),
       };
+
+  /// As falas à parte dos capítulos da aula de final [lessonId]; sem o
+  /// arquivo do capítulo, nada.
+  Future<Map<String, String>> _chapters(
+    String lessonId,
+    String language,
+  ) async {
+    final List<dynamic> parts;
+    try {
+      final lesson = jsonDecode(
+        await _assets.loadString('assets/lessons/endgames/$lessonId.json'),
+      );
+      parts = (lesson as Map)['parts'] as List? ?? const [];
+    } on Object {
+      return const {};
+    }
+    return {
+      for (final part in parts)
+        if (part is Map && part['id'] is String)
+          ...await _read(
+            chapterTextsPath(lessonId, part['id'] as String, language),
+          ),
+    };
+  }
 
   Future<Map<String, String>> _read(String path) async {
     final Object? json;

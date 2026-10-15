@@ -12,7 +12,7 @@ import '../../../testing/fakes/fake_lesson_source.dart';
 /// Posição final da demonstração do erro do atacante (depois de 2.Re3 Re5).
 const _finalFen = '8/8/8/4k3/8/4K3/6P1/8 w - - 4 3';
 
-const _roteiro = 'assets/lessons/roteiros/pawns.distantOpposition.json';
+const _roteiro = 'assets/lessons/roteiros/pawns.distantOpposition/distant.json';
 
 /// A Oposição distante só com o exemplo `erroAtacante` (fim da demo) e a
 /// prática (o que vem depois da etapa).
@@ -133,7 +133,8 @@ void main() {
     }
 
     final dir = io.Directory('assets/lessons/roteiros');
-    for (final f in dir.listSync().whereType<io.File>()) {
+    for (final f in dir.listSync(recursive: true).whereType<io.File>()) {
+      if (!f.path.endsWith('.json')) continue;
       walk(f.path, jsonDecode(f.readAsStringSync()));
     }
     expect(found, greaterThan(0));

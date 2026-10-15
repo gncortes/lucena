@@ -2,8 +2,8 @@ import '../models/endgame_lesson.dart';
 import '../models/lesson.dart';
 
 /// As aulas liberadas no app (Gabriel, 15/10/2026, antes da versão de QA):
-/// só a Oposição, Partes 1 e 2. As outras aulas de finais e a Escola do
-/// Viktor ficam escondidas, sem sair dos assets nem do progresso gravado;
+/// só a Oposição (T76: Casas-chave e oposição, Oposição distante e Lances de
+/// espera). As outras aulas de finais e a Escola do Viktor ficam escondidas, sem sair dos assets nem do progresso gravado;
 /// liberar uma aula é pôr o id aqui.
 ///
 /// Além do id, vale a regra do formato novo (Gabriel, 15/10/2026): um
@@ -19,8 +19,20 @@ abstract final class VisibleLessons {
 
   /// As aulas de finais que aparecem.
   static const endgameLessonIds = {
+    'pawns.keySquares',
     'pawns.distantOpposition',
     'pawns.waitingMoves',
+  };
+
+  /// Os exercícios que cobrem uma ideia sem capítulo visível (T76): ficam nos
+  /// assets e no progresso salvo, mas fora da lista da aula e da nota, até o
+  /// capítulo deles voltar. A nota mínima da aula (`passScore`) já vale só
+  /// para os exercícios visíveis.
+  static const hiddenExercises = <String, Set<String>>{
+    // Peão travado (casas-chave de b6) e zugzwang mútuo.
+    'pawns.keySquares': {'e15', 'e16'},
+    // Corrida de reis com peões na coluna a.
+    'pawns.distantOpposition': {'e19'},
   };
 
   /// As aulas da Escola que aparecem. Vazia: a Escola some do app.
@@ -65,7 +77,11 @@ abstract final class VisibleLessons {
         parts: parts,
         script: lesson.lesson.script,
       ),
-      exercises: lesson.exercises,
+      exercises: [
+        for (final exercise in lesson.exercises)
+          if (!(hiddenExercises[lesson.id]?.contains(exercise.id) ?? false))
+            exercise,
+      ],
       passScore: lesson.passScore,
       keyPositions: lesson.keyPositions,
       practice: lesson.practice,

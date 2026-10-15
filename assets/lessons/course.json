@@ -1346,68 +1346,6 @@
       "id": "technique",
       "lessons": [
         {
-          "id": "technique.opposition",
-          "steps": [
-            {
-              "type": "talk",
-              "id": "wall",
-              "fen": "8/8/8/3k4/8/3K4/8/8 w - - 0 1",
-              "marks": [
-                "c4",
-                "d4",
-                "e4"
-              ]
-            },
-            {
-              "type": "talk",
-              "id": "opposition",
-              "fen": "8/8/8/3k4/8/3K4/8/8 b - - 0 1",
-              "arrows": [
-                "d5d4"
-              ]
-            },
-            {
-              "type": "move",
-              "id": "take",
-              "fen": "8/8/3k4/8/8/3K4/8/8 w - - 0 1",
-              "line": [
-                {
-                  "accept": [
-                    "d3d4"
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "move",
-              "id": "keyPawn",
-              "fen": "8/8/4k3/8/8/4K3/4P3/8 w - - 0 1",
-              "line": [
-                {
-                  "accept": [
-                    "e3d4",
-                    "e3e4",
-                    "e3f4"
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "move",
-              "id": "defend",
-              "fen": "8/4k3/8/8/4K3/4P3/8/8 b - - 0 1",
-              "line": [
-                {
-                  "accept": [
-                    "e7e6"
-                  ]
-                }
-              ]
-            }
-          ],
-          "roteiro": "assets/lessons/roteiros/technique.opposition.json"
-        },
-        {
           "id": "technique.zugzwang",
           "steps": [
             {
@@ -1619,51 +1557,6 @@
             }
           ],
           "roteiro": "assets/lessons/roteiros/rules.enPassant.json"
-        },
-        {
-          "id": "pawns.kingPawn",
-          "steps": [
-            {
-              "type": "talk",
-              "id": "front",
-              "fen": "8/8/8/8/4K3/4P3/8/4k3 w - - 0 1",
-              "marks": [
-                "e4"
-              ]
-            },
-            {
-              "type": "talk",
-              "id": "key",
-              "fen": "8/8/8/8/8/8/4P3/8 w - - 0 1",
-              "marks": [
-                "d4",
-                "e4",
-                "f4"
-              ]
-            },
-            {
-              "type": "move",
-              "id": "step",
-              "fen": "8/8/4k3/8/8/4K3/4P3/8 w - - 0 1",
-              "line": [
-                {
-                  "accept": [
-                    "e3d4",
-                    "e3e4",
-                    "e3f4"
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "play",
-              "id": "play",
-              "fen": "8/8/4k3/8/8/4K3/4P3/8 w - - 0 1",
-              "goal": "promote",
-              "opponent": "stockfish"
-            }
-          ],
-          "roteiro": "assets/lessons/roteiros/pawns.kingPawn.json"
         },
         {
           "id": "pawns.square",

@@ -62,6 +62,35 @@ void main() {
     expect(texts.say('lista'), 'Primeiro');
   });
 
+  test('aula de final: junta as falas à parte de cada capítulo', () async {
+    String chapter(String part, String lang) =>
+        AssetLessonScriptRepository.chapterTextsPath(lesson, part, lang);
+    final repo = AssetLessonScriptRepository(
+      _Assets({
+        'assets/lessons/endgames/$lesson.json': jsonEncode({
+          'parts': [
+            {'id': 'a'},
+            {'id': 'b'},
+            {'id': 'c'},
+          ],
+        }),
+        own('en'): jsonEncode({'x': 'X-aula', 'y': 'Y-aula'}),
+        chapter('a', 'en'): jsonEncode({'rot.a': 'A-en', 'x': 'X-cap'}),
+        chapter('a', 'pt'): jsonEncode({'rot.a': 'A-pt'}),
+        chapter('b', 'en'): jsonEncode({'rot.b': 'B-en'}),
+        // O capítulo `c` ainda não tem falas: não pesa.
+        // Falas de um capítulo que a aula não lista são ignoradas.
+        chapter('z', 'en'): jsonEncode({'rot.z': 'Z-en'}),
+      }),
+    );
+    final texts = await repo.texts(lesson, 'pt');
+    expect(texts.say('rot.a'), 'A-pt');
+    expect(texts.say('rot.b'), 'B-en');
+    expect(texts.say('x'), 'X-cap');
+    expect(texts.say('y'), 'Y-aula');
+    expect(texts.say('rot.z'), 'rot.z');
+  });
+
   test(
     'curso de iniciante: as falas da pasta iniciante e as genéricas dele',
     () async {

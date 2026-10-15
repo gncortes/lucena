@@ -4555,17 +4555,17 @@
   "@skillPawnsRookPawnDraw": {
     "description": "Placement test: name of the skill 'pawns.rookPawnDraw' in the skill map (result screen, roadmap)."
   },
-  "skillPawnsKeySquares": "Key squares",
+  "skillPawnsKeySquares": "Key squares and opposition",
   "@skillPawnsKeySquares": {
     "description": "Placement test: name of the skill 'pawns.keySquares' in the skill map (result screen, roadmap)."
   },
-  "skillPawnsDistantOpposition": "Distant and diagonal opposition",
+  "skillPawnsDistantOpposition": "Distant opposition",
   "@skillPawnsDistantOpposition": {
     "description": "Placement test: name of the skill 'pawns.distantOpposition' in the skill map (result screen, roadmap)."
   },
-  "skillPawnsWaitingMoves": "Opposition: waiting moves",
+  "skillPawnsWaitingMoves": "Waiting moves",
   "@skillPawnsWaitingMoves": {
-    "description": "Placement test: name of the skill 'pawns.waitingMoves' (Part 2 of distant opposition: spare tempi and waiting moves) in the skill map."
+    "description": "Placement test: name of the skill 'pawns.waitingMoves' in the skill map."
   },
   "skillPawnsRace": "Pawn races",
   "@skillPawnsRace": {

@@ -63,8 +63,9 @@ class _ScriptedSchool extends FakeLessonRepository {
 }
 
 void main() {
-  test('só a Oposição, Partes 1 e 2 liberadas, e a Escola escondida', () {
+  test('só a Oposição, em três lições, e a Escola escondida', () {
     expect(VisibleLessons.endgameLessonIds, {
+      'pawns.keySquares',
       'pawns.distantOpposition',
       'pawns.waitingMoves',
     });
@@ -80,6 +81,42 @@ void main() {
       expect([for (final l in trail.lessons) l.id], ['rook.philidor']);
       expect(trail.lesson('rook.lucena'), isNull);
       expect(trail.after('rook.philidor'), isNull);
+    });
+
+    test('exercício de ideia sem capítulo visível sai da lista', () async {
+      final base = (await all.trail()).lesson('rook.lucena')!;
+      Exercise ex(String id) {
+        final model = base.exercises.first;
+        return Exercise(
+          id: id,
+          stars: 1,
+          fen: model.fen,
+          goal: model.goal,
+          line: model.line,
+        );
+      }
+
+      final lesson = EndgameLesson(
+        id: 'pawns.keySquares',
+        module: 'pawns',
+        lesson: base.lesson,
+        exercises: [ex('e14'), ex('e15'), ex('e16'), ex('e10')],
+        passScore: 2,
+        keyPositions: base.keyPositions,
+        practice: base.practice,
+      );
+      final trail = VisibleLessons.trail(
+        EndgameTrail(
+          modules: [
+            EndgameModule(id: 'pawns', lessons: [lesson]),
+          ],
+        ),
+        {'pawns.keySquares'},
+      );
+      expect(
+        [for (final e in trail.lesson('pawns.keySquares')!.exercises) e.id],
+        ['e14', 'e10'],
+      );
     });
 
     test('nenhuma liberada: trilha vazia', () async {

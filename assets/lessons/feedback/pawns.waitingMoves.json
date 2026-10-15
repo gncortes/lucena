@@ -21176,6 +21176,158 @@
           ]
         }
       }
+    },
+    {
+      "kind": "exercise",
+      "id": "e17",
+      "turn": 1,
+      "fen": "8/8/4k3/8/8/2K5/4P3/8 w - - 0 1",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e17.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "O rei vai ao centro e chega à quarta fileira. É o único lance que ganha: qualquer outro deixa as pretas fecharem a frente do peão."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e17.1",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The king goes to the centre and reaches the fourth rank. It is the only winning move: anything else lets Black close the front of the pawn."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e17",
+      "turn": 2,
+      "fen": "8/8/3k4/8/3K4/8/4P3/8 w - - 2 2",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e17.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Os reis estão em oposição e a vez é sua, então ceder não adianta. Um lance de peão passa a vez às pretas sem mudar a posição dos reis."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e17.2",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "The kings are in opposition and it is your move, so giving way does not help. A pawn move passes the turn to Black without changing the kings."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e17",
+      "turn": 3,
+      "fen": "8/8/4k3/8/3K4/4P3/8/8 w - - 1 3",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e17.3",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Agora a oposição é sua: seu rei está diante do rei preto, com uma casa entre eles, e as pretas é que devem se mexer."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e17.3",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Now the opposition is yours: your king faces the black king with one square between them, and Black must move."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "exercise",
+      "id": "e17",
+      "turn": 4,
+      "fen": "8/5k2/8/8/4K3/4P3/8/8 w - - 3 4",
+      "explanations": {
+        "pt": {
+          "positionId": "exercise/e17.4",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "As pretas cederam espaço. Seu rei chega a uma casa-chave do peão e a vitória fica garantida."
+              ],
+              "variations": []
+            }
+          ]
+        },
+        "en": {
+          "positionId": "exercise/e17.4",
+          "state": "review",
+          "explanations": [
+            {
+              "id": "main_solution",
+              "kind": "main_solution",
+              "title": "",
+              "texts": [
+                "Black has given way. Your king reaches a key square of the pawn and the win is secured."
+              ],
+              "variations": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

@@ -81,6 +81,9 @@ flutter:
     - assets/lessons/endgames/
     - assets/lessons/feedback/
     - assets/lessons/roteiros/
+    - assets/lessons/roteiros/pawns.distantOpposition/
+    - assets/lessons/roteiros/pawns.keySquares/
+    - assets/lessons/roteiros/pawns.waitingMoves/
     - assets/tablebase/
     - assets/lessons/en/endgames/
     - assets/lessons/pt/endgames/

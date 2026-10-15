@@ -170,4 +170,142 @@ void main() {
     expect(twice, same(once));
     expect(twice.of(_second).stars, {'e14': 2});
   });
+
+  group('capítulos da T76', () {
+    const keySquares = EndgameProgressMigration.keySquaresId;
+
+    test('progresso novo e já migrado ficam como estão', () {
+      const fresh = EndgameProgress(
+        lessons: {
+          _first: EndgameLessonProgress(parts: {'lateral'}),
+          _second: EndgameLessonProgress(parts: {'waiting'}),
+        },
+      );
+      expect(EndgameProgressMigration.apply(fresh), same(fresh));
+    });
+
+    test('lição tudo concluída: diagonal vai para as casas-chave', () {
+      const old = EndgameProgress(
+        chaptersMigrated: false,
+        lessons: {
+          _first: EndgameLessonProgress(
+            lessonDone: true,
+            approved: true,
+            stars: {'e09': 1, 'e17': 1, 'e18': 2},
+          ),
+          _second: EndgameLessonProgress(lessonDone: true),
+        },
+      );
+      final migrated = EndgameProgressMigration.apply(old);
+      expect(migrated.chaptersMigrated, isTrue);
+      expect(migrated.of(keySquares).parts, {'diagonal'});
+      expect(migrated.of(keySquares).lessonDone, isFalse);
+      // Parte 1: os capítulos que ficaram mais o means, que veio da Parte 2.
+      expect(migrated.of(_first).lessonDone, isTrue);
+      expect(migrated.of(_first).approved, isTrue);
+      expect(migrated.of(_first).parts, {
+        'distant',
+        'lateral',
+        'capablanca',
+        'edge',
+        'means',
+      });
+      expect(migrated.of(_first).stars, {'e09': 1, 'e18': 2});
+      expect(migrated.of(_second).lessonDone, isTrue);
+      expect(migrated.of(_second).stars, {'e17': 1});
+    });
+
+    test('Parte 1 concluída sem o means: não conta como concluída', () {
+      const old = EndgameProgress(
+        chaptersMigrated: false,
+        lessons: {
+          _first: EndgameLessonProgress(lessonDone: true),
+          _second: EndgameLessonProgress(parts: {'reserve', 'waiting'}),
+        },
+      );
+      final migrated = EndgameProgressMigration.apply(old);
+      expect(migrated.of(_first).lessonDone, isFalse);
+      expect(migrated.of(_first).parts, {
+        'distant',
+        'lateral',
+        'capablanca',
+        'edge',
+      });
+      expect(migrated.of(_second).parts, {'reserve', 'waiting'});
+    });
+
+    test('lição em andamento: means e diagonal acompanham o capítulo', () {
+      const old = EndgameProgress(
+        chaptersMigrated: false,
+        lessons: {
+          _first: EndgameLessonProgress(
+            parts: {'distant', 'diagonal', 'lateral', 'defend'},
+            stars: {'e11': 2},
+          ),
+          _second: EndgameLessonProgress(
+            parts: {'means', 'waiting', 'useReserve'},
+          ),
+        },
+      );
+      final migrated = EndgameProgressMigration.apply(old);
+      expect(migrated.of(keySquares).parts, {'diagonal'});
+      expect(migrated.of(_first).parts, {'distant', 'lateral', 'means'});
+      expect(migrated.of(_first).lessonDone, isFalse);
+      expect(migrated.of(_first).stars, {'e11': 2});
+      expect(migrated.of(_second).parts, {'waiting'});
+    });
+
+    test('o exercício e17 aberto vai para a Parte 2 com as estrelas', () {
+      const open = ExerciseCheckpoint(exerciseId: 'e17', turn: 1);
+      const old = EndgameProgress(
+        chaptersMigrated: false,
+        lessons: {
+          _first: EndgameLessonProgress(exercise: open, stars: {'e17': 1}),
+        },
+      );
+      final migrated = EndgameProgressMigration.apply(old);
+      expect(migrated.of(_first).exercise, isNull);
+      expect(migrated.of(_second).exercise, open);
+      expect(migrated.of(_second).stars, {'e17': 1});
+      expect(migrated.openExercise, (_second, open));
+    });
+
+    test('a lição aberta no diagonal e no means muda de lição', () {
+      const inDiagonal = EndgameProgress(
+        chaptersMigrated: false,
+        ongoing: LessonCheckpoint(lessonId: _first, step: 2, part: 'diagonal'),
+      );
+      expect(
+        EndgameProgressMigration.apply(inDiagonal).ongoing?.lessonId,
+        keySquares,
+      );
+      const inMeans = EndgameProgress(
+        chaptersMigrated: false,
+        ongoing: LessonCheckpoint(lessonId: _second, step: 4, part: 'means'),
+      );
+      final migrated = EndgameProgressMigration.apply(inMeans);
+      expect(migrated.ongoing?.lessonId, _first);
+      expect(migrated.ongoing?.step, 4);
+    });
+
+    test('é idempotente e sobrevive à gravação em JSON', () {
+      const old = EndgameProgress(
+        chaptersMigrated: false,
+        lessons: {_first: EndgameLessonProgress(lessonDone: true)},
+      );
+      final once = EndgameProgressMigration.apply(old);
+      expect(EndgameProgressMigration.apply(once), same(once));
+      final loaded = EndgameProgress.fromJson(once.toJson());
+      expect(loaded.chaptersMigrated, isTrue);
+      expect(EndgameProgressMigration.apply(loaded), same(loaded));
+      // Gravado antes da T76: sem o campo, volta a migrar.
+      final legacy = EndgameProgress.fromJson({
+        'lessons': {
+          _first: {'lessonDone': true},
+          _second: {'lessonDone': true},
+        },
+      });
+      expect(legacy.chaptersMigrated, isFalse);
+    });
+  });
 }

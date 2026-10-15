@@ -92,7 +92,9 @@ void main() {
   });
 
   test('o roteiro real da oposição distante lê sem erro', () {
-    final file = File('assets/lessons/roteiros/pawns.distantOpposition.json');
+    final file = File(
+      'assets/lessons/roteiros/pawns.distantOpposition/distant.json',
+    );
     if (!file.existsSync()) return;
     final real = LessonScript.fromJson(
       jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,

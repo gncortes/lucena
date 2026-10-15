@@ -430,15 +430,11 @@
       ],
       "lessons": [
         {
-          "id": "technique.opposition",
-          "kind": "school"
-        },
-        {
           "id": "technique.zugzwang",
           "kind": "school"
         },
         {
-          "id": "basics.kingPawn",
+          "id": "pawns.keySquares",
           "kind": "endgame"
         }
       ],
@@ -453,8 +449,8 @@
       ],
       "lessons": [
         {
-          "id": "pawns.kingPawn",
-          "kind": "school"
+          "id": "pawns.keySquares",
+          "kind": "endgame"
         },
         {
           "id": "basics.kingPawn",
@@ -506,7 +502,7 @@
       "group": "pawns",
       "band": "intermediate",
       "requires": [
-        "pawns.opposition"
+        "pawns.keySquares"
       ],
       "lessons": [
         {

@@ -388,7 +388,7 @@ void main() {
 
     test('salto "imagine g4": o lance atual é o g4, na variante', () async {
       final json = jsonDecode(
-        io.File('assets/lessons/roteiros/pawns.distantOpposition.json')
+        io.File('assets/lessons/roteiros/pawns.distantOpposition/distant.json')
             .readAsStringSync(),
       ) as Map<String, dynamic>;
       final r = await _Rig.open(json: json);

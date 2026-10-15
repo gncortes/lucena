@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/wiki_links.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/move_tree.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/use_cases/wiki_markup.dart';
 
 import '../../../../testing/script_fixture.dart';
@@ -18,6 +19,11 @@ import '../../../../testing/script_fixture.dart';
 /// As aulas de finais de verdade (`assets/lessons/endgames`): o que o
 /// `build_aula.py` conferiu com a tabela de finais, aqui conferido de novo
 /// com as regras do app, sem rede, para o CI.
+/// O capítulo tem roteiro e o arquivo já existe (T76: o app esconde o capítulo
+/// cujo roteiro ainda não chegou).
+bool _hasScript(LessonPart part) =>
+    part.script != null && io.File(part.script!).existsSync();
+
 void main() {
   final index = jsonDecode(
     io.File(AssetEndgameLessonRepository.indexPath).readAsStringSync(),
@@ -36,10 +42,26 @@ void main() {
         ),
       ),
   ];
-  Map<String, dynamic> texts(String language, String id) => jsonDecode(
-    io.File(AssetEndgameLessonRepository.textsPath(language, id))
-        .readAsStringSync(),
-  ) as Map<String, dynamic>;
+  // As falas da lição mais as à parte de cada capítulo (`<lição>.<capítulo>.rot.json`,
+  // T76), como o app as junta.
+  Map<String, dynamic> texts(String language, String id) {
+    final base = jsonDecode(
+      io.File(AssetEndgameLessonRepository.textsPath(language, id))
+          .readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final lesson = lessons.firstWhere((lesson) => lesson.id == id);
+    return {
+      ...base,
+      for (final part in lesson.lesson.parts)
+        if (io.File('assets/lessons/$language/endgames/$id.${part.id}.rot.json')
+            .existsSync())
+          ...jsonDecode(
+            io.File('assets/lessons/$language/endgames/$id.${part.id}.rot.json')
+                .readAsStringSync(),
+          ) as Map<String, dynamic>,
+    };
+  }
+
   final gluedAnnotation = RegExp(r'[a-h1-8O][+#]?[?!]{1,2}[:;.]');
   final mateInN = RegExp(r'mate (em|in) \d+', caseSensitive: false);
 
@@ -50,15 +72,6 @@ void main() {
     final inReview = (review['lessons'] as List).cast<String>();
     expect(inReview.toSet().length, inReview.length);
     expect(ids, containsAll(inReview));
-  });
-
-  test('Casas-chave aceita todas as rotas vencedoras e explica os empates', () {
-    final keySquares = lessons.singleWhere(
-      (lesson) => lesson.id == 'pawns.keySquares',
-    );
-    final start = keySquares.lesson.steps.whereType<ThinkStep>().first;
-    expect(start.accept, {'e2d3', 'e2e3', 'e2f3'});
-    expect(start.refusals, {'e4e5': 1, 'e2d1': 2, 'e2e1': 2, 'e2f1': 2});
   });
 
   test('O rei como muro não mostra uma seta solta para o lance explicado', () {
@@ -93,7 +106,12 @@ void main() {
 
   test('toda aula tem lição, ao menos 3 exercícios e nota mínima válida', () {
     for (final lesson in lessons) {
-      expect(lesson.lesson.steps, isNotEmpty, reason: lesson.id);
+      expect(
+        lesson.lesson.steps.isNotEmpty ||
+            lesson.lesson.parts.any((part) => part.script != null),
+        isTrue,
+        reason: lesson.id,
+      );
       // Um exercício por ideia distinta, sem cota: o mínimo é 3.
       expect(
         lesson.exercises.length,
@@ -108,9 +126,15 @@ void main() {
           reason: '${lesson.id}.${exercise.id}',
         );
       }
+      // A nota vale para os exercícios que aparecem (T76: alguns ficam
+      // escondidos até o capítulo da ideia deles voltar).
+      final hidden = VisibleLessons.hiddenExercises[lesson.id] ?? const {};
+      final shownMax = lesson.exercises
+          .where((exercise) => !hidden.contains(exercise.id))
+          .fold<int>(0, (sum, exercise) => sum + exercise.stars);
       expect(
         lesson.passScore,
-        inInclusiveRange((lesson.maxScore / 2).ceil(), lesson.maxScore),
+        inInclusiveRange((shownMax / 2).ceil(), shownMax),
         reason: lesson.id,
       );
       expect(lesson.keyPositions, isNotEmpty, reason: lesson.id);
@@ -243,7 +267,7 @@ void main() {
         // Parte em roteiro (T70): as falas do próprio roteiro (as genéricas
         // moram em `roteiro_generico.json`).
         for (final part in lesson.lesson.parts)
-          if (part.script != null)
+          if (_hasScript(part))
             ...scriptTexts(
               jsonDecode(io.File(part.script!).readAsStringSync())
                   as Map<String, dynamic>,
@@ -259,7 +283,7 @@ void main() {
         // A linha principal depois de um alternativo: sem a específica, vale
         // a genérica `gen.principal`.
         for (final part in lesson.lesson.parts)
-          if (part.script != null)
+          if (_hasScript(part))
             for (final stage in LessonScript.fromJson(
               jsonDecode(io.File(part.script!).readAsStringSync())
                   as Map<String, dynamic>,
@@ -271,7 +295,7 @@ void main() {
         // O erro previsto da prática: a chave inteira ou as duas partes
         // (`.1` no lance, `.2` com a resposta).
         for (final part in lesson.lesson.parts)
-          if (part.script != null)
+          if (_hasScript(part))
             for (final stage in LessonScript.fromJson(
               jsonDecode(io.File(part.script!).readAsStringSync())
                   as Map<String, dynamic>,

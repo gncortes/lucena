@@ -10,11 +10,44 @@ import '../models/lesson.dart';
 /// aluno já fez não se perde: capítulos, estrelas e o exercício aberto vão
 /// para a lição que passou a ter aquele capítulo ou exercício. A migração é
 /// idempotente: com a Parte 2 já gravada, nada muda.
+///
+/// T76 reorganizou os capítulos: `pawns.keySquares` ("Casas-chave e
+/// oposição") passou a abrir a Oposição e ficou com o `diagonal`, que era da
+/// Parte 1; o `means` subiu da Parte 2 para a Parte 1; o exercício `e17`
+/// (tempo de reserva) desceu da Parte 1 para a Parte 2. Capítulos que saíram
+/// da estrutura (defend, outflank, edgeCorner, protectPawn, wrapUp, refresher,
+/// useReserve, synchronize...) contam como feitos só enquanto a lição inteira
+/// estava concluída. O marcador de que isso já rodou é
+/// `EndgameProgress.chaptersMigrated`.
 class EndgameProgressMigration {
   const EndgameProgressMigration._();
 
   static const firstId = 'pawns.distantOpposition';
   static const secondId = 'pawns.waitingMoves';
+  static const keySquaresId = 'pawns.keySquares';
+
+  /// Os capítulos de cada lição depois da T76.
+  static const keySquaresChapters = {'keySquares', 'opposition', 'diagonal'};
+  static const firstChapters = {
+    'distant',
+    'lateral',
+    'capablanca',
+    'edge',
+    'means',
+  };
+  static const secondChapters = {
+    'reserve',
+    'waiting',
+    'secondReserve',
+    'fixedTarget',
+  };
+
+  /// Os capítulos da Parte 1 antes da T76 que seguem na Parte 1 (o resto saiu
+  /// ou mudou de lição).
+  static const _firstKept = {'distant', 'lateral', 'capablanca', 'edge'};
+
+  /// O exercício que mudou da Parte 1 para a Parte 2 na T76.
+  static const movedExercise = 'e17';
 
   /// Os capítulos da lição antiga que foram para a Parte 2.
   static const secondParts = {
@@ -54,8 +87,90 @@ class EndgameProgressMigration {
       oldExercises.fold<int>(0, (sum, id) => sum + (old.stars[id] ?? 0)) >=
           oldPassScore;
 
-  /// Aplica a migração; devolve o mesmo objeto se não há o que mudar.
-  static EndgameProgress apply(EndgameProgress progress) {
+  /// Aplica as migrações (T74 e T76); devolve o mesmo objeto se não há o que
+  /// mudar.
+  static EndgameProgress apply(EndgameProgress progress) =>
+      _chapters(_split(progress));
+
+  /// T76: leva `diagonal`, `means` e o exercício `e17` para a lição nova.
+  static EndgameProgress _chapters(EndgameProgress progress) {
+    if (progress.chaptersMigrated) return progress;
+    final first = progress.lessons[firstId];
+    final second = progress.lessons[secondId];
+    final ongoing = _ongoingChapters(progress.ongoing);
+    if (first == null && second == null) {
+      return progress.copyWith(ongoing: ongoing, chaptersMigrated: true);
+    }
+    final firstDone = first?.lessonDone ?? false;
+    final secondDone = second?.lessonDone ?? false;
+    final diagonalDone =
+        firstDone || (first?.parts.contains('diagonal') ?? false);
+    final meansDone = secondDone || (second?.parts.contains('means') ?? false);
+    final exercise = first?.exercise;
+    final exerciseMoves = exercise?.exerciseId == movedExercise;
+
+    final firstParts = {
+      if (firstDone)
+        ..._firstKept
+      else
+        ...?first?.parts.intersection(_firstKept),
+      if (meansDone) 'means',
+    };
+    final newFirst = EndgameLessonProgress(
+      lessonDone: firstDone && meansDone,
+      approved: first?.approved ?? false,
+      parts: firstParts,
+      stars: {
+        for (final e in (first?.stars ?? const <String, int>{}).entries)
+          if (e.key != movedExercise) e.key: e.value,
+      },
+      exercise: exerciseMoves ? null : exercise,
+    );
+    final newSecond = EndgameLessonProgress(
+      lessonDone: secondDone,
+      approved: second?.approved ?? false,
+      parts: secondDone
+          ? second!.parts
+          : second?.parts.intersection(secondChapters) ?? const {},
+      stars: {
+        ...?second?.stars,
+        if (first?.stars[movedExercise] case final int stars)
+          movedExercise: stars,
+      },
+      exercise: exerciseMoves ? exercise : second?.exercise,
+    );
+    return EndgameProgress(
+      lessons: {
+        ...progress.lessons,
+        firstId: newFirst,
+        secondId: newSecond,
+        keySquaresId:
+            (progress.lessons[keySquaresId] ?? const EndgameLessonProgress())
+                .copyWith(
+                  parts: {
+                    ...?progress.lessons[keySquaresId]?.parts,
+                    if (diagonalDone) 'diagonal',
+                  },
+                ),
+      },
+      ongoing: ongoing,
+    );
+  }
+
+  /// A lição aberta no `diagonal` (era da Parte 1) passa a apontar para
+  /// `pawns.keySquares`; a aberta no `means` (era da Parte 2), para a Parte 1.
+  static LessonCheckpoint? _ongoingChapters(LessonCheckpoint? checkpoint) {
+    if (checkpoint == null) return checkpoint;
+    final target = switch ((checkpoint.lessonId, checkpoint.part)) {
+      (firstId, 'diagonal') => keySquaresId,
+      (secondId, 'means') => firstId,
+      _ => null,
+    };
+    return target == null ? checkpoint : _retarget(checkpoint, target);
+  }
+
+  /// T74: a Parte 2 ganhou id próprio.
+  static EndgameProgress _split(EndgameProgress progress) {
     if (progress.lessons.containsKey(secondId)) return progress;
     final old = progress.lessons[firstId];
     final ongoing = _ongoing(progress.ongoing);
@@ -87,6 +202,7 @@ class EndgameProgressMigration {
     return EndgameProgress(
       lessons: {...progress.lessons, firstId: first, secondId: second},
       ongoing: ongoing,
+      chaptersMigrated: progress.chaptersMigrated,
     );
   }
 
@@ -99,8 +215,12 @@ class EndgameProgressMigration {
         !secondParts.contains(checkpoint.part)) {
       return checkpoint;
     }
+    return _retarget(checkpoint, secondId);
+  }
+
+  static LessonCheckpoint _retarget(LessonCheckpoint checkpoint, String id) {
     return LessonCheckpoint(
-      lessonId: secondId,
+      lessonId: id,
       step: checkpoint.step,
       fen: checkpoint.fen,
       collected: checkpoint.collected,
