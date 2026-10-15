@@ -38,6 +38,7 @@
       "fen": "6k1/8/8/8/8/8/3P4/7K w - - 0 1",
       "goal": "win",
       "origin": "own",
+      "capitulo": "distant",
       "line": [
         {
           "teach": "h1g2",
@@ -60,6 +61,7 @@
       "fen": "5k2/8/8/8/8/8/2P5/4K3 b - - 0 1",
       "goal": "draw",
       "origin": "own",
+      "capitulo": "distant",
       "line": [
         {
           "teach": "f8e7",
@@ -96,6 +98,7 @@
       "fen": "8/8/8/3p1p2/8/4P3/6K1/2k5 w - - 0 1",
       "goal": "draw",
       "origin": "capablanca",
+      "capitulo": "lateral",
       "line": [
         {
           "teach": "g2g1",
@@ -125,6 +128,7 @@
       "fen": "4k3/8/2p5/2P3K1/8/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
+      "capitulo": "capablanca",
       "line": [
         {
           "teach": "g5f6",
