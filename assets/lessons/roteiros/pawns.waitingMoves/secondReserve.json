@@ -639,7 +639,7 @@
         },
         {
           "id": "pretas",
-          "fen": "8/2p5/5pK1/4kP2/8/2P5/8/8 b - - 0 1",
+          "fen": "8/2p5/5pK1/4kP2/2P5/8/8/8 b - - 0 1",
           "vira": true,
           "objetivo": "ganhar",
           "fim": "etapa",
@@ -652,29 +652,29 @@
             "linha": [
               {
                 "certos": [
-                  "c7c6"
+                  "c7c5"
                 ],
-                "resposta": "c3c4"
+                "resposta": "g6h6"
               },
               {
                 "certos": [
-                  "c6c5"
+                  "e5f5",
+                  "e5e4",
+                  "e5f4"
                 ]
               }
             ],
             "erros": {
-              "c7c5": "rot.secondReserve.pratica.pretas.err.c7c5",
-              "e5e4": "rot.secondReserve.pratica.pretas.err.e5e4",
-              "e5d5": "rot.secondReserve.pratica.pretas.err.e5d5",
+              "c7c6": "rot.secondReserve.pratica.pretas.err.c7c6",
+              "e5d4": "rot.secondReserve.pratica.pretas.err.e5d4",
               "e5d6": "rot.secondReserve.pratica.pretas.err.e5d6",
+              "e5e4": "rot.secondReserve.pratica.pretas.err.e5e4",
               "e5f4": "rot.secondReserve.pratica.pretas.err.e5f4"
             },
             "errosPos": {
-              "8/8/2p2pK1/4kP2/2P5/8/8/8 b - - 0 2": {
+              "8/8/5p1K/2p1kP2/2P5/8/8/8 b - - 1 2": {
                 "e5d4": "rot.secondReserve.pratica.pretas.vez1.err.e5d4",
-                "e5d6": "rot.secondReserve.pratica.pretas.vez1.err.e5d6",
-                "e5e4": "rot.secondReserve.pratica.pretas.vez1.err.e5e4",
-                "e5f4": "rot.secondReserve.pratica.pretas.vez1.err.e5f4"
+                "e5d6": "rot.secondReserve.pratica.pretas.vez1.err.e5d6"
               }
             }
           }
