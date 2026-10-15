@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../core/widgets/speech_balloon.dart';
 import 'script_speech.dart';
 
 /// A página das telas em 3 etapas e do exercício (T70/T72): o balão do
@@ -29,8 +28,8 @@ class ScriptPage extends StatelessWidget {
 
   final Key pageKey;
 
-  /// O balão, com até quantas linhas ele pode ter (nulo: o padrão).
-  final Widget Function(int? lines) speechBuilder;
+  /// O balão, numa área de altura fixa ([ScriptSpeechMetrics.areaHeight]).
+  final Widget Function() speechBuilder;
 
   /// A faixa do Viktor, com a altura de [stripHeight].
   final Widget strip;
@@ -42,36 +41,17 @@ class ScriptPage extends StatelessWidget {
     final metrics = ScriptSpeechMetrics.of(context);
     return LayoutBuilder(
       builder: (context, box) {
-        // O tabuleiro tem um tamanho só: a largura cheia, desde que caiba com
-        // a fala de duas linhas e o retrato acima; nunca encolhe para
-        // centralizar nem para mostrar a lista. Na tela baixa, o maior
-        // possível, e a lista fica abaixo da dobra (Gabriel, 14/10/2026;
-        // canvas `T70-etapa1-estados`).
-        final above =
-            metrics.top +
-            metrics.minHeight(context) +
-            SpeechBalloon.tailExtent +
-            stripHeight;
+        // A área da fala é fixa (3 linhas) e a faixa também: o tabuleiro tem
+        // um tamanho e um lugar só em todos os passos (Gabriel, 14/10/2026).
+        // Ele ocupa a largura cheia se couber; a sobra de altura se divide em
+        // partes iguais entre a faixa e o tabuleiro e entre o tabuleiro e o
+        // rodapé. Na tela baixa, o tabuleiro encosta no rodapé e a lista fica
+        // abaixo da dobra.
+        final above = metrics.areaHeight(context) + stripHeight;
         final room = box.maxHeight - above - compactGap;
         final size = math.max(0.0, math.min(box.maxWidth, room));
-        // A fala vai até 4 linhas, ou mais se couberem acima do tabuleiro
-        // centralizado; depois a letra desce até 12 sp e, só então, o
-        // tabuleiro desce o necessário.
-        final bubbleRoom =
-            (box.maxHeight - size) / 2 -
-            stripHeight -
-            SpeechBalloon.tailExtent -
-            ScriptSpeechMetrics.minTop -
-            2 * metrics.verticalPadding;
-        final lines = metrics.compact
-            ? null
-            : math.max(
-                metrics.maxLines,
-                (bubbleRoom / metrics.lineExtent(context)).floor(),
-              );
-        // Centralizado na altura sempre que dá; a fala sobe no espaço de
-        // cima e só empurra o tabuleiro quando não cabe ali. A tela toda
-        // rola, sem barra, quando a lista passa do fundo.
+        final spare = math.max(0.0, box.maxHeight - above - size);
+        final half = metrics.compact ? 0.0 : spare / 2;
         return SingleChildScrollView(
           key: pageKey,
           child: ConstrainedBox(
@@ -79,23 +59,15 @@ class ScriptPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ConstrainedBox(
-                  constraints: BoxConstraints(
-                    // Tela baixa: o tabuleiro encosta no rodapé (a folga de
-                    // [compactGap]) e a lista fica toda abaixo da dobra, sem a
-                    // primeira linha cortada pelo meio.
-                    minHeight: metrics.compact
-                        ? math.max(0, box.maxHeight - size - compactGap)
-                        : (box.maxHeight - size) / 2,
-                  ),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Column(children: [speechBuilder(lines), strip]),
-                  ),
-                ),
+                // Tela baixa: a sobra fica em cima e o tabuleiro encosta no
+                // rodapé (folga de [compactGap]).
+                if (metrics.compact)
+                  SizedBox(height: math.max(0, spare - compactGap)),
+                speechBuilder(),
+                strip,
+                SizedBox(height: half),
                 Center(child: boardBuilder(size)),
-                // Tela baixa: a lista começa abaixo da dobra, depois do vão.
-                if (metrics.compact) const SizedBox(height: compactGap),
+                SizedBox(height: metrics.compact ? compactGap : half),
                 list,
               ],
             ),

@@ -34,6 +34,7 @@ import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import '../theme/lesson_text_colors.dart';
 import 'sound_off_icon.dart';
+import 'speech_sheet_fade.dart';
 
 /// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
 enum SpeechContext {
@@ -450,6 +451,13 @@ class TeacherSpeech extends StatelessWidget {
       teacher.isMaster ? context.l10n.teacherName(teacher.name) : teacher.name;
 
   Widget _name(BuildContext context) {
+    final name = _plainName(context);
+    // Na faixa que abre a folha da fala (o retrato voa até ela), o nome some
+    // junto enquanto a folha está aberta.
+    return avatarHeroTag == null ? name : SpeechSheetFade(child: name);
+  }
+
+  Widget _plainName(BuildContext context) {
     final theme = Theme.of(context);
     if (lessonV2) {
       return Text(
@@ -708,9 +716,9 @@ class TeacherSpeech extends StatelessWidget {
           ];
     final section = lessonV2 || ViktorSheet.insideOf(context);
     final colors = theme.colorScheme;
-    // Corpo da lição V2 (LICOES-V2 §2): 16/24, peso 400, onSurface.
+    // Corpo da lição V2: 15/22,5, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
-      fontSize: section ? 16 : null,
+      fontSize: section ? 15 : null,
       height: section ? 1.5 : null,
       fontWeight: section ? FontWeight.w400 : null,
       color: section ? colors.onSurface : null,

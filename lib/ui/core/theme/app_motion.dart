@@ -32,6 +32,9 @@ abstract final class AppMotion {
   /// Revelar um lance oculto da faixa de variantes (T69, "desliza para fora").
   static const reveal = Duration(milliseconds: 240);
 
+  /// Quanto tempo o realce da casa tocada na fala fica no tabuleiro.
+  static const squareFlash = Duration(milliseconds: 1500);
+
   /// Os três pontinhos de "digitando" (T70): ciclo e defasagem entre pontos.
   static const typingCycle = Duration(milliseconds: 1200);
   static const typingStagger = Durations.short3;

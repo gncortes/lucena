@@ -9,7 +9,6 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
@@ -99,6 +98,7 @@ Future<_Setup> _open(
 Rect _rect(WidgetTester tester, Key key) => tester.getRect(find.byKey(key));
 
 Future<void> _tap(WidgetTester tester, Key key) async {
+  await tester.ensureVisible(find.byKey(key));
   await tester.tap(find.byKey(key));
   await _settle(tester);
 }
@@ -123,6 +123,29 @@ const _long =
     'respondem com o rei, para depois contarmos as casas.';
 
 void main() {
+  for (final size in const [Size(360, 740), Size(412, 917)]) {
+    testWidgets('área da fala fixa $size: 1 linha, 3 linhas e de volta, o '
+        'tabuleiro e a faixa ficam no mesmo lugar', (tester) async {
+      await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
+      final board = _rect(tester, LessonScriptKeys.board);
+      final strip = _rect(tester, LessonScriptKeys.characterBar);
+      final footer = _rect(tester, LessonScriptKeys.primary);
+      final oneLine = _rect(tester, LessonScriptKeys.speech);
+      await _tap(tester, LessonScriptKeys.primary);
+      final threeLines = _rect(tester, LessonScriptKeys.speech);
+      expect(threeLines.height, greaterThan(oneLine.height));
+      expect(_rect(tester, LessonScriptKeys.board), board);
+      expect(_rect(tester, LessonScriptKeys.characterBar), strip);
+      expect(_rect(tester, LessonScriptKeys.primary), footer);
+      await _tap(tester, LessonScriptKeys.back);
+      expect(_rect(tester, LessonScriptKeys.board), board);
+      expect(_rect(tester, LessonScriptKeys.speech).height, oneLine.height);
+      // A ponta fica a 2 dp do retrato (40 dp, no meio da faixa de 50).
+      expect(strip.top + 5 - threeLines.bottom, closeTo(2, 0.5));
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   for (final size in [_tall, _short]) {
     final label = '${size.width.toInt()}x${size.height.toInt()}';
 
@@ -141,12 +164,17 @@ void main() {
         // Balão abaixo da barra (56 dp), com ao menos 2 dp de folga.
         final speech = _rect(tester, LessonScriptKeys.speech);
         expect(speech.top, greaterThanOrEqualTo(56 + 2 - 0.5));
-        // Tabuleiro centralizado na altura quando cabe; na tela baixa, logo
-        // abaixo da fala.
+        // Com a área da fala fixa, o tabuleiro fica no meio entre a faixa do
+        // Viktor e o rodapé (sobra igual em cima e embaixo); na tela baixa,
+        // logo abaixo da fala.
         final board = _rect(tester, LessonScriptKeys.board);
         final page = _rect(tester, LessonScriptKeys.page);
         if (size == _tall) {
-          expect(board.center.dy, closeTo(page.center.dy, 1));
+          final strip = _rect(tester, LessonScriptKeys.characterBar);
+          expect(
+            board.top - strip.bottom,
+            closeTo(page.bottom - board.bottom, 1),
+          );
         } else {
           expect(board.top, greaterThan(speech.bottom));
         }
@@ -163,49 +191,34 @@ void main() {
         );
       });
 
-      testWidgets('balão: duas linhas no mínimo; sobe antes de empurrar; '
-          'na tela baixa, corta em 2 linhas', (tester) async {
+      testWidgets('balão: área fixa de 3 linhas; fala curta ou longa, o '
+          'tabuleiro e a faixa não se mexem', (tester) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
         final short = _rect(tester, LessonScriptKeys.speech);
-        // A letra é 16 também na tela baixa (canvas `PropV2ExA4P360`).
-        const lines = 2 * 16 * 1.5;
-        final pad = size.height < 700 ? 20.0 : 28.0;
-        expect(
-          short.height,
-          closeTo(lines + pad + SpeechBalloon.tailExtent, 1.5),
-        );
-        final boardTop = _rect(tester, LessonScriptKeys.board).top;
+        final boardBefore = _rect(tester, LessonScriptKeys.board);
+        final stripBefore = _rect(tester, LessonScriptKeys.characterBar);
         await _tap(tester, LessonScriptKeys.primary);
         final grown = _rect(tester, LessonScriptKeys.speech);
-        final board = _rect(tester, LessonScriptKeys.board);
+        // O balão cresce para cima, preso embaixo, junto do retrato.
+        expect(grown.height, greaterThan(short.height));
+        expect(grown.bottom, closeTo(short.bottom, 0.5));
+        expect(_rect(tester, LessonScriptKeys.board), boardBefore);
+        expect(_rect(tester, LessonScriptKeys.characterBar), stripBefore);
         final text = tester.widget<Text>(
-          find.descendant(
-            of: find.byKey(LessonScriptKeys.speech),
-            matching: find.byType(Text),
-          ),
+          find
+              .descendant(
+                of: find.byKey(LessonScriptKeys.speech),
+                matching: find.byType(Text),
+              )
+              .first,
         );
-        if (size == _tall) {
-          // Três linhas: o balão sobe no espaço de cima até a folga mínima e
-          // o tabuleiro desce só o que falta (2,5 dp desde o vão de 6 entre a
-          // ponta e o retrato, canvas CompBalao 3f3938b).
-          expect(grown.height, greaterThan(short.height));
-          final page = _rect(tester, LessonScriptKeys.page);
-          expect(board.center.dy - page.center.dy, inInclusiveRange(0, 3));
-          expect(grown.top, lessThan(short.top));
-          expect(text.maxLines, isNull);
-        } else {
-          // Tela baixa: 2 linhas com reticências, letra 16; o tabuleiro não
-          // se mexe (a fala inteira abre no clique).
-          expect(grown.height, closeTo(short.height, 0.5));
-          expect(board.top, closeTo(boardTop, 0.5));
-          expect(text.maxLines, 2);
-          expect(text.overflow, TextOverflow.ellipsis);
-          expect(text.style?.fontSize, 16);
-        }
+        // Nunca reticências: a letra encolhe (ou a fala rola).
+        expect(text.overflow, isNot(TextOverflow.ellipsis));
+        expect(text.maxLines, isNull);
         expect(tester.takeException(), isNull);
       });
 
-      testWidgets('o tabuleiro deixa 8 dp até o rodapé e a letra do balão é 16 '
+      testWidgets('o tabuleiro deixa 8 dp até o rodapé e a letra do balão é 15 '
           '(canvas PropV2ExA4P360)', (tester) async {
         await _open(tester, size, texts: {'e1': 'Curto.', 'e2': _long});
         final board = _rect(tester, LessonScriptKeys.board);
@@ -219,7 +232,7 @@ void main() {
               )
               .first,
         );
-        expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 16);
+        expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 15);
         expect(tester.takeException(), isNull);
       });
 

@@ -262,10 +262,14 @@ void main() {
           )
           .first,
     );
-    expect(text.maxLines, 2);
+    expect(text.maxLines, isNull);
     final box = tester.getSize(find.byKey(LessonScriptKeys.speech));
     expect(box.height, lessThan(120));
-    await tester.tap(find.byKey(LessonScriptKeys.speech));
+    // Na folga do balão: uma casa citada no meio da fala é alvo de toque.
+    await tester.tapAt(
+      tester.getTopLeft(find.byKey(LessonScriptKeys.speech)) +
+          const Offset(4, 4),
+    );
     await tester.pumpAndSettle();
     expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
   });

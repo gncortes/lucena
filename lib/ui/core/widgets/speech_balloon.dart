@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_shape.dart';
 import 'animated_speech_switcher.dart';
+import 'speech_sheet_fade.dart';
 
 /// Onde fica a ponta do balão (canvas `CompBalao`, parâmetro `ponta`): em
 /// cima (o balão abaixo de quem fala), embaixo (o balão acima), no começo
@@ -245,6 +246,7 @@ class SpeechBalloon extends StatelessWidget {
     this.fitContent = false,
     this.minHeight = 0,
     this.padding = defaultPadding,
+    this.tailSpace = tailGap,
     this.pop = true,
     this.onTap,
     this.tapHint,
@@ -276,6 +278,10 @@ class SpeechBalloon extends StatelessWidget {
   /// A folga do texto (canvas `--balao-pad`: 14 de cima e 16 dos lados), sem
   /// a ponta.
   final EdgeInsetsDirectional padding;
+
+  /// O vão entre a pontinha e o retrato; a lição roteirizada o zera e põe o
+  /// vão que quer (canvas `T70-balao`).
+  final double tailSpace;
 
   /// Pop na primeira aparição; desligado quando quem usa já anima o conjunto.
   final bool pop;
@@ -315,8 +321,8 @@ class SpeechBalloon extends StatelessWidget {
       .textTheme
       .bodyLarge!
       .copyWith(
-        fontSize: 16,
-        height: 24 / 16,
+        fontSize: 15,
+        height: 1.5,
         color: Theme.of(context).colorScheme.onSurface,
       );
 
@@ -330,9 +336,9 @@ class SpeechBalloon extends StatelessWidget {
   };
 
   EdgeInsetsDirectional get _gap => switch (tail) {
-    BalloonTail.up => const EdgeInsetsDirectional.only(top: tailGap),
-    BalloonTail.down => const EdgeInsetsDirectional.only(bottom: tailGap),
-    BalloonTail.start => const EdgeInsetsDirectional.only(start: tailGap),
+    BalloonTail.up => EdgeInsetsDirectional.only(top: tailSpace),
+    BalloonTail.down => EdgeInsetsDirectional.only(bottom: tailSpace),
+    BalloonTail.start => EdgeInsetsDirectional.only(start: tailSpace),
     BalloonTail.none => EdgeInsetsDirectional.zero,
   };
 
@@ -396,6 +402,8 @@ class SpeechBalloon extends StatelessWidget {
     if (tail != BalloonTail.none) {
       balloon = Padding(padding: _gap, child: balloon);
     }
+    // A folha da fala inteira aberta: o balão de cima some, mas o vão fica.
+    balloon = SpeechSheetFade(child: balloon);
     if (!pop) return balloon;
     return SpeechPop(
       alignment: switch (tail) {
@@ -420,6 +428,7 @@ class SpeechText extends StatefulWidget {
     this.maxLines,
     this.onMainLine,
     this.onShowAnswer,
+    this.onSquareTap,
     super.key,
   });
 
@@ -428,6 +437,11 @@ class SpeechText extends StatefulWidget {
   final int? maxLines;
   final VoidCallback? onMainLine;
   final VoidCallback? onShowAnswer;
+
+  /// Com tabuleiro na tela: toda casa citada na fala (`[f5]` ou solta, `f5`)
+  /// vira um alvo de toque, em negrito na cor primária, e chama este callback
+  /// com o nome dela. Nulo, a casa solta fica como texto comum.
+  final ValueChanged<String>? onSquareTap;
 
   /// As marcas na fala que viram o rótulo do botão, sublinhado e clicável
   /// (Gabriel, 14/10/2026): todo botão citado na fala é link.
@@ -440,6 +454,12 @@ class SpeechText extends StatefulWidget {
   /// Uma casa entre colchetes, como `[c6]`: na tela vira negrito azul; fora
   /// dela (voz, medida) fica só a casa.
   static final squarePattern = RegExp(r'\[([a-h][1-8])\]');
+
+  /// Uma casa solta no texto, como palavra inteira: "Rg7" e "1.Rg7" não
+  /// contam, porque a letra da peça vem colada antes.
+  static final looseSquarePattern = RegExp(
+    r'(?<![A-Za-z0-9])[a-h][1-8](?![0-9])',
+  );
 
   /// A fala sem as marcas, para medir e para a voz.
   static String plain(
@@ -473,12 +493,30 @@ class _SpeechTextState extends State<SpeechText> {
   late final _showAnswer = TapGestureRecognizer()
     ..onTap = () => widget.onShowAnswer?.call();
 
+  final _squares = <String, TapGestureRecognizer>{};
+
   @override
   void dispose() {
     _mainLine.dispose();
     _showAnswer.dispose();
+    for (final recognizer in _squares.values) {
+      recognizer.dispose();
+    }
     super.dispose();
   }
+
+  TapGestureRecognizer _squareTap(String square) => _squares.putIfAbsent(
+    square,
+    () =>
+        TapGestureRecognizer()..onTap = () => widget.onSquareTap?.call(square),
+  );
+
+  /// Há algo a desenhar além do texto simples?
+  bool _hasMarkup(String text) =>
+      SpeechText.markPattern.hasMatch(text) ||
+      SpeechText.squarePattern.hasMatch(text) ||
+      (widget.onSquareTap != null &&
+          SpeechText.looseSquarePattern.hasMatch(text));
 
   /// O texto com as marcas trocadas pelos links.
   List<InlineSpan> _spans(BuildContext context, String text) {
@@ -496,13 +534,22 @@ class _SpeechTextState extends State<SpeechText> {
     );
     final spans = <InlineSpan>[];
     var at = 0;
+    final tappable = widget.onSquareTap != null;
     final both = RegExp(
-      '${SpeechText.markPattern.pattern}|${SpeechText.squarePattern.pattern}',
+      '${SpeechText.markPattern.pattern}|${SpeechText.squarePattern.pattern}'
+      '${tappable ? '|(${SpeechText.looseSquarePattern.pattern})' : ''}',
     );
     for (final m in both.allMatches(text)) {
       spans.add(TextSpan(text: text.substring(at, m.start)));
-      if (m.group(2) != null) {
-        spans.add(TextSpan(text: m.group(2), style: square));
+      final name = m.group(2) ?? (tappable ? m.group(3) : null);
+      if (name != null) {
+        spans.add(
+          TextSpan(
+            text: name,
+            style: square,
+            recognizer: tappable ? _squareTap(name) : null,
+          ),
+        );
         at = m.end;
         continue;
       }
@@ -527,8 +574,7 @@ class _SpeechTextState extends State<SpeechText> {
 
   Text _rich(BuildContext context, String text, int? maxLines) {
     final overflow = maxLines == null ? null : TextOverflow.ellipsis;
-    if (!SpeechText.markPattern.hasMatch(text) &&
-        !SpeechText.squarePattern.hasMatch(text)) {
+    if (!_hasMarkup(text)) {
       return Text(
         text,
         style: widget.style,

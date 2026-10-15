@@ -10,6 +10,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/widgets/square_flash.dart';
 import '../view_models/lesson_script_state.dart';
 import 'board_coordinates.dart';
 
@@ -42,6 +43,7 @@ class ScriptBoard extends StatefulWidget {
     required this.settings,
     required this.onMove,
     this.onSquare,
+    this.flash,
     this.showMarks = true,
     super.key,
   });
@@ -62,6 +64,10 @@ class ScriptBoard extends StatefulWidget {
 
   /// Toque numa casa (qualquer uma, até vazia) na prática do tipo toque.
   final ValueChanged<String>? onSquare;
+
+  /// A casa tocada na fala do professor: realçada por 1,5 s, mesmo com as
+  /// marcações desligadas (resposta ao toque do aluno).
+  final SquareFlash? flash;
 
   /// A preferência do botão ao lado do som: sem ela, nem setas nem círculos.
   final bool showMarks;
@@ -88,11 +94,15 @@ class _ScriptBoardState extends State<ScriptBoard> {
   void initState() {
     super.initState();
     _orientation = widget.state.orientation;
+    widget.flash?.addListener(_onFlash);
     _controller = ChessboardController(game: _data(widget.state.fen));
   }
 
+  void _onFlash() => setState(() {});
+
   @override
   void dispose() {
+    widget.flash?.removeListener(_onFlash);
     _run++;
     _controller.dispose();
     super.dispose();
@@ -127,6 +137,10 @@ class _ScriptBoardState extends State<ScriptBoard> {
   @override
   void didUpdateWidget(ScriptBoard old) {
     super.didUpdateWidget(old);
+    if (old.flash != widget.flash) {
+      old.flash?.removeListener(_onFlash);
+      widget.flash?.addListener(_onFlash);
+    }
     final s = widget.state;
     final flipping = s.orientation != old.state.orientation;
     final moved =
@@ -310,9 +324,18 @@ class _ScriptBoardState extends State<ScriptBoard> {
       if (s.touchMiss case final miss?)
         Circle(color: ScriptShapes.red, orig: Square.fromName(miss)),
     };
-    if (!_shapes || !widget.showMarks) return touch;
-    return {
+    final flashed = widget.flash?.square;
+    final spoken = {
       ...touch,
+      if (flashed != null)
+        Circle(
+          color: ScriptShapes.arrow(colors, 'b'),
+          orig: Square.fromName(flashed),
+        ),
+    };
+    if (!_shapes || !widget.showMarks) return spoken;
+    return {
+      ...spoken,
       for (final ScriptArrow arrow in s.arrows)
         Arrow(
           color: ScriptShapes.arrow(colors, arrow.color),

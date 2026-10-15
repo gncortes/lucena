@@ -5,6 +5,7 @@ import '../keys/lesson_script_keys.dart';
 import 'character_avatar.dart';
 import 'script_sheet_route.dart';
 import 'speech_balloon.dart';
+import 'speech_sheet_fade.dart';
 
 /// A tag do retrato do Viktor, que voa da faixa da lição até a folha.
 const scriptViktorHeroTag = 'lessonScript.viktor';
@@ -20,11 +21,13 @@ Future<void> showScriptSpeechSheet(
   required List<String> texts,
   VoidCallback? onMainLine,
   VoidCallback? onShowAnswer,
+  ValueChanged<String>? onSquareTap,
   WidgetBuilder? headerBuilder,
   Color? background,
   double horizontalPadding = 24,
   double headerHeight = 56,
 }) {
+  SpeechSheetFade.open.value = true;
   return showScriptSheet(
     context,
     maxHeightFactor: 0.7,
@@ -37,18 +40,28 @@ Future<void> showScriptSpeechSheet(
               Navigator.of(sheetContext).pop();
               action();
             };
-      return ScriptSpeechSheet(
-        viktor: viktor,
-        title: title,
-        texts: texts,
-        onMainLine: closeThen(onMainLine),
-        onShowAnswer: closeThen(onShowAnswer),
-        headerBuilder: headerBuilder,
-        horizontalPadding: horizontalPadding,
-        headerHeight: headerHeight,
+      // A casa tocada fecha a folha (ela cobre o tabuleiro) e a tela a realça.
+      final onSquare = onSquareTap;
+      return SpeechSheetFade.exempt(
+        child: ScriptSpeechSheet(
+          viktor: viktor,
+          title: title,
+          texts: texts,
+          onMainLine: closeThen(onMainLine),
+          onShowAnswer: closeThen(onShowAnswer),
+          onSquareTap: onSquare == null
+              ? null
+              : (square) {
+                  Navigator.of(sheetContext).pop();
+                  onSquare(square);
+                },
+          headerBuilder: headerBuilder,
+          horizontalPadding: horizontalPadding,
+          headerHeight: headerHeight,
+        ),
       );
     },
-  );
+  ).whenComplete(() => SpeechSheetFade.open.value = false);
 }
 
 /// O conteúdo da folha da fala inteira (público para os testes).
@@ -59,6 +72,7 @@ class ScriptSpeechSheet extends StatelessWidget {
     required this.texts,
     this.onMainLine,
     this.onShowAnswer,
+    this.onSquareTap,
     this.headerBuilder,
     this.horizontalPadding = 24,
     this.headerHeight = 56,
@@ -70,6 +84,7 @@ class ScriptSpeechSheet extends StatelessWidget {
   final List<String> texts;
   final VoidCallback? onMainLine;
   final VoidCallback? onShowAnswer;
+  final ValueChanged<String>? onSquareTap;
 
   /// O cabeçalho no lugar do retrato e do nome (o exercício leva o mesmo da
   /// faixa, com borrar e som).
@@ -139,12 +154,13 @@ class ScriptSpeechSheet extends StatelessWidget {
             child: SpeechText(
               text: texts.join('\n\n'),
               style: theme.textTheme.bodyLarge!.copyWith(
-                fontSize: 16,
-                height: 24 / 16,
+                fontSize: 15,
+                height: 1.5,
                 color: colors.onSurface,
               ),
               onMainLine: onMainLine,
               onShowAnswer: onShowAnswer,
+              onSquareTap: onSquareTap,
             ),
           ),
         ),

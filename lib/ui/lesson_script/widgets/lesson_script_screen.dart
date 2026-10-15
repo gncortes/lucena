@@ -16,6 +16,7 @@ import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
+import '../../core/widgets/square_flash.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
@@ -49,6 +50,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   Character? _viktor;
   bool _started = false;
 
+  /// A casa que o aluno tocou na fala, realçada no tabuleiro.
+  final _flash = SquareFlash();
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +63,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _flash.dispose();
     super.dispose();
   }
 
@@ -220,18 +225,19 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               texts: state.speech,
               onMainLine: onMainLine,
               onShowAnswer: onShowAnswer,
+              onSquareTap: _flash.show,
             ),
           );
     final voice = TeacherSpeech.speechOf(context);
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
-    Widget speechOf(int? lines) {
+    Widget speechOf() {
       Widget speech = ScriptSpeech(
         texts: state.speech,
         metrics: metrics,
-        lines: lines,
         typing: state.machineThinking,
         onMainLine: onMainLine,
         onShowAnswer: onShowAnswer,
+        onSquareTap: _flash.show,
         onOpen: onOpen,
       );
       if (voice != null) {
@@ -295,6 +301,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       size: size,
       settings: settings,
       showMarks: marks,
+      flash: _flash,
       onMove: (uci) => unawaited(cubit.onMove(uci)),
       onSquare: (square) => unawaited(cubit.onSquare(square)),
     );

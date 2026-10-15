@@ -57,10 +57,10 @@ void main() {
           .first,
     );
     expect(dots.width, inInclusiveRange(80, 120));
-    expect(dots.height, lessThan(height));
+    expect(dots.height, lessThanOrEqualTo(height + 6));
   });
 
-  testWidgets('fala longa: a letra diminui até caber em 4 linhas', (
+  testWidgets('fala longa: a letra diminui até caber em 3 linhas', (
     tester,
   ) async {
     tester.view
@@ -97,19 +97,19 @@ void main() {
           .fontSize!;
     }
 
-    expect(await fontOf('Uma fala curta.'), 16);
+    expect(await fontOf('Uma fala curta.'), 15);
     // Na fonte dos testes cada letra é um quadrado: 25 palavras de 3 letras
-    // dão 5 linhas em 16 sp e cabem em 4 com a letra um pouco menor.
+    // dão 4 linhas em 15 sp e cabem em 3 com a letra um pouco menor.
     final fitted = await fontOf(List.filled(25, 'abc').join(' '));
     expect(fitted, lessThan(15));
     expect(fitted, greaterThanOrEqualTo(ScriptSpeechMetrics.minFontSize));
-    // Com a letra menor, a fala cabe em 4 linhas.
+    // Com a letra menor, a fala cabe em 3 linhas.
     final lines =
         (tester.getSize(find.byKey(LessonScriptKeys.speech)).height -
-            2 * 14 -
+            2 * 12 -
             SpeechBalloon.tailHeight) /
         (fitted * ScriptSpeechMetrics.lineHeight);
-    expect(lines, lessThan(4.5));
+    expect(lines, lessThan(3.5));
   });
 
   testWidgets('Ver linha principal na fala: sublinhado, clique faz o mesmo '

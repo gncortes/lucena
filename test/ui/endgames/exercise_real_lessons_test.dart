@@ -347,48 +347,62 @@ void main() {
     expect(said, isNot(contains('aleksandar')));
   });
 
-  group('o balão: 2 linhas e a letra de 16, em andamento e resolvido', () {
-    final long = List.filled(
-      12,
-      'O rei vai a c6 e deixa a casa b8 livre para o rei preto.',
-    ).join(' ');
+  group(
+    'o balão: 3 linhas, letra de 15 que encolhe até 13, sem reticências',
+    () {
+      final long = List.filled(
+        12,
+        'O rei vai a c6 e deixa a casa b8 livre para o rei preto.',
+      ).join(' ');
 
-    Text lines(WidgetTester tester) => tester.widget<Text>(
-      find
-          .descendant(
-            of: find.byKey(LessonScriptKeys.speech),
-            matching: find.byType(Text),
-          )
-          .first,
-    );
-
-    testWidgets('em andamento: corta em 2 linhas, 16 sp, o clique abre a '
-        'folha', (tester) async {
-      await pump(
-        tester,
-        kingPawn,
-        'e13',
-        extraTexts: {'$kingPawn.ex.e13': long},
+      Text lines(WidgetTester tester) => tester.widget<Text>(
+        find
+            .descendant(
+              of: find.byKey(LessonScriptKeys.speech),
+              matching: find.byType(Text),
+            )
+            .first,
       );
-      final text = lines(tester);
-      expect(text.maxLines, 2);
-      expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 16);
-      await tester.tap(find.byKey(LessonScriptKeys.speech));
-      await tester.pumpAndSettle();
-      expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
-    });
 
-    testWidgets('resolvido: mesma letra de 16 e reticências', (tester) async {
-      final cubit = await pump(tester, kingPawn, 'e13');
-      for (final uci in ['d7c6', 'b6b7', 'c6c7']) {
-        await play(tester, cubit, uci);
-      }
-      final text = lines(tester);
-      expect(text.maxLines, 2);
-      expect(text.overflow, TextOverflow.ellipsis);
-      expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 16);
-    });
-  });
+      testWidgets('em andamento: sem corte, letra entre 13 e 15, o clique abre '
+          'a folha', (tester) async {
+        await pump(
+          tester,
+          kingPawn,
+          'e13',
+          extraTexts: {'$kingPawn.ex.e13': long},
+        );
+        final text = lines(tester);
+        expect(text.maxLines, isNull);
+        expect(text.overflow, isNot(TextOverflow.ellipsis));
+        expect(
+          text.style?.fontSize ?? text.textSpan?.style?.fontSize,
+          inInclusiveRange(13, 15),
+        );
+        // Na folga do balão: uma casa citada no meio da fala é alvo de toque.
+        await tester.tapAt(
+          tester.getTopLeft(find.byKey(LessonScriptKeys.speech)) +
+              const Offset(4, 4),
+        );
+        await tester.pumpAndSettle();
+        expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
+      });
+
+      testWidgets('resolvido: mesma letra e sem reticências', (tester) async {
+        final cubit = await pump(tester, kingPawn, 'e13');
+        for (final uci in ['d7c6', 'b6b7', 'c6c7']) {
+          await play(tester, cubit, uci);
+        }
+        final text = lines(tester);
+        expect(text.maxLines, isNull);
+        expect(text.overflow, isNot(TextOverflow.ellipsis));
+        expect(
+          text.style?.fontSize ?? text.textSpan?.style?.fontSize,
+          lessThanOrEqualTo(15),
+        );
+      });
+    },
+  );
 
   testWidgets('360×640: a primeira linha da lista não fica meio escondida', (
     tester,
@@ -435,35 +449,32 @@ void main() {
   });
 
   group('geometria do canvas (PropV2ExA4, A4P360, A7)', () {
-    testWidgets(
-      '360×640: a letra do balão continua 16 e o tabuleiro deixa 8 dp '
-      'até o rodapé',
-      (tester) async {
-        await pump(
-          tester,
-          kingPawn,
-          'e13',
-          size: const Size(360, 640),
-          extraTexts: {'$kingPawn.ex.e13': 'Jogue.'},
-        );
-        final text = tester.widget<Text>(
-          find
-              .descendant(
-                of: find.byKey(LessonScriptKeys.speech),
-                matching: find.byType(Text),
-              )
-              .first,
-        );
-        expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 16);
-        final board = tester.getRect(find.byKey(ExerciseKeys.board));
-        final footer = tester.getRect(find.byKey(ExerciseKeys.footer));
-        expect(footer.top - board.bottom, greaterThanOrEqualTo(8 - 1));
-        expect(board.width, lessThanOrEqualTo(360));
-        expect(tester.takeException(), isNull);
-      },
-    );
+    testWidgets('360×640: a letra do balão é 15 e o tabuleiro deixa 8 dp '
+        'até o rodapé', (tester) async {
+      await pump(
+        tester,
+        kingPawn,
+        'e13',
+        size: const Size(360, 640),
+        extraTexts: {'$kingPawn.ex.e13': 'Jogue.'},
+      );
+      final text = tester.widget<Text>(
+        find
+            .descendant(
+              of: find.byKey(LessonScriptKeys.speech),
+              matching: find.byType(Text),
+            )
+            .first,
+      );
+      expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 15);
+      final board = tester.getRect(find.byKey(ExerciseKeys.board));
+      final footer = tester.getRect(find.byKey(ExerciseKeys.footer));
+      expect(footer.top - board.bottom, greaterThanOrEqualTo(8 - 1));
+      expect(board.width, lessThanOrEqualTo(360));
+      expect(tester.takeException(), isNull);
+    });
 
-    testWidgets('360×740: 20 dp entre a barra de cima e o balão de 2 linhas', (
+    testWidgets('360×740: fala de 1 linha, balão curto preso embaixo da área', (
       tester,
     ) async {
       await pump(
@@ -475,8 +486,8 @@ void main() {
       );
       final bar = tester.getRect(find.byType(AppBar));
       final balloon = tester.getRect(find.byKey(LessonScriptKeys.speech));
-      expect(balloon.top - bar.bottom, closeTo(20, 1));
-      expect(balloon.height, closeTo(76 + 16, 1)); // 76 + a ponta e o vão
+      expect(balloon.top - bar.bottom, greaterThanOrEqualTo(2 - 1));
+      expect(balloon.height, lessThan(76 + 16));
     });
 
     testWidgets('a folha: retrato de 56 e margem de 16', (tester) async {

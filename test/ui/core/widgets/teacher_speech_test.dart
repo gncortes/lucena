@@ -504,10 +504,10 @@ void main() {
       expect(move.style?.fontWeight, FontWeight.w500);
       expect(move.style?.decoration, isNull);
       expect(move.style?.backgroundColor, isNull);
-      // Body: 16/24, w400, onSurface.
+      // Body: 15/22,5, w400, onSurface.
       final body = rich.text.style!;
-      expect(body.fontSize, 16);
-      expect(body.fontSize! * body.height!, closeTo(24, .01));
+      expect(body.fontSize, 15);
+      expect(body.fontSize! * body.height!, closeTo(22.5, .01));
       expect(body.fontWeight, FontWeight.w400);
       expect(body.color, theme.colorScheme.onSurface);
     },

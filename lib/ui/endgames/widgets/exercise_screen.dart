@@ -27,9 +27,11 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
+import '../../core/widgets/square_flash.dart';
 import '../../core/widgets/step_timer.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
+import '../../lesson_script/widgets/script_board.dart' show ScriptShapes;
 import '../../lesson_script/widgets/script_move_list.dart';
 import '../../lesson_script/widgets/script_page.dart';
 import '../../lesson_script/widgets/script_speech.dart';
@@ -81,6 +83,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
 
   bool _background = false;
 
+  /// A casa que o aluno tocou na fala, realçada no tabuleiro.
+  final _flash = SquareFlash();
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final background = state != AppLifecycleState.resumed;
@@ -119,6 +124,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     WidgetsBinding.instance.removeObserver(this);
     _ticker?.cancel();
     _elapsed.dispose();
+    _flash.dispose();
     _board?.dispose();
     _shake.dispose();
     super.dispose();
@@ -307,16 +313,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       );
     }
 
-    Widget speechOf(int? lines) {
+    Widget speechOf() {
       Widget speech = ScriptSpeech(
         texts: [said.text],
         footnote: said.tip,
         metrics: metrics,
-        lines: lines,
-        // Em andamento ou resolvido, o balão corta em 2 linhas com reticências
-        // na letra de sempre e o clique abre a fala inteira (canvas
-        // PropV2ExA4).
-        clipLines: ScriptSpeechMetrics.minLines,
+        onSquareTap: _flash.show,
         onOpen: viktor == null
             ? null
             : () => unawaited(
@@ -325,6 +327,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   viktor: viktor,
                   title: l10n.teacherName(viktor.name),
                   texts: texts,
+                  onSquareTap: _flash.show,
                   background: Theme.of(context).colorScheme.surfaceContainerLow,
                   headerBuilder: (sheet) => header(sheet, viktor, 56),
                   // Canvas `PropV2ExA7`: retrato de 56 e margem de 16.
@@ -504,7 +507,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (widget.previewFen == null) return const SizedBox.shrink();
     return ScriptPage(
       pageKey: ExerciseKeys.page,
-      speechBuilder: (_) => const SizedBox.shrink(),
+      speechBuilder: () => const SizedBox.shrink(),
       strip: const SizedBox(height: ScriptPage.stripHeight),
       boardBuilder: (size) => KeyedSubtree(
         key: _boardAreaKey,
@@ -547,32 +550,44 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                 textDirection: TextDirection.ltr,
                 // A seta vermelha do lance errado fica parada enquanto ele é
                 // comentado (canvas PropV2ExA3/A8).
-                child: Chessboard(
-                  key: ExerciseKeys.board,
-                  size: size,
-                  controller: board,
-                  settings: boardSettings.chessground,
-                  orientation: state.side,
-                  shapes: {
-                    if (hint is NormalMove)
-                      Arrow(
-                        color: AppColors.successColor.withValues(
-                          alpha: AppColors.boardMarkAlpha,
+                child: ListenableBuilder(
+                  listenable: _flash,
+                  builder: (context, _) => Chessboard(
+                    key: ExerciseKeys.board,
+                    size: size,
+                    controller: board,
+                    settings: boardSettings.chessground,
+                    orientation: state.side,
+                    shapes: {
+                      // A casa tocada na fala do professor.
+                      if (_flash.square case final flashed?)
+                        Circle(
+                          color: ScriptShapes.arrow(
+                            Theme.of(context).colorScheme,
+                            'b',
+                          ),
+                          orig: Square.fromName(flashed),
                         ),
-                        orig: hint.from,
-                        dest: hint.to,
-                      ),
-                    if (wrong is NormalMove)
-                      Arrow(
-                        color: AppColors.errorColor.withValues(
-                          alpha: AppColors.boardMarkAlpha,
+                      if (hint is NormalMove)
+                        Arrow(
+                          color: AppColors.successColor.withValues(
+                            alpha: AppColors.boardMarkAlpha,
+                          ),
+                          orig: hint.from,
+                          dest: hint.to,
                         ),
-                        orig: wrong.from,
-                        dest: wrong.to,
-                      ),
-                  },
-                  onMove: (move, {viaDragAndDrop}) =>
-                      context.read<ExerciseCubit>().play(move),
+                      if (wrong is NormalMove)
+                        Arrow(
+                          color: AppColors.errorColor.withValues(
+                            alpha: AppColors.boardMarkAlpha,
+                          ),
+                          orig: wrong.from,
+                          dest: wrong.to,
+                        ),
+                    },
+                    onMove: (move, {viaDragAndDrop}) =>
+                        context.read<ExerciseCubit>().play(move),
+                  ),
                 ),
               ),
       ),
