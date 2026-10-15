@@ -1,0 +1,2452 @@
+{
+ "source": "https://raw.githubusercontent.com/supertorpe/chessendgametraining/master/code/src/static/endgamedatabase.json",
+ "lessons": [
+  "pawns.distantOpposition",
+  "pawns.waitingMoves"
+ ],
+ "links": {
+  "pawn.pawnVsKing.0005": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0008": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsKing.0009": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0010": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0011": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0012": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsKing.0013": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsKing.0014": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0015": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0016": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0017": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0018": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsKing.0019": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0020": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0023": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsKing.0024": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0025": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0026": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0027": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsKing.0028": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0029": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsKing.0030": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0031": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0032": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsKing.0033": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsKing.0034": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0035": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsKing.0036": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsKing.0037": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsKing.0038": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsPawn.0004": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsPawn.0015": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsPawn.0022": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsPawn.0029": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsPawn.0030": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0031": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsPawn.0033": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsPawn.0035": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsPawn.0038": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsPawn.0039": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsPawn.0040": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0042": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsPawn.0043": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsPawn.0045": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.pawnVsPawn.0080": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0082": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0083": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0089": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0090": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0091": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0094": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsPawn.0095": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0096": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.pawnVsPawn.0098": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsPawn.0099": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0100": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0104": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.pawnVsPawn.0110": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsPawn.0111": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.pawnVsPawn.0113": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.pawnVsPawn.0114": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsKing.0001": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsKing.0002": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsKing.0003": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsKing.0005": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsKing.0006": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsKing.0007": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsKing.0008": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsKing.0009": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsKing.0010": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsKing.0011": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsKing.0012": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0001": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0002": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0004": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0006": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0007": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0008": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0012": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0013": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0014": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0015": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0016": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0017": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0018": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0019": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0020": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0021": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0022": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0023": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0026": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0027": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0029": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0030": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0031": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0032": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0033": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0034": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0035": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0036": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0037": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0039": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0040": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0041": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0042": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0043": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0044": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0045": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0046": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0047": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0049": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0053": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0054": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0055": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0056": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0057": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0058": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0060": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0061": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0063": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0064": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0065": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0067": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0069": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0071": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0072": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0073": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0074": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0076": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0078": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0079": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0080": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0081": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0082": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0083": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0085": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0088": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0097": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0102": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0103": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0104": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0107": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0108": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0109": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0111": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0113": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0114": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0115": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0118": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0119": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0120": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0121": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0122": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0123": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0124": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0125": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0126": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0129": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0130": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0131": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0132": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0133": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0134": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0135": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0138": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0139": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0142": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0143": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0144": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0145": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0146": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0147": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0148": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0149": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0151": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0153": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0155": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0157": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0159": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0160": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsPawn.0162": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0002": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0005": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0006": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0007": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0010": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0012": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0014": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0015": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0020": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0021": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0022": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0023": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0024": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0026": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0027": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0029": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0032": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0033": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0036": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0038": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0039": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0041": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0047": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0051": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0052": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0053": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0054": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0056": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0058": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0059": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0063": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0065": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0067": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0069": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0071": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0072": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0073": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0074": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0075": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0076": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0077": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0080": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0081": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0082": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0083": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0084": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0086": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0087": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0090": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0091": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0092": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0093": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0094": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0095": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0099": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0100": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0103": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0106": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0107": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0108": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0109": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0110": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0111": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0112": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0113": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0114": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0115": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0116": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0117": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0120": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0121": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0122": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0123": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0124": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0125": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0126": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0127": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0128": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0130": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0131": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0133": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0135": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0136": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0137": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0139": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0140": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0144": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0146": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0147": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0148": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0149": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0150": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0153": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0155": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.twoPawnsVsTwoPawns.0156": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0001": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   },
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0002": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0003": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0004": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0005": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0006": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0007": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0009": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0010": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0011": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0012": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0013": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0014": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0015": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0016": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0017": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0018": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0019": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0020": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0021": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0022": [
+   {
+    "lesson": "pawns.distantOpposition",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0023": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0024": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0025": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0026": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0027": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0028": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0029": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 6
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0030": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0031": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0032": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0033": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0034": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0035": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0036": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0037": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0038": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0039": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0040": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0042": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "base",
+    "ply": 0
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0043": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0044": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0045": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0046": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0047": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0048": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 2
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0049": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 4
+   }
+  ],
+  "pawn.threePawnsVsTwoPawns.0050": [
+   {
+    "lesson": "pawns.waitingMoves",
+    "relation": "transposes",
+    "ply": 8
+   }
+  ]
+ }
+}
