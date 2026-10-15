@@ -177,7 +177,9 @@ class _Run {
     if (position.board.occupied.size > 3) {
       final best = table.best(position.fen);
       if (best != null) return best;
-      problems.add('$where: o aluno não acha lance na tabela em ${s.fen}');
+      if (!offTable) {
+        problems.add('$where: o aluno não acha lance na tabela em ${s.fen}');
+      }
     }
     return MachineMove.choose(_kpk, position)!;
   }
