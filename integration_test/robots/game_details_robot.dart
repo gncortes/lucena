@@ -29,11 +29,20 @@ class GameDetailsRobot {
       .state;
 
   Future<void> review() async {
+    // A rápida começa sozinha ao abrir (T65): a média só depois dela.
+    await _waitReview((s) => s.review != null);
     await $(GameDetailsKeys.reviewButton).scrollTo().tap();
     // Com a engine de verdade a revisão leva um tempo.
-    await $(GameDetailsKeys.reviewSummary)
-        .waitUntilExists(timeout: const Duration(minutes: 3));
+    await _waitReview((s) => (s.review?.depth ?? 0) >= 2);
     await $.pumpAndSettle();
+  }
+
+  Future<void> _waitReview(bool Function(GameDetailsState) done) async {
+    final end = DateTime.now().add(const Duration(minutes: 3));
+    while (!(done(state) && !state.reviewing) && DateTime.now().isBefore(end)) {
+      await $.pump(const Duration(milliseconds: 200));
+    }
+    expect(done(state) && !state.reviewing, isTrue, reason: 'revisão');
   }
 
   Future<void> expectReviewed() async {

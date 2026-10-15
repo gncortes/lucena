@@ -53,7 +53,7 @@
   "part.seventh.title": "Seventh without check",
   "part.seventh.summary": "With the king on the sixth, take the pawn to the seventh without check. With check, the black king ends up stalemated.",
   "part.corners.title": "Rook and knight pawns",
-  "part.corners.summary": "Against a rook pawn, the king that reaches the corner draws, as Barcza did against Fischer. And the rules to take to your games.",
+  "part.corners.summary": "Against a rook pawn, the king that reaches the corner in front of the pawn draws: nothing can drive it out, and only stalemate is left.",
   "step.t_square.hint2": "From the pawn on g4 to g8 is four squares. Count four files towards the black king.",
   "step.d_doubleStep": "Now the pawn on the second rank. It may move two squares on its first move, so you count the square as if it already stood on the third: from b3 to g8. The king on h5 is outside.",
   "step.d_doubleStep.m1": "1.b4!, the double step. The square now runs from b4 to f8, and the black king cannot reach the f-file in time. With 1.b3?, the square would run from b3 to g8, and 1...Kg6 would step into it.",

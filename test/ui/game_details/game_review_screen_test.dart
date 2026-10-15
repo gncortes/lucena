@@ -328,6 +328,16 @@ void main() {
     }
     expect(cubit.state.reviewing, isTrue);
     expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
+    // Vão de 8 entre a barra de progresso e o retrato da história.
+    final storyPadding = tester.widget<Padding>(
+      find
+          .ancestor(
+            of: find.byKey(GameDetailsKeys.story),
+            matching: find.byType(Padding),
+          )
+          .first,
+    );
+    expect(storyPadding.padding, const EdgeInsets.only(top: 8, bottom: 14));
     final sheetTop = tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
     final board = tester.getRect(find.byKey(GameDetailsKeys.board));
     expect(board.bottom, lessThanOrEqualTo(sheetTop));
@@ -490,7 +500,7 @@ void main() {
   }
 
   testWidgets(
-    'o Viktor conta uma história; pronta a revisão, ela fica até o ✕',
+    'o Viktor conta uma história; pronta a revisão, ela fica sem ✕ no balão',
     (tester) async {
       final id = await progress.addAttempt(game);
       final cubit = await pump(tester, id);
@@ -514,9 +524,14 @@ void main() {
       expect(cubit.state.reviewing, isFalse);
       expect(find.byKey(GameDetailsKeys.story), findsOneWidget);
 
-      await tester.tap(find.byKey(GameDetailsKeys.storyClose));
-      await tester.pumpAndSettle();
-      expect(find.byKey(GameDetailsKeys.story), findsNothing);
+      // Sem ✕ por cima da fala: o fechar é o da folha.
+      expect(
+        find.descendant(
+          of: find.byKey(GameDetailsKeys.story),
+          matching: find.byIcon(Icons.close_rounded),
+        ),
+        findsNothing,
+      );
     },
   );
 }

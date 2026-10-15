@@ -16,7 +16,7 @@
   "part.active.title": "The active rook",
   "part.active.summary": "Against a bishop's or central pawn, the rook leaves the first rank before the attacking king gets in. It goes to the far end, or to the third rank if the pawn is still on the fourth.",
   "part.seventh.title": "Pawn on the seventh",
-  "part.seventh.summary": "With the pawn one step from queening, the rook watches the queening square from afar. Then the rules to take into your games.",
+  "part.seventh.summary": "With the pawn one step from queening, the rook watches the queening square along the first rank, from the long side, far from the enemy king.",
   "step.t_knight": "A knight's pawn on the third rank, the black king beside it, and no time left for the Philidor defence. Your king is in front of the pawn and the rook on the first rank. What do you play, and why is that enough?",
   "step.t_knight.hint1": "Think about where the black rook would need to go to threaten mate on the first rank, and how much room it has for that.",
   "step.t_knight.hint2": "Count the files on the other side of your king. If the black rook has no way round, does your rook need to do anything?",

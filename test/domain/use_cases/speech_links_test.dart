@@ -3,6 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/use_cases/speech_links.dart';
 
 void main() {
+  test('o número do lance faz dele um lance; sem número, "g3" é casa', () {
+    final letters = SpeechLinks.english;
+    for (final text in ['1.g4', '2...g5', '1.Re4']) {
+      final link = SpeechLinks.find(text, letters).single;
+      expect(link.isMove, isTrue, reason: text);
+    }
+    expect(SpeechLinks.find('g3', letters).single.isMove, isFalse);
+  });
+
   const pt = SpeechLinks.portuguese;
   const en = SpeechLinks.english;
 

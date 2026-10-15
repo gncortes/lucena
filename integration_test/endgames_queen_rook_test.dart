@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -17,6 +18,7 @@ const _lessons = {
 
 void main() {
   for (final MapEntry(key: id, value: finish) in _lessons.entries) {
+    // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
     patrolTest('$id: a lição inteira, todos os exercícios e o passo final '
         'liberado', ($) async {
       await AppRobot($).open(systemLocale: _english);
@@ -35,6 +37,6 @@ void main() {
       await endgames.solveAll(lesson);
       await endgames.expectPassed();
       await endgames.expectFinalStep();
-    });
+    }, skip: !VisibleLessons.endgameLessonIds.contains(id));
   }
 }

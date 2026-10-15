@@ -7,7 +7,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/share/share_repository.dart';
+import '../theme/app_button.dart';
 import 'share_cubit.dart';
+import '../theme/app_colors.dart';
 
 /// A imagem do que está dentro do [RepaintBoundary] de [boundary], em PNG.
 /// Com [footer], ela ganha margem na cor [background] e o texto embaixo (a
@@ -17,7 +19,7 @@ Future<Uint8List?> capturePng(
   List<GlobalKey> extra = const [],
   double pixelRatio = 3,
   String? footer,
-  Color background = Colors.white,
+  Color background = AppColors.white,
   TextStyle? footerStyle,
 }) async {
   final render = boundary.currentContext?.findRenderObject();
@@ -43,7 +45,7 @@ Future<Uint8List?> captureBoundaryPng(
   List<RenderRepaintBoundary> extra = const [],
   double pixelRatio = 3,
   String? footer,
-  Color background = Colors.white,
+  Color background = AppColors.white,
   TextStyle? footerStyle,
 }) async {
   var image = await render.toImage(pixelRatio: pixelRatio);
@@ -140,7 +142,9 @@ class ShareButton extends StatelessWidget {
     create: (context) => ShareCubit(context.read<ShareRepository>()),
     child: BlocBuilder<ShareCubit, bool>(
       builder: (context, sharing) => FilledButton.tonalIcon(
-        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(kButtonHeight),
+        ),
         icon: const Icon(Icons.share_rounded),
         label: Text(label),
         onPressed: sharing

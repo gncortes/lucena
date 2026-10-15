@@ -73,28 +73,21 @@ void main() {
   });
 
   for (final mode in [ThemeMode.light, ThemeMode.dark]) {
-    testWidgets('painel e X usam a superfície dos painéis em $mode', (
-      tester,
-    ) async {
+    testWidgets('a folha usa a superfície das folhas em $mode', (tester) async {
       await open(tester, theme: mode);
       final panel = find.byKey(LessonSoundKeys.dialog);
       final theme = Theme.of(tester.element(panel));
-      final dialog = tester.widget<Dialog>(panel);
-      final closeMaterial = tester.widget<Material>(
-        find
-            .ancestor(
-              of: find.byKey(LessonSoundKeys.close),
-              matching: find.byType(Material),
-            )
-            .first,
-      );
+      final sheet = tester.widget<Material>(panel);
       expect(
-        dialog.backgroundColor,
-        theme.bottomSheetTheme.modalBackgroundColor,
+        sheet.color,
+        theme.bottomSheetTheme.modalBackgroundColor ??
+            theme.colorScheme.surfaceContainerLow,
       );
-      expect(dialog.surfaceTintColor, Colors.transparent);
-      expect(closeMaterial.color, dialog.backgroundColor);
-      expect(dialog.backgroundColor == Colors.white, mode == ThemeMode.light);
+      // A folha é a mesma do padrão do app: raio 28 e alça.
+      expect(
+        (sheet.shape! as RoundedRectangleBorder).borderRadius,
+        const BorderRadius.vertical(top: Radius.circular(28)),
+      );
     });
   }
 
@@ -187,8 +180,8 @@ void main() {
     expect(sound.height, greaterThanOrEqualTo(48));
     expect(voice.height, greaterThanOrEqualTo(48));
     expect(voice.center.dy - sound.center.dy, closeTo(52, 1));
-    expect(panel.width, 340);
-    expect(panel.height, lessThanOrEqualTo(280));
+    // A folha tem a largura máxima do tema de folhas (640).
+    expect(panel.width, 640);
     await tester.tap(find.text('Voz do Viktor'));
     await tester.pumpAndSettle();
     expect(voiceRepo.settings.enabled, isFalse);

@@ -10,10 +10,12 @@ class FakeVoiceRepository implements VoiceRepository {
     this.settings = const VoiceSettings(),
     List<TtsVoice>? voices,
     Map<String, CharacterVoiceProfile>? profiles,
+    this.known = const {},
   }) : _voices = voices ?? sampleVoices,
        _profiles = profiles ?? sampleProfiles;
 
   VoiceSettings settings;
+  final Map<String, VoiceGender> known;
   final List<TtsVoice> _voices;
   final Map<String, CharacterVoiceProfile> _profiles;
   final _events = StreamController<TtsEvent>.broadcast();
@@ -31,11 +33,9 @@ class FakeVoiceRepository implements VoiceRepository {
   ];
 
   static const sampleProfiles = {
-    'master': CharacterVoiceProfile(characterId: 'master', pitch: 0.9),
     'grandpa': CharacterVoiceProfile(
       characterId: 'grandpa',
-      pitch: 0.8,
-      rate: 0.85,
+      age: VoiceAge.elder,
     ),
   };
 
@@ -53,6 +53,9 @@ class FakeVoiceRepository implements VoiceRepository {
 
   @override
   Future<Map<String, CharacterVoiceProfile>> profiles() async => _profiles;
+
+  @override
+  Future<Map<String, VoiceGender>> knownGenders() async => known;
 
   /// Termina cada fala logo depois de começar, como um sintetizador rápido.
   bool autoFinish = false;

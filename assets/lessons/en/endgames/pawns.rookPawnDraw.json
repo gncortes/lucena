@@ -8,7 +8,7 @@
   "part.kingFirst.title": "King first",
   "part.kingFirst.summary": "The pawn waits. First the white king steps into the black king's path and shoulders it away.",
   "part.summary.title": "Barcza versus Fischer",
-  "part.summary.summary": "How Barcza held the draw against Fischer in 1959, a similar position where the corner no longer saves, and the rules of the lesson.",
+  "part.summary.summary": "Against a rook pawn, the defender runs along the diagonal to the square next to the corner; one wasted move, and the corner no longer saves him.",
   "step.t_keys": "In the king and pawn lesson you saw that the king in the corner draws. Here the black king hasn't got there yet, and it is one step from f8. Which white king move wins, and why do almost all the others draw?",
   "step.t_keys.hint1": "Forget the pawn for a moment. What does the black king want to do on its next move?",
   "step.t_keys.hint2": "Look at the two squares next to the corner, g7 and g8. Whoever gets close to them first decides.",

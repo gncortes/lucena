@@ -16,7 +16,7 @@
   "part.pass.title": "Trocar ou passar",
   "part.pass.summary": "Com dois peões contra um, em vez de trocar, passe ao lado e crie um peão passado protegido.",
   "part.fischer.title": "Fischer contra Larsen",
-  "part.fischer.summary": "Em Denver, 1971, Fischer troca os bispos porque sabe que o final de peões é ganho. Depois, as regras da aula e uma posição para jogar até o fim.",
+  "part.fischer.summary": "Com o peão passado mais distante, troque as peças e simplifique para o final de peões: ele atrai o rei adversário, e o seu rei captura do outro lado.",
   "step.t_decoy": "O material está igual: cada lado tem dois peões e um peão passado, o branco em a4 e o preto em e5. Os dois reis estão no centro. Por que esta posição é ganha para as brancas, e qual é o plano?",
   "step.t_decoy.hint1": "Compare as distâncias. O peão de e5 está perto dos dois reis. O de a4 está longe de tudo.",
   "step.t_decoy.hint2": "Se o rei preto for capturar o peão de a, por quanto tempo ele fica longe dos peões de e5 e g4? E o que o seu rei faz nesse tempo?",

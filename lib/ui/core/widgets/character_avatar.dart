@@ -9,12 +9,24 @@ class CharacterAvatar extends StatelessWidget {
   const CharacterAvatar({
     required this.character,
     this.size = 44,
+    this.radius,
     this.emotion,
     super.key,
   });
 
+  /// Os tamanhos do retrato (T73, D9; canvas 96d710e): fala em cartão fora do
+  /// tabuleiro, linha da lição, jogador em linha, tour e confronto (VS).
+  static const speech = 56.0;
+  static const lessonRow = 40.0;
+  static const player = 44.0;
+  static const tour = 64.0;
+  static const versus = 72.0;
+
   final Character character;
   final double size;
+
+  /// Raio dos cantos; nulo: 14% do tamanho.
+  final double? radius;
   final Emotion? emotion;
 
   @override
@@ -22,7 +34,7 @@ class CharacterAvatar extends StatelessWidget {
     return SizedBox.square(
       dimension: size,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(size * 0.14),
+        borderRadius: BorderRadius.circular(radius ?? size * 0.14),
         child: AnimatedSwitcher(
           duration: AppMotion.state,
           child: Image.asset(

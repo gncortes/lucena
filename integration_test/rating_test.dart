@@ -155,9 +155,8 @@ void main() {
     await HomeRobot($).expectVisible();
   });
 
-  patrolTest('a etapa de speedrun conta para o rating como a partida comum', (
-    $,
-  ) async {
+  patrolTest('a etapa de speedrun não mexe no rating; o bônus vem na '
+      'conclusão', ($) async {
     final app = AppRobot($);
     final speedrun = SpeedrunRobot($);
     final board = FreeBoardRobot($);
@@ -165,20 +164,59 @@ void main() {
     await app.open(systemLocale: _english);
     await play($, won: true, level: 1000);
     await progress.expectRatedGames('1 rated game');
+    final before = await progress.rating();
 
     await speedrun.open();
-    await speedrun.openSpeedrun('e2e.rung');
+    await speedrun.openSpeedrun('e2e.ending');
+    await speedrun.expectBonusOffer();
     await speedrun.start();
     final (from, to) = E2EJourneyRepository.mate;
+    // As etapas do meio terminam sem rating na conclusão.
+    for (var stage = 0; stage < 2; stage++) {
+      await app.advanceTime(const Duration(seconds: 3));
+      await board.move(from, to);
+      await ConclusionRobot($).expectNoRating();
+      await speedrun.continueToNextStage();
+    }
+    await app.advanceTime(const Duration(seconds: 3));
     await board.move(from, to);
-    await progress.expectRatingChanged();
-    // Conclusão da etapa, speedrun e lista: de volta à tela inicial.
-    await ConclusionRobot($).close();
-    for (var screen = 0; screen < 2; screen++) {
+    await speedrun.finishAttempt();
+    await speedrun.back();
+    await speedrun.openHistory(0);
+    await speedrun.expectBonusEarned();
+
+    // Resumo, Histórico, speedrun e lista: de volta à tela inicial.
+    for (var screen = 0; screen < 4; screen++) {
       await speedrun.back();
     }
     await HomeRobot($).expectVisible();
+    expect(await progress.rating(), greaterThan(before));
+    // O bônus sobe o rating, mas não conta como partida (T67c); as etapas
+    // também não.
+    await progress.expectRatedGames('1 rated game');
+  });
 
-    await progress.expectRatedGames('2 rated games');
+  patrolTest('perder a etapa de speedrun não mexe no rating', ($) async {
+    final app = AppRobot($);
+    final speedrun = SpeedrunRobot($);
+    final progress = ProgressRobot($);
+    await app.open(systemLocale: _english);
+    await play($, won: true, level: 1000);
+    final before = await progress.rating();
+
+    await speedrun.open();
+    await speedrun.openSpeedrun('e2e.ending');
+    await speedrun.start();
+    await app.advanceTime(const Duration(seconds: 3));
+    await FreeBoardRobot($).resign();
+    await ConclusionRobot($).expectNoRating();
+
+    // Conclusão, speedrun e lista: de volta à tela inicial.
+    for (var screen = 0; screen < 3; screen++) {
+      await speedrun.back();
+    }
+    await HomeRobot($).expectVisible();
+    expect(await progress.rating(), before);
+    await progress.expectRatedGames('1 rated game');
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -51,7 +52,7 @@ void main() {
                 BlocProvider.value(value: cubit, child: const LessonScreen()),
           ),
           GoRoute(
-            path: '/board',
+            path: '/setup',
             builder: (_, state) {
               opened = state.uri;
               return const Scaffold(body: Text('Free board destination'));
@@ -73,9 +74,7 @@ void main() {
       await tester.tap(button);
       await tester.pumpAndSettle();
       expect(opened!.queryParameters['fen'], original.fen);
-      expect(opened!.queryParameters['view'], original.current!.side.name);
-      expect(opened!.queryParameters, isNot(contains('side')));
-      expect(opened!.queryParameters, isNot(contains('opponent')));
+      expect(opened!.queryParameters['goal'], PositionGoal.win.code);
       expect(cubit.state.step, original.step);
       expect(cubit.state.reached, original.reached);
       router.pop();

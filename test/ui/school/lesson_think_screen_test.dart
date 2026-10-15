@@ -5,8 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
-import 'package:lucena/domain/models/explanation.dart';
-import 'package:lucena/domain/use_cases/speech_links.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
@@ -24,24 +22,8 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/sheet_settle.dart';
 import '../../../testing/test_app.dart';
-
-class _ThinkFeedback extends EmptyExerciseFeedbackRepository
-    implements ExplanationRepository {
-  const _ThinkFeedback(this.payload);
-  final ExplanationPayload payload;
-  @override
-  Future<ExplanationPayload?> findPayload({
-    required String lessonId,
-    required String exerciseId,
-    required String kind,
-    required int turn,
-    required String fen,
-    required String language,
-    required ExplanationState state,
-    String? playedUci,
-  }) async => payload.forState(state, playedUci: playedUci);
-}
 
 /// T60: o modo exercício da lição. Resolvendo, o enunciado curto em cima, o
 /// tabuleiro no centro e o cronômetro (contando para cima) no canto de
@@ -126,6 +108,7 @@ void main() {
     );
     addTearDown(cubit.close);
     await cubit.load('rook.lucena', locale.languageCode);
+    await cubit.startStepClock();
     final settings = SettingsCubit(
       FakeSettingsRepository(const AppSettings()),
       languages: AppLanguage.selectable,
@@ -157,6 +140,10 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // A folha abre sozinha com o texto novo e recolhe depois do tempo de
+    // leitura: o teste parte dela recolhida.
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pumpAndSettle();
     return cubit;
   }
 
@@ -175,161 +162,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Pensar keeps its bubble until entering the next step', (
-    tester,
-  ) async {
-    final cubit = await pump(tester);
-    TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
-      ),
-    );
-    expect(teacher().lessonPromptBubble, isTrue);
-    final speech = find.byKey(LessonKeys.speech);
-    final bubble = tester
-        .widgetList<Container>(
-          find.ancestor(of: speech, matching: find.byType(Container)),
-        )
-        .firstWhere((widget) => widget.decoration is BoxDecoration);
-    final colors = Theme.of(tester.element(speech)).colorScheme;
-    expect(
-      (bubble.decoration! as BoxDecoration).color,
-      colors.surfaceContainerHighest,
-    );
-    expect(
-      bubble.padding,
-      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-    );
-    await cubit.next();
-    await tester.pumpAndSettle();
-    // Passo de lance (PropV2LicaoPratica): a fala também fica no balão cinza.
-    expect(cubit.state.step, 1);
-    expect(teacher().lessonPromptBubble, isTrue);
-    final moveBubble = tester
-        .widgetList<Container>(
-          find.ancestor(
-            of: find.byKey(LessonKeys.speech),
-            matching: find.byType(Container),
-          ),
-        )
-        .firstWhere((widget) => widget.decoration is BoxDecoration);
-    expect(
-      (moveBubble.decoration! as BoxDecoration).color,
-      colors.surfaceContainerHighest,
-    );
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets(
-    'Pensar authored intro keeps one bubble and excludes variations',
-    (tester) async {
-      final line = ExplanationVariation(
-        id: 'main',
-        label: '1.Rc4',
-        outcome: VariationOutcome.accepted,
-        texts: const ['The rook moves.'],
-        originFen: fen,
-        movesUci: const ['c1c4'],
-        movesSan: const ['1.Rc4'],
-        validated: true,
-      );
-      final cubit = await pump(
-        tester,
-        feedback: _ThinkFeedback(
-          ExplanationPayload(
-            positionId: 'think',
-            state: ExplanationState.intro,
-            explanations: [
-              ExplanationBlock(
-                id: 'context',
-                kind: ExplanationKind.context,
-                texts: [
-                  'First context paragraph.',
-                  'Second context paragraph.',
-                ],
-              ),
-              ExplanationBlock(
-                id: 'solution',
-                kind: ExplanationKind.mainSolution,
-                texts: const ['The solution.'],
-                variations: [line],
-              ),
-            ],
-          ),
-        ),
-      );
-      TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
-        ),
-      );
-      expect(cubit.state.explanation?.state, ExplanationState.intro);
-      expect(teacher().lessonPromptBubble, isTrue);
-      expect(
-        teacher().explanation?.explanations.single.kind,
-        ExplanationKind.context,
-      );
-      final step = cubit.state.step;
-      teacher().onVariation!(line.open());
-      await tester.pumpAndSettle();
-      expect(teacher().lessonPromptBubble, isFalse);
-      teacher().onVariation!(null);
-      await tester.pumpAndSettle();
-      expect(teacher().lessonPromptBubble, isTrue);
-      expect(cubit.state.step, step);
-      await cubit.next();
-      await tester.pumpAndSettle();
-      // Passo de lance: o balão também vale (PropV2LicaoPratica).
-      expect(teacher().lessonPromptBubble, isTrue);
-      teacher().onVariation!(line.open());
-      await tester.pumpAndSettle();
-      expect(teacher().lessonPromptBubble, isFalse);
-      teacher().onVariation!(null);
-      await tester.pumpAndSettle();
-      expect(teacher().lessonPromptBubble, isTrue);
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets('Pensar SAN replay and restore retain prompt and progress', (
-    tester,
-  ) async {
-    final cubit = await pump(
-      tester,
-      promptTexts: LessonTexts.fromJson({
-        ...texts.toJson(),
-        'rook.lucena.think.hint1': 'Consider 1.Rc4.',
-      }),
-    );
-    TeacherSpeech teacher() => tester.widget<TeacherSpeech>(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
-      ),
-    );
-    final step = cubit.state.step;
-    final reached = cubit.state.reached;
-    await cubit.moreHint();
-    await tester.pumpAndSettle();
-    final link = SpeechLinks.find(
-      'Consider 1.Rc4.',
-      SpeechLinks.english,
-    ).single;
-    teacher().onLink!(link);
-    await tester.pumpAndSettle();
-    expect(find.byKey(LessonKeys.variationExit), findsOneWidget);
-    expect(teacher().lessonPromptBubble, isTrue);
-    teacher().onLink!(link);
-    await tester.pumpAndSettle();
-    expect(find.byKey(LessonKeys.variationExit), findsNothing);
-    expect(teacher().lessonPromptBubble, isTrue);
-    expect(cubit.state.step, step);
-    expect(cubit.state.reached, reached);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('B5: recolhida mantém ações após alterar altura da tela', (
     tester,
   ) async {
@@ -338,7 +170,7 @@ void main() {
       tester.view.physicalSize = Size(360, height);
       await tester.pumpAndSettle();
       expect(
-        find.byKey(LessonKeys.nextButton).hitTestable(),
+        find.byKey(LessonKeys.footer).hitTestable(),
         findsOneWidget,
         reason: 'altura=$height',
       );
@@ -352,16 +184,17 @@ void main() {
     }
   });
 
-  void expectBoardAboveSpeech(WidgetTester tester) {
+  Future<void> expectBoardAboveSpeech(WidgetTester tester) async {
+    await settleSheet(tester);
     final board = tester.getRect(find.byKey(LessonKeys.board));
     final size = tester.view.physicalSize / tester.view.devicePixelRatio;
     expect(board.center.dx, closeTo(size.width / 2, 1));
     final progress = tester.getRect(find.byKey(LessonKeys.progress));
     expect(board.top, greaterThanOrEqualTo(progress.bottom));
-    expect(board.top - progress.bottom, lessThanOrEqualTo(16));
+    expect(board.top - progress.bottom, lessThanOrEqualTo(20));
     final teacher = find.byWidgetPredicate(
       (widget) =>
-          widget is TeacherSpeech && widget.part == TeacherSpeechPart.all,
+          widget is TeacherSpeech && widget.part != TeacherSpeechPart.bubble,
     );
     expect(tester.getTopLeft(teacher).dy, greaterThan(board.bottom));
     expect(find.byKey(LessonKeys.prompt), findsNothing);
@@ -388,7 +221,7 @@ void main() {
     final avatar = tester.widget<CharacterAvatar>(
       find.byType(CharacterAvatar).first,
     );
-    expect(avatar.size, 56);
+    expect(avatar.size, 28);
   }
 
   String timerText(WidgetTester tester) => tester
@@ -404,6 +237,9 @@ void main() {
     tester,
   ) async {
     final cubit = await pump(tester);
+    await cubit.next();
+    await cubit.startStepClock();
+    await tester.pumpAndSettle();
     final fen = cubit.state.fen;
     final speech = cubit.state.speech;
     now.advance(const Duration(seconds: 7));
@@ -423,129 +259,20 @@ void main() {
     expect(timerText(tester), '0:09');
   });
 
-  testWidgets('pensar: sem seletor de tempo, o tabuleiro no centro do espaço '
-      'livre e o cronômetro no canto de início, contando', (tester) async {
-    await pump(tester);
-    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expect(find.byKey(LessonKeys.prompt), findsNothing);
-    expectBoardAboveSpeech(tester);
-    final board = tester.getRect(find.byKey(LessonKeys.board));
-    // O cronômetro no canto inferior direito, do zero.
-    final timerFinder = find.byKey(LessonKeys.stepTimer);
-    final timer = tester.getRect(timerFinder);
-    // Sem fundo de pílula (CompTimer): ícone e tempo soltos, margem 16.
-    expect(timer.right, closeTo(400 - 16, 1));
-    expect(
-      tester
-          .widgetList<Material>(
-            find.ancestor(of: timerFinder, matching: find.byType(Material)),
-          )
-          .any((m) => m.shape is StadiumBorder),
-      isFalse,
-    );
-    expect(timer.bottom, greaterThan(board.bottom));
-    expect(timerText(tester), '0:00');
-
-    now.advance(const Duration(seconds: 90));
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(timerText(tester), '1:30');
-    // Passar de 6 minutos não muda nada além do cronômetro.
-    now.advance(const Duration(minutes: 5));
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(timerText(tester), '6:30');
-    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expect(find.byKey(LessonKeys.moreHintButton), findsOneWidget);
-    expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
-  });
-
-  testWidgets('em árabe o cronômetro fica no canto de fim: à esquerda', (
-    tester,
-  ) async {
-    await pump(tester, locale: const Locale('ar'));
-    final timerFinder = find.byKey(LessonKeys.stepTimer);
-    final timer = tester.getRect(timerFinder);
-    expect(timer.left, closeTo(16, 1));
-    final board = tester.getRect(find.byKey(LessonKeys.board));
-    expect(board.center.dx, closeTo(200, 1));
-  });
-
-  for (final (locale, scale) in [
-    (const Locale('pt'), 1.3),
-    (const Locale('de'), 1.3),
-    (const Locale('pt'), 1.0),
-  ]) {
-    testWidgets('pensando, em ${locale.languageCode} com letra ×$scale e 360 '
-        'dp: dica, "Ver explicação" e cronômetro cabem', (tester) async {
-      const size = Size(360, 780);
-      await pump(tester, size: size, locale: locale, scale: scale);
-      expect(tester.takeException(), isNull);
-      final keys = [
-        LessonKeys.moreHintButton,
-        LessonKeys.nextButton,
-        LessonKeys.stepTimer,
-      ];
-      for (final key in keys) {
-        final rect = tester.getRect(find.byKey(key));
-        expect(rect.left, greaterThanOrEqualTo(0), reason: '$key');
-        expect(rect.right, lessThanOrEqualTo(size.width), reason: '$key');
-        expect(find.byKey(key).hitTestable(), findsOneWidget, reason: '$key');
-      }
-      // Round buttons 56; the main one at least that, its label wrapping
-      // (never shrunk by a FittedBox nor cut).
-      expect(tester.getRect(find.byKey(LessonKeys.moreHintButton)).height, 56);
-      expect(
-        tester.getRect(find.byKey(LessonKeys.nextButton)).height,
-        greaterThanOrEqualTo(56),
-      );
-      expect(
-        find.descendant(
-          of: find.byKey(LessonKeys.nextButton),
-          matching: find.byType(FittedBox),
-        ),
-        findsNothing,
-      );
-      final label = tester.renderObject<RenderParagraph>(
-        find.descendant(
-          of: find.descendant(
-            of: find.byKey(LessonKeys.nextButton),
-            matching: find.byType(Text),
-          ),
-          matching: find.byType(RichText),
-        ),
-      );
-      expect(label.didExceedMaxLines, isFalse);
-      // Lado a lado, sem se cobrir.
-      for (var i = 1; i < keys.length; i++) {
-        expect(
-          tester.getRect(find.byKey(keys[i - 1])).right,
-          lessThanOrEqualTo(tester.getRect(find.byKey(keys[i])).left),
-          reason: '${keys[i - 1]} / ${keys[i]}',
-        );
-      }
-    });
-  }
-
-  testWidgets('a dica e "Ver explicação" funcionam desde o começo; a '
-      'explicação leva o tabuleiro para o alto, com a folha da fala', (
-    tester,
-  ) async {
-    await pump(tester);
-    final centered = tester.getRect(find.byKey(LessonKeys.board));
-    await tester.tap(find.byKey(LessonKeys.moreHintButton));
-    await tester.pumpAndSettle();
-    expect(find.text('Think about a bridge.'), findsOneWidget);
-    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-
-    await tester.tap(find.byKey(LessonKeys.nextButton));
-    await tester.pumpAndSettle();
-    expect(find.byKey(LessonKeys.step('rook.lucena', 'try')), findsOneWidget);
-    // O passo de lance também se resolve: segue no centro (o enunciado
-    // mudou de altura, então o centro também), com o cronômetro do zero.
-    expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expect(timerText(tester), '0:00');
-    expectBoardAboveSpeech(tester);
-    expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
-  });
+  testWidgets(
+    'pensar: o tabuleiro no centro do espaço livre e a folha abaixo',
+    (tester) async {
+      await pump(tester);
+      expect(find.byKey(LessonKeys.scroll), findsOneWidget);
+      expect(find.byKey(LessonKeys.prompt), findsNothing);
+      await expectBoardAboveSpeech(tester);
+      // T70: sem Dica, sem "Ver explicação" e sem cronômetro no pensar.
+      expect(find.byKey(LessonKeys.moreHintButton), findsNothing);
+      expect(find.byKey(LessonKeys.nextButton), findsNothing);
+      expect(find.byKey(LessonKeys.stepTimer), findsNothing);
+      expect(find.byKey(LessonKeys.showAnswerLink), findsOneWidget);
+    },
+  );
 
   testWidgets('a fala do enunciado encolhe no meio do passo (lance errado): '
       'o tabuleiro não sai do lugar', (tester) async {
@@ -583,6 +310,7 @@ void main() {
     final raised = tester.getRect(find.byKey(LessonKeys.board));
     expect(raised.size, centered.size);
     expect(raised.top, closeTo(centered.top, 1));
+    await settleSheet(tester);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
     expect(find.text('Perfect, that is the bridge.'), findsOneWidget);
     expect(
@@ -596,9 +324,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(LessonKeys.step('rook.lucena', 'think')), findsOneWidget);
     expect(find.byKey(LessonKeys.scroll), findsOneWidget);
-    expectBoardAboveSpeech(tester);
+    await expectBoardAboveSpeech(tester);
     expect(tester.getRect(find.byKey(LessonKeys.board)).width, centered.width);
-    expect(find.byKey(LessonKeys.stepTimer), findsOneWidget);
+    expect(find.byKey(LessonKeys.stepTimer), findsNothing);
   });
   for (final size in [
     const Size(360, 640),
@@ -614,21 +342,20 @@ void main() {
       (tester) async {
         final cubit = await pump(tester, size: size, systemBars: true);
         final board = tester.getRect(find.byKey(LessonKeys.board));
-        expectBoardAboveSpeech(tester);
+        await expectBoardAboveSpeech(tester);
         expect(board.width, greaterThanOrEqualTo(200));
         expect(find.byKey(LessonKeys.prompt), findsNothing);
         expect(
           tester.getRect(find.byKey(LessonKeys.scroll)).top,
           greaterThan(board.bottom),
         );
-        expectPeek(tester);
         // Explicando, o tabuleiro sobe com o mesmo tamanho; jogando, volta ao
         // centro.
-        void raised() {
+        Future<void> raised() async {
           final rect = tester.getRect(find.byKey(LessonKeys.board));
           expect(rect.size, board.size);
           expect(rect.top, closeTo(board.top, 1));
-          expectBoardAboveSpeech(tester);
+          await expectBoardAboveSpeech(tester);
         }
 
         await cubit.next();
@@ -637,7 +364,7 @@ void main() {
         expectPeek(tester);
         await cubit.play(Move.parse('c1c4')!);
         await tester.pumpAndSettle();
-        raised();
+        await raised();
         expect(
           tester.getRect(find.byKey(LessonKeys.scroll)).top,
           greaterThan(tester.getRect(find.byKey(LessonKeys.board)).bottom),

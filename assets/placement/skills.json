@@ -517,6 +517,21 @@
       "midgameTactic": false
     },
     {
+      "id": "pawns.waitingMoves",
+      "group": "pawns",
+      "band": "advanced",
+      "requires": [
+        "pawns.distantOpposition"
+      ],
+      "lessons": [
+        {
+          "id": "pawns.waitingMoves",
+          "kind": "endgame"
+        }
+      ],
+      "midgameTactic": false
+    },
+    {
       "id": "pawns.race",
       "group": "pawns",
       "band": "intermediate",

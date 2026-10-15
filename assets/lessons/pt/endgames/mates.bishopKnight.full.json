@@ -16,7 +16,7 @@
   "part.rhine.title": "O xeque que afoga",
   "part.rhine.summary": "Perto do canto, conte as casas do rei preto antes de dar xeque, ou você cai na armadilha de Rhine.",
   "part.kempinski.title": "Kempinski–Epishin",
-  "part.kempinski.summary": "Em uma partida de grandes mestres, o rei que se defende se esconde no canto errado. Depois, o mate inteiro no desafio prático.",
+  "part.kempinski.summary": "Se o rei adversário se esconde no canto errado, tire as casas dele uma de cada vez e deixe sempre uma saída, para longe do canto.",
   "step.t_big": "Esta é a posição com que o professor americano {{Bruce Pandolfini|bruce-pandolfini}}, no livro Endgame Workshop, ensina o método de Delétang. Daniel Delétang publicou esse método em 1923, na revista francesa La Stratégie. O rei preto, em d2, já não consegue atravessar a diagonal b1–h7. O seu rei, em b2, está do lado de fora. Como fazer o rei branco entrar no lado do rei preto sem abrir uma saída?",
   "step.t_big.hint1": "Antes de mover o rei, veja quais casas ele controla agora, em b2, e qual casa o rei preto disputa com ele.",
   "step.t_big.hint2": "O bispo pode andar pela própria diagonal e controlar uma casa da primeira fileira.",

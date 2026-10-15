@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -15,11 +16,14 @@ const _lesson = 'basics.queenMate';
 /// O primeiro passo de lance da aula (o mate de apoio, num lance).
 const _move = 'supportMove';
 
-/// T60: na lição, o aluno resolve com o tabuleiro no centro e um cronômetro
-/// que conta para cima, sem limite; respondido o passo, o tabuleiro sobe e o
+/// T60: na lição, o aluno resolve com um cronômetro que conta para cima, sem
+/// limite, e o tabuleiro no alto (D15 do Canvas V2); respondido o passo, o
 /// Viktor fala. O tempo de pensar não se escolhe mais.
+final _hidden = !VisibleLessons.endgameLessonIds.contains(_lesson);
+
 void main() {
-  patrolTest('passo de pensar: sem seletor de tempo, tabuleiro no centro e '
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
+  patrolTest('passo de pensar: sem seletor de tempo, tabuleiro no alto e '
       'cronômetro no canto contando; 6 minutos depois, só ele mudou', (
     $,
   ) async {
@@ -41,10 +45,11 @@ void main() {
     expect(endgames.speech, speech);
     expect(find.byKey(LessonKeys.moreHintButton), findsOneWidget);
     expect(find.byKey(LessonKeys.nextButton), findsOneWidget);
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('dica e "Ver explicação" funcionam desde o começo; a explicação '
-      'leva o tabuleiro ao alto com a folha da fala', ($) async {
+      'abre a folha da fala embaixo do tabuleiro', ($) async {
     await AppRobot($).open(systemLocale: _english);
     final endgames = EndgamesRobot($);
     await endgames.openFromHome();
@@ -59,10 +64,11 @@ void main() {
     await endgames.nextStep();
     await endgames.expectStep(_lesson, 'goal');
     await endgames.expectExplaining();
-  });
+  }, skip: _hidden);
 
-  patrolTest('passo de lance respondido: o cronômetro para, o tabuleiro sobe '
-      'e o Viktor fala', ($) async {
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
+  patrolTest('passo de lance respondido: o cronômetro para, o tabuleiro fica '
+      'no mesmo lugar e o Viktor fala', ($) async {
     await AppRobot($).open(systemLocale: _english);
     final endgames = EndgamesRobot($);
     final lesson = await endgames.lesson(_lesson);
@@ -78,7 +84,7 @@ void main() {
     await endgames.nextStep();
     await endgames.expectStep(_lesson, _move);
     await endgames.expectSolving();
-    final centered = endgames.boardRect;
+    final solving = endgames.boardRect;
     expect(endgames.stepTimer, matches(RegExp(r'^0:0\d$')));
 
     final line = (lesson.lesson.steps.firstWhere(
@@ -89,9 +95,11 @@ void main() {
       if (turn.reply != null) await $.pumpAndSettle();
     }
     await endgames.expectExplaining();
-    expect(endgames.boardRect.top, lessThan(centered.top));
-  });
+    // D15: o tabuleiro não pula entre resolver e explicar.
+    expect(endgames.boardRect.top, closeTo(solving.top, 1));
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('sair do app no meio do passo e voltar: o cronômetro continua '
       'do tempo certo', ($) async {
     final app = AppRobot($);
@@ -109,7 +117,7 @@ void main() {
     await endgames.expectStep(_lesson, 't_support');
     await endgames.expectSolving();
     expect(endgames.stepTimer, matches(RegExp(r'^2:0\d$')));
-  });
+  }, skip: _hidden);
 
   patrolTest('Configurações → Jogo: o tempo de pensar não existe mais', (
     $,
