@@ -2664,8 +2664,8 @@
       "turn": 2,
       "fen": "8/8/3k4/2p4p/2P1K2P/8/8/8 w - - 2 2",
       "uci": "e4d3",
-      "pt": "Recuando a d3, seu rei desiste de atacar os peões: o rei preto vai a e5, ao centro, antes que o seu o alcance. As pretas empatam.",
-      "en": "By retreating to d3, your king gives up attacking the pawns: the black king goes to e5, in the centre, before yours can reach it. Black draws.",
+      "pt": "Recuando a d3, seu rei desiste de atacar os peões: o rei preto vai a e5, no centro, e fica perto dos dois peões. As pretas empatam.",
+      "en": "By retreating to d3, your king gives up attacking the pawns: the black king goes to e5, in the centre, close to both pawns. Black draws.",
       "pv": [
         {
           "fen": "8/8/3k4/2p4p/2P1K2P/8/8/8 w - - 2 2",
