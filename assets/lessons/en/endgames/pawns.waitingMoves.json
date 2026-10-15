@@ -64,5 +64,13 @@
   "ex.e17.r1": "1...Kd6. The black king takes the direct opposition, with one square between the kings, and it is White to move.",
   "ex.e17.r2": "2...Ke6. The black king returns in front of the pawn, but no longer has the opposition: White spent a pawn move to pass the turn.",
   "ex.e17.r3": "3...Kf7. With no pawn move left to pass the turn, the black king has to give way; stepping back to d7 would have the same effect.",
-  "ex.e17": "Play as White and find the best move. Your king is behind the e2 pawn and the black king waits in front of it. Find the plan that wins."
+  "ex.e17": "Play as White and find the best move. Your king is behind the e2 pawn and the black king waits in front of it. Find the plan that wins.",
+  "ex.e23": "Play as White and find the best move. The kings stand in front of the central pawns, and your king defends the e4 pawn. If it were Black to move, the black king would have to leave f4. Find the move that passes the turn without giving anything up.",
+  "ex.e23.hint": "Any king move leaves the e4 pawn undefended. Look for a move that is not a king move: it works as a spare tempo.",
+  "ex.e23.solution": "1.b4! is the spare tempo: it passes the turn without moving the king. Now Black is in zugzwang. The black king cannot go to f5, which the e4 pawn controls, and any other square abandons the e5 pawn: after 1...Kf3, 2.Kxe5 and White wins. A king move such as 1.Kc4? or 1.Ke6? leaves the e4 pawn undefended, and 1...Kxe4 draws.",
+  "ex.e24": "Play as White and find the best move. The black king is in the a8 corner, and the b6 pawn is close to promotion. Beware of stalemate: choose your king's square and wait for the right moment to advance.",
+  "ex.e24.hint": "Coming too close takes away every square from the black king. Leave it one free square, and advance the pawn when the black king steps out of the corner.",
+  "ex.e24.solution": "1.Kc6! waits and leaves the black king the b8 square. 1.Kc7? is stalemate at once: the black king has no move, and the game is drawn. After 1...Kb8, 2.b7! advances with the black king out of the corner; after 2...Ka7, 3.Kc7! guards b8, and the pawn will promote. If 3.b8=Q+?, 3...Kxb8 captures the queen and draws.",
+  "ex.e24.r1": "1...Kb8. The black king leaves the corner by the only free square.",
+  "ex.e24.r2": "2...Ka7. The black king goes to a7, the only square it has left."
 }

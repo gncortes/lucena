@@ -33,6 +33,7 @@
       "fen": "8/8/1p6/8/8/P7/8/5k1K w - - 0 1",
       "goal": "draw",
       "origin": "own",
+      "capitulo": "fixedTarget",
       "line": [
         {
           "teach": "h1h2",
@@ -69,6 +70,7 @@
       "fen": "8/1p6/8/8/1P6/1k1K4/8/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
+      "capitulo": "fixedTarget",
       "line": [
         {
           "teach": "b4b5",
@@ -105,6 +107,7 @@
       "fen": "8/7k/p6P/6K1/P7/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
+      "capitulo": "fixedTarget",
       "line": [
         {
           "teach": "a4a5",
@@ -141,6 +144,7 @@
       "fen": "8/8/8/3p4/1k6/1P6/K1P5/8 w - - 0 1",
       "goal": "win",
       "origin": "grigoriev1933",
+      "capitulo": "waiting",
       "line": [
         {
           "teach": "a2a1",
@@ -201,6 +205,7 @@
       "fen": "8/8/8/2p5/8/7K/1PP2k2/8 w - - 0 1",
       "goal": "win",
       "origin": "grigoriev1932",
+      "capitulo": "secondReserve",
       "line": [
         {
           "teach": "h3g4",
@@ -268,6 +273,7 @@
       "fen": "4k3/7p/4p3/4P2P/8/8/8/4K3 w - - 0 1",
       "goal": "draw",
       "origin": "grigoriev1929",
+      "capitulo": "fixedTarget",
       "line": [
         {
           "teach": "e1f2",
@@ -325,6 +331,7 @@
       "fen": "8/8/4k3/8/8/2K5/4P3/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
+      "capitulo": "reserve",
       "line": [
         {
           "teach": "c3d4",
@@ -351,6 +358,52 @@
           "teach": "e4e5",
           "accept": [
             "e4e5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e23",
+      "stars": 1,
+      "fen": "8/8/8/3Kp3/4Pk2/1P6/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "capitulo": "reserve",
+      "line": [
+        {
+          "teach": "b3b4",
+          "accept": [
+            "b3b4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "e24",
+      "stars": 1,
+      "fen": "k7/8/1P1K4/8/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "capitulo": "waiting",
+      "line": [
+        {
+          "teach": "d6c6",
+          "accept": [
+            "d6c6"
+          ],
+          "reply": "a8b8"
+        },
+        {
+          "teach": "b6b7",
+          "accept": [
+            "b6b7"
+          ],
+          "reply": "b8a7"
+        },
+        {
+          "teach": "c6c7",
+          "accept": [
+            "c6c7"
           ]
         }
       ]
@@ -426,5 +479,5 @@
       "url": "https://lichess.org/study/0iaDBwxT/cyXVejzu"
     }
   ],
-  "maxScore": 15
+  "maxScore": 17
 }

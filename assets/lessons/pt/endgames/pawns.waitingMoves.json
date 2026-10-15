@@ -64,5 +64,13 @@
   "ex.e17.r1": "1...Rd6. O rei preto toma a oposição direta, com uma casa entre os reis, e a vez é das brancas.",
   "ex.e17.r2": "2...Re6. O rei preto volta para a frente do peão, mas já não tem a oposição: as brancas gastaram um lance de peão para passar a vez.",
   "ex.e17.r3": "3...Rf7. Sem um lance de peão para passar a vez, o rei preto precisa ceder espaço; recuar para d7 teria o mesmo efeito.",
-  "ex.e17": "Jogue de brancas e encontre o melhor lance. Seu rei está atrás do peão de e2 e o rei preto espera à frente dele. Encontre o plano que leva à vitória."
+  "ex.e17": "Jogue de brancas e encontre o melhor lance. Seu rei está atrás do peão de e2 e o rei preto espera à frente dele. Encontre o plano que leva à vitória.",
+  "ex.e23": "Jogue de brancas e encontre o melhor lance. Os reis estão diante dos peões centrais, e o seu rei defende o peão de e4. Se as pretas tivessem a vez, o rei delas precisaria sair de f4. Encontre o lance que passa a vez sem soltar nada.",
+  "ex.e23.hint": "Qualquer lance de rei deixa o peão de e4 sem defesa. Procure um lance que não seja de rei: ele funciona como tempo de reserva.",
+  "ex.e23.solution": "1.b4! é o tempo de reserva: passa a vez sem mexer no rei. Agora as pretas estão em zugzwang. O rei preto não pode ir a f5, que o peão de e4 controla, e qualquer outra casa abandona o peão de e5: depois de 1...Rf3, 2.Rxe5 e as brancas ganham. Um lance de rei, como 1.Rc4? ou 1.Re6?, deixa o peão de e4 sem defesa, e 1...Rxe4 empata.",
+  "ex.e24": "Jogue de brancas e encontre o melhor lance. O rei preto está no canto, em a8, e o peão de b6 está perto da promoção. Cuidado com o afogamento: escolha a casa do seu rei e espere a hora certa de avançar.",
+  "ex.e24.hint": "Chegar perto demais tira todas as casas do rei preto. Deixe uma casa livre para ele e avance o peão quando o rei preto sair do canto.",
+  "ex.e24.solution": "1.Rc6! espera e deixa ao rei preto a casa b8. 1.Rc7? afoga na hora: o rei preto não tem lance, e a partida termina empatada. Depois de 1...Rb8, 2.b7! avança com o rei preto fora do canto; depois de 2...Ra7, 3.Rc7! protege a casa b8, e o peão será promovido. Se 3.b8=D+?, 3...Rxb8 captura a dama e empata.",
+  "ex.e24.r1": "1...Rb8. O rei preto sai do canto pela única casa livre.",
+  "ex.e24.r2": "2...Ra7. O rei preto vai a a7, a única casa que lhe resta."
 }
