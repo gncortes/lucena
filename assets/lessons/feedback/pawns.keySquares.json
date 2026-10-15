@@ -514,8 +514,8 @@
    "turn": 1,
    "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
    "uci": "f4e3",
-   "pt": "O rei branco recuou em vez de se aproximar: o rei preto avança a d5 e o rei branco não consegue passar. As pretas empatam.",
-   "en": "The white king stepped back instead of getting closer: the black king advances to d5 and the white king cannot get through. Black draws.",
+   "pt": "O seu rei recuou e se afastou do rei preto: ele avança a d5, e o seu rei não consegue passar. As pretas empatam.",
+   "en": "Your king stepped back and moved away from the black king: it advances to d5, and your king cannot get through. Black draws.",
    "pv": [
     {
      "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
@@ -764,8 +764,8 @@
    "turn": 2,
    "fen": "8/8/5k2/3K4/8/8/5P2/8 w - - 2 2",
    "uci": "d5d4",
-   "pt": "Em d4, o seu rei fica atrás da casa-chave: o rei preto vai a f5 e fecha e4, f4 e g4. É empate.",
-   "en": "On d4, your king stays behind the key square: the black king goes to f5 and shuts e4, f4 and g4. It is a draw.",
+   "pt": "Em d4, o seu rei fica ao lado de e4, mas fora dela: o rei preto vai a f5 e fecha e4, f4 e g4. É empate.",
+   "en": "On d4, your king stands beside e4 but not on it: the black king goes to f5 and shuts e4, f4 and g4. It is a draw.",
    "pv": [
     {
      "fen": "8/8/5k2/3K4/8/8/5P2/8 w - - 2 2",
@@ -804,6 +804,106 @@
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e20.2",
     "uci": "d5d4"
+   },
+   "text_key": "ex.e20.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e20",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "8/8/5k2/3K4/8/8/5P2/8 w - - 2 2",
+   "uci": "f2f3",
+   "pt": "O peão avançou antes do rei: o rei preto vai a f5 e fecha o caminho do seu rei até as casas-chave. É empate.",
+   "en": "The pawn advanced before the king: the black king goes to f5 and blocks your king's way to the key squares. It is a draw.",
+   "pv": [
+    {
+     "fen": "8/8/5k2/3K4/8/8/5P2/8 w - - 2 2",
+     "uci": "f2f3",
+     "san": "f3",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/5k2/3K4/8/5P2/8/8 b - - 0 2",
+     "uci": "f6f5",
+     "san": "Kf5",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/3K1k2/8/5P2/8/8 w - - 1 3",
+     "uci": "d5d4",
+     "san": "Kd4",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/8/5k2/3K4/5P2/8/8 b - - 2 3",
+     "uci": "f5f4",
+     "san": "Kf4",
+     "fullmove": 3,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e20.2",
+    "uci": "f2f3"
+   },
+   "text_key": "ex.e20.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e20",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "8/8/5k2/3K4/8/8/5P2/8 w - - 2 2",
+   "uci": "f2f4",
+   "pt": "O peão avançou antes do rei: o rei preto vai a f5 e fecha o caminho do seu rei até as casas-chave. É empate.",
+   "en": "The pawn advanced before the king: the black king goes to f5 and blocks your king's way to the key squares. It is a draw.",
+   "pv": [
+    {
+     "fen": "8/8/5k2/3K4/8/8/5P2/8 w - - 2 2",
+     "uci": "f2f4",
+     "san": "f4",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/5k2/3K4/5P2/8/8/8 b - - 0 2",
+     "uci": "f6f5",
+     "san": "Kf5",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/8/3K1k2/5P2/8/8/8 w - - 1 3",
+     "uci": "d5d4",
+     "san": "Kd4",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/8/5k2/3K1P2/8/8/8 b - - 2 3",
+     "uci": "f5f4",
+     "san": "Kxf4",
+     "fullmove": 3,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e20.2",
+    "uci": "f2f4"
    },
    "text_key": "ex.e20.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -1164,8 +1264,8 @@
    "turn": 3,
    "fen": "8/8/8/3k4/8/2K5/4P3/8 w - - 4 3",
    "uci": "c3d2",
-   "pt": "Recuando, o seu rei larga a oposição: o rei preto entra em d4, uma casa-chave do lado dele. É empate.",
-   "en": "By stepping back, your king gives up the opposition: the black king enters d4, a key square on its side. It is a draw.",
+   "pt": "Recuando, o seu rei larga a oposição: o rei preto entra em d4, uma das casas-chave, e o seu rei não passa. É empate.",
+   "en": "By stepping back, your king gives up the opposition: the black king enters d4, one of the key squares, and your king cannot get through. It is a draw.",
    "pv": [
     {
      "fen": "8/8/8/3k4/8/2K5/4P3/8 w - - 4 3",
@@ -1464,8 +1564,8 @@
    "turn": 1,
    "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
    "uci": "d7e7",
-   "pt": "Em e7, o seu rei fica longe de d5: o rei branco entra nessa casa-chave, e as brancas ganham.",
-   "en": "On e7, your king is far from d5: the white king enters that key square, and White wins.",
+   "pt": "Em e7, o seu rei não fica vizinho de d5: o rei branco entra nessa casa-chave, e as brancas ganham.",
+   "en": "On e7, your king is not next to d5: the white king enters that key square, and White wins.",
    "pv": [
     {
      "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
@@ -1512,36 +1612,36 @@
    "id": "e25",
    "kind": "exercise",
    "turn": 1,
-   "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
-   "uci": "e8d8",
-   "pt": "Em d8, o seu rei fica longe de c6: o rei branco entra nessa casa-chave, e as brancas ganham.",
-   "en": "On d8, your king is too far from c6: the white king enters that key square, and White wins.",
+   "fen": "8/8/4K3/8/8/2P2k2/8/8 b - - 0 1",
+   "uci": "f3e3",
+   "pt": "Em e3, o seu rei não fica vizinho de d5: o rei branco entra nessa casa-chave, e as brancas ganham.",
+   "en": "On e3, your king is not next to d5: the white king enters that key square, and White wins.",
    "pv": [
     {
-     "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
-     "uci": "e8d8",
-     "san": "Kd8",
+     "fen": "8/8/4K3/8/8/2P2k2/8/8 b - - 0 1",
+     "uci": "f3e3",
+     "san": "Ke3",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "3k4/8/8/1K6/3P4/8/8/8 w - - 1 2",
-     "uci": "b5c6",
-     "san": "Kc6",
+     "fen": "8/8/4K3/8/8/2P1k3/8/8 w - - 1 2",
+     "uci": "e6d5",
+     "san": "Kd5",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "3k4/8/2K5/8/3P4/8/8/8 b - - 2 2",
-     "uci": "d8c8",
-     "san": "Kc8",
+     "fen": "8/8/8/3K4/8/2P1k3/8/8 b - - 2 2",
+     "uci": "e3d2",
+     "san": "Kd2",
      "fullmove": 2,
      "turn": "black"
     },
     {
-     "fen": "2k5/8/2K5/8/3P4/8/8/8 w - - 3 3",
-     "uci": "d4d5",
-     "san": "d5",
+     "fen": "8/8/8/3K4/8/2P5/3k4/8 w - - 3 3",
+     "uci": "c3c4",
+     "san": "c4",
      "fullmove": 3,
      "turn": "white"
     }
@@ -1552,56 +1652,7 @@
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200)",
     "site": "exercise/e25.1",
-    "uci": "e8d8"
-   },
-   "text_key": "ex.e25.hint",
-   "access": "dica sob demanda, exercício silencioso"
-  },
-  {
-   "id": "e25",
-   "kind": "exercise",
-   "turn": 1,
-   "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
-   "uci": "e8e7",
-   "pt": "Em e7, o seu rei não fica vizinho de c6: o rei branco entra nessa casa-chave, e as brancas ganham.",
-   "en": "On e7, your king is not next to c6: the white king enters that key square, and White wins.",
-   "pv": [
-    {
-     "fen": "4k3/8/8/1K6/3P4/8/8/8 b - - 0 1",
-     "uci": "e8e7",
-     "san": "Ke7",
-     "fullmove": 1,
-     "turn": "black"
-    },
-    {
-     "fen": "8/4k3/8/1K6/3P4/8/8/8 w - - 1 2",
-     "uci": "b5c6",
-     "san": "Kc6",
-     "fullmove": 2,
-     "turn": "white"
-    },
-    {
-     "fen": "8/4k3/2K5/8/3P4/8/8/8 b - - 2 2",
-     "uci": "e7e6",
-     "san": "Ke6",
-     "fullmove": 2,
-     "turn": "black"
-    },
-    {
-     "fen": "8/8/2K1k3/8/3P4/8/8/8 w - - 3 3",
-     "uci": "d4d5",
-     "san": "d5+",
-     "fullmove": 3,
-     "turn": "white"
-    }
-   ],
-   "objective": {
-    "result_mover": "loss"
-   },
-   "evidence": {
-    "file": "kpk.bin + maia3 (1000/1400/1800/2200)",
-    "site": "exercise/e25.1",
-    "uci": "e8e7"
+    "uci": "f3e3"
    },
    "text_key": "ex.e25.hint",
    "access": "dica sob demanda, exercício silencioso"

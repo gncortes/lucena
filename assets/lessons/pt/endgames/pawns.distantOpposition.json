@@ -26,7 +26,7 @@
   "ex.e13.r1": "1...Rf6. O rei preto vai rumo às casas-chave do peão.",
   "title": "A oposição distante",
   "summary": "Tomar a oposição de longe, com um número ímpar de casas entre os reis, para chegar às casas-chave, proteger o peão e impedir a entrada do rei adversário.",
-  "ex.e18": "Jogue de brancas e encontre o melhor lance. Os peões das colunas c e h estão travados, e os reis estão na mesma coluna.",
+  "ex.e18": "Jogue de brancas e encontre o melhor lance. Os peões das colunas c e h não podem avançar, e os reis estão na mesma coluna.",
   "ex.e18.hint": "Primeiro, tome a oposição em linha reta. Depois, leve o rei ao peão que o rei preto deixou de defender.",
   "ex.e18.solution": "1.Re4! deixa uma só casa entre os reis, e5, com as pretas na vez: a oposição é sua. Depois de 1...Rd6, o rei preto se afasta do peão de h5, e 2.Rf5 (ou 2.Rf4) leva o seu rei até ele. 1.Rf4? deixa o rei preto ir a f6, de frente para o seu, e as pretas empatam; 2.Rd3? devolve a oposição.",
   "ex.e18.r1": "1...Rd6. O rei preto vai para o lado do peão de c5 e deixa o peão de h5 sem defesa.",
@@ -42,7 +42,7 @@
   "key.means": "A oposição é um meio, não o fim: aqui tomá-la só empata. O que ganha é levar o rei direto para as casas que decidem, na frente do peão.",
   "ex.e22": "Jogue de brancas e encontre o melhor lance. Os peões estão travados: nenhum dos lados pode passar a vez com eles.",
   "ex.e22.hint": "Conte as casas entre os reis na sexta fileira, a do peão incluída. Veja também que casa o peão de d4 vigia.",
-  "ex.e22.solution": "1.Rc6! deixa entre os reis só d6, a casa do peão: uma casa, número ímpar, com as pretas na vez. O rei preto precisa sair de e6, e a única casa que seguraria d5 e d6 ao mesmo tempo, e5, é vigiada pelo peão de d4. Ele recua, e o seu rei avança: depois de 1...Re7, 2.Rb5 vai ao peão de a4 (2.Rc7 também ganha, mais devagar; 2.Rxd5? deixa o rei preto voltar a d7 e empatar). 1.Rb5? e 1.Ra5? vão cedo demais ao peão de a4: o rei preto corre a f5 e e4, contra o peão de d4, e empata.",
+  "ex.e22.solution": "1.Rc6! deixa entre os reis só d6, a casa do peão: uma casa, número ímpar, com as pretas na vez. O rei preto precisa sair de e6, e a única casa que seguraria d5 e d6 ao mesmo tempo, e5, é vigiada pelo peão de d4. Ele recua, e o seu rei avança: depois de 1...Re7, 2.Rb5 vai ao peão de a4 (2.Rc7 também ganha, mais devagar; 2.Rxd5? deixa o rei preto voltar a d7 e empatar). 1.Rb5? e 1.Ra5? vão cedo demais ao peão de a4: o rei preto corre a f5 e e4, contra o peão de d4, e empata. 1.Ra6? também deixa um número ímpar de casas, mas longe dos peões: o rei preto corre a f5 e e4.",
   "ex.e21": "Jogue de brancas e encontre o melhor lance. O peão branco está em f3, e o seu rei está ao lado dele.",
   "ex.e21.hint": "As casas-chave do peão são e5, f5 e g5. Pergunte-se o que importa mais aqui: ir na direção do rei preto ou chegar perto dessas casas.",
   "ex.e21.solution": "1.Rf4! leva o rei para perto de e5, f5 e g5, e o rei preto não consegue guardar as três: depois de 1...Re7, o rei branco entra em uma casa-chave, como em 2.Rf5. 1.Re4? vai na direção do rei preto, e ele, em e6, guarda e5 e f5: é empate. 1.Rd3? afasta o rei das casas-chave, e o rei preto, indo a e7, chega a tempo de guardá-las: é empate. 1.f4? avança o peão antes do rei, e as casas-chave sobem para e6, f6 e g6, perto do rei preto. A oposição é um meio; o objetivo é a casa-chave."

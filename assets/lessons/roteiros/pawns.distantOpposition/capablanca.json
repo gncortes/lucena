@@ -607,13 +607,6 @@
        {
         "certos": [
          "d4e4"
-        ],
-        "resposta": "e6f6"
-       },
-       {
-        "certos": [
-         "e4d5",
-         "e4d4"
         ]
        }
       ],
@@ -635,9 +628,6 @@
        "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 6 4": {
         "d4c5": "rot.capablanca.pratica.colunas.v3.err.d4c5",
         "d4c4": "rot.capablanca.pratica.colunas.v3.err.d4c4"
-       },
-       "8/8/5k2/p5p1/P3K1P1/8/8/8 w - - 8 5": {
-        "e4f3": "rot.capablanca.pratica.colunas.v4.err.e4f3"
        }
       },
       "fim": "rot.capablanca.pratica.colunas.fim"

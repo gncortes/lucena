@@ -74,13 +74,12 @@
   "rot.capablanca.pratica.colunas.v2.err.d3c4": "On c4, your king moves away from the black king's file and opens the way to the other side for it: each king captures a pawn, and it is a draw.",
   "rot.capablanca.pratica.colunas.v3.err.d4c5": "On c5, your king heads for the pawn on a5 but goes around too early, before winning the opposition: each side captures a pawn, and it is a draw.",
   "rot.capablanca.pratica.colunas.v3.err.d4c4": "On c4, your king retreats and leaves the e5 square free for the black king: without the opposition, each side captures a pawn, and it is a draw.",
-  "rot.capablanca.pratica.colunas.v4.err.e4f3": "On f3, your king retreats and gives the e5 square back to the black king: it is a draw. Look at which square the pawn on g5 watches.",
   "rot.capablanca.pratica.colunas.enunciado": "Play White and find the best move.",
   "rot.capablanca.pratica.colunas.err.d1c2": "That move lets the win slip away: your king leaves the black king's file, and Black takes the opposition.",
   "rot.capablanca.pratica.colunas.err.d1e2": "That move lets the win slip away: your king leaves the black king's file, and Black takes the opposition.",
   "rot.capablanca.pratica.colunas.err.d1c1": "That move loses: Black brings the king to your king's file, leaves five squares between them and keeps the opposition.",
   "rot.capablanca.pratica.colunas.err.d1e1": "That move loses: Black brings the king to your king's file, leaves five squares between them and keeps the opposition.",
-  "rot.capablanca.pratica.colunas.fim": "Your king advanced along the black king's file and, since the pawn on g5 watches f4, went around at once along the d-file, towards the pawn on a5. The black king cannot guard both pawns.",
+  "rot.capablanca.pratica.colunas.fim": "Your king advanced on the black king's file and, when it stepped aside, took the opposition on e4. The black king can no longer guard both pawns: White wins.",
   "rot.capablanca.pratica.pretas.v1.err.f7e6": "On e6, your king leaves the white king's file: the kings are not left an odd number of squares apart, and the win slips away.",
   "rot.capablanca.pratica.pretas.v1.err.f7g6": "On g6, your king moves away from the centre, where the kings fight for the way through, and the win slips away.",
   "rot.capablanca.pratica.pretas.v2.err.f6e5": "On e5, your king leaves the white king's file instead of facing it on f5, and the win slips away.",
@@ -89,5 +88,5 @@
   "rot.capablanca.pratica.pretas.err.f8g7": "That move lets the win slip away: your king leaves the white king's file and does not win the opposition.",
   "rot.capablanca.pratica.pretas.err.f8e8": "That move loses: your king goes to the side and loses time, and White wins the fight in the centre.",
   "rot.capablanca.pratica.pretas.err.f8g8": "That move loses: your king goes to the side and loses time, and White wins the fight in the centre.",
-  "rot.capablanca.pratica.pretas.fim": "Your king advanced along the white king's file until it gave up the file; then it went to one of the pawns, and the white king cannot guard both."
+  "rot.capablanca.pratica.pretas.fim": "Your king advanced along the white king's file until it gave up the file; then the white king cannot guard both pawns."
 }
