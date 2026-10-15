@@ -301,12 +301,14 @@ void main() {
                   as Map<String, dynamic>,
             ).stages)
               for (final example in stage.examples)
-                for (final key
-                    in example.practice?.errors.values ?? <String>[]) ...[
-                  key,
-                  '$key.1',
-                  '$key.2',
-                ],
+                for (final key in [
+                  ...?example.practice?.errors.values,
+                  // Os das vezes seguintes (`errosPos`), pela posição.
+                  for (final byMove
+                      in example.practice?.errorsAt.values ??
+                          const <Map<String, String>>[])
+                    ...byMove.values,
+                ]) ...[key, '$key.1', '$key.2'],
       };
       // Também opcionais: resumo curto do passo (`step.<id>.short`), fala da
       // resposta do adversário (`step.<id>.r<n>`, `ex.<id>.r<n>`) e fala do

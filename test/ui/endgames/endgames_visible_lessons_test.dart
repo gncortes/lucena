@@ -65,10 +65,13 @@ void main() {
       find.byKey(EndgamesKeys.lesson('pawns.distantOpposition')),
       findsOneWidget,
     );
-    // Sem roteiro novo, a Parte 2 não aparece.
-    expect(find.byKey(EndgamesKeys.lesson('pawns.waitingMoves')), findsNothing);
+    // A Parte 2 aparece quando o primeiro capítulo dela tem roteiro (T76).
+    expect(
+      find.byKey(EndgamesKeys.lesson('pawns.waitingMoves')),
+      findsOneWidget,
+    );
     expect(find.byKey(EndgamesKeys.lesson('pawns.square')), findsNothing);
-    expect(find.text('0 de 2 concluídas'), findsOneWidget);
+    expect(find.text('0 de 3 concluídas'), findsOneWidget);
 
     if (_print.isNotEmpty) {
       debugDisableShadows = false;

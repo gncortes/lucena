@@ -166,7 +166,7 @@ Map<String, String> scriptTexts([Map<String, dynamic>? json]) {
   void walk(Object? node) {
     if (node is Map) {
       for (final MapEntry(:key, :value) in node.entries) {
-        if ((key == 't' || key == 'fala' || key == 'volta') &&
+        if ((key == 't' || key == 'fala' || key == 'volta' || key == 'fora') &&
             value is String) {
           keys.add(value);
         }
