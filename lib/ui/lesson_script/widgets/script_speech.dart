@@ -97,7 +97,7 @@ class ScriptSpeechMetrics {
   bool fits(BuildContext context, double width, List<String> texts) => textFits(
     context,
     width - 2 * margin - 2 * horizontalPadding,
-    SpeechText.plainOf(context, texts.join('\n')),
+    SpeechText.noBreak(SpeechText.plainOf(context, texts.join('\n'))),
     style(context),
     maxLines,
   );
@@ -217,7 +217,7 @@ class ScriptSpeech extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, box) {
-          final plain = SpeechText.plainOf(context, whole);
+          final plain = SpeechText.noBreak(SpeechText.plainOf(context, whole));
           final style = metrics.fittedStyle(context, box.maxWidth, plain);
           final fits = metrics.textFits(
             context,

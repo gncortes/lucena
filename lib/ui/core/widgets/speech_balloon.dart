@@ -461,6 +461,14 @@ class SpeechText extends StatefulWidget {
     r'(?<![A-Za-z0-9])[a-h][1-8](?![0-9])',
   );
 
+  /// O hífen entre letras ("casas-chave"): na tela vira o hífen não
+  /// separável (U+2011, presente na Roboto), e a linha não quebra no meio da
+  /// palavra composta. A voz segue com o hífen comum.
+  static final wordHyphen = RegExp(r'(?<=\p{L})-(?=\p{L})', unicode: true);
+
+  /// [text] com os hífens entre letras trocados por U+2011.
+  static String noBreak(String text) => text.replaceAll(wordHyphen, '\u2011');
+
   /// A fala sem as marcas, para medir e para a voz.
   static String plain(
     String text, {
@@ -610,7 +618,7 @@ class _SpeechTextState extends State<SpeechText> {
   @override
   Widget build(BuildContext context) {
     final maxLines = widget.maxLines;
-    final text = widget.text;
+    final text = SpeechText.noBreak(widget.text);
     if (maxLines == null ||
         maxLines < 2 ||
         !SpeechText.markPattern.hasMatch(text)) {

@@ -43,10 +43,11 @@ class ScriptPage extends StatelessWidget {
       builder: (context, box) {
         // A área da fala é fixa (3 linhas) e a faixa também: o tabuleiro tem
         // um tamanho e um lugar só em todos os passos (Gabriel, 14/10/2026).
-        // Ele ocupa a largura cheia se couber; a sobra de altura se divide em
-        // partes iguais entre a faixa e o tabuleiro e entre o tabuleiro e o
-        // rodapé. Na tela baixa, o tabuleiro encosta no rodapé e a lista fica
-        // abaixo da dobra.
+        // Ele ocupa a largura cheia se couber. O balão fica colado na faixa e
+        // a faixa colada no tabuleiro; a sobra de altura se divide em partes
+        // iguais acima da área da fala e entre o tabuleiro e o rodapé
+        // (Gabriel, 14/10/2026). Na tela baixa, o tabuleiro encosta no rodapé
+        // e a lista fica abaixo da dobra.
         final above = metrics.areaHeight(context) + stripHeight;
         final room = box.maxHeight - above - compactGap;
         final size = math.max(0.0, math.min(box.maxWidth, room));
@@ -61,11 +62,13 @@ class ScriptPage extends StatelessWidget {
               children: [
                 // Tela baixa: a sobra fica em cima e o tabuleiro encosta no
                 // rodapé (folga de [compactGap]).
-                if (metrics.compact)
-                  SizedBox(height: math.max(0, spare - compactGap)),
+                SizedBox(
+                  height: metrics.compact
+                      ? math.max(0, spare - compactGap)
+                      : half,
+                ),
                 speechBuilder(),
                 strip,
-                SizedBox(height: half),
                 Center(child: boardBuilder(size)),
                 SizedBox(height: metrics.compact ? compactGap : half),
                 list,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/square_flash.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/board_coordinates.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
@@ -50,6 +51,45 @@ void main() {
     await tester.tapAt(at(tester, Square.d8));
     await tester.pumpAndSettle();
     expect(moves, ['d4d8']);
+  });
+
+  testWidgets('a casa tocada na fala fica por cima da marca verde', (
+    tester,
+  ) async {
+    final flash = SquareFlash();
+    addTearDown(flash.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topLeft,
+            child: ScriptBoard(
+              state: const LessonScriptState(
+                ready: true,
+                fen: '4k3/8/8/8/8/8/8/4K3 w - - 0 1',
+                marks: ['f5', 'g5'],
+              ),
+              size: size,
+              settings: const BoardSettings(),
+              flash: flash,
+              onMove: (_) {},
+            ),
+          ),
+        ),
+      ),
+    );
+    flash.show('f5');
+    await tester.pump();
+    // O chessground desenha na ordem do conjunto: o realce vem por último.
+    final shapes = tester.widget<Chessboard>(find.byType(Chessboard)).shapes;
+    expect(shapes.last, isA<Circle>());
+    expect((shapes.last as Circle).orig, Square.f5);
+    expect((shapes.last as Circle).color, isNot(ScriptShapes.green));
+    expect(
+      shapes.whereType<Circle>().where((c) => c.orig == Square.f5),
+      hasLength(2),
+    );
+    flash.clear();
   });
 
   group('prática de toque', () {

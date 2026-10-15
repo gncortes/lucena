@@ -138,7 +138,9 @@ void main() {
         ),
       )
       .map((text) => text.text.toPlainText())
-      .join(' ');
+      .join(' ')
+      // Na tela, o hífen entre letras é o não separável (U+2011).
+      .replaceAll('\u2011', '-');
 
   Future<void> expectNoNotation(WidgetTester tester) async {
     final said = speech(tester);
@@ -523,7 +525,7 @@ void main() {
           (widget) =>
               widget is RichText &&
               widget.text.toPlainText() ==
-                  'Clique nos lances cobertos para vê-los.',
+                  'Clique nos lances cobertos para vê\u2011los.',
         ),
       );
       final paragraph = tester.renderObject<RenderParagraph>(
@@ -531,7 +533,7 @@ void main() {
           (widget) =>
               widget is RichText &&
               widget.text.toPlainText() ==
-                  'Clique nos lances cobertos para vê-los.',
+                  'Clique nos lances cobertos para vê\u2011los.',
         ),
       );
       // Com a fonte real (Roboto), não a Ahem dos testes.

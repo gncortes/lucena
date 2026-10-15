@@ -15,6 +15,7 @@ import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_move_list.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
@@ -143,6 +144,15 @@ void main() {
       expect(_rect(tester, LessonScriptKeys.speech).height, oneLine.height);
       // A ponta fica a 2 dp do retrato (40 dp, no meio da faixa de 50).
       expect(strip.top + 5 - threeLines.bottom, closeTo(2, 0.5));
+      // A faixa fica colada no tabuleiro: a sobra vai para cima da área da
+      // fala e para baixo do tabuleiro, em partes iguais.
+      expect(board.top - strip.bottom, closeTo(0, 0.01));
+      final page = _rect(tester, LessonScriptKeys.page);
+      final context = tester.element(find.byKey(LessonScriptKeys.page));
+      final area = ScriptSpeechMetrics.of(context).areaHeight(context);
+      final top = strip.top - area - page.top;
+      expect(top, greaterThan(0));
+      expect(top, closeTo(page.bottom - board.bottom, 0.5));
       expect(tester.takeException(), isNull);
     });
   }
@@ -172,10 +182,10 @@ void main() {
         final page = _rect(tester, LessonScriptKeys.page);
         if (size == _tall) {
           final strip = _rect(tester, LessonScriptKeys.characterBar);
-          expect(
-            board.top - strip.bottom,
-            closeTo(page.bottom - board.bottom, 1),
-          );
+          // Faixa colada no tabuleiro; a sobra se divide igual entre o alto
+          // da área da fala e o fundo da página.
+          expect(board.top - strip.bottom, closeTo(0, 0.01));
+          expect(board.bottom, lessThan(page.bottom));
         } else {
           expect(board.top, greaterThan(speech.bottom));
         }

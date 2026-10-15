@@ -324,18 +324,19 @@ class _ScriptBoardState extends State<ScriptBoard> {
       if (s.touchMiss case final miss?)
         Circle(color: ScriptShapes.red, orig: Square.fromName(miss)),
     };
+    // A casa tocada na fala vai por último: o chessground desenha na ordem
+    // do conjunto, e o realce fica por cima da marca verde da mesma casa.
     final flashed = widget.flash?.square;
-    final spoken = {
-      ...touch,
+    final flash = {
       if (flashed != null)
         Circle(
           color: ScriptShapes.arrow(colors, 'b'),
           orig: Square.fromName(flashed),
         ),
     };
-    if (!_shapes || !widget.showMarks) return spoken;
+    if (!_shapes || !widget.showMarks) return {...touch, ...flash};
     return {
-      ...spoken,
+      ...touch,
       for (final ScriptArrow arrow in s.arrows)
         Arrow(
           color: ScriptShapes.arrow(colors, arrow.color),
@@ -344,6 +345,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
         ),
       for (final mark in s.marks)
         Circle(color: ScriptShapes.green, orig: Square.fromName(mark)),
+      ...flash,
     };
   }
 
