@@ -756,7 +756,7 @@
       "exemplos": [
         {
           "id": "fixar",
-          "fen": "8/4K3/p7/7p/2k5/P6P/8/8 w - - 0 1",
+          "fen": "8/2K5/1p6/2k3p1/8/1P4P1/8/8 w - - 0 1",
           "vira": false,
           "objetivo": "empatar",
           "fim": "proximo",
@@ -769,51 +769,38 @@
             "linha": [
               {
                 "certos": [
-                  "h3h4"
+                  "g3g4"
                 ],
-                "resposta": "c4b3"
+                "resposta": "b6b5"
               },
               {
                 "certos": [
-                  "e7d6"
-                ],
-                "resposta": "b3a3"
-              },
-              {
-                "certos": [
-                  "d6c5"
+                  "c7d7",
+                  "c7b7"
                 ]
               }
             ],
             "erros": {
-              "e7d6": "rot.fixedTarget.pratica.fixar.err.e7d6",
-              "e7d7": "rot.fixedTarget.pratica.fixar.err.e7d7",
-              "e7d8": "rot.fixedTarget.pratica.fixar.err.e7d8",
-              "e7e8": "rot.fixedTarget.pratica.fixar.err.e7e8",
-              "e7f8": "rot.fixedTarget.pratica.fixar.err.e7f8",
-              "e7e6": "rot.fixedTarget.pratica.fixar.err.e7e6",
-              "e7f6": "rot.fixedTarget.pratica.fixar.err.e7f6",
-              "e7f7": "rot.fixedTarget.pratica.fixar.err.e7f7",
-              "a3a4": "rot.fixedTarget.pratica.fixar.err.a3a4"
+              "c7d7": "rot.fixedTarget.pratica.fixar.err.c7d7",
+              "c7b7": "rot.fixedTarget.pratica.fixar.err.c7b7",
+              "c7c8": "rot.fixedTarget.pratica.fixar.err.c7c8",
+              "c7d8": "rot.fixedTarget.pratica.fixar.err.c7d8",
+              "c7b8": "rot.fixedTarget.pratica.fixar.err.c7b8",
+              "b3b4": "rot.fixedTarget.pratica.fixar.err.b3b4"
             },
             "errosPos": {
-              "8/4K3/p7/7p/7P/Pk6/8/8 w - - 1 2": {
-                "e7e6": "rot.fixedTarget.pratica.fixar.vez1.err.e7e6",
-                "e7f6": "rot.fixedTarget.pratica.fixar.vez1.err.e7f6",
-                "a3a4": "rot.fixedTarget.pratica.fixar.vez1.err.a3a4"
-              },
-              "8/8/p2K4/7p/7P/k7/8/8 w - - 0 3": {
-                "d6c6": "rot.fixedTarget.pratica.fixar.vez2.err.d6c6",
-                "d6e5": "rot.fixedTarget.pratica.fixar.vez2.err.d6e5",
-                "d6e6": "rot.fixedTarget.pratica.fixar.vez2.err.d6e6",
-                "d6d5": "rot.fixedTarget.pratica.fixar.vez2.err.d6d5"
+              "8/2K5/8/1pk3p1/6P1/1P6/8/8 w - - 0 2": {
+                "c7c8": "rot.fixedTarget.pratica.fixar.vez1.err.c7c8",
+                "c7d8": "rot.fixedTarget.pratica.fixar.vez1.err.c7d8",
+                "c7b8": "rot.fixedTarget.pratica.fixar.vez1.err.c7b8",
+                "b3b4": "rot.fixedTarget.pratica.fixar.vez1.err.b3b4"
               }
             }
           }
         },
         {
           "id": "sincronizar",
-          "fen": "8/8/8/p1K4p/7P/k7/8/8 w - - 0 1",
+          "fen": "8/8/7p/7P/p1K5/8/k7/8 w - - 0 1",
           "vira": false,
           "objetivo": "empatar",
           "fim": "etapa",
@@ -826,38 +813,44 @@
             "linha": [
               {
                 "certos": [
-                  "c5c4"
-                ],
-                "resposta": "a5a4"
-              },
-              {
-                "certos": [
                   "c4c3"
                 ],
-                "resposta": "a3a2"
+                "resposta": "a4a3"
               },
               {
                 "certos": [
                   "c3c2"
+                ],
+                "resposta": "a2a1"
+              },
+              {
+                "certos": [
+                  "c2c1",
+                  "c2b3"
                 ]
               }
             ],
             "erros": {
-              "c5b5": "rot.fixedTarget.pratica.sincronizar.err.c5b5",
-              "c5d5": "rot.fixedTarget.pratica.sincronizar.err.c5d5",
-              "c5d4": "rot.fixedTarget.pratica.sincronizar.err.c5d4",
-              "c5b6": "rot.fixedTarget.pratica.sincronizar.err.c5b6",
-              "c5d6": "rot.fixedTarget.pratica.sincronizar.err.c5d6",
-              "c5c6": "rot.fixedTarget.pratica.sincronizar.err.c5c6"
+              "c4b4": "rot.fixedTarget.pratica.sincronizar.err.c4b4",
+              "c4d3": "rot.fixedTarget.pratica.sincronizar.err.c4d3",
+              "c4d4": "rot.fixedTarget.pratica.sincronizar.err.c4d4",
+              "c4b5": "rot.fixedTarget.pratica.sincronizar.err.c4b5",
+              "c4c5": "rot.fixedTarget.pratica.sincronizar.err.c4c5",
+              "c4d5": "rot.fixedTarget.pratica.sincronizar.err.c4d5"
             },
             "errosPos": {
-              "8/8/8/7p/p1K4P/k7/8/8 w - - 0 2": {
-                "c4b5": "rot.fixedTarget.pratica.sincronizar.vez1.err.c4b5",
-                "c4d4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c4d4",
-                "c4d3": "rot.fixedTarget.pratica.sincronizar.vez1.err.c4d3"
+              "8/8/7p/7P/8/p1K5/k7/8 w - - 0 2": {
+                "c3d2": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3d2",
+                "c3d3": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3d3",
+                "c3d4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3d4",
+                "c3b4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3b4",
+                "c3c4": "rot.fixedTarget.pratica.sincronizar.vez1.err.c3c4"
               },
-              "8/8/8/7p/p6P/2K5/k7/8 w - - 2 3": {
-                "c3b4": "rot.fixedTarget.pratica.sincronizar.vez2.err.c3b4"
+              "8/8/7p/7P/8/p7/2K5/k7 w - - 2 3": {
+                "c2c3": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2c3",
+                "c2d1": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2d1",
+                "c2d2": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2d2",
+                "c2d3": "rot.fixedTarget.pratica.sincronizar.vez2.err.c2d3"
               }
             }
           }
