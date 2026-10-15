@@ -959,6 +959,12 @@
               },
               "8/8/8/2kPK3/8/8/8/8 w - -": {
                 "e5e4": "rot.diagonal.pratica.ataque.err.conv.e4"
+              },
+              "8/8/2k5/4K3/8/3P4/8/8 w - - 4 3": {
+                "e5d4": "rot.diagonal.pratica.ataque.v12.err.e5d4"
+              },
+              "8/8/4K3/2k5/8/3P4/8/8 w - - 6 4": {
+                "d3d4": "rot.diagonal.pratica.ataque.v13.err.d3d4"
               }
             }
           }
@@ -997,6 +1003,9 @@
               "8/8/8/3k4/8/2K5/3P4/8 b - - 8 5": {
                 "d5e5": "rot.diagonal.pratica.defesa.v4.err.d5e5",
                 "d5e4": "rot.diagonal.pratica.defesa.v4.err.d5e4"
+              },
+              "8/8/8/2k5/8/3K4/3P4/8 b - - 6 4": {
+                "c5b4": "rot.diagonal.pratica.defesa.v5.err.c5b4"
               }
             }
           }

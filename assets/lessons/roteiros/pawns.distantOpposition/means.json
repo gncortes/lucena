@@ -616,6 +616,22 @@
               },
               "8/2k5/8/3K4/8/3P4/8/8 w - - 0 1": {
                 "d3d4": "rot.means.pratica.ataque.v2.err.d3d4"
+              },
+              "8/3k4/8/8/2K5/3P4/8/8 w - - 0 1": {
+                "d3d4": "rot.means.pratica.ataque.v3.err.d3d4"
+              },
+              "8/3k4/8/8/4K3/3P4/8/8 w - - 0 1": {
+                "d3d4": "rot.means.pratica.ataque.v4.err.d3d4"
+              },
+              "8/3k4/8/4K3/8/3P4/8/8 w - - 0 1": {
+                "d3d4": "rot.means.pratica.ataque.v5.err.d3d4"
+              },
+              "2k5/8/8/2K5/3P4/8/8/8 w - - 0 1": {
+                "d4d5": "rot.means.pratica.ataque.v6.err.d4d5"
+              },
+              "8/2k5/8/4K3/3P4/8/8/8 w - - 0 1": {
+                "d4d5": "rot.means.pratica.ataque.v7.err.d4d5",
+                "e5d5": "rot.means.pratica.ataque.v7.err.e5d5"
               }
             }
           }
@@ -637,6 +653,15 @@
               "e5f5": "rot.means.pratica.defesa.err.e5f5",
               "e5f6": "rot.means.pratica.defesa.err.e5f6",
               "e5f4": "rot.means.pratica.defesa.err.e5f4"
+            },
+            "errosPos": {
+              "8/8/3k4/8/2KP4/8/8/8 b - - 0 1": {
+                "d6e6": "rot.means.pratica.defesa.v1.err.d6e6",
+                "d6d7": "rot.means.pratica.defesa.v1.err.d6d7"
+              },
+              "8/8/8/3k4/3P4/2K5/8/8 b - - 0 1": {
+                "d5e4": "rot.means.pratica.defesa.v2.err.d5e4"
+              }
             }
           }
         }

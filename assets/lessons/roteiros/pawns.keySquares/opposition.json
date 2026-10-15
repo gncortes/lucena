@@ -890,8 +890,34 @@
        "t": "rot.opposition.demos.vezPretas.6"
       },
       {
-       "fen": "8/8/2k5/8/2K5/8/2P5/8 b - - 4 3",
+       "fen": "8/8/2k5/8/3K4/8/2P5/8 w - - 3 3",
+       "salto": true,
+       "marcas": [
+        "c2",
+        "c4"
+       ],
+       "t": "rot.opposition.demos.vezPretas.7a"
+      },
+      {
+       "fen": "8/8/3k4/8/2PK4/8/8/8 w - - 1 4",
+       "seq": [
+        "c2c4",
+        "c6d6"
+       ],
+       "marcas": [
+        "d4",
+        "d6"
+       ],
        "t": "rot.opposition.demos.vezPretas.7"
+      },
+      {
+       "fen": "8/8/2k5/8/2K5/8/2P5/8 b - - 4 3",
+       "salto": true,
+       "marcas": [
+        "c4",
+        "c6"
+       ],
+       "t": "rot.opposition.demos.vezPretas.7b"
       },
       {
        "fen": "8/2k5/8/2K5/8/8/2P5/8 b - - 8 5",

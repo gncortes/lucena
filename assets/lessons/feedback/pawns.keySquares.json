@@ -62,48 +62,48 @@
    "id": "e25",
    "kind": "exercise",
    "turn": 1,
-   "fen": "3k4/8/8/8/4K3/1P6/8/8 b - - 0 1",
-   "uci": "d8c8",
-   "pt": "Em c8, o seu rei fica longe das casas-chave: o rei branco avança e chega a c5, uma casa-chave, antes de o seu rei se aproximar. As brancas ganham.",
-   "en": "On c8, your king stays far from the key squares: the white king advances and reaches c5, a key square, before your king gets close. White wins.",
+   "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
+   "uci": "h7h6",
+   "pt": "Em h6, o seu rei fica na borda: o rei branco entra em f5, uma casa-chave, e as brancas ganham.",
+   "en": "On h6, your king stays on the edge: the white king enters f5, a key square, and White wins.",
    "pv": [
     {
-     "fen": "3k4/8/8/8/4K3/1P6/8/8 b - - 0 1",
-     "uci": "d8c8",
-     "san": "Kc8",
+     "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
+     "uci": "h7h6",
+     "san": "Kh6",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "2k5/8/8/8/4K3/1P6/8/8 w - - 1 2",
-     "uci": "e4d4",
-     "san": "Kd4",
+     "fen": "8/8/7k/8/4K3/6P1/8/8 w - - 1 2",
+     "uci": "e4f5",
+     "san": "Kf5",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "2k5/8/8/8/3K4/1P6/8/8 b - - 2 2",
-     "uci": "c8b7",
-     "san": "Kb7",
+     "fen": "8/8/7k/5K2/8/6P1/8/8 b - - 2 2",
+     "uci": "h6g7",
+     "san": "Kg7",
      "fullmove": 2,
      "turn": "black"
     },
     {
-     "fen": "8/1k6/8/8/3K4/1P6/8/8 w - - 3 3",
-     "uci": "d4c5",
-     "san": "Kc5",
+     "fen": "8/6k1/8/5K2/8/6P1/8/8 w - - 3 3",
+     "uci": "f5g5",
+     "san": "Kg5",
      "fullmove": 3,
      "turn": "white"
     }
    ],
    "objective": {
     "result_mover": "loss",
-    "dtm_successor": 25
+    "dtm_successor": 39
    },
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e25.1",
-    "uci": "d8c8"
+    "uci": "h7h6"
    },
    "text_key": "ex.e25.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -112,48 +112,48 @@
    "id": "e25",
    "kind": "exercise",
    "turn": 1,
-   "fen": "3k4/8/8/8/4K3/1P6/8/8 b - - 0 1",
-   "uci": "d8d7",
-   "pt": "Em d7, o seu rei fica atrás: o rei branco vai a d5 e chega a c5, uma casa-chave, antes de o seu rei se aproximar. As brancas ganham.",
-   "en": "On d7, your king stays behind: the white king goes to d5 and reaches c5, a key square, before your king gets close. White wins.",
+   "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
+   "uci": "h7g7",
+   "pt": "Em g7, o seu rei fica atrás: o rei branco entra em f5, uma casa-chave, antes de o seu rei se aproximar. As brancas ganham.",
+   "en": "On g7, your king stays behind: the white king enters f5, a key square, before your king gets close. White wins.",
    "pv": [
     {
-     "fen": "3k4/8/8/8/4K3/1P6/8/8 b - - 0 1",
-     "uci": "d8d7",
-     "san": "Kd7",
+     "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
+     "uci": "h7g7",
+     "san": "Kg7",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "8/3k4/8/8/4K3/1P6/8/8 w - - 1 2",
-     "uci": "e4d5",
-     "san": "Kd5",
+     "fen": "8/6k1/8/8/4K3/6P1/8/8 w - - 1 2",
+     "uci": "e4f5",
+     "san": "Kf5",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "8/3k4/8/3K4/8/1P6/8/8 b - - 2 2",
-     "uci": "d7c7",
-     "san": "Kc7",
+     "fen": "8/6k1/8/5K2/8/6P1/8/8 b - - 2 2",
+     "uci": "g7h6",
+     "san": "Kh6",
      "fullmove": 2,
      "turn": "black"
     },
     {
-     "fen": "8/2k5/8/3K4/8/1P6/8/8 w - - 3 3",
-     "uci": "d5c5",
-     "san": "Kc5",
+     "fen": "8/8/7k/5K2/8/6P1/8/8 w - - 3 3",
+     "uci": "g3g4",
+     "san": "g4",
      "fullmove": 3,
      "turn": "white"
     }
    ],
    "objective": {
     "result_mover": "loss",
-    "dtm_successor": 23
+    "dtm_successor": 41
    },
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e25.1",
-    "uci": "d8d7"
+    "uci": "h7g7"
    },
    "text_key": "ex.e25.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -664,8 +664,8 @@
    "turn": 2,
    "fen": "8/3k4/8/8/4K3/2P5/8/8 w - - 2 2",
    "uci": "e4d4",
-   "pt": "O rei branco ficou na coluna do rei preto, mas com a vez das brancas: a oposição é das pretas. As pretas empatam.",
-   "en": "The white king stands on the black king's file, but with White to move: the opposition is Black's. Black draws.",
+   "pt": "Em d4, o seu rei fica na coluna do rei preto, mas longe dele: o rei preto vai a d6, de frente para o seu, e a vez é das brancas: a oposição é das pretas. As pretas empatam.",
+   "en": "On d4, your king stands on the black king's file but far from it: the black king goes to d6, facing yours, and it is White's turn: the opposition is Black's. Black draws.",
    "pv": [
     {
      "fen": "8/3k4/8/8/4K3/2P5/8/8 w - - 2 2",
@@ -914,8 +914,8 @@
    "turn": 1,
    "fen": "8/8/8/1k6/8/8/1K2P3/8 w - - 0 1",
    "uci": "b2c2",
-   "pt": "Em c2, o seu rei se afasta do rei preto e não toma a oposição: o rei preto vai a c4, ao lado da casa-chave d4. As pretas empatam.",
-   "en": "On c2, your king moves away from the black king and does not take the opposition: the black king goes to c4, beside the key square d4. Black draws.",
+   "pt": "Em c2, o seu rei não fica de frente para o rei preto e não toma a oposição: o rei preto vai a c4, ao lado da casa-chave d4. As pretas empatam.",
+   "en": "On c2, your king does not face the black king and does not take the opposition: the black king goes to c4, beside the key square d4. Black draws.",
    "pv": [
     {
      "fen": "8/8/8/1k6/8/8/1K2P3/8 w - - 0 1",
@@ -1564,8 +1564,8 @@
    "turn": 1,
    "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
    "uci": "d7e7",
-   "pt": "O seu rei recua e deixa d5 livre: o rei branco entra nessa casa-chave, e as brancas ganham.",
-   "en": "Your king steps back and leaves d5 free: the white king enters that key square, and White wins.",
+   "pt": "Em e7, o seu rei fica longe de d5: o rei branco entra nessa casa-chave, e as brancas ganham.",
+   "en": "On e7, your king is far from d5: the white king enters that key square, and White wins.",
    "pv": [
     {
      "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",

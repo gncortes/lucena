@@ -49,16 +49,16 @@
     },
     {
       "id": "e25",
-      "stars": 2,
-      "fen": "3k4/8/8/8/4K3/1P6/8/8 b - - 0 1",
+      "stars": 1,
+      "fen": "8/7k/8/8/4K3/6P1/8/8 b - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "keySquares",
       "line": [
         {
-          "teach": "d8c7",
+          "teach": "h7g6",
           "accept": [
-            "d8c7"
+            "h7g6"
           ]
         }
       ]
@@ -277,7 +277,7 @@
       ]
     }
   ],
-  "passScore": 9,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "count",
@@ -382,5 +382,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 19
+  "maxScore": 18
 }

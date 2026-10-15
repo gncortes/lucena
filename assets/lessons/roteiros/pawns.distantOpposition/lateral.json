@@ -603,18 +603,28 @@
        "lance": "h6g6"
       },
       {
-       "fen": "8/8/6k1/4K3/8/8/5P2/8 b - - 3 2",
+       "fen": "8/8/4K1k1/8/8/8/5P2/8 b - - 3 2",
        "t": "rot.lateral.demos.ataqueLonge.5",
-       "lance": "d6e5"
+       "lance": "d6e6"
       },
       {
-       "fen": "8/8/8/4K1k1/8/8/5P2/8 w - - 4 3",
+       "fen": "8/8/4K3/6k1/8/8/5P2/8 w - - 4 3",
        "t": "rot.lateral.demos.ataqueLonge.6",
        "lance": "g6g5"
       },
       {
-       "fen": "8/8/8/6k1/4K3/8/5P2/8 b - - 5 3",
+       "fen": "8/8/8/4K1k1/8/8/5P2/8 b - - 5 3",
        "t": "rot.lateral.demos.ataqueLonge.7",
+       "lance": "e6e5"
+      },
+      {
+       "fen": "8/8/8/4K3/6k1/8/5P2/8 w - - 6 4",
+       "t": "rot.lateral.demos.ataqueLonge.8",
+       "lance": "g5g4"
+      },
+      {
+       "fen": "8/8/8/8/4K1k1/8/5P2/8 b - - 7 4",
+       "t": "rot.lateral.demos.ataqueLonge.9",
        "lance": "e5e4"
       }
      ]

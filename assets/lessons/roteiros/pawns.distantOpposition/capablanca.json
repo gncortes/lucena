@@ -208,8 +208,7 @@
        "t": "rot.capablanca.ideia.ex1.l5",
        "lance": "e3e4",
        "marcas": [
-        "e4",
-        "e6"
+        "e5"
        ]
       },
       {
@@ -225,8 +224,7 @@
        "t": "rot.capablanca.ideia.ex1.l7",
        "lance": "e4f4",
        "marcas": [
-        "f4",
-        "f6"
+        "f5"
        ]
       },
       {
@@ -506,8 +504,12 @@
        ]
       },
       {
+       "fen": "8/8/8/1p2k2K/1P5P/8/8/8 b - - 0 6",
+       "t": "rot.capablanca.demos.outroLado.5"
+      },
+      {
        "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
-       "t": "rot.capablanca.demos.outroLado.5",
+       "t": "rot.capablanca.demos.outroLado.6",
        "salto": true
       }
      ]
@@ -556,6 +558,10 @@
       {
        "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
        "t": "rot.capablanca.demos.passar.6"
+      },
+      {
+       "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
+       "t": "rot.capablanca.demos.passar.7"
       },
       {
        "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",

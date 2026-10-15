@@ -398,17 +398,26 @@
               "t": "rot.distant.ideia.ex1.l23"
             },
             {
+              "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 5 3",
+              "marcas": [
+                "f5"
+              ],
+              "seq": [
+                "e7f7",
+                "e5f5"
+              ],
+              "t": "rot.distant.ideia.ex1.l24"
+            },
+            {
               "fen": "8/6k1/8/6K1/8/6P1/8/8 b - - 7 4",
               "marcas": [
                 "g5"
               ],
               "seq": [
-                "e7f7",
-                "e5f5",
                 "f7g7",
                 "f5g5"
               ],
-              "t": "rot.distant.ideia.ex1.l24"
+              "t": "rot.distant.ideia.ex1.l24c"
             },
             {
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
@@ -840,17 +849,27 @@
               "t": "rot.distant.demos.tempo.8"
             },
             {
+              "fen": "8/4k3/8/8/8/3K4/5P2/8 b - - 2 2",
+              "marcas": [
+                "d3",
+                "e7"
+              ],
+              "seq": [
+                "d7e7",
+                "c2d3"
+              ],
+              "t": "rot.distant.demos.tempo.9"
+            },
+            {
               "fen": "8/8/5k2/8/4K3/8/5P2/8 b - - 4 3",
               "marcas": [
                 "e4"
               ],
               "seq": [
-                "d7e7",
-                "c2d3",
                 "e7f6",
                 "d3e4"
               ],
-              "t": "rot.distant.demos.tempo.9"
+              "t": "rot.distant.demos.tempo.9b"
             },
             {
               "fen": "8/8/5k2/8/4K3/8/5P2/8 b - - 4 3",
@@ -1009,7 +1028,7 @@
                 "b3b4": "rot.distant.pratica.ataque.v6.err.b3b4"
               },
               "1k6/8/K7/1P6/8/8/8/8 w - - 0 1": {
-                "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
+                "b5b6": "rot.distant.pratica.ataque.v7.err.b5b6"
               },
               "8/k7/2K5/1P6/8/8/8/8 w - - 0 1": {
                 "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
@@ -1053,7 +1072,8 @@
               },
               "8/8/8/1k6/8/K7/1P6/8 b - - 6 4": {
                 "b5c4": "rot.distant.pratica.defesa.v3.err.b5c4",
-                "b5b6": "rot.distant.pratica.defesa.v3.err.b5b6"
+                "b5b6": "rot.distant.pratica.defesa.v3.err.b5b6",
+                "b5c5": "rot.distant.pratica.defesa.v3.err.b5c5"
               }
             }
           }

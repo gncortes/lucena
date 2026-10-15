@@ -34,7 +34,7 @@
   "exercises": [
     {
       "id": "e09",
-      "stars": 1,
+      "stars": 2,
       "fen": "6k1/8/8/8/8/8/3P4/7K w - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -111,23 +111,23 @@
     {
       "id": "e18",
       "stars": 1,
-      "fen": "8/8/3k4/1p4p1/1P4P1/3K4/8/8 w - - 0 1",
+      "fen": "8/8/4k3/2p4p/2P4P/4K3/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "capablanca",
       "line": [
         {
-          "teach": "d3d4",
+          "teach": "e3e4",
           "accept": [
-            "d3d4"
+            "e3e4"
           ],
-          "reply": "d6c6"
+          "reply": "e6d6"
         },
         {
-          "teach": "d4e5",
+          "teach": "e4f5",
           "accept": [
-            "d4e5",
-            "d4e4"
+            "e4f5",
+            "e4f4"
           ]
         }
       ]
@@ -201,7 +201,7 @@
       ]
     }
   ],
-  "passScore": 6,
+  "passScore": 7,
   "keyPositions": [
     {
       "id": "lesson",
@@ -274,5 +274,5 @@
       "url": "https://lichess.org/study/A4ujYOer"
     }
   ],
-  "maxScore": 13
+  "maxScore": 14
 }
