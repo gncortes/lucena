@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -119,7 +120,7 @@ class AllModesScreen extends StatelessWidget {
           (
             id: 'rating',
             icon: Icons.show_chart,
-            title: l10n.ratingHistory,
+            title: l10n.historyTitle,
             body: l10n.allModesRatingBody,
             route: Routes.rating,
           ),
@@ -141,7 +142,7 @@ class AllModesScreen extends StatelessWidget {
     var index = 0;
     return Scaffold(
       key: AllModesKeys.screen,
-      appBar: AppBar(title: Text(l10n.allModesTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.allModesTitle)),
       body: ListView(
         padding: scrollPadding(context, left: 16, right: 16),
         children: [

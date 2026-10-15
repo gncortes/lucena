@@ -143,6 +143,7 @@ abstract final class ExerciseKeys {
   static const correct = Key('exercise.correct');
 
   /// O rodapé de resolvido com os botões empilhados (tela estreita).
+  static const footerSurface = Key('exercise.footerSurface');
   static const solvedStacked = Key('exercise.solvedStacked');
   static const resultButton = Key('exercise.result');
   static const backButton = Key('exercise.back');
@@ -156,6 +157,17 @@ abstract final class ExerciseKeys {
 
   /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.
   static const goal = Key('exercise.goal');
+
+  /// A página que rola inteira (balão, tabuleiro e lista) e o rodapé fixo.
+  static const page = Key('exercise.page');
+  static const footer = Key('exercise.footer');
+
+  /// "Ver solução": aparece quando o exercício já não pontua.
+  static const showSolution = Key('exercise.showSolution');
+
+  /// Ao lado do som, com a lista completa: cobrir ou mostrar os lances que
+  /// o aluno ainda não viu (T69).
+  static const hiddenMovesToggle = Key('exercise.hiddenMovesToggle');
   static const solution = Key('exercise.solution');
 
   /// O exercício aberto (`<aula>.<exercício>`).

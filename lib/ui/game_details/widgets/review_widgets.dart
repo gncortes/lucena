@@ -14,6 +14,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
@@ -25,6 +26,8 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/progress_pill.dart';
+import '../../core/theme/app_colors.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -103,13 +106,7 @@ class ReviewSummary extends StatelessWidget {
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppShape.small),
-            child: LinearProgressIndicator(
-              value: state.reviewProgress,
-              minHeight: 8,
-            ),
-          ),
+          ProgressPill(value: state.reviewProgress),
         ],
       );
     } else if (review == null) {
@@ -196,7 +193,8 @@ class ReviewSummary extends StatelessWidget {
     }
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -227,7 +225,7 @@ class ReviewSummary extends StatelessWidget {
       (ReviewSpeed.deep, GameDetailsKeys.reviewDeep, l10n.reviewDeep),
     ];
     final style = FilledButton.styleFrom(
-      minimumSize: const Size.fromHeight(46),
+      minimumSize: const Size.fromHeight(kButtonHeight),
       padding: const EdgeInsets.symmetric(horizontal: 10),
     );
     // A próxima a fazer fica em destaque.
@@ -320,7 +318,6 @@ class _StoryTellerState extends State<_StoryTeller> {
   /// Já houve revisão rodando nesta tela (abrir uma partida já revisada
   /// não conta história).
   late bool _told = widget.running;
-  bool _closed = false;
 
   @override
   void initState() {
@@ -333,7 +330,6 @@ class _StoryTellerState extends State<_StoryTeller> {
     super.didUpdateWidget(old);
     if (widget.running && !old.running) {
       _told = true;
-      _closed = false;
       _start();
     } else if (!widget.running && old.running) {
       _timer?.cancel();
@@ -356,9 +352,10 @@ class _StoryTellerState extends State<_StoryTeller> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_told || _closed) return const SizedBox.shrink();
+    if (!_told) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      // Vão de 8 em cima, como o do balão nas outras telas.
+      padding: const EdgeInsets.only(top: 8, bottom: 14),
       child: TeacherSpeech(
         key: GameDetailsKeys.story,
         teacher: widget.viktor,
@@ -366,13 +363,6 @@ class _StoryTellerState extends State<_StoryTeller> {
         avatarSize: 40,
         speechContext: SpeechContext.teaching,
         typed: true,
-        closeKey: GameDetailsKeys.storyClose,
-        onClose: () async {
-          _timer?.cancel();
-          setState(() => _closed = true);
-          final text = widget.stories[_index % widget.stories.length];
-          await TeacherSpeech.speechOf(context)?.stopIf(text);
-        },
       ),
     );
   }
@@ -410,7 +400,8 @@ class ReviewLegend extends StatelessWidget {
     return Card(
       key: GameDetailsKeys.legend,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         child: Column(
@@ -522,14 +513,14 @@ class _AccuracyBox extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 96),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: light ? const Color(0xFFF2F2F0) : const Color(0xFF2B2B2B),
+        color: light ? AppColors.paper : AppColors.chessBlackColor,
         borderRadius: BorderRadius.circular(AppShape.medium),
       ),
       child: Text(
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: light ? const Color(0xFF1E1E1E) : Colors.white,
+          color: light ? AppColors.paperInk : AppColors.white,
           fontSize: 26,
           fontWeight: FontWeight.w800,
           fontFeatures: const [FontFeature.tabularFigures()],
@@ -713,14 +704,14 @@ class _ReviewBoardState extends State<ReviewBoard> {
       if (lines == null || lines.isEmpty || lines.first.moves.isEmpty) {
         return null;
       }
-      return _squares(lines.first.moves.first, const Color(0xCC3E7BC4));
+      return _squares(lines.first.moves.first, AppColors.markBlue);
     }
     final reviewed = state.shownReview;
     final best = reviewed?.best;
     if (reviewed == null || best == null || !reviewed.quality.isError) {
       return null;
     }
-    return _squares(best, const Color(0xCC5FA14A));
+    return _squares(best, AppColors.markGreen);
   }
 
   static (Square, Square, Color)? _squares(String uci, Color color) {
@@ -752,8 +743,8 @@ class _EvalBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final share = (whiteWin ?? 50) / 100;
-    final white = Container(color: const Color(0xFFF2F2F0));
-    final black = Container(color: const Color(0xFF3A3A3A));
+    final white = Container(color: AppColors.paper);
+    final black = Container(color: AppColors.graphite);
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppShape.small),
       child: SizedBox(
@@ -799,8 +790,8 @@ class _EvalBar extends StatelessWidget {
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: whiteAhead
-                              ? const Color(0xFF3A3A3A)
-                              : const Color(0xFFF2F2F0),
+                              ? AppColors.graphite
+                              : AppColors.paper,
                         ),
                       ),
                     ),
@@ -927,10 +918,6 @@ class MoveExplanation extends StatelessWidget {
       key: GameDetailsKeys.explanation,
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.medium),
-      ),
       child: Row(
         children: [
           if (leading != null) ...[leading, const SizedBox(width: 12)],
@@ -1191,8 +1178,8 @@ class EngineLinesPanel extends StatelessWidget {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: line.score.whiteWinPercent >= 50
-                        ? const Color(0xFFF2F2F0)
-                        : const Color(0xFF2B2B2B),
+                        ? AppColors.paper
+                        : AppColors.chessBlackColor,
                     borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   child: Text(
@@ -1200,8 +1187,8 @@ class EngineLinesPanel extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       color: line.score.whiteWinPercent >= 50
-                          ? const Color(0xFF1E1E1E)
-                          : Colors.white,
+                          ? AppColors.paperInk
+                          : AppColors.white,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
@@ -1224,7 +1211,8 @@ class EngineLinesPanel extends StatelessWidget {
     return Card(
       key: GameDetailsKeys.engineLines,
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      color: colors.surfaceContainerLow,
+      color: Colors.transparent,
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
         child: Column(

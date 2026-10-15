@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -23,7 +24,7 @@ class BoardBehaviorScreen extends StatelessWidget {
     );
     return Scaffold(
       key: BoardSettingsKeys.behaviorScreen,
-      appBar: AppBar(title: Text(l10n.settingsBoardBehavior)),
+      appBar: LucenaAppBar(title: Text(l10n.settingsBoardBehavior)),
       body: ListView(
         children: [
           ListTile(

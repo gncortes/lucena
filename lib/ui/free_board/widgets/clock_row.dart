@@ -82,15 +82,8 @@ class ClockRow extends StatelessWidget {
         clockKey: FreeBoardKeys.clock(side),
         timeKey: FreeBoardKeys.clockTime(side),
         turnKey: FreeBoardKeys.turn,
-        // Sem relógio, a vez aparece na linha de quem joga.
-        turnLabel:
-            clock == null && state.end == null && state.position.turn == side
-            ? (side == mode.userSide && mode.opponent.isMachine
-                  ? l10n.gameYourTurn
-                  : side == Side.white
-                  ? l10n.freeBoardWhiteToMove
-                  : l10n.freeBoardBlackToMove)
-            : null,
+        // Sem relógio, a vez é o anel no retrato de quem joga.
+        isTurn: state.end == null && state.position.turn == side,
         portrait: character == null
             ? null
             : CharacterAvatar(

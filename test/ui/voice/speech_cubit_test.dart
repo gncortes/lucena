@@ -183,13 +183,22 @@ void main() {
     expect(voice.settings.enabled, isFalse);
   });
 
-  test('a voz de um personagem: escolhida e de volta à do app', () async {
+  test('a voz de um personagem vem do app, com o tom da idade', () async {
     final cubit = await open();
-    await cubit.setCharacterVoice('grandpa', 'pt-br-a');
-    expect(voice.settings.characterVoices, {'grandpa': 'pt-br-a'});
-    expect(cubit.state.voiceOf('grandpa', 'pt-BR')!.voice.id, 'pt-br-a');
-    await cubit.setCharacterVoice('grandpa', null);
-    expect(voice.settings.characterVoices, isEmpty);
+    final grandpa = cubit.state.voiceOf('grandpa', 'pt-BR')!;
+    // Não é a do professor (a primeira) e o Tito é idoso.
+    expect(grandpa.voice.id, isNot('pt-br-a'));
+    expect(grandpa.pitch, 0.8);
+    expect(grandpa.rate, 0.85);
+    // Quem não tem perfil fala como homem adulto.
+    expect(cubit.state.voiceOf('stockfish', 'pt-BR')!.pitch, 1);
+  });
+
+  test('trocar a voz do professor recalcula a dos personagens', () async {
+    final cubit = await open();
+    final before = cubit.state.voiceOf('grandpa', 'pt-BR')!.voice.id;
+    await cubit.setTeacherVoice(before);
+    expect(cubit.state.voiceOf('grandpa', 'pt-BR')!.voice.id, isNot(before));
   });
 
   test('a amostra fala com a voz pedida, sem gravar a escolha', () async {
@@ -202,9 +211,7 @@ void main() {
     );
     final (_, resolved) = voice.spoken.single;
     expect(resolved.voice.id, 'pt-br-c');
-    // Como ela vai soar se for escolhida: do jeito dela.
     expect(resolved.pitch, 1);
-    expect(voice.settings.characterVoices, isEmpty);
   });
 
   test('a velocidade geral é gravada e multiplica a de cada um', () async {

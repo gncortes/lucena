@@ -10,7 +10,7 @@
   "part.timing.title": "At the right moment",
   "part.timing.summary": "First the king takes its post. The spare tempo is kept for the end.",
   "part.recap.title": "Summary",
-  "part.recap.summary": "The two rules of the lesson, the defence, and an ending to play.",
+  "part.recap.summary": "With the pawns blocked, whoever makes the last pawn move passes the turn: bring the king first and keep the pawn on its starting square for the end.",
   "step.t_pass": "Each king attacks the other pawn and defends its own. Whoever steps away gives up his pawn. What does White do here?",
   "step.t_pass.hint1": "Picture the position without the a2-pawn. Whoever had the move would be lost. So you want Black to be the one moving.",
   "step.t_pass.hint2": "There is a white piece that can move without spoiling anything on the kingside.",

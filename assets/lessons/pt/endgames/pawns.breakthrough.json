@@ -22,7 +22,7 @@
   "part.defenseKing.title": "Com o rei perto",
   "part.defenseKing.summary": "Sem o peão do meio, encoste pela ponta e leve o rei para a frente do peão que sobrar.",
   "part.finish.title": "Resumo",
-  "part.finish.summary": "As três regras da ruptura, a defesa vista do outro lado e um desafio prático para fechar.",
+  "part.finish.summary": "Com três peões contra três, o central se sacrifica e o vizinho desvia o guarda; antes, confira se o rei adversário alcança o peão novo.",
   "step.t_classic": "Há três peões contra três, frente a frente, e os dois reis estão longe. Nenhum peão é passado, isto é, nenhum tem o caminho livre de peões adversários até a promoção, e o rei preto não pode ajudar. É possível fazer um peão branco chegar à oitava fileira?",
   "step.t_classic.hint1": "Um peão sozinho não passa por três. Porém, se você entregar um ou dois peões, os peões pretos precisam capturar e saem do caminho; e, se não capturarem, o peão que avançou captura e coroa.",
   "step.t_classic.hint2": "Qual peão, ao avançar, ameaça dois peões pretos ao mesmo tempo?",

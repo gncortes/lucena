@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 
 import 'game_setup.dart';
 import 'journey.dart';
+import 'variation_tree.dart';
 import '../use_cases/wiki_markup.dart';
 
 /// A Escola do Viktor: as aulas do iniciante, em módulos, na ordem em que se
@@ -42,11 +43,16 @@ class CourseModule {
 
 /// Uma aula: uma conversa com o Viktor, passo a passo.
 class Lesson {
-  const Lesson({required this.id, required this.steps, this.parts = const []});
+  const Lesson({
+    required this.id,
+    required this.steps,
+    this.parts = const [],
+    this.script,
+  });
 
   /// Uma aula dividida em partes curtas (T51): os passos são os das partes,
   /// em ordem.
-  Lesson.parted({required this.id, required this.parts})
+  Lesson.parted({required this.id, required this.parts, this.script})
     : steps = [for (final part in parts) ...part.steps];
 
   /// `pieces.rook`, `mates.queen`... Estável entre versões: o progresso é
@@ -59,6 +65,11 @@ class Lesson {
   /// As partes. Vazia: aula no formato antigo, lida como uma parte só
   /// ([sections]).
   final List<LessonPart> parts;
+
+  /// O roteiro da aula inteira (curso de iniciante, T71): o asset em
+  /// `assets/lessons/roteiros/`. Com ele, a aula abre a tela roteirizada e
+  /// os [steps] ficam de reserva.
+  final String? script;
 
   /// O id da parte única de uma aula no formato antigo.
   static const wholeId = 'main';
@@ -94,10 +105,14 @@ class Lesson {
 /// Uma parte curta de uma aula (T51): título e resumo vêm das falas
 /// (`part.<id>.title`); termina numa prática do aluno.
 class LessonPart {
-  const LessonPart({required this.id, required this.steps});
+  const LessonPart({required this.id, required this.steps, this.script});
 
   final String id;
   final List<LessonStep> steps;
+
+  /// O caminho do asset do roteiro (T70, `LessonScript`) quando a parte é
+  /// tocada pela tela de roteiro, no lugar dos [steps]. Nulo: parte comum.
+  final String? script;
 
   /// O tempo estimado, em minutos: uns 3 de pensar, mais meio minuto por
   /// conversa, uns segundos por lance mostrado e um minuto por prática.
@@ -240,10 +255,18 @@ class MoveStep extends LessonStep {
 /// Uma variante citada numa fala, descrita no JSON da aula: os lances
 /// (UCI) a partir da posição de onde ela sai e se é a linha errada.
 class CitedLine {
-  const CitedLine({required this.uci, this.wrong = false});
+  const CitedLine({
+    required this.uci,
+    this.wrong = false,
+    this.branches = const [],
+  });
 
   final List<String> uci;
   final bool wrong;
+
+  /// As alternativas à linha, mostradas recuadas na faixa (T68). Não mudam
+  /// [matches] nem o selo de linha errada.
+  final List<CitedBranch> branches;
 
   /// A variante [ucis] é esta: uma começa com a outra (a fala pode citar só
   /// o começo da linha, ou a linha inteira e mais).
@@ -255,6 +278,29 @@ class CitedLine {
     }
     return true;
   }
+}
+
+/// Uma alternativa a um lance de uma [CitedLine] (T68): `at` lances da
+/// linha jogados antes; a alternativa substitui o lance `at + 1`.
+/// `{"id":"g4","at":2,"uci":["g3g4","f7g6"],"glyphs":["?",null],"result":"draw"}`.
+/// Comentários no JSON da aula: `step.<passo>.alt.<id>` (da alternativa) e
+/// `step.<passo>.alt.<id>.m<k>` (do lance k, opcional).
+class CitedBranch {
+  const CitedBranch({
+    required this.id,
+    required this.at,
+    required this.uci,
+    this.glyphs = const [],
+    this.result,
+  });
+
+  final String id;
+  final int at;
+  final List<String> uci;
+
+  /// Avaliação de cada lance (`?`, `!`), do tamanho de [uci]; vazio, nenhuma.
+  final List<String?> glyphs;
+  final VariationResult? result;
 }
 
 /// Um lance errado previsto num passo de lance, de jogar ou de pensar: a
@@ -470,6 +516,11 @@ class LessonTexts {
   /// O que o Viktor diz ao abrir o passo.
   String? step(String lessonId, String stepId) => say('$lessonId.$stepId');
 
+  /// O comentário de uma alternativa citada (T68): o dela (`...alt.<id>`) ou,
+  /// com [ply], o do lance (`...alt.<id>.m<ply>`).
+  String? alternative(String lessonId, String stepId, String id, [int? ply]) =>
+      plain('$lessonId.$stepId.alt.$id${ply == null ? '' : '.m$ply'}');
+
   /// A dica depois de um erro no passo.
   String? hint(String lessonId, String stepId) => say('$lessonId.$stepId.hint');
 
@@ -533,87 +584,6 @@ class SchoolProgress {
   );
 }
 
-/// The student's last answer at a decision point (move, play or think step):
-/// enough to ask the repository for the same explanation again when the app
-/// reopens.
-class LessonAttempt {
-  const LessonAttempt({
-    required this.step,
-    required this.id,
-    required this.kind,
-    required this.fen,
-    required this.turn,
-    required this.uci,
-    required this.incorrect,
-  });
-
-  /// Index of the step where the answer was given.
-  final int step;
-
-  /// Id of that step and its kind (`move`, `play`, `think`).
-  final String id;
-  final String kind;
-
-  /// Position before the answer, the student's turn number and the move.
-  final String fen;
-  final int turn;
-  final String uci;
-  final bool incorrect;
-
-  Map<String, dynamic> toJson() => {
-    'step': step,
-    'id': id,
-    'kind': kind,
-    'fen': fen,
-    'turn': turn,
-    'uci': uci,
-    'incorrect': incorrect,
-  };
-
-  static LessonAttempt? fromJson(Object? json) {
-    if (json is! Map<String, dynamic>) return null;
-    final (step, id, kind, fen, turn, uci) = (
-      json['step'],
-      json['id'],
-      json['kind'],
-      json['fen'],
-      json['turn'],
-      json['uci'],
-    );
-    if (step is! int ||
-        id is! String ||
-        kind is! String ||
-        fen is! String ||
-        turn is! int ||
-        uci is! String) {
-      return null;
-    }
-    return LessonAttempt(
-      step: step,
-      id: id,
-      kind: kind,
-      fen: fen,
-      turn: turn,
-      uci: uci,
-      incorrect: json['incorrect'] as bool? ?? false,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      other is LessonAttempt &&
-      other.step == step &&
-      other.id == id &&
-      other.kind == kind &&
-      other.fen == fen &&
-      other.turn == turn &&
-      other.uci == uci &&
-      other.incorrect == incorrect;
-
-  @override
-  int get hashCode => Object.hash(step, id, kind, fen, turn, uci, incorrect);
-}
-
 /// Onde o aluno parou dentro de uma aula: o passo e o tabuleiro dele.
 class LessonCheckpoint {
   const LessonCheckpoint({
@@ -632,29 +602,9 @@ class LessonCheckpoint {
     this.mistakes = 0,
     this.demoMove = 0,
     this.demoPlaying = false,
-    this.reviewReturn,
-    this.attempt,
-    this.failed = false,
-    this.reviewStep,
-    this.attemptedSan,
-    this.thinkMistake,
   });
 
   final String lessonId;
-
-  /// The last answer at this step (T65 §7): with it the explanation of a
-  /// wrong move comes back after the app is closed.
-  final LessonAttempt? attempt;
-
-  /// The step was failed (wrong move with the 2×2 footer).
-  final bool failed;
-
-  /// The earlier step the wrong move points to ("Rever a ideia").
-  final String? reviewStep;
-
-  /// The wrong move, numbered (`1.Kd2`), in a move step and in a think step.
-  final String? attemptedSan;
-  final String? thinkMistake;
 
   /// A parte aberta (aula em partes, T51). Nula: checkpoint da aula inteira
   /// ([step] conta desde o começo da aula); numa aula de finais, a parte é
@@ -683,9 +633,6 @@ class LessonCheckpoint {
   final int demoMove;
 
   final bool demoPlaying;
-
-  /// Exact interactive position to resume after reviewing an earlier point.
-  final LessonCheckpoint? reviewReturn;
 
   /// O índice do passo.
   final int step;
@@ -722,12 +669,6 @@ class LessonCheckpoint {
     mistakes: mistakes,
     demoMove: demoMove,
     demoPlaying: demoPlaying,
-    reviewReturn: reviewReturn,
-    attempt: attempt,
-    failed: failed,
-    reviewStep: reviewStep,
-    attemptedSan: attemptedSan,
-    thinkMistake: thinkMistake,
   );
 
   Map<String, dynamic> toJson() => {
@@ -746,12 +687,6 @@ class LessonCheckpoint {
     if (mistakes > 0) 'mistakes': mistakes,
     if (demoMove > 0) 'demoMove': demoMove,
     'demoPlaying': demoPlaying,
-    'reviewReturn': ?reviewReturn?.toJson(),
-    'attempt': ?attempt?.toJson(),
-    if (failed) 'failed': true,
-    'reviewStep': ?reviewStep,
-    'attemptedSan': ?attemptedSan,
-    'thinkMistake': ?thinkMistake,
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -781,12 +716,6 @@ class LessonCheckpoint {
       mistakes: json['mistakes'] as int? ?? 0,
       demoMove: json['demoMove'] as int? ?? 0,
       demoPlaying: json['demoPlaying'] as bool? ?? false,
-      reviewReturn: LessonCheckpoint.fromJson(json['reviewReturn']),
-      attempt: LessonAttempt.fromJson(json['attempt']),
-      failed: json['failed'] as bool? ?? false,
-      reviewStep: json['reviewStep'] as String?,
-      attemptedSan: json['attemptedSan'] as String?,
-      thinkMistake: json['thinkMistake'] as String?,
     );
   }
 
@@ -805,13 +734,7 @@ class LessonCheckpoint {
       other.stepStartedAt?.toUtc() == stepStartedAt?.toUtc() &&
       other.hintsShown == hintsShown &&
       other.mistakes == mistakes &&
-      other.demoMove == demoMove &&
-      other.reviewReturn == reviewReturn &&
-      other.attempt == attempt &&
-      other.failed == failed &&
-      other.reviewStep == reviewStep &&
-      other.attemptedSan == attemptedSan &&
-      other.thinkMistake == thinkMistake;
+      other.demoMove == demoMove;
 
   @override
   int get hashCode => Object.hash(
@@ -828,8 +751,6 @@ class LessonCheckpoint {
     hintsShown,
     mistakes,
     demoMove,
-    reviewReturn,
-    Object.hash(attempt, failed, reviewStep, attemptedSan, thinkMistake),
   );
 
   static bool _sameList(List<String> a, List<String> b) {

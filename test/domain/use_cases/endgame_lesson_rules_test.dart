@@ -17,6 +17,27 @@ void main() {
     expect(EndgameLessonRules.earned(1, mistakes: 2, hints: 1), 0);
   });
 
+  test('errar o primeiro lance zera, sejam quais forem os outros erros', () {
+    expect(
+      EndgameLessonRules.earned(
+        3,
+        mistakes: 1,
+        hints: 0,
+        firstMoveMistake: true,
+      ),
+      0,
+    );
+    expect(
+      EndgameLessonRules.earned(
+        2,
+        mistakes: 0,
+        hints: 0,
+        firstMoveMistake: true,
+      ),
+      0,
+    );
+  });
+
   test('a nota passa com todos resolvidos e a soma no mínimo', () {
     expect(lucena.maxScore, 6);
     const partial = EndgameLessonProgress(stars: {'e01': 1, 'e02': 2});
@@ -41,6 +62,18 @@ void main() {
       stars: {'e01': 1, 'e02': 2, 'e03': 3},
     );
     expect(EndgameLessonRules.passed(lucena, noLesson), isFalse);
+  });
+
+  test('aprovada antes de ganhar exercícios novos continua aprovada', () {
+    const before = EndgameLessonProgress(
+      lessonDone: true,
+      approved: true,
+      stars: {'e01': 1},
+    );
+    expect(EndgameLessonRules.allSolved(lucena, before), isFalse);
+    expect(EndgameLessonRules.passed(lucena, before), isTrue);
+    const notDone = EndgameLessonProgress(approved: true);
+    expect(EndgameLessonRules.passed(lucena, notDone), isFalse);
   });
 
   test('estrela de exercício que saiu da aula não conta na nota', () {

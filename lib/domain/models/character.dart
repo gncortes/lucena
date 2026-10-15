@@ -155,6 +155,11 @@ class Character {
     this.images = const {},
   });
 
+  /// O Mestre Viktor: o único com o título "Mestre" antes do nome.
+  static const masterId = 'master';
+
+  bool get isMaster => id == masterId;
+
   /// O Stockfish como personagem: o logo e nenhuma emoção nem fala.
   static const stockfish = Character(
     id: 'stockfish',

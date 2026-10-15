@@ -83,7 +83,6 @@ abstract final class FreeBoardKeys {
   /// balão com a fala (pelo id da fala).
   static const characterBar = Key('freeBoard.character');
   static const speechBubble = Key('freeBoard.character.bubble');
-  static const speechClose = Key('freeBoard.character.close');
   static const speechHint = Key('freeBoard.character.hint');
   static const speechHintAdjust = Key('freeBoard.character.hint.adjust');
   static Key characterAvatar(Emotion emotion) =>

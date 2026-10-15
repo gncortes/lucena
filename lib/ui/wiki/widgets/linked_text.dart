@@ -56,6 +56,7 @@ class _LinkedTextState extends State<LinkedText> {
     final colors = Theme.of(context).colorScheme;
     final pageStyle = TextStyle(
       color: colors.primary,
+      fontWeight: FontWeight.w400,
       decoration: TextDecoration.underline,
       decorationColor: colors.primary,
     );

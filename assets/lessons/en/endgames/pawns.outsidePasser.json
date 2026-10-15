@@ -16,7 +16,7 @@
   "part.pass.title": "Trade or pass",
   "part.pass.summary": "With two pawns against one, instead of trading, go past and create a protected passed pawn.",
   "part.fischer.title": "Fischer versus Larsen",
-  "part.fischer.summary": "In Denver, 1971, Fischer trades bishops because he knows the pawn ending is won. Then the rules of the lesson and a position to play to the end.",
+  "part.fischer.summary": "With the outside passed pawn, trade pieces and simplify into the pawn ending: it lures the enemy king away, and your king captures on the other side.",
   "step.t_decoy": "Equal material: each side has two pawns and one passed pawn, White's on a4, Black's on e5. Both kings are in the centre. Why is this winning for White, and what is the plan?",
   "step.t_decoy.hint1": "Compare the distances. The e5 pawn is close to both kings. The a4 pawn is far from everything.",
   "step.t_decoy.hint2": "If the black king goes after the a-pawn, how long is it away from e5 and g4? And what does your king do in that time?",

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_button.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import 'lucena_sheet.dart';
 
 /// Uma opção do painel de escolha.
 class ChoiceSheetOption<T> {
@@ -38,11 +40,8 @@ Future<T?> showChoiceSheet<T>(
   Key? sheetKey,
   Key? confirmKey,
 }) {
-  return showModalBottomSheet<T>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  return showLucenaSheet<T>(
+    context,
     // O botão de confirmar fica acima da barra de gestos do sistema.
     builder: (context) => SafeArea(
       top: false,
@@ -144,7 +143,7 @@ class _ChoiceSheetState<T> extends State<_ChoiceSheet<T>> {
           child: FilledButton(
             key: widget.confirmKey,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: () => Navigator.of(context).pop(_marked),
             child: Text(widget.confirmLabel),

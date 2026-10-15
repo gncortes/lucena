@@ -22,7 +22,7 @@
   "part.defenseKing.title": "With the king close",
   "part.defenseKing.summary": "Without the middle pawn, make contact from the edge and bring the king in front of whichever pawn is left.",
   "part.finish.title": "Summary",
-  "part.finish.summary": "The three rules of the breakthrough, the defence seen from the other side, and a practical challenge to finish.",
+  "part.finish.summary": "With three pawns against three, the central one is sacrificed and its neighbour deflects the guard; first, check whether the enemy king can catch the new pawn.",
   "step.t_classic": "Three pawns against three, face to face, and both kings far away. No pawn is passed, and the black king can't help. Can White get a pawn to the eighth rank?",
   "step.t_classic.hint1": "One pawn alone can't get past three. But if you give away one or two pawns, the black pawns must capture and step out of the way; and if they don't capture, the pawn that advanced captures and queens.",
   "step.t_classic.hint2": "Which pawn, when it advances, threatens two black pawns at the same time?",
