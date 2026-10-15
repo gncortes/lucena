@@ -2614,8 +2614,8 @@
       "turn": 1,
       "fen": "8/8/4k3/2p4p/2P4P/4K3/8/8 w - - 0 1",
       "uci": "e3d3",
-      "pt": "Indo a d3, seu rei sai da coluna do rei preto e deixa de tomar a oposição: ele vai ao centro, a e5, antes que o seu o alcance. As pretas empatam.",
-      "en": "Going to d3, your king leaves the black king's file and stops taking the opposition: he goes to the centre, e5, before yours can reach it. Black draws.",
+      "pt": "Indo a d3, seu rei sai da coluna do rei preto e se afasta do peão de h4: o rei preto vai a f5, chega antes a ele e fica com um peão a mais. As pretas ganham.",
+      "en": "Going to d3, your king leaves the black king's file and moves away from the h4-pawn: the black king goes to f5, reaches it first and ends up a pawn ahead. Black wins.",
       "pv": [
         {
           "fen": "8/8/4k3/2p4p/2P4P/4K3/8/8 w - - 0 1",
@@ -2626,28 +2626,28 @@
         },
         {
           "fen": "8/8/4k3/2p4p/2P4P/3K4/8/8 b - - 1 1",
-          "uci": "e6e5",
-          "san": "Ke5",
+          "uci": "e6f5",
+          "san": "Kf5",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/2p1k2p/2P4P/3K4/8/8 w - - 2 2",
+          "fen": "8/8/8/2p2k1p/2P4P/3K4/8/8 w - - 2 2",
           "uci": "d3e3",
           "san": "Ke3",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/2p1k2p/2P4P/4K3/8/8 b - - 3 2",
-          "uci": "e5f5",
-          "san": "Kf5",
+          "fen": "8/8/8/2p2k1p/2P4P/4K3/8/8 b - - 3 2",
+          "uci": "f5g4",
+          "san": "Kg4",
           "fullmove": 2,
           "turn": "black"
         }
       ],
       "objective": {
-        "result_mover": "draw",
+        "result_mover": "loss",
         "dtz_successor": 0
       },
       "evidence": {
