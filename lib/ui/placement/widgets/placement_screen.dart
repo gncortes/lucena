@@ -177,6 +177,23 @@ class _Intro extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: AppSpacing.xs,
               children: [
+                // Na retomada (canvas 0744f9e): onde o teste parou, centrado
+                // acima do botão (4 de margem, mais o vão da coluna).
+                if (state.resuming)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: Text(
+                      l10n.placementStoppedAt(
+                        state.number,
+                        PlacementState.questionCount,
+                      ),
+                      key: PlacementKeys.stoppedAt,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
                 FilledButton(
                   key: state.resuming
                       ? PlacementKeys.resume
@@ -187,9 +204,7 @@ class _Intro extends StatelessWidget {
                   ),
                   onPressed: cubit.start,
                   child: Text(
-                    state.resuming
-                        ? l10n.placementResume(state.number)
-                        : l10n.placementStart,
+                    state.resuming ? l10n.placementResume : l10n.placementStart,
                   ),
                 ),
                 if (state.resuming)

@@ -233,6 +233,13 @@ void main() {
     expect(800 - restart.bottom, 24);
     expect(find.byKey(PlacementKeys.start), findsNothing);
     expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
+    // A legenda de onde parou, centrada, 8 acima do "Continuar teste".
+    final stopped = find.byKey(PlacementKeys.stoppedAt);
+    expect(find.descendant(of: footer, matching: stopped), findsOneWidget);
+    expect(resume.top - tester.getRect(stopped).bottom, 8);
+    expect(tester.widget<Text>(stopped).textAlign, TextAlign.center);
+    expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
+    expect(find.text('Continuar teste'), findsOneWidget);
   });
 
   for (final reducedMotion in [false, true]) {

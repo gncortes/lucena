@@ -4350,11 +4350,18 @@
   "@placementStart": {
     "description": "Button that starts the placement test."
   },
-  "placementResume": "Continue from question {number}",
+  "placementResume": "Continue test",
   "@placementResume": {
-    "description": "Button that resumes an unfinished placement test.",
+    "description": "Button that resumes an unfinished placement test."
+  },
+  "placementStoppedAt": "You stopped at question {number} of {total}",
+  "@placementStoppedAt": {
+    "description": "Caption above the resume button: the question where the unfinished placement test stopped.",
     "placeholders": {
       "number": {
+        "type": "int"
+      },
+      "total": {
         "type": "int"
       }
     }
