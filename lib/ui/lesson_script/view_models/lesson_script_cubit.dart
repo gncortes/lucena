@@ -57,6 +57,7 @@ import '../../../domain/use_cases/machine_move.dart';
 import '../../../domain/use_cases/move_tree.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/script_moves.dart';
+import '../../../domain/use_cases/spoken_text.dart';
 import 'lesson_script_state.dart';
 
 export 'lesson_script_state.dart';
@@ -77,6 +78,23 @@ class _Frame {
 }
 
 /// O que a tela está tocando além do que o estado mostra.
+/// O que o "Tentar de novo" restaura depois da refutação de um erro.
+class _Refutation {
+  const _Refutation({
+    required this.before,
+    required this.scene,
+    required this.cursor,
+    required this.known,
+  });
+
+  final LessonScriptState before;
+  final _Scene scene;
+  final String? cursor;
+
+  /// Os nós da partida de antes do erro.
+  final Set<String> known;
+}
+
 class _Scene {
   const _Scene({
     required this.track,
@@ -191,6 +209,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// ser desfeito.
   static const machineDelay = Duration(milliseconds: 500);
   static const undoDelay = Duration(milliseconds: 800);
+
+  /// O intervalo entre os lances da refutação de um erro da prática: ritmo
+  /// de quem lê e olha o tabuleiro.
+  static const refuteDelay = Duration(milliseconds: 1400);
 
   /// O tempo que o Stockfish pensa no objetivo `mate`.
   static const engineTime = Duration(milliseconds: 400);
@@ -1029,6 +1051,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         await _nextStage();
       case ScriptAction.voltarInicio:
         await _backToStart();
+      case ScriptAction.tentarDeNovo:
+        _retryAfterError();
       case ScriptAction.linhaPrincipal:
         await _backToLine();
       case ScriptAction.reverIdeia:
@@ -1929,35 +1953,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final verdict = _mateGoal
         ? MoveVerdict.keeps
         : JudgeMove.judge(_oracle, position, move, wantsWin: _wantsWin);
-    final after = position.playUnchecked(move);
     if (verdict == MoveVerdict.loses) {
-      final epoch = ++_epoch;
-      final before = state;
-      emit(
-        state.copyWith(
-          fen: after.fen,
-          lastMove: uci,
-          speech: [_say('gen.pratica.errado.$_goalName')],
-          tone: ScriptTone.bad,
-          movable: null,
-          transition: _transition([uci], fromFen: from),
-        ),
-      );
-      await _delay(undoDelay);
-      if (isClosed || epoch != _epoch) return;
-      emit(
-        before.copyWith(
-          speech: [_say('gen.pratica.errado.$_goalName')],
-          tone: ScriptTone.bad,
-          transition: ScriptTransition(
-            id: ++_tick,
-            kind: TransitionKind.back,
-            fromFen: after.fen,
-            ucis: [uci],
-          ),
-        ),
-      );
-      return;
+      return _refute(position, move, from);
     }
     _push();
     _playGame(uci);
@@ -1983,6 +1980,126 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       ),
     );
     await _machineReply(speech: base.speech, tone: base.tone);
+  }
+
+  /// A refutação em andamento ou na tela: o que o "Tentar de novo" desfaz.
+  _Refutation? _refutation;
+
+  /// Lance que deixa o objetivo escapar na prática: fica no tabuleiro, o
+  /// Viktor diz por que falha e a refutação (2 a 4 lances, da tabela) é
+  /// jogada lance a lance. No fim, "Tentar de novo" volta à posição de antes.
+  Future<void> _refute(Position position, Move move, String from) async {
+    final uci = move.uci;
+    final epoch = ++_epoch;
+    final saved = _Refutation(
+      before: state,
+      scene: _scene,
+      cursor: _cursor,
+      known: _game.keys.toSet(),
+    );
+    _refutation = saved;
+    // A refutação: o adversário responde, o aluno segue pelo melhor e o
+    // adversário fecha (a escolha é a do MachineMove, igual nos dois lados).
+    final plies = <String>[uci];
+    var current = position.playUnchecked(move);
+    for (var i = 0; i < 3 && current.board.pawns.isNotEmpty; i++) {
+      final reply = MachineMove.choose(_oracle, current);
+      if (reply == null) break;
+      plies.add(reply);
+      current = current.playUnchecked(Move.parse(reply)!);
+    }
+    final fens = [from];
+    final labels = <String>[];
+    var walk = from;
+    for (final ply in plies) {
+      final played = ScriptMoves.play(walk, ply);
+      if (played == null) break;
+      labels.add(_numbered(walk, played.san));
+      walk = played.fen;
+      fens.add(walk);
+    }
+    final custom = _example.practice!.errors[uci];
+    final intro = custom != null
+        ? _say(custom)
+        : labels.length < 2
+        ? _say('gen.pratica.errado.$_goalName')
+        : _say('gen.pratica.refuta.$_goalName')
+              .replaceAll('{lance}', labels[0])
+              .replaceAll('{lado}', _say('gen.lado.${_sideOf(fens[1]).name}'))
+              .replaceAll('{resposta}', labels[1]);
+    _playGame(uci, symbol: '?');
+    _scene = _scene.at(_cursor);
+    _publish(
+      state.copyWith(
+        fen: fens[1],
+        lastMove: uci,
+        speech: [intro],
+        tone: ScriptTone.bad,
+        movable: null,
+        machineThinking: false,
+        transition: _transition([uci], fromFen: from),
+      ),
+    );
+    for (var i = 1; i < labels.length; i++) {
+      await _delay(refuteDelay);
+      if (isClosed || epoch != _epoch) return;
+      _playGame(plies[i]);
+      _scene = _scene.at(_cursor);
+      _publish(
+        state.copyWith(
+          fen: fens[i + 1],
+          lastMove: plies[i],
+          transition: _transition([plies[i]], fromFen: fens[i]),
+        ),
+      );
+    }
+    await _delay(refuteDelay);
+    if (isClosed || epoch != _epoch) return;
+    _publish(
+      state.copyWith(
+        phase: ScriptPhase.praticaFim,
+        speech: [intro],
+        tone: ScriptTone.bad,
+        primary: ScriptAction.tentarDeNovo,
+        secondary: null,
+        movable: null,
+      ),
+    );
+  }
+
+  /// O lance de [fen] com número e a marca de quem joga: `1.Re3`, `1...Rf7`.
+  String _numbered(String fen, String san) {
+    final number = fen.split(' ').elementAtOrNull(5) ?? '1';
+    final dots = _sideOf(fen) == Side.white ? '.' : '...';
+    return '$number$dots${SpokenText.localSan(san, language)}';
+  }
+
+  /// "Tentar de novo": tira a refutação da partida e volta à posição de
+  /// antes do erro, com a vez do aluno.
+  void _retryAfterError() {
+    final saved = _refutation;
+    if (saved == null || state.phase != ScriptPhase.praticaFim) return;
+    _refutation = null;
+    _epoch++;
+    final added = _game.keys.where((id) => !saved.known.contains(id)).toList();
+    for (final id in added) {
+      final node = _game.remove(id)!;
+      (node.parent == null ? _gameTop : _game[node.parent]?.children)?.remove(
+        id,
+      );
+    }
+    _cursor = saved.cursor;
+    _scene = saved.scene;
+    _publish(
+      saved.before.copyWith(
+        tone: ScriptTone.neutral,
+        transition: ScriptTransition(
+          id: ++_tick,
+          kind: TransitionKind.jump,
+          fromFen: state.fen,
+        ),
+      ),
+    );
   }
 
   LessonScriptState _finishPractice(LessonScriptState base, FreeEnd end) {

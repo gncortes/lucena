@@ -22,6 +22,10 @@
   "gen.pratica.certo": "Correto. Sua vez.",
   "gen.pratica.errado.ganhar": "Esse lance deixa a vitória escapar. Tente outro.",
   "gen.pratica.errado.empatar": "Esse lance perde. Tente outro.",
+  "gen.pratica.refuta.ganhar": "Com {lance}?, {lado} respondem com {resposta} e a vitória escapa: a posição vira empate.",
+  "gen.pratica.refuta.empatar": "Com {lance}?, {lado} respondem com {resposta} e o empate escapa: a posição está perdida.",
+  "gen.lado.white": "as brancas",
+  "gen.lado.black": "as pretas",
   "gen.pratica.sucesso.ganhar": "Ganhou! Você usou a oposição até o fim.",
   "gen.pratica.sucesso.empatar": "Empate garantido! A oposição salvou as pretas.",
   "gen.pratica.sucesso.mate": "Xeque-mate! Você levou o rei até a borda e fechou a rede."

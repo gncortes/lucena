@@ -1077,7 +1077,8 @@ void main() {
       expect(r.s.lastMove, isNot('f3e3'));
     });
 
-    test('lance que perde: mostra, avisa e desfaz depois', () async {
+    test('lance que perde: mostra, explica, joga a refutação e oferece '
+        'Tentar de novo', () async {
       final oracle = FakeKpkOracle(
         rule: (position) => position.fen.startsWith('4k3/8/8/8/5K2/1P6/8/8')
             ? KpkOutcome.draw
@@ -1091,13 +1092,16 @@ void main() {
       final shown = seen.first;
       expect(shown.lastMove, 'f3f4');
       expect(shown.tone, ScriptTone.bad);
-      expect(shown.speech, ['errado.ganhar']);
+      expect(shown.speech.single, startsWith('refuta.ganhar 1.Rf4'));
       expect(shown.movable, isNull);
+      expect(shown.primary, isNull);
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.primary, ScriptAction.tentarDeNovo);
+      expect(r.s.movable, isNull);
+      await r.cubit.onAction(ScriptAction.tentarDeNovo);
       expect(r.s.fen, practiceFen);
       expect(r.s.movable, Side.white);
-      expect(r.s.speech, ['errado.ganhar']);
-      expect(r.s.transition.kind, TransitionKind.back);
-      expect(r.s.transition.ucis, ['f3f4']);
+      expect(r.s.primary, isNull);
     });
 
     test('começa pela máquina quando a vez é dela', () async {

@@ -22,6 +22,10 @@
   "gen.pratica.certo": "Correct. Your move.",
   "gen.pratica.errado.ganhar": "This move lets the win slip. Try another.",
   "gen.pratica.errado.empatar": "This move loses. Try another.",
+  "gen.pratica.refuta.ganhar": "After {lance}?, {lado} reply {resposta} and the win slips away: the position is a draw.",
+  "gen.pratica.refuta.empatar": "After {lance}?, {lado} reply {resposta} and the draw slips away: the position is lost.",
+  "gen.lado.white": "White",
+  "gen.lado.black": "Black",
   "gen.pratica.sucesso.ganhar": "You won! You used the opposition all the way.",
   "gen.pratica.sucesso.empatar": "Draw secured! The opposition saved Black.",
   "gen.pratica.sucesso.mate": "Checkmate! You drove the king to the edge and closed the net."

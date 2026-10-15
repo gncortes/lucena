@@ -339,6 +339,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         l10n.lessonNextStage,
         LessonScriptKeys.primary,
       ),
+      ScriptAction.tentarDeNovo => (l10n.lessonRetry, LessonScriptKeys.primary),
       ScriptAction.voltarInicio => (
         l10n.lessonBackToStart,
         LessonScriptKeys.primary,

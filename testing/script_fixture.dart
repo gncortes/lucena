@@ -194,6 +194,7 @@ Map<String, String> scriptTexts([Map<String, dynamic>? json]) {
       'gen.segueBem.$goal': 'segueBem.$goal',
       'gen.estragou.$goal': 'estragou.$goal',
       'gen.pratica.errado.$goal': 'errado.$goal',
+      'gen.pratica.refuta.$goal': 'refuta.$goal {lance} {lado} {resposta}',
       'gen.pratica.sucesso.$goal': 'sucesso.$goal',
     },
     'gen.voltaIdeia': 'voltaIdeia',
@@ -201,6 +202,8 @@ Map<String, String> scriptTexts([Map<String, dynamic>? json]) {
     for (final goal in ['ganhar', 'empatar'])
       'gen.verLinha.$goal': 'verLinha.$goal {linhaPrincipal}',
     'gen.pratica.certo': 'certo',
+    'gen.lado.white': 'brancas',
+    'gen.lado.black': 'pretas',
     'gen.pratica.sucesso.mate': 'sucesso.mate',
     for (final end in [
       'coroa',

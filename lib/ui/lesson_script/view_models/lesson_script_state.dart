@@ -44,6 +44,9 @@ enum ScriptAction {
 
   /// Conclui a parte e abre a próxima.
   proximaParte,
+
+  /// Depois da refutação de um erro na prática: volta à posição de antes.
+  tentarDeNovo,
 }
 
 /// A cor do balão: neutro, certo ou errado (feedback da prática e do jogo

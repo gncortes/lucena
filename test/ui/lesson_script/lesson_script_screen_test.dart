@@ -26,6 +26,7 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
+import 'lesson_script_fim_demo_test.dart' show demoToPractice;
 
 const _tall = Size(412, 915);
 const _short = Size(360, 640);
@@ -636,6 +637,21 @@ void main() {
     expect(find.byKey(LessonScriptKeys.nextPart), findsOneWidget);
     await _tap(tester, LessonScriptKeys.reviewIdea);
     expect(s.cubit.state.stageId, 'ideia');
+    expect(tester.takeException(), isNull);
+  });
+  testWidgets('fim da demo: a ponte fica na posição final, com o lance', (
+    tester,
+  ) async {
+    final s = await _open(tester, _tall, json: demoToPractice());
+    await _until(tester, s, ScriptPhase.fimEtapa);
+    final board = tester.widget<ScriptBoard>(find.byType(ScriptBoard));
+    expect(board.state.fen, '8/8/8/4k3/8/4K3/6P1/8 w - - 4 3');
+    expect(board.state.lastMove, 'e6e5');
+    final list = tester.widget<ScriptMoveList>(find.byType(ScriptMoveList));
+    expect(list.currentId, list.moves.last.id);
+    expect(list.moves, hasLength(4));
+    await _tap(tester, LessonScriptKeys.primary);
+    expect(s.cubit.state.stageId, 'pratica');
     expect(tester.takeException(), isNull);
   });
 }
