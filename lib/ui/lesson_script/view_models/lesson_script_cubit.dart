@@ -43,11 +43,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/tablebase/kpk_repository.dart';
+import '../../../data/repositories/tablebase/script_table_repository.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../domain/models/kpk_outcome.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/lesson_script.dart';
+import '../../../domain/models/script_table.dart';
+import '../../../domain/models/wdl.dart';
 import '../../../domain/use_cases/free_play_referee.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/group_speech.dart';
@@ -56,6 +59,7 @@ import '../../../domain/use_cases/kpk_oracle.dart';
 import '../../../domain/use_cases/machine_move.dart';
 import '../../../domain/use_cases/move_tree.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/position_judge.dart';
 import '../../../domain/use_cases/script_moves.dart';
 import '../../../domain/use_cases/spoken_text.dart';
 import 'lesson_script_state.dart';
@@ -165,11 +169,16 @@ class _GameNode {
   /// Como a partida acabou neste lance; nulo se ela segue.
   FreeEnd? end;
 
+  /// Quem ganhou, na coroação e no mate (T76): o dono da peça coroada, ou
+  /// quem deu o mate.
+  Side? winner;
+
   /// O resultado, se a partida acabou neste lance: quem coroou ganhou; o
   /// resto é empate.
   String? get result => switch (end) {
     null => null,
-    FreeEnd.coroa || FreeEnd.mate => side == Side.white ? '1–0' : '0–1',
+    FreeEnd.coroa ||
+    FreeEnd.mate => (winner ?? side) == Side.white ? '1–0' : '0–1',
     _ => '½–½',
   };
 }
@@ -188,6 +197,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     this._now = const SystemNow(),
     this._timer = Timer.new,
     this._opponent,
+    this._tables,
+    this._engineJudge,
   }) : _delay = delay ?? ((duration) => Future<void>.delayed(duration)),
        super(const LessonScriptState());
 
@@ -241,9 +252,19 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// primeiro lance legal).
   final OpponentRepository? _opponent;
 
+  /// As tabelas dos roteiros com mais de 3 peças (T76); sem ela, só a KPK.
+  final ScriptTableRepository? _tables;
+
+  /// O juiz de reserva (o Stockfish), para a posição fora das tabelas.
+  final PositionJudge? _engineJudge;
+
   late LessonScript _script;
   late ScriptTexts _texts;
   late KpkOracle _oracle;
+  ScriptTable _table = ScriptTable.empty;
+
+  /// O juiz dos lances: KPK, a tabela do roteiro e o motor (T76).
+  late PositionJudge _judge;
   List<Reference> _lessonRefs = const [];
 
   int _stage = 0;
@@ -301,6 +322,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _script = await _scripts.script(scriptPath);
     _texts = await _scripts.texts(lessonId, language);
     _oracle = await _kpk.oracle();
+    _table = await _tables?.table(scriptPath) ?? ScriptTable.empty;
+    _judge = LayeredJudge(_oracle, _table, _engineJudge);
     try {
       _lessonRefs = await _source.references(lessonId);
     } on Object {
@@ -779,14 +802,40 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   /// O fim da partida no lance do tabuleiro, marcado nele (a lista mostra o
   /// resultado); nulo se ela segue.
-  FreeEnd? _markResult(int limit) {
-    final end = FreePlayReferee.check(
-      _pathFens(),
-      limit: limit,
-      mate: _mateGoal,
-    );
-    _cursorNode?.end = end;
+  Future<FreeEnd?> _markResult(int limit) async {
+    var end = FreePlayReferee.check(_pathFens(), limit: limit, mate: _mateGoal);
+    final node = _cursorNode;
+    final position = GameRules.fromFen(_gameFen);
+    // Com mais de 3 peças, a coroação fecha a partida se quem coroou ganha
+    // (pelo juiz); senão, ela segue (T76).
+    if (end == null &&
+        !_mateGoal &&
+        node != null &&
+        node.uci.length == 5 &&
+        position != null &&
+        position.board.occupied.size > 3 &&
+        await _judge.evaluate(position) == Wdl.loss) {
+      end = FreeEnd.coroa;
+    }
+    if (node != null) {
+      node.end = end;
+      node.winner = switch (end) {
+        FreeEnd.coroa => _crownOwner(position) ?? node.side,
+        FreeEnd.mate => node.side,
+        _ => null,
+      };
+    }
     return end;
+  }
+
+  /// O dono da única peça além dos reis (a coroada), se há só três.
+  static Side? _crownOwner(Position? position) {
+    final board = position?.board;
+    if (board == null || board.occupied.size != 3) return null;
+    return board.occupied.squares
+        .where((sq) => board.roleAt(sq) != Role.king)
+        .map(board.sideAt)
+        .firstOrNull;
   }
 
   /// A partida na ordem da notação: a continuação primeiro e, logo depois do
@@ -1387,8 +1436,17 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   bool get _mateGoal => _example.goal == ScriptGoal.mate;
 
   /// O fim cumpre o objetivo: no `mate`, só o mate.
-  bool _meets(FreeEnd end) =>
-      _mateGoal ? end == FreeEnd.mate : end.meets(_wantsWin);
+  /// Coroação e mate cumprem se o vencedor é o aluno (ganhar também cumpre o
+  /// empatar); o resto cumpre só o empatar (T76).
+  bool _meets(FreeEnd end) {
+    if (_mateGoal) return end == FreeEnd.mate;
+    final winner = _cursorNode?.winner;
+    if (winner != null && (end == FreeEnd.coroa || end == FreeEnd.mate)) {
+      return winner == _example.student;
+    }
+    return end.meets(_wantsWin);
+  }
+
   // `casa` usa as falas genéricas do `ganhar`.
   String get _goalName =>
       _example.goal == ScriptGoal.casa ? 'ganhar' : _example.goal.name;
@@ -1429,10 +1487,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     } else {
       final position = GameRules.fromFen(from)!;
       final after = position.playUnchecked(Move.parse(uci)!);
-      final verdict = JudgeMove.ofOutcome(
-        _oracle.evaluate(after),
+      final verdict = JudgeMove.ofWdl(
+        await _judge.evaluate(after),
         wantsWin: _wantsWin,
       );
+      if (isClosed) return;
       if (verdict == MoveVerdict.loses) {
         _present(
           _groupState(
@@ -1507,7 +1566,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       transition: _transition(const [], fromFen: fen),
     );
     // A refutação pode ter acabado a partida (o rei capturou o peão).
-    final end = _markResult(freeLimit);
+    final end = await _markResult(freeLimit);
+    if (isClosed) return;
     if (end != null) {
       _publish(_finishFree(base, end, kept));
       return;
@@ -1522,12 +1582,13 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     var kept = _scene.kept;
     var speech = state.speech.first;
     if (state.phase == ScriptPhase.livreMantido) {
-      final verdict = JudgeMove.judge(
-        _oracle,
+      final verdict = await JudgeMove.judgeWith(
+        _judge,
         position,
         move,
         wantsWin: _wantsWin,
       );
+      if (isClosed) return;
       kept = verdict == MoveVerdict.keeps;
       speech = _say(
         kept ? 'gen.segueBem.$_goalName' : 'gen.estragou.$_goalName',
@@ -1552,7 +1613,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     required String fromFen,
     required bool offScript,
   }) async {
-    final end = _markResult(freeLimit);
+    final end = await _markResult(freeLimit);
+    if (isClosed) return;
     _scene = _Scene(
       track: offScript ? 'freeFora' : 'free',
       kept: kept,
@@ -1630,11 +1692,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (isClosed || epoch != _epoch) return;
     final from = _gameFen;
     final position = GameRules.fromFen(from);
-    final uci = position == null
-        ? null
-        : _mateGoal
-        ? await _engineMove(position)
-        : MachineMove.choose(_oracle, position);
+    final uci = position == null ? null : await _machineMove(position);
     if (isClosed || epoch != _epoch) return;
     final node = uci == null ? null : _playGame(uci);
     if (node == null) {
@@ -1649,7 +1707,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     }
     node.kept = _scene.kept;
     final practice = state.phase == ScriptPhase.praticaVez;
-    final end = _markResult(practice ? _example.practice!.limit : freeLimit);
+    final end = await _markResult(
+      practice ? _example.practice!.limit : freeLimit,
+    );
+    if (isClosed || epoch != _epoch) return;
     _scene = _scene.at(_cursor);
     final base = state.copyWith(
       fen: node.fen,
@@ -1669,6 +1730,20 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       return;
     }
     _publish(base.copyWith(movable: _sideOf(node.fen)));
+  }
+
+  /// O lance da máquina em [position]: no `mate`, o do motor; até 3 peças, o
+  /// da tabela KPK; com mais, o da tabela do roteiro e, fora dela, o do motor
+  /// (T76). Sem motor, o da regra KPK (o primeiro lance legal).
+  Future<String?> _machineMove(Position position) async {
+    if (_mateGoal) return _engineMove(position);
+    if (position.board.occupied.size > 3) {
+      final best = _table.best(position.fen);
+      final move = best == null ? null : Move.parse(best);
+      if (move != null && position.isLegal(move)) return best;
+      if (_opponent != null) return _engineMove(position);
+    }
+    return MachineMove.choose(_oracle, position);
   }
 
   /// O lance do Stockfish (no máximo, como no app) em [position]. Se o motor
@@ -1955,14 +2030,21 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     // No `mate` não há tabela: o lance não é julgado, a partida corre.
     final verdict = _mateGoal
         ? MoveVerdict.keeps
-        : JudgeMove.judge(_oracle, position, move, wantsWin: _wantsWin);
+        : await JudgeMove.judgeWith(
+            _judge,
+            position,
+            move,
+            wantsWin: _wantsWin,
+          );
+    if (isClosed) return;
     if (verdict == MoveVerdict.loses) {
       return _refute(position, move, from);
     }
     _push();
     _playGame(uci);
     _scene = _scene.at(_cursor);
-    final end = _markResult(_example.practice!.limit);
+    final end = await _markResult(_example.practice!.limit);
+    if (isClosed) return;
     final arrived = _example.kingOnSquare(GameRules.fromFen(_gameFen)!);
     final base = state.copyWith(
       fen: _gameFen,
@@ -2007,7 +2089,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final plies = <String>[uci];
     var current = position.playUnchecked(move);
     for (var i = 0; i < 3 && current.board.pawns.isNotEmpty; i++) {
-      final reply = MachineMove.choose(_oracle, current);
+      final reply = await _machineMove(current);
+      if (isClosed || epoch != _epoch) return;
       if (reply == null) break;
       plies.add(reply);
       current = current.playUnchecked(Move.parse(reply)!);

@@ -1,3 +1,4 @@
+import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 
 import 'package:lucena/config/dependencies.dart';
@@ -35,6 +36,7 @@ import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository_asset.dart';
 import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
+import 'package:lucena/data/repositories/tablebase/script_table_repository.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
 
@@ -157,6 +159,8 @@ Dependencies testDependencies({
         endgameLessonRepository ?? FakeEndgameLessonRepository(),
     lessonScriptRepository: AssetLessonScriptRepository(const AssetService()),
     kpkRepository: AssetKpkRepository(const AssetService()),
+    scriptTableRepository: AssetScriptTableRepository(const AssetService()),
+    engineJudge: FakePositionJudge(),
     endgameProgressRepository:
         endgameProgressRepository ?? FakeEndgameProgressRepository(),
     drawOfferRepository: drawOfferRepository ?? FakeDrawOfferRepository(),

@@ -1,3 +1,4 @@
+import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 
 import 'dart:math';
@@ -50,6 +51,7 @@ import 'package:lucena/data/repositories/endgames/visible_endgame_lesson_reposit
 import 'package:lucena/data/repositories/school/visible_lesson_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository_asset.dart';
 import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
+import 'package:lucena/data/repositories/tablebase/script_table_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
@@ -277,6 +279,8 @@ Future<Dependencies> e2eDependencies() async {
     ),
     lessonScriptRepository: AssetLessonScriptRepository(const AssetService()),
     kpkRepository: AssetKpkRepository(const AssetService()),
+    scriptTableRepository: AssetScriptTableRepository(const AssetService()),
+    engineJudge: FakePositionJudge(),
     endgameProgressRepository: LocalEndgameProgressRepository(
       PreferencesService(),
     ),

@@ -10,7 +10,9 @@ abstract final class FreePlayReferee {
   /// enquanto o jogo continua.
   ///
   /// Com [mate] (objetivo `mate`, sem peão em jogo), o fim é o xeque-mate, e
-  /// não a falta de peão.
+  /// não a falta de peão. Com mais de 3 peças, a coroação que ganha é julgada
+  /// fora daqui (pelo juiz da tela, T76); sem peões e com mais de 3 peças, só
+  /// mate, afogamento, repetição e limite fecham.
   static FreeEnd? check(
     List<String> fens, {
     required int limit,
@@ -21,7 +23,11 @@ abstract final class FreePlayReferee {
     if (mate) {
       if (current.isCheckmate) return FreeEnd.mate;
       if (current.isInsufficientMaterial) return FreeEnd.insuficiente;
-    } else if (current.board.pawns.isEmpty) {
+    } else if (current.isCheckmate) {
+      // Com vários peões, o mate pode vir antes da coroação (T76).
+      return FreeEnd.mate;
+    } else if (current.board.pawns.isEmpty &&
+        current.board.occupied.size <= 3) {
       if (current.board.occupied.size <= 2) {
         // Só os reis: o peão caiu, ou a peça coroada foi capturada.
         final before = fens.length < 2
@@ -36,6 +42,7 @@ abstract final class FreePlayReferee {
       if (!hangingPromotion(current)) return FreeEnd.coroa;
     }
     if (current.isStalemate) return FreeEnd.afogado;
+    if (!mate && current.isInsufficientMaterial) return FreeEnd.insuficiente;
     final key = _key(fens.last);
     if (fens.where((fen) => _key(fen) == key).length >= 3) {
       return FreeEnd.repeticao;

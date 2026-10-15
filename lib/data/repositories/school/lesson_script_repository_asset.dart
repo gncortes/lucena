@@ -19,6 +19,10 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
 
   static String scriptPath(String lessonId) =>
       'assets/lessons/roteiros/$lessonId.json';
+
+  /// O roteiro de um capítulo de aula de final (o `roteiro` da parte).
+  static String chapterScriptPath(String lessonId, String partId) =>
+      'assets/lessons/roteiros/$lessonId/$partId.json';
   static String lessonTextsPath(String lessonId, String language) =>
       'assets/lessons/$language/endgames/$lessonId.json';
   static String chapterTextsPath(

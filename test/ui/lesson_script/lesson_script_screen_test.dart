@@ -428,8 +428,11 @@ void main() {
     expect(s.cubit.state.phase, ScriptPhase.pergunta);
     // Fora do roteiro: o rei preto captura o peão na hora, e o objetivo
     // (ganhar) não se cumpre.
+    // Rei contra rei é empate (T76): o juiz condena o lance antes.
     await s.cubit.onMove('g3g2');
     await _settle(tester);
+    expect(s.cubit.state.phase, ScriptPhase.refutacao);
+    await _tap(tester, LessonScriptKeys.primary);
     expect(s.cubit.state.phase, ScriptPhase.livreFim);
     // A fala do fim vem sozinha; o convite com o link é o passo seguinte.
     expect(find.byKey(LessonScriptKeys.mainLine), findsNothing);

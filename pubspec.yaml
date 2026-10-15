@@ -85,6 +85,7 @@ flutter:
     - assets/lessons/roteiros/pawns.keySquares/
     - assets/lessons/roteiros/pawns.waitingMoves/
     - assets/tablebase/
+    - assets/tablebase/roteiros/
     - assets/lessons/en/endgames/
     - assets/lessons/pt/endgames/
     # Curso de iniciante na receita de 3 etapas (T71): falas dos roteiros

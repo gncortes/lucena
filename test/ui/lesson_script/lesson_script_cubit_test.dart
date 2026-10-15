@@ -135,7 +135,7 @@ class _Rig {
 /// Um roteiro de uma etapa só, com um exemplo de pergunta em que o aluno
 /// (pretas, empatar) pode capturar o peão: `g3g2` é um lance fora do roteiro
 /// que mantém o empate.
-Map<String, dynamic> _captureJson() {
+Map<String, dynamic> _captureJson({String goal = 'empatar'}) {
   const fen = '8/8/8/8/8/6k1/6P1/4K3 b - - 0 1';
   const after = '8/8/8/8/8/8/6k1/4K3 w - - 0 1';
   Map<String, dynamic> step(String f, String t, [String? move]) => {
@@ -154,7 +154,7 @@ Map<String, dynamic> _captureJson() {
             'id': 'c1',
             'fen': fen,
             'vira': true,
-            'objetivo': 'empatar',
+            'objetivo': goal,
             'entrada': <dynamic>[],
             'pergunta': {
               't': 'q',
@@ -694,14 +694,19 @@ void main() {
     test(
       'fim sem o resultado: Ver linha principal, sem a volta à ideia',
       () async {
-        final r = await _Rig.open(json: _captureJson());
+        // Rei contra rei é empate (T76: o juiz não pergunta ao oráculo sem
+        // peão); com o objetivo de ganhar, capturar o peão não basta.
+        final r = await _Rig.open(json: _captureJson(goal: 'ganhar'));
         await r.cubit.onMove('g3g2');
-        // o oráculo manda ganhar: capturar o peão não mantém o empate
         expect(r.s.phase, ScriptPhase.refutacao);
-        expect(r.s.speech, ['foraPerde.empatar']);
+        expect(r.s.speech, ['foraPerde.ganhar']);
         await r.next();
         expect(r.s.phase, ScriptPhase.livreFim);
         expect(r.s.speech, ['fin.cap']);
+        // Não cumpriu: a fala do fim e, num passo sozinho, o convite à linha.
+        expect(r.s.primary, ScriptAction.continuar);
+        await r.next();
+        expect(r.s.speech, isNot(contains('voltaIdeia')));
         expect(r.s.primary, ScriptAction.linhaPrincipal);
       },
     );

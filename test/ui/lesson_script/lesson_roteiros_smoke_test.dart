@@ -8,13 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository_asset.dart';
 import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
+import 'package:lucena/data/repositories/tablebase/script_table_repository.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
+import 'package:lucena/domain/models/script_table.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/judge_move.dart';
 import 'package:lucena/domain/use_cases/kpk_oracle.dart';
 import 'package:lucena/domain/use_cases/machine_move.dart';
 import 'package:lucena/domain/use_cases/move_tree.dart';
+import 'package:lucena/domain/use_cases/position_judge.dart';
 import 'package:lucena/domain/use_cases/script_moves.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -22,10 +25,14 @@ import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
+import '../../../testing/fakes/fake_position_judge.dart';
 
 /// Teste de fumaça (T71): cada roteiro de `assets/lessons/roteiros/`, com as
-/// falas e a tabela KPK de verdade, do começo ao fim pelo caminho certo e,
-/// numa segunda volta, com um erro previsto em cada pergunta.
+/// falas e o juiz de verdade (a tabela KPK e, com mais de 3 peças, a tabela
+/// do roteiro, T76), do começo ao fim pelo caminho certo e, numa segunda
+/// volta, com um erro previsto em cada pergunta. Fora do mate, toda posição
+/// que pede o motor (juiz de reserva ou lance da máquina) é um problema: a
+/// tabela do roteiro tem que cobrir o caminho.
 
 /// Os assets lidos do disco, como o app os lê do pacote.
 class _DiskBundle extends CachingAssetBundle {
@@ -41,6 +48,20 @@ class _DiskBundle extends CachingAssetBundle {
 }
 
 final _kpk = KpkTableOracle(io.File(AssetKpkRepository.path).readAsBytesSync());
+
+/// A tabela do roteiro [key] (`<lição>/<capítulo>`), lida do disco; vazia se
+/// ele não tem.
+ScriptTable _tableOf(String key) {
+  final file = io.File(
+    AssetScriptTableRepository.pathFor(
+      AssetLessonScriptRepository.scriptPath(key),
+    ),
+  );
+  if (!file.existsSync()) return ScriptTable.empty;
+  return ScriptTable.fromJson(
+    jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
+  );
+}
 
 /// Fala que vazou a chave ou um marcador que a tela não troca.
 final _rawKey = RegExp(r'\b(rot|ini|gen)\.[A-Za-z]');
@@ -60,10 +81,23 @@ List<String> _roteiros() => [
 String _lessonOf(String key) => key.split('/').first;
 
 class _Run {
-  _Run(this.cubit, this.script, this.switching);
+  _Run(
+    this.cubit,
+    this.script,
+    this.switching, {
+    required this.table,
+    required this.engine,
+    required this.opponent,
+  });
 
   final LessonScriptCubit cubit;
   final LessonScript script;
+  final ScriptTable table;
+
+  /// O juiz de reserva e o motor da máquina: fora do mate, nenhum dos dois
+  /// pode ser chamado.
+  final FakePositionJudge engine;
+  final FakeOpponentRepository opponent;
   final problems = <String>[];
   final trail = <String>[];
 
@@ -112,15 +146,33 @@ class _Run {
 
   Future<void> act(String what, Future<void> Function() action) async {
     trail.add('$where → $what');
+    final asked = engine.asked.length;
+    final requests = opponent.requests.length;
     await action();
+    for (final fen in engine.asked.skip(asked)) {
+      problems.add('$where: o juiz pediu o motor em $fen (fora da tabela)');
+    }
+    if (example.goal != ScriptGoal.mate) {
+      for (final fen in opponent.requests.skip(requests)) {
+        problems.add(
+          '$where: a máquina pediu o motor em $fen (fora da tabela)',
+        );
+      }
+    }
   }
 
-  /// Um lance do aluno na prática contra a máquina: o melhor pela tabela;
-  /// no objetivo `mate`, o que encurrala o rei ([_mateMove]).
+  /// Um lance do aluno na prática contra a máquina: o melhor pela tabela
+  /// KPK ou, com mais de 3 peças, pela do roteiro; no objetivo `mate`, o que
+  /// encurrala o rei ([_mateMove]).
   String practiceMove() {
     final position = GameRules.fromFen(s.fen)!;
     if (example.goal == ScriptGoal.mate) return _mateMove(position, seen);
     if (example.goal == ScriptGoal.casa) return _casaMove(position);
+    if (position.board.occupied.size > 3) {
+      final best = table.best(position.fen);
+      if (best != null) return best;
+      problems.add('$where: o aluno não acha lance na tabela em ${s.fen}');
+    }
     return MachineMove.choose(_kpk, position)!;
   }
 
@@ -397,6 +449,9 @@ Future<(_Run, FakeLessonSource)> _open(String key) async {
   final path = AssetLessonScriptRepository.scriptPath(key);
   final script = await repository.script(path);
   final source = FakeLessonSource();
+  final table = _tableOf(key);
+  final engine = FakePositionJudge();
+  final opponent = FakeOpponentRepository();
   final cubit = LessonScriptCubit(
     lessonId: id,
     partId: script.partId,
@@ -407,16 +462,23 @@ Future<(_Run, FakeLessonSource)> _open(String key) async {
     source: source,
     // No objetivo `mate`, o motor de mentira: dá mate se puder, senão o
     // primeiro lance em ordem.
-    opponent: FakeOpponentRepository(),
+    opponent: opponent,
+    tables: _FixedTables(table),
+    engineJudge: engine,
     delay: (_) => Future.value(),
     // A demonstração não anda sozinha: o teste clica.
     timer: (_, _) => Timer(const Duration(days: 1), () {}),
   );
   addTearDown(cubit.close);
   final texts = await repository.texts(id, 'pt');
-  final run = _Run(cubit, script, {
-    for (final side in Side.values) texts.say('gen.troca.${side.name}'),
-  });
+  final run = _Run(
+    cubit,
+    script,
+    {for (final side in Side.values) texts.say('gen.troca.${side.name}')},
+    table: table,
+    engine: engine,
+    opponent: opponent,
+  );
   final sub = cubit.stream.listen(run.check);
   addTearDown(sub.cancel);
   await cubit.start();
@@ -459,7 +521,17 @@ List<String> _offLine(ScriptExample example) {
   ];
 }
 
-/// As perguntas com jogo livre (lições com a tabela KPK).
+/// A tabela já lida, para qualquer roteiro.
+class _FixedTables implements ScriptTableRepository {
+  _FixedTables(this._table);
+
+  final ScriptTable _table;
+
+  @override
+  Future<ScriptTable> table(String scriptPath) async => _table;
+}
+
+/// As perguntas com jogo livre.
 List<(int, int, ScriptExample)> _freeQuestions(String id) {
   final script = LessonScript.fromJson(
     jsonDecode(
@@ -646,8 +718,10 @@ void main() {
         // perdeu: a tabela tem que concordar, e o certo e os alternativos
         // têm que manter.
         test('jogo livre: os erros perdem pela tabela; certo e alternativos '
-            'mantêm', () {
+            'mantêm', () async {
           final wrong = <String>[];
+          // O juiz do app, sem motor: o que ele não sabe fica nulo e falha.
+          final judge = LayeredJudge(_kpk, _tableOf(id));
           for (final (_, _, example) in free) {
             // A tabela local só cobre rei e peão contra rei; com mais
             // peças quem confere é o check_roteiro (tablebase).
@@ -655,21 +729,28 @@ void main() {
             final question = example.question!;
             final from = GameRules.fromFen(example.questionFen)!;
             final wantsWin = example.goal.wantsWin;
-            MoveVerdict verdict(String uci) => JudgeMove.ofOutcome(
-              _kpk.evaluate(from.playUnchecked(Move.parse(uci)!)),
-              wantsWin: wantsWin,
-            );
+            Future<MoveVerdict?> verdict(String uci) async {
+              final after = await judge.evaluate(
+                from.playUnchecked(Move.parse(uci)!),
+              );
+              return after == null
+                  ? null
+                  : JudgeMove.ofWdl(after, wantsWin: wantsWin);
+            }
+
             for (final uci in question.errors.keys) {
-              if (verdict(uci) != MoveVerdict.loses) {
-                wrong.add('${example.id}: erro $uci mantém');
+              final got = await verdict(uci);
+              if (got != MoveVerdict.loses) {
+                wrong.add('${example.id}: erro $uci ${got ?? 'sem juiz'}');
               }
             }
             for (final uci in [
               ...question.right,
               ...question.alternatives.keys,
             ]) {
-              if (verdict(uci) != MoveVerdict.keeps) {
-                wrong.add('${example.id}: $uci perde');
+              final got = await verdict(uci);
+              if (got != MoveVerdict.keeps) {
+                wrong.add('${example.id}: $uci ${got ?? 'sem juiz'}');
               }
             }
           }

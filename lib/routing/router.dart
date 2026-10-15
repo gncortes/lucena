@@ -74,6 +74,8 @@ import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
 import '../data/repositories/tablebase/kpk_repository.dart';
+import '../data/repositories/tablebase/script_table_repository.dart';
+import '../domain/use_cases/position_judge.dart';
 import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
 import '../ui/endgames/view_models/endgames_cubit.dart';
 import '../ui/endgames/view_models/exercise_cubit.dart';
@@ -511,6 +513,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       language: language,
                       scripts: context.read<LessonScriptRepository>(),
                       kpk: context.read<KpkRepository>(),
+                      tables: context.read<ScriptTableRepository>(),
+                      engineJudge: context.read<PositionJudge>(),
                       opponent: context.read<OpponentRepository>(),
                       source: SchoolLessonSource(
                         lessons,
@@ -647,12 +651,16 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                         create: (_) => LessonScriptCubit(
                           lessonId: id,
                           partId: part,
-                          scriptPath: AssetLessonScriptRepository.scriptPath(
-                            id,
-                          ),
+                          scriptPath:
+                              AssetLessonScriptRepository.chapterScriptPath(
+                                id,
+                                part,
+                              ),
                           language: language,
                           scripts: context.read<LessonScriptRepository>(),
                           kpk: context.read<KpkRepository>(),
+                          tables: context.read<ScriptTableRepository>(),
+                          engineJudge: context.read<PositionJudge>(),
                           opponent: context.read<OpponentRepository>(),
                           source: EndgameLessonSource(
                             lessons,

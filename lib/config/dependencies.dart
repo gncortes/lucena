@@ -1,6 +1,9 @@
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
+import '../data/repositories/tablebase/engine_judge_repository.dart';
 import '../data/repositories/tablebase/kpk_repository.dart';
+import '../data/repositories/tablebase/script_table_repository.dart';
+import '../domain/use_cases/position_judge.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -134,6 +137,8 @@ class Dependencies {
     required this.endgameLessonRepository,
     required this.lessonScriptRepository,
     required this.kpkRepository,
+    required this.scriptTableRepository,
+    required this.engineJudge,
     required this.endgameProgressRepository,
     this.exerciseFeedbackRepository = const EmptyExerciseFeedbackRepository(),
     required this.drawOfferRepository,
@@ -204,6 +209,9 @@ class Dependencies {
       ),
       lessonScriptRepository: AssetLessonScriptRepository(assets),
       kpkRepository: AssetKpkRepository(assets),
+      scriptTableRepository: AssetScriptTableRepository(assets),
+      // O juiz de reserva da lição em roteiro: o mesmo Stockfish (T76).
+      engineJudge: StockfishJudgeRepository(stockfish),
       endgameProgressRepository: LocalEndgameProgressRepository(preferences),
       exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
       drawOfferRepository: DeviceDrawOfferRepository(
@@ -252,6 +260,12 @@ class Dependencies {
   final EndgameLessonRepository endgameLessonRepository;
   final LessonScriptRepository lessonScriptRepository;
   final KpkRepository kpkRepository;
+
+  /// As tabelas dos roteiros com mais de 3 peças (T76).
+  final ScriptTableRepository scriptTableRepository;
+
+  /// O juiz de reserva da lição em roteiro, fora das tabelas (T76).
+  final PositionJudge engineJudge;
   final EndgameProgressRepository endgameProgressRepository;
   final ExerciseFeedbackRepository exerciseFeedbackRepository;
   final DrawOfferRepository drawOfferRepository;
