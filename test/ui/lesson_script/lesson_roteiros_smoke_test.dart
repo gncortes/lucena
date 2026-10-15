@@ -443,7 +443,7 @@ const _results = {'½–½', '1–0', '0–1'};
 /// Da pergunta, joga [uci] e segue até o jogo livre acabar e a linha
 /// principal voltar (ou, sem jogo livre, até sair do exemplo). Com [branch],
 /// no meio da partida volta a um lance da máquina e joga outro lance.
-Future<({bool ended, bool branched})> _freeGame(
+Future<({bool ended, bool branched, int longest})> _freeGame(
   _Run run,
   ScriptExample example,
   String uci, {
@@ -454,21 +454,23 @@ Future<({bool ended, bool branched})> _freeGame(
   final err = example.question!.errors.containsKey(uci);
   await run.act('livre $uci', () => cubit.onMove(uci));
   var branched = false;
+  var longest = 0;
   for (var i = 0; i < 400; i++) {
     final s = run.s;
     if (s.exampleIndex != index || s.phase == ScriptPhase.fimExemplo) {
-      return (ended: false, branched: branched);
+      return (ended: false, branched: branched, longest: longest);
     }
     switch (s.phase) {
       case ScriptPhase.pergunta:
-        return (ended: false, branched: branched);
+        return (ended: false, branched: branched, longest: longest);
       case ScriptPhase.livrePerdido || ScriptPhase.livreMantido:
         if (s.movable == null) {
           run.problems.add('${run.where}: jogo livre parado sem vez');
-          return (ended: false, branched: branched);
+          return (ended: false, branched: branched, longest: longest);
         }
         final game = s.moves.where((m) => m.id.startsWith('g:')).toList();
         final machine = example.student.opposite;
+        if (game.length > longest) longest = game.length;
         if (branch && !branched && game.length >= 4) {
           branched = true;
           await _branch(run, game, machine);
@@ -499,7 +501,7 @@ Future<({bool ended, bool branched})> _freeGame(
         }
         if (s.primary != ScriptAction.linhaPrincipal) {
           run.problems.add('${run.where}: fim sem a linha principal');
-          return (ended: false, branched: branched);
+          return (ended: false, branched: branched, longest: longest);
         }
         await run.act(
           'linha principal',
@@ -516,18 +518,18 @@ Future<({bool ended, bool branched})> _freeGame(
         if (back.moves.any((m) => m.id.startsWith('g:'))) {
           run.problems.add('${run.where}: a partida ficou na lista');
         }
-        return (ended: true, branched: branched);
+        return (ended: true, branched: branched, longest: longest);
       default:
         final action = s.primary;
         if (action == null) {
           run.problems.add('${run.where}: sem botão para seguir');
-          return (ended: false, branched: branched);
+          return (ended: false, branched: branched, longest: longest);
         }
         await run.act(action.name, () => cubit.onAction(action));
     }
   }
   run.problems.add('${run.where}: o jogo livre não acabou');
-  return (ended: false, branched: branched);
+  return (ended: false, branched: branched, longest: longest);
 }
 
 /// Volta a um lance da máquina já jogado, joga outro lance e confere a
@@ -647,7 +649,8 @@ void main() {
             if (example.question!.errors.containsKey(uci)) {
               expect(game.ended, isTrue, reason: 'o jogo livre não acabou');
             }
-            if (n == 0) expect(game.branched, isTrue);
+            // Partida que acaba antes do 4º lance não tem onde ramificar.
+            if (n == 0 && game.longest >= 4) expect(game.branched, isTrue);
             expect(
               run.problems,
               isEmpty,

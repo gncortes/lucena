@@ -13,7 +13,7 @@
   "gen.verLinha.empatar": "At the start, there was a draw. Click {linhaPrincipal} and I will show you.",
   "gen.fim.coroa": "The pawn promoted.",
   "gen.fim.capturado": "The pawn fell: it is a draw.",
-  "gen.fim.afogado": "Stalemate: it is a draw.",
+  "gen.fim.afogado": "The side to move has no legal move: it is a draw by stalemate.",
   "gen.fim.repeticao": "The position repeated: it is a draw.",
   "gen.fim.limite": "We reached the move limit.",
   "gen.fim.insuficiente": "Only the kings are left: no one can give mate, so it is a draw.",
@@ -26,7 +26,7 @@
   "gen.pratica.refuta.empatar": "After {lance}?, {lado} reply {resposta} and the draw slips away: the position is lost.",
   "gen.lado.white": "White",
   "gen.lado.black": "Black",
-  "gen.pratica.sucesso.ganhar": "You won! You used the opposition all the way.",
-  "gen.pratica.sucesso.empatar": "Draw secured! The opposition saved Black.",
+  "gen.pratica.sucesso.ganhar": "You won!",
+  "gen.pratica.sucesso.empatar": "Draw secured!",
   "gen.pratica.sucesso.mate": "Checkmate! You drove the king to the edge and closed the net."
 }

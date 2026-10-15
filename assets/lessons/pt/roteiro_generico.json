@@ -13,7 +13,7 @@
   "gen.verLinha.empatar": "No começo, havia empate. Clique em {linhaPrincipal} e eu lhe mostro.",
   "gen.fim.coroa": "O peão coroou.",
   "gen.fim.capturado": "O peão caiu: é empate.",
-  "gen.fim.afogado": "Afogamento: é empate.",
+  "gen.fim.afogado": "Quem joga ficou sem nenhum lance: é empate por afogamento.",
   "gen.fim.repeticao": "A posição se repetiu: é empate.",
   "gen.fim.limite": "Chegamos ao limite de lances.",
   "gen.fim.insuficiente": "Só sobraram os reis: ninguém consegue dar mate, e é empate.",
@@ -26,7 +26,7 @@
   "gen.pratica.refuta.empatar": "Com {lance}?, {lado} respondem com {resposta} e o empate escapa: a posição está perdida.",
   "gen.lado.white": "as brancas",
   "gen.lado.black": "as pretas",
-  "gen.pratica.sucesso.ganhar": "Ganhou! Você usou a oposição até o fim.",
-  "gen.pratica.sucesso.empatar": "Empate garantido! A oposição salvou as pretas.",
+  "gen.pratica.sucesso.ganhar": "Ganhou!",
+  "gen.pratica.sucesso.empatar": "Empate garantido!",
   "gen.pratica.sucesso.mate": "Xeque-mate! Você levou o rei até a borda e fechou a rede."
 }
