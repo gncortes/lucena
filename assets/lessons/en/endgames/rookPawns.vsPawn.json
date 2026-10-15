@@ -22,7 +22,7 @@
   "part.staircase.title": "The king's staircase",
   "part.staircase.summary": "The king walks down a staircase towards the rook, avoiding the pin and the skewer, until the pawn queens. The idea runs from the game Fenton–Potter, 1875, to the Saavedra position.",
   "part.fortress.title": "Rook against queen",
-  "part.fortress.summary": "When the pawn will queen no matter what, the rook protected by its king checks without end or gives itself up for the queen. Then the rules to take into the practical challenge.",
+  "part.fortress.summary": "If the pawn is going to queen, the rook protected by its king checks without end or gives itself up for the queen: king against king is a draw.",
   "step.t_cut": "The d4-pawn is on its own, and your king is far away, on h7. The black king, on f6, is one step from touching the pawn. If your king walks straight there, it arrives late. Which rook move gains the time you are missing?",
   "step.t_cut.hint1": "The black king is not glued to the pawn yet. Can you stop it from getting there?",
   "step.t_cut.hint2": "Look for a whole rank that the black king has to cross to reach the pawn.",

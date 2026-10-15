@@ -16,7 +16,7 @@
   "part.rhine.title": "The stalemating check",
   "part.rhine.summary": "Near the corner, count the black king's squares before giving check, or you fall into Rhine's trap.",
   "part.kempinski.title": "Kempinski–Epishin",
-  "part.kempinski.summary": "In a game between grandmasters, the defending king hides in the wrong corner. Then the whole mate in the practical challenge.",
+  "part.kempinski.summary": "If the enemy king hides in the wrong corner, take away his squares one at a time and always leave him an exit, away from the corner.",
   "step.t_big": "This is the position {{Bruce Pandolfini|bruce-pandolfini}} uses in his book Endgame Workshop to teach Delétang's method. The black king, on d2, can no longer cross the b1–h7 diagonal. Your king, on b2, is on the outside. How do you bring the white king over to the black king's side without opening an exit?",
   "step.t_big.hint1": "Before moving the king, see which squares it watches now, on b2, and which square the black king fights it for.",
   "step.t_big.hint2": "The bishop can move along its own diagonal and watch a square on the first rank.",

@@ -8,7 +8,7 @@
   "part.kingFirst.title": "Primeiro o rei",
   "part.kingFirst.summary": "O peão espera. Primeiro o rei branco se põe no caminho do rei preto e o afasta com o ombro.",
   "part.summary.title": "Barcza contra Fischer",
-  "part.summary.summary": "Como Barcza segurou o empate contra Fischer em 1959, uma posição parecida em que o canto já não salva e as regras da aula.",
+  "part.summary.summary": "Contra o peão de torre, o defensor corre pela diagonal até a casa ao lado do canto; um lance perdido, e o canto já não salva.",
   "step.t_keys": "Na aula de rei e peão, você viu que o rei no canto empata. Aqui, o rei preto ainda não chegou lá, mas está a um passo de f8. Qual lance do rei branco ganha, e por que quase todos os outros empatam?",
   "step.t_keys.hint1": "Esqueça o peão por um momento. O que o rei preto quer fazer no próximo lance dele?",
   "step.t_keys.hint2": "Olhe as duas casas ao lado do canto, g7 e g8. Quem se aproximar delas primeiro decide a partida.",

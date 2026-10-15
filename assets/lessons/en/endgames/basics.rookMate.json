@@ -12,7 +12,7 @@
   "part.edge.title": "Mating on the edge",
   "part.edge.summary": "With your king on the sixth, it goes to the next file, the rook checks when the kings face each other, and sometimes a quiet move is needed.",
   "part.quiet.title": "The waiting move",
-  "part.quiet.summary": "In the previous chapter the black king still had somewhere to go. Here he has nothing, if he is forced to move.",
+  "part.quiet.summary": "When the check would not yet be mate, a waiting move, by the rook along its own file or by the king, forces the black king to stand opposite yours.",
   "part.stalemate.title": "Stalemate and summary",
   "part.stalemate.summary": "Taking squares from the black king is the method, but taking them all without giving check is stalemate.",
   "step.t_box": "The rook on h3 already stops the black king from coming down. How do you shrink that piece of the board without losing the rook?",

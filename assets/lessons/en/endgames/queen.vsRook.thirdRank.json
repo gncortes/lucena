@@ -16,7 +16,7 @@
   "part.stalemate.title": "The stalemates",
   "part.stalemate.summary": "With the black king out of squares, the rook offers itself, with check or without. That is how Morozevich let the win slip.",
   "part.map.title": "Browne vs the computer",
-  "part.map.summary": "Browne's rematch against the computer, the stages of the ending and the practical challenge.",
+  "part.map.summary": "Against the rook on the third rank, a quiet queen move that looks like a retreat takes away all its squares on that rank; then the king advances.",
   "step.t_third": "This is the most stubborn defence of the ending. The black king is on the edge and the rook, on its third rank, on b6, blocks our king's way. As long as the rook has a safe square on that rank there is no progress, and checks do not help. Which queen move leaves the rook without a safe square on its rank?",
   "step.t_third.hint1": "Count the squares on the rook's rank that our king and queen watch now. Which ones are left for it?",
   "step.t_third.hint2": "From another square the queen would watch both ends of the rank at once, even if it looks like a retreat.",
