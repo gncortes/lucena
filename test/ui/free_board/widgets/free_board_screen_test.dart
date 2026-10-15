@@ -1505,19 +1505,29 @@ void main() {
         expect(rect.bottom, lessThanOrEqualTo(board.top));
         // A ponta (18x10) no centro do retrato de 44, a 6 dp dele.
         final shape =
-            tester
-                    .widget<Material>(
-                      find.descendant(
-                        of: balloon,
-                        matching: find.byType(Material),
-                      ),
-                    )
-                    .shape!
-                as SpeechBalloonShape;
-        // A ponta é medida no Material; o vão de 6 fica fora dele.
+            (tester
+                        .widget<CustomPaint>(
+                          find.descendant(
+                            of: balloon,
+                            matching: find.byWidgetPredicate(
+                              (w) =>
+                                  w is CustomPaint &&
+                                  w.painter is BalloonPainter,
+                            ),
+                          ),
+                        )
+                        .painter!
+                    as BalloonPainter)
+                .shape;
+        // A ponta é medida na pintura do balão; o vão de 6 fica fora dele.
         final tip = shape.tipOf(
           tester.getRect(
-            find.descendant(of: balloon, matching: find.byType(Material)),
+            find.descendant(
+              of: balloon,
+              matching: find.byWidgetPredicate(
+                (w) => w is CustomPaint && w.painter is BalloonPainter,
+              ),
+            ),
           ),
         );
         final avatar = tester.getRect(

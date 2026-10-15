@@ -50,7 +50,9 @@ void main() {
       find
           .ancestor(
             of: find.byKey(LessonScriptKeys.typing),
-            matching: find.byType(Material),
+            matching: find.byWidgetPredicate(
+              (w) => w is CustomPaint && w.painter is BalloonPainter,
+            ),
           )
           .first,
     );

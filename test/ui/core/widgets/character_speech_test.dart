@@ -99,24 +99,30 @@ void main() {
       tester,
     ) async {
       await pump(tester, text: 'Sua vez.', size: size);
-      // A ponta é medida no Material; o vão de 6 fica fora dele.
+      // A ponta é medida na pintura do balão; o vão de 6 fica fora dele.
       final rect = tester.getRect(
         find.descendant(
           of: find.byKey(LessonKeys.practiceSpeech),
-          matching: find.byType(Material),
+          matching: find.byWidgetPredicate(
+            (w) => w is CustomPaint && w.painter is BalloonPainter,
+          ),
         ),
       );
       final avatar = tester.getRect(find.byKey(LessonKeys.practiceViktor));
       final shape =
-          tester
-                  .widget<Material>(
-                    find.descendant(
-                      of: find.byKey(LessonKeys.practiceSpeech),
-                      matching: find.byType(Material),
-                    ),
-                  )
-                  .shape!
-              as SpeechBalloonShape;
+          (tester
+                      .widget<CustomPaint>(
+                        find.descendant(
+                          of: find.byKey(LessonKeys.practiceSpeech),
+                          matching: find.byWidgetPredicate(
+                            (w) =>
+                                w is CustomPaint && w.painter is BalloonPainter,
+                          ),
+                        ),
+                      )
+                      .painter!
+                  as BalloonPainter)
+              .shape;
       final tip = shape.tipOf(rect);
       expect(tip.dx, closeTo(avatar.center.dx, 2));
       // A pontinha fica a 6 dp do retrato.

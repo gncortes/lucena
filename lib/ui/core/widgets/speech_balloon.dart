@@ -80,15 +80,9 @@ class SpeechBalloonShape extends ShapeBorder {
     final body = bodyOf(rect, direction);
     switch (tail) {
       case BalloonTail.up:
-        return Offset(
-          _triangleLeft(body, direction) + tipSize.width / 2,
-          rect.top,
-        );
+        return Offset(_apexX(body, direction), rect.top);
       case BalloonTail.down:
-        return Offset(
-          _triangleLeft(body, direction) + tipSize.width / 2,
-          rect.bottom,
-        );
+        return Offset(_apexX(body, direction), rect.bottom);
       case BalloonTail.start:
         return Offset(
           direction == TextDirection.rtl ? rect.right : rect.left,
@@ -99,14 +93,26 @@ class SpeechBalloonShape extends ShapeBorder {
     }
   }
 
+  double _rawLeft(Rect body, TextDirection direction) =>
+      direction == TextDirection.rtl
+      ? body.right - tailX - tipSize.width
+      : body.left + tailX;
+
+  /// O começo da base: inteira no trecho reto da borda, depois do raio do
+  /// canto, para a emenda com o corpo não sair torta.
   double _triangleLeft(Rect body, TextDirection direction) {
-    final rtl = direction == TextDirection.rtl;
-    final raw = rtl ? body.right - tailX - tipSize.width : body.left + tailX;
-    // Canvas: a base nasce em pontaX (13), já na curva do canto; só não sai
-    // do corpo.
-    final low = body.left + 8;
+    final raw = _rawLeft(body, direction);
+    final low = body.left + AppShape.large;
     final high = body.right - AppShape.large - tipSize.width;
     return high < low ? raw : raw.clamp(low, high);
+  }
+
+  /// A pontinha mira onde [tailX] pede (o centro do retrato), mesmo quando a
+  /// base precisou sair de dentro do raio; nunca passa da base.
+  double _apexX(Rect body, TextDirection direction) {
+    final left = _triangleLeft(body, direction);
+    final aim = _rawLeft(body, direction) + tipSize.width / 2;
+    return aim.clamp(left, left + tipSize.width);
   }
 
   double _sideCenter(Rect body) {
@@ -120,28 +126,31 @@ class SpeechBalloonShape extends ShapeBorder {
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
       getOuterPath(rect, textDirection: textDirection);
 
+  /// Corpo e ponta num contorno só (união), sem emenda: a sombra e o fundo
+  /// passam pela ponta como pelo corpo.
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
     final direction = textDirection ?? this.textDirection;
     final body = bodyOf(rect, direction);
-    final path = Path()
+    final bodyPath = Path()
       ..addRRect(
         RRect.fromRectAndRadius(body, const Radius.circular(AppShape.large)),
       );
+    final path = Path();
     switch (tail) {
       case BalloonTail.up:
         final left = _triangleLeft(body, direction);
         path.addPolygon([
-          Offset(left, body.top + 1),
-          Offset(left + tipSize.width, body.top + 1),
-          Offset(left + tipSize.width / 2, rect.top),
+          Offset(left, body.top + 2),
+          Offset(left + tipSize.width, body.top + 2),
+          Offset(_apexX(body, direction), rect.top),
         ], true);
       case BalloonTail.down:
         final left = _triangleLeft(body, direction);
         path.addPolygon([
-          Offset(left, body.bottom - 1),
-          Offset(left + tipSize.width, body.bottom - 1),
-          Offset(left + tipSize.width / 2, rect.bottom),
+          Offset(left, body.bottom - 2),
+          Offset(left + tipSize.width, body.bottom - 2),
+          Offset(_apexX(body, direction), rect.bottom),
         ], true);
       case BalloonTail.start:
         final rtl = direction == TextDirection.rtl;
@@ -150,16 +159,16 @@ class SpeechBalloonShape extends ShapeBorder {
         // curva → (10,-8); espelhadas em idiomas da direita para a esquerda.
         double x(double dx) => rtl ? rect.right - dx : rect.left + dx;
         path
-          ..moveTo(x(sideSize.width + 0.6), cy + 8)
+          ..moveTo(x(sideSize.width + 2), cy + 8)
           ..lineTo(x(sideSize.width), cy + 8)
           ..quadraticBezierTo(x(8), cy + 2, x(0), cy - 2)
           ..quadraticBezierTo(x(6), cy - 6, x(sideSize.width), cy - 8)
-          ..lineTo(x(sideSize.width + 0.6), cy - 8)
+          ..lineTo(x(sideSize.width + 2), cy - 8)
           ..close();
       case BalloonTail.none:
-        break;
+        return bodyPath;
     }
-    return path;
+    return Path.combine(PathOperation.union, bodyPath, path);
   }
 
   @override
@@ -175,6 +184,47 @@ class SpeechBalloonShape extends ShapeBorder {
 
   @override
   int get hashCode => Object.hash(tail, tailX, tailY, textDirection);
+}
+
+/// O balão pintado como uma forma só: primeiro a sombra do canvas
+/// (`--balao-sombra`: drop-shadow 0 1px 1.5px, preto a 25%, a cor `shadow` do
+/// tema), depois o fundo, os dois no mesmo contorno de corpo e ponta. Assim a
+/// ponta tem a mesma sombra do corpo, para cima, para baixo ou ao lado, e não
+/// há emenda nem elevação do Material.
+class BalloonPainter extends CustomPainter {
+  const BalloonPainter(this.shape, {required this.color, required this.shadow});
+
+  final SpeechBalloonShape shape;
+
+  /// O fundo (`surfaceContainerLowest`).
+  final Color color;
+
+  /// A cor da sombra, já com a [opacity].
+  final Color shadow;
+
+  /// A opacidade da sombra do canvas (25%).
+  static const opacity = 0.25;
+  static const offset = Offset(0, 1);
+
+  /// O blur de 1,5 px do CSS é o dobro do sigma.
+  static const sigma = 0.75;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = shape.getOuterPath(Offset.zero & size);
+    canvas
+      ..drawPath(
+        path.shift(offset),
+        Paint()
+          ..color = shadow
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, sigma),
+      )
+      ..drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(BalloonPainter old) =>
+      old.shape != shape || old.color != color || old.shadow != shadow;
 }
 
 /// O balão de fala do app, um só (canvas `CompBalao`, T72): o estilo da lição
@@ -289,6 +339,13 @@ class SpeechBalloon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final speech = this.speech;
+    final colors = Theme.of(context).colorScheme;
+    final shape = SpeechBalloonShape(
+      tail: tail,
+      tailX: tailX,
+      tailY: tailY,
+      textDirection: Directionality.of(context),
+    );
     Widget content = Align(
       alignment: AlignmentDirectional.centerStart,
       widthFactor: fitContent ? 1 : null,
@@ -302,14 +359,11 @@ class SpeechBalloon extends StatelessWidget {
       liveRegion: true,
       label: semanticsLabel,
       excludeSemantics: semanticsLabel != null,
-      child: Material(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        elevation: 1,
-        shape: SpeechBalloonShape(
-          tail: tail,
-          tailX: tailX,
-          tailY: tailY,
-          textDirection: Directionality.of(context),
+      child: CustomPaint(
+        painter: BalloonPainter(
+          shape,
+          color: colors.surfaceContainerLowest,
+          shadow: colors.shadow.withValues(alpha: BalloonPainter.opacity),
         ),
         // A altura mínima conta só o corpo: a ponta fica por fora dela.
         child: ConstrainedBox(

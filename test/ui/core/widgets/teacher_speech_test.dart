@@ -1504,11 +1504,15 @@ void main() {
       await tester.pumpAndSettle();
       final balloon = find.byType(SpeechBalloon);
       expect(balloon, findsOneWidget);
-      final material = tester.widget<Material>(
-        find.descendant(of: balloon, matching: find.byType(Material)).first,
-      );
+      final painter = tester
+          .widgetList<CustomPaint>(
+            find.descendant(of: balloon, matching: find.byType(CustomPaint)),
+          )
+          .map((p) => p.painter)
+          .whereType<BalloonPainter>()
+          .single;
       expect(
-        material.color,
+        painter.color,
         Theme.of(tester.element(balloon)).colorScheme.surfaceContainerLowest,
       );
     });

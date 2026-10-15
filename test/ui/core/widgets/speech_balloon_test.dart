@@ -22,11 +22,14 @@ CharacterLine _line(String id, String text) => CharacterLine(
   text: text,
 );
 
-/// O Material que desenha o balão (corpo e ponta num contorno só).
+/// O que pinta o balão (corpo e ponta num contorno só).
 final _shaped = find.byWidgetPredicate(
-  (w) => w is Material && w.shape is SpeechBalloonShape,
-  description: 'Material do balão',
+  (w) => w is CustomPaint && w.painter is BalloonPainter,
+  description: 'pintura do balão',
 );
+
+SpeechBalloonShape _shapeOf(WidgetTester tester) =>
+    (tester.widget<CustomPaint>(_shaped).painter! as BalloonPainter).shape;
 
 void main() {
   for (final tail in [BalloonTail.up, BalloonTail.down]) {
@@ -62,8 +65,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       final rect = tester.getRect(_shaped);
-      final shape =
-          tester.widget<Material>(_shaped).shape! as SpeechBalloonShape;
+      final shape = _shapeOf(tester);
       final tip = shape.tipOf(rect);
       expect(tip.dx, closeTo(tester.getCenter(find.byKey(_avatar)).dx, 2));
     });
@@ -112,8 +114,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       final rect = tester.getRect(_shaped);
-      final shape =
-          tester.widget<Material>(_shaped).shape! as SpeechBalloonShape;
+      final shape = _shapeOf(tester);
       final tip = shape.tipOf(rect);
       final face = tester.getRect(find.byKey(_avatar));
       final gap = switch (tail) {
@@ -123,6 +124,40 @@ void main() {
       };
       expect(gap, SpeechBalloon.tailGap);
       expect(SpeechBalloon.tailGap, 6);
+    });
+  }
+
+  for (final tail in [BalloonTail.up, BalloonTail.down, BalloonTail.start]) {
+    test('ponta ${tail.name}: um contorno só, com a ponta presa ao corpo', () {
+      final shape = SpeechBalloonShape(
+        tail: tail,
+        tailX: SpeechBalloon.tailXFor(44),
+        tailY: 22,
+        textDirection: TextDirection.ltr,
+      );
+      const rect = Rect.fromLTWH(0, 0, 300, 100);
+      final path = shape.getOuterPath(rect);
+      final tip = shape.tipOf(rect);
+      final body = shape.bodyOf(rect, TextDirection.ltr);
+      // A pontinha e o meio do caminho até o corpo estão dentro do contorno.
+      final inward = switch (tail) {
+        BalloonTail.up => const Offset(0, 1),
+        BalloonTail.down => const Offset(0, -1),
+        _ => const Offset(1, 0),
+      };
+      // Da pontinha até dentro do corpo, sem buraco na emenda.
+      for (var d = 1.0; d <= 14; d++) {
+        expect(path.contains(tip + inward * d), isTrue, reason: '$d');
+      }
+      expect(path.contains(body.center), isTrue);
+      // A base fica no trecho reto, fora do raio do canto (16).
+      if (tail != BalloonTail.start) {
+        final y = tail == BalloonTail.up ? body.top + 0.5 : body.bottom - 0.5;
+        expect(path.contains(Offset(body.left + 16.5, y)), isTrue);
+        expect(path.contains(Offset(body.left + 16 + 17.5, y)), isTrue);
+        // A pontinha mira o centro do retrato de 44.
+        expect(tip.dx, closeTo(22, 0.01));
+      }
     });
   }
 
@@ -162,13 +197,27 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final materials = tester.widgetList<Material>(_shaped).toList();
-    expect(materials, hasLength(3));
     final scheme = Theme.of(tester.element(find.byType(Scaffold))).colorScheme;
-    for (final m in materials) {
-      expect(m.color, scheme.surfaceContainerLowest);
-      expect(m.elevation, 1);
+    // Sem Material nem elevação: o fundo e a sombra vêm pintados no contorno.
+    expect(
+      find.descendant(
+        of: find.byType(SpeechBalloon),
+        matching: find.byType(PhysicalShape),
+      ),
+      findsNothing,
+    );
+    final painters = tester
+        .widgetList<CustomPaint>(find.byType(CustomPaint))
+        .map((p) => p.painter)
+        .whereType<BalloonPainter>()
+        .toList();
+    expect(painters, hasLength(3));
+    for (final painter in painters) {
+      expect(painter.color, scheme.surfaceContainerLowest);
+      expect(painter.shadow, scheme.shadow.withValues(alpha: 0.25));
     }
+    expect(BalloonPainter.offset, const Offset(0, 1));
+    expect(BalloonPainter.sigma, 0.75);
     expect(find.byType(IconButton), findsNothing);
     expect(find.byIcon(Icons.close), findsNothing);
     expect(find.byKey(LessonScriptKeys.speech), findsOneWidget);
