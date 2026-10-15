@@ -30,29 +30,29 @@
     {
       "id": "e20",
       "stars": 2,
-      "fen": "8/8/7p/p6k/P4K2/8/8/8 w - - 0 1",
+      "fen": "8/8/8/4p3/1p6/1P6/3K2k1/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "fixedTarget",
       "line": [
         {
-          "teach": "f4f5",
+          "teach": "d2e2",
           "accept": [
-            "f4f5"
+            "d2e2"
           ],
-          "reply": "h5h4"
+          "reply": "g2g1"
         },
         {
-          "teach": "f5f4",
+          "teach": "e2e1",
           "accept": [
-            "f5f4"
+            "e2e1"
           ],
-          "reply": "h6h5"
+          "reply": "g1g2"
         },
         {
-          "teach": "f4f3",
+          "teach": "e1e2",
           "accept": [
-            "f4f3"
+            "e1e2"
           ]
         }
       ]
@@ -165,37 +165,16 @@
     },
     {
       "id": "e16",
-      "stars": 3,
-      "fen": "8/7K/8/1p4pk/8/1P4P1/8/8 w - - 0 1",
+      "stars": 2,
+      "fen": "8/8/5K2/2p2p2/5k2/2P2P2/8/8 w - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "fixedTarget",
       "line": [
         {
-          "teach": "b3b4",
+          "teach": "c3c4",
           "accept": [
-            "b3b4"
-          ],
-          "reply": "g5g4"
-        },
-        {
-          "teach": "h7g7",
-          "accept": [
-            "h7g7"
-          ],
-          "reply": "h5g5"
-        },
-        {
-          "teach": "g7h7",
-          "accept": [
-            "g7h7"
-          ],
-          "reply": "g5f5"
-        },
-        {
-          "teach": "h7h6",
-          "accept": [
-            "h7h6"
+            "c3c4"
           ]
         }
       ]
