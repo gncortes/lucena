@@ -114,7 +114,7 @@
   "rot.opposition.demos.vezBrancas.13": "The black king is not attacked and has no move: it is stalemate, and the game is drawn.",
   "rot.opposition.demos.vezBrancas.14": "Same position, the move switched, a different result: whoever has the opposition decides the game.",
   "rot.opposition.demos.longe.1": "Now the kings are far apart: the white king is on e4, the pawn on c4, and neither king can take the opposition yet. Black to move.",
-  "rot.opposition.demos.longe.2": "The black king goes to e8 and waits, on the white king's file: it is the only move that draws. On any other square, Black loses.",
+  "rot.opposition.demos.longe.2": "The black king goes to e8 and waits on the last rank: if the white king rises to the 5th, it takes the opposition right ahead, on the 7th. It is the only move that draws.",
   "rot.opposition.demos.longe.3": "When the white king steps up to e5, the black king takes the opposition on e7: it is the only move.",
   "rot.opposition.demos.longe.4": "If the white king goes sideways, to d5, the black king follows, to d7, and keeps the opposition: Black holds the draw.",
   "rot.opposition.pratica.ataque.err.f3f4.1": "The pawn advances before the king, and the key squares move up to e6, f6 and g6.",

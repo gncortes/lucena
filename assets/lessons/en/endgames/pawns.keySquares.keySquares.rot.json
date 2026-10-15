@@ -66,7 +66,7 @@
   "rot.keySquares.ideia.ex2.fins.afogado": "The black king has no move and is not attacked: it is a draw.",
   "rot.keySquares.ideia.ex2.livre.volta": "Let's go back to the starting position. Suggest another move or tap {verResposta}",
   "rot.keySquares.ideia.ex2.p": "Black to move. Think and suggest a move, or tap {verResposta}",
-  "rot.keySquares.demos.regra.1": "A rule for finding the key squares, away from the a and h files: with the pawn up to halfway, they lie two ranks ahead of it.",
+  "rot.keySquares.demos.regra.1": "A rule for finding the key squares: with the pawn up to halfway, they lie two ranks ahead of it. A pawn on the a or h file has its own rule, seen in another lesson.",
   "rot.keySquares.demos.regra.2": "Here the pawn is on c2: the key squares are c4 and its neighbours b4 and d4.",
   "rot.keySquares.demos.regra.3": "The white king goes to d4, a key square: the win is guaranteed.",
   "rot.keySquares.demos.regra.4": "The black king goes to b4, towards the pawn, and the white king returns to d3 to defend it: the win is still guaranteed.",

@@ -114,7 +114,7 @@
   "rot.opposition.demos.vezBrancas.13": "O rei preto não está atacado e não tem lance: é afogamento, e a partida empata.",
   "rot.opposition.demos.vezBrancas.14": "Mesma posição, vez trocada, resultado diferente: quem tem a oposição decide a partida.",
   "rot.opposition.demos.longe.1": "Agora os reis estão afastados: o rei branco está em e4, o peão em c4, e ainda nenhum dos dois pode tomar a oposição. Jogam as pretas.",
-  "rot.opposition.demos.longe.2": "O rei preto vai a e8 e espera, na coluna do rei branco: é o único lance que empata. Em qualquer outra casa, as pretas perdem.",
+  "rot.opposition.demos.longe.2": "O rei preto vai a e8 e espera na última fileira: se o rei branco subir à 5ª, ele toma a oposição logo à frente, na 7ª. É o único lance que empata.",
   "rot.opposition.demos.longe.3": "Quando o rei branco sobe a e5, o rei preto toma a oposição em e7: é o único lance.",
   "rot.opposition.demos.longe.4": "Se o rei branco vai para o lado, a d5, o rei preto acompanha, em d7, e mantém a oposição: as pretas seguram o empate.",
   "rot.opposition.pratica.ataque.err.f3f4.1": "O peão avança antes do rei, e as casas-chave sobem para e6, f6 e g6.",

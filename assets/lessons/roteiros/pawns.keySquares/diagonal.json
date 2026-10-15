@@ -359,6 +359,37 @@
               "t": "rot.diagonal.ideia.ex1.l14b"
             },
             {
+              "fen": "8/8/8/1k6/8/4P3/2K5/8 w - - 0 1",
+              "marcas": [
+                "b3",
+                "b5"
+              ],
+              "setas": [
+                [
+                  "c2",
+                  "b3",
+                  "r"
+                ]
+              ],
+              "t": "rot.diagonal.ideia.ex1.l14c"
+            },
+            {
+              "fen": "8/8/8/1k6/8/4P3/2K5/8 w - - 0 1",
+              "marcas": [
+                "d5",
+                "e5",
+                "f5"
+              ],
+              "setas": [
+                [
+                  "c2",
+                  "d3",
+                  "r"
+                ]
+              ],
+              "t": "rot.diagonal.ideia.ex1.l14d"
+            },
+            {
               "fen": "8/8/4k3/8/2K5/3P4/8/8 b - - 1 1",
               "t": "rot.diagonal.ideia.ex1.l15"
             }
@@ -915,6 +946,19 @@
               },
               "4k3/8/2KP4/8/8/8/8/8 w - - 1 9": {
                 "d6d7": "rot.diagonal.pratica.ataque.v11.err.d6d7"
+              },
+              "5k2/3K4/3P4/8/8/8/8/8 w - -": {
+                "d7e6": "rot.diagonal.pratica.ataque.err.conv.e6"
+              },
+              "1k6/3K4/3P4/8/8/8/8/8 w - -": {
+                "d7c6": "rot.diagonal.pratica.ataque.err.conv.c6"
+              },
+              "3k4/8/3PK3/8/8/8/8/8 w - -": {
+                "e6d5": "rot.diagonal.pratica.ataque.err.conv.sai6",
+                "e6e5": "rot.diagonal.pratica.ataque.err.conv.sai6"
+              },
+              "8/8/8/2kPK3/8/8/8/8 w - -": {
+                "e5e4": "rot.diagonal.pratica.ataque.err.conv.e4"
               }
             }
           }

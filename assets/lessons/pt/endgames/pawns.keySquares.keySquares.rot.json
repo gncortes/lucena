@@ -66,7 +66,7 @@
   "rot.keySquares.ideia.ex2.fins.afogado": "O rei preto ficou sem lance, sem estar atacado: é empate.",
   "rot.keySquares.ideia.ex2.livre.volta": "Vamos voltar à posição inicial. Sugira outro lance ou clique em {verResposta}",
   "rot.keySquares.ideia.ex2.p": "Jogam as pretas. Pense e sugira um lance, ou clique em {verResposta}",
-  "rot.keySquares.demos.regra.1": "Uma regra para achar as casas-chave, fora das colunas a e h: com o peão até a metade do caminho, elas ficam duas fileiras à frente dele.",
+  "rot.keySquares.demos.regra.1": "Uma regra para achar as casas-chave: com o peão até a metade do caminho, elas ficam duas fileiras à frente dele. O peão das colunas a e h tem regra própria, vista em outra lição.",
   "rot.keySquares.demos.regra.2": "Aqui, o peão está em c2: as casas-chave são c4 e as vizinhas b4 e d4.",
   "rot.keySquares.demos.regra.3": "O rei branco vai a d4, uma casa-chave: a vitória está garantida.",
   "rot.keySquares.demos.regra.4": "O rei preto vai a b4, rumo ao peão, e o rei branco volta a d3 para defendê-lo: a vitória continua garantida.",
