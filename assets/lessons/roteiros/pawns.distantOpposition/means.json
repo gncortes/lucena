@@ -609,6 +609,14 @@
               "e3e2": "rot.means.pratica.ataque.err.e3e2",
               "e3d2": "rot.means.pratica.ataque.err.e3d2",
               "d3d4": "rot.means.pratica.ataque.err.d3d4"
+            },
+            "errosPos": {
+              "8/3k4/8/2K5/8/3P4/8/8 w - - 0 1": {
+                "d3d4": "rot.means.pratica.ataque.v1.err.d3d4"
+              },
+              "8/2k5/8/3K4/8/3P4/8/8 w - - 0 1": {
+                "d3d4": "rot.means.pratica.ataque.v2.err.d3d4"
+              }
             }
           }
         },

@@ -989,10 +989,12 @@
             },
             "errosPos": {
               "8/3k4/8/8/4K3/1P6/8/8 w - - 2 2": {
-                "e4d4": "rot.distant.pratica.ataque.v1.err.e4d4"
+                "e4d4": "rot.distant.pratica.ataque.v1.err.e4d4",
+                "b3b4": "rot.distant.pratica.ataque.v1.err.b3b4"
               },
               "8/2k5/8/3K4/8/1P6/8/8 w - - 4 3": {
-                "d5c4": "rot.distant.pratica.ataque.v2.err.d5c4"
+                "d5c4": "rot.distant.pratica.ataque.v2.err.d5c4",
+                "b3b4": "rot.distant.pratica.ataque.v2.err.b3b4"
               },
               "8/1k6/8/2K5/8/1P6/8/8 w - - 6 4": {
                 "b3b4": "rot.distant.pratica.ataque.v3.err.b3b4"
@@ -1002,6 +1004,22 @@
               },
               "1k6/8/2K5/1P6/8/8/8/8 w - - 1 8": {
                 "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
+              },
+              "8/1k6/8/K7/8/1P6/8/8 w - - 0 1": {
+                "b3b4": "rot.distant.pratica.ataque.v6.err.b3b4"
+              },
+              "1k6/8/K7/1P6/8/8/8/8 w - - 0 1": {
+                "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
+              },
+              "8/k7/2K5/1P6/8/8/8/8 w - - 0 1": {
+                "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
+              },
+              "k7/2K5/8/1P6/8/8/8/8 w - - 0 1": {
+                "b5b6": "rot.distant.pratica.ataque.v9.err.b5b6"
+              },
+              "1k6/8/KP6/8/8/8/8/8 w - - 0 1": {
+                "a6b5": "rot.distant.pratica.ataque.v10.err.a6b5",
+                "a6a5": "rot.distant.pratica.ataque.v10.err.a6a5"
               }
             }
           }
@@ -1034,7 +1052,8 @@
                 "c6b7": "rot.distant.pratica.defesa.v2.err.c6b7"
               },
               "8/8/8/1k6/8/K7/1P6/8 b - - 6 4": {
-                "b5c4": "rot.distant.pratica.defesa.v3.err.b5c4"
+                "b5c4": "rot.distant.pratica.defesa.v3.err.b5c4",
+                "b5b6": "rot.distant.pratica.defesa.v3.err.b5b6"
               }
             }
           }

@@ -2014,8 +2014,8 @@
       "turn": 2,
       "fen": "8/5k2/8/8/8/8/3P2K1/8 w - - 2 2",
       "uci": "g2f2",
-      "pt": "O rei ficou na segunda fileira, longe do rei preto: ele sobe a e6 e toma a oposição. As pretas empatam.",
-      "en": "The king stayed on the second rank, far from the black king: it goes up to e6 and takes the opposition. Black draws.",
+      "pt": "Em f2, ficam quatro casas até o rei preto, número par: ele sobe a e6 e depois a d6, à frente das casas-chave. As pretas empatam.",
+      "en": "On f2, four squares separate it from the black king, an even number: he goes up to e6 and then to d6, in front of the key squares. Black draws.",
       "pv": [
         {
           "fen": "8/5k2/8/8/8/8/3P2K1/8 w - - 2 2",
@@ -2062,48 +2062,48 @@
       "id": "e11",
       "kind": "exercise",
       "turn": 1,
-      "fen": "5k2/8/8/8/8/2P1K3/8/8 b - - 0 1",
-      "uci": "f8e8",
-      "pt": "Em e8, ficam quatro casas entre os reis, número par: o rei branco avança a d4 e chega às casas-chave. As brancas ganham.",
-      "en": "On e8, four squares remain between the kings, an even number: the white king advances to d4 and reaches the key squares. White wins.",
+      "fen": "6k1/8/8/8/8/8/2P5/5K2 b - - 0 1",
+      "uci": "g8f8",
+      "pt": "Em f8, ficam seis casas entre os reis, número par: a oposição passa às brancas, e o rei branco avança rumo às casas-chave. As brancas ganham.",
+      "en": "On f8, six squares separate the kings, an even number: the opposition passes to White, and the white king heads for the key squares. White wins.",
       "pv": [
         {
-          "fen": "5k2/8/8/8/8/2P1K3/8/8 b - - 0 1",
-          "uci": "f8e8",
-          "san": "Ke8",
+          "fen": "6k1/8/8/8/8/8/2P5/5K2 b - - 0 1",
+          "uci": "g8f8",
+          "san": "Kf8",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "4k3/8/8/8/8/2P1K3/8/8 w - - 1 2",
-          "uci": "e3d4",
-          "san": "Kd4",
+          "fen": "5k2/8/8/8/8/8/2P5/5K2 w - - 1 2",
+          "uci": "f1e2",
+          "san": "Ke2",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "4k3/8/8/8/3K4/2P5/8/8 b - - 2 2",
-          "uci": "e8d7",
-          "san": "Kd7",
+          "fen": "5k2/8/8/8/8/8/2P1K3/8 b - - 2 2",
+          "uci": "f8e7",
+          "san": "Ke7",
           "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/3k4/8/8/3K4/2P5/8/8 w - - 3 3",
-          "uci": "d4c5",
-          "san": "Kc5",
+          "fen": "8/4k3/8/8/8/8/2P1K3/8 w - - 3 3",
+          "uci": "e2d3",
+          "san": "Kd3",
           "fullmove": 3,
           "turn": "white"
         }
       ],
       "objective": {
         "result_mover": "loss",
-        "dtm_successor": 35
+        "dtm_successor": 43
       },
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e11.1",
-        "uci": "f8e8"
+        "uci": "g8f8"
       },
       "text_key": "ex.e11.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2112,48 +2112,48 @@
       "id": "e11",
       "kind": "exercise",
       "turn": 2,
-      "fen": "8/4k3/8/8/8/2PK4/8/8 b - - 2 2",
-      "uci": "e7d6",
-      "pt": "Em d6, ficam duas casas entre os reis, número par: o rei branco avança a d4 e toma a oposição. As brancas ganham.",
-      "en": "On d6, two squares remain between the kings, an even number: the white king advances to d4 and takes the opposition. White wins.",
+      "fen": "8/5k2/8/8/8/8/2P1K3/8 b - - 2 2",
+      "uci": "f7e7",
+      "pt": "Em e7, ficam quatro casas entre os reis, número par: o rei branco avança a d3 e chega antes às casas-chave. As brancas ganham.",
+      "en": "On e7, four squares separate the kings, an even number: the white king goes to d3 and reaches the key squares first. White wins.",
       "pv": [
         {
-          "fen": "8/4k3/8/8/8/2PK4/8/8 b - - 2 2",
-          "uci": "e7d6",
-          "san": "Kd6",
+          "fen": "8/5k2/8/8/8/8/2P1K3/8 b - - 2 2",
+          "uci": "f7e7",
+          "san": "Ke7",
           "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/8/3k4/8/8/2PK4/8/8 w - - 3 3",
-          "uci": "d3d4",
-          "san": "Kd4",
+          "fen": "8/4k3/8/8/8/8/2P1K3/8 w - - 3 3",
+          "uci": "e2d3",
+          "san": "Kd3",
           "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/3k4/8/3K4/2P5/8/8 b - - 4 3",
-          "uci": "d6c7",
-          "san": "Kc7",
+          "fen": "8/4k3/8/8/8/3K4/2P5/8 b - - 4 3",
+          "uci": "e7d6",
+          "san": "Kd6",
           "fullmove": 3,
           "turn": "black"
         },
         {
-          "fen": "8/2k5/8/8/3K4/2P5/8/8 w - - 5 4",
-          "uci": "d4c5",
-          "san": "Kc5",
+          "fen": "8/8/3k4/8/8/3K4/2P5/8 w - - 5 4",
+          "uci": "d3c4",
+          "san": "Kc4",
           "fullmove": 4,
           "turn": "white"
         }
       ],
       "objective": {
         "result_mover": "loss",
-        "dtm_successor": 39
+        "dtm_successor": 41
       },
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e11.2",
-        "uci": "e7d6"
+        "uci": "f7e7"
       },
       "text_key": "ex.e11.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2162,48 +2162,48 @@
       "id": "e11",
       "kind": "exercise",
       "turn": 3,
-      "fen": "8/3k4/8/8/2K5/2P5/8/8 b - - 4 3",
-      "uci": "d7c7",
-      "pt": "Em c7, o rei preto fica longe do rei branco: ele vai a b5 e entra nas casas-chave. As brancas ganham.",
-      "en": "On c7, the black king is far from the white king: it goes to b5 and enters the key squares. White wins.",
+      "fen": "8/8/4k3/8/8/8/2PK4/8 b - - 4 3",
+      "uci": "e6d5",
+      "pt": "Em d5, ficam duas casas entre os reis, número par: o rei branco vai a d3, de frente para o seu, e a oposição é das brancas. As brancas ganham.",
+      "en": "On d5, two squares separate the kings, an even number: the white king goes to d3, facing yours, and White has the opposition. White wins.",
       "pv": [
         {
-          "fen": "8/3k4/8/8/2K5/2P5/8/8 b - - 4 3",
-          "uci": "d7c7",
-          "san": "Kc7",
+          "fen": "8/8/4k3/8/8/8/2PK4/8 b - - 4 3",
+          "uci": "e6d5",
+          "san": "Kd5",
           "fullmove": 3,
           "turn": "black"
         },
         {
-          "fen": "8/2k5/8/8/2K5/2P5/8/8 w - - 5 4",
-          "uci": "c4b5",
-          "san": "Kb5",
+          "fen": "8/8/8/3k4/8/8/2PK4/8 w - - 5 4",
+          "uci": "d2d3",
+          "san": "Kd3",
           "fullmove": 4,
           "turn": "white"
         },
         {
-          "fen": "8/2k5/8/1K6/8/2P5/8/8 b - - 6 4",
-          "uci": "c7b7",
-          "san": "Kb7",
+          "fen": "8/8/8/3k4/8/3K4/2P5/8 b - - 6 4",
+          "uci": "d5c5",
+          "san": "Kc5",
           "fullmove": 4,
           "turn": "black"
         },
         {
-          "fen": "8/1k6/8/1K6/8/2P5/8/8 w - - 7 5",
-          "uci": "b5c5",
-          "san": "Kc5",
+          "fen": "8/8/8/2k5/8/3K4/2P5/8 w - - 7 5",
+          "uci": "d3c3",
+          "san": "Kc3",
           "fullmove": 5,
           "turn": "white"
         }
       ],
       "objective": {
         "result_mover": "loss",
-        "dtm_successor": 33
+        "dtm_successor": 43
       },
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e11.3",
-        "uci": "d7c7"
+        "uci": "e6d5"
       },
       "text_key": "ex.e11.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2212,48 +2212,48 @@
       "id": "e11",
       "kind": "exercise",
       "turn": 3,
-      "fen": "8/3k4/8/8/2K5/2P5/8/8 b - - 4 3",
-      "uci": "d7c8",
-      "pt": "Em c8, o rei preto recua demais: o rei branco vai a c5 e ocupa uma casa-chave. As brancas ganham.",
-      "en": "On c8, the black king steps back too far: the white king goes to c5 and takes a key square. White wins.",
+      "fen": "8/8/4k3/8/8/8/2PK4/8 b - - 4 3",
+      "uci": "e6d7",
+      "pt": "Em d7, ficam quatro casas entre os reis, número par: o rei branco vai a c3 e chega antes às casas-chave. As brancas ganham.",
+      "en": "On d7, four squares separate the kings, an even number: the white king goes to c3 and reaches the key squares first. White wins.",
       "pv": [
         {
-          "fen": "8/3k4/8/8/2K5/2P5/8/8 b - - 4 3",
-          "uci": "d7c8",
-          "san": "Kc8",
+          "fen": "8/8/4k3/8/8/8/2PK4/8 b - - 4 3",
+          "uci": "e6d7",
+          "san": "Kd7",
           "fullmove": 3,
           "turn": "black"
         },
         {
-          "fen": "2k5/8/8/8/2K5/2P5/8/8 w - - 5 4",
-          "uci": "c4c5",
-          "san": "Kc5",
+          "fen": "8/3k4/8/8/8/8/2PK4/8 w - - 5 4",
+          "uci": "d2c3",
+          "san": "Kc3",
           "fullmove": 4,
           "turn": "white"
         },
         {
-          "fen": "2k5/8/8/2K5/8/2P5/8/8 b - - 6 4",
-          "uci": "c8b7",
-          "san": "Kb7",
-          "fullmove": 4,
-          "turn": "black"
-        },
-        {
-          "fen": "8/1k6/8/2K5/8/2P5/8/8 w - - 7 5",
-          "uci": "c5d6",
+          "fen": "8/3k4/8/8/8/2K5/2P5/8 b - - 6 4",
+          "uci": "d7d6",
           "san": "Kd6",
+          "fullmove": 4,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/3k4/8/8/2K5/2P5/8 w - - 7 5",
+          "uci": "c3c4",
+          "san": "Kc4",
           "fullmove": 5,
           "turn": "white"
         }
       ],
       "objective": {
         "result_mover": "loss",
-        "dtm_successor": 33
+        "dtm_successor": 41
       },
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e11.3",
-        "uci": "d7c8"
+        "uci": "e6d7"
       },
       "text_key": "ex.e11.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2262,36 +2262,36 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/1k6/3K4/2P5/8/8 w - - 0 1",
-      "uci": "c3c4",
-      "pt": "O peão avançou cedo demais: o rei preto vai a c6 e se planta diante dele. As pretas empatam.",
-      "en": "The pawn advanced too soon: the black king goes to c6 and plants itself in front of it. Black draws.",
+      "fen": "1K6/6k1/8/8/8/4P3/8/8 w - - 0 1",
+      "uci": "e3e4",
+      "pt": "O peão avançou antes do rei: as casas-chave passam a ser d6, e6 e f6, e o rei preto chega primeiro a elas. As pretas empatam.",
+      "en": "The pawn advanced before the king: the key squares become d6, e6 and f6, and the black king gets there first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/1k6/3K4/2P5/8/8 w - - 0 1",
-          "uci": "c3c4",
-          "san": "c4+",
+          "fen": "1K6/6k1/8/8/8/4P3/8/8 w - - 0 1",
+          "uci": "e3e4",
+          "san": "e4",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k6/2PK4/8/8/8 b - - 0 1",
-          "uci": "b5c6",
-          "san": "Kc6",
+          "fen": "1K6/6k1/8/8/4P3/8/8/8 b - - 0 1",
+          "uci": "g7f6",
+          "san": "Kf6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/2k5/8/2PK4/8/8/8 w - - 1 2",
-          "uci": "d4e4",
-          "san": "Ke4",
+          "fen": "1K6/8/5k2/8/4P3/8/8/8 w - - 1 2",
+          "uci": "b8c7",
+          "san": "Kc7",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/2k5/8/2P1K3/8/8/8 b - - 2 2",
-          "uci": "c6c5",
-          "san": "Kc5",
+          "fen": "8/2K5/5k2/8/4P3/8/8/8 b - - 2 2",
+          "uci": "f6e5",
+          "san": "Ke5",
           "fullmove": 2,
           "turn": "black"
         }
@@ -2303,46 +2303,46 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.1",
-        "uci": "c3c4"
+        "uci": "e3e4"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
     },
     {
-      "id": "e18",
+      "id": "e13",
       "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/3k4/1p5p/1P3K1P/8/8/8 w - - 0 1",
-      "uci": "f4f5",
-      "pt": "Com o rei em f5, o rei preto vai a d5 e chega ao peão de b4 antes que o seu capture o de h5. As pretas empatam.",
-      "en": "With the king on f5, the black king goes to d5 and reaches the b4-pawn before yours captures the one on h5. Black draws.",
+      "turn": 2,
+      "fen": "8/2K5/5k2/8/8/4P3/8/8 w - - 2 2",
+      "uci": "c7c6",
+      "pt": "Em c6, ficam duas casas entre os reis, número par: o rei preto vai a e5 e fecha as casas-chave d5, e5 e f5. As pretas empatam.",
+      "en": "On c6, two squares separate the kings, an even number: the black king goes to e5 and shuts the key squares d5, e5 and f5. Black draws.",
       "pv": [
         {
-          "fen": "8/8/3k4/1p5p/1P3K1P/8/8/8 w - - 0 1",
-          "uci": "f4f5",
-          "san": "Kf5",
-          "fullmove": 1,
+          "fen": "8/2K5/5k2/8/8/4P3/8/8 w - - 2 2",
+          "uci": "c7c6",
+          "san": "Kc6",
+          "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/3k4/1p3K1p/1P5P/8/8/8 b - - 1 1",
-          "uci": "d6d5",
-          "san": "Kd5",
-          "fullmove": 1,
+          "fen": "8/8/2K2k2/8/8/4P3/8/8 b - - 3 2",
+          "uci": "f6e5",
+          "san": "Ke5",
+          "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1p1k1K1p/1P5P/8/8/8 w - - 2 2",
-          "uci": "f5g5",
-          "san": "Kg5",
-          "fullmove": 2,
+          "fen": "8/8/2K5/4k3/8/4P3/8/8 w - - 4 3",
+          "uci": "c6c5",
+          "san": "Kc5",
+          "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1p1k2Kp/1P5P/8/8/8 b - - 3 2",
-          "uci": "d5c4",
-          "san": "Kc4",
-          "fullmove": 2,
+          "fen": "8/8/8/2K1k3/8/4P3/8/8 b - - 5 3",
+          "uci": "e5e4",
+          "san": "Ke4",
+          "fullmove": 3,
           "turn": "black"
         }
       ],
@@ -2352,44 +2352,44 @@
       },
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
-        "site": "exercise/e18.1",
-        "uci": "f4f5"
+        "site": "exercise/e13.2",
+        "uci": "c7c6"
       },
-      "text_key": "ex.e18.hint",
+      "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
     },
     {
       "id": "e18",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/3k4/1p5p/1P3K1P/8/8/8 w - - 0 1",
-      "uci": "f4e4",
-      "pt": "Aproximar-se do rei preto não leva a nada: ele responde indo a e6 e fica com a oposição. As pretas empatam.",
-      "en": "Walking up to the black king gets nowhere: he replies by going to e6 and takes the opposition. Black draws.",
+      "fen": "8/8/3k4/1p4p1/1P4P1/3K4/8/8 w - - 0 1",
+      "uci": "d3e4",
+      "pt": "Indo a e4, seu rei sai da coluna do rei preto: ele vai a e6, de frente para o seu, e a oposição passa às pretas. As pretas empatam.",
+      "en": "Going to e4, your king leaves the black king's file: he goes to e6, facing yours, and the opposition passes to Black. Black draws.",
       "pv": [
         {
-          "fen": "8/8/3k4/1p5p/1P3K1P/8/8/8 w - - 0 1",
-          "uci": "f4e4",
+          "fen": "8/8/3k4/1p4p1/1P4P1/3K4/8/8 w - - 0 1",
+          "uci": "d3e4",
           "san": "Ke4",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/3k4/1p5p/1P2K2P/8/8/8 b - - 1 1",
+          "fen": "8/8/3k4/1p4p1/1P2K1P1/8/8/8 b - - 1 1",
           "uci": "d6e6",
           "san": "Ke6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/4k3/1p5p/1P2K2P/8/8/8 w - - 2 2",
+          "fen": "8/8/4k3/1p4p1/1P2K1P1/8/8/8 w - - 2 2",
           "uci": "e4d4",
           "san": "Kd4",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/4k3/1p5p/1P1K3P/8/8/8 b - - 3 2",
+          "fen": "8/8/4k3/1p4p1/1P1K2P1/8/8/8 b - - 3 2",
           "uci": "e6d6",
           "san": "Kd6",
           "fullmove": 2,
@@ -2403,7 +2403,57 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e18.1",
-        "uci": "f4e4"
+        "uci": "d3e4"
+      },
+      "text_key": "ex.e18.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e18",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/2k5/1p4p1/1P1K2P1/8/8/8 w - - 2 2",
+      "uci": "d4c3",
+      "pt": "Recuando, seu rei devolve a oposição: o rei preto vai a d5, à frente do seu, e as pretas empatam.",
+      "en": "By retreating, your king hands back the opposition: the black king goes to d5, in front of yours, and Black draws.",
+      "pv": [
+        {
+          "fen": "8/8/2k5/1p4p1/1P1K2P1/8/8/8 w - - 2 2",
+          "uci": "d4c3",
+          "san": "Kc3",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/2k5/1p4p1/1P4P1/2K5/8/8 b - - 3 2",
+          "uci": "c6d5",
+          "san": "Kd5",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/8/1p1k2p1/1P4P1/2K5/8/8 w - - 4 3",
+          "uci": "c3d3",
+          "san": "Kd3",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/1p1k2p1/1P4P1/3K4/8/8 b - - 5 3",
+          "uci": "d5e5",
+          "san": "Ke5",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
+        "site": "exercise/e18.2",
+        "uci": "d4c3"
       },
       "text_key": "ex.e18.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2412,238 +2462,138 @@
       "id": "e21",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
-      "uci": "b2b4",
-      "pt": "O peão avança antes do rei: o rei preto vai a d4 e chega antes às casas-chave. As pretas empatam.",
-      "en": "The pawn advances before the king: the black king goes to d4 and reaches the key squares first. Black draws.",
+      "fen": "8/3k4/8/8/8/4KP2/8/8 w - - 0 1",
+      "uci": "e3e4",
+      "pt": "Indo a e4, seu rei vai na direção do rei preto, e não das casas-chave e5, f5 e g5: ele vai a e6 e guarda duas delas. As pretas empatam.",
+      "en": "Going to e4, your king heads for the black king, not for the key squares e5, f5 and g5: he goes to e6 and guards two of them. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
-          "uci": "b2b4",
-          "san": "b4",
+          "fen": "8/3k4/8/8/8/4KP2/8/8 w - - 0 1",
+          "uci": "e3e4",
+          "san": "Ke4",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/8/1P2k3/8/8/3K4 b - - 0 1",
-          "uci": "e4d4",
-          "san": "Kd4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/8/1P1k4/8/8/3K4 w - - 1 2",
-          "uci": "b4b5",
-          "san": "b5",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/1P6/3k4/8/8/3K4 b - - 0 2",
-          "uci": "d4c5",
-          "san": "Kc5",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "draw",
-        "dtz_successor": 0
-      },
-      "evidence": {
-        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
-        "site": "exercise/e21.1",
-        "uci": "b2b4"
-      },
-      "text_key": "ex.e21.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e21",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
-      "uci": "d1d2",
-      "pt": "O rei branco fica longe das casas-chave: o rei preto vai a d4 e chega antes a elas. As pretas empatam.",
-      "en": "The white king stays far from the key squares: the black king goes to d4 and reaches them first. Black draws.",
-      "pv": [
-        {
-          "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
-          "uci": "d1d2",
-          "san": "Kd2",
-          "fullmove": 1,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/8/4k3/8/1P1K4/8 b - - 1 1",
-          "uci": "e4d4",
-          "san": "Kd4",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/8/3k4/8/1P1K4/8 w - - 2 2",
-          "uci": "d2c2",
-          "san": "Kc2",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/8/3k4/8/1PK5/8 b - - 3 2",
-          "uci": "d4c4",
-          "san": "Kc4",
-          "fullmove": 2,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "draw",
-        "dtz_successor": 0
-      },
-      "evidence": {
-        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
-        "site": "exercise/e21.1",
-        "uci": "d1d2"
-      },
-      "text_key": "ex.e21.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e21",
-      "kind": "exercise",
-      "turn": 2,
-      "fen": "8/8/8/8/3k4/8/1PK5/8 w - - 2 2",
-      "uci": "b2b3",
-      "pt": "O peão avança antes do rei: o rei preto vai a c5 e se planta diante dele. As pretas empatam.",
-      "en": "The pawn advances before the king: the black king goes to c5 and plants itself in front of it. Black draws.",
-      "pv": [
-        {
-          "fen": "8/8/8/8/3k4/8/1PK5/8 w - - 2 2",
-          "uci": "b2b3",
-          "san": "b3",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/8/3k4/1P6/2K5/8 b - - 0 2",
-          "uci": "d4c5",
-          "san": "Kc5",
-          "fullmove": 2,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/8/2k5/8/1P6/2K5/8 w - - 1 3",
-          "uci": "c2c3",
-          "san": "Kc3",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/8/2k5/8/1PK5/8/8 b - - 2 3",
-          "uci": "c5b5",
-          "san": "Kb5",
-          "fullmove": 3,
-          "turn": "black"
-        }
-      ],
-      "objective": {
-        "result_mover": "draw",
-        "dtz_successor": 0
-      },
-      "evidence": {
-        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
-        "site": "exercise/e21.2",
-        "uci": "b2b3"
-      },
-      "text_key": "ex.e21.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e22",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/4k3/3p4/3p4/p2P4/P7/7K/8 b - - 0 1",
-      "uci": "e7f6",
-      "pt": "Em f6, o rei preto se aproxima do rei branco: ele vai a g2 e a f3 a tempo de defender os peões. As pretas empatam.",
-      "en": "On f6, the black king moves closer to the white king: it goes to g2 and f3 in time to defend the pawns. Black draws.",
-      "pv": [
-        {
-          "fen": "8/4k3/3p4/3p4/p2P4/P7/7K/8 b - - 0 1",
-          "uci": "e7f6",
-          "san": "Kf6",
-          "fullmove": 1,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/3p1k2/3p4/p2P4/P7/7K/8 w - - 1 2",
-          "uci": "h2g2",
-          "san": "Kg2",
-          "fullmove": 2,
-          "turn": "white"
-        },
-        {
-          "fen": "8/8/3p1k2/3p4/p2P4/P7/6K1/8 b - - 2 2",
-          "uci": "f6f5",
-          "san": "Kf5",
-          "fullmove": 2,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/3p4/3p1k2/p2P4/P7/6K1/8 w - - 3 3",
-          "uci": "g2f3",
-          "san": "Kf3",
-          "fullmove": 3,
-          "turn": "white"
-        }
-      ],
-      "objective": {
-        "result_mover": "draw",
-        "dtz_successor": 0
-      },
-      "evidence": {
-        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
-        "site": "exercise/e22.1",
-        "uci": "e7f6"
-      },
-      "text_key": "ex.e22.hint",
-      "access": "dica sob demanda, exercício silencioso"
-    },
-    {
-      "id": "e22",
-      "kind": "exercise",
-      "turn": 1,
-      "fen": "8/4k3/3p4/3p4/p2P4/P7/7K/8 b - - 0 1",
-      "uci": "e7e6",
-      "pt": "Em e6, o rei preto fica no centro, ao alcance do rei branco: ele vai a g2 e a f3 e defende os peões a tempo. As pretas empatam.",
-      "en": "On e6, the black king stays in the centre, within reach of the white king: it goes to g2 and f3 and defends the pawns in time. Black draws.",
-      "pv": [
-        {
-          "fen": "8/4k3/3p4/3p4/p2P4/P7/7K/8 b - - 0 1",
-          "uci": "e7e6",
+          "fen": "8/3k4/8/8/4K3/5P2/8/8 b - - 1 1",
+          "uci": "d7e6",
           "san": "Ke6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/3pk3/3p4/p2P4/P7/7K/8 w - - 1 2",
-          "uci": "h2g2",
-          "san": "Kg2",
+          "fen": "8/8/4k3/8/4K3/5P2/8/8 w - - 2 2",
+          "uci": "e4f4",
+          "san": "Kf4",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/3pk3/3p4/p2P4/P7/6K1/8 b - - 2 2",
-          "uci": "e6f5",
-          "san": "Kf5",
+          "fen": "8/8/4k3/8/5K2/5P2/8/8 b - - 3 2",
+          "uci": "e6f6",
+          "san": "Kf6",
           "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
+        "site": "exercise/e21.1",
+        "uci": "e3e4"
+      },
+      "text_key": "ex.e21.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e21",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/3k4/8/8/8/4KP2/8/8 w - - 0 1",
+      "uci": "f3f4",
+      "pt": "O peão avançou antes do rei: as casas-chave sobem para e6, f6 e g6, e o rei preto, que vai a e6, chega primeiro a elas. As pretas empatam.",
+      "en": "The pawn advanced before the king: the key squares move up to e6, f6 and g6, and the black king, going to e6, gets there first. Black draws.",
+      "pv": [
+        {
+          "fen": "8/3k4/8/8/8/4KP2/8/8 w - - 0 1",
+          "uci": "f3f4",
+          "san": "f4",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/3k4/8/8/5P2/4K3/8/8 b - - 0 1",
+          "uci": "d7e6",
+          "san": "Ke6",
+          "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/3p4/3p1k2/p2P4/P7/6K1/8 w - - 3 3",
-          "uci": "g2f3",
-          "san": "Kf3",
-          "fullmove": 3,
+          "fen": "8/8/4k3/8/5P2/4K3/8/8 w - - 1 2",
+          "uci": "e3e4",
+          "san": "Ke4",
+          "fullmove": 2,
           "turn": "white"
+        },
+        {
+          "fen": "8/8/4k3/8/4KP2/8/8/8 b - - 2 2",
+          "uci": "e6f6",
+          "san": "Kf6",
+          "fullmove": 2,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
+        "site": "exercise/e21.1",
+        "uci": "f3f4"
+      },
+      "text_key": "ex.e21.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e22",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/1K1pk3/3p4/p2P4/P7/8/8 w - - 0 1",
+      "uci": "b6b5",
+      "pt": "Indo já atrás do peão da coluna a, seu rei perde o tempo: o rei preto vai a f5 e depois a e4, contra o peão de d4, e chega a tempo. As pretas empatam.",
+      "en": "Heading straight for the a-pawn, your king loses the tempo: the black king goes to f5 and then e4, against the d4-pawn, and arrives in time. Black draws.",
+      "pv": [
+        {
+          "fen": "8/8/1K1pk3/3p4/p2P4/P7/8/8 w - - 0 1",
+          "uci": "b6b5",
+          "san": "Kb5",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/3pk3/1K1p4/p2P4/P7/8/8 b - - 1 1",
+          "uci": "e6f5",
+          "san": "Kf5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/3p4/1K1p1k2/p2P4/P7/8/8 w - - 2 2",
+          "uci": "b5a4",
+          "san": "Kxa4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/3p4/3p1k2/K2P4/P7/8/8 b - - 0 2",
+          "uci": "f5e4",
+          "san": "Ke4",
+          "fullmove": 2,
+          "turn": "black"
         }
       ],
       "objective": {
@@ -2653,7 +2603,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e22.1",
-        "uci": "e7e6"
+        "uci": "b6b5"
       },
       "text_key": "ex.e22.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2661,39 +2611,39 @@
     {
       "id": "e22",
       "kind": "exercise",
-      "turn": 2,
-      "fen": "8/3k4/3p4/3p4/p2P4/P7/8/6K1 b - - 2 2",
-      "uci": "d7c7",
-      "pt": "Em c7, o rei preto fica uma fileira atrás: o rei branco vai a f1 e a e2 e chega a tempo de defender os peões. As pretas empatam.",
-      "en": "On c7, the black king stays a rank behind: the white king goes to f1 and e2 and arrives in time to defend the pawns. Black draws.",
+      "turn": 1,
+      "fen": "8/8/1K1pk3/3p4/p2P4/P7/8/8 w - - 0 1",
+      "uci": "b6a5",
+      "pt": "Em a5, seu rei vai ao peão da coluna a, mas o rei preto parte para f5 e e4, contra o peão de d4, e chega a tempo. As pretas empatam.",
+      "en": "On a5, your king goes for the a-pawn, but the black king sets off for f5 and e4, against the d4-pawn, and arrives in time. Black draws.",
       "pv": [
         {
-          "fen": "8/3k4/3p4/3p4/p2P4/P7/8/6K1 b - - 2 2",
-          "uci": "d7c7",
-          "san": "Kc7",
+          "fen": "8/8/1K1pk3/3p4/p2P4/P7/8/8 w - - 0 1",
+          "uci": "b6a5",
+          "san": "Ka5",
+          "fullmove": 1,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/3pk3/K2p4/p2P4/P7/8/8 b - - 1 1",
+          "uci": "e6f5",
+          "san": "Kf5",
+          "fullmove": 1,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/3p4/K2p1k2/p2P4/P7/8/8 w - - 2 2",
+          "uci": "a5a4",
+          "san": "Kxa4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/3p4/3p1k2/K2P4/P7/8/8 b - - 0 2",
+          "uci": "f5e4",
+          "san": "Ke4",
           "fullmove": 2,
           "turn": "black"
-        },
-        {
-          "fen": "8/2k5/3p4/3p4/p2P4/P7/8/6K1 w - - 3 3",
-          "uci": "g1f1",
-          "san": "Kf1",
-          "fullmove": 3,
-          "turn": "white"
-        },
-        {
-          "fen": "8/2k5/3p4/3p4/p2P4/P7/8/5K2 b - - 4 3",
-          "uci": "c7b6",
-          "san": "Kb6",
-          "fullmove": 3,
-          "turn": "black"
-        },
-        {
-          "fen": "8/8/1k1p4/3p4/p2P4/P7/8/5K2 w - - 5 4",
-          "uci": "f1e2",
-          "san": "Ke2",
-          "fullmove": 4,
-          "turn": "white"
         }
       ],
       "objective": {
@@ -2702,8 +2652,8 @@
       },
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
-        "site": "exercise/e22.2",
-        "uci": "d7c7"
+        "site": "exercise/e22.1",
+        "uci": "b6a5"
       },
       "text_key": "ex.e22.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -4401,316 +4351,6 @@
       }
     },
     {
-      "kind": "think",
-      "id": "t_carlsenSo",
-      "turn": 1,
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-      "explanations": {
-        "pt": {
-          "positionId": "defend/t_carlsenSo",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "A posição",
-              "texts": [
-                "No {{Norway Chess|norway-chess}}, em {{Stavanger|stavanger}}, em 2017, {{Magnus Carlsen|magnus-carlsen}}, com as brancas, enfrentou {{Wesley So|wesley-so}}, com as pretas. Depois da troca dos cavalos no lance 53, So (pretas) ficou com um peão a menos; acompanhamos sua defesa do peão de h6.",
-                "O rei branco procura espaço para apoiar seus peões. Sua defesa deve impedir a entrada: confira a coluna, a distância e as casas que o peão torna importantes."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "A ideia principal",
-              "texts": [
-                "Correto: com 55...Rf7, a defesa continua de pé.",
-                "Seu rei recua na coluna f e deixa f4, f5 e f6 entre os reis, com as brancas na vez. A oposição distante obriga o atacante a mostrar sua rota antes de você ajustar a defesa de h6.",
-                "Se as brancas continuarem com 56.Rf4, procurando entrar pela quinta fileira, você responde com 56...Rf6 e, mesmo depois do xeque 57.g5+, conserva o empate: o recuo inicial permitiu reajustar o rei à nova posição branca. Compare a posição completa dos peões e a vez de jogar, em vez de concluir que todo xeque de peão ganha."
-              ],
-              "variations": [
-                {
-                  "id": "f6f7",
-                  "label": "A",
-                  "outcome": "accepted",
-                  "texts": [
-                    "Correto: com 55...Rf7, a defesa continua de pé.",
-                    "Seu rei recua na coluna f e deixa f4, f5 e f6 entre os reis, com as brancas na vez. A oposição distante obriga o atacante a mostrar sua rota antes de você ajustar a defesa de h6.",
-                    "Se as brancas continuarem com 56.Rf4, procurando entrar pela quinta fileira, você responde com 56...Rf6 e, mesmo depois do xeque 57.g5+, conserva o empate: o recuo inicial permitiu reajustar o rei à nova posição branca. Compare a posição completa dos peões e a vez de jogar, em vez de concluir que todo xeque de peão ganha."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6f7",
-                    "f3f4",
-                    "f7f6",
-                    "g4g5"
-                  ],
-                  "movesSan": [
-                    "55...Rf7",
-                    "56.Rf4",
-                    "56...Rf6",
-                    "57.g5+"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo"
-                }
-              ]
-            },
-            {
-              "id": "failed_alternatives",
-              "kind": "failed_alternatives",
-              "title": "Lances que não funcionam",
-              "texts": [],
-              "variations": [
-                {
-                  "id": "f6e5",
-                  "label": "B",
-                  "outcome": "losing",
-                  "texts": [
-                    "Se as pretas jogassem 55...Re5?, as brancas responderiam com 56.Re3 e ganhariam.",
-                    "O rei preto abandona a coluna f. As brancas podem responder em e3 e depois ocupar f4, combinando oposição e espaço para apoiar os peões de g4 e h4.",
-                    "Depois de 56.Re3, voltar com 56...Rf6 já não salva as pretas: as brancas seguem vencendo. O rei branco não se apressa a empurrar os peões: melhora a própria posição enquanto o rei preto precisa voltar. Centralizar o defensor cedo demais não deixou uma barreira útil."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6e5",
-                    "f3e3",
-                    "e5f6"
-                  ],
-                  "movesSan": [
-                    "55...Re5",
-                    "56.Re3",
-                    "56...Rf6"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo",
-                  "playedTexts": [
-                    "Com 55...Re5? você deixa escapar o empate: as brancas respondem com 56.Re3 e ganham.",
-                    "Seu rei abandona a coluna f. As brancas podem responder em e3 e depois ocupar f4, combinando oposição e espaço para apoiar os peões de g4 e h4.",
-                    "Depois de 56.Re3, voltar com 56...Rf6 já não salva a sua defesa: as brancas seguem vencendo. O rei branco não se apressa a empurrar os peões: melhora a própria posição enquanto o seu rei precisa voltar. Centralizar o rei cedo demais não deixou uma barreira útil."
-                  ]
-                },
-                {
-                  "id": "f6g6",
-                  "label": "C",
-                  "outcome": "losing",
-                  "texts": [
-                    "Se as pretas jogassem 55...Rg6?, as brancas responderiam com 56.Re4 e ganhariam.",
-                    "O rei preto fica perto de h6, mas deixa ao rei branco a aproximação por e4 e d5. Defender só pela proximidade do peão não impede o contorno pela outra ala.",
-                    "Na linha 56.Re4 Rf6 57.Rf4, as brancas seguem vencendo. O rei preto volta à coluna f, mas o rei branco já se aproximou da região dos peões de g4 e h4. O desvio inicial não ganhou um tempo útil para montar a defesa."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6g6",
-                    "f3e4",
-                    "g6f6",
-                    "e4f4"
-                  ],
-                  "movesSan": [
-                    "55...Rg6",
-                    "56.Re4",
-                    "56...Rf6",
-                    "57.Rf4"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo",
-                  "playedTexts": [
-                    "Com 55...Rg6? você deixa escapar o empate: as brancas respondem com 56.Re4 e ganham.",
-                    "Seu rei fica perto de h6, mas deixa ao rei branco a aproximação por e4 e d5. Defender só pela proximidade do peão não impede o contorno pela outra ala.",
-                    "Na linha 56.Re4 Rf6 57.Rf4, as brancas seguem vencendo. Seu rei volta à coluna f, mas o rei branco já se aproximou da região dos peões de g4 e h4. O desvio inicial não ganhou um tempo útil para montar a defesa."
-                  ]
-                },
-                {
-                  "id": "f6e6",
-                  "label": "D",
-                  "outcome": "losing",
-                  "texts": [
-                    "Se as pretas jogassem o natural 55...Re6?, as brancas responderiam com 56.Re4! e ganhariam: o rei branco fica de frente para o rei preto, com e5 entre eles e as pretas na vez.",
-                    "Depois de 56...Rf6, 57.Rd5 entra pela coluna d, que o rei preto deixou ao mudar de coluna. Defender exige controlar as entradas úteis, e não simplesmente ficar perto do rei adversário."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6e6",
-                    "f3e4",
-                    "e6f6",
-                    "e4d5"
-                  ],
-                  "movesSan": [
-                    "55...Re6",
-                    "56.Re4",
-                    "56...Rf6",
-                    "57.Rd5"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo",
-                  "playedTexts": [
-                    "Com 55...Re6? você deixa escapar o empate: as brancas respondem com 56.Re4! e tomam a oposição direta, com e5 entre os reis e as pretas na vez.",
-                    "Depois de 56...Rf6, 57.Rd5 entra pela coluna d, que o rei preto deixou ao mudar de coluna. Defender exige controlar as entradas úteis, e não simplesmente ficar perto do rei adversário."
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        "en": {
-          "positionId": "defend/t_carlsenSo",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "The position",
-              "texts": [
-                "At {{Norway Chess|norway-chess}} in {{Stavanger|stavanger}} in 2017, {{Magnus Carlsen|magnus-carlsen}}, playing White, faced {{Wesley So|wesley-so}}, playing Black. After the knights were exchanged on move 53, So (Black) was a pawn down; we follow his defence of the h6-pawn.",
-                "The white king seeks space to support its pawns. Your defence must prevent entry: check the file, the distance and the squares made important by the pawn."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "The main idea",
-              "texts": [
-                "Correct: after 55...Kf7, the defence still holds.",
-                "Your king retreats along the f-file, leaving f4, f5 and f6 between the kings, with White to move. Distant opposition makes the attacker reveal its route before you adjust the defence of h6.",
-                "If White continues 56.Kf4, looking to enter on the fifth rank, you reply 56...Kf6 and, even after the check 57.g5+, you hold the draw: the initial retreat let your king readjust to White's new position. Compare the whole pawn position and whose move it is, rather than concluding that every pawn check wins."
-              ],
-              "variations": [
-                {
-                  "id": "f6f7",
-                  "label": "A",
-                  "outcome": "accepted",
-                  "texts": [
-                    "Correct: after 55...Kf7, the defence still holds.",
-                    "Your king retreats along the f-file, leaving f4, f5 and f6 between the kings, with White to move. Distant opposition makes the attacker reveal its route before you adjust the defence of h6.",
-                    "If White continues 56.Kf4, looking to enter on the fifth rank, you reply 56...Kf6 and, even after the check 57.g5+, you hold the draw: the initial retreat let your king readjust to White's new position. Compare the whole pawn position and whose move it is, rather than concluding that every pawn check wins."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6f7",
-                    "f3f4",
-                    "f7f6",
-                    "g4g5"
-                  ],
-                  "movesSan": [
-                    "55...Kf7",
-                    "56.Kf4",
-                    "56...Kf6",
-                    "57.g5+"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo"
-                }
-              ]
-            },
-            {
-              "id": "failed_alternatives",
-              "kind": "failed_alternatives",
-              "title": "Moves that do not work",
-              "texts": [],
-              "variations": [
-                {
-                  "id": "f6e5",
-                  "label": "B",
-                  "outcome": "losing",
-                  "texts": [
-                    "If Black played 55...Ke5?, White would reply 56.Ke3 and win.",
-                    "The black king leaves the f-file. White can reply on e3 and then occupy f4, combining opposition and space to support the pawns on g4 and h4.",
-                    "After 56.Ke3, going back with 56...Kf6 no longer saves Black: White keeps the win. The white king does not rush to push the pawns: it improves its own position while the black king has to return. Centralizing the defender too early did not preserve a useful barrier."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6e5",
-                    "f3e3",
-                    "e5f6"
-                  ],
-                  "movesSan": [
-                    "55...Ke5",
-                    "56.Ke3",
-                    "56...Kf6"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo",
-                  "playedTexts": [
-                    "With 55...Ke5? you let the draw slip: White replies 56.Ke3 and wins.",
-                    "Your king leaves the f-file. White can reply on e3 and then occupy f4, combining opposition and space to support the pawns on g4 and h4.",
-                    "After 56.Ke3, going back with 56...Kf6 no longer saves your defence: White keeps the win. The white king does not rush to push the pawns: it improves its own position while your king has to return. Centralizing your king too early did not preserve a useful barrier."
-                  ]
-                },
-                {
-                  "id": "f6g6",
-                  "label": "C",
-                  "outcome": "losing",
-                  "texts": [
-                    "If Black played 55...Kg6?, White would reply 56.Ke4 and win.",
-                    "The black king stays close to h6 but allows the white king to approach through e4 and d5. Defending only by staying close to the pawn does not prevent outflanking on the other wing.",
-                    "In the line 56.Ke4 Kf6 57.Kf4, White keeps the win. The black king returns to the f-file, but the white king has already approached the area of the g4- and h4-pawns. The initial detour did not gain a useful tempo for establishing the defence."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6g6",
-                    "f3e4",
-                    "g6f6",
-                    "e4f4"
-                  ],
-                  "movesSan": [
-                    "55...Kg6",
-                    "56.Ke4",
-                    "56...Kf6",
-                    "57.Kf4"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo",
-                  "playedTexts": [
-                    "With 55...Kg6? you let the draw slip: White replies 56.Ke4 and wins.",
-                    "Your king stays close to h6 but allows the white king to approach through e4 and d5. Defending only by staying close to the pawn does not prevent outflanking on the other wing.",
-                    "In the line 56.Ke4 Kf6 57.Kf4, White keeps the win. Your king returns to the f-file, but the white king has already approached the area of the g4- and h4-pawns. The initial detour did not gain a useful tempo for establishing the defence."
-                  ]
-                },
-                {
-                  "id": "f6e6",
-                  "label": "D",
-                  "outcome": "losing",
-                  "texts": [
-                    "If Black played the natural 55...Ke6?, White would reply 56.Ke4! and win: the white king faces the black king, with e5 between them and Black to move.",
-                    "After 56...Kf6, 57.Kd5 gets in along the d-file, which the black king left when it changed file. Defending means controlling the useful entries, not simply staying close to the enemy king."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6e6",
-                    "f3e4",
-                    "e6f6",
-                    "e4d5"
-                  ],
-                  "movesSan": [
-                    "55...Ke6",
-                    "56.Ke4",
-                    "56...Kf6",
-                    "57.Kd5"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "defend/t_carlsenSo",
-                  "playedTexts": [
-                    "With 55...Ke6? you let the draw slip: White replies 56.Ke4! and takes the direct opposition, with e5 between the kings and Black to move.",
-                    "After 56...Kf6, 57.Kd5 gets in along the d-file, which the black king left when it changed file. Defending means controlling the useful entries, not simply staying close to the enemy king."
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
-    },
-    {
       "kind": "move",
       "id": "defendMove",
       "turn": 1,
@@ -5497,288 +5137,6 @@
             }
           ],
           "reviewStepId": "d_carlsenSo"
-        }
-      }
-    },
-    {
-      "kind": "think",
-      "id": "t_euwe",
-      "turn": 1,
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-      "explanations": {
-        "pt": {
-          "positionId": "lateral/t_euwe",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "A posição",
-              "texts": [
-                "Em Haia, em 1928, no campeonato mundial de amadores, {{Max Euwe|max-euwe}}, com as brancas, enfrentou {{Norman Whitaker|norman-whitaker}}, com as pretas. Depois das trocas de torres no lance 47, cada lado ficou com um peão; acompanhamos as brancas na disputa entre os alvos a5 e c2.",
-                "O rei branco precisa apoiar o peão; o rei preto procura impedir esse apoio. Identifique a fileira que permite enfrentar o outro rei sem abandonar o objetivo."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "A ideia principal",
-              "texts": [
-                "Com 49.Rb5 você mantém a vitória e aproxima o rei do peão preto de a5, que é o alvo concreto.",
-                "Se as pretas jogarem 49...Re5, tentando aproximar o rei do peão de c2, você responde com 50.Rxa5, captura o peão e conserva a vitória. A oposição lateral era um meio de abrir a entrada do rei; quando a captura está disponível, manter uma formação geométrica deixa de ser a prioridade."
-              ],
-              "variations": [
-                {
-                  "id": "c4b5",
-                  "label": "A",
-                  "outcome": "accepted",
-                  "texts": [
-                    "Com 49.Rb5 você mantém a vitória e aproxima o rei do peão preto de a5, que é o alvo concreto.",
-                    "Se as pretas jogarem 49...Re5, tentando aproximar o rei do peão de c2, você responde com 50.Rxa5, captura o peão e conserva a vitória. A oposição lateral era um meio de abrir a entrada do rei; quando a captura está disponível, manter uma formação geométrica deixa de ser a prioridade."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c4b5",
-                    "f5e5",
-                    "b5a5"
-                  ],
-                  "movesSan": [
-                    "49.Rb5",
-                    "49...Re5",
-                    "50.Rxa5"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe"
-                }
-              ]
-            },
-            {
-              "id": "failed_alternatives",
-              "kind": "failed_alternatives",
-              "title": "Lances que não funcionam",
-              "texts": [],
-              "variations": [
-                {
-                  "id": "c2c3",
-                  "label": "B",
-                  "outcome": "does_not_meet_goal",
-                  "texts": [
-                    "Se as brancas jogassem 49.c3?, as pretas responderiam com 49...Re6 e segurariam o empate.",
-                    "O peão branco mudaria a estrutura sem preparar a captura de a5. O rei preto se aproximaria por e4 e d3, criando contrajogo contra o peão branco antes que a corrida fosse decidida a favor das brancas.",
-                    "Depois de 49...Re6, 50.Rb5 Rd6 permanece empatado. O rei branco chega perto de a5, mas o avanço do peão de c2 mudou a coordenação antes dessa aproximação. As pretas conservaram tempo para defender a posição, de modo que a semelhança visual com a entrada vencedora não garante o mesmo resultado."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c2c3",
-                    "f5e6",
-                    "c4b5",
-                    "e6d6"
-                  ],
-                  "movesSan": [
-                    "49.c3",
-                    "49...Re6",
-                    "50.Rb5",
-                    "50...Rd6"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe",
-                  "playedTexts": [
-                    "Com 49.c3? você deixa escapar a vitória: as pretas respondem com 49...Re6 e seguram o empate.",
-                    "Seu peão muda a estrutura sem preparar a captura de a5. O rei preto aproxima-se por e4 e d3, criando contrajogo contra o peão branco antes que a corrida seja decidida a seu favor.",
-                    "Depois de 49...Re6, 50.Rb5 Rd6 permanece empatado. Seu rei chega perto de a5, mas o avanço do peão de c2 mudou a coordenação antes dessa aproximação. As pretas conservaram tempo para defender a posição, de modo que a semelhança visual com a entrada vencedora não garante o mesmo resultado."
-                  ]
-                },
-                {
-                  "id": "c4d5",
-                  "label": "C",
-                  "outcome": "does_not_meet_goal",
-                  "texts": [
-                    "Se as brancas jogassem 49.Rd5?, as pretas responderiam com 49...a4 e segurariam o empate.",
-                    "Centralizar o rei é tentador, mas o rei branco deixaria de atacar a5, e o avanço preto a a4 criaria uma corrida que a centralização não vence. Para ganhar, era preciso combinar a aproximação ao alvo com a restrição do rei defensor."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c4d5",
-                    "a5a4"
-                  ],
-                  "movesSan": [
-                    "49.Rd5",
-                    "49...a4"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe",
-                  "playedTexts": [
-                    "Com 49.Rd5? você deixa escapar a vitória: as pretas respondem com 49...a4 e seguram o empate.",
-                    "É tentador centralizar o rei, mas você deixa de atacar a5. O avanço preto a a4 cria uma corrida que sua centralização não vence. Para ganhar, era necessário combinar a aproximação ao alvo com a restrição do rei defensor."
-                  ]
-                },
-                {
-                  "id": "c4d5_change_1",
-                  "label": "C.1",
-                  "outcome": "losing",
-                  "texts": [
-                    "Se as brancas continuassem com 50.c4?, as pretas ganhariam. A continuação seria 50.c4 a3.",
-                    "Agora o objetivo imediato das brancas é salvar o empate. É tentador pôr o próprio peão para correr, mas 50.c4 perde: depois de 50...a3, o passado preto está perto da promoção e seu rei de d5 está afastado. Antes de iniciar uma corrida, compare o avanço dos peões e o alcance dos reis."
-                  ],
-                  "originFen": "8/8/8/3K1k2/p7/8/2P5/8 w - - 0 50",
-                  "movesUci": [
-                    "c2c4",
-                    "a4a3"
-                  ],
-                  "movesSan": [
-                    "50.c4",
-                    "50...a3"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe",
-                  "parentId": "c4d5",
-                  "parentPly": 2
-                }
-              ]
-            }
-          ]
-        },
-        "en": {
-          "positionId": "lateral/t_euwe",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "The position",
-              "texts": [
-                "At The Hague in 1928, in the world amateur championship, {{Max Euwe|max-euwe}}, playing White, faced {{Norman Whitaker|norman-whitaker}}, playing Black. After the rook exchanges on move 47, each side had one pawn; we follow White in the struggle between the targets a5 and c2.",
-                "The white king needs to support the pawn; the black king tries to prevent that support. Identify the rank that allows you to face the other king without abandoning the objective."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "The main idea",
-              "texts": [
-                "With 49.Kb5 you keep the win and bring the king closer to the black a5-pawn, the concrete target.",
-                "If Black plays 49...Ke5, trying to bring the king closer to the c2-pawn, you reply 50.Kxa5, capture the pawn and keep the win. Lateral opposition was a means of opening the way for your king; once the capture is available, keeping a geometric formation is no longer the priority."
-              ],
-              "variations": [
-                {
-                  "id": "c4b5",
-                  "label": "A",
-                  "outcome": "accepted",
-                  "texts": [
-                    "With 49.Kb5 you keep the win and bring the king closer to the black a5-pawn, the concrete target.",
-                    "If Black plays 49...Ke5, trying to bring the king closer to the c2-pawn, you reply 50.Kxa5, capture the pawn and keep the win. Lateral opposition was a means of opening the way for your king; once the capture is available, keeping a geometric formation is no longer the priority."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c4b5",
-                    "f5e5",
-                    "b5a5"
-                  ],
-                  "movesSan": [
-                    "49.Kb5",
-                    "49...Ke5",
-                    "50.Kxa5"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe"
-                }
-              ]
-            },
-            {
-              "id": "failed_alternatives",
-              "kind": "failed_alternatives",
-              "title": "Moves that do not work",
-              "texts": [],
-              "variations": [
-                {
-                  "id": "c2c3",
-                  "label": "B",
-                  "outcome": "does_not_meet_goal",
-                  "texts": [
-                    "If White played 49.c3?, Black would reply 49...Ke6 and hold the draw.",
-                    "The white pawn would change the structure without preparing the capture of a5. The black king would approach via e4 and d3, creating counterplay against the white pawn before the race was decided in White's favour.",
-                    "After 49...Ke6, 50.Kb5 Kd6 remains drawn. The white king reaches the vicinity of a5, but advancing the c2-pawn changed the coordination before this approach. Black kept time to defend the position, so the visual similarity to the winning entry does not guarantee the same result."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c2c3",
-                    "f5e6",
-                    "c4b5",
-                    "e6d6"
-                  ],
-                  "movesSan": [
-                    "49.c3",
-                    "49...Ke6",
-                    "50.Kb5",
-                    "50...Kd6"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe",
-                  "playedTexts": [
-                    "With 49.c3? you let the win slip: Black replies 49...Ke6 and holds the draw.",
-                    "Your pawn changes the structure without preparing the capture of a5. The black king approaches through e4 and d3, creating counterplay against the white pawn before the race can be decided in your favour.",
-                    "After 49...Ke6, 50.Kb5 Kd6 remains drawn. Your king reaches the vicinity of a5, but advancing the c2-pawn changed the coordination before this approach. Black kept time to defend the position, so the visual similarity to the winning entry does not guarantee the same result."
-                  ]
-                },
-                {
-                  "id": "c4d5",
-                  "label": "C",
-                  "outcome": "does_not_meet_goal",
-                  "texts": [
-                    "If White played 49.Kd5?, Black would reply 49...a4 and hold the draw.",
-                    "Centralizing the king is tempting, but the white king would stop attacking a5, and Black's advance to a4 would create a race that centralization does not win. Winning required combining the approach to the target with restricting the defending king."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c4d5",
-                    "a5a4"
-                  ],
-                  "movesSan": [
-                    "49.Kd5",
-                    "49...a4"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe",
-                  "playedTexts": [
-                    "With 49.Kd5? you let the win slip: Black replies 49...a4 and holds the draw.",
-                    "Centralising your king is tempting, but you stop attacking a5. Black’s advance to a4 creates a race that centralisation does not win. Winning required combining an approach to the target with restriction of the defending king."
-                  ]
-                },
-                {
-                  "id": "c4d5_change_1",
-                  "label": "C.1",
-                  "outcome": "losing",
-                  "texts": [
-                    "If White continued with 50.c4?, Black would win. The line would be 50.c4 a3.",
-                    "White’s immediate task is now to save the draw. Sending your own pawn forward is tempting, but 50.c4 loses: after 50...a3, Black’s passer is close to promotion and your king on d5 is far away. Before starting a race, compare the pawns’ progress and the kings’ reach."
-                  ],
-                  "originFen": "8/8/8/3K1k2/p7/8/2P5/8 w - - 0 50",
-                  "movesUci": [
-                    "c2c4",
-                    "a4a3"
-                  ],
-                  "movesSan": [
-                    "50.c4",
-                    "50...a3"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {},
-                  "contextId": "lateral/t_euwe",
-                  "parentId": "c4d5",
-                  "parentPly": 2
-                }
-              ]
-            }
-          ]
         }
       }
     },
@@ -13732,170 +13090,6 @@
     },
     {
       "kind": "demo",
-      "id": "d_carlsenSo",
-      "turn": 1,
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-      "explanations": {
-        "pt": {
-          "positionId": "defend/d_carlsenSo",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "A posição",
-              "texts": [
-                "Vejamos os lances da partida. Nos três primeiros passos do rei branco, So mantém o rei na mesma coluna do rei branco, com três casas entre eles."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "A ideia principal",
-              "texts": [
-                "Esta continuação mantém o empate.",
-                "Seu rei recua na coluna f e deixa f4, f5 e f6 entre os reis, com as brancas na vez. A oposição distante obriga o atacante a mostrar sua rota antes de você ajustar a defesa de h6. Por exemplo: 55...Rf7 56.Re3 Re7 57.Rd3 Rd7 58.Rc4 Re6."
-              ],
-              "variations": [
-                {
-                  "id": "f6f7",
-                  "label": "55...Rf7",
-                  "outcome": "accepted",
-                  "texts": [
-                    "Esta continuação mantém o empate.",
-                    "Seu rei recua na coluna f e deixa f4, f5 e f6 entre os reis, com as brancas na vez. A oposição distante obriga o atacante a mostrar sua rota antes de você ajustar a defesa de h6. Por exemplo: 55...Rf7 56.Re3 Re7 57.Rd3 Rd7 58.Rc4 Re6."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6f7",
-                    "f3e3",
-                    "f7e7",
-                    "e3d3",
-                    "e7d7",
-                    "d3c4",
-                    "d7e6"
-                  ],
-                  "movesSan": [
-                    "55...Rf7",
-                    "56.Re3",
-                    "56...Re7",
-                    "57.Rd3",
-                    "57...Rd7",
-                    "58.Rc4",
-                    "58...Re6"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {
-                    "1": [
-                      "55...Rf7! O rei recua e toma a oposição distante: f4, f5 e f6 ficam entre os reis, e as brancas jogam."
-                    ],
-                    "2": [
-                      "56.Re3. {{Carlsen|magnus-carlsen}} muda de coluna, para tentar entrar pela coluna e."
-                    ],
-                    "3": [
-                      "56...Re7! So acompanha a mudança: de novo, há três casas entre os reis, agora na coluna e."
-                    ],
-                    "4": [
-                      "57.Rd3. {{Carlsen|magnus-carlsen}} tenta a coluna d. Se So não acompanhar agora, perde; por isso, 57...Rd7 é novamente o único lance."
-                    ],
-                    "5": [
-                      "57...Rd7! Outra vez de frente, a distância. O rei branco se move, mas não ganha terreno."
-                    ],
-                    "6": [
-                      "58.Rc4. {{Carlsen|magnus-carlsen}} sobe pela coluna c, para chegar pela ala da dama."
-                    ],
-                    "7": [
-                      "58...Re6! O rei preto volta para perto dos peões, e o rei branco não tem por onde entrar. A partida terminou empatada no lance 63."
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        "en": {
-          "positionId": "defend/d_carlsenSo",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "The position",
-              "texts": [
-                "The moves of the game. For the white king’s first three steps, So keeps his king on the white king’s file, with three squares between them."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "The main idea",
-              "texts": [
-                "This continuation keeps the draw.",
-                "Your king retreats along the f-file, leaving f4, f5 and f6 between the kings, with White to move. Distant opposition makes the attacker reveal its route before you adjust the defence of h6. For example: 55...Kf7 56.Ke3 Ke7 57.Kd3 Kd7 58.Kc4 Ke6."
-              ],
-              "variations": [
-                {
-                  "id": "f6f7",
-                  "label": "55...Kf7",
-                  "outcome": "accepted",
-                  "texts": [
-                    "This continuation keeps the draw.",
-                    "Your king retreats along the f-file, leaving f4, f5 and f6 between the kings, with White to move. Distant opposition makes the attacker reveal its route before you adjust the defence of h6. For example: 55...Kf7 56.Ke3 Ke7 57.Kd3 Kd7 58.Kc4 Ke6."
-                  ],
-                  "originFen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-                  "movesUci": [
-                    "f6f7",
-                    "f3e3",
-                    "f7e7",
-                    "e3d3",
-                    "e7d7",
-                    "d3c4",
-                    "d7e6"
-                  ],
-                  "movesSan": [
-                    "55...Kf7",
-                    "56.Ke3",
-                    "56...Ke7",
-                    "57.Kd3",
-                    "57...Kd7",
-                    "58.Kc4",
-                    "58...Ke6"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {
-                    "1": [
-                      "55...Kf7! He steps back and takes the distant opposition: f4, f5 and f6 in between, and White to move."
-                    ],
-                    "2": [
-                      "56.Ke3. {{Carlsen|magnus-carlsen}} changes file, trying to get in along the e-file."
-                    ],
-                    "3": [
-                      "56...Ke7! So changes file with him: three squares in between again, now on the e-file."
-                    ],
-                    "4": [
-                      "{{Carlsen|magnus-carlsen}} tries the d-file. If So does not follow now, he loses: 57...Kd7 is again the only move."
-                    ],
-                    "5": [
-                      "57...Kd7! Facing him again, from afar. The white king moves, but gains no ground."
-                    ],
-                    "6": [
-                      "58.Kc4. {{Carlsen|magnus-carlsen}} goes up the c-file, to come in on the queenside."
-                    ],
-                    "7": [
-                      "58...Ke6! The black king comes back close to the pawns, and the white king has no way in. The game was drawn on move 63."
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "demo",
       "id": "err_defendClose",
       "turn": 1,
       "fen": "8/8/5k2/8/8/5KP1/8/8 w - - 1 1",
@@ -14187,170 +13381,6 @@
                 "In the game, the white king seeks a5 without allowing the black king to capture c2. After winning material, it must return to supporting its own pawn. Following the other king helps only when that route protects the objective."
               ],
               "variations": []
-            }
-          ]
-        }
-      }
-    },
-    {
-      "kind": "demo",
-      "id": "d_euwe",
-      "turn": 1,
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-      "explanations": {
-        "pt": {
-          "positionId": "lateral/d_euwe",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "A posição",
-              "texts": [
-                "Vejamos os lances da partida: {{Euwe|max-euwe}} fica sempre na mesma fileira do rei preto."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "A ideia principal",
-              "texts": [
-                "Esta continuação mantém a vitória.",
-                "Seu rei ataca a5 e fica na mesma fileira do rei preto de f5, com três casas entre eles. A captura fica preparada sem permitir uma corrida equivalente contra c2. Por exemplo: 49.Rb5 Re5 50.Rxa5 Rd4 51.Rb4 Rd5 52.Rb5."
-              ],
-              "variations": [
-                {
-                  "id": "c4b5",
-                  "label": "49.Rb5",
-                  "outcome": "accepted",
-                  "texts": [
-                    "Esta continuação mantém a vitória.",
-                    "Seu rei ataca a5 e fica na mesma fileira do rei preto de f5, com três casas entre eles. A captura fica preparada sem permitir uma corrida equivalente contra c2. Por exemplo: 49.Rb5 Re5 50.Rxa5 Rd4 51.Rb4 Rd5 52.Rb5."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c4b5",
-                    "f5e5",
-                    "b5a5",
-                    "e5d4",
-                    "a5b4",
-                    "d4d5",
-                    "b4b5"
-                  ],
-                  "movesSan": [
-                    "49.Rb5",
-                    "49...Re5",
-                    "50.Rxa5",
-                    "50...Rd4",
-                    "51.Rb4",
-                    "51...Rd5",
-                    "52.Rb5"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {
-                    "1": [
-                      "49.Rb5! É o único lance que ganha. Os reis estão em b5 e f5, com três casas entre eles, e a vez é das pretas."
-                    ],
-                    "2": [
-                      "49...Re5. {{Whitaker|norman-whitaker}} desce em direção ao peão de c2."
-                    ],
-                    "3": [
-                      "50.Rxa5! O peão é capturado, e os reis ficam novamente com três casas entre eles, em a5 e e5, com a vez das pretas."
-                    ],
-                    "4": [
-                      "50...Rd4. Ele desce mais e ameaça 51...Rc3, atacando o peão de c2."
-                    ],
-                    "5": [
-                      "51.Rb4! Os reis estão em b4 e d4, com uma casa entre eles, e as pretas jogam: é a oposição lateral, e a casa c3 está fechada para ele."
-                    ],
-                    "6": [
-                      "51...Rd5. Sem passagem por c3, ele recua. Qualquer lance perde, porque o rei branco já está na frente do peão."
-                    ],
-                    "7": [
-                      "52.Rb5. O rei branco sobe na frente do peão, rumo a b6 e c6. {{Euwe|max-euwe}} seguiu com 53.c4, 54.Rb6 e 55.Rc6, e a partida terminou ali, com a vitória das brancas."
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        "en": {
-          "positionId": "lateral/d_euwe",
-          "state": "review",
-          "explanations": [
-            {
-              "id": "context",
-              "kind": "context",
-              "title": "The position",
-              "texts": [
-                "The moves of the game: {{Euwe|max-euwe}} always stays on the black king's rank."
-              ],
-              "variations": []
-            },
-            {
-              "id": "main_solution",
-              "kind": "main_solution",
-              "title": "The main idea",
-              "texts": [
-                "This continuation keeps the win.",
-                "Your king attacks a5 and reaches the same rank as the black king on f5, with three squares between them. The capture is prepared without allowing an equivalent race against c2. For example: 49.Kb5 Ke5 50.Kxa5 Kd4 51.Kb4 Kd5 52.Kb5."
-              ],
-              "variations": [
-                {
-                  "id": "c4b5",
-                  "label": "49.Kb5",
-                  "outcome": "accepted",
-                  "texts": [
-                    "This continuation keeps the win.",
-                    "Your king attacks a5 and reaches the same rank as the black king on f5, with three squares between them. The capture is prepared without allowing an equivalent race against c2. For example: 49.Kb5 Ke5 50.Kxa5 Kd4 51.Kb4 Kd5 52.Kb5."
-                  ],
-                  "originFen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-                  "movesUci": [
-                    "c4b5",
-                    "f5e5",
-                    "b5a5",
-                    "e5d4",
-                    "a5b4",
-                    "d4d5",
-                    "b4b5"
-                  ],
-                  "movesSan": [
-                    "49.Kb5",
-                    "49...Ke5",
-                    "50.Kxa5",
-                    "50...Kd4",
-                    "51.Kb4",
-                    "51...Kd5",
-                    "52.Kb5"
-                  ],
-                  "validated": true,
-                  "explanationByPly": {
-                    "1": [
-                      "49.Kb5! The only winning move. Kings on b5 and f5, three squares in between, and Black to move."
-                    ],
-                    "2": [
-                      "{{Whitaker|norman-whitaker}} heads down towards the c2-pawn."
-                    ],
-                    "3": [
-                      "50.Kxa5! The pawn falls, and the kings again have three squares in between, a5 and e5, with Black to move."
-                    ],
-                    "4": [
-                      "He goes further down and threatens 51...Kc3, attacking the c2-pawn."
-                    ],
-                    "5": [
-                      "51.Kb4! Kings on b4 and d4, one square in between, and Black to move: lateral opposition, and c3 is shut to him."
-                    ],
-                    "6": [
-                      "With no way through c3, he steps back. Every move loses: the white king is already in front of the pawn."
-                    ],
-                    "7": [
-                      "52.Kb5. The white king goes up in front of the pawn, towards b6 and c6. {{Euwe|max-euwe}} went on with 53.c4, 54.Kb6 and 55.Kc6, and the game ended there, a win for White."
-                    ]
-                  }
-                }
-              ]
             }
           ]
         }

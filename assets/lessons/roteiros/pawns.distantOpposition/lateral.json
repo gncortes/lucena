@@ -571,286 +571,100 @@
    "id": "demos",
    "exemplos": [
     {
-     "id": "euweWhitaker",
-     "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
+     "id": "ataqueLonge",
+     "fen": "8/2K5/7k/8/8/8/5P2/8 w - - 0 1",
      "vira": false,
      "objetivo": "ganhar",
      "fim": "proximo",
-     "curiosidades": {
-      "t": "rot.lateral.demos.euwe.curiosidades",
-      "referencias": [
-       "euweWhitaker1928",
-       {
-        "id": "euweWhitakerChessgames",
-        "kind": "web",
-        "title": "Chessgames: Max Euwe x Norman Whitaker, Haia 1928",
-        "url": "https://www.chessgames.com/perl/chessgame?gid=1280265"
-       },
-       {
-        "id": "wikiEuwe",
-        "kind": "web",
-        "title": "Wikipedia: Max Euwe",
-        "url": "https://en.wikipedia.org/wiki/Max_Euwe"
-       }
-      ]
-     },
      "entrada": [
       {
-       "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
-       "t": "rot.lateral.demos.euwe.1"
-      },
-      {
-       "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
-       "t": "rot.lateral.demos.euwe.2"
-      },
-      {
-       "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
-       "t": "rot.lateral.demos.euwe.3",
+       "fen": "8/2K5/7k/8/8/8/5P2/8 w - - 0 1",
+       "t": "rot.lateral.demos.ataqueLonge.1",
        "marcas": [
-        "a5",
-        "c2"
+        "e4",
+        "f4",
+        "g4"
        ]
       },
       {
-       "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
-       "t": "rot.lateral.demos.euwe.4"
+       "fen": "8/2K5/7k/8/8/8/5P2/8 w - - 0 1",
+       "t": "rot.lateral.demos.ataqueLonge.2"
       }
      ],
      "linha": [
       {
-       "fen": "8/8/8/pK3k2/8/8/2P5/8 b - - 3 49",
-       "t": "rot.lateral.demos.euwe.5",
-       "lance": "c4b5",
-       "marcas": [
-        "c5",
-        "d5",
-        "e5"
-       ]
+       "fen": "8/8/3K3k/8/8/8/5P2/8 b - - 1 1",
+       "t": "rot.lateral.demos.ataqueLonge.3",
+       "lance": "c7d6"
       },
       {
-       "fen": "8/8/8/K3k3/8/8/2P5/8 b - - 0 50",
-       "t": "rot.lateral.demos.euwe.6",
-       "seq": [
-        "f5e5",
-        "b5a5"
-       ]
+       "fen": "8/8/3K2k1/8/8/8/5P2/8 w - - 2 2",
+       "t": "rot.lateral.demos.ataqueLonge.4",
+       "lance": "h6g6"
       },
       {
-       "fen": "8/8/8/K7/3k4/8/2P5/8 w - - 1 51",
-       "t": "rot.lateral.demos.euwe.8",
-       "lance": "e5d4",
-       "marcas": [
-        "c3"
-       ]
+       "fen": "8/8/6k1/4K3/8/8/5P2/8 b - - 3 2",
+       "t": "rot.lateral.demos.ataqueLonge.5",
+       "lance": "d6e5"
       },
       {
-       "fen": "8/8/8/8/1K1k4/8/2P5/8 b - - 2 51",
-       "t": "rot.lateral.demos.euwe.9",
-       "lance": "a5b4",
-       "marcas": [
-        "b4",
-        "d4"
-       ]
+       "fen": "8/8/8/4K1k1/8/8/5P2/8 w - - 4 3",
+       "t": "rot.lateral.demos.ataqueLonge.6",
+       "lance": "g6g5"
       },
       {
-       "fen": "8/8/8/1K1k4/8/8/2P5/8 b - - 4 52",
-       "t": "rot.lateral.demos.euwe.11",
-       "seq": [
-        "d4d5",
-        "b4b5"
-       ],
-       "marcas": [
-        "b5",
-        "d5"
-       ]
-      },
-      {
-       "fen": "8/3k4/1K6/8/2P5/8/8/8 b - - 2 54",
-       "t": "rot.lateral.demos.euwe.12",
-       "seq": [
-        "d5d6",
-        "c2c4",
-        "d6d7",
-        "b5b6"
-       ]
-      },
-      {
-       "fen": "2k5/8/2K5/8/2P5/8/8/8 b - - 4 55",
-       "t": "rot.lateral.demos.euwe.13",
-       "seq": [
-        "d7c8",
-        "b6c6"
-       ]
-      },
-      {
-       "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
-       "t": "rot.lateral.demos.euwe.14",
-       "salto": true
-      },
-      {
-       "fen": "8/8/8/p1K1k3/8/8/2P5/8 w - - 4 50",
-       "t": "rot.lateral.demos.euwe.15",
-       "seq": [
-        "c4c5",
-        "f5e5"
-       ],
-       "marcas": [
-        "d5",
-        "e5"
-       ]
-      },
-      {
-       "fen": "8/8/8/p1K1k3/8/8/2P5/8 w - - 4 50",
-       "t": "rot.lateral.demos.euwe.17",
-       "marcas": [
-        "a5",
-        "c2"
-       ]
-      },
-      {
-       "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 2 49",
-       "t": "rot.lateral.demos.euwe.18",
-       "salto": true
+       "fen": "8/8/8/6k1/4K3/8/5P2/8 b - - 5 3",
+       "t": "rot.lateral.demos.ataqueLonge.7",
+       "lance": "e5e4"
       }
      ]
     },
     {
-     "id": "carlsenSo",
-     "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
+     "id": "defesaLonge",
+     "fen": "k7/5K2/8/8/8/8/2P5/8 b - - 0 1",
      "vira": true,
      "objetivo": "empatar",
      "fim": "etapa",
-     "curiosidades": {
-      "t": "rot.lateral.demos.carlsenSo.curiosidades",
-      "referencias": [
-       "carlsenSo2017",
-       {
-        "id": "carlsenSoChessgames",
-        "kind": "web",
-        "title": "Chessgames: Magnus Carlsen x Wesley So, Norway Chess 2017",
-        "url": "https://www.chessgames.com/perl/chessgame?gid=1877416"
-       },
-       {
-        "id": "norwayChess2017R1",
-        "kind": "web",
-        "title": "ChessBase India: Norway Chess 2017, rodada 1",
-        "url": "https://chessbase.in/news/norway-chess-2017-r1"
-       }
-      ]
-     },
      "entrada": [
       {
-       "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
-       "t": "rot.lateral.demos.carlsenSo.1"
-      },
-      {
-       "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
-       "t": "rot.lateral.demos.carlsenSo.2"
-      },
-      {
-       "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
-       "t": "rot.lateral.demos.carlsenSo.3"
+       "fen": "k7/5K2/8/8/8/8/2P5/8 b - - 0 1",
+       "t": "rot.lateral.demos.defesaLonge.1",
+       "marcas": [
+        "b4",
+        "c4",
+        "d4"
+       ]
       }
      ],
      "linha": [
       {
-       "fen": "8/5k2/7p/8/6PP/5K2/8/8 w - - 3 56",
-       "t": "rot.lateral.demos.carlsenSo.4",
-       "lance": "f6f7",
-       "marcas": [
-        "f4",
-        "f5",
-        "f6"
-       ]
+       "fen": "8/1k3K2/8/8/8/8/2P5/8 w - - 1 2",
+       "t": "rot.lateral.demos.defesaLonge.2",
+       "lance": "a8b7"
       },
       {
-       "fen": "8/4k3/7p/8/6PP/4K3/8/8 w - - 5 57",
-       "t": "rot.lateral.demos.carlsenSo.5",
-       "seq": [
-        "f3e3",
-        "f7e7"
-       ]
+       "fen": "8/1k6/4K3/8/8/8/2P5/8 b - - 2 2",
+       "t": "rot.lateral.demos.defesaLonge.3",
+       "lance": "f7e6"
       },
       {
-       "fen": "8/3k4/7p/8/6PP/3K4/8/8 w - - 7 58",
-       "t": "rot.lateral.demos.carlsenSo.7",
-       "seq": [
-        "e3d3",
-        "e7d7"
-       ]
+       "fen": "8/8/2k1K3/8/8/8/2P5/8 w - - 3 3",
+       "t": "rot.lateral.demos.defesaLonge.4",
+       "lance": "b7c6"
       },
       {
-       "fen": "8/3k4/7p/8/2K3PP/8/8/8 b - - 8 58",
-       "t": "rot.lateral.demos.carlsenSo.9",
-       "lance": "d3c4"
+       "fen": "8/8/2k5/4K3/8/8/2P5/8 b - - 4 3",
+       "t": "rot.lateral.demos.defesaLonge.5",
+       "lance": "e6e5"
       },
       {
-       "fen": "8/8/4k2p/8/2K3PP/8/8/8 w - - 9 59",
-       "t": "rot.lateral.demos.carlsenSo.10",
-       "lance": "d7e6",
-       "marcas": [
-        "d5"
-       ]
+       "fen": "8/8/8/2k1K3/8/8/2P5/8 w - - 5 4",
+       "t": "rot.lateral.demos.defesaLonge.6",
+       "lance": "c6c5"
       },
       {
-       "fen": "8/8/3k3p/8/3K2PP/8/8/8 w - - 11 60",
-       "t": "rot.lateral.demos.carlsenSo.11",
-       "seq": [
-        "c4d4",
-        "e6d6"
-       ],
-       "marcas": [
-        "d4",
-        "d6"
-       ]
-      },
-      {
-       "fen": "8/8/5k1p/8/5KPP/8/8/8 w - - 15 62",
-       "t": "rot.lateral.demos.carlsenSo.13",
-       "seq": [
-        "d4e4",
-        "d6e6",
-        "e4f4",
-        "e6f6"
-       ]
-      },
-      {
-       "fen": "8/8/5k1p/8/5KPP/8/8/8 w - - 15 62",
-       "t": "rot.lateral.demos.carlsenSo.14"
-      },
-      {
-       "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
-       "t": "rot.lateral.demos.carlsenSo.15",
-       "salto": true
-      },
-      {
-       "fen": "8/8/6kp/8/4K1PP/8/8/8 b - - 4 56",
-       "t": "rot.lateral.demos.carlsenSo.17",
-       "seq": [
-        "f6g6",
-        "f3e4"
-       ]
-      },
-      {
-       "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
-       "t": "rot.lateral.demos.carlsenSo.18",
-       "salto": true
-      },
-      {
-       "fen": "8/8/7p/4k3/6PP/4K3/8/8 b - - 4 56",
-       "t": "rot.lateral.demos.carlsenSo.20",
-       "seq": [
-        "f6e5",
-        "f3e3"
-       ]
-      },
-      {
-       "fen": "8/8/7p/4k3/6PP/4K3/8/8 b - - 4 56",
-       "t": "rot.lateral.demos.carlsenSo.21"
-      },
-      {
-       "fen": "8/8/7p/4k3/6PP/4K3/8/8 b - - 4 56",
-       "t": "rot.lateral.demos.carlsenSo.ponte"
+       "fen": "8/8/8/2k1K3/8/8/2P5/8 w - - 5 4",
+       "t": "rot.lateral.demos.defesaLonge.ponte"
       }
      ]
     }
@@ -905,6 +719,9 @@
        },
        "8/3k4/8/4K3/8/4P3/8/8 w - - 6 7": {
         "e3e4": "rot.lateral.pratica.ataque.v6.err.e3e4"
+       },
+       "8/4k3/8/5K2/8/4P3/8/8 w - - 8 8": {
+        "e3e4": "rot.lateral.pratica.ataque.v7.err.e3e4"
        }
       }
      }

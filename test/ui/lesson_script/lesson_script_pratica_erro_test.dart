@@ -172,8 +172,9 @@ void main() {
       // A máquina resiste (T76): Kd7 deixa ao aluno mais lances que perdem
       // a vitória.
       expect(cubit.state.fen, startsWith('8/3k4/8/8/4K3/1P6/8/8 w'));
-      // b3b4 está nos erros do roteiro, mas a fala dele cita o 1º lance.
-      await cubit.onMove('b3b4');
+      // Kd3 perde a vitória, mas não tem fala própria nesta posição (nem em
+      // erros, que vale só no 1º lance, nem em errosPos): sai a genérica.
+      await cubit.onMove('e4d3');
       expect(cubit.state.phase, ScriptPhase.praticaFim);
       expect(
         cubit.state.speech.single,

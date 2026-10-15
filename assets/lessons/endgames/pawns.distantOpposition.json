@@ -58,29 +58,29 @@
     {
       "id": "e11",
       "stars": 2,
-      "fen": "5k2/8/8/8/8/2P1K3/8/8 b - - 0 1",
+      "fen": "6k1/8/8/8/8/8/2P5/5K2 b - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "distant",
       "line": [
         {
-          "teach": "f8e7",
+          "teach": "g8f7",
           "accept": [
-            "f8e7"
+            "g8f7"
           ],
-          "reply": "e3d3"
+          "reply": "f1e2"
         },
         {
-          "teach": "e7d7",
+          "teach": "f7e6",
           "accept": [
-            "e7d7"
+            "f7e6"
           ],
-          "reply": "d3c4"
+          "reply": "e2d2"
         },
         {
-          "teach": "d7c6",
+          "teach": "e6d6",
           "accept": [
-            "d7c6"
+            "e6d6"
           ]
         }
       ]
@@ -88,47 +88,46 @@
     {
       "id": "e13",
       "stars": 2,
-      "fen": "8/8/8/1k6/3K4/2P5/8/8 w - - 0 1",
+      "fen": "1K6/6k1/8/8/8/4P3/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "lateral",
       "line": [
         {
-          "teach": "d4d5",
+          "teach": "b8c7",
           "accept": [
-            "d4d5"
+            "b8c7"
           ],
-          "reply": "b5b6"
+          "reply": "g7f6"
         },
         {
-          "teach": "d5d6",
+          "teach": "c7d6",
           "accept": [
-            "d5d6",
-            "c3c4",
-            "d5d4"
+            "c7d6"
           ]
         }
       ]
     },
     {
       "id": "e18",
-      "stars": 2,
-      "fen": "8/8/3k4/1p5p/1P3K1P/8/8/8 w - - 0 1",
+      "stars": 1,
+      "fen": "8/8/3k4/1p4p1/1P4P1/3K4/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "capablanca",
       "line": [
         {
-          "teach": "f4g5",
+          "teach": "d3d4",
           "accept": [
-            "f4g5"
+            "d3d4"
           ],
-          "reply": "d6d5"
+          "reply": "d6c6"
         },
         {
-          "teach": "g5h5",
+          "teach": "d4e5",
           "accept": [
-            "g5h5"
+            "d4e5",
+            "d4e4"
           ]
         }
       ]
@@ -137,44 +136,30 @@
       "id": "e22",
       "stars": 2,
       "capitulo": "edge",
-      "fen": "8/4k3/3p4/3p4/p2P4/P7/7K/8 b - - 0 1",
+      "fen": "8/8/1K1pk3/3p4/p2P4/P7/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "e7d7",
+          "teach": "b6c6",
           "accept": [
-            "e7d7"
-          ],
-          "reply": "h2g1"
-        },
-        {
-          "teach": "d7c6",
-          "accept": [
-            "d7c6"
+            "b6c6"
           ]
         }
       ]
     },
     {
       "id": "e21",
-      "stars": 1,
+      "stars": 2,
       "capitulo": "means",
-      "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
+      "fen": "8/3k4/8/8/8/4KP2/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "d1c2",
+          "teach": "e3f4",
           "accept": [
-            "d1c2"
-          ],
-          "reply": "e4d4"
-        },
-        {
-          "teach": "c2b3",
-          "accept": [
-            "c2b3"
+            "e3f4"
           ]
         }
       ]
@@ -228,16 +213,6 @@
       "ref": "capablanca"
     },
     {
-      "id": "carlsenSo",
-      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 0 55",
-      "ref": "carlsenSo2017"
-    },
-    {
-      "id": "euweWhitaker",
-      "fen": "8/8/8/p4k2/2K5/8/2P5/8 w - - 0 49",
-      "ref": "euweWhitaker1928"
-    },
-    {
       "id": "means",
       "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
       "ref": "practice"
@@ -279,35 +254,11 @@
       "url": "https://lichess.org/study/6lZOGy5q"
     },
     {
-      "id": "carlsenSo2017",
-      "kind": "game",
-      "white": "Magnus Carlsen",
-      "black": "Wesley So",
-      "event": "5th Norway Chess, Stavanger",
-      "year": 2017,
-      "url": "https://lichess.org/analysis/pgn/e4_e5_Nf3_Nc6_Bc4_Bc5_O-O_Nf6_d3_O-O_h3_d6_c3_a6_a4_Be6_Bxe6_fxe6_b4_Ba7_Be3_Bxe3_fxe3_Ne7_Nbd2_Ng6_d4_Qe7_Qb3_Kh8_b5_axb5_axb5_exd4_cxd4_e5_Rxa8_Rxa8_Rc1_exd4_exd4_Nxe4_Nxe4_Qxe4_Rxc7_Rf8_Qc2_Qd5_Qc4_Qxc4_Rxc4_Kg8_b6_h6_Nd2_Nf4_Rc7_Rf7_Nc4_Nd5_Rc8+_Rf8_Rxf8+_Kxf8_Nxd6_Nxb6_Nxb7_Ke7_Kf2_Ke6_Ke3_Kd5_Na5_Na4_Nb3_Nb2_Nd2_Nd1+_Ke2_Nb2_Nb3_Kc4_Nc5_Kxd4_Ne6+_Ke4_Nxg7_Nc4_Kf2_Kf4_g3+_Ke4_g4_Kf4_Nh5+_Kg5_Kg3_Ne5_Nf4_Kf6_Kh4_Ng6+_Kg3_Nxf4_Kxf4_Kg6_h4_Kf6_Kf3_Kf7_Ke3_Ke7_Kd3_Kd7_Kc4_Ke6_Kd4_Kd6_Ke4_Ke6_Kf4_Kf6_Ke4_Ke6_Kf4_Kf6#109"
-    },
-    {
-      "id": "euweWhitaker1928",
-      "kind": "game",
-      "white": "Max Euwe",
-      "black": "Norman Whitaker",
-      "event": "World Amateur Championship, The Hague",
-      "year": 1928,
-      "url": "https://lichess.org/analysis/pgn/e4_e5_Nf3_d6_d4_exd4_Nxd4_g6_Nc3_Bg7_h4_Nf6_Be2_Qe7_Bg5_h6_Nd5_Qd8_Bxf6_Bxf6_Nxf6+_Qxf6_Qd2_Nc6_Nxc6_bxc6_O-O-O_Rb8_Qd4_Ke7_Bf3_c5_e5_cxd4_exf6+_Kxf6_Rxd4_Bb7_Rf4+_Kg7_Bxb7_Rxb7_Re1_g5_Rf3_c6_Rc3_Rc8_Re4_d5_Re5_gxh4_Rxd5_Rcb8_Rxc6_Rxb2_Rd4_Rxa2_Rg4+_Kh7_Rxh4_Ra1+_Kd2_Rd8+_Kc3_Rg1_Rcxh6+_Kg7_Rh7+_Kg6_R4h6+_Kg5_Rc6_Rg8_Rxf7_Rxg2_Rcc7_a6_Rc6_a5_Rc5+_Kg6_Rf3_Ra8_Rg3+_Rxg3+_fxg3_Kf6_g4_Rg8_g5+_Rxg5_Rxg5_Kxg5_Kc4_Kf5_Kb5_Ke5_Kxa5_Kd4_Kb4_Kd5_Kb5_Kd6_c4_Kd7_Kb6_Kc8_Kc6#96"
-    },
-    {
       "id": "brandonEdge",
       "kind": "study",
       "author": "Brandon2021",
       "title": "Distant Opposition: Practical Endgame using opposition",
       "url": "https://lichess.org/study/CmOO2PLp/REhYmZXe"
-    },
-    {
-      "id": "pgnMentor",
-      "kind": "web",
-      "title": "PGN Mentor: partidas de Carlsen e de Euwe",
-      "url": "https://www.pgnmentor.com/files.html"
     },
     {
       "id": "tablebase",

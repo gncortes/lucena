@@ -475,33 +475,8 @@
               ]
             },
             {
-              "fen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 6 4",
-              "t": "rot.edge.ideia.ex2.l.8",
-              "lance": "b7b6"
-            },
-            {
-              "fen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 6 4",
-              "t": "rot.edge.ideia.ex2.l.9",
-              "salto": true
-            },
-            {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 7 4",
-              "t": "rot.edge.ideia.ex2.l.10",
-              "lance": "f7e7"
-            },
-            {
-              "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 w - - 8 5",
-              "t": "rot.edge.ideia.ex2.l.11",
-              "lance": "b6a7",
-              "marcas": [
-                "a7",
-                "e7"
-              ]
-            },
-            {
-              "fen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 6 4",
-              "t": "rot.edge.ideia.ex2.l.12",
-              "salto": true
+              "fen": "8/1k3K2/2p5/2p5/p1P5/P7/8/8 b - - 5 3",
+              "t": "rot.edge.ideia.ex2.l.7b"
             },
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
@@ -527,115 +502,107 @@
       "id": "demos",
       "exemplos": [
         {
-          "id": "aproximar",
-          "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
+          "id": "longe",
+          "fen": "8/8/2p5/k1p4K/p1P5/P7/8/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.demos.aproximar.1",
+              "fen": "8/8/2p5/k1p4K/p1P5/P7/8/8 w - - 0 1",
+              "t": "rot.edge.demos.longe.1",
               "marcas": [
-                "d6"
+                "b5",
+                "c5",
+                "d5",
+                "e5",
+                "f5",
+                "g5"
               ]
             }
           ],
           "linha": [
             {
-              "fen": "8/8/2pK4/k1p5/p1P5/P7/8/8 b - - 1 1",
-              "lance": "e5d6",
-              "setas": [
-                [
-                  "d6",
-                  "c5",
-                  "r"
-                ]
-              ],
-              "t": "rot.edge.demos.aproximar.2"
+              "fen": "8/8/2p5/k1p3K1/p1P5/P7/8/8 b - - 1 1",
+              "lance": "h5g5",
+              "t": "rot.edge.demos.longe.2",
+              "marcas": [
+                "b5",
+                "c5",
+                "d5",
+                "e5",
+                "f5"
+              ]
             },
             {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 2 2",
-              "t": "rot.edge.demos.aproximar.3",
-              "lance": "a5b6",
+              "fen": "8/8/2p5/k1p3K1/p1P5/P7/8/8 b - - 1 1",
+              "t": "rot.edge.demos.longe.3",
+              "marcas": [
+                "b5"
+              ]
+            },
+            {
+              "fen": "8/8/k1p5/2p3K1/p1P5/P7/8/8 w - - 2 2",
+              "lance": "a5a6",
+              "t": "rot.edge.demos.longe.4"
+            },
+            {
+              "fen": "8/8/k1p3K1/2p5/p1P5/P7/8/8 b - - 3 2",
+              "lance": "g5g6",
+              "t": "rot.edge.demos.longe.5",
               "marcas": [
                 "b6",
                 "c6",
-                "d6"
+                "d6",
+                "e6",
+                "f6"
               ]
             },
             {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.demos.aproximar.5",
-              "salto": true,
-              "marcas": [
-                "b5",
-                "f5"
-              ]
+              "fen": "8/8/k1p3K1/2p5/p1P5/P7/8/8 b - - 3 2",
+              "t": "rot.edge.demos.longe.6"
             }
           ]
         },
         {
-          "id": "erroDefesa",
-          "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
+          "id": "contagem",
+          "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
           "entrada": [
             {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.demos.erroDefesa.1",
+              "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
+              "t": "rot.edge.demos.contagem.1"
+            },
+            {
+              "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
+              "t": "rot.edge.demos.contagem.2",
               "marcas": [
-                "c7"
+                "c6",
+                "d6"
               ]
             }
           ],
           "linha": [
             {
-              "fen": "8/2k5/2p1K3/2p5/p1P5/P7/8/8 b - - 2 2",
-              "t": "rot.edge.demos.erroDefesa.2",
-              "seq": [
-                "b6c7",
-                "e7e6"
-              ],
-              "marcas": [
-                "c7",
-                "e6"
-              ]
+              "fen": "8/8/k1p1K3/2p5/p1P5/P7/8/8 w - - 1 2",
+              "lance": "b6a6",
+              "t": "rot.edge.demos.contagem.3"
             },
             {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 b - - 4 3",
-              "t": "rot.edge.demos.erroDefesa.4",
-              "seq": [
-                "c7b6",
-                "e6d6"
-              ],
-              "marcas": [
-                "b6",
-                "c6",
-                "d6"
-              ]
+              "fen": "8/8/k1pK4/2p5/p1P5/P7/8/8 b - - 2 2",
+              "lance": "e6d6",
+              "t": "rot.edge.demos.contagem.4"
             },
             {
-              "fen": "8/1k6/2p5/2K5/p1P5/P7/8/8 b - - 0 4",
-              "t": "rot.edge.demos.erroDefesa.6",
-              "seq": [
-                "b6b7",
-                "d6c5"
-              ]
+              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
+              "lance": "a6b6",
+              "t": "rot.edge.demos.contagem.5"
             },
             {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.demos.erroDefesa.8",
-              "salto": true,
-              "marcas": [
-                "a7",
-                "b6"
-              ]
-            },
-            {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.demos.erroDefesa.9"
+              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
+              "t": "rot.edge.demos.contagem.ponte"
             }
           ]
         }
@@ -648,7 +615,7 @@
           "id": "ataque",
           "fen": "8/8/5p1k/3K1p2/5P1p/7P/8/8 w - - 0 1",
           "vira": false,
-          "objetivo": "ganhar",
+          "objetivo": "casa",
           "fim": "proximo",
           "pratica": {
             "t": "rot.edge.pratica.ataque.enunciado",
@@ -665,14 +632,14 @@
             "errosPos": {
               "8/7k/3K1p2/5p2/5P1p/7P/8/8 w - - 2 2": {
                 "d6e6": "rot.edge.pratica.ataque.err.d6e6",
-                "d6e7": "rot.edge.pratica.ataque.err.d6e7"
-              },
-              "8/3K2k1/5p2/5p2/5P1p/7P/8/8 w - - 4 3": {
-                "d7e8": "rot.edge.pratica.ataque.err.d7e8",
-                "d7e6": "rot.edge.pratica.ataque.err.d7e6"
+                "d6e7": "rot.edge.pratica.ataque.err.d6e7",
+                "d6d5": "rot.edge.pratica.ataque.err.recua"
               }
             }
-          }
+          },
+          "casas": [
+            "d7"
+          ]
         },
         {
           "id": "defesa",

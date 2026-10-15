@@ -203,10 +203,10 @@ class _Run {
       for (final to in value.squares) {
         final move = NormalMove(from: key, to: to);
         final next = position.playUnchecked(move);
-        if (JudgeMove.judge(_kpk, position, move, wantsWin: true) !=
-            MoveVerdict.keeps) {
-          continue;
-        }
+        final verdict = next.board.occupied.size > 3
+            ? JudgeMove.ofWdl(table.wdl(next.fen), wantsWin: true)
+            : JudgeMove.judge(_kpk, position, move, wantsWin: true);
+        if (verdict != MoveVerdict.keeps) continue;
         final d = distance(next);
         if (d < bestDistance) {
           bestDistance = d;
