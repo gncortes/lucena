@@ -101,6 +101,11 @@ class _Run {
   final problems = <String>[];
   final trail = <String>[];
 
+  /// Depois de voltar e jogar um lance qualquer no jogo livre ([_branch]),
+  /// a partida sai do que a tabela do roteiro cobre: ali o app usa o
+  /// Stockfish, e o motor pode ser chamado.
+  bool offTable = false;
+
   /// As falas de troca de lado: passam sozinhas, sem botão.
   final Set<String> switching;
 
@@ -149,6 +154,7 @@ class _Run {
     final asked = engine.asked.length;
     final requests = opponent.requests.length;
     await action();
+    if (offTable) return;
     for (final fen in engine.asked.skip(asked)) {
       problems.add('$where: o juiz pediu o motor em $fen (fora da tabela)');
     }
@@ -588,6 +594,7 @@ Future<({bool ended, bool branched, int longest})> _freeGame(
         if (game.length > longest) longest = game.length;
         if (branch && !branched && game.length >= 4) {
           branched = true;
+          run.offTable = true;
           await _branch(run, game, machine);
           continue;
         }
@@ -622,6 +629,7 @@ Future<({bool ended, bool branched, int longest})> _freeGame(
           'linha principal',
           () => cubit.onAction(ScriptAction.linhaPrincipal),
         );
+        run.offTable = false;
         final back = run.s;
         final main = ScriptTracks.steps(example, ScriptTracks.main).first;
         if (back.phase != ScriptPhase.linha &&
