@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/domain/use_cases/judge_move.dart';
 import 'package:lucena/domain/use_cases/kpk_oracle.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
@@ -52,11 +54,21 @@ Map<String, String> _texts() {
     for (final e in generic.entries) e.key: e.value as String,
     'enunciado': 'Chegue à casa.',
     'fala.fim': 'Fim da casa.',
+    'fala.erro.1': 'Aqui esse lance falha.',
+    'fala.erro.2': 'Porque o rei perde a oposição.',
   };
 }
 
-LessonScriptCubit _cubit(List<String> squares) {
-  final script = LessonScript.fromJson(_json(squares));
+LessonScriptCubit _cubit(
+  List<String> squares, {
+  Map<String, dynamic>? errosPos,
+}) {
+  final json = _json(squares);
+  if (errosPos != null) {
+    final example = ((json['etapas'] as List).first as Map)['exemplos'] as List;
+    ((example.first as Map)['pratica'] as Map)['errosPos'] = errosPos;
+  }
+  final script = LessonScript.fromJson(json);
   final cubit = LessonScriptCubit(
     lessonId: script.lessonId,
     partId: script.partId,
@@ -130,4 +142,46 @@ void main() {
     expect(s.tone, ScriptTone.bad);
     expect(s.primary, ScriptAction.tentarDeNovo);
   });
+
+  test(
+    'errosPos: o erro da 2ª vez usa a fala da posição (contadores à parte)',
+    () async {
+      // Descobre a posição da 2ª vez e um lance que perde o ganho nela.
+      final probe = _cubit(['a8']);
+      await probe.start();
+      await probe.onMove('f3e4');
+      final fen = probe.state.fen;
+      expect(probe.state.phase, ScriptPhase.praticaVez);
+      final position = GameRules.fromFen(fen)!;
+      final oracle = _oracle();
+      String? bad;
+      for (final MapEntry(:key, :value) in position.legalMoves.entries) {
+        for (final to in value.squares) {
+          final move = NormalMove(from: key, to: to);
+          if (JudgeMove.judge(oracle, position, move, wantsWin: true) ==
+              MoveVerdict.loses) {
+            bad ??= move.uci;
+          }
+        }
+      }
+      expect(bad, isNotNull);
+
+      // A chave do roteiro traz outros contadores: só os 4 campos contam.
+      final other = '${fen.split(' ').take(4).join(' ')} 17 42';
+      final cubit = _cubit(
+        ['a8'],
+        errosPos: {
+          other: {bad!: 'fala.erro'},
+        },
+      );
+      await cubit.start();
+      await cubit.onMove('f3e4');
+      expect(cubit.state.fen, fen);
+      await cubit.onMove(bad);
+      final s = cubit.state;
+      expect(s.phase, ScriptPhase.praticaFim);
+      expect(s.tone, ScriptTone.bad);
+      expect(s.speech.single, _texts()['fala.erro.2']);
+    },
+  );
 }

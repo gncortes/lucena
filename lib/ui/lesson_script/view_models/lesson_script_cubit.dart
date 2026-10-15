@@ -1894,8 +1894,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (turn >= practice.line.length) return;
     final step = practice.line[turn];
     if (!step.right.contains(uci)) {
-      // Os erros com fala própria valem só no primeiro lance (F3, T71).
-      final error = turn == 0 ? practice.errors[uci] : null;
+      // Erro com fala própria: `erros` no primeiro lance, `errosPos` em
+      // qualquer vez (pela posição).
+      final error = practice.errorKey(state.fen, uci, start: _example.fen);
       return _bounce(uci, error ?? 'ini.lance.errado');
     }
     final from = state.fen;
@@ -2024,7 +2025,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     // A fala do roteiro cita o lance numerado: vale só no primeiro lance da
     // prática. Em duas partes, `.1` (o que o lance perde) entra com o erro e
     // `.2` (o porquê, com a resposta) entra com a resposta e fica até o fim.
-    final custom = from == _example.fen ? _example.practice!.errors[uci] : null;
+    final custom = _example.practice!.errorKey(from, uci, start: _example.fen);
     final split = custom != null && _texts.has('$custom.1');
     final why = split && _texts.has('$custom.2') ? _say('$custom.2') : null;
     final intro = custom != null

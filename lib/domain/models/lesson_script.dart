@@ -303,6 +303,7 @@ class PracticeSpec {
     this.coordinates = false,
     this.line = const [],
     this.errors = const {},
+    this.errorsAt = const {},
   });
 
   factory PracticeSpec.fromJson(Map<String, dynamic> json) => PracticeSpec(
@@ -326,7 +327,19 @@ class PracticeSpec {
           in (json['erros'] as Map? ?? const {}).entries)
         key as String: value as String,
     },
+    errorsAt: {
+      for (final MapEntry(:key, :value)
+          in (json['errosPos'] as Map? ?? const {}).entries)
+        fen4(key as String): {
+          for (final MapEntry(key: uci, value: text) in (value as Map).entries)
+            uci as String: text as String,
+        },
+    },
   );
+
+  /// Os quatro primeiros campos do FEN (peças, vez, roque, en passant): a
+  /// posição sem os contadores.
+  static String fen4(String fen) => fen.split(' ').take(4).join(' ');
 
   final PracticeKind kind;
 
@@ -345,6 +358,15 @@ class PracticeSpec {
   /// Lance: as vezes do aluno e a fala de cada erro (lance → chave).
   final List<PracticeTurn> line;
   final Map<String, String> errors;
+
+  /// Erros com fala própria em qualquer vez: FEN (4 campos) → lance → chave.
+  final Map<String, Map<String, String>> errorsAt;
+
+  /// A chave da fala do erro [uci] jogado em [fen]: a de `erros` na posição
+  /// inicial [start] e, em qualquer posição, a de `errosPos`.
+  String? errorKey(String fen, String uci, {required String start}) =>
+      (fen4(fen) == fen4(start) ? errors[uci] : null) ??
+      errorsAt[fen4(fen)]?[uci];
 
   /// A chave da frase que fecha a posição quando o objetivo é cumprido,
   /// depois da genérica de sucesso.
