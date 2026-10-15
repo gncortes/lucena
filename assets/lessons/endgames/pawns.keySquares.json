@@ -110,38 +110,23 @@
     {
       "id": "e12",
       "stars": 2,
-      "fen": "6k1/8/6K1/6P1/8/8/8/8 w - - 0 1",
+      "fen": "8/4k3/8/8/3PK3/8/8/8 w - - 0 1",
       "goal": "win",
-      "origin": "wikiKpk",
+      "origin": "own",
       "capitulo": "opposition",
       "line": [
         {
-          "teach": "g6h6",
+          "teach": "e4e5",
           "accept": [
-            "g6f6",
-            "g6h6"
+            "e4e5"
           ],
-          "reply": "g8h8"
+          "reply": "e7d8"
         },
         {
-          "teach": "g5g6",
+          "teach": "e5d6",
           "accept": [
-            "g5g6",
-            "h6g6"
-          ],
-          "reply": "h8g8"
-        },
-        {
-          "teach": "g6g7",
-          "accept": [
-            "g6g7"
-          ],
-          "reply": "g8f7"
-        },
-        {
-          "teach": "h6h7",
-          "accept": [
-            "h6h7"
+            "e5d6",
+            "e5e6"
           ]
         }
       ]
@@ -192,7 +177,7 @@
     },
     {
       "id": "e20",
-      "stars": 2,
+      "stars": 1,
       "capitulo": "diagonal",
       "fen": "8/5k2/2K5/8/8/8/5P2/8 w - - 0 1",
       "goal": "win",
@@ -252,7 +237,6 @@
         {
           "teach": "c4b5",
           "accept": [
-            "c4b4",
             "c4b5",
             "c4d4"
           ]
@@ -407,5 +391,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 16
+  "maxScore": 15
 }

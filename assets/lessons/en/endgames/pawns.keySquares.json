@@ -10,12 +10,12 @@
   "ex.e09.solution": "57...Kb8! Only then, when the white king comes up, Black takes the opposition: 58.Kc5 Kc7 or 58.Kb5 Kb7. That is what {{Fischer|bobby-fischer}} played, and the white king never reached the key squares a6, b6 and c6.",
   "ex.e10": "A position by Jan Drtina, 1908. The direct road does not work.",
   "ex.e10.hint": "The key squares are b5, c5 and d5. Through the centre the black king gets there first; try the other side of the pawn.",
-  "ex.e10.solution": "1.Kc2!, then 2.Kb3, 3.Kb4 and, with the opposition on c4, the king enters b5. Down the d-file the black king reaches c6, takes the opposition and draws.",
-  "ex.e12": "Golombek against Pomar, 1946. The most stubborn defence is the corner.",
-  "ex.e12.hint": "The black king wants the corner, to be stalemated when the pawn checks. Before pushing the pawn, move your king out of its way and advance the pawn only with the king beside it.",
-  "ex.e12.solution": "1.Kh6!, 1...Kh8, 2.g6, 2...Kg8, 3.g7 and, after 3...Kf7, 4.Kh7: the pawn queens. 1.Kf6 also wins, but after 1...Kh7 it has to come back with 2.Kf7 and 3.Kg6.",
-  "ex.e14": "Maróczy against {{Marshall|frank-marshall}}, {{Monte Carlo|monte-carlo}} 1903. This time the pawn is yours, and the white king waits in the corner.",
-  "ex.e14.hint": "The key squares of the g5-pawn are f3, g3 and h3. The pawn waits; the king moves first.",
+  "ex.e10.solution": "1.Kc2!, then 2.Kb3 and 3.Kb4. After 3...Kc6, 4.Kc4 takes the direct opposition, Black has to give way with 4...Kd6 and the white king enters b5. If the white king went down the d-file, the black king would reach c6, take the opposition and draw.",
+  "ex.e12": "Play White and find the best move. The kings are on the same file, and the pawn stands beside your king.",
+  "ex.e12.hint": "The key squares of the d4-pawn are c6, d6 and e6. If the kings face each other, with one square between them and Black to move, the black king is the one that gives way: think how to reach that situation.",
+  "ex.e12.solution": "1.Ke5! takes the direct opposition: the kings face each other, with e6 between them, and the black king has to give way, whatever move it makes. After 1...Kd8, 2.Kd6 (2.Ke6 also wins) takes the king to a key square, and the pawn queens. 1.d5? and 1.Kd5? only draw: after 1.d5? Kd6 the black king stands in front of the pawn, and after 1.Kd5? Kd7 Black takes the opposition.",
+  "ex.e14": "Maróczy against {{Marshall|frank-marshall}}, {{Monte Carlo|monte-carlo}} 1903. You play Black, and the pawn is yours; the white king waits on g2.",
+  "ex.e14.hint": "The key squares of the g5-pawn are f3, g3 and h3, and the white king watches them from g2. The pawn waits: think which square brings your king closer to them.",
   "ex.e14.solution": "58...Kg4! The king goes in front of the pawn, towards the key squares; 58...g4? and 58...Kh5? only draw. After 59.Kh2, 59...Kf3: the black king reaches a key square, and the win is certain, whatever the defence. 59...Kf4 and 59...Kh4 also win.",
   "ex.e15": "The pawns are blocked, and your king is further away than Black's. Find the winning move.",
   "ex.e15.hint": "A blocked pawn has key squares too. For your king they are the squares on the sixth rank beside the b6-pawn: a6, c6, d6 and e6. For the black king, the ones on the fifth: a5, c5, d5 and e5. Whoever gets there first wins, and the shortest road is the diagonal.",
@@ -36,6 +36,6 @@
   "ex.e20.solution": "1.Kd5! The kings stand on a diagonal, with e6 between them, and Black to move: the diagonal opposition is yours. After 1...Kf6, 2.Ke4! The white king reaches e4, a key square, and the pawn will promote. Any other first move lets the black king get there first and draws; pushing the pawn, with 1.f3? or 1.f4?, too, because the pawn goes ahead of the king.",
   "ex.e20.r1": "1...Kf6. The black king approaches the pawn and wants to close your king's path to e4, f4 and g4.",
   "ex.e22": "Play Black and find the best move. The white king is closer to the pawn, but has not reached the key squares yet.",
-  "ex.e22.hint": "The key squares of the b2-pawn are a4, b4 and c4, and the white king already threatens one of them. Take your king to a square from which it watches all three.",
-  "ex.e22.solution": "1...Kb5! Only from this square does the black king watch a4, b4 and c4 at once. After 2.Kd3, 2...Kb4! The black king stands on a key square, in front of the pawn, and the white king has no way through: it is a draw. 1...Ka5? leaves c4 unguarded: after 2.Kc5, the white king gets ahead of the pawn and White wins."
+  "ex.e22.hint": "The key squares of the b2-pawn are a4, b4 and c4, and the white king already threatens one of them. Your king must arrive in time to shut them all.",
+  "ex.e22.solution": "1...Kb5! Only from this square does the black king watch a4, b4 and c4 at once. After 2.Kd3, 2...Kb4! The black king stands on a key square, in front of the pawn, and the white king has no way through: it is a draw. 1...Ka5? does not watch c4 or c5: after 2.Kc5, the white king gets ahead of the pawn and White wins."
 }
