@@ -58,7 +58,7 @@
     {
       "id": "e11",
       "stars": 2,
-      "fen": "5k2/8/8/8/8/8/2P5/4K3 b - - 0 1",
+      "fen": "5k2/8/8/8/8/2P1K3/8/8 b - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "distant",
@@ -68,26 +68,19 @@
           "accept": [
             "f8e7"
           ],
-          "reply": "e1d2"
+          "reply": "e3d3"
         },
         {
-          "teach": "e7d6",
+          "teach": "e7d7",
           "accept": [
-            "e7d6"
+            "e7d7"
           ],
-          "reply": "d2d3"
+          "reply": "d3c4"
         },
         {
-          "teach": "d6d5",
+          "teach": "d7c6",
           "accept": [
-            "d6d5"
-          ],
-          "reply": "d3c3"
-        },
-        {
-          "teach": "d5c5",
-          "accept": [
-            "d5c5"
+            "d7c6"
           ]
         }
       ]
@@ -95,29 +88,24 @@
     {
       "id": "e13",
       "stars": 2,
-      "fen": "8/8/8/3p1p2/8/4P3/6K1/2k5 w - - 0 1",
-      "goal": "draw",
-      "origin": "capablanca",
+      "fen": "8/8/8/1k6/3K4/2P5/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
       "capitulo": "lateral",
       "line": [
         {
-          "teach": "g2g1",
+          "teach": "d4d5",
           "accept": [
-            "g2g1"
+            "d4d5"
           ],
-          "reply": "c1d2"
+          "reply": "b5b6"
         },
         {
-          "teach": "g1f2",
+          "teach": "d5d6",
           "accept": [
-            "g1f2"
-          ],
-          "reply": "d2d3"
-        },
-        {
-          "teach": "f2f3",
-          "accept": [
-            "f2f3"
+            "d5d6",
+            "c3c4",
+            "d5d4"
           ]
         }
       ]
@@ -125,36 +113,22 @@
     {
       "id": "e18",
       "stars": 2,
-      "fen": "4k3/8/2p5/2P3K1/8/8/8/8 w - - 0 1",
+      "fen": "8/8/3k4/1p5p/1P3K1P/8/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "capablanca",
       "line": [
         {
-          "teach": "g5f6",
+          "teach": "f4g5",
           "accept": [
-            "g5f6"
+            "f4g5"
           ],
-          "reply": "e8d7"
+          "reply": "d6d5"
         },
         {
-          "teach": "f6f7",
+          "teach": "g5h5",
           "accept": [
-            "f6f7"
-          ],
-          "reply": "d7d8"
-        },
-        {
-          "teach": "f7e6",
-          "accept": [
-            "f7e6"
-          ],
-          "reply": "d8c7"
-        },
-        {
-          "teach": "e6e7",
-          "accept": [
-            "e6e7"
+            "g5h5"
           ]
         }
       ]
@@ -163,28 +137,28 @@
       "id": "e22",
       "stars": 2,
       "capitulo": "edge",
-      "fen": "8/8/8/2p5/k1p1K3/p1P5/P7/8 w - - 0 1",
+      "fen": "8/4k3/3p4/3p4/p2P4/P7/7K/8 b - - 0 1",
       "goal": "win",
       "origin": "own",
       "line": [
         {
-          "teach": "e4f4",
+          "teach": "e7d7",
           "accept": [
-            "e4f4"
+            "e7d7"
           ],
-          "reply": "a4b5"
+          "reply": "h2g1"
         },
         {
-          "teach": "f4f5",
+          "teach": "d7c6",
           "accept": [
-            "f4f5"
+            "d7c6"
           ]
         }
       ]
     },
     {
       "id": "e21",
-      "stars": 2,
+      "stars": 1,
       "capitulo": "means",
       "fen": "8/8/8/8/4k3/8/1P6/3K4 w - - 0 1",
       "goal": "win",
@@ -349,5 +323,5 @@
       "url": "https://lichess.org/study/A4ujYOer"
     }
   ],
-  "maxScore": 14
+  "maxScore": 13
 }

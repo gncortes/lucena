@@ -152,17 +152,13 @@ void main() {
         expect(exercise.state.fen, fen);
         expect(exercise.state.mistakes, 1);
         await exercise.explaining;
-        // O texto da aula traz lances escritos: o balão não o mostra (a tela
-        // diz o lance com a frase gerada).
-        expect(
-          ExerciseReview.hasNotation(exact(fen, 'd2d3', language)),
-          isTrue,
-        );
-        expect(exercise.state.sayTexts, isEmpty);
-        expect(exercise.state.sayMove, (fenBefore: fen, uci: 'd2d3'));
+        // O texto da aula é em palavras (sem lances escritos): o balão o mostra.
+        final said = exact(fen, 'd2d3', language);
+        expect(ExerciseReview.hasNotation(said), isFalse);
+        expect(exercise.state.sayTexts, [said]);
         await exercise.askHint();
         expect(exercise.state.say, ExerciseSay.hint);
-        expect(exercise.state.sayTexts, ['Generic hint.', 'Statement.']);
+        expect(exercise.state.sayTexts, [said, 'Statement.']);
         expect(exercise.state.hint, isNull);
         expect(exercise.state.hints, 1);
         await exercise.askHint();
@@ -189,8 +185,8 @@ void main() {
       final fen = exercise.state.fen!;
       await exercise.play(move('g2f2'));
       await exercise.explaining;
-      expect(exercise.state.sayTexts, isEmpty);
-      expect(exercise.state.sayMove, (fenBefore: fen, uci: 'g2f2'));
+      final said = exact(fen, 'g2f2', 'en');
+      expect(exercise.state.sayTexts, [said]);
       final restored = cubit(lessons: lessons, feedback: feedback);
       await restored.load(lessonId, 'e09', 'en');
       expect(restored.state.fen, fen);

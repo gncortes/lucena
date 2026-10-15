@@ -317,12 +317,12 @@ void main() {
     });
   });
 
-  testWidgets('Oposição distante: o feedback com lances escritos não vai ao '
-      'balão (frase gerada no lugar)', (tester) async {
+  testWidgets('Oposição distante: o feedback em palavras vai ao balão, sem '
+      'notação', (tester) async {
     final cubit = await pump(tester, opposition, 'e09');
     await play(tester, cubit, 'd2d3');
     final said = speech(tester);
-    expect(said, contains('O peão avança para d3.'));
+    expect(said, contains('o rei preto vai ao centro antes que o seu o apoie'));
     expect(said, endsWith('Tente outro lance.'));
     await expectNoNotation(tester);
     await tester.runAsync(() => cubit.askHint());
@@ -549,26 +549,31 @@ void main() {
     await tester.runAsync(cubit.askHint);
     await tester.pumpAndSettle();
     final said = speech(tester);
-    expect(said, startsWith('Primeiro a coluna do rei preto, de longe.'));
+    expect(said, startsWith('Primeiro leve o rei à coluna do rei preto,'));
     expect(said.indexOf('Jogue de brancas'), greaterThan(0));
     expect(find.byKey(LessonScriptKeys.speech), findsOneWidget);
     // A pista está na parte visível das 2 linhas.
     final paragraph = tester.renderObject<RenderParagraph>(
       find.byWidgetPredicate(
-        (w) => w is RichText && w.text.toPlainText().startsWith('Primeiro a'),
+        (w) =>
+            w is RichText && w.text.toPlainText().startsWith('Primeiro leve'),
       ),
     );
     final visibleEnd = paragraph
         .getPositionForOffset(Offset(paragraph.size.width, 36))
         .offset;
-    expect(visibleEnd, greaterThan('Primeiro a coluna do rei preto,'.length));
+    expect(
+      visibleEnd,
+      greaterThan('Primeiro leve o rei à coluna do rei preto,'.length),
+    );
     // Na folha, uma linha em branco entre a pista e o enunciado.
     await tester.tap(find.byKey(LessonScriptKeys.speech));
     await tester.pumpAndSettle();
     final sheetText = find.descendant(
       of: find.byKey(LessonScriptKeys.speechSheet),
       matching: find.byWidgetPredicate(
-        (w) => w is RichText && w.text.toPlainText().startsWith('Primeiro a'),
+        (w) =>
+            w is RichText && w.text.toPlainText().startsWith('Primeiro leve'),
       ),
     );
     final full = tester.widget<RichText>(sheetText).text.toPlainText();
