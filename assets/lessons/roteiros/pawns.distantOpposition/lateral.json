@@ -928,7 +928,9 @@
       },
       "errosPos": {
        "8/8/1K6/6k1/8/8/4P3/8 w - - 2 2": {
-        "b6c6": "rot.lateral.pratica.ataque.v1.err.b6c6"
+        "b6c6": "rot.lateral.pratica.ataque.v1.err.b6c6",
+        "e2e3": "rot.lateral.pratica.ataque.v1.err.e2e3",
+        "e2e4": "rot.lateral.pratica.ataque.v1.err.e2e4"
        },
        "8/8/8/2K5/5k2/8/4P3/8 w - - 4 3": {
         "c5c4": "rot.lateral.pratica.ataque.v2.err.c5c4",
