@@ -169,7 +169,9 @@ void main() {
       await cubit.start();
       await cubit.onMove('f3e4');
       await Future<void>.delayed(Duration.zero);
-      expect(cubit.state.fen, startsWith('3k4/8/8/8/4K3/1P6/8/8 w'));
+      // A máquina resiste (T76): Kd7 deixa ao aluno mais lances que perdem
+      // a vitória.
+      expect(cubit.state.fen, startsWith('8/3k4/8/8/4K3/1P6/8/8 w'));
       // b3b4 está nos erros do roteiro, mas a fala dele cita o 1º lance.
       await cubit.onMove('b3b4');
       expect(cubit.state.phase, ScriptPhase.praticaFim);

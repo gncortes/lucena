@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dartchess/dartchess.dart' show Move;
+import 'package:dartchess/dartchess.dart' show Move, NormalMove;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
@@ -113,6 +113,42 @@ void main() {
       expect(choose(oracle, 'Q7/1k6/8/8/8/3K4/8/8 b - - 0 1'), 'b7a8');
       // Pretas coroaram em a1; o rei branco em b2 a captura.
       expect(choose(oracle, '8/8/8/3k4/8/8/1K6/q7 w - - 0 1'), 'b2a1');
+    }, skip: skip);
+
+    test('A1, prática da defesa: o atacante não entrega o peão (T76)', () {
+      final oracle = KpkTableOracle(bin.readAsBytesSync());
+      // O aluno (pretas) defende certo; a máquina (brancas) ataca sem
+      // vitória e tem que resistir: nada de dar o peão nos 6 primeiros
+      // lances dela.
+      var position = GameRules.fromFen('2k5/8/8/4K3/2P5/8/8/8 b - - 0 1')!;
+      for (var i = 0; i < 12; i++) {
+        final uci = MachineMove.choose(oracle, position)!;
+        position = position.playUnchecked(Move.parse(uci)!);
+        expect(
+          position.board.pawns.isNotEmpty,
+          isTrue,
+          reason: 'meio-lance ${i + 1}: ${position.fen}',
+        );
+      }
+    }, skip: skip);
+
+    test('empate: o lance que deixa ao aluno mais respostas que perdem', () {
+      final oracle = KpkTableOracle(bin.readAsBytesSync());
+      final position = GameRules.fromFen('2k5/8/8/4K3/2P5/8/8/8 b - - 0 1')!;
+      // A defesa: o aluno joga c8 por um lance que segura; a máquina
+      // responde com o lance de empate mais exigente.
+      final reply = position.playUnchecked(Move.parse('c8c7')!);
+      final uci = MachineMove.choose(oracle, reply)!;
+      final next = reply.playUnchecked(Move.parse(uci)!);
+      var losing = 0;
+      for (final MapEntry(key: from, value: targets)
+          in next.legalMoves.entries) {
+        for (final to in targets.squares) {
+          final after = next.playUnchecked(NormalMove(from: from, to: to));
+          if (oracle.evaluate(after).isWin) losing++;
+        }
+      }
+      expect(losing, greaterThan(0), reason: '$uci: ${next.fen}');
     }, skip: skip);
   });
 }
