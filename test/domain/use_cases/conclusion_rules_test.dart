@@ -137,7 +137,7 @@ void main() {
           ConclusionKind.marathonEnd,
           recorded: true,
         ).take(2),
-        [ConclusionAction.retry, ConclusionAction.speedruns],
+        [ConclusionAction.summary, ConclusionAction.retry],
       );
       // Sem rating, o atalho do histórico vai pelas partidas.
       expect(

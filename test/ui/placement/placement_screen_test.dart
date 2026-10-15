@@ -7,12 +7,16 @@ import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/placement/view_models/placement_cubit.dart';
 import 'package:lucena/ui/placement/widgets/placement_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/domain/models/voice.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/placement_synthetic.dart';
 
@@ -40,6 +44,7 @@ void main() {
     bool geometry = false,
     double textScale = 1,
     bool disableAnimations = false,
+    SpeechCubit? speech,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -72,6 +77,7 @@ void main() {
       TestApp(
         locale: const Locale('pt'),
         settingsCubit: settings,
+        speechCubit: speech,
         child: Builder(
           builder: (context) => MediaQuery(
             data: MediaQuery.of(context).copyWith(
@@ -119,6 +125,121 @@ void main() {
     await tester.pumpAndSettle();
     expect(done, isTrue);
     expect(profile.profile.rating, cubit.state.result!.theta);
+  });
+
+  for (final size in [const Size(412, 915), const Size(360, 640)]) {
+    testWidgets('abertura, $size: rodapé em coluna, "Começar" na largura '
+        'toda e "Prefiro informar" em texto abaixo', (tester) async {
+      await pump(tester, size: size, onChooseByHand: () {});
+      final footerFinder = find.byKey(PlacementKeys.footer);
+      final footer = tester.getRect(footerFinder);
+      final start = tester.getRect(find.byKey(PlacementKeys.start));
+      final choose = tester.getRect(find.byKey(PlacementKeys.chooseByHand));
+      // O rodapé encosta na base da tela (canvas PropV2TesteAbertura).
+      expect(footer.bottom, size.height);
+      expect(footer.left, 0);
+      expect(footer.right, size.width);
+      expect(start.top - footer.top, 12);
+      expect(start.height, 52);
+      expect(start.left, 16);
+      expect(start.right, size.width - 16);
+      expect(
+        find.descendant(
+          of: footerFinder,
+          matching: find.byKey(PlacementKeys.chooseByHand),
+        ),
+        findsOneWidget,
+      );
+      expect(choose.top - start.bottom, 4);
+      // Mínimo de 40 (na fonte de teste o rótulo quebra em duas linhas).
+      final style = tester
+          .widget<TextButton>(find.byKey(PlacementKeys.chooseByHand))
+          .style!;
+      expect(style.minimumSize!.resolve({}), const Size.fromHeight(40));
+      expect(choose.left, 16);
+      expect(choose.right, size.width - 16);
+      expect(size.height - choose.bottom, 24);
+      final label = tester.getRect(
+        find.descendant(
+          of: find.byKey(PlacementKeys.chooseByHand),
+          matching: find.byType(Text),
+        ),
+      );
+      expect(label.center.dx, closeTo(size.width / 2, 0.5));
+    });
+  }
+
+  for (final enabled in [true, false]) {
+    testWidgets('abertura, voz ${enabled ? 'ligada' : 'desligada'}: o "1×" '
+        '${enabled ? 'aparece' : 'some'} e o som fica à vista', (tester) async {
+      final speech = SpeechCubit(
+        FakeVoiceRepository(settings: VoiceSettings(enabled: enabled)),
+      );
+      addTearDown(speech.close);
+      await speech.load();
+      await pump(tester, speech: speech);
+      expect(
+        find.byKey(VoiceKeys.speedButton),
+        enabled ? findsOneWidget : findsNothing,
+      );
+      expect(find.byKey(VoiceKeys.speakButton), findsOneWidget);
+    });
+  }
+
+  testWidgets('abertura: os selos são cheios e sem contorno (CompChip info)', (
+    tester,
+  ) async {
+    await pump(tester);
+    final chips = tester.widgetList<Chip>(find.byType(Chip)).toList();
+    expect(chips, hasLength(3));
+    final context = tester.element(find.byType(Chip).first);
+    final colors = Theme.of(context).colorScheme;
+    for (final chip in chips) {
+      expect(chip.side, BorderSide.none);
+      expect(chip.backgroundColor, colors.surfaceContainer);
+    }
+  });
+
+  testWidgets('abertura: o balão não repete o que os selos dizem', (
+    tester,
+  ) async {
+    await pump(tester);
+    expect(find.textContaining('20 perguntas, sem relógio'), findsNothing);
+    expect(find.textContaining('Não vale chutar'), findsOneWidget);
+  });
+
+  testWidgets('abertura retomada: "Continuar" cheio e "Recomeçar" em texto '
+      'abaixo, sem o link de rating', (tester) async {
+    final (cubit, _) = await pump(tester, onChooseByHand: () {});
+    await tester.tap(find.byKey(PlacementKeys.start));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(PlacementKeys.dontKnow));
+    await tester.pumpAndSettle();
+    await cubit.load();
+    await tester.pumpAndSettle();
+    expect(cubit.state.resuming, isTrue);
+    final footer = find.byKey(PlacementKeys.footer);
+    for (final key in [PlacementKeys.restart, PlacementKeys.resume]) {
+      expect(
+        find.descendant(of: footer, matching: find.byKey(key)),
+        findsOneWidget,
+      );
+    }
+    final resume = tester.getRect(find.byKey(PlacementKeys.resume));
+    final restart = tester.getRect(find.byKey(PlacementKeys.restart));
+    expect(resume.left, 16);
+    expect(resume.right, 800 - 400 - 16);
+    expect(restart.top - resume.bottom, 4);
+    expect(800 - restart.bottom, 24);
+    expect(find.byKey(PlacementKeys.start), findsNothing);
+    expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
+    // A legenda de onde parou, centrada, 8 acima do "Continuar teste".
+    final stopped = find.byKey(PlacementKeys.stoppedAt);
+    expect(find.descendant(of: footer, matching: stopped), findsOneWidget);
+    expect(resume.top - tester.getRect(stopped).bottom, 8);
+    expect(tester.widget<Text>(stopped).textAlign, TextAlign.center);
+    expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
+    expect(find.text('Continuar teste'), findsOneWidget);
   });
 
   for (final reducedMotion in [false, true]) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/clock_settings.dart';
@@ -21,7 +22,7 @@ class ClockSettingsScreen extends StatelessWidget {
     );
     return Scaffold(
       key: BoardSettingsKeys.clockScreen,
-      appBar: AppBar(title: Text(l10n.settingsClock)),
+      appBar: LucenaAppBar(title: Text(l10n.settingsClock)),
       body: ListView(
         children: [
           ListTile(

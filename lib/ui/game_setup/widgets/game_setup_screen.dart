@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -10,6 +11,8 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
@@ -61,7 +64,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
         );
     return Scaffold(
       key: GameSetupKeys.screen,
-      appBar: AppBar(title: Text(l10n.setupTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.setupTitle)),
       // A posição já aparece antes de a configuração ser lida: é nela que o
       // tabuleiro do catálogo pousa. O resto entra quando estiver pronto.
       // O tabuleiro fica no centro do espaço entre a barra do app e o painel
@@ -93,7 +96,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                       child: FilledButton(
                         key: GameSetupKeys.startButton,
                         style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(52),
+                          minimumSize: const Size.fromHeight(kButtonHeight),
                         ),
                         onPressed: state.canStart
                             ? () => _start(context, state)
@@ -241,14 +244,6 @@ class _Header extends StatelessWidget {
             backgroundColor: GoalStyle.of(context, state.goal).container,
             side: BorderSide.none,
           ),
-          Chip(
-            label: Text(
-              state.position.turn == Side.white
-                  ? l10n.freeBoardWhiteToMove
-                  : l10n.freeBoardBlackToMove,
-            ),
-            side: BorderSide.none,
-          ),
         ],
       ),
     );
@@ -304,7 +299,9 @@ class _SidePicker extends StatelessWidget {
                   height: 14,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: side == Side.white ? Colors.white : Colors.black,
+                    color: side == Side.white
+                        ? AppColors.chessWhiteColor
+                        : AppColors.chessBlackColor,
                     border: Border.all(
                       color: Theme.of(context).colorScheme.outline,
                     ),
@@ -537,6 +534,8 @@ class _PacePicker extends StatelessWidget {
     final setup = state.setup;
     // Relógio ligado com um tempo que não é de nenhum ritmo nomeado.
     final custom = setup.clock && selected == null;
+    // Sem relógio, os ritmos ficam à vista, mas desabilitados.
+    final enabled = setup.clock;
     final customTime = setup.userTime == setup.opponentTime
         ? paceShort(l10n, setup.userTime)
         : '${paceShort(l10n, setup.userTime)} / '
@@ -565,7 +564,7 @@ class _PacePicker extends StatelessWidget {
                     l10n.paceChip(pace.id, pace.category.label(l10n)),
                   ),
                   selected: pace == selected,
-                  onSelected: (_) => cubit.setPace(pace),
+                  onSelected: enabled ? (_) => cubit.setPace(pace) : null,
                 ),
               ChoiceChip(
                 key: GameSetupKeys.customPace,
@@ -576,18 +575,20 @@ class _PacePicker extends StatelessWidget {
                       : l10n.setupPaceCustom,
                 ),
                 selected: custom,
-                onSelected: (_) async {
-                  final choice = await showCustomPaceSheet(
-                    context,
-                    user: setup.userTime,
-                    opponent: setup.opponentTime,
-                  );
-                  if (choice == null) return;
-                  await cubit.setTimes(
-                    user: choice.user,
-                    opponent: choice.opponent,
-                  );
-                },
+                onSelected: enabled
+                    ? (_) async {
+                        final choice = await showCustomPaceSheet(
+                          context,
+                          user: setup.userTime,
+                          opponent: setup.opponentTime,
+                        );
+                        if (choice == null) return;
+                        await cubit.setTimes(
+                          user: choice.user,
+                          opponent: choice.opponent,
+                        );
+                      }
+                    : null,
               ),
             ],
           ),

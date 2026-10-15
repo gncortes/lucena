@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/voice.dart';
@@ -7,8 +8,8 @@ import '../../core/l10n/l10n.dart';
 import '../view_models/speech_cubit.dart';
 import 'voice_pickers.dart';
 
-/// Configurações da voz: falar sozinho, a velocidade, a voz do professor e as
-/// dos adversários. Sem voz no idioma, só o porquê e como resolver.
+/// Configurações da voz: falar sozinho, a velocidade e a voz do professor (as
+/// dos adversários vêm sozinhas). Sem voz no idioma, só o porquê e como resolver.
 class VoiceSettingsScreen extends StatelessWidget {
   const VoiceSettingsScreen({super.key});
 
@@ -33,7 +34,7 @@ class VoiceSettingsScreen extends StatelessWidget {
     final help = SystemVoicesHelp(missing: !available);
     return Scaffold(
       key: VoiceKeys.settingsSection,
-      appBar: AppBar(title: Text(l10n.voiceSection)),
+      appBar: LucenaAppBar(title: Text(l10n.voiceSection)),
       body: !state.loaded
           ? const SizedBox.shrink()
           : ListView(
@@ -73,8 +74,6 @@ class VoiceSettingsScreen extends StatelessWidget {
                   ),
                   header(l10n.voiceTeacher),
                   const TeacherVoiceList(),
-                  header(l10n.voiceCharacters),
-                  const CharacterVoiceList(),
                   help,
                 ],
               ],

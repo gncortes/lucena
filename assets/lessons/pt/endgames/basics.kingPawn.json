@@ -53,7 +53,7 @@
   "part.seventh.title": "A sétima sem xeque",
   "part.seventh.summary": "Com o rei na sexta, leve o peão à sétima sem dar xeque. Com xeque, o rei preto acaba afogado.",
   "part.corners.title": "Peão de torre e cavalo",
-  "part.corners.summary": "Com o peão de torre, o rei que alcança o canto empata, como Barcza contra Fischer. E as regras para levar para a partida.",
+  "part.corners.summary": "Contra o peão de torre, o rei que alcança o canto à frente do peão empata: de lá ninguém o tira, e só resta o afogamento.",
   "step.t_square.hint2": "Do peão em g4 até g8, são quatro casas. Conte quatro colunas na direção do rei preto.",
   "step.d_doubleStep": "Agora o peão está na segunda fileira. Como ele pode avançar duas casas no primeiro lance, o quadrado é contado como se ele já estivesse na terceira fileira: de b3 até g8. O rei em h5 está fora.",
   "step.d_doubleStep.m1": "1.b4!, o avanço duplo. O quadrado agora vai de b4 a f8, e o rei preto não alcança a coluna f a tempo. Com 1.b3?, o quadrado iria de b3 a g8, e 1...Rg6 entraria nele.",

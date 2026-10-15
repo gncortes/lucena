@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,7 +40,7 @@ class AboutScreen extends StatelessWidget {
     final language = Localizations.localeOf(context).languageCode;
     return Scaffold(
       key: SettingsKeys.aboutScreen,
-      appBar: AppBar(title: Text(l10n.settingsAbout)),
+      appBar: LucenaAppBar(title: Text(l10n.settingsAbout)),
       body: ListView(
         padding: scrollPadding(context),
         children: [

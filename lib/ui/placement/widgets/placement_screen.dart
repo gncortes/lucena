@@ -1,6 +1,10 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/app_bar_progress.dart';
+
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
@@ -11,6 +15,9 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -44,7 +51,7 @@ class PlacementScreen extends StatelessWidget {
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.
       appBar: state.view == PlacementView.result
           ? null
-          : AppBar(
+          : LucenaAppBar(
               title: state.view == PlacementView.question
                   ? Text(
                       l10n.placementQuestionOf(state.number),
@@ -54,18 +61,9 @@ class PlacementScreen extends StatelessWidget {
               // Quanto do questionário já foi: uma barra contínua na base
               // da barra do app, que anda a cada resposta.
               bottom: state.view == PlacementView.question
-                  ? PreferredSize(
-                      preferredSize: const Size.fromHeight(4),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(end: (state.number - 1) / 20),
-                        duration: AppMotion.of(context).component,
-                        curve: AppMotion.enter,
-                        builder: (context, value, _) => LinearProgressIndicator(
-                          key: PlacementKeys.progress,
-                          value: value,
-                          minHeight: 4,
-                        ),
-                      ),
+                  ? AppBarProgress(
+                      key: PlacementKeys.progress,
+                      value: (state.number - 1) / 20,
                     )
                   : null,
             ),
@@ -113,6 +111,7 @@ class _Intro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     final cubit = context.read<PlacementCubit>();
     final viktor = state.viktor;
@@ -121,77 +120,120 @@ class _Intro extends StatelessWidget {
       (Icons.schedule_rounded, l10n.placementChipMinutes),
       (Icons.timer_off_outlined, l10n.placementChipNoClock),
     ];
-    return SingleChildScrollView(
-      padding: scrollPadding(
-        context,
-        left: AppSpacing.xl,
-        top: AppSpacing.lg,
-        right: AppSpacing.xl,
-        bottom: AppSpacing.xl,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (viktor != null)
-            TeacherSpeech(
-              speechContext: SpeechContext.teaching,
-              teacher: viktor,
-              text: l10n.placementIntroSpeech,
-              emotion: Emotion.happy,
-              avatarSize: 56,
-              speaks: true,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: scrollPadding(
+              context,
+              // Canvas `PropV2TesteAbertura`: margem de 16, como o rodapé.
+              left: AppSpacing.lg,
+              top: AppSpacing.lg,
+              right: AppSpacing.lg,
+              bottom: AppSpacing.xl,
             ),
-          const SizedBox(height: AppSpacing.xl),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              for (final (icon, label) in chips)
-                Chip(avatar: Icon(icon, size: 18), label: Text(label)),
-            ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (viktor != null)
+                  TeacherSpeech(
+                    speechContext: SpeechContext.teaching,
+                    teacher: viktor,
+                    text: l10n.placementIntroSpeech,
+                    emotion: Emotion.happy,
+                    avatarSize: 56,
+                    speaks: true,
+                  ),
+                const SizedBox(height: AppSpacing.xl),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    // CompChip informativo: cheio, sem contorno.
+                    for (final (icon, label) in chips)
+                      Chip(
+                        avatar: Icon(icon, size: 18, color: colors.onSurface),
+                        label: Text(label),
+                        labelStyle: TextStyle(color: colors.onSurface),
+                        backgroundColor: colors.surfaceContainer,
+                        side: BorderSide.none,
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          if (state.resuming) ...[
-            FilledButton(
-              key: PlacementKeys.resume,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              onPressed: cubit.start,
-              child: Text(l10n.placementResume(state.number)),
+        ),
+        // Fixo no rodapé (Gabriel, 14/10/2026; canvas PropV2TesteAbertura): o
+        // principal cheio na largura toda e a saída em texto logo abaixo.
+        ColoredBox(
+          key: PlacementKeys.footer,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.xs,
+              children: [
+                // Na retomada (canvas 0744f9e): onde o teste parou, centrado
+                // acima do botão (4 de margem, mais o vão da coluna).
+                if (state.resuming)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child: Text(
+                      l10n.placementStoppedAt(
+                        state.number,
+                        PlacementState.questionCount,
+                      ),
+                      key: PlacementKeys.stoppedAt,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                FilledButton(
+                  key: state.resuming
+                      ? PlacementKeys.resume
+                      : PlacementKeys.start,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(kButtonHeight),
+                    textStyle: AppButtonText.footer(context),
+                  ),
+                  onPressed: cubit.start,
+                  child: Text(
+                    state.resuming ? l10n.placementResume : l10n.placementStart,
+                  ),
+                ),
+                if (state.resuming)
+                  TextButton(
+                    key: PlacementKeys.restart,
+                    style: _footerText,
+                    onPressed: cubit.restart,
+                    child: Text(l10n.placementRestart),
+                  )
+                else if (onChooseByHand != null)
+                  TextButton(
+                    key: PlacementKeys.chooseByHand,
+                    style: _footerText,
+                    onPressed: onChooseByHand,
+                    child: Text(l10n.placementChooseByHand),
+                  ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-            OutlinedButton(
-              key: PlacementKeys.restart,
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
-              ),
-              onPressed: cubit.restart,
-              child: Text(l10n.placementRestart),
-            ),
-          ] else
-            FilledButton(
-              key: PlacementKeys.start,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              onPressed: cubit.start,
-              child: Text(l10n.placementStart),
-            ),
-          if (onChooseByHand != null) ...[
-            const SizedBox(height: AppSpacing.sm),
-            TextButton(
-              key: PlacementKeys.chooseByHand,
-              onPressed: onChooseByHand,
-              child: Text(l10n.placementChooseByHand),
-            ),
-          ],
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 }
+
+/// A saída em texto do rodapé da abertura: 40 de altura, largura toda.
+final _footerText = TextButton.styleFrom(
+  minimumSize: const Size.fromHeight(40),
+);
 
 /// Uma pergunta: enunciado no alto, tabuleiro centralizado na área entre
 /// as barras do sistema e respostas no rodapé.
@@ -296,7 +338,7 @@ class _Answers extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.confirm,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: state.selected.isEmpty ? null : cubit.confirmSquares,
               child: Text(l10n.placementConfirm),
@@ -323,7 +365,7 @@ class _Option extends StatelessWidget {
     return OutlinedButton(
       key: PlacementKeys.option(option),
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size.fromHeight(56),
+        minimumSize: const Size.fromHeight(kButtonHeight),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         backgroundColor: colors.surfaceContainerLow,
         foregroundColor: colors.onSurface,
@@ -372,8 +414,8 @@ class _OptionBadge extends StatelessWidget {
       _ => null,
     };
     final side = switch (option) {
-      'whiteWins' => Colors.white,
-      'blackWins' => Colors.black,
+      'whiteWins' => AppColors.chessWhiteColor,
+      'blackWins' => AppColors.chessBlackColor,
       _ => null,
     };
     // Só o sinal, sem fundo; o lado que ganha é uma bolinha da cor dele.

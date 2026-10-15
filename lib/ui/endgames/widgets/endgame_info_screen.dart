@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
@@ -26,7 +27,7 @@ class EndgameInfoScreen extends StatelessWidget {
     return Scaffold(
       key: EndgameInfoKeys.screen,
       // O título da aula pode ser longo: ele vem no corpo, inteiro.
-      appBar: AppBar(title: Text(l10n.endgameInfoTooltip)),
+      appBar: LucenaAppBar(title: Text(l10n.endgameInfoTooltip)),
       body: lesson == null
           ? const SizedBox.shrink()
           : ListView(

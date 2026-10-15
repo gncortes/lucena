@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/app_accent.dart';
@@ -31,7 +32,7 @@ class ThemeScreen extends StatelessWidget {
         );
     return Scaffold(
       key: SettingsKeys.themeScreen,
-      appBar: AppBar(title: Text(l10n.settingsTheme)),
+      appBar: LucenaAppBar(title: Text(l10n.settingsTheme)),
       body: ListView(
         children: [
           for (final mode in AppThemeMode.values)

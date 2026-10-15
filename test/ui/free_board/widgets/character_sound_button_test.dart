@@ -6,6 +6,7 @@ import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_sound_keys.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/ui/core/widgets/sound_off_icon.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
@@ -68,7 +69,7 @@ void main() {
     await tester.tap(find.byKey(GameSoundKeys.close));
     await tester.pumpAndSettle();
     expect(find.byKey(GameSoundKeys.dialog), findsNothing);
-    expect(find.byIcon(Icons.volume_off_outlined), findsOneWidget);
+    expect(find.byType(SoundOffIcon), findsOneWidget);
   });
 
   testWidgets('velocidade muda pelo diálogo e aparece no botão', (

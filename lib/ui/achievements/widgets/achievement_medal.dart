@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+
 /// A medalha de uma conquista: disco dourado com o ícone quando obtida; cinza,
 /// com um cadeado por cima, quando falta. O [shine] passa um brilho pelo
 /// disco (o aviso e o detalhe usam).
@@ -28,11 +30,11 @@ class AchievementMedal extends StatelessWidget {
   static const gold = _gold;
 
   static const _gold = [
-    Color(0xFFFFE08A),
-    Color(0xFFF2B705),
-    Color(0xFFB97A00),
+    AppColors.medalLight,
+    AppColors.goldColor,
+    AppColors.medalDark,
   ];
-  static const _ink = Color(0xFF4A3000);
+  static const _ink = AppColors.medalInk;
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +77,9 @@ class AchievementMedal extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Color(0x00FFFFFF),
-                              Color(0xCCFFFFFF),
-                              Color(0x00FFFFFF),
+                              AppColors.shineClear,
+                              AppColors.shine,
+                              AppColors.shineClear,
                             ],
                             stops: [0.35, 0.5, 0.65],
                           ),

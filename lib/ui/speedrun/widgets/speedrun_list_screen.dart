@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,6 +12,7 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -53,7 +55,7 @@ class SpeedrunListScreen extends StatelessWidget {
     );
     return Scaffold(
       key: SpeedrunKeys.listScreen,
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         title: Text(l10n.speedrunTitle),
         actions: [
           IconButton(
@@ -180,11 +182,8 @@ class SpeedrunListScreen extends StatelessWidget {
         Text(names.join(', '), style: theme.textTheme.bodyLarge),
       ]);
     }
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      useSafeArea: true,
+    showLucenaSheet<void>(
+      context,
       builder: (context) => FractionallySizedBox(
         heightFactor: 0.85,
         child: Scrollbar(

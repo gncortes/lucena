@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/clock.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/widgets/lucena_sheet.dart';
 
 /// O que foi confirmado no painel do relógio. [config] nulo: sem relógio.
 class ClockChoice {
@@ -19,11 +21,8 @@ Future<ClockChoice?> showClockSheet(
   BuildContext context, {
   required ClockConfig? current,
 }) {
-  return showModalBottomSheet<ClockChoice>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    useSafeArea: true,
+  return showLucenaSheet<ClockChoice>(
+    context,
     // O botão de começar fica acima da barra de gestos do sistema.
     builder: (context) =>
         SafeArea(top: false, child: _ClockSheet(current: current)),
@@ -162,7 +161,7 @@ class _ClockSheetState extends State<_ClockSheet> {
           child: FilledButton(
             key: FreeBoardKeys.clockStartButton,
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: () => Navigator.of(context).pop(_choice),
             child: Text(l10n.clockStartGame),

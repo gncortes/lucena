@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../../domain/models/endgame_lesson.dart';
+import '../../../domain/use_cases/endgame_progress_migration.dart';
 import '../../services/preferences_service.dart';
 
 /// O que o aluno já fez nas aulas de finais.
@@ -23,7 +24,12 @@ class LocalEndgameProgressRepository implements EndgameProgressRepository {
     final text = await _preferences.getString(key);
     if (text == null) return const EndgameProgress();
     try {
-      return EndgameProgress.fromJson(jsonDecode(text));
+      final loaded = EndgameProgress.fromJson(jsonDecode(text));
+      // T74: a Oposição distante virou duas partes; o progresso gravado
+      // antes da divisão passa para o formato novo e é gravado de volta.
+      final migrated = EndgameProgressMigration.apply(loaded);
+      if (!identical(migrated, loaded)) await save(migrated);
+      return migrated;
     } on FormatException {
       return const EndgameProgress();
     }

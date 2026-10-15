@@ -1,7 +1,9 @@
 import 'package:dartchess/dartchess.dart' show Side;
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
+import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -198,6 +200,13 @@ void main() {
               "opponent, moves) VALUES ('basic.queen.0001', 1767268800, "
               "'win', 1, 'maia', 'c1c7 d7e6')",
             )
+            // A do rating, como a versão 5 criou (a 8 mexe nela).
+            ..execute(
+              'CREATE TABLE rating_history (id INTEGER NOT NULL PRIMARY KEY '
+              'AUTOINCREMENT, game_id INTEGER NULL, at INTEGER NOT NULL, '
+              'rating REAL NOT NULL, deviation REAL NOT NULL, volatility REAL '
+              'NOT NULL)',
+            )
             // A das conquistas, como a versão 5 criou (a 7 mexe nela).
             ..execute(
               'CREATE TABLE unlocked_achievements (achievement_id TEXT NOT '
@@ -229,5 +238,81 @@ void main() {
     final saved = (await repository.attemptsById([id]))[id]!;
     expect(saved.moveTimes, const [Duration(milliseconds: 1200)]);
     expect(saved.userSide, Side.black);
+  });
+
+  test('da versão 7 para a 8: o rating fica, as tentativas antigas não dão '
+      'bônus e a mesma tentativa não recebe dois', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          // As tabelas da versão 7 que a 8 lê ou toca, como o drift as criou.
+          raw
+            ..execute(profiles)
+            ..execute(
+              'CREATE TABLE games (id INTEGER NOT NULL PRIMARY KEY '
+              'AUTOINCREMENT, position_id TEXT NOT NULL, played_at INTEGER '
+              'NOT NULL, outcome TEXT NOT NULL, fulfilled INTEGER NOT NULL, '
+              'opponent TEXT NOT NULL, opponent_level INTEGER NULL, '
+              'started_at INTEGER NULL, start_fen TEXT NULL, moves TEXT NOT '
+              "NULL DEFAULT '', end_reason TEXT NULL, user_time TEXT NULL, "
+              'opponent_time TEXT NULL, user_clock_ms INTEGER NULL, '
+              'challenge_id TEXT NULL, speedrun_attempt_id INTEGER NULL, '
+              'speedrun_stage INTEGER NULL, move_times_ms TEXT NOT NULL '
+              "DEFAULT '', user_side TEXT NULL)",
+            )
+            ..execute(
+              'CREATE TABLE speedrun_attempts (id INTEGER NOT NULL PRIMARY '
+              'KEY AUTOINCREMENT, speedrun_id TEXT NOT NULL, started_at '
+              'INTEGER NOT NULL, abandoned_at INTEGER NULL)',
+            )
+            ..execute(
+              'CREATE TABLE rating_history (id INTEGER NOT NULL PRIMARY KEY '
+              'AUTOINCREMENT, game_id INTEGER NULL, at INTEGER NOT NULL, '
+              'rating REAL NOT NULL, deviation REAL NOT NULL, volatility REAL '
+              'NOT NULL)',
+            )
+            ..execute(
+              'INSERT INTO speedrun_attempts (speedrun_id, started_at) '
+              "VALUES ('ending.queen', 1767268800)",
+            )
+            // Uma etapa de speedrun que mexeu no rating, como antes da 8:
+            // continua no gráfico (P11).
+            ..execute(
+              'INSERT INTO rating_history (game_id, at, rating, deviation, '
+              'volatility) VALUES (7, 1767268900, 1180.5, 120, 0.06)',
+            )
+            ..execute('PRAGMA user_version = 7');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    final speedruns = LocalSpeedrunRepository(database);
+
+    final old = (await speedruns.allAttempts()).single;
+    expect(old.bonusEligible, isFalse);
+    final fresh = await speedruns.start(
+      'ending.queen',
+      DateTime.utc(2026, 10, 13),
+    );
+    expect((await speedruns.attempt(fresh.id))!.bonusEligible, isTrue);
+
+    final rows = await database.select(database.ratingHistory).get();
+    expect(rows.single.rating, 1180.5);
+    expect(rows.single.gameId, 7);
+    expect(rows.single.speedrunAttemptId, isNull);
+
+    Future<int> bonus() => database
+        .into(database.ratingHistory)
+        .insert(
+          RatingHistoryCompanion.insert(
+            at: DateTime.utc(2026, 10, 13),
+            rating: 1280.5,
+            deviation: 120,
+            volatility: 0.06,
+            speedrunAttemptId: Value(fresh.id),
+          ),
+        );
+    await bonus();
+    await expectLater(bonus(), throwsA(isA<SqliteException>()));
   });
 }
