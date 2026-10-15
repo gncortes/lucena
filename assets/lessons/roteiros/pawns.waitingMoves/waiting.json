@@ -281,32 +281,32 @@
     },
     {
      "id": "ex2",
-     "fen": "8/1k6/2p2K2/2p5/p1P5/P7/8/8 w - - 0 1",
+     "fen": "8/2k5/3p2K1/3p4/1p1P4/1P6/8/8 w - - 0 1",
      "vira": false,
      "objetivo": "ganhar",
      "fim": "etapa",
      "entrada": [
       {
-       "fen": "8/1k6/2p2K2/2p5/p1P5/P7/8/8 w - - 0 1",
+       "fen": "8/2k5/3p2K1/3p4/1p1P4/1P6/8/8 w - - 0 1",
        "marcas": [
-        "a3",
-        "a4",
-        "c4",
-        "c5",
-        "c6"
+        "b3",
+        "b4",
+        "d4",
+        "d5",
+        "d6"
        ],
        "t": "rot.waiting.ideia.ex2.e1"
       },
       {
-       "fen": "8/1k6/2p2K2/2p5/p1P5/P7/8/8 w - - 0 1",
+       "fen": "8/2k5/3p2K1/3p4/1p1P4/1P6/8/8 w - - 0 1",
        "marcas": [
-        "c5",
-        "c6"
+        "d5",
+        "d6"
        ],
        "t": "rot.waiting.ideia.ex2.e2"
       },
       {
-       "fen": "8/1k6/2p2K2/2p5/p1P5/P7/8/8 w - - 0 1",
+       "fen": "8/2k5/3p2K1/3p4/1p1P4/1P6/8/8 w - - 0 1",
        "t": "rot.waiting.ideia.ex2.e3"
       }
      ],
@@ -314,27 +314,27 @@
       "juiz": "lista",
       "t": "rot.waiting.ideia.ex2.p",
       "certos": [
-       "f6f7"
+       "g6g7"
       ],
       "certo": {
-       "fen": "8/1k3K2/2p5/2p5/p1P5/P7/8/8 b - - 1 1",
-       "lance": "f6f7",
+       "fen": "8/2k3K1/3p4/3p4/1p1P4/1P6/8/8 b - - 1 1",
+       "lance": "g6g7",
        "setas": [
         [
-         "f6",
-         "f7",
+         "g6",
+         "g7",
          "g"
         ]
        ],
        "t": "rot.waiting.ideia.ex2.certo"
       },
       "revela": {
-       "fen": "8/1k3K2/2p5/2p5/p1P5/P7/8/8 b - - 1 1",
-       "lance": "f6f7",
+       "fen": "8/2k3K1/3p4/3p4/1p1P4/1P6/8/8 b - - 1 1",
+       "lance": "g6g7",
        "setas": [
         [
-         "f6",
-         "f7",
+         "g6",
+         "g7",
          "g"
         ]
        ],
@@ -342,137 +342,137 @@
       },
       "alternativos": {},
       "erros": {
-       "f6e7": [
+       "g6f7": [
         {
-         "fen": "8/1k2K3/2p5/2p5/p1P5/P7/8/8 b - - 1 1",
+         "fen": "8/2k2K2/3p4/3p4/1p1P4/1P6/8/8 b - - 1 1",
          "setas": [
           [
-           "f6",
-           "e7",
-           "r"
-          ]
-         ],
-         "lance": "f6e7",
-         "t": "rot.waiting.ideia.ex2.err.f6e7.1"
-        },
-        {
-         "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a7",
-         "t": "rot.waiting.ideia.ex2.err.f6e7.2"
-        }
-       ],
-       "f6g7": [
-        {
-         "fen": "8/1k4K1/2p5/2p5/p1P5/P7/8/8 b - - 1 1",
-         "setas": [
-          [
-           "f6",
-           "g7",
-           "r"
-          ]
-         ],
-         "lance": "f6g7",
-         "t": "rot.waiting.ideia.ex2.err.f6g7.1"
-        },
-        {
-         "fen": "8/k5K1/2p5/2p5/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a7",
-         "t": "rot.waiting.ideia.ex2.err.f6g7.2"
-        }
-       ],
-       "f6e6": [
-        {
-         "fen": "8/1k6/2p1K3/2p5/p1P5/P7/8/8 b - - 1 1",
-         "setas": [
-          [
-           "f6",
-           "e6",
-           "r"
-          ]
-         ],
-         "lance": "f6e6",
-         "t": "rot.waiting.ideia.ex2.err.f6e6.1"
-        },
-        {
-         "fen": "8/8/k1p1K3/2p5/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a6",
-         "t": "rot.waiting.ideia.ex2.err.f6e6.2"
-        }
-       ],
-       "f6g6": [
-        {
-         "fen": "8/1k6/2p3K1/2p5/p1P5/P7/8/8 b - - 1 1",
-         "setas": [
-          [
-           "f6",
            "g6",
+           "f7",
            "r"
           ]
          ],
-         "lance": "f6g6",
-         "t": "rot.waiting.ideia.ex2.err.f6g6.1"
+         "lance": "g6f7",
+         "t": "rot.waiting.ideia.ex2.err.g6f7.1"
         },
         {
-         "fen": "8/8/k1p3K1/2p5/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a6",
-         "t": "rot.waiting.ideia.ex2.err.f6g6.2"
+         "fen": "8/1k3K2/3p4/3p4/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b7",
+         "t": "rot.waiting.ideia.ex2.err.g6f7.2"
         }
        ],
-       "f6e5": [
+       "g6h7": [
         {
-         "fen": "8/1k6/2p5/2p1K3/p1P5/P7/8/8 b - - 1 1",
+         "fen": "8/2k4K/3p4/3p4/1p1P4/1P6/8/8 b - - 1 1",
          "setas": [
           [
-           "f6",
-           "e5",
+           "g6",
+           "h7",
            "r"
           ]
          ],
-         "lance": "f6e5",
-         "t": "rot.waiting.ideia.ex2.err.f6e5.1"
+         "lance": "g6h7",
+         "t": "rot.waiting.ideia.ex2.err.g6h7.1"
         },
         {
-         "fen": "8/k7/2p5/2p1K3/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a7",
-         "t": "rot.waiting.ideia.ex2.err.f6e5.2"
+         "fen": "8/1k5K/3p4/3p4/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b7",
+         "t": "rot.waiting.ideia.ex2.err.g6h7.2"
         }
        ],
-       "f6f5": [
+       "g6f6": [
         {
-         "fen": "8/1k6/2p5/2p2K2/p1P5/P7/8/8 b - - 1 1",
+         "fen": "8/2k5/3p1K2/3p4/1p1P4/1P6/8/8 b - - 1 1",
          "setas": [
           [
+           "g6",
            "f6",
+           "r"
+          ]
+         ],
+         "lance": "g6f6",
+         "t": "rot.waiting.ideia.ex2.err.g6f6.1"
+        },
+        {
+         "fen": "8/8/1k1p1K2/3p4/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b6",
+         "t": "rot.waiting.ideia.ex2.err.g6f6.2"
+        }
+       ],
+       "g6h6": [
+        {
+         "fen": "8/2k5/3p3K/3p4/1p1P4/1P6/8/8 b - - 1 1",
+         "setas": [
+          [
+           "g6",
+           "h6",
+           "r"
+          ]
+         ],
+         "lance": "g6h6",
+         "t": "rot.waiting.ideia.ex2.err.g6h6.1"
+        },
+        {
+         "fen": "8/8/1k1p3K/3p4/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b6",
+         "t": "rot.waiting.ideia.ex2.err.g6h6.2"
+        }
+       ],
+       "g6f5": [
+        {
+         "fen": "8/2k5/3p4/3p1K2/1p1P4/1P6/8/8 b - - 1 1",
+         "setas": [
+          [
+           "g6",
            "f5",
            "r"
           ]
          ],
-         "lance": "f6f5",
-         "t": "rot.waiting.ideia.ex2.err.f6f5.1"
+         "lance": "g6f5",
+         "t": "rot.waiting.ideia.ex2.err.g6f5.1"
         },
         {
-         "fen": "8/k7/2p5/2p2K2/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a7",
-         "t": "rot.waiting.ideia.ex2.err.f6f5.2"
+         "fen": "8/1k6/3p4/3p1K2/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b7",
+         "t": "rot.waiting.ideia.ex2.err.g6f5.2"
         }
        ],
-       "f6g5": [
+       "g6g5": [
         {
-         "fen": "8/1k6/2p5/2p3K1/p1P5/P7/8/8 b - - 1 1",
+         "fen": "8/2k5/3p4/3p2K1/1p1P4/1P6/8/8 b - - 1 1",
          "setas": [
           [
-           "f6",
+           "g6",
            "g5",
            "r"
           ]
          ],
-         "lance": "f6g5",
-         "t": "rot.waiting.ideia.ex2.err.f6g5.1"
+         "lance": "g6g5",
+         "t": "rot.waiting.ideia.ex2.err.g6g5.1"
         },
         {
-         "fen": "8/k7/2p5/2p3K1/p1P5/P7/8/8 w - - 2 2",
-         "lance": "b7a7",
-         "t": "rot.waiting.ideia.ex2.err.f6g5.2"
+         "fen": "8/1k6/3p4/3p2K1/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b7",
+         "t": "rot.waiting.ideia.ex2.err.g6g5.2"
+        }
+       ],
+       "g6h5": [
+        {
+         "fen": "8/2k5/3p4/3p3K/1p1P4/1P6/8/8 b - - 1 1",
+         "setas": [
+          [
+           "g6",
+           "h5",
+           "r"
+          ]
+         ],
+         "lance": "g6h5",
+         "t": "rot.waiting.ideia.ex2.err.g6h5.1"
+        },
+        {
+         "fen": "8/1k6/3p4/3p3K/1p1P4/1P6/8/8 w - - 2 2",
+         "lance": "c7b7",
+         "t": "rot.waiting.ideia.ex2.err.g6h5.2"
         }
        ]
       },
@@ -481,72 +481,72 @@
      },
      "linha": [
       {
-       "fen": "8/1k3K2/2p5/2p5/p1P5/P7/8/8 b - - 1 1",
+       "fen": "8/2k3K1/3p4/3p4/1p1P4/1P6/8/8 b - - 1 1",
        "t": "rot.waiting.ideia.ex2.l1"
       },
       {
-       "fen": "8/1k3K2/2p5/2p5/p1P5/P7/8/8 b - - 1 1",
+       "fen": "8/2k3K1/3p4/3p4/1p1P4/1P6/8/8 b - - 1 1",
+       "marcas": [
+        "d7",
+        "e7",
+        "f7"
+       ],
+       "t": "rot.waiting.ideia.ex2.l2"
+      },
+      {
+       "lance": "c7b7",
+       "fen": "8/1k4K1/3p4/3p4/1p1P4/1P6/8/8 w - - 2 2",
+       "t": "rot.waiting.ideia.ex2.l3"
+      },
+      {
+       "lance": "g7f7",
+       "fen": "8/1k3K2/3p4/3p4/1p1P4/1P6/8/8 b - - 3 2",
        "marcas": [
         "c7",
         "d7",
         "e7"
        ],
-       "t": "rot.waiting.ideia.ex2.l2"
-      },
-      {
-       "lance": "b7a7",
-       "fen": "8/k4K2/2p5/2p5/p1P5/P7/8/8 w - - 2 2",
-       "t": "rot.waiting.ideia.ex2.l3"
-      },
-      {
-       "lance": "f7e7",
-       "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 b - - 3 2",
-       "marcas": [
-        "b7",
-        "c7",
-        "d7"
-       ],
        "t": "rot.waiting.ideia.ex2.l4"
       },
       {
-       "lance": "a7b7",
-       "fen": "8/1k2K3/2p5/2p5/p1P5/P7/8/8 w - - 4 3",
+       "lance": "b7c7",
+       "fen": "8/2k2K2/3p4/3p4/1p1P4/1P6/8/8 w - - 4 3",
        "t": "rot.waiting.ideia.ex2.l5"
       },
       {
-       "lance": "e7d7",
-       "fen": "8/1k1K4/2p5/2p5/p1P5/P7/8/8 b - - 5 3",
+       "lance": "f7e7",
+       "fen": "8/2k1K3/3p4/3p4/1p1P4/1P6/8/8 b - - 5 3",
        "marcas": [
-        "b7",
-        "d7"
+        "c7",
+        "e7"
        ],
        "t": "rot.waiting.ideia.ex2.l6"
       },
       {
-       "lance": "b7b6",
-       "fen": "8/3K4/1kp5/2p5/p1P5/P7/8/8 w - - 6 4",
+       "lance": "c7c6",
+       "fen": "8/4K3/2kp4/3p4/1p1P4/1P6/8/8 w - - 6 4",
        "t": "rot.waiting.ideia.ex2.l7"
       },
       {
-       "lance": "d7d6",
-       "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 b - - 7 4",
+       "lance": "e7e6",
+       "fen": "8/8/2kpK3/3p4/1p1P4/1P6/8/8 b - - 7 4",
        "marcas": [
-        "c5",
-        "c6"
+        "d5",
+        "d6"
        ],
        "t": "rot.waiting.ideia.ex2.l8"
       },
       {
        "seq": [
-        "b6a5",
-        "d6c5"
+        "c6b5",
+        "e6d5"
        ],
-       "fen": "8/8/2p5/k1K5/p1P5/P7/8/8 b - - 0 5",
+       "fen": "8/8/3p4/1k1K4/1p1P4/1P6/8/8 b - - 0 5",
        "t": "rot.waiting.ideia.ex2.l9"
       },
       {
        "salto": true,
-       "fen": "8/1k6/2p2K2/2p5/p1P5/P7/8/8 w - - 0 1",
+       "fen": "8/2k5/3p2K1/3p4/1p1P4/1P6/8/8 w - - 0 1",
        "t": "rot.waiting.ideia.ex2.l10"
       }
      ]
@@ -558,75 +558,75 @@
    "exemplos": [
     {
      "id": "borda",
-     "fen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 0 1",
+     "fen": "8/6K1/2kp4/3p4/1p1P4/1P6/8/8 w - - 0 1",
      "vira": false,
      "objetivo": "ganhar",
      "fim": "proximo",
      "entrada": [
       {
-       "fen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 0 1",
+       "fen": "8/6K1/2kp4/3p4/1p1P4/1P6/8/8 w - - 0 1",
        "marcas": [
-        "b6",
-        "f7"
+        "c6",
+        "g7"
        ],
        "t": "rot.waiting.demos.borda.1"
       },
       {
-       "fen": "8/5K2/1kp5/2p5/p1P5/P7/8/8 w - - 0 1",
+       "fen": "8/6K1/2kp4/3p4/1p1P4/1P6/8/8 w - - 0 1",
        "t": "rot.waiting.demos.borda.2"
       }
      ],
      "linha": [
       {
-       "lance": "f7e8",
-       "fen": "4K3/8/1kp5/2p5/p1P5/P7/8/8 b - - 1 1",
+       "lance": "g7f8",
+       "fen": "5K2/8/2kp4/3p4/1p1P4/1P6/8/8 b - - 1 1",
        "t": "rot.waiting.demos.borda.3"
       },
       {
-       "lance": "b6a7",
-       "fen": "4K3/k7/2p5/2p5/p1P5/P7/8/8 w - - 2 2",
+       "lance": "c6b7",
+       "fen": "5K2/1k6/3p4/3p4/1p1P4/1P6/8/8 w - - 2 2",
        "t": "rot.waiting.demos.borda.4"
       },
       {
-       "lance": "e8e7",
-       "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 b - - 3 2",
+       "lance": "f8f7",
+       "fen": "8/1k3K2/3p4/3p4/1p1P4/1P6/8/8 b - - 3 2",
        "marcas": [
-        "b7",
         "c7",
-        "d7"
+        "d7",
+        "e7"
        ],
        "t": "rot.waiting.demos.borda.5"
       },
       {
        "seq": [
-        "a7b7",
-        "e7d7"
+        "b7c7",
+        "f7e7"
        ],
-       "fen": "8/1k1K4/2p5/2p5/p1P5/P7/8/8 b - - 5 3",
+       "fen": "8/2k1K3/3p4/3p4/1p1P4/1P6/8/8 b - - 5 3",
        "marcas": [
-        "b7",
-        "d7"
+        "c7",
+        "e7"
        ],
        "t": "rot.waiting.demos.borda.6"
       },
       {
        "seq": [
-        "b7b6",
-        "d7d6"
+        "c7c6",
+        "e7e6"
        ],
-       "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 b - - 7 4",
+       "fen": "8/8/2kpK3/3p4/1p1P4/1P6/8/8 b - - 7 4",
        "marcas": [
-        "c5",
-        "c6"
+        "d5",
+        "d6"
        ],
        "t": "rot.waiting.demos.borda.7"
       },
       {
        "seq": [
-        "b6a5",
-        "d6c5"
+        "c6b5",
+        "e6d5"
        ],
-       "fen": "8/8/2p5/k1K5/p1P5/P7/8/8 b - - 0 5",
+       "fen": "8/8/3p4/1k1K4/1p1P4/1P6/8/8 b - - 0 5",
        "t": "rot.waiting.demos.borda.8"
       }
      ]

@@ -160,6 +160,29 @@
       ]
     },
     {
+      "id": "e22",
+      "stars": 2,
+      "capitulo": "edge",
+      "fen": "8/8/8/2p5/k1p1K3/p1P5/P7/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e4f4",
+          "accept": [
+            "e4f4"
+          ],
+          "reply": "a4b5"
+        },
+        {
+          "teach": "f4f5",
+          "accept": [
+            "f4f5"
+          ]
+        }
+      ]
+    },
+    {
       "id": "e21",
       "stars": 2,
       "capitulo": "means",
@@ -219,7 +242,7 @@
       ]
     }
   ],
-  "passScore": 5,
+  "passScore": 6,
   "keyPositions": [
     {
       "id": "lesson",
@@ -326,5 +349,5 @@
       "url": "https://lichess.org/study/A4ujYOer"
     }
   ],
-  "maxScore": 12
+  "maxScore": 14
 }
