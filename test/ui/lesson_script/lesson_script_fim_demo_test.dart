@@ -64,7 +64,7 @@ void main() {
         final cubit = await _open(demoToPractice());
         await _untilEnd(cubit);
         final s = cubit.state;
-        expect(s.speech.last, 'rot.demos.erroAtacante.ponte');
+        expect(s.speech.last, 'rot.distant.demos.erroAtacante.ponte');
         expect(s.fen, _finalFen);
         expect(s.lastMove, 'e6e5');
         expect(s.currentMoveId, s.moves.last.id);

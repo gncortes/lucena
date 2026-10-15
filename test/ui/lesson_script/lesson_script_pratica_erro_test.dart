@@ -54,10 +54,16 @@ Map<String, String> _texts() {
     io.File('assets/lessons/pt/endgames/pawns.distantOpposition.json')
         .readAsStringSync(),
   ) as Map<String, dynamic>;
+  final rot = jsonDecode(
+    io.File(
+      'assets/lessons/pt/endgames/pawns.distantOpposition.distant.rot.json',
+    ).readAsStringSync(),
+  ) as Map<String, dynamic>;
   return {
     for (final e in generic.entries) e.key: e.value as String,
     for (final e in lesson.entries)
-      if (e.key.startsWith('rot.pratica.')) e.key: e.value as String,
+      if (e.key.startsWith('rot.')) e.key: e.value as String,
+    for (final e in rot.entries) e.key: e.value as String,
   };
 }
 
@@ -115,8 +121,8 @@ void main() {
     expect(s.lastMove, 'f3e3');
     expect(s.tone, ScriptTone.bad);
     // A fala do roteiro em duas partes: primeiro o que o lance perde.
-    expect(s.speech.single, _texts()['rot.pratica.ataque.err.f3e3.1']);
-    expect(s.speech.single, startsWith('Com 1.Re3?'));
+    expect(s.speech.single, _texts()['rot.distant.pratica.ataque.err.f3e3.1']);
+    expect(s.speech.single, startsWith('Indo a e3,'));
     expect(s.primary, isNull);
     expect(s.movable, isNull);
     expect(s.moves.first.san, 'Ke3');
@@ -137,8 +143,8 @@ void main() {
     expect(s.secondary, isNull);
     expect(s.moves.length, inInclusiveRange(2, 4));
     // Com a resposta, o porquê, que fica até o "Tentar de novo".
-    expect(s.speech.single, _texts()['rot.pratica.ataque.err.f3e3.2']);
-    expect(s.speech.single, contains('1...Rd7'));
+    expect(s.speech.single, _texts()['rot.distant.pratica.ataque.err.f3e3.2']);
+    expect(s.speech.single, contains('O rei preto vai a d7'));
 
     // Tentar de novo: a posição de antes, com a vez do aluno.
     await cubit.onAction(ScriptAction.tentarDeNovo);
@@ -181,7 +187,8 @@ void main() {
     for (final language in ['pt', 'en']) {
       final texts = jsonDecode(
         io.File(
-          'assets/lessons/$language/endgames/pawns.distantOpposition.json',
+          'assets/lessons/$language/endgames/'
+          'pawns.distantOpposition.distant.rot.json',
         ).readAsStringSync(),
       ) as Map<String, dynamic>;
       var count = 0;
@@ -251,7 +258,7 @@ void main() {
     expect(cubit.state.phase, ScriptPhase.praticaFim);
     expect(find.byKey(LessonScriptKeys.primary), findsOneWidget);
     expect(find.text('Tentar de novo'), findsOneWidget);
-    expect(find.textContaining('1...Rd7'), findsOneWidget);
+    expect(find.textContaining('O rei preto vai a d7'), findsOneWidget);
     expect(
       tester.getSize(find.byKey(LessonScriptKeys.primary)).height,
       greaterThanOrEqualTo(48),

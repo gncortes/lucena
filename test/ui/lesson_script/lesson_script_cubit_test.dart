@@ -398,12 +398,12 @@ void main() {
       await r.cubit.onMove('d3e4');
       for (
         var i = 0;
-        i < 30 && !r.s.speech.contains('rot.ideia.ex1.l14');
+        i < 30 && !r.s.speech.contains('rot.distant.ideia.ex1.l14');
         i++
       ) {
         await r.next();
       }
-      expect(r.s.speech, contains('rot.ideia.ex1.l14'));
+      expect(r.s.speech, contains('rot.distant.ideia.ex1.l14'));
       expect(r.s.currentMoveId, 'd3e4-e8f7-g3g4');
       final g4 = r.s.moves.firstWhere((m) => m.id == 'd3e4-e8f7-g3g4');
       expect(g4.variant, isTrue);

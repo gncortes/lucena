@@ -26,8 +26,8 @@ void main() {
     expect(at('d3e4-e8f7-g3g4-f7g6').variant, isTrue);
     expect(at('d3e4-e8f7-e4f5').variant, isFalse);
     // O passo do salto joga o g4: é o lance atual dele.
-    expect(tree.of(ex1.line[14]).map((n) => n.id), ['d3e4-e8f7-g3g4']);
-    expect(tree.of(ex1.line[15]).single.id, 'd3e4-e8f7-g3g4-f7g6');
+    expect(tree.of(ex1.line[13]).map((n) => n.id), ['d3e4-e8f7-g3g4']);
+    expect(tree.of(ex1.line[14]).single.id, 'd3e4-e8f7-g3g4-f7g6');
   });
 
   test('a volta a 2.Rf5 não repete o lance e segue a principal', () {

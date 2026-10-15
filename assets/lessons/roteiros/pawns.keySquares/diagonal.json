@@ -1,0 +1,840 @@
+{
+  "licao": "pawns.keySquares",
+  "parte": "diagonal",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": [
+        {
+          "id": "ex1",
+          "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+              "marcas": [
+                "f3",
+                "d6"
+              ],
+              "t": "rot.diagonal.ideia.ex1.e1"
+            },
+            {
+              "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+              "marcas": [
+                "d5",
+                "e5",
+                "f5"
+              ],
+              "t": "rot.diagonal.ideia.ex1.e2"
+            },
+            {
+              "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+              "marcas": [
+                "e6"
+              ],
+              "setas": [
+                [
+                  "d6",
+                  "e6",
+                  "b"
+                ]
+              ],
+              "t": "rot.diagonal.ideia.ex1.e3"
+            }
+          ],
+          "pergunta": {
+            "certos": [
+              "f3f4"
+            ],
+            "certo": {
+              "fen": "8/8/3k4/8/5K2/4P3/8/8 b - - 1 1",
+              "marcas": [
+                "f4",
+                "d6",
+                "e5"
+              ],
+              "lance": "f3f4",
+              "t": "rot.diagonal.ideia.ex1.certo"
+            },
+            "revela": {
+              "fen": "8/8/3k4/8/5K2/4P3/8/8 b - - 1 1",
+              "marcas": [
+                "f4",
+                "d6",
+                "e5"
+              ],
+              "lance": "f3f4",
+              "t": "rot.diagonal.ideia.ex1.revela"
+            },
+            "alternativos": {},
+            "erros": {
+              "f3e2": [
+                {
+                  "fen": "8/8/3k4/8/8/4P3/4K3/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "f3",
+                      "e2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f3e2",
+                  "t": "rot.diagonal.ideia.ex1.err.f3e2.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/8/4P3/4K3/8 w - - 2 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.f3e2.2"
+                }
+              ],
+              "f3f2": [
+                {
+                  "fen": "8/8/3k4/8/8/4P3/5K2/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "f3",
+                      "f2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f3f2",
+                  "t": "rot.diagonal.ideia.ex1.err.f3f2.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/8/4P3/5K2/8 w - - 2 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.f3f2.2"
+                }
+              ],
+              "f3g2": [
+                {
+                  "fen": "8/8/3k4/8/8/4P3/6K1/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "f3",
+                      "g2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f3g2",
+                  "t": "rot.diagonal.ideia.ex1.err.f3g2.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/8/4P3/6K1/8 w - - 2 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.f3g2.2"
+                }
+              ],
+              "f3g3": [
+                {
+                  "fen": "8/8/3k4/8/8/4P1K1/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "f3",
+                      "g3",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f3g3",
+                  "t": "rot.diagonal.ideia.ex1.err.f3g3.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/8/4P1K1/8/8 w - - 2 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.f3g3.2"
+                }
+              ],
+              "f3g4": [
+                {
+                  "fen": "8/8/3k4/8/6K1/4P3/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "f3",
+                      "g4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f3g4",
+                  "t": "rot.diagonal.ideia.ex1.err.f3g4.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 2 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.f3g4.2"
+                }
+              ],
+              "f3e4": [
+                {
+                  "fen": "8/8/3k4/8/4K3/4P3/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "f3",
+                      "e4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f3e4",
+                  "t": "rot.diagonal.ideia.ex1.err.f3e4.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/4K3/4P3/8/8 w - - 2 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.f3e4.2"
+                }
+              ],
+              "e3e4": [
+                {
+                  "fen": "8/8/3k4/8/4P3/5K2/8/8 b - - 0 1",
+                  "setas": [
+                    [
+                      "e3",
+                      "e4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e3e4",
+                  "t": "rot.diagonal.ideia.ex1.err.e3e4.1"
+                },
+                {
+                  "fen": "8/8/4k3/8/4P3/5K2/8/8 w - - 1 2",
+                  "lance": "d6e6",
+                  "t": "rot.diagonal.ideia.ex1.err.e3e4.2"
+                }
+              ]
+            },
+            "livre": {
+              "maquina": "b",
+              "fala": "rot.diagonal.ideia.ex1.livre.fala",
+              "fins": {
+                "capturado": "rot.diagonal.ideia.ex1.fins.capturado",
+                "afogado": "rot.diagonal.ideia.ex1.fins.afogado",
+                "repeticao": "rot.diagonal.ideia.ex1.fins.repeticao",
+                "limite": "rot.diagonal.ideia.ex1.fins.limite"
+              },
+              "volta": "rot.diagonal.ideia.ex1.livre.volta"
+            },
+            "t": "rot.diagonal.ideia.ex1.p"
+          },
+          "linha": [
+            {
+              "fen": "8/8/3k4/8/5K2/4P3/8/8 b - - 1 1",
+              "marcas": [
+                "f4",
+                "d6",
+                "e5"
+              ],
+              "t": "rot.diagonal.ideia.ex1.l1"
+            },
+            {
+              "fen": "8/8/3k4/8/5K2/4P3/8/8 b - - 1 1",
+              "t": "rot.diagonal.ideia.ex1.l2"
+            },
+            {
+              "fen": "8/8/4k3/8/5K2/4P3/8/8 w - - 2 2",
+              "marcas": [
+                "d5",
+                "e5",
+                "f5"
+              ],
+              "lance": "d6e6",
+              "t": "rot.diagonal.ideia.ex1.l3"
+            },
+            {
+              "fen": "8/8/4k3/8/4K3/4P3/8/8 b - - 3 2",
+              "marcas": [
+                "e4",
+                "e6"
+              ],
+              "lance": "f4e4",
+              "t": "rot.diagonal.ideia.ex1.l4"
+            },
+            {
+              "fen": "8/8/4k3/8/4K3/4P3/8/8 b - - 3 2",
+              "t": "rot.diagonal.ideia.ex1.l5"
+            },
+            {
+              "fen": "8/8/3k4/8/4K3/4P3/8/8 w - - 4 3",
+              "lance": "e6d6",
+              "t": "rot.diagonal.ideia.ex1.l6"
+            },
+            {
+              "fen": "8/8/3k4/5K2/8/4P3/8/8 b - - 5 3",
+              "marcas": [
+                "f5"
+              ],
+              "lance": "e4f5",
+              "t": "rot.diagonal.ideia.ex1.l7"
+            },
+            {
+              "fen": "8/8/4k3/8/4PK2/8/8/8 b - - 0 2",
+              "setas": [
+                [
+                  "e3",
+                  "e4",
+                  "r"
+                ]
+              ],
+              "salto": true,
+              "t": "rot.diagonal.ideia.ex1.l8"
+            },
+            {
+              "fen": "8/8/5k2/8/4PK2/8/8/8 w - - 1 3",
+              "marcas": [
+                "f4",
+                "f6"
+              ],
+              "lance": "e6f6",
+              "t": "rot.diagonal.ideia.ex1.l9"
+            },
+            {
+              "fen": "8/8/5k2/8/4PK2/8/8/8 w - - 1 3",
+              "t": "rot.diagonal.ideia.ex1.l10"
+            },
+            {
+              "fen": "8/8/3k4/8/5K2/4P3/8/8 b - - 1 1",
+              "salto": true,
+              "t": "rot.diagonal.ideia.ex1.l11"
+            },
+            {
+              "fen": "8/8/8/3k4/5K2/4P3/8/8 w - - 2 2",
+              "lance": "d6d5",
+              "t": "rot.diagonal.ideia.ex1.l12"
+            },
+            {
+              "fen": "8/8/8/3k1K2/8/4P3/8/8 b - - 3 2",
+              "marcas": [
+                "f5"
+              ],
+              "lance": "f4f5",
+              "t": "rot.diagonal.ideia.ex1.l13"
+            },
+            {
+              "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+              "salto": true,
+              "t": "rot.diagonal.ideia.ex1.l14"
+            },
+            {
+              "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+              "t": "rot.diagonal.ideia.ex1.l15"
+            },
+            {
+              "fen": "8/8/3k4/8/8/4PK2/8/8 w - - 0 1",
+              "t": "rot.diagonal.ideia.ex1.l16"
+            }
+          ]
+        },
+        {
+          "id": "ex2",
+          "fen": "8/4k3/8/8/6K1/4P3/8/8 b - - 0 1",
+          "vira": true,
+          "objetivo": "empatar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "8/4k3/8/8/6K1/4P3/8/8 b - - 0 1",
+              "t": "rot.diagonal.ideia.ex2.e1"
+            },
+            {
+              "fen": "8/4k3/8/8/6K1/4P3/8/8 b - - 0 1",
+              "marcas": [
+                "d5",
+                "e5",
+                "f5"
+              ],
+              "t": "rot.diagonal.ideia.ex2.e2"
+            },
+            {
+              "fen": "8/4k3/8/8/6K1/4P3/8/8 b - - 0 1",
+              "t": "rot.diagonal.ideia.ex2.e3"
+            }
+          ],
+          "pergunta": {
+            "certos": [
+              "e7e6"
+            ],
+            "certo": {
+              "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 1 2",
+              "marcas": [
+                "g4",
+                "e6",
+                "f5"
+              ],
+              "lance": "e7e6",
+              "t": "rot.diagonal.ideia.ex2.certo"
+            },
+            "revela": {
+              "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 1 2",
+              "marcas": [
+                "g4",
+                "e6",
+                "f5"
+              ],
+              "lance": "e7e6",
+              "t": "rot.diagonal.ideia.ex2.revela"
+            },
+            "alternativos": {},
+            "erros": {
+              "e7d6": [
+                {
+                  "fen": "8/8/3k4/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "d6",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7d6",
+                  "t": "rot.diagonal.ideia.ex2.err.e7d6.1"
+                },
+                {
+                  "fen": "8/8/3k4/5K2/8/4P3/8/8 b - - 2 2",
+                  "lance": "g4f5",
+                  "t": "rot.diagonal.ideia.ex2.err.e7d6.2"
+                }
+              ],
+              "e7d7": [
+                {
+                  "fen": "8/3k4/8/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "d7",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7d7",
+                  "t": "rot.diagonal.ideia.ex2.err.e7d7.1"
+                },
+                {
+                  "fen": "8/3k4/8/5K2/8/4P3/8/8 b - - 2 2",
+                  "lance": "g4f5",
+                  "t": "rot.diagonal.ideia.ex2.err.e7d7.2"
+                }
+              ],
+              "e7d8": [
+                {
+                  "fen": "3k4/8/8/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "d8",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7d8",
+                  "t": "rot.diagonal.ideia.ex2.err.e7d8.1"
+                },
+                {
+                  "fen": "3k4/8/8/5K2/8/4P3/8/8 b - - 2 2",
+                  "lance": "g4f5",
+                  "t": "rot.diagonal.ideia.ex2.err.e7d8.2"
+                }
+              ],
+              "e7e8": [
+                {
+                  "fen": "4k3/8/8/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "e8",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7e8",
+                  "t": "rot.diagonal.ideia.ex2.err.e7e8.1"
+                },
+                {
+                  "fen": "4k3/8/8/5K2/8/4P3/8/8 b - - 2 2",
+                  "lance": "g4f5",
+                  "t": "rot.diagonal.ideia.ex2.err.e7e8.2"
+                }
+              ],
+              "e7f8": [
+                {
+                  "fen": "5k2/8/8/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "f8",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7f8",
+                  "t": "rot.diagonal.ideia.ex2.err.e7f8.1"
+                },
+                {
+                  "fen": "5k2/8/8/5K2/8/4P3/8/8 b - - 2 2",
+                  "lance": "g4f5",
+                  "t": "rot.diagonal.ideia.ex2.err.e7f8.2"
+                }
+              ],
+              "e7f7": [
+                {
+                  "fen": "8/5k2/8/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "f7",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7f7",
+                  "t": "rot.diagonal.ideia.ex2.err.e7f7.1"
+                },
+                {
+                  "fen": "8/5k2/8/5K2/8/4P3/8/8 b - - 2 2",
+                  "lance": "g4f5",
+                  "t": "rot.diagonal.ideia.ex2.err.e7f7.2"
+                }
+              ],
+              "e7f6": [
+                {
+                  "fen": "8/8/5k2/8/6K1/4P3/8/8 w - - 1 2",
+                  "setas": [
+                    [
+                      "e7",
+                      "f6",
+                      "r"
+                    ]
+                  ],
+                  "lance": "e7f6",
+                  "t": "rot.diagonal.ideia.ex2.err.e7f6.1"
+                },
+                {
+                  "fen": "8/8/5k2/8/5K2/4P3/8/8 b - - 2 2",
+                  "lance": "g4f4",
+                  "t": "rot.diagonal.ideia.ex2.err.e7f6.2"
+                }
+              ]
+            },
+            "livre": {
+              "maquina": "w",
+              "fala": "rot.diagonal.ideia.ex2.livre.fala",
+              "fins": {
+                "coroa": "rot.diagonal.ideia.ex2.fins.coroa",
+                "limite": "rot.diagonal.ideia.ex2.fins.limite",
+                "repeticao": "rot.diagonal.ideia.ex2.fins.repeticao",
+                "capturado": "rot.diagonal.ideia.ex2.fins.capturado",
+                "afogado": "rot.diagonal.ideia.ex2.fins.afogado"
+              },
+              "volta": "rot.diagonal.ideia.ex2.livre.volta"
+            },
+            "t": "rot.diagonal.ideia.ex2.p"
+          },
+          "linha": [
+            {
+              "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 1 2",
+              "marcas": [
+                "g4",
+                "e6",
+                "f5"
+              ],
+              "t": "rot.diagonal.ideia.ex2.l1"
+            },
+            {
+              "fen": "8/8/4k3/8/5K2/4P3/8/8 b - - 2 2",
+              "lance": "g4f4",
+              "t": "rot.diagonal.ideia.ex2.l2"
+            },
+            {
+              "fen": "8/8/5k2/8/5K2/4P3/8/8 w - - 3 3",
+              "marcas": [
+                "f4",
+                "f6"
+              ],
+              "lance": "e6f6",
+              "t": "rot.diagonal.ideia.ex2.l3"
+            },
+            {
+              "fen": "8/8/5k2/8/5K2/4P3/8/8 w - - 3 3",
+              "t": "rot.diagonal.ideia.ex2.l4"
+            },
+            {
+              "fen": "8/8/4k3/8/5K2/4P3/8/8 b - - 2 2",
+              "salto": true,
+              "t": "rot.diagonal.ideia.ex2.l5"
+            },
+            {
+              "fen": "8/8/8/3k4/5K2/4P3/8/8 w - - 3 3",
+              "setas": [
+                [
+                  "e6",
+                  "d5",
+                  "r"
+                ]
+              ],
+              "lance": "e6d5",
+              "t": "rot.diagonal.ideia.ex2.l6"
+            },
+            {
+              "fen": "8/8/8/3k1K2/8/4P3/8/8 b - - 4 3",
+              "marcas": [
+                "f5"
+              ],
+              "lance": "f4f5",
+              "t": "rot.diagonal.ideia.ex2.l7"
+            },
+            {
+              "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 1 2",
+              "salto": true,
+              "t": "rot.diagonal.ideia.ex2.l8"
+            },
+            {
+              "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 1 2",
+              "marcas": [
+                "e6",
+                "f6"
+              ],
+              "t": "rot.diagonal.ideia.ex2.l9"
+            },
+            {
+              "fen": "8/8/4k3/8/6K1/4P3/8/8 w - - 1 2",
+              "t": "rot.diagonal.ideia.ex2.ponte"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "demos",
+      "exemplos": [
+        {
+          "id": "outraAla",
+          "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+              "marcas": [
+                "b4",
+                "c4",
+                "d4"
+              ],
+              "t": "rot.diagonal.demos.outraAla.1"
+            }
+          ],
+          "linha": [
+            {
+              "fen": "8/8/8/1k6/8/3K4/2P5/8 b - - 1 1",
+              "marcas": [
+                "d3",
+                "b5",
+                "c4"
+              ],
+              "lance": "d2d3",
+              "t": "rot.diagonal.demos.outraAla.2"
+            },
+            {
+              "fen": "8/8/8/1k6/8/3K4/2P5/8 b - - 1 1",
+              "t": "rot.diagonal.demos.outraAla.3"
+            },
+            {
+              "fen": "8/8/8/2k5/8/3K4/2P5/8 w - - 2 2",
+              "marcas": [
+                "b4",
+                "c4",
+                "d4"
+              ],
+              "lance": "b5c5",
+              "t": "rot.diagonal.demos.outraAla.4"
+            },
+            {
+              "fen": "8/8/8/2k5/8/2K5/2P5/8 b - - 3 2",
+              "marcas": [
+                "c3",
+                "c5"
+              ],
+              "lance": "d3c3",
+              "t": "rot.diagonal.demos.outraAla.5"
+            },
+            {
+              "fen": "8/8/8/1k6/8/2K5/2P5/8 w - - 4 3",
+              "lance": "c5b5",
+              "t": "rot.diagonal.demos.outraAla.6"
+            },
+            {
+              "fen": "8/8/8/1k6/3K4/8/2P5/8 b - - 5 3",
+              "marcas": [
+                "d4"
+              ],
+              "lance": "c3d4",
+              "t": "rot.diagonal.demos.outraAla.7"
+            },
+            {
+              "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+              "salto": true,
+              "t": "rot.diagonal.demos.outraAla.8"
+            },
+            {
+              "fen": "8/8/8/1k6/8/2K5/2P5/8 b - - 1 1",
+              "setas": [
+                [
+                  "d2",
+                  "c3",
+                  "r"
+                ]
+              ],
+              "lance": "d2c3",
+              "t": "rot.diagonal.demos.outraAla.9"
+            },
+            {
+              "fen": "8/8/8/2k5/8/2K5/2P5/8 w - - 2 2",
+              "marcas": [
+                "c3",
+                "c5"
+              ],
+              "lance": "b5c5",
+              "t": "rot.diagonal.demos.outraAla.10"
+            },
+            {
+              "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+              "salto": true,
+              "t": "rot.diagonal.demos.outraAla.11"
+            }
+          ]
+        },
+        {
+          "id": "defesa",
+          "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+          "vira": true,
+          "objetivo": "empatar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+              "t": "rot.diagonal.demos.defesa.1"
+            },
+            {
+              "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+              "marcas": [
+                "c4",
+                "d4",
+                "e4"
+              ],
+              "t": "rot.diagonal.demos.defesa.2"
+            }
+          ],
+          "linha": [
+            {
+              "fen": "8/8/8/3k4/8/1K6/3P4/8 w - - 1 2",
+              "marcas": [
+                "b3",
+                "d5",
+                "c4"
+              ],
+              "lance": "d6d5",
+              "t": "rot.diagonal.demos.defesa.3"
+            },
+            {
+              "fen": "8/8/8/3k4/8/2K5/3P4/8 b - - 2 2",
+              "lance": "b3c3",
+              "t": "rot.diagonal.demos.defesa.4"
+            },
+            {
+              "fen": "8/8/8/2k5/8/2K5/3P4/8 w - - 3 3",
+              "marcas": [
+                "c3",
+                "c5"
+              ],
+              "lance": "d5c5",
+              "t": "rot.diagonal.demos.defesa.5"
+            },
+            {
+              "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+              "salto": true,
+              "t": "rot.diagonal.demos.defesa.6"
+            },
+            {
+              "fen": "8/8/8/2k5/8/1K6/3P4/8 w - - 1 2",
+              "setas": [
+                [
+                  "d6",
+                  "c5",
+                  "r"
+                ]
+              ],
+              "lance": "d6c5",
+              "t": "rot.diagonal.demos.defesa.7"
+            },
+            {
+              "fen": "8/8/8/2k5/8/2K5/3P4/8 b - - 2 2",
+              "marcas": [
+                "c3",
+                "c5"
+              ],
+              "lance": "b3c3",
+              "t": "rot.diagonal.demos.defesa.8"
+            },
+            {
+              "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+              "salto": true,
+              "t": "rot.diagonal.demos.defesa.9"
+            },
+            {
+              "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+              "t": "rot.diagonal.demos.defesa.10"
+            },
+            {
+              "fen": "8/8/3k4/8/8/1K6/3P4/8 b - - 0 1",
+              "t": "rot.diagonal.demos.defesa.ponte"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pratica",
+      "exemplos": [
+        {
+          "id": "ataque",
+          "fen": "8/8/6k1/8/8/4KP2/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "pratica": {
+            "t": "rot.diagonal.pratica.ataque.enunciado",
+            "maquina": "b",
+            "limite": 40,
+            "fim": "rot.diagonal.pratica.ataque.fim",
+            "erros": {
+              "e3d2": "rot.diagonal.pratica.ataque.err.e3d2",
+              "e3e2": "rot.diagonal.pratica.ataque.err.e3e2",
+              "e3f2": "rot.diagonal.pratica.ataque.err.e3f2",
+              "e3d3": "rot.diagonal.pratica.ataque.err.e3d3",
+              "e3d4": "rot.diagonal.pratica.ataque.err.e3d4",
+              "e3f4": "rot.diagonal.pratica.ataque.err.e3f4",
+              "f3f4": "rot.diagonal.pratica.ataque.err.f3f4"
+            }
+          }
+        },
+        {
+          "id": "defesa",
+          "fen": "8/8/2k5/8/8/4K3/2P5/8 b - - 0 1",
+          "vira": true,
+          "objetivo": "empatar",
+          "fim": "etapa",
+          "pratica": {
+            "t": "rot.diagonal.pratica.defesa.enunciado",
+            "maquina": "w",
+            "limite": 40,
+            "fim": "rot.diagonal.pratica.defesa.fim",
+            "erros": {
+              "c6b5": "rot.diagonal.pratica.defesa.err.c6b5",
+              "c6b6": "rot.diagonal.pratica.defesa.err.c6b6",
+              "c6b7": "rot.diagonal.pratica.defesa.err.c6b7",
+              "c6c7": "rot.diagonal.pratica.defesa.err.c6c7",
+              "c6d7": "rot.diagonal.pratica.defesa.err.c6d7",
+              "c6d6": "rot.diagonal.pratica.defesa.err.c6d6",
+              "c6d5": "rot.diagonal.pratica.defesa.err.c6d5"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -27,7 +27,7 @@ const _print = String.fromEnvironment('PRINT');
 /// As aulas de finais escondidas (VisibleLessons): o catálogo de verdade
 /// mostra só a Oposição, Partes 1 e 2, num módulo só.
 void main() {
-  testWidgets('o catálogo real mostra só a aula da Oposição com roteiro novo', (
+  testWidgets('o catálogo real mostra só as aulas com roteiro novo', (
     tester,
   ) async {
     await Goldens.loadFonts();
@@ -60,6 +60,7 @@ void main() {
     for (final module in ['basics', 'mates', 'queen', 'rook', 'minor']) {
       expect(find.byKey(EndgamesKeys.module(module)), findsNothing);
     }
+    expect(find.byKey(EndgamesKeys.lesson('pawns.keySquares')), findsOneWidget);
     expect(
       find.byKey(EndgamesKeys.lesson('pawns.distantOpposition')),
       findsOneWidget,
@@ -67,7 +68,7 @@ void main() {
     // Sem roteiro novo, a Parte 2 não aparece.
     expect(find.byKey(EndgamesKeys.lesson('pawns.waitingMoves')), findsNothing);
     expect(find.byKey(EndgamesKeys.lesson('pawns.square')), findsNothing);
-    expect(find.text('0 de 1 concluídas'), findsOneWidget);
+    expect(find.text('0 de 2 concluídas'), findsOneWidget);
 
     if (_print.isNotEmpty) {
       debugDisableShadows = false;
