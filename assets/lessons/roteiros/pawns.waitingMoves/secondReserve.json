@@ -254,7 +254,7 @@
               ]
             },
             {
-              "fen": "8/8/p7/5pK1/4kP2/8/P7/8 w - - 0 1",
+              "fen": "8/8/p7/5pK1/4kP2/P7/8/8 b - - 0 1",
               "t": "rot.secondReserve.ideia.ex1.l8",
               "marcas": [
                 "a4",
@@ -262,7 +262,7 @@
               ]
             },
             {
-              "fen": "8/8/p7/5pK1/4kP2/8/P7/8 w - - 0 1",
+              "fen": "8/8/p7/5pK1/P3kP2/8/8/8 b - - 0 1",
               "t": "rot.secondReserve.ideia.ex1.l9",
               "marcas": [
                 "a5"
@@ -493,110 +493,6 @@
       "id": "demos",
       "exemplos": [
         {
-          "id": "duasVezes",
-          "fen": "8/8/2p1k1p1/2P3P1/4K3/8/2P5/8 w - - 0 1",
-          "vira": false,
-          "objetivo": "ganhar",
-          "fim": "proximo",
-          "entrada": [
-            {
-              "fen": "8/8/2p1k1p1/2P3P1/4K3/8/2P5/8 w - - 0 1",
-              "t": "rot.secondReserve.demos.duasVezes.1",
-              "marcas": [
-                "e4",
-                "e6"
-              ]
-            },
-            {
-              "fen": "8/8/2p1k1p1/2P3P1/4K3/8/2P5/8 w - - 0 1",
-              "t": "rot.secondReserve.demos.duasVezes.2",
-              "marcas": [
-                "c3",
-                "c4"
-              ]
-            }
-          ],
-          "linha": [
-            {
-              "fen": "8/8/2p1k1p1/2P3P1/4K3/2P5/8/8 b - - 0 1",
-              "lance": "c2c3",
-              "t": "rot.secondReserve.demos.duasVezes.3"
-            },
-            {
-              "fen": "8/3k4/2p3p1/2P3P1/4K3/2P5/8/8 w - - 1 2",
-              "lance": "e6d7",
-              "t": "rot.secondReserve.demos.duasVezes.4"
-            },
-            {
-              "fen": "8/3k4/2p3p1/2P1K1P1/8/2P5/8/8 b - - 2 2",
-              "lance": "e4e5",
-              "t": "rot.secondReserve.demos.duasVezes.5"
-            },
-            {
-              "fen": "8/4k3/2p3p1/2P1K1P1/8/2P5/8/8 w - - 3 3",
-              "lance": "d7e7",
-              "t": "rot.secondReserve.demos.duasVezes.6"
-            },
-            {
-              "fen": "8/4k3/2p3p1/2P1K1P1/2P5/8/8/8 b - - 0 3",
-              "lance": "c3c4",
-              "t": "rot.secondReserve.demos.duasVezes.7"
-            },
-            {
-              "fen": "8/3k4/2p3p1/2P1K1P1/2P5/8/8/8 w - - 1 4",
-              "lance": "e7d7",
-              "t": "rot.secondReserve.demos.duasVezes.8"
-            },
-            {
-              "fen": "8/3k4/2p2Kp1/2P3P1/2P5/8/8/8 b - - 2 4",
-              "lance": "e5f6",
-              "t": "rot.secondReserve.demos.duasVezes.9",
-              "marcas": [
-                "g6"
-              ]
-            },
-            {
-              "fen": "8/8/2p1k1p1/2P3P1/4K3/8/2P5/8 w - - 0 1",
-              "salto": true,
-              "t": "rot.secondReserve.demos.duasVezes.10"
-            },
-            {
-              "fen": "8/8/2p1k1p1/2P3P1/2P1K3/8/8/8 b - - 0 1",
-              "lance": "c2c4",
-              "t": "rot.secondReserve.demos.duasVezes.11",
-              "setas": [
-                [
-                  "c2",
-                  "c4",
-                  "r"
-                ]
-              ]
-            },
-            {
-              "fen": "8/4k3/2p3p1/2P1K1P1/2P5/8/8/8 w - - 3 3",
-              "seq": [
-                "e6d7",
-                "e4e5",
-                "d7e7"
-              ],
-              "t": "rot.secondReserve.demos.duasVezes.12",
-              "marcas": [
-                "e5",
-                "e7"
-              ]
-            },
-            {
-              "fen": "8/4k3/2p3p1/2P1K1P1/2P5/8/8/8 w - - 3 3",
-              "t": "rot.secondReserve.demos.duasVezes.13"
-            },
-            {
-              "fen": "8/8/2p1k1p1/2P3P1/4K3/8/2P5/8 w - - 0 1",
-              "salto": true,
-              "t": "rot.secondReserve.demos.duasVezes.14"
-            }
-          ]
-        },
-        {
           "id": "resposta",
           "fen": "8/p7/8/5pK1/4kP2/8/P7/8 w - - 0 1",
           "vira": true,
@@ -660,42 +556,8 @@
               "t": "rot.secondReserve.demos.resposta.8"
             },
             {
-              "fen": "8/p7/8/5pK1/P3kP2/8/8/8 b - - 0 1",
-              "lance": "a2a4",
-              "t": "rot.secondReserve.demos.resposta.9",
-              "marcas": [
-                "a5",
-                "a6"
-              ]
-            },
-            {
-              "fen": "8/8/8/p4pK1/P3kP2/8/8/8 w - - 0 2",
-              "lance": "a7a5",
-              "t": "rot.secondReserve.demos.resposta.10"
-            },
-            {
               "fen": "8/p7/8/5pK1/4kP2/8/P7/8 w - - 0 1",
-              "salto": true,
-              "t": "rot.secondReserve.demos.resposta.11"
-            },
-            {
-              "fen": "8/8/8/p4pK1/4kP2/P7/8/8 w - - 0 2",
-              "seq": [
-                "a2a3",
-                "a7a5"
-              ],
-              "t": "rot.secondReserve.demos.resposta.12",
-              "marcas": [
-                "a4"
-              ]
-            },
-            {
-              "fen": "8/8/8/p4pK1/P3kP2/8/8/8 b - - 0 2",
-              "lance": "a3a4",
-              "t": "rot.secondReserve.demos.resposta.13",
-              "marcas": [
-                "f5"
-              ]
+              "t": "rot.secondReserve.demos.resposta.9"
             }
           ]
         }
@@ -706,48 +568,50 @@
       "exemplos": [
         {
           "id": "um",
-          "fen": "8/8/7p/1Kp5/2Pk4/8/7P/8 w - - 0 1",
+          "fen": "8/8/2p1Kp2/5Pk1/8/8/2P5/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "pratica": {
             "tipo": "lance",
-            "t": "rot.secondReserve.pratica.enunciado.brancas",
+            "t": "rot.secondReserve.pratica.um.enunciado",
             "maquina": "b",
             "limite": 40,
             "fim": "rot.secondReserve.pratica.um.fim",
             "linha": [
               {
                 "certos": [
-                  "h2h3"
+                  "c2c3"
                 ],
-                "resposta": "h6h5"
+                "resposta": "c6c5"
               },
               {
                 "certos": [
-                  "h3h4"
+                  "c3c4"
                 ]
               }
             ],
             "erros": {
-              "h2h4": "rot.secondReserve.pratica.um.err.h2h4",
-              "b5c6": "rot.secondReserve.pratica.um.err.b5c6",
-              "b5b6": "rot.secondReserve.pratica.um.err.b5b6",
-              "b5a6": "rot.secondReserve.pratica.um.err.b5a6",
-              "b5a5": "rot.secondReserve.pratica.um.err.b5a5",
-              "b5a4": "rot.secondReserve.pratica.um.err.b5a4"
+              "c2c4": "rot.secondReserve.pratica.um.err.c2c4",
+              "e6d6": "rot.secondReserve.pratica.um.err.e6d6",
+              "e6d7": "rot.secondReserve.pratica.um.err.e6d7",
+              "e6e7": "rot.secondReserve.pratica.um.err.e6e7",
+              "e6f7": "rot.secondReserve.pratica.um.err.e6f7"
             },
             "errosPos": {
-              "8/8/8/1Kp4p/2Pk4/7P/8/8 w - - 0 2": {
-                "b5c6": "rot.secondReserve.pratica.um.vez1.err.b5c6",
-                "b5a4": "rot.secondReserve.pratica.um.vez1.err.b5a4"
+              "8/8/4Kp2/2p2Pk1/8/2P5/8/8 w - - 0 2": {
+                "e6d5": "rot.secondReserve.pratica.um.vez1.err.e6d5",
+                "e6d6": "rot.secondReserve.pratica.um.vez1.err.e6d6",
+                "e6d7": "rot.secondReserve.pratica.um.vez1.err.e6d7",
+                "e6e7": "rot.secondReserve.pratica.um.vez1.err.e6e7",
+                "e6f7": "rot.secondReserve.pratica.um.vez1.err.e6f7"
               }
             }
           }
         },
         {
           "id": "dois",
-          "fen": "8/8/8/1Kp4p/2Pk4/8/7P/8 w - - 0 1",
+          "fen": "8/8/8/3p1Kp1/6Pk/8/3P4/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
@@ -760,23 +624,22 @@
             "linha": [
               {
                 "certos": [
-                  "h2h4"
+                  "d2d4"
                 ]
               }
             ],
             "erros": {
-              "h2h3": "rot.secondReserve.pratica.dois.err.h2h3",
-              "b5c6": "rot.secondReserve.pratica.dois.err.b5c6",
-              "b5b6": "rot.secondReserve.pratica.dois.err.b5b6",
-              "b5a6": "rot.secondReserve.pratica.dois.err.b5a6",
-              "b5a5": "rot.secondReserve.pratica.dois.err.b5a5",
-              "b5a4": "rot.secondReserve.pratica.dois.err.b5a4"
+              "d2d3": "rot.secondReserve.pratica.dois.err.d2d3",
+              "f5e5": "rot.secondReserve.pratica.dois.err.f5e5",
+              "f5e6": "rot.secondReserve.pratica.dois.err.f5e6",
+              "f5f6": "rot.secondReserve.pratica.dois.err.f5f6",
+              "f5g6": "rot.secondReserve.pratica.dois.err.f5g6"
             }
           }
         },
         {
           "id": "pretas",
-          "fen": "8/p7/8/4Kp2/5Pk1/P7/8/8 b - - 0 1",
+          "fen": "8/2p5/5pK1/4kP2/8/2P5/8/8 b - - 0 1",
           "vira": true,
           "objetivo": "ganhar",
           "fim": "etapa",
@@ -789,28 +652,29 @@
             "linha": [
               {
                 "certos": [
-                  "a7a6"
+                  "c7c6"
                 ],
-                "resposta": "a3a4"
+                "resposta": "c3c4"
               },
               {
                 "certos": [
-                  "a6a5"
+                  "c6c5"
                 ]
               }
             ],
             "erros": {
-              "a7a5": "rot.secondReserve.pratica.pretas.err.a7a5",
-              "g4h5": "rot.secondReserve.pratica.pretas.err.g4h5",
-              "g4h4": "rot.secondReserve.pratica.pretas.err.g4h4",
-              "g4h3": "rot.secondReserve.pratica.pretas.err.g4h3",
-              "g4g3": "rot.secondReserve.pratica.pretas.err.g4g3",
-              "g4f3": "rot.secondReserve.pratica.pretas.err.g4f3"
+              "c7c5": "rot.secondReserve.pratica.pretas.err.c7c5",
+              "e5e4": "rot.secondReserve.pratica.pretas.err.e5e4",
+              "e5d5": "rot.secondReserve.pratica.pretas.err.e5d5",
+              "e5d6": "rot.secondReserve.pratica.pretas.err.e5d6",
+              "e5f4": "rot.secondReserve.pratica.pretas.err.e5f4"
             },
             "errosPos": {
-              "8/8/p7/4Kp2/P4Pk1/8/8/8 b - - 0 2": {
-                "g4h5": "rot.secondReserve.pratica.pretas.vez1.err.g4h5",
-                "g4f3": "rot.secondReserve.pratica.pretas.vez1.err.g4f3"
+              "8/8/2p2pK1/4kP2/2P5/8/8/8 b - - 0 2": {
+                "e5d4": "rot.secondReserve.pratica.pretas.vez1.err.e5d4",
+                "e5d6": "rot.secondReserve.pratica.pretas.vez1.err.e5d6",
+                "e5e4": "rot.secondReserve.pratica.pretas.vez1.err.e5e4",
+                "e5f4": "rot.secondReserve.pratica.pretas.vez1.err.e5f4"
               }
             }
           }

@@ -581,6 +581,10 @@
               "marcas": [
                 "b5"
               ]
+            },
+            {
+              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
+              "t": "rot.edge.ideia.ex2.l.16"
             }
           ]
         }
@@ -758,7 +762,8 @@
               "marcas": [
                 "d7",
                 "f7",
-                "e7"
+                "e7",
+                "c7"
               ]
             },
             {
@@ -921,15 +926,15 @@
             },
             "errosPos": {
               "5k2/1p1p4/1P1P2K1/8/8/8/8/8 w - - 2 2": {
-                "g6g5": "rot.edge.pratica.ataque.err.solta",
+                "g6g5": "rot.edge.pratica.ataque.err.soltag7",
                 "g6f5": "rot.edge.pratica.ataque.err.solta",
                 "g6h5": "rot.edge.pratica.ataque.err.solta",
                 "g6h6": "rot.edge.pratica.ataque.err.solta",
                 "g6h7": "rot.edge.pratica.ataque.err.solta"
               },
               "6k1/1p1p4/1P1P1K2/8/8/8/8/8 w - - 4 3": {
-                "f6e5": "rot.edge.pratica.ataque.err.solta",
-                "f6g5": "rot.edge.pratica.ataque.err.solta",
+                "f6e5": "rot.edge.pratica.ataque.err.soltag7",
+                "f6g5": "rot.edge.pratica.ataque.err.soltag7",
                 "f6f5": "rot.edge.pratica.ataque.err.solta"
               }
             }
@@ -940,7 +945,7 @@
         },
         {
           "id": "defesa",
-          "fen": "8/4pk2/K3p3/2p1P3/2P5/8/8/8 b - - 0 1",
+          "fen": "8/3k4/p3pK2/P3p3/4P3/8/8/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
@@ -950,30 +955,17 @@
             "limite": 40,
             "fim": "rot.edge.pratica.defesa.fim",
             "erros": {
-              "f7g6": "rot.edge.pratica.defesa.err.longe",
-              "f7g7": "rot.edge.pratica.defesa.err.longe",
-              "f7g8": "rot.edge.pratica.defesa.err.longe",
-              "f7f8": "rot.edge.pratica.defesa.err.f8"
+              "d7c6": "rot.edge.pratica.defesa.err.par",
+              "d7c7": "rot.edge.pratica.defesa.err.fora",
+              "d7c8": "rot.edge.pratica.defesa.err.fora",
+              "d7d8": "rot.edge.pratica.defesa.err.fora",
+              "d7e8": "rot.edge.pratica.defesa.err.fora"
             },
             "errosPos": {
-              "4k3/4p3/4p3/K1p1P3/2P5/8/8/8 b - - 2 2": {
-                "e8f7": "rot.edge.pratica.defesa.err.longe",
-                "e8f8": "rot.edge.pratica.defesa.err.longe"
-              },
-              "8/3kp3/4p3/1Kp1P3/2P5/8/8/8 b - - 4 3": {
-                "d7e8": "rot.edge.pratica.defesa.err.longe"
-              },
-              "8/2k1p3/4p3/2K1P3/2P5/8/8/8 b - - 0 4": {
-                "c7d7": "rot.edge.pratica.defesa.err.b6",
-                "c7c8": "rot.edge.pratica.defesa.err.b6",
-                "c7b8": "rot.edge.pratica.defesa.err.b6",
-                "c7d8": "rot.edge.pratica.defesa.err.b6"
-              },
-              "8/1k2p3/4p3/1K2P3/2P5/8/8/8 b - - 2 5": {
-                "b7c8": "rot.edge.pratica.defesa.err.b6",
-                "b7b8": "rot.edge.pratica.defesa.err.b6",
-                "b7a7": "rot.edge.pratica.defesa.err.b6",
-                "b7a8": "rot.edge.pratica.defesa.err.b6"
+              "8/5K2/p2kp3/P3p3/4P3/8/8/8 b - - 2 2": {
+                "d6c5": "rot.edge.pratica.defesa.err.corre",
+                "d6c7": "rot.edge.pratica.defesa.err.parc7",
+                "d6c6": "rot.edge.pratica.defesa.err.fora"
               }
             }
           }
