@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_setup.dart';
@@ -8,7 +10,9 @@ import 'training_repository.dart';
 class LocalTrainingRepository implements TrainingRepository {
   LocalTrainingRepository(this._preferences);
 
-  static const _filterKey = 'catalog.goal';
+  static const _filterKey = 'catalog.filter';
+  // O filtro só de objetivo, das versões anteriores: lido uma vez e apagado.
+  static const _legacyGoalKey = 'catalog.goal';
   static const _clockKey = 'setup.clock';
   static const _userTimeKey = 'setup.userTime';
   static const _opponentTimeKey = 'setup.opponentTime';
@@ -21,12 +25,34 @@ class LocalTrainingRepository implements TrainingRepository {
   final PreferencesService _preferences;
 
   @override
-  Future<GoalFilter> loadCatalogFilter() async =>
-      GoalFilter.fromCode(await _preferences.getString(_filterKey));
+  Future<CatalogFilter> loadCatalogFilter() async {
+    final saved = await _preferences.getString(_filterKey);
+    if (saved == null) {
+      final legacy = await _preferences.getString(_legacyGoalKey);
+      return CatalogFilter(goal: GoalFilter.fromCode(legacy));
+    }
+    try {
+      final json = jsonDecode(saved) as Map<String, dynamic>;
+      return CatalogFilter(
+        goal: GoalFilter.fromCode(json['goal'] as String?),
+        lessons: {...(json['lessons'] as List? ?? const []).cast<String>()},
+      );
+    } on Object {
+      return const CatalogFilter();
+    }
+  }
 
   @override
-  Future<void> saveCatalogFilter(GoalFilter filter) =>
-      _preferences.setString(_filterKey, filter.code);
+  Future<void> saveCatalogFilter(CatalogFilter filter) async {
+    await _preferences.setString(
+      _filterKey,
+      jsonEncode({
+        'goal': filter.goal.code,
+        'lessons': filter.lessons.toList(),
+      }),
+    );
+    await _preferences.remove(_legacyGoalKey);
+  }
 
   @override
   Future<GameSetup> loadSetup() async {

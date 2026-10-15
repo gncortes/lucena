@@ -7,8 +7,10 @@ typedef CustomPositionDraft = ({String fen, PositionGoal goal});
 /// Preferências do treino: filtro do catálogo, última configuração de partida
 /// e o rascunho da posição personalizada.
 abstract class TrainingRepository {
-  Future<GoalFilter> loadCatalogFilter();
-  Future<void> saveCatalogFilter(GoalFilter filter);
+  /// O filtro do catálogo (objetivo e lições). Quem só tinha o objetivo
+  /// gravado (versão anterior) volta com ele e sem lição.
+  Future<CatalogFilter> loadCatalogFilter();
+  Future<void> saveCatalogFilter(CatalogFilter filter);
 
   Future<GameSetup> loadSetup();
   Future<void> saveSetup(GameSetup setup);

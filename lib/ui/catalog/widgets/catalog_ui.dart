@@ -115,7 +115,9 @@ class GoalFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<CatalogCubit>();
-    final filter = context.select((CatalogCubit cubit) => cubit.state.filter);
+    final filter = context.select(
+      (CatalogCubit cubit) => cubit.state.filter.goal,
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       child: SizedBox(
@@ -138,7 +140,7 @@ class GoalFilterBar extends StatelessWidget {
               ),
           ],
           selected: {filter},
-          onSelectionChanged: (selected) => cubit.setFilter(selected.single),
+          onSelectionChanged: (selected) => cubit.setGoal(selected.single),
         ),
       ),
     );

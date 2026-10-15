@@ -294,7 +294,9 @@ mixin _$CatalogState {
 /// Nulo enquanto o catálogo é lido.
  List<CatalogCategory>? get categories;/// As posições da categoria aberta, na ordem do catálogo. Nulo fora da
 /// tela da categoria ou enquanto elas são lidas.
- List<EndgamePosition>? get positions; GoalFilter get filter;/// As posições em que o objetivo já foi cumprido.
+ List<EndgamePosition>? get positions; CatalogFilter get filter;/// As lições que têm posição ligada, na ordem da escola (as opções do
+/// filtro de lição).
+ List<String> get lessons;/// As posições em que o objetivo já foi cumprido.
  Set<String> get fulfilled;/// Os finais que o jogador fechou na tela da categoria. Toda seção começa
 /// aberta; o estado não é gravado.
  Set<String> get collapsed;
@@ -309,20 +311,20 @@ $CatalogStateCopyWith<CatalogState> get copyWith => _$CatalogStateCopyWithImpl<C
 @override
 bool operator ==(Object other) {
   final _this = this as CatalogState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogState&&const DeepCollectionEquality().equals(other.categories, _this.categories)&&const DeepCollectionEquality().equals(other.positions, _this.positions)&&(identical(other.filter, _this.filter) || other.filter == _this.filter)&&const DeepCollectionEquality().equals(other.fulfilled, _this.fulfilled)&&const DeepCollectionEquality().equals(other.collapsed, _this.collapsed));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogState&&const DeepCollectionEquality().equals(other.categories, _this.categories)&&const DeepCollectionEquality().equals(other.positions, _this.positions)&&(identical(other.filter, _this.filter) || other.filter == _this.filter)&&const DeepCollectionEquality().equals(other.lessons, _this.lessons)&&const DeepCollectionEquality().equals(other.fulfilled, _this.fulfilled)&&const DeepCollectionEquality().equals(other.collapsed, _this.collapsed));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CatalogState;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.categories),const DeepCollectionEquality().hash(_this.positions),_this.filter,const DeepCollectionEquality().hash(_this.fulfilled),const DeepCollectionEquality().hash(_this.collapsed));
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.categories),const DeepCollectionEquality().hash(_this.positions),_this.filter,const DeepCollectionEquality().hash(_this.lessons),const DeepCollectionEquality().hash(_this.fulfilled),const DeepCollectionEquality().hash(_this.collapsed));
 }
 
 @override
 String toString() {
   final _this = this as CatalogState;
-  return 'CatalogState(categories: ${_this.categories}, positions: ${_this.positions}, filter: ${_this.filter}, fulfilled: ${_this.fulfilled}, collapsed: ${_this.collapsed})';
+  return 'CatalogState(categories: ${_this.categories}, positions: ${_this.positions}, filter: ${_this.filter}, lessons: ${_this.lessons}, fulfilled: ${_this.fulfilled}, collapsed: ${_this.collapsed})';
 }
 
 
@@ -333,11 +335,11 @@ abstract mixin class $CatalogStateCopyWith<$Res>  {
   factory $CatalogStateCopyWith(CatalogState value, $Res Function(CatalogState) _then) = _$CatalogStateCopyWithImpl;
 @useResult
 $Res call({
- List<CatalogCategory>? categories, List<EndgamePosition>? positions, GoalFilter filter, Set<String> fulfilled, Set<String> collapsed
+ List<CatalogCategory>? categories, List<EndgamePosition>? positions, CatalogFilter filter, List<String> lessons, Set<String> fulfilled, Set<String> collapsed
 });
 
 
-
+$CatalogFilterCopyWith<$Res> get filter;
 
 }
 /// @nodoc
@@ -350,17 +352,27 @@ class _$CatalogStateCopyWithImpl<$Res>
 
 /// Create a copy of CatalogState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? categories = freezed,Object? positions = freezed,Object? filter = null,Object? fulfilled = null,Object? collapsed = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? categories = freezed,Object? positions = freezed,Object? filter = null,Object? lessons = null,Object? fulfilled = null,Object? collapsed = null,}) {
   return _then(CatalogState(
 categories: freezed == categories ? _self.categories : categories // ignore: cast_nullable_to_non_nullable
 as List<CatalogCategory>?,positions: freezed == positions ? _self.positions : positions // ignore: cast_nullable_to_non_nullable
 as List<EndgamePosition>?,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
-as GoalFilter,fulfilled: null == fulfilled ? _self.fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
+as CatalogFilter,lessons: null == lessons ? _self.lessons : lessons // ignore: cast_nullable_to_non_nullable
+as List<String>,fulfilled: null == fulfilled ? _self.fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
 as Set<String>,collapsed: null == collapsed ? _self.collapsed : collapsed // ignore: cast_nullable_to_non_nullable
 as Set<String>,
   ));
 }
-
+/// Create a copy of CatalogState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CatalogFilterCopyWith<$Res> get filter {
+  
+  return $CatalogFilterCopyWith<$Res>(_self.filter, (value) {
+    return _then(_self.copyWith(filter: value));
+  });
+}
 }
 
 
@@ -442,10 +454,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> collapsed)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  CatalogFilter filter,  List<String> lessons,  Set<String> fulfilled,  Set<String> collapsed)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogState() when $default != null:
-return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_that.collapsed);case _:
+return $default(_that.categories,_that.positions,_that.filter,_that.lessons,_that.fulfilled,_that.collapsed);case _:
   return orElse();
 
 }
@@ -463,10 +475,10 @@ return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> collapsed)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  CatalogFilter filter,  List<String> lessons,  Set<String> fulfilled,  Set<String> collapsed)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogState():
-return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_that.collapsed);case _:
+return $default(_that.categories,_that.positions,_that.filter,_that.lessons,_that.fulfilled,_that.collapsed);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -483,10 +495,10 @@ return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  GoalFilter filter,  Set<String> fulfilled,  Set<String> collapsed)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CatalogCategory>? categories,  List<EndgamePosition>? positions,  CatalogFilter filter,  List<String> lessons,  Set<String> fulfilled,  Set<String> collapsed)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogState() when $default != null:
-return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_that.collapsed);case _:
+return $default(_that.categories,_that.positions,_that.filter,_that.lessons,_that.fulfilled,_that.collapsed);case _:
   return null;
 
 }
@@ -498,7 +510,7 @@ return $default(_that.categories,_that.positions,_that.filter,_that.fulfilled,_t
 
 
 class _CatalogState extends CatalogState {
-  const _CatalogState({ List<CatalogCategory>? categories,  List<EndgamePosition>? positions, this.filter = GoalFilter.all,  Set<String> fulfilled = const <String>{},  Set<String> collapsed = const <String>{}}): _categories = categories,_positions = positions,_fulfilled = fulfilled,_collapsed = collapsed,super._();
+  const _CatalogState({ List<CatalogCategory>? categories,  List<EndgamePosition>? positions, this.filter = const CatalogFilter(),  List<String> lessons = const <String>[],  Set<String> fulfilled = const <String>{},  Set<String> collapsed = const <String>{}}): _categories = categories,_positions = positions,_lessons = lessons,_fulfilled = fulfilled,_collapsed = collapsed,super._();
   
 
 /// Nulo enquanto o catálogo é lido.
@@ -525,7 +537,18 @@ class _CatalogState extends CatalogState {
   return EqualUnmodifiableListView(value);
 }
 
-@override@JsonKey() final  GoalFilter filter;
+@override@JsonKey() final  CatalogFilter filter;
+/// As lições que têm posição ligada, na ordem da escola (as opções do
+/// filtro de lição).
+ final  List<String> _lessons;
+/// As lições que têm posição ligada, na ordem da escola (as opções do
+/// filtro de lição).
+@override@JsonKey() List<String> get lessons {
+  if (_lessons is EqualUnmodifiableListView) return _lessons;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lessons);
+}
+
 /// As posições em que o objetivo já foi cumprido.
  final  Set<String> _fulfilled;
 /// As posições em que o objetivo já foi cumprido.
@@ -557,18 +580,18 @@ _$CatalogStateCopyWith<_CatalogState> get copyWith => __$CatalogStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogState&&const DeepCollectionEquality().equals(other.categories, _categories)&&const DeepCollectionEquality().equals(other.positions, _positions)&&(identical(other.filter, filter) || other.filter == filter)&&const DeepCollectionEquality().equals(other.fulfilled, _fulfilled)&&const DeepCollectionEquality().equals(other.collapsed, _collapsed));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogState&&const DeepCollectionEquality().equals(other.categories, _categories)&&const DeepCollectionEquality().equals(other.positions, _positions)&&(identical(other.filter, filter) || other.filter == filter)&&const DeepCollectionEquality().equals(other.lessons, _lessons)&&const DeepCollectionEquality().equals(other.fulfilled, _fulfilled)&&const DeepCollectionEquality().equals(other.collapsed, _collapsed));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_positions),filter,const DeepCollectionEquality().hash(_fulfilled),const DeepCollectionEquality().hash(_collapsed));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_positions),filter,const DeepCollectionEquality().hash(_lessons),const DeepCollectionEquality().hash(_fulfilled),const DeepCollectionEquality().hash(_collapsed));
 }
 
 @override
 String toString() {
-    return 'CatalogState(categories: $categories, positions: $positions, filter: $filter, fulfilled: $fulfilled, collapsed: $collapsed)';
+    return 'CatalogState(categories: $categories, positions: $positions, filter: $filter, lessons: $lessons, fulfilled: $fulfilled, collapsed: $collapsed)';
 }
 
 
@@ -579,11 +602,11 @@ abstract mixin class _$CatalogStateCopyWith<$Res> implements $CatalogStateCopyWi
   factory _$CatalogStateCopyWith(_CatalogState value, $Res Function(_CatalogState) _then) = __$CatalogStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<CatalogCategory>? categories, List<EndgamePosition>? positions, GoalFilter filter, Set<String> fulfilled, Set<String> collapsed
+ List<CatalogCategory>? categories, List<EndgamePosition>? positions, CatalogFilter filter, List<String> lessons, Set<String> fulfilled, Set<String> collapsed
 });
 
 
-
+@override $CatalogFilterCopyWith<$Res> get filter;
 
 }
 /// @nodoc
@@ -596,18 +619,28 @@ class __$CatalogStateCopyWithImpl<$Res>
 
 /// Create a copy of CatalogState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? categories = freezed,Object? positions = freezed,Object? filter = null,Object? fulfilled = null,Object? collapsed = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? categories = freezed,Object? positions = freezed,Object? filter = null,Object? lessons = null,Object? fulfilled = null,Object? collapsed = null,}) {
   return _then(_CatalogState(
 categories: freezed == categories ? _self._categories : categories // ignore: cast_nullable_to_non_nullable
 as List<CatalogCategory>?,positions: freezed == positions ? _self._positions : positions // ignore: cast_nullable_to_non_nullable
 as List<EndgamePosition>?,filter: null == filter ? _self.filter : filter // ignore: cast_nullable_to_non_nullable
-as GoalFilter,fulfilled: null == fulfilled ? _self._fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
+as CatalogFilter,lessons: null == lessons ? _self._lessons : lessons // ignore: cast_nullable_to_non_nullable
+as List<String>,fulfilled: null == fulfilled ? _self._fulfilled : fulfilled // ignore: cast_nullable_to_non_nullable
 as Set<String>,collapsed: null == collapsed ? _self._collapsed : collapsed // ignore: cast_nullable_to_non_nullable
 as Set<String>,
   ));
 }
 
-
+/// Create a copy of CatalogState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$CatalogFilterCopyWith<$Res> get filter {
+  
+  return $CatalogFilterCopyWith<$Res>(_self.filter, (value) {
+    return _then(_self.copyWith(filter: value));
+  });
+}
 }
 
 // dart format on

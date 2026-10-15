@@ -10,4 +10,7 @@ abstract class PositionsRepository {
 
   /// Uma posição pelo id. Nula se não existe.
   Future<EndgamePosition?> byId(String id);
+
+  /// As lições que têm alguma posição ligada, na ordem da escola.
+  Future<List<String>> lessonsWithLinks();
 }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -36,7 +37,8 @@ void main() {
       'queen',
     ]);
     final total = catalog.fold(0, (sum, c) => sum + c.count(GoalFilter.all));
-    expect(total, inInclusiveRange(40, 60));
+    // 55 de iniciante e as ligadas às lições (tools/lesson_positions.py).
+    expect(total, greaterThanOrEqualTo(55));
   });
 
   test('toda posição do catálogo é jogável e foi conferida', () async {
@@ -78,5 +80,100 @@ void main() {
     expect(position?.mateIn, 8);
     expect(position?.number, 1);
     expect(await repository.byId('nao.existe.0001'), isNull);
+  });
+
+  group('ligações às lições (lesson_links.json)', () {
+    const p1 = 'pawns.distantOpposition';
+    const p2 = 'pawns.waitingMoves';
+
+    Future<List<EndgamePosition>> all() async => [
+      for (final category in await repository.catalog())
+        for (final sub in category.subcategories)
+          ...await repository.bySubcategory(sub.key),
+    ];
+
+    test('as lições com posição vêm na ordem da escola', () async {
+      expect(await repository.lessonsWithLinks(), [p1, p2]);
+    });
+
+    test('toda ligação aponta para posição do catálogo, de peão', () async {
+      final links =
+          jsonDecode(
+                File(AssetPositionsRepository.linksPath).readAsStringSync(),
+              )['links']
+              as Map<String, dynamic>;
+      expect(links, isNotEmpty);
+      for (final id in links.keys) {
+        final position = await repository.byId(id);
+        expect(position, isNotNull, reason: id);
+        expect(position!.category, 'pawn', reason: id);
+        expect(position.links, isNotEmpty, reason: id);
+      }
+    });
+
+    test('as ligadas têm seção de material e dificuldade de 1 a 3', () async {
+      final linked = [
+        for (final p in await all())
+          if (p.links.isNotEmpty) p,
+      ];
+      expect(
+        linked.where((p) => p.links.any((l) => l.lessonId == p1)),
+        isNotEmpty,
+      );
+      expect(
+        linked.where((p) => p.links.any((l) => l.lessonId == p2)),
+        isNotEmpty,
+      );
+      for (final position in linked) {
+        expect(
+          position.section,
+          matches(RegExp(r'^KP*vKP*$')),
+          reason: position.id,
+        );
+        expect(
+          position.difficulty,
+          inInclusiveRange(1, 3),
+          reason: position.id,
+        );
+        for (final link in position.links) {
+          expect(
+            link.ply == 0,
+            link.relation == LessonRelation.base,
+            reason: position.id,
+          );
+        }
+      }
+    });
+
+    test('a contagem com o filtro de lição bate com as posições', () async {
+      const filter = CatalogFilter(goal: GoalFilter.draw, lessons: {p1, p2});
+      final shown = (await all()).where(filter.accepts).length;
+      final counted = (await repository.catalog()).fold(
+        0,
+        (sum, c) => sum + c.countFor(filter),
+      );
+      expect(counted, shown);
+    });
+
+    test('nenhuma ligada repete posição de lição', () async {
+      final lessons = <String>{};
+      final fen = RegExp(
+        r'[pnbrqkPNBRQK1-8]{1,8}(?:/[pnbrqkPNBRQK1-8]{1,8}){7} [wb]',
+      );
+      for (final file in Directory(
+        'assets/lessons',
+      ).listSync(recursive: true)) {
+        if (file is File && file.path.endsWith('.json')) {
+          lessons.addAll(
+            fen.allMatches(file.readAsStringSync()).map((m) => m[0]!),
+          );
+        }
+      }
+      for (final position in await all()) {
+        if (position.links.isEmpty) continue;
+        final here = position.fen.split(' ').take(2).join(' ');
+        expect(lessons, isNot(contains(here)), reason: position.id);
+      }
+    });
   });
 }

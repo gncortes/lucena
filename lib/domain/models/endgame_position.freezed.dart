@@ -13,12 +13,564 @@ part of 'endgame_position.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
+mixin _$LessonLink {
+
+/// O id da lição de finais (`pawns.distantOpposition`).
+ String get lessonId; LessonRelation get relation;/// Em que meio-lance da linha a posição chega ao tema (0 na base).
+ int get ply;
+/// Create a copy of LessonLink
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LessonLinkCopyWith<LessonLink> get copyWith => _$LessonLinkCopyWithImpl<LessonLink>(this as LessonLink, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as LessonLink;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LessonLink&&(identical(other.lessonId, _this.lessonId) || other.lessonId == _this.lessonId)&&(identical(other.relation, _this.relation) || other.relation == _this.relation)&&(identical(other.ply, _this.ply) || other.ply == _this.ply));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as LessonLink;
+  return Object.hash(runtimeType,_this.lessonId,_this.relation,_this.ply);
+}
+
+@override
+String toString() {
+  final _this = this as LessonLink;
+  return 'LessonLink(lessonId: ${_this.lessonId}, relation: ${_this.relation}, ply: ${_this.ply})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LessonLinkCopyWith<$Res>  {
+  factory $LessonLinkCopyWith(LessonLink value, $Res Function(LessonLink) _then) = _$LessonLinkCopyWithImpl;
+@useResult
+$Res call({
+ String lessonId, LessonRelation relation, int ply
+});
+
+
+
+
+}
+/// @nodoc
+class _$LessonLinkCopyWithImpl<$Res>
+    implements $LessonLinkCopyWith<$Res> {
+  _$LessonLinkCopyWithImpl(this._self, this._then);
+
+  final LessonLink _self;
+  final $Res Function(LessonLink) _then;
+
+/// Create a copy of LessonLink
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? lessonId = null,Object? relation = null,Object? ply = null,}) {
+  return _then(LessonLink(
+lessonId: null == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
+as String,relation: null == relation ? _self.relation : relation // ignore: cast_nullable_to_non_nullable
+as LessonRelation,ply: null == ply ? _self.ply : ply // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [LessonLink].
+extension LessonLinkPatterns on LessonLink {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LessonLink value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LessonLink() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LessonLink value)  $default,){
+final _that = this;
+switch (_that) {
+case _LessonLink():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LessonLink value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LessonLink() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String lessonId,  LessonRelation relation,  int ply)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LessonLink() when $default != null:
+return $default(_that.lessonId,_that.relation,_that.ply);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String lessonId,  LessonRelation relation,  int ply)  $default,) {final _that = this;
+switch (_that) {
+case _LessonLink():
+return $default(_that.lessonId,_that.relation,_that.ply);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String lessonId,  LessonRelation relation,  int ply)?  $default,) {final _that = this;
+switch (_that) {
+case _LessonLink() when $default != null:
+return $default(_that.lessonId,_that.relation,_that.ply);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _LessonLink implements LessonLink {
+  const _LessonLink({required this.lessonId, required this.relation, this.ply = 0});
+  
+
+/// O id da lição de finais (`pawns.distantOpposition`).
+@override final  String lessonId;
+@override final  LessonRelation relation;
+/// Em que meio-lance da linha a posição chega ao tema (0 na base).
+@override@JsonKey() final  int ply;
+
+/// Create a copy of LessonLink
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LessonLinkCopyWith<_LessonLink> get copyWith => __$LessonLinkCopyWithImpl<_LessonLink>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LessonLink&&(identical(other.lessonId, lessonId) || other.lessonId == lessonId)&&(identical(other.relation, relation) || other.relation == relation)&&(identical(other.ply, ply) || other.ply == ply));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,lessonId,relation,ply);
+}
+
+@override
+String toString() {
+    return 'LessonLink(lessonId: $lessonId, relation: $relation, ply: $ply)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LessonLinkCopyWith<$Res> implements $LessonLinkCopyWith<$Res> {
+  factory _$LessonLinkCopyWith(_LessonLink value, $Res Function(_LessonLink) _then) = __$LessonLinkCopyWithImpl;
+@override @useResult
+$Res call({
+ String lessonId, LessonRelation relation, int ply
+});
+
+
+
+
+}
+/// @nodoc
+class __$LessonLinkCopyWithImpl<$Res>
+    implements _$LessonLinkCopyWith<$Res> {
+  __$LessonLinkCopyWithImpl(this._self, this._then);
+
+  final _LessonLink _self;
+  final $Res Function(_LessonLink) _then;
+
+/// Create a copy of LessonLink
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? lessonId = null,Object? relation = null,Object? ply = null,}) {
+  return _then(_LessonLink(
+lessonId: null == lessonId ? _self.lessonId : lessonId // ignore: cast_nullable_to_non_nullable
+as String,relation: null == relation ? _self.relation : relation // ignore: cast_nullable_to_non_nullable
+as LessonRelation,ply: null == ply ? _self.ply : ply // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$CatalogFilter {
+
+ GoalFilter get goal; Set<String> get lessons;
+/// Create a copy of CatalogFilter
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CatalogFilterCopyWith<CatalogFilter> get copyWith => _$CatalogFilterCopyWithImpl<CatalogFilter>(this as CatalogFilter, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as CatalogFilter;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogFilter&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&const DeepCollectionEquality().equals(other.lessons, _this.lessons));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as CatalogFilter;
+  return Object.hash(runtimeType,_this.goal,const DeepCollectionEquality().hash(_this.lessons));
+}
+
+@override
+String toString() {
+  final _this = this as CatalogFilter;
+  return 'CatalogFilter(goal: ${_this.goal}, lessons: ${_this.lessons})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CatalogFilterCopyWith<$Res>  {
+  factory $CatalogFilterCopyWith(CatalogFilter value, $Res Function(CatalogFilter) _then) = _$CatalogFilterCopyWithImpl;
+@useResult
+$Res call({
+ GoalFilter goal, Set<String> lessons
+});
+
+
+
+
+}
+/// @nodoc
+class _$CatalogFilterCopyWithImpl<$Res>
+    implements $CatalogFilterCopyWith<$Res> {
+  _$CatalogFilterCopyWithImpl(this._self, this._then);
+
+  final CatalogFilter _self;
+  final $Res Function(CatalogFilter) _then;
+
+/// Create a copy of CatalogFilter
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? goal = null,Object? lessons = null,}) {
+  return _then(CatalogFilter(
+goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
+as GoalFilter,lessons: null == lessons ? _self.lessons : lessons // ignore: cast_nullable_to_non_nullable
+as Set<String>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [CatalogFilter].
+extension CatalogFilterPatterns on CatalogFilter {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _CatalogFilter value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _CatalogFilter() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _CatalogFilter value)  $default,){
+final _that = this;
+switch (_that) {
+case _CatalogFilter():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _CatalogFilter value)?  $default,){
+final _that = this;
+switch (_that) {
+case _CatalogFilter() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( GoalFilter goal,  Set<String> lessons)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _CatalogFilter() when $default != null:
+return $default(_that.goal,_that.lessons);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( GoalFilter goal,  Set<String> lessons)  $default,) {final _that = this;
+switch (_that) {
+case _CatalogFilter():
+return $default(_that.goal,_that.lessons);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( GoalFilter goal,  Set<String> lessons)?  $default,) {final _that = this;
+switch (_that) {
+case _CatalogFilter() when $default != null:
+return $default(_that.goal,_that.lessons);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _CatalogFilter extends CatalogFilter {
+  const _CatalogFilter({this.goal = GoalFilter.all,  Set<String> lessons = const <String>{}}): _lessons = lessons,super._();
+  
+
+@override@JsonKey() final  GoalFilter goal;
+ final  Set<String> _lessons;
+@override@JsonKey() Set<String> get lessons {
+  if (_lessons is EqualUnmodifiableSetView) return _lessons;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableSetView(_lessons);
+}
+
+
+/// Create a copy of CatalogFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CatalogFilterCopyWith<_CatalogFilter> get copyWith => __$CatalogFilterCopyWithImpl<_CatalogFilter>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogFilter&&(identical(other.goal, goal) || other.goal == goal)&&const DeepCollectionEquality().equals(other.lessons, _lessons));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,goal,const DeepCollectionEquality().hash(_lessons));
+}
+
+@override
+String toString() {
+    return 'CatalogFilter(goal: $goal, lessons: $lessons)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CatalogFilterCopyWith<$Res> implements $CatalogFilterCopyWith<$Res> {
+  factory _$CatalogFilterCopyWith(_CatalogFilter value, $Res Function(_CatalogFilter) _then) = __$CatalogFilterCopyWithImpl;
+@override @useResult
+$Res call({
+ GoalFilter goal, Set<String> lessons
+});
+
+
+
+
+}
+/// @nodoc
+class __$CatalogFilterCopyWithImpl<$Res>
+    implements _$CatalogFilterCopyWith<$Res> {
+  __$CatalogFilterCopyWithImpl(this._self, this._then);
+
+  final _CatalogFilter _self;
+  final $Res Function(_CatalogFilter) _then;
+
+/// Create a copy of CatalogFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? goal = null,Object? lessons = null,}) {
+  return _then(_CatalogFilter(
+goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
+as GoalFilter,lessons: null == lessons ? _self._lessons : lessons // ignore: cast_nullable_to_non_nullable
+as Set<String>,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$EndgamePosition {
 
 /// `categoria.subcategoria.NNNN`, estável entre versões do catálogo.
  String get id; String get category; String get subcategory; String get fen; PositionGoal get goal;/// Mate em quantos lances, quando a fonte informa.
  int? get mateIn;/// Conferida na tablebase do Lichess.
- bool get verified;
+ bool get verified;/// A seção por material (`KPvK`, `KPPvKP`...), o lado com mais peças
+/// primeiro. Nula nas posições sem material gravado.
+ String? get section;/// De 1 (mais fácil) a 3, pelo número de peças e pela distância da
+/// tablebase. Nula se o catálogo não informa.
+ int? get difficulty;/// As lições a que a posição se liga.
+ List<LessonLink> get links;
 /// Create a copy of EndgamePosition
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +582,20 @@ $EndgamePositionCopyWith<EndgamePosition> get copyWith => _$EndgamePositionCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as EndgamePosition;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EndgamePosition&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.category, _this.category) || other.category == _this.category)&&(identical(other.subcategory, _this.subcategory) || other.subcategory == _this.subcategory)&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.mateIn, _this.mateIn) || other.mateIn == _this.mateIn)&&(identical(other.verified, _this.verified) || other.verified == _this.verified));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EndgamePosition&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.category, _this.category) || other.category == _this.category)&&(identical(other.subcategory, _this.subcategory) || other.subcategory == _this.subcategory)&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.mateIn, _this.mateIn) || other.mateIn == _this.mateIn)&&(identical(other.verified, _this.verified) || other.verified == _this.verified)&&(identical(other.section, _this.section) || other.section == _this.section)&&(identical(other.difficulty, _this.difficulty) || other.difficulty == _this.difficulty)&&const DeepCollectionEquality().equals(other.links, _this.links));
 }
 
 
 @override
 int get hashCode {
   final _this = this as EndgamePosition;
-  return Object.hash(runtimeType,_this.id,_this.category,_this.subcategory,_this.fen,_this.goal,_this.mateIn,_this.verified);
+  return Object.hash(runtimeType,_this.id,_this.category,_this.subcategory,_this.fen,_this.goal,_this.mateIn,_this.verified,_this.section,_this.difficulty,const DeepCollectionEquality().hash(_this.links));
 }
 
 @override
 String toString() {
   final _this = this as EndgamePosition;
-  return 'EndgamePosition(id: ${_this.id}, category: ${_this.category}, subcategory: ${_this.subcategory}, fen: ${_this.fen}, goal: ${_this.goal}, mateIn: ${_this.mateIn}, verified: ${_this.verified})';
+  return 'EndgamePosition(id: ${_this.id}, category: ${_this.category}, subcategory: ${_this.subcategory}, fen: ${_this.fen}, goal: ${_this.goal}, mateIn: ${_this.mateIn}, verified: ${_this.verified}, section: ${_this.section}, difficulty: ${_this.difficulty}, links: ${_this.links})';
 }
 
 
@@ -54,7 +606,7 @@ abstract mixin class $EndgamePositionCopyWith<$Res>  {
   factory $EndgamePositionCopyWith(EndgamePosition value, $Res Function(EndgamePosition) _then) = _$EndgamePositionCopyWithImpl;
 @useResult
 $Res call({
- String id, String category, String subcategory, String fen, PositionGoal goal, int? mateIn, bool verified
+ String id, String category, String subcategory, String fen, PositionGoal goal, int? mateIn, bool verified, String? section, int? difficulty, List<LessonLink> links
 });
 
 
@@ -71,7 +623,7 @@ class _$EndgamePositionCopyWithImpl<$Res>
 
 /// Create a copy of EndgamePosition
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? category = null,Object? subcategory = null,Object? fen = null,Object? goal = null,Object? mateIn = freezed,Object? verified = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? category = null,Object? subcategory = null,Object? fen = null,Object? goal = null,Object? mateIn = freezed,Object? verified = null,Object? section = freezed,Object? difficulty = freezed,Object? links = null,}) {
   return _then(EndgamePosition(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
@@ -80,7 +632,10 @@ as String,fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nul
 as String,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
 as PositionGoal,mateIn: freezed == mateIn ? _self.mateIn : mateIn // ignore: cast_nullable_to_non_nullable
 as int?,verified: null == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,section: freezed == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as String?,difficulty: freezed == difficulty ? _self.difficulty : difficulty // ignore: cast_nullable_to_non_nullable
+as int?,links: null == links ? _self.links : links // ignore: cast_nullable_to_non_nullable
+as List<LessonLink>,
   ));
 }
 
@@ -165,10 +720,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String category,  String subcategory,  String fen,  PositionGoal goal,  int? mateIn,  bool verified)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String category,  String subcategory,  String fen,  PositionGoal goal,  int? mateIn,  bool verified,  String? section,  int? difficulty,  List<LessonLink> links)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EndgamePosition() when $default != null:
-return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_that.mateIn,_that.verified);case _:
+return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_that.mateIn,_that.verified,_that.section,_that.difficulty,_that.links);case _:
   return orElse();
 
 }
@@ -186,10 +741,10 @@ return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String category,  String subcategory,  String fen,  PositionGoal goal,  int? mateIn,  bool verified)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String category,  String subcategory,  String fen,  PositionGoal goal,  int? mateIn,  bool verified,  String? section,  int? difficulty,  List<LessonLink> links)  $default,) {final _that = this;
 switch (_that) {
 case _EndgamePosition():
-return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_that.mateIn,_that.verified);case _:
+return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_that.mateIn,_that.verified,_that.section,_that.difficulty,_that.links);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +761,10 @@ return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String category,  String subcategory,  String fen,  PositionGoal goal,  int? mateIn,  bool verified)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String category,  String subcategory,  String fen,  PositionGoal goal,  int? mateIn,  bool verified,  String? section,  int? difficulty,  List<LessonLink> links)?  $default,) {final _that = this;
 switch (_that) {
 case _EndgamePosition() when $default != null:
-return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_that.mateIn,_that.verified);case _:
+return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_that.mateIn,_that.verified,_that.section,_that.difficulty,_that.links);case _:
   return null;
 
 }
@@ -221,7 +776,7 @@ return $default(_that.id,_that.category,_that.subcategory,_that.fen,_that.goal,_
 
 
 class _EndgamePosition extends EndgamePosition {
-  const _EndgamePosition({required this.id, required this.category, required this.subcategory, required this.fen, required this.goal, this.mateIn, this.verified = false}): super._();
+  const _EndgamePosition({required this.id, required this.category, required this.subcategory, required this.fen, required this.goal, this.mateIn, this.verified = false, this.section, this.difficulty,  List<LessonLink> links = const <LessonLink>[]}): _links = links,super._();
   
 
 /// `categoria.subcategoria.NNNN`, estável entre versões do catálogo.
@@ -234,6 +789,21 @@ class _EndgamePosition extends EndgamePosition {
 @override final  int? mateIn;
 /// Conferida na tablebase do Lichess.
 @override@JsonKey() final  bool verified;
+/// A seção por material (`KPvK`, `KPPvKP`...), o lado com mais peças
+/// primeiro. Nula nas posições sem material gravado.
+@override final  String? section;
+/// De 1 (mais fácil) a 3, pelo número de peças e pela distância da
+/// tablebase. Nula se o catálogo não informa.
+@override final  int? difficulty;
+/// As lições a que a posição se liga.
+ final  List<LessonLink> _links;
+/// As lições a que a posição se liga.
+@override@JsonKey() List<LessonLink> get links {
+  if (_links is EqualUnmodifiableListView) return _links;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_links);
+}
+
 
 /// Create a copy of EndgamePosition
 /// with the given fields replaced by the non-null parameter values.
@@ -245,18 +815,18 @@ _$EndgamePositionCopyWith<_EndgamePosition> get copyWith => __$EndgamePositionCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EndgamePosition&&(identical(other.id, id) || other.id == id)&&(identical(other.category, category) || other.category == category)&&(identical(other.subcategory, subcategory) || other.subcategory == subcategory)&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.mateIn, mateIn) || other.mateIn == mateIn)&&(identical(other.verified, verified) || other.verified == verified));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _EndgamePosition&&(identical(other.id, id) || other.id == id)&&(identical(other.category, category) || other.category == category)&&(identical(other.subcategory, subcategory) || other.subcategory == subcategory)&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.mateIn, mateIn) || other.mateIn == mateIn)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.section, section) || other.section == section)&&(identical(other.difficulty, difficulty) || other.difficulty == difficulty)&&const DeepCollectionEquality().equals(other.links, _links));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,category,subcategory,fen,goal,mateIn,verified);
+    return Object.hash(runtimeType,id,category,subcategory,fen,goal,mateIn,verified,section,difficulty,const DeepCollectionEquality().hash(_links));
 }
 
 @override
 String toString() {
-    return 'EndgamePosition(id: $id, category: $category, subcategory: $subcategory, fen: $fen, goal: $goal, mateIn: $mateIn, verified: $verified)';
+    return 'EndgamePosition(id: $id, category: $category, subcategory: $subcategory, fen: $fen, goal: $goal, mateIn: $mateIn, verified: $verified, section: $section, difficulty: $difficulty, links: $links)';
 }
 
 
@@ -267,7 +837,7 @@ abstract mixin class _$EndgamePositionCopyWith<$Res> implements $EndgamePosition
   factory _$EndgamePositionCopyWith(_EndgamePosition value, $Res Function(_EndgamePosition) _then) = __$EndgamePositionCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String category, String subcategory, String fen, PositionGoal goal, int? mateIn, bool verified
+ String id, String category, String subcategory, String fen, PositionGoal goal, int? mateIn, bool verified, String? section, int? difficulty, List<LessonLink> links
 });
 
 
@@ -284,7 +854,7 @@ class __$EndgamePositionCopyWithImpl<$Res>
 
 /// Create a copy of EndgamePosition
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? category = null,Object? subcategory = null,Object? fen = null,Object? goal = null,Object? mateIn = freezed,Object? verified = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? category = null,Object? subcategory = null,Object? fen = null,Object? goal = null,Object? mateIn = freezed,Object? verified = null,Object? section = freezed,Object? difficulty = freezed,Object? links = null,}) {
   return _then(_EndgamePosition(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
@@ -293,7 +863,10 @@ as String,fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nul
 as String,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
 as PositionGoal,mateIn: freezed == mateIn ? _self.mateIn : mateIn // ignore: cast_nullable_to_non_nullable
 as int?,verified: null == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,section: freezed == section ? _self.section : section // ignore: cast_nullable_to_non_nullable
+as String?,difficulty: freezed == difficulty ? _self.difficulty : difficulty // ignore: cast_nullable_to_non_nullable
+as int?,links: null == links ? _self._links : links // ignore: cast_nullable_to_non_nullable
+as List<LessonLink>,
   ));
 }
 
@@ -303,7 +876,9 @@ as bool,
 /// @nodoc
 mixin _$CatalogSubcategory {
 
- String get key; String get category; int get winCount; int get drawCount;
+ String get key; String get category; int get winCount; int get drawCount;/// As posições da subcategoria ligadas a alguma lição (para contar com o
+/// filtro de lição).
+ List<EndgamePosition> get lessonLinks;
 /// Create a copy of CatalogSubcategory
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -315,20 +890,20 @@ $CatalogSubcategoryCopyWith<CatalogSubcategory> get copyWith => _$CatalogSubcate
 @override
 bool operator ==(Object other) {
   final _this = this as CatalogSubcategory;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogSubcategory&&(identical(other.key, _this.key) || other.key == _this.key)&&(identical(other.category, _this.category) || other.category == _this.category)&&(identical(other.winCount, _this.winCount) || other.winCount == _this.winCount)&&(identical(other.drawCount, _this.drawCount) || other.drawCount == _this.drawCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogSubcategory&&(identical(other.key, _this.key) || other.key == _this.key)&&(identical(other.category, _this.category) || other.category == _this.category)&&(identical(other.winCount, _this.winCount) || other.winCount == _this.winCount)&&(identical(other.drawCount, _this.drawCount) || other.drawCount == _this.drawCount)&&const DeepCollectionEquality().equals(other.lessonLinks, _this.lessonLinks));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CatalogSubcategory;
-  return Object.hash(runtimeType,_this.key,_this.category,_this.winCount,_this.drawCount);
+  return Object.hash(runtimeType,_this.key,_this.category,_this.winCount,_this.drawCount,const DeepCollectionEquality().hash(_this.lessonLinks));
 }
 
 @override
 String toString() {
   final _this = this as CatalogSubcategory;
-  return 'CatalogSubcategory(key: ${_this.key}, category: ${_this.category}, winCount: ${_this.winCount}, drawCount: ${_this.drawCount})';
+  return 'CatalogSubcategory(key: ${_this.key}, category: ${_this.category}, winCount: ${_this.winCount}, drawCount: ${_this.drawCount}, lessonLinks: ${_this.lessonLinks})';
 }
 
 
@@ -339,7 +914,7 @@ abstract mixin class $CatalogSubcategoryCopyWith<$Res>  {
   factory $CatalogSubcategoryCopyWith(CatalogSubcategory value, $Res Function(CatalogSubcategory) _then) = _$CatalogSubcategoryCopyWithImpl;
 @useResult
 $Res call({
- String key, String category, int winCount, int drawCount
+ String key, String category, int winCount, int drawCount, List<EndgamePosition> lessonLinks
 });
 
 
@@ -356,13 +931,14 @@ class _$CatalogSubcategoryCopyWithImpl<$Res>
 
 /// Create a copy of CatalogSubcategory
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? key = null,Object? category = null,Object? winCount = null,Object? drawCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? key = null,Object? category = null,Object? winCount = null,Object? drawCount = null,Object? lessonLinks = null,}) {
   return _then(CatalogSubcategory(
 key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String,winCount: null == winCount ? _self.winCount : winCount // ignore: cast_nullable_to_non_nullable
 as int,drawCount: null == drawCount ? _self.drawCount : drawCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,lessonLinks: null == lessonLinks ? _self.lessonLinks : lessonLinks // ignore: cast_nullable_to_non_nullable
+as List<EndgamePosition>,
   ));
 }
 
@@ -447,10 +1023,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  String category,  int winCount,  int drawCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  String category,  int winCount,  int drawCount,  List<EndgamePosition> lessonLinks)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogSubcategory() when $default != null:
-return $default(_that.key,_that.category,_that.winCount,_that.drawCount);case _:
+return $default(_that.key,_that.category,_that.winCount,_that.drawCount,_that.lessonLinks);case _:
   return orElse();
 
 }
@@ -468,10 +1044,10 @@ return $default(_that.key,_that.category,_that.winCount,_that.drawCount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  String category,  int winCount,  int drawCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  String category,  int winCount,  int drawCount,  List<EndgamePosition> lessonLinks)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogSubcategory():
-return $default(_that.key,_that.category,_that.winCount,_that.drawCount);case _:
+return $default(_that.key,_that.category,_that.winCount,_that.drawCount,_that.lessonLinks);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -488,10 +1064,10 @@ return $default(_that.key,_that.category,_that.winCount,_that.drawCount);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  String category,  int winCount,  int drawCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  String category,  int winCount,  int drawCount,  List<EndgamePosition> lessonLinks)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogSubcategory() when $default != null:
-return $default(_that.key,_that.category,_that.winCount,_that.drawCount);case _:
+return $default(_that.key,_that.category,_that.winCount,_that.drawCount,_that.lessonLinks);case _:
   return null;
 
 }
@@ -503,13 +1079,24 @@ return $default(_that.key,_that.category,_that.winCount,_that.drawCount);case _:
 
 
 class _CatalogSubcategory extends CatalogSubcategory {
-  const _CatalogSubcategory({required this.key, required this.category, this.winCount = 0, this.drawCount = 0}): super._();
+  const _CatalogSubcategory({required this.key, required this.category, this.winCount = 0, this.drawCount = 0,  List<EndgamePosition> lessonLinks = const <EndgamePosition>[]}): _lessonLinks = lessonLinks,super._();
   
 
 @override final  String key;
 @override final  String category;
 @override@JsonKey() final  int winCount;
 @override@JsonKey() final  int drawCount;
+/// As posições da subcategoria ligadas a alguma lição (para contar com o
+/// filtro de lição).
+ final  List<EndgamePosition> _lessonLinks;
+/// As posições da subcategoria ligadas a alguma lição (para contar com o
+/// filtro de lição).
+@override@JsonKey() List<EndgamePosition> get lessonLinks {
+  if (_lessonLinks is EqualUnmodifiableListView) return _lessonLinks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lessonLinks);
+}
+
 
 /// Create a copy of CatalogSubcategory
 /// with the given fields replaced by the non-null parameter values.
@@ -521,18 +1108,18 @@ _$CatalogSubcategoryCopyWith<_CatalogSubcategory> get copyWith => __$CatalogSubc
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogSubcategory&&(identical(other.key, key) || other.key == key)&&(identical(other.category, category) || other.category == category)&&(identical(other.winCount, winCount) || other.winCount == winCount)&&(identical(other.drawCount, drawCount) || other.drawCount == drawCount));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogSubcategory&&(identical(other.key, key) || other.key == key)&&(identical(other.category, category) || other.category == category)&&(identical(other.winCount, winCount) || other.winCount == winCount)&&(identical(other.drawCount, drawCount) || other.drawCount == drawCount)&&const DeepCollectionEquality().equals(other.lessonLinks, _lessonLinks));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,key,category,winCount,drawCount);
+    return Object.hash(runtimeType,key,category,winCount,drawCount,const DeepCollectionEquality().hash(_lessonLinks));
 }
 
 @override
 String toString() {
-    return 'CatalogSubcategory(key: $key, category: $category, winCount: $winCount, drawCount: $drawCount)';
+    return 'CatalogSubcategory(key: $key, category: $category, winCount: $winCount, drawCount: $drawCount, lessonLinks: $lessonLinks)';
 }
 
 
@@ -543,7 +1130,7 @@ abstract mixin class _$CatalogSubcategoryCopyWith<$Res> implements $CatalogSubca
   factory _$CatalogSubcategoryCopyWith(_CatalogSubcategory value, $Res Function(_CatalogSubcategory) _then) = __$CatalogSubcategoryCopyWithImpl;
 @override @useResult
 $Res call({
- String key, String category, int winCount, int drawCount
+ String key, String category, int winCount, int drawCount, List<EndgamePosition> lessonLinks
 });
 
 
@@ -560,13 +1147,14 @@ class __$CatalogSubcategoryCopyWithImpl<$Res>
 
 /// Create a copy of CatalogSubcategory
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? category = null,Object? winCount = null,Object? drawCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? category = null,Object? winCount = null,Object? drawCount = null,Object? lessonLinks = null,}) {
   return _then(_CatalogSubcategory(
 key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String,winCount: null == winCount ? _self.winCount : winCount // ignore: cast_nullable_to_non_nullable
 as int,drawCount: null == drawCount ? _self.drawCount : drawCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,lessonLinks: null == lessonLinks ? _self._lessonLinks : lessonLinks // ignore: cast_nullable_to_non_nullable
+as List<EndgamePosition>,
   ));
 }
 

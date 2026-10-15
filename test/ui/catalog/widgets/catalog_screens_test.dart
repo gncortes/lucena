@@ -130,7 +130,7 @@ void main() {
     expect(find.byKey(CatalogKeys.category('basic')), findsNothing);
     expect(find.byKey(CatalogKeys.category('rookPawn')), findsOneWidget);
     expect(find.text('1 position'), findsOneWidget);
-    expect(training.filter, GoalFilter.draw);
+    expect(training.filter, const CatalogFilter(goal: GoalFilter.draw));
   });
 
   testWidgets('a categoria mostra cada final já aberto, com as posições', (

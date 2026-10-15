@@ -40,7 +40,7 @@ class CatalogScreen extends StatelessWidget {
                     padding: scrollPadding(context, left: 16, right: 16),
                     children: [
                       for (final category in categories)
-                        if (category.count(state.filter) > 0)
+                        if (category.countFor(state.filter) > 0)
                           _CategoryCard(
                             category: category,
                             filter: state.filter,
@@ -69,7 +69,7 @@ class _CategoryCard extends StatelessWidget {
   });
 
   final CatalogCategory category;
-  final GoalFilter filter;
+  final CatalogFilter filter;
 
   /// Quantas posições da categoria já tiveram o objetivo cumprido.
   final int done;
@@ -138,7 +138,7 @@ class _CategoryCard extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 l10n.catalogPositionCount(
-                                  category.count(filter),
+                                  category.countFor(filter),
                                 ),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: colors.onSurfaceVariant,
@@ -169,7 +169,7 @@ class _CategoryCard extends StatelessWidget {
                 runSpacing: 6,
                 children: [
                   for (final sub in category.subcategories)
-                    if (sub.count(filter) > 0)
+                    if (sub.countFor(filter) > 0)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,

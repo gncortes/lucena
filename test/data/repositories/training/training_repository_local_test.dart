@@ -17,15 +17,42 @@ void main() {
   });
 
   test('sem nada gravado: todas as posições, 5 min para cada lado', () async {
-    expect(await reopen().loadCatalogFilter(), GoalFilter.all);
+    expect(await reopen().loadCatalogFilter(), const CatalogFilter());
     expect(await reopen().loadSetup(), const GameSetup());
     expect(await reopen().loadCustomDraft(), isNull);
   });
 
-  test('o filtro do catálogo volta ao reabrir', () async {
-    await reopen().saveCatalogFilter(GoalFilter.draw);
+  test('o filtro do catálogo (objetivo e lições) volta ao reabrir', () async {
+    const filter = CatalogFilter(
+      goal: GoalFilter.draw,
+      lessons: {'pawns.distantOpposition', 'pawns.waitingMoves'},
+    );
+    await reopen().saveCatalogFilter(filter);
 
-    expect(await reopen().loadCatalogFilter(), GoalFilter.draw);
+    expect(await reopen().loadCatalogFilter(), filter);
+  });
+
+  test('o objetivo gravado na versão anterior vira o filtro novo', () async {
+    await PreferencesService().setString('catalog.goal', 'draw');
+
+    expect(
+      await reopen().loadCatalogFilter(),
+      const CatalogFilter(goal: GoalFilter.draw),
+    );
+
+    // Ao gravar o filtro novo, a chave antiga sai.
+    await reopen().saveCatalogFilter(const CatalogFilter(goal: GoalFilter.win));
+    expect(await PreferencesService().getString('catalog.goal'), isNull);
+    expect(
+      await reopen().loadCatalogFilter(),
+      const CatalogFilter(goal: GoalFilter.win),
+    );
+  });
+
+  test('filtro gravado estragado volta ao padrão', () async {
+    await PreferencesService().setString('catalog.filter', '{quebrado');
+
+    expect(await reopen().loadCatalogFilter(), const CatalogFilter());
   });
 
   test('a última configuração de partida volta ao reabrir', () async {

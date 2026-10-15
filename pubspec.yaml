@@ -54,6 +54,7 @@ flutter:
     # Sons do jogo: conjunto "sfx" do Lichess (ver THIRD-PARTY-NOTICES.md).
     - assets/sounds/
     - assets/positions/positions.json
+    - assets/positions/lesson_links.json
     - assets/progression/ladder.json
     - assets/progression/speedruns.json
     - assets/progression/speedrun_positions.json

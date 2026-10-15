@@ -35,6 +35,10 @@ class FakePositionsRepository implements PositionsRepository {
                           p.subcategory == sub && p.goal == PositionGoal.draw,
                     )
                     .length,
+                lessonLinks: [
+                  for (final p in positions)
+                    if (p.subcategory == sub && p.links.isNotEmpty) p,
+                ],
               ),
           ],
         ),
@@ -51,6 +55,17 @@ class FakePositionsRepository implements PositionsRepository {
       if (p.id == id) return p;
     }
     return null;
+  }
+
+  @override
+  Future<List<String>> lessonsWithLinks() async {
+    final lessons = <String>[];
+    for (final p in positions) {
+      for (final link in p.links) {
+        if (!lessons.contains(link.lessonId)) lessons.add(link.lessonId);
+      }
+    }
+    return lessons;
   }
 }
 

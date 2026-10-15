@@ -28,7 +28,11 @@ abstract class CatalogState with _$CatalogState {
     /// As posições da categoria aberta, na ordem do catálogo. Nulo fora da
     /// tela da categoria ou enquanto elas são lidas.
     List<EndgamePosition>? positions,
-    @Default(GoalFilter.all) GoalFilter filter,
+    @Default(CatalogFilter()) CatalogFilter filter,
+
+    /// As lições que têm posição ligada, na ordem da escola (as opções do
+    /// filtro de lição).
+    @Default(<String>[]) List<String> lessons,
 
     /// As posições em que o objetivo já foi cumprido.
     @Default(<String>{}) Set<String> fulfilled,
@@ -42,7 +46,7 @@ abstract class CatalogState with _$CatalogState {
 
   /// As posições da categoria que passam pelo filtro.
   List<EndgamePosition>? get visiblePositions =>
-      positions?.where((p) => filter.accepts(p.goal)).toList();
+      positions?.where(filter.accepts).toList();
 
   /// Os finais da categoria com as posições que passam pelo filtro, na ordem
   /// do catálogo. Final sem posição para o filtro não entra.
@@ -66,7 +70,7 @@ abstract class CatalogState with _$CatalogState {
 }
 
 /// O catálogo: categorias, subcategorias e posições, com o filtro por
-/// objetivo (gravado: volta igual na próxima vez).
+/// objetivo e por lição (gravado: volta igual na próxima vez).
 class CatalogCubit extends Cubit<CatalogState> {
   CatalogCubit(this._positions, this._training, this._progress)
     : super(const CatalogState());
@@ -78,8 +82,11 @@ class CatalogCubit extends Cubit<CatalogState> {
   /// Lê o catálogo e o filtro. Com [category], lê também as posições de todos
   /// os finais dela.
   Future<void> load({String? category}) async {
-    final filter = await _training.loadCatalogFilter();
+    final saved = await _training.loadCatalogFilter();
     final categories = await _positions.catalog();
+    final lessons = await _positions.lessonsWithLinks();
+    // Lição que saiu do catálogo não filtra mais.
+    final filter = saved.retain(lessons);
     List<EndgamePosition>? positions;
     if (category != null) {
       positions = [
@@ -96,12 +103,24 @@ class CatalogCubit extends Cubit<CatalogState> {
         categories: categories,
         positions: positions,
         filter: filter,
+        lessons: lessons,
         fulfilled: fulfilled,
       ),
     );
   }
 
-  Future<void> setFilter(GoalFilter filter) async {
+  /// Troca o objetivo; as lições marcadas continuam.
+  Future<void> setGoal(GoalFilter goal) =>
+      _save(state.filter.copyWith(goal: goal));
+
+  /// Marca as lições [lessons] (as que não têm posição ficam de fora).
+  Future<void> setLessons(Set<String> lessons) =>
+      _save(state.filter.copyWith(lessons: lessons).retain(state.lessons));
+
+  /// Tira o filtro de lição; o objetivo continua.
+  Future<void> clearLessons() => _save(state.filter.copyWith(lessons: {}));
+
+  Future<void> _save(CatalogFilter filter) async {
     emit(state.copyWith(filter: filter));
     await _training.saveCatalogFilter(filter);
   }

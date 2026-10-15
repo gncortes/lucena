@@ -5,21 +5,21 @@ import 'package:lucena/domain/models/game_setup.dart';
 /// Preferências do treino só na memória.
 class FakeTrainingRepository implements TrainingRepository {
   FakeTrainingRepository({
-    this.filter = GoalFilter.all,
+    this.filter = const CatalogFilter(),
     this.setup = const GameSetup(),
     this.draft,
   });
 
-  GoalFilter filter;
+  CatalogFilter filter;
   GameSetup setup;
   CustomPositionDraft? draft;
   final savedSetups = <GameSetup>[];
 
   @override
-  Future<GoalFilter> loadCatalogFilter() async => filter;
+  Future<CatalogFilter> loadCatalogFilter() async => filter;
 
   @override
-  Future<void> saveCatalogFilter(GoalFilter filter) async =>
+  Future<void> saveCatalogFilter(CatalogFilter filter) async =>
       this.filter = filter;
 
   @override
