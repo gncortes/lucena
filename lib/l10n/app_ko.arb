@@ -819,6 +819,7 @@
   "placementStart": "시작",
   "placementResume": "Continue test",
   "placementStoppedAt": "You stopped at question {number} of {total}",
+  "placementAnswersSaved": "The answers you already gave are saved.",
   "placementRestart": "처음부터 다시",
   "placementDontKnow": "모르겠어요",
   "placementConfirm": "확인",

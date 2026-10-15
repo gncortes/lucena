@@ -819,6 +819,7 @@
   "placementStart": "Mulai",
   "placementResume": "Continue test",
   "placementStoppedAt": "You stopped at question {number} of {total}",
+  "placementAnswersSaved": "The answers you already gave are saved.",
   "placementRestart": "Mulai ulang",
   "placementDontKnow": "Tidak tahu",
   "placementConfirm": "Konfirmasi",

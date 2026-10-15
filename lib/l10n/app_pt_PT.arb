@@ -819,6 +819,7 @@
   "placementStart": "Começar",
   "placementResume": "Continuar teste",
   "placementStoppedAt": "Paraste na pergunta {number} de {total}",
+  "placementAnswersSaved": "As respostas que já deste estão guardadas.",
   "placementRestart": "Recomeçar do zero",
   "placementDontKnow": "Não sei",
   "placementConfirm": "Confirmar",

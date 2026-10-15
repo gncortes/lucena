@@ -9,7 +9,9 @@ abstract final class PlacementKeys {
   static const start = Key('placement.start');
   static const footer = Key('placement.footer');
   static const resume = Key('placement.resume');
+  static const stoppedCard = Key('placement.stoppedCard');
   static const stoppedAt = Key('placement.stoppedAt');
+  static const answersSaved = Key('placement.answersSaved');
   static const restart = Key('placement.restart');
   static const chooseByHand = Key('placement.chooseByHand');
 

@@ -819,6 +819,7 @@
   "placementStart": "Beginnen",
   "placementResume": "Continue test",
   "placementStoppedAt": "You stopped at question {number} of {total}",
+  "placementAnswersSaved": "The answers you already gave are saved.",
   "placementRestart": "Opnieuw beginnen",
   "placementDontKnow": "Weet ik niet",
   "placementConfirm": "Bevestigen",

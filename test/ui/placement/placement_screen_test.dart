@@ -208,39 +208,70 @@ void main() {
     expect(find.textContaining('Não vale chutar'), findsOneWidget);
   });
 
-  testWidgets('abertura retomada: "Continuar" cheio e "Recomeçar" em texto '
-      'abaixo, sem o link de rating', (tester) async {
-    final (cubit, _) = await pump(tester, onChooseByHand: () {});
-    await tester.tap(find.byKey(PlacementKeys.start));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(PlacementKeys.dontKnow));
-    await tester.pumpAndSettle();
-    await cubit.load();
-    await tester.pumpAndSettle();
-    expect(cubit.state.resuming, isTrue);
-    final footer = find.byKey(PlacementKeys.footer);
-    for (final key in [PlacementKeys.restart, PlacementKeys.resume]) {
+  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+    final w = size.width;
+    testWidgets('${w.toInt()}: abertura retomada: card de onde parou abaixo '
+        'dos selos; "Continuar teste" cheio e "Recomeçar" em texto, sem o '
+        'link de rating', (tester) async {
+      final (cubit, _) = await pump(tester, size: size, onChooseByHand: () {});
+      await tester.tap(find.byKey(PlacementKeys.start));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(PlacementKeys.dontKnow));
+      await tester.pumpAndSettle();
+      await cubit.load();
+      await tester.pumpAndSettle();
+      expect(cubit.state.resuming, isTrue);
+      final footer = find.byKey(PlacementKeys.footer);
+      for (final key in [PlacementKeys.restart, PlacementKeys.resume]) {
+        expect(
+          find.descendant(of: footer, matching: find.byKey(key)),
+          findsOneWidget,
+        );
+      }
+      final resume = tester.getRect(find.byKey(PlacementKeys.resume));
+      final restart = tester.getRect(find.byKey(PlacementKeys.restart));
+      expect(resume.left, 16);
+      expect(resume.right, w - 16);
+      expect(restart.top - resume.bottom, 4);
+      expect(size.height - restart.bottom, 24);
+      expect(find.byKey(PlacementKeys.start), findsNothing);
+      expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
+      expect(find.text('Continuar teste'), findsOneWidget);
+
+      // O card (variante B): fora do rodapé, 24 abaixo dos selos, na
+      // largura do conteúdo, padding 16, ícone e duas linhas.
+      final card = find.byKey(PlacementKeys.stoppedCard);
+      expect(find.descendant(of: footer, matching: card), findsNothing);
+      final box = tester.getRect(card);
+      final chips = find.byType(Chip);
+      final chipsBottom = [
+        for (final e in chips.evaluate())
+          tester.getRect(find.byWidget(e.widget)).bottom,
+      ].reduce((a, b) => a > b ? a : b);
+      expect(box.top - chipsBottom, 24);
+      expect(box.left, 16);
+      expect(box.width, w - 32);
+      final decoration =
+          tester.widget<Container>(card).decoration! as BoxDecoration;
+      final colors = Theme.of(tester.element(card)).colorScheme;
+      expect(decoration.color, colors.surfaceContainer);
+      expect(decoration.borderRadius, BorderRadius.circular(12));
+      final icon = find.descendant(of: card, matching: find.byType(Icon));
+      final iconBox = tester.getRect(icon);
+      expect(iconBox.topLeft - box.topLeft, const Offset(16, 16));
+      expect(tester.widget<Icon>(icon).color, colors.primary);
+      final title = find.byKey(PlacementKeys.stoppedAt);
+      final saved = find.byKey(PlacementKeys.answersSaved);
+      expect(tester.getRect(title).left - iconBox.right, 12);
+      expect(tester.getRect(saved).top - tester.getRect(title).bottom, 2);
+      expect(box.bottom - tester.getRect(saved).bottom, 16);
+      expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
       expect(
-        find.descendant(of: footer, matching: find.byKey(key)),
+        find.text('As respostas que você já deu estão guardadas.'),
         findsOneWidget,
       );
-    }
-    final resume = tester.getRect(find.byKey(PlacementKeys.resume));
-    final restart = tester.getRect(find.byKey(PlacementKeys.restart));
-    expect(resume.left, 16);
-    expect(resume.right, 800 - 400 - 16);
-    expect(restart.top - resume.bottom, 4);
-    expect(800 - restart.bottom, 24);
-    expect(find.byKey(PlacementKeys.start), findsNothing);
-    expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
-    // A legenda de onde parou, centrada, 8 acima do "Continuar teste".
-    final stopped = find.byKey(PlacementKeys.stoppedAt);
-    expect(find.descendant(of: footer, matching: stopped), findsOneWidget);
-    expect(resume.top - tester.getRect(stopped).bottom, 8);
-    expect(tester.widget<Text>(stopped).textAlign, TextAlign.center);
-    expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
-    expect(find.text('Continuar teste'), findsOneWidget);
-  });
+    });
+  }
 
   for (final reducedMotion in [false, true]) {
     testWidgets('B7: troca de pergunta sem deslocar o tabuleiro, '

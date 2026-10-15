@@ -819,6 +819,7 @@
   "placementStart": "Bắt đầu",
   "placementResume": "Continue test",
   "placementStoppedAt": "You stopped at question {number} of {total}",
+  "placementAnswersSaved": "The answers you already gave are saved.",
   "placementRestart": "Làm lại từ đầu",
   "placementDontKnow": "Không biết",
   "placementConfirm": "Xác nhận",

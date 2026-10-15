@@ -823,6 +823,7 @@
   "placementStart": "[Štåŕt one]",
   "placementResume": "[Çöñtîñûé téšt one two]",
   "placementStoppedAt": "[Ýöû štöppéd åt qûéštîöñ {number} öf {total} one two three four]",
+  "placementAnswersSaved": "[Thé åñšwéŕš ýöû ålŕéådý ĝåvé åŕé šåvéd. one two three four]",
   "placementRestart": "[Štåŕt övéŕ one]",
   "placementDontKnow": "[Î döñ't kñöw one two]",
   "placementConfirm": "[Çöñfîŕm one]",

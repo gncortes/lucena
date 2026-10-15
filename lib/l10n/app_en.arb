@@ -4366,6 +4366,10 @@
       }
     }
   },
+  "placementAnswersSaved": "The answers you already gave are saved.",
+  "@placementAnswersSaved": {
+    "description": "Second line of the resume card of the placement test: the answers so far are kept."
+  },
   "placementRestart": "Start over",
   "@placementRestart": {
     "description": "Button that restarts the placement test from scratch."

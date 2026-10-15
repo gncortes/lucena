@@ -111,7 +111,8 @@ class _Intro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final cubit = context.read<PlacementCubit>();
     final viktor = state.viktor;
@@ -161,6 +162,50 @@ class _Intro extends StatelessWidget {
                       ),
                   ],
                 ),
+                // Na retomada (Gabriel, variante B; canvas
+                // PropV2TesteAberturaRetomadaCard): onde o teste parou, num
+                // card abaixo dos selos.
+                if (state.resuming) ...[
+                  const SizedBox(height: AppSpacing.xl),
+                  Container(
+                    key: PlacementKeys.stoppedCard,
+                    padding: const EdgeInsets.all(AppSpacing.insideCard),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainer,
+                      borderRadius: BorderRadius.circular(AppShape.medium),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: AppSpacing.md,
+                      children: [
+                        Icon(Icons.history_rounded, color: colors.primary),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 2,
+                            children: [
+                              Text(
+                                l10n.placementStoppedAt(
+                                  state.number,
+                                  PlacementState.questionCount,
+                                ),
+                                key: PlacementKeys.stoppedAt,
+                                style: theme.textTheme.titleMedium,
+                              ),
+                              Text(
+                                l10n.placementAnswersSaved,
+                                key: PlacementKeys.answersSaved,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -177,23 +222,6 @@ class _Intro extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: AppSpacing.xs,
               children: [
-                // Na retomada (canvas 0744f9e): onde o teste parou, centrado
-                // acima do botão (4 de margem, mais o vão da coluna).
-                if (state.resuming)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                    child: Text(
-                      l10n.placementStoppedAt(
-                        state.number,
-                        PlacementState.questionCount,
-                      ),
-                      key: PlacementKeys.stoppedAt,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
                 FilledButton(
                   key: state.resuming
                       ? PlacementKeys.resume

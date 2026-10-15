@@ -819,6 +819,7 @@
   "placementStart": "शुरू करें",
   "placementResume": "Continue test",
   "placementStoppedAt": "You stopped at question {number} of {total}",
+  "placementAnswersSaved": "The answers you already gave are saved.",
   "placementRestart": "फिर से शुरू",
   "placementDontKnow": "पता नहीं",
   "placementConfirm": "पुष्टि करें",
