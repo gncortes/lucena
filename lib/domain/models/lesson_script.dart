@@ -14,16 +14,21 @@ enum ScriptGoal {
 
   /// Sem adversário (curso de iniciante): mover a peça, achar a casa. A vez
   /// não passa.
-  tarefa;
+  tarefa,
+
+  /// Como `ganhar`, mas o exemplo termina com sucesso assim que o rei do aluno
+  /// chega a uma das `casas` do exemplo sem perder o ganho.
+  casa;
 
   static ScriptGoal parse(Object? value) => switch (value) {
     'empatar' => ScriptGoal.empatar,
     'mate' => ScriptGoal.mate,
     'tarefa' => ScriptGoal.tarefa,
+    'casa' => ScriptGoal.casa,
     _ => ScriptGoal.ganhar,
   };
 
-  bool get wantsWin => this == ganhar;
+  bool get wantsWin => this == ganhar || this == casa;
 }
 
 /// O que vem depois do último passo de um exemplo.
@@ -423,6 +428,7 @@ class ScriptExample {
     required this.entry,
     required this.line,
     required this.end,
+    this.squares = const [],
     this.curiosities,
     this.question,
     this.practice,
@@ -433,6 +439,10 @@ class ScriptExample {
     fen: json['fen'] as String,
     flip: json['vira'] as bool? ?? false,
     goal: ScriptGoal.parse(json['objetivo']),
+    squares: [
+      for (final name in json['casas'] as List? ?? const [])
+        Square.fromName(name as String),
+    ],
     curiosities: json['curiosidades'] == null
         ? null
         : Curiosities.fromJson(json['curiosidades'] as Map<String, dynamic>),
@@ -453,6 +463,9 @@ class ScriptExample {
   /// O tabuleiro é visto do lado das pretas (e o aluno joga de pretas).
   final bool flip;
   final ScriptGoal goal;
+
+  /// Objetivo `casa`: as casas em que o rei do aluno encerra o exemplo.
+  final List<Square> squares;
   final Curiosities? curiosities;
   final List<ScriptStep> entry;
   final ScriptQuestion? question;
@@ -467,6 +480,13 @@ class ScriptExample {
   String get questionFen => entry.lastOrNull?.fen ?? fen;
 
   bool get isPractice => practice != null;
+
+  /// Objetivo `casa`: o rei do aluno em [position] está numa das casas do exemplo.
+  bool kingOnSquare(Position position) {
+    if (goal != ScriptGoal.casa) return false;
+    final king = position.board.kingOf(student);
+    return king != null && squares.contains(king);
+  }
 }
 
 /// Uma etapa do roteiro (`ideia`, `demos`, `pratica`).

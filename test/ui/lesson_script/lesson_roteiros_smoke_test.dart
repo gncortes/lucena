@@ -120,7 +120,41 @@ class _Run {
   String practiceMove() {
     final position = GameRules.fromFen(s.fen)!;
     if (example.goal == ScriptGoal.mate) return _mateMove(position, seen);
+    if (example.goal == ScriptGoal.casa) return _casaMove(position);
     return MachineMove.choose(_kpk, position)!;
+  }
+
+  /// No objetivo `casa`: entre os lances que mantêm o ganho, o que deixa o rei
+  /// do aluno mais perto de uma das casas (chegar encerra com sucesso).
+  String _casaMove(Position position) {
+    final us = position.turn;
+    int distance(Position next) {
+      final king = next.board.kingOf(us)!;
+      return example.squares
+          .map(
+            (c) => max((c.file - king.file).abs(), (c.rank - king.rank).abs()),
+          )
+          .reduce(min);
+    }
+
+    String? best;
+    var bestDistance = 99;
+    for (final MapEntry(:key, :value) in position.legalMoves.entries) {
+      for (final to in value.squares) {
+        final move = NormalMove(from: key, to: to);
+        final next = position.playUnchecked(move);
+        if (JudgeMove.judge(_kpk, position, move, wantsWin: true) !=
+            MoveVerdict.keeps) {
+          continue;
+        }
+        final d = distance(next);
+        if (d < bestDistance) {
+          bestDistance = d;
+          best = move.uci;
+        }
+      }
+    }
+    return best ?? MachineMove.choose(_kpk, position)!;
   }
 
   /// As posições da prática de mate já vistas (para não repetir).
@@ -222,6 +256,7 @@ class _Run {
         return false;
       case ScriptPhase.praticaFim
           when example.practice?.kind == PracticeKind.jogo &&
+              example.goal != ScriptGoal.casa &&
               !s.machineThinking:
         // A partida contra a máquina fecha com o resultado na lista.
         final last = s.moves.where((m) => m.id == s.currentMoveId).firstOrNull;

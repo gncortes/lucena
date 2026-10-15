@@ -1389,7 +1389,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// O fim cumpre o objetivo: no `mate`, só o mate.
   bool _meets(FreeEnd end) =>
       _mateGoal ? end == FreeEnd.mate : end.meets(_wantsWin);
-  String get _goalName => _example.goal.name;
+  // `casa` usa as falas genéricas do `ganhar`.
+  String get _goalName =>
+      _example.goal == ScriptGoal.casa ? 'ganhar' : _example.goal.name;
 
   /// O convite a ver a linha principal (a fala com o link).
   String get _seeLineKey => 'gen.verLinha.$_goalName';
@@ -1960,6 +1962,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _playGame(uci);
     _scene = _scene.at(_cursor);
     final end = _markResult(_example.practice!.limit);
+    final arrived = _example.kingOnSquare(GameRules.fromFen(_gameFen)!);
     final base = state.copyWith(
       fen: _gameFen,
       lastMove: uci,
@@ -1968,8 +1971,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       movable: null,
       transition: _transition([uci], fromFen: from),
     );
-    if (end != null) {
-      _publish(_finishPractice(base, end));
+    if (arrived || end != null) {
+      _publish(_finishPractice(base, arrived ? null : end));
       return;
     }
     _publish(
@@ -2108,8 +2111,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     );
   }
 
-  LessonScriptState _finishPractice(LessonScriptState base, FreeEnd end) {
-    final met = _meets(end);
+  /// [end] nulo: o rei do aluno chegou à casa do objetivo `casa` (sucesso).
+  LessonScriptState _finishPractice(LessonScriptState base, FreeEnd? end) {
+    final met = end == null || _meets(end);
     final last = _exampleIndex == _stageData.examples.length - 1;
     return base.copyWith(
       phase: ScriptPhase.praticaFim,
