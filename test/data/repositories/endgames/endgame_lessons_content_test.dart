@@ -282,6 +282,8 @@ void main() {
       );
       bool isOptional(String key) {
         if (optional.contains(key)) return true;
+        // A fala de fim da aula, própria dela (no lugar da genérica).
+        if (key == 'coach.allPartsDone') return true;
         final match = optionalPattern.firstMatch(key);
         if (match == null) return false;
         return match.group(2) != null

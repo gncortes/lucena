@@ -842,6 +842,15 @@
       },
       {
        "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
+       "t": "rot.demos.fileiraAbaixo.25b",
+       "marcas": [
+        "f4",
+        "g4",
+        "h4"
+       ]
+      },
+      {
+       "fen": "8/4k3/8/8/8/8/3K2P1/8 w - - 0 1",
        "t": "rot.demos.fileiraAbaixo.26",
        "marcas": [
         "a5",

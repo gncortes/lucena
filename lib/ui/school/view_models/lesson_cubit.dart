@@ -3243,8 +3243,12 @@ class LessonCubit extends Cubit<LessonState> {
           finished: true,
           nextPart: outcome.nextPart,
           // A última parte fecha a aula: fala de fim de aula, não de capítulo.
+          // A da própria aula (`coach.allPartsDone` no JSON dela) vence a
+          // genérica: diz o que o aluno domina e anuncia o teste.
           speech: outcome.nextPart == null
-              ? _pick('coach.allPartsDone') ?? _pick('coach.lessonDone')
+              ? _pick('${lesson.id}.coach.allPartsDone') ??
+                    _pick('coach.allPartsDone') ??
+                    _pick('coach.lessonDone')
               : _pick('coach.partDone') ?? _pick('coach.lessonDone'),
           emotion: Emotion.confident,
         ),

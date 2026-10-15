@@ -121,4 +121,32 @@ void main() {
     expect(find.byIcon(Icons.arrow_back), findsNothing);
     addTearDown(() => tester.pumpWidget(const SizedBox()));
   });
+
+  test('fim da aula: a fala da própria aula vence a genérica', () async {
+    final cubit = LessonCubit(
+      source: EndgameLessonSource(
+        FakeEndgameLessonRepository(
+          trail: trail,
+          texts: LessonTexts.fromJson({
+            'rook.lucena.a': 'First.',
+            'rook.lucena.b': 'Second.',
+            'coach.allPartsDone': ['Lesson done.'],
+            'rook.lucena.coach.allPartsDone': 'You build the bridge now.',
+          }),
+        ),
+        FakeEndgameProgressRepository(),
+      ),
+      characters: FakeCharacterRepository(),
+      opponent: FakeOpponentRepository(),
+      replyDelay: Duration.zero,
+    );
+    addTearDown(cubit.close);
+    await cubit.load('rook.lucena', 'en', part: 'one');
+    await cubit.next();
+    await cubit.load('rook.lucena', 'en', part: 'two');
+    await cubit.next();
+    expect(cubit.state.finished, isTrue);
+    expect(cubit.state.nextPart, isNull);
+    expect(cubit.state.speech, 'You build the bridge now.');
+  });
 }

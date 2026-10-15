@@ -16,7 +16,7 @@
   "step.grigorievMove.done": "Paciência recompensada: a espera conserva suas reservas e as casas adversárias necessárias para evitar afogamento. Só depois de o adversário gastar o próprio tempo convém mudar a estrutura.\n\nA linha principal é 1.b3 Ra5 2.Rb8 b4 3.c4.",
   "part.means.title": "Escolher o objetivo",
   "part.means.summary": "Tomar a oposição não é o objetivo: se o seu rei alcança direto uma casa-chave do peão, vá até ela, mesmo sem a oposição.",
-  "step.t_means": "O peão branco está em c4. Até aqui você viu maneiras de disputar a oposição; agora compare essa técnica com a meta de alcançar uma casa-chave. Qual lance melhora de fato o caminho para a promoção?",
+  "step.t_means": "O peão branco está em c4. A oposição é um meio, não o fim: ela serve para o rei chegar a uma casa-chave. Qual lance melhora de fato o caminho para a promoção?",
   "step.t_means.hint1": "Onde ficam as casas-chave do peão de c4? É possível chegar a elas sem passar pela oposição?",
   "step.means": "Primeiro o alvo, depois a técnica. Nesta posição, 1.Re4 toma a oposição e apenas empata depois de 1...Rd6. O avanço 1.Rc5 ganha porque aproxima o rei das casas-chave b6, c6 e d6. Na linha, 1...Rd7 permite 2.Rb6, chegando a uma delas. Ter a oposição não é um objetivo independente: para ganhar, ela deve ajudar a promover ou capturar; para defender, deve impedir a entrada ou permitir contrajogo.",
   "step.d_means": "Veja o rei branco ir diretamente à casa-chave.",
@@ -207,7 +207,7 @@
   "title": "Oposição distante II: lances de espera",
   "summary": "Trocar a vez com um lance de peão de reserva ou uma espera do rei, para ficar com a oposição e obrigar o rei adversário a ceder.",
   "history": "Em muitos finais de peões o que decide não é quem tem o rei mais perto, e sim quem é obrigado a mexer primeiro. Um peão que ainda pode avançar sem consequências é um tempo de reserva: serve para passar a vez ao adversário. Um lance de rei que não muda nada, só para esperar, é um lance de espera. Quem sabe contar esses lances transforma uma posição aparentemente igual em vitória ou empate.\n\nO mestre soviético {{Nikolai Grigoriev|nikolai-grigoriev}} compôs, no início do século XX, estudos famosos sobre o tema, em que dois peões e dois reis parecem parados e, ainda assim, só um lance de espera preciso conserva o resultado.",
-  "practice": "Agora o final de verdade: rei em e1, peão em f3 e o rei preto em c8. Leve o rei à frente do peão, tome a oposição quando precisar e coroe. Escolha o ritmo e vá.",
+  "practice": "Agora o final de verdade: rei em e1, peão em f3 e o rei preto em c8. Leve o rei à frente do peão, rumo às casas-chave e5, f5 e g5, e use a oposição para chegar a uma delas. Escolha o ritmo e vá.",
   "key.grigoriev": "Estudo de {{Nikolai Grigoriev|nikolai-grigoriev}}, de 1933. As pretas guardam o avanço do peão de d5 como reserva, um lance para mudar a vez quando lhes convier. As brancas precisam de esperas que continuem valendo depois que a reserva for usada.",
   "part.refresher.title": "Antes de seguir",
   "part.refresher.summary": "Depois do seu lance, um número ímpar de casas entre os reis deixa a oposição com você, e o outro rei precisa ceder.",
@@ -229,5 +229,6 @@
   "ex.e22.solution": "1.a5! avança o peão e tira das pretas o lance de peão que serviria para passar a vez. Depois de 1...Rh8, 2.Rg6! e, depois de 2...Rg8, 3.Rf6! Depois de 3...Rh7, 4.Re7! O rei branco chega ao peão de a6 e a vitória é certa.",
   "ex.e22.r1": "1...Rh8. O rei preto só tem lances de rei; ele vai ao canto.",
   "ex.e22.r2": "2...Rg8. O rei preto sai para g8, tentando alcançar f8.",
-  "ex.e22.r3": "3...Rh7. O rei preto volta a h7 e o rei branco entra por e7."
+  "ex.e22.r3": "3...Rh7. O rei preto volta a h7 e o rei branco entra por e7.",
+  "coach.allPartsDone": "Agora você sabe usar o lance de espera para devolver a vez ao adversário. Vamos ao teste final?"
 }

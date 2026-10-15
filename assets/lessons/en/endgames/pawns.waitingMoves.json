@@ -16,7 +16,7 @@
   "step.grigorievMove.done": "Patience rewarded: the waiting move preserves your reserves and the opposing squares needed to avoid stalemate. Only after the opponent spends their own tempo is it appropriate to change the structure.\n\nThe main line is 1.b3 Ka5 2.Kb8 b4 3.c4.",
   "part.means.title": "Choose the target",
   "part.means.summary": "Taking the opposition is not the goal: if your king can reach one of the pawn’s key squares directly, go there, even without the opposition.",
-  "step.t_means": "The white pawn is on c4. So far you have seen ways to fight for opposition; now compare that technique with the aim of reaching a key square. Which move actually improves the route to promotion?",
+  "step.t_means": "The white pawn is on c4. The opposition is a means, not the goal: it serves to bring the king to a key square. Which move actually improves the route to promotion?",
   "step.t_means.hint1": "Where are the key squares of the c4-pawn? Can you reach them without going through the opposition?",
   "step.means": "First the target, then the technique. In this position 1.Ke4 takes the opposition and only draws after 1...Kd6. The advance 1.Kc5 wins because it brings the king closer to the key squares b6, c6 and d6. In the line, 1...Kd7 allows 2.Kb6, reaching one of them. Having the opposition is not a goal in itself: to win, it must help to promote or capture; to defend, it must stop the entry or allow counterplay.",
   "step.d_means": "Watch the white king go straight to the key square.",
@@ -207,7 +207,7 @@
   "title": "Distant opposition II: waiting moves",
   "summary": "Changing the turn with a spare pawn move or a king waiting move, to keep the opposition and force the enemy king to give way.",
   "history": "In many pawn endings what decides is not who has the closer king, but who is forced to move first. A pawn that can still advance without consequences is a spare tempo: it lets you pass the move to the opponent. A king move that changes nothing, made only to wait, is a waiting move. Whoever can count these moves turns a seemingly equal position into a win or a draw.\n\nThe Soviet master {{Nikolai Grigoriev|nikolai-grigoriev}} composed famous studies on the theme in the early twentieth century, in which two pawns and two kings seem frozen and yet only one precise waiting move keeps the result.",
-  "practice": "Now the real ending: king on e1, pawn on f3, and the black king on c8. Bring the king in front of the pawn, take the opposition when you need it and queen the pawn. Pick your pace and go.",
+  "practice": "Now the real ending: king on e1, pawn on f3, and the black king on c8. Bring the king in front of the pawn, toward the key squares e5, f5 and g5, and use the opposition to reach one of them. Pick your pace and go.",
   "key.grigoriev": "A study by {{Nikolai Grigoriev|nikolai-grigoriev}}, from 1933. Black keeps the advance of the d5 pawn in reserve, a move to change the turn whenever convenient. White needs waiting moves that still work after the reserve is spent.",
   "part.refresher.title": "Before moving on",
   "part.refresher.summary": "After your move, an odd number of squares between the kings leaves the opposition with you, and the other king has to give way.",
@@ -229,5 +229,6 @@
   "ex.e22.solution": "1.a5! advances the pawn and takes away the pawn move Black would use to pass the turn. After 1...Kh8, 2.Kg6! and, after 2...Kg8, 3.Kf6! After 3...Kh7, 4.Ke7! The white king reaches the a6 pawn and the win is certain.",
   "ex.e22.r1": "1...Kh8. The black king has only king moves; it goes to the corner.",
   "ex.e22.r2": "2...Kg8. The black king steps out to g8, trying to reach f8.",
-  "ex.e22.r3": "3...Kh7. The black king returns to h7 and the white king enters via e7."
+  "ex.e22.r3": "3...Kh7. The black king returns to h7 and the white king enters via e7.",
+  "coach.allPartsDone": "Now you know how to use a waiting move to hand the move back to your opponent. Shall we go to the final test?"
 }
