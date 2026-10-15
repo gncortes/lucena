@@ -487,31 +487,27 @@
      ],
      "linha": [
       {
-       "fen": "8/8/4k3/1p5p/1P3K1P/8/8/8 w - - 8 5",
-       "t": "rot.capablanca.demos.outroLado.3",
-       "lance": "f6e6"
-      },
-      {
        "fen": "8/8/4k3/1p4Kp/1P5P/8/8/8 b - - 9 5",
-       "t": "rot.capablanca.demos.outroLado.4",
-       "lance": "f4g5",
+       "t": "rot.capablanca.demos.outroLado.3",
+       "seq": [
+        "f6e6",
+        "f4g5"
+       ],
        "marcas": [
         "h5"
        ]
       },
       {
-       "fen": "8/8/8/1p2k1Kp/1P5P/8/8/8 w - - 10 6",
-       "t": "rot.capablanca.demos.outroLado.5",
-       "lance": "e6e5"
-      },
-      {
        "fen": "8/8/8/1p2k2K/1P5P/8/8/8 b - - 0 6",
-       "t": "rot.capablanca.demos.outroLado.6",
-       "lance": "g5h5"
+       "t": "rot.capablanca.demos.outroLado.4",
+       "seq": [
+        "e6e5",
+        "g5h5"
+       ]
       },
       {
        "fen": "8/8/5k2/1p5p/1P3K1P/8/8/8 b - - 7 4",
-       "t": "rot.capablanca.demos.outroLado.7",
+       "t": "rot.capablanca.demos.outroLado.5",
        "salto": true
       }
      ]
@@ -537,33 +533,29 @@
      ],
      "linha": [
       {
-       "fen": "8/8/8/1p1K1k1p/1P5P/8/8/8 w - - 8 5",
-       "t": "rot.capablanca.demos.passar.3",
-       "lance": "f6f5"
-      },
-      {
        "fen": "8/8/8/1pK2k1p/1P5P/8/8/8 b - - 9 5",
-       "t": "rot.capablanca.demos.passar.4",
-       "lance": "d5c5"
-      },
-      {
-       "fen": "8/8/8/1pK4p/1P4kP/8/8/8 w - - 10 6",
-       "t": "rot.capablanca.demos.passar.5",
-       "lance": "f5g4"
+       "t": "rot.capablanca.demos.passar.3",
+       "seq": [
+        "f6f5",
+        "d5c5"
+       ]
       },
       {
        "fen": "8/8/8/1K5p/1P4kP/8/8/8 b - - 0 6",
-       "t": "rot.capablanca.demos.passar.6",
-       "lance": "c5b5"
+       "t": "rot.capablanca.demos.passar.4",
+       "seq": [
+        "f5g4",
+        "c5b5"
+       ]
       },
       {
        "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
-       "t": "rot.capablanca.demos.passar.7",
+       "t": "rot.capablanca.demos.passar.5",
        "lance": "g4h4"
       },
       {
        "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
-       "t": "rot.capablanca.demos.passar.8"
+       "t": "rot.capablanca.demos.passar.6"
       },
       {
        "fen": "8/8/8/1K5p/1P5k/8/8/8 w - - 0 7",
