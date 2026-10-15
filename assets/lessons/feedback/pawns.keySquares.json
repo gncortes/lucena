@@ -462,36 +462,36 @@
    "id": "e12",
    "kind": "exercise",
    "turn": 1,
-   "fen": "8/4k3/8/8/3PK3/8/8/8 w - - 0 1",
-   "uci": "d4d5",
-   "pt": "O peão saiu na frente do rei: o rei preto vai a d6, diante dele, e o rei branco não passa. As pretas empatam.",
-   "en": "The pawn went ahead of the king: the black king goes to d6, in front of it, and the white king cannot get through. Black draws.",
+   "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
+   "uci": "c3c4",
+   "pt": "O peão avançou antes de o rei tomar a oposição: o rei preto vai a d6, diante dele, e o rei branco não passa. As pretas empatam.",
+   "en": "The pawn advanced before the king took the opposition: the black king goes to d6, in front of it, and the white king cannot get through. Black draws.",
    "pv": [
     {
-     "fen": "8/4k3/8/8/3PK3/8/8/8 w - - 0 1",
-     "uci": "d4d5",
-     "san": "d5",
+     "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
+     "uci": "c3c4",
+     "san": "c4",
      "fullmove": 1,
      "turn": "white"
     },
     {
-     "fen": "8/4k3/8/3P4/4K3/8/8/8 b - - 0 1",
-     "uci": "e7d6",
+     "fen": "8/8/4k3/8/2P2K2/8/8/8 b - - 0 1",
+     "uci": "e6d6",
      "san": "Kd6",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "8/8/3k4/3P4/4K3/8/8/8 w - - 1 2",
-     "uci": "e4f5",
-     "san": "Kf5",
+     "fen": "8/8/3k4/8/2P2K2/8/8/8 w - - 1 2",
+     "uci": "f4e4",
+     "san": "Ke4",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "8/8/3k4/3P1K2/8/8/8/8 b - - 2 2",
-     "uci": "d6d5",
-     "san": "Kxd5",
+     "fen": "8/8/3k4/8/2P1K3/8/8/8 b - - 2 2",
+     "uci": "d6c5",
+     "san": "Kc5",
      "fullmove": 2,
      "turn": "black"
     }
@@ -503,7 +503,7 @@
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e12.1",
-    "uci": "d4d5"
+    "uci": "c3c4"
    },
    "text_key": "ex.e12.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -512,36 +512,36 @@
    "id": "e12",
    "kind": "exercise",
    "turn": 1,
-   "fen": "8/4k3/8/8/3PK3/8/8/8 w - - 0 1",
-   "uci": "e4d5",
-   "pt": "Com o rei em d5, o rei preto vai a d7 e fica de frente para o seu, com as brancas na vez: a oposição é das pretas. As pretas empatam.",
-   "en": "With the king on d5, the black king goes to d7 and faces yours, with White to move: the opposition is Black's. Black draws.",
+   "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
+   "uci": "f4e3",
+   "pt": "O rei branco recuou em vez de se aproximar: o rei preto avança a d5 e o rei branco não consegue passar. As pretas empatam.",
+   "en": "The white king stepped back instead of getting closer: the black king advances to d5 and the white king cannot get through. Black draws.",
    "pv": [
     {
-     "fen": "8/4k3/8/8/3PK3/8/8/8 w - - 0 1",
-     "uci": "e4d5",
-     "san": "Kd5",
+     "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
+     "uci": "f4e3",
+     "san": "Ke3",
      "fullmove": 1,
      "turn": "white"
     },
     {
-     "fen": "8/4k3/8/3K4/3P4/8/8/8 b - - 1 1",
-     "uci": "e7d7",
-     "san": "Kd7",
+     "fen": "8/8/4k3/8/8/2P1K3/8/8 b - - 1 1",
+     "uci": "e6d5",
+     "san": "Kd5",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "8/3k4/8/3K4/3P4/8/8/8 w - - 2 2",
-     "uci": "d5e5",
-     "san": "Ke5",
+     "fen": "8/8/8/3k4/8/2P1K3/8/8 w - - 2 2",
+     "uci": "e3d3",
+     "san": "Kd3",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "8/3k4/8/4K3/3P4/8/8/8 b - - 3 2",
-     "uci": "d7e7",
-     "san": "Ke7",
+     "fen": "8/8/8/3k4/8/2PK4/8/8 b - - 3 2",
+     "uci": "d5c5",
+     "san": "Kc5",
      "fullmove": 2,
      "turn": "black"
     }
@@ -553,7 +553,7 @@
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e12.1",
-    "uci": "e4d5"
+    "uci": "f4e3"
    },
    "text_key": "ex.e12.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -562,35 +562,85 @@
    "id": "e12",
    "kind": "exercise",
    "turn": 2,
-   "fen": "3k4/8/8/4K3/3P4/8/8/8 w - - 2 2",
-   "uci": "d4d5",
-   "pt": "O peão avançou antes de o rei chegar a uma casa-chave: o rei preto vai a d7, à frente do peão, e o rei branco não passa. As pretas empatam.",
-   "en": "The pawn advanced before the king reached a key square: the black king goes to d7, in front of the pawn, and the white king cannot get through. Black draws.",
+   "fen": "8/3k4/8/8/4K3/2P5/8/8 w - - 2 2",
+   "uci": "e4d4",
+   "pt": "O rei branco ficou na coluna do rei preto, mas com a vez das brancas: a oposição é das pretas. As pretas empatam.",
+   "en": "The white king stands on the black king's file, but with White to move: the opposition is Black's. Black draws.",
    "pv": [
     {
-     "fen": "3k4/8/8/4K3/3P4/8/8/8 w - - 2 2",
-     "uci": "d4d5",
-     "san": "d5",
+     "fen": "8/3k4/8/8/4K3/2P5/8/8 w - - 2 2",
+     "uci": "e4d4",
+     "san": "Kd4",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "3k4/8/8/3PK3/8/8/8/8 b - - 0 2",
-     "uci": "d8d7",
-     "san": "Kd7",
+     "fen": "8/3k4/8/8/3K4/2P5/8/8 b - - 3 2",
+     "uci": "d7d6",
+     "san": "Kd6",
      "fullmove": 2,
      "turn": "black"
     },
     {
-     "fen": "8/3k4/8/3PK3/8/8/8/8 w - - 1 3",
-     "uci": "e5f6",
-     "san": "Kf6",
+     "fen": "8/8/3k4/8/3K4/2P5/8/8 w - - 4 3",
+     "uci": "c3c4",
+     "san": "c4",
      "fullmove": 3,
      "turn": "white"
     },
     {
-     "fen": "8/3k4/5K2/3P4/8/8/8/8 b - - 2 3",
-     "uci": "d7d6",
+     "fen": "8/8/3k4/8/2PK4/8/8/8 b - - 0 3",
+     "uci": "d6c6",
+     "san": "Kc6",
+     "fullmove": 3,
+     "turn": "black"
+    }
+   ],
+   "objective": {
+    "result_mover": "draw",
+    "dtm_successor": 0
+   },
+   "evidence": {
+    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
+    "site": "exercise/e12.2",
+    "uci": "e4d4"
+   },
+   "text_key": "ex.e12.hint",
+   "access": "dica sob demanda, exercício silencioso"
+  },
+  {
+   "id": "e12",
+   "kind": "exercise",
+   "turn": 2,
+   "fen": "8/3k4/8/8/4K3/2P5/8/8 w - - 2 2",
+   "uci": "c3c4",
+   "pt": "O peão avançou antes de o rei chegar a uma casa-chave: o rei preto vai a c6, à frente do peão, e o rei branco não passa. As pretas empatam.",
+   "en": "The pawn advanced before the king reached a key square: the black king goes to c6, in front of the pawn, and the white king cannot get through. Black draws.",
+   "pv": [
+    {
+     "fen": "8/3k4/8/8/4K3/2P5/8/8 w - - 2 2",
+     "uci": "c3c4",
+     "san": "c4",
+     "fullmove": 2,
+     "turn": "white"
+    },
+    {
+     "fen": "8/3k4/8/8/2P1K3/8/8/8 b - - 0 2",
+     "uci": "d7c6",
+     "san": "Kc6",
+     "fullmove": 2,
+     "turn": "black"
+    },
+    {
+     "fen": "8/8/2k5/8/2P1K3/8/8/8 w - - 1 3",
+     "uci": "e4d4",
+     "san": "Kd4",
+     "fullmove": 3,
+     "turn": "white"
+    },
+    {
+     "fen": "8/8/2k5/8/2PK4/8/8/8 b - - 2 3",
+     "uci": "c6d6",
      "san": "Kd6",
      "fullmove": 3,
      "turn": "black"
@@ -603,7 +653,7 @@
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e12.2",
-    "uci": "d4d5"
+    "uci": "c3c4"
    },
    "text_key": "ex.e12.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -1262,48 +1312,48 @@
    "id": "e22",
    "kind": "exercise",
    "turn": 1,
-   "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
-   "uci": "a6a5",
-   "pt": "Em a5, o seu rei não vigia c4: o rei branco pode entrar nessa casa-chave, e as brancas ganham.",
-   "en": "On a5, your king does not watch c4: the white king can step onto that key square, and White wins.",
+   "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
+   "uci": "d7d6",
+   "pt": "Em d6, o seu rei fica diante do peão, mas o rei branco vai a d4 e chega a c5 ou a e5, casas-chave. As brancas ganham.",
+   "en": "On d6, your king stands in front of the pawn, but the white king goes to d4 and reaches c5 or e5, key squares. White wins.",
    "pv": [
     {
-     "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
-     "uci": "a6a5",
-     "san": "Ka5",
+     "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
+     "uci": "d7d6",
+     "san": "Kd6",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "8/8/8/k7/3K4/8/1P6/8 w - - 1 2",
-     "uci": "d4c5",
-     "san": "Kc5",
+     "fen": "8/8/3k4/8/4K3/3P4/8/8 w - - 1 2",
+     "uci": "e4d4",
+     "san": "Kd4",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "8/8/8/k1K5/8/8/1P6/8 b - - 2 2",
-     "uci": "a5a4",
-     "san": "Ka4",
+     "fen": "8/8/3k4/8/3K4/3P4/8/8 b - - 2 2",
+     "uci": "d6e6",
+     "san": "Ke6",
      "fullmove": 2,
      "turn": "black"
     },
     {
-     "fen": "8/8/8/2K5/k7/8/1P6/8 w - - 3 3",
-     "uci": "b2b4",
-     "san": "b4",
+     "fen": "8/8/4k3/8/3K4/3P4/8/8 w - - 3 3",
+     "uci": "d4c5",
+     "san": "Kc5",
      "fullmove": 3,
      "turn": "white"
     }
    ],
    "objective": {
     "result_mover": "loss",
-    "dtm_successor": 23
+    "dtm_successor": 21
    },
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e22.1",
-    "uci": "a6a5"
+    "uci": "d7d6"
    },
    "text_key": "ex.e22.hint",
    "access": "dica sob demanda, exercício silencioso"
@@ -1312,98 +1362,48 @@
    "id": "e22",
    "kind": "exercise",
    "turn": 1,
-   "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
-   "uci": "a6b6",
-   "pt": "Em b6, o seu rei não vigia c4: o rei branco chega a essa casa-chave. As brancas ganham.",
-   "en": "On b6, your king does not watch c4: the white king reaches that key square. White wins.",
+   "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
+   "uci": "d7c6",
+   "pt": "Em c6, o seu rei não fica vizinho de e5: o rei branco entra nessa casa-chave, e as brancas ganham.",
+   "en": "On c6, your king is not next to e5: the white king steps onto that key square, and White wins.",
    "pv": [
     {
-     "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
-     "uci": "a6b6",
-     "san": "Kb6",
-     "fullmove": 1,
-     "turn": "black"
-    },
-    {
-     "fen": "8/8/1k6/8/3K4/8/1P6/8 w - - 1 2",
-     "uci": "d4c4",
-     "san": "Kc4",
-     "fullmove": 2,
-     "turn": "white"
-    },
-    {
-     "fen": "8/8/1k6/8/2K5/8/1P6/8 b - - 2 2",
-     "uci": "b6c6",
+     "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
+     "uci": "d7c6",
      "san": "Kc6",
-     "fullmove": 2,
-     "turn": "black"
-    },
-    {
-     "fen": "8/8/2k5/8/2K5/8/1P6/8 w - - 3 3",
-     "uci": "b2b3",
-     "san": "b3",
-     "fullmove": 3,
-     "turn": "white"
-    }
-   ],
-   "objective": {
-    "result_mover": "loss",
-    "dtm_successor": 27
-   },
-   "evidence": {
-    "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
-    "site": "exercise/e22.1",
-    "uci": "a6b6"
-   },
-   "text_key": "ex.e22.hint",
-   "access": "dica sob demanda, exercício silencioso"
-  },
-  {
-   "id": "e22",
-   "kind": "exercise",
-   "turn": 1,
-   "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
-   "uci": "a6b7",
-   "pt": "Recuar para b7 deixa o caminho livre: o rei branco vai a c5 e passa à frente do peão. As brancas ganham.",
-   "en": "Retreating to b7 leaves the road open: the white king goes to c5 and gets ahead of the pawn. White wins.",
-   "pv": [
-    {
-     "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
-     "uci": "a6b7",
-     "san": "Kb7",
      "fullmove": 1,
      "turn": "black"
     },
     {
-     "fen": "8/1k6/8/8/3K4/8/1P6/8 w - - 1 2",
-     "uci": "d4c5",
-     "san": "Kc5",
+     "fen": "8/8/2k5/8/4K3/3P4/8/8 w - - 1 2",
+     "uci": "e4e5",
+     "san": "Ke5",
      "fullmove": 2,
      "turn": "white"
     },
     {
-     "fen": "8/1k6/8/2K5/8/8/1P6/8 b - - 2 2",
-     "uci": "b7a6",
-     "san": "Ka6",
+     "fen": "8/8/2k5/4K3/8/3P4/8/8 b - - 2 2",
+     "uci": "c6c5",
+     "san": "Kc5",
      "fullmove": 2,
      "turn": "black"
     },
     {
-     "fen": "8/8/k7/2K5/8/8/1P6/8 w - - 3 3",
-     "uci": "b2b3",
-     "san": "b3",
+     "fen": "8/8/8/2k1K3/8/3P4/8/8 w - - 3 3",
+     "uci": "e5e4",
+     "san": "Ke4",
      "fullmove": 3,
      "turn": "white"
     }
    ],
    "objective": {
     "result_mover": "loss",
-    "dtm_successor": 23
+    "dtm_successor": 19
    },
    "evidence": {
     "file": "kpk.bin + maia3 (1000/1400/1800/2200) + MachineMove",
     "site": "exercise/e22.1",
-    "uci": "a6b7"
+    "uci": "d7c6"
    },
    "text_key": "ex.e22.hint",
    "access": "dica sob demanda, exercício silencioso"

@@ -843,15 +843,23 @@
        "t": "rot.keySquares.demos.regra.3"
       },
       {
-       "fen": "8/8/8/8/1k6/3K4/2P5/8 b - - 3 2",
+       "fen": "8/8/8/8/1k1K4/2P5/8/8 b - - 0 3",
        "seq": [
         "b5b4",
-        "d4d3"
+        "c2c3"
        ],
        "marcas": [
-        "c2"
+        "c3"
        ],
        "t": "rot.keySquares.demos.regra.4"
+      },
+      {
+       "fen": "k7/8/1K6/P7/8/8/8/8 w - - 0 1",
+       "salto": true,
+       "marcas": [
+        "a8"
+       ],
+       "t": "rot.keySquares.demos.regra.torre"
       },
       {
        "fen": "8/3p4/5k2/8/8/8/8/2K5 w - - 0 1",
@@ -862,32 +870,6 @@
         "e5"
        ],
        "t": "rot.keySquares.demos.regra.preto"
-      },
-      {
-       "fen": "8/6k1/8/2P1K3/8/8/8/8 w - - 0 1",
-       "salto": true,
-       "marcas": [
-        "b6",
-        "c6",
-        "d6",
-        "b7",
-        "c7",
-        "d7"
-       ],
-       "t": "rot.keySquares.demos.regra.quinta"
-      },
-      {
-       "fen": "8/6k1/3K4/2P5/8/8/8/8 b - - 1 1",
-       "lance": "e5d6",
-       "marcas": [
-        "b6",
-        "c6",
-        "d6",
-        "b7",
-        "c7",
-        "d7"
-       ],
-       "t": "rot.keySquares.demos.regra.quinta2"
       }
      ]
     },

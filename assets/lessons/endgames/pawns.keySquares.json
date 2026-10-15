@@ -24,7 +24,7 @@
   "exercises": [
     {
       "id": "e24",
-      "stars": 1,
+      "stars": 2,
       "fen": "8/8/2K1p3/8/8/2k5/8/8 b - - 0 1",
       "goal": "win",
       "origin": "own",
@@ -49,16 +49,16 @@
     },
     {
       "id": "e22",
-      "stars": 1,
-      "fen": "8/8/k7/8/3K4/8/1P6/8 b - - 0 1",
+      "stars": 2,
+      "fen": "8/3k4/8/8/4K3/3P4/8/8 b - - 0 1",
       "goal": "draw",
       "origin": "own",
       "capitulo": "keySquares",
       "line": [
         {
-          "teach": "a6b5",
+          "teach": "d7e6",
           "accept": [
-            "a6b5"
+            "d7e6"
           ]
         }
       ]
@@ -103,23 +103,22 @@
     {
       "id": "e12",
       "stars": 2,
-      "fen": "8/4k3/8/8/3PK3/8/8/8 w - - 0 1",
+      "fen": "8/8/4k3/8/5K2/2P5/8/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "opposition",
       "line": [
         {
-          "teach": "e4e5",
+          "teach": "f4e4",
           "accept": [
-            "e4e5"
+            "f4e4"
           ],
-          "reply": "e7d8"
+          "reply": "e6d7"
         },
         {
-          "teach": "e5d6",
+          "teach": "e4d5",
           "accept": [
-            "e5d6",
-            "e5e6"
+            "e4d5"
           ]
         }
       ]
@@ -262,7 +261,7 @@
       ]
     }
   ],
-  "passScore": 6,
+  "passScore": 8,
   "keyPositions": [
     {
       "id": "count",
@@ -367,5 +366,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 15
+  "maxScore": 17
 }
