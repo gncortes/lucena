@@ -826,13 +826,7 @@
               "t": "rot.diagonal.demos.defesa.7"
             },
             {
-              "fen": "8/8/8/3k4/8/1K6/3P4/8 w - - 1 2",
-              "marcas": [
-                "b3",
-                "c4",
-                "d5"
-              ],
-              "salto": true,
+              "fen": "8/8/8/2k5/8/2K5/3P4/8 b - - 2 2",
               "t": "rot.diagonal.demos.defesa.ponte"
             }
           ]

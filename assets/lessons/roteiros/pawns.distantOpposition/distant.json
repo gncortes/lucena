@@ -412,6 +412,26 @@
             },
             {
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+              "setas": [
+                [
+                  "d3",
+                  "e2",
+                  "r"
+                ]
+              ],
+              "salto": true,
+              "t": "rot.distant.ideia.ex1.l24a"
+            },
+            {
+              "fen": "4k3/8/8/8/8/6P1/4K3/8 b - - 1 1",
+              "marcas": [
+                "e2"
+              ],
+              "lance": "d3e2",
+              "t": "rot.distant.ideia.ex1.l24b"
+            },
+            {
+              "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
               "salto": true,
               "t": "rot.distant.ideia.ex1.l25"
             },
@@ -968,19 +988,19 @@
               "b3b4": "rot.distant.pratica.ataque.err.b3b4"
             },
             "errosPos": {
-              "8/3k4/8/3K4/8/1P6/8/8 w - - 4 3": {
-                "d5c4": "rot.distant.pratica.ataque.v1.err.d5c4"
+              "8/3k4/8/8/4K3/1P6/8/8 w - - 2 2": {
+                "e4d4": "rot.distant.pratica.ataque.v1.err.e4d4"
               },
-              "2k5/8/8/8/3K4/1P6/8/8 w - - 4 3": {
-                "b3b4": "rot.distant.pratica.ataque.v2.err.b3b4"
+              "8/2k5/8/3K4/8/1P6/8/8 w - - 4 3": {
+                "d5c4": "rot.distant.pratica.ataque.v2.err.d5c4"
               },
-              "1k6/8/8/8/2K5/1P6/8/8 w - - 6 4": {
+              "8/1k6/8/2K5/8/1P6/8/8 w - - 6 4": {
                 "b3b4": "rot.distant.pratica.ataque.v3.err.b3b4"
               },
-              "8/1k6/8/2K5/1P6/8/8/8 w - - 1 5": {
-                "b4b5": "rot.distant.pratica.ataque.v4.err.b4b5"
+              "8/k7/8/1K6/8/1P6/8/8 w - - 8 5": {
+                "b3b4": "rot.distant.pratica.ataque.v4.err.b3b4"
               },
-              "8/k7/2K5/1P6/8/8/8/8 w - - 1 8": {
+              "1k6/8/2K5/1P6/8/8/8/8 w - - 1 8": {
                 "b5b6": "rot.distant.pratica.ataque.v5.err.b5b6"
               }
             }
@@ -1002,6 +1022,20 @@
               "e8e7": "rot.distant.pratica.defesa.err.e8e7",
               "e8f7": "rot.distant.pratica.defesa.err.e8f7",
               "e8f8": "rot.distant.pratica.defesa.err.e8f8"
+            },
+            "errosPos": {
+              "8/3k4/8/8/8/8/1PK5/8 b - - 2 2": {
+                "d7c7": "rot.distant.pratica.defesa.v1.err.d7c7",
+                "d7d6": "rot.distant.pratica.defesa.v1.err.d7d6"
+              },
+              "8/8/2k5/8/8/1K6/1P6/8 b - - 4 3": {
+                "c6b6": "rot.distant.pratica.defesa.v2.err.c6b6",
+                "c6c5": "rot.distant.pratica.defesa.v2.err.c6c5",
+                "c6b7": "rot.distant.pratica.defesa.v2.err.c6b7"
+              },
+              "8/8/8/1k6/8/K7/1P6/8 b - - 6 4": {
+                "b5c4": "rot.distant.pratica.defesa.v3.err.b5c4"
+              }
             }
           }
         }
