@@ -455,15 +455,7 @@ class _CompareCard extends StatelessWidget {
             children: bars,
           ),
           if (footer != null)
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: colors.outlineVariant)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: footer,
-              ),
-            ),
+            Padding(padding: const EdgeInsets.only(top: 10), child: footer),
         ],
       ),
     );

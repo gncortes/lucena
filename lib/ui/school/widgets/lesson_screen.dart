@@ -3635,10 +3635,7 @@ class _LessonScreenState extends State<LessonScreen>
     final colors = Theme.of(context).colorScheme;
     return DecoratedBox(
       key: key,
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
-      ),
+      decoration: BoxDecoration(color: colors.surfaceContainerLow),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         child: child,

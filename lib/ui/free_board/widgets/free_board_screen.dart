@@ -729,28 +729,23 @@ class _SeeResultBar extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Material(
       color: colors.surfaceContainerLow,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: colors.outlineVariant)),
-        ),
-        // 76 de altura (a reserva do tabuleiro): botão de 52 e 12 de respiro.
-        child: SizedBox(
-          height: 76,
-          child: Padding(
-            // CompRodapeAcoes: 16 nas laterais (380 dp a 412); 12 em cima e embaixo.
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                key: FreeBoardKeys.seeResultButton,
-                onPressed: onPressed,
-                // CompBotao: 52 de altura, seta antes do texto (18), 14/500.
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(kButtonHeight),
-                ),
-                icon: const Icon(Icons.arrow_forward),
-                label: Text(context.l10n.gameSeeResult),
+      // 76 de altura (a reserva do tabuleiro): botão de 52 e 12 de respiro.
+      child: SizedBox(
+        height: 76,
+        child: Padding(
+          // CompRodapeAcoes: 16 nas laterais (380 dp a 412); 12 em cima e embaixo.
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              key: FreeBoardKeys.seeResultButton,
+              onPressed: onPressed,
+              // CompBotao: 52 de altura, seta antes do texto (18), 14/500.
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(context.l10n.gameSeeResult),
             ),
           ),
         ),

@@ -34,56 +34,51 @@ class GameActionsBar extends StatelessWidget {
       color: colors.surfaceContainerLow,
       child: SizedBox(
         height: 76,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: colors.outlineVariant)),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-            child: Row(
-              children: [
-                if (training) ...[
-                  _action(
-                    context,
-                    FreeBoardKeys.resignButton,
-                    Icons.flag_outlined,
-                    l10n.gameResign,
-                    onResign,
-                  ),
-                  _action(
-                    context,
-                    FreeBoardKeys.drawButton,
-                    Icons.handshake_outlined,
-                    l10n.freeBoardDraw,
-                    onDraw,
-                  ),
-                ] else ...[
-                  _action(
-                    context,
-                    FreeBoardKeys.flipButton,
-                    Icons.swap_vert,
-                    l10n.freeBoardFlip,
-                    onFlip,
-                  ),
-                  _action(
-                    context,
-                    FreeBoardKeys.clockButton,
-                    Icons.av_timer_outlined,
-                    l10n.freeBoardClock,
-                    onClock,
-                  ),
-                  _action(
-                    context,
-                    FreeBoardKeys.newGameButton,
-                    Icons.add,
-                    l10n.freeBoardNewGame,
-                    onNewGame,
-                  ),
-                ],
-                if (showSound)
-                  const Expanded(child: Center(child: CharacterSoundButton())),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+          child: Row(
+            children: [
+              if (training) ...[
+                _action(
+                  context,
+                  FreeBoardKeys.resignButton,
+                  Icons.flag_outlined,
+                  l10n.gameResign,
+                  onResign,
+                ),
+                _action(
+                  context,
+                  FreeBoardKeys.drawButton,
+                  Icons.handshake_outlined,
+                  l10n.freeBoardDraw,
+                  onDraw,
+                ),
+              ] else ...[
+                _action(
+                  context,
+                  FreeBoardKeys.flipButton,
+                  Icons.swap_vert,
+                  l10n.freeBoardFlip,
+                  onFlip,
+                ),
+                _action(
+                  context,
+                  FreeBoardKeys.clockButton,
+                  Icons.av_timer_outlined,
+                  l10n.freeBoardClock,
+                  onClock,
+                ),
+                _action(
+                  context,
+                  FreeBoardKeys.newGameButton,
+                  Icons.add,
+                  l10n.freeBoardNewGame,
+                  onNewGame,
+                ),
               ],
-            ),
+              if (showSound)
+                const Expanded(child: Center(child: CharacterSoundButton())),
+            ],
           ),
         ),
       ),

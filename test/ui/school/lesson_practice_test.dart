@@ -111,20 +111,22 @@ void main() {
       // Margem lateral de 16 (Gabriel, 14/10/2026).
       expect(size.width - next.right, closeTo(16, 1));
       expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
-      // Rodapé branco, com divisória em cima (pg. 3.1/4.7).
+      // Rodapé branco, sem linha em cima (Gabriel, 14/10/2026).
       final footer = find.ancestor(
         of: find.byKey(LessonKeys.hintButton),
         matching: find.byType(DecoratedBox),
       );
-      final decoration = footer
-          .evaluate()
-          .map((e) => (e.widget as DecoratedBox).decoration)
-          .whereType<BoxDecoration>()
-          .firstWhere((d) => d.border != null);
       final scheme = Theme.of(tester.element(find.byKey(LessonKeys.hintButton)))
           .colorScheme;
-      expect(decoration.color, scheme.surfaceContainerLowest);
-      expect((decoration.border! as Border).top.width, greaterThan(0));
+      final decorations = footer
+          .evaluate()
+          .map((e) => (e.widget as DecoratedBox).decoration)
+          .whereType<BoxDecoration>();
+      expect(
+        decorations.any((d) => d.color == scheme.surfaceContainerLowest),
+        isTrue,
+      );
+      expect(decorations.every((d) => d.border == null), isTrue);
       await tester.tap(find.byKey(LessonKeys.hintButton));
       await tester.tap(find.byKey(LessonKeys.practiceBack));
       await tester.tap(find.byKey(LessonKeys.practiceContinue));

@@ -139,11 +139,6 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Theme.of(context).scaffoldBackgroundColor,
-                        border: Border(
-                          top: BorderSide(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                          ),
-                        ),
                       ),
                       child: SafeArea(
                         top: false,

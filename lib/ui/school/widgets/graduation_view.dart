@@ -423,10 +423,7 @@ class _Actions extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
-      ),
+      decoration: BoxDecoration(color: theme.scaffoldBackgroundColor),
       child: SafeArea(
         top: false,
         child: Padding(

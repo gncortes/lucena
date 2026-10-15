@@ -657,10 +657,7 @@ class _Actions extends StatelessWidget {
     final l10n = context.l10n;
     final colors = Theme.of(context).colorScheme;
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
-      ),
+      decoration: BoxDecoration(color: colors.surface),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screen,

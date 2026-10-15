@@ -653,7 +653,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         key: ExerciseKeys.solved,
         color: color,
         hug: true,
-        divider: false,
         hint: lichess,
         actions: [_primaryAction(context, state)],
       );
@@ -662,7 +661,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         key: ExerciseKeys.footer,
         color: color,
         hug: true,
-        divider: false,
         hint: lichess,
         actions: [
           ExerciseAction(
@@ -677,7 +675,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       actions = ExerciseActions(
         key: ExerciseKeys.footer,
         color: color,
-        divider: false,
         hint: Expanded(
           child: Row(
             children: [
