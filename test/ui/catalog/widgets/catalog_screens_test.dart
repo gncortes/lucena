@@ -117,6 +117,22 @@ void main() {
       ),
       findsOneWidget,
     );
+    // Todos os níveis no azul claro do design system (Gabriel, 14/10/2026).
+    final colors = Theme.of(
+      tester.element(find.byKey(CatalogKeys.difficulty('basic'))),
+    ).colorScheme;
+    final badge = tester.widget<Container>(
+      find
+          .descendant(
+            of: find.byKey(CatalogKeys.difficulty('basic')),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
+    expect(
+      (badge.decoration! as BoxDecoration).color,
+      colors.secondaryContainer,
+    );
   });
 
   testWidgets('filtrar "defender" esconde a categoria sem empates e grava', (

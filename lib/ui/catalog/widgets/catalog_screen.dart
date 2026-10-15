@@ -225,23 +225,14 @@ class _DifficultyBadge extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final (label, background, foreground) = switch (difficulty) {
-      SpeedrunCategory.beginner => (
-        l10n.profileLevelBeginner,
-        colors.tertiaryContainer,
-        colors.onTertiaryContainer,
-      ),
-      SpeedrunCategory.intermediate => (
-        l10n.profileLevelIntermediate,
-        colors.secondaryContainer,
-        colors.onSecondaryContainer,
-      ),
-      SpeedrunCategory.advanced => (
-        l10n.profileLevelAdvanced,
-        colors.errorContainer,
-        colors.onErrorContainer,
-      ),
+    // Os três níveis no mesmo azul claro do design system (Gabriel, 14/10/2026).
+    final label = switch (difficulty) {
+      SpeedrunCategory.beginner => l10n.profileLevelBeginner,
+      SpeedrunCategory.intermediate => l10n.profileLevelIntermediate,
+      SpeedrunCategory.advanced => l10n.profileLevelAdvanced,
     };
+    final background = colors.secondaryContainer;
+    final foreground = colors.onSecondaryContainer;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
