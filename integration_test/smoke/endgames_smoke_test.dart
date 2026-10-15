@@ -29,8 +29,6 @@ void main() {
     await endgames.startExercises(_lessonId, lesson.exercises.first.id);
     app.expectNoClippedText();
     await endgames.back();
-    await endgames.openSteps();
-    app.expectNoClippedText();
   }
 
   // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
@@ -70,9 +68,7 @@ void main() {
   }, skip: _hidden);
 
   // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
-  patrolTest('exercício e lição voltam do segundo plano onde estavam', (
-    $,
-  ) async {
+  patrolTest('exercício volta do segundo plano onde estava', ($) async {
     final app = AppRobot($);
     final endgames = EndgamesRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
@@ -85,12 +81,5 @@ void main() {
     await app.sendToBackgroundAndReturn();
     await endgames.expectExercise(_lessonId, first.id);
     endgames.expectExerciseBoard('k1N5/2K5/8/8/8/8/8/5B2 w - - 2 2');
-
-    await endgames.back();
-    await endgames.openSteps();
-    await endgames.nextStep();
-    await app.sendToBackgroundAndReturn();
-    // O passo de pensar e, com "Ver explicação", a explicação dele.
-    await endgames.expectStep(_lessonId, 'corner');
   }, skip: _hidden);
 }

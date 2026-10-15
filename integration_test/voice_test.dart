@@ -1,7 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/use_cases/visible_lessons.dart';
-import 'package:lucena/ui/core/keys/lesson_sound_keys.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
@@ -10,9 +8,7 @@ import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
-import 'robots/endgames_robot.dart';
 import 'robots/home_robot.dart';
-import 'robots/sheet_robot.dart';
 import 'robots/tour_robot.dart';
 import 'robots/variant.dart';
 import 'robots/voice_robot.dart';
@@ -113,68 +109,4 @@ void main() {
       );
     }
   });
-
-  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
-  patrolTest('lição: o botão de som abre o som da lição; ligar a voz ali faz '
-      'a fala sair sozinha', ($) async {
-    final app = AppRobot($);
-    final voice = VoiceRobot($);
-    final endgames = EndgamesRobot($);
-    await app.open(systemLocale: _english);
-    await endgames.openFromHome();
-    await endgames.openLesson('rook.philidor');
-    await endgames.openSteps();
-
-    // A voz começa desligada: nada sai sozinho. No V2 o botão de som abre o
-    // diálogo do som da lição (Canvas V2), onde a voz do Viktor liga.
-    expect(voice.spokenCount, 0);
-    await voice.tapSpeak();
-    final sheet = SheetRobot(
-      $,
-      surface: LessonSoundKeys.dialog,
-      close: LessonSoundKeys.close,
-    );
-    await sheet.expectOpen();
-    expect(voice.spokenCount, 0);
-    // O ✕ fecha a folha sem ligar nada; a lição segue.
-    await sheet.closeWithX();
-    expect(voice.spokenCount, 0);
-    await voice.tapSpeak();
-    await sheet.expectOpen();
-    await $(LessonSoundKeys.teacherVoice).tap();
-    await $.pumpAndSettle();
-    await $(LessonSoundKeys.close).tap();
-    await $.pumpAndSettle();
-
-    // Ligada: o passo seguinte fala sozinho; sair da lição cala.
-    var before = voice.spokenCount;
-    await endgames.nextStep();
-    expect(voice.spokenCount, greaterThan(before));
-    final stops = voice.stops;
-    await endgames.back();
-    expect(voice.stops, greaterThan(stops));
-
-    // A escolha persiste: reaberto o app, o passo fala sozinho.
-    await app.restart();
-    before = voice.spokenCount;
-    await endgames.openFromHome();
-    await endgames.openLesson('rook.philidor');
-    await endgames.openSteps();
-    await endgames.nextStep();
-    expect(voice.spokenCount, greaterThan(before));
-    await endgames.back();
-
-    // Desligada nas configurações, nada sai sozinho.
-    await app.restart();
-    await HomeRobot($).openSettings();
-    await voice.openSettings();
-    await voice.toggleEnabled();
-    await app.restart();
-    before = voice.spokenCount;
-    await endgames.openFromHome();
-    await endgames.openLesson('rook.philidor');
-    await endgames.openSteps();
-    await $.pump(const Duration(seconds: 1));
-    expect(voice.spokenCount, before);
-  }, skip: !VisibleLessons.endgameLessonIds.contains('rook.philidor'));
 }

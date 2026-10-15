@@ -17,7 +17,6 @@ import '../../../domain/use_cases/endgame_lesson_filter.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../placement/view_models/roadmap_loader.dart';
-import '../../school/view_models/lesson_cubit.dart';
 
 export '../../../domain/models/endgame_filter.dart';
 
@@ -299,7 +298,7 @@ class EndgamesCubit extends Cubit<EndgamesState> {
     if (isClosed) return;
     Character? viktor;
     for (final character in characters) {
-      if (character.id == LessonCubit.viktorId) viktor = character;
+      if (character.id == Character.masterId) viktor = character;
     }
     emit(
       EndgamesState(

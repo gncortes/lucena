@@ -21,13 +21,15 @@ String launchLocation({
   bool visible(String id) => visibleEndgameLessons?.contains(id) ?? true;
   if (conclusion != null) return Routes.conclusion(conclusion);
   if (resumeGame) return Routes.freeBoard;
-  if (lesson != null && lesson.open) return Routes.lesson(lesson.lessonId);
+  if (lesson != null && lesson.open) {
+    return Routes.lessonScript(lesson.lessonId);
+  }
   if (endgameLesson != null &&
       endgameLesson.open &&
       visible(endgameLesson.lessonId)) {
     // Com a parte: a parte com roteiro vai direto para a tela de roteiro (o
     // redirect da rota), que grava o checkpoint com ela.
-    return Routes.endgameLessonSteps(
+    return Routes.endgameLessonScript(
       endgameLesson.lessonId,
       part: endgameLesson.part,
     );

@@ -182,7 +182,7 @@ class _Body extends StatelessWidget {
                   TextButton(
                     key: EndgameLessonKeys.lessonButton,
                     onPressed: () => context.push(
-                      Routes.endgameLessonSteps(
+                      Routes.endgameLessonScript(
                         lesson.id,
                         part: lesson.lesson.parts.isEmpty
                             ? null
@@ -327,7 +327,7 @@ class _PartTile extends StatelessWidget {
     final summary = texts.partSummary(lesson.id, part.id);
     final ongoing = state.ongoingPart == part.id;
     void open() => context.push(
-      Routes.endgameLessonSteps(
+      Routes.endgameLessonScript(
         lesson.id,
         part: lesson.lesson.parts.isEmpty ? null : part.id,
       ),
@@ -605,7 +605,7 @@ class _ContinueBar extends StatelessWidget {
           ? l10n.endgameStartLesson
           : l10n.endgameNextPart(number);
       onPressed = () => context.push(
-        Routes.endgameLessonSteps(
+        Routes.endgameLessonScript(
           lesson.id,
           part: lesson.lesson.parts.isEmpty ? null : part.id,
         ),

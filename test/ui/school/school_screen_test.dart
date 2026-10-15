@@ -114,7 +114,7 @@ void main() {
                 BlocProvider.value(value: cubit, child: const SchoolScreen()),
             routes: [
               GoRoute(
-                path: ':lesson',
+                path: ':lesson/roteiro',
                 builder: (context, state) => Scaffold(
                   body: TextButton(
                     onPressed: () async {
@@ -171,7 +171,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         router.routeInformationProvider.value.uri.path,
-        Routes.lesson('pieces.rook'),
+        Uri.parse(Routes.lessonScript('pieces.rook')).path,
       );
       await tester.tap(find.text('return to school'));
       await tester.pumpAndSettle();

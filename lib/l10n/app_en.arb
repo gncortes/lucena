@@ -758,30 +758,9 @@
   "@journeyTitle": {
     "description": "Title of the Journey screen: a ladder of levels, each with endgame challenges."
   },
-  "lessonBackToSchool": "Back to the school",
-  "@lessonBackToSchool": {
-    "description": "Button at the end of a lesson that goes back to the lessons trail."
-  },
   "lessonContinue": "Continue",
   "@lessonContinue": {
     "description": "Button that goes to the next step of the lesson."
-  },
-  "lessonDoneTitle": "{lesson}: done!",
-  "@lessonDoneTitle": {
-    "description": "Title of the card at the end of a lesson.",
-    "placeholders": {
-      "lesson": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonFinish": "Finish lesson",
-  "@lessonFinish": {
-    "description": "Button on the last step of a lesson."
-  },
-  "lessonGraduationTitle": "Diploma earned!",
-  "@lessonGraduationTitle": {
-    "description": "Title of the card at the end of the last lesson of the course."
   },
   "lessonHint": "Hint",
   "@lessonHint": {
@@ -812,22 +791,6 @@
       }
     }
   },
-  "lessonRetry": "Try again",
-  "@lessonRetry": {
-    "description": "Button that restarts the position after a stalemate or a draw."
-  },
-  "lessonStep": "Step {step} of {total}",
-  "@lessonStep": {
-    "description": "Accessibility label of the lesson progress bar.",
-    "placeholders": {
-      "step": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "lessonStepShort": "{step}/{total}",
   "@lessonStepShort": {
     "description": "Short step counter beside the lesson progress bar.",
@@ -843,10 +806,6 @@
   "lessonThinking": "Thinking…",
   "@lessonThinking": {
     "description": "While the computer answers in a lesson."
-  },
-  "lessonToJourney": "Go to the Journey",
-  "@lessonToJourney": {
-    "description": "Button at the graduation that opens the Journey."
   },
   "maiaDebugElapsed": "Computed in {ms} ms",
   "@maiaDebugElapsed": {
@@ -2345,10 +2304,6 @@
   "@exerciseMissing": {
     "description": "When the exercise in the link does not exist."
   },
-  "lessonToExercises": "Go to the exercises",
-  "@lessonToExercises": {
-    "description": "Button at the end of an endgame lesson that goes back to the lesson with its exercises."
-  },
   "exerciseGoal": "{side, select, white{White} other{Black}} to play and {goal, select, win{win} other{hold}}",
   "@exerciseGoal": {
     "description": "Under the exercise board before solving: whose move it is and the goal.",
@@ -2366,38 +2321,6 @@
   "exerciseSolution": "Solution",
   "@exerciseSolution": {
     "description": "Label before the solution line of a solved exercise (e.g. 'Solution: 1.Kd4 Kg5')."
-  },
-  "lessonGuideTalk": "Look at the board, then continue.",
-  "@lessonGuideTalk": {
-    "description": "Under the lesson board on a talk step: what to do."
-  },
-  "lessonGuideStars": "Your move: collect every star.",
-  "@lessonGuideStars": {
-    "description": "Under the lesson board on a stars step."
-  },
-  "lessonGuideMove": "{side, select, white{Your move, with White.} other{Your move, with Black.}}",
-  "@lessonGuideMove": {
-    "description": "Under the lesson board when it is the student's move.",
-    "placeholders": {
-      "side": {
-        "type": "String",
-        "example": "white"
-      }
-    }
-  },
-  "lessonGuidePlay": "{goal, select, mate{Play on and checkmate.} draw{Hold the draw against the machine.} other{Play on and promote the pawn.}}",
-  "@lessonGuidePlay": {
-    "description": "Under the lesson board on a play step: the goal.",
-    "placeholders": {
-      "goal": {
-        "type": "String",
-        "example": "mate"
-      }
-    }
-  },
-  "lessonGuideDone": "Done. Continue to the next step.",
-  "@lessonGuideDone": {
-    "description": "Under the lesson board when the step is done."
   },
   "exerciseYourMove": "Your move",
   "@exerciseYourMove": {
@@ -2804,14 +2727,6 @@
   "voiceTeacherSample": "Hello! I'm Viktor, your teacher. Let's master the endgames together.",
   "@voiceTeacherSample": {
     "description": "Voice (text-to-speech) feature: voiceTeacherSample"
-  },
-  "lessonPrevious": "Previous step",
-  "@lessonPrevious": {
-    "description": "Lesson: button (tooltip) that goes back to the previous step to review it"
-  },
-  "lessonFooterBack": "Back",
-  "@lessonFooterBack": {
-    "description": "Lesson: label of the footer button that goes back to the previous step (outlined, next to Continue)"
   },
   "voiceSpeedValue": "{speed}×",
   "@voiceSpeedValue": {
@@ -3409,27 +3324,10 @@
     "description": "Shown under 'Casual' when choosing a level, instead of a rating range."
   },
   "speedrunPaceLine": "Pace: {time}",
-  "speedrunPaceHelp": "15+10 means 15 minutes for the whole game, plus 10 seconds added to your clock after each move you make.",
   "@speedrunPaceLine": {
     "description": "Collapsed pace selector for beginners in the speedrun list.",
     "placeholders": {
       "time": {
-        "type": "String"
-      }
-    }
-  },
-  "@speedrunPaceHelp": {
-    "description": "Speedrun help: what a time control like 15+10 means."
-  },
-  "lessonPlayWithClock": "Play with a clock (15+10)",
-  "@lessonPlayWithClock": {
-    "description": "Graduation screen button: first game with a clock (15 minutes plus 10 seconds per move)."
-  },
-  "lessonGuideTap": "Tap the square {square}",
-  "@lessonGuideTap": {
-    "description": "Lesson guide line in a 'tap the square' step (notation lessons).",
-    "placeholders": {
-      "square": {
         "type": "String"
       }
     }
@@ -3469,10 +3367,6 @@
   "lichessInviteBody": "Create a free account on Lichess (lichess.org), practice these tricks in real games, and come back here to train endgames.",
   "@lichessInviteBody": {
     "description": "Body of the Lichess invite: create an account, practice, come back to train endgames."
-  },
-  "lichessInviteButton": "Open Lichess",
-  "@lichessInviteButton": {
-    "description": "Button that opens lichess.org/signup in the browser."
   },
   "journeySpecialSpeedrunTitle": "Short speedrun",
   "@journeySpecialSpeedrunTitle": {
@@ -3628,21 +3522,9 @@
       }
     }
   },
-  "lessonGuideThink": "Study the position. You can move both sides' pieces to test ideas.",
-  "@lessonGuideThink": {
-    "description": "Lesson guide during the think step: study the position, you may move the pieces of both sides."
-  },
-  "lessonGuideDemo": "Watch: the teacher plays and explains each move.",
-  "@lessonGuideDemo": {
-    "description": "Lesson guide during a demonstration: the teacher plays the moves and explains."
-  },
   "lessonThinkReset": "Reset position",
   "@lessonThinkReset": {
     "description": "Button in the think step: put the pieces back to the step's position."
-  },
-  "lessonMoreHint": "Another hint",
-  "@lessonMoreHint": {
-    "description": "Button after the think time: show the next hint."
   },
   "lessonSeeExplanation": "See explanation",
   "@lessonSeeExplanation": {
@@ -3657,55 +3539,13 @@
       }
     }
   },
-  "lessonWrongLine": "Wrong line",
-  "@lessonWrongLine": {
-    "description": "Lesson badge by the board and in the move controls: the moves shown are the WRONG line (what not to do)."
-  },
   "lessonReviewPoint": "Review this point",
   "@lessonReviewPoint": {
     "description": "Lesson button after a wrong move in a practice step: open the lesson step that explains this point."
   },
-  "lessonBackToTest": "Back to the test",
-  "@lessonBackToTest": {
-    "description": "Lesson button while reviewing a point: go back to the practice step where the student made the mistake."
-  },
-  "lessonMistakeGeneric": "Not that one. Think about what the lesson showed about “{topic}”.",
-  "@lessonMistakeGeneric": {
-    "description": "Teacher speech after a wrong move with no specific explanation. topic is the title of the lesson part (or of the lesson).",
-    "placeholders": {
-      "topic": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonThinkMistakeGeneric": "Your move {move} doesn't work here. Here is why:",
-  "@lessonThinkMistakeGeneric": {
-    "description": "Teacher speech that opens the explanation of a think step after a wrong move with no specific explanation. move is the move in numbered algebraic notation (1...Kd7).",
-    "placeholders": {
-      "move": {
-        "type": "String"
-      }
-    }
-  },
   "lessonVariationShow": "See the line",
   "@lessonVariationShow": {
     "description": "Lesson footer button (tooltip): step through, move by move, the line of moves the teacher cites in the speech."
-  },
-  "lessonVariationClose": "Close the line and return to the explanation",
-  "@lessonVariationClose": {
-    "description": "Tooltip of the X in the line mode footer: leave the cited line and show the explanation panel again."
-  },
-  "lessonVariationPrevious": "Previous move in the line",
-  "@lessonVariationPrevious": {
-    "description": "Tooltip: go back one move in the cited line."
-  },
-  "lessonVariationNext": "Next move in the line",
-  "@lessonVariationNext": {
-    "description": "Tooltip: go forward one move in the cited line."
-  },
-  "lessonPresentationClose": "Close and see the board",
-  "@lessonPresentationClose": {
-    "description": "Tooltip and label of the X that closes the step presentation sheet and shows the board."
   },
   "lessonVariationAlternative": "Alternative to {move}",
   "@lessonVariationAlternative": {
@@ -3724,10 +3564,6 @@
   "@lessonDemoBack": {
     "description": "Tooltip: go back one move in the demonstration."
   },
-  "lessonDemoForward": "Next move",
-  "@lessonDemoForward": {
-    "description": "Tooltip: next move in the demonstration."
-  },
   "lessonDemoReplay": "Replay",
   "@lessonDemoReplay": {
     "description": "Tooltip: replay the demonstration from the start."
@@ -3740,15 +3576,6 @@
   "@lessonDemoPlay": {
     "description": "Lesson demo control: resume the moves playing by themselves."
   },
-  "lessonPartDone": "Chapter {part} complete",
-  "@lessonPartDone": {
-    "description": "Title of the card at the end of a lesson part.",
-    "placeholders": {
-      "part": {
-        "type": "int"
-      }
-    }
-  },
   "lessonNextPart": "Go to chapter {part}",
   "@lessonNextPart": {
     "description": "Button at the end of a lesson part: open the next part.",
@@ -3757,30 +3584,6 @@
         "type": "int"
       }
     }
-  },
-  "lessonToFinalTest": "Take the final test",
-  "@lessonToFinalTest": {
-    "description": "Button at the end of the last lesson part: go to the final test (the exercises)."
-  },
-  "lessonReviewPart": "Review",
-  "@lessonReviewPart": {
-    "description": "Button at the end of a lesson stage: go through this stage again."
-  },
-  "lessonPartNext": "Next",
-  "@lessonPartNext": {
-    "description": "Button at the end of a lesson stage: go to the next stage (or back to the lesson after the last one)."
-  },
-  "lessonPartLearned": "What you learned",
-  "@lessonPartLearned": {
-    "description": "Heading above the stage summary on the stage-done screen."
-  },
-  "lessonAllPartsDone": "All chapters complete",
-  "@lessonAllPartsDone": {
-    "description": "Title when the last lesson part is done."
-  },
-  "lessonAllPartsDoneBody": "Now it is time to put what you learned to the test.",
-  "@lessonAllPartsDoneBody": {
-    "description": "Under the title when all lesson parts are done: invite to the final test."
   },
   "lessonCloseSpeech": "Close",
   "@lessonCloseSpeech": {
@@ -3963,15 +3766,6 @@
   "@graduationAwardedTo": {
     "description": "Diploma line before the student's name."
   },
-  "graduationFor": "for completing the {count} lessons of Viktor's School",
-  "@graduationFor": {
-    "description": "Diploma line: for completing all lessons of the school.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "graduationDate": "Date",
   "@graduationDate": {
     "description": "Label under the date line on the diploma."
@@ -3989,43 +3783,9 @@
       }
     }
   },
-  "graduationPathTitle": "Your path",
-  "@graduationPathTitle": {
-    "description": "Heading of the list of school modules the student went through, on the graduation card."
-  },
-  "graduationModuleLessons": "{count, plural, =1{1 lesson} other{{count} lessons}}",
-  "@graduationModuleLessons": {
-    "description": "Number of lessons in a school module, on the graduation card.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "graduationFinalTest": "Passed the final test: {lesson}",
-  "@graduationFinalTest": {
-    "description": "Last line of the graduation path: the final test the student passed. {lesson} is the lesson title.",
-    "placeholders": {
-      "lesson": {
-        "type": "String"
-      }
-    }
-  },
   "graduationShare": "Share achievement",
   "@graduationShare": {
     "description": "Button at graduation that shares an image of the diploma and the path on social networks."
-  },
-  "graduationShareText": "I finished Viktor's School on Lucena: {count} chess endgame lessons and the final test! {link}",
-  "@graduationShareText": {
-    "description": "Text that goes with the shared graduation image. {count} is the number of lessons, {link} the app website.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "link": {
-        "type": "String"
-      }
-    }
   },
   "ratingHelp": "How the rating works",
   "@ratingHelp": {
@@ -5573,20 +5333,8 @@
     "description": "Canvas V2 lesson feedback heading; presentation only."
   },
   "lessonStillUnsure": "Still unsure?",
-  "lessonOpenFreeBoard": "Open in the free board",
-  "lessonExplanationShort": "Explanation",
-  "lessonFreeBoardInvite": "Still unsure? Test other ideas from this position, from your side of the board.",
   "@lessonStillUnsure": {
     "description": "Canvas V2 lesson feedback heading; presentation only."
-  },
-  "@lessonOpenFreeBoard": {
-    "description": "Canvas V2 lesson feedback heading; presentation only."
-  },
-  "@lessonExplanationShort": {
-    "description": "Main button of a lesson think step (D16): one word that opens Viktor's explanation."
-  },
-  "@lessonFreeBoardInvite": {
-    "description": "End of a lesson explanation, above the button that opens the free board from the student's side."
   },
   "lessonTeacherVoice": "Viktor's voice",
   "@lessonTeacherVoice": {
@@ -6216,23 +5964,6 @@
   "@lessonRevealNextMove": {
     "description": "Screen reader hint of the tap on the block that covers the unseen moves."
   },
-  "lessonVariationEndBranch": "End of the alternative",
-  "@lessonVariationEndBranch": {
-    "description": "Tooltip of the disabled next button at the end of an alternative."
-  },
-  "lessonVariationEndLine": "End of the line",
-  "@lessonVariationEndLine": {
-    "description": "Tooltip of the disabled next button at the end of the main line."
-  },
-  "lessonYourTurnPlay": "Your turn: play with {side}.",
-  "@lessonYourTurnPlay": {
-    "description": "Collapsed lesson sheet, first line: the student plays the side given (White/Black).",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
   "lessonShowAnswer": "Show answer",
   "lessonMainLine": "See main line",
   "@lessonMainLine": {
@@ -6245,121 +5976,9 @@
   "@lessonFullSpeech": {
     "description": "Screen reader hint of the teacher's speech bubble in the scripted lesson: tapping it opens a sheet with the whole speech."
   },
-  "lessonAlreadySeen": "Already seen",
-  "@lessonAlreadySeen": {
-    "description": "Note under a failed alternative the student already opened."
-  },
-  "lessonSeeFullExplanation": "See the full explanation",
-  "@lessonSeeFullExplanation": {
-    "description": "Link at the end of the short explanation: swaps it for the full text."
-  },
-  "lessonSeeFullStatement": "See the full prompt",
-  "@lessonSeeFullStatement": {
-    "description": "Link in the collapsed lesson sheet that expands the full prompt."
-  },
-  "lessonHideStatement": "Hide prompt",
-  "@lessonHideStatement": {
-    "description": "Same link as lessonSeeFullStatement once the prompt is expanded."
-  },
-  "lessonWrongMoveTryAnother": "Wrong move. Try another move.",
-  "@lessonWrongMoveTryAnother": {
-    "description": "First line of the collapsed sheet after a wrong move with no branch."
-  },
-  "lessonEngineError": "An unexpected error occurred. Try again.",
-  "@lessonEngineError": {
-    "description": "Snackbar when the engine failed to answer a move outside the lesson data."
-  },
-  "lessonAlsoCorrect": "Also correct. The lesson continues with {move}.",
-  "@lessonAlsoCorrect": {
-    "description": "Shown when the student played another accepted move; {move} is the lesson move.",
-    "placeholders": {
-      "move": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonExit": "Leave the lesson",
-  "@lessonExit": {
-    "description": "Tooltip of the footer X outside a branch."
-  },
-  "lessonDemoBackToScript": "Back to the demonstration",
-  "@lessonDemoBackToScript": {
-    "description": "Primary button shown when the student left the demonstration script."
-  },
-  "lessonEngineMove": "Watch {side}'s reply to this move.",
-  "@lessonEngineMove": {
-    "description": "Generic comment on the student move when the engine answers; {side} is the opponent side.",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonEngineReply": "With this reply, {side} finds a resource against your plan.",
-  "@lessonEngineReply": {
-    "description": "Generic comment on the engine reply; {side} is the opponent side.",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonEngineAlsoWins": "Well done: this path also wins. Keep going.",
-  "@lessonEngineAlsoWins": {
-    "description": "Engine said the student move keeps the win (demonstration)."
-  },
-  "lessonEngineAlsoHolds": "Well done: this path also holds the draw. Keep going.",
-  "@lessonEngineAlsoHolds": {
-    "description": "Engine said the student move keeps the draw (demonstration)."
-  },
-  "lessonGameStalemate": "Stalemate: it is a draw.",
-  "@lessonGameStalemate": {
-    "description": "Game end in the demonstration: stalemate."
-  },
-  "lessonGameInsufficient": "Insufficient material: it is a draw.",
-  "@lessonGameInsufficient": {
-    "description": "Game end in the demonstration: neither side can mate."
-  },
-  "lessonGameRepetition": "Threefold repetition: it is a draw.",
-  "@lessonGameRepetition": {
-    "description": "Game end in the demonstration: position repeated three times."
-  },
-  "lessonGameFifty": "Fifty-move rule: it is a draw.",
-  "@lessonGameFifty": {
-    "description": "Game end in the demonstration: fifty moves without capture or pawn move."
-  },
-  "lessonGameMate": "Checkmate: {side} win.",
-  "@lessonGameMate": {
-    "description": "Game end in the demonstration: checkmate; {side} is the winning side.",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonEngineAlsoWinsShowMain": "Well done: this path also wins. Now see the main line.",
-  "@lessonEngineAlsoWinsShowMain": {
-    "description": "Engine said the student move keeps the win (learning step)."
-  },
-  "lessonEngineAlsoHoldsShowMain": "Well done: this path also holds the draw. Now see the main line.",
-  "@lessonEngineAlsoHoldsShowMain": {
-    "description": "Engine said the student move keeps the draw (learning step)."
-  },
   "lessonShowSpeech": "Show Viktor's message",
   "@lessonShowSpeech": {
     "description": "Tooltip to show Viktor's speech again."
-  },
-  "lessonBranchMoveFallback": "After this move, the opponent finds a resource.",
-  "@lessonBranchMoveFallback": {
-    "description": "Neutral comment on the student move in a branch with no authored text."
-  },
-  "lessonPracticeInvite": "Now practise the idea you have just seen.",
-  "@lessonPracticeInvite": {
-    "description": "Viktor balloon on the practice invite screen."
-  },
-  "lessonPracticeStart": "Let's practice",
-  "@lessonPracticeStart": {
-    "description": "Primary button of the practice invite."
   },
   "curiositiesTitle": "Curiosities",
   "@curiositiesTitle": {
@@ -6565,5 +6184,7 @@
   },
   "@exerciseNodeLosesTail": {
     "description": "Closing sentence for a move marked with ?? and no comment."
-  }
+  },
+  "lessonRetry": "Try again",
+  "@lessonRetry": {"description": "Button that restarts the position after a stalemate or a draw."}
 }

@@ -14,33 +14,9 @@ const _english = Locale('en', 'US');
 /// A primeira aula da trilha: o mate de bispo e cavalo pela manobra em W.
 const _lessonId = 'mates.bishopKnight.w';
 
-/// Os passos de jogar da lição contra a máquina dos cenários, que responde
-/// sempre o mesmo (o mate, se houver, ou o primeiro lance em ordem).
-const _play = {
-  'playW': ['d3g6', 'g6f7', 'e5d7'],
-  'playFar': ['e6e7', 'e7d6', 'd3c5', 'c5e6', 'e4g6'],
-};
-
 final _hidden = !VisibleLessons.endgameLessonIds.contains(_lessonId);
 
 void main() {
-  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
-  patrolTest('aula de final: a lição inteira e a volta à aula marcada', (
-    $,
-  ) async {
-    await AppRobot($).open(systemLocale: _english);
-    final endgames = EndgamesRobot($);
-    final lesson = await endgames.lesson(_lessonId);
-    await endgames.openFromHome();
-    await endgames.openLesson(_lessonId);
-    await endgames.expectFinalStep();
-
-    await endgames.openSteps();
-    await endgames.completeSteps(lesson, play: _play);
-    await endgames.backToExercises();
-    await endgames.expectLessonDone();
-  }, skip: _hidden);
-
   // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('exercício: o erro e a dica descontam estrelas', ($) async {
     final app = AppRobot($);

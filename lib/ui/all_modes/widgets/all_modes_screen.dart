@@ -15,10 +15,10 @@ import '../../core/widgets/staggered_entrance.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';
 import '../../profile/view_models/profile_cubit.dart';
-import '../../school/widgets/lesson_finished.dart';
 
 // O item do Lichess não é uma rota do app: abre o site.
 const _lichess = 'lichess';
+const _lichessSignup = 'https://lichess.org/signup';
 
 // O nível do jogador, se o perfil estiver à mão.
 RatingLevel? _level(BuildContext context) {
@@ -171,7 +171,7 @@ class AllModesScreen extends StatelessWidget {
                     onTap: () async {
                       if (item.route == _lichess) {
                         await launchUrl(
-                          LichessInvite.url,
+                          Uri.parse(_lichessSignup),
                           mode: LaunchMode.externalApplication,
                         );
                         return;

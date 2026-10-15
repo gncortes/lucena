@@ -121,7 +121,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       if (lesson == null || outcome.last) {
         context.go(Routes.school);
       } else {
-        context.pushReplacement(Routes.lesson(lesson));
+        context.pushReplacement(Routes.lessonScript(lesson));
       }
       return;
     }
@@ -130,7 +130,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       context.go(Routes.endgameLesson(cubit.lessonId));
     } else {
       context.pushReplacement(
-        Routes.endgameLessonSteps(cubit.lessonId, part: next),
+        Routes.endgameLessonScript(cubit.lessonId, part: next),
       );
     }
   }

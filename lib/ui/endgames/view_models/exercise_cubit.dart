@@ -19,7 +19,6 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/step_clock.dart';
 import '../../core/sound/game_haptics.dart';
 import '../../core/sound/game_sounds.dart';
-import '../../school/view_models/lesson_cubit.dart';
 import 'exercise_state.dart';
 
 export 'exercise_state.dart';
@@ -188,7 +187,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     }
     Character? viktor;
     for (final character in characters) {
-      if (character.id == LessonCubit.viktorId) viktor = character;
+      if (character.id == Character.masterId) viktor = character;
     }
     final each = progress.of(lessonId);
     final index = lesson.exercises.indexOf(exercise);

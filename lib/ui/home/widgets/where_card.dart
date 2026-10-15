@@ -217,7 +217,7 @@ class _SchoolCard extends StatelessWidget {
               key: HomeKeys.schoolContinue,
               onPressed: () => school.ongoingLessonId == null
                   ? context.go(Routes.school)
-                  : context.push(Routes.lesson(school.ongoingLessonId!)),
+                  : context.push(Routes.lessonScript(school.ongoingLessonId!)),
               child: Text(l10n.homeContinue),
             ),
           ],
@@ -251,7 +251,7 @@ class _EndgameCard extends StatelessWidget {
       return Routes.endgameExercise(endgame.lessonId, exerciseId);
     }
     if (endgame.lessonOpen) {
-      return Routes.endgameLessonSteps(endgame.lessonId, part: endgame.partId);
+      return Routes.endgameLessonScript(endgame.lessonId, part: endgame.partId);
     }
     return Routes.endgameLesson(endgame.lessonId);
   }

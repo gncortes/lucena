@@ -108,7 +108,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                           ? l10n.schoolContinue(texts.lessonTitle(next))
                           : l10n.schoolStart,
                     ),
-                    onPressed: () => context.go(Routes.lesson(next)),
+                    onPressed: () => context.go(Routes.lessonScript(next)),
                   ),
                 ],
                 if (state.graduated) ...[
@@ -287,7 +287,7 @@ class _LessonNode extends StatelessWidget {
           );
         return;
       }
-      context.go(Routes.lesson(lesson.id));
+      context.go(Routes.lessonScript(lesson.id));
     }
 
     return Padding(
@@ -507,7 +507,7 @@ class _SkippedGroup extends StatelessWidget {
                     key: SchoolKeys.skippedLesson(lesson.id),
                     title: state.texts.lessonTitle(lesson.id),
                     reason: reason,
-                    onTap: () => context.go(Routes.lesson(lesson.id)),
+                    onTap: () => context.go(Routes.lessonScript(lesson.id)),
                   ),
               ],
               const SizedBox(height: 12),

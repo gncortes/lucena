@@ -235,7 +235,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                         final lesson = state.lesson!;
                         final first = lesson.lesson.sections.firstOrNull;
                         context.pushReplacement(
-                          Routes.endgameLessonSteps(
+                          Routes.endgameLessonScript(
                             lesson.id,
                             part: lesson.lesson.parts.isEmpty
                                 ? null

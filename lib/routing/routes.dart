@@ -183,7 +183,6 @@ abstract final class Routes {
 
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
-  static String lesson(String id) => '/school/$id';
 
   /// A aula da escola com roteiro (curso de iniciante, T71), na etapa
   /// [stage].
@@ -204,21 +203,14 @@ abstract final class Routes {
       '/endgames?filter=${forYou ? 'forYou' : 'all'}';
   static String endgameLesson(String id) => '/endgames/$id';
 
-  /// A lição de uma aula de final; numa aula em partes, a parte [part].
-  static String endgameLessonSteps(String id, {String? part}) => Uri(
-    path: '/endgames/$id/lesson',
-    queryParameters: part == null ? null : {'part': part},
-  ).toString();
-
   /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
-  static String endgameLessonScript(
-    String id, {
-    required String part,
-    int stage = 0,
-  }) => Uri(
-    path: '/endgames/$id/roteiro',
-    queryParameters: {'part': part, 'etapa': '$stage'},
-  ).toString();
+  /// Sem parte, ou com uma que não abre mais, a rota cai no início da
+  /// primeira parte (`resolveScriptPart`).
+  static String endgameLessonScript(String id, {String? part, int stage = 0}) =>
+      Uri(
+        path: '/endgames/$id/roteiro',
+        queryParameters: {'part': ?part, 'etapa': '$stage'},
+      ).toString();
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';

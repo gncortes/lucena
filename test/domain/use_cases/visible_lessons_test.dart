@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/visible_endgame_lesson_repository.dart';
 import 'package:lucena/data/repositories/school/visible_lesson_repository.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/rating_level.dart';
@@ -10,8 +11,59 @@ import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 
+/// A aula de final com um capítulo de roteiro novo (as dos fakes são do
+/// formato antigo, escondido).
+EndgameLesson _scripted(EndgameLesson lesson) => EndgameLesson(
+  id: lesson.id,
+  module: lesson.module,
+  lesson: Lesson.parted(
+    id: lesson.id,
+    parts: [
+      LessonPart(id: 'main', steps: lesson.lesson.steps, script: 'r.json'),
+    ],
+  ),
+  exercises: lesson.exercises,
+  passScore: lesson.passScore,
+  keyPositions: lesson.keyPositions,
+  practice: lesson.practice,
+);
+
+/// Os fakes de final, todos com roteiro novo.
+class _ScriptedEndgames extends FakeEndgameLessonRepository {
+  @override
+  Future<EndgameTrail> trail() async => EndgameTrail(
+    modules: [
+      for (final m in (await super.trail()).modules)
+        EndgameModule(
+          id: m.id,
+          lessons: [for (final l in m.lessons) _scripted(l)],
+        ),
+    ],
+  );
+}
+
+/// A Escola de teste, com a aula de roteiro novo.
+class _ScriptedSchool extends FakeLessonRepository {
+  @override
+  Future<Course> course() async {
+    final course = await super.course();
+    return Course(
+      modules: [
+        for (final m in course.modules)
+          CourseModule(
+            id: m.id,
+            lessons: [
+              for (final l in m.lessons)
+                Lesson(id: l.id, steps: l.steps, script: 'r.json'),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
 void main() {
-  test('só a Oposição, Partes 1 e 2, e a Escola escondida', () {
+  test('só a Oposição, Partes 1 e 2 liberadas, e a Escola escondida', () {
     expect(VisibleLessons.endgameLessonIds, {
       'pawns.distantOpposition',
       'pawns.waitingMoves',
@@ -20,7 +72,7 @@ void main() {
   });
 
   group('trilha', () {
-    final all = FakeEndgameLessonRepository();
+    final all = _ScriptedEndgames();
 
     test('fica só a aula liberada; o módulo vazio sai', () async {
       final trail = VisibleLessons.trail(await all.trail(), {'rook.philidor'});
@@ -46,7 +98,7 @@ void main() {
   });
 
   group('Escola', () {
-    final all = FakeLessonRepository();
+    final all = _ScriptedSchool();
 
     test('sem aula liberada, o curso fica vazio', () async {
       final course = await VisibleLessonRepository(all).course();

@@ -21,7 +21,6 @@ import '../data/repositories/settings/settings_repository.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
-import '../domain/use_cases/engine_fallback.dart';
 import '../domain/use_cases/game_rules.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
@@ -91,11 +90,9 @@ import '../ui/school/view_models/star_challenge_cubit.dart';
 import '../domain/use_cases/visible_lessons.dart';
 import '../ui/school/widgets/star_challenge_screen.dart';
 import '../ui/school/widgets/star_challenges_screen.dart';
-import '../ui/school/view_models/lesson_cubit.dart';
 import '../ui/school/view_models/school_cubit.dart';
 import '../ui/lesson_script/view_models/lesson_script_cubit.dart';
 import '../ui/lesson_script/widgets/lesson_script_screen.dart';
-import '../ui/school/widgets/lesson_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
@@ -132,18 +129,20 @@ import '../domain/use_cases/game_intro.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
 /// árvore de rotas entram junto, para o botão de voltar funcionar.
-/// A lição da parte [part] da aula [id]: se a parte tem roteiro, a rota da
-/// tela de roteiro (o card da parte, a próxima parte, o revisar e o app que
-/// reabre nela); senão, nula (fica na lição).
-Future<String?> scriptPartRedirect(
+/// A rota da lição roteirizada que abre no lugar de [part] da aula [id]: nula
+/// se [part] é uma parte visível (a aula só mostra partes com roteiro, ver
+/// `VisibleLessons`); senão (retomada salva de um capítulo que não aparece
+/// mais, ou nenhuma parte), o início da primeira parte visível. Nula também
+/// se a aula não tem parte visível.
+Future<String?> resolveScriptPart(
   EndgameLessonRepository lessons,
   String id,
   String? part,
 ) async {
-  if (part == null) return null;
-  final trail = await lessons.trail();
-  final script = trail.lesson(id)?.lesson.part(part)?.script;
-  return script == null ? null : Routes.endgameLessonScript(id, part: part);
+  final visible = (await lessons.trail()).lesson(id)?.lesson.parts;
+  if (visible == null || visible.isEmpty) return null;
+  if (part != null && visible.any((each) => each.id == part)) return null;
+  return Routes.endgameLessonScript(id, part: visible.first.id);
 }
 
 GoRouter buildRouter({String initialLocation = Routes.home}) {
@@ -528,41 +527,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   );
                 },
               ),
-              _route(
-                path: ':lesson',
-                // A aula com roteiro abre a tela roteirizada.
-                redirect: (context, state) async {
-                  final id = state.pathParameters['lesson']!;
-                  final course = await context
-                      .read<LessonRepository>()
-                      .course();
-                  return course.lesson(id)?.script == null
-                      ? null
-                      : Routes.lessonScript(id);
-                },
-                builder: (context, state) {
-                  final id = state.pathParameters['lesson']!;
-                  return BlocProvider(
-                    // A aula seguinte (pela tela de fim) troca o view model.
-                    key: ValueKey(id),
-                    create: (_) => LessonCubit(
-                      now: context.read<Now>(),
-                      sounds: context.read<GameSounds>(),
-                      haptics: context.read<GameHaptics>(),
-                      lessons: context.read<LessonRepository>(),
-                      progress: context.read<SchoolProgressRepository>(),
-                      characters: context.read<CharacterRepository>(),
-                      opponent: context.read<OpponentRepository>(),
-                      engine: _engineFallback(context),
-                      practiceV2: true,
-                    )..load(id, _language(context)),
-                    child: LessonScreen(
-                      key: ValueKey('lesson.$id'),
-                      engine: _engineFallback(context),
-                    ),
-                  );
-                },
-              ),
             ],
           ),
           _route(
@@ -661,6 +625,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   // A lição roteirizada (T70): as três etapas da parte.
                   _route(
                     path: 'roteiro',
+                    // Parte que não abre mais (retomada salva de um capítulo
+                    // sem roteiro): cai no início da primeira parte.
+                    redirect: (context, state) => resolveScriptPart(
+                      context.read<EndgameLessonRepository>(),
+                      state.pathParameters['lesson']!,
+                      state.uri.queryParameters['part'],
+                    ),
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
                       final part = state.uri.queryParameters['part'] ?? '';
@@ -694,41 +665,6 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           title: lessons
                               .texts(language)
                               .then((texts) => texts.partTitle(id, part)),
-                        ),
-                      );
-                    },
-                  ),
-                  _route(
-                    path: 'lesson',
-                    // A parte com roteiro abre a tela roteirizada (cobre o
-                    // card da parte, a próxima parte e o revisar).
-                    redirect: (context, state) => scriptPartRedirect(
-                      context.read<EndgameLessonRepository>(),
-                      state.pathParameters['lesson']!,
-                      state.uri.queryParameters['part'],
-                    ),
-                    builder: (context, state) {
-                      final id = state.pathParameters['lesson']!;
-                      final part = state.uri.queryParameters['part'];
-                      return BlocProvider(
-                        key: ValueKey('steps.$id.$part'),
-                        create: (_) => LessonCubit(
-                          now: context.read<Now>(),
-                          sounds: context.read<GameSounds>(),
-                          haptics: context.read<GameHaptics>(),
-                          feedback: context.read<ExerciseFeedbackRepository?>(),
-                          source: EndgameLessonSource(
-                            context.read<EndgameLessonRepository>(),
-                            context.read<EndgameProgressRepository>(),
-                          ),
-                          characters: context.read<CharacterRepository>(),
-                          opponent: context.read<OpponentRepository>(),
-                          engine: _engineFallback(context),
-                          practiceV2: true,
-                        )..load(id, _language(context), part: part),
-                        child: LessonScreen(
-                          key: ValueKey('lesson.$id.$part'),
-                          engine: _engineFallback(context),
                         ),
                       );
                     },
@@ -1219,18 +1155,3 @@ bool? _endgamesFilter(GoRouterState state) =>
       'forYou' => false,
       _ => null,
     };
-
-/// O motor da lição para o lance fora dos dados (T70, crit. 8): o Stockfish
-/// avalia e responde com a melhor jogada.
-EngineFallback _engineFallback(BuildContext context) {
-  final evaluation = context.read<EvaluationRepository>();
-  final opponent = context.read<OpponentRepository>();
-  return EngineFallback(
-    evaluate: (position, pov) => evaluation.evaluate(position, pov: pov),
-    bestMove: (position) => opponent.pickMove(
-      position,
-      thinkTime: const Duration(milliseconds: 500),
-      kind: OpponentKind.stockfish,
-    ),
-  );
-}

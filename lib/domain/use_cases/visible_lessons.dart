@@ -5,7 +5,18 @@ import '../models/lesson.dart';
 /// só a Oposição, Partes 1 e 2. As outras aulas de finais e a Escola do
 /// Viktor ficam escondidas, sem sair dos assets nem do progresso gravado;
 /// liberar uma aula é pôr o id aqui.
+///
+/// Além do id, vale a regra do formato novo (Gabriel, 15/10/2026): um
+/// capítulo só aparece se tiver roteiro novo (`LessonPart.script`); a aula
+/// sem nenhum capítulo com roteiro sai, e a Escola mostra só a aula com
+/// `Lesson.script`. Este arquivo é o único ponto dessa decisão.
 abstract final class VisibleLessons {
+  /// O capítulo [part] aparece: tem roteiro novo.
+  static bool partVisible(LessonPart part) => part.script != null;
+
+  /// A aula [lesson] da Escola aparece: tem roteiro novo.
+  static bool schoolLessonVisible(Lesson lesson) => lesson.script != null;
+
   /// As aulas de finais que aparecem.
   static const endgameLessonIds = {
     'pawns.distantOpposition',
@@ -23,24 +34,46 @@ abstract final class VisibleLessons {
   /// A Escola tem alguma aula liberada.
   static bool get school => schoolLessonIds.isNotEmpty;
 
-  /// [trail] só com as aulas de [ids], na mesma ordem; o módulo que fica
-  /// vazio sai.
+  /// [trail] só com as aulas de [ids], na mesma ordem, e delas só os
+  /// capítulos com roteiro ([partVisible]); a aula e o módulo que ficam vazios
+  /// saem.
   static EndgameTrail trail(
     EndgameTrail trail, [
     Set<String> ids = endgameLessonIds,
-  ]) => EndgameTrail(
-    modules: [
-      for (final module in trail.modules)
-        if (module.lessons.any((lesson) => ids.contains(lesson.id)))
-          EndgameModule(
-            id: module.id,
-            lessons: [
-              for (final lesson in module.lessons)
-                if (ids.contains(lesson.id)) lesson,
-            ],
-          ),
-    ],
-  );
+  ]) {
+    final modules = <EndgameModule>[];
+    for (final module in trail.modules) {
+      final lessons = [
+        for (final lesson in module.lessons)
+          if (ids.contains(lesson.id)) ?_withVisibleParts(lesson),
+      ];
+      if (lessons.isNotEmpty) {
+        modules.add(EndgameModule(id: module.id, lessons: lessons));
+      }
+    }
+    return EndgameTrail(modules: modules);
+  }
+
+  static EndgameLesson? _withVisibleParts(EndgameLesson lesson) {
+    final parts = [...lesson.lesson.parts.where(partVisible)];
+    if (parts.isEmpty) return null;
+    return EndgameLesson(
+      id: lesson.id,
+      module: lesson.module,
+      lesson: Lesson.parted(
+        id: lesson.lesson.id,
+        parts: parts,
+        script: lesson.lesson.script,
+      ),
+      exercises: lesson.exercises,
+      passScore: lesson.passScore,
+      keyPositions: lesson.keyPositions,
+      practice: lesson.practice,
+      references: lesson.references,
+      inReview: lesson.inReview,
+      failed: lesson.failed,
+    );
+  }
 
   /// [course] só com as aulas de [ids], na mesma ordem; o módulo que fica
   /// vazio sai.
@@ -48,12 +81,16 @@ abstract final class VisibleLessons {
       Course(
         modules: [
           for (final module in course.modules)
-            if (module.lessons.any((lesson) => ids.contains(lesson.id)))
+            if (module.lessons.any(
+              (lesson) =>
+                  ids.contains(lesson.id) && schoolLessonVisible(lesson),
+            ))
               CourseModule(
                 id: module.id,
                 lessons: [
                   for (final lesson in module.lessons)
-                    if (ids.contains(lesson.id)) lesson,
+                    if (ids.contains(lesson.id) && schoolLessonVisible(lesson))
+                      lesson,
                 ],
               ),
         ],

@@ -45,7 +45,6 @@ void main() {
     final school = SchoolRobot($);
     await school.openFromHome();
     await school.openScriptLesson('pieces.rook');
-    expect(find.byKey(LessonKeys.screen), findsNothing);
 
     await school.expectScriptSpeechSheet();
     // O Continuar anda para a fala seguinte, na mesma tela.
