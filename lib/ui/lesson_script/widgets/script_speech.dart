@@ -39,6 +39,20 @@ class ScriptSpeechMetrics {
 
   static const minLines = 2;
 
+  /// As mesmas medidas com mais [extra] linhas: a página empresta ao balão a
+  /// sobra de cima que fica vazia (Gabriel, 16/10/2026: "cabia mais texto lá
+  /// em cima e ficou cortado no balãozinho"). O balão segue preso embaixo, e
+  /// o tabuleiro não se mexe.
+  ScriptSpeechMetrics grow(int extra) => extra <= 0
+      ? this
+      : ScriptSpeechMetrics._(
+          compact: compact,
+          fontSize: fontSize,
+          verticalPadding: verticalPadding,
+          horizontalPadding: horizontalPadding,
+          maxLines: maxLines + extra,
+        );
+
   /// A área da fala tem 3 linhas fixas (Gabriel, 14/10/2026): o balão cresce
   /// e diminui dentro dela, presa embaixo, e o tabuleiro não sobe nem desce.
   static const areaLines = 3;

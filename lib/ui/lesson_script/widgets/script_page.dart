@@ -28,8 +28,10 @@ class ScriptPage extends StatelessWidget {
 
   final Key pageKey;
 
-  /// O balão, numa área de altura fixa ([ScriptSpeechMetrics.areaHeight]).
-  final Widget Function() speechBuilder;
+  /// O balão, numa área de altura fixa ([ScriptSpeechMetrics.areaHeight])
+  /// medida por [metrics]: as da tela, com as linhas a mais que couberem na
+  /// sobra de cima ([ScriptSpeechMetrics.grow]).
+  final Widget Function(ScriptSpeechMetrics metrics) speechBuilder;
 
   /// A faixa do Viktor, com a altura de [stripHeight].
   final Widget strip;
@@ -53,6 +55,15 @@ class ScriptPage extends StatelessWidget {
         final size = math.max(0.0, math.min(box.maxWidth, room));
         final spare = math.max(0.0, box.maxHeight - above - size);
         final half = metrics.compact ? 0.0 : spare / 2;
+        // Tela baixa: a sobra fica em cima e o tabuleiro encosta no rodapé
+        // (folga de [compactGap]).
+        final top = metrics.compact ? math.max(0.0, spare - compactGap) : half;
+        // As linhas inteiras que cabem na sobra de cima vão para o balão:
+        // fala longa usa o vão vazio em vez de rolar dentro do balão; fala
+        // curta continua presa embaixo, e o tabuleiro fica onde estava.
+        final line = metrics.lineExtent(context);
+        final extra = line <= 0 ? 0 : (top / line).floor();
+        final grown = metrics.grow(extra);
         return SingleChildScrollView(
           key: pageKey,
           child: ConstrainedBox(
@@ -60,14 +71,8 @@ class ScriptPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Tela baixa: a sobra fica em cima e o tabuleiro encosta no
-                // rodapé (folga de [compactGap]).
-                SizedBox(
-                  height: metrics.compact
-                      ? math.max(0, spare - compactGap)
-                      : half,
-                ),
-                speechBuilder(),
+                SizedBox(height: top - extra * line),
+                speechBuilder(grown),
                 strip,
                 Center(child: boardBuilder(size)),
                 SizedBox(height: metrics.compact ? compactGap : half),

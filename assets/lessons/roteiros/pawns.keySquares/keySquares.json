@@ -6,167 +6,6 @@
    "id": "ideia",
    "exemplos": [
     {
-     "id": "ex0",
-     "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-     "vira": false,
-     "objetivo": "ganhar",
-     "fim": "proximo",
-     "entrada": [
-      {
-       "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-       "marcas": [
-        "d4",
-        "d2"
-       ],
-       "t": "rot.keySquares.ideia.ex0.e1"
-      },
-      {
-       "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-       "marcas": [
-        "e3",
-        "e4",
-        "e5"
-       ],
-       "t": "rot.keySquares.ideia.ex0.e2"
-      },
-      {
-       "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-       "setas": [
-        [
-         "d2",
-         "d8",
-         "b"
-        ]
-       ],
-       "t": "rot.keySquares.ideia.ex0.e3"
-      },
-      {
-       "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-       "marcas": [
-        "d8"
-       ],
-       "t": "rot.keySquares.ideia.ex0.e4"
-      }
-     ],
-     "pergunta": {
-      "certos": [
-       "d4d5"
-      ],
-      "certo": {
-       "fen": "8/8/8/3K4/5k2/8/3P4/8 b - - 1 1",
-       "lance": "d4d5",
-       "setas": [
-        [
-         "d4",
-         "d5",
-         "g"
-        ]
-       ],
-       "t": "rot.keySquares.ideia.ex0.certo"
-      },
-      "revela": {
-       "fen": "8/8/8/3K4/5k2/8/3P4/8 b - - 1 1",
-       "lance": "d4d5",
-       "setas": [
-        [
-         "d4",
-         "d5",
-         "g"
-        ]
-       ],
-       "t": "rot.keySquares.ideia.ex0.revela"
-      },
-      "alternativos": {
-       "d4c3": [
-        {
-         "fen": "8/8/8/8/5k2/2K5/3P4/8 b - - 1 1",
-         "lance": "d4c3",
-         "t": "rot.keySquares.ideia.ex0.alt.rei"
-        },
-        {
-         "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-         "salto": true,
-         "t": "rot.keySquares.ideia.ex0.alt.volta"
-        }
-       ],
-       "d4c4": [
-        {
-         "fen": "8/8/8/8/2K2k2/8/3P4/8 b - - 1 1",
-         "lance": "d4c4",
-         "t": "rot.keySquares.ideia.ex0.alt.rei"
-        },
-        {
-         "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-         "salto": true,
-         "t": "rot.keySquares.ideia.ex0.alt.volta"
-        }
-       ],
-       "d4c5": [
-        {
-         "fen": "8/8/8/2K5/5k2/8/3P4/8 b - - 1 1",
-         "lance": "d4c5",
-         "t": "rot.keySquares.ideia.ex0.alt.rei"
-        },
-        {
-         "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-         "salto": true,
-         "t": "rot.keySquares.ideia.ex0.alt.volta"
-        }
-       ],
-       "d4d3": [
-        {
-         "fen": "8/8/8/8/5k2/3K4/3P4/8 b - - 1 1",
-         "lance": "d4d3",
-         "t": "rot.keySquares.ideia.ex0.alt.rei"
-        },
-        {
-         "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-         "salto": true,
-         "t": "rot.keySquares.ideia.ex0.alt.volta"
-        }
-       ],
-       "d2d3": [
-        {
-         "fen": "8/8/8/8/3K1k2/3P4/8/8 b - - 0 1",
-         "lance": "d2d3",
-         "t": "rot.keySquares.ideia.ex0.alt.peao"
-        },
-        {
-         "fen": "8/8/8/8/3K1k2/8/3P4/8 w - - 0 1",
-         "salto": true,
-         "t": "rot.keySquares.ideia.ex0.alt.volta"
-        }
-       ]
-      },
-      "erros": {},
-      "livre": {
-       "maquina": "b",
-       "fala": "rot.keySquares.ideia.ex0.livre.fala",
-       "volta": "rot.keySquares.ideia.ex0.livre.volta"
-      },
-      "t": "rot.keySquares.ideia.ex0.p"
-     },
-     "linha": [
-      {
-       "fen": "8/8/8/3K4/5k2/8/3P4/8 b - - 1 1",
-       "marcas": [
-        "c3",
-        "e3"
-       ],
-       "t": "rot.keySquares.ideia.ex0.l0"
-      },
-      {
-       "fen": "8/8/8/3K4/5k2/8/3P4/8 b - - 1 1",
-       "marcas": [
-        "e3",
-        "e4",
-        "e5"
-       ],
-       "t": "rot.keySquares.ideia.ex0.l1"
-      }
-     ]
-    },
-    {
      "id": "ex1",
      "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
      "vira": false,
@@ -182,41 +21,12 @@
          "b"
         ]
        ],
-       "t": "rot.keySquares.ideia.ex1.e1"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
-       "t": "rot.keySquares.ideia.ex1.e1b"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
-       "t": "rot.keySquares.ideia.ex1.e2"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
-       "t": "rot.keySquares.ideia.ex1.e2b"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
-       "t": "rot.keySquares.ideia.ex1.e2c"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
+       "t": "rot.keySquares.ideia.ex1.e1",
        "marcas": [
         "d5",
         "e5",
         "f5"
-       ],
-       "t": "rot.keySquares.ideia.ex1.e3"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/4P3/8/8 w - - 0 1",
-       "marcas": [
-        "d5",
-        "e5",
-        "f5"
-       ],
-       "t": "rot.keySquares.ideia.ex1.e4"
+       ]
       }
      ],
      "pergunta": {
@@ -428,10 +238,6 @@
        "t": "rot.keySquares.ideia.ex1.l1"
       },
       {
-       "fen": "8/8/3k4/5K2/8/4P3/8/8 b - - 1 1",
-       "t": "rot.keySquares.ideia.ex1.l2"
-      },
-      {
        "fen": "8/8/8/3k1K2/8/4P3/8/8 w - - 2 2",
        "lance": "d6d5",
        "marcas": [
@@ -448,10 +254,6 @@
        "t": "rot.keySquares.ideia.ex1.l4"
       },
       {
-       "fen": "8/8/8/3k4/5K2/4P3/8/8 b - - 3 2",
-       "t": "rot.keySquares.ideia.ex1.l5"
-      },
-      {
        "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
        "salto": true,
        "setas": [
@@ -462,14 +264,6 @@
         ]
        ],
        "t": "rot.keySquares.ideia.ex1.l6"
-      },
-      {
-       "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
-       "t": "rot.keySquares.ideia.ex1.l7"
-      },
-      {
-       "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
-       "t": "rot.keySquares.ideia.ex1.l8"
       },
       {
        "fen": "8/4k3/8/5K2/4P3/8/8/8 b - - 0 2",
@@ -511,10 +305,6 @@
        "t": "rot.keySquares.ideia.ex1.l11"
       },
       {
-       "fen": "8/4k3/8/4K3/4P3/8/8/8 w - - 3 4",
-       "t": "rot.keySquares.ideia.ex1.l12"
-      },
-      {
        "fen": "8/8/3k4/5K2/8/4P3/8/8 b - - 1 1",
        "salto": true,
        "marcas": [
@@ -541,13 +331,6 @@
         "e5"
        ],
        "t": "rot.keySquares.ideia.ex2.e1"
-      },
-      {
-       "fen": "8/2k5/8/8/5K2/3P4/8/8 b - - 0 1",
-       "marcas": [
-        "e5"
-       ],
-       "t": "rot.keySquares.ideia.ex2.e2"
       }
      ],
      "pergunta": {
@@ -774,20 +557,6 @@
         "e5"
        ],
        "t": "rot.keySquares.ideia.ex2.l2"
-      },
-      {
-       "fen": "8/8/3k4/8/4K3/3P4/8/8 b - - 2 2",
-       "t": "rot.keySquares.ideia.ex2.l3"
-      },
-      {
-       "fen": "8/8/3k4/8/5K2/3P4/8/8 w - - 1 2",
-       "salto": true,
-       "marcas": [
-        "c5",
-        "d5",
-        "e5"
-       ],
-       "t": "rot.keySquares.ideia.ex2.l4"
       }
      ]
     }
@@ -811,24 +580,6 @@
         "d4"
        ],
        "t": "rot.keySquares.demos.regra.1"
-      },
-      {
-       "fen": "8/8/8/1k6/8/4K3/2P5/8 w - - 0 1",
-       "marcas": [
-        "b4",
-        "c4",
-        "d4"
-       ],
-       "t": "rot.keySquares.demos.regra.1b"
-      },
-      {
-       "fen": "8/8/8/1k6/8/4K3/2P5/8 w - - 0 1",
-       "marcas": [
-        "b4",
-        "c4",
-        "d4"
-       ],
-       "t": "rot.keySquares.demos.regra.2"
       }
      ],
      "linha": [
@@ -923,16 +674,12 @@
          "r"
         ]
        ],
-       "t": "rot.keySquares.demos.cedo.1"
-      },
-      {
-       "fen": "8/4k3/8/8/6P1/8/3K4/8 b - - 0 1",
+       "t": "rot.keySquares.demos.cedo.1",
        "marcas": [
         "f6",
         "g6",
         "h6"
-       ],
-       "t": "rot.keySquares.demos.cedo.2"
+       ]
       }
      ],
      "linha": [
@@ -959,10 +706,6 @@
         "h6"
        ],
        "t": "rot.keySquares.demos.cedo.4"
-      },
-      {
-       "fen": "8/8/8/6k1/6P1/5K2/8/8 b - - 4 3",
-       "t": "rot.keySquares.demos.cedo.6"
       }
      ]
     }

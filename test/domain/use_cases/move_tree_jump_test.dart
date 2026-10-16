@@ -26,7 +26,7 @@ void main() {
     expect(at('d3e4-e8f7-e4f4-f7f6').variant, isTrue);
     expect(at('d3e4-e8f7-e4f5').variant, isFalse);
     // O passo da variante joga os dois lances; o último é o atual.
-    expect(tree.of(ex1.line[8]).last.id, 'd3e4-e8f7-e4f4-f7f6');
+    expect(tree.of(ex1.line[5]).last.id, 'd3e4-e8f7-e4f4-f7f6');
   });
 
   test('a volta a 2.Rf5 não repete o lance e segue a principal', () {

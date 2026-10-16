@@ -78,7 +78,7 @@
   "step.t_release.hint1": "Conte os lances de que o peão precisa para chegar a g1, depois de liberado.",
   "step.t_release.hint2": "O cavalo de g5 pode sair com xeque. Para onde o rei preto vai depois?",
   "step.releaseWhy": "Agora, sim: 1.Ce6+. O cavalo de g5 sai com xeque e libera o peão. O peão precisa de cinco lances para chegar a g1. As brancas precisam do mesmo número, mas o primeiro é xeque, e o rei preto gasta lances fugindo: o mate chega antes. E os lances do peão são justamente o que evita o afogamento: enquanto o rei preto fica sem casas, as pretas movem o peão. A regra é esta: libere o bloqueio quando o rei preto já estiver na rede e o mate vier antes da promoção.",
-  "step.releaseMove": "Voltemos à nossa posição. Agora é a sua vez: libere o peão com xeque e dê o mate antes que ele promova.",
+  "step.releaseMove": "De volta à nossa posição. Agora é a sua vez: libere o peão com xeque e dê o mate antes que ele promova.",
   "step.releaseMove.hint": "Primeiro, 1.Ce6+. Depois, 2.Rf7 e 3.Cf6.",
   "step.releaseMove.done": "O peão está livre, e o mate chega antes da promoção. Liberar o bloqueio na hora certa é metade deste final.",
   "step.fifty": "Há também a regra dos cinquenta lances: a partida termina empatada quando os dois lados fazem cinquenta lances seguidos sem nenhum lance de peão e sem nenhuma captura. Aqui, o peão está em e4, na linha, ainda livre, e apenas 1.Ce3, que o bloqueia, mantém a vitória. Mas as brancas só ganham sem a regra: o primeiro lance de peão ou captura viria depois de cerca de sessenta e sete lances, e a regra encerra a partida antes. O mate mais longo deste final passa de cem lances. Na prática, ajuda muito ter o peão bloqueado bem atrás da linha, ou o rei preto já perto do canto.",

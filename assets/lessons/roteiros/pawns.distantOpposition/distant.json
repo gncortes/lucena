@@ -14,23 +14,12 @@
           "entrada": [
             {
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-              "t": "rot.distant.ideia.ex1.e1"
-            },
-            {
-              "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
+              "t": "rot.distant.ideia.ex1.e1",
               "marcas": [
                 "f5",
                 "g5",
                 "h5"
-              ],
-              "t": "rot.distant.ideia.ex1.e5"
-            },
-            {
-              "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-              "marcas": [
-                "g6"
-              ],
-              "t": "rot.distant.ideia.ex1.e6"
+              ]
             }
           ],
           "pergunta": {
@@ -235,19 +224,7 @@
             },
             {
               "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l2"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
               "t": "rot.distant.ideia.ex1.l3"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l4"
-            },
-            {
-              "fen": "4k3/8/8/8/4K3/6P1/8/8 b - - 1 1",
-              "t": "rot.distant.ideia.ex1.l5"
             },
             {
               "fen": "8/5k2/8/8/4K3/6P1/8/8 w - - 2 2",
@@ -338,10 +315,6 @@
               "t": "rot.distant.ideia.ex1.l16"
             },
             {
-              "fen": "8/5k2/8/6K1/8/6P1/8/8 w - - 6 4",
-              "t": "rot.distant.ideia.ex1.l17"
-            },
-            {
               "fen": "8/5k2/7K/8/8/6P1/8/8 b - - 7 4",
               "lance": "g5h6",
               "t": "rot.distant.ideia.ex1.l18"
@@ -394,10 +367,6 @@
               "t": "rot.distant.ideia.ex1.l22"
             },
             {
-              "fen": "8/4k3/8/4K3/8/6P1/8/8 b - - 3 2",
-              "t": "rot.distant.ideia.ex1.l23"
-            },
-            {
               "fen": "8/5k2/8/5K2/8/6P1/8/8 b - - 5 3",
               "marcas": [
                 "f5"
@@ -443,14 +412,6 @@
               "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
               "salto": true,
               "t": "rot.distant.ideia.ex1.l25"
-            },
-            {
-              "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-              "t": "rot.distant.ideia.ex1.l26"
-            },
-            {
-              "fen": "4k3/8/8/8/8/3K2P1/8/8 w - - 0 1",
-              "t": "rot.distant.ideia.ex1.l27"
             }
           ]
         },
@@ -463,20 +424,12 @@
           "entrada": [
             {
               "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
-              "t": "rot.distant.ideia.ex2.e1"
-            },
-            {
-              "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
+              "t": "rot.distant.ideia.ex2.e1",
               "marcas": [
                 "f5",
                 "g5",
                 "h5"
-              ],
-              "t": "rot.distant.ideia.ex2.e2"
-            },
-            {
-              "fen": "4k3/8/8/8/8/4K1P1/8/8 b - - 0 1",
-              "t": "rot.distant.ideia.ex2.e3"
+              ]
             }
           ],
           "pergunta": {
@@ -677,10 +630,6 @@
               "t": "rot.distant.ideia.ex2.l11"
             },
             {
-              "fen": "8/8/4k3/8/4K3/6P1/8/8 w - - 3 3",
-              "t": "rot.distant.ideia.ex2.l12"
-            },
-            {
               "fen": "8/4k3/8/8/8/4K1P1/8/8 w - - 1 2",
               "salto": true,
               "t": "rot.distant.ideia.ex2.l13"
@@ -715,10 +664,6 @@
                 "h4"
               ],
               "t": "rot.distant.demos.cincoCasas.1"
-            },
-            {
-              "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
-              "t": "rot.distant.demos.cincoCasas.2"
             }
           ],
           "linha": [
@@ -756,10 +701,6 @@
               "t": "rot.distant.demos.cincoCasas.7"
             },
             {
-              "fen": "8/8/4k3/8/4K3/8/6P1/8 b - - 5 3",
-              "t": "rot.distant.demos.cincoCasas.8"
-            },
-            {
               "fen": "8/8/5k2/8/4K3/8/6P1/8 w - - 6 4",
               "lance": "e6f6",
               "t": "rot.distant.demos.cincoCasas.9"
@@ -776,10 +717,6 @@
               "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
               "salto": true,
               "t": "rot.distant.demos.cincoCasas.11"
-            },
-            {
-              "fen": "4k3/8/8/8/8/8/6P1/4K3 w - - 0 1",
-              "t": "rot.distant.demos.cincoCasas.12"
             }
           ]
         },
@@ -792,16 +729,12 @@
           "entrada": [
             {
               "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
-              "t": "rot.distant.demos.tempo.1"
-            },
-            {
-              "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
+              "t": "rot.distant.demos.tempo.1",
               "marcas": [
                 "e4",
                 "f4",
                 "g4"
-              ],
-              "t": "rot.distant.demos.tempo.2"
+              ]
             }
           ],
           "linha": [
@@ -813,10 +746,6 @@
               ],
               "lance": "d7c6",
               "t": "rot.distant.demos.tempo.3"
-            },
-            {
-              "fen": "8/8/2k5/8/8/8/2K2P2/8 w - - 1 2",
-              "t": "rot.distant.demos.tempo.4"
             },
             {
               "fen": "8/8/2k5/8/8/3K4/5P2/8 b - - 2 2",
@@ -831,10 +760,6 @@
               ],
               "lance": "c6d5",
               "t": "rot.distant.demos.tempo.6"
-            },
-            {
-              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
-              "t": "rot.distant.demos.tempo.7"
             },
             {
               "fen": "8/3k4/8/8/8/8/2K2P2/8 b - - 0 1",
@@ -872,10 +797,6 @@
               "t": "rot.distant.demos.tempo.9b"
             },
             {
-              "fen": "8/8/5k2/8/4K3/8/5P2/8 b - - 4 3",
-              "t": "rot.distant.demos.tempo.10"
-            },
-            {
               "fen": "8/3k4/8/8/8/8/2K2P2/8 w - - 0 1",
               "salto": true,
               "t": "rot.distant.demos.tempo.11"
@@ -890,10 +811,6 @@
               "t": "rot.distant.demos.tempo.12"
             },
             {
-              "fen": "8/3k4/8/8/8/3K4/5P2/8 b - - 1 1",
-              "t": "rot.distant.demos.tempo.13"
-            },
-            {
               "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
               "marcas": [
                 "d3",
@@ -901,10 +818,6 @@
               ],
               "salto": true,
               "t": "rot.distant.demos.tempo.14"
-            },
-            {
-              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 3 3",
-              "t": "rot.distant.demos.tempo.15"
             }
           ]
         },
@@ -940,10 +853,6 @@
           ],
           "linha": [
             {
-              "fen": "8/3k4/8/8/8/8/3K1P2/8 b - - 1 1",
-              "t": "rot.distant.demos.erroAtacante.3"
-            },
-            {
               "fen": "8/8/3k4/8/8/8/3K1P2/8 w - - 2 2",
               "marcas": [
                 "d2",
@@ -951,10 +860,6 @@
               ],
               "lance": "d7d6",
               "t": "rot.distant.demos.erroAtacante.4"
-            },
-            {
-              "fen": "8/8/3k4/8/8/8/3K1P2/8 w - - 2 2",
-              "t": "rot.distant.demos.erroAtacante.5"
             },
             {
               "fen": "8/8/3k4/8/8/3K4/5P2/8 b - - 3 2",
@@ -969,10 +874,6 @@
               ],
               "lance": "d6d5",
               "t": "rot.distant.demos.erroAtacante.7"
-            },
-            {
-              "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 4 3",
-              "t": "rot.distant.demos.erroAtacante.8"
             },
             {
               "fen": "8/8/8/3k4/8/3K4/5P2/8 w - - 4 3",
