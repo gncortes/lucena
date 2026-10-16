@@ -132,6 +132,14 @@ class _Rig {
   }
 }
 
+/// Toca em Continuar até a pergunta do 1º exemplo da etapa 1.
+Future<void> _toQuestion(_Rig r) async {
+  for (var i = 0; i < 5 && r.s.phase != ScriptPhase.pergunta; i++) {
+    await r.next();
+  }
+  expect(r.s.phase, ScriptPhase.pergunta);
+}
+
 /// Um roteiro de uma etapa só, com um exemplo de pergunta em que o aluno
 /// (pretas, empatar) pode capturar o peão: `g3g2` é um lance fora do roteiro
 /// que mantém o empate.
@@ -819,9 +827,55 @@ void main() {
   });
 
   group('demonstração automática', () {
-    test('fora da etapa 2 não tem demonstração', () async {
+    test('etapa 1: a fala de Continuar anda sozinha, sem ↻ nem ⏮; a '
+        'pergunta espera o aluno', () async {
       final r = await _Rig.open();
+      expect(r.s.phase, ScriptPhase.entrada);
+      final first = r.s.demo!;
+      expect(first.full, isFalse);
+      expect(first.playing, isTrue);
+      expect(first.ended, isFalse);
+      expect(r.pending.single.duration, LessonScriptCubit.readTime('e1'));
+      // A entrada passa sozinha até a pergunta, que não tem relógio.
+      for (var i = 0; i < 5 && r.s.phase != ScriptPhase.pergunta; i++) {
+        await r.elapse();
+      }
+      expect(r.s.phase, ScriptPhase.pergunta);
       expect(r.s.demo, isNull);
+      expect(r.pending, isEmpty);
+      // Depois do lance certo, a linha volta a andar sozinha.
+      await r.cubit.onMove('d3e4');
+      expect(r.s.phase, ScriptPhase.linha);
+      expect(r.s.demo!.full, isFalse);
+      expect(r.pending, hasLength(1));
+    });
+
+    test('etapa 1: a refutação de um erro espera o aluno', () async {
+      final r = await _Rig.open();
+      await _toQuestion(r);
+      await r.cubit.onMove('d3d4');
+      expect(r.s.phase, ScriptPhase.refutacao);
+      expect(r.s.demo, isNull);
+      expect(r.pending, isEmpty);
+    });
+
+    test('etapa 1: ⏸ vale até o passo que espera o aluno; voz e ◀ como na '
+        'demonstração', () async {
+      final r = await _Rig.open();
+      r.cubit.demoToggle();
+      expect(r.s.demo!.playing, isFalse);
+      expect(r.pending, isEmpty);
+      await r.next();
+      expect(r.s.demo!.playing, isFalse);
+      expect(r.pending, isEmpty);
+      r.cubit.demoToggle();
+      r.cubit.demoVoice(speaking: true);
+      expect(r.s.demo!.speaking, isTrue);
+      r.cubit.demoVoice(speaking: false);
+      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
+      // ◀: quem volta quer reler, o passo para.
+      r.cubit.back();
+      expect(r.s.demo!.playing, isFalse);
       expect(r.pending, isEmpty);
     });
 
@@ -912,8 +966,9 @@ void main() {
       expect(r.pending.single.duration, LessonScriptCubit.speechCap('d1a'));
     });
 
-    test('voz fora da demonstração não faz nada', () async {
+    test('voz fora do passo automático não faz nada', () async {
       final r = await _Rig.open();
+      await _toQuestion(r);
       r.cubit.demoVoice(speaking: true);
       expect(r.s.demo, isNull);
     });
@@ -956,8 +1011,9 @@ void main() {
       expect(r.pending.single.duration, LessonScriptCubit.voicePause);
     });
 
-    test('segundo plano fora da demonstração não muda o estado', () async {
+    test('segundo plano fora do passo automático não muda o estado', () async {
       final r = await _Rig.open();
+      await _toQuestion(r);
       final before = r.s;
       r.cubit.pauseForBackground();
       r.cubit.resumeFromBackground();
@@ -985,7 +1041,8 @@ void main() {
       final reopened = await _Rig.open(stage: stage);
       expect(reopened.s.stageIndex, 0);
       expect(reopened.s.phase, ScriptPhase.entrada);
-      expect(reopened.s.demo, isNull);
+      // A entrada da etapa 1 anda sozinha, só com ⏸ e ⏭.
+      expect(reopened.s.demo!.full, isFalse);
     });
 
     test('⏸ guarda o tempo decorrido; ▶ retoma com o que falta', () async {
@@ -1052,7 +1109,7 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       expect(r.s.stageIndex, 0);
       expect(r.s.phase, ScriptPhase.entrada);
-      expect(r.s.demo, isNull);
+      expect(r.s.demo!.full, isFalse);
     });
 
     test('fechar cancela o timer', () async {

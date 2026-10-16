@@ -128,8 +128,9 @@ class ScriptMoveEntry {
   final String? result;
 }
 
-/// A demonstração automática da etapa 2: a fala passa sozinha quando o anel
-/// em volta do ⏭ enche (canvas E12).
+/// O passo automático: a fala passa sozinha quando o anel em volta do ⏭
+/// enche (canvas E12). Na demonstração (etapa 2) e nas falas da teoria
+/// (etapa 1) que só pedem "Continuar" ([full] diz qual).
 class ScriptDemo {
   const ScriptDemo({
     required this.playing,
@@ -139,6 +140,7 @@ class ScriptDemo {
     required this.tick,
     required this.canStepBack,
     this.speaking = false,
+    this.full = true,
   });
 
   /// Andando (⏸ na tela) ou pausada (▶).
@@ -162,6 +164,11 @@ class ScriptDemo {
 
   /// A voz do Viktor está dizendo a fala: o anel espera parado.
   final bool speaking;
+
+  /// Os controles inteiros da demonstração (etapa 2: ↻ ⏮ ⏸ ⏭). Falso na
+  /// teoria (etapa 1): só ⏸ e o ⏭ com o anel, porque o ◀ já volta o passo e
+  /// não há o que repetir (Gabriel, 16/10/2026).
+  final bool full;
 }
 
 /// A folha Curiosidades já com as falas e as referências resolvidas.
@@ -250,7 +257,8 @@ abstract class LessonScriptState with _$LessonScriptState {
     /// A folha Curiosidades do exemplo; nula se não tem (esconde o livro).
     ScriptCuriosities? curiosities,
 
-    /// A demonstração automática (etapa 2); nula fora dela.
+    /// O passo automático (etapa 2 e as falas de "Continuar" da etapa 1);
+    /// nulo fora dele.
     ScriptDemo? demo,
 
     /// Preenchido quando a parte foi concluída (`finishPart`).

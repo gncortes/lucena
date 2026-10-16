@@ -197,7 +197,6 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     LessonScriptCubit cubit,
     LessonScriptState state,
   ) {
-    final metrics = ScriptSpeechMetrics.of(context);
     final settings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
@@ -230,7 +229,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           );
     final voice = TeacherSpeech.speechOf(context);
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
-    Widget speechOf() {
+    Widget speechOf(ScriptSpeechMetrics metrics) {
       Widget speech = ScriptSpeech(
         texts: state.speech,
         metrics: metrics,
@@ -379,7 +378,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final colors = Theme.of(context).colorScheme;
     final demo = state.demo;
     // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
-    // botões; no fim, só ↻ e o botão principal (canvas, E12).
+    // botões; no fim, só ↻ e o botão principal (canvas, E12). Teoria (etapa
+    // 1): nas falas de "Continuar", ⏸/▶ e o ⏭ com o anel.
     final repeat = ScriptDemoButton(
       buttonKey: LessonScriptKeys.demoRepeat,
       icon: Icons.replay_rounded,
@@ -391,6 +391,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         : ScriptDemoControls(
             playing: demo.playing,
             speaking: demo.speaking,
+            full: demo.full,
             progress: demo.progress,
             remaining: demo.remaining,
             tick: demo.tick,

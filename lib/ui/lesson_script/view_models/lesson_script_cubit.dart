@@ -476,7 +476,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
               ),
           if (game) ..._gameEntries(),
         ],
-        demo: demo ? _demoState(s) : _demoStop(),
+        demo: _autoPlays(s) ? _demoState(s) : _demoStop(),
         dests: s.movable == null
             ? null
             : ScriptMoves.dests(s.fen, pieces: _movablePieces(s.phase)),
@@ -532,7 +532,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     ];
   }
 
-  // ---- Demonstração automática (etapa 2) ---------------------------------
+  // ---- Passo automático (etapas 1 e 2) -----------------------------------
 
   /// Etapa de demonstrações, num exemplo sem pergunta (com pergunta, segue a
   /// regra da etapa 1).
@@ -540,6 +540,29 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _stageData.id == 'demos' &&
       _example.question == null &&
       !_example.isPractice;
+
+  /// As fases da etapa 1 que só pedem "Continuar".
+  static const _theoryPhases = {
+    ScriptPhase.entrada,
+    ScriptPhase.linha,
+    ScriptPhase.fimExemplo,
+  };
+
+  /// Na etapa 1 (teoria), as falas que só pedem "Continuar" também passam
+  /// sozinhas, no ritmo da voz do Viktor, com o anel e o ⏸ (Gabriel,
+  /// 16/10/2026: "antes do aluno ficar clicando em continuar toda hora").
+  /// A pergunta, a refutação de um erro, o jogo livre e o fim da etapa
+  /// esperam o aluno.
+  bool _inTheory(LessonScriptState s) =>
+      _stageData.id == 'ideia' &&
+      !_example.isPractice &&
+      !_inGame &&
+      _theoryPhases.contains(s.phase) &&
+      s.primary == ScriptAction.continuar &&
+      s.secondary == null;
+
+  /// O passo em tela anda sozinho: a demonstração ou a teoria.
+  bool _autoPlays(LessonScriptState s) => _inDemo || _inTheory(s);
 
   /// Fora da demonstração: para o relógio; a próxima começa andando.
   Null _demoStop() {
@@ -590,6 +613,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       tick: _demoTick,
       canStepBack: _stepBackIndex(s.fen) >= 0,
       speaking: _demoSpeaking,
+      full: _inDemo,
     );
   }
 
@@ -606,7 +630,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _demoRunStart = null;
       _demoTimer = _timer(speechCap(state.speech.join(' ')), () {
         _demoTimer = null;
-        if (isClosed || !_inDemo || !_demoSpeaking) return;
+        if (isClosed || state.demo == null || !_demoSpeaking) return;
         demoVoice(speaking: false);
       });
       return;
@@ -615,7 +639,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _demoRunStart = _now();
     _demoTimer = _timer(left.isNegative ? Duration.zero : left, () {
       _demoTimer = null;
-      if (isClosed || !_inDemo) return;
+      if (isClosed || state.demo == null) return;
       final action = state.primary;
       if (action != null) unawaited(onAction(action));
     });
@@ -625,7 +649,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// em tela (a tela conta). Falando, o relógio para; quando ela acaba, o
   /// passo só espera [voicePause]. Sem voz, vale o [readTime].
   void demoVoice({required bool speaking}) {
-    if (!_inDemo || state.demo?.ended != false) return;
+    if (state.demo?.ended != false) return;
     if (speaking == _demoSpeaking) return;
     _demoHold();
     _demoSpeaking = speaking;
@@ -642,7 +666,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   /// ⏸/▶: pausa onde está ou retoma de onde parou.
   void demoToggle() {
-    if (!_inDemo || state.demo?.ended != false) return;
+    if (state.demo?.ended != false) return;
     if (_demoPlaying) {
       _demoPause();
     } else {
@@ -669,7 +693,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   void resumeFromBackground() {
     if (!_background) return;
     _background = false;
-    if (isClosed || !_inDemo || state.demo?.ended != false) return;
+    if (isClosed || state.demo?.ended != false) return;
     if (_demoPlaying) _demoRun();
     _demoEmit();
   }
@@ -1267,7 +1291,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   void back() {
     final demo = _inDemo;
-    if (demo) _demoPause();
+    // Quem volta quer reler: o passo automático para onde está.
+    if (state.demo != null) _demoPause();
     if (_history.isEmpty) {
       // Etapa 2 aberta direto: o ◀ volta ao começo da etapa 1.
       if (demo && _stage > 0) unawaited(_enterStage(_stage - 1, keep: true));
@@ -1321,7 +1346,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   /// Toque num lance já visto: mostra o passo dele (e a fala).
   Future<void> goToMove(String id) async {
-    if (_inDemo) _demoPause();
+    if (state.demo != null) _demoPause();
     if (_game.containsKey(id)) return _goToGameMove(id);
     final ref = _seen[id];
     if (ref == null || _example.isPractice) return;

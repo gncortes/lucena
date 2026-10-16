@@ -17,7 +17,9 @@ abstract final class ScriptDemoColors {
 /// Os controles da demonstração (etapa 2), à direita do ← redondo: ↻
 /// repetir, ⏮ lance anterior, ⏸/▶ e o ⏭ principal com o anel do tempo de
 /// leitura (Gabriel, 14/10/2026; canvas `T70-etapa1-estados`, E12). O ⏭ faz
-/// o mesmo que o botão principal da etapa; o anel cheio também avança.
+/// o mesmo que o botão principal da etapa; o anel cheio também avança. Na
+/// teoria (etapa 1, [full] falso), só ⏸/▶ e o ⏭ com o anel (Gabriel,
+/// 16/10/2026).
 class ScriptDemoControls extends StatelessWidget {
   const ScriptDemoControls({
     required this.playing,
@@ -31,10 +33,14 @@ class ScriptDemoControls extends StatelessWidget {
     required this.onToggle,
     required this.onNext,
     this.speaking = false,
+    this.full = true,
     super.key,
   });
 
   final bool playing;
+
+  /// Com ↻ e ⏮ (a demonstração); falso, só ⏸/▶ e o ⏭ (a teoria).
+  final bool full;
 
   /// A voz do Viktor está falando: o anel espera parado (sem ficar cinza).
   final bool speaking;
@@ -65,20 +71,22 @@ class ScriptDemoControls extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ScriptDemoButton(
-          buttonKey: LessonScriptKeys.demoRepeat,
-          icon: Icons.replay_rounded,
-          tooltip: l10n.lessonDemoReplay,
-          onPressed: onRepeat,
-        ),
-        const SizedBox(width: gap),
-        ScriptDemoButton(
-          buttonKey: LessonScriptKeys.demoStepBack,
-          icon: Icons.skip_previous_rounded,
-          tooltip: l10n.lessonDemoBack,
-          onPressed: canStepBack ? onStepBack : null,
-        ),
-        const SizedBox(width: gap),
+        if (full) ...[
+          ScriptDemoButton(
+            buttonKey: LessonScriptKeys.demoRepeat,
+            icon: Icons.replay_rounded,
+            tooltip: l10n.lessonDemoReplay,
+            onPressed: onRepeat,
+          ),
+          const SizedBox(width: gap),
+          ScriptDemoButton(
+            buttonKey: LessonScriptKeys.demoStepBack,
+            icon: Icons.skip_previous_rounded,
+            tooltip: l10n.lessonDemoBack,
+            onPressed: canStepBack ? onStepBack : null,
+          ),
+          const SizedBox(width: gap),
+        ],
         ScriptDemoButton(
           buttonKey: LessonScriptKeys.demoToggle,
           icon: playing ? Icons.pause_rounded : Icons.play_arrow_rounded,

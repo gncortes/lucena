@@ -280,7 +280,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         : const <String>{};
     final said = _speech(context, state, hide: hide && done);
     final texts = [...said.paragraphs, ?said.tip];
-    final metrics = ScriptSpeechMetrics.of(context);
     final viktor = state.viktor;
     final voice = TeacherSpeech.speechOf(context);
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
@@ -313,7 +312,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       );
     }
 
-    Widget speechOf() {
+    Widget speechOf(ScriptSpeechMetrics metrics) {
       Widget speech = ScriptSpeech(
         texts: [said.text],
         footnote: said.tip,
@@ -507,7 +506,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (widget.previewFen == null) return const SizedBox.shrink();
     return ScriptPage(
       pageKey: ExerciseKeys.page,
-      speechBuilder: () => const SizedBox.shrink(),
+      speechBuilder: (_) => const SizedBox.shrink(),
       strip: const SizedBox(height: ScriptPage.stripHeight),
       boardBuilder: (size) => KeyedSubtree(
         key: _boardAreaKey,
