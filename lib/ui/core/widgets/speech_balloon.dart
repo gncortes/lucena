@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../l10n/l10n.dart';
 import '../theme/app_shape.dart';
@@ -477,9 +478,26 @@ class SpeechText extends StatefulWidget {
   }) => text
       .replaceAllMapped(
         markPattern,
-        (m) => m.group(1) == 'verResposta' ? showAnswer : mainLine,
+        (m) => inline(
+          m.group(1) == 'verResposta' ? showAnswer : mainLine,
+          text.substring(0, m.start),
+        ),
       )
       .replaceAllMapped(squarePattern, (m) => m.group(1)!);
+
+  /// O rótulo do botão citado no meio da frase ("clique em ver resposta")
+  /// começa em minúscula; no começo da fala ou de uma frase, fica como no
+  /// botão (Gabriel, 16/10/2026).
+  static String inline(String label, String before) {
+    final prev = before.trimRight();
+    if (prev.isEmpty || RegExp(r'[.!?…:]$').hasMatch(prev)) return label;
+    return label.substring(0, 1).toLowerCase() + label.substring(1);
+  }
+
+  /// A folga em volta da casa citada que ainda conta como toque nela: as
+  /// duas letras sozinhas são um alvo pequeno demais para o dedo, e o toque
+  /// ao lado abria a fala inteira (Gabriel, 16/10/2026).
+  static const squareSlop = EdgeInsets.symmetric(horizontal: 14, vertical: 6);
 
   /// [plain] com os rótulos do idioma da tela.
   static String plainOf(BuildContext context, String text) =>
@@ -565,7 +583,10 @@ class _SpeechTextState extends State<SpeechText> {
       final onTap = answer ? widget.onShowAnswer : widget.onMainLine;
       spans.add(
         TextSpan(
-          text: answer ? l10n.lessonShowAnswer : l10n.lessonMainLine,
+          text: SpeechText.inline(
+            answer ? l10n.lessonShowAnswer : l10n.lessonMainLine,
+            text.substring(0, m.start),
+          ),
           style: link,
           recognizer: onTap == null
               ? null
@@ -580,7 +601,7 @@ class _SpeechTextState extends State<SpeechText> {
     return spans;
   }
 
-  Text _rich(BuildContext context, String text, int? maxLines) {
+  Widget _rich(BuildContext context, String text, int? maxLines) {
     final overflow = maxLines == null ? null : TextOverflow.ellipsis;
     if (!_hasMarkup(text)) {
       return Text(
@@ -590,10 +611,17 @@ class _SpeechTextState extends State<SpeechText> {
         overflow: overflow,
       );
     }
-    return Text.rich(
+    final rich = Text.rich(
       TextSpan(style: widget.style, children: _spans(context, text)),
       maxLines: maxLines,
       overflow: overflow,
+    );
+    final onSquare = widget.onSquareTap;
+    if (onSquare == null) return rich;
+    return _SquareSlop(
+      squares: {for (final e in _squares.entries) e.value: e.key},
+      onSquare: onSquare,
+      child: rich,
     );
   }
 
@@ -659,5 +687,94 @@ class _SpeechTextState extends State<SpeechText> {
         );
       },
     );
+  }
+}
+
+/// O toque perto de uma casa citada (dentro de [SpeechText.squareSlop]) vale
+/// como toque nela e ganha do clique do balão, que abriria a fala inteira.
+/// Longe de toda casa, o toque passa adiante.
+class _SquareSlop extends StatefulWidget {
+  const _SquareSlop({
+    required this.squares,
+    required this.onSquare,
+    required this.child,
+  });
+
+  /// O reconhecedor de cada casa na fala, e a casa dele.
+  final Map<GestureRecognizer, String> squares;
+  final ValueChanged<String> onSquare;
+  final Widget child;
+
+  @override
+  State<_SquareSlop> createState() => _SquareSlopState();
+}
+
+class _SquareSlopState extends State<_SquareSlop> {
+  final _text = GlobalKey();
+
+  /// A casa mais perto de [global], se alguma está dentro da folga.
+  String? _near(Offset global) {
+    final paragraph = _text.currentContext?.findRenderObject();
+    if (paragraph is! RenderParagraph || !paragraph.hasSize) return null;
+    final local = paragraph.globalToLocal(global);
+    final slop = SpeechText.squareSlop;
+    String? best;
+    var bestDistance = double.infinity;
+    var at = 0;
+    paragraph.text.visitChildren((span) {
+      if (span is! TextSpan) return true;
+      final length = span.text?.length ?? 0;
+      final square = widget.squares[span.recognizer];
+      if (square != null && length > 0) {
+        final boxes = paragraph.getBoxesForSelection(
+          TextSelection(baseOffset: at, extentOffset: at + length),
+        );
+        for (final box in boxes) {
+          final rect = box.toRect();
+          if (!slop.inflateRect(rect).contains(local)) continue;
+          final distance = (rect.center - local).distance;
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            best = square;
+          }
+        }
+      }
+      at += length;
+      return true;
+    });
+    return best;
+  }
+
+  @override
+  Widget build(BuildContext context) => RawGestureDetector(
+    behavior: HitTestBehavior.translucent,
+    gestures: {
+      _NearSquareTap: GestureRecognizerFactoryWithHandlers<_NearSquareTap>(
+        () => _NearSquareTap(_near),
+        (tap) => tap
+          ..near = _near
+          ..onTap = () {
+            final square = tap.square;
+            if (square != null) widget.onSquare(square);
+          },
+      ),
+    },
+    child: KeyedSubtree(key: _text, child: widget.child),
+  );
+}
+
+/// Só entra na disputa do toque se ele começa perto de uma casa.
+class _NearSquareTap extends TapGestureRecognizer {
+  _NearSquareTap(this.near);
+
+  String? Function(Offset global) near;
+
+  /// A casa do toque em andamento.
+  String? square;
+
+  @override
+  bool isPointerAllowed(PointerDownEvent event) {
+    square = near(event.position);
+    return square != null && super.isPointerAllowed(event);
   }
 }

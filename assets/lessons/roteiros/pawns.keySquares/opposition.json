@@ -14,10 +14,6 @@
      "entrada": [
       {
        "fen": "8/2k5/8/8/2PK4/8/8/8 w - - 0 1",
-       "t": "rot.opposition.ideia.ex1.e0"
-      },
-      {
-       "fen": "8/2k5/8/8/2PK4/8/8/8 w - - 0 1",
        "marcas": [
         "b6",
         "c6",
@@ -27,20 +23,12 @@
       },
       {
        "fen": "8/2k5/8/8/2PK4/8/8/8 w - - 0 1",
-       "t": "rot.opposition.ideia.ex1.e2"
-      },
-      {
-       "fen": "8/2k5/8/8/2PK4/8/8/8 w - - 0 1",
        "marcas": [
         "a5",
         "b5",
         "c5"
        ],
        "t": "rot.opposition.ideia.ex1.e3"
-      },
-      {
-       "fen": "8/2k5/8/8/2PK4/8/8/8 w - - 0 1",
-       "t": "rot.opposition.ideia.ex1.e4"
       }
      ],
      "pergunta": {
@@ -260,23 +248,6 @@
      "linha": [
       {
        "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 1 1",
-       "marcas": [
-        "c5",
-        "c7"
-       ],
-       "t": "rot.opposition.ideia.ex1.l1"
-      },
-      {
-       "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 1 1",
-       "marcas": [
-        "b6",
-        "c6",
-        "d6"
-       ],
-       "t": "rot.opposition.ideia.ex1.l2"
-      },
-      {
-       "fen": "8/2k5/8/2K5/2P5/8/8/8 b - - 1 1",
        "t": "rot.opposition.ideia.ex1.l3"
       },
       {
@@ -383,10 +354,6 @@
      "objetivo": "empatar",
      "fim": "etapa",
      "entrada": [
-      {
-       "fen": "8/4k3/8/8/4K3/4P3/8/8 b - - 0 1",
-       "t": "rot.opposition.ideia.ex2.e1"
-      },
       {
        "fen": "8/4k3/8/8/4K3/4P3/8/8 b - - 0 1",
        "marcas": [
@@ -628,10 +595,6 @@
        "t": "rot.opposition.ideia.ex2.l3"
       },
       {
-       "fen": "8/8/3k4/8/3K4/4P3/8/8 w - - 3 3",
-       "t": "rot.opposition.ideia.ex2.l3b"
-      },
-      {
        "fen": "8/8/3k4/8/3KP3/8/8/8 b - - 0 3",
        "lance": "e3e4",
        "marcas": [
@@ -670,10 +633,6 @@
         "d7"
        ],
        "t": "rot.opposition.ideia.ex2.l8"
-      },
-      {
-       "fen": "8/3k4/8/3KP3/8/8/8/8 w - - 3 6",
-       "t": "rot.opposition.ideia.ex2.l8b"
       },
       {
        "fen": "8/4k3/4P3/3K4/8/8/8/8 w - - 1 7",
@@ -726,28 +685,14 @@
         "d7",
         "d8",
         "f7",
-        "f8"
+        "f8",
+        "e7"
        ],
        "t": "rot.opposition.ideia.ex2.l15"
       },
       {
        "fen": "4k3/4P3/4K3/8/8/8/8/8 b - - 2 10",
-       "marcas": [
-        "e7"
-       ],
-       "t": "rot.opposition.ideia.ex2.l16"
-      },
-      {
-       "fen": "4k3/4P3/4K3/8/8/8/8/8 b - - 2 10",
        "t": "rot.opposition.ideia.ex2.l17"
-      },
-      {
-       "fen": "4k3/4P3/4K3/8/8/8/8/8 b - - 2 10",
-       "t": "rot.opposition.ideia.ex2.l18"
-      },
-      {
-       "fen": "4k3/4P3/4K3/8/8/8/8/8 b - - 2 10",
-       "t": "rot.opposition.ideia.ex2.l18b"
       }
      ]
     }
@@ -847,19 +792,11 @@
       {
        "fen": "8/8/8/2k5/8/2K5/2P5/8 b - - 0 1",
        "marcas": [
-        "c3",
-        "c5"
-       ],
-       "t": "rot.opposition.demos.vezPretas.1"
-      },
-      {
-       "fen": "8/8/8/2k5/8/2K5/2P5/8 b - - 0 1",
-       "marcas": [
         "b4",
         "c4",
         "d4"
        ],
-       "t": "rot.opposition.demos.vezPretas.2"
+       "t": "rot.opposition.demos.vezPretas.1"
       }
      ],
      "linha": [
@@ -1113,14 +1050,6 @@
         "d8"
        ],
        "t": "rot.opposition.demos.vezBrancas.12"
-      },
-      {
-       "fen": "2k5/2P5/2K5/8/8/8/8/8 b - - 2 10",
-       "t": "rot.opposition.demos.vezBrancas.13"
-      },
-      {
-       "fen": "2k5/2P5/2K5/8/8/8/8/8 b - - 2 10",
-       "t": "rot.opposition.demos.vezBrancas.14"
       }
      ],
      "ref": "wikiKpk"
@@ -1135,19 +1064,11 @@
       {
        "fen": "5k2/8/8/8/2P1K3/8/8/8 b - - 0 1",
        "marcas": [
-        "e4",
-        "f8"
-       ],
-       "t": "rot.opposition.demos.longe.1"
-      },
-      {
-       "fen": "5k2/8/8/8/2P1K3/8/8/8 b - - 0 1",
-       "marcas": [
         "d7",
         "e7",
         "f7"
        ],
-       "t": "rot.opposition.demos.longe.1b"
+       "t": "rot.opposition.demos.longe.1"
       }
      ],
      "linha": [
@@ -1224,10 +1145,6 @@
         "b8"
        ],
        "t": "rot.opposition.demos.espera.e1"
-      },
-      {
-       "fen": "1k6/8/8/8/2PK4/8/8/8 b - - 0 1",
-       "t": "rot.opposition.demos.espera.e2"
       }
      ],
      "pergunta": {

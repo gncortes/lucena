@@ -30,6 +30,7 @@ abstract final class LessonScriptKeys {
   static const demoStepBack = Key('lessonScript.demoStepBack');
   static const demoToggle = Key('lessonScript.demoToggle');
   static const demoRing = Key('lessonScript.demoRing');
+  static const theoryFill = Key('lessonScript.theoryFill');
   static const back = Key('lessonScript.back');
 
   /// Continuar, Próxima etapa, Voltar ao início.

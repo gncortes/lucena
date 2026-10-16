@@ -263,8 +263,12 @@ void main() {
           .first,
     );
     expect(text.maxLines, isNull);
-    final box = tester.getSize(find.byKey(LessonScriptKeys.speech));
-    expect(box.height, lessThan(120));
+    // Fala enorme: o balão usa só a sobra de cima da página (linhas
+    // inteiras), rola dentro dela e não toma o tabuleiro.
+    final box = tester.getRect(find.byKey(LessonScriptKeys.speech));
+    final page = tester.getRect(find.byKey(ExerciseKeys.page));
+    expect(box.top, greaterThanOrEqualTo(page.top));
+    expect(box.height, lessThan(200));
     // Na folga do balão: uma casa citada no meio da fala é alvo de toque.
     await tester.tapAt(
       tester.getTopLeft(find.byKey(LessonScriptKeys.speech)) +

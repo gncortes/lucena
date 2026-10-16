@@ -1,40 +1,22 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 
-import '../theme/app_motion.dart';
-
 /// A casa que o aluno tocou na fala do professor: o tabuleiro da tela a
-/// realça por [duration] e o realce some sozinho ou quando o aluno toca em
-/// outra casa. Tocar de novo na mesma casa repete o realce ([show] sempre
-/// avisa).
+/// realça até o aluno tocar nela de novo (desmarca), tocar em outra casa
+/// (troca) ou a tela ir para outro passo ([clear]) (Gabriel, 16/10/2026).
 class SquareFlash extends ChangeNotifier {
-  static const duration = AppMotion.squareFlash;
-
   String? _square;
-  Timer? _timer;
 
-  /// A casa realçada agora (`f5`); nula quando o realce já sumiu.
+  /// A casa realçada agora (`f5`); nula quando nenhuma está marcada.
   String? get square => _square;
 
   void show(String square) {
-    _timer?.cancel();
-    _square = square;
-    _timer = Timer(duration, clear);
+    _square = _square == square ? null : square;
     notifyListeners();
   }
 
   void clear() {
-    _timer?.cancel();
-    _timer = null;
     if (_square == null) return;
     _square = null;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
   }
 }

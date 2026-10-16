@@ -104,7 +104,12 @@ class LucenaSheetFrame extends StatelessWidget {
                     ),
                   ),
                 ),
-                Flexible(child: child),
+                // O `useSafeArea` da folha só guarda o topo e os lados: com a
+                // tela de ponta a ponta, a barra de navegação cobria o fim
+                // da folha ("Som e voz" cortada, Gabriel 16/10/2026). A
+                // superfície desce por trás da barra e o conteúdo para
+                // acima dela; o SafeArea de dentro de cada folha vira no-op.
+                Flexible(child: SafeArea(top: false, child: child)),
               ],
             ),
           ),
