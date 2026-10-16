@@ -575,6 +575,13 @@
               {
                 "certos": [
                   "d4e4"
+                ],
+                "resposta": "e6f6"
+              },
+              {
+                "certos": [
+                  "e4d5",
+                  "e4d4"
                 ]
               }
             ],
@@ -596,6 +603,11 @@
               "8/8/4k3/p5p1/P2K2P1/8/8/8 w - - 6 4": {
                 "d4c5": "rot.capablanca.pratica.colunas.v3.err.d4c5",
                 "d4c4": "rot.capablanca.pratica.colunas.v3.err.d4c4"
+              },
+              "8/8/5k2/p5p1/P3K1P1/8/8/8 w - - 8 5": {
+                "e4d3": "rot.capablanca.pratica.colunas.v4.err.e4d3",
+                "e4f3": "rot.capablanca.pratica.colunas.v4.err.e4f3",
+                "e4e3": "rot.capablanca.pratica.colunas.v4.err.e4e3"
               }
             },
             "fim": "rot.capablanca.pratica.colunas.fim"
@@ -603,7 +615,7 @@
         },
         {
           "id": "pretas",
-          "fen": "5k2/8/8/1p5p/1P5P/8/8/5K2 b - - 0 1",
+          "fen": "8/3k4/8/8/p6p/P6P/3K4/8 b - - 0 1",
           "vira": true,
           "objetivo": "ganhar",
           "fim": "etapa",
@@ -615,42 +627,47 @@
             "linha": [
               {
                 "certos": [
-                  "f8f7"
+                  "d7d6"
                 ],
-                "resposta": "f1f2"
+                "resposta": "d2d3"
               },
               {
                 "certos": [
-                  "f7f6"
+                  "d6d5"
                 ],
-                "resposta": "f2f3"
+                "resposta": "d3c3"
               },
               {
                 "certos": [
-                  "f6f5"
-                ],
-                "resposta": "f3e3"
-              },
-              {
-                "certos": [
-                  "f5g4",
-                  "f5e5"
+                  "d5e4",
+                  "d5e5",
+                  "d5c5"
                 ]
               }
             ],
             "erros": {
-              "f8e7": "rot.capablanca.pratica.pretas.err.f8e7",
-              "f8g7": "rot.capablanca.pratica.pretas.err.f8g7",
-              "f8e8": "rot.capablanca.pratica.pretas.err.f8e8",
-              "f8g8": "rot.capablanca.pratica.pretas.err.f8g8"
+              "d7c6": "rot.capablanca.pratica.pretas.err.d7c6",
+              "d7e6": "rot.capablanca.pratica.pretas.err.d7e6",
+              "d7c7": "rot.capablanca.pratica.pretas.err.d7c7",
+              "d7e7": "rot.capablanca.pratica.pretas.err.d7e7",
+              "d7c8": "rot.capablanca.pratica.pretas.err.d7c8",
+              "d7d8": "rot.capablanca.pratica.pretas.err.d7d8",
+              "d7e8": "rot.capablanca.pratica.pretas.err.d7e8"
             },
             "errosPos": {
-              "8/5k2/8/1p5p/1P5P/8/5K2/8 b - - 2 2": {
-                "f7e6": "rot.capablanca.pratica.pretas.v1.err.f7e6",
-                "f7g6": "rot.capablanca.pratica.pretas.v1.err.f7g6"
+              "8/8/3k4/8/p6p/P2K3P/8/8 b - - 2 2": {
+                "d6c5": "rot.capablanca.pratica.pretas.v1.err.d6c5",
+                "d6e5": "rot.capablanca.pratica.pretas.v1.err.d6e5",
+                "d6c6": "rot.capablanca.pratica.pretas.v1.err.d6c6",
+                "d6e6": "rot.capablanca.pratica.pretas.v1.err.d6e6",
+                "d6c7": "rot.capablanca.pratica.pretas.v1.err.d6c7",
+                "d6d7": "rot.capablanca.pratica.pretas.v1.err.d6d7",
+                "d6e7": "rot.capablanca.pratica.pretas.v1.err.d6e7"
               },
-              "8/8/5k2/1p5p/1P5P/5K2/8/8 b - - 4 3": {
-                "f6e5": "rot.capablanca.pratica.pretas.v2.err.f6e5"
+              "8/8/8/3k4/p6p/P1K4P/8/8 b - - 4 3": {
+                "d5c6": "rot.capablanca.pratica.pretas.v2.err.d5c6",
+                "d5d6": "rot.capablanca.pratica.pretas.v2.err.d5d6",
+                "d5e6": "rot.capablanca.pratica.pretas.v2.err.d5e6"
               }
             },
             "fim": "rot.capablanca.pratica.pretas.fim"
