@@ -208,11 +208,11 @@ void main() {
         } else {
           expect(board.top, greaterThan(speech.bottom));
         }
-        // A fala de "Continuar" da etapa 1 passa sozinha: ⏸ e o ⏭ com o
-        // anel, que diz "Continuar" (Gabriel, 16/10/2026).
+        // A fala de "Continuar" da etapa 1 passa sozinha: ⏸ e o Continuar
+        // que enche (Gabriel, 16/10/2026).
         expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
-        expect(find.byKey(LessonScriptKeys.demoRing), findsOneWidget);
-        expect(find.byTooltip('Continuar'), findsOneWidget);
+        expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
+        expect(find.text('Continuar'), findsOneWidget);
         expect(find.text('Ver resposta'), findsNothing);
         // Sem passo anterior, o botão voltar não aparece.
         expect(find.byKey(LessonScriptKeys.back), findsNothing);
@@ -687,7 +687,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('teoria (etapa 1): ← quando há volta, ⏸ e o ⏭ com anel, sem ↻ '
+  testWidgets('teoria (etapa 1): ← quando há volta, ⏸ e o Continuar que enche, sem ↻ '
       'nem ⏮; a fala passa sozinha e a pergunta espera o aluno', (
     tester,
   ) async {
@@ -695,7 +695,15 @@ void main() {
     expect(s.cubit.state.stageId, 'ideia');
     expect(s.cubit.state.demo?.full, isFalse);
     expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
-    expect(find.byKey(LessonScriptKeys.demoRing), findsOneWidget);
+    expect(find.byKey(LessonScriptKeys.demoRing), findsNothing);
+    expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(LessonScriptKeys.primary),
+        matching: find.text('Continuar'),
+      ),
+      findsOneWidget,
+    );
     expect(find.byKey(LessonScriptKeys.demoRepeat), findsNothing);
     expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
     // ⏸ pausa; ▶ retoma.
@@ -712,7 +720,7 @@ void main() {
     }
     expect(s.cubit.state.phase, ScriptPhase.pergunta);
     expect(s.cubit.state.demo, isNull);
-    expect(find.byKey(LessonScriptKeys.demoRing), findsNothing);
+    expect(find.byKey(LessonScriptKeys.theoryFill), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

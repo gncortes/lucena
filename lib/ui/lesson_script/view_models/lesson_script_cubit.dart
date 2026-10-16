@@ -211,6 +211,13 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// Com a voz, o passo espera a fala acabar e só faz esta pausa depois.
   static const voicePause = Duration(milliseconds: 600);
 
+  /// Na teoria (etapa 1) o aluno lê e olha o tabuleiro com mais calma: uma
+  /// vez e meia o [readTime] (Gabriel, 16/10/2026).
+  static Duration theoryReadTime(String text) => readTime(text) * 1.5;
+
+  /// A pausa depois da voz na teoria.
+  static const theoryVoicePause = Duration(milliseconds: 1500);
+
   /// O teto da espera pela voz: se o TTS travar falando (sem avisar o fim),
   /// depois de quatro vezes o tempo de leitura o passo segue como se a fala
   /// tivesse acabado.
@@ -598,7 +605,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _demoElapsed = Duration.zero;
       _demoRunStart = null;
       _demoSpeaking = false;
-      _demoTotal = readTime(s.speech.join(' '));
+      _demoTotal = _inDemo
+          ? readTime(s.speech.join(' '))
+          : theoryReadTime(s.speech.join(' '));
       if (_demoPlaying && !ended) _demoRun();
     }
     final spent = _demoSpent;
@@ -628,11 +637,14 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     }
     if (_demoSpeaking) {
       _demoRunStart = null;
-      _demoTimer = _timer(speechCap(state.speech.join(' ')), () {
-        _demoTimer = null;
-        if (isClosed || state.demo == null || !_demoSpeaking) return;
-        demoVoice(speaking: false);
-      });
+      _demoTimer = _timer(
+        speechCap(state.speech.join(' ')) * (_inDemo ? 1 : 1.5),
+        () {
+          _demoTimer = null;
+          if (isClosed || state.demo == null || !_demoSpeaking) return;
+          demoVoice(speaking: false);
+        },
+      );
       return;
     }
     final left = _demoTotal - _demoElapsed;
@@ -655,7 +667,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _demoSpeaking = speaking;
     if (!speaking) {
       _demoElapsed = Duration.zero;
-      _demoTotal = voicePause;
+      _demoTotal = _inDemo ? voicePause : theoryVoicePause;
     }
     _demoEmit();
     if (_demoPlaying) _demoRun();

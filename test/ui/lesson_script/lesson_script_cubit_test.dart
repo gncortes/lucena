@@ -835,7 +835,7 @@ void main() {
       expect(first.full, isFalse);
       expect(first.playing, isTrue);
       expect(first.ended, isFalse);
-      expect(r.pending.single.duration, LessonScriptCubit.readTime('e1'));
+      expect(r.pending.single.duration, LessonScriptCubit.theoryReadTime('e1'));
       // A entrada passa sozinha até a pergunta, que não tem relógio.
       for (var i = 0; i < 5 && r.s.phase != ScriptPhase.pergunta; i++) {
         await r.elapse();
@@ -872,7 +872,7 @@ void main() {
       r.cubit.demoVoice(speaking: true);
       expect(r.s.demo!.speaking, isTrue);
       r.cubit.demoVoice(speaking: false);
-      expect(r.pending.single.duration, LessonScriptCubit.voicePause);
+      expect(r.pending.single.duration, LessonScriptCubit.theoryVoicePause);
       // ◀: quem volta quer reler, o passo para.
       r.cubit.back();
       expect(r.s.demo!.playing, isFalse);

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_motion.dart';
 
 /// As cores do rodapé da demonstração (canvas `T70-etapa1-estados`, `.cb`):
@@ -18,7 +20,7 @@ abstract final class ScriptDemoColors {
 /// repetir, ⏮ lance anterior, ⏸/▶ e o ⏭ principal com o anel do tempo de
 /// leitura (Gabriel, 14/10/2026; canvas `T70-etapa1-estados`, E12). O ⏭ faz
 /// o mesmo que o botão principal da etapa; o anel cheio também avança. Na
-/// teoria (etapa 1, [full] falso), só ⏸/▶ e o ⏭ com o anel (Gabriel,
+/// teoria (etapa 1, [full] falso), só ⏸/▶ e o Continuar que enche (Gabriel,
 /// 16/10/2026).
 class ScriptDemoControls extends StatelessWidget {
   const ScriptDemoControls({
@@ -39,7 +41,7 @@ class ScriptDemoControls extends StatelessWidget {
 
   final bool playing;
 
-  /// Com ↻ e ⏮ (a demonstração); falso, só ⏸/▶ e o ⏭ (a teoria).
+  /// Com ↻ e ⏮ (a demonstração); falso, só ⏸/▶ e o Continuar (a teoria).
   final bool full;
 
   /// A voz do Viktor está falando: o anel espera parado (sem ficar cinza).
@@ -94,32 +96,50 @@ class ScriptDemoControls extends StatelessWidget {
           onPressed: onToggle,
         ),
         const SizedBox(width: gap),
-        Padding(
-          // O anel passa 4 dp do botão: o rodapé guarda o espaço dele.
-          padding: const EdgeInsetsDirectional.only(end: 6),
-          child: SizedBox.square(
-            dimension: _DemoRing.diameter,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                _DemoRing(
-                  playing: playing,
-                  speaking: speaking,
-                  progress: progress,
-                  remaining: remaining,
-                  tick: tick,
-                ),
-                ScriptDemoButton(
-                  buttonKey: LessonScriptKeys.primary,
-                  icon: Icons.skip_next_rounded,
-                  tooltip: mainTooltip,
-                  onPressed: onNext,
-                  main: true,
-                ),
-              ],
+        if (full)
+          Padding(
+            // O anel passa 4 dp do botão: o rodapé guarda o espaço dele.
+            padding: const EdgeInsetsDirectional.only(end: 6),
+            child: SizedBox.square(
+              dimension: _DemoRing.diameter,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  _DemoRing(
+                    playing: playing,
+                    speaking: speaking,
+                    progress: progress,
+                    remaining: remaining,
+                    tick: tick,
+                  ),
+                  ScriptDemoButton(
+                    buttonKey: LessonScriptKeys.primary,
+                    icon: Icons.skip_next_rounded,
+                    tooltip: mainTooltip,
+                    onPressed: onNext,
+                    main: true,
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          // Mesma altura do anel: o tabuleiro não se mexe entre a teoria e a
+          // demonstração.
+          SizedBox(
+            height: _DemoRing.diameter,
+            child: Center(
+              child: _FillButton(
+                label: mainTooltip,
+                onPressed: onNext,
+                playing: playing,
+                speaking: speaking,
+                progress: progress,
+                remaining: remaining,
+                tick: tick,
+              ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -168,32 +188,31 @@ class ScriptDemoButton extends StatelessWidget {
   }
 }
 
-/// O anel do tempo em volta do ⏭: trilho claro e o arco, que enche de
-/// [progress] até o fim em [remaining] enquanto toca e recomeça a cada
-/// [tick]. Pausado, para e fica cinza; com a voz falando, só para.
-class _DemoRing extends StatefulWidget {
-  const _DemoRing({
+/// O relógio do passo: um valor de 0 a 1 que enche de [progress] até o fim
+/// em [remaining] enquanto toca e recomeça a cada [tick]. Pausado ou com a
+/// voz falando, para. Desenha o anel do ⏭ ou o Continuar que enche.
+class _DemoClock extends StatefulWidget {
+  const _DemoClock({
     required this.playing,
     required this.speaking,
     required this.progress,
     required this.remaining,
     required this.tick,
+    required this.builder,
   });
-
-  static const diameter = 64.0;
-  static const stroke = 3.0;
 
   final bool playing;
   final bool speaking;
   final double progress;
   final Duration remaining;
   final int tick;
+  final Widget Function(BuildContext context, double value) builder;
 
   @override
-  State<_DemoRing> createState() => _DemoRingState();
+  State<_DemoClock> createState() => _DemoClockState();
 }
 
-class _DemoRingState extends State<_DemoRing>
+class _DemoClockState extends State<_DemoClock>
     with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(vsync: this);
   bool _started = false;
@@ -208,7 +227,7 @@ class _DemoRingState extends State<_DemoRing>
   }
 
   @override
-  void didUpdateWidget(_DemoRing old) {
+  void didUpdateWidget(_DemoClock old) {
     super.didUpdateWidget(old);
     if (old.tick != widget.tick ||
         old.playing != widget.playing ||
@@ -244,17 +263,122 @@ class _DemoRingState extends State<_DemoRing>
   }
 
   @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _controller,
+    builder: (context, _) => widget.builder(context, _controller.value),
+  );
+}
+
+/// O anel do tempo em volta do ⏭: trilho claro e o arco. Pausado, fica
+/// cinza.
+class _DemoRing extends StatelessWidget {
+  const _DemoRing({
+    required this.playing,
+    required this.speaking,
+    required this.progress,
+    required this.remaining,
+    required this.tick,
+  });
+
+  static const diameter = 64.0;
+  static const stroke = 3.0;
+
+  final bool playing;
+  final bool speaking;
+  final double progress;
+  final Duration remaining;
+  final int tick;
+
+  @override
   Widget build(BuildContext context) => IgnorePointer(
-    child: AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) => CustomPaint(
+    child: _DemoClock(
+      playing: playing,
+      speaking: speaking,
+      progress: progress,
+      remaining: remaining,
+      tick: tick,
+      builder: (context, value) => CustomPaint(
         key: LessonScriptKeys.demoRing,
-        size: const Size.square(_DemoRing.diameter),
+        size: const Size.square(diameter),
         painter: _RingPainter(
-          progress: _controller.value,
-          arc: widget.playing ? ScriptDemoColors.arc : ScriptDemoColors.off,
+          progress: value,
+          arc: playing ? ScriptDemoColors.arc : ScriptDemoColors.off,
         ),
       ),
+    ),
+  );
+}
+
+/// O Continuar da teoria (etapa 1) que enche da esquerda para a direita no
+/// tempo do passo; cheio, a fala segue (Gabriel, 16/10/2026: variante A,
+/// canvas `PropV2TeoriaTimerBarra`). A faixa escurece o botão tocando e
+/// clareia pausado.
+class _FillButton extends StatelessWidget {
+  const _FillButton({
+    required this.label,
+    required this.onPressed,
+    required this.playing,
+    required this.speaking,
+    required this.progress,
+    required this.remaining,
+    required this.tick,
+  });
+
+  /// A faixa do tempo sobre o botão (canvas, `corBarra`).
+  static const _shade = Color(0x3D000000);
+  static const _shadePaused = Color(0x47FFFFFF);
+
+  final String label;
+  final VoidCallback onPressed;
+  final bool playing;
+  final bool speaking;
+  final double progress;
+  final Duration remaining;
+  final int tick;
+
+  @override
+  Widget build(BuildContext context) => ClipRRect(
+    borderRadius: BorderRadius.circular(kButtonHeightCompact / 2),
+    child: Stack(
+      children: [
+        FilledButton(
+          key: LessonScriptKeys.primary,
+          style: ButtonStyle(
+            minimumSize: const WidgetStatePropertyAll(
+              Size(0, kButtonHeightCompact),
+            ),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 22),
+            ),
+            textStyle: WidgetStatePropertyAll(
+              AppButtonText.footer(context)
+                  ?.copyWith(fontWeight: FontWeight.w500),
+            ),
+          ),
+          onPressed: onPressed,
+          child: Text(label),
+        ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: _DemoClock(
+              playing: playing,
+              speaking: speaking,
+              progress: progress,
+              remaining: remaining,
+              tick: tick,
+              builder: (context, value) => Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: FractionallySizedBox(
+                  key: LessonScriptKeys.theoryFill,
+                  widthFactor: value,
+                  heightFactor: 1,
+                  child: ColoredBox(color: playing ? _shade : _shadePaused),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }
