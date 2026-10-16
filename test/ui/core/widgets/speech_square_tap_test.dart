@@ -117,25 +117,24 @@ void main() {
     expect(tapped, ['f6', 'g6']);
   });
 
-  testWidgets('SquareFlash: realça, repete e some em 1,5 s', (tester) async {
+  test('SquareFlash: marca, troca, desmarca no segundo toque e limpa', () {
     final flash = SquareFlash();
     addTearDown(flash.dispose);
     var calls = 0;
     flash.addListener(() => calls++);
     flash.show('f5');
     expect(flash.square, 'f5');
-    await tester.pump(const Duration(milliseconds: 1000));
-    flash.show('f5');
-    expect(calls, 2);
-    await tester.pump(const Duration(milliseconds: 1000));
-    expect(flash.square, 'f5');
     flash.show('g5');
     expect(flash.square, 'g5');
-    await tester.pump(SquareFlash.duration);
+    flash.show('g5');
     expect(flash.square, isNull);
+    flash.show('f5');
+    flash.clear();
+    expect(flash.square, isNull);
+    expect(calls, 5);
   });
 
-  testWidgets('o tabuleiro realça a casa tocada e o realce some', (
+  testWidgets('o tabuleiro realça a casa tocada até o segundo toque', (
     tester,
   ) async {
     final flash = SquareFlash();
@@ -163,7 +162,10 @@ void main() {
     flash.show('f5');
     await tester.pump();
     expect(shapes().map((s) => (s as Circle).orig), [Square.f5]);
-    await tester.pump(SquareFlash.duration);
+    await tester.pump(const Duration(seconds: 5));
+    expect(shapes().map((s) => (s as Circle).orig), [Square.f5]);
+    flash.show('f5');
+    await tester.pump();
     expect(shapes(), isEmpty);
   });
 }

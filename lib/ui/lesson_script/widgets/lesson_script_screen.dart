@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -138,7 +139,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<LessonScriptCubit>();
-    return BlocConsumer<LessonScriptCubit, LessonScriptState>(
+    final screen = BlocConsumer<LessonScriptCubit, LessonScriptState>(
       listenWhen: (a, b) => a.outcome != b.outcome,
       listener: _onState,
       builder: (context, state) => Scaffold(
@@ -169,6 +170,12 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           child: state.ready ? _body(context, cubit, state) : const SizedBox(),
         ),
       ),
+    );
+    // Outro passo (posição ou fala nova): a casa marcada pela fala sai.
+    return BlocListener<LessonScriptCubit, LessonScriptState>(
+      listenWhen: (a, b) => a.fen != b.fen || !listEquals(a.speech, b.speech),
+      listener: (_, _) => _flash.clear(),
+      child: screen,
     );
   }
 

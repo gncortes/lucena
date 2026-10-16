@@ -161,6 +161,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     if (state.mistakes > previous.mistakes) {
       _shake.forward(from: 0);
     }
+    // Outro passo (posição ou fase nova): a casa marcada pela fala sai.
+    if (state.fen != previous.fen || state.phase != previous.phase) {
+      _flash.clear();
+    }
     if (state.fen == null) {
       return;
     }
