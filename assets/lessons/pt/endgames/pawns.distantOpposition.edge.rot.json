@@ -52,7 +52,7 @@
   "rot.edge.demos.escolha.2": "Em e6, o rei branco se afasta do peão de h5: a vitória escapa.",
   "rot.edge.demos.escolha.3": "O rei preto contra-ataca rumo ao peão de a3.",
   "rot.edge.demos.escolha.4": "O rei branco chega tarde: o rei preto já está junto ao peão de a3.",
-  "rot.edge.demos.escolha.5": "O rei preto captura o peão de a3: o branco só empata.",
+  "rot.edge.demos.escolha.5": "O rei preto captura o peão de a3, e as brancas já não ganham: a partida termina empatada.",
   "rot.edge.demos.escolha.6": "De volta ao início: a outra casa, mais perto do peão de h5.",
   "rot.edge.demos.escolha.7": "Em g6, também ímpar, e o rei branco ataca o peão de h5.",
   "rot.edge.demos.escolha.8": "O rei preto corre ao peão de h4, mas o branco captura antes o de h5.",

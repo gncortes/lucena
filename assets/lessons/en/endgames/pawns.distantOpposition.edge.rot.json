@@ -52,7 +52,7 @@
   "rot.edge.demos.escolha.2": "With the king on e6, only d6 is left: an odd number. But the white king moves away from the h5 pawn, and the win is already gone.",
   "rot.edge.demos.escolha.3": "The black king counterattacks: it runs to c4, toward the a3 pawn, and the white king follows it.",
   "rot.edge.demos.escolha.4": "The white king goes to e4 and to d3, but arrives too late: the black king is already on b3, beside the a3 pawn.",
-  "rot.edge.demos.escolha.5": "The black king captures the a3 pawn: now the white king only draws by going to c2 or c3.",
+  "rot.edge.demos.escolha.5": "The black king captures the a3 pawn, and White can no longer win: the game ends in a draw.",
   "rot.edge.demos.escolha.6": "Let us go back to the starting position and choose the other square, the one closer to the h5 pawn.",
   "rot.edge.demos.escolha.7": "With the king on g6, three squares remain: also odd. And the white king attacks the h5 pawn.",
   "rot.edge.demos.escolha.8": "The black king runs to the h4 pawn via d7 and e7, but the white king captures the h5 pawn first.",
