@@ -15,7 +15,7 @@
   "ex.e12.hint": "Pense em qual rei vai ter de ceder caminho depois do seu lance.",
   "ex.e12.solution": "1.Re4! toma a oposição direta: os reis ficam de frente, com e5 no meio, e é o rei preto que precisa ceder. Depois de 1...Rd7, 2.Rd5 leva o rei adiante do peão, e a vitória está garantida. 1.c4? e 1.Re3? só empatam: com 1.c4? Rd6 o rei preto ocupa d6, uma das casas-chave do peão de c4, e com 1.Re3? Rd5 ele avança e o rei branco não passa. No segundo lance, 2.Rd4? entrega a oposição: o rei preto vai a d6, de frente para o seu, e é o rei branco quem precisa ceder passagem. 2.c4? avança o peão antes de o rei chegar a uma casa-chave: o rei preto vai a c6, e o rei branco não passa. As duas jogadas empatam.",
   "ex.e24": "Jogue de pretas e encontre o melhor lance. Agora o peão é seu, e ele anda rumo à 1ª fileira.",
-  "ex.e24.hint": "Peão preto anda rumo à 1ª fileira: conte duas fileiras à frente dele. Primeiro o rei, depois o peão.",
+  "ex.e24.hint": "Conte duas fileiras à frente do peão. Primeiro o rei, depois o peão.",
   "ex.e24.solution": "1...Rd4! O rei preto entra em d4, uma casa-chave, e a vitória está garantida, qualquer que seja a defesa. Depois de 2.Rd7, que ataca o peão, 2...e5 o põe a salvo, ao lado do rei. 1...e5? avança o peão cedo: as casas-chave descem para d3, e3 e f3, o rei branco vai a d5 e é empate.",
   "ex.e25": "Jogue de pretas e encontre o melhor lance. O rei branco ameaça entrar em uma casa-chave do peão, e o seu rei precisa impedir.",
   "ex.e25.hint": "Escolha o lance que deixa o seu rei vizinho da casa-chave para onde o rei branco quer ir.",
