@@ -687,42 +687,43 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('teoria (etapa 1): ← quando há volta, ⏸ e o Continuar que enche, sem ↻ '
-      'nem ⏮; a fala passa sozinha e a pergunta espera o aluno', (
-    tester,
-  ) async {
-    final s = await _open(tester, _tall, autoPlay: true);
-    expect(s.cubit.state.stageId, 'ideia');
-    expect(s.cubit.state.demo?.full, isFalse);
-    expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
-    expect(find.byKey(LessonScriptKeys.demoRing), findsNothing);
-    expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byKey(LessonScriptKeys.primary),
-        matching: find.text('Continuar'),
-      ),
-      findsOneWidget,
-    );
-    expect(find.byKey(LessonScriptKeys.demoRepeat), findsNothing);
-    expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
-    // ⏸ pausa; ▶ retoma.
-    await _tap(tester, LessonScriptKeys.demoToggle);
-    expect(s.cubit.state.demo!.playing, isFalse);
-    await _tap(tester, LessonScriptKeys.demoToggle);
-    expect(s.cubit.state.demo!.playing, isTrue);
-    // Sem voz, o tempo de leitura passa a fala sozinha até a pergunta, que
-    // não tem relógio.
-    for (var i = 0; i < 12; i++) {
-      if (s.cubit.state.phase == ScriptPhase.pergunta) break;
-      await tester.pump(const Duration(seconds: 9));
-      await _settle(tester);
-    }
-    expect(s.cubit.state.phase, ScriptPhase.pergunta);
-    expect(s.cubit.state.demo, isNull);
-    expect(find.byKey(LessonScriptKeys.theoryFill), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'teoria (etapa 1): ← quando há volta, ⏸ e o Continuar que enche, sem ↻ '
+    'nem ⏮; a fala passa sozinha e a pergunta espera o aluno',
+    (tester) async {
+      final s = await _open(tester, _tall, autoPlay: true);
+      expect(s.cubit.state.stageId, 'ideia');
+      expect(s.cubit.state.demo?.full, isFalse);
+      expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
+      expect(find.byKey(LessonScriptKeys.demoRing), findsNothing);
+      expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(LessonScriptKeys.primary),
+          matching: find.text('Continuar'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(LessonScriptKeys.demoRepeat), findsNothing);
+      expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
+      // ⏸ pausa; ▶ retoma.
+      await _tap(tester, LessonScriptKeys.demoToggle);
+      expect(s.cubit.state.demo!.playing, isFalse);
+      await _tap(tester, LessonScriptKeys.demoToggle);
+      expect(s.cubit.state.demo!.playing, isTrue);
+      // Sem voz, o tempo de leitura passa a fala sozinha até a pergunta, que
+      // não tem relógio.
+      for (var i = 0; i < 12; i++) {
+        if (s.cubit.state.phase == ScriptPhase.pergunta) break;
+        await tester.pump(const Duration(seconds: 9));
+        await _settle(tester);
+      }
+      expect(s.cubit.state.phase, ScriptPhase.pergunta);
+      expect(s.cubit.state.demo, isNull);
+      expect(find.byKey(LessonScriptKeys.theoryFill), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('fim da parte: Rever a ideia volta; Continuar conclui', (
     tester,

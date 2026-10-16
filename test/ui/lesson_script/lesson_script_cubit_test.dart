@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/routing/launch_location.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/sound/game_sounds.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
 import '../../../testing/fakes/fake_kpk_repository.dart';
@@ -18,6 +19,8 @@ import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_sound_repository.dart';
 import '../../../testing/script_fixture.dart';
 
 const _lessonId = 'pawns.test';
@@ -100,6 +103,7 @@ class _Rig {
     ScriptDelay? delay,
     List<Reference> refs = const [],
     OpponentRepository? opponent,
+    GameSounds? sounds,
   }) async {
     final source = FakeLessonSource(refs: refs);
     final kpk = oracle ?? FakeKpkOracle();
@@ -125,6 +129,7 @@ class _Rig {
         return timer;
       },
       opponent: opponent,
+      sounds: sounds,
     );
     addTearDown(cubit.close);
     await cubit.start();
@@ -320,6 +325,22 @@ void main() {
       expect(r.s.primary, ScriptAction.verResposta);
       expect(r.s.secondary, isNull);
       expect(r.s.canBack, isTrue);
+    });
+
+    test('o lance do aluno toca o som da peça; voltar não toca', () async {
+      final sound = FakeSoundRepository();
+      final r = await _Rig.open(
+        sounds: GameSounds(FakeSettingsRepository(), sound),
+      );
+      await r.times(3);
+      expect(sound.played, isEmpty);
+      await r.cubit.onMove('d3e4');
+      await pumpEventQueue();
+      expect(sound.played, isNotEmpty);
+      final count = sound.played.length;
+      r.cubit.back();
+      await pumpEventQueue();
+      expect(sound.played.length, count);
     });
 
     test('lance ilegal não faz nada', () async {

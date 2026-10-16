@@ -516,6 +516,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       tables: context.read<ScriptTableRepository>(),
                       engineJudge: context.read<PositionJudge>(),
                       opponent: context.read<OpponentRepository>(),
+                      sounds: context.read<GameSounds>(),
                       source: SchoolLessonSource(
                         lessons,
                         context.read<SchoolProgressRepository>(),
@@ -662,6 +663,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           tables: context.read<ScriptTableRepository>(),
                           engineJudge: context.read<PositionJudge>(),
                           opponent: context.read<OpponentRepository>(),
+                          sounds: context.read<GameSounds>(),
                           source: EndgameLessonSource(
                             lessons,
                             context.read<EndgameProgressRepository>(),

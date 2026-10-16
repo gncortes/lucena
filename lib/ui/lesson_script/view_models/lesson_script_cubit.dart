@@ -44,6 +44,7 @@ import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/tablebase/kpk_repository.dart';
 import '../../../data/repositories/tablebase/script_table_repository.dart';
+import '../../core/sound/game_sounds.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../domain/models/kpk_outcome.dart';
@@ -199,8 +200,42 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     this._opponent,
     this._tables,
     this._engineJudge,
+    this._sounds,
   }) : _delay = delay ?? ((duration) => Future<void>.delayed(duration)),
        super(const LessonScriptState());
+
+  /// Os sons das peças (ligados ou não em Som e voz); nulo nos testes.
+  final GameSounds? _sounds;
+
+  /// Todo lance que entra no tabuleiro, de quem quer que seja (aluno,
+  /// máquina, demonstração), toca o som dele. Voltar um passo não toca: o
+  /// lance só vale quando sai da posição anterior e chega na nova.
+  @override
+  void onChange(Change<LessonScriptState> change) {
+    super.onChange(change);
+    final sounds = _sounds;
+    if (sounds == null) return;
+    final san = playedSan(change.currentState, change.nextState);
+    if (san != null) unawaited(sounds.move(san));
+  }
+
+  /// O SAN do lance que leva de [from] a [to], ou nulo quando não foi um
+  /// lance (passo novo, voltar, troca de exemplo).
+  static String? playedSan(LessonScriptState from, LessonScriptState to) {
+    final uci = to.lastMove;
+    if (uci == null || from.fen.isEmpty || from.fen == to.fen) return null;
+    if (uci == from.lastMove && from.fen == to.fen) return null;
+    try {
+      final before = Chess.fromSetup(Setup.parseFen(from.fen));
+      final move = Move.parse(uci);
+      if (move == null || !before.isLegal(move)) return null;
+      final (after, san) = before.makeSan(move);
+      final board = to.fen.split(' ').first;
+      return after.fen.split(' ').first == board ? san : null;
+    } on Object {
+      return null;
+    }
+  }
 
   /// O tempo de leitura de um passo da demonstração, como `DemoPace` da
   /// lição antiga (spike T51): 65 ms por letra, no mínimo 2,5 s, mais a
