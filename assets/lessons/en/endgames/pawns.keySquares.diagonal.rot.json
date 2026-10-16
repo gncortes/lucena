@@ -190,11 +190,12 @@
   "rot.diagonal.pratica.ataque.v16.err.d5c5.2": "The black king goes to c7 and faces yours: the direct opposition is Black's.",
   "rot.diagonal.pratica.ataque.v17.err.d6c5.1": "Going to c5, your king leaves d6, in front of the pawn, and loses the opposition: the win slips away.",
   "rot.diagonal.pratica.ataque.v17.err.d6c5.2": "The black king goes to c7 and faces yours: the direct opposition is Black's.",
-  "rot.diagonal.demos.caminho.1": "Second position: the pawn is on c4, the key squares are b6, c6 and d6, and both kings are far from them.",
-  "rot.diagonal.demos.caminho.2": "The white king goes to e3: on the diagonal with the black king, with f4 in between, and on the way to b6, c6 and d6.",
-  "rot.diagonal.demos.caminho.4": "The black king runs to d7 to defend, but the white king gets to b6 first, a key square. The pawn will promote.",
-  "rot.diagonal.demos.caminho.5": "Back to the starting position. What if the white king goes to g3, face to face with the black king?",
-  "rot.diagonal.demos.caminho.6": "On g3, the white king is far from b6, c6 and d6. The black king goes to f5, towards the pawn, reaches the key squares first, and it is a draw.",
-  "rot.diagonal.demos.caminho.3": "The black king goes to f5, towards the pawn, and the white king heads for d4, closer to the key squares.",
-  "rot.diagonal.demos.caminho.7": "That is why, here, the white king goes to e3, on the diagonal and on the way, and not to g3."
+  "rot.diagonal.demos.caminho.1": "Second position: with the pawn on b3, the key squares are a5, b5 and c5. The white king is far away, on e8.",
+  "rot.diagonal.demos.caminho.2": "The white king goes to d7: on the diagonal with the black king, with e6 in between, and on the way to a5, b5 and c5.",
+  "rot.diagonal.demos.caminho.3": "The black king goes to e5, towards the pawn.",
+  "rot.diagonal.demos.caminho.4": "The white king goes to c6, the only winning move, and stands next to b5 and c5.",
+  "rot.diagonal.demos.caminho.5": "The black king goes to d4, but the white king gets into b5, a key square. The pawn will promote.",
+  "rot.diagonal.demos.caminho.6": "Back to the starting position. What if the white king goes to f7, face to face with the black king?",
+  "rot.diagonal.demos.caminho.7": "On f7, the white king is far from a5, b5 and c5. The black king goes to e4, towards the pawn, gets there before the white king, and it is a draw.",
+  "rot.diagonal.demos.caminho.8": "That is why, here, the white king goes to d7, on the diagonal and on the way, and not to f7."
 }

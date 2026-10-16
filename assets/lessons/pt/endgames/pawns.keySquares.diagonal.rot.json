@@ -190,11 +190,12 @@
   "rot.diagonal.pratica.ataque.v16.err.d5c5.2": "O rei preto vai a c7 e fica de frente para o seu: a oposição direta é das pretas.",
   "rot.diagonal.pratica.ataque.v17.err.d6c5.1": "Indo a c5, o seu rei sai de d6, na frente do peão, e perde a oposição: a vitória escapa.",
   "rot.diagonal.pratica.ataque.v17.err.d6c5.2": "O rei preto vai a c7 e fica de frente para o seu: a oposição direta é das pretas.",
-  "rot.diagonal.demos.caminho.1": "Segunda posição: com o peão em c4, as casas-chave são b6, c6 e d6, e os dois reis estão longe delas.",
-  "rot.diagonal.demos.caminho.2": "O rei branco vai a e3: em diagonal com o rei preto, com f4 no meio, e no caminho de b6, c6 e d6.",
-  "rot.diagonal.demos.caminho.4": "O rei preto corre para d7 para defender, mas o rei branco chega antes a b6, uma casa-chave. O peão vai coroar.",
-  "rot.diagonal.demos.caminho.5": "De volta à posição inicial. E se o rei branco for a g3, de frente para o rei preto?",
-  "rot.diagonal.demos.caminho.6": "Em g3, o rei branco fica longe de b6, c6 e d6. O rei preto vai a f5, rumo ao peão, chega antes às casas-chave, e é empate.",
-  "rot.diagonal.demos.caminho.3": "O rei preto vai a f5, rumo ao peão, e o rei branco segue para d4, mais perto das casas-chave.",
-  "rot.diagonal.demos.caminho.7": "Por isso, aqui, o rei branco vai a e3, em diagonal e no caminho, e não a g3."
+  "rot.diagonal.demos.caminho.1": "Segunda posição: com o peão em b3, as casas-chave são a5, b5 e c5. O rei branco está longe, em e8.",
+  "rot.diagonal.demos.caminho.2": "O rei branco vai a d7: em diagonal com o rei preto, com e6 no meio, e no caminho de a5, b5 e c5.",
+  "rot.diagonal.demos.caminho.3": "O rei preto vai a e5, rumo ao peão.",
+  "rot.diagonal.demos.caminho.4": "O rei branco vai a c6, o único lance que ganha, e fica ao lado de b5 e c5.",
+  "rot.diagonal.demos.caminho.5": "O rei preto vai a d4, mas o rei branco entra em b5, uma casa-chave. O peão vai coroar.",
+  "rot.diagonal.demos.caminho.6": "De volta à posição inicial. E se o rei branco for a f7, de frente para o rei preto?",
+  "rot.diagonal.demos.caminho.7": "Em f7, o rei branco fica longe de a5, b5 e c5. O rei preto vai a e4, rumo ao peão, chega antes do rei branco, e é empate.",
+  "rot.diagonal.demos.caminho.8": "Por isso, aqui, o rei branco vai a d7, em diagonal e no caminho, e não a f7."
 }
