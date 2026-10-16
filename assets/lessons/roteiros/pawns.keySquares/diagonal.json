@@ -625,7 +625,19 @@
               "t": "rot.diagonal.ideia.ex2.l7"
             },
             {
-              "fen": "8/8/8/4k3/8/6K1/4P3/8 w - - 1 2",
+              "fen": "8/8/8/5k2/8/5K2/4P3/8 w - - 3 3",
+              "marcas": [
+                "f3",
+                "f5"
+              ],
+              "seq": [
+                "g3f3",
+                "e5f5"
+              ],
+              "t": "rot.diagonal.ideia.ex2.l8"
+            },
+            {
+              "fen": "8/8/8/5k2/8/5K2/4P3/8 w - - 3 3",
               "t": "rot.diagonal.ideia.ex2.ponte"
             }
           ]
