@@ -928,38 +928,57 @@
         },
         {
           "id": "contagem",
-          "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
+          "fen": "8/1k6/2p1K3/p1p5/P1P5/8/8/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
           "entrada": [
             {
-              "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
+              "fen": "8/1k6/2p1K3/p1p5/P1P5/8/8/8 b - - 0 1",
               "t": "rot.edge.demos.contagem.1",
               "marcas": [
-                "c6",
-                "d6"
+                "c6"
               ]
             }
           ],
           "linha": [
             {
-              "fen": "8/8/k1p1K3/2p5/p1P5/P7/8/8 w - - 1 2",
-              "lance": "b6a6",
+              "fen": "8/8/k1p1K3/p1p5/P1P5/8/8/8 w - - 1 2",
+              "lance": "b7a6",
+              "t": "rot.edge.demos.contagem.2"
+            },
+            {
+              "fen": "8/8/k1pK4/p1p5/P1P5/8/8/8 b - - 2 2",
+              "lance": "e6d6",
               "t": "rot.edge.demos.contagem.3"
             },
             {
-              "fen": "8/8/k1pK4/2p5/p1P5/P7/8/8 b - - 2 2",
-              "lance": "e6d6",
+              "fen": "8/8/1kpK4/p1p5/P1P5/8/8/8 w - - 3 3",
+              "lance": "a6b6",
               "t": "rot.edge.demos.contagem.4"
             },
             {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
-              "lance": "a6b6",
+              "fen": "8/4K3/1kp5/p1p5/P1P5/8/8/8 b - - 4 3",
+              "lance": "d6e7",
               "t": "rot.edge.demos.contagem.5"
             },
             {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
+              "fen": "8/k3K3/2p5/p1p5/P1P5/8/8/8 w - - 5 4",
+              "lance": "b6a7",
+              "t": "rot.edge.demos.contagem.6"
+            },
+            {
+              "fen": "8/k2K4/2p5/p1p5/P1P5/8/8/8 b - - 6 4",
+              "lance": "e7d7",
+              "t": "rot.edge.demos.contagem.7"
+            },
+            {
+              "fen": "8/1k1K4/2p5/p1p5/P1P5/8/8/8 w - - 7 5",
+              "lance": "a7b7",
+              "t": "rot.edge.demos.contagem.8"
+            },
+            {
+              "fen": "8/1k1K4/2p5/p1p5/P1P5/8/8/8 w - - 7 5",
               "t": "rot.edge.demos.contagem.ponte"
             }
           ]
