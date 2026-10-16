@@ -80,7 +80,7 @@
   "rot.lateral.demos.ataqueLonge.3": "The black king comes down diagonally to b6, heading for the key squares c4 and d4.",
   "rot.lateral.demos.ataqueLonge.4": "The white king comes down with it, to f6: now c6, d6 and e6 lie between the kings, three squares. Both kings changed rank, and the count stays odd. Any other move draws.",
   "rot.lateral.demos.ataqueLonge.5": "The black king comes down again, to c5, next to c4 and d4.",
-  "rot.lateral.demos.ataqueLonge.6": "The white king comes down to e5, face to face, with d5 between them. Advancing the pawn now would draw: the black king reaches it.",
+  "rot.lateral.demos.ataqueLonge.6": "The white king comes down to e5, face to face, with d5 between them. Had the pawn advanced instead of this move, it would be a draw: the black king would reach it.",
   "rot.lateral.demos.ataqueLonge.7": "The black king occupies c4, one of the key squares, and threatens to go to d3, attacking the pawn.",
   "rot.lateral.demos.ataqueLonge.8": "The white king enters e4, another key square, and guards d3: with the king there, the pawn promotes.",
   "rot.lateral.pratica.ataque.err.e2e3": "With the pawn advance, the win slips away: the key squares move up to d5, e5 and f5, and the black king, going to g5, reaches them before yours.",

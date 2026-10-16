@@ -2362,35 +2362,35 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-      "uci": "d3c3",
-      "pt": "Em c3, seu rei deixa b5 livre: o rei preto passa por b5 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "On c3, your king leaves b5 free: the black king goes through b5 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+      "uci": "c2c3",
+      "pt": "O peão avançou antes do rei: as casas-chave passam a ser b5, c5 e d5, e o rei preto chega primeiro a elas. As pretas empatam.",
+      "en": "The pawn advanced before the king: the key squares become b5, c5 and d5, and the black king gets there first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-          "uci": "d3c3",
-          "san": "Kc3",
+          "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+          "uci": "c2c3",
+          "san": "c3",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/k3P3/2K5/8/8 b - - 1 1",
-          "uci": "a4b5",
-          "san": "Kb5",
+          "fen": "5K2/k7/8/8/8/2P5/8/8 b - - 0 1",
+          "uci": "a7b6",
+          "san": "Kb6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/2K5/8/8 w - - 2 2",
-          "uci": "c3d3",
-          "san": "Kd3",
+          "fen": "5K2/8/1k6/8/8/2P5/8/8 w - - 1 2",
+          "uci": "f8e7",
+          "san": "Ke7",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/3K4/8/8 b - - 3 2",
-          "uci": "b5c5",
+          "fen": "8/4K3/1k6/8/8/2P5/8/8 b - - 2 2",
+          "uci": "b6c5",
           "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
@@ -2403,7 +2403,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.1",
-        "uci": "d3c3"
+        "uci": "c2c3"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2412,36 +2412,36 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-      "uci": "d3e3",
-      "pt": "Em e3, seu rei se afasta da coluna b: o rei preto passa por b5 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "On e3, your king moves away from the b-file: the black king goes through b5 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+      "uci": "c2c4",
+      "pt": "O peão avançou antes do rei: as casas-chave passam a ser b6, c6 e d6, e o rei preto chega primeiro a elas. As pretas empatam.",
+      "en": "The pawn advanced before the king: the key squares become b6, c6 and d6, and the black king gets there first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-          "uci": "d3e3",
-          "san": "Ke3",
+          "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+          "uci": "c2c4",
+          "san": "c4",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/k3P3/4K3/8/8 b - - 1 1",
-          "uci": "a4b5",
-          "san": "Kb5",
+          "fen": "5K2/k7/8/8/2P5/8/8/8 b - - 0 1",
+          "uci": "a7b6",
+          "san": "Kb6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/4K3/8/8 w - - 2 2",
-          "uci": "e3d3",
-          "san": "Kd3",
+          "fen": "5K2/8/1k6/8/2P5/8/8/8 w - - 1 2",
+          "uci": "f8e7",
+          "san": "Ke7",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/3K4/8/8 b - - 3 2",
-          "uci": "b5c5",
-          "san": "Kc5",
+          "fen": "8/4K3/1k6/8/2P5/8/8/8 b - - 2 2",
+          "uci": "b6c6",
+          "san": "Kc6",
           "fullmove": 2,
           "turn": "black"
         }
@@ -2453,7 +2453,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.1",
-        "uci": "d3e3"
+        "uci": "c2c4"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2462,35 +2462,35 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-      "uci": "d3d2",
-      "pt": "Seu rei recuou e saiu da quarta fileira: o rei preto passa por b4 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "Your king stepped back and left the fourth rank: the black king goes through b4 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+      "uci": "f8f7",
+      "pt": "Em f7, ficam quatro casas entre os reis, número par: o rei preto desce por b6 e c5 e chega antes às casas-chave b4, c4 e d4. As pretas empatam.",
+      "en": "On f7, four squares separate the kings, an even number: the black king comes down through b6 and c5 and reaches the key squares b4, c4 and d4 first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-          "uci": "d3d2",
-          "san": "Kd2",
+          "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+          "uci": "f8f7",
+          "san": "Kf7",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/k3P3/8/3K4/8 b - - 1 1",
-          "uci": "a4b4",
-          "san": "Kb4",
+          "fen": "8/k4K2/8/8/8/8/2P5/8 b - - 1 1",
+          "uci": "a7b6",
+          "san": "Kb6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/4p3/1k2P3/8/3K4/8 w - - 2 2",
-          "uci": "d2d3",
-          "san": "Kd3",
+          "fen": "8/5K2/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "f7e6",
+          "san": "Ke6",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/1k2P3/3K4/8/8 b - - 3 2",
-          "uci": "b4c5",
+          "fen": "8/8/1k2K3/8/8/8/2P5/8 b - - 3 2",
+          "uci": "b6c5",
           "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
@@ -2503,7 +2503,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.1",
-        "uci": "d3d2"
+        "uci": "f8f7"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2512,35 +2512,35 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-      "uci": "d3c2",
-      "pt": "Seu rei recuou e deixou b4 livre: o rei preto passa por b4 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "Your king stepped back and left b4 free: the black king goes through b4 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+      "uci": "f8e8",
+      "pt": "Em e8, seu rei não fica na fileira do rei preto: ele desce por b6 e c5 e chega antes às casas-chave b4, c4 e d4. As pretas empatam.",
+      "en": "On e8, your king is not on the black king's rank: he comes down through b6 and c5 and reaches the key squares b4, c4 and d4 first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-          "uci": "d3c2",
-          "san": "Kc2",
+          "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+          "uci": "f8e8",
+          "san": "Ke8",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/k3P3/8/2K5/8 b - - 1 1",
-          "uci": "a4b4",
-          "san": "Kb4",
+          "fen": "4K3/k7/8/8/8/8/2P5/8 b - - 1 1",
+          "uci": "a7b6",
+          "san": "Kb6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/4p3/1k2P3/8/2K5/8 w - - 2 2",
-          "uci": "c2d3",
-          "san": "Kd3",
+          "fen": "4K3/8/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "e8d7",
+          "san": "Kd7",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/1k2P3/3K4/8/8 b - - 3 2",
-          "uci": "b4c5",
+          "fen": "8/3K4/1k6/8/8/8/2P5/8 b - - 3 2",
+          "uci": "b6c5",
           "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
@@ -2553,7 +2553,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.1",
-        "uci": "d3c2"
+        "uci": "f8e8"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2562,35 +2562,35 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 1,
-      "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-      "uci": "d3e2",
-      "pt": "Seu rei recuou e se afastou da coluna b: o rei preto passa por b5 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "Your king stepped back and moved away from the b-file: the black king goes through b5 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+      "uci": "f8g7",
+      "pt": "Em g7, a conta é ímpar, mas seu rei se afasta das casas-chave: o rei preto desce por b6 e c5 e chega antes a elas. As pretas empatam.",
+      "en": "On g7, the count is odd, but your king moves away from the key squares: the black king comes down through b6 and c5 and gets there first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
-          "uci": "d3e2",
-          "san": "Ke2",
+          "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
+          "uci": "f8g7",
+          "san": "Kg7",
           "fullmove": 1,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/4p3/k3P3/8/4K3/8 b - - 1 1",
-          "uci": "a4b5",
-          "san": "Kb5",
+          "fen": "8/k5K1/8/8/8/8/2P5/8 b - - 1 1",
+          "uci": "a7b6",
+          "san": "Kb6",
           "fullmove": 1,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/8/4K3/8 w - - 2 2",
-          "uci": "e2d3",
-          "san": "Kd3",
+          "fen": "8/6K1/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "g7f6",
+          "san": "Kf6",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/3K4/8/8 b - - 3 2",
-          "uci": "b5c5",
+          "fen": "8/8/1k3K2/8/8/8/2P5/8 b - - 3 2",
+          "uci": "b6c5",
           "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
@@ -2603,7 +2603,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.1",
-        "uci": "d3e2"
+        "uci": "f8g7"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2612,35 +2612,85 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 2,
-      "fen": "8/8/8/k3p3/2K1P3/8/8/8 w - - 2 2",
-      "uci": "c4b3",
-      "pt": "Em b3, seu rei deixa b5 livre: o rei preto passa por b5 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "On b3, your king leaves b5 free: the black king goes through b5 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+      "uci": "c2c3",
+      "pt": "O peão avançou antes do rei: as casas-chave passam a ser b5, c5 e d5, e o rei preto chega a c5, uma delas. As pretas empatam.",
+      "en": "The pawn advanced before the king: the key squares become b5, c5 and d5, and the black king reaches c5, one of them. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/k3p3/2K1P3/8/8/8 w - - 2 2",
-          "uci": "c4b3",
-          "san": "Kb3",
+          "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "c2c3",
+          "san": "c3",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/k3p3/4P3/1K6/8/8 b - - 3 2",
-          "uci": "a5b5",
-          "san": "Kb5",
+          "fen": "8/4K3/1k6/8/8/2P5/8/8 b - - 0 2",
+          "uci": "b6c5",
+          "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/1K6/8/8 w - - 4 3",
-          "uci": "b3c3",
-          "san": "Kc3",
+          "fen": "8/4K3/8/2k5/8/2P5/8/8 w - - 1 3",
+          "uci": "e7e6",
+          "san": "Ke6",
           "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/2K5/8/8 b - - 5 3",
-          "uci": "b5c5",
+          "fen": "8/8/4K3/2k5/8/2P5/8/8 b - - 2 3",
+          "uci": "c5c4",
+          "san": "Kc4",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
+        "site": "exercise/e13.2",
+        "uci": "c2c3"
+      },
+      "text_key": "ex.e13.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e13",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+      "uci": "c2c4",
+      "pt": "O peão avançou antes do rei: as casas-chave passam a ser b6, c6 e d6, e o rei preto já está em b6, uma delas. As pretas empatam.",
+      "en": "The pawn advanced before the king: the key squares become b6, c6 and d6, and the black king is already on b6, one of them. Black draws.",
+      "pv": [
+        {
+          "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "c2c4",
+          "san": "c4",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/4K3/1k6/8/2P5/8/8/8 b - - 0 2",
+          "uci": "b6c6",
+          "san": "Kc6",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/4K3/2k5/8/2P5/8/8/8 w - - 1 3",
+          "uci": "e7e6",
+          "san": "Ke6",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/2k1K3/8/2P5/8/8/8 b - - 2 3",
+          "uci": "c6c5",
           "san": "Kc5",
           "fullmove": 3,
           "turn": "black"
@@ -2653,7 +2703,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.2",
-        "uci": "c4b3"
+        "uci": "c2c4"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2662,36 +2712,36 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 2,
-      "fen": "8/8/8/k3p3/2K1P3/8/8/8 w - - 2 2",
-      "uci": "c4c3",
-      "pt": "Seu rei recuou e deixou b5 livre: o rei preto passa por b5 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "Your king stepped back and left b5 free: the black king goes through b5 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+      "uci": "e7e6",
+      "pt": "Em e6, ficam duas casas entre os reis, número par: o rei preto vai a c5 e chega antes às casas-chave b4, c4 e d4. As pretas empatam.",
+      "en": "On e6, two squares separate the kings, an even number: the black king goes to c5 and reaches the key squares b4, c4 and d4 first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/k3p3/2K1P3/8/8/8 w - - 2 2",
-          "uci": "c4c3",
-          "san": "Kc3",
+          "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "e7e6",
+          "san": "Ke6",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/k3p3/4P3/2K5/8/8 b - - 3 2",
-          "uci": "a5b5",
-          "san": "Kb5",
+          "fen": "8/8/1k2K3/8/8/8/2P5/8 b - - 3 2",
+          "uci": "b6c5",
+          "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/2K5/8/8 w - - 4 3",
-          "uci": "c3d3",
-          "san": "Kd3",
+          "fen": "8/8/4K3/2k5/8/8/2P5/8 w - - 4 3",
+          "uci": "e6e5",
+          "san": "Ke5",
           "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/3K4/8/8 b - - 5 3",
-          "uci": "b5c5",
-          "san": "Kc5",
+          "fen": "8/8/8/2k1K3/8/8/2P5/8 b - - 5 3",
+          "uci": "c5c4",
+          "san": "Kc4",
           "fullmove": 3,
           "turn": "black"
         }
@@ -2703,7 +2753,7 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.2",
-        "uci": "c4c3"
+        "uci": "e7e6"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"
@@ -2712,36 +2762,36 @@
       "id": "e13",
       "kind": "exercise",
       "turn": 2,
-      "fen": "8/8/8/k3p3/2K1P3/8/8/8 w - - 2 2",
-      "uci": "c4d3",
-      "pt": "Em d3, seu rei recua e deixa b5 livre: o rei preto passa por b5 e c5 e chega a d6, onde defende e5. As pretas empatam.",
-      "en": "On d3, your king steps back and leaves b5 free: the black king goes through b5 and c5 and reaches d6, where he defends e5. Black draws.",
+      "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+      "uci": "e7d7",
+      "pt": "Em d7, seu rei não fica na fileira do rei preto: ele vai a c5 e chega antes às casas-chave b4, c4 e d4. As pretas empatam.",
+      "en": "On d7, your king is not on the black king's rank: he goes to c5 and reaches the key squares b4, c4 and d4 first. Black draws.",
       "pv": [
         {
-          "fen": "8/8/8/k3p3/2K1P3/8/8/8 w - - 2 2",
-          "uci": "c4d3",
-          "san": "Kd3",
+          "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "e7d7",
+          "san": "Kd7",
           "fullmove": 2,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/k3p3/4P3/3K4/8/8 b - - 3 2",
-          "uci": "a5b5",
-          "san": "Kb5",
+          "fen": "8/3K4/1k6/8/8/8/2P5/8 b - - 3 2",
+          "uci": "b6c5",
+          "san": "Kc5",
           "fullmove": 2,
           "turn": "black"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/3K4/8/8 w - - 4 3",
-          "uci": "d3c3",
-          "san": "Kc3",
+          "fen": "8/3K4/8/2k5/8/8/2P5/8 w - - 4 3",
+          "uci": "d7e6",
+          "san": "Ke6",
           "fullmove": 3,
           "turn": "white"
         },
         {
-          "fen": "8/8/8/1k2p3/4P3/2K5/8/8 b - - 5 3",
-          "uci": "b5c5",
-          "san": "Kc5",
+          "fen": "8/8/4K3/2k5/8/8/2P5/8 b - - 5 3",
+          "uci": "c5c4",
+          "san": "Kc4",
           "fullmove": 3,
           "turn": "black"
         }
@@ -2753,7 +2803,57 @@
       "evidence": {
         "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
         "site": "exercise/e13.2",
-        "uci": "c4d3"
+        "uci": "e7d7"
+      },
+      "text_key": "ex.e13.hint",
+      "access": "dica sob demanda, exercício silencioso"
+    },
+    {
+      "id": "e13",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+      "uci": "e7f6",
+      "pt": "Em f6, a conta é ímpar, mas seu rei fica longe das casas-chave: o rei preto vai a c5 e chega antes a elas. As pretas empatam.",
+      "en": "On f6, the count is odd, but your king stays far from the key squares: the black king goes to c5 and gets there first. Black draws.",
+      "pv": [
+        {
+          "fen": "8/4K3/1k6/8/8/8/2P5/8 w - - 2 2",
+          "uci": "e7f6",
+          "san": "Kf6",
+          "fullmove": 2,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/1k3K2/8/8/8/2P5/8 b - - 3 2",
+          "uci": "b6c5",
+          "san": "Kc5",
+          "fullmove": 2,
+          "turn": "black"
+        },
+        {
+          "fen": "8/8/5K2/2k5/8/8/2P5/8 w - - 4 3",
+          "uci": "f6e5",
+          "san": "Ke5",
+          "fullmove": 3,
+          "turn": "white"
+        },
+        {
+          "fen": "8/8/8/2k1K3/8/8/2P5/8 b - - 5 3",
+          "uci": "c5c4",
+          "san": "Kc4",
+          "fullmove": 3,
+          "turn": "black"
+        }
+      ],
+      "objective": {
+        "result_mover": "draw",
+        "dtz_successor": 0
+      },
+      "evidence": {
+        "file": "tablebase Lichess + maia3 (1000 a 2200) + MachineMove",
+        "site": "exercise/e13.2",
+        "uci": "e7f6"
       },
       "text_key": "ex.e13.hint",
       "access": "dica sob demanda, exercício silencioso"

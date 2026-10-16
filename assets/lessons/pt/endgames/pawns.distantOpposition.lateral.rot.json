@@ -80,7 +80,7 @@
   "rot.lateral.demos.ataqueLonge.3": "O rei preto desce na diagonal para b6, rumo às casas-chave c4 e d4.",
   "rot.lateral.demos.ataqueLonge.4": "O rei branco desce junto, para f6: agora c6, d6 e e6 entre os reis, três casas. Os dois mudaram de fileira, e a conta segue ímpar. Qualquer outro lance empata.",
   "rot.lateral.demos.ataqueLonge.5": "O rei preto desce outra vez, para c5, ao lado de c4 e de d4.",
-  "rot.lateral.demos.ataqueLonge.6": "O rei branco desce para e5, de frente, com d5 entre eles. O avanço do peão agora empataria: o rei preto o alcança.",
+  "rot.lateral.demos.ataqueLonge.6": "O rei branco desce para e5, de frente, com d5 entre eles. Se o peão avançasse no lugar deste lance, seria empate: o rei preto o alcançaria.",
   "rot.lateral.demos.ataqueLonge.7": "O rei preto ocupa c4, uma das casas-chave, e ameaça ir a d3, atacando o peão.",
   "rot.lateral.demos.ataqueLonge.8": "O rei branco entra em e4, outra casa-chave, e guarda d3: com o rei nela, o peão coroa.",
   "rot.lateral.pratica.ataque.err.e2e3": "Com o avanço do peão, a vitória escapa: as casas-chave sobem para d5, e5 e f5, e o rei preto, indo a g5, chega a elas antes do seu.",

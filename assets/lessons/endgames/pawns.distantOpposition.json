@@ -88,23 +88,22 @@
     {
       "id": "e13",
       "stars": 2,
-      "fen": "8/8/8/4p3/k3P3/3K4/8/8 w - - 0 1",
+      "fen": "5K2/k7/8/8/8/8/2P5/8 w - - 0 1",
       "goal": "win",
       "origin": "own",
       "capitulo": "lateral",
       "line": [
         {
-          "teach": "d3c4",
+          "teach": "f8e7",
           "accept": [
-            "d3c4"
+            "f8e7"
           ],
-          "reply": "a4a5"
+          "reply": "a7b6"
         },
         {
-          "teach": "c4c5",
+          "teach": "e7d6",
           "accept": [
-            "c4c5",
-            "c4d5"
+            "e7d6"
           ]
         }
       ]
