@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,7 +28,7 @@ class StarChallengesScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
       key: StarChallengeKeys.listScreen,
-      appBar: AppBar(title: Text(l10n.starChallengesTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.starChallengesTitle)),
       body: BlocBuilder<StarChallengesCubit, StarChallengesState>(
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();

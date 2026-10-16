@@ -1395,12 +1395,28 @@ class $SpeedrunAttemptsTable extends SpeedrunAttempts
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _bonusEligibleMeta = const VerificationMeta(
+    'bonusEligible',
+  );
+  @override
+  late final GeneratedColumn<bool> bonusEligible = GeneratedColumn<bool>(
+    'bonus_eligible',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("bonus_eligible" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     speedrunId,
     startedAt,
     abandonedAt,
+    bonusEligible,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1442,6 +1458,15 @@ class $SpeedrunAttemptsTable extends SpeedrunAttempts
         ),
       );
     }
+    if (data.containsKey('bonus_eligible')) {
+      context.handle(
+        _bonusEligibleMeta,
+        bonusEligible.isAcceptableOrUnknown(
+          data['bonus_eligible']!,
+          _bonusEligibleMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1467,6 +1492,10 @@ class $SpeedrunAttemptsTable extends SpeedrunAttempts
         DriftSqlType.dateTime,
         data['${effectivePrefix}abandoned_at'],
       ),
+      bonusEligible: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}bonus_eligible'],
+      )!,
     );
   }
 
@@ -1482,11 +1511,16 @@ class SpeedrunAttemptRow extends DataClass
   final String speedrunId;
   final DateTime startedAt;
   final DateTime? abandonedAt;
+
+  /// A tentativa pode dar o bônus de rating da conclusão (versão 8). As de
+  /// antes da 8 ficam sem: o bônus não é retroativo.
+  final bool bonusEligible;
   const SpeedrunAttemptRow({
     required this.id,
     required this.speedrunId,
     required this.startedAt,
     this.abandonedAt,
+    required this.bonusEligible,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1497,6 +1531,7 @@ class SpeedrunAttemptRow extends DataClass
     if (!nullToAbsent || abandonedAt != null) {
       map['abandoned_at'] = Variable<DateTime>(abandonedAt);
     }
+    map['bonus_eligible'] = Variable<bool>(bonusEligible);
     return map;
   }
 
@@ -1508,6 +1543,7 @@ class SpeedrunAttemptRow extends DataClass
       abandonedAt: abandonedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(abandonedAt),
+      bonusEligible: Value(bonusEligible),
     );
   }
 
@@ -1521,6 +1557,7 @@ class SpeedrunAttemptRow extends DataClass
       speedrunId: serializer.fromJson<String>(json['speedrunId']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       abandonedAt: serializer.fromJson<DateTime?>(json['abandonedAt']),
+      bonusEligible: serializer.fromJson<bool>(json['bonusEligible']),
     );
   }
   @override
@@ -1531,6 +1568,7 @@ class SpeedrunAttemptRow extends DataClass
       'speedrunId': serializer.toJson<String>(speedrunId),
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'abandonedAt': serializer.toJson<DateTime?>(abandonedAt),
+      'bonusEligible': serializer.toJson<bool>(bonusEligible),
     };
   }
 
@@ -1539,11 +1577,13 @@ class SpeedrunAttemptRow extends DataClass
     String? speedrunId,
     DateTime? startedAt,
     Value<DateTime?> abandonedAt = const Value.absent(),
+    bool? bonusEligible,
   }) => SpeedrunAttemptRow(
     id: id ?? this.id,
     speedrunId: speedrunId ?? this.speedrunId,
     startedAt: startedAt ?? this.startedAt,
     abandonedAt: abandonedAt.present ? abandonedAt.value : this.abandonedAt,
+    bonusEligible: bonusEligible ?? this.bonusEligible,
   );
   SpeedrunAttemptRow copyWithCompanion(SpeedrunAttemptsCompanion data) {
     return SpeedrunAttemptRow(
@@ -1555,6 +1595,9 @@ class SpeedrunAttemptRow extends DataClass
       abandonedAt: data.abandonedAt.present
           ? data.abandonedAt.value
           : this.abandonedAt,
+      bonusEligible: data.bonusEligible.present
+          ? data.bonusEligible.value
+          : this.bonusEligible,
     );
   }
 
@@ -1564,13 +1607,15 @@ class SpeedrunAttemptRow extends DataClass
           ..write('id: $id, ')
           ..write('speedrunId: $speedrunId, ')
           ..write('startedAt: $startedAt, ')
-          ..write('abandonedAt: $abandonedAt')
+          ..write('abandonedAt: $abandonedAt, ')
+          ..write('bonusEligible: $bonusEligible')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, speedrunId, startedAt, abandonedAt);
+  int get hashCode =>
+      Object.hash(id, speedrunId, startedAt, abandonedAt, bonusEligible);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1578,7 +1623,8 @@ class SpeedrunAttemptRow extends DataClass
           other.id == this.id &&
           other.speedrunId == this.speedrunId &&
           other.startedAt == this.startedAt &&
-          other.abandonedAt == this.abandonedAt);
+          other.abandonedAt == this.abandonedAt &&
+          other.bonusEligible == this.bonusEligible);
 }
 
 class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
@@ -1586,17 +1632,20 @@ class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
   final Value<String> speedrunId;
   final Value<DateTime> startedAt;
   final Value<DateTime?> abandonedAt;
+  final Value<bool> bonusEligible;
   const SpeedrunAttemptsCompanion({
     this.id = const Value.absent(),
     this.speedrunId = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.abandonedAt = const Value.absent(),
+    this.bonusEligible = const Value.absent(),
   });
   SpeedrunAttemptsCompanion.insert({
     this.id = const Value.absent(),
     required String speedrunId,
     required DateTime startedAt,
     this.abandonedAt = const Value.absent(),
+    this.bonusEligible = const Value.absent(),
   }) : speedrunId = Value(speedrunId),
        startedAt = Value(startedAt);
   static Insertable<SpeedrunAttemptRow> custom({
@@ -1604,12 +1653,14 @@ class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
     Expression<String>? speedrunId,
     Expression<DateTime>? startedAt,
     Expression<DateTime>? abandonedAt,
+    Expression<bool>? bonusEligible,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (speedrunId != null) 'speedrun_id': speedrunId,
       if (startedAt != null) 'started_at': startedAt,
       if (abandonedAt != null) 'abandoned_at': abandonedAt,
+      if (bonusEligible != null) 'bonus_eligible': bonusEligible,
     });
   }
 
@@ -1618,12 +1669,14 @@ class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
     Value<String>? speedrunId,
     Value<DateTime>? startedAt,
     Value<DateTime?>? abandonedAt,
+    Value<bool>? bonusEligible,
   }) {
     return SpeedrunAttemptsCompanion(
       id: id ?? this.id,
       speedrunId: speedrunId ?? this.speedrunId,
       startedAt: startedAt ?? this.startedAt,
       abandonedAt: abandonedAt ?? this.abandonedAt,
+      bonusEligible: bonusEligible ?? this.bonusEligible,
     );
   }
 
@@ -1642,6 +1695,9 @@ class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
     if (abandonedAt.present) {
       map['abandoned_at'] = Variable<DateTime>(abandonedAt.value);
     }
+    if (bonusEligible.present) {
+      map['bonus_eligible'] = Variable<bool>(bonusEligible.value);
+    }
     return map;
   }
 
@@ -1651,7 +1707,8 @@ class SpeedrunAttemptsCompanion extends UpdateCompanion<SpeedrunAttemptRow> {
           ..write('id: $id, ')
           ..write('speedrunId: $speedrunId, ')
           ..write('startedAt: $startedAt, ')
-          ..write('abandonedAt: $abandonedAt')
+          ..write('abandonedAt: $abandonedAt, ')
+          ..write('bonusEligible: $bonusEligible')
           ..write(')'))
         .toString();
   }
@@ -1725,6 +1782,17 @@ class $RatingHistoryTable extends RatingHistory
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _speedrunAttemptIdMeta = const VerificationMeta(
+    'speedrunAttemptId',
+  );
+  @override
+  late final GeneratedColumn<int> speedrunAttemptId = GeneratedColumn<int>(
+    'speedrun_attempt_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1733,6 +1801,7 @@ class $RatingHistoryTable extends RatingHistory
     rating,
     deviation,
     volatility,
+    speedrunAttemptId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1784,6 +1853,15 @@ class $RatingHistoryTable extends RatingHistory
     } else if (isInserting) {
       context.missing(_volatilityMeta);
     }
+    if (data.containsKey('speedrun_attempt_id')) {
+      context.handle(
+        _speedrunAttemptIdMeta,
+        speedrunAttemptId.isAcceptableOrUnknown(
+          data['speedrun_attempt_id']!,
+          _speedrunAttemptIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1817,6 +1895,10 @@ class $RatingHistoryTable extends RatingHistory
         DriftSqlType.double,
         data['${effectivePrefix}volatility'],
       )!,
+      speedrunAttemptId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}speedrun_attempt_id'],
+      ),
     );
   }
 
@@ -1835,6 +1917,10 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
   final double rating;
   final double deviation;
   final double volatility;
+
+  /// O bônus da conclusão desta tentativa de speedrun (versão 8). Uma linha
+  /// por tentativa: o índice único impede pagar duas vezes.
+  final int? speedrunAttemptId;
   const RatingRow({
     required this.id,
     this.gameId,
@@ -1842,6 +1928,7 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
     required this.rating,
     required this.deviation,
     required this.volatility,
+    this.speedrunAttemptId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1854,6 +1941,9 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
     map['rating'] = Variable<double>(rating);
     map['deviation'] = Variable<double>(deviation);
     map['volatility'] = Variable<double>(volatility);
+    if (!nullToAbsent || speedrunAttemptId != null) {
+      map['speedrun_attempt_id'] = Variable<int>(speedrunAttemptId);
+    }
     return map;
   }
 
@@ -1867,6 +1957,9 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
       rating: Value(rating),
       deviation: Value(deviation),
       volatility: Value(volatility),
+      speedrunAttemptId: speedrunAttemptId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(speedrunAttemptId),
     );
   }
 
@@ -1882,6 +1975,7 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
       rating: serializer.fromJson<double>(json['rating']),
       deviation: serializer.fromJson<double>(json['deviation']),
       volatility: serializer.fromJson<double>(json['volatility']),
+      speedrunAttemptId: serializer.fromJson<int?>(json['speedrunAttemptId']),
     );
   }
   @override
@@ -1894,6 +1988,7 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
       'rating': serializer.toJson<double>(rating),
       'deviation': serializer.toJson<double>(deviation),
       'volatility': serializer.toJson<double>(volatility),
+      'speedrunAttemptId': serializer.toJson<int?>(speedrunAttemptId),
     };
   }
 
@@ -1904,6 +1999,7 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
     double? rating,
     double? deviation,
     double? volatility,
+    Value<int?> speedrunAttemptId = const Value.absent(),
   }) => RatingRow(
     id: id ?? this.id,
     gameId: gameId.present ? gameId.value : this.gameId,
@@ -1911,6 +2007,9 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
     rating: rating ?? this.rating,
     deviation: deviation ?? this.deviation,
     volatility: volatility ?? this.volatility,
+    speedrunAttemptId: speedrunAttemptId.present
+        ? speedrunAttemptId.value
+        : this.speedrunAttemptId,
   );
   RatingRow copyWithCompanion(RatingHistoryCompanion data) {
     return RatingRow(
@@ -1922,6 +2021,9 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
       volatility: data.volatility.present
           ? data.volatility.value
           : this.volatility,
+      speedrunAttemptId: data.speedrunAttemptId.present
+          ? data.speedrunAttemptId.value
+          : this.speedrunAttemptId,
     );
   }
 
@@ -1933,14 +2035,22 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
           ..write('at: $at, ')
           ..write('rating: $rating, ')
           ..write('deviation: $deviation, ')
-          ..write('volatility: $volatility')
+          ..write('volatility: $volatility, ')
+          ..write('speedrunAttemptId: $speedrunAttemptId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, gameId, at, rating, deviation, volatility);
+  int get hashCode => Object.hash(
+    id,
+    gameId,
+    at,
+    rating,
+    deviation,
+    volatility,
+    speedrunAttemptId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1950,7 +2060,8 @@ class RatingRow extends DataClass implements Insertable<RatingRow> {
           other.at == this.at &&
           other.rating == this.rating &&
           other.deviation == this.deviation &&
-          other.volatility == this.volatility);
+          other.volatility == this.volatility &&
+          other.speedrunAttemptId == this.speedrunAttemptId);
 }
 
 class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
@@ -1960,6 +2071,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
   final Value<double> rating;
   final Value<double> deviation;
   final Value<double> volatility;
+  final Value<int?> speedrunAttemptId;
   const RatingHistoryCompanion({
     this.id = const Value.absent(),
     this.gameId = const Value.absent(),
@@ -1967,6 +2079,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
     this.rating = const Value.absent(),
     this.deviation = const Value.absent(),
     this.volatility = const Value.absent(),
+    this.speedrunAttemptId = const Value.absent(),
   });
   RatingHistoryCompanion.insert({
     this.id = const Value.absent(),
@@ -1975,6 +2088,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
     required double rating,
     required double deviation,
     required double volatility,
+    this.speedrunAttemptId = const Value.absent(),
   }) : at = Value(at),
        rating = Value(rating),
        deviation = Value(deviation),
@@ -1986,6 +2100,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
     Expression<double>? rating,
     Expression<double>? deviation,
     Expression<double>? volatility,
+    Expression<int>? speedrunAttemptId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1994,6 +2109,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
       if (rating != null) 'rating': rating,
       if (deviation != null) 'deviation': deviation,
       if (volatility != null) 'volatility': volatility,
+      if (speedrunAttemptId != null) 'speedrun_attempt_id': speedrunAttemptId,
     });
   }
 
@@ -2004,6 +2120,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
     Value<double>? rating,
     Value<double>? deviation,
     Value<double>? volatility,
+    Value<int?>? speedrunAttemptId,
   }) {
     return RatingHistoryCompanion(
       id: id ?? this.id,
@@ -2012,6 +2129,7 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
       rating: rating ?? this.rating,
       deviation: deviation ?? this.deviation,
       volatility: volatility ?? this.volatility,
+      speedrunAttemptId: speedrunAttemptId ?? this.speedrunAttemptId,
     );
   }
 
@@ -2036,6 +2154,9 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
     if (volatility.present) {
       map['volatility'] = Variable<double>(volatility.value);
     }
+    if (speedrunAttemptId.present) {
+      map['speedrun_attempt_id'] = Variable<int>(speedrunAttemptId.value);
+    }
     return map;
   }
 
@@ -2047,7 +2168,8 @@ class RatingHistoryCompanion extends UpdateCompanion<RatingRow> {
           ..write('at: $at, ')
           ..write('rating: $rating, ')
           ..write('deviation: $deviation, ')
-          ..write('volatility: $volatility')
+          ..write('volatility: $volatility, ')
+          ..write('speedrunAttemptId: $speedrunAttemptId')
           ..write(')'))
         .toString();
   }
@@ -2396,6 +2518,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $RatingHistoryTable ratingHistory = $RatingHistoryTable(this);
   late final $UnlockedAchievementsTable unlockedAchievements =
       $UnlockedAchievementsTable(this);
+  late final Index ratingHistorySpeedrunAttempt = Index(
+    'rating_history_speedrun_attempt',
+    'CREATE UNIQUE INDEX rating_history_speedrun_attempt ON rating_history (speedrun_attempt_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2406,6 +2532,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     speedrunAttempts,
     ratingHistory,
     unlockedAchievements,
+    ratingHistorySpeedrunAttempt,
   ];
 }
 
@@ -3043,6 +3170,7 @@ typedef $$SpeedrunAttemptsTableCreateCompanionBuilder =
       required String speedrunId,
       required DateTime startedAt,
       Value<DateTime?> abandonedAt,
+      Value<bool> bonusEligible,
     });
 typedef $$SpeedrunAttemptsTableUpdateCompanionBuilder =
     SpeedrunAttemptsCompanion Function({
@@ -3050,6 +3178,7 @@ typedef $$SpeedrunAttemptsTableUpdateCompanionBuilder =
       Value<String> speedrunId,
       Value<DateTime> startedAt,
       Value<DateTime?> abandonedAt,
+      Value<bool> bonusEligible,
     });
 
 class $$SpeedrunAttemptsTableFilterComposer
@@ -3078,6 +3207,11 @@ class $$SpeedrunAttemptsTableFilterComposer
 
   ColumnFilters<DateTime> get abandonedAt => $composableBuilder(
     column: $table.abandonedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get bonusEligible => $composableBuilder(
+    column: $table.bonusEligible,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3110,6 +3244,11 @@ class $$SpeedrunAttemptsTableOrderingComposer
     column: $table.abandonedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get bonusEligible => $composableBuilder(
+    column: $table.bonusEligible,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SpeedrunAttemptsTableAnnotationComposer
@@ -3134,6 +3273,11 @@ class $$SpeedrunAttemptsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get abandonedAt => $composableBuilder(
     column: $table.abandonedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get bonusEligible => $composableBuilder(
+    column: $table.bonusEligible,
     builder: (column) => column,
   );
 }
@@ -3179,11 +3323,13 @@ class $$SpeedrunAttemptsTableTableManager
                 Value<String> speedrunId = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> abandonedAt = const Value.absent(),
+                Value<bool> bonusEligible = const Value.absent(),
               }) => SpeedrunAttemptsCompanion(
                 id: id,
                 speedrunId: speedrunId,
                 startedAt: startedAt,
                 abandonedAt: abandonedAt,
+                bonusEligible: bonusEligible,
               ),
           createCompanionCallback:
               ({
@@ -3191,11 +3337,13 @@ class $$SpeedrunAttemptsTableTableManager
                 required String speedrunId,
                 required DateTime startedAt,
                 Value<DateTime?> abandonedAt = const Value.absent(),
+                Value<bool> bonusEligible = const Value.absent(),
               }) => SpeedrunAttemptsCompanion.insert(
                 id: id,
                 speedrunId: speedrunId,
                 startedAt: startedAt,
                 abandonedAt: abandonedAt,
+                bonusEligible: bonusEligible,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3245,6 +3393,7 @@ typedef $$RatingHistoryTableCreateCompanionBuilder =
       required double rating,
       required double deviation,
       required double volatility,
+      Value<int?> speedrunAttemptId,
     });
 typedef $$RatingHistoryTableUpdateCompanionBuilder =
     RatingHistoryCompanion Function({
@@ -3254,6 +3403,7 @@ typedef $$RatingHistoryTableUpdateCompanionBuilder =
       Value<double> rating,
       Value<double> deviation,
       Value<double> volatility,
+      Value<int?> speedrunAttemptId,
     });
 
 class $$RatingHistoryTableFilterComposer
@@ -3292,6 +3442,11 @@ class $$RatingHistoryTableFilterComposer
 
   ColumnFilters<double> get volatility => $composableBuilder(
     column: $table.volatility,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3334,6 +3489,11 @@ class $$RatingHistoryTableOrderingComposer
     column: $table.volatility,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RatingHistoryTableAnnotationComposer
@@ -3362,6 +3522,11 @@ class $$RatingHistoryTableAnnotationComposer
 
   GeneratedColumn<double> get volatility => $composableBuilder(
     column: $table.volatility,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get speedrunAttemptId => $composableBuilder(
+    column: $table.speedrunAttemptId,
     builder: (column) => column,
   );
 }
@@ -3403,6 +3568,7 @@ class $$RatingHistoryTableTableManager
                 Value<double> rating = const Value.absent(),
                 Value<double> deviation = const Value.absent(),
                 Value<double> volatility = const Value.absent(),
+                Value<int?> speedrunAttemptId = const Value.absent(),
               }) => RatingHistoryCompanion(
                 id: id,
                 gameId: gameId,
@@ -3410,6 +3576,7 @@ class $$RatingHistoryTableTableManager
                 rating: rating,
                 deviation: deviation,
                 volatility: volatility,
+                speedrunAttemptId: speedrunAttemptId,
               ),
           createCompanionCallback:
               ({
@@ -3419,6 +3586,7 @@ class $$RatingHistoryTableTableManager
                 required double rating,
                 required double deviation,
                 required double volatility,
+                Value<int?> speedrunAttemptId = const Value.absent(),
               }) => RatingHistoryCompanion.insert(
                 id: id,
                 gameId: gameId,
@@ -3426,6 +3594,7 @@ class $$RatingHistoryTableTableManager
                 rating: rating,
                 deviation: deviation,
                 volatility: volatility,
+                speedrunAttemptId: speedrunAttemptId,
               ),
           withReferenceMapper: (p0) => p0
               .map(

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/all_modes_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -13,10 +15,10 @@ import '../../core/widgets/staggered_entrance.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';
 import '../../profile/view_models/profile_cubit.dart';
-import '../../school/widgets/lesson_finished.dart';
 
 // O item do Lichess não é uma rota do app: abre o site.
 const _lichess = 'lichess';
+const _lichessSignup = 'https://lichess.org/signup';
 
 // O nível do jogador, se o perfil estiver à mão.
 RatingLevel? _level(BuildContext context) {
@@ -51,7 +53,7 @@ class AllModesScreen extends StatelessWidget {
       (
         l10n.allModesLearnSection,
         [
-          path(HomePath.learn),
+          if (VisibleLessons.school) path(HomePath.learn),
           (
             id: 'stars',
             icon: Icons.star_outline_rounded,
@@ -119,7 +121,7 @@ class AllModesScreen extends StatelessWidget {
           (
             id: 'rating',
             icon: Icons.show_chart,
-            title: l10n.ratingHistory,
+            title: l10n.historyTitle,
             body: l10n.allModesRatingBody,
             route: Routes.rating,
           ),
@@ -141,7 +143,7 @@ class AllModesScreen extends StatelessWidget {
     var index = 0;
     return Scaffold(
       key: AllModesKeys.screen,
-      appBar: AppBar(title: Text(l10n.allModesTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.allModesTitle)),
       body: ListView(
         padding: scrollPadding(context, left: 16, right: 16),
         children: [
@@ -169,7 +171,7 @@ class AllModesScreen extends StatelessWidget {
                     onTap: () async {
                       if (item.route == _lichess) {
                         await launchUrl(
-                          LichessInvite.url,
+                          Uri.parse(_lichessSignup),
                           mode: LaunchMode.externalApplication,
                         );
                         return;

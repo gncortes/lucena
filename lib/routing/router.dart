@@ -70,7 +70,12 @@ import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
+import '../data/repositories/school/lesson_script_repository.dart';
+import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
+import '../data/repositories/tablebase/kpk_repository.dart';
+import '../data/repositories/tablebase/script_table_repository.dart';
+import '../domain/use_cases/position_judge.dart';
 import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
 import '../ui/endgames/view_models/endgames_cubit.dart';
 import '../ui/endgames/view_models/exercise_cubit.dart';
@@ -84,11 +89,12 @@ import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
 import '../domain/models/star_challenge.dart';
 import '../ui/school/view_models/star_challenge_cubit.dart';
+import '../domain/use_cases/visible_lessons.dart';
 import '../ui/school/widgets/star_challenge_screen.dart';
 import '../ui/school/widgets/star_challenges_screen.dart';
-import '../ui/school/view_models/lesson_cubit.dart';
 import '../ui/school/view_models/school_cubit.dart';
-import '../ui/school/widgets/lesson_screen.dart';
+import '../ui/lesson_script/view_models/lesson_script_cubit.dart';
+import '../ui/lesson_script/widgets/lesson_script_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
@@ -102,8 +108,10 @@ import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
 import '../ui/journey/widgets/rung_screen.dart';
 import '../ui/speedrun/view_models/speedrun_cubit.dart';
+import '../ui/speedrun/view_models/speedrun_history_cubit.dart';
 import '../ui/speedrun/widgets/speedrun_attempt_screen.dart';
 import '../ui/speedrun/widgets/speedrun_list_screen.dart';
+import '../ui/speedrun/widgets/speedrun_history_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
@@ -123,6 +131,22 @@ import '../domain/use_cases/game_intro.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
 /// árvore de rotas entram junto, para o botão de voltar funcionar.
+/// A rota da lição roteirizada que abre no lugar de [part] da aula [id]: nula
+/// se [part] é uma parte visível (a aula só mostra partes com roteiro, ver
+/// `VisibleLessons`); senão (retomada salva de um capítulo que não aparece
+/// mais, ou nenhuma parte), o início da primeira parte visível. Nula também
+/// se a aula não tem parte visível.
+Future<String?> resolveScriptPart(
+  EndgameLessonRepository lessons,
+  String id,
+  String? part,
+) async {
+  final visible = (await lessons.trail()).lesson(id)?.lesson.parts;
+  if (visible == null || visible.isEmpty) return null;
+  if (part != null && visible.any((each) => each.id == part)) return null;
+  return Routes.endgameLessonScript(id, part: visible.first.id);
+}
+
 GoRouter buildRouter({String initialLocation = Routes.home}) {
   return GoRouter(
     initialLocation: initialLocation,
@@ -400,6 +424,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
           _route(
             path: 'school',
+            // Escola escondida (VisibleLessons): a lista e as aulas dela
+            // levam à tela inicial; os desafios de estrelas continuam.
+            redirect: (context, state) =>
+                VisibleLessons.school ||
+                    state.uri.path.startsWith(Routes.starChallenges)
+                ? null
+                : Routes.home,
             builder: (context, state) => BlocProvider(
               create: (_) => SchoolCubit(
                 lessons: context.read<LessonRepository>(),
@@ -462,23 +493,41 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ],
               ),
+              // A aula com roteiro (curso de iniciante, T71): a tela
+              // roteirizada, com o progresso da escola.
               _route(
-                path: ':lesson',
+                path: ':lesson/roteiro',
                 builder: (context, state) {
                   final id = state.pathParameters['lesson']!;
+                  final stage =
+                      int.tryParse(state.uri.queryParameters['etapa'] ?? '') ??
+                      0;
+                  final language = _language(context);
+                  final lessons = context.read<LessonRepository>();
                   return BlocProvider(
-                    // A aula seguinte (pela tela de fim) troca o view model.
-                    key: ValueKey(id),
-                    create: (_) => LessonCubit(
-                      now: context.read<Now>(),
-                      sounds: context.read<GameSounds>(),
-                      haptics: context.read<GameHaptics>(),
-                      lessons: context.read<LessonRepository>(),
-                      progress: context.read<SchoolProgressRepository>(),
-                      characters: context.read<CharacterRepository>(),
+                    key: ValueKey('script.$id'),
+                    create: (_) => LessonScriptCubit(
+                      lessonId: id,
+                      partId: id,
+                      scriptPath: AssetLessonScriptRepository.scriptPath(id),
+                      language: language,
+                      scripts: context.read<LessonScriptRepository>(),
+                      kpk: context.read<KpkRepository>(),
+                      tables: context.read<ScriptTableRepository>(),
+                      engineJudge: context.read<PositionJudge>(),
                       opponent: context.read<OpponentRepository>(),
-                    )..load(id, _language(context)),
-                    child: LessonScreen(key: ValueKey('lesson.$id')),
+                      source: SchoolLessonSource(
+                        lessons,
+                        context.read<SchoolProgressRepository>(),
+                      ),
+                      initialStage: stage,
+                    ),
+                    child: LessonScriptScreen(
+                      key: ValueKey('script.$id'),
+                      title: lessons
+                          .texts(language)
+                          .then((texts) => texts.lessonTitle(id)),
+                    ),
                   );
                 },
               ),
@@ -577,26 +626,54 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 },
                 routes: [
                   // A lição: a mesma tela das aulas da escola.
+                  // A lição roteirizada (T70): as três etapas da parte.
                   _route(
-                    path: 'lesson',
+                    path: 'roteiro',
+                    // Parte que não abre mais (retomada salva de um capítulo
+                    // sem roteiro): cai no início da primeira parte.
+                    redirect: (context, state) => resolveScriptPart(
+                      context.read<EndgameLessonRepository>(),
+                      state.pathParameters['lesson']!,
+                      state.uri.queryParameters['part'],
+                    ),
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
-                      final part = state.uri.queryParameters['part'];
+                      final part = state.uri.queryParameters['part'] ?? '';
+                      final stage =
+                          int.tryParse(
+                            state.uri.queryParameters['etapa'] ?? '',
+                          ) ??
+                          0;
+                      final language = _language(context);
+                      final lessons = context.read<EndgameLessonRepository>();
                       return BlocProvider(
-                        key: ValueKey('steps.$id.$part'),
-                        create: (_) => LessonCubit(
-                          now: context.read<Now>(),
-                          sounds: context.read<GameSounds>(),
-                          haptics: context.read<GameHaptics>(),
-                          feedback: context.read<ExerciseFeedbackRepository?>(),
+                        key: ValueKey('script.$id.$part'),
+                        create: (_) => LessonScriptCubit(
+                          lessonId: id,
+                          partId: part,
+                          scriptPath:
+                              AssetLessonScriptRepository.chapterScriptPath(
+                                id,
+                                part,
+                              ),
+                          language: language,
+                          scripts: context.read<LessonScriptRepository>(),
+                          kpk: context.read<KpkRepository>(),
+                          tables: context.read<ScriptTableRepository>(),
+                          engineJudge: context.read<PositionJudge>(),
+                          opponent: context.read<OpponentRepository>(),
                           source: EndgameLessonSource(
-                            context.read<EndgameLessonRepository>(),
+                            lessons,
                             context.read<EndgameProgressRepository>(),
                           ),
-                          characters: context.read<CharacterRepository>(),
-                          opponent: context.read<OpponentRepository>(),
-                        )..load(id, _language(context), part: part),
-                        child: LessonScreen(key: ValueKey('lesson.$id.$part')),
+                          initialStage: stage,
+                        ),
+                        child: LessonScriptScreen(
+                          key: ValueKey('script.$id.$part'),
+                          title: lessons
+                              .texts(language)
+                              .then((texts) => texts.partTitle(id, part)),
+                        ),
                       );
                     },
                   ),
@@ -752,6 +829,27 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   ),
                 ),
                 routes: [
+                  // Antes de `:attempt`, que pegaria "history" como id.
+                  _route(
+                    path: 'history',
+                    builder: (context, state) => BlocProvider(
+                      create: (context) => SpeedrunHistoryCubit(
+                        journey: context.read<JourneyRepository>(),
+                        speedruns: context.read<SpeedrunRepository>(),
+                        rating: context.read<RatingRepository>(),
+                        characters: context.read<CharacterRepository>(),
+                        now: context.read<Now>(),
+                      )..load(state.pathParameters['speedrun']!),
+                      child: Builder(
+                        builder: (context) => ReloadOnReturn(
+                          onReturn: () => context
+                              .read<SpeedrunHistoryCubit>()
+                              .load(state.pathParameters['speedrun']!),
+                          child: const SpeedrunHistoryScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
                   _route(
                     path: ':attempt',
                     builder: (context, state) => BlocProvider(
@@ -975,6 +1073,7 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   settings: context.read<SettingsRepository>(),
   characters: context.read<CharacterRepository>(),
   profile: context.read<ProfileRepository>(),
+  rating: context.read<RatingRepository>(),
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18

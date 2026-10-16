@@ -23,14 +23,17 @@ void main() {
 
   test('o layout ajustado volta ao reabrir e não muda com o nível', () async {
     final mine = HomeSuggestion.toggle(
-      HomeSuggestion.of(RatingLevel.casual),
+      HomeSuggestion.of(RatingLevel.casual, school: true),
       HomePath.speedrun,
       RatingLevel.casual,
     );
     await open().save(mine);
     final saved = await open().load();
     expect(saved, mine);
-    expect(HomeSuggestion.resolve(saved, RatingLevel.master), mine);
+    expect(
+      HomeSuggestion.resolve(saved, RatingLevel.master, school: true),
+      mine,
+    );
   });
 
   test('voltar à sugestão: o layout segue o nível de novo', () async {

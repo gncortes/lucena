@@ -9,7 +9,6 @@ import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
-import '../../school/view_models/lesson_cubit.dart';
 
 class EndgameLessonState {
   const EndgameLessonState({
@@ -183,7 +182,7 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
     if (isClosed) return;
     Character? viktor;
     for (final character in characters) {
-      if (character.id == LessonCubit.viktorId) viktor = character;
+      if (character.id == Character.masterId) viktor = character;
     }
     final lessons = trail.lessons;
     final checkpoint = progress.ongoing?.lessonId == lessonId

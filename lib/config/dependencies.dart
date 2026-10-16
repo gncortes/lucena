@@ -1,8 +1,16 @@
+import '../data/repositories/school/lesson_script_repository.dart';
+import '../data/repositories/school/lesson_script_repository_asset.dart';
+import '../data/repositories/tablebase/engine_judge_repository.dart';
+import '../data/repositories/tablebase/kpk_repository.dart';
+import '../data/repositories/tablebase/script_table_repository.dart';
+import '../domain/use_cases/position_judge.dart';
+
 import 'package:flutter/foundation.dart';
 
 import '../data/repositories/draw/draw_offer_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import '../data/repositories/endgames/visible_endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../data/repositories/endgames/exercise_feedback_repository_asset.dart';
@@ -24,6 +32,7 @@ import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_repository_asset.dart';
+import '../data/repositories/school/visible_lesson_repository.dart';
 import '../data/repositories/school/school_progress_repository.dart';
 import '../data/repositories/school/star_challenge_repository.dart';
 import '../data/repositories/pace/pace_repository.dart';
@@ -126,6 +135,10 @@ class Dependencies {
     required this.schoolProgressRepository,
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
+    required this.lessonScriptRepository,
+    required this.kpkRepository,
+    required this.scriptTableRepository,
+    required this.engineJudge,
     required this.endgameProgressRepository,
     this.exerciseFeedbackRepository = const EmptyExerciseFeedbackRepository(),
     required this.drawOfferRepository,
@@ -187,13 +200,18 @@ class Dependencies {
       homeLayoutRepository: LocalHomeLayoutRepository(preferences),
       unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
-      lessonRepository: lessons,
+      lessonRepository: VisibleLessonRepository(lessons),
       schoolProgressRepository: LocalSchoolProgressRepository(preferences),
       starChallengeRepository: LocalStarChallengeRepository(preferences),
-      endgameLessonRepository: AssetEndgameLessonRepository(
-        assets,
-        school: lessons,
+      // Só as aulas liberadas (VisibleLessons); as falas comuns vêm todas.
+      endgameLessonRepository: VisibleEndgameLessonRepository(
+        AssetEndgameLessonRepository(assets, school: lessons),
       ),
+      lessonScriptRepository: AssetLessonScriptRepository(assets),
+      kpkRepository: AssetKpkRepository(assets),
+      scriptTableRepository: AssetScriptTableRepository(assets),
+      // O juiz de reserva da lição em roteiro: o mesmo Stockfish (T76).
+      engineJudge: StockfishJudgeRepository(stockfish),
       endgameProgressRepository: LocalEndgameProgressRepository(preferences),
       exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
       drawOfferRepository: DeviceDrawOfferRepository(
@@ -240,6 +258,14 @@ class Dependencies {
   final SchoolProgressRepository schoolProgressRepository;
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
+  final LessonScriptRepository lessonScriptRepository;
+  final KpkRepository kpkRepository;
+
+  /// As tabelas dos roteiros com mais de 3 peças (T76).
+  final ScriptTableRepository scriptTableRepository;
+
+  /// O juiz de reserva da lição em roteiro, fora das tabelas (T76).
+  final PositionJudge engineJudge;
   final EndgameProgressRepository endgameProgressRepository;
   final ExerciseFeedbackRepository exerciseFeedbackRepository;
   final DrawOfferRepository drawOfferRepository;

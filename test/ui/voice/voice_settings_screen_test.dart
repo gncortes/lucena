@@ -60,4 +60,14 @@ void main() {
     expect(find.byKey(VoiceKeys.enabledSwitch), findsNothing);
     expect(voice.settings, const VoiceSettings());
   });
+
+  testWidgets('sem a seção das vozes dos adversários', (tester) async {
+    await pump(tester);
+    await tester.scrollUntilVisible(
+      find.byKey(VoiceKeys.voice('pt-br-b')),
+      100,
+    );
+    expect(find.text('Vozes dos adversários'), findsNothing);
+    expect(find.byKey(VoiceKeys.voice('pt-br-b')), findsOneWidget);
+  });
 }

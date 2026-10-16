@@ -7,8 +7,8 @@ import '../../services/system_settings_service.dart';
 import '../../services/tts_service.dart';
 import 'voice_repository.dart';
 
-/// Preferências no aparelho, perfis em `assets/voices/profiles.json` e a
-/// voz do sistema.
+/// Preferências no aparelho, perfis em `assets/voices/profiles.json`, gêneros
+/// conhecidos em `assets/voices/known.json` e a voz do sistema.
 class LocalVoiceRepository implements VoiceRepository {
   LocalVoiceRepository(
     this._preferences,
@@ -23,9 +23,11 @@ class LocalVoiceRepository implements VoiceRepository {
   final SystemSettingsService _system;
   Future<List<TtsVoice>>? _voices;
   Future<Map<String, CharacterVoiceProfile>>? _profiles;
+  Future<Map<String, VoiceGender>>? _known;
 
   static const _key = 'voice';
   static const profilesAsset = 'assets/voices/profiles.json';
+  static const knownAsset = 'assets/voices/known.json';
 
   @override
   Future<VoiceSettings> load() async {
@@ -62,6 +64,17 @@ class LocalVoiceRepository implements VoiceRepository {
             e.key,
             e.value as Map<String, dynamic>,
           ),
+    };
+  }
+
+  @override
+  Future<Map<String, VoiceGender>> knownGenders() => _known ??= _loadKnown();
+
+  Future<Map<String, VoiceGender>> _loadKnown() async {
+    final json = jsonDecode(await _assets.loadString(knownAsset));
+    if (json is! Map<String, dynamic>) return const {};
+    return {
+      for (final e in json.entries) e.key: ?VoiceGender.fromLetter(e.value),
     };
   }
 

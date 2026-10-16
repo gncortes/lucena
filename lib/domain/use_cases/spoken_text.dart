@@ -14,15 +14,22 @@ abstract final class SpokenText {
   /// Um lance em notação algébrica em inglês, como o motor e o `dartchess`
   /// escrevem (`Rf3` é torre), pronto para falar em [language]: "torre f3".
   static String san(String san, String language) {
-    final code = language.split(RegExp('[-_]')).first.toLowerCase();
-    final letters = _sanLetters[code];
-    if (letters == null) return san;
-    final local = san.replaceAllMapped(
-      RegExp('[KQRBN]'),
-      (m) => letters[m[0]!]!,
-    );
-    return speakable(local, language);
+    final local = localSan(san, language);
+    return local == san && _lettersOf(language) == null
+        ? san
+        : speakable(local, language);
   }
+
+  /// [san] (letras inglesas) com as letras das peças de [language] para a
+  /// tela (`Ke3` vira `Re3` em português); idioma sem tabela: como veio.
+  static String localSan(String san, String language) {
+    final letters = _lettersOf(language);
+    if (letters == null) return san;
+    return san.replaceAllMapped(RegExp('[KQRBN]'), (m) => letters[m[0]!]!);
+  }
+
+  static Map<String, String>? _lettersOf(String language) =>
+      _sanLetters[language.split(RegExp('[-_]')).first.toLowerCase()];
 
   /// As letras das peças em cada idioma, a partir das do inglês.
   static const _sanLetters = {

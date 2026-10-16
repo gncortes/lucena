@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +11,7 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/share/share_button.dart';
@@ -47,7 +49,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
     return Scaffold(
       key: ExercisesDoneKeys.screen,
       // Compartilhar o diploma: só o ícone, no canto da barra.
-      appBar: AppBar(
+      appBar: LucenaAppBar(
         actions: [
           if (!below)
             ShareIconButton(
@@ -187,7 +189,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     FilledButton.icon(
                       key: ExercisesDoneKeys.redo,
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       icon: const Icon(Icons.replay),
                       onPressed: () async {
@@ -205,7 +207,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     FilledButton.icon(
                       key: ExercisesDoneKeys.practice,
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       icon: const Icon(Icons.sports_esports_outlined),
                       onPressed: () {
@@ -226,14 +228,14 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     OutlinedButton.icon(
                       key: ExercisesDoneKeys.reviewLesson,
                       style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       icon: const Icon(Icons.menu_book_outlined),
                       onPressed: () {
                         final lesson = state.lesson!;
                         final first = lesson.lesson.sections.firstOrNull;
                         context.pushReplacement(
-                          Routes.endgameLessonSteps(
+                          Routes.endgameLessonScript(
                             lesson.id,
                             part: lesson.lesson.parts.isEmpty
                                 ? null
@@ -247,7 +249,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     OutlinedButton(
                       key: ExercisesDoneKeys.back,
                       style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
+                        minimumSize: const Size.fromHeight(kButtonHeight),
                       ),
                       onPressed: () => context.pop(),
                       child: Text(l10n.exercisesDoneFinish),

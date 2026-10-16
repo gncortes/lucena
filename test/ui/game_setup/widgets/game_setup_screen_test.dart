@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/maia_level.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
 import 'package:lucena/ui/game_setup/widgets/custom_pace_sheet.dart';
 import 'package:lucena/ui/game_setup/widgets/game_setup_screen.dart';
@@ -212,6 +213,50 @@ void main() {
 
     expect(find.byKey(GameSetupKeys.customSheet), findsNothing);
     expect(cubit.state.clockCodes.white, '300+0');
+  });
+
+  testWidgets('sem relógio, os ritmos e o "Personalizar" ficam desabilitados '
+      'e não abrem o painel', (tester) async {
+    await pump(tester, setup: const GameSetup(clock: false));
+    await show(tester, GameSetupKeys.customPace);
+    ChoiceChip custom() =>
+        tester.widget<ChoiceChip>(find.byKey(GameSetupKeys.customPace));
+    expect(custom().onSelected, isNull);
+    for (final pace in cubit.state.paces) {
+      expect(
+        tester
+            .widget<ChoiceChip>(find.byKey(GameSetupKeys.pace(pace.id)))
+            .onSelected,
+        isNull,
+      );
+    }
+
+    await tester.tap(find.byKey(GameSetupKeys.customPace));
+    await tester.pumpAndSettle();
+    expect(find.byKey(GameSetupKeys.customSheet), findsNothing);
+    expect(cubit.state.setup.clock, isFalse);
+
+    // Ligar o relógio devolve os ritmos.
+    await tap(tester, GameSetupKeys.clockSwitch);
+    expect(custom().onSelected, isNotNull);
+  });
+
+  testWidgets('fechar o "Personalizar" pelo ✕ não rola o painel: o relógio '
+      'continua onde estava', (tester) async {
+    await pump(tester);
+    await show(tester, GameSetupKeys.customPace);
+    final list = find.byType(Scrollable).first;
+    final offset = tester.state<ScrollableState>(list).position.pixels;
+    final clock = tester.getRect(find.byKey(GameSetupKeys.clockSwitch));
+
+    await tester.tap(find.byKey(GameSetupKeys.customPace));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(SheetKeys.close));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(GameSetupKeys.customSheet), findsNothing);
+    expect(tester.state<ScrollableState>(list).position.pixels, offset);
+    expect(tester.getRect(find.byKey(GameSetupKeys.clockSwitch)), clock);
   });
 
   testWidgets('tempo zero gravado de antes: aparece o erro e o botão de '

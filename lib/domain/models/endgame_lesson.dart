@@ -152,7 +152,8 @@ class Reference {
 
   final String id;
 
-  /// `book`, `study`, `game`, `tablebase` ou `web`.
+  /// `book`, `study`, `game`, `tablebase`, `web` ou `player` (jogador: `name`,
+  /// `initials`, `dates`, `url`).
   final String kind;
 
   /// Os campos do tipo (`author`, `title`, `publisher`, `year`, `url`...).
@@ -162,10 +163,20 @@ class Reference {
 
   String get title => switch (kind) {
     'game' => '${fields['white']} – ${fields['black']}',
+    'player' => fields['name'] ?? id,
     _ => fields['title'] ?? id,
   };
 
   String? get url => fields['url'];
+
+  /// As iniciais do jogador (`player`): o campo `initials` ou as primeiras
+  /// letras do nome.
+  String get initials {
+    final given = fields['initials'];
+    if (given != null && given.isNotEmpty) return given;
+    final words = title.split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+    return words.take(2).map((w) => w.substring(0, 1).toUpperCase()).join();
+  }
 
   /// Fontes de produção ficam nos dados para rastreabilidade, mas não são
   /// mostradas como referências ao aluno.
@@ -204,6 +215,7 @@ class Reference {
 class EndgameLessonProgress {
   const EndgameLessonProgress({
     this.lessonDone = false,
+    this.approved = false,
     this.parts = const {},
     this.stars = const {},
     this.exercise,
@@ -212,6 +224,10 @@ class EndgameLessonProgress {
   /// A lição inteira (todas as partes) foi concluída. Num progresso gravado
   /// antes das partes (T51), é o que diz que todas estão feitas.
   final bool lessonDone;
+
+  /// A aula já estava aprovada antes de ganhar exercícios novos (T74): a
+  /// aprovação vale mesmo com eles ainda sem resolver.
+  final bool approved;
 
   /// As partes concluídas, pelo id.
   final Set<String> parts;
@@ -247,12 +263,14 @@ class EndgameLessonProgress {
 
   EndgameLessonProgress copyWith({
     bool? lessonDone,
+    bool? approved,
     Set<String>? parts,
     Map<String, int>? stars,
     ExerciseCheckpoint? exercise,
     bool clearExercise = false,
   }) => EndgameLessonProgress(
     lessonDone: lessonDone ?? this.lessonDone,
+    approved: approved ?? this.approved,
     parts: parts ?? this.parts,
     stars: stars ?? this.stars,
     exercise: clearExercise ? null : exercise ?? this.exercise,
@@ -260,6 +278,7 @@ class EndgameLessonProgress {
 
   Map<String, dynamic> toJson() => {
     'lessonDone': lessonDone,
+    if (approved) 'approved': true,
     'parts': parts.toList()..sort(),
     'stars': stars,
     'exercise': ?exercise?.toJson(),
@@ -269,6 +288,7 @@ class EndgameLessonProgress {
     if (json is! Map<String, dynamic>) return const EndgameLessonProgress();
     return EndgameLessonProgress(
       lessonDone: json['lessonDone'] as bool? ?? false,
+      approved: json['approved'] as bool? ?? false,
       parts: {
         for (final part in json['parts'] as List? ?? const [])
           if (part is String) part,
@@ -295,9 +315,22 @@ class ExerciseCheckpoint {
     this.open = true,
     this.startedAt,
     this.pausedAt,
+    this.played = const [],
+    this.wrongs = const [],
+    this.firstMoveMistake = false,
   });
 
   final String exerciseId;
+
+  /// Os lances jogados até agora (UCI), do aluno e do outro lado, na ordem:
+  /// a lista de lances volta igual ao reabrir o exercício.
+  final List<String> played;
+
+  /// Os lances errados do aluno, como `vez:uci` (a vez é o índice, de 0).
+  final List<String> wrongs;
+
+  /// Errou o primeiro lance: o exercício não pontua mais.
+  final bool firstMoveMistake;
 
   /// Quando o exercício abriu: o cronômetro (T60) continua daqui.
   final DateTime? startedAt;
@@ -323,6 +356,9 @@ class ExerciseCheckpoint {
     'open': open,
     'startedAt': ?startedAt?.toUtc().toIso8601String(),
     'pausedAt': ?pausedAt?.toUtc().toIso8601String(),
+    if (played.isNotEmpty) 'played': played,
+    if (wrongs.isNotEmpty) 'wrongs': wrongs,
+    if (firstMoveMistake) 'firstMoveMistake': true,
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -339,12 +375,18 @@ class ExerciseCheckpoint {
       open: json['open'] as bool? ?? false,
       startedAt: DateTime.tryParse(json['startedAt'] as String? ?? ''),
       pausedAt: DateTime.tryParse(json['pausedAt'] as String? ?? ''),
+      played: [...?(json['played'] as List?)?.whereType<String>()],
+      wrongs: [...?(json['wrongs'] as List?)?.whereType<String>()],
+      firstMoveMistake: json['firstMoveMistake'] as bool? ?? false,
     );
   }
 
   @override
   bool operator ==(Object other) =>
       other is ExerciseCheckpoint &&
+      _sameList(other.played, played) &&
+      _sameList(other.wrongs, wrongs) &&
+      other.firstMoveMistake == firstMoveMistake &&
       other.exerciseId == exerciseId &&
       other.fen == fen &&
       other.turn == turn &&
@@ -366,12 +408,29 @@ class ExerciseCheckpoint {
     open,
     startedAt,
     pausedAt,
+    Object.hashAll(played),
+    Object.hashAll(wrongs),
+    firstMoveMistake,
   );
+
+  static bool _sameList(List<String> a, List<String> b) =>
+      a.length == b.length &&
+      Iterable<int>.generate(a.length).every((i) => a[i] == b[i]);
 }
 
 /// O progresso em todas as aulas de finais.
 class EndgameProgress {
-  const EndgameProgress({this.lessons = const {}, this.ongoing});
+  const EndgameProgress({
+    this.lessons = const {},
+    this.ongoing,
+    this.chaptersMigrated = true,
+  });
+
+  /// O progresso já está na estrutura de capítulos da T76 (`diagonal` em
+  /// `pawns.keySquares`, `means` na Parte 1, `e17` na Parte 2). Progresso novo
+  /// nasce migrado; o gravado antes não traz o campo (ver
+  /// `EndgameProgressMigration`).
+  final bool chaptersMigrated;
 
   /// Por id de aula.
   final Map<String, EndgameLessonProgress> lessons;
@@ -396,15 +455,18 @@ class EndgameProgress {
       EndgameProgress(
         lessons: {...lessons, lessonId: progress},
         ongoing: ongoing,
+        chaptersMigrated: chaptersMigrated,
       );
 
   EndgameProgress copyWith({
     Map<String, EndgameLessonProgress>? lessons,
     LessonCheckpoint? ongoing,
     bool clearOngoing = false,
+    bool? chaptersMigrated,
   }) => EndgameProgress(
     lessons: lessons ?? this.lessons,
     ongoing: clearOngoing ? null : ongoing ?? this.ongoing,
+    chaptersMigrated: chaptersMigrated ?? this.chaptersMigrated,
   );
 
   Map<String, dynamic> toJson() => {
@@ -412,6 +474,7 @@ class EndgameProgress {
       for (final MapEntry(:key, :value) in lessons.entries) key: value.toJson(),
     },
     'ongoing': ?ongoing?.toJson(),
+    if (chaptersMigrated) 'chapters': true,
   };
 
   static EndgameProgress fromJson(Object? json) {
@@ -423,6 +486,7 @@ class EndgameProgress {
           key: EndgameLessonProgress.fromJson(value),
       },
       ongoing: LessonCheckpoint.fromJson(json['ongoing']),
+      chaptersMigrated: json['chapters'] as bool? ?? false,
     );
   }
 }

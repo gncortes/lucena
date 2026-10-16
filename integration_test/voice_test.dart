@@ -1,10 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
+import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
-import 'robots/endgames_robot.dart';
 import 'robots/home_robot.dart';
 import 'robots/tour_robot.dart';
 import 'robots/variant.dart';
@@ -23,22 +26,15 @@ void main() {
     final tour = TourRobot($);
     final voice = VoiceRobot($);
     await app.open(systemLocale: _english, tour: true);
-    // A voz é o primeiro passo.
-    await tour.expectStep(TourStep.voice);
+    // A voz é o segundo passo, depois do tabuleiro.
+    await tour.openVoice();
 
     // Tocar numa voz liga a voz e o Viktor fala nela.
     await voice.choose(_voice(1));
     expect(voice.lastSpoken.$2, _voice(1));
 
     await tour.next();
-    await tour.expectStep(TourStep.characterVoices);
-    await voice.openCharacter('beachgoer');
-    await voice.choose(_voice(0));
-    expect(voice.lastSpoken.$1, contains('Coco'));
-    expect(voice.lastSpoken.$2, _voice(0));
-    await voice.closeSheet();
-    await tour.next();
-    await tour.expectStep(TourStep.goal);
+    await tour.expectStep(TourStep.school);
 
     // Fechar à força: a escolha continua.
     await app.restart();
@@ -55,58 +51,62 @@ void main() {
     final tour = TourRobot($);
     final voice = VoiceRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.expectStep(TourStep.voice);
+    await tour.openVoice();
     await voice.chooseNone();
     await tour.next();
-    await tour.expectStep(TourStep.goal);
+    await tour.expectStep(TourStep.school);
   });
 
-  patrolTest('lição: o botão de som liga a voz e fala, e cala de novo; '
-      'ligada, a fala sai sozinha', ($) async {
+  patrolTest('Configurações > Voz: sem a seção das vozes dos adversários; '
+      'cada adversário recebe uma voz sozinho, diferente da do Viktor', (
+    $,
+  ) async {
     final app = AppRobot($);
     final voice = VoiceRobot($);
-    final endgames = EndgamesRobot($);
     await app.open(systemLocale: _english);
-    await endgames.openFromHome();
-    await endgames.openLesson('rook.philidor');
-    await endgames.openSteps();
-
-    // A voz começa desligada: nada sai sozinho. O botão liga e já fala; de
-    // novo, cala.
-    expect(voice.spokenCount, 0);
-    await voice.tapSpeak();
-    expect(voice.spokenCount, 1);
-    var stops = voice.stops;
-    await voice.tapSpeak();
-    expect(voice.stops, greaterThan(stops));
-
-    // Sair da lição no meio da fala para a voz.
-    await voice.tapSpeak();
-    stops = voice.stops;
-    await endgames.back();
-    expect(voice.stops, greaterThan(stops));
-
-    // O botão deixou a voz ligada: o passo seguinte fala sozinho.
-    await app.restart();
-    var before = voice.spokenCount;
-    await endgames.openFromHome();
-    await endgames.openLesson('rook.philidor');
-    await endgames.openSteps();
-    await endgames.nextStep();
-    expect(voice.spokenCount, greaterThan(before));
-    await endgames.back();
-
-    // Desligada nas configurações, nada sai sozinho.
-    await app.restart();
     await HomeRobot($).openSettings();
     await voice.openSettings();
-    await voice.toggleEnabled();
-    await app.restart();
-    before = voice.spokenCount;
-    await endgames.openFromHome();
-    await endgames.openLesson('rook.philidor');
-    await endgames.openSteps();
-    await $.pump(const Duration(seconds: 1));
-    expect(voice.spokenCount, before);
+
+    // Só a voz do professor: nada de lista de vozes por adversário.
+    await $(VoiceKeys.voice(_voice(0))).scrollTo();
+    // Controle: o idioma é mesmo o inglês (o título que fica aparece), então
+    // a ausência dos textos antigos, abaixo, prova alguma coisa.
+    final l10n = $.tester.element(find.byKey(VoiceKeys.settingsSection)).l10n;
+    expect(find.text(l10n.voiceTeacher), findsOneWidget);
+    expect(l10n.voiceTeacher, "Teacher's voice");
+    expect(find.text("Opponents' voices"), findsNothing);
+    expect(find.text('Chosen by the app'), findsNothing);
+    expect(find.byKey(VoiceKeys.keep), findsNothing);
+
+    // A atribuição é automática: todos os adversários têm voz, e nenhum fala
+    // com a do Viktor (há mais de uma voz no idioma).
+    final speech = $.tester
+        .element(find.byKey(VoiceKeys.settingsSection))
+        .read<SpeechCubit>();
+    final state = speech.state;
+    final teacher = state.voiceOf(SpeechCubit.teacherId, 'en');
+    expect(teacher, isNotNull);
+    expect(state.characters, isNotEmpty);
+    for (final character in state.characters) {
+      final assigned = state.voiceOf(character.id, 'en');
+      expect(assigned, isNotNull, reason: character.id);
+      expect(
+        assigned!.voice.id,
+        isNot(teacher!.voice.id),
+        reason: character.id,
+      );
+    }
+
+    // Trocar a voz do Viktor muda a dele sem deixar um adversário com ela.
+    await voice.choose(_voice(1));
+    final changed = speech.state.voiceOf(SpeechCubit.teacherId, 'en')!;
+    expect(changed.voice.id, _voice(1));
+    for (final character in speech.state.characters) {
+      expect(
+        speech.state.voiceOf(character.id, 'en')!.voice.id,
+        isNot(changed.voice.id),
+        reason: character.id,
+      );
+    }
   });
 }

@@ -7,6 +7,7 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -14,6 +15,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
+import '../../core/theme/app_colors.dart';
 
 /// O fim do teste: a faixa (com o intervalo numa régua), o mapa do que o
 /// jogador domina e do que falta, os três primeiros passos do roteiro e, fixo
@@ -458,8 +460,8 @@ Color _color(ColorScheme colors, NodeState state) => switch (state) {
 
 // "Para estudar": âmbar, um aviso sem cara de erro.
 Color _amber(ColorScheme colors) => colors.brightness == Brightness.dark
-    ? Colors.amber.shade300
-    : Colors.amber.shade900;
+    ? AppColors.amberLight
+    : AppColors.amberDark;
 
 String _label(AppLocalizations l10n, NodeState state) => switch (state) {
   NodeState.mastered => l10n.placementMastered,
@@ -655,10 +657,7 @@ class _Actions extends StatelessWidget {
     final l10n = context.l10n;
     final colors = Theme.of(context).colorScheme;
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(top: BorderSide(color: colors.outlineVariant)),
-      ),
+      decoration: BoxDecoration(color: colors.surface),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screen,
@@ -673,7 +672,7 @@ class _Actions extends StatelessWidget {
             FilledButton(
               key: PlacementKeys.useLevel,
               style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
+                minimumSize: const Size.fromHeight(kButtonHeight),
               ),
               onPressed: onUse,
               child: Text(l10n.placementUseLevel),

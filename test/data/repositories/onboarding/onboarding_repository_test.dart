@@ -37,7 +37,7 @@ void main() {
       final repository = LocalOnboardingRepository(PreferencesService());
       const choice = Onboarding(
         done: true,
-        step: 12,
+        step: 5,
         selectedRating: 1530,
         byHand: false,
         inProgress: true,
@@ -65,6 +65,38 @@ void main() {
     expect(loaded.done, isTrue);
     expect(loaded.selectedRating, isNull);
     expect(loaded.inProgress, isFalse);
+  });
+
+  test(
+    'o passo do tour antigo migra para a chave nova e a velha some',
+    () async {
+      Future<int> migrated(String? legacy) async {
+        SharedPreferencesAsyncPlatform.instance =
+            InMemorySharedPreferencesAsync.empty();
+        final preferences = PreferencesService();
+        if (legacy != null) await preferences.setString('tour.step', legacy);
+        final step = (await LocalOnboardingRepository(preferences).load()).step;
+        expect(await preferences.getString('tour.step'), isNull);
+        return step;
+      }
+
+      expect(await migrated(null), 0);
+      expect(await migrated('3'), 0);
+      expect(await migrated('11'), 0);
+      expect(await migrated('12'), 5);
+      expect(await migrated('13'), 5);
+    },
+  );
+
+  test('a chave nova vale e não é sobrescrita pela antiga', () async {
+    final preferences = PreferencesService();
+    await preferences.setString('tour.step', '12');
+    await preferences.setString('tour.stepV2', '2');
+    final repository = LocalOnboardingRepository(preferences);
+    expect((await repository.load()).step, 2);
+    await repository.save(const Onboarding(step: 4));
+    expect(await preferences.getString('tour.stepV2'), '4');
+    expect((await repository.load()).step, 4);
   });
 
   test('a memória do personagem volta com a partida', () async {

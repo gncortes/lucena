@@ -13,6 +13,7 @@ void main() {
     int theta = 1450,
     Set<String> completedSchool = const {},
     Set<String> completedEndgames = const {},
+    bool soon = true,
   }) => PlacementRoadmap.build(
     result: resultWith(nodes, theta: theta),
     skills: skills,
@@ -20,6 +21,7 @@ void main() {
     endgameLessons: smallEndgames,
     completedSchool: completedSchool,
     completedEndgames: completedEndgames,
+    soon: soon,
   );
 
   group('Escola do Viktor', () {
@@ -165,6 +167,19 @@ void main() {
       strong.skippedSchool.keys.where((id) => id.startsWith('tricks.')),
       isEmpty,
     );
+  });
+
+  test('sem "em breve" (aulas escondidas): o nó sem aula não vira passo', () {
+    final nodes = {'pawns.opposition': mastered, 'pawns.reti': gap};
+    final theta = mid(RatingLevel.advanced);
+    final roadmap = build(nodes, theta: theta, soon: false);
+    expect(roadmap.steps.where((step) => step.soon), isEmpty);
+    expect(roadmap.nodes, isNot(contains('pawns.reti')));
+    final ready = build(
+      nodes,
+      theta: theta,
+    ).endgameSteps.firstWhere((step) => !step.soon);
+    expect(roadmap.nextEndgame!.lessonId, ready.lessonId);
   });
 
   test(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/endgame_difficulty.dart';
@@ -28,7 +29,7 @@ class CatalogScreen extends StatelessWidget {
     final categories = state.categories;
     return Scaffold(
       key: CatalogKeys.screen,
-      appBar: AppBar(title: Text(context.l10n.catalogTitle)),
+      appBar: LucenaAppBar(title: Text(context.l10n.catalogTitle)),
       body: Column(
         children: [
           const GoalFilterBar(),
@@ -224,23 +225,14 @@ class _DifficultyBadge extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final (label, background, foreground) = switch (difficulty) {
-      SpeedrunCategory.beginner => (
-        l10n.profileLevelBeginner,
-        colors.tertiaryContainer,
-        colors.onTertiaryContainer,
-      ),
-      SpeedrunCategory.intermediate => (
-        l10n.profileLevelIntermediate,
-        colors.secondaryContainer,
-        colors.onSecondaryContainer,
-      ),
-      SpeedrunCategory.advanced => (
-        l10n.profileLevelAdvanced,
-        colors.errorContainer,
-        colors.onErrorContainer,
-      ),
+    // Os três níveis no mesmo azul claro do design system (Gabriel, 14/10/2026).
+    final label = switch (difficulty) {
+      SpeedrunCategory.beginner => l10n.profileLevelBeginner,
+      SpeedrunCategory.intermediate => l10n.profileLevelIntermediate,
+      SpeedrunCategory.advanced => l10n.profileLevelAdvanced,
     };
+    final background = colors.secondaryContainer;
+    final foreground = colors.onSecondaryContainer;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(

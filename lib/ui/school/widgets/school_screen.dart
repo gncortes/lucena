@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,8 @@ import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
 import '../../core/widgets/figurine.dart';
@@ -49,7 +52,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
     final l10n = context.l10n;
     return Scaffold(
       key: SchoolKeys.screen,
-      appBar: AppBar(title: Text(l10n.schoolTitle)),
+      appBar: LucenaAppBar(title: Text(l10n.schoolTitle)),
       body: BlocBuilder<SchoolCubit, SchoolState>(
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
@@ -95,7 +98,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   FilledButton.icon(
                     key: SchoolKeys.continueButton,
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
+                      minimumSize: const Size.fromHeight(kButtonHeight),
                     ),
                     icon: const Icon(Icons.play_arrow_rounded),
                     label: Text(
@@ -105,7 +108,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                           ? l10n.schoolContinue(texts.lessonTitle(next))
                           : l10n.schoolStart,
                     ),
-                    onPressed: () => context.go(Routes.lesson(next)),
+                    onPressed: () => context.go(Routes.lessonScript(next)),
                   ),
                 ],
                 if (state.graduated) ...[
@@ -113,7 +116,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   FilledButton.tonalIcon(
                     key: SchoolKeys.endgamesButton,
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(52),
+                      minimumSize: const Size.fromHeight(kButtonHeight),
                     ),
                     icon: const Icon(Icons.auto_stories_outlined),
                     label: Text(l10n.endgamesTitle),
@@ -284,7 +287,7 @@ class _LessonNode extends StatelessWidget {
           );
         return;
       }
-      context.go(Routes.lesson(lesson.id));
+      context.go(Routes.lessonScript(lesson.id));
     }
 
     return Padding(
@@ -504,7 +507,7 @@ class _SkippedGroup extends StatelessWidget {
                     key: SchoolKeys.skippedLesson(lesson.id),
                     title: state.texts.lessonTitle(lesson.id),
                     reason: reason,
-                    onTap: () => context.go(Routes.lesson(lesson.id)),
+                    onTap: () => context.go(Routes.lessonScript(lesson.id)),
                   ),
               ],
               const SizedBox(height: 12),
@@ -622,7 +625,7 @@ class _ChallengesCard extends StatelessWidget {
                 ),
                 child: const Icon(
                   Icons.star_rounded,
-                  color: Color(0xfff2b705),
+                  color: AppColors.goldColor,
                   size: 38,
                 ),
               ),

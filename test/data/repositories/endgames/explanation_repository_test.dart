@@ -146,7 +146,7 @@ void main() {
   test(
     'real e14 review keeps every decision in turn order with unique ids',
     () async {
-      const lessonId = 'pawns.distantOpposition';
+      const lessonId = 'pawns.waitingMoves';
       final data = jsonDecode(
         File(AssetExerciseFeedbackRepository.assetPath(lessonId))
             .readAsStringSync(),
@@ -163,10 +163,10 @@ void main() {
       final solutions = review.explanations
           .where((b) => b.kind == ExplanationKind.mainSolution)
           .toList();
-      expect(solutions.length, 7);
+      expect(solutions.length, 3);
       expect(
         solutions.map((b) => b.id),
-        List.generate(7, (i) => 'exercise/e14.${i + 1}:main_solution'),
+        List.generate(3, (i) => 'exercise/e14.${i + 1}:main_solution'),
       );
       final blockIds = review.explanations.map((b) => b.id).toList();
       final variants = review.explanations.expand((b) => b.variations).toList();
@@ -226,49 +226,63 @@ void main() {
   );
 
   test('all real counterexamples keep authored consequence separately from reply outcome', () async {
-    const lessonId = 'pawns.distantOpposition';
-    final data = jsonDecode(
-      File(AssetExerciseFeedbackRepository.assetPath(lessonId))
-          .readAsStringSync(),
-    ) as Map<String, dynamic>;
-    final repository = AssetExerciseFeedbackRepository(_Assets(data));
-    final positions = (data['positions'] as List)
-        .cast<Map<String, dynamic>>()
-        .where((p) => (p['id'] as String).startsWith('err_'))
-        .toList();
-    expect(positions.length, 17);
-    for (final position in positions) {
-      for (final language in ['pt', 'en']) {
-        final payload = (await repository.findPayload(
-          lessonId: lessonId,
-          exerciseId: position['id'],
-          kind: position['kind'],
-          turn: position['turn'],
-          fen: position['fen'],
-          language: language,
-          state: ExplanationState.review,
-        ))!;
-        final block = payload.explanations.singleWhere(
-          (b) => b.variations.isNotEmpty,
-        );
-        expect(
-          block.title,
-          language == 'pt'
-              ? 'Por que a tentativa anterior falha'
-              : 'Why the previous attempt fails',
-        );
-        final variant = block.variations.single;
-        expect(variant.outcomeText, variant.texts.first);
-        expect(
-          variant.outcomeText,
-          startsWith(
+    var total = 0;
+    for (final lessonId in ['pawns.distantOpposition', 'pawns.waitingMoves']) {
+      final data = jsonDecode(
+        File(AssetExerciseFeedbackRepository.assetPath(lessonId))
+            .readAsStringSync(),
+      ) as Map<String, dynamic>;
+      final repository = AssetExerciseFeedbackRepository(_Assets(data));
+      final positions = (data['positions'] as List)
+          .cast<Map<String, dynamic>>()
+          .where((p) => (p['id'] as String).startsWith('err_'))
+          .toList();
+      total += positions.length;
+      for (final position in positions) {
+        for (final language in ['pt', 'en']) {
+          final payload = (await repository.findPayload(
+            lessonId: lessonId,
+            exerciseId: position['id'],
+            kind: position['kind'],
+            turn: position['turn'],
+            fen: position['fen'],
+            language: language,
+            state: ExplanationState.review,
+          ))!;
+          final block = payload.explanations.singleWhere(
+            (b) => b.variations.isNotEmpty,
+          );
+          expect(
+            block.title,
             language == 'pt'
-                ? 'Refutação da tentativa anterior:'
-                : 'Refutation of the previous attempt:',
-          ),
-        );
+                ? 'Por que o lance anterior não funciona'
+                : 'Why the previous move does not work',
+          );
+          final variant = block.variations.single;
+          expect(variant.outcomeText, variant.texts.first);
+          // A frase de punição é própria de cada posição e cita a resposta
+          // numerada que pune o lance anterior (rodada 2 da oposição).
+          // Na waitingMoves o texto é em prosa, sem notação (regra do app).
+          if (lessonId == 'pawns.distantOpposition') {
+            expect(
+              variant.outcomeText,
+              contains(RegExp(r'\d+\.(\.\.)?[A-Za-h]')),
+            );
+          }
+          expect(
+            variant.outcomeText,
+            isNot(
+              startsWith(
+                language == 'pt'
+                    ? 'É esta resposta que pune o lance anterior'
+                    : 'This is the reply that punishes the previous move',
+              ),
+            ),
+          );
+        }
       }
     }
+    expect(total, 17);
   });
 
   const fen = '6k1/8/8/8/8/8/3P4/7K w - - 0 1';

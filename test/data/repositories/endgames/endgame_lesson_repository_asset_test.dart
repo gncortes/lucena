@@ -152,6 +152,46 @@ void main() {
     },
   );
 
+  test(
+    'capítulo cujo roteiro ainda não existe fica sem roteiro (escondido)',
+    () async {
+      const present = 'assets/lessons/roteiros/pawns.keySquares/a.json';
+      final lesson = {
+        ..._lesson,
+        'id': 'pawns.keySquares',
+        'steps': null,
+        'parts': [
+          {'id': 'a', 'steps': <Object>[], 'roteiro': present},
+          {
+            'id': 'b',
+            'steps': <Object>[],
+            'roteiro': 'assets/lessons/roteiros/pawns.keySquares/b.json',
+          },
+        ],
+      }..remove('steps');
+      final repository = AssetEndgameLessonRepository(
+        AssetService(
+          _Bundle({
+            AssetEndgameLessonRepository.indexPath: jsonEncode({
+              'modules': [
+                {
+                  'id': 'pawns',
+                  'lessons': ['pawns.keySquares'],
+                },
+              ],
+            }),
+            AssetEndgameLessonRepository.lessonPath('pawns.keySquares'):
+                jsonEncode(lesson),
+            present: '{}',
+          }),
+        ),
+        school: FakeLessonRepository(),
+      );
+      final parts = (await repository.trail()).lessons.single.lesson.parts;
+      expect([for (final part in parts) part.script], [present, null]);
+    },
+  );
+
   test('as falas ganham o prefixo da aula, e o idioma cai no inglês', () async {
     final texts = await repository().texts('pt');
     expect(texts.lessonTitle('rook.lucena'), 'A posição de Lucena');

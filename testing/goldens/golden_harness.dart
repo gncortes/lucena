@@ -46,13 +46,20 @@ abstract final class Goldens {
           GoldenVariant(theme: theme, locale: locale, width: width),
   ];
 
+  /// Só o português no tema claro, em 360 e 412 (o escopo validado hoje).
+  static final ptLight = [
+    for (final width in [360.0, 412.0])
+      GoldenVariant(theme: ThemeMode.light, locale: Locale('pt'), width: width),
+  ];
+
   /// Um teste por variante, com o golden em `goldens/<name>/<variante>.png`.
   static void matrix(
     String name,
     Widget Function(GoldenVariant variant) build, {
     double height = 640,
+    List<GoldenVariant>? only,
   }) {
-    for (final variant in variants) {
+    for (final variant in only ?? variants) {
       testWidgets('$name · ${variant.id}', (tester) async {
         await loadFonts();
         tester.view

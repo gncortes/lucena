@@ -1,6 +1,8 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/all_modes_keys.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/domain/use_cases/lesson_rules.dart';
 import 'package:lucena/domain/use_cases/star_challenge_rules.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
@@ -17,6 +19,14 @@ class StarChallengeRobot {
   /// Da trilha da escola, pelo cartão dos desafios.
   Future<void> openFromSchool() async {
     await $(SchoolKeys.challengesButton).scrollTo().tap();
+    await $(StarChallengeKeys.listScreen).waitUntilVisible();
+  }
+
+  /// Pela tela de todos os modos (a Escola, que também leva aos desafios,
+  /// pode estar escondida).
+  Future<void> openFromAllModes() async {
+    await $(HomeKeys.allModesButton).tap();
+    await $(AllModesKeys.item('stars')).scrollTo().tap();
     await $(StarChallengeKeys.listScreen).waitUntilVisible();
   }
 

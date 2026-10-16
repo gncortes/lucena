@@ -1,0 +1,44 @@
+import '../domain/models/endgame_lesson.dart';
+import '../domain/models/lesson.dart';
+import '../domain/models/star_challenge.dart';
+import 'routes.dart';
+
+/// Onde o app abre: na partida ou na aula que estava na tela quando ele foi
+/// fechado, ou no início. Aula escondida não reabre: a da Escola sem
+/// [showSchool], a de final fora de [visibleEndgameLessons] (nulo: todas).
+String launchLocation({
+  int? conclusion,
+  bool resumeGame = false,
+  SchoolProgress school = const SchoolProgress(),
+  EndgameProgress endgames = const EndgameProgress(),
+  OpenStarChallenge? stars,
+  bool showSchool = true,
+  Set<String>? visibleEndgameLessons,
+}) {
+  final lesson = showSchool ? school.ongoing : null;
+  final endgameLesson = endgames.ongoing;
+  final exercise = endgames.openExercise;
+  bool visible(String id) => visibleEndgameLessons?.contains(id) ?? true;
+  if (conclusion != null) return Routes.conclusion(conclusion);
+  if (resumeGame) return Routes.freeBoard;
+  if (lesson != null && lesson.open) {
+    return Routes.lessonScript(lesson.lessonId);
+  }
+  if (endgameLesson != null &&
+      endgameLesson.open &&
+      visible(endgameLesson.lessonId)) {
+    // Com a parte: a parte com roteiro vai direto para a tela de roteiro (o
+    // redirect da rota), que grava o checkpoint com ela.
+    return Routes.endgameLessonScript(
+      endgameLesson.lessonId,
+      part: endgameLesson.part,
+    );
+  }
+  if (exercise != null && visible(exercise.$1)) {
+    return Routes.endgameExercise(exercise.$1, exercise.$2.exerciseId);
+  }
+  if (stars != null) {
+    return Routes.starChallenge(stars.piece.name, stars.level.name);
+  }
+  return Routes.home;
+}

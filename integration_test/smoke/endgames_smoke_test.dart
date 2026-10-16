@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:patrol/patrol.dart';
 
@@ -12,6 +13,8 @@ const _lessonId = 'mates.bishopKnight.w';
 
 /// Fumaça das aulas de finais: tema escuro, árabe, pseudo-idioma longo e
 /// segundo plano.
+final _hidden = !VisibleLessons.endgameLessonIds.contains(_lessonId);
+
 void main() {
   Future<void> walkThrough(PatrolIntegrationTester $, AppRobot app) async {
     final endgames = EndgamesRobot($);
@@ -26,10 +29,9 @@ void main() {
     await endgames.startExercises(_lessonId, lesson.exercises.first.id);
     app.expectNoClippedText();
     await endgames.back();
-    await endgames.openSteps();
-    app.expectNoClippedText();
   }
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('aulas de finais em tema escuro', ($) async {
     final app = AppRobot($);
     await app.enableSystemDarkMode();
@@ -41,16 +43,18 @@ void main() {
     app.expectBrightness(Brightness.dark);
     await endgames.openLesson(_lessonId);
     app.expectBrightness(Brightness.dark);
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('aulas de finais em árabe, sem texto cortado', ($) async {
     final app = AppRobot($);
     await app.open(systemLocale: const Locale('ar'));
 
     await walkThrough($, app);
     app.expectDirection(TextDirection.rtl);
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('aulas de finais no pseudo-idioma longo', ($) async {
     final app = AppRobot($);
     final settings = SettingsRobot($);
@@ -61,11 +65,10 @@ void main() {
     await settings.backToHome();
 
     await walkThrough($, app);
-  });
+  }, skip: _hidden);
 
-  patrolTest('exercício e lição voltam do segundo plano onde estavam', (
-    $,
-  ) async {
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
+  patrolTest('exercício volta do segundo plano onde estava', ($) async {
     final app = AppRobot($);
     final endgames = EndgamesRobot($);
     await app.open(systemLocale: const Locale('en', 'US'));
@@ -78,12 +81,5 @@ void main() {
     await app.sendToBackgroundAndReturn();
     await endgames.expectExercise(_lessonId, first.id);
     endgames.expectExerciseBoard('k1N5/2K5/8/8/8/8/8/5B2 w - - 2 2');
-
-    await endgames.back();
-    await endgames.openSteps();
-    await endgames.nextStep();
-    await app.sendToBackgroundAndReturn();
-    // O passo de pensar e, com "Ver explicação", a explicação dele.
-    await endgames.expectStep(_lessonId, 'corner');
-  });
+  }, skip: _hidden);
 }

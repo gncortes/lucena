@@ -22,7 +22,7 @@
   "part.staircase.title": "O rei em escada",
   "part.staircase.summary": "O rei desce em escada na direção da torre, fugindo da cravada e do espeto, até o peão coroar. A ideia vai da partida Fenton–Potter, de 1875, à posição de Saavedra.",
   "part.fortress.title": "Torre contra dama",
-  "part.fortress.summary": "Quando o peão vai coroar de qualquer jeito, a torre protegida pelo rei dá xeque sem parar ou se troca pela dama. No fim, as regras para levar para o desafio prático.",
+  "part.fortress.summary": "Se o peão vai coroar, a torre protegida pelo rei dá xeque sem parar ou se troca pela dama: rei contra rei é empate.",
   "step.t_cut": "O peão de d4 está sozinho, e o seu rei está longe, em h7. O rei preto, em f6, está a um passo de se juntar ao peão. Se o seu rei for direto, chega tarde. Qual lance da torre ganha o tempo que falta?",
   "step.t_cut.hint1": "O rei preto ainda não está ao lado do peão. É possível impedir que ele chegue lá?",
   "step.t_cut.hint2": "Procure uma fileira inteira que o rei preto precise atravessar para chegar ao peão.",

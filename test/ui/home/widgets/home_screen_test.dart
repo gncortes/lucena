@@ -195,50 +195,43 @@ void main() {
   const beginner = UserProfile(rating: 800);
   const master = UserProfile(rating: 2400);
 
-  testWidgets('iniciante: Aprender e Jornada em destaque, cada um dizendo o '
-      'que se faz nele; os outros recolhidos em Outros modos', (tester) async {
+  testWidgets('iniciante: a Jornada e as aulas de finais em destaque, sem a '
+      'Escola escondida; os outros recolhidos em Outros modos', (tester) async {
     await pumpTall(tester, profile: beginner);
 
     expect(find.text('O que você quer fazer?'), findsOneWidget);
-    for (final (key, title, body) in [
-      (
-        HomeKeys.schoolButton,
-        'Aprender a jogar xadrez',
-        'Aulas com o Viktor: como as peças se movem, xeque, mate e os '
-            'primeiros finais.',
-      ),
-      (
-        HomeKeys.journeyButton,
-        'Jornada',
-        'O passo seguinte às aulas: pratique vencendo os finais de cada '
-            'adversário, do mais fraco até o Stockfish.',
-      ),
-    ]) {
-      final card = find.byKey(key);
-      expect(
-        find.descendant(of: card, matching: find.text(title)),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: card, matching: find.text(body)),
-        findsOneWidget,
-      );
-    }
+    final card = find.byKey(HomeKeys.journeyButton);
     expect(
-      top(tester, HomeKeys.schoolButton),
-      lessThan(top(tester, HomeKeys.journeyButton)),
+      find.descendant(of: card, matching: find.text('Jornada')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: card,
+        matching: find.text(
+          'O passo seguinte às aulas: pratique vencendo os finais de cada '
+          'adversário, do mais fraco até o Stockfish.',
+        ),
+      ),
+      findsOneWidget,
+    );
+    // A Escola (VisibleLessons) não aparece nem em Outros modos.
+    expect(find.byKey(HomeKeys.schoolButton), findsNothing);
+    expect(
+      top(tester, HomeKeys.journeyButton),
+      lessThan(top(tester, HomeKeys.endgamesButton)),
     );
     // Recolhidos, mas à mão.
     expect(find.byKey(HomeKeys.speedrunButton), findsNothing);
     await tester.tap(find.byKey(HomeKeys.otherModes));
     await tester.pumpAndSettle();
     final order = [
-      HomeKeys.endgamesButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
       HomeKeys.freeBoardButton,
     ].map((key) => top(tester, key)).toList();
     expect(order, [...order]..sort());
+    expect(find.byKey(HomeKeys.schoolButton), findsNothing);
     // Os números do jogador saíram daqui: ficam nos detalhes do rating.
     expect(find.text('Partidas'), findsNothing);
     expect(find.text('Dias seguidos'), findsNothing);

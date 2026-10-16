@@ -42,6 +42,17 @@ class FakeSpeedrunRepository implements SpeedrunRepository {
       if (attempt.speedrunId == speedrunId) _withGames(attempt),
   ];
 
+  @override
+  Future<List<SpeedrunAttempt>> allAttempts() async => [
+    for (final attempt in _attempts) _withGames(attempt),
+  ];
+
+  /// Marca a tentativa [attemptId] como de antes do bônus (migração 7→8).
+  void beforeBonus(int attemptId) {
+    final index = _attempts.indexWhere((attempt) => attempt.id == attemptId);
+    _attempts[index] = _attempts[index].copyWith(bonusEligible: false);
+  }
+
   SpeedrunAttempt _withGames(SpeedrunAttempt attempt) => attempt.copyWith(
     games: [
       for (final game in progress.attempts)

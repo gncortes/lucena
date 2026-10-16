@@ -1,5 +1,6 @@
 import '../models/home_layout.dart';
 import '../models/rating_level.dart';
+import 'visible_lessons.dart';
 
 /// Qual texto um caminho mostra na tela inicial, pelo nível do jogador.
 enum HomePathText {
@@ -19,7 +20,10 @@ abstract final class HomeSuggestion {
   /// A sugestão do nível [level]: os caminhos na ordem que faz sentido para
   /// ele, com os primeiros marcados. Os finais para você vêm logo antes das
   /// aulas de finais e, quando elas estão marcadas, marcados também.
-  static HomeLayout of(RatingLevel level) {
+  ///
+  /// Sem a Escola ([school] falso, enquanto [VisibleLessons] não libera aula
+  /// dela), as aulas do Viktor saem da lista e o próximo caminho sobe.
+  static HomeLayout of(RatingLevel level, {bool? school}) {
     const learn = HomePath.learn;
     const journey = HomePath.journey;
     const endgames = HomePath.endgames;
@@ -36,6 +40,7 @@ abstract final class HomeSuggestion {
       RatingLevel.expert => ([endgames, speedrun, train, journey, learn], 3),
       RatingLevel.master => ([speedrun, endgames, train, journey, learn], 3),
     };
+    if (!(school ?? VisibleLessons.school)) order.remove(learn);
     final visible = order.take(marked).toSet();
     final at = order.indexOf(endgames);
     final withForYou = [...order]..insert(at, HomePath.forYou);
@@ -46,9 +51,21 @@ abstract final class HomeSuggestion {
   }
 
   /// O layout da tela: o ajustado pelo jogador ou, sem ajuste (ou sem nada
-  /// gravado), a sugestão do nível atual.
-  static HomeLayout resolve(HomeLayout? saved, RatingLevel level) =>
-      saved != null && saved.custom ? saved : of(level);
+  /// gravado), a sugestão do nível atual. Sem a Escola, as aulas do Viktor saem também do ajustado.
+  static HomeLayout resolve(
+    HomeLayout? saved,
+    RatingLevel level, {
+    bool? school,
+  }) {
+    if (saved == null || !saved.custom) return of(level, school: school);
+    if (school ?? VisibleLessons.school) return saved;
+    final order = [...saved.order]..remove(HomePath.learn);
+    final visible = {...saved.visible}..remove(HomePath.learn);
+    return saved.copyWith(
+      order: order,
+      visible: visible.isEmpty ? {order.first} : visible,
+    );
+  }
 
   /// O layout com os caminhos [visible] marcados (no tour ou na
   /// configuração). Diferente da sugestão do nível, ele fica como ajustado.

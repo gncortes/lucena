@@ -141,6 +141,10 @@ abstract final class Routes {
   static const speedruns = '/speedruns';
   static String speedrun(String id) => '/speedruns/$id';
 
+  /// O histórico de um speedrun: o [id] já com o ritmo
+  /// (`SpeedrunPaces.idFor`).
+  static String speedrunHistory(String id) => '/speedruns/$id/history';
+
   ///
   /// [game] (o instante em que uma etapa terminou) faz a tentativa ser lida de
   /// novo ao voltar do tabuleiro, mesmo que a tela dela já esteja aberta.
@@ -179,7 +183,13 @@ abstract final class Routes {
 
   /// A Escola do Viktor (as aulas do iniciante) e uma aula dela.
   static const school = '/school';
-  static String lesson(String id) => '/school/$id';
+
+  /// A aula da escola com roteiro (curso de iniciante, T71), na etapa
+  /// [stage].
+  static String lessonScript(String id, {int stage = 0}) => Uri(
+    path: '/school/$id/roteiro',
+    queryParameters: {'etapa': '$stage'},
+  ).toString();
   static const starChallenges = '/school/challenges';
   static String starChallenge(String piece, String level) =>
       '/school/challenges/$piece/$level';
@@ -193,11 +203,14 @@ abstract final class Routes {
       '/endgames?filter=${forYou ? 'forYou' : 'all'}';
   static String endgameLesson(String id) => '/endgames/$id';
 
-  /// A lição de uma aula de final; numa aula em partes, a parte [part].
-  static String endgameLessonSteps(String id, {String? part}) => Uri(
-    path: '/endgames/$id/lesson',
-    queryParameters: part == null ? null : {'part': part},
-  ).toString();
+  /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
+  /// Sem parte, ou com uma que não abre mais, a rota cai no início da
+  /// primeira parte (`resolveScriptPart`).
+  static String endgameLessonScript(String id, {String? part, int stage = 0}) =>
+      Uri(
+        path: '/endgames/$id/roteiro',
+        queryParameters: {'part': ?part, 'etapa': '$stage'},
+      ).toString();
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';

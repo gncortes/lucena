@@ -1,7 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
@@ -26,12 +25,11 @@ void main() {
     final tour = TourRobot($);
     final progress = ProgressRobot($);
     app.expectNoClippedText();
-    // Os passos de aparência: tema e cor do app, depois o tabuleiro.
-    await tour.next();
-    await tour.expectStep(TourStep.theme);
+    // O tabuleiro e a voz abrem o tour.
+    await tour.expectStep(TourStep.board);
     app.expectNoClippedText();
     await tour.next();
-    await tour.expectStep(TourStep.board);
+    await tour.expectStep(TourStep.voice);
     app.expectNoClippedText();
     await tour.nextUntilLevel();
     app.expectNoClippedText();
@@ -73,7 +71,6 @@ void main() {
     addTearDown(app.disableSystemDarkMode);
     await app.open(systemLocale: const Locale('en', 'US'), tour: true);
 
-    await TourRobot($).passVoice();
     app.expectBrightness(Brightness.dark);
     await walkThrough($, app);
     app.expectBrightness(Brightness.dark);
@@ -83,7 +80,6 @@ void main() {
     final app = AppRobot($);
     await app.open(systemLocale: const Locale('ar'), tour: true);
 
-    await TourRobot($).passVoice();
     app.expectDirection(TextDirection.rtl);
     await walkThrough($, app);
   });
@@ -97,7 +93,6 @@ void main() {
     await settings.chooseLanguage(AppLanguage.pseudo);
     await settings.back();
     await TourRobot($).openFromSettings();
-    await TourRobot($).passVoice();
 
     await walkThrough($, app);
   });
@@ -107,13 +102,9 @@ void main() {
     final app = AppRobot($);
     final tour = TourRobot($);
     await app.open(systemLocale: const Locale('en', 'US'), tour: true);
-    await TourRobot($).passVoice();
     await tour.next();
-    await tour.chooseAccent(AppAccent.orange);
     await app.sendToBackgroundAndReturn();
-    await tour.expectStep(TourStep.theme);
-    tour.expectAccentValue('Orange');
-    app.expectAccent(AppAccent.orange);
+    await tour.expectStep(TourStep.voice);
     await tour.skip();
 
     await ProgressRobot($).openAchievements();

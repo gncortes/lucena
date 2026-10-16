@@ -2,7 +2,7 @@
   "title": "Bispo e cavalo I: a manobra em W",
   "summary": "Levar o rei preto do canto errado ao canto do mate, com o cavalo desenhando um W.",
   "part.corner.title": "O canto certo",
-  "part.corner.summary": "Por que o mate só é forçado no canto da cor do bispo, e as duas primeiras pontas do W.",
+  "part.corner.summary": "Com bispo e cavalo, o mate só é forçado no canto da cor do bispo; o cavalo faz o W pela borda e tira as casas da outra cor.",
   "step.t_corner": "O rei preto já está na borda, em h8. Antes de qualquer lance, pense: em que canto o mate pode ser forçado, e qual peça vai tirar dele as casas escuras da oitava fileira?",
   "step.t_corner.hint1": "Compare a cor da casa h8 com a cor das casas do seu bispo.",
   "step.t_corner.hint2": "O bispo nunca alcança uma casa escura. Quem controla as casas escuras da oitava fileira é a outra peça, saltando em zigue-zague.",

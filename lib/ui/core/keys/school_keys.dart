@@ -10,12 +10,6 @@ abstract final class SchoolKeys {
   static const screen = Key('school.screen');
   static const scroll = Key('school.scroll');
   static const continueButton = Key('school.continue');
-  static const graduated = Key('school.graduated');
-  static const diploma = Key('school.graduation.diploma');
-  static const diplomaName = Key('school.graduation.diplomaName');
-  static const graduationSummary = Key('school.graduation.summary');
-  static const graduationCard = Key('school.graduation.card');
-  static const graduationShare = Key('school.graduation.share');
   static const endgamesButton = Key('school.endgames');
   static const challengesButton = Key('school.challenges');
 
@@ -26,92 +20,33 @@ abstract final class SchoolKeys {
   static Key module(String id) => Key('school.module.$id');
 }
 
+/// As chaves que sobraram da lição antiga: a faixa de variantes
+/// (`variation_strip.dart`, usada pelo exercício e pela lista de lances) e o
+/// balão de teste do `CharacterSpeech`.
 abstract final class LessonKeys {
-  /// T60, modo exercício: a faixa do enunciado em cima, o cronômetro do
-  /// passo e o rodapé das ações.
-  static const prompt = Key('lesson.prompt');
-  static const stepTimer = Key('lesson.step.timer');
-  static const footer = Key('lesson.footer');
+  static const variationStripList = Key('lesson.variation.strip.list');
+  static const variationStripCurrent = Key('lesson.variation.strip.current');
 
-  /// O esmaecer de 24 dp no topo do rodapé (fundo sólido abaixo dele).
-  static const footerFade = Key('lesson.footer.fade');
-
-  /// O convite para jogar no Lichess e o botão que abre o site.
-  static const lichessInvite = Key('lesson.lichessInvite');
-  static const lichessButton = Key('lesson.lichessButton');
-
-  /// O link do passo para a partida ou o estudo de onde vem a posição.
-  static const referenceLink = Key('lesson.referenceLink');
-
-  /// O confete do fim da aula.
-  static const celebration = Key('lesson.celebration');
-
-  /// Na formatura: o primeiro jogo com relógio e o que é o "+10".
-  static const clockGameButton = Key('lesson.clockGame');
-  static const clockHelp = Key('lesson.clockHelp');
-
-  static const screen = Key('lesson.screen');
-  static const missing = Key('lesson.missing');
-  static const board = Key('lesson.board');
-  static const speech = Key('lesson.speech');
-  static const viktorSheet = Key('lesson.viktorSheet');
-  static const scroll = Key('lesson.scroll');
-
-  /// Volta ao passo anterior, para rever.
-  static const backButton = Key('lesson.back');
-  static const progress = Key('lesson.progress');
-  static const stepCounter = Key('lesson.stepCounter');
-
-  /// Sob o tabuleiro: o título da aula e o que fazer no passo.
-  static const title = Key('lesson.title');
-  static const guide = Key('lesson.guide');
-  static const nextButton = Key('lesson.next');
-  static const hintButton = Key('lesson.hint');
-
-  /// T51: o passo de pensar, a demonstração e o fim de uma parte.
-  static const appBarTitle = Key('lesson.appBar.title');
-  static const place = Key('lesson.appBar.place');
-  static const thinkReset = Key('lesson.think.reset');
-  static const moreHintButton = Key('lesson.think.moreHint');
-  static const demoBack = Key('lesson.demo.back');
-  static const demoForward = Key('lesson.demo.forward');
-  static const demoReplay = Key('lesson.demo.replay');
-  static const demoPause = Key('lesson.demo.pause');
+  /// Os pontos "pensando" na folha do Viktor.
+  static const sheetTyping = Key('lesson.sheet.typing');
 
   /// A variante citada na fala, lance a lance no tabuleiro.
-  static const variationShow = Key('lesson.variation.show');
-  static const variationExit = Key('lesson.variation.exit');
-  static const variationBack = Key('lesson.variation.back');
-  static const variationForward = Key('lesson.variation.forward');
+  static Key variationMove(int ply) => Key('lesson.variation.move.$ply');
+  static Key variationBranch(String id) => Key('lesson.variation.branch.$id');
+  static Key variationBranchMove(String id, int ply) =>
+      Key('lesson.variation.branch.$id.move.$ply');
+  static Key variationResult(String id) =>
+      Key('lesson.variation.branch.$id.result');
 
-  /// O selo de linha errada: junto ao tabuleiro e nos controles.
-  static const wrongLine = Key('lesson.wrongLine.board');
-  static const wrongLineControls = Key('lesson.wrongLine.controls');
+  /// Lances ocultos (T69): o botão do canto da faixa e os blocos.
+  static const variationHiddenToggle = Key('lesson.variation.hiddenMoves');
+  static Key variationHiddenBlock(int row) =>
+      Key('lesson.variation.hidden.$row');
+  static const variationHiddenComment = Key('lesson.variation.hidden.comment');
 
-  /// Depois de um lance errado previsto: rever o ponto da lição.
-  static const reviewPoint = Key('lesson.reviewPoint');
-  static const partFinished = Key('lesson.part.finished');
-  static const nextPartButton = Key('lesson.part.next');
-  static const reviewPartButton = Key('lesson.part.review');
-  static const closeSheet = Key('lesson.sheet.close');
-  static const marksToggle = Key('lesson.marks');
-  static const partSummary = Key('lesson.part.summary');
-  static const allPartsDone = Key('lesson.part.allDone');
-  static const retryButton = Key('lesson.retry');
-  static const finished = Key('lesson.finished');
-  static const nextLessonButton = Key('lesson.nextLesson');
-  static const trailButton = Key('lesson.trail');
-  static const journeyButton = Key('lesson.journey');
-
-  /// No fim da lição de uma aula de final: volta para a aula e os exercícios.
-  static const exercisesButton = Key('lesson.exercises');
-
-  /// O passo aberto (`<aula>.<passo>`).
-  static Key step(String lessonId, String stepId) =>
-      Key('lesson.step.$lessonId.$stepId');
-
-  /// Uma estrela que falta pegar.
-  static Key star(String square) => Key('lesson.star.$square');
+  static const practiceSpeech = Key('lesson.practice.speech');
+  static const practiceViktor = Key('lesson.practice.viktor');
+  static const practiceTyping = Key('lesson.practice.typing');
 }
 
 /// Os desafios das estrelas: a lista e um desafio.

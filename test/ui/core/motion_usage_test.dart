@@ -24,11 +24,18 @@ void main() {
           'relógio da partida: tempo de jogo',
       'duration: const Duration(milliseconds: 1400)':
           'coreografia do cartão do resultado (sai na frente B)',
+      'total = Duration(milliseconds: 1600)': 'selo de fim: 200 + 1200 + 200',
+      '_reducedFade = Duration(milliseconds: 150)':
+          'selo de fim com movimento reduzido',
+      'const Duration(milliseconds: 1200)': 'pico do selo de fim',
     },
     'lib/ui/free_board/widgets/character_bar.dart': {
       'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
       'Duration(milliseconds: math.max(6000, widget.text.length * 60))':
           'tempo disponível para ler a fala flutuante antes de ocultá-la',
+    },
+    'lib/ui/core/widgets/character_speech.dart': {
+      'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
     },
     'lib/ui/core/widgets/teacher_speech.dart': {
       'Duration(milliseconds: (_length': 'ritmo de leitura da fala',
@@ -60,15 +67,19 @@ void main() {
       'minHold = Duration(milliseconds: 350)':
           'toque longo do microfone: gesto, não animação',
     },
-    'lib/ui/school/widgets/lesson_screen.dart': {
-      'Timer.periodic(const Duration(milliseconds: 250)':
-          'cronômetro do passo e ritmo da demonstração: tempo, não animação',
+    'lib/ui/core/widgets/viktor_sheet.dart': {
+      'Duration(milliseconds: (2000 + 50 * length)':
+          'tempo de leitura da folha aberta sozinha: tempo, não animação',
     },
     'lib/ui/core/widgets/skeleton.dart': {
       'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',
     },
-    'lib/ui/tour/widgets/tour_demos.dart': {
-      'const Duration(milliseconds:': 'coreografia das demonstrações do tour',
+    'lib/ui/core/widgets/typing_dots.dart': {
+      'cycle = Duration(milliseconds: 1200)':
+          'ciclo dos pontinhos de digitando',
+      'stagger = Duration(milliseconds: 150)': 'defasagem entre os pontinhos',
+      'MediaQuery.disableAnimationsOf(context)':
+          'sem animação os pontinhos ficam parados, não só mais curtos',
     },
   };
 

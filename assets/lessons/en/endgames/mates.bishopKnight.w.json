@@ -2,7 +2,7 @@
   "title": "Bishop and knight I: the W manoeuvre",
   "summary": "Drive the black king from the wrong corner to the mating corner, with the knight drawing a W.",
   "part.corner.title": "The right corner",
-  "part.corner.summary": "Why mate can only be forced in the corner of the bishop's colour, and the first two points of the W.",
+  "part.corner.summary": "With bishop and knight, mate can only be forced in the corner of the bishop’s colour; the knight traces the W along the edge and covers the squares of the other colour.",
   "step.t_corner": "The black king is already on the edge, on h8. Before any move: in which corner can mate be forced, and which piece will take the dark squares of the eighth rank away from him?",
   "step.t_corner.hint1": "Compare the colour of h8 with the colour of your bishop's squares.",
   "step.t_corner.hint2": "The bishop never touches a dark square. The dark squares of the eighth rank belong to the other piece, jumping in a zigzag.",

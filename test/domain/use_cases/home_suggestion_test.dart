@@ -42,7 +42,8 @@ void main() {
     };
     for (final MapEntry(key: level, value: (order, visible))
         in expected.entries) {
-      final layout = HomeSuggestion.of(level);
+      // Com a Escola liberada; sem ela, visible_lessons_test.
+      final layout = HomeSuggestion.of(level, school: true);
       expect(layout.order, order, reason: level.name);
       expect(layout.visible, visible, reason: level.name);
       expect(layout.custom, isFalse);
@@ -67,7 +68,7 @@ void main() {
   });
 
   test('pelo menos um caminho fica visível', () {
-    var layout = HomeSuggestion.of(RatingLevel.beginner);
+    var layout = HomeSuggestion.of(RatingLevel.beginner, school: true);
     layout = HomeSuggestion.toggle(layout, learn, RatingLevel.beginner);
     expect(HomeSuggestion.canHide(layout, journey), isFalse);
     layout = HomeSuggestion.toggle(layout, journey, RatingLevel.beginner);
@@ -144,7 +145,7 @@ void main() {
 
   test('o layout gravado volta igual; caminho novo vai para o fim', () {
     final layout = HomeSuggestion.toggle(
-      HomeSuggestion.of(RatingLevel.casual),
+      HomeSuggestion.of(RatingLevel.casual, school: true),
       speedrun,
       RatingLevel.casual,
     );

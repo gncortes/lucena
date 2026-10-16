@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:patrol/patrol.dart';
 
@@ -13,30 +14,10 @@ const _english = Locale('en', 'US');
 /// A primeira aula da trilha: o mate de bispo e cavalo pela manobra em W.
 const _lessonId = 'mates.bishopKnight.w';
 
-/// Os passos de jogar da lição contra a máquina dos cenários, que responde
-/// sempre o mesmo (o mate, se houver, ou o primeiro lance em ordem).
-const _play = {
-  'playW': ['d3g6', 'g6f7', 'e5d7'],
-  'playFar': ['e6e7', 'e7d6', 'd3c5', 'c5e6', 'e4g6'],
-};
+final _hidden = !VisibleLessons.endgameLessonIds.contains(_lessonId);
 
 void main() {
-  patrolTest('aula de final: a lição inteira e a volta à aula marcada', (
-    $,
-  ) async {
-    await AppRobot($).open(systemLocale: _english);
-    final endgames = EndgamesRobot($);
-    final lesson = await endgames.lesson(_lessonId);
-    await endgames.openFromHome();
-    await endgames.openLesson(_lessonId);
-    await endgames.expectFinalStep();
-
-    await endgames.openSteps();
-    await endgames.completeSteps(lesson, play: _play);
-    await endgames.backToExercises();
-    await endgames.expectLessonDone();
-  });
-
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('exercício: o erro e a dica descontam estrelas', ($) async {
     final app = AppRobot($);
     await app.open(systemLocale: _english);
@@ -47,10 +28,10 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
 
-    // A dica mostra a seta do lance e custa a estrela.
+    // A dica dá a pista sem a seta do lance e custa a estrela.
     await endgames.startExercises(_lessonId, first.id);
     await endgames.hint();
-    endgames.expectHintArrow(first.line.first.accept.first);
+    endgames.expectHintWithoutArrow();
     await endgames.solveExercise(first);
     expectText(endgames.earned, _points(0, first.stars));
     // Com erro ou dica, a correção do Viktor vem sozinha.
@@ -90,8 +71,9 @@ void main() {
     endgames.expectSolvedCount(
       '${index + 1} of ${lesson.exercises.length} solved',
     );
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('nota abaixo do mínimo: o passo final fica fechado e refazer '
       'zera a nota', ($) async {
     await AppRobot($).open(systemLocale: _english);
@@ -116,8 +98,9 @@ void main() {
     // Zerada, a nota sai e volta o botão de começar os exercícios.
     await endgames.expectExercisesToStart();
     endgames.expectNotFailed();
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('nota mínima alcançada: speedrun do final e treino liberados', (
     $,
   ) async {
@@ -148,8 +131,9 @@ void main() {
     await endgames.back();
 
     await endgames.train();
-  });
+  }, skip: _hidden);
 
+  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
   patrolTest('fechar à força no meio do exercício: reabre no mesmo lance', (
     $,
   ) async {
@@ -185,7 +169,7 @@ void main() {
     endgames.expectExerciseBoard(_afterFirstTurn);
     await endgames.solveExercise(last, from: 1);
     expectText(endgames.earned, _points(last.stars, last.stars));
-  });
+  }, skip: _hidden);
 }
 
 /// Um lance legal que nenhum exercício de 2 estrelas da aula aceita no

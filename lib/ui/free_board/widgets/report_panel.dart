@@ -12,6 +12,7 @@ import '../../core/opponent/opponent_ui.dart';
 import '../view_models/game_reporter.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Depois da partida: o que o jogador conquistou
 /// ("Primeira vitória contra a Zuri", "Novo recorde").
@@ -161,7 +162,7 @@ class _AchievementCard extends StatelessWidget {
   final String spoken;
   final List<Character> characters;
 
-  static const _gold = Color(0xFFF2B33D);
+  static const _gold = AppColors.reportGold;
 
   @override
   Widget build(BuildContext context) {
@@ -204,12 +205,12 @@ class _AchievementCard extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFFFFD976), _gold],
+                    colors: [AppColors.reportGoldLight, _gold],
                   ),
                 ),
                 child: Icon(
                   achievement?.iconData ?? Icons.military_tech,
-                  color: const Color(0xFF5A3C00),
+                  color: AppColors.reportGoldInk,
                 ),
               ),
               const SizedBox(width: 12),

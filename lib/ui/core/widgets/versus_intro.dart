@@ -6,6 +6,7 @@ import '../keys/free_board_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_colors.dart';
 
 /// A entrada de uma partida contra a máquina (T51, A2), sobre o tabuleiro: o
 /// cartão do adversário em cima, o do jogador embaixo (cada um na cor das
@@ -133,7 +134,7 @@ class _VersusIntroState extends State<VersusIntro>
               // O tabuleiro escurece um pouco por trás.
               Positioned.fill(
                 child: ColoredBox(
-                  color: Colors.black.withValues(alpha: 0.3 * dim),
+                  color: AppColors.black.withValues(alpha: 0.3 * dim),
                 ),
               ),
               Opacity(
@@ -199,13 +200,13 @@ class _VersusIntroState extends State<VersusIntro>
                       style: theme.textTheme.displayLarge?.copyWith(
                         fontSize: 144,
                         height: 1,
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.w900,
                         shadows: const [
                           Shadow(
                             blurRadius: 18,
                             offset: Offset(0, 4),
-                            color: Colors.black45,
+                            color: AppColors.black45,
                           ),
                         ],
                       ),
@@ -240,15 +241,15 @@ class VersusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dark = side == Side.black;
-    final ink = dark ? Colors.white : const Color(0xFF312E2B);
+    final ink = dark ? AppColors.white : AppColors.inkWarm;
     return Container(
       width: 236,
       height: 64,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: dark ? const Color(0xFF312E2B) : Colors.white,
+        color: dark ? AppColors.inkWarm : AppColors.white,
         borderRadius: BorderRadius.circular(AppShape.small),
-        boxShadow: const [BoxShadow(blurRadius: 12, color: Colors.black38)],
+        boxShadow: const [BoxShadow(blurRadius: 12, color: AppColors.black38)],
       ),
       child: Row(
         children: [
@@ -310,14 +311,14 @@ class VersusSeal extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     decoration: BoxDecoration(
-      color: const Color(0xFF312E2B),
+      color: AppColors.inkWarm,
       borderRadius: BorderRadius.circular(AppShape.small),
-      boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black38)],
+      boxShadow: const [BoxShadow(blurRadius: 8, color: AppColors.black38)],
     ),
     child: Text(
       context.l10n.versusLabel,
       style: Theme.of(context).textTheme.titleMedium
-          ?.copyWith(color: Colors.white, fontWeight: FontWeight.w900),
+          ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w900),
     ),
   );
 }

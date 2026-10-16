@@ -70,7 +70,8 @@ class PlacementRoadmap {
   ///
   /// [schoolLessons] e [endgameLessons] são as aulas que existem no app, na
   /// ordem do curso e da trilha; [completedSchool] e [completedEndgames], as
-  /// já concluídas.
+  /// já concluídas. Sem [soon], o nó sem aula no app não vira passo "em
+  /// breve" (com aulas escondidas, o "em breve" enganaria).
   factory PlacementRoadmap.build({
     required PlacementResult result,
     required SkillMap skills,
@@ -78,6 +79,7 @@ class PlacementRoadmap {
     required List<String> endgameLessons,
     Set<String> completedSchool = const {},
     Set<String> completedEndgames = const {},
+    bool soon = true,
   }) {
     final band = RatingLevel.of(result.theta).index;
     final routed = [
@@ -127,14 +129,14 @@ class PlacementRoadmap {
             school: lesson.school,
           ),
       ];
-      if (existing.isEmpty) {
-        final soon = all.where((lesson) => lesson.soon).firstOrNull;
-        if (soon != null) {
+      if (existing.isEmpty && soon) {
+        final later = all.where((lesson) => lesson.soon).firstOrNull;
+        if (later != null) {
           nodeSteps.add(
             RoadmapStep(
               node: node.id,
-              lessonId: soon.id,
-              school: soon.school,
+              lessonId: later.id,
+              school: later.school,
               soon: true,
             ),
           );

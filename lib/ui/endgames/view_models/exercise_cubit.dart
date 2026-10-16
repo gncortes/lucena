@@ -1,5 +1,3 @@
-import '../../../domain/models/explanation.dart';
-
 import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
@@ -11,208 +9,24 @@ import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/endgames/exercise_feedback_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
+import '../../../domain/models/haptic_event.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
+import '../../../domain/use_cases/exercise_review.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/step_clock.dart';
-import '../../school/view_models/lesson_cubit.dart';
-import '../../core/sound/game_sounds.dart';
-import '../../../domain/models/haptic_event.dart';
 import '../../core/sound/game_haptics.dart';
+import '../../core/sound/game_sounds.dart';
+import 'exercise_state.dart';
 
-/// Em que pé está o exercício.
-enum ExercisePhase {
-  /// O aluno procura o lance.
-  active,
-
-  /// O outro lado está respondendo.
-  waiting,
-
-  /// Resolvido: a solução e as estrelas ganhas.
-  done,
-}
-
-/// Como a tela se organiza (T60), como na lição.
-enum ExerciseLayoutMode {
-  /// O aluno resolve: o enunciado curto em cima, o tabuleiro no centro e a
-  /// dica com o cronômetro embaixo.
-  solving,
-
-  /// Resolvido: o tabuleiro no alto e, embaixo, as estrelas, a solução e a
-  /// fala do Viktor.
-  explaining,
-}
-
-class ExerciseState {
-  const ExerciseState({
-    this.ready = false,
-    this.missing = false,
-    this.lesson,
-    this.exercise,
-    this.texts = LessonTexts.empty,
-    this.viktor,
-    this.fen,
-    this.lastMove,
-    this.turn = 0,
-    this.mistakes = 0,
-    this.hints = 0,
-    this.hint,
-    this.wrongMove,
-    this.phase = ExercisePhase.active,
-    this.speech,
-    this.explanationPayload,
-    this.hintShown = false,
-    this.emotion = Emotion.calm,
-    this.earned,
-    this.explained = false,
-    this.locked = false,
-    this.number = 0,
-    this.count = 0,
-    this.nextExercise,
-    this.startedAt,
-  });
-
-  final bool ready;
-
-  /// Quando o exercício abriu: o cronômetro conta daqui.
-  final DateTime? startedAt;
-
-  /// Resolvendo até a resposta; resolvido com erro ou dica (ou com a
-  /// explicação aberta), o professor fala. No acerto limpo o tabuleiro fica
-  /// onde estava: embaixo, só "você acertou" e o próximo.
-  ExerciseLayoutMode get layout =>
-      phase == ExercisePhase.done && (!cleanSolve || explained)
-      ? ExerciseLayoutMode.explaining
-      : ExerciseLayoutMode.solving;
-
-  /// Resolvido de primeira, sem erro nem dica.
-  bool get cleanSolve =>
-      phase == ExercisePhase.done && mistakes == 0 && hints == 0;
-
-  /// A aula ou o exercício pedido não existem.
-  final bool missing;
-  final EndgameLesson? lesson;
-  final Exercise? exercise;
-  final LessonTexts texts;
-  final Character? viktor;
-
-  /// O tabuleiro agora.
-  final String? fen;
-  final Move? lastMove;
-
-  /// A vez do aluno na linha do exercício.
-  final int turn;
-
-  /// Lances errados e dicas pedidas: cada um tira uma estrela.
-  final int mistakes;
-  final int hints;
-
-  /// A seta da dica.
-  final Move? hint;
-
-  /// O último lance errado, para o tabuleiro mostrar o que o aluno fez.
-  final Move? wrongMove;
-  final ExercisePhase phase;
-  final String? speech;
-  final ExplanationPayload? explanationPayload;
-  final bool hintShown;
-  final Emotion emotion;
-
-  /// As estrelas ganhas, quando resolvido.
-  final int? earned;
-
-  /// O aluno abriu a explicação detalhada da solução.
-  final bool explained;
-
-  /// A nota da aula já fechou (todos os exercícios resolvidos): este é
-  /// treino livre, e o resultado não muda. Só "refazer os exercícios" zera.
-  final bool locked;
-
-  /// O número do exercício na aula (1 é o primeiro) e quantos há.
-  final int number;
-  final int count;
-
-  /// O exercício seguinte ainda por resolver. Nulo se não há.
-  final String? nextExercise;
-
-  bool get interactive => phase == ExercisePhase.active;
-
-  /// A explicação detalhada da solução, quando a aula tem.
-  String? get explanation => lesson == null || exercise == null
-      ? null
-      : texts.say('${lesson!.id}.ex.${exercise!.id}.solution');
-
-  /// Resolvido, com explicação a pedir: o botão "Ver explicação".
-  bool get canExplain =>
-      phase == ExercisePhase.done && !explained && explanation != null;
-
-  /// O lado do aluno: o que joga no FEN do exercício.
-  Side get side => exercise?.step.side ?? Side.white;
-
-  /// Quanto do exercício está feito, para a barra.
-  double get progress {
-    final line = exercise?.line;
-    if (line == null || line.isEmpty) return 0;
-    if (phase == ExercisePhase.done) return 1;
-    return turn / line.length;
-  }
-
-  ExerciseState copyWith({
-    String? fen,
-    Move? lastMove,
-    int? turn,
-    int? mistakes,
-    int? hints,
-    Move? hint,
-    Move? wrongMove,
-    bool clearWrongMove = false,
-    bool clearHint = false,
-    ExercisePhase? phase,
-    String? speech,
-    ExplanationPayload? explanationPayload,
-    bool? hintShown,
-    bool clearSpeech = false,
-    Emotion? emotion,
-    int? earned,
-    bool? explained,
-    DateTime? startedAt,
-  }) => ExerciseState(
-    ready: ready,
-    missing: missing,
-    lesson: lesson,
-    exercise: exercise,
-    texts: texts,
-    viktor: viktor,
-    fen: fen ?? this.fen,
-    lastMove: lastMove ?? this.lastMove,
-    turn: turn ?? this.turn,
-    mistakes: mistakes ?? this.mistakes,
-    hints: hints ?? this.hints,
-    hint: clearHint ? null : hint ?? this.hint,
-    wrongMove: clearWrongMove ? null : wrongMove ?? this.wrongMove,
-    phase: phase ?? this.phase,
-    speech: clearSpeech ? null : speech ?? this.speech,
-    explanationPayload: clearSpeech
-        ? null
-        : explanationPayload ??
-              (speech != null ? null : this.explanationPayload),
-    hintShown: hintShown ?? (clearHint ? false : this.hintShown),
-    emotion: emotion ?? this.emotion,
-    earned: earned ?? this.earned,
-    explained: explained ?? this.explained,
-    locked: locked,
-    number: number,
-    count: count,
-    nextExercise: nextExercise,
-    startedAt: startedAt ?? this.startedAt,
-  );
-}
+export 'exercise_state.dart';
 
 /// Um exercício de uma aula de final: o aluno acha os lances da técnica;
-/// cada erro ou dica tira uma estrela. Cada mudança é gravada: o app fechado
-/// à força volta no mesmo exercício e na mesma posição.
+/// cada erro ou dica tira um ponto, e errar o primeiro lance zera. Cada
+/// mudança é gravada: o app fechado à força volta no mesmo exercício e na
+/// mesma posição.
 class ExerciseCubit extends Cubit<ExerciseState> {
   ExerciseCubit({
     required this._lessons,
@@ -291,40 +105,6 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   final EndgameLessonRepository _lessons;
   final EndgameProgressRepository _progress;
   final CharacterRepository _characters;
-
-  @override
-  void emit(ExerciseState state) {
-    super.emit(state);
-    if (state.phase == ExercisePhase.done &&
-        state.speech != null &&
-        state.explanationPayload == null) {
-      unawaited(_loadSolution(state));
-    }
-  }
-
-  Future<void> _loadSolution(ExerciseState snapshot) async {
-    if (_feedback == null ||
-        snapshot.exercise == null ||
-        snapshot.lesson == null) {
-      return;
-    }
-    try {
-      final payload = await _feedback.findExerciseReview(
-        lessonId: snapshot.lesson!.id,
-        exerciseId: snapshot.exercise!.id,
-        language: _language,
-      );
-      if (!isClosed &&
-          identical(state, snapshot) &&
-          payload != null &&
-          payload.explanations.isNotEmpty) {
-        super.emit(snapshot.copyWith(explanationPayload: payload));
-      }
-    } catch (_) {
-      /* Keep the existing solution if optional content is unavailable. */
-    }
-  }
-
   final ExerciseFeedbackRepository? _feedback;
   String _language = 'en';
   int _loadRevision = 0;
@@ -342,6 +122,48 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   final Duration replyDelay;
 
   final _said = <String, int>{};
+
+  /// As explicações escritas na aula (variantes e porquês), se há: chegam
+  /// depois de abrir e enriquecem a notação.
+  Future<void> _loadPayload(int revision) async {
+    final feedback = _feedback;
+    final lesson = state.lesson;
+    final exercise = state.exercise;
+    if (feedback == null || lesson == null || exercise == null) return;
+    try {
+      final payload = await feedback.findExerciseReview(
+        lessonId: lesson.id,
+        exerciseId: exercise.id,
+        language: _language,
+      );
+      if (isClosed ||
+          revision != _loadRevision ||
+          payload == null ||
+          payload.explanations.isEmpty) {
+        return;
+      }
+      var next = state.copyWith(explanationPayload: payload);
+      if (state.phase == ExercisePhase.done) {
+        final review = ExerciseReview.full(
+          exercise,
+          state.played,
+          payload: payload,
+          wrongs: state.wrongs,
+        );
+        next = next.copyWith(
+          review: review,
+          // O erro do aluno segue à vista, mesmo se a aula já o previa.
+          seen: {
+            ...state.seen,
+            ...ExerciseReview.wrongNodeIds(review, state.wrongs),
+          },
+        );
+      }
+      super.emit(next);
+    } catch (_) {
+      /* A notação segue sem as variantes escritas se o dado faltar. */
+    }
+  }
 
   Future<void> load(String lessonId, String exerciseId, String language) async {
     final revision = ++_loadRevision;
@@ -365,7 +187,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     }
     Character? viktor;
     for (final character in characters) {
-      if (character.id == LessonCubit.viktorId) viktor = character;
+      if (character.id == Character.masterId) viktor = character;
     }
     final each = progress.of(lessonId);
     final index = lesson.exercises.indexOf(exercise);
@@ -391,7 +213,6 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       texts: texts,
       viktor: viktor,
       fen: exercise.fen,
-      // O Viktor fala somente na dica ou depois de resolver.
       emotion: Emotion.focused,
       number: index + 1,
       count: lesson.exercises.length,
@@ -407,6 +228,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
               now: _now(),
             )
           : (resumed ? saved.startedAt : null) ?? _now(),
+      // O balão abre com o enunciado.
+      sayTexts: [?texts.say('${lesson.id}.ex.${exercise.id}')],
     );
     if (resumed) {
       opened = opened.copyWith(
@@ -415,6 +238,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         mistakes: saved.mistakes,
         hints: saved.hints,
         hintShown: saved.hintTurn == saved.turn,
+        played: saved.played,
+        wrongs: [for (final wrong in saved.wrongs) ?_parseWrong(wrong)],
+        firstMoveMistake: saved.firstMoveMistake,
         phase:
             GameRules.fromFen(saved.fen ?? exercise.fen)?.turn !=
                 exercise.step.side
@@ -424,9 +250,21 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     }
     emit(opened);
     await _save();
+    unawaited(_loadPayload(revision));
     if (state.phase == ExercisePhase.waiting) {
       unawaited(_finishReply(exercise.step));
     }
+  }
+
+  static ReviewWrong? _parseWrong(String text) {
+    final at = text.indexOf(':');
+    final turn = at < 0 ? null : int.tryParse(text.substring(0, at));
+    if (turn == null) return null;
+    return (
+      turn: turn,
+      uci: text.substring(at + 1),
+      comments: const <String>[],
+    );
   }
 
   /// O aluno moveu uma peça.
@@ -441,25 +279,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       return;
     }
     if (!LessonRules.accepts(step, state.turn, move.uci)) {
-      _lastError = (
-        lessonId: state.lesson!.id,
-        exerciseId: exercise.id,
-        turn: state.turn + 1,
-        fen: state.fen!,
-        uci: move.uci,
-      );
-      final mistakes = state.mistakes + 1;
-      emit(
-        state.copyWith(
-          mistakes: mistakes,
-          wrongMove: move,
-          // Sem fala: o tabuleiro treme e o lance volta. O Viktor só fala
-          // na dica e depois de resolver.
-          clearSpeech: true,
-          emotion: Emotion.focused,
-        ),
-      );
-      await _save();
+      await _wrong(move);
       return;
     }
     final played = GameRules.play(position, move);
@@ -471,27 +291,125 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     unawaited(_haptics?.move(played.san));
     final turn = step.line[state.turn];
     final ends = LessonRules.endsLine(step, state.turn, move.uci);
+    final history = [...state.played, move.uci];
     if (ends) {
-      await _solve(played.position.fen, move);
+      await _solve(played.position.fen, move, history);
       return;
     }
     emit(
       state.copyWith(
         fen: played.position.fen,
         lastMove: move,
+        played: history,
         clearHint: true,
         clearWrongMove: true,
         phase: turn.reply == null
             ? ExercisePhase.active
             : ExercisePhase.waiting,
-        // O aluno só joga: sem elogio no meio da linha. A vez volta a
-        // aparecer embaixo do tabuleiro quando o outro lado responder.
-        clearSpeech: true,
+        // O porquê do lance, se a aula o escreveu; senão, a tela diz o lance
+        // com a frase gerada.
+        say: ExerciseSay.correct,
+        sayMove: (fenBefore: position.fen, uci: move.uci),
+        sayTexts: ExerciseReview.commentFor(
+          state.explanationPayload,
+          position.fen,
+          move.uci,
+        ),
         emotion: Emotion.happy,
       ),
     );
     await _save();
     await _finishReply(step);
+  }
+
+  /// O lance errado: o tabuleiro treme e o lance volta; o balão diz "Não." e
+  /// o porquê, se há. Errar o primeiro lance zera os pontos. O porquê escrito
+  /// na aula chega depois, sem segurar o tabuleiro.
+  Future<void> _wrong(Move move) async {
+    final exercise = state.exercise!;
+    final lesson = state.lesson!;
+    final fen = state.fen!;
+    final turn = state.turn;
+    _lastError = (
+      lessonId: lesson.id,
+      exerciseId: exercise.id,
+      turn: turn + 1,
+      fen: fen,
+      uci: move.uci,
+    );
+    final why = ExerciseReview.commentFor(
+      state.explanationPayload,
+      fen,
+      move.uci,
+    );
+    final first = state.played.isEmpty;
+    emit(
+      state.copyWith(
+        mistakes: state.mistakes + 1,
+        wrongMove: move,
+        wrongs: [
+          for (final each in state.wrongs)
+            if (!(each.turn == turn && each.uci == move.uci)) each,
+          (turn: turn, uci: move.uci, comments: why),
+        ],
+        firstMoveMistake: state.firstMoveMistake || first,
+        say: ExerciseSay.wrong,
+        sayMove: (fenBefore: fen, uci: move.uci),
+        sayTexts: why,
+        sayZeroed: first && !state.firstMoveMistake,
+        emotion: Emotion.focused,
+      ),
+    );
+    if (why.isEmpty && _feedback != null) {
+      explaining = _explainWrong(move, turn, fen);
+    }
+    await _save();
+  }
+
+  /// Termina quando o porquê do último erro já foi buscado (para os testes).
+  Future<void>? explaining;
+
+  Future<void> _explainWrong(Move move, int turn, String fen) async {
+    final revision = _loadRevision;
+    try {
+      final found = await _feedback!.find(
+        lessonId: state.lesson!.id,
+        exerciseId: state.exercise!.id,
+        kind: 'exercise',
+        turn: turn + 1,
+        fen: fen,
+        uci: move.uci,
+        language: _language,
+      );
+      if (found == null ||
+          found.isEmpty ||
+          ExerciseReview.hasNotation(found) ||
+          isClosed ||
+          revision != _loadRevision ||
+          !state.interactive ||
+          state.fen != fen ||
+          state.say != ExerciseSay.wrong ||
+          state.wrongMove != move) {
+        return;
+      }
+      emit(
+        state.copyWith(
+          say: ExerciseSay.wrong,
+          sayMove: state.sayMove,
+          sayTexts: [found],
+          sayZeroed: state.sayZeroed,
+          wrongs: [
+            for (final each in state.wrongs)
+              if (each.turn == turn && each.uci == move.uci)
+                (turn: turn, uci: move.uci, comments: [found])
+              else
+                each,
+          ],
+        ),
+      );
+    } catch (_) {
+      /* Sem o porquê escrito, o balão diz só que não. */
+    }
   }
 
   Future<void> _finishReply(MoveStep step) async {
@@ -513,7 +431,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       if (answered == null) {
         // A resposta combinada não cabe no tabuleiro (aula com dado
         // inconsistente): a linha acaba aqui, com o exercício resolvido.
-        await _solve(after.fen, state.lastMove);
+        await _solve(after.fen, state.lastMove, state.played);
         return;
       }
       unawaited(_sounds?.move(answered.san));
@@ -524,14 +442,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         fen: after.fen,
         lastMove: reply ?? state.lastMove,
         turn: state.turn + 1,
+        played: reply == null ? null : [...state.played, reply.uci],
         phase: ExercisePhase.active,
       ),
     );
     await _save();
   }
 
-  /// A dica: a fala conceitual da aula. Custa uma estrela (só a
-  /// primeira vez em cada vez do aluno).
+  /// A dica: a fala conceitual da aula. Custa um ponto (só a primeira vez em
+  /// cada vez do aluno).
   Future<void> askHint() async {
     if (!state.interactive) {
       return;
@@ -556,6 +475,10 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         // Existing conceptual hint stays available if optional data fails.
       }
     }
+    // O balão nunca mostra notação: o porquê com lances escritos fica de fora.
+    if (feedback != null && ExerciseReview.hasNotation(feedback)) {
+      feedback = null;
+    }
     if (isClosed ||
         revision != _loadRevision ||
         !state.interactive ||
@@ -571,28 +494,45 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         clearWrongMove: true,
         hints: !state.hintShown ? state.hints + 1 : state.hints,
         // A ajuda traz o enunciado e a pista, sem antecipar o lance.
-        speech: [
-          ?_statement(),
+        say: ExerciseSay.hint,
+        // A pista primeiro, para aparecer no balão cortado em 2 linhas; o
+        // enunciado fica depois, visível na folha.
+        sayTexts: [
           ?(feedback ?? _hintText() ?? _pick('coach.hint')),
-        ].join(' '),
-        explanationPayload: ExplanationPayload.context([
           ?_statement(),
-          ?(feedback ?? _hintText() ?? _pick('coach.hint')),
-        ]),
+        ],
         emotion: Emotion.focused,
       ),
     );
     await _save();
   }
 
-  /// "Ver explicação": a fala detalhada da solução, depois de resolver.
-  void showExplanation() {
-    final text = state.explanation;
-    if (!state.canExplain || text == null) {
+  /// "Ver solução": joga a linha até o fim, com 0 pontos. O aluno vê a
+  /// notação completa e o balão comenta o último lance.
+  Future<void> showSolution({bool hidden = false}) async {
+    if (!state.interactive) {
       return;
     }
-    emit(
-      state.copyWith(speech: text, explained: true, emotion: Emotion.focused),
+    final exercise = state.exercise!;
+    var position = _position();
+    if (position == null) return;
+    final history = [...state.played];
+    Move? last = state.lastMove;
+    for (final uci in ExerciseReview.remaining(exercise, state.played)) {
+      final move = Move.parse(uci);
+      final result = move == null ? null : GameRules.play(position!, move);
+      if (result == null) break;
+      position = result.position;
+      history.add(uci);
+      last = move;
+    }
+    await _finish(
+      fen: position!.fen,
+      lastMove: last,
+      history: history,
+      earned: 0,
+      solutionShown: true,
+      hidden: hidden,
     );
   }
 
@@ -604,16 +544,35 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     await _save(open: false);
   }
 
-  Future<void> _solve(String fen, Move? move) async {
+  Future<void> _solve(String fen, Move? move, List<String> history) async {
     _lastError = null;
     unawaited(_haptics?.play(HapticEvent.success));
+    final exercise = state.exercise!;
+    await _finish(
+      fen: fen,
+      lastMove: move,
+      history: history,
+      earned: EndgameLessonRules.earned(
+        exercise.stars,
+        mistakes: state.mistakes,
+        hints: state.hints,
+        firstMoveMistake: state.firstMoveMistake,
+      ),
+    );
+  }
+
+  /// Fecha o exercício: grava os pontos, monta a notação completa e põe o
+  /// balão no último lance.
+  Future<void> _finish({
+    required String fen,
+    required Move? lastMove,
+    required List<String> history,
+    required int earned,
+    bool solutionShown = false,
+    bool hidden = false,
+  }) async {
     final lesson = state.lesson!;
     final exercise = state.exercise!;
-    final earned = EndgameLessonRules.earned(
-      exercise.stars,
-      mistakes: state.mistakes,
-      hints: state.hints,
-    );
     // Com a nota fechada, o treino não grava nada.
     if (!state.locked) {
       final all = await _progress.load();
@@ -631,22 +590,93 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     if (isClosed) {
       return;
     }
-    // Acerto limpo: o Viktor fica quieto, e a explicação vem a pedido. Com
-    // erro ou dica, a correção vem sozinha.
-    final corrected = state.mistakes > 0 || state.hints > 0;
+    final review = ExerciseReview.full(
+      exercise,
+      history,
+      payload: state.explanationPayload,
+      wrongs: state.wrongs,
+    );
+    final main = review.where((node) => node.depth == 0).toList();
+    final wrongIds = ExerciseReview.wrongNodeIds(review, state.wrongs);
+    // Onde a lista para: o erro do aluno, se houve; depois de "Ver solução",
+    // a posição final (com o borrar ligado, o 1º lance que ela mostrou); senão
+    // o lance-chave, o primeiro lance do aluno (canvas PropV2ExA4/5/9/10).
+    ReviewNode? cursor;
+    if (solutionShown) {
+      cursor = hidden && main.isNotEmpty
+          ? main[state.played.length.clamp(0, main.length - 1)]
+          : main.lastOrNull;
+    } else if (wrongIds.isNotEmpty) {
+      cursor = review.firstWhere((node) => node.id == wrongIds.first);
+    } else {
+      cursor = main.firstOrNull;
+    }
+    final corrected =
+        state.mistakes > 0 ||
+        state.hints > 0 ||
+        state.firstMoveMistake ||
+        solutionShown;
     emit(
       state.copyWith(
-        fen: fen,
-        lastMove: move,
+        fen: cursor?.fenAfter ?? fen,
+        lastMove: cursor == null ? lastMove : Move.parse(cursor.uci),
         turn: state.turn + 1,
+        played: history,
         clearHint: true,
         clearWrongMove: true,
         phase: ExercisePhase.done,
         earned: earned,
-        clearSpeech: !corrected,
-        speech: corrected ? (state.explanation ?? _pick('coach.praise')) : null,
-        explained: corrected,
+        solutionShown: solutionShown,
+        review: review,
+        cursorId: cursor?.id,
+        seen: {
+          ?cursor?.id,
+          // O que o aluno jogou ou viu no tabuleiro conta como visto, e o
+          // lance errado dele também (mesmo sendo uma variante prevista); só
+          // as outras variantes e o que a solução mostrou ficam por ver.
+          for (final node in main.take(
+            solutionShown ? state.played.length : history.length,
+          ))
+            node.id,
+          ...wrongIds,
+        },
+        browsed: 0,
+        say: solutionShown ? ExerciseSay.node : ExerciseSay.solved,
+        sayNode: cursor,
+        sayTexts: cursor?.comments ?? const [],
+        sayZeroed: corrected,
         emotion: earned == exercise.stars ? Emotion.happy : Emotion.calm,
+      ),
+    );
+  }
+
+  /// O aluno foi a um lance da notação (depois de acabar): o tabuleiro vai à
+  /// posição e o balão comenta o lance. Com o borrar ligado ([hide]), um
+  /// lance coberto revela UM lance: o primeiro ainda não visto no caminho.
+  void goToReview(String id, {bool hide = false}) {
+    if (state.phase != ExercisePhase.done) return;
+    final byId = {for (final node in state.review) node.id: node};
+    var target = byId[id];
+    if (target == null) return;
+    if (hide && !state.seen.contains(id)) {
+      while (target!.previousId != null) {
+        final before = byId[target.previousId];
+        if (before == null || state.seen.contains(before.id)) break;
+        target = before;
+      }
+    }
+    final node = target;
+    emit(
+      state.copyWith(
+        fen: node.fenAfter,
+        lastMove: Move.parse(node.uci),
+        cursorId: node.id,
+        seen: {...state.seen, node.id},
+        say: ExerciseSay.node,
+        sayNode: node,
+        sayTexts: node.comments,
+        browsed: state.browsed + 1,
+        clearWrongMove: true,
       ),
     );
   }
@@ -677,6 +707,12 @@ class ExerciseCubit extends Cubit<ExerciseState> {
                 open: open,
                 startedAt: state.startedAt,
                 pausedAt: _pausedAt,
+                played: state.played,
+                wrongs: [
+                  for (final wrong in state.wrongs)
+                    '${wrong.turn}:${wrong.uci}',
+                ],
+                firstMoveMistake: state.firstMoveMistake,
               ),
             ),
       ),
@@ -691,8 +727,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   String? _statement() =>
       state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}');
 
-  String? _hintText() =>
-      state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}.hint');
+  String? _hintText() => ExerciseReview.plainParagraphs(
+    state.texts.say('${state.lesson!.id}.ex.${state.exercise!.id}.hint'),
+  );
 
   String? _pick(String key) {
     final index = _said[key] ?? 0;

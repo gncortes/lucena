@@ -12,7 +12,6 @@ import '../../../domain/models/lesson.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../placement/view_models/roadmap_loader.dart';
-import 'lesson_cubit.dart';
 
 /// A situação de uma aula na trilha.
 enum LessonStatus { locked, open, completed, skippedByTest }
@@ -151,7 +150,7 @@ class SchoolCubit extends Cubit<SchoolState> {
     if (isClosed) return;
     Character? viktor;
     for (final character in characters) {
-      if (character.id == LessonCubit.viktorId) viktor = character;
+      if (character.id == Character.masterId) viktor = character;
     }
     emit(
       SchoolState(

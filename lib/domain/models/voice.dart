@@ -9,6 +9,61 @@ enum VoiceGender {
     'female' => female,
     _ => null,
   };
+
+  /// O gênero dos JSONs de voz (`m`, `f`); outra coisa, nulo.
+  static VoiceGender? fromLetter(Object? letter) => switch (letter) {
+    'm' => male,
+    'f' => female,
+    _ => null,
+  };
+}
+
+/// A qualidade de uma voz, como o sistema informa (o Android diz "very
+/// high" a "very low"; o iOS, "premium", "enhanced" e "default").
+enum VoiceQuality {
+  veryLow,
+  low,
+  normal,
+  high,
+  veryHigh,
+  unknown;
+
+  /// A qualidade que o sistema informou ([raw]); o que não se reconhece é
+  /// [unknown].
+  static VoiceQuality fromSystem(Object? raw) {
+    if (raw is! String) return unknown;
+    return switch (raw.trim().toLowerCase().replaceAll(RegExp('[ _-]'), '')) {
+      'veryhigh' || 'premium' => veryHigh,
+      'high' || 'enhanced' => high,
+      'normal' || 'default' => normal,
+      'low' => low,
+      'verylow' => veryLow,
+      _ => unknown,
+    };
+  }
+}
+
+/// A idade de um personagem: dá o tom e o ritmo da fala dele, multiplicados
+/// sobre os da voz escolhida.
+enum VoiceAge {
+  child(pitch: 1.3, rate: 1.1),
+  young(pitch: 1.05, rate: 1.08),
+  adult(pitch: 1, rate: 1),
+  elder(pitch: 0.8, rate: 0.85);
+
+  const VoiceAge({required this.pitch, required this.rate});
+
+  final double pitch;
+  final double rate;
+
+  /// A idade do JSON (`crianca`, `jovem`, `adulto`, `idoso`); outra coisa
+  /// vira [adult].
+  static VoiceAge fromCode(Object? code) => switch (code) {
+    'crianca' || 'criança' => child,
+    'jovem' => young,
+    'idoso' => elder,
+    _ => adult,
+  };
 }
 
 /// O tom que o usuário dá a uma voz: muda o tom e o ritmo dela, de leve.
@@ -42,7 +97,12 @@ enum VoiceTone {
 
 /// Uma voz do sintetizador do aparelho.
 class TtsVoice {
-  const TtsVoice({required this.id, required this.locale, this.gender});
+  const TtsVoice({
+    required this.id,
+    required this.locale,
+    this.gender,
+    this.quality = VoiceQuality.unknown,
+  });
 
   /// O nome com que o sistema a identifica (e com que ela é pedida).
   final String id;
@@ -50,6 +110,9 @@ class TtsVoice {
   /// O idioma da voz, como o sistema informa (`pt-BR`, `en_US`).
   final String locale;
   final VoiceGender? gender;
+
+  /// A qualidade que o sistema informa; [VoiceQuality.unknown] se não diz.
+  final VoiceQuality quality;
 
   /// O idioma sem a região, em minúsculas (`pt`).
   String get language => _parts(locale).$1;
@@ -92,68 +155,54 @@ class TtsVoice {
       other is TtsVoice &&
       other.id == id &&
       other.locale == locale &&
-      other.gender == gender;
+      other.gender == gender &&
+      other.quality == quality;
 
   @override
-  int get hashCode => Object.hash(id, locale, gender);
+  int get hashCode => Object.hash(id, locale, gender, quality);
 
   @override
   String toString() => 'TtsVoice($id, $locale)';
 }
 
-/// Como um personagem fala: o tom, a velocidade e a "vaga" de voz que ele
-/// prefere entre as que sobram depois da do professor (assim dois
-/// personagens tendem a cair em vozes diferentes).
+/// Como um personagem fala: o gênero e a idade dele. O app escolhe a voz e
+/// a idade dá o tom e o ritmo ([VoiceAge]).
 class CharacterVoiceProfile {
   const CharacterVoiceProfile({
     required this.characterId,
-    this.pitch = 1,
-    this.rate = 1,
-    this.slot = 0,
+    this.gender = VoiceGender.male,
+    this.age = VoiceAge.adult,
   });
 
   /// O perfil neutro, para um personagem sem perfil no JSON.
   const CharacterVoiceProfile.neutral(this.characterId)
-    : pitch = 1,
-      rate = 1,
-      slot = 0;
+    : gender = VoiceGender.male,
+      age = VoiceAge.adult;
 
   final String characterId;
+  final VoiceGender gender;
+  final VoiceAge age;
 
-  /// O tom: 1 é o da voz; abaixo, mais grave; acima, mais agudo.
-  final double pitch;
-
-  /// A velocidade: 1 é a normal da voz.
-  final double rate;
-  final int slot;
-
-  /// O perfil do JSON (`{"pitch": 0.8, "rate": 0.9, "slot": 1}`); campos
-  /// ausentes ficam no neutro e valores absurdos são trazidos para a faixa.
+  /// O perfil do JSON (`{"genero": "m", "idade": "adulto"}`); campos
+  /// ausentes ou estranhos ficam em homem adulto.
   static CharacterVoiceProfile fromJson(
     String characterId,
     Map<String, dynamic> json,
-  ) {
-    double number(Object? v, double min, double max) =>
-        v is num ? v.toDouble().clamp(min, max) : 1;
-    final slot = json['slot'];
-    return CharacterVoiceProfile(
-      characterId: characterId,
-      pitch: number(json['pitch'], 0.5, 2),
-      rate: number(json['rate'], 0.5, 2),
-      slot: slot is num ? slot.toInt().clamp(0, 99) : 0,
-    );
-  }
+  ) => CharacterVoiceProfile(
+    characterId: characterId,
+    gender: VoiceGender.fromLetter(json['genero']) ?? VoiceGender.male,
+    age: VoiceAge.fromCode(json['idade']),
+  );
 
   @override
   bool operator ==(Object other) =>
       other is CharacterVoiceProfile &&
       other.characterId == characterId &&
-      other.pitch == pitch &&
-      other.rate == rate &&
-      other.slot == slot;
+      other.gender == gender &&
+      other.age == age;
 
   @override
-  int get hashCode => Object.hash(characterId, pitch, rate, slot);
+  int get hashCode => Object.hash(characterId, gender, age);
 }
 
 /// A voz com que uma fala sai: qual voz, o tom e a velocidade.
@@ -189,9 +238,7 @@ class VoiceSettings {
     this.enabled = false,
     this.speed = 1,
     this.teacherVoice,
-    this.characterVoices = const {},
     this.teacherTone = VoiceTone.natural,
-    this.characterTones = const {},
     this.charactersMuted = false,
   });
 
@@ -205,14 +252,8 @@ class VoiceSettings {
   /// A voz do professor. Nula: a primeira do idioma.
   final String? teacherVoice;
 
-  /// A voz escolhida para cada personagem (pelo id dele).
-  final Map<String, String> characterVoices;
-
-  /// O tom da voz do professor.
+  /// O tom da voz do professor (os adversários têm o da idade deles).
   final VoiceTone teacherTone;
-
-  /// O tom escolhido para cada personagem. Sem escolha, o do perfil dele.
-  final Map<String, VoiceTone> characterTones;
 
   /// Os personagens das partidas calados (o botão de som da partida). O
   /// professor continua falando.
@@ -225,17 +266,13 @@ class VoiceSettings {
     bool? enabled,
     double? speed,
     String? Function()? teacherVoice,
-    Map<String, String>? characterVoices,
     VoiceTone? teacherTone,
-    Map<String, VoiceTone>? characterTones,
     bool? charactersMuted,
   }) => VoiceSettings(
     enabled: enabled ?? this.enabled,
     speed: speed ?? this.speed,
     teacherVoice: teacherVoice == null ? this.teacherVoice : teacherVoice(),
-    characterVoices: characterVoices ?? this.characterVoices,
     teacherTone: teacherTone ?? this.teacherTone,
-    characterTones: characterTones ?? this.characterTones,
     charactersMuted: charactersMuted ?? this.charactersMuted,
   );
 
@@ -243,11 +280,7 @@ class VoiceSettings {
     'enabled': enabled,
     'speed': speed,
     'teacher': teacherVoice,
-    'characters': characterVoices,
     'teacherTone': teacherTone.name,
-    'characterTones': {
-      for (final e in characterTones.entries) e.key: e.value.name,
-    },
     'charactersMuted': charactersMuted,
   };
 
@@ -256,25 +289,11 @@ class VoiceSettings {
     if (json is! Map) return const VoiceSettings();
     final speed = json['speed'];
     final teacher = json['teacher'];
-    final characters = json['characters'];
-    final tones = json['characterTones'];
     return VoiceSettings(
       enabled: json['enabled'] == true,
       speed: speed is num ? speed.toDouble().clamp(0.5, 2) : 1,
       teacherVoice: teacher is String ? teacher : null,
-      characterVoices: {
-        if (characters is Map)
-          for (final e in characters.entries)
-            if (e.key is String && e.value is String)
-              e.key as String: e.value as String,
-      },
       teacherTone: VoiceTone.fromName(json['teacherTone']) ?? VoiceTone.natural,
-      characterTones: {
-        if (tones is Map)
-          for (final e in tones.entries)
-            if (e.key is String && VoiceTone.fromName(e.value) != null)
-              e.key as String: VoiceTone.fromName(e.value)!,
-      },
       charactersMuted: json['charactersMuted'] == true,
     );
   }
@@ -286,25 +305,9 @@ class VoiceSettings {
       other.speed == speed &&
       other.teacherVoice == teacherVoice &&
       other.teacherTone == teacherTone &&
-      other.charactersMuted == charactersMuted &&
-      _sameMap(other.characterVoices, characterVoices) &&
-      _sameMap(other.characterTones, characterTones);
-
-  static bool _sameMap<T>(Map<String, T> a, Map<String, T> b) =>
-      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+      other.charactersMuted == charactersMuted;
 
   @override
-  int get hashCode => Object.hash(
-    enabled,
-    speed,
-    teacherVoice,
-    teacherTone,
-    charactersMuted,
-    Object.hashAllUnordered(
-      characterVoices.entries.map((e) => Object.hash(e.key, e.value)),
-    ),
-    Object.hashAllUnordered(
-      characterTones.entries.map((e) => Object.hash(e.key, e.value)),
-    ),
-  );
+  int get hashCode =>
+      Object.hash(enabled, speed, teacherVoice, teacherTone, charactersMuted);
 }

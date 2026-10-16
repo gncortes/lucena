@@ -19,6 +19,10 @@ abstract class VoiceRepository {
   /// O jeito de falar de cada personagem, pelo id dele.
   Future<Map<String, CharacterVoiceProfile>> profiles();
 
+  /// O gênero das vozes que o sistema não informa (o Android), pelo id da
+  /// voz, da tabela `assets/voices/known.json`.
+  Future<Map<String, VoiceGender>> knownGenders();
+
   /// Fala [text] com [voice], interrompendo a fala anterior.
   Future<void> speak(String text, ResolvedVoice voice);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/settings_keys.dart';
@@ -17,7 +18,7 @@ class LanguageScreen extends StatelessWidget {
     );
     return Scaffold(
       key: SettingsKeys.languageScreen,
-      appBar: AppBar(title: Text(context.l10n.settingsLanguage)),
+      appBar: LucenaAppBar(title: Text(context.l10n.settingsLanguage)),
       body: ListView(
         children: [
           ChoiceTile(

@@ -16,7 +16,7 @@
   "part.active.title": "A torre ativa",
   "part.active.summary": "Contra peão de bispo ou central, a torre sai da primeira fileira antes que o rei atacante entre. Vai para o fundo, ou para a terceira fileira se o peão ainda está na quarta.",
   "part.seventh.title": "O peão na sétima",
-  "part.seventh.summary": "Com o peão a uma casa de coroar, a torre vigia de longe a casa de promoção. No fim, as regras para levar para a partida.",
+  "part.seventh.summary": "Com o peão a uma casa de coroar, a torre vigia a casa de coroação pela primeira fileira, do lado longo, longe do rei adversário.",
   "step.t_knight": "O peão de cavalo está na terceira fileira, com o rei preto ao lado dele, e já não há tempo de montar a defesa de Philidor. O seu rei está na frente do peão, e a torre, na primeira fileira. O que você joga, e por que isso basta?",
   "step.t_knight.hint1": "Pense em onde a torre preta precisaria chegar para ameaçar mate na primeira fileira, e em quanto espaço ela tem para isso.",
   "step.t_knight.hint2": "Conte as colunas do outro lado do seu rei. Se a torre preta não tem por onde contornar o rei, a sua torre precisa fazer alguma coisa?",

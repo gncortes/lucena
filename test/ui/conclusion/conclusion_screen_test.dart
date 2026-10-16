@@ -10,8 +10,14 @@ import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/conclusion.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/speedrun_pace.dart';
+import 'package:lucena/domain/use_cases/clock_format.dart';
+import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
+import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
+import 'package:lucena/ui/core/widgets/character_avatar.dart';
+import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -73,11 +79,19 @@ void main() {
     bool disableAnimations = false,
     SpeechCubit? speech,
     FakeOpponentRepository? opponent,
+    FakeJourneyRepository? journey,
+    Future<(int, int)> Function(FakeSpeedrunRepository)? marathon,
+    Size size = const Size(412, 2400),
+    double scale = 1,
+    Locale locale = const Locale('en'),
+    bool fresh = false,
+    bool settled = true,
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
     final speedruns = FakeSpeedrunRepository(progress);
     await tester.runAsync(() async {
+      final run = await marathon?.call(speedruns);
       final game = Attempt(
         positionId: samplePositions[0].id,
         playedAt: now(),
@@ -94,12 +108,15 @@ void main() {
           AttemptOutcome.draw => GameEndReason.stalemate,
         },
         moves: moves,
+        userClock: run == null ? null : const Duration(seconds: 10),
+        speedrunAttemptId: run?.$1,
+        speedrunStage: run?.$2,
       );
       final id = await progress.addAttempt(game);
       await GameReporter(
         rating: rating,
         achievements: achievements,
-        journey: FakeJourneyRepository(),
+        journey: journey ?? FakeJourneyRepository(),
         progress: progress,
         speedruns: speedruns,
         positions: FakePositionsRepository(),
@@ -109,7 +126,7 @@ void main() {
         progress: progress,
         rating: rating,
         achievements: achievements,
-        journey: FakeJourneyRepository(),
+        journey: journey ?? FakeJourneyRepository(),
         speedruns: speedruns,
         positions: FakePositionsRepository(),
         characters: FakeCharacterRepository(),
@@ -121,7 +138,6 @@ void main() {
       await cubit.load(id, 'en');
     });
     addTearDown(cubit.close);
-    const size = Size(412, 2400);
     tester.view
       ..devicePixelRatio = 1
       ..physicalSize = size;
@@ -137,19 +153,28 @@ void main() {
         shareRepository: share,
         settingsCubit: settings,
         speechCubit: speech,
+        locale: locale,
         child: MediaQuery(
           data: MediaQueryData(
             size: size,
+            textScaler: TextScaler.linear(scale),
             disableAnimations: disableAnimations,
           ),
           child: BlocProvider.value(
             value: cubit,
-            child: const ConclusionScreen(),
+            child: ConclusionScreen(fresh: fresh),
           ),
         ),
       ),
     );
-    await settle(tester);
+    if (settled) {
+      await settle(tester);
+    } else {
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 60)),
+      );
+      await tester.pump();
+    }
   }
 
   /// Compartilha e devolve a altura da imagem (no cabeçalho do PNG).
@@ -164,6 +189,51 @@ void main() {
     final png = share.shared.single.png;
     return ByteData.sublistView(png, 20, 24).getUint32(0);
   }
+
+  group('Maratona concluída', () {
+    for (final locale in [const Locale('en'), const Locale('ar')]) {
+      testWidgets('o painel mostra "Tempo que sobrou", como o resumo '
+          '(${locale.languageCode})', (tester) async {
+        final marathon = sampleMarathon;
+        final stages = marathon.stages.length;
+        final pace = SpeedrunPaces.idFor(marathon.id, sampleSpeedrunTime);
+        await open(
+          tester,
+          locale: locale,
+          journey: FakeJourneyRepository(speedruns: [marathon]),
+          marathon: (speedruns) async {
+            final attempt = await speedruns.start(pace, now());
+            for (var stage = 0; stage < stages - 1; stage++) {
+              await progress.addAttempt(
+                Attempt(
+                  positionId: samplePositions[0].id,
+                  playedAt: now(),
+                  outcome: AttemptOutcome.win,
+                  fulfilled: true,
+                  opponent: OpponentKind.maia,
+                  userClock: const Duration(seconds: 10),
+                  speedrunAttemptId: attempt.id,
+                  speedrunStage: stage,
+                ),
+              );
+            }
+            return (attempt.id, stages - 1);
+          },
+        );
+
+        final label = AppLocalizations.of(
+          tester.element(find.byKey(ConclusionKeys.run)),
+        );
+        expect(find.text(label.marathonLeft), findsOneWidget);
+        expect(find.text(label.conclusionTotalTime), findsNothing);
+        final left = Duration(seconds: 180 - stages * 10);
+        expect(
+          tester.widget<Text>(find.byKey(ConclusionKeys.total)).data,
+          RunTimeFormat.clock(left),
+        );
+      });
+    }
+  });
 
   group('análise rápida', () {
     testWidgets('partida curta: começa sozinha, no fim da tela, andando', (
@@ -337,6 +407,41 @@ void main() {
     });
   });
 
+  group('avatares (T73, D9)', () {
+    Size avatarIn(WidgetTester tester, Key key) => tester.getSize(
+      find.descendant(
+        of: find.byKey(key),
+        matching: find.byType(CharacterAvatar),
+      ),
+    );
+
+    testWidgets('no confronto o adversário (avatar com moldura) tem 72', (
+      tester,
+    ) async {
+      await open(tester, moves: _longMoves, played: const Duration(minutes: 5));
+      final frame = find
+          .ancestor(
+            of: find.descendant(
+              of: find.byKey(ConclusionKeys.opponent),
+              matching: find.byType(CharacterAvatar),
+            ),
+            matching: find.byType(Container),
+          )
+          .first;
+      expect(tester.getSize(frame), const Size(72, 72));
+    });
+
+    testWidgets('na fala em cartão do adversário o avatar tem 56', (
+      tester,
+    ) async {
+      await open(tester, moves: _longMoves, played: const Duration(minutes: 5));
+      await tester.ensureVisible(find.byKey(ConclusionKeys.quickReview));
+      await tester.tap(find.byKey(ConclusionKeys.quickReview));
+      await settle(tester);
+      expect(avatarIn(tester, ConclusionKeys.comment), const Size(56, 56));
+    });
+  });
+
   group('brilho de quem venceu', () {
     Finder glowIn(Key player) => find.descendant(
       of: find.byKey(player),
@@ -379,5 +484,25 @@ void main() {
       );
       expect(find.byKey(ConclusionKeys.winnerGlow), findsNothing);
     });
+  });
+
+  group('aviso de conquista', () {
+    for (final size in const [Size(360, 740), Size(412, 917)]) {
+      testWidgets('fica no alto, acima do título (${size.width.toInt()})', (
+        tester,
+      ) async {
+        await open(tester, size: size, fresh: true, settled: false);
+        await tester.pump(AchievementToasts.duration * 0.3);
+        final toast = tester.getRect(find.byKey(AchievementsKeys.toast));
+        final title = tester.getRect(find.byKey(ConclusionKeys.title));
+        expect(toast.top, closeTo(8, 1));
+        expect(toast.bottom, lessThanOrEqualTo(title.top));
+        // Some sozinho e o título fica livre.
+        await tester.pump(AchievementToasts.duration);
+        await tester.pumpAndSettle();
+        expect(find.byKey(AchievementsKeys.toast).hitTestable(), findsNothing);
+        expect(find.byKey(ConclusionKeys.title).hitTestable(), findsOneWidget);
+      });
+    }
   });
 }

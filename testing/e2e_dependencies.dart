@@ -1,3 +1,4 @@
+import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 
 import 'dart:math';
@@ -46,7 +47,13 @@ import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/pace/pace_repository.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
+import 'package:lucena/data/repositories/endgames/visible_endgame_lesson_repository.dart';
+import 'package:lucena/data/repositories/school/visible_lesson_repository.dart';
+import 'package:lucena/data/repositories/school/lesson_script_repository_asset.dart';
+import 'package:lucena/data/repositories/tablebase/kpk_repository.dart';
+import 'package:lucena/data/repositories/tablebase/script_table_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
@@ -261,17 +268,25 @@ Future<Dependencies> e2eDependencies() async {
     unlockRepository: LocalUnlockRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
-    lessonRepository: lessons,
+    lessonRepository: VisibleLessonRepository(lessons),
     schoolProgressRepository: LocalSchoolProgressRepository(
       PreferencesService(),
     ),
     starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
-    endgameLessonRepository: AssetEndgameLessonRepository(
-      const AssetService(),
-      school: lessons,
+    // Só as aulas liberadas, como no app (VisibleLessons).
+    endgameLessonRepository: VisibleEndgameLessonRepository(
+      AssetEndgameLessonRepository(const AssetService(), school: lessons),
     ),
+    lessonScriptRepository: AssetLessonScriptRepository(const AssetService()),
+    kpkRepository: AssetKpkRepository(const AssetService()),
+    scriptTableRepository: AssetScriptTableRepository(const AssetService()),
+    engineJudge: FakePositionJudge(),
     endgameProgressRepository: LocalEndgameProgressRepository(
       PreferencesService(),
+    ),
+    // As explicações de erro de verdade (o painel da lição V2).
+    exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
+      const AssetService(),
     ),
     drawOfferRepository: e2eDraws,
     // As preferências de verdade; o sintetizador, sem som.

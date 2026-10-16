@@ -54,9 +54,13 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
             .cast<Map<String, dynamic>>()) {
       final lessons = <EndgameLesson>[];
       for (final id in (module['lessons'] as List).cast<String>()) {
+        final json = jsonDecode(
+          await _assets.loadString(lessonPath(id)),
+        ) as Map<String, dynamic>;
+        await _dropMissingScripts(json);
         lessons.add(
           parseLesson(
-            jsonDecode(await _assets.loadString(lessonPath(id))),
+            json,
             inReview: review.contains(id),
             failed: failed.contains(id),
           ),
@@ -65,6 +69,23 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
       modules.add(EndgameModule(id: module['id'] as String, lessons: lessons));
     }
     return EndgameTrail(modules: modules);
+  }
+
+  /// Tira de [lesson] o `roteiro` das partes cujo arquivo ainda não existe
+  /// (T76: a estrutura liga todos os capítulos, e os roteiros chegam um a um).
+  /// A parte sem roteiro fica escondida por `VisibleLessons.partVisible`.
+  Future<void> _dropMissingScripts(Map<String, dynamic> lesson) async {
+    for (final part
+        in (lesson['parts'] as List? ?? const [])
+            .cast<Map<String, dynamic>>()) {
+      final path = part['roteiro'];
+      if (path is! String) continue;
+      try {
+        await _assets.loadString(path);
+      } on Object {
+        part.remove('roteiro');
+      }
+    }
   }
 
   /// Sem o arquivo, nenhuma aula está em revisão.
