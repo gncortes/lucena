@@ -449,36 +449,43 @@
       "id": "demos",
       "exemplos": [
         {
-          "id": "erroDefesa",
-          "fen": "8/3k4/8/4K3/8/2P5/8/8 b - - 0 1",
+          "id": "casaChave",
+          "fen": "8/5k2/8/8/6K1/4P3/8/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "8/4k3/8/4K3/8/2P5/8/8 w - - 1 2",
-              "lance": "d7e7",
-              "t": "rot.means.demos.erroDefesa.1",
-              "setas": [
-                [
-                  "d7",
-                  "e7",
-                  "r"
-                ]
-              ],
+              "fen": "8/5k2/8/8/6K1/4P3/8/8 w - - 0 1",
+              "t": "rot.means.demos.casaChave.1",
               "marcas": [
-                "e7",
-                "d5"
+                "d5",
+                "e5",
+                "f5"
               ]
             }
           ],
           "linha": [
             {
-              "fen": "8/4k3/8/3K4/8/2P5/8/8 b - - 2 2",
-              "t": "rot.means.demos.erroDefesa.3",
-              "lance": "e5d5",
+              "fen": "8/5k2/8/5K2/8/4P3/8/8 b - - 1 1",
+              "t": "rot.means.demos.casaChave.2",
+              "lance": "g4f5",
               "marcas": [
-                "d5"
+                "f5"
+              ]
+            },
+            {
+              "fen": "8/4k3/8/5K2/8/4P3/8/8 w - - 2 2",
+              "t": "rot.means.demos.casaChave.3",
+              "lance": "f7e7"
+            },
+            {
+              "fen": "8/4k3/8/4K3/8/4P3/8/8 b - - 3 2",
+              "t": "rot.means.demos.casaChave.4",
+              "lance": "f5e5",
+              "marcas": [
+                "e5",
+                "e7"
               ]
             }
           ]
@@ -536,7 +543,11 @@
             },
             "errosPos": {
               "8/3k4/8/2K5/8/3P4/8/8 w - - 0 1": {
-                "d3d4": "rot.means.pratica.ataque.v1.err.d3d4"
+                "d3d4": "rot.means.pratica.ataque.v1.err.d3d4",
+                "c5b6": "rot.means.pratica.ataque.v1.err.c5b6",
+                "c5b5": "rot.means.pratica.ataque.v1.err.c5b5",
+                "c5c4": "rot.means.pratica.ataque.v1.err.c5c4",
+                "c5d4": "rot.means.pratica.ataque.v1.err.c5d4"
               },
               "8/2k5/8/3K4/8/3P4/8/8 w - - 0 1": {
                 "d3d4": "rot.means.pratica.ataque.v2.err.d3d4"
@@ -548,14 +559,20 @@
                 "d3d4": "rot.means.pratica.ataque.v4.err.d3d4"
               },
               "8/3k4/8/4K3/8/3P4/8/8 w - - 0 1": {
-                "d3d4": "rot.means.pratica.ataque.v5.err.d3d4"
+                "d3d4": "rot.means.pratica.ataque.v5.err.d3d4",
+                "e5d4": "rot.means.pratica.ataque.v5.err.e5d4",
+                "e5e4": "rot.means.pratica.ataque.v5.err.e5e4",
+                "e5f5": "rot.means.pratica.ataque.v5.err.e5f5"
               },
               "2k5/8/8/2K5/3P4/8/8/8 w - - 0 1": {
                 "d4d5": "rot.means.pratica.ataque.v6.err.d4d5"
               },
               "8/2k5/8/4K3/3P4/8/8/8 w - - 0 1": {
                 "d4d5": "rot.means.pratica.ataque.v7.err.d4d5",
-                "e5d5": "rot.means.pratica.ataque.v7.err.e5d5"
+                "e5d5": "rot.means.pratica.ataque.v7.err.e5d5",
+                "e5e4": "rot.means.pratica.ataque.v7.err.e5e4",
+                "e5f5": "rot.means.pratica.ataque.v7.err.e5f5",
+                "e5f6": "rot.means.pratica.ataque.v7.err.e5f6"
               }
             }
           }
