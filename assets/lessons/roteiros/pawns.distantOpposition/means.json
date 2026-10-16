@@ -14,20 +14,12 @@
           "entrada": [
             {
               "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.ideia.ex1.e1"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.ideia.ex1.e2",
+              "t": "rot.means.ideia.ex1.e1",
               "marcas": [
                 "b6",
                 "c6",
                 "d6"
               ]
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.ideia.ex1.e3"
             }
           ],
           "pergunta": {
@@ -176,10 +168,6 @@
               ]
             },
             {
-              "fen": "8/8/4k3/2K5/2P5/8/8/8 b - - 1 1",
-              "t": "rot.means.ideia.ex1.l.2"
-            },
-            {
               "fen": "8/3k4/8/2K5/2P5/8/8/8 w - - 2 2",
               "t": "rot.means.ideia.ex1.l.3",
               "lance": "e6d7"
@@ -254,10 +242,6 @@
                 "c6",
                 "d6"
               ]
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.ideia.ex1.l.13"
             }
           ]
         },
@@ -270,22 +254,10 @@
           "entrada": [
             {
               "fen": "8/3k4/8/4K3/8/2P5/8/8 b - - 0 1",
-              "t": "rot.means.ideia.ex2.e1"
-            },
-            {
-              "fen": "8/3k4/8/4K3/8/2P5/8/8 b - - 0 1",
-              "t": "rot.means.ideia.ex2.e2",
+              "t": "rot.means.ideia.ex2.e1",
               "marcas": [
                 "b5",
                 "c5",
-                "d5"
-              ]
-            },
-            {
-              "fen": "8/3k4/8/4K3/8/2P5/8/8 b - - 0 1",
-              "t": "rot.means.ideia.ex2.e3",
-              "marcas": [
-                "e5",
                 "d5"
               ]
             }
@@ -495,19 +467,12 @@
                 ]
               ],
               "marcas": [
-                "e5",
-                "e7"
+                "e7",
+                "d5"
               ]
             }
           ],
           "linha": [
-            {
-              "fen": "8/4k3/8/4K3/8/2P5/8/8 w - - 1 2",
-              "t": "rot.means.demos.erroDefesa.2",
-              "marcas": [
-                "d5"
-              ]
-            },
             {
               "fen": "8/4k3/8/3K4/8/2P5/8/8 b - - 2 2",
               "t": "rot.means.demos.erroDefesa.3",
@@ -515,10 +480,6 @@
               "marcas": [
                 "d5"
               ]
-            },
-            {
-              "fen": "8/4k3/8/3K4/8/2P5/8/8 b - - 2 2",
-              "t": "rot.means.demos.erroDefesa.4"
             }
           ]
         },
@@ -537,53 +498,16 @@
           "linha": [
             {
               "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.2",
+              "t": "rot.means.demos.recap.2"
+            },
+            {
+              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
+              "t": "rot.means.demos.recap.3",
               "marcas": [
                 "b6",
                 "c6",
                 "d6"
               ]
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.3"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.4"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.5"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.6"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.7"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.8"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.9"
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.10",
-              "marcas": [
-                "b6",
-                "c6",
-                "d6"
-              ]
-            },
-            {
-              "fen": "8/8/4k3/8/2PK4/8/8/8 w - - 0 1",
-              "t": "rot.means.demos.recap.11"
             }
           ]
         }

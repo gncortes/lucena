@@ -29,27 +29,9 @@
             },
             {
               "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.ideia.ex1.e3"
-            },
-            {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
               "t": "rot.edge.ideia.ex1.e4",
               "marcas": [
                 "c5"
-              ]
-            },
-            {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.ideia.ex1.e5",
-              "marcas": [
-                "b6"
-              ]
-            },
-            {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.ideia.ex1.e6",
-              "marcas": [
-                "c6"
               ]
             }
           ],
@@ -216,10 +198,6 @@
               ]
             },
             {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 5 4",
-              "t": "rot.edge.ideia.ex1.l.7"
-            },
-            {
               "fen": "8/2k1K3/2p5/2p5/p1P5/P7/8/8 w - - 1 2",
               "t": "rot.edge.ideia.ex1.l.8",
               "salto": true,
@@ -245,10 +223,6 @@
                 "a7",
                 "e7"
               ]
-            },
-            {
-              "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 w - - 1 2",
-              "t": "rot.edge.ideia.ex1.l.10"
             }
           ]
         },
@@ -267,14 +241,11 @@
           "entrada": [
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.ideia.ex2.e1"
-            },
-            {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
               "t": "rot.edge.ideia.ex2.e2",
               "marcas": [
+                "b5",
                 "c5",
-                "c6"
+                "d5"
               ]
             },
             {
@@ -285,10 +256,6 @@
                 "c5",
                 "d5"
               ]
-            },
-            {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.ideia.ex2.e4"
             },
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
@@ -441,16 +408,6 @@
           "linha": [
             {
               "fen": "8/8/2p5/k1p2K2/p1P5/P7/8/8 b - - 1 1",
-              "t": "rot.edge.ideia.ex2.l.1",
-              "marcas": [
-                "b5",
-                "c5",
-                "d5",
-                "e5"
-              ]
-            },
-            {
-              "fen": "8/8/2p5/k1p2K2/p1P5/P7/8/8 b - - 1 1",
               "t": "rot.edge.ideia.ex2.l.2",
               "marcas": [
                 "b5"
@@ -462,10 +419,6 @@
                   "r"
                 ]
               ]
-            },
-            {
-              "fen": "8/8/2p5/k1p2K2/p1P5/P7/8/8 b - - 1 1",
-              "t": "rot.edge.ideia.ex2.l.3"
             },
             {
               "fen": "8/8/1kp5/2p2K2/p1P5/P7/8/8 w - - 2 2",
@@ -514,13 +467,6 @@
                 "b7",
                 "c7",
                 "d7"
-              ]
-            },
-            {
-              "fen": "8/k3K3/2p5/2p5/p1P5/P7/8/8 b - - 7 4",
-              "t": "rot.edge.ideia.ex2.l.15",
-              "marcas": [
-                "g7"
               ]
             },
             {
@@ -577,13 +523,6 @@
             },
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.ideia.ex2.l.14",
-              "marcas": [
-                "b5"
-              ]
-            },
-            {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
               "t": "rot.edge.ideia.ex2.l.16"
             }
           ]
@@ -625,20 +564,6 @@
               ]
             },
             {
-              "fen": "8/8/2p5/k1p2K2/p1P5/P7/8/8 b - - 1 1",
-              "t": "rot.edge.demos.longe.3",
-              "marcas": [
-                "b5"
-              ],
-              "setas": [
-                [
-                  "c4",
-                  "b5",
-                  "r"
-                ]
-              ]
-            },
-            {
               "fen": "8/8/k1p5/2p2K2/p1P5/P7/8/8 w - - 2 2",
               "lance": "a5a6",
               "t": "rot.edge.demos.longe.4"
@@ -652,10 +577,6 @@
                 "c6",
                 "d6"
               ]
-            },
-            {
-              "fen": "8/8/k1p1K3/2p5/p1P5/P7/8/8 b - - 3 2",
-              "t": "rot.edge.demos.longe.6"
             }
           ]
         },
@@ -765,13 +686,6 @@
                 "e7",
                 "c7"
               ]
-            },
-            {
-              "fen": "3k4/4p3/4P3/2K5/8/8/8/8 w - - 0 1",
-              "t": "rot.edge.demos.oitava.2",
-              "marcas": [
-                "d7"
-              ]
             }
           ],
           "linha": [
@@ -781,14 +695,6 @@
               "t": "rot.edge.demos.oitava.3",
               "marcas": [
                 "c7"
-              ]
-            },
-            {
-              "fen": "3k4/4p3/1K2P3/8/8/8/8/8 b - - 1 1",
-              "t": "rot.edge.demos.oitava.4",
-              "marcas": [
-                "c6",
-                "c8"
               ]
             },
             {
@@ -847,10 +753,6 @@
                 "d7e7"
               ],
               "t": "rot.edge.demos.oitava.11"
-            },
-            {
-              "fen": "8/4K1k1/4P3/8/8/8/8/8 b - - 0 6",
-              "t": "rot.edge.demos.oitava.12"
             }
           ]
         },
@@ -863,11 +765,7 @@
           "entrada": [
             {
               "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.demos.contagem.1"
-            },
-            {
-              "fen": "8/8/1kp1K3/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.demos.contagem.2",
+              "t": "rot.edge.demos.contagem.1",
               "marcas": [
                 "c6",
                 "d6"
@@ -893,10 +791,6 @@
             {
               "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
               "t": "rot.edge.demos.contagem.ponte"
-            },
-            {
-              "fen": "8/8/1kpK4/2p5/p1P5/P7/8/8 w - - 3 3",
-              "t": "rot.edge.demos.contagem.ponte2"
             }
           ]
         }
