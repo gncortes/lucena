@@ -53,9 +53,9 @@ void main() {
     );
     expect(
       body.textSpan!.toPlainText(),
-      'Primeira fala.\n\nAgora clique em Ver resposta',
+      'Primeira fala.\n\nAgora clique em ver resposta',
     );
-    await tester.tapOnText(find.textRange.ofSubstring('Ver resposta'));
+    await tester.tapOnText(find.textRange.ofSubstring('ver resposta'));
     await tester.pumpAndSettle();
     expect(answers, 1);
     expect(sheet, findsNothing);

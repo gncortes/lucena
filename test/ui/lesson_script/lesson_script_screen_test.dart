@@ -465,7 +465,7 @@ void main() {
     // O Viktor convida a ver a linha principal; o rótulo na fala é clicável
     // e faz o mesmo que o botão.
     final link = find.textRange.ofSubstring(
-      'Ver linha principal',
+      'ver linha principal',
       descendentOf: find.byKey(LessonScriptKeys.speech),
     );
     expect(link, findsOneWidget);

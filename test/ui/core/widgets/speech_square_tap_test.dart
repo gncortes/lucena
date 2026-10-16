@@ -7,6 +7,7 @@ import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/core/widgets/square_flash.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 
 import '../../../../testing/test_app.dart';
 
@@ -72,6 +73,48 @@ void main() {
   ) async {
     await pumpFala(tester, taps: false);
     expect(spans(tester).where((s) => s.recognizer != null), isEmpty);
+  });
+
+  testWidgets('no balão, o toque na casa ou ao lado dela realça a casa e não '
+      'abre a fala inteira; longe dela, abre', (tester) async {
+    final tapped = <String>[];
+    var opens = 0;
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: Scaffold(
+          body: Builder(
+            builder: (context) => ScriptSpeech(
+              texts: const ['Mantenha o rei em f6 ou g6, e o peão passa.'],
+              metrics: ScriptSpeechMetrics.of(context),
+              onSquareTap: tapped.add,
+              onOpen: () => opens++,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tapOnText(find.textRange.ofSubstring('f6'));
+    // O dedo cai um pouco ao lado das duas letras: ainda é a casa.
+    final g6 = find.textRange.ofSubstring('g6').evaluate().single;
+    final box = g6.renderObject
+        .getBoxesForSelection(
+          TextSelection(
+            baseOffset: g6.textRange.start,
+            extentOffset: g6.textRange.end,
+          ),
+        )
+        .single
+        .toRect();
+    await tester.tapAt(
+      g6.renderObject.localToGlobal(box.centerRight + const Offset(8, 3)),
+    );
+    expect(tapped, ['f6', 'g6']);
+    expect(opens, 0);
+    await tester.tapOnText(find.textRange.ofSubstring('Mantenha'));
+    expect(opens, 1);
+    expect(tapped, ['f6', 'g6']);
   });
 
   testWidgets('SquareFlash: realça, repete e some em 1,5 s', (tester) async {
