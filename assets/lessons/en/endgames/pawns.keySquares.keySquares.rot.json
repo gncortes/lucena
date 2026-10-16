@@ -15,7 +15,7 @@
   "rot.keySquares.ideia.ex1.certo": "Exactly! Your king has reached f5, a key square. The other two, d5 and e5, are next to the black king.",
   "rot.keySquares.ideia.ex1.l1": "With the king on a key square, promotion is guaranteed, whatever the defence. What if Black went after the pawn?",
   "rot.keySquares.ideia.ex1.l3": "The black king goes to d5, towards the pawn. If your king climbed to f6 or g5, it would go to e4 and take the pawn.",
-  "rot.keySquares.ideia.ex1.l4": "So your king returns to f4 and defends the pawn: the black king cannot take it, because it would stand next to your king. The win is still guaranteed.",
+  "rot.keySquares.ideia.ex1.l4": "Your king returns to f4 and defends the pawn; then it goes back to the key squares.",
   "rot.keySquares.ideia.ex1.l6": "The black king can also drop back to e7, in front of the pawn: it is the toughest defence. Against this defence, bringing the pawn all the way to promotion takes a precise technique: it is the subject of the next chapter. What if, in this position, White pushed the pawn instead of the king?",
   "rot.keySquares.ideia.ex1.l9": "With the pawn on e4, the key squares move up to d6, e6 and f6.",
   "rot.keySquares.ideia.ex1.l10": "The black king goes to f7 and stands next to e6 and f6: your king cannot get in. It is the only move that holds the draw.",

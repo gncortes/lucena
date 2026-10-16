@@ -626,10 +626,6 @@
             },
             {
               "fen": "8/8/8/4k3/8/6K1/4P3/8 w - - 1 2",
-              "t": "rot.diagonal.ideia.ex2.l8"
-            },
-            {
-              "fen": "8/8/8/4k3/8/6K1/4P3/8 w - - 1 2",
               "t": "rot.diagonal.ideia.ex2.ponte"
             }
           ]
@@ -744,6 +740,91 @@
               ],
               "salto": true,
               "t": "rot.diagonal.demos.outraAla.12"
+            }
+          ]
+        },
+        {
+          "id": "caminho",
+          "fen": "8/8/8/6k1/2P5/8/5K2/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/8/8/6k1/2P5/8/5K2/8 w - - 0 1",
+              "marcas": [
+                "b6",
+                "c6",
+                "d6"
+              ],
+              "t": "rot.diagonal.demos.caminho.1"
+            }
+          ],
+          "linha": [
+            {
+              "fen": "8/8/8/6k1/2P5/4K3/8/8 b - - 1 1",
+              "marcas": [
+                "e3",
+                "f4",
+                "g5"
+              ],
+              "lance": "f2e3",
+              "t": "rot.diagonal.demos.caminho.2"
+            },
+            {
+              "fen": "8/8/8/5k2/2PK4/8/8/8 b - - 3 2",
+              "seq": [
+                "g5f5",
+                "e3d4"
+              ],
+              "t": "rot.diagonal.demos.caminho.3"
+            },
+            {
+              "fen": "8/3k4/1K6/8/2P5/8/8/8 b - - 7 4",
+              "marcas": [
+                "b6"
+              ],
+              "seq": [
+                "f5e6",
+                "d4c5",
+                "e6d7",
+                "c5b6"
+              ],
+              "t": "rot.diagonal.demos.caminho.4"
+            },
+            {
+              "fen": "8/8/8/6k1/2P5/8/5K2/8 w - - 0 1",
+              "setas": [
+                [
+                  "f2",
+                  "g3",
+                  "r"
+                ]
+              ],
+              "salto": true,
+              "t": "rot.diagonal.demos.caminho.5"
+            },
+            {
+              "fen": "8/8/8/5k2/2P5/6K1/8/8 w - - 2 2",
+              "marcas": [
+                "g3",
+                "f5"
+              ],
+              "seq": [
+                "f2g3",
+                "g5f5"
+              ],
+              "t": "rot.diagonal.demos.caminho.6"
+            },
+            {
+              "fen": "8/8/8/6k1/2P5/4K3/8/8 b - - 1 1",
+              "marcas": [
+                "e3",
+                "f4",
+                "g5"
+              ],
+              "salto": true,
+              "t": "rot.diagonal.demos.caminho.7"
             }
           ]
         },
