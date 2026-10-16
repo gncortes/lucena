@@ -131,7 +131,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.textContaining('{linhaPrincipal}'), findsNothing);
-    final link = find.textRange.ofSubstring('Ver linha principal');
+    final link = find.textRange.ofSubstring('ver linha principal');
     expect(link, findsOneWidget);
     await tester.tapOnText(link);
     expect(taps, 1);
@@ -141,7 +141,7 @@ void main() {
         mainLine: 'Ver linha principal',
         showAnswer: 'Ver resposta',
       ),
-      'Clique em Ver linha principal',
+      'Clique em ver linha principal',
     );
   });
 
@@ -166,7 +166,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.textContaining('{verResposta}'), findsNothing);
-    expect(find.textContaining('Ver resposta.'), findsNothing);
+    expect(find.textContaining('ver resposta.'), findsNothing);
     final rich = tester.widget<Text>(
       find.descendant(
         of: find.byKey(LessonScriptKeys.speech),
@@ -175,9 +175,9 @@ void main() {
     );
     final link = (rich.textSpan! as TextSpan).children!
         .whereType<TextSpan>()
-        .firstWhere((span) => span.text == 'Ver resposta');
+        .firstWhere((span) => span.text == 'ver resposta');
     expect(link.style?.decoration, TextDecoration.underline);
-    await tester.tapOnText(find.textRange.ofSubstring('Ver resposta'));
+    await tester.tapOnText(find.textRange.ofSubstring('ver resposta'));
     expect(answers, 1);
     expect(opens, 0);
     // Fora do link, o balão inteiro abre a fala.
@@ -202,7 +202,7 @@ void main() {
     final rich = tester.widget<Text>(find.byType(Text));
     expect(
       rich.textSpan!.toPlainText(),
-      'Clique em Ver linha principal Depois siga.',
+      'Clique em ver linha principal Depois siga.',
     );
     final link = (rich.textSpan! as TextSpan).children![1] as TextSpan;
     expect(link.recognizer, isNull);
@@ -250,7 +250,7 @@ void main() {
       expect(texts.first.overflow, TextOverflow.ellipsis);
       expect(
         texts.last.textSpan!.toPlainText(),
-        'Clique em Ver linha principal e eu lhe mostro.',
+        'Clique em ver linha principal e eu lhe mostro.',
       );
       // A frase do link cabe inteira na última linha.
       final paragraph = tester.renderObject<RenderParagraph>(
@@ -259,7 +259,7 @@ void main() {
       expect(paragraph.didExceedMaxLines, isFalse);
       // As duas linhas somam a altura de 2 linhas de 24.
       expect(tester.getSize(find.byType(SpeechText)).height, 48);
-      final link = find.textRange.ofSubstring('Ver linha principal');
+      final link = find.textRange.ofSubstring('ver linha principal');
       expect(link, findsOneWidget);
       await tester.tapOnText(link);
       expect(lines, 1);

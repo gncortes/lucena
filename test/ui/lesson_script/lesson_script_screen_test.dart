@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +34,19 @@ import 'lesson_script_fim_demo_test.dart' show demoToPractice;
 const _tall = Size(412, 915);
 const _short = Size(360, 640);
 
+/// Um relógio que nunca dispara: o passo automático da etapa 1 não anda
+/// sozinho no meio do teste nem deixa timer pendente no fim.
+class _InertTimer implements Timer {
+  @override
+  bool get isActive => false;
+
+  @override
+  int get tick => 0;
+
+  @override
+  void cancel() {}
+}
+
 class _Setup {
   _Setup(this.cubit, this.voice);
 
@@ -47,6 +62,7 @@ Future<_Setup> _open(
   int stage = 0,
   FakeKpkOracle? oracle,
   bool voiceOn = false,
+  bool? autoPlay,
 }) async {
   tester.view
     ..physicalSize = size
@@ -75,6 +91,9 @@ Future<_Setup> _open(
     source: FakeLessonSource(),
     initialStage: stage,
     delay: (_) async {},
+    // O relógio de verdade só onde o teste mede o passo automático (por
+    // padrão, a etapa 2).
+    timer: autoPlay ?? stage == 1 ? Timer.new : (_, _) => _InertTimer(),
   );
   addTearDown(cubit.close);
   await tester.pumpWidget(
@@ -161,7 +180,7 @@ void main() {
     final label = '${size.width.toInt()}x${size.height.toInt()}';
 
     group('tela $label', () {
-      testWidgets('entrada: barra, livro, balão colado, Continuar e ◀ parado', (
+      testWidgets('entrada: barra, livro, balão colado, ⏸ e ⏭ e ◀ parado', (
         tester,
       ) async {
         await _open(tester, size);
@@ -189,6 +208,10 @@ void main() {
         } else {
           expect(board.top, greaterThan(speech.bottom));
         }
+        // A fala de "Continuar" da etapa 1 passa sozinha: ⏸ e o Continuar
+        // que enche (Gabriel, 16/10/2026).
+        expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
+        expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
         expect(find.text('Continuar'), findsOneWidget);
         expect(find.text('Ver resposta'), findsNothing);
         // Sem passo anterior, o botão voltar não aparece.
@@ -442,7 +465,7 @@ void main() {
     // O Viktor convida a ver a linha principal; o rótulo na fala é clicável
     // e faz o mesmo que o botão.
     final link = find.textRange.ofSubstring(
-      'Ver linha principal',
+      'ver linha principal',
       descendentOf: find.byKey(LessonScriptKeys.speech),
     );
     expect(link, findsOneWidget);
@@ -631,6 +654,76 @@ void main() {
     expect(find.text('Próxima etapa'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('fala de 5 linhas na tela alta: o balão usa a sobra de cima, '
+      'sem rolar nem diminuir a letra, e o tabuleiro não se mexe (Gabriel, '
+      '16/10/2026)', (tester) async {
+    // Na fonte dos testes (caixas de 15 dp), umas 5 linhas: além das 3 da
+    // área fixa, mesmo em 13.
+    const five =
+        'Uma regra para achar as casas-chave: elas ficam duas fileiras à '
+        'frente do peão.';
+    await _open(tester, _tall, texts: {'e1': 'Curto.', 'e2': five});
+    final board = _rect(tester, LessonScriptKeys.board);
+    final page = _rect(tester, LessonScriptKeys.page);
+    await _tap(tester, LessonScriptKeys.primary);
+    final speech = _rect(tester, LessonScriptKeys.speech);
+    expect(_rect(tester, LessonScriptKeys.board), board);
+    expect(speech.top, greaterThanOrEqualTo(page.top));
+    final inside = find.descendant(
+      of: find.byKey(LessonScriptKeys.speech),
+      matching: find.byType(SingleChildScrollView),
+    );
+    expect(inside, findsNothing);
+    final text = tester.widget<Text>(
+      find
+          .descendant(
+            of: find.byKey(LessonScriptKeys.speech),
+            matching: find.byType(Text),
+          )
+          .first,
+    );
+    expect(text.style?.fontSize ?? text.textSpan?.style?.fontSize, 15);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'teoria (etapa 1): ← quando há volta, ⏸ e o Continuar que enche, sem ↻ '
+    'nem ⏮; a fala passa sozinha e a pergunta espera o aluno',
+    (tester) async {
+      final s = await _open(tester, _tall, autoPlay: true);
+      expect(s.cubit.state.stageId, 'ideia');
+      expect(s.cubit.state.demo?.full, isFalse);
+      expect(find.byKey(LessonScriptKeys.demoToggle), findsOneWidget);
+      expect(find.byKey(LessonScriptKeys.demoRing), findsNothing);
+      expect(find.byKey(LessonScriptKeys.theoryFill), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(LessonScriptKeys.primary),
+          matching: find.text('Continuar'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(LessonScriptKeys.demoRepeat), findsNothing);
+      expect(find.byKey(LessonScriptKeys.demoStepBack), findsNothing);
+      // ⏸ pausa; ▶ retoma.
+      await _tap(tester, LessonScriptKeys.demoToggle);
+      expect(s.cubit.state.demo!.playing, isFalse);
+      await _tap(tester, LessonScriptKeys.demoToggle);
+      expect(s.cubit.state.demo!.playing, isTrue);
+      // Sem voz, o tempo de leitura passa a fala sozinha até a pergunta, que
+      // não tem relógio.
+      for (var i = 0; i < 12; i++) {
+        if (s.cubit.state.phase == ScriptPhase.pergunta) break;
+        await tester.pump(const Duration(seconds: 9));
+        await _settle(tester);
+      }
+      expect(s.cubit.state.phase, ScriptPhase.pergunta);
+      expect(s.cubit.state.demo, isNull);
+      expect(find.byKey(LessonScriptKeys.theoryFill), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('fim da parte: Rever a ideia volta; Continuar conclui', (
     tester,
