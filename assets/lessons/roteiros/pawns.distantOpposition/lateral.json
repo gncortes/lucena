@@ -508,10 +508,6 @@
               "fen": "8/5k2/K7/8/8/8/3P4/8 b - - 0 1",
               "t": "rot.lateral.ideia.ex2.l6",
               "salto": true
-            },
-            {
-              "fen": "8/5k2/K7/8/8/8/3P4/8 b - - 0 1",
-              "t": "rot.lateral.ideia.ex2.ponte"
             }
           ]
         }
@@ -522,65 +518,69 @@
       "exemplos": [
         {
           "id": "ataqueLonge",
-          "fen": "2K5/7k/8/8/8/8/5P2/8 w - - 0 1",
+          "fen": "7K/k7/8/8/8/8/3P4/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "2K5/7k/8/8/8/8/5P2/8 w - - 0 1",
+              "fen": "7K/k7/8/8/8/8/3P4/8 w - - 0 1",
               "t": "rot.lateral.demos.ataqueLonge.1",
               "marcas": [
-                "e4",
-                "f4",
-                "g4"
+                "c4",
+                "d4",
+                "e4"
               ]
             }
           ],
           "linha": [
             {
-              "fen": "8/3K3k/8/8/8/8/5P2/8 b - - 1 1",
+              "fen": "8/k5K1/8/8/8/8/3P4/8 b - - 1 1",
               "t": "rot.lateral.demos.ataqueLonge.2",
-              "lance": "c8d7",
+              "lance": "h8g7",
               "marcas": [
+                "b7",
+                "c7",
+                "d7",
                 "e7",
-                "f7",
-                "g7"
+                "f7"
               ]
             },
             {
-              "fen": "8/3K4/6k1/8/8/8/5P2/8 w - - 2 2",
+              "fen": "8/6K1/1k6/8/8/8/3P4/8 w - - 2 2",
               "t": "rot.lateral.demos.ataqueLonge.3",
-              "lance": "h7g6"
+              "lance": "a7b6"
             },
             {
-              "fen": "8/8/4K1k1/8/8/8/5P2/8 b - - 3 2",
+              "fen": "8/8/1k3K2/8/8/8/3P4/8 b - - 3 2",
               "t": "rot.lateral.demos.ataqueLonge.4",
-              "lance": "d7e6",
+              "lance": "g7f6",
               "marcas": [
-                "f6"
+                "c6",
+                "d6",
+                "e6"
               ]
             },
             {
-              "fen": "8/8/4K3/6k1/8/8/5P2/8 w - - 4 3",
+              "fen": "8/8/5K2/2k5/8/8/3P4/8 w - - 4 3",
               "t": "rot.lateral.demos.ataqueLonge.5",
-              "lance": "g6g5"
+              "lance": "b6c5"
             },
             {
-              "fen": "8/8/8/4K1k1/8/8/5P2/8 b - - 5 3",
+              "fen": "8/8/8/2k1K3/8/8/3P4/8 b - - 5 3",
               "t": "rot.lateral.demos.ataqueLonge.6",
-              "lance": "e6e5",
+              "lance": "f6e5",
               "marcas": [
-                "f5"
+                "d5"
               ]
             },
             {
-              "fen": "8/8/8/4K3/6k1/8/5P2/8 w - - 6 4",
+              "fen": "8/8/8/4K3/2k5/8/3P4/8 w - - 6 4",
               "t": "rot.lateral.demos.ataqueLonge.7",
-              "lance": "g5g4"
+              "lance": "c5c4"
             },
             {
-              "fen": "8/8/8/8/4K1k1/8/5P2/8 b - - 7 4",
+              "fen": "8/8/8/8/2k1K3/8/3P4/8 b - - 7 4",
               "t": "rot.lateral.demos.ataqueLonge.8",
               "lance": "e5e4",
               "marcas": [
