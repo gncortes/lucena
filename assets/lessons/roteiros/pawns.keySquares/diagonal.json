@@ -641,82 +641,82 @@
       "exemplos": [
         {
           "id": "outraAla",
-          "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+          "fen": "8/8/8/4k3/8/8/5PK1/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+              "fen": "8/8/8/4k3/8/8/5PK1/8 w - - 0 1",
               "marcas": [
-                "b4",
-                "c4",
-                "d4"
+                "e4",
+                "f4",
+                "g4"
               ],
               "t": "rot.diagonal.demos.outraAla.1"
             }
           ],
           "linha": [
             {
-              "fen": "8/8/8/1k6/8/3K4/2P5/8 b - - 1 1",
+              "fen": "8/8/8/4k3/8/6K1/5P2/8 b - - 1 1",
               "marcas": [
-                "d3",
-                "b5",
-                "c4"
+                "g3",
+                "e5",
+                "f4"
               ],
-              "lance": "d2d3",
+              "lance": "g2g3",
               "t": "rot.diagonal.demos.outraAla.2"
             },
             {
-              "fen": "8/8/8/2k5/8/3K4/2P5/8 w - - 2 2",
+              "fen": "8/8/8/5k2/8/6K1/5P2/8 w - - 2 2",
               "marcas": [
-                "b4",
-                "c4",
-                "d4"
+                "e4",
+                "f4",
+                "g4"
               ],
-              "lance": "b5c5",
+              "lance": "e5f5",
               "t": "rot.diagonal.demos.outraAla.4"
             },
             {
-              "fen": "8/8/8/2k5/8/2K5/2P5/8 b - - 3 2",
+              "fen": "8/8/8/5k2/8/5K2/5P2/8 b - - 3 2",
               "marcas": [
-                "c3",
-                "c5"
+                "f3",
+                "f5"
               ],
-              "lance": "d3c3",
+              "lance": "g3f3",
               "t": "rot.diagonal.demos.outraAla.5"
             },
             {
-              "fen": "8/8/8/1k6/8/2K5/2P5/8 w - - 4 3",
-              "lance": "c5b5",
+              "fen": "8/8/8/4k3/8/5K2/5P2/8 w - - 4 3",
+              "lance": "f5e5",
               "t": "rot.diagonal.demos.outraAla.7"
             },
             {
-              "fen": "8/8/8/1k6/3K4/8/2P5/8 b - - 5 3",
+              "fen": "8/8/8/4k3/6K1/8/5P2/8 b - - 5 3",
               "marcas": [
-                "d4"
+                "g4"
               ],
-              "lance": "c3d4",
+              "lance": "f3g4",
               "t": "rot.diagonal.demos.outraAla.8"
             },
             {
-              "fen": "8/8/2k5/8/2K5/8/2P5/8 b - - 7 4",
+              "fen": "8/8/5k2/8/5K2/8/5P2/8 b - - 7 4",
               "marcas": [
-                "c4",
-                "c6"
+                "f4",
+                "f6"
               ],
               "seq": [
-                "b5c6",
-                "d4c4"
+                "e5f6",
+                "g4f4"
               ],
               "t": "rot.diagonal.demos.outraAla.8b"
             },
             {
-              "fen": "8/8/8/1k6/8/8/2PK4/8 w - - 0 1",
+              "fen": "8/8/8/4k3/8/8/5PK1/8 w - - 0 1",
               "setas": [
                 [
-                  "d2",
-                  "c3",
+                  "g2",
+                  "f3",
                   "r"
                 ]
               ],
@@ -724,23 +724,23 @@
               "t": "rot.diagonal.demos.outraAla.9"
             },
             {
-              "fen": "8/8/8/2k5/8/2K5/2P5/8 w - - 2 2",
+              "fen": "8/8/8/5k2/8/5K2/5P2/8 w - - 2 2",
               "marcas": [
-                "c3",
-                "c5"
+                "f3",
+                "f5"
               ],
               "seq": [
-                "d2c3",
-                "b5c5"
+                "g2f3",
+                "e5f5"
               ],
               "t": "rot.diagonal.demos.outraAla.10"
             },
             {
-              "fen": "8/8/8/1k6/8/3K4/2P5/8 b - - 1 1",
+              "fen": "8/8/8/4k3/8/6K1/5P2/8 b - - 1 1",
               "marcas": [
-                "d3",
-                "c4",
-                "b5"
+                "g3",
+                "f4",
+                "e5"
               ],
               "salto": true,
               "t": "rot.diagonal.demos.outraAla.12"
