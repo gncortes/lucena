@@ -14,11 +14,7 @@
           "entrada": [
             {
               "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.ideia.ex1.e1"
-            },
-            {
-              "fen": "8/4K3/1kp5/2p5/p1P5/P7/8/8 b - - 0 1",
-              "t": "rot.edge.ideia.ex1.e2",
+              "t": "rot.edge.ideia.ex1.e1",
               "marcas": [
                 "a3",
                 "a4",
@@ -242,15 +238,6 @@
             {
               "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
               "t": "rot.edge.ideia.ex2.e2",
-              "marcas": [
-                "b5",
-                "c5",
-                "d5"
-              ]
-            },
-            {
-              "fen": "8/8/2p5/k1p1K3/p1P5/P7/8/8 w - - 0 1",
-              "t": "rot.edge.ideia.ex2.e3",
               "marcas": [
                 "b5",
                 "c5",
