@@ -1,5 +1,5 @@
 {
-  "rot.diagonal.ideia.ex1.e1": "Now the kings are not on the same file, but the opposition also works on the diagonal: the kings on the same diagonal, with a single square between them. With the pawn on d3, the key squares are c5, d5 and e5.",
+  "rot.diagonal.ideia.ex1.e1": "The opposition also works on the diagonal: the kings on the same diagonal, with a single square between them, like e6 and g4, with f5 in the middle. With the pawn on d3, the key squares are c5, d5 and e5.",
   "rot.diagonal.ideia.ex1.certo": "On c4 your king stands on the same diagonal as the black king, with d5 between them.",
   "rot.diagonal.ideia.ex1.revela": "The best is to take the king to c4, on a diagonal with the black king.",
   "rot.diagonal.ideia.ex1.err.c3b2.1": "Your king retreats and moves away from c5, d5 and e5.",
@@ -176,8 +176,8 @@
   "rot.diagonal.pratica.ataque.err.conv.sai6.2": "The black king goes to d7, in front of the pawn, and shuts c6 and e6: it is a draw.",
   "rot.diagonal.pratica.ataque.err.conv.e4.1": "Going to e4, your king drops back and leaves d6 free.",
   "rot.diagonal.pratica.ataque.err.conv.e4.2": "The black king goes to d6, in front of the pawn, and it is a draw.",
-  "rot.diagonal.ideia.ex1.l14c": "But the opposition only helps on the way to the key squares. In this other position, the white king could go to b2, face to face with the black king. Let us see what happens.",
-  "rot.diagonal.ideia.ex1.l14e": "The black king goes to c4, towards the pawn, and gets close to e5 before your king: that opposition does not help, and it is a draw.",
+  "rot.diagonal.ideia.ex1.l14c": "But the opposition only helps if the king is also on the way to the key squares. In this other position, with the pawn on f3, they are e5, f5 and g5. The white king could go to b2, face to face with the black king.",
+  "rot.diagonal.ideia.ex1.l14e": "The black king goes to c4, towards the pawn. From b2, your king is farther from e5 than the black king: that opposition does not help, and it is a draw.",
   "rot.diagonal.ideia.ex1.l14d": "The winning move is to go to d2: on the diagonal with the black king and on the way to e5, f5 and g5.",
   "rot.diagonal.ideia.ex1.l14f": "The black king goes back to c4, toward the pawn, but your king goes to e3, on the way to e5, f5 and g5: it reaches f4 and the key squares first.",
   "rot.diagonal.pratica.ataque.v14.err.c6d5.2": "The black king goes to d7, in front of the pawn, and it is a draw.",

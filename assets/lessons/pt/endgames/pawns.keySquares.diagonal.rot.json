@@ -1,5 +1,5 @@
 {
-  "rot.diagonal.ideia.ex1.e1": "Agora os reis não estão na mesma coluna, mas a oposição também vale na diagonal: os reis na mesma diagonal, com uma só casa entre eles. Com o peão em d3, as casas-chave são c5, d5 e e5.",
+  "rot.diagonal.ideia.ex1.e1": "A oposição também vale na diagonal: os reis na mesma diagonal, com uma só casa entre eles, como e6 e g4, com f5 no meio. Com o peão em d3, as casas-chave são c5, d5 e e5.",
   "rot.diagonal.ideia.ex1.certo": "Em c4, o seu rei fica na mesma diagonal do rei preto, com d5 entre eles.",
   "rot.diagonal.ideia.ex1.revela": "O melhor é levar o rei a c4, em diagonal com o rei preto.",
   "rot.diagonal.ideia.ex1.err.c3b2.1": "O seu rei recua e se afasta de c5, d5 e e5.",
@@ -176,8 +176,8 @@
   "rot.diagonal.pratica.ataque.err.conv.sai6.2": "O rei preto vai a d7, à frente do peão, e fecha c6 e e6: é empate.",
   "rot.diagonal.pratica.ataque.err.conv.e4.1": "Indo a e4, o seu rei recua e deixa d6 livre.",
   "rot.diagonal.pratica.ataque.err.conv.e4.2": "O rei preto vai a d6, à frente do peão, e é empate.",
-  "rot.diagonal.ideia.ex1.l14c": "Mas a oposição só ajuda no caminho das casas-chave. Nesta outra posição, o rei branco poderia ir a b2, de frente para o rei preto. Vejamos o que acontece.",
-  "rot.diagonal.ideia.ex1.l14e": "O rei preto vai a c4, rumo ao peão, e chega perto de e5 antes do seu rei: essa oposição não serve, e é empate.",
+  "rot.diagonal.ideia.ex1.l14c": "Mas a oposição só ajuda se o rei também fica no caminho das casas-chave. Nesta outra posição, com o peão em f3, elas são e5, f5 e g5. O rei branco poderia ir a b2, de frente para o rei preto.",
+  "rot.diagonal.ideia.ex1.l14e": "O rei preto vai a c4, rumo ao peão. De b2, o seu rei está mais longe de e5 do que o rei preto: essa oposição não serve, e é empate.",
   "rot.diagonal.ideia.ex1.l14d": "O lance que ganha é ir a d2: em diagonal com o rei preto e no caminho de e5, f5 e g5.",
   "rot.diagonal.ideia.ex1.l14f": "O rei preto volta a c4, rumo ao peão, mas o seu rei vai a e3, no caminho de e5, f5 e g5: chega antes a f4 e às casas-chave.",
   "rot.diagonal.pratica.ataque.v14.err.c6d5.2": "O rei preto vai a d7, à frente do peão, e é empate.",
