@@ -201,7 +201,7 @@
               "lance": "b5c4",
               "marcas": [
                 "c4",
-                "e4"
+                "d4"
               ]
             },
             {
@@ -253,8 +253,7 @@
               "t": "rot.lateral.ideia.ex1.l10",
               "lance": "b5c5",
               "marcas": [
-                "c5",
-                "e5"
+                "d5"
               ]
             },
             {
@@ -502,18 +501,13 @@
               "t": "rot.lateral.ideia.ex2.l5",
               "lance": "d5d4",
               "marcas": [
-                "b4",
-                "d4"
+                "c4"
               ]
             },
             {
               "fen": "8/5k2/K7/8/8/8/3P4/8 b - - 0 1",
               "t": "rot.lateral.ideia.ex2.l6",
               "salto": true
-            },
-            {
-              "fen": "8/5k2/K7/8/8/8/3P4/8 b - - 0 1",
-              "t": "rot.lateral.ideia.ex2.l7"
             },
             {
               "fen": "8/5k2/K7/8/8/8/3P4/8 b - - 0 1",
@@ -528,56 +522,70 @@
       "exemplos": [
         {
           "id": "ataqueLonge",
-          "fen": "8/8/8/1k6/7K/8/6P1/8 w - - 0 1",
+          "fen": "2K5/7k/8/8/8/8/5P2/8 w - - 0 1",
           "vira": false,
           "objetivo": "ganhar",
           "fim": "proximo",
           "entrada": [
             {
-              "fen": "8/8/8/1k6/7K/8/6P1/8 w - - 0 1",
+              "fen": "2K5/7k/8/8/8/8/5P2/8 w - - 0 1",
               "t": "rot.lateral.demos.ataqueLonge.1",
               "marcas": [
+                "e4",
                 "f4",
-                "g4",
-                "h4"
+                "g4"
               ]
             }
           ],
           "linha": [
             {
-              "fen": "8/8/8/1k5K/8/8/6P1/8 b - - 1 1",
+              "fen": "8/3K3k/8/8/8/8/5P2/8 b - - 1 1",
+              "t": "rot.lateral.demos.ataqueLonge.2",
+              "lance": "c8d7",
+              "marcas": [
+                "e7",
+                "f7",
+                "g7"
+              ]
+            },
+            {
+              "fen": "8/3K4/6k1/8/8/8/5P2/8 w - - 2 2",
               "t": "rot.lateral.demos.ataqueLonge.3",
-              "lance": "h4h5"
+              "lance": "h7g6"
             },
             {
-              "fen": "8/8/8/2k4K/8/8/6P1/8 w - - 2 2",
+              "fen": "8/8/4K1k1/8/8/8/5P2/8 b - - 3 2",
               "t": "rot.lateral.demos.ataqueLonge.4",
-              "lance": "b5c5"
+              "lance": "d7e6",
+              "marcas": [
+                "f6"
+              ]
             },
             {
-              "fen": "8/8/8/2k3K1/8/8/6P1/8 b - - 3 2",
+              "fen": "8/8/4K3/6k1/8/8/5P2/8 w - - 4 3",
               "t": "rot.lateral.demos.ataqueLonge.5",
-              "lance": "h5g5"
+              "lance": "g6g5"
             },
             {
-              "fen": "8/8/8/3k2K1/8/8/6P1/8 w - - 4 3",
+              "fen": "8/8/8/4K1k1/8/8/5P2/8 b - - 5 3",
               "t": "rot.lateral.demos.ataqueLonge.6",
-              "lance": "c5d5"
+              "lance": "e6e5",
+              "marcas": [
+                "f5"
+              ]
             },
             {
-              "fen": "8/8/8/3k1K2/8/8/6P1/8 b - - 5 3",
+              "fen": "8/8/8/4K3/6k1/8/5P2/8 w - - 6 4",
               "t": "rot.lateral.demos.ataqueLonge.7",
-              "lance": "g5f5"
+              "lance": "g5g4"
             },
             {
-              "fen": "8/8/8/5K2/3k4/8/6P1/8 w - - 6 4",
+              "fen": "8/8/8/8/4K1k1/8/5P2/8 b - - 7 4",
               "t": "rot.lateral.demos.ataqueLonge.8",
-              "lance": "d5d4"
-            },
-            {
-              "fen": "8/8/8/8/3k1K2/8/6P1/8 b - - 7 4",
-              "t": "rot.lateral.demos.ataqueLonge.9",
-              "lance": "f5f4"
+              "lance": "e5e4",
+              "marcas": [
+                "e4"
+              ]
             }
           ]
         },
@@ -642,10 +650,29 @@
           "objetivo": "ganhar",
           "fim": "proximo",
           "pratica": {
+            "tipo": "lance",
             "t": "rot.lateral.pratica.ataque.enunciado",
             "maquina": "b",
             "limite": 40,
-            "fim": "rot.lateral.pratica.ataque.fim",
+            "linha": [
+              {
+                "certos": [
+                  "a7b6"
+                ],
+                "resposta": "h6g5"
+              },
+              {
+                "certos": [
+                  "b6c5"
+                ],
+                "resposta": "g5f4"
+              },
+              {
+                "certos": [
+                  "c5d4"
+                ]
+              }
+            ],
             "erros": {
               "e2e3": "rot.lateral.pratica.ataque.err.e2e3",
               "e2e4": "rot.lateral.pratica.ataque.err.e2e4",
@@ -657,64 +684,71 @@
             "errosPos": {
               "8/8/1K6/6k1/8/8/4P3/8 w - - 2 2": {
                 "b6c6": "rot.lateral.pratica.ataque.v1.err.b6c6",
+                "b6b5": "rot.lateral.pratica.ataque.v1.err.b6b5",
+                "b6a5": "rot.lateral.pratica.ataque.v1.err.b6a5",
+                "b6a6": "rot.lateral.pratica.ataque.v1.err.b6a6",
+                "b6a7": "rot.lateral.pratica.ataque.v1.err.b6a7",
+                "b6b7": "rot.lateral.pratica.ataque.v1.err.b6b7",
+                "b6c7": "rot.lateral.pratica.ataque.v1.err.b6c7",
                 "e2e3": "rot.lateral.pratica.ataque.v1.err.e2e3",
                 "e2e4": "rot.lateral.pratica.ataque.v1.err.e2e4"
               },
               "8/8/8/2K5/5k2/8/4P3/8 w - - 4 3": {
                 "c5c4": "rot.lateral.pratica.ataque.v2.err.c5c4",
-                "c5d5": "rot.lateral.pratica.ataque.v2.err.c5d5"
-              },
-              "8/8/8/5k2/3K4/8/4P3/8 w - - 6 4": {
-                "e2e4": "rot.lateral.pratica.ataque.v3.err.e2e4",
-                "d4e3": "rot.lateral.pratica.ataque.v3.err.d4e3"
-              },
-              "8/8/8/4k3/8/3K4/4P3/8 w - - 8 5": {
-                "e2e4": "rot.lateral.pratica.ataque.v4.err.e2e4",
-                "e2e3": "rot.lateral.pratica.ataque.v4.err.e2e3"
-              },
-              "8/8/5k2/8/3K4/4P3/8/8 w - - 2 5": {
-                "e3e4": "rot.lateral.pratica.ataque.v4.err.e3e4",
-                "d4e4": "rot.lateral.pratica.ataque.v4.err.d4e4"
-              },
-              "8/4k3/8/3K4/8/4P3/8/8 w - - 4 6": {
-                "e3e4": "rot.lateral.pratica.ataque.v5.err.e3e4"
-              },
-              "8/3k4/8/4K3/8/4P3/8/8 w - - 6 7": {
-                "e3e4": "rot.lateral.pratica.ataque.v6.err.e3e4"
-              },
-              "8/4k3/8/5K2/8/4P3/8/8 w - - 8 8": {
-                "e3e4": "rot.lateral.pratica.ataque.v7.err.e3e4"
+                "c5d5": "rot.lateral.pratica.ataque.v2.err.c5d5",
+                "c5b4": "rot.lateral.pratica.ataque.v2.err.c5b4",
+                "c5d6": "rot.lateral.pratica.ataque.v2.err.c5d6",
+                "c5c6": "rot.lateral.pratica.ataque.v2.err.c5c6",
+                "c5b6": "rot.lateral.pratica.ataque.v2.err.c5b6",
+                "c5b5": "rot.lateral.pratica.ataque.v2.err.c5b5",
+                "e2e3": "rot.lateral.pratica.ataque.v2.err.e2e3",
+                "e2e4": "rot.lateral.pratica.ataque.v2.err.e2e4"
               }
-            }
+            },
+            "fim": "rot.lateral.pratica.ataque.fim"
           }
         },
         {
           "id": "defesa",
-          "fen": "8/1k6/6K1/8/8/8/3P4/8 b - - 0 1",
+          "fen": "8/8/8/8/8/7K/k2P4/8 b - - 0 1",
           "vira": true,
           "objetivo": "empatar",
           "fim": "etapa",
           "pratica": {
+            "tipo": "lance",
             "t": "rot.lateral.pratica.defesa.enunciado",
             "maquina": "w",
             "limite": 40,
-            "fim": "rot.lateral.pratica.defesa.fim",
+            "linha": [
+              {
+                "certos": [
+                  "a2b3"
+                ],
+                "resposta": "h3g4"
+              },
+              {
+                "certos": [
+                  "b3c4"
+                ]
+              }
+            ],
             "erros": {
-              "b7c7": "rot.lateral.pratica.defesa.err.b7c7",
-              "b7b6": "rot.lateral.pratica.defesa.err.b7b6",
-              "b7c8": "rot.lateral.pratica.defesa.err.b7c8",
-              "b7b8": "rot.lateral.pratica.defesa.err.b7b8",
-              "b7a8": "rot.lateral.pratica.defesa.err.b7a8",
-              "b7a7": "rot.lateral.pratica.defesa.err.b7a7",
-              "b7a6": "rot.lateral.pratica.defesa.err.b7a6"
+              "a2a3": "rot.lateral.pratica.defesa.err.a2a3",
+              "a2b2": "rot.lateral.pratica.defesa.err.a2b2",
+              "a2b1": "rot.lateral.pratica.defesa.err.a2b1",
+              "a2a1": "rot.lateral.pratica.defesa.err.a2a1"
             },
             "errosPos": {
-              "8/8/2k5/5K2/8/8/3P4/8 b - - 1 2": {
-                "c6c5": "rot.lateral.pratica.defesa.v1.err.c6c5",
-                "c6d6": "rot.lateral.pratica.defesa.v1.err.c6d6",
-                "c6d7": "rot.lateral.pratica.defesa.v1.err.c6d7"
+              "8/8/8/8/6K1/1k6/3P4/8 b - - 2 2": {
+                "b3b4": "rot.lateral.pratica.defesa.v1.err.b3b4",
+                "b3a4": "rot.lateral.pratica.defesa.v1.err.b3a4",
+                "b3c2": "rot.lateral.pratica.defesa.v1.err.b3c2",
+                "b3b2": "rot.lateral.pratica.defesa.v1.err.b3b2",
+                "b3a2": "rot.lateral.pratica.defesa.v1.err.b3a2",
+                "b3a3": "rot.lateral.pratica.defesa.v1.err.b3a3"
               }
-            }
+            },
+            "fim": "rot.lateral.pratica.defesa.fim"
           }
         }
       ]
