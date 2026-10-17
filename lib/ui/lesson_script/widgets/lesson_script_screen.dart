@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -138,7 +139,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<LessonScriptCubit>();
-    return BlocConsumer<LessonScriptCubit, LessonScriptState>(
+    final screen = BlocConsumer<LessonScriptCubit, LessonScriptState>(
       listenWhen: (a, b) => a.outcome != b.outcome,
       listener: _onState,
       builder: (context, state) => Scaffold(
@@ -170,6 +171,12 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         ),
       ),
     );
+    // Outro passo (posição ou fala nova): a casa marcada pela fala sai.
+    return BlocListener<LessonScriptCubit, LessonScriptState>(
+      listenWhen: (a, b) => a.fen != b.fen || !listEquals(a.speech, b.speech),
+      listener: (_, _) => _flash.clear(),
+      child: screen,
+    );
   }
 
   void _openCuriosities(BuildContext context, ScriptCuriosities data) {
@@ -197,7 +204,6 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     LessonScriptCubit cubit,
     LessonScriptState state,
   ) {
-    final metrics = ScriptSpeechMetrics.of(context);
     final settings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
@@ -230,7 +236,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           );
     final voice = TeacherSpeech.speechOf(context);
     final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
-    Widget speechOf() {
+    Widget speechOf(ScriptSpeechMetrics metrics) {
       Widget speech = ScriptSpeech(
         texts: state.speech,
         metrics: metrics,
@@ -379,7 +385,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final colors = Theme.of(context).colorScheme;
     final demo = state.demo;
     // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
-    // botões; no fim, só ↻ e o botão principal (canvas, E12).
+    // botões; no fim, só ↻ e o botão principal (canvas, E12). Teoria (etapa
+    // 1): nas falas de "Continuar", ⏸/▶ e o ⏭ com o anel.
     final repeat = ScriptDemoButton(
       buttonKey: LessonScriptKeys.demoRepeat,
       icon: Icons.replay_rounded,
@@ -391,6 +398,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         : ScriptDemoControls(
             playing: demo.playing,
             speaking: demo.speaking,
+            full: demo.full,
             progress: demo.progress,
             remaining: demo.remaining,
             tick: demo.tick,

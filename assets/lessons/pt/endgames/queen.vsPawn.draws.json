@@ -33,7 +33,7 @@
   "step.rookHold": "Agora é a sua vez de defender, em uma análise do grande mestre estoniano {{Paul Keres|paul-keres}}, um dos melhores jogadores do mundo nas décadas de 1940 e 1950. Depois de 1.Dg2+ Rb1 2.Df1+ Rb2 3.Db5+, a dama dá xeque pela coluna b, e o rei branco está em a8. Mantenha o rei sempre perto do peão, até chegar ao canto.",
   "step.rookHold.hint": "Fique sempre ao lado do peão. Se a dama o atacar sem xeque, volte para a casa que o defende.",
   "step.rookHold.done": "3...Rc2, 4...Rb2, 5...Rc2, 6...Rb1 e 7...Ra1. O rei não saiu de perto de a1, e a dama não consegue tirá-lo de lá sem afogá-lo. {{Keres|paul-keres}} apresenta esta linha no seu livro de finais práticos.",
-  "step.t_block": "Voltemos à escada do primeiro capítulo. Depois de 1.Dd4+, as pretas não jogaram 1...Rb1, o único lance, e sim 1...Rc1?, que parece equivalente. O que mudou? Os xeques de sempre ainda servem, ou há algo melhor?",
+  "step.t_block": "De volta à escada do primeiro capítulo. Depois de 1.Dd4+, as pretas não jogaram 1...Rb1, o único lance, e sim 1...Rc1?, que parece equivalente. O que mudou? Os xeques de sempre ainda servem, ou há algo melhor?",
   "step.t_block.hint1": "Observe a casa por onde o peão precisa passar.",
   "step.t_block.hint2": "O rei preto ainda alcança essa casa? E se a dama chegar lá antes dele?",
   "step.blockWhy": "Esta é a regra mais simples deste final. Se a dama consegue parar na casa da frente do peão sem ser capturada, ela ganha: dali, ela vigia b1 e b2, o rei preto não consegue mais se aproximar, e o peão não avança. Com 1...Rb1, o rei vigiava a1; com 1...Rc1?, não vigia mais. Por isso, antes de dar xeque, observe sempre a casa de coroação.",

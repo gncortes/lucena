@@ -37,7 +37,8 @@ mixin _$LessonScriptState {
  bool get coordinates;/// A máquina está para responder.
  bool get machineThinking;/// Os lances já vistos, na ordem da lista, e o atual.
  List<ScriptMoveEntry> get moves; String? get currentMoveId; ScriptTransition get transition;/// A folha Curiosidades do exemplo; nula se não tem (esconde o livro).
- ScriptCuriosities? get curiosities;/// A demonstração automática (etapa 2); nula fora dela.
+ ScriptCuriosities? get curiosities;/// O passo automático (etapa 2 e as falas de "Continuar" da etapa 1);
+/// nulo fora dele.
  ScriptDemo? get demo;/// Preenchido quando a parte foi concluída (`finishPart`).
  LessonOutcome? get outcome;
 /// Create a copy of LessonScriptState
@@ -372,7 +373,8 @@ class _LessonScriptState implements LessonScriptState {
 @override@JsonKey() final  ScriptTransition transition;
 /// A folha Curiosidades do exemplo; nula se não tem (esconde o livro).
 @override final  ScriptCuriosities? curiosities;
-/// A demonstração automática (etapa 2); nula fora dela.
+/// O passo automático (etapa 2 e as falas de "Continuar" da etapa 1);
+/// nulo fora dele.
 @override final  ScriptDemo? demo;
 /// Preenchido quando a parte foi concluída (`finishPart`).
 @override final  LessonOutcome? outcome;

@@ -131,7 +131,7 @@
   "step.d_desperado.m6": "3...Rg2. O rei ataca a torre, achando que os xeques acabaram.",
   "step.d_desperado.m7": "4.Th2+! A torre se oferece: se o rei não a capturar, ela segue dando xeques pela coluna h.",
   "step.d_desperado.m8": "4...Rxh2. É afogamento: o nosso rei não tem lance, e a partida termina empatada.",
-  "step.m_desperado": "Voltemos à primeira posição: depois de 1.Th6+ Rb5, a torre continua o seu trabalho. Apenas um lance segura.",
+  "step.m_desperado": "De volta à primeira posição: depois de 1.Th6+ Rb5, a torre continua o seu trabalho. Apenas um lance segura.",
   "step.m_desperado.hint": "Dê xeque de novo, de uma casa que nem a dama nem o rei preto alcançam.",
   "step.m_desperado.done": "2.Th5+ Rb6 3.Th6+: a torre louca segue dando xeques. Se o rei a capturar, é afogamento; se fugir, vem outro xeque.",
   "part.recap.title": "Zugzwang de Grigoriev",
