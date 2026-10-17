@@ -80,7 +80,7 @@
   "rot.fixedTarget.demos.semFixar.8": "The black pawn goes to a4 and fixes yours on a3: on the a-file, the last move was Black’s.",
   "rot.fixedTarget.demos.semFixar.9": "The black king captures the h3-pawn, while your king comes back to e3.",
   "rot.fixedTarget.demos.semFixar.10": "Your king tries to come closer. The black king protects the h5-pawn and steps out of its way, to g5.",
-  "rot.fixedTarget.demos.semFixar.11": "Black uses the reserve tempo: the pawn goes to h4. Your king goes to f3, and the black king takes the opposition on f5: zugzwang.",
+  "rot.fixedTarget.demos.semFixar.11": "Black uses the reserve tempo: the pawn goes to h4. Your king goes to f3, and the black king takes the opposition on f5: your king has to give way.",
   "rot.fixedTarget.demos.semFixar.12": "With the pawn on a4, the last move on the a-file would be White’s. Fixing comes before running, in defence and in attack too.",
   "rot.fixedTarget.demos.compasso.1": "Defence: see how keeping in step with the black king holds the draw to the end.",
   "rot.fixedTarget.demos.compasso.2": "Both kings come down together, rank by rank, until yours reaches f1.",

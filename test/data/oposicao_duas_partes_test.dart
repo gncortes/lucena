@@ -35,7 +35,10 @@ void main() {
     expect(pawns.indexOf(distant), pawns.indexOf(keySquares) + 1);
     expect(pawns.indexOf(waiting), pawns.indexOf(distant) + 1);
     final review = _json('assets/lessons/endgames/review.json');
-    expect(review['lessons'], containsAll(ids));
+    // Liberadas pelo Gabriel (T76): as três saem do selo "em revisão".
+    for (final id in ids) {
+      expect(review['lessons'], isNot(contains(id)));
+    }
   });
 
   test('os capítulos de cada lição, na ordem do plano', () {

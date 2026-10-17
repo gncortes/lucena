@@ -78,7 +78,7 @@
  "rot.reserve.demos.semReserva.2": "White to play, and White has no pawn move to pass the turn.",
  "rot.reserve.demos.semReserva.3": "The white king has to move. It goes to h5 and stops protecting the f4 pawn.",
  "rot.reserve.demos.semReserva.4": "The black king captures the f4 pawn.",
- "rot.reserve.demos.semReserva.5": "The white king comes back, and the black king goes to e4, beside the pawn's path, to let it advance.",
+ "rot.reserve.demos.semReserva.5": "The white king attacks f5; the black king defends it from e4, beside the pawn's path.",
  "rot.reserve.demos.semReserva.6": "With the king alongside, the pawn advances and will promote.",
  "rot.reserve.demos.semReserva.7": "The same position changes hands with one reserve tempo more or less.",
  "rot.reserve.pratica.ataque.enunciado": "Play as White and find the best move. With the kings in lateral opposition and the h-pawn, the white king only wins if it occupies g7, near the promotion square, before the black king reaches f8, without abandoning the pawn.",

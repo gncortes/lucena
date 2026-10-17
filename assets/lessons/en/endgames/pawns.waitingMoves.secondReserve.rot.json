@@ -120,7 +120,7 @@
   "rot.secondReserve.pratica.pretas.vez1.err.e5d4.1": "With that move, your king moves away from the f5 pawn, which was undefended.",
   "rot.secondReserve.pratica.pretas.vez1.err.e5d4.2": "The white king goes to g7 and attacks the f6 pawn, and Black no longer wins.",
   "rot.secondReserve.pratica.pretas.vez1.err.e5d6.1": "With that move, your king moves away from the f5 pawn, which was undefended.",
-  "rot.secondReserve.pratica.pretas.vez1.err.e5d6.2": "Your king moved away from f5, and the white king has time to come back near the f6 pawn: Black no longer wins.",
+  "rot.secondReserve.pratica.pretas.vez1.err.e5d6.2": "The white king goes to g7 and attacks the f6 pawn, and Black no longer wins.",
   "rot.secondReserve.pratica.pretas.err.c7c6.1": "With the one-square push, one empty square is left between the pawns: an odd number.",
   "rot.secondReserve.pratica.pretas.err.c7c6.2": "The white pawn goes to c5 and closes the gap. Now it is your king that must abandon f6.",
   "rot.secondReserve.pratica.pretas.err.e5d4.1": "With that move, your king abandons the f6 pawn.",
