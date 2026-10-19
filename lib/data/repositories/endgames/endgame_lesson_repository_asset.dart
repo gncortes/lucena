@@ -146,16 +146,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
       exercises: [
         for (final exercise
             in (map['exercises'] as List).cast<Map<String, dynamic>>())
-          Exercise(
-            id: exercise['id'] as String,
-            stars: exercise['stars'] as int,
-            fen: exercise['fen'] as String,
-            goal:
-                PositionGoal.fromCode(exercise['goal'] as String?) ??
-                PositionGoal.win,
-            origin: exercise['origin'] as String? ?? 'own',
-            line: AssetLessonRepository.parseLine(exercise['line'] as List),
-          ),
+          _parseExercise(exercise),
       ],
       passScore: map['passScore'] as int,
       keyPositions: [
@@ -188,6 +179,24 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
             },
           ),
       ],
+    );
+  }
+
+  static Exercise _parseExercise(Map<String, dynamic> map) {
+    final completion = ExerciseCompletion.fromCode(map['completion']);
+    final goal = PositionGoal.fromCode(map['goal'] as String?);
+    if (completion == ExerciseCompletion.checkmate &&
+        goal != PositionGoal.win) {
+      throw const FormatException('Checkmate completion requires goal win');
+    }
+    return Exercise(
+      id: map['id'] as String,
+      stars: map['stars'] as int,
+      fen: map['fen'] as String,
+      goal: goal ?? PositionGoal.win,
+      completion: completion,
+      origin: map['origin'] as String? ?? 'own',
+      line: AssetLessonRepository.parseLine(map['line'] as List),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
@@ -13,6 +14,7 @@ import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.d
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/use_cases/exercise_review.dart';
+import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -55,6 +57,132 @@ void main() {
     sound = FakeSoundRepository();
     now = FakeNow(DateTime.utc(2026, 10, 9, 20));
   });
+
+  for (final invalidReply in ['a7a6', 'invalid']) {
+    test(
+      'e13: resposta inválida ($invalidReply) sinaliza dado indisponível '
+      'sem sucesso ou penalidade e conserva checkpoint recuperável',
+      () async {
+        // Fixture pública U1-e13, contrato-avaliacao-app/public_fixture.json.
+        // Mantida localmente para o teste não depender de docs ignorados pelo git.
+        const lessonId = 'mates.bishopKnight.w';
+        const exerciseId = 'e13';
+        const fen = '8/k1K5/3N4/8/8/8/8/5B2 w - - 0 1';
+        const line = [
+          MoveTurn(accept: {'d6c8'}, reply: 'a7a8'),
+          MoveTurn(accept: {'f1g2'}),
+        ];
+        final studentMove = move('d6c8');
+        final root = GameRules.fromFen(fen)!;
+        expect(root.turn, Side.white);
+        final child = GameRules.play(root, studentMove)!;
+        expect(child.position.isCheckmate, isFalse);
+        expect(GameRules.endOf(child.position), isNull);
+        expect(GameRules.play(child.position, move('a7a6')), isNull);
+        expect(Move.parse('invalid'), isNull);
+
+        EndgameLessonRepository repository({required bool corrupted}) =>
+            FakeEndgameLessonRepository(
+              trail: EndgameTrail(
+                modules: [
+                  EndgameModule(
+                    id: 'mates',
+                    lessons: [
+                      EndgameLesson(
+                        id: lessonId,
+                        module: 'mates',
+                        lesson: const Lesson(id: lessonId, steps: []),
+                        exercises: [
+                          Exercise(
+                            id: exerciseId,
+                            stars: 3,
+                            fen: fen,
+                            goal: PositionGoal.win,
+                            line: [
+                              MoveTurn(
+                                accept: line.first.accept,
+                                reply: corrupted
+                                    ? invalidReply
+                                    : line.first.reply,
+                              ),
+                              ...line.skip(1),
+                            ],
+                          ),
+                        ],
+                        passScore: 3,
+                        keyPositions: const [],
+                        practice: Practice(fen: fen, goal: PositionGoal.win),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              texts: LessonTexts.empty,
+            );
+
+        final exercise = cubit(lessons: repository(corrupted: true));
+        await exercise.load(lessonId, exerciseId, 'pt');
+        expect(exercise.state.missing, isFalse);
+        await exercise.play(studentMove);
+        final state = exercise.state;
+        expect(state.missing, isTrue);
+        expect(state.phase, isNot(ExercisePhase.done));
+        expect(state.interactive, isFalse);
+        expect(state.say, isNot(ExerciseSay.solved));
+        expect(state.say, isNot(ExerciseSay.wrong));
+        expect(state.earned, isNull);
+        expect(state.mistakes, 0);
+        expect(state.hints, 0);
+        expect(state.firstMoveMistake, isFalse);
+        expect(state.worth, 3);
+        expect(state.fen, child.position.fen);
+        expect(state.played, ['d6c8']);
+        expect(progress.saved.of(lessonId).stars, isEmpty);
+        final checkpoint = progress.saved.of(lessonId).exercise!;
+        expect(checkpoint.fen, child.position.fen);
+        expect(checkpoint.turn, 0);
+        expect(checkpoint.played, ['d6c8']);
+        expect(checkpoint.mistakes, 0);
+        expect(checkpoint.firstMoveMistake, isFalse);
+
+        // Nenhuma ação após a falha pode pontuar ou substituir o checkpoint.
+        await exercise.play(move('a7a8'));
+        await exercise.askHint();
+        await exercise.showSolution();
+        expect(progress.saved.of(lessonId).exercise, checkpoint);
+        expect(progress.saved.of(lessonId).stars, isEmpty);
+        await exercise.close();
+
+        final unavailable = cubit(lessons: repository(corrupted: true));
+        final failedAgain = unavailable.stream.firstWhere(
+          (state) => state.missing,
+        );
+        await unavailable.load(lessonId, exerciseId, 'pt');
+        await failedAgain.timeout(const Duration(seconds: 5));
+        expect(unavailable.state.interactive, isFalse);
+        expect(progress.saved.of(lessonId).exercise, checkpoint);
+        expect(progress.saved.of(lessonId).stars, isEmpty);
+        await unavailable.close();
+
+        // Corrigir só a resposta permite retomar a posição salva e concluir
+        // segundo a semântica técnica legada, sem exigir mate para goal.win.
+        final restored = cubit(lessons: repository(corrupted: false));
+        final replied = restored.stream.firstWhere(
+          (state) => state.ready && state.turn == 1,
+        );
+        await restored.load(lessonId, exerciseId, 'pt');
+        await replied.timeout(const Duration(seconds: 5));
+        await Future<void>.delayed(Duration.zero);
+        expect(restored.state.missing, isFalse);
+        expect(restored.state.played, ['d6c8', 'a7a8']);
+        await restored.play(move('f1g2'));
+        expect(restored.state.phase, ExercisePhase.done);
+        expect(restored.state.earned, 3);
+        expect(progress.saved.of(lessonId).stars, {exerciseId: 3});
+        expect(progress.saved.of(lessonId).exercise, isNull);
+      },
+    );
+  }
 
   test('e14: a notação do exercício traz as decisões escritas na aula, e a '
       'retomada guarda os lances jogados', () async {

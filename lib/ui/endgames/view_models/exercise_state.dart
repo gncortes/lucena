@@ -78,6 +78,7 @@ class ExerciseState {
     this.cursorId,
     this.seen = const {},
     this.browsed = 0,
+    this.technicalFailure,
   });
 
   final bool ready;
@@ -87,6 +88,9 @@ class ExerciseState {
 
   /// A aula ou o exercício pedido não existem.
   final bool missing;
+
+  /// Avaliação/resposta indisponível: preserva a tentativa sem penalidade.
+  final String? technicalFailure;
   final EndgameLesson? lesson;
   final Exercise? exercise;
   final LessonTexts texts;
@@ -162,14 +166,19 @@ class ExerciseState {
   /// Quantas vezes o aluno foi a um lance da notação depois de acabar.
   final int browsed;
 
-  bool get interactive => phase == ExercisePhase.active;
+  bool get interactive =>
+      ready &&
+      exercise != null &&
+      phase == ExercisePhase.active &&
+      !missing &&
+      technicalFailure == null;
 
   /// Quanto o exercício vale agora: as estrelas dele menos erros e dicas;
   /// errar o primeiro lance zera. Depois de resolvido, o que ganhou.
   int get worth {
     final exercise = this.exercise;
     if (phase == ExercisePhase.done) return earned ?? 0;
-    if (exercise == null || firstMoveMistake) return 0;
+    if (exercise == null || firstMoveMistake || solutionShown) return 0;
     final left = exercise.stars - mistakes - hints;
     return left < 0 ? 0 : left;
   }
@@ -190,7 +199,7 @@ class ExerciseState {
     final line = exercise?.line;
     if (line == null || line.isEmpty) return 0;
     if (phase == ExercisePhase.done) return 1;
-    return turn / line.length;
+    return (turn / line.length).clamp(0, 1);
   }
 
   ExerciseState copyWith({
@@ -222,9 +231,11 @@ class ExerciseState {
     String? cursorId,
     Set<String>? seen,
     int? browsed,
+    String? technicalFailure,
   }) => ExerciseState(
     ready: ready,
     missing: missing,
+    technicalFailure: technicalFailure ?? this.technicalFailure,
     lesson: lesson,
     exercise: exercise,
     texts: texts,

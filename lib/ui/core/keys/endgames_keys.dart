@@ -1,5 +1,42 @@
 import 'package:flutter/widgets.dart';
 
+abstract final class AssessmentPilotKeys {
+  static const page = Key('assessmentPilot.page');
+  static const loading = Key('assessmentPilot.loading');
+  static const back = Key('assessmentPilot.back');
+  static const retry = Key('assessmentPilot.retry');
+  static const collector = Key('assessmentPilot.collector');
+  static const confirmSheet = Key('assessmentPilot.confirmSheet');
+  static const pickerSheet = Key('assessmentPilot.pickerSheet');
+  static const sheetClose = Key('assessmentPilot.sheetClose');
+  static const pickerBoard = Key('assessmentPilot.pickerBoard');
+  static const squareGrid = Key('assessmentPilot.squareGrid');
+  static const cancel = Key('assessmentPilot.cancel');
+  static const confirm = Key('assessmentPilot.confirm');
+  static Key square(String square) =>
+      ValueKey('assessmentPilot.square.$square');
+}
+
+/// The injected U1 collector; no legacy exercise progress keys are shared.
+abstract final class AssessmentKeys {
+  static const screen = Key('assessment.screen');
+  static const exit = Key('assessment.exit');
+  static const busy = Key('assessment.busy');
+  static const failure = Key('assessment.failure');
+  static const retry = Key('assessment.retry');
+  static const timer = Key('assessment.timer');
+  static const phase = Key('assessment.phase');
+  static const closed = Key('assessment.closed');
+  static const page = Key('assessment.page');
+  static const board = Key('assessment.board');
+  static const footer = Key('assessment.footer');
+  static const submit = Key('assessment.submit');
+  static const newAttempt = Key('assessment.newAttempt');
+  static Key form(String attemptId, Object phase) =>
+      ValueKey('assessment.form.$attemptId.$phase');
+  static Key snapshot(String ref) => ValueKey('assessment.view.$ref');
+}
+
 /// A trilha das aulas de finais.
 abstract final class EndgamesKeys {
   /// O teste de nível (T52): a entrada, o próximo final e os selos.
@@ -127,6 +164,8 @@ abstract final class EndgameInfoKeys {
 abstract final class ExerciseKeys {
   static const screen = Key('exercise.screen');
   static const missing = Key('exercise.missing');
+  static const technicalFailure = Key('exercise.technicalFailure');
+  static const technicalRetry = Key('exercise.technicalRetry');
   static const board = Key('exercise.board');
   static const speech = Key('exercise.speech');
   static const viktorSheet = Key('exercise.viktorSheet');

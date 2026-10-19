@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "path": "assets/tablebase/exercise_T77_finalNet_b54a543df82c.json",
+      "queryFen": "8/k1K5/8/8/1NB5/8/8/8 w - - 0 1",
+      "rawSha256": "b54a543df82cb9763d43686b06799e2dc3b02b66edd57a04e2f03e1f641ef95b"
+    },
+    {
+      "path": "assets/tablebase/exercise_T77_finalNet_6287c012259e.json",
+      "queryFen": "8/k1K5/B7/8/1N6/8/8/8 b - - 1 1",
+      "rawSha256": "6287c012259e02cbaf8d246191bdd7788e813ad1a0b1147ad590260338e1b6d4"
+    },
+    {
+      "path": "assets/tablebase/exercise_T77_finalNet_ab6184549132.json",
+      "queryFen": "k7/2K5/B7/8/1N6/8/8/8 w - - 2 2",
+      "rawSha256": "ab6184549132f52d6c7dce32b6a8f3216a5d5b832cb68954ea6c1abdfe88976d"
+    }
+  ]
+}

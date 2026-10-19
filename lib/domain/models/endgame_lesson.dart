@@ -95,6 +95,18 @@ class EndgameLesson {
   }
 }
 
+/// O evento que conclui o exercício, independente do objetivo da posição.
+enum ExerciseCompletion {
+  technicalLine,
+  checkmate;
+
+  static ExerciseCompletion fromCode(Object? code) => switch (code) {
+    null || 'technicalLine' => technicalLine,
+    'checkmate' => checkmate,
+    _ => throw FormatException('Unknown exercise completion: $code'),
+  };
+}
+
 /// Um exercício: uma posição-chave com o lance (ou os lances) da técnica.
 class Exercise {
   const Exercise({
@@ -104,7 +116,10 @@ class Exercise {
     required this.goal,
     required this.line,
     this.origin = 'own',
-  });
+    this.completion = ExerciseCompletion.technicalLine,
+  }) : assert(
+         completion != ExerciseCompletion.checkmate || goal == PositionGoal.win,
+       );
 
   final String id;
 
@@ -112,6 +127,7 @@ class Exercise {
   final int stars;
   final String fen;
   final PositionGoal goal;
+  final ExerciseCompletion completion;
 
   /// As vezes do aluno, com os lances aceitos e a resposta do outro lado.
   final List<MoveTurn> line;
@@ -318,9 +334,17 @@ class ExerciseCheckpoint {
     this.played = const [],
     this.wrongs = const [],
     this.firstMoveMistake = false,
+    this.solutionShown = false,
+    this.contractVersion,
+    this.contractIdentity,
   });
 
   final String exerciseId;
+
+  /// Identity of the explicit completion contract; absent in legacy saves.
+  final int? contractVersion;
+  final String? contractIdentity;
+  final bool solutionShown;
 
   /// Os lances jogados até agora (UCI), do aluno e do outro lado, na ordem:
   /// a lista de lances volta igual ao reabrir o exercício.
@@ -359,6 +383,9 @@ class ExerciseCheckpoint {
     if (played.isNotEmpty) 'played': played,
     if (wrongs.isNotEmpty) 'wrongs': wrongs,
     if (firstMoveMistake) 'firstMoveMistake': true,
+    if (solutionShown) 'solutionShown': true,
+    'contractVersion': ?contractVersion,
+    'contractIdentity': ?contractIdentity,
   };
 
   static ExerciseCheckpoint? fromJson(Object? json) {
@@ -378,6 +405,9 @@ class ExerciseCheckpoint {
       played: [...?(json['played'] as List?)?.whereType<String>()],
       wrongs: [...?(json['wrongs'] as List?)?.whereType<String>()],
       firstMoveMistake: json['firstMoveMistake'] as bool? ?? false,
+      solutionShown: json['solutionShown'] as bool? ?? false,
+      contractVersion: json['contractVersion'] as int?,
+      contractIdentity: json['contractIdentity'] as String?,
     );
   }
 
@@ -387,6 +417,9 @@ class ExerciseCheckpoint {
       _sameList(other.played, played) &&
       _sameList(other.wrongs, wrongs) &&
       other.firstMoveMistake == firstMoveMistake &&
+      other.solutionShown == solutionShown &&
+      other.contractVersion == contractVersion &&
+      other.contractIdentity == contractIdentity &&
       other.exerciseId == exerciseId &&
       other.fen == fen &&
       other.turn == turn &&
@@ -411,6 +444,9 @@ class ExerciseCheckpoint {
     Object.hashAll(played),
     Object.hashAll(wrongs),
     firstMoveMistake,
+    solutionShown,
+    contractVersion,
+    contractIdentity,
   );
 
   static bool _sameList(List<String> a, List<String> b) =>

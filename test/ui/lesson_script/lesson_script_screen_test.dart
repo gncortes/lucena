@@ -144,6 +144,29 @@ const _long =
     'respondem com o rei, para depois contarmos as casas.';
 
 void main() {
+  for (final size in const [
+    Size(360, 740),
+    Size(360, 800),
+    Size(384, 832),
+    Size(393, 873),
+    Size(412, 915),
+    Size(414, 896),
+  ]) {
+    testWidgets('prática usa balão acima e não tem folha persistente: $size', (
+      tester,
+    ) async {
+      final s = await _open(tester, size, stage: 2);
+      final board = _rect(tester, LessonScriptKeys.board);
+      final speech = _rect(tester, LessonScriptKeys.speech);
+      final strip = _rect(tester, LessonScriptKeys.characterBar);
+      expect(speech.top, lessThan(strip.top));
+      expect(speech.bottom, lessThanOrEqualTo(board.top));
+      expect(strip.bottom, lessThanOrEqualTo(board.top));
+      expect(find.byType(DraggableScrollableSheet), findsNothing);
+      expect(s.cubit.state.stageId, 'pratica');
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final size in const [Size(360, 740), Size(412, 917)]) {
     testWidgets('área da fala fixa $size: 1 linha, 3 linhas e de volta, o '
         'tabuleiro e a faixa ficam no mesmo lugar', (tester) async {

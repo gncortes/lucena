@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "descriptorId": "T77-finalNet-runtime-geometry-v1",
+  "factualVersion": "u1-runtime-geometry-v1",
+  "assessmentVersion": "u1-relations-v3-runtime",
+  "lessonId": "mates.bishopKnight.deletang",
+  "exerciseId": "finalNetAssessment01",
+  "initialFen": "8/k1K5/8/8/1NB5/8/8/8 w - - 0 1",
+  "student": "white",
+  "orientation": "white",
+  "supportedCorner": "a8",
+  "bishopCompatibleCorners": [
+    "a8",
+    "h1"
+  ],
+  "sourceHashes": {
+    "item": "66645d124f85d8eef383f6bdbaba04784aa270a2bccc3eaaab442b9c2150c08c",
+    "lessonDescriptor": "5965aa3355e8b1869936347ca4c564a8eebce27d5643ee0dbf67ca7dda8290c3",
+    "teaching": "e34cec8512101b17e46ac08d5211038559428a3cd0eaba2501787e04e6a9e253",
+    "textsPt": "98884115c3c12ff8c688f2a44df7379bd0b7a7344f02c27805091b9478635b6d",
+    "objectives": "a1fe128a6f35b48de9c0a2027b975056de5c5c20bc935fbf5de89a81d1157c0f",
+    "proofManifest": "862f9a82d53e45d9696b8974dc36fe57ee7c758cdeb557e08ac658e53d2d3c48",
+    "contract": "d81dc3184f518ebe0a299bfd14fe860ea6585cd6efdd02d0e1aeff63a4a86093",
+    "runtimeContract": "9973e3aa67d7fb156669468a857890f1c50f05816e5f06cbd49298f51654cbae",
+    "spec": "bc6df546f921065cf76296f6efc941a7b70e31f311671b1f8f2c2d21487dd432",
+    "inventory": "342da88e37833582ad5f5358ff36c92f9c4b4e06eef8f8cc5511811437851825"
+  },
+  "contentIdentity": {
+    "item": "66645d124f85d8eef383f6bdbaba04784aa270a2bccc3eaaab442b9c2150c08c",
+    "lessonDescriptor": "5965aa3355e8b1869936347ca4c564a8eebce27d5643ee0dbf67ca7dda8290c3",
+    "teaching": "e34cec8512101b17e46ac08d5211038559428a3cd0eaba2501787e04e6a9e253",
+    "textsPt": "98884115c3c12ff8c688f2a44df7379bd0b7a7344f02c27805091b9478635b6d",
+    "objectives": "a1fe128a6f35b48de9c0a2027b975056de5c5c20bc935fbf5de89a81d1157c0f",
+    "proofManifest": "862f9a82d53e45d9696b8974dc36fe57ee7c758cdeb557e08ac658e53d2d3c48",
+    "contract": "d81dc3184f518ebe0a299bfd14fe860ea6585cd6efdd02d0e1aeff63a4a86093",
+    "runtimeContract": "9973e3aa67d7fb156669468a857890f1c50f05816e5f06cbd49298f51654cbae",
+    "spec": "bc6df546f921065cf76296f6efc941a7b70e31f311671b1f8f2c2d21487dd432",
+    "inventory": "342da88e37833582ad5f5358ff36c92f9c4b4e06eef8f8cc5511811437851825",
+    "assessmentVersion": "u1-relations-v3-runtime",
+    "factualVersion": "u1-runtime-geometry-v1"
+  },
+  "authority": "coordinator-derived from pinned existing reserve; hashes identify, not authenticate arbitrary input",
+  "notChecked": [
+    "production DI/pinned asset loader",
+    "learning",
+    "novelty",
+    "unseen routes"
+  ]
+}

@@ -22,6 +22,7 @@ import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/game_rules.dart';
+import '../domain/use_cases/exercise_judge.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
@@ -79,6 +80,9 @@ import '../domain/use_cases/position_judge.dart';
 import '../ui/endgames/view_models/endgame_lesson_cubit.dart';
 import '../ui/endgames/view_models/endgames_cubit.dart';
 import '../ui/endgames/view_models/exercise_cubit.dart';
+import '../ui/endgames/view_models/assessment_cubit.dart';
+import '../ui/endgames/view_models/assessment_pilot_factory.dart';
+import '../ui/endgames/widgets/assessment_pilot_page.dart';
 import '../ui/endgames/widgets/endgame_info_screen.dart';
 import '../ui/endgames/widgets/endgame_lesson_screen.dart';
 import '../ui/endgames/widgets/endgames_screen.dart';
@@ -147,7 +151,10 @@ Future<String?> resolveScriptPart(
   return Routes.endgameLessonScript(id, part: visible.first.id);
 }
 
-GoRouter buildRouter({String initialLocation = Routes.home}) {
+GoRouter buildRouter({
+  String initialLocation = Routes.home,
+  Future<AssessmentCubit> Function()? createAssessmentPilot,
+}) {
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
@@ -730,11 +737,25 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     builder: (context, state) {
                       final id = state.pathParameters['lesson']!;
                       final exercise = state.pathParameters['exercise']!;
+                      if (id == AssessmentPilotFactory.lessonId &&
+                          exercise == AssessmentPilotFactory.exerciseId) {
+                        return AssessmentPilotPage(
+                          key: ValueKey('assessment.$id.$exercise'),
+                          create:
+                              createAssessmentPilot ??
+                              () => AssessmentPilotFactory(
+                                opponent: context.read<OpponentRepository>(),
+                                now: context.read<Now>(),
+                              ).create(),
+                        );
+                      }
                       return BlocProvider(
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
                         create: (_) => ExerciseCubit(
                           feedback: context.read<ExerciseFeedbackRepository?>(),
+                          exerciseJudge: context.read<ExerciseJudge?>(),
+                          opponent: context.read<OpponentRepository?>(),
                           now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),

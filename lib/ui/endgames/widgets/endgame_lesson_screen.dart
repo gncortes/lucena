@@ -83,6 +83,7 @@ class _Body extends StatelessWidget {
     final texts = state.texts;
     final intro =
         texts.lessonSummary(lesson.id) ?? texts.say('endgames.lesson.intro');
+    if (lesson.exercises.isEmpty) return intro;
     if (state.passed) return texts.say('endgames.lesson.passed');
     // Nota alcançada, mas a lição (as etapas) ainda não: falta ela.
     if (state.allSolved && state.score >= state.passScore) {
@@ -202,8 +203,10 @@ class _Body extends StatelessWidget {
                 done: done.contains(part.id),
                 recommended: recommended?.id == part.id,
               ),
-            _Section(title: l10n.endgameFinalTest),
-            _FinalTest(state: state, lesson: lesson),
+            if (lesson.exercises.isNotEmpty) ...[
+              _Section(title: l10n.endgameFinalTest),
+              _FinalTest(state: state, lesson: lesson),
+            ],
             _Section(title: l10n.endgameChallengeTitle),
             _FinalCard(state: state, lesson: lesson),
           ],

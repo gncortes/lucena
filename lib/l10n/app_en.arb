@@ -6186,5 +6186,229 @@
     "description": "Closing sentence for a move marked with ?? and no comment."
   },
   "lessonRetry": "Try again",
-  "@lessonRetry": {"description": "Button that restarts the position after a stalemate or a draw."}
+  "@lessonRetry": {"description": "Button that restarts the position after a stalemate or a draw."},
+  "exerciseTechnicalFailure": "This exercise could not continue. Please try again shortly.",
+  "@exerciseTechnicalFailure": {"description": "Neutral infrastructure failure in an exercise. No result or penalty is assigned; the learner may retry the saved attempt."},
+  "assessmentTitle": "Assessment responses",
+  "@assessmentTitle": {
+    "description": "U1 assessment collector: Title. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentLoading": "Preparing assessment…",
+  "@assessmentLoading": {
+    "description": "U1 assessment collector: Loading. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentTechnicalFailure": "The assessment could not be opened or saved. Your saved responses have been retained.",
+  "@assessmentTechnicalFailure": {
+    "description": "U1 assessment collector: TechnicalFailure. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentExit": "Exit assessment",
+  "@assessmentExit": {
+    "description": "U1 assessment collector: Exit. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentSubmitInitial": "Submit initial responses",
+  "@assessmentSubmitInitial": {
+    "description": "U1 assessment collector: SubmitInitial. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentFinishExecution": "Finish execution",
+  "@assessmentFinishExecution": {
+    "description": "U1 assessment collector: FinishExecution. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentSubmitProtection": "Submit protection responses",
+  "@assessmentSubmitProtection": {
+    "description": "U1 assessment collector: SubmitProtection. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentClosed": "Attempt closed",
+  "@assessmentClosed": {
+    "description": "U1 assessment collector: Closed. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentPhase": "{phase, select, initial{Initial responses} execution{Execution} protection{Protection responses} other{Attempt closed}}",
+  "@assessmentPhase": {
+    "description": "U1 assessment collector: Phase. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "assessmentRemaining": "{seconds, plural, =1{1 second remaining} other{{seconds} seconds remaining}}",
+  "@assessmentRemaining": {
+    "description": "U1 assessment collector: Remaining. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentSnapshot": "Visited position {ply}",
+  "@assessmentSnapshot": {
+    "description": "U1 assessment collector: Snapshot. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "ply": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentNewAttempt": "New attempt",
+  "@assessmentNewAttempt": {
+    "description": "U1 assessment collector: NewAttempt. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentTarget": "Target corner",
+  "@assessmentTarget": {
+    "description": "U1 assessment collector: Target. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentCorner": "Choose a corner",
+  "@assessmentCorner": {
+    "description": "U1 assessment collector: Corner. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentReferencePiece": "Reference piece",
+  "@assessmentReferencePiece": {
+    "description": "U1 assessment collector: ReferencePiece. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentColor": "Corner color relative to the piece",
+  "@assessmentColor": {
+    "description": "U1 assessment collector: Color. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentSameColor": "Same color",
+  "@assessmentSameColor": {
+    "description": "U1 assessment collector: SameColor. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentOtherColor": "Other color",
+  "@assessmentOtherColor": {
+    "description": "U1 assessment collector: OtherColor. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentAccessSquares": "Choose escape squares",
+  "@assessmentAccessSquares": {
+    "description": "U1 assessment collector: AccessSquares. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentConfirmTarget": "Confirm target",
+  "@assessmentConfirmTarget": {
+    "description": "U1 assessment collector: ConfirmTarget. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentRemoveTarget": "Remove target",
+  "@assessmentRemoveTarget": {
+    "description": "U1 assessment collector: RemoveTarget. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentRelations": "Relations between pieces and squares",
+  "@assessmentRelations": {
+    "description": "U1 assessment collector: Relations. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentChoosePiece": "Choose the piece",
+  "@assessmentChoosePiece": {
+    "description": "U1 assessment collector: ChoosePiece. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentChooseKind": "Choose the relation",
+  "@assessmentChooseKind": {
+    "description": "U1 assessment collector: ChooseKind. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentChooseMoment": "Choose the moment",
+  "@assessmentChooseMoment": {
+    "description": "U1 assessment collector: ChooseMoment. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentChooseSnapshot": "Choose the position",
+  "@assessmentChooseSnapshot": {
+    "description": "U1 assessment collector: ChooseSnapshot. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentRelationSquares": "Choose relation squares",
+  "@assessmentRelationSquares": {
+    "description": "U1 assessment collector: RelationSquares. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentComponents": "Use this relation for",
+  "@assessmentComponents": {
+    "description": "U1 assessment collector: Components. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentConfirmRelation": "Confirm relation",
+  "@assessmentConfirmRelation": {
+    "description": "U1 assessment collector: ConfirmRelation. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentCancelEdit": "Cancel editing",
+  "@assessmentCancelEdit": {
+    "description": "U1 assessment collector: CancelEdit. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentEdit": "Edit",
+  "@assessmentEdit": {
+    "description": "U1 assessment collector: Edit. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentRemove": "Remove",
+  "@assessmentRemove": {
+    "description": "U1 assessment collector: Remove. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentKind": "{kind, select, control{Controls} protection{Protects} other{Gives check}}",
+  "@assessmentKind": {
+    "description": "U1 assessment collector: Kind. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "assessmentMoment": "{moment, select, initial{Initial position} visited{Visited position} other{Planned or unrepresented position}}",
+  "@assessmentMoment": {
+    "description": "U1 assessment collector: Moment. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "moment": {
+        "type": "String"
+      }
+    }
+  },
+  "assessmentComponent": "{component, select, target{Corner choice} pieces{Piece roles} protection{Protection between pieces} other{Execution}}",
+  "@assessmentComponent": {
+    "description": "U1 assessment collector: Component. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "component": {
+        "type": "String"
+      }
+    }
+  },
+  "assessmentNoSquares": "No squares selected",
+  "@assessmentNoSquares": {
+    "description": "U1 assessment collector: NoSquares. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentSquares": "Selected squares: {squares}",
+  "@assessmentSquares": {
+    "description": "U1 assessment collector: Squares. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "squares": {
+        "type": "String"
+      }
+    }
+  },
+  "assessmentRelationSummary": "{piece} · {kind} · {squares}",
+  "@assessmentRelationSummary": {
+    "description": "U1 assessment collector: RelationSummary. Neutral collection interface; no correctness feedback.",
+    "placeholders": {
+      "piece": {
+        "type": "String"
+      },
+      "kind": {
+        "type": "String"
+      },
+      "squares": {
+        "type": "String"
+      }
+    }
+  },
+  "assessmentFinishConfirmation": "Finish execution and proceed to the protection responses? You will no longer be able to play moves in this attempt.",
+  "@assessmentFinishConfirmation": {
+    "description": "U1 assessment collector: FinishConfirmation. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentExitConfirmation": "Close this attempt and leave the assessment? Your recorded responses will be retained.",
+  "@assessmentExitConfirmation": {
+    "description": "U1 assessment collector: ExitConfirmation. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentRemoveConfirmation": "Remove this confirmed response?",
+  "@assessmentRemoveConfirmation": {
+    "description": "U1 assessment collector: RemoveConfirmation. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentNewAttemptConfirmation": "Start a new attempt? The previous attempt will remain saved.",
+  "@assessmentNewAttemptConfirmation": {
+    "description": "U1 assessment collector: NewAttemptConfirmation. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentPickSquares": "Tap squares to select or deselect them.",
+  "@assessmentPickSquares": {
+    "description": "U1 assessment collector: PickSquares. Neutral collection interface; no correctness feedback."
+  },
+  "assessmentUnrepresented": "Unrepresented position: select coordinates without a board position.",
+  "@assessmentUnrepresented": {
+    "description": "U1 assessment collector: Unrepresented. Neutral collection interface; no correctness feedback."
+  }
 }

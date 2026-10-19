@@ -1,9 +1,11 @@
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/tablebase/engine_judge_repository.dart';
+import '../data/repositories/tablebase/exercise_proof_catalog_repository.dart';
 import '../data/repositories/tablebase/kpk_repository.dart';
 import '../data/repositories/tablebase/script_table_repository.dart';
 import '../domain/use_cases/position_judge.dart';
+import '../domain/use_cases/exercise_judge.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -141,6 +143,7 @@ class Dependencies {
     required this.engineJudge,
     required this.endgameProgressRepository,
     this.exerciseFeedbackRepository = const EmptyExerciseFeedbackRepository(),
+    this.exerciseJudge,
     required this.drawOfferRepository,
     required this.voiceRepository,
     required this.speechInputRepository,
@@ -214,6 +217,12 @@ class Dependencies {
       engineJudge: StockfishJudgeRepository(stockfish),
       endgameProgressRepository: LocalEndgameProgressRepository(preferences),
       exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
+      exerciseJudge: ExerciseJudge(
+        AssetExerciseProofCatalogRepository(
+          assets,
+          path: AssetExerciseProofCatalogRepository.defaultPath,
+        ),
+      ),
       drawOfferRepository: DeviceDrawOfferRepository(
         maia: maiaRepository,
         evaluation: evaluation,
@@ -268,6 +277,7 @@ class Dependencies {
   final PositionJudge engineJudge;
   final EndgameProgressRepository endgameProgressRepository;
   final ExerciseFeedbackRepository exerciseFeedbackRepository;
+  final ExerciseJudge? exerciseJudge;
   final DrawOfferRepository drawOfferRepository;
   final VoiceRepository voiceRepository;
   final SpeechInputRepository speechInputRepository;
