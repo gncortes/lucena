@@ -167,6 +167,23 @@ abstract final class ExerciseReview {
     List<String> played,
   ) {
     final steps = <({String uci, int turn, bool student})>[];
+    if (exercise.completion == ExerciseCompletion.checkmate) {
+      final start = GameRules.fromFen(exercise.fen);
+      if (start == null) return steps;
+      var position = start;
+      var turn = 0;
+      for (final uci in played) {
+        if (GameRules.endOf(position) != null) break;
+        final move = Move.parse(uci);
+        final next = move == null ? null : GameRules.play(position, move);
+        if (next == null) break;
+        final student = position.turn == start.turn;
+        steps.add((uci: uci, turn: turn, student: student));
+        if (!student) turn++;
+        position = next.position;
+      }
+      return steps;
+    }
     var index = 0;
     for (final (turn, each) in exercise.line.indexed) {
       if (index >= played.length) break;
@@ -249,6 +266,19 @@ abstract final class ExerciseReview {
   /// Os lances que faltam para terminar o exercício, em UCI, a partir do
   /// que já foi jogado: o aceito primeiro de cada vez e a resposta.
   static List<String> remaining(Exercise exercise, List<String> played) {
+    if (exercise.completion == ExerciseCompletion.checkmate) {
+      final pv = [
+        for (final turn in exercise.line) ...[
+          if (turn.accept.isNotEmpty) turn.accept.first,
+          if (turn.reply != null) turn.reply!,
+        ],
+      ];
+      if (played.length > pv.length) return const [];
+      for (var i = 0; i < played.length; i++) {
+        if (played[i] != pv[i]) return const [];
+      }
+      return pv.sublist(played.length);
+    }
     final steps = _walk(exercise, played);
     final out = <String>[];
     var turn = 0;
@@ -275,6 +305,9 @@ abstract final class ExerciseReview {
     List<ReviewWrong> wrongs = const [],
   }) {
     final main = mainLine(exercise, played, payload: payload);
+    // Evaluation mode reviews only the legally played game. Whitelists are
+    // not proof of alternatives, and a partial PV is not a complete solution.
+    if (exercise.completion == ExerciseCompletion.checkmate) return main;
     final children = <String, List<List<ReviewNode>>>{};
     var serial = 0;
 

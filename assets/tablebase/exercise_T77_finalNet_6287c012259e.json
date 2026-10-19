@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "queryFen": "8/k1K5/B7/8/1N6/8/8/8 b - - 1 1",
+  "source": "https://tablebase.lichess.ovh/standard?fen=8/k1K5/B7/8/1N6/8/8/8%20b%20-%20-%201%201",
+  "rawSha256": "6287c012259e02cbaf8d246191bdd7788e813ad1a0b1147ad590260338e1b6d4",
+  "raw": "{\"checkmate\":false,\"stalemate\":false,\"variant_win\":false,\"variant_loss\":false,\"insufficient_material\":false,\"dtz\":-4,\"precise_dtz\":-4,\"dtm\":-4,\"dtw\":null,\"dtc\":null,\"category\":\"loss\",\"moves\":[{\"uci\":\"a7a8\",\"san\":\"Ka8\",\"zeroing\":false,\"conversion\":false,\"checkmate\":false,\"stalemate\":false,\"variant_win\":false,\"variant_loss\":false,\"insufficient_material\":false,\"dtz\":3,\"precise_dtz\":3,\"dtm\":3,\"dtw\":null,\"dtc\":null,\"category\":\"win\"}]}"
+}

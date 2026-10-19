@@ -1,0 +1,21 @@
+{
+  "rot.finalNet.ideia.e13.e1": "Attack: a8 is a corner of your bishop's color. In the final mating net, one piece gives check and the others cover the escape squares. How can you drive the black king to that corner?",
+  "rot.finalNet.ideia.e13.l1": "Attack: the knight gives check and now controls a7. Your king covers b6, b7 and b8; the bishop covers a6. Only a8 remains for the black king.",
+  "rot.finalNet.ideia.e13.l2": "Defense: the king moves to a8, the only reply to the check. The knight prevents a return to a7; your king keeps b7 and b8 under control.",
+  "rot.finalNet.ideia.e13.l3": "Attack: the bishop delivers mate along the diagonal leading to a8. The knight and king already covered the escape squares: their coordination made the final check possible.",
+  "rot.finalNet.ideia.e15.e1": "Attack: the black king is in the corner, but the knight on b8 is unprotected. How can you reorganize the mating net without losing the piece or stalemating the king?",
+  "rot.finalNet.ideia.e15.l1": "Attack: your king protects the knight on b8 and frees a7. This preserves the piece and leaves Black a legal reply, avoiding stalemate.",
+  "rot.finalNet.ideia.e15.l2": "Defense: the king uses a7, its only available square. The knight remains protected by your king and, in turn, protects the bishop on a6.",
+  "rot.finalNet.ideia.e15.l3": "Attack: the bishop prepares to give check on b7. Your king protects both pieces; a6 remains controlled, and a8 is left available to Black.",
+  "rot.finalNet.demos.e15.e1": "Attack: the preparation is complete. Follow Black's reply and look for a sequence that gives check without opening an escape square.",
+  "rot.finalNet.demos.e15.l4": "Defense: the king returns to a8, its only available square. The bishop and knight control a6; your king prevents escape through b6, b7 and b8.",
+  "rot.finalNet.demos.e15.l5": "Attack: the bishop gives check from a square protected by your king. It now controls a8 and a6; the black king can escape only through a7.",
+  "rot.finalNet.demos.e15.l6": "Defense: the king escapes the check through a7. The bishop cuts off a6 and a8; your king protects the bishop and covers b6 and b8.",
+  "rot.finalNet.demos.e15.l7": "Attack: the knight delivers mate. The king and bishop cover the escape squares; the black king ends on a7, beside the corner, without needing to be on a8.",
+  "rot.finalNet.pratica.transfer01.p": "Attack: play as White and find the continuation.",
+  "rot.finalNet.pratica.transfer01.fim": "You coordinated the check with control of the escape squares. To build the mating net, relate the corner to the bishop and keep the pieces protected.",
+  "rot.finalNet.pratica.transfer01.fins.afogado": "The position ended in stalemate. Start again and check the escape squares as you prepare the mating net.",
+  "rot.finalNet.pratica.transfer01.fins.repeticao": "The position repeated. Start again and look for a way to make progress in preparing the mating net.",
+  "rot.finalNet.pratica.transfer01.fins.limite": "The practice ended before mate. Start again and review each piece's role.",
+  "rot.finalNet.pratica.transfer01.fins.insuficiente": "The capture left insufficient material. Start again and check that the pieces are protected."
+}

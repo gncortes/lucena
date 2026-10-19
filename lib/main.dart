@@ -23,6 +23,7 @@ import 'data/repositories/school/lesson_script_repository.dart';
 import 'data/repositories/tablebase/kpk_repository.dart';
 import 'data/repositories/tablebase/script_table_repository.dart';
 import 'domain/use_cases/position_judge.dart';
+import 'domain/use_cases/exercise_judge.dart';
 import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
@@ -238,6 +239,8 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<ExerciseFeedbackRepository>.value(
           value: dependencies.exerciseFeedbackRepository,
         ),
+        if (dependencies.exerciseJudge case final judge?)
+          RepositoryProvider<ExerciseJudge>.value(value: judge),
         RepositoryProvider<EndgameProgressRepository>.value(
           value: dependencies.endgameProgressRepository,
         ),

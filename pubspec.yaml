@@ -10,6 +10,7 @@ environment:
 dependencies:
   animations: 2.1.2
   chessground: ^10.3.0
+  crypto: 3.0.7
   dartchess: ^0.14.0
   drift: ^2.35.1
   drift_flutter: ^0.3.1
@@ -84,6 +85,7 @@ flutter:
     - assets/lessons/roteiros/pawns.distantOpposition/
     - assets/lessons/roteiros/pawns.keySquares/
     - assets/lessons/roteiros/pawns.waitingMoves/
+    - assets/lessons/roteiros/mates.bishopKnight.deletang/
     - assets/tablebase/
     - assets/tablebase/roteiros/
     - assets/lessons/en/endgames/

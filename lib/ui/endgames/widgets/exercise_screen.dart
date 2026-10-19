@@ -210,24 +210,25 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
               // vazia até o fim.
               actions: [
-                if (state.exercise case final exercise?)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 12),
-                    child: Semantics(
-                      label: _starLabel(l10n, state, exercise),
-                      excludeSemantics: true,
-                      // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
-                      // ainda vale pontos, vazia se não.
-                      child: Icon(
-                        state.worth > 0
-                            ? Icons.star_rounded
-                            : Icons.star_outline_rounded,
-                        key: ExerciseKeys.stars,
-                        size: 28,
-                        color: Theme.of(context).colorScheme.onSurface,
+                if (state.technicalFailure == null)
+                  if (state.exercise case final exercise?)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(end: 12),
+                      child: Semantics(
+                        label: _starLabel(l10n, state, exercise),
+                        excludeSemantics: true,
+                        // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
+                        // ainda vale pontos, vazia se não.
+                        child: Icon(
+                          state.worth > 0
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          key: ExerciseKeys.stars,
+                          size: 28,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
               ],
             ),
             body: SafeArea(top: false, child: _body(context, state)),
@@ -269,7 +270,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
     final cubit = context.read<ExerciseCubit>();
     final done = state.phase == ExercisePhase.done;
-    final nodes = done
+    final technicalFailure = state.technicalFailure != null;
+    final nodes = technicalFailure
+        ? const <ReviewNode>[]
+        : done
         ? state.review
         : ExerciseReview.mainLine(
             exercise,
@@ -282,7 +286,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               if (!state.seen.contains(node.id)) node.id,
           }
         : const <String>{};
-    final said = _speech(context, state, hide: hide && done);
+    final said = technicalFailure
+        ? (
+            text: l10n.exerciseTechnicalFailure,
+            paragraphs: [l10n.exerciseTechnicalFailure],
+            tip: null,
+          )
+        : _speech(context, state, hide: hide && done);
     final texts = [...said.paragraphs, ?said.tip];
     final viktor = state.viktor;
     final voice = TeacherSpeech.speechOf(context);
@@ -348,7 +358,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           child: speech,
         );
       }
-      return speech;
+      return technicalFailure
+          ? KeyedSubtree(key: ExerciseKeys.technicalFailure, child: speech)
+          : speech;
     }
 
     final strip = SizedBox(
@@ -370,15 +382,21 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               key: _boardAreaKey,
               child: _boardArea(context, state, boardSettings, size: size),
             ),
-            list: ScriptMoveList(
-              moves: [for (final node in nodes) _entry(node)],
-              currentId: done ? state.cursorId : nodes.lastOrNull?.id,
-              covered: covered,
-              // A notação só leva a uma posição depois que o exercício
-              // acaba; antes, o tabuleiro é do aluno.
-              onTap: done ? (id) => cubit.goToReview(id, hide: hide) : (_) {},
-              onReveal: done ? (id) => cubit.goToReview(id, hide: hide) : null,
-            ),
+            list: technicalFailure
+                ? const SizedBox.shrink()
+                : ScriptMoveList(
+                    moves: [for (final node in nodes) _entry(node)],
+                    currentId: done ? state.cursorId : nodes.lastOrNull?.id,
+                    covered: covered,
+                    // A notação só leva a uma posição depois que o exercício
+                    // acaba; antes, o tabuleiro é do aluno.
+                    onTap: done
+                        ? (id) => cubit.goToReview(id, hide: hide)
+                        : (_) {},
+                    onReveal: done
+                        ? (id) => cubit.goToReview(id, hide: hide)
+                        : null,
+                  ),
           ),
         ),
         _footer(context, state),
@@ -661,6 +679,27 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       return const SizedBox.shrink();
     }
     final color = theme.scaffoldBackgroundColor;
+    if (state.technicalFailure != null) {
+      return ExerciseActions(
+        color: color,
+        actions: [
+          ExerciseAction(
+            key: ExerciseKeys.backButton,
+            label: l10n.tourBack,
+            onPressed: () => context.pop(),
+          ),
+          ExerciseAction(
+            key: ExerciseKeys.technicalRetry,
+            label: l10n.lessonRetry,
+            primary: true,
+            // Recarrega o mesmo exercício; o Cubit recupera a tentativa salva.
+            onPressed: () => unawaited(
+              cubit.load(state.lesson!.id, state.exercise!.id, l10n.localeName),
+            ),
+          ),
+        ],
+      );
+    }
     final hide = context.select(
       (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
     );

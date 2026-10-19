@@ -58,6 +58,48 @@ void main() {
     },
   );
 
+  for (final completed in [false, true]) {
+    testWidgets(
+      'zero exercises has no invented test or result: done=$completed',
+      (tester) async {
+        const sample = FakeEndgameLessonRepository.sample;
+        final original = sample.modules.first.lessons.first;
+        final lesson = EndgameLesson(
+          id: original.id,
+          module: original.module,
+          lesson: original.lesson,
+          exercises: const [],
+          passScore: 0,
+          keyPositions: original.keyPositions,
+          practice: original.practice,
+        );
+        final cubit = await pump(
+          tester,
+          trail: EndgameTrail(
+            modules: [
+              EndgameModule(id: lesson.module, lessons: [lesson]),
+            ],
+          ),
+          progress: EndgameProgress(
+            lessons: {lesson.id: EndgameLessonProgress(lessonDone: completed)},
+          ),
+        );
+        expect(cubit.state.exerciseCount, 0);
+        expect(find.byKey(EndgameLessonKeys.finalTest), findsNothing);
+        expect(find.byKey(EndgameLessonKeys.score), findsNothing);
+        expect(find.byKey(EndgameLessonKeys.failed), findsNothing);
+        expect(find.byKey(EndgameLessonKeys.passed), findsNothing);
+        expect(find.byKey(EndgameLessonKeys.redoButton), findsNothing);
+        expect(find.byKey(EndgameLessonKeys.startExercises), findsNothing);
+        expect(find.text('Not this time.'), findsNothing);
+        expect(find.text('Passed.'), findsNothing);
+        expect(cubit.state.progress.lessonDone, completed);
+        expect(cubit.state.progress.stars, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets(
     'nada feito: começar a lição, o teste recolhido e o desafio aberto',
     (tester) async {

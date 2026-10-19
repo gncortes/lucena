@@ -8,6 +8,7 @@ import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asse
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 
 import '../../../../testing/fakes/fake_school_repositories.dart';
@@ -95,6 +96,45 @@ const _lesson = {
 };
 
 void main() {
+  test(
+    'exercise completion defaults to legacy and explicitly supports checkmate',
+    () {
+      expect(
+        AssetEndgameLessonRepository.parseLesson(_lesson)
+            .exercises
+            .single
+            .completion,
+        ExerciseCompletion.technicalLine,
+      );
+      final data = jsonDecode(jsonEncode(_lesson)) as Map<String, dynamic>;
+      final exercise =
+          (data['exercises'] as List).single as Map<String, dynamic>;
+      exercise['completion'] = 'checkmate';
+      expect(
+        AssetEndgameLessonRepository.parseLesson(data)
+            .exercises
+            .single
+            .completion,
+        ExerciseCompletion.checkmate,
+      );
+      for (final goal in ['draw', 'unknown', null]) {
+        exercise['goal'] = goal;
+        expect(
+          () => AssetEndgameLessonRepository.parseLesson(data),
+          throwsFormatException,
+        );
+      }
+      exercise['goal'] = 'win';
+      for (final completion in ['mate', '', 1]) {
+        exercise['completion'] = completion;
+        expect(
+          () => AssetEndgameLessonRepository.parseLesson(data),
+          throwsFormatException,
+        );
+      }
+    },
+  );
+
   AssetEndgameLessonRepository repository() => AssetEndgameLessonRepository(
     AssetService(
       _Bundle({
