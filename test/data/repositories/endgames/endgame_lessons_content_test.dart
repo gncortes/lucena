@@ -24,6 +24,11 @@ import '../../../../testing/script_fixture.dart';
 bool _hasScript(LessonPart part) =>
     part.script != null && io.File(part.script!).existsSync();
 
+/// Aulas visíveis com o teste final ainda em escrita (uma sessão por
+/// capítulo): o mínimo de exercícios e a solução em texto só passam a valer
+/// quando o teste delas fechar.
+const _testInProgress = <String>{};
+
 void main() {
   final index = jsonDecode(
     io.File(AssetEndgameLessonRepository.indexPath).readAsStringSync(),
@@ -113,11 +118,13 @@ void main() {
         reason: lesson.id,
       );
       // Um exercício por ideia distinta, sem cota: o mínimo é 3.
-      expect(
-        lesson.exercises.length,
-        greaterThanOrEqualTo(3),
-        reason: lesson.id,
-      );
+      if (!_testInProgress.contains(lesson.id)) {
+        expect(
+          lesson.exercises.length,
+          greaterThanOrEqualTo(3),
+          reason: lesson.id,
+        );
+      }
       for (final exercise in lesson.exercises) {
         expect(exercise.stars, inInclusiveRange(1, 3), reason: exercise.id);
         expect(
@@ -261,7 +268,8 @@ void main() {
         for (final exercise in lesson.exercises) ...[
           'ex.${exercise.id}',
           'ex.${exercise.id}.hint',
-          'ex.${exercise.id}.solution',
+          if (!_testInProgress.contains(lesson.id))
+            'ex.${exercise.id}.solution',
         ],
         for (final position in lesson.keyPositions) 'key.${position.id}',
         // Parte em roteiro (T70): as falas do próprio roteiro (as genéricas

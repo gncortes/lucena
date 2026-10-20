@@ -1504,8 +1504,13 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     }
   }
 
-  bool get _wantsWin => _example.goal.wantsWin;
+  bool get _wantsWin => _example.goal.wantsWin || _mateGoal;
   bool get _mateGoal => _example.goal == ScriptGoal.mate;
+
+  /// O `mate` com tabela do roteiro (T77, bispo e cavalo): o lance do aluno é
+  /// julgado como no `ganhar` e a máquina defende pela tabela. Sem tabela, o
+  /// lance não é julgado e o Stockfish defende.
+  bool get _mateByEngine => _mateGoal && _table.length == 0;
 
   /// O fim cumpre o objetivo: no `mate`, só o mate.
   /// Coroação e mate cumprem se o vencedor é o aluno (ganhar também cumpre o
@@ -1522,6 +1527,10 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   // `casa` usa as falas genéricas do `ganhar`.
   String get _goalName =>
       _example.goal == ScriptGoal.casa ? 'ganhar' : _example.goal.name;
+
+  /// A fala genérica do erro na prática: o `mate` usa a do `ganhar` (o lance
+  /// que deixa a vitória escapar).
+  String get _refuteGoal => _mateGoal ? 'ganhar' : _goalName;
 
   /// O convite a ver a linha principal (a fala com o link).
   String get _seeLineKey => 'gen.verLinha.$_goalName';
@@ -1804,11 +1813,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _publish(base.copyWith(movable: _sideOf(node.fen)));
   }
 
-  /// O lance da máquina em [position]: no `mate`, o do motor; até 3 peças, o
-  /// da tabela KPK; com mais, o da tabela do roteiro e, fora dela, o do motor
-  /// (T76). Sem motor, o da regra KPK (o primeiro lance legal).
+  /// O lance da máquina em [position]: no `mate` sem tabela, o do motor; até
+  /// 3 peças, o da tabela KPK; com mais, o da tabela do roteiro e, fora dela,
+  /// o do motor (T76). Sem motor, o da regra KPK (o primeiro lance legal).
   Future<String?> _machineMove(Position position) async {
-    if (_mateGoal) return _engineMove(position);
+    if (_mateByEngine) return _engineMove(position);
     if (position.board.occupied.size > 3) {
       final best = _table.best(position.fen);
       final move = best == null ? null : Move.parse(best);
@@ -2103,8 +2112,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   Future<void> _practiceMove(Position position, Move move) async {
     final uci = move.uci;
     final from = state.fen;
-    // No `mate` não há tabela: o lance não é julgado, a partida corre.
-    final verdict = _mateGoal
+    // No `mate` sem tabela o lance não é julgado: a partida corre.
+    final verdict = _mateByEngine
         ? MoveVerdict.keeps
         : await JudgeMove.judgeWith(
             _judge,
@@ -2190,8 +2199,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final intro = custom != null
         ? _say(split ? '$custom.1' : custom)
         : labels.length < 2
-        ? _say('gen.pratica.errado.$_goalName')
-        : _say('gen.pratica.refuta.$_goalName')
+        ? _say('gen.pratica.errado.$_refuteGoal')
+        : _say('gen.pratica.refuta.$_refuteGoal')
               .replaceAll('{lance}', labels[0])
               .replaceAll('{lado}', _say('gen.lado.${_sideOf(fens[1]).name}'))
               .replaceAll('{resposta}', labels[1]);

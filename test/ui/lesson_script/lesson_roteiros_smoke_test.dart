@@ -67,16 +67,24 @@ ScriptTable _tableOf(String key) {
 final _rawKey = RegExp(r'\b(rot|ini|gen)\.[A-Za-z]');
 
 /// Os roteiros como `<lição>` (Escola) ou `<lição>/<capítulo>` (aula de
-/// final, T76), o caminho sem a pasta e sem o `.json`.
+/// final, T76), o caminho sem a pasta e sem o `.json`. O esqueleto de um
+/// capítulo ainda sem exemplo nenhum (T77) fica de fora até ser escrito.
 List<String> _roteiros() => [
   for (final file in io.Directory(
     'assets/lessons/roteiros',
   ).listSync(recursive: true))
-    if (file.path.endsWith('.json'))
+    if (file.path.endsWith('.json') && !_skeleton(file.path))
       file.path
           .replaceFirst('assets/lessons/roteiros/', '')
           .replaceAll('.json', ''),
 ]..sort();
+
+bool _skeleton(String path) {
+  final json = jsonDecode(io.File(path).readAsStringSync()) as Map;
+  return (json['etapas'] as List).every(
+    (stage) => ((stage as Map)['exemplos'] as List).isEmpty,
+  );
+}
 
 String _lessonOf(String key) => key.split('/').first;
 
@@ -158,7 +166,7 @@ class _Run {
     for (final fen in engine.asked.skip(asked)) {
       problems.add('$where: o juiz pediu o motor em $fen (fora da tabela)');
     }
-    if (example.goal != ScriptGoal.mate) {
+    if (example.goal != ScriptGoal.mate || table.length > 0) {
       for (final fen in opponent.requests.skip(requests)) {
         problems.add(
           '$where: a máquina pediu o motor em $fen (fora da tabela)',
@@ -168,11 +176,13 @@ class _Run {
   }
 
   /// Um lance do aluno na prática contra a máquina: o melhor pela tabela
-  /// KPK ou, com mais de 3 peças, pela do roteiro; no objetivo `mate`, o que
-  /// encurrala o rei ([_mateMove]).
+  /// KPK ou, com mais de 3 peças, pela do roteiro; no objetivo `mate` sem
+  /// tabela, o que encurrala o rei ([_mateMove]).
   String practiceMove() {
     final position = GameRules.fromFen(s.fen)!;
-    if (example.goal == ScriptGoal.mate) return _mateMove(position, seen);
+    if (example.goal == ScriptGoal.mate && table.length == 0) {
+      return _mateMove(position, seen);
+    }
     if (example.goal == ScriptGoal.casa) return _casaMove(position);
     if (position.board.occupied.size > 3) {
       final best = table.best(position.fen);

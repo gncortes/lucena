@@ -308,4 +308,42 @@ void main() {
       expect(legacy.chaptersMigrated, isFalse);
     });
   });
+
+  group('T77: lições de bispo e cavalo removidas', () {
+    const kept = EndgameLessonProgress(lessonDone: true, stars: {'e01': 3});
+    const checkpoint = LessonCheckpoint(
+      lessonId: 'mates.bishopKnight.edge',
+      step: 2,
+    );
+
+    test('o progresso delas sai; o das outras fica', () {
+      const progress = EndgameProgress(
+        lessons: {
+          'mates.bishopKnight.w': EndgameLessonProgress(lessonDone: true),
+          'mates.bishopKnight.full': EndgameLessonProgress(
+            approved: true,
+            stars: {'e05': 2},
+          ),
+          'rook.lucena': kept,
+        },
+        ongoing: checkpoint,
+      );
+      final migrated = EndgameProgressMigration.apply(progress);
+      expect(migrated.lessons.keys, ['rook.lucena']);
+      expect(migrated.of('rook.lucena'), same(kept));
+      expect(migrated.ongoing, isNull);
+      expect(EndgameProgressMigration.apply(migrated), same(migrated));
+    });
+
+    test('lição aberta em outra aula continua aberta', () {
+      const other = LessonCheckpoint(lessonId: 'rook.lucena', step: 1);
+      const progress = EndgameProgress(
+        lessons: {'mates.bishopKnight.w': EndgameLessonProgress()},
+        ongoing: other,
+      );
+      final migrated = EndgameProgressMigration.apply(progress);
+      expect(migrated.lessons, isEmpty);
+      expect(migrated.ongoing, same(other));
+    });
+  });
 }

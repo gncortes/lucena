@@ -12,7 +12,7 @@ import 'robots/variant.dart';
 const _english = Locale('en', 'US');
 
 /// A primeira aula da trilha: o mate de bispo e cavalo pela manobra em W.
-const _lessonId = 'mates.bishopKnight.w';
+const _lessonId = 'rook.lucena';
 
 final _hidden = !VisibleLessons.endgameLessonIds.contains(_lessonId);
 

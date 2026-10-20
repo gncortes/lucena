@@ -63,11 +63,12 @@ class _ScriptedSchool extends FakeLessonRepository {
 }
 
 void main() {
-  test('só a Oposição, em três lições, e a Escola escondida', () {
+  test('a Oposição, o bispo e cavalo e a Escola escondida', () {
     expect(VisibleLessons.endgameLessonIds, {
       'pawns.keySquares',
       'pawns.distantOpposition',
       'pawns.waitingMoves',
+      'mates.bishopKnight.deletang',
     });
     expect(VisibleLessons.school, isFalse);
   });
