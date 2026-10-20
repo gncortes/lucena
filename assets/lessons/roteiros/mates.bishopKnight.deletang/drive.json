@@ -4,15 +4,1204 @@
   "etapas": [
     {
       "id": "ideia",
-      "exemplos": []
+      "exemplos": [
+        {
+          "id": "ex1",
+          "fen": "8/8/7N/2k5/8/KB6/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/8/7N/2k5/8/KB6/8/8 w - - 0 1",
+              "marcas": [
+                "a8",
+                "d4"
+              ],
+              "setas": [
+                [
+                  "b3",
+                  "g8",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex1.e1"
+            }
+          ],
+          "pergunta": {
+            "juiz": "lista",
+            "t": "rot.drive.ideia.ex1.p",
+            "certos": [
+              "h6f5"
+            ],
+            "certo": {
+              "fen": "8/8/8/2k2N2/8/KB6/8/8 b - - 1 1",
+              "lance": "h6f5",
+              "setas": [
+                [
+                  "f5",
+                  "d4",
+                  "g"
+                ],
+                [
+                  "f5",
+                  "d6",
+                  "g"
+                ],
+                [
+                  "f5",
+                  "e7",
+                  "g"
+                ],
+                [
+                  "f5",
+                  "g7",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex1.certo"
+            },
+            "revela": {
+              "fen": "8/8/8/2k2N2/8/KB6/8/8 b - - 1 1",
+              "lance": "h6f5",
+              "setas": [
+                [
+                  "f5",
+                  "d4",
+                  "g"
+                ],
+                [
+                  "f5",
+                  "d6",
+                  "g"
+                ],
+                [
+                  "f5",
+                  "e7",
+                  "g"
+                ],
+                [
+                  "f5",
+                  "g7",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex1.revela"
+            },
+            "alternativos": {},
+            "erros": {
+              "h6f7": [
+                {
+                  "fen": "8/5N2/8/2k5/8/KB6/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "h6",
+                      "f7",
+                      "r"
+                    ]
+                  ],
+                  "lance": "h6f7",
+                  "t": "rot.drive.ideia.ex1.err.h6f7.1"
+                },
+                {
+                  "fen": "8/5N2/8/8/3k4/KB6/8/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.h6f7.2"
+                }
+              ],
+              "h6g8": [
+                {
+                  "fen": "6N1/8/8/2k5/8/KB6/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "h6",
+                      "g8",
+                      "r"
+                    ]
+                  ],
+                  "lance": "h6g8",
+                  "t": "rot.drive.ideia.ex1.err.h6g8.1"
+                },
+                {
+                  "fen": "6N1/8/8/8/3k4/KB6/8/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.h6g8.2"
+                }
+              ],
+              "h6g4": [
+                {
+                  "fen": "8/8/8/2k5/6N1/KB6/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "h6",
+                      "g4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "h6g4",
+                  "t": "rot.drive.ideia.ex1.err.h6g4.1"
+                },
+                {
+                  "fen": "8/8/8/8/3k2N1/KB6/8/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.h6g4.2"
+                }
+              ],
+              "a3a2": [
+                {
+                  "fen": "8/8/7N/2k5/8/1B6/K7/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "a3",
+                      "a2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "a3a2",
+                  "t": "rot.drive.ideia.ex1.err.a3a2.1"
+                },
+                {
+                  "fen": "8/8/7N/8/3k4/1B6/K7/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.a3a2.2"
+                }
+              ],
+              "a3a4": [
+                {
+                  "fen": "8/8/7N/2k5/K7/1B6/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "a3",
+                      "a4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "a3a4",
+                  "t": "rot.drive.ideia.ex1.err.a3a4.1"
+                },
+                {
+                  "fen": "8/8/7N/8/K2k4/1B6/8/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.a3a4.2"
+                }
+              ],
+              "a3b2": [
+                {
+                  "fen": "8/8/7N/2k5/8/1B6/1K6/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "a3",
+                      "b2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "a3b2",
+                  "t": "rot.drive.ideia.ex1.err.a3b2.1"
+                },
+                {
+                  "fen": "8/8/3k3N/8/8/1B6/1K6/8 w - - 2 2",
+                  "lance": "c5d6",
+                  "t": "rot.drive.ideia.ex1.err.a3b2.2"
+                }
+              ],
+              "b3d1": [
+                {
+                  "fen": "8/8/7N/2k5/8/K7/8/3B4 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "d1",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3d1",
+                  "t": "rot.drive.ideia.ex1.err.b3d1.1"
+                },
+                {
+                  "fen": "8/8/7N/3k4/8/K7/8/3B4 w - - 2 2",
+                  "lance": "c5d5",
+                  "t": "rot.drive.ideia.ex1.err.b3d1.2"
+                }
+              ],
+              "b3c2": [
+                {
+                  "fen": "8/8/7N/2k5/8/K7/2B5/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "c2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3c2",
+                  "t": "rot.drive.ideia.ex1.err.b3c2.1"
+                },
+                {
+                  "fen": "8/8/7N/3k4/8/K7/2B5/8 w - - 2 2",
+                  "lance": "c5d5",
+                  "t": "rot.drive.ideia.ex1.err.b3c2.2"
+                }
+              ],
+              "b3a4": [
+                {
+                  "fen": "8/8/7N/2k5/B7/K7/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "a4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3a4",
+                  "t": "rot.drive.ideia.ex1.err.b3a4.1"
+                },
+                {
+                  "fen": "8/8/7N/3k4/B7/K7/8/8 w - - 2 2",
+                  "lance": "c5d5",
+                  "t": "rot.drive.ideia.ex1.err.b3a4.2"
+                }
+              ],
+              "b3a2": [
+                {
+                  "fen": "8/8/7N/2k5/8/K7/B7/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "a2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3a2",
+                  "t": "rot.drive.ideia.ex1.err.b3a2.1"
+                },
+                {
+                  "fen": "8/8/7N/8/3k4/K7/B7/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.b3a2.2"
+                }
+              ],
+              "b3g8": [
+                {
+                  "fen": "6B1/8/7N/2k5/8/K7/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "g8",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3g8",
+                  "t": "rot.drive.ideia.ex1.err.b3g8.1"
+                },
+                {
+                  "fen": "6B1/8/7N/8/3k4/K7/8/8 w - - 2 2",
+                  "lance": "c5d4",
+                  "t": "rot.drive.ideia.ex1.err.b3g8.2"
+                }
+              ],
+              "b3e6": [
+                {
+                  "fen": "8/8/4B2N/2k5/8/K7/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "e6",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3e6",
+                  "t": "rot.drive.ideia.ex1.err.b3e6.1"
+                },
+                {
+                  "fen": "8/8/3kB2N/8/8/K7/8/8 w - - 2 2",
+                  "lance": "c5d6",
+                  "t": "rot.drive.ideia.ex1.err.b3e6.2"
+                }
+              ],
+              "b3f7": [
+                {
+                  "fen": "8/5B2/7N/2k5/8/K7/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "f7",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3f7",
+                  "t": "rot.drive.ideia.ex1.err.b3f7.1"
+                },
+                {
+                  "fen": "8/5B2/3k3N/8/8/K7/8/8 w - - 2 2",
+                  "lance": "c5d6",
+                  "t": "rot.drive.ideia.ex1.err.b3f7.2"
+                }
+              ],
+              "b3c4": [
+                {
+                  "fen": "8/8/7N/2k5/2B5/K7/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "c4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3c4",
+                  "t": "rot.drive.ideia.ex1.err.b3c4.1"
+                },
+                {
+                  "fen": "8/8/7N/8/2k5/K7/8/8 w - - 0 2",
+                  "lance": "c5c4",
+                  "t": "rot.drive.ideia.ex1.err.b3c4.2"
+                }
+              ],
+              "b3d5": [
+                {
+                  "fen": "8/8/7N/2kB4/8/K7/8/8 b - - 1 1",
+                  "setas": [
+                    [
+                      "b3",
+                      "d5",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3d5",
+                  "t": "rot.drive.ideia.ex1.err.b3d5.1"
+                },
+                {
+                  "fen": "8/8/7N/3k4/8/K7/8/8 w - - 0 2",
+                  "lance": "c5d5",
+                  "t": "rot.drive.ideia.ex1.err.b3d5.2"
+                }
+              ]
+            },
+            "fora": "rot.drive.ideia.ex1.fora",
+            "volta": "rot.drive.ideia.ex1.volta"
+          },
+          "linha": [
+            {
+              "fen": "8/8/8/2k2N2/8/KB6/8/8 b - - 1 1",
+              "marcas": [
+                "a5",
+                "a6",
+                "a7",
+                "a8",
+                "b5",
+                "b6",
+                "b7",
+                "b8",
+                "c5",
+                "c6",
+                "c7",
+                "c8",
+                "d7",
+                "d8",
+                "e8",
+                "f8"
+              ],
+              "t": "rot.drive.ideia.ex1.l1"
+            },
+            {
+              "fen": "8/8/8/2k2N2/8/KB6/8/8 b - - 1 1",
+              "marcas": [
+                "a4",
+                "b4",
+                "d4",
+                "d6",
+                "e7",
+                "g7"
+              ],
+              "setas": [
+                [
+                  "b3",
+                  "g8",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex1.l2"
+            }
+          ]
+        },
+        {
+          "id": "ex2",
+          "fen": "8/8/8/2k2N2/8/KB6/8/8 b - - 1 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "lance": "c5b5",
+              "fen": "8/8/8/1k3N2/8/KB6/8/8 w - - 2 2",
+              "marcas": [
+                "a4",
+                "b4"
+              ],
+              "t": "rot.drive.ideia.ex2.e1"
+            },
+            {
+              "fen": "8/8/8/1k3N2/8/KB6/8/8 w - - 2 2",
+              "setas": [
+                [
+                  "b3",
+                  "g8",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex2.e2"
+            }
+          ],
+          "pergunta": {
+            "juiz": "lista",
+            "t": "rot.drive.ideia.ex2.p",
+            "certos": [
+              "b3f7"
+            ],
+            "certo": {
+              "fen": "8/5B2/8/1k3N2/8/K7/8/8 b - - 3 2",
+              "lance": "b3f7",
+              "setas": [
+                [
+                  "b3",
+                  "f7",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex2.certo"
+            },
+            "revela": {
+              "fen": "8/5B2/8/1k3N2/8/K7/8/8 b - - 3 2",
+              "lance": "b3f7",
+              "setas": [
+                [
+                  "b3",
+                  "f7",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.ideia.ex2.revela"
+            },
+            "alternativos": {
+              "b3a2": [
+                {
+                  "fen": "8/8/8/1k3N2/8/K7/B7/8 b - - 3 2",
+                  "lance": "b3a2",
+                  "t": "rot.drive.ideia.ex2.alt.b3a2.1"
+                },
+                {
+                  "fen": "8/8/8/1k3N2/8/KB6/8/8 w - - 2 2",
+                  "salto": true,
+                  "t": "rot.drive.ideia.ex2.alt.b3a2.2"
+                }
+              ],
+              "b3e6": [
+                {
+                  "fen": "8/8/4B3/1k3N2/8/K7/8/8 b - - 3 2",
+                  "lance": "b3e6",
+                  "t": "rot.drive.ideia.ex2.alt.b3e6.1"
+                },
+                {
+                  "fen": "8/8/8/1k3N2/8/KB6/8/8 w - - 2 2",
+                  "salto": true,
+                  "t": "rot.drive.ideia.ex2.alt.b3e6.2"
+                }
+              ],
+              "b3g8": [
+                {
+                  "fen": "6B1/8/8/1k3N2/8/K7/8/8 b - - 3 2",
+                  "lance": "b3g8",
+                  "t": "rot.drive.ideia.ex2.alt.b3g8.1"
+                },
+                {
+                  "fen": "8/8/8/1k3N2/8/KB6/8/8 w - - 2 2",
+                  "salto": true,
+                  "t": "rot.drive.ideia.ex2.alt.b3g8.2"
+                }
+              ],
+              "b3d5": [
+                {
+                  "fen": "8/8/8/1k1B1N2/8/K7/8/8 b - - 3 2",
+                  "lance": "b3d5",
+                  "t": "rot.drive.ideia.ex2.alt.b3d5.1"
+                },
+                {
+                  "fen": "8/8/8/1k3N2/8/KB6/8/8 w - - 2 2",
+                  "salto": true,
+                  "t": "rot.drive.ideia.ex2.alt.b3d5.2"
+                }
+              ]
+            },
+            "erros": {
+              "f5e3": [
+                {
+                  "fen": "8/8/8/1k6/8/KB2N3/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "e3",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5e3",
+                  "t": "rot.drive.ideia.ex2.err.f5e3.1"
+                },
+                {
+                  "fen": "8/8/8/2k5/8/KB2N3/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5e3.2"
+                }
+              ],
+              "f5g3": [
+                {
+                  "fen": "8/8/8/1k6/8/KB4N1/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "g3",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5g3",
+                  "t": "rot.drive.ideia.ex2.err.f5g3.1"
+                },
+                {
+                  "fen": "8/8/8/2k5/8/KB4N1/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5g3.2"
+                }
+              ],
+              "f5h4": [
+                {
+                  "fen": "8/8/8/1k6/7N/KB6/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "h4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5h4",
+                  "t": "rot.drive.ideia.ex2.err.f5h4.1"
+                },
+                {
+                  "fen": "8/8/8/2k5/7N/KB6/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5h4.2"
+                }
+              ],
+              "f5h6": [
+                {
+                  "fen": "8/8/7N/1k6/8/KB6/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "h6",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5h6",
+                  "t": "rot.drive.ideia.ex2.err.f5h6.1"
+                },
+                {
+                  "fen": "8/8/7N/2k5/8/KB6/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5h6.2"
+                }
+              ],
+              "f5e7": [
+                {
+                  "fen": "8/4N3/8/1k6/8/KB6/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "e7",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5e7",
+                  "t": "rot.drive.ideia.ex2.err.f5e7.1"
+                },
+                {
+                  "fen": "8/4N3/8/2k5/8/KB6/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5e7.2"
+                }
+              ],
+              "f5g7": [
+                {
+                  "fen": "8/6N1/8/1k6/8/KB6/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "g7",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5g7",
+                  "t": "rot.drive.ideia.ex2.err.f5g7.1"
+                },
+                {
+                  "fen": "8/6N1/8/2k5/8/KB6/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5g7.2"
+                }
+              ],
+              "f5d4": [
+                {
+                  "fen": "8/8/8/1k6/3N4/KB6/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "d4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5d4",
+                  "t": "rot.drive.ideia.ex2.err.f5d4.1"
+                },
+                {
+                  "fen": "8/8/8/2k5/3N4/KB6/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5d4.2"
+                }
+              ],
+              "f5d6": [
+                {
+                  "fen": "8/8/3N4/1k6/8/KB6/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "f5",
+                      "d6",
+                      "r"
+                    ]
+                  ],
+                  "lance": "f5d6",
+                  "t": "rot.drive.ideia.ex2.err.f5d6.1"
+                },
+                {
+                  "fen": "8/8/3N4/2k5/8/KB6/8/8 w - - 4 3",
+                  "lance": "b5c5",
+                  "t": "rot.drive.ideia.ex2.err.f5d6.2"
+                }
+              ],
+              "a3a2": [
+                {
+                  "fen": "8/8/8/1k3N2/8/1B6/K7/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "a3",
+                      "a2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "a3a2",
+                  "t": "rot.drive.ideia.ex2.err.a3a2.1"
+                },
+                {
+                  "fen": "8/8/8/5N2/1k6/1B6/K7/8 w - - 4 3",
+                  "lance": "b5b4",
+                  "t": "rot.drive.ideia.ex2.err.a3a2.2"
+                }
+              ],
+              "a3b2": [
+                {
+                  "fen": "8/8/8/1k3N2/8/1B6/1K6/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "a3",
+                      "b2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "a3b2",
+                  "t": "rot.drive.ideia.ex2.err.a3b2.1"
+                },
+                {
+                  "fen": "8/8/8/5N2/1k6/1B6/1K6/8 w - - 4 3",
+                  "lance": "b5b4",
+                  "t": "rot.drive.ideia.ex2.err.a3b2.2"
+                }
+              ],
+              "b3a4": [
+                {
+                  "fen": "8/8/8/1k3N2/B7/K7/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "b3",
+                      "a4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3a4",
+                  "t": "rot.drive.ideia.ex2.err.b3a4.1"
+                },
+                {
+                  "fen": "8/8/8/5N2/B1k5/K7/8/8 w - - 4 3",
+                  "lance": "b5c4",
+                  "t": "rot.drive.ideia.ex2.err.b3a4.2"
+                }
+              ],
+              "b3d1": [
+                {
+                  "fen": "8/8/8/1k3N2/8/K7/8/3B4 b - - 3 2",
+                  "setas": [
+                    [
+                      "b3",
+                      "d1",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3d1",
+                  "t": "rot.drive.ideia.ex2.err.b3d1.1"
+                },
+                {
+                  "fen": "8/8/8/5N2/2k5/K7/8/3B4 w - - 4 3",
+                  "lance": "b5c4",
+                  "t": "rot.drive.ideia.ex2.err.b3d1.2"
+                }
+              ],
+              "b3c2": [
+                {
+                  "fen": "8/8/8/1k3N2/8/K7/2B5/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "b3",
+                      "c2",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3c2",
+                  "t": "rot.drive.ideia.ex2.err.b3c2.1"
+                },
+                {
+                  "fen": "8/8/8/5N2/2k5/K7/2B5/8 w - - 4 3",
+                  "lance": "b5c4",
+                  "t": "rot.drive.ideia.ex2.err.b3c2.2"
+                }
+              ],
+              "b3c4": [
+                {
+                  "fen": "8/8/8/1k3N2/2B5/K7/8/8 b - - 3 2",
+                  "setas": [
+                    [
+                      "b3",
+                      "c4",
+                      "r"
+                    ]
+                  ],
+                  "lance": "b3c4",
+                  "t": "rot.drive.ideia.ex2.err.b3c4.1"
+                },
+                {
+                  "fen": "8/8/8/5N2/2k5/K7/8/8 w - - 0 3",
+                  "lance": "b5c4",
+                  "t": "rot.drive.ideia.ex2.err.b3c4.2"
+                }
+              ]
+            },
+            "fora": "rot.drive.ideia.ex2.fora",
+            "volta": "rot.drive.ideia.ex2.volta"
+          },
+          "linha": [
+            {
+              "fen": "8/5B2/8/1k3N2/8/K7/8/8 b - - 3 2",
+              "t": "rot.drive.ideia.ex2.l1"
+            },
+            {
+              "lance": "b5c5",
+              "fen": "8/5B2/8/2k2N2/8/K7/8/8 w - - 4 3",
+              "marcas": [
+                "d4"
+              ],
+              "t": "rot.drive.ideia.ex2.l2"
+            },
+            {
+              "lance": "a3a4",
+              "fen": "8/5B2/8/2k2N2/K7/8/8/8 b - - 5 3",
+              "marcas": [
+                "b5"
+              ],
+              "t": "rot.drive.ideia.ex2.l3"
+            },
+            {
+              "lance": "c5b6",
+              "fen": "8/5B2/1k6/5N2/K7/8/8/8 w - - 6 4",
+              "marcas": [
+                "a5",
+                "b5"
+              ],
+              "t": "rot.drive.ideia.ex2.l4"
+            },
+            {
+              "lance": "a4b4",
+              "fen": "8/5B2/1k6/5N2/1K6/8/8/8 b - - 7 4",
+              "marcas": [
+                "c5"
+              ],
+              "t": "rot.drive.ideia.ex2.l5"
+            },
+            {
+              "fen": "8/5B2/1k6/5N2/1K6/8/8/8 b - - 7 4",
+              "marcas": [
+                "a6",
+                "a7",
+                "a8",
+                "b6",
+                "b7",
+                "b8",
+                "c6",
+                "c7",
+                "c8",
+                "d7",
+                "d8"
+              ],
+              "t": "rot.drive.ideia.ex2.l6"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "demos",
-      "exemplos": []
+      "exemplos": [
+        {
+          "id": "selar",
+          "fen": "5K2/2k5/8/8/8/8/BN6/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "5K2/2k5/8/8/8/8/BN6/8 w - - 0 1",
+              "marcas": [
+                "b4",
+                "c5",
+                "e5"
+              ],
+              "setas": [
+                [
+                  "a2",
+                  "g8",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.demos.selar.1"
+            }
+          ],
+          "linha": [
+            {
+              "lance": "b2d3",
+              "fen": "5K2/2k5/8/8/8/3N4/B7/8 b - - 1 1",
+              "marcas": [
+                "a3",
+                "a4",
+                "a5",
+                "a6",
+                "a7",
+                "a8",
+                "b5",
+                "b6",
+                "b7",
+                "b8",
+                "c6",
+                "c7",
+                "c8",
+                "d6",
+                "d7",
+                "d8"
+              ],
+              "t": "rot.drive.demos.selar.2"
+            },
+            {
+              "lance": "c7d6",
+              "fen": "5K2/8/3k4/8/8/3N4/B7/8 w - - 2 2",
+              "t": "rot.drive.demos.selar.3"
+            },
+            {
+              "lance": "f8e8",
+              "fen": "4K3/8/3k4/8/8/3N4/B7/8 b - - 3 2",
+              "marcas": [
+                "d7",
+                "d8"
+              ],
+              "t": "rot.drive.demos.selar.4"
+            },
+            {
+              "lance": "d6c6",
+              "fen": "4K3/8/2k5/8/8/3N4/B7/8 w - - 4 3",
+              "t": "rot.drive.demos.selar.5"
+            },
+            {
+              "lance": "a2b3",
+              "fen": "4K3/8/2k5/8/8/1B1N4/8/8 b - - 5 3",
+              "marcas": [
+                "a3",
+                "a4"
+              ],
+              "t": "rot.drive.demos.selar.6"
+            },
+            {
+              "lance": "c6d6",
+              "fen": "4K3/8/3k4/8/8/1B1N4/8/8 w - - 6 4",
+              "t": "rot.drive.demos.selar.7"
+            },
+            {
+              "lance": "e8d8",
+              "fen": "3K4/8/3k4/8/8/1B1N4/8/8 b - - 7 4",
+              "marcas": [
+                "c7",
+                "c8"
+              ],
+              "t": "rot.drive.demos.selar.8"
+            },
+            {
+              "lance": "d6c6",
+              "fen": "3K4/8/2k5/8/8/1B1N4/8/8 w - - 8 5",
+              "t": "rot.drive.demos.selar.9"
+            },
+            {
+              "lance": "d8e7",
+              "fen": "8/4K3/2k5/8/8/1B1N4/8/8 b - - 9 5",
+              "marcas": [
+                "a5",
+                "a6",
+                "a7",
+                "a8",
+                "b5",
+                "b6",
+                "b7",
+                "b8",
+                "c6",
+                "c7",
+                "c8"
+              ],
+              "t": "rot.drive.demos.selar.10"
+            }
+          ]
+        },
+        {
+          "id": "ataqueBispo",
+          "fen": "8/8/4N3/8/8/3B4/1K6/4k3 b - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "8/8/4N3/8/8/3B4/1K6/4k3 b - - 0 1",
+              "marcas": [
+                "d1",
+                "d2",
+                "e1",
+                "e3",
+                "f2",
+                "f3",
+                "g1",
+                "g2",
+                "g3",
+                "g4",
+                "h1",
+                "h2",
+                "h3",
+                "h4",
+                "h5",
+                "h6",
+                "d3"
+              ],
+              "setas": [
+                [
+                  "b1",
+                  "h7",
+                  "g"
+                ]
+              ],
+              "t": "rot.drive.demos.ataqueBispo.1"
+            }
+          ],
+          "linha": [
+            {
+              "lance": "e1d2",
+              "fen": "8/8/4N3/8/8/3B4/1K1k4/8 w - - 1 2",
+              "marcas": [
+                "d3"
+              ],
+              "t": "rot.drive.demos.ataqueBispo.2"
+            },
+            {
+              "lance": "d3c2",
+              "fen": "8/8/4N3/8/8/8/1KBk4/8 b - - 2 2",
+              "marcas": [
+                "c2"
+              ],
+              "t": "rot.drive.demos.ataqueBispo.3"
+            },
+            {
+              "lance": "d2e1",
+              "fen": "8/8/4N3/8/8/8/1KB5/4k3 w - - 3 3",
+              "t": "rot.drive.demos.ataqueBispo.4"
+            },
+            {
+              "lance": "b2c1",
+              "fen": "8/8/4N3/8/8/8/2B5/2K1k3 b - - 4 3",
+              "marcas": [
+                "d1",
+                "d2"
+              ],
+              "t": "rot.drive.demos.ataqueBispo.5"
+            },
+            {
+              "lance": "e1e2",
+              "fen": "8/8/4N3/8/8/8/2B1k3/2K5 w - - 5 4",
+              "t": "rot.drive.demos.ataqueBispo.6"
+            },
+            {
+              "lance": "c2g6",
+              "fen": "8/8/4N1B1/8/8/8/4k3/2K5 b - - 6 4",
+              "t": "rot.drive.demos.ataqueBispo.7"
+            },
+            {
+              "lance": "e2e3",
+              "fen": "8/8/4N1B1/8/8/4k3/8/2K5 w - - 7 5",
+              "marcas": [
+                "d4",
+                "f4"
+              ],
+              "t": "rot.drive.demos.ataqueBispo.8"
+            },
+            {
+              "lance": "c1d1",
+              "fen": "8/8/4N1B1/8/8/4k3/8/3K4 b - - 8 5",
+              "marcas": [
+                "e1",
+                "e2"
+              ],
+              "t": "rot.drive.demos.ataqueBispo.9"
+            },
+            {
+              "lance": "e3f2",
+              "fen": "8/8/4N1B1/8/8/8/5k2/3K4 w - - 9 6",
+              "t": "rot.drive.demos.ataqueBispo.10"
+            },
+            {
+              "lance": "d1d2",
+              "fen": "8/8/4N1B1/8/8/8/3K1k2/8 b - - 10 6",
+              "marcas": [
+                "f1",
+                "f2",
+                "f3",
+                "g1",
+                "g2",
+                "g3",
+                "g4",
+                "h1",
+                "h2",
+                "h3",
+                "h4"
+              ],
+              "t": "rot.drive.demos.ataqueBispo.11"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "pratica",
-      "exemplos": []
+      "exemplos": [
+        {
+          "id": "selar",
+          "fen": "5N2/8/8/8/8/1K2k3/8/1B6 w - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "proximo",
+          "pratica": {
+            "tipo": "lance",
+            "maquina": "b",
+            "limite": 40,
+            "t": "rot.drive.pratica.selar.enunciado",
+            "linha": [
+              {
+                "certos": [
+                  "f8e6"
+                ]
+              }
+            ],
+            "fim": "rot.drive.pratica.selar.fim",
+            "erros": {
+              "b1d3": "rot.drive.pratica.selar.v1.err.b1d3",
+              "b1e4": "rot.drive.pratica.selar.v1.err.b1e4"
+            },
+            "errosPos": {
+              "5N2/8/8/8/8/1K2k3/8/1B6 w - -": {
+                "b3c3": "rot.drive.pratica.selar.v1.err.b3c3",
+                "b3c4": "rot.drive.pratica.selar.v1.err.b3c4",
+                "f8g6": "rot.drive.pratica.selar.v1.err.f8g6",
+                "b1c2": "rot.drive.pratica.selar.v1.err.b1c2",
+                "b3b4": "rot.drive.pratica.selar.v1.err.b3b4",
+                "f8d7": "rot.drive.pratica.selar.v1.err.f8d7",
+                "f8h7": "rot.drive.pratica.selar.v1.err.f8h7",
+                "b1a2": "rot.drive.pratica.selar.v1.err.b1a2",
+                "b1f5": "rot.drive.pratica.selar.v1.err.b1f5",
+                "b1g6": "rot.drive.pratica.selar.v1.err.b1g6",
+                "b1h7": "rot.drive.pratica.selar.v1.err.b1h7",
+                "b3a2": "rot.drive.pratica.selar.v1.err.b3a2",
+                "b3b2": "rot.drive.pratica.selar.v1.err.b3b2",
+                "b3c2": "rot.drive.pratica.selar.v1.err.b3c2",
+                "b3a3": "rot.drive.pratica.selar.v1.err.b3a3",
+                "b3a4": "rot.drive.pratica.selar.v1.err.b3a4"
+              }
+            }
+          }
+        },
+        {
+          "id": "defesa",
+          "fen": "8/4k1K1/4B3/8/8/3N4/8/8 w - - 1 2",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "etapa",
+          "pratica": {
+            "tipo": "lance",
+            "maquina": "b",
+            "limite": 40,
+            "t": "rot.drive.pratica.defesa.enunciado",
+            "linha": [
+              {
+                "certos": [
+                  "e6b3",
+                  "e6f7",
+                  "e6a2",
+                  "e6c4",
+                  "e6g8",
+                  "e6d5"
+                ]
+              }
+            ],
+            "fim": "rot.drive.pratica.defesa.fim",
+            "erros": {
+              "d3c1": "rot.drive.pratica.defesa.v1.err.d3c1",
+              "d3e1": "rot.drive.pratica.defesa.v1.err.d3e1",
+              "d3b2": "rot.drive.pratica.defesa.v1.err.d3b2",
+              "d3f2": "rot.drive.pratica.defesa.v1.err.d3f2",
+              "d3b4": "rot.drive.pratica.defesa.v1.err.d3b4",
+              "d3c5": "rot.drive.pratica.defesa.v1.err.d3c5",
+              "d3e5": "rot.drive.pratica.defesa.v1.err.d3e5",
+              "e6d7": "rot.drive.pratica.defesa.v1.err.e6d7",
+              "g7g6": "rot.drive.pratica.defesa.v1.err.g7g6",
+              "g7h6": "rot.drive.pratica.defesa.v1.err.g7h6",
+              "g7h7": "rot.drive.pratica.defesa.v1.err.g7h7",
+              "g7g8": "rot.drive.pratica.defesa.v1.err.g7g8",
+              "g7h8": "rot.drive.pratica.defesa.v1.err.g7h8"
+            },
+            "errosPos": {
+              "8/4k1K1/4B3/8/8/3N4/8/8 w - -": {
+                "d3f4": "rot.drive.pratica.defesa.v1.err.d3f4",
+                "e6h3": "rot.drive.pratica.defesa.v1.err.e6h3",
+                "e6g4": "rot.drive.pratica.defesa.v1.err.e6g4",
+                "e6f5": "rot.drive.pratica.defesa.v1.err.e6f5",
+                "e6c8": "rot.drive.pratica.defesa.v1.err.e6c8"
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }

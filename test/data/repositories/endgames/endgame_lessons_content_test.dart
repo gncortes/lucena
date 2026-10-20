@@ -24,10 +24,10 @@ import '../../../../testing/script_fixture.dart';
 bool _hasScript(LessonPart part) =>
     part.script != null && io.File(part.script!).existsSync();
 
-/// Aulas visíveis com o teste final ainda em escrita (T77: bispo e cavalo,
-/// um capítulo por sessão): o mínimo de exercícios e a solução em texto só
-/// passam a valer quando o teste delas fechar.
-const _testInProgress = {'mates.bishopKnight.deletang'};
+/// Aulas visíveis com o teste final ainda em escrita (uma sessão por
+/// capítulo): o mínimo de exercícios e a solução em texto só passam a valer
+/// quando o teste delas fechar.
+const _testInProgress = <String>{};
 
 void main() {
   final index = jsonDecode(

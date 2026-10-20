@@ -1,0 +1,420 @@
+{
+  "lesson": "mates.bishopKnight.deletang",
+  "scope": "finalNet, drive, deletang e convert: alternativas naturais (Maia ≥ 8%) recusadas nos exercícios do teste; as que ainda ganham têm o mate mais longe, e as que empatam dizem por quê (tablebase)",
+  "rows": [
+    {
+      "id": "finalNetAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "7k/5KN1/8/8/8/4B3/8/8 w - - 0 1",
+      "uci": "e3d4",
+      "pt": "Com o lance do bispo para d4, a diagonal continua tapada pelo seu cavalo em g7: o rei preto sai para h7, e o mate fica mais longe.",
+      "en": "With the bishop move to d4, the diagonal is still blocked by your knight on g7: the black king steps out to h7, and the mate gets further away."
+    },
+    {
+      "id": "finalNetAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "7k/5KN1/8/8/8/4B3/8/8 w - - 0 1",
+      "uci": "f7g6",
+      "pt": "Com o lance do rei para g6, g8 fica livre: o rei preto sai do canto por g8, e o mate fica mais longe.",
+      "en": "With the king move to g6, g8 is left free: the black king leaves the corner through g8, and the mate gets further away."
+    },
+    {
+      "id": "finalNetAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/5K1k/4N3/8/8/4B3/8/8 w - - 2 2",
+      "uci": "e6g5",
+      "pt": "Com o xeque do cavalo de g5, o cavalo tapa a diagonal do bispo até h6: o rei preto foge para h6, e o mate fica bem mais longe.",
+      "en": "With the knight check from g5, the knight blocks the bishop's diagonal to h6: the black king escapes to h6, and the mate gets much further away."
+    },
+    {
+      "id": "finalNetAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/5K1k/4N3/8/8/4B3/8/8 w - - 2 2",
+      "uci": "f7f6",
+      "pt": "Com o lance do rei para f6, g8 fica livre: o rei preto vai a g8, e o mate fica mais longe.",
+      "en": "With the king move to f6, g8 is left free: the black king goes to g8, and the mate gets further away."
+    },
+    {
+      "id": "finalNetAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/5K1k/4N3/8/8/4B3/8/8 w - - 2 2",
+      "uci": "e3d4",
+      "pt": "Com o lance do bispo para d4, h6 fica livre: o rei preto foge para h6, e o mate fica bem mais longe.",
+      "en": "With the bishop move to d4, h6 is left free: the black king escapes to h6, and the mate gets much further away."
+    },
+    {
+      "id": "finalNetAssessment01",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "5N1k/5K2/8/8/8/4B3/8/8 w - - 4 3",
+      "uci": "f8g6",
+      "pt": "Com o xeque do cavalo de g6, o rei preto sai para h7, e o mate demora mais.",
+      "en": "With the knight check from g6, the black king steps out to h7, and the mate takes longer."
+    },
+    {
+      "id": "driveAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "uci": "c5d5",
+      "pt": "Com o lance do rei para d5, e3 fica livre: o rei preto pode voltar por ali, e o mate leva dois lances a mais.",
+      "en": "With the king move to d5, e3 is left free: the black king can come back that way, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "uci": "f2d3",
+      "pt": "O xeque do cavalo solta a barreira: o rei preto ganha e4, f5 e g4, e o mate leva cinco lances a mais.",
+      "en": "The knight check opens the barrier: the black king gains e4, f5 and g4, and mate takes five moves longer."
+    },
+    {
+      "id": "driveAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "uci": "f2e4",
+      "pt": "Com o cavalo em e4, e3, e5 e f5 ficam livres: o rei preto volta ao centro, e o mate leva cinco lances a mais.",
+      "en": "With the knight on e4, e3, e5 and f5 are left free: the black king returns to the centre, and mate takes five moves longer."
+    },
+    {
+      "id": "driveAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "uci": "b1c2",
+      "pt": "Com o lance do bispo, e3 e e5 continuam livres: o rei preto volta ao centro, e o mate leva cinco lances a mais.",
+      "en": "With the bishop move, e3 and e5 are still free: the black king returns to the centre, and mate takes five moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4e2",
+      "pt": "O cavalo deixa de vigiar d5: o rei preto vai a c4 e cruza a diagonal do bispo por d5, e o mate leva dois lances a mais.",
+      "en": "The knight stops covering d5: the black king goes to c4 and crosses the bishop's diagonal through d5, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4g2",
+      "pt": "O cavalo deixa de vigiar d5: o rei preto vai a c4 e cruza a diagonal do bispo por d5, e o mate leva dois lances a mais.",
+      "en": "The knight stops covering d5: the black king goes to c4 and crosses the bishop's diagonal through d5, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4h3",
+      "pt": "O cavalo deixa de vigiar d5: o rei preto vai a c4 e cruza a diagonal do bispo por d5, e o mate leva dois lances a mais.",
+      "en": "The knight stops covering d5: the black king goes to c4 and crosses the bishop's diagonal through d5, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4h5",
+      "pt": "O cavalo deixa de vigiar d5: o rei preto vai a c4 e cruza a diagonal do bispo por d5, e o mate leva dois lances a mais.",
+      "en": "The knight stops covering d5: the black king goes to c4 and crosses the bishop's diagonal through d5, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4e6",
+      "pt": "O cavalo deixa de vigiar d5: o rei preto vai a c4 e cruza a diagonal do bispo por d5, e o mate leva dois lances a mais.",
+      "en": "The knight stops covering d5: the black king goes to c4 and crosses the bishop's diagonal through d5, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4g6",
+      "pt": "O cavalo deixa de vigiar d5: o rei preto vai a c4 e cruza a diagonal do bispo por d5, e o mate leva dois lances a mais.",
+      "en": "The knight stops covering d5: the black king goes to c4 and crosses the bishop's diagonal through d5, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4d3",
+      "pt": "O xeque em d3 deixa o cavalo sem proteção e d5 livre: o rei preto vai a c4 e o ataca, e o mate leva dois lances a mais.",
+      "en": "The check on d3 leaves the knight unprotected and d5 free: the black king goes to c4 and attacks it, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "f4d5",
+      "pt": "O xeque em d5 deixa o cavalo sem proteção: o rei preto vai a c4 e o ataca, e o mate leva dois lances a mais.",
+      "en": "The check on d5 leaves the knight unprotected: the black king goes to c4 and attacks it, and mate takes two moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "a6a7",
+      "pt": "O seu rei sai de a6 e deixa b5 livre: o rei preto escapa por ali, e o mate leva três lances a mais.",
+      "en": "Your king leaves a6 and frees b5: the black king escapes that way, and mate takes three moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "a6b7",
+      "pt": "O seu rei sai de a6 e deixa b5 livre: o rei preto escapa por ali, e o mate leva três lances a mais.",
+      "en": "Your king leaves a6 and frees b5: the black king escapes that way, and mate takes three moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "b6a5",
+      "pt": "O xeque em a5 tira o bispo da diagonal: c5 fica livre, o rei preto foge por ali, e o mate leva oito lances a mais.",
+      "en": "The check on a5 takes the bishop off the diagonal: c5 is freed, the black king escapes that way, and mate takes eight moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "b6d8",
+      "pt": "O bispo sai da diagonal e deixa c5 livre: o rei preto foge por ali, e o mate leva oito lances a mais.",
+      "en": "The bishop leaves the diagonal and frees c5: the black king escapes that way, and mate takes eight moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "b6c7",
+      "pt": "O bispo sai da diagonal e deixa c5 livre: o rei preto foge por ali, e o mate leva nove lances a mais.",
+      "en": "The bishop leaves the diagonal and frees c5: the black king escapes that way, and mate takes nine moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "b6c5",
+      "pt": "O bispo vai a c5, junto do rei preto e sem proteção: ele o captura, e o material não basta para o mate.",
+      "en": "The bishop goes to c5, next to the black king and unprotected: it captures it, and the material is not enough to mate."
+    },
+    {
+      "id": "driveAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "uci": "f2h3",
+      "pt": "O xeque não fecha e5: o rei preto volta ao centro por ali, e o mate leva seis lances a mais.",
+      "en": "The check does not close e5: the black king goes back to the centre that way, and mate takes six moves longer."
+    },
+    {
+      "id": "driveAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/2K5/5k2/8/5N2/1B6 w - - 0 1",
+      "uci": "f2d1",
+      "pt": "O cavalo recua, e e5 continua livre: o rei preto volta ao centro, e o mate leva seis lances a mais.",
+      "en": "The knight retreats, and e5 stays free: the black king goes back to the centre, and mate takes six moves longer."
+    },
+    {
+      "id": "driveAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/KB6/8/1k3N2/8/8/8 w - - 0 1",
+      "uci": "b6d4",
+      "pt": "Em d4, o bispo fica sem proteção: o rei preto vai a c4 e o ataca, e o mate leva dois lances a mais.",
+      "en": "On d4 the bishop is unprotected: the black king goes to c4 and attacks it, and mate takes two moves longer."
+    },
+    {
+      "id": "deletangAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/4N3/8/7B/5K2/7k w - - 0 1",
+      "uci": "e5f3",
+      "pt": "O cavalo tira h2 sem dar xeque: o rei preto fica sem lance. É afogamento, e a partida empata.",
+      "en": "The knight takes h2 away without check: the black king has no move. It is stalemate, and the game is drawn."
+    },
+    {
+      "id": "deletangAssessment02",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/4N3/8/7B/5K2/7k w - - 0 1",
+      "uci": "e5g4",
+      "pt": "O cavalo tira h2 sem dar xeque: o rei preto fica sem lance. É afogamento, e a partida empata.",
+      "en": "The knight takes h2 away without check: the black king has no move. It is stalemate, and the game is drawn."
+    },
+    {
+      "id": "deletangAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/5K2/8/7k/8/2B5/4N3 w - - 0 1",
+      "uci": "f6f5",
+      "pt": "Seu rei avança, mas o bispo segue na diagonal de b1 a h7, e o triângulo não encolhe: o mate leva cinco lances a mais.",
+      "en": "Your king advances, but the bishop stays on the diagonal from b1 to h7, and the triangle does not shrink: mate takes five moves longer."
+    },
+    {
+      "id": "deletangAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/5K2/8/7k/8/2B5/4N3 w - - 0 1",
+      "uci": "f6e5",
+      "pt": "Seu rei sai de f6 e solta g5: o triângulo do rei preto cresce, e o mate leva seis lances a mais.",
+      "en": "Your king leaves f6 and frees g5: the black king's triangle grows, and mate takes six moves longer."
+    },
+    {
+      "id": "deletangAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/5K2/8/7k/8/2B5/4N3 w - - 0 1",
+      "uci": "e1f3",
+      "pt": "O xeque empurra o rei preto, mas não encolhe o triângulo: o mate leva sete lances a mais.",
+      "en": "The check pushes the black king, but does not shrink the triangle: mate takes seven moves longer."
+    },
+    {
+      "id": "deletangAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/5K2/8/7k/8/2B5/4N3 w - - 0 1",
+      "uci": "e1g2",
+      "pt": "O xeque empurra o rei preto, mas não encolhe o triângulo: o mate leva sete lances a mais.",
+      "en": "The check pushes the black king, but does not shrink the triangle: mate takes seven moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/k1KB4/8/3N4/8/8 w - - 70 56",
+      "uci": "d3e5",
+      "pt": "O cavalo se afasta, e a4 continua livre: o rei preto se afasta do canto por ali, e o mate leva onze lances a mais. Pela regra dos 50 lances, as pretas pediriam empate antes.",
+      "en": "The knight moves away, and a4 stays free: the black king moves away from the corner that way, and mate takes eleven moves longer. Under the fifty-move rule, Black would claim a draw first."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/k1KB4/8/3N4/8/8 w - - 70 56",
+      "uci": "d3b4",
+      "pt": "O cavalo fecha a6, mas a4 continua livre: o rei preto se afasta do canto, e o mate leva três lances a mais.",
+      "en": "The knight closes a6, but a4 stays free: the black king moves away from the corner, and mate takes three moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/k1KB4/8/3N4/8/8 w - - 70 56",
+      "uci": "d5c6",
+      "pt": "O bispo fecha a4, mas o cavalo segue longe da rede: o mate leva um lance a mais.",
+      "en": "The bishop closes a4, but the knight stays far from the net: mate takes one move longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "8/8/8/k1KB4/8/3N4/8/8 w - - 70 56",
+      "uci": "d5c4",
+      "pt": "O bispo fecha a6, mas a4 continua livre: o rei preto se afasta do canto, e o mate leva onze lances a mais. Pela regra dos 50 lances, as pretas pediriam empate antes.",
+      "en": "The bishop closes a6, but a4 stays free: the black king moves away from the corner, and mate takes eleven moves longer. Under the fifty-move rule, Black would claim a draw first."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/k7/2KB4/8/8/1N6/8 w - - 72 57",
+      "uci": "c5c6",
+      "pt": "Seu rei vai a c6, mas a5 continua livre: o rei preto volta por ali, e o mate leva dois lances a mais.",
+      "en": "Your king goes to c6, but a5 stays free: the black king comes back that way, and mate takes two moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/k7/2KB4/8/8/1N6/8 w - - 72 57",
+      "uci": "d5c4",
+      "pt": "O xeque tira o bispo de b7: o rei preto escapa por ali, rumo ao centro, e o mate leva quatro lances a mais.",
+      "en": "The check takes the bishop off b7: the black king escapes that way, towards the centre, and mate takes four moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/k7/2KB4/8/8/1N6/8 w - - 72 57",
+      "uci": "b2a4",
+      "pt": "Em a4, o cavalo não fecha a5: o rei preto volta por ali, e o mate leva dois lances a mais.",
+      "en": "On a4 the knight does not close a5: the black king comes back that way, and mate takes two moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/k7/2KB4/8/8/1N6/8 w - - 72 57",
+      "uci": "c5b4",
+      "pt": "Seu rei sai de c5 e solta b6: o rei preto volta ao centro, e o mate leva quatorze lances a mais. Pela regra dos 50 lances, as pretas pediriam empate antes.",
+      "en": "Your king leaves c5 and frees b6: the black king goes back to the centre, and mate takes fourteen moves longer. Under the fifty-move rule, Black would claim a draw first."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 2,
+      "fen": "8/8/k7/2KB4/8/8/1N6/8 w - - 72 57",
+      "uci": "d5c6",
+      "pt": "O bispo não fecha a5: o rei preto volta por ali, e o mate leva um lance a mais.",
+      "en": "The bishop does not close a5: the black king comes back that way, and mate takes one move longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "8/k7/8/2KB4/2N5/8/8/8 w - - 74 58",
+      "uci": "c4d6",
+      "pt": "O cavalo sai de c4 e solta a5: o rei preto volta a a6, e o mate leva dois lances a mais.",
+      "en": "The knight leaves c4 and frees a5: the black king goes back to a6, and mate takes two moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "8/k7/8/2KB4/2N5/8/8/8 w - - 74 58",
+      "uci": "c4a5",
+      "pt": "Em a5, o cavalo fica sem proteção: o rei preto vai a a6 e o ataca, o cavalo precisa sair de novo, e o mate leva dois lances a mais.",
+      "en": "On a5 the knight is unprotected: the black king goes to a6 and attacks it, the knight has to move again, and mate takes two moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "8/k7/8/2KB4/2N5/8/8/8 w - - 74 58",
+      "uci": "c4b6",
+      "pt": "O cavalo sai de c4 e solta a5: depois que o rei preto volta a a6, ele precisa voltar para fechar a5, e o mate leva dois lances a mais.",
+      "en": "The knight leaves c4 and frees a5: once the black king goes back to a6, it has to come back to close a5, and mate takes two moves longer."
+    },
+    {
+      "id": "convertAssessment01",
+      "kind": "exercise",
+      "turn": 3,
+      "fen": "8/k7/8/2KB4/2N5/8/8/8 w - - 74 58",
+      "uci": "c5b5",
+      "pt": "Seu rei vai a b5, e o rei preto escapa por b8, pela oitava fileira: o mate leva seis lances a mais.",
+      "en": "Your king goes to b5, and the black king escapes through b8, along the eighth rank: mate takes six moves longer."
+    }
+  ]
+}
