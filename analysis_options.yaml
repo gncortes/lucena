@@ -13,6 +13,8 @@ analyzer:
   exclude:
     - build/**
     - android/**
+    # Documentação e arquivos de tarefas (symlink do lucena-utils), sem código do app.
+    - docs/**
 
 linter:
   # The lint rules applied to this project can be customized in the

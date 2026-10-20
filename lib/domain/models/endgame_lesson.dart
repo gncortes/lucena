@@ -54,7 +54,7 @@ class EndgameLesson {
     this.failed = false,
   });
 
-  /// `rook.lucena`, `mates.bishopKnight.w`... Estável: o progresso é gravado
+  /// `rook.lucena`, `mates.bishopKnight.deletang`... Estável: o progresso é gravado
   /// por ele.
   final String id;
   final String module;

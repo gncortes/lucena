@@ -1,0 +1,12 @@
+{
+  "title": "Bispo e cavalo: Delétang",
+  "summary": "Rede final",
+  "history": "Piloto em revisão. Somente o capítulo Rede final foi integrado; os demais capítulos permanecem pendentes.",
+  "practice": "Prática em configuração diferente das demonstrações. Avaliação independente pendente.",
+  "part.finalNet.title": "Rede final",
+  "part.finalNet.summary": "Você coordenou o xeque com o controle das fugas. Para montar a rede, relacione o canto ao bispo e mantenha as peças protegidas.",
+  "key.e13": "Rede final: bispo dá mate.",
+  "key.e15": "Rede final: cavalo dá mate.",
+  "ex.finalNetAssessment01": "Complete a rede até o mate.",
+  "ex.finalNetAssessment01.hint": "Considere a resposta adversária antes de escolher seu lance."
+}

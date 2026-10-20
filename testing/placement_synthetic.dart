@@ -46,9 +46,7 @@ const endgameLessons = [
   'basics.rookMate',
   'basics.twoBishops',
   'basics.kingPawn',
-  'mates.bishopKnight.w',
-  'mates.bishopKnight.edge',
-  'mates.bishopKnight.full',
+  'mates.bishopKnight.deletang',
   'pawns.keySquares',
   'pawns.distantOpposition',
   'pawns.waitingMoves',
@@ -219,11 +217,7 @@ const _nodes = <(String, String, String, List<String>, List<String>, bool)>[
     'mates',
     'expert',
     ['mate.twoBishops'],
-    [
-      'mates.bishopKnight.w:endgame',
-      'mates.bishopKnight.edge:endgame',
-      'mates.bishopKnight.full:endgame',
-    ],
+    ['mates.bishopKnight.deletang:endgame'],
     false,
   ),
   (

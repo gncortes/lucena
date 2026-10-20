@@ -1,0 +1,261 @@
+{
+  "licao": "mates.bishopKnight.deletang",
+  "parte": "finalNet",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": [
+        {
+          "id": "e13",
+          "fen": "8/k1K5/3N4/8/8/8/8/5B2 w - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/k1K5/3N4/8/8/8/8/5B2 w - - 0 1",
+              "t": "rot.finalNet.ideia.e13.e1",
+              "marcas": [
+                "a8",
+                "f1"
+              ],
+              "setas": []
+            }
+          ],
+          "linha": [
+            {
+              "fen": "2N5/k1K5/8/8/8/8/8/5B2 b - - 1 1",
+              "t": "rot.finalNet.ideia.e13.l1",
+              "lance": "d6c8",
+              "marcas": [
+                "a6",
+                "b6",
+                "b7",
+                "b8"
+              ],
+              "setas": [
+                [
+                  "c8",
+                  "a7",
+                  "g"
+                ]
+              ]
+            },
+            {
+              "fen": "k1N5/2K5/8/8/8/8/8/5B2 w - - 2 2",
+              "t": "rot.finalNet.ideia.e13.l2",
+              "lance": "a7a8",
+              "marcas": [
+                "a7",
+                "b7",
+                "b8"
+              ],
+              "setas": [
+                [
+                  "c8",
+                  "a7",
+                  "g"
+                ],
+                [
+                  "c7",
+                  "b8",
+                  "g"
+                ]
+              ]
+            },
+            {
+              "fen": "k1N5/2K5/8/8/8/8/6B1/8 b - - 3 2",
+              "t": "rot.finalNet.ideia.e13.l3",
+              "lance": "f1g2",
+              "marcas": [
+                "a7",
+                "b7",
+                "b8"
+              ],
+              "setas": [
+                [
+                  "g2",
+                  "a8",
+                  "g"
+                ],
+                [
+                  "c8",
+                  "a7",
+                  "g"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "e15_preparacao",
+          "fen": "kN6/8/BK6/8/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "kN6/8/BK6/8/8/8/8/8 w - - 0 1",
+              "t": "rot.finalNet.ideia.e15.e1",
+              "marcas": [
+                "a8",
+                "b8"
+              ],
+              "setas": []
+            }
+          ],
+          "linha": [
+            {
+              "fen": "kN6/2K5/B7/8/8/8/8/8 b - - 1 1",
+              "t": "rot.finalNet.ideia.e15.l1",
+              "lance": "b6c7",
+              "marcas": [
+                "a7",
+                "b8"
+              ],
+              "setas": [
+                [
+                  "c7",
+                  "b8",
+                  "g"
+                ]
+              ]
+            },
+            {
+              "fen": "1N6/k1K5/B7/8/8/8/8/8 w - - 2 2",
+              "t": "rot.finalNet.ideia.e15.l2",
+              "lance": "a8a7",
+              "marcas": [
+                "a6",
+                "b8"
+              ],
+              "setas": [
+                [
+                  "c7",
+                  "b8",
+                  "g"
+                ],
+                [
+                  "b8",
+                  "a6",
+                  "g"
+                ]
+              ]
+            },
+            {
+              "fen": "1NB5/k1K5/8/8/8/8/8/8 b - - 3 2",
+              "t": "rot.finalNet.ideia.e15.l3",
+              "lance": "a6c8",
+              "marcas": [
+                "a8",
+                "b7"
+              ],
+              "setas": [
+                [
+                  "c7",
+                  "b8",
+                  "g"
+                ],
+                [
+                  "c7",
+                  "c8",
+                  "g"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "demos",
+      "exemplos": [
+        {
+          "id": "e15_conclusao",
+          "fen": "1NB5/k1K5/8/8/8/8/8/8 b - - 3 2",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "1NB5/k1K5/8/8/8/8/8/8 b - - 3 2",
+              "t": "rot.finalNet.demos.e15.e1",
+              "marcas": [
+                "a7"
+              ],
+              "setas": []
+            }
+          ],
+          "linha": [
+            {
+              "fen": "kNB5/2K5/8/8/8/8/8/8 w - - 4 3",
+              "t": "rot.finalNet.demos.e15.l4",
+              "lance": "a7a8",
+              "marcas": [
+                "a6"
+              ],
+              "setas": []
+            },
+            {
+              "fen": "kN6/1BK5/8/8/8/8/8/8 b - - 5 3",
+              "t": "rot.finalNet.demos.e15.l5",
+              "lance": "c8b7",
+              "marcas": [
+                "a7"
+              ],
+              "setas": []
+            },
+            {
+              "fen": "1N6/kBK5/8/8/8/8/8/8 w - - 6 4",
+              "t": "rot.finalNet.demos.e15.l6",
+              "lance": "a8a7",
+              "marcas": [
+                "a6",
+                "a8"
+              ],
+              "setas": []
+            },
+            {
+              "fen": "8/kBK5/2N5/8/8/8/8/8 b - - 7 4",
+              "t": "rot.finalNet.demos.e15.l7",
+              "lance": "b8c6",
+              "marcas": [
+                "a7"
+              ],
+              "setas": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pratica",
+      "exemplos": [
+        {
+          "id": "transfer01",
+          "fen": "8/k1K5/1N6/8/8/8/4B3/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "mate",
+          "fim": "etapa",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.finalNet.pratica.transfer01.p",
+            "maquina": "b",
+            "limite": 40,
+            "erros": {},
+            "errosPos": {},
+            "fim": "rot.finalNet.pratica.transfer01.fim",
+            "fins": {
+              "afogado": "rot.finalNet.pratica.transfer01.fins.afogado",
+              "repeticao": "rot.finalNet.pratica.transfer01.fins.repeticao",
+              "limite": "rot.finalNet.pratica.transfer01.fins.limite",
+              "insuficiente": "rot.finalNet.pratica.transfer01.fins.insuficiente"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

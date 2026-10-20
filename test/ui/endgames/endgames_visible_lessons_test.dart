@@ -57,7 +57,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(EndgamesKeys.module('pawns')), findsOneWidget);
-    for (final module in ['basics', 'mates', 'queen', 'rook', 'minor']) {
+    // O bispo e cavalo (T77) abre o módulo de mates.
+    expect(find.byKey(EndgamesKeys.module('mates')), findsOneWidget);
+    expect(
+      find.byKey(EndgamesKeys.lesson('mates.bishopKnight.deletang')),
+      findsOneWidget,
+    );
+    for (final module in ['basics', 'queen', 'rook', 'minor']) {
       expect(find.byKey(EndgamesKeys.module(module)), findsNothing);
     }
     expect(find.byKey(EndgamesKeys.lesson('pawns.keySquares')), findsOneWidget);
@@ -71,7 +77,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(EndgamesKeys.lesson('pawns.square')), findsNothing);
-    expect(find.text('0 de 3 concluídas'), findsOneWidget);
+    expect(find.text('0 de 4 concluídas'), findsOneWidget);
 
     if (_print.isNotEmpty) {
       debugDisableShadows = false;

@@ -373,15 +373,7 @@
       ],
       "lessons": [
         {
-          "id": "mates.bishopKnight.w",
-          "kind": "endgame"
-        },
-        {
-          "id": "mates.bishopKnight.edge",
-          "kind": "endgame"
-        },
-        {
-          "id": "mates.bishopKnight.full",
+          "id": "mates.bishopKnight.deletang",
           "kind": "endgame"
         }
       ],

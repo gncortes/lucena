@@ -87,10 +87,34 @@ class EndgameProgressMigration {
       oldExercises.fold<int>(0, (sum, id) => sum + (old.stars[id] ?? 0)) >=
           oldPassScore;
 
-  /// Aplica as migrações (T74 e T76); devolve o mesmo objeto se não há o que
-  /// mudar.
+  /// As lições de bispo e cavalo que saíram do app (T77): o lugar delas é a
+  /// `mates.bishopKnight.deletang`, com capítulos e exercícios novos.
+  static const removedIds = {
+    'mates.bishopKnight.w',
+    'mates.bishopKnight.edge',
+    'mates.bishopKnight.full',
+  };
+
+  /// Aplica as migrações (T74, T76 e T77); devolve o mesmo objeto se não há o
+  /// que mudar.
   static EndgameProgress apply(EndgameProgress progress) =>
-      _chapters(_split(progress));
+      _removed(_chapters(_split(progress)));
+
+  /// T77: o progresso das lições de [removedIds] sai (os capítulos e os
+  /// exercícios delas não existem na lição nova), e a lição aberta nelas
+  /// fecha.
+  static EndgameProgress _removed(EndgameProgress progress) {
+    final stale = progress.lessons.keys.any(removedIds.contains);
+    final ongoing = removedIds.contains(progress.ongoing?.lessonId);
+    if (!stale && !ongoing) return progress;
+    return progress.copyWith(
+      lessons: {
+        for (final MapEntry(:key, :value) in progress.lessons.entries)
+          if (!removedIds.contains(key)) key: value,
+      },
+      clearOngoing: ongoing,
+    );
+  }
 
   /// T76: leva `diagonal`, `means` e o exercício `e17` para a lição nova.
   static EndgameProgress _chapters(EndgameProgress progress) {

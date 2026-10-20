@@ -81,6 +81,7 @@ flutter:
     - assets/lessons/endgames/
     - assets/lessons/feedback/
     - assets/lessons/roteiros/
+    - assets/lessons/roteiros/mates.bishopKnight.deletang/
     - assets/lessons/roteiros/pawns.distantOpposition/
     - assets/lessons/roteiros/pawns.keySquares/
     - assets/lessons/roteiros/pawns.waitingMoves/

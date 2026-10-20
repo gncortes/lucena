@@ -1,0 +1,12 @@
+{
+  "title": "Bishop and knight: Delétang",
+  "summary": "Final mating net",
+  "history": "Pilot under review. Only the Final mating net chapter has been integrated; the other chapters remain pending.",
+  "practice": "Practice in a configuration different from the demonstrations. Independent assessment pending.",
+  "part.finalNet.title": "Final mating net",
+  "part.finalNet.summary": "You coordinated the check with control of the escape squares. To build the mating net, relate the corner to the bishop and keep the pieces protected.",
+  "key.e13": "Final mating net: the bishop delivers checkmate.",
+  "key.e15": "Final mating net: the knight delivers checkmate.",
+  "ex.finalNetAssessment01": "Complete the mating net.",
+  "ex.finalNetAssessment01.hint": "Consider your opponent's reply before choosing your move."
+}

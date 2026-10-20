@@ -22,6 +22,8 @@ abstract final class VisibleLessons {
     'pawns.keySquares',
     'pawns.distantOpposition',
     'pawns.waitingMoves',
+    // T77: bispo e cavalo, capítulo a capítulo (só os com roteiro aparecem).
+    'mates.bishopKnight.deletang',
   };
 
   /// Os exercícios que cobrem uma ideia sem capítulo visível (T76): ficam nos

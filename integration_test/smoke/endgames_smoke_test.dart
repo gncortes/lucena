@@ -9,7 +9,7 @@ import '../robots/endgames_robot.dart';
 import '../robots/home_robot.dart';
 import '../robots/settings_robot.dart';
 
-const _lessonId = 'mates.bishopKnight.w';
+const _lessonId = 'rook.lucena';
 
 /// Fumaça das aulas de finais: tema escuro, árabe, pseudo-idioma longo e
 /// segundo plano.
