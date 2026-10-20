@@ -87,20 +87,76 @@ class EndgameProgressMigration {
       oldExercises.fold<int>(0, (sum, id) => sum + (old.stars[id] ?? 0)) >=
           oldPassScore;
 
-  /// As lições de bispo e cavalo que saíram do app (T77): o lugar delas é a
-  /// `mates.bishopKnight.deletang`, com capítulos e exercícios novos.
+  /// As lições que saíram do app: as de bispo e cavalo (T77), cujo lugar é a
+  /// `mates.bishopKnight.deletang`, e as de dama contra torre (T78), cujo
+  /// lugar é a [queenId]; as duas com capítulos e exercícios novos.
   static const removedIds = {
     'mates.bishopKnight.w',
     'mates.bishopKnight.edge',
     'mates.bishopKnight.full',
+    'queen.vsRook.approach',
+    'queen.vsRook.thirdRank',
   };
 
-  /// Aplica as migrações (T74, T76 e T77); devolve o mesmo objeto se não há o
-  /// que mudar.
-  static EndgameProgress apply(EndgameProgress progress) =>
-      _removed(_chapters(_split(progress)));
+  /// A lição de dama contra torre (T78): manteve o id, mas os capítulos e os
+  /// exercícios mudaram.
+  static const queenId = 'queen.vsRook.philidor';
 
-  /// T77: o progresso das lições de [removedIds] sai (os capítulos e os
+  /// Os capítulos dela depois da T78. O `philidor` é a mesma ideia do
+  /// capítulo antigo de mesmo id: quem o fez continua com ele feito.
+  static const queenChapters = {
+    'philidor',
+    'tempo',
+    'segunda',
+    'terceira',
+    'borda',
+    'convert',
+  };
+
+  /// Os exercícios da lição no formato antigo (os novos têm outro nome).
+  static final _queenOldExercise = RegExp(r'^e\d\d$');
+
+  /// Aplica as migrações (T74, T76, T77 e T78); devolve o mesmo objeto se não
+  /// há o que mudar.
+  static EndgameProgress apply(EndgameProgress progress) =>
+      _queen(_removed(_chapters(_split(progress))));
+
+  /// T78: na [queenId], saem os capítulos e os exercícios do formato antigo
+  /// (fica o `philidor`), e com eles a lição concluída e aprovada; a lição
+  /// aberta num capítulo que saiu fecha.
+  static EndgameProgress _queen(EndgameProgress progress) {
+    final old = progress.lessons[queenId];
+    final checkpoint = progress.ongoing;
+    final ongoing =
+        checkpoint?.lessonId == queenId &&
+        checkpoint?.part != null &&
+        !queenChapters.contains(checkpoint?.part);
+    final stale =
+        old != null &&
+        (old.parts.any((part) => !queenChapters.contains(part)) ||
+            old.stars.keys.any(_queenOldExercise.hasMatch) ||
+            _queenOldExercise.hasMatch(old.exercise?.exerciseId ?? ''));
+    if (!stale && !ongoing) return progress;
+    return progress.copyWith(
+      lessons: {
+        ...progress.lessons,
+        if (stale)
+          queenId: EndgameLessonProgress(
+            parts: old.parts.intersection(queenChapters),
+            stars: {
+              for (final e in old.stars.entries)
+                if (!_queenOldExercise.hasMatch(e.key)) e.key: e.value,
+            },
+            exercise: _queenOldExercise.hasMatch(old.exercise?.exerciseId ?? '')
+                ? null
+                : old.exercise,
+          ),
+      },
+      clearOngoing: ongoing,
+    );
+  }
+
+  /// T77 e T78: o progresso das lições de [removedIds] sai (os capítulos e os
   /// exercícios delas não existem na lição nova), e a lição aberta nelas
   /// fecha.
   static EndgameProgress _removed(EndgameProgress progress) {

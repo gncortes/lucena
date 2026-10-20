@@ -1,0 +1,18 @@
+{
+  "licao": "queen.vsRook.philidor",
+  "parte": "philidor",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": []
+    },
+    {
+      "id": "demos",
+      "exemplos": []
+    },
+    {
+      "id": "pratica",
+      "exemplos": []
+    }
+  ]
+}

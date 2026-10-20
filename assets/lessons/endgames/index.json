@@ -41,8 +41,6 @@
         "queen.vsPawn",
         "queen.vsPawn.draws",
         "queen.vsRook.philidor",
-        "queen.vsRook.approach",
-        "queen.vsRook.thirdRank",
         "queen.vsRookPawn"
       ]
     },

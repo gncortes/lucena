@@ -63,12 +63,14 @@ class _ScriptedSchool extends FakeLessonRepository {
 }
 
 void main() {
-  test('a Oposição, o bispo e cavalo e a Escola escondida', () {
+  test('a Oposição, o bispo e cavalo, a dama contra torre e a Escola '
+      'escondida', () {
     expect(VisibleLessons.endgameLessonIds, {
       'pawns.keySquares',
       'pawns.distantOpposition',
       'pawns.waitingMoves',
       'mates.bishopKnight.deletang',
+      'queen.vsRook.philidor',
     });
     expect(VisibleLessons.school, isFalse);
   });

@@ -170,8 +170,8 @@ class _GameNode {
   /// Como a partida acabou neste lance; nulo se ela segue.
   FreeEnd? end;
 
-  /// Quem ganhou, na coroação e no mate (T76): o dono da peça coroada, ou
-  /// quem deu o mate.
+  /// Quem ganhou, na coroação, no mate e na peça ganha (T76, T78): o dono da
+  /// peça que sobrou, ou quem deu o mate.
   Side? winner;
 
   /// O resultado, se a partida acabou neste lance: quem coroou ganhou; o
@@ -179,6 +179,7 @@ class _GameNode {
   String? get result => switch (end) {
     null => null,
     FreeEnd.coroa ||
+    FreeEnd.material ||
     FreeEnd.mate => (winner ?? side) == Side.white ? '1–0' : '0–1',
     _ => '½–½',
   };
@@ -891,7 +892,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     if (node != null) {
       node.end = end;
       node.winner = switch (end) {
-        FreeEnd.coroa => _crownOwner(position) ?? node.side,
+        FreeEnd.coroa || FreeEnd.material => _crownOwner(position) ?? node.side,
         FreeEnd.mate => node.side,
         _ => null,
       };
@@ -1513,12 +1514,15 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   bool get _mateByEngine => _mateGoal && _table.length == 0;
 
   /// O fim cumpre o objetivo: no `mate`, só o mate.
-  /// Coroação e mate cumprem se o vencedor é o aluno (ganhar também cumpre o
-  /// empatar); o resto cumpre só o empatar (T76).
+  /// Coroação, mate e peça ganha cumprem se o vencedor é o aluno (ganhar
+  /// também cumpre o empatar); o resto cumpre só o empatar (T76, T78).
   bool _meets(FreeEnd end) {
     if (_mateGoal) return end == FreeEnd.mate;
     final winner = _cursorNode?.winner;
-    if (winner != null && (end == FreeEnd.coroa || end == FreeEnd.mate)) {
+    if (winner != null &&
+        (end == FreeEnd.coroa ||
+            end == FreeEnd.mate ||
+            end == FreeEnd.material)) {
       return winner == _example.student;
     }
     return end.meets(_wantsWin);

@@ -27,7 +27,12 @@ bool _hasScript(LessonPart part) =>
 /// Aulas visíveis com o teste final ainda em escrita (uma sessão por
 /// capítulo): o mínimo de exercícios e a solução em texto só passam a valer
 /// quando o teste delas fechar.
-const _testInProgress = <String>{};
+const _testInProgress = <String>{'queen.vsRook.philidor'};
+
+/// Aulas ligadas antes do primeiro capítulo escrito (T78, sessão 0): sem
+/// capítulo e sem exercício, o app as esconde. Saem daqui com o primeiro
+/// roteiro preenchido.
+const _noChapterYet = <String>{'queen.vsRook.philidor'};
 
 void main() {
   final index = jsonDecode(
@@ -113,7 +118,8 @@ void main() {
     for (final lesson in lessons) {
       expect(
         lesson.lesson.steps.isNotEmpty ||
-            lesson.lesson.parts.any((part) => part.script != null),
+            lesson.lesson.parts.any((part) => part.script != null) ||
+            _noChapterYet.contains(lesson.id),
         isTrue,
         reason: lesson.id,
       );

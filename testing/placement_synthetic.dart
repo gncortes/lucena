@@ -52,8 +52,6 @@ const endgameLessons = [
   'pawns.waitingMoves',
   'queen.vsPawn',
   'queen.vsRook.philidor',
-  'queen.vsRook.approach',
-  'queen.vsRook.thirdRank',
   'rookPawns.vsPawn',
   'rook.lucena',
   'rook.philidor',
@@ -386,12 +384,8 @@ const _nodes = <(String, String, String, List<String>, List<String>, bool)>[
     'queen.vsRook',
     'queenRook',
     'expert',
-    ['queen.vsPawn'],
-    [
-      'queen.vsRook.philidor:endgame',
-      'queen.vsRook.approach:endgame',
-      'queen.vsRook.thirdRank:endgame',
-    ],
+    [],
+    ['queen.vsRook.philidor:endgame'],
     false,
   ),
   (

@@ -703,20 +703,10 @@
       "id": "queen.vsRook",
       "group": "queenRook",
       "band": "expert",
-      "requires": [
-        "queen.vsPawn"
-      ],
+      "requires": [],
       "lessons": [
         {
           "id": "queen.vsRook.philidor",
-          "kind": "endgame"
-        },
-        {
-          "id": "queen.vsRook.approach",
-          "kind": "endgame"
-        },
-        {
-          "id": "queen.vsRook.thirdRank",
           "kind": "endgame"
         }
       ],

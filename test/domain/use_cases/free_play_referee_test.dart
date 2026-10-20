@@ -52,6 +52,48 @@ void main() {
     });
   });
 
+  group('peça ganha, sem peões (T78)', () {
+    test('a dama captura a torre: material', () {
+      expect(
+        check([
+          'k7/8/2K5/8/8/8/r7/Q7 w - - 0 1',
+          'k7/8/2K5/8/8/8/Q7/8 b - - 0 1',
+        ]),
+        FreeEnd.material,
+      );
+    });
+
+    test('a torre captura a dama: material (o dono decide quem ganha)', () {
+      expect(
+        check([
+          '4k3/8/8/8/4Q3/K7/8/4r3 b - - 0 1',
+          '4k3/8/8/8/4r3/K7/8/8 w - - 0 2',
+        ]),
+        FreeEnd.material,
+      );
+    });
+
+    test('a dama captura e fica solta: a partida segue', () {
+      expect(
+        check([
+          '8/8/8/8/8/1k6/1r6/1Q5K w - - 0 1',
+          '8/8/8/8/8/1k6/1Q6/7K b - - 0 1',
+        ]),
+        isNull,
+      );
+    });
+
+    test('a captura que afoga empata', () {
+      expect(
+        check([
+          'k7/2K5/1r6/8/8/8/8/1Q6 w - - 0 1',
+          'k7/2K5/1Q6/8/8/8/8/8 b - - 0 1',
+        ]),
+        FreeEnd.afogado,
+      );
+    });
+  });
+
   test('capturado: só os reis', () {
     expect(check([start, '8/8/8/8/8/3K4/8/4k3 w - - 0 1']), FreeEnd.capturado);
   });

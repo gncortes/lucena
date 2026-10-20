@@ -63,6 +63,11 @@ void main() {
       find.byKey(EndgamesKeys.lesson('mates.bishopKnight.deletang')),
       findsOneWidget,
     );
+    // A dama contra torre (T78) está ligada, mas sem capítulo escrito: some.
+    expect(
+      find.byKey(EndgamesKeys.lesson('queen.vsRook.philidor')),
+      findsNothing,
+    );
     for (final module in ['basics', 'queen', 'rook', 'minor']) {
       expect(find.byKey(EndgamesKeys.module(module)), findsNothing);
     }
