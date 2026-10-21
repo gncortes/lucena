@@ -1,0 +1,51 @@
+{
+  "lesson": "rook.lucena",
+  "scope": "corte: alternativas naturais do exercício do teste (Maia e tablebase: a ponte antes do xeque, o xeque pela sétima e a torre na coluna e ganham mais longe; a troca afoga; a torre na terceira é capturada)",
+  "rows": [
+    {
+      "id": "corteAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "5K2/3k1P2/8/8/8/6r1/8/1R6 w - - 0 1",
+      "uci": "b1b4",
+      "pt": "A torre na quarta fileira ainda ganha, mas o rei preto continua colado, vigiando e7 e e8, e o seu rei segue preso. O xeque na coluna dele vem primeiro.",
+      "en": "The rook on the fourth rank still wins, but the black king stays glued to the pawn, watching e7 and e8, and your king is still trapped. The check on its file comes first."
+    },
+    {
+      "id": "corteAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "5K2/3k1P2/8/8/8/6r1/8/1R6 w - - 0 1",
+      "uci": "b1b7",
+      "pt": "O xeque pela sétima fileira ainda ganha, mas a torre não fica entre o rei preto e o peão: nada o corta, e a vitória fica mais longe. O xeque na coluna dele vem primeiro.",
+      "en": "The check along the seventh rank still wins, but the rook does not stand between the black king and the pawn: nothing cuts it off, and the win is further away. The check on its file comes first."
+    },
+    {
+      "id": "corteAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "5K2/3k1P2/8/8/8/6r1/8/1R6 w - - 0 1",
+      "uci": "b1e1",
+      "pt": "A torre na coluna e ainda ganha, mas sem xeque o rei preto não é empurrado: segue vigiando e7 e e8, com o seu rei preso. O xeque na coluna dele vem primeiro.",
+      "en": "The rook on the e-file still wins, but without a check the black king is not pushed away: it keeps watching e7 and e8, with your king trapped. The check on its file comes first."
+    },
+    {
+      "id": "corteAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "5K2/3k1P2/8/8/8/6r1/8/1R6 w - - 0 1",
+      "uci": "b1g1",
+      "pt": "A torre preta captura a sua, e o seu rei fica sem casa, com o peão bloqueado: afogado, empate. Com o seu rei preso, não ofereça a troca de torres.",
+      "en": "The black rook captures yours, and your king has no square, with the pawn blocked: stalemate, a draw. With your king trapped, do not offer the rook trade."
+    },
+    {
+      "id": "corteAssessment01",
+      "kind": "exercise",
+      "turn": 1,
+      "fen": "5K2/3k1P2/8/8/8/6r1/8/1R6 w - - 0 1",
+      "uci": "b1b3",
+      "pt": "Na terceira fileira, a torre fica ao alcance da torre preta, sem proteção, e é capturada: sem ela, quem ganha são as pretas. O xeque na coluna do rei preto o corta do peão.",
+      "en": "On the third rank, the rook is within reach of the black rook, unprotected, and is captured: without it, Black is the one winning. The check on the black king's file cuts it off from the pawn."
+    }
+  ]
+}
