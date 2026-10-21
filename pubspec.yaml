@@ -86,6 +86,7 @@ flutter:
     - assets/lessons/roteiros/pawns.keySquares/
     - assets/lessons/roteiros/pawns.waitingMoves/
     - assets/lessons/roteiros/queen.vsRook.philidor/
+    - assets/lessons/roteiros/rook.lucena/
     - assets/tablebase/
     - assets/tablebase/roteiros/
     - assets/lessons/en/endgames/

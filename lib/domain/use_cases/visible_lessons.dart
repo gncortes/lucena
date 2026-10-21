@@ -26,6 +26,8 @@ abstract final class VisibleLessons {
     'mates.bishopKnight.deletang',
     // T78: dama contra torre, do mesmo jeito.
     'queen.vsRook.philidor',
+    // T79: final de torre (posição de Lucena), do mesmo jeito.
+    'rook.lucena',
   };
 
   /// Os exercícios que cobrem uma ideia sem capítulo visível (T76): ficam nos

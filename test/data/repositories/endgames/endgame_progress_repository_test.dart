@@ -33,7 +33,7 @@ void main() {
     await repository.save(
       const EndgameProgress(
         lessons: {
-          'rook.lucena': EndgameLessonProgress(
+          'rook.cutOff': EndgameLessonProgress(
             lessonDone: true,
             stars: {'e01': 1},
             exercise: exercise,
@@ -43,11 +43,11 @@ void main() {
       ),
     );
     final loaded = await repository.load();
-    final lucena = loaded.of('rook.lucena');
-    expect(lucena.lessonDone, isTrue);
-    expect(lucena.stars, {'e01': 1});
-    expect(lucena.exercise, exercise);
-    expect(loaded.openExercise, ('rook.lucena', exercise));
+    final cutOff = loaded.of('rook.cutOff');
+    expect(cutOff.lessonDone, isTrue);
+    expect(cutOff.stars, {'e01': 1});
+    expect(cutOff.exercise, exercise);
+    expect(loaded.openExercise, ('rook.cutOff', exercise));
     expect(loaded.ongoing?.lessonId, 'rook.philidor');
     expect(loaded.ongoing?.step, 2);
   });
@@ -56,7 +56,7 @@ void main() {
     await repository.save(
       const EndgameProgress(
         lessons: {
-          'rook.lucena': EndgameLessonProgress(
+          'rook.cutOff': EndgameLessonProgress(
             exercise: ExerciseCheckpoint(exerciseId: 'e01', open: false),
           ),
         },
