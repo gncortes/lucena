@@ -83,7 +83,7 @@
   "rot.ponte.pratica.err.desvio.2": "Before moving the rook, check that it stays safe after an exchange on the pawn.",
   "rot.ponte.pratica.err.menor.1": "The pawn became a bishop or a knight, and rook and minor piece against rook is usually a draw.",
   "rot.ponte.pratica.err.menor.2": "When you promote, choose a queen.",
-  "rot.ponte.pratica.err.peao.1": "The pawn was left unprotected: the black rook captures it, and rook against rook is a draw.",
+  "rot.ponte.pratica.err.peao.1": "The pawn was left unprotected: the black rook wins it, and rook against rook is a draw.",
   "rot.ponte.pratica.err.peao.2": "Keep the king next to the pawn until it promotes, and leave the checks for the rook to block.",
   "rot.ponte.pratica.err.rei.1": "The rook went to a square next to the black king, unprotected: the king captures it, and the pawn alone cannot win.",
   "rot.ponte.pratica.err.rei.2": "Keep the rook away from the black king, or protected by your king. If the black king attacks it, slide the rook along the rank without giving it up.",
@@ -94,5 +94,5 @@
   "rot.ponte.pratica.fins.limite": "The move limit ran out before the pawn promoted. First the rook goes to the fourth rank; then the king steps out and the rook blocks the last check.",
   "rot.ponte.pratica.fins.repeticao": "Draw by repetition. Instead of going back to the same position, bring the rook to the fourth rank and get the king out of g8.",
   "rot.ponte.pratica.lado.fim": "End of the chapter: in the Lucena position, the rook goes to the fourth rank, the king steps out, and the rook blocks the last check. That is building the bridge.",
-  "rot.ponte.pratica.lado.p": "Attack: your turn, with White again. The pawn is on g7, and your rook shuts the e-file. Build the bridge and promote the pawn."
+  "rot.ponte.pratica.lado.p": "Attack: the pawn is on g7, and your rook shuts the e-file. Build the bridge and promote the pawn. If the black rook watches the promotion square, cover that square before you promote."
 }

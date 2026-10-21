@@ -83,7 +83,7 @@
   "rot.ponte.pratica.err.desvio.2": "Antes de mexer a torre, confira se ela continua segura depois de uma troca no peão.",
   "rot.ponte.pratica.err.menor.1": "O peão virou um bispo ou um cavalo, e torre e peça menor contra torre costuma ser empate.",
   "rot.ponte.pratica.err.menor.2": "Na hora de coroar, escolha a dama.",
-  "rot.ponte.pratica.err.peao.1": "O peão ficou sem proteção: a torre preta o captura, e torre contra torre é empate.",
+  "rot.ponte.pratica.err.peao.1": "O peão ficou sem proteção: a torre preta o ganha, e torre contra torre é empate.",
   "rot.ponte.pratica.err.peao.2": "Mantenha o rei ao lado do peão até ele coroar, e deixe os xeques para a torre bloquear.",
   "rot.ponte.pratica.err.rei.1": "A torre foi a uma casa vizinha do rei preto, sem proteção: o rei a captura, e só com o peão não há vitória.",
   "rot.ponte.pratica.err.rei.2": "Mantenha a torre longe do rei preto, ou protegida pelo seu rei. Se o rei preto a atacar, deslize a torre pela fileira, sem soltá-la.",
@@ -94,5 +94,5 @@
   "rot.ponte.pratica.fins.limite": "O limite de lances acabou antes de o peão coroar. Primeiro, a torre vai à quarta fileira; depois, o rei sai e a torre bloqueia o último xeque.",
   "rot.ponte.pratica.fins.repeticao": "Empate por repetição. Em vez de voltar à mesma posição, leve a torre à quarta fileira e tire o rei de g8.",
   "rot.ponte.pratica.lado.fim": "Fim do capítulo: na posição de Lucena, a torre vai à quarta fileira, o rei sai, e a torre bloqueia o último xeque. Isso é construir a ponte.",
-  "rot.ponte.pratica.lado.p": "Ataque: agora é com você, de novo com as brancas. O peão está em g7, e a sua torre fecha a coluna e. Construa a ponte e coroe o peão."
+  "rot.ponte.pratica.lado.p": "Ataque: o peão está em g7, e a sua torre fecha a coluna e. Construa a ponte e coroe o peão. Se a torre preta vigiar a casa de coroação, cubra essa casa antes de coroar."
 }

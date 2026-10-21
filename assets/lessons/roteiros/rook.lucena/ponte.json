@@ -642,6 +642,13 @@
                 "f6e6": "rot.ponte.pratica.err.peao",
                 "f6e7": "rot.ponte.pratica.err.peao"
               },
+              "r7/6P1/3k1K2/8/6R1/8/8/8 w - - 12 7": {
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor"
+              },
+              "8/5rP1/3k1K2/8/6R1/8/8/8 w - - 12 7": {
+                "f6g5": "rot.ponte.pratica.err.peao"
+              },
               "1r6/5KP1/3k4/8/6R1/8/8/8 w - - 10 6": {
                 "g7g8b": "rot.ponte.pratica.err.menor",
                 "g7g8n": "rot.ponte.pratica.err.menor"
@@ -715,6 +722,181 @@
                 "a5d5": "rot.ponte.pratica.err.rei",
                 "a5a8": "rot.ponte.pratica.err.torre"
               },
+              "5r2/6P1/3k1K2/4R3/8/8/8/8 w - - 10 6": {
+                "f6g5": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/3k1K2/8/4R3/5r2/8/8 w - - 8 5": {
+                "e4f4": "rot.ponte.pratica.err.torre"
+              },
+              "8/6P1/3k4/6K1/4R3/6r1/8/8 w - - 10 6": {
+                "g5f4": "rot.ponte.pratica.err.peao",
+                "g5h4": "rot.ponte.pratica.err.peao",
+                "g5f5": "rot.ponte.pratica.err.peao",
+                "g5h5": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/3k2K1/8/4R3/6r1/8/8 w - - 6 4": {
+                "g6f5": "rot.ponte.pratica.err.peao",
+                "g6h5": "rot.ponte.pratica.err.peao",
+                "e4g4": "rot.ponte.pratica.err.torre"
+              },
+              "8/6P1/5K2/2k5/4R3/6r1/8/8 w - - 8 5": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "e4b4": "rot.ponte.pratica.err.rei",
+                "e4c4": "rot.ponte.pratica.err.rei",
+                "e4d4": "rot.ponte.pratica.err.rei",
+                "e4g4": "rot.ponte.pratica.err.torre",
+                "f6e5": "rot.ponte.pratica.err.peao",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e6": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/4R3/1k6/6r1/8/8 w - - 10 6": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "e5a5": "rot.ponte.pratica.err.rei",
+                "e5b5": "rot.ponte.pratica.err.rei",
+                "e5c5": "rot.ponte.pratica.err.rei",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e6": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/4R3/3k4/6r1/8/8 w - - 10 6": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "e5e3": "rot.ponte.pratica.err.rei",
+                "e5e4": "rot.ponte.pratica.err.rei",
+                "e5c5": "rot.ponte.pratica.err.rei",
+                "e5d5": "rot.ponte.pratica.err.rei",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e6": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.desprotege",
+                "f6f7": "rot.ponte.pratica.err.desprotege"
+              },
+              "8/6P1/5K2/3k4/5R2/6r1/8/8 w - - 10 6": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "f4f3": "rot.ponte.pratica.err.torre",
+                "f4c4": "rot.ponte.pratica.err.rei",
+                "f4d4": "rot.ponte.pratica.err.rei",
+                "f4e4": "rot.ponte.pratica.err.rei",
+                "f4g4": "rot.ponte.pratica.err.torre",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/5R2/3k4/6r1/8/8 w - - 12 7": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "f5f3": "rot.ponte.pratica.err.torre",
+                "f5c5": "rot.ponte.pratica.err.rei",
+                "f5d5": "rot.ponte.pratica.err.rei",
+                "f5e5": "rot.ponte.pratica.err.desvio",
+                "f6e6": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5Kr1/3k4/R7/8/8/8 w - - 12 7": {
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5Kr1/3k4/7R/8/8/8 w - - 12 7": {
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5Kr1/2k5/5R2/8/8/8 w - - 10 6": {
+                "f6e5": "rot.ponte.pratica.err.peao",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/2k5/7R/5r2/8/8 w - - 10 6": {
+                "h4f4": "rot.ponte.pratica.err.torre"
+              },
+              "8/6P1/8/2k3K1/7R/6r1/8/8 w - - 12 7": {
+                "g5f4": "rot.ponte.pratica.err.peao",
+                "g5f5": "rot.ponte.pratica.err.peao",
+                "g5h5": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/2k5/7R/8/8/6r1 w - - 10 6": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "h4b4": "rot.ponte.pratica.err.rei",
+                "h4c4": "rot.ponte.pratica.err.rei",
+                "h4d4": "rot.ponte.pratica.err.rei",
+                "h4g4": "rot.ponte.pratica.err.torre",
+                "f6e5": "rot.ponte.pratica.err.peao",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e6": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/7R/1k6/8/8/6r1 w - - 12 7": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "h5a5": "rot.ponte.pratica.err.rei",
+                "h5b5": "rot.ponte.pratica.err.rei",
+                "h5c5": "rot.ponte.pratica.err.rei",
+                "f6e5": "rot.ponte.pratica.err.peao",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e6": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/3k4/5R2/8/8/6r1 w - - 12 7": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "f4f1": "rot.ponte.pratica.err.torre",
+                "f4c4": "rot.ponte.pratica.err.rei",
+                "f4d4": "rot.ponte.pratica.err.rei",
+                "f4e4": "rot.ponte.pratica.err.rei",
+                "f4g4": "rot.ponte.pratica.err.torre",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5K2/1k6/R7/8/8/6r1 w - - 12 7": {
+                "g7g8q": "rot.ponte.pratica.err.coroa",
+                "g7g8r": "rot.ponte.pratica.err.coroa",
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor",
+                "a4b4": "rot.ponte.pratica.err.rei",
+                "a4c4": "rot.ponte.pratica.err.rei",
+                "a4g4": "rot.ponte.pratica.err.torre",
+                "a4a5": "rot.ponte.pratica.err.rei",
+                "a4a6": "rot.ponte.pratica.err.rei",
+                "f6e5": "rot.ponte.pratica.err.desprotege",
+                "f6f5": "rot.ponte.pratica.err.desprotege",
+                "f6e6": "rot.ponte.pratica.err.desprotege",
+                "f6e7": "rot.ponte.pratica.err.desprotege",
+                "f6f7": "rot.ponte.pratica.err.desprotege"
+              },
+              "8/6P1/5K2/2k5/R7/8/8/5r2 w - - 12 7": {
+                "a4f4": "rot.ponte.pratica.err.torre"
+              },
+              "8/6P1/5Kr1/2k5/R7/8/8/8 w - - 12 7": {
+                "f6e5": "rot.ponte.pratica.err.peao",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/5Kr1/2k5/7R/8/8/8 w - - 10 6": {
+                "f6e5": "rot.ponte.pratica.err.peao",
+                "f6f5": "rot.ponte.pratica.err.peao",
+                "f6e7": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/3k1Kr1/8/4R3/8/8/8 w - - 8 5": {
+                "f6f5": "rot.ponte.pratica.err.peao"
+              },
               "4K3/6P1/3k4/8/4R3/6r1/8/8 w - - 6 4": {
                 "g7g8q": "rot.ponte.pratica.err.coroa",
                 "g7g8r": "rot.ponte.pratica.err.coroa",
@@ -735,6 +917,10 @@
               },
               "5K2/6P1/3k4/8/4R3/5r2/8/8 w - - 8 5": {
                 "e4f4": "rot.ponte.pratica.err.torre"
+              },
+              "5K1r/6P1/3k4/8/4R3/8/8/8 w - - 4 3": {
+                "g7g8b": "rot.ponte.pratica.err.menor",
+                "g7g8n": "rot.ponte.pratica.err.menor"
               },
               "6K1/6P1/3k4/4R3/8/7r/8/8 w - - 2 2": {
                 "e5e3": "rot.ponte.pratica.err.torre",
@@ -761,6 +947,20 @@
                 "e4a4": "rot.ponte.pratica.err.torre",
                 "e4e5": "rot.ponte.pratica.err.rei",
                 "e4e7": "rot.ponte.pratica.err.rei"
+              },
+              "8/6P1/3k1K2/8/4R3/8/8/5r2 w - - 10 6": {
+                "e4f4": "rot.ponte.pratica.err.torre"
+              },
+              "8/6P1/3k4/6K1/4R3/8/8/6r1 w - - 12 7": {
+                "g5f4": "rot.ponte.pratica.err.peao",
+                "g5h4": "rot.ponte.pratica.err.peao",
+                "g5f5": "rot.ponte.pratica.err.peao",
+                "g5h5": "rot.ponte.pratica.err.peao"
+              },
+              "8/6P1/3k2K1/8/4R3/8/8/6r1 w - - 8 5": {
+                "g6f5": "rot.ponte.pratica.err.peao",
+                "g6h5": "rot.ponte.pratica.err.peao",
+                "e4g4": "rot.ponte.pratica.err.torre"
               },
               "4K3/6P1/3k4/8/4R3/8/8/6r1 w - - 8 5": {
                 "g7g8q": "rot.ponte.pratica.err.coroa",
