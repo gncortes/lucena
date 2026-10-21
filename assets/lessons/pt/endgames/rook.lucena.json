@@ -1,6 +1,11 @@
 {
   "title": "A posição de Lucena",
   "summary": "Chegar à posição de Lucena e construir a ponte que leva o peão a coroar contra a torre.",
+  "part.ponte.title": "Construir a ponte",
+  "part.ponte.summary": "Na posição de Lucena, a torre vai à quarta fileira, o rei sai da frente do peão, e a torre bloqueia o último xeque: o peão coroa.",
+  "ex.ponteAssessment01": "Jogue de brancas e ganhe. A torre preta, em g2, dá xeque no seu rei, e o rei preto está longe do peão, em c6.",
+  "ex.ponteAssessment01.hint": "O rei sozinho não escapa dos xeques. Pense em como o rei e a torre podem trabalhar juntos.",
+  "ex.ponteAssessment01.solution": "1.Tg4 bloqueia o xeque com a torre protegida pelo rei: é a ponte. Se 1...Txg4, 2.Rxg4, e o peão coroa. 1.Rf5 também ganha, com a mesma ideia: depois do xeque em f2, a torre bloqueia em f4.",
   "key.lucena": "A posição de Lucena, como Alessandro Salvio a publicou em 1634: o peão está a uma casa de promover e o rei branco está na frente dele. Brancas ganham, jogue quem jogar: falta só construir a ponte.",
   "history": "A posição de Lucena é a mais importante dos finais de torre: com torre e peão contra torre, é a posição que ganha, e quase todo final desse tipo gira em torno de chegar a ela ou de impedi-la. O nome é um engano histórico: o espanhol Luis Ramírez de Lucena escreveu por volta de 1497 um dos primeiros livros de xadrez impressos, mas a posição não está nele; ela aparece pela primeira vez em 1634, em um livro do italiano Alessandro Salvio. A ideia de \"construir uma ponte\" com a torre, que é o coração desta aula, ganhou esse nome com Aron {{Nimzowitsch|aron-nimzowitsch}}, em 1925. Os grandes mestres a conhecem tão bem que nem precisam jogá-la até o fim: em 1999, na Suécia, {{Ulf Andersson|ulf-andersson}} trocou peões só para chegar a ela, e o adversário desistiu antes de a ponte aparecer no tabuleiro. Em 2002, em {{Cannes|cannes}}, {{Veselin Topalov|veselin-topalov}} ganhou de {{Anatoly Karpov|anatoly-karpov}} uma posição parecida em que não dava para fazer a ponte, com um truque para passar a vez.",
   "practice": "A posição de Lucena com as brancas a jogar."

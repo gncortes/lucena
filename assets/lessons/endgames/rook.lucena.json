@@ -4,8 +4,12 @@
   "skills": [
     "rook.lucena"
   ],
-  "parts": [],
-  "exercises": [],
+  "parts": [
+    {"id": "ponte", "steps": [], "roteiro": "assets/lessons/roteiros/rook.lucena/ponte.json"}
+  ],
+  "exercises": [
+    {"id": "ponteAssessment01", "capitulo": "ponte", "stars": 1, "fen": "8/5P2/2k5/6K1/4R3/8/6r1/8 w - - 0 1", "goal": "win", "origin": "own", "line": [{"teach": "e4g4", "accept": ["e4g4", "g5f5"]}]}
+  ],
   "passScore": 0,
   "keyPositions": [
     {
