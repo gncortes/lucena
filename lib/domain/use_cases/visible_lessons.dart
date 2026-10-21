@@ -24,7 +24,7 @@ abstract final class VisibleLessons {
     'pawns.waitingMoves',
     // T77: bispo e cavalo, capítulo a capítulo (só os com roteiro aparecem).
     'mates.bishopKnight.deletang',
-    // T78: dama contra torre, do mesmo jeito (sem capítulo escrito, some).
+    // T78: dama contra torre, do mesmo jeito.
     'queen.vsRook.philidor',
   };
 

@@ -4,15 +4,799 @@
   "etapas": [
     {
       "id": "ideia",
-      "exemplos": []
+      "exemplos": [
+        {
+          "id": "ex1",
+          "fen": "8/8/3k4/3r4/8/8/2K3Q1/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/8/3k4/3r4/8/8/2K3Q1/8 w - - 0 1",
+              "t": "rot.convert.ideia.ex1.e1",
+              "marcas": [
+                "d6",
+                "d5"
+              ]
+            },
+            {
+              "fen": "8/8/3k4/3r4/8/8/2K3Q1/8 w - - 0 1",
+              "t": "rot.convert.ideia.ex1.e2"
+            },
+            {
+              "fen": "8/8/3k4/3r4/8/8/2K3Q1/8 w - - 0 1",
+              "t": "rot.convert.ideia.ex1.e3"
+            }
+          ],
+          "linha": [
+            {
+              "fen": "8/8/3k4/3r4/4Q3/8/2K5/8 b - - 1 1",
+              "lance": "g2e4",
+              "t": "rot.convert.ideia.ex1.l1",
+              "marcas": [
+                "e5",
+                "e6",
+                "e7"
+              ]
+            },
+            {
+              "fen": "8/8/3k4/4r3/4Q3/8/2K5/8 w - - 2 2",
+              "lance": "d5e5",
+              "t": "rot.convert.ideia.ex1.l2",
+              "marcas": [
+                "e5"
+              ]
+            },
+            {
+              "fen": "8/8/3k4/4r3/5Q2/8/2K5/8 b - - 3 2",
+              "lance": "e4f4",
+              "t": "rot.convert.ideia.ex1.l3",
+              "marcas": [
+                "f4",
+                "e5",
+                "d6"
+              ]
+            },
+            {
+              "fen": "8/8/4k3/4r3/5Q2/8/2K5/8 w - - 4 3",
+              "lance": "d6e6",
+              "t": "rot.convert.ideia.ex1.l4",
+              "marcas": [
+                "e6"
+              ]
+            },
+            {
+              "fen": "8/8/4k3/4r3/5Q2/3K4/8/8 b - - 5 3",
+              "lance": "c2d3",
+              "t": "rot.convert.ideia.ex1.l5",
+              "marcas": [
+                "d3"
+              ]
+            },
+            {
+              "fen": "8/8/4k3/5r2/5Q2/3K4/8/8 w - - 6 4",
+              "lance": "e5f5",
+              "t": "rot.convert.ideia.ex1.l6",
+              "marcas": [
+                "f5"
+              ]
+            },
+            {
+              "fen": "8/8/4k3/5r2/2Q5/3K4/8/8 b - - 7 4",
+              "lance": "f4c4",
+              "t": "rot.convert.ideia.ex1.l7",
+              "marcas": [
+                "c4",
+                "e6"
+              ]
+            },
+            {
+              "fen": "8/8/8/4kr2/2Q5/3K4/8/8 w - - 8 5",
+              "lance": "e6e5",
+              "t": "rot.convert.ideia.ex1.l8",
+              "marcas": [
+                "e5",
+                "f5"
+              ]
+            },
+            {
+              "fen": "8/8/2Q5/4kr2/8/3K4/8/8 b - - 9 5",
+              "lance": "c4c6",
+              "t": "rot.convert.ideia.ex1.l9",
+              "marcas": [
+                "f4"
+              ]
+            },
+            {
+              "fen": "8/8/2Q2r2/4k3/8/3K4/8/8 w - - 10 6",
+              "lance": "f5f6",
+              "t": "rot.convert.ideia.ex1.l10",
+              "marcas": [
+                "f6"
+              ]
+            },
+            {
+              "fen": "8/8/5r2/4k3/4Q3/3K4/8/8 b - - 11 6",
+              "lance": "c6e4",
+              "t": "rot.convert.ideia.ex1.l11",
+              "marcas": [
+                "d6"
+              ]
+            },
+            {
+              "fen": "8/8/3k1r2/8/4Q3/3K4/8/8 w - - 12 7",
+              "lance": "e5d6",
+              "t": "rot.convert.ideia.ex1.l12"
+            },
+            {
+              "fen": "8/8/3k1r2/8/2K1Q3/8/8/8 b - - 13 7",
+              "lance": "d3c4",
+              "t": "rot.convert.ideia.ex1.l13",
+              "marcas": [
+                "c7",
+                "d7"
+              ]
+            },
+            {
+              "fen": "8/8/3kr3/8/2K1Q3/8/8/8 w - - 14 8",
+              "lance": "f6e6",
+              "t": "rot.convert.ideia.ex1.l14",
+              "marcas": [
+                "e6"
+              ]
+            },
+            {
+              "fen": "8/8/3kr3/8/2K2Q2/8/8/8 b - - 15 8",
+              "lance": "e4f4",
+              "t": "rot.convert.ideia.ex1.l15",
+              "marcas": [
+                "f4",
+                "d6"
+              ]
+            },
+            {
+              "fen": "8/4k3/4r3/8/2K2Q2/8/8/8 w - - 16 9",
+              "lance": "d6e7",
+              "t": "rot.convert.ideia.ex1.l16"
+            },
+            {
+              "fen": "8/4k3/4r3/3K4/5Q2/8/8/8 b - - 17 9",
+              "lance": "c4d5",
+              "t": "rot.convert.ideia.ex1.l17",
+              "marcas": [
+                "e6"
+              ]
+            },
+            {
+              "fen": "8/4k3/5r2/3K4/5Q2/8/8/8 w - - 18 10",
+              "lance": "e6f6",
+              "t": "rot.convert.ideia.ex1.l18",
+              "marcas": [
+                "f6"
+              ]
+            },
+            {
+              "fen": "8/2Q1k3/5r2/3K4/8/8/8/8 b - - 19 10",
+              "lance": "f4c7",
+              "t": "rot.convert.ideia.ex1.l19",
+              "marcas": [
+                "e8",
+                "f8"
+              ]
+            },
+            {
+              "fen": "4k3/2Q5/5r2/3K4/8/8/8/8 w - - 20 11",
+              "lance": "e7e8",
+              "t": "rot.convert.ideia.ex1.l20",
+              "marcas": [
+                "e8"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ex2",
+          "fen": "4k3/2Q5/5r2/3K4/8/8/8/8 w - - 20 11",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "4k3/2Q5/5r2/3K4/8/8/8/8 w - - 20 11",
+              "t": "rot.convert.ideia.ex2.e1",
+              "marcas": [
+                "e8",
+                "f6"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "4k3/2Q5/5r2/4K3/8/8/8/8 b - - 21 11",
+              "lance": "d5e5",
+              "t": "rot.convert.ideia.ex2.l1",
+              "marcas": [
+                "f6"
+              ]
+            },
+            {
+              "fen": "4k3/2Q2r2/8/4K3/8/8/8/8 w - - 22 12",
+              "lance": "f6f7",
+              "t": "rot.convert.ideia.ex2.l2",
+              "marcas": [
+                "f7",
+                "c7"
+              ]
+            },
+            {
+              "fen": "2Q1k3/5r2/8/4K3/8/8/8/8 b - - 23 12",
+              "lance": "c7c8",
+              "t": "rot.convert.ideia.ex2.l3",
+              "marcas": [
+                "e7"
+              ]
+            },
+            {
+              "fen": "2Q5/4kr2/8/4K3/8/8/8/8 w - - 24 13",
+              "lance": "e8e7",
+              "t": "rot.convert.ideia.ex2.l4"
+            },
+            {
+              "fen": "8/4kr2/8/4K3/2Q5/8/8/8 b - - 25 13",
+              "lance": "c8c4",
+              "t": "rot.convert.ideia.ex2.l5",
+              "marcas": [
+                "c4",
+                "f7"
+              ]
+            },
+            {
+              "fen": "4k3/5r2/8/4K3/2Q5/8/8/8 w - - 26 14",
+              "lance": "e7e8",
+              "t": "rot.convert.ideia.ex2.l6"
+            },
+            {
+              "fen": "4k3/5r2/4K3/8/2Q5/8/8/8 b - - 27 14",
+              "lance": "e5e6",
+              "t": "rot.convert.ideia.ex2.l7",
+              "marcas": [
+                "e6",
+                "g8"
+              ]
+            },
+            {
+              "fen": "5k2/5r2/4K3/8/2Q5/8/8/8 w - - 28 15",
+              "lance": "e8f8",
+              "t": "rot.convert.ideia.ex2.l8"
+            },
+            {
+              "fen": "5k2/5r2/4K3/2Q5/8/8/8/8 b - - 29 15",
+              "lance": "c4c5",
+              "t": "rot.convert.ideia.ex2.l9",
+              "marcas": [
+                "c5",
+                "f8"
+              ]
+            },
+            {
+              "fen": "6k1/5r2/4K3/2Q5/8/8/8/8 w - - 30 16",
+              "lance": "f8g8",
+              "t": "rot.convert.ideia.ex2.l10"
+            },
+            {
+              "fen": "6k1/5r2/4K3/3Q4/8/8/8/8 b - - 31 16",
+              "lance": "c5d5",
+              "t": "rot.convert.ideia.ex2.l11",
+              "marcas": [
+                "d5",
+                "e6",
+                "f7",
+                "g8"
+              ]
+            },
+            {
+              "fen": "6k1/6r1/4K3/3Q4/8/8/8/8 w - - 32 17",
+              "lance": "f7g7",
+              "t": "rot.convert.ideia.ex2.l12",
+              "marcas": [
+                "g7"
+              ]
+            },
+            {
+              "fen": "6k1/6r1/5K2/3Q4/8/8/8/8 b - - 33 17",
+              "lance": "e6f6",
+              "t": "rot.convert.ideia.ex2.l13",
+              "marcas": [
+                "f6",
+                "g7"
+              ]
+            },
+            {
+              "fen": "8/6rk/5K2/3Q4/8/8/8/8 w - - 34 18",
+              "lance": "g8h7",
+              "t": "rot.convert.ideia.ex2.l14"
+            },
+            {
+              "fen": "8/6rk/5K2/8/8/8/8/7Q b - - 35 18",
+              "lance": "d5h1",
+              "t": "rot.convert.ideia.ex2.l15",
+              "marcas": [
+                "g8"
+              ]
+            },
+            {
+              "fen": "6k1/6r1/5K2/8/8/8/8/7Q w - - 36 19",
+              "lance": "h7g8",
+              "t": "rot.convert.ideia.ex2.l16"
+            },
+            {
+              "fen": "6k1/6r1/5K2/7Q/8/8/8/8 b - - 37 19",
+              "lance": "h1h5",
+              "t": "rot.convert.ideia.ex2.l17",
+              "marcas": [
+                "g8",
+                "g7",
+                "f6",
+                "h5"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ex3",
+          "fen": "6k1/6r1/5K2/7Q/8/8/8/8 b - - 37 19",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "6k1/6r1/5K2/7Q/8/8/8/8 b - - 37 19",
+              "t": "rot.convert.ideia.ex3.e1",
+              "marcas": [
+                "g8",
+                "g7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "6k1/8/5K2/7Q/8/8/8/6r1 w - - 38 20",
+              "lance": "g7g1",
+              "t": "rot.convert.ideia.ex3.l1",
+              "marcas": [
+                "g1"
+              ]
+            },
+            {
+              "fen": "4Q1k1/8/5K2/8/8/8/8/6r1 b - - 39 20",
+              "lance": "h5e8",
+              "t": "rot.convert.ideia.ex3.l2",
+              "marcas": [
+                "h7"
+              ]
+            },
+            {
+              "fen": "4Q3/7k/5K2/8/8/8/8/6r1 w - - 40 21",
+              "lance": "g8h7",
+              "t": "rot.convert.ideia.ex3.l3"
+            },
+            {
+              "fen": "8/7k/5K2/8/4Q3/8/8/6r1 b - - 41 21",
+              "lance": "e8e4",
+              "t": "rot.convert.ideia.ex3.l4",
+              "marcas": [
+                "a7"
+              ]
+            },
+            {
+              "fen": "7k/8/5K2/8/4Q3/8/8/6r1 w - - 42 22",
+              "lance": "h7h8",
+              "t": "rot.convert.ideia.ex3.l5"
+            },
+            {
+              "fen": "Q6k/8/5K2/8/8/8/8/6r1 b - - 43 22",
+              "lance": "e4a8",
+              "t": "rot.convert.ideia.ex3.l6",
+              "marcas": [
+                "a7"
+              ]
+            },
+            {
+              "fen": "Q7/7k/5K2/8/8/8/8/6r1 w - - 44 23",
+              "lance": "h8h7",
+              "t": "rot.convert.ideia.ex3.l7",
+              "marcas": [
+                "g8"
+              ]
+            },
+            {
+              "fen": "8/Q6k/5K2/8/8/8/8/6r1 b - - 45 23",
+              "lance": "a8a7",
+              "t": "rot.convert.ideia.ex3.l8",
+              "marcas": [
+                "h7",
+                "g1"
+              ]
+            },
+            {
+              "fen": "6k1/Q7/5K2/8/8/8/8/6r1 w - - 46 24",
+              "lance": "h7g8",
+              "t": "rot.convert.ideia.ex3.l9",
+              "marcas": [
+                "g7"
+              ]
+            },
+            {
+              "fen": "6k1/8/5K2/8/8/8/8/6Q1 b - - 0 24",
+              "lance": "a7g1",
+              "t": "rot.convert.ideia.ex3.l10"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "demos",
-      "exemplos": []
+      "exemplos": [
+        {
+          "id": "terceira",
+          "fen": "5k2/5r2/8/3K3Q/8/8/8/8 b - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "5k2/5r2/8/3K3Q/8/8/8/8 b - - 0 1",
+              "t": "rot.convert.demos.terceira.1",
+              "marcas": [
+                "f8",
+                "f7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "5k2/8/5r2/3K3Q/8/8/8/8 w - - 1 2",
+              "lance": "f7f6",
+              "t": "rot.convert.demos.terceira.2",
+              "marcas": [
+                "f6"
+              ]
+            },
+            {
+              "fen": "5k2/8/5r2/3K4/6Q1/8/8/8 b - - 2 2",
+              "lance": "h5g4",
+              "t": "rot.convert.demos.terceira.3",
+              "marcas": [
+                "g7",
+                "g8"
+              ]
+            },
+            {
+              "fen": "8/4k3/5r2/3K4/6Q1/8/8/8 w - - 3 3",
+              "lance": "f8e7",
+              "t": "rot.convert.demos.terceira.4"
+            },
+            {
+              "fen": "8/4k1Q1/5r2/3K4/8/8/8/8 b - - 4 3",
+              "lance": "g4g7",
+              "t": "rot.convert.demos.terceira.5",
+              "marcas": [
+                "f6"
+              ]
+            },
+            {
+              "fen": "8/4krQ1/8/3K4/8/8/8/8 w - - 5 4",
+              "lance": "f6f7",
+              "t": "rot.convert.demos.terceira.6",
+              "marcas": [
+                "f7"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "relogio",
+          "fen": "7k/7r/8/5K2/8/8/8/4Q3 w - - 88 45",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "7k/7r/8/5K2/8/8/8/4Q3 w - - 88 45",
+              "t": "rot.convert.demos.relogio.1"
+            },
+            {
+              "fen": "7k/7r/8/5K2/8/8/8/4Q3 w - - 88 45",
+              "t": "rot.convert.demos.relogio.2",
+              "marcas": [
+                "f6"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "4Q2k/7r/8/5K2/8/8/8/8 b - - 89 45",
+              "lance": "e1e8",
+              "t": "rot.convert.demos.relogio.3",
+              "marcas": [
+                "g7"
+              ]
+            },
+            {
+              "fen": "4Q3/6kr/8/5K2/8/8/8/8 w - - 90 46",
+              "lance": "h8g7",
+              "t": "rot.convert.demos.relogio.4"
+            },
+            {
+              "fen": "4Q3/6kr/8/6K1/8/8/8/8 b - - 91 46",
+              "lance": "f5g5",
+              "t": "rot.convert.demos.relogio.5"
+            },
+            {
+              "fen": "4Q3/6k1/8/6K1/8/8/8/7r w - - 92 47",
+              "lance": "h7h1",
+              "t": "rot.convert.demos.relogio.6",
+              "marcas": [
+                "h1"
+              ]
+            },
+            {
+              "fen": "8/3Q2k1/8/6K1/8/8/8/7r b - - 93 47",
+              "lance": "e8d7",
+              "t": "rot.convert.demos.relogio.7"
+            },
+            {
+              "fen": "7k/3Q4/8/6K1/8/8/8/7r w - - 94 48",
+              "lance": "g7h8",
+              "t": "rot.convert.demos.relogio.8"
+            },
+            {
+              "fen": "7k/8/8/6K1/3Q4/8/8/7r b - - 95 48",
+              "lance": "d7d4",
+              "t": "rot.convert.demos.relogio.9",
+              "marcas": [
+                "e4"
+              ]
+            },
+            {
+              "fen": "8/7k/8/6K1/3Q4/8/8/7r w - - 96 49",
+              "lance": "h8h7",
+              "t": "rot.convert.demos.relogio.10"
+            },
+            {
+              "fen": "8/7k/8/6K1/4Q3/8/8/7r b - - 97 49",
+              "lance": "d4e4",
+              "t": "rot.convert.demos.relogio.11",
+              "marcas": [
+                "h7",
+                "h1"
+              ]
+            },
+            {
+              "fen": "7k/8/8/6K1/4Q3/8/8/7r w - - 98 50",
+              "lance": "h7h8",
+              "t": "rot.convert.demos.relogio.12"
+            },
+            {
+              "fen": "7k/8/8/6K1/8/8/8/7Q b - - 0 50",
+              "lance": "e4h1",
+              "t": "rot.convert.demos.relogio.13"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "pratica",
-      "exemplos": []
+      "exemplos": [
+        {
+          "id": "defesa",
+          "fen": "5k2/4r3/8/8/4K3/8/8/Q7 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.convert.pratica.defesa.p",
+            "maquina": "b",
+            "limite": 30,
+            "erros": {
+              "a1e5": "rot.convert.pratica.err.troca"
+            },
+            "errosPos": {
+              "8/4rk2/8/3K4/8/8/8/Q7 w - -": {
+                "a1g7": "rot.convert.pratica.err.soltaRei",
+                "a1a7": "rot.convert.pratica.err.solta",
+                "a1f6": "rot.convert.pratica.err.soltaRei",
+                "a1e5": "rot.convert.pratica.err.troca",
+                "a1d4": "rot.convert.pratica.err.espetoTroca",
+                "a1e1": "rot.convert.pratica.err.solta",
+                "a1d1": "rot.convert.pratica.err.espeto"
+              },
+              "8/4r3/5k2/3K4/Q7/8/8/8 w - -": {
+                "d5c4": "rot.convert.pratica.err.espetoTroca",
+                "a4e8": "rot.convert.pratica.err.solta",
+                "a4d7": "rot.convert.pratica.err.solta",
+                "a4a7": "rot.convert.pratica.err.solta",
+                "a4b5": "rot.convert.pratica.err.espetoTroca",
+                "a4a5": "rot.convert.pratica.err.espeto",
+                "a4e4": "rot.convert.pratica.err.troca",
+                "a4d1": "rot.convert.pratica.err.espeto"
+              },
+              "8/4rk2/8/3K4/7Q/8/8/8 w - -": {
+                "h4e7": "rot.convert.pratica.err.recaptura",
+                "h4f6": "rot.convert.pratica.err.soltaRei",
+                "h4e4": "rot.convert.pratica.err.troca",
+                "h4d4": "rot.convert.pratica.err.espetoTroca",
+                "h4e1": "rot.convert.pratica.err.solta"
+              },
+              "8/3K1k2/6r1/8/7Q/8/8/8 w - -": {
+                "h4h6": "rot.convert.pratica.err.solta",
+                "h4f6": "rot.convert.pratica.err.soltaRei",
+                "h4g5": "rot.convert.pratica.err.solta",
+                "h4g4": "rot.convert.pratica.err.solta",
+                "h4g3": "rot.convert.pratica.err.solta"
+              },
+              "6k1/3KQ3/6r1/8/8/8/8/8 w - -": {
+                "e7f8": "rot.convert.pratica.err.soltaRei",
+                "e7h7": "rot.convert.pratica.err.soltaRei",
+                "e7g7": "rot.convert.pratica.err.soltaRei",
+                "e7f7": "rot.convert.pratica.err.soltaRei",
+                "e7f6": "rot.convert.pratica.err.solta",
+                "e7e6": "rot.convert.pratica.err.troca",
+                "e7d6": "rot.convert.pratica.err.troca",
+                "e7g5": "rot.convert.pratica.err.solta",
+                "d7c7": "rot.convert.pratica.err.cravada"
+              },
+              "4K2k/4Q3/6r1/8/8/8/8/8 w - -": {
+                "e8f8": "rot.convert.pratica.err.xequeOutro",
+                "e8d8": "rot.convert.pratica.err.xequeOutro",
+                "e8f7": "rot.convert.pratica.err.espetoTroca",
+                "e8d7": "rot.convert.pratica.err.cravada",
+                "e7f8": "rot.convert.pratica.err.tapa",
+                "e7d8": "rot.convert.pratica.err.espetoTroca",
+                "e7h7": "rot.convert.pratica.err.soltaRei",
+                "e7g7": "rot.convert.pratica.err.soltaRei",
+                "e7f7": "rot.convert.pratica.err.xequeOutro",
+                "e7d7": "rot.convert.pratica.err.xequeOutro",
+                "e7c7": "rot.convert.pratica.err.xequeOutro",
+                "e7b7": "rot.convert.pratica.err.xequeOutro",
+                "e7a7": "rot.convert.pratica.err.espetoXeque",
+                "e7f6": "rot.convert.pratica.err.solta",
+                "e7e6": "rot.convert.pratica.err.solta",
+                "e7d6": "rot.convert.pratica.err.solta",
+                "e7g5": "rot.convert.pratica.err.solta"
+              },
+              "4K1k1/8/6r1/4Q3/8/8/8/8 w - -": {
+                "e5h8": "rot.convert.pratica.err.soltaRei",
+                "e5g7": "rot.convert.pratica.err.soltaRei",
+                "e5f6": "rot.convert.pratica.err.solta",
+                "e5e6": "rot.convert.pratica.err.solta",
+                "e5d6": "rot.convert.pratica.err.solta",
+                "e5g5": "rot.convert.pratica.err.solta",
+                "e5g3": "rot.convert.pratica.err.solta"
+              },
+              "6k1/4K3/8/4Q3/8/8/8/6r1 w - -": {
+                "e5h8": "rot.convert.pratica.err.soltaRei",
+                "e5g7": "rot.convert.pratica.err.soltaRei",
+                "e5c7": "rot.convert.pratica.err.espetoTroca",
+                "e5g5": "rot.convert.pratica.err.solta",
+                "e5g3": "rot.convert.pratica.err.solta",
+                "e5e1": "rot.convert.pratica.err.solta",
+                "e5a1": "rot.convert.pratica.err.solta"
+              }
+            },
+            "fim": "rot.convert.pratica.defesa.fim",
+            "fins": {
+              "afogado": "rot.convert.pratica.fins.afogado",
+              "repeticao": "rot.convert.pratica.fins.repeticao",
+              "limite": "rot.convert.pratica.fins.limite",
+              "insuficiente": "rot.convert.pratica.fins.insuficiente"
+            }
+          }
+        },
+        {
+          "id": "inteira",
+          "fen": "8/2K5/8/4rk2/8/1Q6/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.convert.pratica.inteira.p",
+            "maquina": "b",
+            "limite": 50,
+            "erros": {
+              "b3b7": "rot.convert.pratica.err.espetoTroca",
+              "b3e6": "rot.convert.pratica.err.soltaRei",
+              "b3d5": "rot.convert.pratica.err.solta",
+              "b3b5": "rot.convert.pratica.err.solta",
+              "b3e3": "rot.convert.pratica.err.solta"
+            },
+            "errosPos": {
+              "8/2K5/4k3/4r3/8/5Q2/8/8 w - -": {
+                "f3f7": "rot.convert.pratica.err.soltaRei",
+                "f3f6": "rot.convert.pratica.err.soltaRei",
+                "f3h5": "rot.convert.pratica.err.solta",
+                "f3f5": "rot.convert.pratica.err.soltaRei",
+                "f3d5": "rot.convert.pratica.err.soltaRei",
+                "f3e4": "rot.convert.pratica.err.solta",
+                "f3e3": "rot.convert.pratica.err.solta",
+                "f3e2": "rot.convert.pratica.err.solta"
+              },
+              "8/4k3/2K5/4r3/8/5Q2/8/8 w - -": {
+                "f3f8": "rot.convert.pratica.err.soltaRei",
+                "f3f7": "rot.convert.pratica.err.soltaRei",
+                "f3f6": "rot.convert.pratica.err.soltaRei",
+                "f3h5": "rot.convert.pratica.err.solta",
+                "f3f5": "rot.convert.pratica.err.solta",
+                "f3d5": "rot.convert.pratica.err.troca",
+                "f3e4": "rot.convert.pratica.err.solta",
+                "f3e3": "rot.convert.pratica.err.solta",
+                "f3e2": "rot.convert.pratica.err.solta"
+              },
+              "8/8/2K2k2/4r3/8/6Q1/8/8 w - -": {
+                "g3g7": "rot.convert.pratica.err.soltaRei",
+                "g3g6": "rot.convert.pratica.err.soltaRei",
+                "g3g5": "rot.convert.pratica.err.soltaRei",
+                "g3e5": "rot.convert.pratica.err.recaptura",
+                "g3e3": "rot.convert.pratica.err.solta",
+                "g3e1": "rot.convert.pratica.err.solta"
+              },
+              "8/5k2/4r3/3K4/8/6Q1/8/8 w - -": {
+                "g3g8": "rot.convert.pratica.err.trocaRei",
+                "g3g7": "rot.convert.pratica.err.trocaRei",
+                "g3g6": "rot.convert.pratica.err.solta",
+                "g3d6": "rot.convert.pratica.err.troca",
+                "g3e5": "rot.convert.pratica.err.troca",
+                "g3e3": "rot.convert.pratica.err.solta",
+                "g3e1": "rot.convert.pratica.err.solta"
+              },
+              "8/5k2/r7/3K4/8/7Q/8/8 w - -": {
+                "h3h6": "rot.convert.pratica.err.solta",
+                "h3e6": "rot.convert.pratica.err.solta",
+                "h3a3": "rot.convert.pratica.err.solta"
+              },
+              "8/3Q4/r4k2/3K4/8/8/8/8 w - -": {
+                "d7g7": "rot.convert.pratica.err.soltaRei",
+                "d7f7": "rot.convert.pratica.err.soltaRei",
+                "d7e7": "rot.convert.pratica.err.soltaRei",
+                "d7a7": "rot.convert.pratica.err.solta",
+                "d7e6": "rot.convert.pratica.err.solta",
+                "d7d6": "rot.convert.pratica.err.troca",
+                "d7c6": "rot.convert.pratica.err.troca",
+                "d7f5": "rot.convert.pratica.err.soltaRei",
+                "d7a4": "rot.convert.pratica.err.solta"
+              },
+              "3Q4/5k2/r7/3K4/8/8/8/8 w - -": {
+                "d8g8": "rot.convert.pratica.err.soltaRei",
+                "d8f8": "rot.convert.pratica.err.soltaRei",
+                "d8e8": "rot.convert.pratica.err.soltaRei",
+                "d8a8": "rot.convert.pratica.err.solta",
+                "d8e7": "rot.convert.pratica.err.soltaRei",
+                "d8f6": "rot.convert.pratica.err.soltaRei",
+                "d8d6": "rot.convert.pratica.err.troca",
+                "d8b6": "rot.convert.pratica.err.solta",
+                "d8g5": "rot.convert.pratica.err.espeto",
+                "d8a5": "rot.convert.pratica.err.solta"
+              }
+            },
+            "fim": "rot.convert.pratica.inteira.fim",
+            "fins": {
+              "afogado": "rot.convert.pratica.fins.afogado",
+              "repeticao": "rot.convert.pratica.fins.repeticao",
+              "limite": "rot.convert.pratica.fins.limite",
+              "insuficiente": "rot.convert.pratica.fins.insuficiente"
+            }
+          }
+        }
+      ]
     }
   ]
 }

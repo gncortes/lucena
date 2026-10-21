@@ -4,9 +4,145 @@
   "skills": [
     "queen.vsRook"
   ],
-  "parts": [],
-  "exercises": [],
-  "passScore": 0,
+  "parts": [
+    {
+      "id": "philidor",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/queen.vsRook.philidor/philidor.json"
+    },
+    {
+      "id": "tempo",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/queen.vsRook.philidor/tempo.json"
+    },
+    {
+      "id": "segunda",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/queen.vsRook.philidor/segunda.json"
+    },
+    {
+      "id": "terceira",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/queen.vsRook.philidor/terceira.json"
+    },
+    {
+      "id": "borda",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/queen.vsRook.philidor/borda.json"
+    },
+    {
+      "id": "convert",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/queen.vsRook.philidor/convert.json"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "philidorAssessment01",
+      "capitulo": "philidor",
+      "stars": 1,
+      "fen": "8/8/2K5/5Q2/8/8/k5r1/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "f5d5",
+          "accept": [
+            "f5d5"
+          ],
+          "reply": "a2b2"
+        },
+        {
+          "teach": "d5g2",
+          "accept": [
+            "d5g2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tempoAssessment01",
+      "capitulo": "tempo",
+      "stars": 2,
+      "fen": "1k6/1r6/2K5/8/8/8/8/2Q5 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "c1f4",
+          "accept": [
+            "c1f4",
+            "c1h1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "segundaAssessment01",
+      "capitulo": "segunda",
+      "stars": 2,
+      "fen": "3k4/2r5/8/1Q2K3/8/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e5d6",
+          "accept": [
+            "e5d6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "terceiraAssessment01",
+      "capitulo": "terceira",
+      "stars": 1,
+      "fen": "1k6/8/4r3/1K6/8/8/6Q1/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "g2g8",
+          "accept": [
+            "g2g8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bordaAssessment01",
+      "capitulo": "borda",
+      "stars": 2,
+      "fen": "8/8/8/8/QK6/5k2/4r3/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "a4d1",
+          "accept": [
+            "a4d1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "convertAssessment01",
+      "capitulo": "convert",
+      "stars": 3,
+      "fen": "8/6Q1/1K6/8/4k3/8/7r/8 w - - 80 61",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "g7g4",
+          "accept": [
+            "g7g4"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 7,
   "keyPositions": [
     {
       "id": "black",
@@ -47,5 +183,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 0
+  "maxScore": 11
 }
