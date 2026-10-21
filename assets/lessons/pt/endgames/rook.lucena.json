@@ -1,7 +1,12 @@
 {
   "title": "A posição de Lucena",
   "summary": "Chegar à posição de Lucena e construir a ponte que leva o peão a coroar contra a torre.",
+  "part.chegar.title": "Escoltar o peão",
+  "part.chegar.summary": "Com a torre cortando o rei preto, o seu rei sobe colado ao peão, abrigado dos xeques, até a posição de Lucena.",
   "key.lucena": "A posição de Lucena, como Alessandro Salvio a publicou em 1634: o peão está a uma casa de promover e o rei branco está na frente dele. Brancas ganham, jogue quem jogar: falta só construir a ponte.",
   "history": "A posição de Lucena é a mais importante dos finais de torre: com torre e peão contra torre, é a posição que ganha, e quase todo final desse tipo gira em torno de chegar a ela ou de impedi-la. O nome é um engano histórico: o espanhol Luis Ramírez de Lucena escreveu por volta de 1497 um dos primeiros livros de xadrez impressos, mas a posição não está nele; ela aparece pela primeira vez em 1634, em um livro do italiano Alessandro Salvio. A ideia de \"construir uma ponte\" com a torre, que é o coração desta aula, ganhou esse nome com Aron {{Nimzowitsch|aron-nimzowitsch}}, em 1925. Os grandes mestres a conhecem tão bem que nem precisam jogá-la até o fim: em 1999, na Suécia, {{Ulf Andersson|ulf-andersson}} trocou peões só para chegar a ela, e o adversário desistiu antes de a ponte aparecer no tabuleiro. Em 2002, em {{Cannes|cannes}}, {{Veselin Topalov|veselin-topalov}} ganhou de {{Anatoly Karpov|anatoly-karpov}} uma posição parecida em que não dava para fazer a ponte, com um truque para passar a vez.",
-  "practice": "A posição de Lucena com as brancas a jogar."
+  "practice": "A posição de Lucena com as brancas a jogar.",
+  "ex.chegarAssessment01": "Jogue de brancas e ganhe. A torre preta, em h4, dá xeque ao seu rei, em f4. O peão está em f5, e o rei preto, em d6, está cortado pela sua torre na coluna e.",
+  "ex.chegarAssessment01.hint": "Saia do xeque sem deixar o peão sozinho.",
+  "ex.chegarAssessment01.solution": "1.Rg5: o rei sai do xeque e fica colado ao peão, que continua protegido, e ainda ataca a torre em h4. Recuar o rei para e3, f3 ou g3 o afasta do peão, e a posição já é empate."
 }

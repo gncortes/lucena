@@ -1,7 +1,12 @@
 {
   "title": "The Lucena position",
   "summary": "Reach the Lucena position and build the bridge that lets the pawn queen against the rook.",
+  "part.chegar.title": "Escorting the pawn",
+  "part.chegar.summary": "With the rook cutting off the black king, your king climbs right next to the pawn, sheltered from the checks, until the Lucena position.",
   "key.lucena": "The Lucena position as Alessandro Salvio published it in 1634: the pawn is one step from promoting and the white king stands in front of it. White wins whoever moves: all that is left is to build the bridge.",
   "history": "The Lucena position is the most important one in rook endings: with rook and pawn against rook it is the position that wins, and almost every ending of this kind revolves around reaching it or preventing it. The name is a historical mistake: the Spaniard Luis Ramírez de Lucena wrote one of the first printed chess books around 1497, but the position is not in it; it first appears in 1634, in a book by the Italian Alessandro Salvio. The idea of \"building a bridge\" with the rook, which is the heart of this lesson, got its name from Aron {{Nimzowitsch|aron-nimzowitsch}} in 1925. Grandmasters know it so well that they rarely need to play it out: in 1999, in Sweden, {{Ulf Andersson|ulf-andersson}} exchanged pawns just to reach it, and his opponent resigned before the bridge ever appeared on the board. In 2002, in {{Cannes|cannes}}, {{Veselin Topalov|veselin-topalov}} beat {{Anatoly Karpov|anatoly-karpov}} in a similar position where no bridge was possible, with a trick to hand over the move.",
-  "practice": "The Lucena position with White to move."
+  "practice": "The Lucena position with White to move.",
+  "ex.chegarAssessment01": "Play as White and win. The black rook on h4 checks your king on f4. The pawn is on f5, and the black king on d6 is cut off by your rook on the e-file.",
+  "ex.chegarAssessment01.hint": "Get out of check without leaving the pawn alone.",
+  "ex.chegarAssessment01.solution": "1.Kg5: the king gets out of check and stays next to the pawn, which remains protected, and it also attacks the rook on h4. Retreating the king to e3, f3 or g3 takes it away from the pawn, and the position is already a draw."
 }
