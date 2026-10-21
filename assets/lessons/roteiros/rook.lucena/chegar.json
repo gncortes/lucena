@@ -681,7 +681,7 @@
               },
               "8/8/2k1P3/r3K3/8/8/8/3R4 w - - 3 3": {
                 "e5d4": "rot.chegar.pratica.err.tapa",
-                "d1d5": "rot.chegar.pratica.err.torre"
+                "d1d5": "rot.chegar.pratica.err.rei"
               },
               "8/8/2k1P3/4K3/8/8/4r3/3R4 w - - 3 3": {
                 "e5d4": "rot.chegar.pratica.err.tapa",
@@ -833,7 +833,7 @@
               },
               "8/4P3/2k5/r3K3/8/8/8/3R4 w - - 1 4": {
                 "e5d4": "rot.chegar.pratica.err.tapa",
-                "d1d5": "rot.chegar.pratica.err.torre"
+                "d1d5": "rot.chegar.pratica.err.rei"
               },
               "8/4P3/2k5/4K3/8/8/4r3/3R4 w - - 1 4": {
                 "e5d4": "rot.chegar.pratica.err.tapa",
@@ -864,7 +864,7 @@
               },
               "8/4P3/2k5/r4K2/8/8/8/3R4 w - - 1 4": {
                 "f5g4": "rot.chegar.pratica.err.longe",
-                "d1d5": "rot.chegar.pratica.err.torre"
+                "d1d5": "rot.chegar.pratica.err.rei"
               },
               "8/4P3/2k5/5K2/8/8/4r3/3R4 w - - 1 4": {
                 "e7e8q": "rot.chegar.pratica.err.coroa",
@@ -915,15 +915,15 @@
                 "f1f2": "rot.chegar.pratica.err.torre"
               },
               "8/8/2k1PK2/8/8/8/5r2/5R2 w - - 7 5": {
-                "f6e7": "rot.chegar.pratica.err.torre",
-                "f6e5": "rot.chegar.pratica.err.torre",
-                "f6g5": "rot.chegar.pratica.err.torre",
-                "f6g7": "rot.chegar.pratica.err.torre",
-                "f6g6": "rot.chegar.pratica.err.torre"
+                "f6e7": "rot.chegar.pratica.err.pendurada",
+                "f6e5": "rot.chegar.pratica.err.pendurada",
+                "f6g5": "rot.chegar.pratica.err.pendurada",
+                "f6g7": "rot.chegar.pratica.err.pendurada",
+                "f6g6": "rot.chegar.pratica.err.pendurada"
               },
               "8/r4K2/2k1P3/8/8/8/8/3R4 w - - 7 5": {
                 "f7g8": "rot.chegar.pratica.err.longe",
-                "d1d7": "rot.chegar.pratica.err.torre"
+                "d1d7": "rot.chegar.pratica.err.rei"
               },
               "8/6K1/2k1P3/8/8/8/4r3/3R4 w - - 7 5": {
                 "e6e7": "rot.chegar.pratica.err.peao",
