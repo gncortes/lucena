@@ -1,0 +1,38 @@
+{
+  "licao": "queen.vsRook.philidor",
+  "parte": "kqkr",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": []
+    },
+    {
+      "id": "demos",
+      "exemplos": []
+    },
+    {
+      "id": "pratica",
+      "exemplos": [
+        {
+          "id": "torre",
+          "fen": "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "fx.pratica",
+            "maquina": "b",
+            "limite": 30,
+            "erros": {},
+            "errosPos": {},
+            "fim": "fx.fim",
+            "fins": {}
+          }
+        }
+      ]
+    }
+  ]
+}

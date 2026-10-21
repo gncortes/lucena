@@ -12,7 +12,8 @@ abstract final class FreePlayReferee {
   /// Com [mate] (objetivo `mate`, sem peão em jogo), o fim é o xeque-mate, e
   /// não a falta de peão. Com mais de 3 peças, a coroação que ganha é julgada
   /// fora daqui (pelo juiz da tela, T76); sem peões e com mais de 3 peças, só
-  /// mate, afogamento, repetição e limite fecham.
+  /// mate, afogamento, repetição e limite fecham. Sem peões, a captura que
+  /// deixa uma peça só fecha como [FreeEnd.material] (T78).
   static FreeEnd? check(
     List<String> fens, {
     required int limit,
@@ -37,9 +38,22 @@ abstract final class FreePlayReferee {
             ? FreeEnd.capturado
             : FreeEnd.insuficiente;
       }
-      // A coroação só fecha a partida se a peça nova não cai de graça no
-      // lance seguinte; senão, a partida segue.
-      if (!hangingPromotion(current)) return FreeEnd.coroa;
+      // A coroação (ou a peça que sobrou da captura) só fecha a partida se
+      // ela não cai de graça no lance seguinte; senão, a partida segue.
+      if (!hangingPromotion(current)) {
+        final before = fens.length < 2
+            ? null
+            : GameRules.fromFen(fens[fens.length - 2]);
+        if (before == null ||
+            before.board.pawns.isNotEmpty ||
+            before.board.occupied.size <= 3) {
+          return FreeEnd.coroa;
+        }
+        // A captura que afoga, ou que deixa peça que não dá mate, empata.
+        if (current.isStalemate) return FreeEnd.afogado;
+        if (current.isInsufficientMaterial) return FreeEnd.insuficiente;
+        return FreeEnd.material;
+      }
     }
     if (current.isStalemate) return FreeEnd.afogado;
     if (!mate && current.isInsufficientMaterial) return FreeEnd.insuficiente;

@@ -346,4 +346,58 @@ void main() {
       expect(migrated.ongoing, same(other));
     });
   });
+
+  group('T78: dama contra torre', () {
+    const queen = EndgameProgressMigration.queenId;
+
+    test('approach e thirdRank saem como as removidas', () {
+      const progress = EndgameProgress(
+        lessons: {
+          'queen.vsRook.approach': EndgameLessonProgress(lessonDone: true),
+          'queen.vsRook.thirdRank': EndgameLessonProgress(stars: {'e18': 2}),
+        },
+        ongoing: LessonCheckpoint(lessonId: 'queen.vsRook.thirdRank', step: 3),
+      );
+      final migrated = EndgameProgressMigration.apply(progress);
+      expect(migrated.lessons, isEmpty);
+      expect(migrated.ongoing, isNull);
+    });
+
+    test('na philidor, sai o formato antigo e fica o capítulo philidor', () {
+      const progress = EndgameProgress(
+        lessons: {
+          queen: EndgameLessonProgress(
+            lessonDone: true,
+            approved: true,
+            parts: {'philidor', 'fork', 'ladder'},
+            stars: {'e02': 3, 'e11': 1},
+            exercise: ExerciseCheckpoint(exerciseId: 'e09'),
+          ),
+        },
+        ongoing: LessonCheckpoint(lessonId: queen, part: 'fork', step: 2),
+      );
+      final migrated = EndgameProgressMigration.apply(progress);
+      final lesson = migrated.of(queen);
+      expect(lesson.lessonDone, isFalse);
+      expect(lesson.approved, isFalse);
+      expect(lesson.parts, {'philidor'});
+      expect(lesson.stars, isEmpty);
+      expect(lesson.exercise, isNull);
+      expect(migrated.ongoing, isNull);
+      expect(EndgameProgressMigration.apply(migrated), same(migrated));
+    });
+
+    test('o progresso novo da philidor não muda', () {
+      const progress = EndgameProgress(
+        lessons: {
+          queen: EndgameLessonProgress(
+            parts: {'philidor', 'tempo'},
+            stars: {'tempoAssessment01': 2},
+          ),
+        },
+        ongoing: LessonCheckpoint(lessonId: queen, part: 'segunda', step: 1),
+      );
+      expect(EndgameProgressMigration.apply(progress), same(progress));
+    });
+  });
 }

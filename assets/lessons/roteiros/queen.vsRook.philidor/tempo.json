@@ -1,0 +1,278 @@
+{
+  "licao": "queen.vsRook.philidor",
+  "parte": "tempo",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": [
+        {
+          "id": "ex1",
+          "fen": "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+              "t": "rot.tempo.ideia.ex1.e1",
+              "marcas": [
+                "b7"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+              "t": "rot.tempo.ideia.ex1.e2",
+              "marcas": [
+                "a5",
+                "e5",
+                "a1"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "1k6/1r6/2K5/4Q3/8/8/8/8 b - - 1 1",
+              "lance": "a5e5",
+              "t": "rot.tempo.ideia.ex1.l1",
+              "marcas": [
+                "c7"
+              ]
+            },
+            {
+              "fen": "k7/1r6/2K5/4Q3/8/8/8/8 w - - 2 2",
+              "lance": "b8a8",
+              "t": "rot.tempo.ideia.ex1.l2",
+              "marcas": [
+                "c8",
+                "e8"
+              ]
+            },
+            {
+              "fen": "k7/1r6/2K5/8/8/8/8/Q7 b - - 3 2",
+              "lance": "e5a1",
+              "t": "rot.tempo.ideia.ex1.l3",
+              "marcas": [
+                "a1"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/2K5/8/8/8/8/Q7 w - - 4 3",
+              "lance": "a8b8",
+              "t": "rot.tempo.ideia.ex1.l4",
+              "marcas": [
+                "a7",
+                "h8"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 5 3",
+              "lance": "a1a5",
+              "t": "rot.tempo.ideia.ex1.l5",
+              "marcas": [
+                "a5",
+                "e5",
+                "a1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "demos",
+      "exemplos": [
+        {
+          "id": "a7",
+          "fen": "8/kr6/2K5/4Q3/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/kr6/2K5/4Q3/8/8/8/8 w - - 0 1",
+              "t": "rot.tempo.demos.a7.1",
+              "marcas": [
+                "a7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "8/kr6/2K5/8/8/8/8/Q7 b - - 1 1",
+              "lance": "e5a1",
+              "t": "rot.tempo.demos.a7.2",
+              "marcas": [
+                "b8"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/2K5/8/8/8/8/Q7 w - - 2 2",
+              "lance": "a7b8",
+              "t": "rot.tempo.demos.a7.3"
+            },
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 3 2",
+              "lance": "a1a5",
+              "t": "rot.tempo.demos.a7.4",
+              "marcas": [
+                "b7"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "afogar",
+          "fen": "k7/1r6/2KQ4/8/8/8/8/8 b - - 0 1",
+          "vira": true,
+          "objetivo": "empatar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "k7/1r6/2KQ4/8/8/8/8/8 b - - 0 1",
+              "t": "rot.tempo.demos.afogar.1",
+              "marcas": [
+                "a7",
+                "b8"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "k7/8/1rKQ4/8/8/8/8/8 w - - 1 2",
+              "lance": "b7b6",
+              "t": "rot.tempo.demos.afogar.2",
+              "marcas": [
+                "b6"
+              ]
+            },
+            {
+              "fen": "k7/8/1K1Q4/8/8/8/8/8 b - - 0 2",
+              "lance": "c6b6",
+              "t": "rot.tempo.demos.afogar.3",
+              "marcas": [
+                "a7",
+                "b7",
+                "b8"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pratica",
+      "exemplos": [
+        {
+          "id": "canto",
+          "fen": "8/8/8/7Q/8/2K5/1r6/1k6 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.tempo.pratica.canto.p",
+            "maquina": "b",
+            "limite": 25,
+            "erros": {
+              "h5c5": "rot.tempo.pratica.err.espeto",
+              "h5b5": "rot.tempo.pratica.err.solta",
+              "h5h2": "rot.tempo.pratica.err.solta",
+              "h5e2": "rot.tempo.pratica.err.solta"
+            },
+            "errosPos": {
+              "8/8/8/8/8/2K5/kr6/7Q w - - 2 2": {
+                "h1h3": "rot.tempo.pratica.err.espeto",
+                "h1f3": "rot.tempo.pratica.err.espeto",
+                "h1b7": "rot.tempo.pratica.err.solta",
+                "h1h2": "rot.tempo.pratica.err.solta",
+                "h1g2": "rot.tempo.pratica.err.solta",
+                "h1b1": "rot.tempo.pratica.err.solta",
+                "h1a1": "rot.tempo.pratica.err.solta"
+              },
+              "Q7/8/8/8/8/2K5/1r6/1k6 w - - 4 3": {
+                "a8c8": "rot.tempo.pratica.err.espeto",
+                "a8c6": "rot.tempo.pratica.err.espeto",
+                "a8b8": "rot.tempo.pratica.err.solta",
+                "a8b7": "rot.tempo.pratica.err.solta",
+                "a8g2": "rot.tempo.pratica.err.solta",
+                "a8a2": "rot.tempo.pratica.err.solta",
+                "a8a1": "rot.tempo.pratica.err.solta"
+              }
+            },
+            "fim": "rot.tempo.pratica.canto.fim",
+            "fins": {
+              "afogado": "rot.tempo.pratica.fins.afogado",
+              "repeticao": "rot.tempo.pratica.fins.repeticao",
+              "limite": "rot.tempo.pratica.fins.limite",
+              "insuficiente": "rot.tempo.pratica.fins.insuficiente"
+            }
+          }
+        },
+        {
+          "id": "outroCanto",
+          "fen": "6k1/6r1/5K2/8/8/8/8/4Q3 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.tempo.pratica.outroCanto.p",
+            "maquina": "b",
+            "limite": 25,
+            "erros": {
+              "e1e7": "rot.tempo.pratica.err.troca",
+              "f6e5": "rot.tempo.pratica.err.espeto",
+              "e1f2": "rot.tempo.pratica.err.espeto",
+              "e1f1": "rot.tempo.pratica.err.espeto",
+              "e1g3": "rot.tempo.pratica.err.solta",
+              "e1g1": "rot.tempo.pratica.err.solta"
+            },
+            "errosPos": {
+              "7k/6r1/4QK2/8/8/8/8/8 w - - 2 2": {
+                "e6f7": "rot.tempo.pratica.err.troca",
+                "e6e7": "rot.tempo.pratica.err.troca",
+                "e6f5": "rot.tempo.pratica.err.afoga",
+                "e6g8": "rot.tempo.pratica.err.solta",
+                "e6d7": "rot.tempo.pratica.err.solta",
+                "e6g4": "rot.tempo.pratica.err.solta"
+              },
+              "6k1/6r1/5K2/8/8/7Q/8/8 w - - 4 3": {
+                "h3f5": "rot.tempo.pratica.err.espeto",
+                "h3f3": "rot.tempo.pratica.err.espeto",
+                "h3f1": "rot.tempo.pratica.err.espeto",
+                "h3h8": "rot.tempo.pratica.err.solta",
+                "h3h7": "rot.tempo.pratica.err.solta",
+                "h3d7": "rot.tempo.pratica.err.solta",
+                "h3g4": "rot.tempo.pratica.err.solta",
+                "h3g3": "rot.tempo.pratica.err.solta",
+                "h3g2": "rot.tempo.pratica.err.solta"
+              },
+              "8/6rk/4QK2/8/8/8/8/8 w - - 2 2": {
+                "e6f7": "rot.tempo.pratica.err.troca",
+                "e6e7": "rot.tempo.pratica.err.troca",
+                "e6d6": "rot.tempo.pratica.err.espeto",
+                "e6c6": "rot.tempo.pratica.err.espeto",
+                "e6b6": "rot.tempo.pratica.err.espeto",
+                "e6a6": "rot.tempo.pratica.err.espeto",
+                "e6g8": "rot.tempo.pratica.err.solta",
+                "e6d7": "rot.tempo.pratica.err.solta",
+                "e6g4": "rot.tempo.pratica.err.solta"
+              }
+            },
+            "fim": "rot.tempo.pratica.outroCanto.fim",
+            "fins": {
+              "afogado": "rot.tempo.pratica.fins.afogado",
+              "repeticao": "rot.tempo.pratica.fins.repeticao",
+              "limite": "rot.tempo.pratica.fins.limite",
+              "insuficiente": "rot.tempo.pratica.fins.insuficiente"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

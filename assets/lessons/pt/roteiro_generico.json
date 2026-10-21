@@ -16,6 +16,7 @@
   "gen.fim.afogado": "Quem joga ficou sem nenhum lance: é empate por afogamento.",
   "gen.fim.repeticao": "A posição se repetiu: é empate.",
   "gen.fim.limite": "Chegamos ao limite de lances.",
+  "gen.fim.material": "Sobrou uma peça só no tabuleiro, e quem a tem ganha.",
   "gen.fim.insuficiente": "Só sobraram os reis: ninguém consegue dar mate, e é empate.",
   "gen.troca.white": "Agora troque de lado: você joga com as brancas.",
   "gen.troca.black": "Agora troque de lado: você joga com as pretas.",

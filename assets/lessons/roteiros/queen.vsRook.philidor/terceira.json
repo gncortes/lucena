@@ -1,0 +1,380 @@
+{
+  "licao": "queen.vsRook.philidor",
+  "parte": "terceira",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": [
+        {
+          "id": "ex1",
+          "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+              "t": "rot.terceira.ideia.ex1.e1",
+              "marcas": [
+                "b6",
+                "c6",
+                "d6",
+                "e6"
+              ]
+            },
+            {
+              "fen": "3k4/5Q2/1r6/3K4/8/8/8/8 w - - 0 1",
+              "t": "rot.terceira.ideia.ex1.e2",
+              "marcas": [
+                "b7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "3k4/8/1r6/3K4/5Q2/8/8/8 b - - 1 1",
+              "lance": "f7f4",
+              "t": "rot.terceira.ideia.ex1.l1",
+              "marcas": [
+                "e3",
+                "b8"
+              ]
+            },
+            {
+              "fen": "8/3k4/1r6/3K4/5Q2/8/8/8 w - - 2 2",
+              "lance": "d8d7",
+              "t": "rot.terceira.ideia.ex1.l2",
+              "marcas": [
+                "d7"
+              ]
+            },
+            {
+              "fen": "8/3k4/1r6/3K4/Q7/8/8/8 b - - 3 2",
+              "lance": "f4a4",
+              "t": "rot.terceira.ideia.ex1.l3",
+              "marcas": [
+                "c7"
+              ]
+            },
+            {
+              "fen": "8/2k5/1r6/3K4/Q7/8/8/8 w - - 4 3",
+              "lance": "d7c7",
+              "t": "rot.terceira.ideia.ex1.l4",
+              "marcas": [
+                "b6"
+              ]
+            },
+            {
+              "fen": "8/Q1k5/1r6/3K4/8/8/8/8 b - - 5 3",
+              "lance": "a4a7",
+              "t": "rot.terceira.ideia.ex1.l5",
+              "marcas": [
+                "b6",
+                "c8",
+                "d8"
+              ]
+            },
+            {
+              "fen": "8/Qrk5/8/3K4/8/8/8/8 w - - 6 4",
+              "lance": "b6b7",
+              "t": "rot.terceira.ideia.ex1.l6",
+              "marcas": [
+                "b7"
+              ]
+            },
+            {
+              "fen": "8/1rk5/8/2QK4/8/8/8/8 b - - 7 4",
+              "lance": "a7c5",
+              "t": "rot.terceira.ideia.ex1.l7",
+              "marcas": [
+                "a7"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/8/2QK4/8/8/8/8 w - - 8 5",
+              "lance": "c7b8",
+              "t": "rot.terceira.ideia.ex1.l8",
+              "marcas": [
+                "b7",
+                "b8"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "demos",
+      "exemplos": [
+        {
+          "id": "garfo",
+          "fen": "3k4/8/r7/3K4/5Q2/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "3k4/8/r7/3K4/5Q2/8/8/8 w - - 0 1",
+              "t": "rot.terceira.demos.garfo.1",
+              "marcas": [
+                "a6"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "1Q1k4/8/r7/3K4/8/8/8/8 b - - 1 1",
+              "lance": "f4b8",
+              "t": "rot.terceira.demos.garfo.2",
+              "marcas": [
+                "b7"
+              ]
+            },
+            {
+              "fen": "1Q6/4k3/r7/3K4/8/8/8/8 w - - 2 2",
+              "lance": "d8e7",
+              "t": "rot.terceira.demos.garfo.3"
+            },
+            {
+              "fen": "8/1Q2k3/r7/3K4/8/8/8/8 b - - 3 2",
+              "lance": "b8b7",
+              "t": "rot.terceira.demos.garfo.4",
+              "marcas": [
+                "e7",
+                "a6"
+              ]
+            },
+            {
+              "fen": "8/1Q6/r4k2/3K4/8/8/8/8 w - - 4 3",
+              "lance": "e7f6",
+              "t": "rot.terceira.demos.garfo.5"
+            },
+            {
+              "fen": "8/8/Q4k2/3K4/8/8/8/8 b - - 0 3",
+              "lance": "b7a6",
+              "t": "rot.terceira.demos.garfo.6"
+            }
+          ]
+        },
+        {
+          "id": "colada",
+          "fen": "8/5k2/6r1/4K3/8/8/8/7Q w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "8/5k2/6r1/4K3/8/8/8/7Q w - - 0 1",
+              "t": "rot.terceira.demos.colada.1",
+              "marcas": [
+                "f7",
+                "g6"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "8/5k1Q/6r1/4K3/8/8/8/8 b - - 1 1",
+              "lance": "h1h7",
+              "t": "rot.terceira.demos.colada.2",
+              "marcas": [
+                "e8",
+                "f8"
+              ]
+            },
+            {
+              "fen": "8/5krQ/8/4K3/8/8/8/8 w - - 2 2",
+              "lance": "g6g7",
+              "t": "rot.terceira.demos.colada.3",
+              "marcas": [
+                "g7",
+                "h7"
+              ]
+            },
+            {
+              "fen": "8/5kr1/8/4KQ2/8/8/8/8 b - - 3 2",
+              "lance": "h7f5",
+              "t": "rot.terceira.demos.colada.4",
+              "marcas": [
+                "g7"
+              ]
+            },
+            {
+              "fen": "6k1/6r1/8/4KQ2/8/8/8/8 w - - 4 3",
+              "lance": "f7g8",
+              "t": "rot.terceira.demos.colada.5",
+              "marcas": [
+                "g7",
+                "g8"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "espeto",
+          "fen": "3k4/8/1r6/3K1Q2/8/8/8/8 b - - 1 1",
+          "vira": true,
+          "objetivo": "empatar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "3k4/8/1r6/3K1Q2/8/8/8/8 b - - 1 1",
+              "t": "rot.terceira.demos.espeto.1",
+              "marcas": [
+                "f5"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "3k4/8/8/1r1K1Q2/8/8/8/8 w - - 2 2",
+              "lance": "b6b5",
+              "t": "rot.terceira.demos.espeto.2",
+              "marcas": [
+                "d5",
+                "f5"
+              ]
+            },
+            {
+              "fen": "3k4/8/4K3/1r3Q2/8/8/8/8 b - - 3 2",
+              "lance": "d5e6",
+              "t": "rot.terceira.demos.espeto.3"
+            },
+            {
+              "fen": "3k4/8/4K3/5r2/8/8/8/8 w - - 0 3",
+              "lance": "b5f5",
+              "t": "rot.terceira.demos.espeto.4"
+            },
+            {
+              "fen": "3k4/8/8/5K2/8/8/8/8 b - - 0 3",
+              "lance": "e6f5",
+              "t": "rot.terceira.demos.espeto.5"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pratica",
+      "exemplos": [
+        {
+          "id": "lado",
+          "fen": "4k3/8/1r6/6Q1/3K4/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.terceira.pratica.lado.p",
+            "maquina": "b",
+            "limite": 30,
+            "erros": {
+              "g5d2": "rot.terceira.pratica.err.espeto",
+              "g5f4": "rot.terceira.pratica.err.espeto",
+              "d4e5": "rot.terceira.pratica.err.espeto",
+              "d4d5": "rot.terceira.pratica.err.espeto",
+              "g5g4": "rot.terceira.pratica.err.espeto",
+              "g5b5": "rot.terceira.pratica.err.solta",
+              "g5d8": "rot.terceira.pratica.err.solta",
+              "g5h4": "rot.terceira.pratica.err.espeto",
+              "g5f6": "rot.terceira.pratica.err.solta",
+              "g5g6": "rot.terceira.pratica.err.solta",
+              "g5h6": "rot.terceira.pratica.err.solta",
+              "g5e7": "rot.terceira.pratica.err.solta"
+            },
+            "errosPos": {
+              "4k3/8/6r1/3Q4/3K4/8/8/8 w - - 2 2": {
+                "d5c4": "rot.terceira.pratica.err.espeto",
+                "d4e5": "rot.terceira.pratica.err.espeto",
+                "d5g2": "rot.terceira.pratica.err.solta",
+                "d5g8": "rot.terceira.pratica.err.solta",
+                "d5g5": "rot.terceira.pratica.err.solta",
+                "d5c6": "rot.terceira.pratica.err.solta",
+                "d5d6": "rot.terceira.pratica.err.solta",
+                "d5e6": "rot.terceira.pratica.err.solta",
+                "d5f7": "rot.terceira.pratica.err.solta",
+                "d5d8": "rot.terceira.pratica.err.solta",
+                "d5d7": "rot.terceira.pratica.err.solta"
+              },
+              "8/5k2/6r1/7Q/3K4/8/8/8 w - - 4 3": {
+                "h5g6": "rot.terceira.pratica.err.entrega",
+                "h5d1": "rot.terceira.pratica.err.espeto",
+                "h5h6": "rot.terceira.pratica.err.solta",
+                "h5g4": "rot.terceira.pratica.err.solta",
+                "h5g5": "rot.terceira.pratica.err.solta"
+              },
+              "8/3k4/1r6/4Q3/3K4/8/8/8 w - - 2 2": {
+                "e5e8": "rot.terceira.pratica.err.solta",
+                "e5b8": "rot.terceira.pratica.err.solta",
+                "e5e7": "rot.terceira.pratica.err.solta",
+                "e5c7": "rot.terceira.pratica.err.solta",
+                "e5f6": "rot.terceira.pratica.err.solta",
+                "e5e6": "rot.terceira.pratica.err.solta",
+                "e5d6": "rot.terceira.pratica.err.solta",
+                "e5b5": "rot.terceira.pratica.err.solta",
+                "e5d5": "rot.terceira.pratica.err.cravada",
+                "d4e4": "rot.terceira.pratica.err.cravada",
+                "d4e3": "rot.terceira.pratica.err.cravada",
+                "e5f4": "rot.terceira.pratica.err.espetoTroca",
+                "e5e4": "rot.terceira.pratica.err.espetoTroca",
+                "d4d5": "rot.terceira.pratica.err.espetoTroca"
+              }
+            },
+            "fim": "rot.terceira.pratica.lado.fim",
+            "fins": {
+              "afogado": "rot.terceira.pratica.fins.afogado",
+              "repeticao": "rot.terceira.pratica.fins.repeticao",
+              "limite": "rot.terceira.pratica.fins.limite",
+              "insuficiente": "rot.terceira.pratica.fins.insuficiente"
+            }
+          }
+        },
+        {
+          "id": "fora",
+          "fen": "8/1k6/1r6/3K4/8/8/8/5Q2 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.terceira.pratica.fora.p",
+            "maquina": "b",
+            "limite": 30,
+            "erros": {
+              "f1f5": "rot.terceira.pratica.err.espeto",
+              "f1f6": "rot.terceira.pratica.err.solta",
+              "f1b1": "rot.terceira.pratica.err.solta",
+              "f1b5": "rot.terceira.pratica.err.solta",
+              "f1a6": "rot.terceira.pratica.err.solta"
+            },
+            "errosPos": {
+              "8/5Q2/kr6/3K4/8/8/8/8 w - - 2 2": {
+                "f7f5": "rot.terceira.pratica.err.espeto",
+                "f7e6": "rot.terceira.pratica.err.troca",
+                "f7h5": "rot.terceira.pratica.err.espeto",
+                "f7a7": "rot.terceira.pratica.err.solta",
+                "f7f6": "rot.terceira.pratica.err.solta",
+                "f7g6": "rot.terceira.pratica.err.solta",
+                "f7b7": "rot.terceira.pratica.err.solta"
+              },
+              "4Q3/8/k7/1r1K4/8/8/8/8 w - - 4 3": {
+                "e8b5": "rot.terceira.pratica.err.entrega"
+              }
+            },
+            "fim": "rot.terceira.pratica.fora.fim",
+            "fins": {
+              "afogado": "rot.terceira.pratica.fins.afogado",
+              "repeticao": "rot.terceira.pratica.fins.repeticao",
+              "limite": "rot.terceira.pratica.fins.limite",
+              "insuficiente": "rot.terceira.pratica.fins.insuficiente"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

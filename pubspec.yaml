@@ -85,6 +85,7 @@ flutter:
     - assets/lessons/roteiros/pawns.distantOpposition/
     - assets/lessons/roteiros/pawns.keySquares/
     - assets/lessons/roteiros/pawns.waitingMoves/
+    - assets/lessons/roteiros/queen.vsRook.philidor/
     - assets/tablebase/
     - assets/tablebase/roteiros/
     - assets/lessons/en/endgames/

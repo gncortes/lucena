@@ -1,0 +1,464 @@
+{
+  "licao": "queen.vsRook.philidor",
+  "parte": "philidor",
+  "etapas": [
+    {
+      "id": "ideia",
+      "exemplos": [
+        {
+          "id": "ex1",
+          "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "curiosidades": {
+            "t": "rot.philidor.curiosidades.philidor",
+            "referencias": [
+              {
+                "kind": "web",
+                "title": "Wikipedia: Queen versus rook endgame (Philidor's position)",
+                "url": "https://en.wikipedia.org/wiki/Queen_versus_rook_endgame"
+              }
+            ]
+          },
+          "entrada": [
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+              "t": "rot.philidor.ideia.ex1.e1",
+              "marcas": [
+                "b7",
+                "b8"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+              "t": "rot.philidor.ideia.ex1.e2",
+              "marcas": [
+                "c8"
+              ]
+            },
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+              "t": "rot.philidor.ideia.ex1.e3",
+              "marcas": [
+                "b6",
+                "c7",
+                "d7",
+                "a7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "1k6/8/2K5/Q7/8/8/8/1r6 w - - 1 2",
+              "lance": "b7b1",
+              "t": "rot.philidor.ideia.ex1.l1",
+              "marcas": [
+                "b1"
+              ]
+            },
+            {
+              "fen": "1k1Q4/8/2K5/8/8/8/8/1r6 b - - 2 2",
+              "lance": "a5d8",
+              "t": "rot.philidor.ideia.ex1.l2",
+              "marcas": [
+                "a7"
+              ]
+            },
+            {
+              "fen": "3Q4/k7/2K5/8/8/8/8/1r6 w - - 3 3",
+              "lance": "b8a7",
+              "t": "rot.philidor.ideia.ex1.l3"
+            },
+            {
+              "fen": "8/k7/2K5/8/3Q4/8/8/1r6 b - - 4 3",
+              "lance": "d8d4",
+              "t": "rot.philidor.ideia.ex1.l4",
+              "marcas": [
+                "h7",
+                "b1"
+              ]
+            },
+            {
+              "fen": "k7/8/2K5/8/3Q4/8/8/1r6 w - - 5 4",
+              "lance": "a7a8",
+              "t": "rot.philidor.ideia.ex1.l5"
+            },
+            {
+              "fen": "k6Q/8/2K5/8/8/8/8/1r6 b - - 6 4",
+              "lance": "d4h8",
+              "t": "rot.philidor.ideia.ex1.l6",
+              "marcas": [
+                "h8"
+              ]
+            },
+            {
+              "fen": "7Q/k7/2K5/8/8/8/8/1r6 w - - 7 5",
+              "lance": "a8a7",
+              "t": "rot.philidor.ideia.ex1.l7",
+              "marcas": [
+                "a1"
+              ]
+            },
+            {
+              "fen": "8/k6Q/2K5/8/8/8/8/1r6 b - - 8 5",
+              "lance": "h8h7",
+              "t": "rot.philidor.ideia.ex1.l8",
+              "marcas": [
+                "h7",
+                "b1"
+              ]
+            },
+            {
+              "fen": "1k6/7Q/2K5/8/8/8/8/1r6 w - - 9 6",
+              "lance": "a7b8",
+              "t": "rot.philidor.ideia.ex1.l9"
+            },
+            {
+              "fen": "1k6/8/2K5/8/8/8/8/1Q6 b - - 0 6",
+              "lance": "h7b1",
+              "t": "rot.philidor.ideia.ex1.l10"
+            }
+          ]
+        },
+        {
+          "id": "ex2",
+          "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "1k6/1r6/2K5/Q7/8/8/8/8 b - - 0 1",
+              "t": "rot.philidor.ideia.ex2.e1",
+              "marcas": [
+                "b7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "1k6/7r/2K5/Q7/8/8/8/8 w - - 1 2",
+              "lance": "b7h7",
+              "t": "rot.philidor.ideia.ex2.l1",
+              "marcas": [
+                "h7"
+              ]
+            },
+            {
+              "fen": "1k6/7r/2K5/4Q3/8/8/8/8 b - - 2 2",
+              "lance": "a5e5",
+              "t": "rot.philidor.ideia.ex2.l2",
+              "marcas": [
+                "b1",
+                "h7"
+              ]
+            },
+            {
+              "fen": "k7/7r/2K5/4Q3/8/8/8/8 w - - 3 3",
+              "lance": "b8a8",
+              "t": "rot.philidor.ideia.ex2.l3"
+            },
+            {
+              "fen": "k7/7r/2K5/8/8/8/8/Q7 b - - 4 3",
+              "lance": "e5a1",
+              "t": "rot.philidor.ideia.ex2.l4",
+              "marcas": [
+                "b8"
+              ]
+            },
+            {
+              "fen": "1k6/7r/2K5/8/8/8/8/Q7 w - - 5 4",
+              "lance": "a8b8",
+              "t": "rot.philidor.ideia.ex2.l5",
+              "marcas": [
+                "h8"
+              ]
+            },
+            {
+              "fen": "1k6/7r/2K5/8/8/8/8/1Q6 b - - 6 4",
+              "lance": "a1b1",
+              "t": "rot.philidor.ideia.ex2.l6",
+              "marcas": [
+                "b1",
+                "h7"
+              ]
+            },
+            {
+              "fen": "2k5/7r/2K5/8/8/8/8/1Q6 w - - 7 5",
+              "lance": "b8c8",
+              "t": "rot.philidor.ideia.ex2.l7"
+            },
+            {
+              "fen": "2k5/7Q/2K5/8/8/8/8/8 b - - 0 5",
+              "lance": "b1h7",
+              "t": "rot.philidor.ideia.ex2.l8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "demos",
+      "exemplos": [
+        {
+          "id": "cravada",
+          "fen": "2k5/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "2k5/1r6/2K5/Q7/8/8/8/8 w - - 0 1",
+              "t": "rot.philidor.demos.cravada.1",
+              "marcas": [
+                "c8",
+                "b7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "2k5/1r6/Q1K5/8/8/8/8/8 b - - 1 1",
+              "lance": "a5a6",
+              "t": "rot.philidor.demos.cravada.2",
+              "marcas": [
+                "a6",
+                "b7",
+                "c8"
+              ]
+            },
+            {
+              "fen": "3k4/1r6/Q1K5/8/8/8/8/8 w - - 2 2",
+              "lance": "c8d8",
+              "t": "rot.philidor.demos.cravada.3"
+            },
+            {
+              "fen": "3k4/1Q6/2K5/8/8/8/8/8 b - - 0 2",
+              "lance": "a6b7",
+              "t": "rot.philidor.demos.cravada.4"
+            }
+          ]
+        },
+        {
+          "id": "garfo",
+          "fen": "1k6/4r3/2K5/Q7/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [
+            {
+              "fen": "1k6/4r3/2K5/Q7/8/8/8/8 w - - 0 1",
+              "t": "rot.philidor.demos.garfo.1",
+              "marcas": [
+                "e7"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "1k6/4r3/2K5/8/1Q6/8/8/8 b - - 1 1",
+              "lance": "a5b4",
+              "t": "rot.philidor.demos.garfo.2",
+              "marcas": [
+                "b8",
+                "e7"
+              ]
+            },
+            {
+              "fen": "8/k3r3/2K5/8/1Q6/8/8/8 w - - 2 2",
+              "lance": "b8a7",
+              "t": "rot.philidor.demos.garfo.3"
+            },
+            {
+              "fen": "8/k3Q3/2K5/8/8/8/8/8 b - - 0 2",
+              "lance": "b4e7",
+              "t": "rot.philidor.demos.garfo.4"
+            }
+          ]
+        },
+        {
+          "id": "escada",
+          "fen": "7k/1r6/5K2/8/8/4Q3/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [
+            {
+              "fen": "7k/1r6/5K2/8/8/4Q3/8/8 w - - 0 1",
+              "t": "rot.philidor.demos.escada.1",
+              "marcas": [
+                "b7",
+                "e4"
+              ]
+            }
+          ],
+          "linha": [
+            {
+              "fen": "4Q2k/1r6/5K2/8/8/8/8/8 b - - 1 1",
+              "lance": "e3e8",
+              "t": "rot.philidor.demos.escada.2",
+              "marcas": [
+                "e8",
+                "h7"
+              ]
+            },
+            {
+              "fen": "4Q3/1r5k/5K2/8/8/8/8/8 w - - 2 2",
+              "lance": "h8h7",
+              "t": "rot.philidor.demos.escada.3",
+              "marcas": [
+                "e4"
+              ]
+            },
+            {
+              "fen": "8/1r5k/5K2/8/4Q3/8/8/8 b - - 3 2",
+              "lance": "e8e4",
+              "t": "rot.philidor.demos.escada.4",
+              "marcas": [
+                "h7",
+                "b7"
+              ]
+            },
+            {
+              "fen": "6k1/1r6/5K2/8/4Q3/8/8/8 w - - 4 3",
+              "lance": "h7g8",
+              "t": "rot.philidor.demos.escada.5"
+            },
+            {
+              "fen": "6k1/1Q6/5K2/8/8/8/8/8 b - - 0 3",
+              "lance": "e4b7",
+              "t": "rot.philidor.demos.escada.6"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pratica",
+      "exemplos": [
+        {
+          "id": "garfo",
+          "fen": "8/6r1/8/8/8/5K2/7k/4Q3 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "proximo",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.philidor.pratica.garfo.p",
+            "maquina": "b",
+            "limite": 8,
+            "erros": {
+              "e1c3": "rot.philidor.pratica.garfo.err.espeto",
+              "e1e3": "rot.philidor.pratica.garfo.err.espeto",
+              "e1e7": "rot.philidor.pratica.garfo.err.captura",
+              "e1f1": "rot.philidor.pratica.garfo.err.espeto",
+              "e1g1": "rot.philidor.pratica.garfo.err.captura",
+              "e1g3": "rot.philidor.pratica.garfo.err.captura",
+              "e1h1": "rot.philidor.pratica.garfo.err.captura",
+              "f3e2": "rot.philidor.pratica.garfo.err.espeto",
+              "f3e3": "rot.philidor.pratica.garfo.err.espeto",
+              "f3e4": "rot.philidor.pratica.garfo.err.espeto",
+              "f3f2": "rot.philidor.pratica.garfo.err.xeques"
+            },
+            "errosPos": {
+              "8/6r1/8/4Q3/8/5K1k/8/8 w - -": {
+                "e5c3": "rot.philidor.pratica.garfo.err.espeto",
+                "e5c7": "rot.philidor.pratica.garfo.err.captura",
+                "e5e1": "rot.philidor.pratica.garfo.err.xeques",
+                "e5e2": "rot.philidor.pratica.garfo.err.xeques",
+                "e5e3": "rot.philidor.pratica.garfo.err.espeto",
+                "e5e7": "rot.philidor.pratica.garfo.err.captura",
+                "e5g3": "rot.philidor.pratica.garfo.err.captura",
+                "e5g5": "rot.philidor.pratica.garfo.err.captura",
+                "e5h2": "rot.philidor.pratica.garfo.err.captura"
+              }
+            },
+            "fim": "rot.philidor.pratica.garfo.fim",
+            "fins": {
+              "afogado": "rot.philidor.pratica.fins.afogado",
+              "repeticao": "rot.philidor.pratica.fins.repeticao",
+              "limite": "rot.philidor.pratica.fins.limite",
+              "insuficiente": "rot.philidor.pratica.fins.insuficiente"
+            }
+          }
+        },
+        {
+          "id": "escada",
+          "fen": "6k1/2r5/5K2/7Q/8/8/8/8 w - - 0 1",
+          "vira": false,
+          "objetivo": "ganhar",
+          "fim": "etapa",
+          "entrada": [],
+          "linha": [],
+          "pratica": {
+            "tipo": "jogo",
+            "t": "rot.philidor.pratica.escada.p",
+            "maquina": "b",
+            "limite": 12,
+            "erros": {
+              "f6e5": "rot.philidor.pratica.escada.err.espeto",
+              "f6f5": "rot.philidor.pratica.escada.err.espeto",
+              "f6g5": "rot.philidor.pratica.escada.err.espeto",
+              "f6g6": "rot.philidor.pratica.escada.err.xeques",
+              "h5c5": "rot.philidor.pratica.escada.err.captura",
+              "h5f3": "rot.philidor.pratica.escada.err.espeto",
+              "h5f5": "rot.philidor.pratica.escada.err.espeto",
+              "h5f7": "rot.philidor.pratica.escada.err.captura",
+              "h5h6": "rot.philidor.pratica.escada.err.espeto",
+              "h5h7": "rot.philidor.pratica.escada.err.captura",
+              "h5h8": "rot.philidor.pratica.escada.err.captura"
+            },
+            "errosPos": {
+              "7k/2r5/5K2/8/6Q1/8/8/8 w - -": {
+                "f6g5": "rot.philidor.pratica.escada.err.espeto",
+                "f6g6": "rot.philidor.pratica.escada.err.espeto",
+                "g4c4": "rot.philidor.pratica.escada.err.captura",
+                "g4c8": "rot.philidor.pratica.escada.err.captura",
+                "g4d7": "rot.philidor.pratica.escada.err.captura",
+                "g4f5": "rot.philidor.pratica.escada.err.xeques",
+                "g4g6": "rot.philidor.pratica.escada.err.espeto",
+                "g4g7": "rot.philidor.pratica.escada.err.captura",
+                "g4g8": "rot.philidor.pratica.escada.err.captura"
+              },
+              "6k1/2r5/5K2/8/8/7Q/8/8 w - -": {
+                "h3c3": "rot.philidor.pratica.escada.err.captura",
+                "h3c8": "rot.philidor.pratica.escada.err.captura",
+                "h3d7": "rot.philidor.pratica.escada.err.captura",
+                "h3f1": "rot.philidor.pratica.escada.err.espeto",
+                "h3f3": "rot.philidor.pratica.escada.err.espeto",
+                "h3f5": "rot.philidor.pratica.escada.err.espeto",
+                "h3h6": "rot.philidor.pratica.escada.err.espeto",
+                "h3h7": "rot.philidor.pratica.escada.err.captura",
+                "h3h8": "rot.philidor.pratica.escada.err.captura"
+              },
+              "6k1/6r1/5K2/8/8/6Q1/8/8 w - -": {
+                "f6e5": "rot.philidor.pratica.escada.err.solta",
+                "f6e6": "rot.philidor.pratica.escada.err.solta",
+                "f6f5": "rot.philidor.pratica.escada.err.solta",
+                "g3c7": "rot.philidor.pratica.escada.err.captura",
+                "g3f2": "rot.philidor.pratica.escada.err.espeto",
+                "g3f3": "rot.philidor.pratica.escada.err.espeto",
+                "g3f4": "rot.philidor.pratica.escada.err.espeto",
+                "g3g1": "rot.philidor.pratica.escada.err.captura",
+                "g3g2": "rot.philidor.pratica.escada.err.captura",
+                "g3g4": "rot.philidor.pratica.escada.err.captura",
+                "g3g5": "rot.philidor.pratica.escada.err.captura",
+                "g3g6": "rot.philidor.pratica.escada.err.captura"
+              }
+            },
+            "fim": "rot.philidor.pratica.escada.fim",
+            "fins": {
+              "afogado": "rot.philidor.pratica.fins.afogado",
+              "repeticao": "rot.philidor.pratica.fins.repeticao",
+              "limite": "rot.philidor.pratica.fins.limite",
+              "insuficiente": "rot.philidor.pratica.fins.insuficiente"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

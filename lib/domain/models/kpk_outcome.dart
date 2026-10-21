@@ -62,9 +62,15 @@ enum FreeEnd {
   mate,
 
   /// Só sobrou material que não dá mate (objetivo `mate`).
-  insuficiente;
+  insuficiente,
 
-  /// O fim cumpre o objetivo do aluno: quem quer ganhar precisa coroar; quem
-  /// quer empatar cumpre com qualquer outro fim.
-  bool meets(bool wantsWin) => wantsWin ? this == coroa : this != coroa;
+  /// Sem peões, um lado perdeu a última peça e o outro ficou com uma (T78,
+  /// dama contra torre: a torre ganha).
+  material;
+
+  /// O fim cumpre o objetivo do aluno: quem quer ganhar precisa coroar (ou
+  /// ficar com a peça, que o juiz da tela confere pelo dono); quem quer
+  /// empatar cumpre com qualquer outro fim.
+  bool meets(bool wantsWin) =>
+      wantsWin ? this == coroa : this != coroa && this != material;
 }

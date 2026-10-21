@@ -29,6 +29,11 @@ bool _hasScript(LessonPart part) =>
 /// quando o teste delas fechar.
 const _testInProgress = <String>{};
 
+/// Aulas ligadas antes do primeiro capítulo escrito (T78, sessão 0): sem
+/// capítulo e sem exercício, o app as esconde. Saem daqui com o primeiro
+/// roteiro preenchido.
+const _noChapterYet = <String>{};
+
 void main() {
   final index = jsonDecode(
     io.File(AssetEndgameLessonRepository.indexPath).readAsStringSync(),
@@ -113,7 +118,8 @@ void main() {
     for (final lesson in lessons) {
       expect(
         lesson.lesson.steps.isNotEmpty ||
-            lesson.lesson.parts.any((part) => part.script != null),
+            lesson.lesson.parts.any((part) => part.script != null) ||
+            _noChapterYet.contains(lesson.id),
         isTrue,
         reason: lesson.id,
       );
