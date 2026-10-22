@@ -28,6 +28,10 @@ class Streak {
   /// [lost] dias seguidos. Zero se nada acabou.
   final int lost;
 
+  /// A mesma sequência, sem a que acabou (a folha já saiu).
+  Streak get withoutLost =>
+      Streak(current: current, record: record, activeToday: activeToday);
+
   /// Quantos dias faltam para empatar o recorde (zero: já é o recorde).
   int get toRecord => record - current;
 }

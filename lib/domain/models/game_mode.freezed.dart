@@ -28,7 +28,8 @@ mixin _$GameMode {
  bool get fromLink;/// O link de origem, quando o desafio é fechado: o resultado leva o mesmo
 /// link (mesmo código, trava e modo). Nulo: o link se refaz da partida.
  ChallengeLink? get link;/// O final em destaque, quando a partida é um (sem nota e sem anúncio).
- String? get featuredId;
+ String? get featuredId;/// O dia (`aaaa-mm-dd`), quando a partida é o final do dia (sem nota).
+ String? get dailyDate;
 /// Create a copy of GameMode
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -40,20 +41,20 @@ $GameModeCopyWith<GameMode> get copyWith => _$GameModeCopyWithImpl<GameMode>(thi
 @override
 bool operator ==(Object other) {
   final _this = this as GameMode;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameMode&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.userSide, _this.userSide) || other.userSide == _this.userSide)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.challengeId, _this.challengeId) || other.challengeId == _this.challengeId)&&(identical(other.speedrunId, _this.speedrunId) || other.speedrunId == _this.speedrunId)&&(identical(other.speedrunAttemptId, _this.speedrunAttemptId) || other.speedrunAttemptId == _this.speedrunAttemptId)&&(identical(other.speedrunStage, _this.speedrunStage) || other.speedrunStage == _this.speedrunStage)&&(identical(other.fromLink, _this.fromLink) || other.fromLink == _this.fromLink)&&(identical(other.link, _this.link) || other.link == _this.link)&&(identical(other.featuredId, _this.featuredId) || other.featuredId == _this.featuredId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameMode&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.userSide, _this.userSide) || other.userSide == _this.userSide)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.challengeId, _this.challengeId) || other.challengeId == _this.challengeId)&&(identical(other.speedrunId, _this.speedrunId) || other.speedrunId == _this.speedrunId)&&(identical(other.speedrunAttemptId, _this.speedrunAttemptId) || other.speedrunAttemptId == _this.speedrunAttemptId)&&(identical(other.speedrunStage, _this.speedrunStage) || other.speedrunStage == _this.speedrunStage)&&(identical(other.fromLink, _this.fromLink) || other.fromLink == _this.fromLink)&&(identical(other.link, _this.link) || other.link == _this.link)&&(identical(other.featuredId, _this.featuredId) || other.featuredId == _this.featuredId)&&(identical(other.dailyDate, _this.dailyDate) || other.dailyDate == _this.dailyDate));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GameMode;
-  return Object.hash(runtimeType,_this.opponent,_this.level,_this.userSide,_this.goal,_this.positionId,_this.challengeId,_this.speedrunId,_this.speedrunAttemptId,_this.speedrunStage,_this.fromLink,_this.link,_this.featuredId);
+  return Object.hash(runtimeType,_this.opponent,_this.level,_this.userSide,_this.goal,_this.positionId,_this.challengeId,_this.speedrunId,_this.speedrunAttemptId,_this.speedrunStage,_this.fromLink,_this.link,_this.featuredId,_this.dailyDate);
 }
 
 @override
 String toString() {
   final _this = this as GameMode;
-  return 'GameMode(opponent: ${_this.opponent}, level: ${_this.level}, userSide: ${_this.userSide}, goal: ${_this.goal}, positionId: ${_this.positionId}, challengeId: ${_this.challengeId}, speedrunId: ${_this.speedrunId}, speedrunAttemptId: ${_this.speedrunAttemptId}, speedrunStage: ${_this.speedrunStage}, fromLink: ${_this.fromLink}, link: ${_this.link}, featuredId: ${_this.featuredId})';
+  return 'GameMode(opponent: ${_this.opponent}, level: ${_this.level}, userSide: ${_this.userSide}, goal: ${_this.goal}, positionId: ${_this.positionId}, challengeId: ${_this.challengeId}, speedrunId: ${_this.speedrunId}, speedrunAttemptId: ${_this.speedrunAttemptId}, speedrunStage: ${_this.speedrunStage}, fromLink: ${_this.fromLink}, link: ${_this.link}, featuredId: ${_this.featuredId}, dailyDate: ${_this.dailyDate})';
 }
 
 
@@ -64,7 +65,7 @@ abstract mixin class $GameModeCopyWith<$Res>  {
   factory $GameModeCopyWith(GameMode value, $Res Function(GameMode) _then) = _$GameModeCopyWithImpl;
 @useResult
 $Res call({
- OpponentKind opponent, int? level, Side? userSide, PositionGoal? goal, String? positionId, String? challengeId, String? speedrunId, int? speedrunAttemptId, int? speedrunStage, bool fromLink, ChallengeLink? link, String? featuredId
+ OpponentKind opponent, int? level, Side? userSide, PositionGoal? goal, String? positionId, String? challengeId, String? speedrunId, int? speedrunAttemptId, int? speedrunStage, bool fromLink, ChallengeLink? link, String? featuredId, String? dailyDate
 });
 
 
@@ -81,7 +82,7 @@ class _$GameModeCopyWithImpl<$Res>
 
 /// Create a copy of GameMode
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? opponent = null,Object? level = freezed,Object? userSide = freezed,Object? goal = freezed,Object? positionId = freezed,Object? challengeId = freezed,Object? speedrunId = freezed,Object? speedrunAttemptId = freezed,Object? speedrunStage = freezed,Object? fromLink = null,Object? link = freezed,Object? featuredId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? opponent = null,Object? level = freezed,Object? userSide = freezed,Object? goal = freezed,Object? positionId = freezed,Object? challengeId = freezed,Object? speedrunId = freezed,Object? speedrunAttemptId = freezed,Object? speedrunStage = freezed,Object? fromLink = null,Object? link = freezed,Object? featuredId = freezed,Object? dailyDate = freezed,}) {
   return _then(GameMode(
 opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
 as OpponentKind,level: freezed == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
@@ -95,6 +96,7 @@ as int?,speedrunStage: freezed == speedrunStage ? _self.speedrunStage : speedrun
 as int?,fromLink: null == fromLink ? _self.fromLink : fromLink // ignore: cast_nullable_to_non_nullable
 as bool,link: freezed == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
 as ChallengeLink?,featuredId: freezed == featuredId ? _self.featuredId : featuredId // ignore: cast_nullable_to_non_nullable
+as String?,dailyDate: freezed == dailyDate ? _self.dailyDate : dailyDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -192,10 +194,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OpponentKind opponent,  int? level,  Side? userSide,  PositionGoal? goal,  String? positionId,  String? challengeId,  String? speedrunId,  int? speedrunAttemptId,  int? speedrunStage,  bool fromLink,  ChallengeLink? link,  String? featuredId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OpponentKind opponent,  int? level,  Side? userSide,  PositionGoal? goal,  String? positionId,  String? challengeId,  String? speedrunId,  int? speedrunAttemptId,  int? speedrunStage,  bool fromLink,  ChallengeLink? link,  String? featuredId,  String? dailyDate)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameMode() when $default != null:
-return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.positionId,_that.challengeId,_that.speedrunId,_that.speedrunAttemptId,_that.speedrunStage,_that.fromLink,_that.link,_that.featuredId);case _:
+return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.positionId,_that.challengeId,_that.speedrunId,_that.speedrunAttemptId,_that.speedrunStage,_that.fromLink,_that.link,_that.featuredId,_that.dailyDate);case _:
   return orElse();
 
 }
@@ -213,10 +215,10 @@ return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.posit
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OpponentKind opponent,  int? level,  Side? userSide,  PositionGoal? goal,  String? positionId,  String? challengeId,  String? speedrunId,  int? speedrunAttemptId,  int? speedrunStage,  bool fromLink,  ChallengeLink? link,  String? featuredId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OpponentKind opponent,  int? level,  Side? userSide,  PositionGoal? goal,  String? positionId,  String? challengeId,  String? speedrunId,  int? speedrunAttemptId,  int? speedrunStage,  bool fromLink,  ChallengeLink? link,  String? featuredId,  String? dailyDate)  $default,) {final _that = this;
 switch (_that) {
 case _GameMode():
-return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.positionId,_that.challengeId,_that.speedrunId,_that.speedrunAttemptId,_that.speedrunStage,_that.fromLink,_that.link,_that.featuredId);case _:
+return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.positionId,_that.challengeId,_that.speedrunId,_that.speedrunAttemptId,_that.speedrunStage,_that.fromLink,_that.link,_that.featuredId,_that.dailyDate);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -233,10 +235,10 @@ return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.posit
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OpponentKind opponent,  int? level,  Side? userSide,  PositionGoal? goal,  String? positionId,  String? challengeId,  String? speedrunId,  int? speedrunAttemptId,  int? speedrunStage,  bool fromLink,  ChallengeLink? link,  String? featuredId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OpponentKind opponent,  int? level,  Side? userSide,  PositionGoal? goal,  String? positionId,  String? challengeId,  String? speedrunId,  int? speedrunAttemptId,  int? speedrunStage,  bool fromLink,  ChallengeLink? link,  String? featuredId,  String? dailyDate)?  $default,) {final _that = this;
 switch (_that) {
 case _GameMode() when $default != null:
-return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.positionId,_that.challengeId,_that.speedrunId,_that.speedrunAttemptId,_that.speedrunStage,_that.fromLink,_that.link,_that.featuredId);case _:
+return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.positionId,_that.challengeId,_that.speedrunId,_that.speedrunAttemptId,_that.speedrunStage,_that.fromLink,_that.link,_that.featuredId,_that.dailyDate);case _:
   return null;
 
 }
@@ -248,7 +250,7 @@ return $default(_that.opponent,_that.level,_that.userSide,_that.goal,_that.posit
 
 
 class _GameMode extends GameMode {
-  const _GameMode({this.opponent = OpponentKind.twoPlayers, this.level, this.userSide, this.goal, this.positionId, this.challengeId, this.speedrunId, this.speedrunAttemptId, this.speedrunStage, this.fromLink = false, this.link, this.featuredId}): super._();
+  const _GameMode({this.opponent = OpponentKind.twoPlayers, this.level, this.userSide, this.goal, this.positionId, this.challengeId, this.speedrunId, this.speedrunAttemptId, this.speedrunStage, this.fromLink = false, this.link, this.featuredId, this.dailyDate}): super._();
   
 
 @override@JsonKey() final  OpponentKind opponent;
@@ -276,6 +278,8 @@ class _GameMode extends GameMode {
 @override final  ChallengeLink? link;
 /// O final em destaque, quando a partida é um (sem nota e sem anúncio).
 @override final  String? featuredId;
+/// O dia (`aaaa-mm-dd`), quando a partida é o final do dia (sem nota).
+@override final  String? dailyDate;
 
 /// Create a copy of GameMode
 /// with the given fields replaced by the non-null parameter values.
@@ -287,18 +291,18 @@ _$GameModeCopyWith<_GameMode> get copyWith => __$GameModeCopyWithImpl<_GameMode>
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameMode&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.level, level) || other.level == level)&&(identical(other.userSide, userSide) || other.userSide == userSide)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.challengeId, challengeId) || other.challengeId == challengeId)&&(identical(other.speedrunId, speedrunId) || other.speedrunId == speedrunId)&&(identical(other.speedrunAttemptId, speedrunAttemptId) || other.speedrunAttemptId == speedrunAttemptId)&&(identical(other.speedrunStage, speedrunStage) || other.speedrunStage == speedrunStage)&&(identical(other.fromLink, fromLink) || other.fromLink == fromLink)&&(identical(other.link, link) || other.link == link)&&(identical(other.featuredId, featuredId) || other.featuredId == featuredId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameMode&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.level, level) || other.level == level)&&(identical(other.userSide, userSide) || other.userSide == userSide)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.challengeId, challengeId) || other.challengeId == challengeId)&&(identical(other.speedrunId, speedrunId) || other.speedrunId == speedrunId)&&(identical(other.speedrunAttemptId, speedrunAttemptId) || other.speedrunAttemptId == speedrunAttemptId)&&(identical(other.speedrunStage, speedrunStage) || other.speedrunStage == speedrunStage)&&(identical(other.fromLink, fromLink) || other.fromLink == fromLink)&&(identical(other.link, link) || other.link == link)&&(identical(other.featuredId, featuredId) || other.featuredId == featuredId)&&(identical(other.dailyDate, dailyDate) || other.dailyDate == dailyDate));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,opponent,level,userSide,goal,positionId,challengeId,speedrunId,speedrunAttemptId,speedrunStage,fromLink,link,featuredId);
+    return Object.hash(runtimeType,opponent,level,userSide,goal,positionId,challengeId,speedrunId,speedrunAttemptId,speedrunStage,fromLink,link,featuredId,dailyDate);
 }
 
 @override
 String toString() {
-    return 'GameMode(opponent: $opponent, level: $level, userSide: $userSide, goal: $goal, positionId: $positionId, challengeId: $challengeId, speedrunId: $speedrunId, speedrunAttemptId: $speedrunAttemptId, speedrunStage: $speedrunStage, fromLink: $fromLink, link: $link, featuredId: $featuredId)';
+    return 'GameMode(opponent: $opponent, level: $level, userSide: $userSide, goal: $goal, positionId: $positionId, challengeId: $challengeId, speedrunId: $speedrunId, speedrunAttemptId: $speedrunAttemptId, speedrunStage: $speedrunStage, fromLink: $fromLink, link: $link, featuredId: $featuredId, dailyDate: $dailyDate)';
 }
 
 
@@ -309,7 +313,7 @@ abstract mixin class _$GameModeCopyWith<$Res> implements $GameModeCopyWith<$Res>
   factory _$GameModeCopyWith(_GameMode value, $Res Function(_GameMode) _then) = __$GameModeCopyWithImpl;
 @override @useResult
 $Res call({
- OpponentKind opponent, int? level, Side? userSide, PositionGoal? goal, String? positionId, String? challengeId, String? speedrunId, int? speedrunAttemptId, int? speedrunStage, bool fromLink, ChallengeLink? link, String? featuredId
+ OpponentKind opponent, int? level, Side? userSide, PositionGoal? goal, String? positionId, String? challengeId, String? speedrunId, int? speedrunAttemptId, int? speedrunStage, bool fromLink, ChallengeLink? link, String? featuredId, String? dailyDate
 });
 
 
@@ -326,7 +330,7 @@ class __$GameModeCopyWithImpl<$Res>
 
 /// Create a copy of GameMode
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? opponent = null,Object? level = freezed,Object? userSide = freezed,Object? goal = freezed,Object? positionId = freezed,Object? challengeId = freezed,Object? speedrunId = freezed,Object? speedrunAttemptId = freezed,Object? speedrunStage = freezed,Object? fromLink = null,Object? link = freezed,Object? featuredId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? opponent = null,Object? level = freezed,Object? userSide = freezed,Object? goal = freezed,Object? positionId = freezed,Object? challengeId = freezed,Object? speedrunId = freezed,Object? speedrunAttemptId = freezed,Object? speedrunStage = freezed,Object? fromLink = null,Object? link = freezed,Object? featuredId = freezed,Object? dailyDate = freezed,}) {
   return _then(_GameMode(
 opponent: null == opponent ? _self.opponent : opponent // ignore: cast_nullable_to_non_nullable
 as OpponentKind,level: freezed == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
@@ -340,6 +344,7 @@ as int?,speedrunStage: freezed == speedrunStage ? _self.speedrunStage : speedrun
 as int?,fromLink: null == fromLink ? _self.fromLink : fromLink // ignore: cast_nullable_to_non_nullable
 as bool,link: freezed == link ? _self.link : link // ignore: cast_nullable_to_non_nullable
 as ChallengeLink?,featuredId: freezed == featuredId ? _self.featuredId : featuredId // ignore: cast_nullable_to_non_nullable
+as String?,dailyDate: freezed == dailyDate ? _self.dailyDate : dailyDate // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

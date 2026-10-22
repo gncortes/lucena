@@ -37,6 +37,7 @@ import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/account/account_invite_repository.dart';
 import 'data/repositories/activity/activity_repository.dart';
+import 'data/repositories/daily/daily_final_repository.dart';
 import 'data/repositories/account/account_repository.dart';
 import 'data/repositories/chesscom/chesscom_repository.dart';
 import 'data/repositories/lichess/lichess_repository.dart';
@@ -198,6 +199,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<ActivityRepository>.value(
           value: dependencies.activityRepository,
+        ),
+        RepositoryProvider<DailyFinalRepository>.value(
+          value: dependencies.dailyFinalRepository,
         ),
         RepositoryProvider<SyncScheduler>.value(value: _sync),
         RepositoryProvider<LichessRepository>.value(

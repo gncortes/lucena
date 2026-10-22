@@ -129,7 +129,7 @@ class _Hero extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            _Week(state: state),
+            StreakWeek(state: state),
           ],
         ),
       ),
@@ -137,9 +137,10 @@ class _Hero extends StatelessWidget {
   }
 }
 
-// Segunda a domingo: os dias da sequência atual com o check, hoje com anel.
-class _Week extends StatelessWidget {
-  const _Week({required this.state});
+/// Segunda a domingo: os dias da sequência atual com o check, hoje com anel.
+/// Também no cartão da sequência do resultado do final do dia.
+class StreakWeek extends StatelessWidget {
+  const StreakWeek({required this.state, super.key});
 
   final StreakState state;
 

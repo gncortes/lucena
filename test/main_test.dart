@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:lucena/ui/core/keys/history_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
@@ -308,7 +310,11 @@ void main() {
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    final flying = tester.getSize(find.byType(StaticChessboard)).width;
+    // O maior tabuleiro: a miniatura do final do dia continua na home.
+    final flying = [
+      for (final board in find.byType(StaticChessboard).evaluate())
+        tester.getSize(find.byWidget(board.widget)).width,
+    ].reduce(math.max);
     expect(flying, greaterThan(small));
     expect(flying, lessThan(screen));
     expect(

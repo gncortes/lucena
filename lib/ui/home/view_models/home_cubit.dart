@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
+import '../../../data/repositories/daily/daily_final_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/featured/featured_progress_repository.dart';
@@ -18,6 +20,7 @@ import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/daily_final.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/goal_preference.dart';
@@ -25,11 +28,13 @@ import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/models/streak.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
+import '../../../domain/use_cases/streak_rules.dart';
 import '../../../domain/use_cases/train_suggestion.dart';
 
 /// O que a tela inicial mostra: onde o jogador está, contra quem joga e o
@@ -56,6 +61,8 @@ class HomeState {
     this.endgameGoal,
     this.trainGoal,
     this.journeyStarted = false,
+    this.daily,
+    this.streak = Streak.none,
   });
 
   final bool ready;
@@ -115,6 +122,13 @@ class HomeState {
 
   /// Algum desafio da Jornada já cumprido.
   final bool journeyStarted;
+
+  /// O final de hoje, na faixa "Final do dia". Nulo: a faixa some.
+  final DailyFinal? daily;
+
+  /// A sequência de dias; com [Streak.lost], a folha da sequência perdida
+  /// sai uma vez.
+  final Streak streak;
 
   /// O caminho do cartão "Seu objetivo". Nulo: sem objetivo, ou sem nada
   /// por fazer nele (o caminho fica na lista).
@@ -179,7 +193,11 @@ class HomeState {
     );
   }
 
-  HomeState copyWith({bool? layoutNotice, bool? unlockedBlind}) => HomeState(
+  HomeState copyWith({
+    bool? layoutNotice,
+    bool? unlockedBlind,
+    Streak? streak,
+  }) => HomeState(
     ready: ready,
     tourPending: tourPending,
     stage: stage,
@@ -200,6 +218,8 @@ class HomeState {
     endgameGoal: endgameGoal,
     trainGoal: trainGoal,
     journeyStarted: journeyStarted,
+    daily: daily,
+    streak: streak ?? this.streak,
   );
 }
 
@@ -317,7 +337,13 @@ class HomeCubit extends Cubit<HomeState> {
     this._featuredProgress,
     this._now,
     this._positions,
+    this._daily,
+    this._activity,
   }) : super(const HomeState());
+
+  // O final do dia e a sequência: sem eles (ou sem o relógio), a faixa some.
+  final DailyFinalRepository? _daily;
+  final ActivityRepository? _activity;
 
   // O catálogo de posições, para o cartão de "Treinar finais".
   final PositionsRepository? _positions;
@@ -407,6 +433,9 @@ class HomeCubit extends Cubit<HomeState> {
         saved == null &&
         !await _homeLayout.noticeSeen();
     final featured = await _featuredItem();
+    final now = _now;
+    final daily = now == null ? null : await _daily?.of(now());
+    final streak = await _streak();
     if (isClosed) return;
     emit(
       HomeState(
@@ -436,8 +465,32 @@ class HomeCubit extends Cubit<HomeState> {
         endgameGoal: endgameGoal,
         trainGoal: trainGoal,
         journeyStarted: fulfilled.isNotEmpty,
+        daily: daily,
+        streak: streak,
       ),
     );
+  }
+
+  /// A sequência de hoje. [Streak.lost] só fica quando a folha da sequência
+  /// perdida ainda não saiu e a que acabou tinha pelo menos dois dias.
+  Future<Streak> _streak() async {
+    final activity = _activity;
+    final now = _now;
+    if (activity == null || now == null) return Streak.none;
+    final at = now();
+    final streak = StreakRules.of(await activity.days(), at);
+    final pending =
+        streak.lost >= 2 &&
+        await activity.lostPending(StreakRules.lostLastDay(at));
+    return pending ? streak : streak.withoutLost;
+  }
+
+  /// A folha da sequência perdida saiu: não volta.
+  Future<void> lostShown() async {
+    final now = _now;
+    if (now == null) return;
+    emit(state.copyWith(streak: state.streak.withoutLost));
+    await _activity?.markLostShown(StreakRules.lostLastDay(now()));
   }
 
   /// A aula da vez na trilha: o número dela e quantas já passaram.

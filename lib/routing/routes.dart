@@ -1,6 +1,7 @@
 import '../domain/models/challenge_link.dart';
 import '../domain/models/featured.dart';
 import '../domain/models/clock.dart';
+import '../domain/models/daily_final.dart';
 import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
 import '../domain/models/survey.dart';
@@ -88,6 +89,7 @@ abstract final class Routes {
     bool fromLink = false,
     ChallengeLink? origin,
     String? featured,
+    String? daily,
   }) => Uri(
     path: freeBoard,
     queryParameters: {
@@ -107,6 +109,7 @@ abstract final class Routes {
       'stage': ?stage,
       if (fromLink) 'link': origin == null ? '1' : origin.uri.toString(),
       'featured': ?featured,
+      'daily': ?daily,
     },
   ).toString();
 
@@ -197,6 +200,33 @@ abstract final class Routes {
       user: user,
       goal: endgame.goal.code,
       featured: endgame.id,
+    );
+  }
+
+  /// O final do dia: abre a partida de hoje (o toque do lembrete cai aqui).
+  static const daily = '/daily';
+  static const dailyResult = '/daily/result';
+  static const dailyShare = '/daily/share';
+
+  /// O resultado do final do dia [date] (`aaaa-mm-dd`).
+  static String dailyResultOf(String date) =>
+      Uri(path: dailyResult, queryParameters: {'date': date}).toString();
+  static String dailyShareOf(String date) =>
+      Uri(path: dailyShare, queryParameters: {'date': date}).toString();
+
+  /// A partida do final do dia: sem relógio, contra o Maia no nível
+  /// [level], com o lado e o objetivo do próprio final.
+  static String dailyGame(DailyFinal daily, {required int level}) {
+    final position = daily.position;
+    final user = position.fen.split(' ')[1] == 'b' ? 'black' : 'white';
+    return freeBoardAt(
+      position.fen,
+      view: user,
+      opponent: OpponentKind.maia.code,
+      level: '$level',
+      user: user,
+      goal: position.goal.code,
+      daily: DailyRecord.dayCode(daily.date),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
+import '../data/repositories/daily/daily_final_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/tablebase/engine_judge_repository.dart';
@@ -187,6 +188,7 @@ class Dependencies {
     required this.featuredRepository,
     required this.featuredProgressRepository,
     required this.activityRepository,
+    required this.dailyFinalRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     this.syncRepository = const NoSyncRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
@@ -339,6 +341,11 @@ class Dependencies {
       featuredRepository: AssetFeaturedRepository(assets),
       featuredProgressRepository: featured,
       activityRepository: activity,
+      dailyFinalRepository: LocalDailyFinalRepository(
+        assets,
+        positions,
+        preferences,
+      ),
       accountInviteRepository: LocalAccountInviteRepository(preferences),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
@@ -431,6 +438,7 @@ class Dependencies {
 
   /// Os dias com atividade, para a sequência (E1.22).
   final ActivityRepository activityRepository;
+  final DailyFinalRepository dailyFinalRepository;
 
   /// O progresso na conta (E1.13). Sem conta, ninguém chama.
   final SyncRepository syncRepository;

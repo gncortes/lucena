@@ -1,0 +1,225 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_links.dart';
+import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/daily_final.dart';
+import 'package:lucena/domain/models/maia_level.dart';
+import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/keys/daily_keys.dart';
+import 'package:lucena/ui/daily/view_models/daily_result_cubit.dart';
+import 'package:lucena/ui/daily/view_models/daily_start_cubit.dart';
+import 'package:lucena/ui/daily/widgets/daily_home_card.dart';
+import 'package:lucena/ui/daily/widgets/daily_result_screen.dart';
+import 'package:lucena/ui/daily/widgets/daily_share_screen.dart';
+import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/ui/streak/view_models/streak_cubit.dart';
+
+import '../../../testing/fakes/fake_activity_repository.dart';
+import '../../../testing/fakes/fake_daily_final_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
+import '../../../testing/fakes/fake_positions_repository.dart';
+import '../../../testing/fakes/fake_rating_repository.dart';
+import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_share_repository.dart';
+import '../../../testing/test_app.dart';
+
+void main() {
+  final now = FakeNow(DateTime(2026, 10, 22, 9));
+  final day = DateTime(2026, 10, 22);
+  final won = DailyRecord(
+    date: day,
+    positionId: samplePositions.first.id,
+    outcome: DailyOutcome.won,
+    fulfilled: true,
+    squares: const [DailySquare.right, DailySquare.bad, DailySquare.right],
+  );
+
+  void phone(WidgetTester tester) {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(412, 915);
+    addTearDown(tester.view.reset);
+  }
+
+  Future<void> pumpHome(WidgetTester tester, {required int streak}) async {
+    phone(tester);
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings()),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: Scaffold(
+          body: DailyHomeCard(
+            daily: DailyFinal(date: day, position: samplePositions.first),
+            streak: streak,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> pumpDaily(
+    WidgetTester tester,
+    Widget screen, {
+    DailyRecord? record,
+    FakeShareRepository? share,
+  }) async {
+    phone(tester);
+    final daily = FakeDailyFinalRepository(records: {day: ?record});
+    final result = DailyResultCubit(date: '2026-10-22', daily: daily);
+    final streak = StreakCubit(
+      activity: FakeActivityRepository(
+        days: {
+          for (final d in [20, 21, 22]) DateTime(2026, 10, d, 18),
+        },
+      ),
+      now: now,
+    );
+    addTearDown(result.close);
+    addTearDown(streak.close);
+    await result.load();
+    await streak.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        shareRepository: share,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: result),
+            BlocProvider.value(value: streak),
+          ],
+          child: screen,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('home: a faixa com a data, a sequência e o selo HOJE', (
+    tester,
+  ) async {
+    await pumpHome(tester, streak: 12);
+
+    expect(find.byKey(DailyKeys.homeStrip), findsOneWidget);
+    expect(find.text('Final do dia'), findsOneWidget);
+    expect(find.text('22 de outubro'), findsOneWidget);
+    expect(find.byKey(DailyKeys.streakPill), findsOneWidget);
+    expect(find.byKey(DailyKeys.badge), findsOneWidget);
+  });
+
+  testWidgets('home: sem sequência, sem a pílula', (tester) async {
+    await pumpHome(tester, streak: 0);
+
+    expect(find.byKey(DailyKeys.streakPill), findsNothing);
+  });
+
+  testWidgets(
+    'resultado: título, quadradinhos, sequência e quantos acertaram',
+    (tester) async {
+      await pumpDaily(tester, const DailyResultScreen(), record: won);
+
+      expect(find.text('Você ganhou'), findsOneWidget);
+      expect(find.text('22 de outubro · 3 lances'), findsOneWidget);
+      for (var i = 0; i < 3; i++) {
+        expect(find.byKey(DailyKeys.square(i)), findsOneWidget);
+      }
+      expect(find.byKey(DailyKeys.streakCard), findsOneWidget);
+      expect(find.text('3 dias seguidos'), findsOneWidget);
+      expect(find.byKey(DailyKeys.crowdCard), findsOneWidget);
+      expect(find.byKey(DailyKeys.share), findsOneWidget);
+      expect(find.byKey(DailyKeys.continueButton), findsOneWidget);
+    },
+  );
+
+  testWidgets('resultado sem tentativa: sem o cartão e sem compartilhar', (
+    tester,
+  ) async {
+    await pumpDaily(tester, const DailyResultScreen());
+
+    expect(find.byKey(DailyKeys.resultTitle), findsNothing);
+    expect(find.byKey(DailyKeys.share), findsNothing);
+    expect(find.byKey(DailyKeys.continueButton), findsOneWidget);
+  });
+
+  testWidgets('compartilhar: a imagem e o texto com o link do dia', (
+    tester,
+  ) async {
+    final share = FakeShareRepository();
+    await pumpDaily(
+      tester,
+      const DailyShareScreen(),
+      record: won,
+      share: share,
+    );
+
+    expect(find.byKey(DailyKeys.shareImage), findsOneWidget);
+    expect(find.text('Ganhei em 3 lances'), findsOneWidget);
+    expect(
+      find.text(
+        'Final do dia do Lucena, 22 de outubro: ganhei em 3 lances e a '
+        'sequência está em 3 dias. Você acha o lance? '
+        'https://${AppLinks.host}/${AppLinks.dailySegment}',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.byKey(DailyKeys.shareButton));
+    await tester.pump();
+    await tester.runAsync(() async {
+      await tester.pump();
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+    });
+    await tester.pump();
+
+    final sent = share.shared.single;
+    expect(sent.png.sublist(0, 4), [0x89, 0x50, 0x4e, 0x47]);
+    expect(sent.name, 'lucena-final-do-dia.png');
+    expect(sent.text, contains('ganhei em 3 lances'));
+  });
+
+  test('início: a partida de hoje no nível da pessoa', () async {
+    final rating = FakeRatingRepository();
+    final cubit = DailyStartCubit(
+      daily: FakeDailyFinalRepository(),
+      rating: rating,
+      now: now,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    final level = MaiaLevels.nearest((await rating.current()).rounded);
+    expect(
+      cubit.state,
+      isA<DailyStartReady>().having(
+        (s) => s.location,
+        'location',
+        Routes.dailyGame(
+          DailyFinal(date: day, position: samplePositions.first),
+          level: level,
+        ),
+      ),
+    );
+  });
+
+  test('início sem final hoje: a home', () async {
+    final cubit = DailyStartCubit(
+      daily: FakeDailyFinalRepository(none: true),
+      rating: FakeRatingRepository(),
+      now: now,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    expect(
+      cubit.state,
+      isA<DailyStartReady>().having((s) => s.location, 'location', Routes.home),
+    );
+  });
+}

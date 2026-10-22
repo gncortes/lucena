@@ -8,6 +8,7 @@ import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_progress_repository_notifying.dart';
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
@@ -351,6 +352,11 @@ Future<Dependencies> e2eDependencies() async {
       activity,
     ),
     activityRepository: activity,
+    dailyFinalRepository: LocalDailyFinalRepository(
+      const AssetService(),
+      positions,
+      PreferencesService(),
+    ),
     languages: AppLanguage.values,
   );
 }

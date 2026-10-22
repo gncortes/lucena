@@ -11,6 +11,9 @@ abstract final class AppLinks {
   /// O começo do caminho de um desafio: `<host>/p/<código>`.
   static const challengeSegment = 'p';
 
+  /// O caminho do final do dia, no link que vai com a imagem: `<host>/dia`.
+  static const dailySegment = 'dia';
+
   /// O endereço de [path] no domínio do app.
   static Uri uri(String path, [Map<String, String>? query]) =>
       Uri.https(host, path, query);

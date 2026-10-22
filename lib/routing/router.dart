@@ -42,6 +42,7 @@ import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/game_rules.dart';
+import '../domain/models/daily_final.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
@@ -77,6 +78,13 @@ import '../ui/free_board/widgets/free_board_screen.dart';
 import '../data/repositories/account/account_invite_repository.dart';
 import '../data/repositories/activity/activity_repository.dart';
 import '../ui/streak/view_models/streak_cubit.dart';
+import '../data/repositories/daily/daily_final_repository.dart';
+import '../ui/daily/view_models/daily_game_cubit.dart';
+import '../ui/daily/view_models/daily_result_cubit.dart';
+import '../ui/daily/view_models/daily_start_cubit.dart';
+import '../ui/daily/widgets/daily_result_screen.dart';
+import '../ui/daily/widgets/daily_share_screen.dart';
+import '../ui/daily/widgets/daily_start_screen.dart';
 import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
@@ -263,6 +271,27 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
         ),
       ),
       _route(
+        path: Routes.daily,
+        builder: (context, state) => BlocProvider(
+          create: (context) => DailyStartCubit(
+            daily: context.read<DailyFinalRepository>(),
+            rating: context.read<RatingRepository>(),
+            now: context.read<Now>(),
+          )..load(),
+          child: const DailyStartScreen(),
+        ),
+      ),
+      _route(
+        path: Routes.dailyResult,
+        builder: (context, state) =>
+            _daily(context, state, child: const DailyResultScreen()),
+      ),
+      _route(
+        path: Routes.dailyShare,
+        builder: (context, state) =>
+            _daily(context, state, child: const DailyShareScreen()),
+      ),
+      _route(
         path: Routes.accountEnter,
         builder: (context, state) => AccountScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
@@ -369,6 +398,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             featuredProgress: context.read<FeaturedProgressRepository>(),
             now: context.read<Now>(),
             positions: context.read<PositionsRepository>(),
+            daily: context.read<DailyFinalRepository>(),
+            activity: context.read<ActivityRepository>(),
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -456,6 +487,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                   final url => ChallengeLink.tryParse(Uri.parse(url)),
                 },
                 featuredId: query['featured'],
+                dailyDate: query['daily'],
               );
               final start = fen == null ? null : GameRules.fromFen(fen);
               // As falas vêm no idioma do app (as que faltam, em inglês).
@@ -497,6 +529,16 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           : ClockConfig(white: white, black: black),
                     )..open(),
                   ),
+                  if (mode.dailyDate case final date?)
+                    BlocProvider(
+                      create: (context) => DailyGameCubit(
+                        date: date,
+                        daily: context.read<DailyFinalRepository>(),
+                        activity: context.read<ActivityRepository>(),
+                        kpk: context.read<KpkRepository>(),
+                        engine: context.read<PositionJudge>(),
+                      )..load(),
+                    ),
                   if (mode.featuredId case final featuredId?)
                     BlocProvider(
                       create: (context) => FeaturedEndgameCubit(
@@ -1377,6 +1419,35 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
 
 /// Uma tela ligada a "Seu nível", com o `LevelCubit` dela no `extra`. Sem ele
 /// (o app reaberto nesse endereço), volta para "Seu nível".
+// O resultado e a imagem do final do dia `?date=` (sem ele, o de hoje), com a
+// sequência de agora.
+Widget _daily(
+  BuildContext context,
+  GoRouterState state, {
+  required Widget child,
+}) {
+  final date =
+      state.uri.queryParameters['date'] ??
+      DailyRecord.dayCode(context.read<Now>()());
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => DailyResultCubit(
+          date: date,
+          daily: context.read<DailyFinalRepository>(),
+        )..load(),
+      ),
+      BlocProvider(
+        create: (context) => StreakCubit(
+          activity: context.read<ActivityRepository>(),
+          now: context.read<Now>(),
+        )..load(),
+      ),
+    ],
+    child: child,
+  );
+}
+
 GoRoute _levelPart(String path, Widget screen) => _route(
   path: path,
   redirect: (context, state) => state.extra is LevelCubit ? null : Routes.level,

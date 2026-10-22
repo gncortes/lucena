@@ -10,11 +10,12 @@ import '../../core/theme/app_text.dart';
 import 'featured_card.dart';
 
 /// A seção "Finais em destaque" da tela inicial: o título, "Ver todos" e o
-/// final em destaque.
+/// final em destaque. [daily], quando há, vem entre o título e o destaque.
 class FeaturedHomeSection extends StatelessWidget {
-  const FeaturedHomeSection({required this.item, super.key});
+  const FeaturedHomeSection({required this.item, this.daily, super.key});
 
   final FeaturedItem item;
+  final Widget? daily;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,7 @@ class FeaturedHomeSection extends StatelessWidget {
             ],
           ),
         ),
+        if (daily != null) ...[daily!, const SizedBox(height: AppSpacing.md)],
         FeaturedCard(
           key: FeaturedKeys.homeCard,
           item: item,

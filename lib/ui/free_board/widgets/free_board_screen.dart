@@ -51,6 +51,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
+import '../../daily/view_models/daily_game_cubit.dart';
+import '../../daily/widgets/daily_end_bar.dart';
 import '../../featured/view_models/featured_endgame_cubit.dart';
 import '../../featured/widgets/featured_game_bar.dart';
 
@@ -251,77 +253,90 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         );
       },
       child: BlocListener<FreeBoardCubit, FreeBoardState>(
-        // Final em destaque: o primeiro lance conta como tentativa.
+        // Final do dia: a cor de cada lance e a primeira tentativa do dia.
         listenWhen: (previous, current) =>
-            current.mode.featuredId != null &&
-            previous.ucis.isEmpty &&
-            current.ucis.isNotEmpty,
+            current.mode.dailyDate != null &&
+            (previous.ucis.length != current.ucis.length ||
+                previous.end != current.end ||
+                previous.startedAt != current.startedAt),
         listener: (context, state) =>
-            unawaited(context.read<FeaturedEndgameCubit>().markPlayed()),
+            context.read<DailyGameCubit>().update(state),
         child: BlocListener<FreeBoardCubit, FreeBoardState>(
-          // O personagem vê cada lance, o fim e a partida nova.
+          // Final em destaque: o primeiro lance conta como tentativa.
           listenWhen: (previous, current) =>
-              previous.ready != current.ready ||
-              previous.ucis.length != current.ucis.length ||
-              previous.end != current.end ||
-              previous.startedAt != current.startedAt ||
-              previous.drawOffer != current.drawOffer,
-          listener: (context, state) => context.read<TalkCubit>().update(state),
+              current.mode.featuredId != null &&
+              previous.ucis.isEmpty &&
+              current.ucis.isNotEmpty,
+          listener: (context, state) =>
+              unawaited(context.read<FeaturedEndgameCubit>().markPlayed()),
           child: BlocListener<FreeBoardCubit, FreeBoardState>(
-            // A máquina recusou o empate: um aviso curto, além da fala.
+            // O personagem vê cada lance, o fim e a partida nova.
             listenWhen: (previous, current) =>
-                previous.drawOffer != current.drawOffer &&
-                current.drawOffer == DrawOffer.declined,
-            listener: (context, state) => showLucenaSnackBar(
-              context,
-              context.l10n.gameDrawDeclined,
-              key: FreeBoardKeys.drawDeclined,
-            ),
+                previous.ready != current.ready ||
+                previous.ucis.length != current.ucis.length ||
+                previous.end != current.end ||
+                previous.startedAt != current.startedAt ||
+                previous.drawOffer != current.drawOffer,
+            listener: (context, state) =>
+                context.read<TalkCubit>().update(state),
             child: BlocListener<FreeBoardCubit, FreeBoardState>(
-              // A partida contra a máquina terminou agora: a tela de conclusão
-              // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
-              // fica embaixo do tabuleiro.
-              listenWhen: (previous, current) => previous.end != current.end,
-              listener: (context, state) {
-                if (!_marathonAdvance(state)) return;
-                unawaited(_conclude(context, cubit, state));
-              },
-              child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
-                // O tabuleiro só é refeito quando a partida muda, não a cada tique do
-                // relógio.
-                listenWhen: (previous, current) =>
-                    !identical(previous.position, current.position) ||
-                    previous.moves.length != current.moves.length ||
-                    previous.viewedPly != current.viewedPly ||
-                    previous.end != current.end ||
-                    previous.playerSide != current.playerSide ||
-                    previous.machineThinking != current.machineThinking,
-                listener: (context, state) => _onStateChanged(state),
-                builder: (context, state) {
-                  // Sair da tela pela seta ou pelo botão de voltar para o relógio e
-                  // guarda a partida. No meio de um speedrun, sair encerra a
-                  // tentativa: antes, a confirmação.
-                  final speedrunOpen =
-                      state.mode.isSpeedrun && state.end == null && !_quitting;
-                  return PopScope(
-                    canPop: !speedrunOpen,
-                    onPopInvokedWithResult: (didPop, _) {
-                      if (didPop) {
-                        if (!state.mode.isSpeedrun) unawaited(cubit.leave());
-                      } else {
-                        unawaited(_confirmQuitSpeedrun(cubit));
-                      }
-                    },
-                    child: _scaffold(
-                      context,
-                      cubit,
-                      state,
-                      boardSettings,
-                      clockPosition,
-                      talk,
-                    ),
-                  );
+              // A máquina recusou o empate: um aviso curto, além da fala.
+              listenWhen: (previous, current) =>
+                  previous.drawOffer != current.drawOffer &&
+                  current.drawOffer == DrawOffer.declined,
+              listener: (context, state) => showLucenaSnackBar(
+                context,
+                context.l10n.gameDrawDeclined,
+                key: FreeBoardKeys.drawDeclined,
+              ),
+              child: BlocListener<FreeBoardCubit, FreeBoardState>(
+                // A partida contra a máquina terminou agora: a tela de conclusão
+                // abre no lugar desta (T51, B4). No tabuleiro livre de dois, o fim
+                // fica embaixo do tabuleiro.
+                listenWhen: (previous, current) => previous.end != current.end,
+                listener: (context, state) {
+                  if (!_marathonAdvance(state)) return;
+                  unawaited(_conclude(context, cubit, state));
                 },
+                child: BlocConsumer<FreeBoardCubit, FreeBoardState>(
+                  // O tabuleiro só é refeito quando a partida muda, não a cada tique do
+                  // relógio.
+                  listenWhen: (previous, current) =>
+                      !identical(previous.position, current.position) ||
+                      previous.moves.length != current.moves.length ||
+                      previous.viewedPly != current.viewedPly ||
+                      previous.end != current.end ||
+                      previous.playerSide != current.playerSide ||
+                      previous.machineThinking != current.machineThinking,
+                  listener: (context, state) => _onStateChanged(state),
+                  builder: (context, state) {
+                    // Sair da tela pela seta ou pelo botão de voltar para o relógio e
+                    // guarda a partida. No meio de um speedrun, sair encerra a
+                    // tentativa: antes, a confirmação.
+                    final speedrunOpen =
+                        state.mode.isSpeedrun &&
+                        state.end == null &&
+                        !_quitting;
+                    return PopScope(
+                      canPop: !speedrunOpen,
+                      onPopInvokedWithResult: (didPop, _) {
+                        if (didPop) {
+                          if (!state.mode.isSpeedrun) unawaited(cubit.leave());
+                        } else {
+                          unawaited(_confirmQuitSpeedrun(cubit));
+                        }
+                      },
+                      child: _scaffold(
+                        context,
+                        cubit,
+                        state,
+                        boardSettings,
+                        clockPosition,
+                        talk,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -462,6 +477,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       reserveBottom: clocksBelow,
                       footer: machineEnded && featured
                           ? FeaturedEndBar(onAgain: cubit.newGame)
+                          : machineEnded && state.mode.dailyDate != null
+                          ? DailyEndBar(onAgain: cubit.newGame)
                           : machineEnded && state.mode.fromLink
                           ? _LinkEndBar(
                               onAgain: () => _playLinkAgain(cubit),
@@ -575,7 +592,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                     end: end,
                                     userSide: state.mode.userSide,
                                     // O final em destaque pisca por 1,5 s.
-                                    short: state.mode.featuredId != null,
+                                    short: state.mode.isUnratedFinal,
                                   ),
                                 ),
                               ),
@@ -681,6 +698,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     final l10n = context.l10n;
     if (state.mode.isSpeedrun) return l10n.speedrunTitle;
     if (state.mode.featuredId != null) return l10n.featuredEndgameTitle;
+    if (state.mode.dailyDate != null) return l10n.dailyTitle;
     if (state.mode.challengeId != null && talk.character != null) {
       return l10n.gameChallengeTitle(talk.character!.name);
     }

@@ -46,7 +46,7 @@ class ClockRow extends StatelessWidget {
       (ProfileCubit cubit) => cubit.state?.nickname ?? '',
     );
     // O final em destaque não mexe no rating: "Você · Sem rating" (canvas).
-    final featured = mode.featuredId != null;
+    final featured = mode.isUnratedFinal;
     PlayerEntry entry(Side side) {
       // O lado da máquina leva o nome dela (`Maia 1400`, `Stockfish`).
       final character = side == mode.machineSide ? talk?.character : null;

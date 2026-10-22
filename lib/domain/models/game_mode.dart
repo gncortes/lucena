@@ -48,9 +48,15 @@ abstract class GameMode with _$GameMode {
 
     /// O final em destaque, quando a partida é um (sem nota e sem anúncio).
     String? featuredId,
+
+    /// O dia (`aaaa-mm-dd`), quando a partida é o final do dia (sem nota).
+    String? dailyDate,
   }) = _GameMode;
 
   const GameMode._();
+
+  /// Um final para jogar sem nota: o em destaque ou o do dia.
+  bool get isUnratedFinal => featuredId != null || dailyDate != null;
 
   /// O lado da máquina. Nulo quando o jogador move os dois lados.
   bool get isSpeedrun => speedrunAttemptId != null;

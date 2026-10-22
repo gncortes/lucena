@@ -1,9 +1,11 @@
 import 'fakes/fake_activity_repository.dart';
+import 'fakes/fake_daily_final_repository.dart';
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'package:lucena/config/dependencies.dart';
@@ -151,6 +153,7 @@ Dependencies testDependencies({
   FeaturedProgressRepository? featuredProgressRepository,
   FeaturedAlertsRepository? featuredAlertsRepository,
   ActivityRepository? activityRepository,
+  DailyFinalRepository? dailyFinalRepository,
   SyncRepository? syncRepository,
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
@@ -227,6 +230,7 @@ Dependencies testDependencies({
         featuredAlertsRepository ?? const NoFeaturedAlertsRepository(),
     activityRepository:
         activityRepository ?? FakeActivityRepository(now: clock),
+    dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),
     syncRepository: syncRepository ?? FakeSyncRepository(),
     languages: languages ?? AppLanguage.selectable,
   );

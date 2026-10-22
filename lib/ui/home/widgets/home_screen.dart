@@ -11,7 +11,9 @@ import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../routing/routes.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../core/keys/home_keys.dart';
+import '../../daily/widgets/daily_home_card.dart';
 import '../../featured/widgets/featured_home_section.dart';
+import '../../streak/widgets/streak_lost_sheet.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
@@ -89,7 +91,23 @@ class _HomeScreenState extends State<HomeScreen>
           });
         }
       },
-      child: _scaffold(context, theme),
+      child: BlocListener<HomeCubit, HomeState>(
+        // A sequência que acabou: o aviso sai uma vez, com o final de hoje.
+        listenWhen: (previous, current) =>
+            current.streak.lost > 0 && previous.streak.lost == 0,
+        listener: (context, state) {
+          final cubit = context.read<HomeCubit>();
+          unawaited(
+            showStreakLostSheet(
+              context,
+              streak: state.streak,
+              onPlay: () => unawaited(context.push(Routes.daily)),
+            ),
+          );
+          unawaited(cubit.lostShown());
+        },
+        child: _scaffold(context, theme),
+      ),
     );
   }
 
@@ -210,6 +228,9 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _shortcuts(BuildContext context, ThemeData theme, HomeState state) {
     final l10n = context.l10n;
     final layout = state.layout ?? HomeSuggestion.of(RatingLevel.casual);
+    final daily = state.daily == null
+        ? null
+        : DailyHomeCard(daily: state.daily!, streak: state.streak.current);
     // Os cartões entram um depois do outro.
     Widget card(HomePath path, int index) => StaggeredEntrance(
       index: index,
@@ -224,7 +245,13 @@ class _HomeScreenState extends State<HomeScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (state.featured != null) FeaturedHomeSection(item: state.featured!),
+        if (state.featured != null)
+          FeaturedHomeSection(item: state.featured!, daily: daily)
+        else if (daily != null)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: daily,
+          ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.xs,
