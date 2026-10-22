@@ -139,6 +139,7 @@ Dependencies testDependencies({
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
   List<AppLanguage>? languages,
+  bool darkTheme = true,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
   final clock = now ?? FakeNow(DateTime.utc(2026, 1, 1, 12));
@@ -208,5 +209,6 @@ Dependencies testDependencies({
     featuredAlertsRepository:
         featuredAlertsRepository ?? const NoFeaturedAlertsRepository(),
     languages: languages ?? AppLanguage.selectable,
+    darkTheme: darkTheme,
   );
 }

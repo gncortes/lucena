@@ -73,14 +73,15 @@ class AppearanceSettingsScreen extends StatelessWidget {
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.go(Routes.settingsLanguage),
         ),
-        ListTile(
-          key: SettingsKeys.themeTile,
-          leading: Icon(themeMode.icon),
-          title: Text(l10n.settingsTheme),
-          subtitle: Text(themeMode.label(l10n), key: SettingsKeys.themeValue),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.go(Routes.settingsTheme),
-        ),
+        if (context.read<SettingsCubit>().darkTheme)
+          ListTile(
+            key: SettingsKeys.themeTile,
+            leading: Icon(themeMode.icon),
+            title: Text(l10n.settingsTheme),
+            subtitle: Text(themeMode.label(l10n), key: SettingsKeys.themeValue),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(Routes.settingsTheme),
+          ),
         ListTile(
           key: SettingsKeys.boardAppearanceTile,
           leading: const Icon(Icons.palette_outlined),

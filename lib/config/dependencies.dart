@@ -172,6 +172,7 @@ class Dependencies {
     required this.featuredProgressRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     required this.languages,
+    this.darkTheme = true,
     this.version = const AppVersion(appVersion),
   });
 
@@ -277,6 +278,7 @@ class Dependencies {
       featuredRepository: AssetFeaturedRepository(assets),
       featuredProgressRepository: LocalFeaturedProgressRepository(preferences),
       languages: AppLanguage.selectable,
+      darkTheme: isE2E,
       version: version,
     );
   }
@@ -348,4 +350,9 @@ class Dependencies {
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;
+
+  /// Se o tema escuro está liberado. Fora dele o app fica no claro, siga o
+  /// sistema ou não, e Configurações não oferece a troca. A V1 sai só com o
+  /// claro; a suíte Patrol e os testes seguem cobrindo o escuro.
+  final bool darkTheme;
 }
