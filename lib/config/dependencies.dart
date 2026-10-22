@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
+import '../data/repositories/reminders/reminders_repository.dart';
+import '../data/repositories/week/week_repository.dart';
+import '../data/services/notification_service.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
@@ -135,7 +138,7 @@ bool get showsDevTools => kDebugMode || isE2E || appVersion.contains('-rc');
 /// As composições de teste ficam em `testing/`: código de `lib/` não importa
 /// `testing/`.
 class Dependencies {
-  const Dependencies({
+  Dependencies({
     required this.now,
     required this.settingsRepository,
     required this.profileRepository,
@@ -195,6 +198,8 @@ class Dependencies {
     this.syncRepository = const NoSyncRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
     this.localChanges = const Stream.empty(),
+    this._remindersRepository,
+    this._weekRepository,
     required this.languages,
     this.version = const AppVersion(appVersion),
   });
@@ -262,6 +267,10 @@ class Dependencies {
       LocalEndgameProgressRepository(preferences),
       changed,
     );
+    // Só as aulas liberadas (VisibleLessons); as falas comuns vêm todas.
+    final endgameLessons = VisibleEndgameLessonRepository(
+      AssetEndgameLessonRepository(assets, school: lessons),
+    );
     final featured = ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(preferences),
       activity,
@@ -321,10 +330,7 @@ class Dependencies {
       lessonRepository: VisibleLessonRepository(lessons),
       schoolProgressRepository: school,
       starChallengeRepository: stars,
-      // Só as aulas liberadas (VisibleLessons); as falas comuns vêm todas.
-      endgameLessonRepository: VisibleEndgameLessonRepository(
-        AssetEndgameLessonRepository(assets, school: lessons),
-      ),
+      endgameLessonRepository: endgameLessons,
       lessonScriptRepository: AssetLessonScriptRepository(assets),
       kpkRepository: AssetKpkRepository(assets),
       scriptTableRepository: AssetScriptTableRepository(assets),
@@ -368,6 +374,11 @@ class Dependencies {
         featured: featured,
       ),
       localChanges: changes.stream,
+      remindersRepository: LocalRemindersRepository(
+        DeviceNotificationService(),
+        progress: endgames,
+        lessons: endgameLessons,
+      ),
       languages: AppLanguage.selectable,
       version: version,
     );
@@ -451,6 +462,25 @@ class Dependencies {
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;
+
+  /// Os lembretes locais (E1.23). Sem nenhum, o aparelho não agenda nada.
+  RemindersRepository get remindersRepository =>
+      _remindersRepository ??= LocalRemindersRepository(
+        const NoNotificationService(),
+        progress: endgameProgressRepository,
+        lessons: endgameLessonRepository,
+      );
+  RemindersRepository? _remindersRepository;
+
+  /// Sua semana (E1.23), das partidas, do rating e dos finais do dia.
+  WeekRepository get weekRepository => _weekRepository ??= LocalWeekRepository(
+    progress: progressRepository,
+    rating: ratingRepository,
+    activity: activityRepository,
+    daily: dailyFinalRepository,
+    now: now,
+  );
+  WeekRepository? _weekRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

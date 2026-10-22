@@ -11,6 +11,7 @@ import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
+import 'data/repositories/week/week_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
 import 'data/repositories/characters/character_repository.dart';
@@ -70,6 +71,8 @@ import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
+import 'ui/reminders/view_models/reminders_cubit.dart';
+import 'ui/reminders/widgets/reminders_bridge.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
@@ -358,6 +361,9 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<SurveyRepository>.value(
           value: dependencies.surveyRepository,
         ),
+        RepositoryProvider<WeekRepository>.value(
+          value: dependencies.weekRepository,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -386,6 +392,18 @@ class _LucenaAppState extends State<LucenaApp> {
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,
             )..load(),
+          ),
+          BlocProvider(
+            // Os lembretes locais: o RemindersBridge passa as chaves e os
+            // textos.
+            lazy: false,
+            create: (context) => RemindersCubit(
+              reminders: dependencies.remindersRepository,
+              activity: dependencies.activityRepository,
+              week: dependencies.weekRepository,
+              now: dependencies.now,
+              changes: dependencies.localChanges,
+            ),
           ),
           BlocProvider(
             create: (context) =>
@@ -419,6 +437,11 @@ class _LucenaAppState extends State<LucenaApp> {
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: appSupportedLocales,
                 routerConfig: router,
+                // Abaixo das traduções: os textos dos lembretes vêm delas.
+                builder: (context, child) => RemindersBridge(
+                  onOpen: (route) => _router?.push(route),
+                  child: child ?? const SizedBox.shrink(),
+                ),
               ),
             );
           },

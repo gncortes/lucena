@@ -8062,5 +8062,156 @@
   "alertsReminder": "Reminder time",
   "@alertsReminder": {
     "description": "Alerts: row with the time of local reminders."
+  },
+  "reminderChannel": "Reminders",
+  "@reminderChannel": {
+    "description": "Android notification channel: streak and lesson reminders."
+  },
+  "weekChannel": "Weekly summary",
+  "@weekChannel": {
+    "description": "Android notification channel: the Sunday summary."
+  },
+  "reminderStreakTitle": "Your {days}-day streak ends today",
+  "@reminderStreakTitle": {
+    "description": "Local notification title.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderStreakText": "Almost there: a lesson, a game or the daily endgame keeps the streak.",
+  "@reminderStreakText": {
+    "description": "Local notification text."
+  },
+  "reminderStreakAction": "Play the daily endgame",
+  "@reminderStreakAction": {
+    "description": "Local notification button."
+  },
+  "reminderLessonTitle": "Continue the lesson",
+  "@reminderLessonTitle": {
+    "description": "Local notification title."
+  },
+  "reminderLessonText": "Almost done with \"{lesson}\": you stopped at chapter {chapter} of {total}.",
+  "@reminderLessonText": {
+    "description": "Local notification text.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      },
+      "chapter": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reminderLessonAction": "Continue",
+  "@reminderLessonAction": {
+    "description": "Local notification button."
+  },
+  "weekNotifTitle": "Your weekly summary",
+  "@weekNotifTitle": {
+    "description": "Sunday notification title."
+  },
+  "weekNotifText": "This week you played {finals, plural, =1{1 endgame} other{{finals} endgames}} and {trend, select, up{gained {points} points} down{lost {points} points} other{your rating stayed at {points}}}. See how it went.",
+  "@weekNotifText": {
+    "description": "Sunday notification text. trend is up, down or same; with same, points is the rating.",
+    "placeholders": {
+      "finals": {
+        "type": "int"
+      },
+      "trend": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "weekTitle": "Your week",
+  "@weekTitle": {
+    "description": "Week screen title."
+  },
+  "weekHeadline": "This week you played {finals, plural, =1{1 endgame} other{{finals} endgames}} and {trend, select, up{gained {points} points} down{lost {points} points} other{your rating stayed at {points}}}",
+  "@weekHeadline": {
+    "description": "Week screen headline. trend is up, down or same; with same, points is the rating.",
+    "placeholders": {
+      "finals": {
+        "type": "int"
+      },
+      "trend": {
+        "type": "String"
+      },
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "weekHeadlineEmpty": "No endgames this week yet",
+  "@weekHeadlineEmpty": {
+    "description": "Week screen headline with no endgames played."
+  },
+  "weekRange": "From Monday, {from}, to Sunday, {to}.",
+  "@weekRange": {
+    "description": "Week screen: the dates of the week.",
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "weekStatFinals": "Endgames",
+  "@weekStatFinals": {
+    "description": "Week screen number label."
+  },
+  "weekStatPoints": "Rating points",
+  "@weekStatPoints": {
+    "description": "Week screen number label."
+  },
+  "weekStatDays": "Days in a row",
+  "@weekStatDays": {
+    "description": "Week screen number label."
+  },
+  "weekStatFirstTry": "First-try moves",
+  "@weekStatFirstTry": {
+    "description": "Week screen number label."
+  },
+  "weekByDay": "Endgames per day",
+  "@weekByDay": {
+    "description": "Week screen card title."
+  },
+  "weekRating": "Rating: {from} to {to}",
+  "@weekRating": {
+    "description": "Week screen rating card.",
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    }
+  },
+  "weekBestDay": "Your best day was {day, select, monday{Monday} tuesday{Tuesday} wednesday{Wednesday} thursday{Thursday} friday{Friday} saturday{Saturday} other{Sunday}}.",
+  "@weekBestDay": {
+    "description": "Week screen: the weekday with the most endgames.",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "weekPlay": "Play the daily endgame",
+  "@weekPlay": {
+    "description": "Week screen button."
+  },
+  "weekSeeStreak": "See the streak",
+  "@weekSeeStreak": {
+    "description": "Week screen button."
   }
 }

@@ -349,6 +349,9 @@ abstract final class Routes {
   /// A Sequência de dias (E1.22).
   static const streak = '/streak';
 
+  /// Sua semana (E1.23), aberta pelo resumo de domingo.
+  static const week = '/week';
+
   static const account = '/tour/conta';
   static const level = '/tour/nivel';
 
