@@ -3153,6 +3153,14 @@
   "@aboutLicenses": {
     "description": "About screen: opens the list of open source licenses of the libraries used."
   },
+  "aboutPrivacy": "Privacy policy",
+  "@aboutPrivacy": {
+    "description": "About screen: opens the privacy policy on the website."
+  },
+  "aboutTerms": "Terms of use",
+  "@aboutTerms": {
+    "description": "About screen: opens the terms of use on the website."
+  },
   "lessonVariationAlternative": "Alternative to {move}",
   "@lessonVariationAlternative": {
     "description": "Screen reader label of a side line in the variation strip; {move} is the main-line move it replaces.",

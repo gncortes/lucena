@@ -609,6 +609,8 @@
   "aboutSource": "소스 코드",
   "aboutSourceHint": "자유 소프트웨어, AGPL-3.0",
   "aboutLicenses": "오픈 소스 라이선스",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "이전 수",

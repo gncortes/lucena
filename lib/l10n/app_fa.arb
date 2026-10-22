@@ -609,6 +609,8 @@
   "aboutSource": "کد منبع",
   "aboutSourceHint": "نرم‌افزار آزاد، AGPL-3.0",
   "aboutLicenses": "مجوزهای متن‌باز",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "حرکت قبلی",

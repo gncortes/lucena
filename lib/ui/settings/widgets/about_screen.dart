@@ -29,6 +29,28 @@ class AboutScreen extends StatelessWidget {
     });
   }
 
+  /// A Política de privacidade no site, no idioma de quem usa.
+  static Uri privacyFor(String languageCode) =>
+      websiteFor(languageCode).resolve(switch (languageCode) {
+        'pt' => 'privacidade/',
+        'es' => 'privacidad/',
+        _ => 'privacy/',
+      });
+
+  /// Os Termos de uso no site, no idioma de quem usa.
+  static Uri termsFor(String languageCode) =>
+      websiteFor(languageCode).resolve(switch (languageCode) {
+        'pt' => 'termos/',
+        'es' => 'terminos/',
+        _ => 'terms/',
+      });
+
+  /// O endereço como a linha mostra: sem `https://` e sem a barra do fim.
+  static String shown(Uri uri) {
+    final text = '${uri.host}${uri.path}';
+    return text.endsWith('/') ? text.substring(0, text.length - 1) : text;
+  }
+
   static final source = Uri.parse('https://github.com/gncortes/lucena');
 
   @override
@@ -109,6 +131,28 @@ class AboutScreen extends StatelessWidget {
               context: context,
               applicationName: l10n.appTitle,
               applicationVersion: version.isEmpty ? null : version,
+            ),
+          ),
+          ListTile(
+            key: SettingsKeys.aboutPrivacy,
+            leading: const Icon(Icons.policy_outlined),
+            title: Text(l10n.aboutPrivacy),
+            subtitle: Text(shown(privacyFor(language))),
+            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
+            onTap: () => launchUrl(
+              privacyFor(language),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
+          ListTile(
+            key: SettingsKeys.aboutTerms,
+            leading: const Icon(Icons.gavel),
+            title: Text(l10n.aboutTerms),
+            subtitle: Text(shown(termsFor(language))),
+            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
+            onTap: () => launchUrl(
+              termsFor(language),
+              mode: LaunchMode.externalApplication,
             ),
           ),
           ListTile(

@@ -609,6 +609,8 @@
   "aboutSource": "Kode sumber",
   "aboutSourceHint": "Perangkat lunak bebas, AGPL-3.0",
   "aboutLicenses": "Lisensi sumber terbuka",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Langkah sebelumnya",

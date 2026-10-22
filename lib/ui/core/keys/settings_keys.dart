@@ -75,5 +75,7 @@ abstract final class SettingsKeys {
   static const aboutWebsite = Key('settings.about.website');
   static const aboutSource = Key('settings.about.source');
   static const aboutLicenses = Key('settings.about.licenses');
+  static const aboutPrivacy = Key('settings.about.privacy');
+  static const aboutTerms = Key('settings.about.terms');
   static const aboutVersion = Key('settings.about.version');
 }

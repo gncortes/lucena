@@ -228,4 +228,50 @@ void main() {
       'https://gncortes.github.io/lucena/en/',
     );
   });
+
+  testWidgets('Sobre: Política e Termos depois das licenças, com o endereço', (
+    tester,
+  ) async {
+    await pumpScreen(tester, const AppSettings(), screen: const AboutScreen());
+    await tester.pumpAndSettle();
+    final language = Localizations.localeOf(
+      tester.element(find.byType(AboutScreen)),
+    ).languageCode;
+
+    final licenses = tester.getTopLeft(find.byKey(SettingsKeys.aboutLicenses));
+    final privacy = tester.getTopLeft(find.byKey(SettingsKeys.aboutPrivacy));
+    final terms = tester.getTopLeft(find.byKey(SettingsKeys.aboutTerms));
+    expect(privacy.dy, greaterThan(licenses.dy));
+    expect(terms.dy, greaterThan(privacy.dy));
+    expect(
+      find.descendant(
+        of: find.byKey(SettingsKeys.aboutTerms),
+        matching: find.text(AboutScreen.shown(AboutScreen.termsFor(language))),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  test('a política e os termos abrem no idioma de quem usa', () {
+    expect(
+      AboutScreen.privacyFor('pt').toString(),
+      'https://gncortes.github.io/lucena/privacidade/',
+    );
+    expect(
+      AboutScreen.termsFor('pt').toString(),
+      'https://gncortes.github.io/lucena/termos/',
+    );
+    expect(
+      AboutScreen.privacyFor('es').toString(),
+      'https://gncortes.github.io/lucena/es/privacidad/',
+    );
+    expect(
+      AboutScreen.termsFor('de').toString(),
+      'https://gncortes.github.io/lucena/en/terms/',
+    );
+    expect(
+      AboutScreen.shown(AboutScreen.privacyFor('pt')),
+      'gncortes.github.io/lucena/privacidade',
+    );
+  });
 }

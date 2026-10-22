@@ -609,6 +609,8 @@
   "aboutSource": "सोर्स कोड",
   "aboutSourceHint": "मुक्त सॉफ़्टवेयर, AGPL-3.0",
   "aboutLicenses": "ओपन सोर्स लाइसेंस",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "पिछली चाल",
