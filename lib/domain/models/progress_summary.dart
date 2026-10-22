@@ -1,3 +1,4 @@
+import 'avatar_photo.dart';
 import 'endgame_lesson.dart';
 import 'goal_preference.dart';
 import 'level_source.dart';
@@ -75,7 +76,8 @@ class ProgressSummary {
       'lichessUser': ?profile.lichessUser,
       'chessComUser': ?profile.chessComUser,
       'avatarColor': profile.avatarColor,
-      'googlePhoto': profile.googlePhoto,
+      'photo': profile.photo.name,
+      'photoUrl': ?profile.photoUrl,
       'country': ?profile.country,
       'state': ?profile.state,
       'city': ?profile.city,
@@ -115,7 +117,11 @@ class ProgressSummary {
         lichessUser: profile['lichessUser'] as String?,
         chessComUser: profile['chessComUser'] as String?,
         avatarColor: _int(profile['avatarColor']) ?? 0,
-        googlePhoto: profile['googlePhoto'] == true,
+        // Apps mais antigos gravavam só o sim/não da foto do Google.
+        photo: profile['googlePhoto'] == true
+            ? AvatarPhoto.google
+            : AvatarPhoto.fromCode(profile['photo']),
+        photoUrl: profile['photoUrl'] as String?,
         country: profile['country'] as String?,
         state: profile['state'] as String?,
         city: profile['city'] as String?,

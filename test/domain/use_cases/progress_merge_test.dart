@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/level_source.dart';
@@ -109,6 +110,41 @@ void main() {
         ..['profile'] = {'country': 'BR'},
     );
     expect(old.profile.state, isNull);
+  });
+
+  test('sem foto no aparelho, vem a da conta; com foto, fica a dele', () {
+    const account = ProgressSummary(
+      profile: UserProfile(
+        photo: AvatarPhoto.upload,
+        photoUrl: 'https://fotos/ana.jpg',
+      ),
+    );
+    const google = ProgressSummary(
+      profile: UserProfile(photo: AvatarPhoto.google),
+    );
+
+    final none = ProgressMerge.merge(const ProgressSummary(), account).profile;
+    expect(
+      (none.photo, none.photoUrl),
+      (AvatarPhoto.upload, 'https://fotos/ana.jpg'),
+    );
+    final kept = ProgressMerge.merge(google, account).profile;
+    expect((kept.photo, kept.photoUrl), (AvatarPhoto.google, null));
+  });
+
+  test('a foto vai e volta pelo JSON; o googlePhoto antigo vira a do '
+      'Google', () {
+    const summary = ProgressSummary(
+      profile: UserProfile(
+        photo: AvatarPhoto.upload,
+        photoUrl: 'https://fotos/ana.jpg',
+      ),
+    );
+    expect(ProgressSummary.fromJson(summary.toJson()).profile, summary.profile);
+    final old = ProgressSummary.fromJson(
+      const ProgressSummary().toJson()..['profile'] = {'googlePhoto': true},
+    );
+    expect(old.profile.photo, AvatarPhoto.google);
   });
 
   test('só no aparelho ou só na conta: fica o que existe', () {

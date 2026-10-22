@@ -7521,26 +7521,6 @@
   "@accountInviteTextSheet": {
     "description": "Account invite sheet after the first game: text."
   },
-  "accountEnterTitle": "Create account or sign in",
-  "@accountEnterTitle": {
-    "description": "Account screen opened from the Profile: title."
-  },
-  "accountEnterText": "With the same account, your progress shows up on any phone.",
-  "@accountEnterText": {
-    "description": "Account screen opened from the Profile: text."
-  },
-  "accountEmailTitle": "Continue with e-mail",
-  "@accountEmailTitle": {
-    "description": "E-mail account screen: app bar title."
-  },
-  "accountSegCreate": "Create account",
-  "@accountSegCreate": {
-    "description": "E-mail account screen: segment to create an account."
-  },
-  "accountSegSignIn": "Sign in",
-  "@accountSegSignIn": {
-    "description": "E-mail account screen: segment and button to sign in."
-  },
   "accountEmailField": "E-mail",
   "@accountEmailField": {
     "description": "E-mail account screen: e-mail field label."
@@ -7565,10 +7545,6 @@
   "@accountCreate": {
     "description": "E-mail account screen: create button."
   },
-  "accountHaveAccountSignIn": "I have an account: sign in",
-  "@accountHaveAccountSignIn": {
-    "description": "E-mail account screen: switches to signing in."
-  },
   "accountWrongCredentials": "Wrong e-mail or password.",
   "@accountWrongCredentials": {
     "description": "Account error: wrong credentials."
@@ -7588,18 +7564,6 @@
   "accountTooManyAttempts": "Too many attempts. Wait a little and try again.",
   "@accountTooManyAttempts": {
     "description": "Account error: too many attempts."
-  },
-  "accountDataTitle": "Your details",
-  "@accountDataTitle": {
-    "description": "Your details screen: app bar title."
-  },
-  "accountAvatar": "Avatar",
-  "@accountAvatar": {
-    "description": "Your details screen: avatar section title."
-  },
-  "accountAvatarNote": "Optional. Your initial in the color you like, or your Google photo.",
-  "@accountAvatarNote": {
-    "description": "Your details screen: avatar note."
   },
   "accountAvatarColor": "Color {number}",
   "@accountAvatarColor": {
@@ -7630,14 +7594,6 @@
         "type": "String"
       }
     }
-  },
-  "accountDataNote": "What you already did on this phone goes up to the account now.",
-  "@accountDataNote": {
-    "description": "Your details screen: note (with account)."
-  },
-  "accountSave": "Save",
-  "@accountSave": {
-    "description": "Your details screen: save button."
   },
   "accountRestoredTitle": "Welcome back, {name}",
   "@accountRestoredTitle": {
@@ -8331,5 +8287,142 @@
         "type": "String"
       }
     }
+  },
+  "accountEntryTitle": "Save your progress",
+  "@accountEntryTitle": {
+    "description": "Account entry screen title."
+  },
+  "accountEntryText": "It is free and takes less than a minute.",
+  "@accountEntryText": {
+    "description": "Account entry screen text under the title."
+  },
+  "accountCreateWithEmail": "Create account with email",
+  "@accountCreateWithEmail": {
+    "description": "Account entry: button to create an account with email and password."
+  },
+  "accountHaveAccount": "Already have an account?",
+  "@accountHaveAccount": {
+    "description": "Question before the \"Sign in\" link."
+  },
+  "accountNoAccount": "No account yet?",
+  "@accountNoAccount": {
+    "description": "Question before the \"Create account\" link."
+  },
+  "accountSignIn": "Sign in",
+  "@accountSignIn": {
+    "description": "Sign in screen title, button and link."
+  },
+  "accountLegalContinue": "By continuing, you agree to the {terms} and the {privacy}.",
+  "@accountLegalContinue": {
+    "description": "Legal notice on the account entry; {terms} and {privacy} are the linked document names.",
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "accountLegalCreate": "By creating the account, you agree to the {terms} and the {privacy}.",
+  "@accountLegalCreate": {
+    "description": "Legal notice on the create account screen; {terms} and {privacy} are the linked document names.",
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "accountShowPassword": "Show password",
+  "@accountShowPassword": {
+    "description": "Tooltip of the eye button in the password field."
+  },
+  "accountHidePassword": "Hide password",
+  "@accountHidePassword": {
+    "description": "Tooltip of the eye button while the password is shown."
+  },
+  "accountForgotPassword": "Forgot password",
+  "@accountForgotPassword": {
+    "description": "Sign in screen: opens the password reset sheet."
+  },
+  "accountResetTitle": "Forgot your password?",
+  "@accountResetTitle": {
+    "description": "Password reset sheet title."
+  },
+  "accountResetText": "We will send you a link to create a new password.",
+  "@accountResetText": {
+    "description": "Password reset sheet text."
+  },
+  "accountResetSend": "Send the link",
+  "@accountResetSend": {
+    "description": "Password reset sheet: sends the email."
+  },
+  "accountResetCancel": "Cancel",
+  "@accountResetCancel": {
+    "description": "Password reset sheet: closes it."
+  },
+  "accountResetSentTitle": "Check your email",
+  "@accountResetSentTitle": {
+    "description": "Sheet after the reset link was requested."
+  },
+  "accountResetSentText": "If there is an account with {email}, the link arrives in a few minutes. Check spam too.",
+  "@accountResetSentText": {
+    "description": "Same text whether or not the account exists; {email} is shown in bold.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "accountResetOpenMail": "Open email",
+  "@accountResetOpenMail": {
+    "description": "Opens the email app inbox."
+  },
+  "accountResetOk": "Got it",
+  "@accountResetOk": {
+    "description": "Closes the check your email sheet."
+  },
+  "accountProfileTitle": "Your profile",
+  "@accountProfileTitle": {
+    "description": "Profile edit screen title (photo, name, country, region)."
+  },
+  "accountPhotoChange": "Change photo",
+  "@accountPhotoChange": {
+    "description": "Under the avatar: opens the profile photo sheet."
+  },
+  "accountProfileSaved": "Done: the progress on this phone is already saved in the account.",
+  "@accountProfileSaved": {
+    "description": "Green banner on the profile screen right after creating or entering the account."
+  },
+  "accountSaveContinue": "Save and continue",
+  "@accountSaveContinue": {
+    "description": "Profile edit screen main button."
+  },
+  "accountPhotoTitle": "Profile photo",
+  "@accountPhotoTitle": {
+    "description": "Profile photo sheet title."
+  },
+  "accountPhotoCamera": "Take photo",
+  "@accountPhotoCamera": {
+    "description": "Profile photo sheet: opens the camera."
+  },
+  "accountPhotoGallery": "Choose from gallery",
+  "@accountPhotoGallery": {
+    "description": "Profile photo sheet: opens the gallery."
+  },
+  "accountPhotoInitial": "Or your initial, in any color you like",
+  "@accountPhotoInitial": {
+    "description": "Profile photo sheet: label above the initial colors."
+  },
+  "accountPhotoRemove": "Remove photo",
+  "@accountPhotoRemove": {
+    "description": "Profile photo sheet: back to the initial."
+  },
+  "accountPhotoFailed": "Could not upload the photo. Check the internet and try again.",
+  "@accountPhotoFailed": {
+    "description": "Snack bar when the photo upload fails."
   }
 }

@@ -11,8 +11,8 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        // Abre telas do sistema: a de texto para fala (as vozes do aparelho) e
-        // a de notificações do Lucena.
+        // Abre telas do sistema: a de texto para fala (as vozes do aparelho),
+        // a de notificações do Lucena e a caixa de entrada do app de e-mail.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lucena/system_settings")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -28,6 +28,10 @@ class MainActivity : FlutterActivity() {
                                     .setData(Uri.fromParts("package", packageName, null))
                             )
                     )
+                    "hasEmailApp" -> result.success(
+                        emailApp().resolveActivity(packageManager) != null
+                    )
+                    "openEmailApp" -> result.success(open(emailApp()))
                     else -> result.notImplemented()
                 }
             }
@@ -41,6 +45,10 @@ class MainActivity : FlutterActivity() {
     } catch (e: Exception) {
         false
     }
+
+    // "Abrir o e-mail" (esqueci a senha): o app de e-mail na caixa de entrada.
+    private fun emailApp(): Intent =
+        Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_EMAIL)
 
     private fun openNotifications(): Boolean =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&

@@ -316,6 +316,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
         path: Routes.accountEmail,
         builder: (context, state) => AccountEmailScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
+          signIn: state.uri.queryParameters['entrar'] == '1',
           reauth: state.uri.queryParameters['reauth'] == '1',
         ),
       ),
@@ -323,6 +324,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
         path: Routes.accountData,
         builder: (context, state) => AccountDataScreen(
           from: state.uri.queryParameters['from'] ?? 'tour',
+          welcome: state.uri.queryParameters['novo'] == '1',
         ),
       ),
       // Sem o resultado da leitura (link aberto de fora), volta ao início.

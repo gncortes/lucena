@@ -6,6 +6,8 @@ import '../../../domain/models/account.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../services/firebase/auth_service.dart';
 import '../../services/firebase/cloud_store_service.dart';
+import '../../services/firebase/file_store_service.dart';
+import 'avatar_repository.dart';
 
 /// A conta opcional (E1.13): entrar com o Google ou com e-mail e senha, sair e
 /// apagar a conta (exigência da Play).
@@ -35,8 +37,9 @@ abstract class AccountRepository {
 
   Future<void> signOut();
 
-  /// Apaga o perfil no Firestore e a conta no Auth.
-  Future<void> deleteAccount();
+  /// Apaga o perfil no Firestore e a conta no Auth. Com [photo] (o perfil
+  /// tem foto enviada), apaga antes a foto no Storage.
+  Future<void> deleteAccount({bool photo = false});
 }
 
 /// A conta no Firebase Auth, com o perfil em `users/{uid}` no Firestore.
@@ -44,12 +47,14 @@ class CloudAccountRepository implements AccountRepository {
   const CloudAccountRepository(
     this._auth,
     this._store, {
+    required this._avatars,
     required this._now,
     required this._language,
   });
 
   final AuthService _auth;
   final CloudStoreService _store;
+  final AvatarRepository _avatars;
   final Now _now;
 
   /// O idioma escolhido no app (nulo: o do aparelho).
@@ -104,11 +109,15 @@ class CloudAccountRepository implements AccountRepository {
   Future<void> signOut() => _auth.signOut();
 
   @override
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount({bool photo = false}) async {
     final account = _auth.current;
     if (account == null) return;
     try {
+      // Sem foto enviada o Storage nem é tocado (pode nem estar ativo).
+      if (photo) await _avatars.delete(account.uid);
       await _store.deleteUser(account.uid);
+    } on FileStoreException {
+      throw const AccountException(AccountFailure.network);
     } on CloudStoreException {
       // Sem rede não dá para apagar o que está na nuvem: nada é apagado.
       throw const AccountException(AccountFailure.network);

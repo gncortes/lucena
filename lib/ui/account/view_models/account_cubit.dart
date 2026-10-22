@@ -26,7 +26,7 @@ class AccountState {
   /// Entrou: a tela segue.
   final bool done;
 
-  /// A conta é nova (criada agora com e-mail): segue para "Seus dados".
+  /// A conta é nova (criada agora com e-mail): segue para "Seu perfil".
   final bool created;
 
   /// A conta já tinha progresso, agora junto com o do aparelho: segue para
@@ -77,6 +77,20 @@ class AccountCubit extends Cubit<AccountState> {
     );
   }
 
+  /// "Mandar o link" de senha nova. A resposta é a mesma com ou sem conta
+  /// (ninguém descobre quais e-mails têm conta). Nulo: mandou; senão, o
+  /// motivo (e-mail mal escrito, sem rede).
+  Future<AccountFailure?> sendPasswordReset(String email) async {
+    try {
+      await _accounts.sendPasswordReset(email.trim());
+      return null;
+    } on AccountException catch (error) {
+      return error.failure == AccountFailure.wrongCredentials
+          ? null
+          : error.failure;
+    }
+  }
+
   Future<void> _run(
     Future<Account?> Function() signIn, {
     bool created = false,
@@ -121,7 +135,7 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
-  /// "Seus dados" salvos com conta: o nome vai para a conta e o progresso
+  /// "Seu perfil" salvo com conta: o nome vai para a conta e o progresso
   /// sobe. Sem esperar: sem rede, sobe depois, sozinho.
   void publishProfile(String name) {
     final account = _accounts.current;

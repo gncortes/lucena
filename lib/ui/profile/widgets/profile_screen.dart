@@ -262,7 +262,7 @@ class _Header extends StatelessWidget {
             AccountAvatar(
               name: name,
               color: profile?.avatarColor ?? 0,
-              photoUrl: profile?.googlePhoto == true ? account?.photoUrl : null,
+              photoUrl: avatarPhotoUrl(profile, account),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(

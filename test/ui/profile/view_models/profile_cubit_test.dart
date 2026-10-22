@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/level_source.dart';
+import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 
@@ -42,7 +43,8 @@ void main() {
       await cubit.saveData(
         nickname: ' Bia ',
         avatarColor: 3,
-        googlePhoto: true,
+        photo: AvatarPhoto.google,
+        photoUrl: 'ignorado sem foto enviada',
       );
     },
     skip: 1,
@@ -50,7 +52,7 @@ void main() {
       saved.copyWith(
         nickname: 'Bia',
         avatarColor: 3,
-        googlePhoto: true,
+        photo: AvatarPhoto.google,
         goal: GoalPreference.learn,
         levelSource: LevelSource.lichess,
         lichessUser: 'ana_finais',
@@ -64,7 +66,7 @@ void main() {
     build: build,
     act: (cubit) async {
       await cubit.load();
-      await cubit.saveData(nickname: '   ', avatarColor: 0, googlePhoto: false);
+      await cubit.saveData(nickname: '   ', avatarColor: 0);
     },
     skip: 1,
     expect: () => [saved.copyWith(nickname: '')],

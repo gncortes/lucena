@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/profile_rules.dart';
@@ -34,12 +35,14 @@ class ProfileCubit extends Cubit<UserProfile?> {
   Future<void> saveData({
     required String nickname,
     required int avatarColor,
-    required bool googlePhoto,
+    AvatarPhoto photo = AvatarPhoto.none,
+    String? photoUrl,
   }) async {
     final profile = (await _repository.load()).copyWith(
       nickname: ProfileRules.cleanNickname(nickname),
       avatarColor: avatarColor.clamp(0, UserProfile.avatarColors - 1),
-      googlePhoto: googlePhoto,
+      photo: photo,
+      photoUrl: photo == AvatarPhoto.upload ? photoUrl : null,
     );
     await _repository.save(profile);
     emit(profile);

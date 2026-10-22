@@ -105,6 +105,8 @@ import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../data/repositories/account/account_invite_repository.dart';
 import '../data/repositories/account/avatar_repository.dart';
+import '../data/repositories/account/mail_app_repository.dart';
+import '../data/repositories/photo/photo_repository.dart';
 import '../data/repositories/account/account_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository_remote.dart';
@@ -202,6 +204,8 @@ class Dependencies {
     this.syncRepository = const NoSyncRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
     this.avatarRepository = const NoAvatarRepository(),
+    this.photoRepository = const NoPhotoRepository(),
+    this.mailAppRepository = const NoMailAppRepository(),
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
@@ -280,6 +284,9 @@ class Dependencies {
       LocalFeaturedProgressRepository(preferences),
       activity,
     );
+    final avatars = CloudAvatarRepository(
+      firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
+    );
     return Dependencies(
       now: now,
       settingsRepository: settings,
@@ -290,6 +297,7 @@ class Dependencies {
       accountRepository: CloudAccountRepository(
         firebase ? FirebaseAuthService() : const NoAuthService(),
         cloudStore,
+        avatars: avatars,
         now: now,
         language: () async => (await settings.load()).languageCode,
       ),
@@ -363,9 +371,9 @@ class Dependencies {
         preferences,
       ),
       accountInviteRepository: LocalAccountInviteRepository(preferences),
-      avatarRepository: CloudAvatarRepository(
-        firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
-      ),
+      avatarRepository: avatars,
+      photoRepository: DevicePhotoRepository(),
+      mailAppRepository: const DeviceMailAppRepository(),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -474,6 +482,12 @@ class Dependencies {
 
   /// A foto de perfil enviada (§2.12), no Storage da conta.
   final AvatarRepository avatarRepository;
+
+  /// A câmera e a galeria, para a foto do perfil.
+  final PhotoRepository photoRepository;
+
+  /// "Abrir o e-mail" depois do link de senha nova.
+  final MailAppRepository mailAppRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;

@@ -370,17 +370,29 @@ abstract final class Routes {
   static const accountEnter = '/conta';
   static String accountEnterFrom(String from) => _from(accountEnter, from);
 
-  /// "Continuar com e-mail". Com [reauth], só entra de novo e volta `true`
-  /// (apagar a conta pede um login recente).
+  /// "Criar conta" com e-mail ou, com [signIn], "Entrar". Com [reauth], só
+  /// entra de novo e volta `true` (apagar a conta pede um login recente).
   static const accountEmail = '/conta/email';
-  static String accountEmailFrom(String from, {bool reauth = false}) => Uri(
+  static String accountEmailFrom(
+    String from, {
+    bool signIn = false,
+    bool reauth = false,
+  }) => Uri(
     path: accountEmail,
-    queryParameters: {'from': from, if (reauth) 'reauth': '1'},
+    queryParameters: {
+      'from': from,
+      if (signIn || reauth) 'entrar': '1',
+      if (reauth) 'reauth': '1',
+    },
   ).toString();
 
-  /// "Seus dados", depois de criar a conta (e pelo lápis do Perfil).
+  /// "Seu perfil", depois de entrar (e pelo lápis do Perfil). Com [welcome],
+  /// o aviso de que o progresso já está na conta.
   static const accountData = '/conta/dados';
-  static String accountDataFrom(String from) => _from(accountData, from);
+  static String accountDataFrom(String from, {bool welcome = false}) => Uri(
+    path: accountData,
+    queryParameters: {'from': from, if (welcome) 'novo': '1'},
+  ).toString();
 
   /// "Bem-vindo de volta": recebe o `SyncResult` como `extra`.
   static const accountRestored = '/conta/de-volta';

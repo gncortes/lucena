@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
@@ -29,7 +30,8 @@ class LocalProfileRepository implements ProfileRepository {
       lichessUser: row.lichessUser,
       chessComUser: row.chessComUser,
       avatarColor: row.avatarColor,
-      googlePhoto: row.googlePhoto,
+      photo: AvatarPhoto.fromCode(row.photo),
+      photoUrl: row.photoUrl,
       country: row.country,
       state: row.state,
       city: row.city,
@@ -50,7 +52,8 @@ class LocalProfileRepository implements ProfileRepository {
             lichessUser: Value(profile.lichessUser),
             chessComUser: Value(profile.chessComUser),
             avatarColor: Value(profile.avatarColor),
-            googlePhoto: Value(profile.googlePhoto),
+            photo: Value(profile.photo.name),
+            photoUrl: Value(profile.photoUrl),
             country: Value(profile.country),
             state: Value(profile.state),
             city: Value(profile.city),

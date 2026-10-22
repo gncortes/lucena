@@ -8,6 +8,7 @@ import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
+import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/platform_rating.dart';
 
 /// Um aviso do Perfil, mostrado uma vez.
@@ -127,7 +128,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     if (state.busy) return;
     emit(state.copyWith(busy: true));
     try {
-      await _accounts.deleteAccount();
+      await _accounts.deleteAccount(photo: await _uploadedPhoto());
       _done(ProfileNotice.deleted);
     } on AccountException catch (error) {
       if (error.failure == AccountFailure.recentLoginRequired &&
@@ -153,12 +154,16 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     try {
       final account = await _accounts.signInWithGoogle();
       if (account == null) return _done(null);
-      await _accounts.deleteAccount();
+      await _accounts.deleteAccount(photo: await _uploadedPhoto());
       _done(ProfileNotice.deleted);
     } on AccountException catch (error) {
       _done(_deleteNotice(error.failure));
     }
   }
+
+  // Só a foto enviada mora no Storage; a do Google e a inicial, não.
+  Future<bool> _uploadedPhoto() async =>
+      (await _profile.load()).photo == AvatarPhoto.upload;
 
   static ProfileNotice _deleteNotice(AccountFailure failure) =>
       switch (failure) {

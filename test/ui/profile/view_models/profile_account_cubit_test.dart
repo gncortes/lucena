@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
+import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/profile/view_models/profile_account_cubit.dart';
@@ -82,6 +83,19 @@ void main() {
     expect(accounts.current, isNull);
     expect(cubit.state.notice, ProfileNotice.deleted);
     expect(cubit.state.busy, isFalse);
+  });
+
+  test('apagar leva junto a foto enviada; sem ela, o Storage fica de '
+      'fora', () async {
+    accounts.account = FakeAccountRepository.google;
+    final cubit = await build();
+    await cubit.deleteAccount();
+    expect(accounts.deletedWithPhoto, isFalse);
+
+    accounts.account = FakeAccountRepository.google;
+    await profiles.save(const UserProfile(photo: AvatarPhoto.upload));
+    await cubit.deleteAccount();
+    expect(accounts.deletedWithPhoto, isTrue);
   });
 
   test('apagar sem rede não apaga', () async {

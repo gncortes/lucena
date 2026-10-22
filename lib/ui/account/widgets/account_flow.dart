@@ -7,7 +7,8 @@ import '../../core/l10n/l10n.dart';
 import '../view_models/account_cubit.dart';
 
 /// Depois de entrar: a conta com progresso mostra "Bem-vindo de volta"; a
-/// nova (ou vazia) pede "Seus dados"; sem rede, segue direto. [from] é de
+/// nova (ou vazia) abre "Seu perfil" com o aviso de que o progresso deste
+/// celular já está na conta; sem rede, segue direto. [from] é de
 /// onde a conta foi aberta (`tour` ou `profile`).
 void continueAfterSignIn(
   BuildContext context,
@@ -20,7 +21,7 @@ void continueAfterSignIn(
   } else if (state.offline) {
     context.go(Routes.afterAccount(from));
   } else {
-    context.go(Routes.accountDataFrom(from));
+    context.go(Routes.accountDataFrom(from, welcome: true));
   }
 }
 

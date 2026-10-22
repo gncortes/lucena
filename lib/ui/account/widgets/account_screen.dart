@@ -16,12 +16,14 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
 import 'account_flow.dart';
+import 'account_widgets.dart';
 
 /// A conta, opcional. Com [enter] falso, o convite em tela cheia (canvas
 /// `PropV1LinkConta`): vindo de um link, entre o tour e "O que você quer
-/// fazer?". Com [enter], "Criar conta ou entrar" (`PropV1PerfilEntrar`),
-/// aberto pelo Perfil ou pelo "Já tenho conta" da pergunta. [from] diz para
-/// onde seguir no fim (`tour` ou `profile`).
+/// fazer?". Com [enter], "Guarde o seu progresso" (`V1ContaEntrada`, §2.12),
+/// aberto pelo Perfil ou pelo "Já tenho conta" da pergunta. Google, criar
+/// conta com e-mail ou "Já tem conta? Entrar", cada um na sua tela. [from]
+/// diz para onde seguir no fim (`tour` ou `profile`).
 class AccountScreen extends StatelessWidget {
   const AccountScreen({this.from = 'tour', this.enter = false, super.key});
 
@@ -91,10 +93,10 @@ class _AccountView extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: colors.primaryContainer,
-                    borderRadius: BorderRadius.circular(AppShape.extraLarge),
+                    borderRadius: BorderRadius.circular(AppShape.large),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     child: Icon(
                       Icons.cloud_sync,
                       size: AppIconSize.illustration,
@@ -105,14 +107,14 @@ class _AccountView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xl),
               Text(
-                enter ? l10n.accountEnterTitle : l10n.accountTitle,
+                enter ? l10n.accountEntryTitle : l10n.accountTitle,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                enter ? l10n.accountEnterText : l10n.accountHint,
+                enter ? l10n.accountEntryText : l10n.accountHint,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
@@ -125,7 +127,7 @@ class _AccountView extends StatelessWidget {
                     children: [
                       Icon(
                         icon,
-                        size: AppIconSize.large,
+                        size: AppIconSize.standard,
                         color: colors.primary,
                       ),
                       const SizedBox(width: AppSpacing.md),
@@ -140,13 +142,14 @@ class _AccountView extends StatelessWidget {
         ),
         bottomNavigationBar: ActionsFooter(
           stacked: true,
+          note: const AccountLegalNote(),
           children: [
-            OutlinedButton.icon(
+            FilledButton.icon(
               key: AccountKeys.google,
               onPressed: busy
                   ? null
                   : () => context.read<AccountCubit>().signInWithGoogle(),
-              icon: const Icon(Icons.account_circle_outlined),
+              icon: const Icon(Icons.account_circle),
               label: Text(l10n.accountGoogle),
             ),
             OutlinedButton.icon(
@@ -155,7 +158,17 @@ class _AccountView extends StatelessWidget {
                   ? null
                   : () => context.push(Routes.accountEmailFrom(from)),
               icon: const Icon(Icons.mail),
-              label: Text(l10n.accountEmail),
+              label: Text(l10n.accountCreateWithEmail),
+            ),
+            AccountSwitchLink(
+              key: AccountKeys.toSignIn,
+              question: l10n.accountHaveAccount,
+              action: l10n.accountSignIn,
+              onPressed: busy
+                  ? null
+                  : () => context.push(
+                      Routes.accountEmailFrom(from, signIn: true),
+                    ),
             ),
             if (!enter)
               TextButton(

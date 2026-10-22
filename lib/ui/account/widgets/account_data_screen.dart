@@ -3,44 +3,72 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/account/avatar_repository.dart';
+import '../../../data/repositories/photo/photo_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/nickname_field.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/profile_rows.dart';
+import '../../region/widgets/region_sheet.dart';
 import '../view_models/account_cubit.dart';
+import '../view_models/account_photo_cubit.dart';
+import 'account_photo_sheet.dart';
 
-/// "Seus dados" (canvas `PropV1PerfilDados`): avatar, nome, país e idioma.
-/// Vem depois de criar a conta e do lápis do Perfil. Salvar grava no
-/// aparelho e, com conta, sobe sem esperar a rede.
+/// "Seu perfil" (canvas `V1ContaPerfil`, §2.12): a foto, o nome, o país e o
+/// estado e cidade. Vem depois de entrar numa conta nova e do lápis do
+/// Perfil. Com [welcome] (acabou de entrar), avisa que o progresso deste
+/// celular já está na conta. Salvar grava no aparelho e, com conta, sobe
+/// sem esperar a rede (a foto nova sobe antes).
 class AccountDataScreen extends StatelessWidget {
-  const AccountDataScreen({required this.from, super.key});
+  const AccountDataScreen({
+    required this.from,
+    this.welcome = false,
+    super.key,
+  });
 
   final String from;
+  final bool welcome;
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (context) => AccountCubit(
-      context.read<AccountRepository>(),
-      sync: context.read<SyncScheduler>(),
-    ),
-    child: _DataView(from: from),
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => AccountCubit(
+          context.read<AccountRepository>(),
+          sync: context.read<SyncScheduler>(),
+        ),
+      ),
+      BlocProvider(
+        create: (context) => AccountPhotoCubit(
+          accounts: context.read<AccountRepository>(),
+          photos: context.read<PhotoRepository>(),
+          avatars: context.read<AvatarRepository>(),
+        ),
+      ),
+    ],
+    child: _DataView(from: from, welcome: welcome),
   );
 }
 
 class _DataView extends StatefulWidget {
-  const _DataView({required this.from});
+  const _DataView({required this.from, required this.welcome});
 
   final String from;
+  final bool welcome;
 
   @override
   State<_DataView> createState() => _DataViewState();
@@ -48,8 +76,6 @@ class _DataView extends StatefulWidget {
 
 class _DataViewState extends State<_DataView> {
   final _nickname = TextEditingController();
-  int _color = 0;
-  bool _photo = false;
   bool _filled = false;
 
   @override
@@ -72,17 +98,25 @@ class _DataViewState extends State<_DataView> {
     _nickname.text = profile.nickname.isEmpty
         ? account?.name ?? ''
         : profile.nickname;
-    _color = profile.avatarColor;
-    _photo = profile.googlePhoto && account?.photoUrl != null;
+    context.read<AccountPhotoCubit>().load(profile);
   }
 
   Future<void> _save() async {
+    final l10n = context.l10n;
     final router = GoRouter.of(context);
     final account = context.read<AccountCubit>();
-    await context.read<ProfileCubit>().saveData(
+    final profile = context.read<ProfileCubit>();
+    final photo = await context.read<AccountPhotoCubit>().save();
+    if (!mounted) return;
+    if (photo == null) {
+      showLucenaSnackBar(context, l10n.accountPhotoFailed);
+      return;
+    }
+    await profile.saveData(
       nickname: _nickname.text,
-      avatarColor: _color,
-      googlePhoto: _photo,
+      avatarColor: photo.color,
+      photo: photo.photo,
+      photoUrl: photo.photoUrl,
     );
     account.publishProfile(_nickname.text);
     router.go(Routes.afterAccount(widget.from));
@@ -92,66 +126,35 @@ class _DataViewState extends State<_DataView> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final muted = theme.textTheme.bodySmall?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
+    final colors = theme.colorScheme;
+    final profile = context.watch<ProfileCubit>().state;
+    final saving = context.select(
+      (AccountPhotoCubit cubit) => cubit.state.saving,
     );
-    final photoUrl = context.read<AccountRepository>().current?.photoUrl;
-    final country = context.select(
-      (ProfileCubit cubit) => cubit.state?.country,
-    );
+    void changePhoto() =>
+        showAccountPhotoSheet(context, name: _nickname.text.trim());
     return BlocListener<ProfileCubit, UserProfile?>(
       listener: (context, profile) => setState(() => _fill(profile)),
       child: Scaffold(
         key: AccountKeys.dataScreen,
-        appBar: LucenaAppBar(title: Text(l10n.accountDataTitle)),
+        appBar: LucenaAppBar(title: Text(l10n.accountProfileTitle)),
         body: ListView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.sm,
-          ),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           children: [
-            Text(l10n.accountAvatar, style: theme.textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.md),
-            ValueListenableBuilder(
-              valueListenable: _nickname,
-              builder: (context, value, _) => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  for (var i = 0; i < avatarPalette.length; i++)
-                    _AvatarChoice(
-                      key: AccountKeys.avatar(i),
-                      label: l10n.accountAvatarColor(i + 1),
-                      selected: !_photo && _color == i,
-                      onTap: () => setState(() {
-                        _color = i;
-                        _photo = false;
-                      }),
-                      child: AccountAvatar(
-                        name: value.text.isEmpty
-                            ? l10n.profileNicknameDefault
-                            : value.text,
-                        color: i,
-                        size: 42,
-                      ),
-                    ),
-                  if (photoUrl != null)
-                    _AvatarChoice(
-                      key: AccountKeys.avatarGoogle,
-                      label: l10n.accountAvatarGoogle,
-                      selected: _photo,
-                      onTap: () => setState(() => _photo = true),
-                      child: AccountAvatar(
-                        name: value.text,
-                        photoUrl: photoUrl,
-                        size: 42,
-                      ),
-                    ),
-                ],
+            Center(
+              child: _PhotoButton(
+                nickname: _nickname,
+                saving: saving,
+                onTap: saving ? null : changePhoto,
               ),
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(l10n.accountAvatarNote, style: muted),
-            const SizedBox(height: AppSpacing.lg),
+            Center(
+              child: TextButton(
+                onPressed: saving ? null : changePhoto,
+                child: Text(l10n.accountPhotoChange),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
             NicknameField(
               fieldKey: AccountKeys.nickname,
               controller: _nickname,
@@ -166,31 +169,68 @@ class _DataViewState extends State<_DataView> {
                   key: ProfileKeys.rowCountry,
                   icon: Icons.public,
                   title: l10n.profileCountry,
-                  value: country == null
-                      ? l10n.profileCountryNone
-                      : l10n.accountCountryFromPhone(
-                          profileCountryName(l10n, country),
-                        ),
+                  value: profileCountryValue(
+                    l10n,
+                    profile?.country,
+                    phone: context.read<ProfileCubit>().phoneCountry,
+                  ),
+                  onTap: () => context.push(Routes.country),
                 ),
                 ProfileRow(
-                  key: ProfileKeys.rowLanguage,
-                  icon: Icons.language,
-                  title: l10n.profileLanguage,
-                  value: profileLanguageName(context),
-                  onTap: () => context.push(Routes.settingsLanguage),
+                  key: ProfileKeys.rowRegion,
+                  icon: Icons.location_on,
+                  title: l10n.profileRegion,
+                  value:
+                      regionLabel(
+                        l10n,
+                        country: profile?.country,
+                        state: profile?.state,
+                        city: profile?.city,
+                      ) ??
+                      l10n.profileRegionNone,
+                  onTap: () => showRegionSheet(context),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(l10n.accountDataNote, style: muted),
+            if (widget.welcome) ...[
+              const SizedBox(height: AppSpacing.lg),
+              DecoratedBox(
+                key: AccountKeys.savedBanner,
+                decoration: BoxDecoration(
+                  color: AppColors.goalWinBg,
+                  borderRadius: BorderRadius.circular(AppShape.large),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.cloud_done,
+                        size: AppIconSize.standard,
+                        color: AppColors.record,
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Text(
+                          l10n.accountProfileSaved,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
         bottomNavigationBar: ActionsFooter(
           children: [
             FilledButton(
               key: AccountKeys.dataSave,
-              onPressed: _save,
-              child: Text(l10n.accountSave),
+              onPressed: saving ? null : _save,
+              child: Text(l10n.accountSaveContinue),
             ),
           ],
         ),
@@ -199,41 +239,79 @@ class _DataViewState extends State<_DataView> {
   }
 }
 
-/// Uma opção de avatar: o anel azul marca a escolhida.
-class _AvatarChoice extends StatelessWidget {
-  const _AvatarChoice({
-    required this.label,
-    required this.selected,
+/// O avatar grande com o selo da câmera; tocar abre "Foto do perfil".
+class _PhotoButton extends StatelessWidget {
+  const _PhotoButton({
+    required this.nickname,
+    required this.saving,
     required this.onTap,
-    required this.child,
-    super.key,
   });
 
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  final Widget child;
+  final TextEditingController nickname;
+  final bool saving;
+  final VoidCallback? onTap;
+
+  static const _size = 112.0;
+  static const _badge = 40.0;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final colors = Theme.of(context).colorScheme;
+    final state = context.watch<AccountPhotoCubit>().state;
+    final cubit = context.read<AccountPhotoCubit>();
+    final url = switch (state.photo) {
+      AvatarPhoto.google => cubit.googleUrl,
+      AvatarPhoto.upload => state.photoUrl,
+      AvatarPhoto.none => null,
+    };
     return Semantics(
       button: true,
-      selected: selected,
-      label: label,
+      label: l10n.accountPhotoChange,
       child: InkWell(
+        key: AccountKeys.photo,
         customBorder: const CircleBorder(),
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(AppSpacing.xs),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: AppShape.hairline + 1,
-              color: selected ? colors.primary : Colors.transparent,
-            ),
+        child: SizedBox.square(
+          dimension: _size,
+          child: Stack(
+            children: [
+              ValueListenableBuilder(
+                valueListenable: nickname,
+                builder: (context, value, _) => AccountAvatar(
+                  name: value.text.trim().isEmpty
+                      ? l10n.profileNicknameDefault
+                      : value.text,
+                  color: state.color,
+                  photoUrl: url,
+                  photoBytes: state.bytes,
+                  size: _size,
+                ),
+              ),
+              if (saving)
+                const Positioned.fill(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              PositionedDirectional(
+                end: 0,
+                bottom: 0,
+                child: Container(
+                  width: _badge,
+                  height: _badge,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors.surface, width: 3),
+                  ),
+                  child: Icon(
+                    Icons.photo_camera,
+                    size: AppIconSize.button,
+                    color: colors.onPrimary,
+                  ),
+                ),
+              ),
+            ],
           ),
-          child: child,
         ),
       ),
     );

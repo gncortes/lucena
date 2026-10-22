@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/account/avatar_repository.dart';
 import 'package:lucena/data/services/firebase/auth_service.dart';
 import 'package:lucena/data/services/firebase/cloud_store_service.dart';
 import 'package:lucena/domain/models/account.dart';
 
+import '../../../../testing/fakes/fake_avatar_repository.dart';
 import '../../../../testing/fakes/fake_cloud_store_service.dart';
 import '../../../../testing/fakes/fake_now.dart';
 
@@ -44,14 +47,17 @@ void main() {
   final now = FakeNow(DateTime.utc(2026, 10, 22, 12));
   late _Auth auth;
   late FakeCloudStoreService store;
+  late FakeAvatarRepository avatars;
   late CloudAccountRepository repository;
 
   setUp(() {
     auth = _Auth();
     store = FakeCloudStoreService();
+    avatars = FakeAvatarRepository();
     repository = CloudAccountRepository(
       auth,
       store,
+      avatars: avatars,
       now: now,
       language: () async => 'pt',
     );
@@ -131,6 +137,45 @@ void main() {
     expect(auth.deleted, isFalse);
   });
 
+  test('apagar sem foto enviada não toca no Storage', () async {
+    await repository.signInWithGoogle();
+    avatars.offline = true;
+
+    await repository.deleteAccount();
+
+    expect(store.deleted, ['u1']);
+    expect(auth.deleted, isTrue);
+  });
+
+  test('com foto enviada, apaga a foto antes do perfil', () async {
+    await repository.signInWithGoogle();
+    avatars.photos['u1'] = Uint8List(1);
+
+    await repository.deleteAccount(photo: true);
+
+    expect(avatars.deleted, ['u1']);
+    expect(store.deleted, ['u1']);
+    expect(auth.deleted, isTrue);
+  });
+
+  test('com foto e sem rede no Storage, nada é apagado', () async {
+    await repository.signInWithGoogle();
+    avatars.offline = true;
+
+    await expectLater(
+      repository.deleteAccount(photo: true),
+      throwsA(
+        isA<AccountException>().having(
+          (e) => e.failure,
+          'failure',
+          AccountFailure.network,
+        ),
+      ),
+    );
+    expect(store.deleted, isEmpty);
+    expect(auth.deleted, isFalse);
+  });
+
   test('sem conta, apagar não faz nada', () async {
     await repository.deleteAccount();
 
@@ -142,6 +187,7 @@ void main() {
     final offline = CloudAccountRepository(
       const NoAuthService(),
       const NoCloudStoreService(),
+      avatars: const NoAvatarRepository(),
       now: now,
       language: () async => null,
     );

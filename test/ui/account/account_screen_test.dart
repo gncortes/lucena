@@ -75,14 +75,17 @@ void main() {
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
   });
 
-  testWidgets('entrar com o Google (conta vazia) segue para "Seus dados"', (
+  testWidgets('entrar com o Google (conta vazia) segue para "Seu perfil"', (
     tester,
   ) async {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.google));
     await tester.pumpAndSettle();
     expect(accounts.current, FakeAccountRepository.google);
-    expect(find.text('rota-dados /conta/dados?from=tour'), findsOneWidget);
+    expect(
+      find.text('rota-dados /conta/dados?from=tour&novo=1'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('fechar a escolha do Google fica na tela, sem aviso', (
@@ -116,11 +119,25 @@ void main() {
     });
   }
 
-  testWidgets('e-mail abre a tela do e-mail', (tester) async {
+  testWidgets('e-mail abre Criar conta; o link, Entrar; e os termos', (
+    tester,
+  ) async {
     await pumpAccount(tester);
+    expect(find.text('Create account with email'), findsOneWidget);
+    expect(find.byKey(AccountKeys.legal), findsOneWidget);
     await tester.tap(find.byKey(AccountKeys.email));
     await tester.pumpAndSettle();
     expect(find.text('rota-email /conta/email?from=tour'), findsOneWidget);
+  });
+
+  testWidgets('"Já tem conta? Entrar" abre Entrar', (tester) async {
+    await pumpAccount(tester);
+    await tester.tap(find.byKey(AccountKeys.toSignIn));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('rota-email /conta/email?from=tour&entrar=1'),
+      findsOneWidget,
+    );
   });
 
   for (final key in [AccountKeys.later, AccountKeys.close]) {

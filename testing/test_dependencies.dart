@@ -30,11 +30,15 @@ import 'fakes/fake_push_repository.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/account/avatar_repository.dart';
+import 'package:lucena/data/repositories/account/mail_app_repository.dart';
 
 import 'fakes/fake_avatar_repository.dart';
+import 'fakes/fake_mail_app_repository.dart';
+import 'fakes/fake_photo_repository.dart';
 
 import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
+import 'package:lucena/data/repositories/photo/photo_repository.dart';
 
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 import 'package:lucena/data/repositories/conclusion/conclusion_repository.dart';
@@ -165,6 +169,8 @@ Dependencies testDependencies({
   DailyFinalRepository? dailyFinalRepository,
   SyncRepository? syncRepository,
   AvatarRepository? avatarRepository,
+  PhotoRepository? photoRepository,
+  MailAppRepository? mailAppRepository,
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
   List<AppLanguage>? languages,
@@ -246,6 +252,8 @@ Dependencies testDependencies({
     dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),
     syncRepository: syncRepository ?? FakeSyncRepository(),
     avatarRepository: avatarRepository ?? FakeAvatarRepository(),
+    photoRepository: photoRepository ?? FakePhotoRepository(),
+    mailAppRepository: mailAppRepository ?? FakeMailAppRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

@@ -20,12 +20,19 @@ class Profiles extends Table {
 
   /// O avatar e o país (E1.13). Desde a versão 11.
   IntColumn get avatarColor => integer().withDefault(const Constant(0))();
+
+  /// Só até a versão 12: a 13 passou para [photo].
   BoolColumn get googlePhoto => boolean().withDefault(const Constant(false))();
   TextColumn get country => text().nullable()();
 
   /// O estado e a cidade (E1.21). Desde a versão 12.
   TextColumn get state => text().nullable()();
   TextColumn get city => text().nullable()();
+
+  /// A foto do avatar (`AvatarPhoto`) e o endereço da enviada (§2.12).
+  /// Desde a versão 13.
+  TextColumn get photo => text().nullable()();
+  TextColumn get photoUrl => text().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -143,7 +150,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -211,6 +218,14 @@ class AppDatabase extends _$AppDatabase {
       if (from < 12) {
         await migrator.addColumn(profiles, profiles.state);
         await migrator.addColumn(profiles, profiles.city);
+      }
+      // 12 -> 13: a foto do avatar sai do sim/não do Google para a origem.
+      if (from < 13) {
+        await migrator.addColumn(profiles, profiles.photo);
+        await migrator.addColumn(profiles, profiles.photoUrl);
+        await customStatement(
+          "UPDATE profiles SET photo = 'google' WHERE google_photo = 1",
+        );
       }
     },
   );

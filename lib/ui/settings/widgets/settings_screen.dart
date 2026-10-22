@@ -157,9 +157,7 @@ class _PersonRow extends StatelessWidget {
                   AccountAvatar(
                     name: name,
                     color: profile?.avatarColor ?? 0,
-                    photoUrl: profile?.googlePhoto == true
-                        ? account?.photoUrl
-                        : null,
+                    photoUrl: avatarPhotoUrl(profile, account),
                     size: 48,
                   ),
                   const SizedBox(width: AppSpacing.md),

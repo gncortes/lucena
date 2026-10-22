@@ -4,6 +4,8 @@ import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
 import 'fakes/fake_sync_repository.dart';
 import 'fakes/fake_avatar_repository.dart';
+import 'fakes/fake_mail_app_repository.dart';
+import 'fakes/fake_photo_repository.dart';
 import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
@@ -264,6 +266,8 @@ Future<Dependencies> e2eDependencies() async {
     accountRepository: FakeAccountRepository(),
     syncRepository: FakeSyncRepository(),
     avatarRepository: FakeAvatarRepository(),
+    photoRepository: FakePhotoRepository(),
+    mailAppRepository: FakeMailAppRepository(),
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
     pushRepository: FakePushRepository(allowed: true),

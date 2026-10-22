@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-/// A conta, opcional (E1.13): convite, entrar, e-mail, "Seus dados",
-/// "Bem-vindo de volta" e apagar.
+/// A conta, opcional (E1.13, refeita na §2.12): convite, entrada, criar
+/// conta, entrar, esqueci a senha, "Seu perfil" com a foto, "Bem-vindo de
+/// volta" e apagar.
 abstract final class AccountKeys {
   /// O convite em tela cheia (vindo de um link) e o "Criar conta ou entrar".
   static const screen = Key('account.screen');
@@ -11,23 +12,45 @@ abstract final class AccountKeys {
   static const email = Key('account.email');
   static const later = Key('account.later');
 
+  /// "Já tem conta? Entrar" e "Não tem conta? Criar conta".
+  static const toSignIn = Key('account.toSignIn');
+  static const toCreate = Key('account.toCreate');
+  static const legal = Key('account.legal');
+
   /// O convite em folha, no fim da 1ª partida.
   static const inviteSheet = Key('account.inviteSheet');
   static const notNow = Key('account.notNow');
 
-  static const emailScreen = Key('account.emailScreen');
+  /// Criar conta e Entrar, com e-mail e senha.
+  static const createScreen = Key('account.create');
+  static const signInScreen = Key('account.signIn');
   static const emailField = Key('account.emailField');
   static const passwordField = Key('account.passwordField');
-  static const emailSegCreate = Key('account.emailSeg.create');
-  static const emailSegSignIn = Key('account.emailSeg.signIn');
+  static const passwordEye = Key('account.passwordEye');
   static const emailSubmit = Key('account.emailSubmit');
-  static const emailHaveAccount = Key('account.emailHaveAccount');
+  static const forgotPassword = Key('account.forgotPassword');
 
+  /// As folhas "Esqueceu a senha?" e "Confira o seu e-mail".
+  static const resetSheet = Key('account.resetSheet');
+  static const resetEmail = Key('account.resetEmail');
+  static const resetSend = Key('account.resetSend');
+  static const resetCancel = Key('account.resetCancel');
+  static const resetSentSheet = Key('account.resetSent');
+  static const resetOpenMail = Key('account.resetOpenMail');
+  static const resetOk = Key('account.resetOk');
+
+  /// "Seu perfil" e a folha "Foto do perfil".
   static const dataScreen = Key('account.data');
+  static const photo = Key('account.photo');
   static const nickname = Key('account.nickname');
-  static Key avatar(int index) => Key('account.avatar.$index');
-  static const avatarGoogle = Key('account.avatarGoogle');
+  static const savedBanner = Key('account.savedBanner');
   static const dataSave = Key('account.dataSave');
+  static const photoSheet = Key('account.photoSheet');
+  static const photoCamera = Key('account.photoCamera');
+  static const photoGallery = Key('account.photoGallery');
+  static const photoGoogle = Key('account.photoGoogle');
+  static Key avatar(int index) => Key('account.avatar.$index');
+  static const photoRemove = Key('account.photoRemove');
 
   static const restoredScreen = Key('account.restored');
   static const restoredContinue = Key('account.restoredContinue');

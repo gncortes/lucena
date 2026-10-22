@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'avatar_photo.dart';
 import 'goal_preference.dart';
 import 'level_source.dart';
 import 'rating_level.dart';
@@ -35,8 +36,11 @@ abstract class UserProfile with _$UserProfile {
     /// A cor do avatar (índice em [avatarColors]), com a inicial do nome.
     @Default(0) int avatarColor,
 
-    /// O avatar é a foto da conta do Google, no lugar da inicial.
-    @Default(false) bool googlePhoto,
+    /// A foto no lugar da inicial: a do Google ou a enviada (§2.12).
+    @Default(AvatarPhoto.none) AvatarPhoto photo,
+
+    /// O endereço da foto enviada ([AvatarPhoto.upload]).
+    String? photoUrl,
 
     /// O país (código ISO, como `BR`): vem da região do celular e a pessoa
     /// troca em "Seu país". Nulo: o celular não informou.

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../models/avatar_photo.dart';
 import '../models/endgame_lesson.dart';
 import '../models/progress_summary.dart';
 import '../models/race.dart';
@@ -52,6 +53,7 @@ abstract final class ProgressMerge {
     final fromRemote = local.levelSource == null && remote.levelSource != null;
     final country = local.country ?? remote.country;
     final sameCountry = country == remote.country;
+    final photo = local.photo == AvatarPhoto.none ? remote : local;
     return local.copyWith(
       nickname: local.nickname.isEmpty ? remote.nickname : local.nickname,
       rating: fromRemote ? remote.rating : local.rating,
@@ -63,6 +65,9 @@ abstract final class ProgressMerge {
       // Estado e cidade da conta só valem para o mesmo país.
       state: local.state ?? (sameCountry ? remote.state : null),
       city: local.city ?? (sameCountry ? remote.city : null),
+      // A foto é da conta: sem foto neste celular, vale a da conta.
+      photo: photo.photo,
+      photoUrl: photo.photoUrl,
     );
   }
 

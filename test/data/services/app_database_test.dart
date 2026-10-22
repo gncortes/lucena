@@ -2,10 +2,12 @@ import 'package:dartchess/dartchess.dart' show Side;
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 
 /// O banco de quem já tinha o app instalado continua valendo depois de
@@ -314,5 +316,37 @@ void main() {
         );
     await bonus();
     await expectLater(bonus(), throwsA(isA<SqliteException>()));
+  });
+
+  test('da versão 12 para a 13: quem usava a foto do Google continua com '
+      'ela', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          // O perfil como era na versão 12, com o sim/não da foto do Google.
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, goal TEXT NULL, level_source '
+              'TEXT NULL, lichess_user TEXT NULL, chess_com_user TEXT NULL, '
+              'avatar_color INTEGER NOT NULL DEFAULT 0, google_photo INTEGER '
+              'NOT NULL DEFAULT 0, country TEXT NULL, state TEXT NULL, city '
+              'TEXT NULL, PRIMARY KEY (id))',
+            )
+            ..execute(
+              'INSERT INTO profiles (id, nickname, rating, avatar_color, '
+              "google_photo) VALUES (1, 'Ana', 1500, 2, 1)",
+            )
+            ..execute('PRAGMA user_version = 12');
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    final profile = await LocalProfileRepository(database).load();
+    expect(profile.nickname, 'Ana');
+    expect(profile.avatarColor, 2);
+    expect(profile.photo, AvatarPhoto.google);
+    expect(profile.photoUrl, isNull);
   });
 }

@@ -6,6 +6,7 @@ import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/level_source.dart';
+import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 
 void main() {
@@ -69,7 +70,8 @@ void main() {
     const profile = UserProfile(
       nickname: 'Ana',
       avatarColor: 3,
-      googlePhoto: true,
+      photo: AvatarPhoto.upload,
+      photoUrl: 'https://storage.test/users/u/avatar.jpg',
       country: 'BR',
     );
     await reopen((repository) => repository.save(profile));

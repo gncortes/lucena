@@ -78,6 +78,9 @@ class FakeAccountRepository implements AccountRepository {
 
   final List<String> resets = [];
 
+  /// O `photo` do último [deleteAccount].
+  bool? deletedWithPhoto;
+
   @override
   Future<void> sendPasswordReset(String email) async {
     _throwIfFailing();
@@ -106,8 +109,9 @@ class FakeAccountRepository implements AccountRepository {
   Future<void> signOut() async => _set(null);
 
   @override
-  Future<void> deleteAccount() async {
+  Future<void> deleteAccount({bool photo = false}) async {
     _throwIfFailing();
+    deletedWithPhoto = photo;
     _set(null);
   }
 }

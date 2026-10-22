@@ -25,6 +25,7 @@ import 'data/repositories/featured/featured_repository.dart';
 import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
+import 'data/repositories/photo/photo_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
@@ -39,6 +40,7 @@ import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/account/account_invite_repository.dart';
 import 'data/repositories/account/avatar_repository.dart';
+import 'data/repositories/account/mail_app_repository.dart';
 import 'data/repositories/activity/activity_repository.dart';
 import 'data/repositories/daily/daily_final_repository.dart';
 import 'data/repositories/account/account_repository.dart';
@@ -221,6 +223,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AvatarRepository>.value(
           value: dependencies.avatarRepository,
+        ),
+        RepositoryProvider<PhotoRepository>.value(
+          value: dependencies.photoRepository,
+        ),
+        RepositoryProvider<MailAppRepository>.value(
+          value: dependencies.mailAppRepository,
         ),
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,
