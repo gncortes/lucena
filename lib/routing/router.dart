@@ -185,6 +185,8 @@ import '../ui/core/sound/game_sounds.dart';
 import '../data/repositories/week/week_repository.dart';
 import '../ui/week/view_models/week_cubit.dart';
 import '../ui/week/widgets/week_screen.dart';
+import '../ui/update/widgets/update_recommended_screen.dart';
+import '../ui/update/widgets/update_required_screen.dart';
 import 'routes.dart';
 import '../domain/use_cases/game_intro.dart';
 
@@ -206,10 +208,28 @@ Future<String?> resolveScriptPart(
   return Routes.endgameLessonScript(id, part: visible.first.id);
 }
 
-GoRouter buildRouter({String initialLocation = Routes.home}) {
+/// Com [updateRequired] verdadeiro, toda rota vai para a atualização
+/// obrigatória (E1.32); [refresh] avisa quando ele muda. A Política de
+/// privacidade abre no navegador, fora das rotas: continua alcançável.
+GoRouter buildRouter({
+  String initialLocation = Routes.home,
+  bool Function()? updateRequired,
+  Listenable? refresh,
+}) {
   return GoRouter(
     initialLocation: initialLocation,
+    refreshListenable: refresh,
+    redirect: (context, state) =>
+        updateRedirect(state.matchedLocation, required: updateRequired),
     routes: [
+      _route(
+        path: Routes.updateRequired,
+        builder: (context, state) => const UpdateRequiredScreen(),
+      ),
+      _route(
+        path: Routes.updateRecommended,
+        builder: (context, state) => const UpdateRecommendedScreen(),
+      ),
       _route(
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
@@ -1482,6 +1502,16 @@ GoRoute _levelPart(String path, Widget screen) => _route(
   builder: (context, state) =>
       BlocProvider.value(value: state.extra! as LevelCubit, child: screen),
 );
+
+/// Para onde a atualização obrigatória manda quem está em [location]: nulo
+/// fica onde está.
+String? updateRedirect(String location, {bool Function()? required}) {
+  final blocked = required?.call() ?? false;
+  final here = location == Routes.updateRequired;
+  if (blocked && !here) return Routes.updateRequired;
+  if (!blocked && here) return Routes.home;
+  return null;
+}
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18
 /// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do

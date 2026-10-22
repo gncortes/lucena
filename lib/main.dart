@@ -13,6 +13,8 @@ import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
 import 'data/repositories/week/week_repository.dart';
+import 'data/repositories/config/remote_flags_repository.dart';
+import 'data/repositories/update/app_update_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
 import 'data/repositories/characters/character_repository.dart';
@@ -76,6 +78,9 @@ import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
 import 'routing/router.dart';
+import 'routing/stream_refresh.dart';
+import 'ui/update/view_models/update_cubit.dart';
+import 'ui/update/widgets/update_bridge.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
 import 'ui/reminders/view_models/reminders_cubit.dart';
 import 'ui/reminders/widgets/reminders_bridge.dart';
@@ -126,10 +131,22 @@ class _LucenaAppState extends State<LucenaApp> {
     changes: widget.dependencies.localChanges,
   );
 
+  // A versão contra o Remote Config e a Play (E1.32).
+  late final UpdateCubit _update = UpdateCubit(
+    flags: widget.dependencies.remoteFlagsRepository,
+    updates: widget.dependencies.appUpdateRepository,
+  );
+
+  // Refaz o redirect da atualização obrigatória quando ela muda.
+  late final StreamRefresh _updateRefresh = StreamRefresh(
+    _update.stream.map((state) => state.required).distinct(),
+  );
+
   @override
   void initState() {
     super.initState();
     _sync.start();
+    unawaited(_update.start());
     _openRouter();
   }
 
@@ -161,6 +178,8 @@ class _LucenaAppState extends State<LucenaApp> {
           showSchool: VisibleLessons.school,
           visibleEndgameLessons: VisibleLessons.endgameLessonIds,
         ),
+        updateRequired: () => _update.state.required,
+        refresh: _updateRefresh,
       );
     });
     _links = deepLinks.opened.listen(
@@ -197,6 +216,8 @@ class _LucenaAppState extends State<LucenaApp> {
     unawaited(_pushLinks?.cancel());
     unawaited(_sync.dispose());
     _router?.dispose();
+    _updateRefresh.dispose();
+    unawaited(_update.close());
     super.dispose();
   }
 
@@ -403,9 +424,16 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<WeekRepository>.value(
           value: dependencies.weekRepository,
         ),
+        RepositoryProvider<RemoteFlagsRepository>.value(
+          value: dependencies.remoteFlagsRepository,
+        ),
+        RepositoryProvider<AppUpdateRepository>.value(
+          value: dependencies.appUpdateRepository,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider<UpdateCubit>.value(value: _update),
           BlocProvider(
             create: (context) => SettingsCubit(
               dependencies.settingsRepository,
@@ -477,9 +505,12 @@ class _LucenaAppState extends State<LucenaApp> {
                 supportedLocales: appSupportedLocales,
                 routerConfig: router,
                 // Abaixo das traduções: os textos dos lembretes vêm delas.
-                builder: (context, child) => RemindersBridge(
-                  onOpen: (route) => _router?.push(route),
-                  child: child ?? const SizedBox.shrink(),
+                builder: (context, child) => UpdateBridge(
+                  router: router,
+                  child: RemindersBridge(
+                    onOpen: (route) => _router?.push(route),
+                    child: child ?? const SizedBox.shrink(),
+                  ),
                 ),
               ),
             );

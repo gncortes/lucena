@@ -1,0 +1,60 @@
+{
+  "conditions": [],
+  "parameters": {
+    "update_min_build": {
+      "defaultValue": { "value": "0" },
+      "valueType": "NUMBER",
+      "description": "E1.32: build (versionCode) abaixo disso vê a atualização obrigatória. Só para erro grave."
+    },
+    "update_recommended_build": {
+      "defaultValue": { "value": "0" },
+      "valueType": "NUMBER",
+      "description": "E1.32: build abaixo disso vê a atualização recomendada, uma vez por valor."
+    },
+    "ads_enabled": {
+      "defaultValue": { "value": "true" },
+      "valueType": "BOOLEAN",
+      "description": "E1.25: interruptor geral do anúncio."
+    },
+    "ads_free_lessons": {
+      "defaultValue": { "value": "2" },
+      "valueType": "NUMBER",
+      "description": "E1.25: lições abertas sem anúncio (decisão 3b)."
+    },
+    "ads_min_gap_seconds": {
+      "defaultValue": { "value": "180" },
+      "valueType": "NUMBER",
+      "description": "E1.25: intervalo mínimo entre dois anúncios, em segundos."
+    },
+    "volta_3d_titulo": {
+      "defaultValue": { "value": "O final do dia está esperando" },
+      "valueType": "STRING",
+      "description": "E1.21: título da campanha de quem não abre há 3 dias."
+    },
+    "volta_3d_corpo": {
+      "defaultValue": { "value": "Um final novo por dia. Venha ver se você acerta o de hoje." },
+      "valueType": "STRING",
+      "description": "E1.21: corpo da campanha de quem não abre há 3 dias."
+    },
+    "volta_aula_titulo": {
+      "defaultValue": { "value": "A aula ficou no meio" },
+      "valueType": "STRING",
+      "description": "E1.21: título da campanha de quem parou uma aula."
+    },
+    "volta_aula_corpo": {
+      "defaultValue": { "value": "Volte de onde parou. Falta pouco para fechar o capítulo." },
+      "valueType": "STRING",
+      "description": "E1.21: corpo da campanha de quem parou uma aula."
+    },
+    "volta_torneio_titulo": {
+      "defaultValue": { "value": "Saiu um final de torneio novo" },
+      "valueType": "STRING",
+      "description": "E1.21: título da campanha de quem jogou um final de torneio e não voltou."
+    },
+    "volta_torneio_corpo": {
+      "defaultValue": { "value": "Um final de uma partida de verdade. Tente resolver." },
+      "valueType": "STRING",
+      "description": "E1.21: corpo da campanha de quem jogou um final de torneio e não voltou."
+    }
+  }
+}

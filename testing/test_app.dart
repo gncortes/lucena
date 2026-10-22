@@ -13,6 +13,7 @@ import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/ui/update/view_models/update_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
 import 'package:lucena/ui/core/widgets/web_pages.dart';
@@ -43,6 +44,7 @@ class TestApp extends StatelessWidget {
     this.surveyRepository,
     this.regionPromptRepository,
     this.crowdRepository,
+    this.updateCubit,
     super.key,
   });
 
@@ -82,6 +84,9 @@ class TestApp extends StatelessWidget {
   /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
   final RegionPromptRepository? regionPromptRepository;
   final CrowdRepository? crowdRepository;
+
+  /// A atualização (E1.32), quando a tela testada é uma das duas.
+  final UpdateCubit? updateCubit;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -145,6 +150,8 @@ class TestApp extends StatelessWidget {
         BlocProvider<SpeechCubit>(
           create: (_) => SpeechCubit(FakeVoiceRepository())..load(),
         ),
+      if (updateCubit case final update?)
+        BlocProvider<UpdateCubit>.value(value: update),
     ];
     return MultiRepositoryProvider(
       providers: [
