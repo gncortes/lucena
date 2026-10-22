@@ -388,7 +388,7 @@ void main() {
 
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Casual');
+    expect(textOf(tester, SettingsKeys.profileName), 'Ana');
     expect(profile.saved.last.nickname, 'Ana');
   });
 

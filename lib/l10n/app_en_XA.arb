@@ -1497,5 +1497,9 @@
   "streakAtRecord": "[Thîš îš ýöûŕ ŕéçöŕd. one two]",
   "crowdTomorrowTitle": "[Höw måñý ĝöt ît? Tömöŕŕöw. one two three]",
   "crowdTomorrowText": "[Thé ñûmbéŕ çöméš öût whéñ thé dåý îš övéŕ, åñd ýöû šéé ît héŕé. one two three four five six]",
-  "dailyContinue": "[Çöñtîñûé one]"
+  "dailyContinue": "[Çöñtîñûé one]",
+  "settingsSectionApp": "[Åpp one]",
+  "settingsSectionHelp": "[Hélp åñd åböût one two]",
+  "profileSectionChess": "[Ýöûŕ çhéšš one]",
+  "profileSectionRegion": "[Ŕéĝîöñ one]"
 }

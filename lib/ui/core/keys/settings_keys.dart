@@ -16,6 +16,7 @@ abstract final class SettingsKeys {
   static const version = Key('settings.version');
   static const title = Key('settings.title');
   static const profileTile = Key('settings.profile');
+  static const profileName = Key('settings.profile.name');
   static const profileValue = Key('settings.profile.value');
 
   static const languageTile = Key('settings.language');

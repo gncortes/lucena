@@ -22,19 +22,20 @@ class ProfileRowGroup extends StatelessWidget {
   );
 }
 
-/// Uma linha do grupo: ícone, título e valor. Sem [onTap], só mostra.
+/// Uma linha do grupo: ícone, título e valor (opcional). Sem [onTap], só
+/// mostra.
 class ProfileRow extends StatelessWidget {
   const ProfileRow({
     required this.icon,
     required this.title,
-    required this.value,
+    this.value,
     this.onTap,
     super.key,
   });
 
   final IconData icon;
   final String title;
-  final String value;
+  final String? value;
   final VoidCallback? onTap;
 
   @override
@@ -42,7 +43,7 @@ class ProfileRow extends StatelessWidget {
     minTileHeight: 64,
     leading: Icon(icon),
     title: Text(title),
-    subtitle: Text(value),
+    subtitle: value == null ? null : Text(value!),
     trailing: onTap == null ? null : const Icon(Icons.chevron_right),
     onTap: onTap,
   );

@@ -7970,5 +7970,21 @@
   "dailyContinue": "Continue",
   "@dailyContinue": {
     "description": "Daily endgame result: button that goes back home."
+  },
+  "settingsSectionApp": "App",
+  "@settingsSectionApp": {
+    "description": "Settings: section title of the app options (appearance, game, sound)."
+  },
+  "settingsSectionHelp": "Help and about",
+  "@settingsSectionHelp": {
+    "description": "Settings: section title of feedback, rating and about."
+  },
+  "profileSectionChess": "Your chess",
+  "@profileSectionChess": {
+    "description": "Profile: section title of goal, level and Lichess."
+  },
+  "profileSectionRegion": "Region",
+  "@profileSectionRegion": {
+    "description": "Profile: section title of country, state and city."
   }
 }

@@ -21,6 +21,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
+import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
 import '../view_models/profile_account_cubit.dart';
@@ -29,8 +30,9 @@ import 'account_delete_dialog.dart';
 import 'lichess_sheet.dart';
 import 'profile_rows.dart';
 
-/// O Perfil (canvas `PropV1PerfilSemConta` e `PropV1PerfilConta`): a mesma
-/// tela com e sem conta; muda a linha do cabeçalho e o cartão de cima.
+/// O Perfil (canvas `PropV1ConfigBPerfil`): só o que é da pessoa, a mesma
+/// tela com e sem conta (muda a linha do cabeçalho e o cartão de cima), com
+/// as seções Seu xadrez e Região. O idioma fica em Aparência.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -125,22 +127,9 @@ class _ProfileView extends StatelessWidget {
               const _LocalCard()
             else
               _SyncCard(syncedAt: state.syncedAt),
-            const SizedBox(height: AppSpacing.lg),
+            SectionTitle(l10n.profileSectionChess, inset: AppSpacing.xs),
             ProfileRowGroup(
               children: [
-                ProfileRow(
-                  key: ProfileKeys.rowCountry,
-                  icon: Icons.public,
-                  title: l10n.profileCountry,
-                  value: profileCountryName(l10n, profile?.country),
-                ),
-                ProfileRow(
-                  key: ProfileKeys.rowLanguage,
-                  icon: Icons.language,
-                  title: l10n.profileLanguage,
-                  value: profileLanguageName(context),
-                  onTap: () => context.push(Routes.settingsLanguage),
-                ),
                 // Grava na hora: a folha tem o próprio "Salvar".
                 ProfileRow(
                   key: ProfileKeys.rowGoal,
@@ -167,6 +156,17 @@ class _ProfileView extends StatelessWidget {
                           context,
                           context.read<ProfileAccountCubit>(),
                         ),
+                ),
+              ],
+            ),
+            SectionTitle(l10n.profileSectionRegion, inset: AppSpacing.xs),
+            ProfileRowGroup(
+              children: [
+                ProfileRow(
+                  key: ProfileKeys.rowCountry,
+                  icon: Icons.public,
+                  title: l10n.profileCountry,
+                  value: profileCountryName(l10n, profile?.country),
                 ),
               ],
             ),

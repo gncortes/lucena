@@ -1539,5 +1539,9 @@
   "streakAtRecord": "This is your record.",
   "crowdTomorrowTitle": "How many got it? Tomorrow.",
   "crowdTomorrowText": "The number comes out when the day is over, and you see it here.",
-  "dailyContinue": "Continue"
+  "dailyContinue": "Continue",
+  "settingsSectionApp": "App",
+  "settingsSectionHelp": "Help and about",
+  "profileSectionChess": "Your chess",
+  "profileSectionRegion": "Region"
 }

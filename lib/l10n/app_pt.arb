@@ -1538,5 +1538,9 @@
   "streakAtRecord": "É o seu recorde.",
   "crowdTomorrowTitle": "Quantos acertaram? Amanhã.",
   "crowdTomorrowText": "O número sai quando o dia fecha, e você vê aqui.",
-  "dailyContinue": "Continuar"
+  "dailyContinue": "Continuar",
+  "settingsSectionApp": "App",
+  "settingsSectionHelp": "Ajuda e sobre",
+  "profileSectionChess": "Seu xadrez",
+  "profileSectionRegion": "Região"
 }
