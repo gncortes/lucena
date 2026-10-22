@@ -342,8 +342,8 @@ const pt: Dictionary = {
         body: [
           'Você pode entrar com a sua conta do Google ou com um e-mail. O login é feito pelo Firebase Authentication, do Google, que guarda o seu e-mail, o nome e a foto da conta do Google (quando você entra com ela) e um identificador da conta.',
           'Com a conta, o app copia para o Cloud Firestore, também do Google:',
-          '<ul><li>o seu perfil: nome, apelido, avatar, país (lido da região do celular), idioma, objetivo, nível e os usuários do Lichess e do Chess.com, se você os informou;</li><li>o seu progresso: aulas, rating, conquistas, recordes, desafios e posições cumpridas;</li><li>as suas partidas no app: os lances, o resultado, as datas e o adversário (sempre um motor do próprio app).</li></ul>',
-          'Esses dados ficam em servidores do Google, que podem estar fora do Brasil. A transferência segue as garantias contratuais do Google Cloud (<a href="https://firebase.google.com/support/privacy" rel="noopener">privacidade do Firebase</a>). Só você, entrando na sua conta, lê e altera esses dados.',
+          '<ul><li>o seu perfil: nome, apelido, país (lido da região do celular, que você pode trocar), estado e cidade (se você informar), idioma, objetivo, nível e os usuários do Lichess e do Chess.com, se você os informou;</li><li>o seu progresso: aulas, rating, conquistas, recordes, desafios e posições cumpridas;</li><li>as suas partidas no app: os lances, o resultado, as datas e o adversário (sempre um motor do próprio app).</li></ul>',
+          'Se você escolher uma foto de perfil (da câmera, da galeria ou a da conta do Google), ela vai para o Firebase Storage, também do Google, em tamanho reduzido. O app só usa a câmera e a galeria quando você toca para trocar a foto.', 'Esses dados ficam em servidores do Google, que podem estar fora do Brasil. A transferência segue as garantias contratuais do Google Cloud (<a href="https://firebase.google.com/support/privacy" rel="noopener">privacidade do Firebase</a>). Só você, entrando na sua conta, lê e altera esses dados.',
         ],
       },
       {
@@ -363,15 +363,17 @@ const pt: Dictionary = {
       {
         title: 'Estatísticas de uso, falhas e anúncios',
         body: [
-          '<strong>Estatísticas de uso.</strong> O app usa o Google Analytics for Firebase para saber quais telas e aulas são usadas, onde as pessoas desistem e de onde vieram (por exemplo, de um link de desafio). Ele registra eventos do app, o modelo do aparelho, a versão do Android, o país aproximado e um identificador do app, sem o seu nome nem o seu e-mail.',
+          '<strong>Estatísticas de uso.</strong> O app usa o Google Analytics for Firebase para saber quais telas e aulas são usadas, onde as pessoas desistem e de onde vieram (por exemplo, de um link de desafio). Ele registra eventos do app (como abrir uma aula ou terminar uma partida), o modelo do aparelho, a versão do Android, o país e o estado (nunca a cidade), se você tem conta e a campanha ou o link pelo qual chegou, com um identificador do app. Nunca vão o seu nome, o seu e-mail, o que você digita nem as posições que você monta.',
           '<strong>Falhas.</strong> Quando o app trava, o Firebase Crashlytics envia o relatório do erro, com o modelo do aparelho, a versão do sistema e a do app, para eu poder corrigir.',
-          '<strong>Anúncios.</strong> O app pode oferecer anúncios premiados do Google AdMob, que você escolhe ver em troca de um benefício no app. Eles não interrompem as aulas nem as partidas. Antes do primeiro anúncio, o app mostra a tela de consentimento do Google, onde você escolhe se os anúncios podem ser personalizados. O AdMob usa o identificador de publicidade do aparelho, que você pode redefinir ou apagar nas configurações do Android (<a href="https://policies.google.com/technologies/ads" rel="noopener">como o Google usa dados em anúncios</a>).',
+          '<strong>Anúncios.</strong> O app mostra anúncios do Google AdMob em tela cheia, só quando você toca para abrir ou continuar uma lição, e nunca nas primeiras lições, no meio de um exercício, de uma partida ou de um desafio. Antes do primeiro anúncio, o app mostra a tela de consentimento do Google, onde você escolhe se os anúncios podem ser personalizados. O AdMob usa o identificador de publicidade do aparelho, que você pode redefinir ou apagar nas configurações do Android (<a href="https://policies.google.com/technologies/ads" rel="noopener">como o Google usa dados em anúncios</a>). Você muda essa escolha na tela Privacidade e anúncios do app.',
+          '<strong>Remover anúncios.</strong> A compra é feita pela Google Play, que trata o pagamento. O app só fica sabendo se a compra foi feita, para não mostrar mais anúncios.',
+          '<strong>A sua opinião.</strong> Quando você responde uma pesquisa do app ou manda um feedback, a resposta vai para o Cloud Firestore <strong>sem identificar você</strong>: sem conta, e-mail, nome nem identificador de publicidade. Vão junto só a versão do app, o modelo do celular, o seu nível e como você chegou ao app.',
         ],
       },
       {
         title: 'Internet e páginas externas',
         body: [
-          'Os motores de xadrez, as aulas e as vozes rodam no próprio aparelho. O app usa a internet para a conta, as notificações, as estatísticas, os anúncios, o Lichess e o Chess.com, e para abrir, dentro dele, as páginas externas que você toca, como artigos da Wikipedia. Essas páginas seguem as políticas dos sites delas.',
+          'Os motores de xadrez, as aulas e as vozes rodam no próprio aparelho. O app usa a internet para a conta, as notificações, as estatísticas, os anúncios, as compras, a sua opinião, o Lichess e o Chess.com, e para abrir, dentro dele, as páginas externas que você toca, como artigos da Wikipedia. Essas páginas seguem as políticas dos sites delas.',
           'Quando você compartilha uma partida ou um desafio, o texto, a imagem e o link vão só para o app que você escolher.',
         ],
       },
@@ -384,7 +386,7 @@ const pt: Dictionary = {
       {
         title: 'Para que os dados são usados e com que base',
         body: [
-          '<ul><li><strong>Conta, perfil, progresso e partidas:</strong> para guardar e devolver o seu progresso, como você pediu ao criar a conta (execução do contrato, LGPD art. 7º, V).</li><li><strong>Notificações e anúncios personalizados:</strong> só com o seu consentimento, que você pode retirar a qualquer momento (art. 7º, I).</li><li><strong>Estatísticas de uso e relatórios de falha:</strong> para corrigir erros e melhorar as aulas (legítimo interesse, art. 7º, IX).</li></ul>',
+          '<ul><li><strong>Conta, perfil, progresso e partidas:</strong> para guardar e devolver o seu progresso, como você pediu ao criar a conta (execução do contrato, LGPD art. 7º, V).</li><li><strong>Notificações e anúncios personalizados:</strong> só com o seu consentimento, que você pode retirar a qualquer momento (art. 7º, I).</li><li><strong>Estatísticas de uso, relatórios de falha e a sua opinião:</strong> para corrigir erros e melhorar as aulas (legítimo interesse, art. 7º, IX).</li></ul>',
         ],
       },
       {
@@ -397,7 +399,7 @@ const pt: Dictionary = {
         id: 'apagar-conta',
         title: 'Como apagar a conta',
         body: [
-          'No app, abra o <strong>Perfil</strong> e toque em <strong>Apagar a conta</strong>. A conta, o perfil, o progresso e as partidas guardados nela são apagados na hora. Neste celular, o app continua funcionando sem conta.',
+          'No app, abra o <strong>Perfil</strong> e toque em <strong>Apagar a conta</strong>. A conta, o perfil, a foto, o progresso e as partidas guardados nela são apagados na hora. Neste celular, o app continua funcionando sem conta.',
           'Sem o app, siga os passos da página <a href="/apagar-conta/">Apagar a conta</a>.',
         ],
       },
@@ -461,7 +463,7 @@ const pt: Dictionary = {
       {
         title: 'A sua conta',
         body: [
-          'A conta é opcional. Você responde pelo que é feito nela e deve manter o acesso ao seu e-mail ou à sua conta do Google em segurança. Use um nome e um apelido que não ofendam ninguém nem se passem por outra pessoa.',
+          'A conta é opcional. Você responde pelo que é feito nela e deve manter o acesso ao seu e-mail ou à sua conta do Google em segurança. Use um nome, um apelido e uma foto que não ofendam ninguém nem se passem por outra pessoa.',
           'Você pode apagar a conta quando quiser, no Perfil do app ou pela página <a href="/apagar-conta/">Apagar a conta</a>. Posso suspender ou apagar uma conta usada para burlar o app, atacar o serviço ou violar estes termos.',
         ],
       },
@@ -481,13 +483,13 @@ const pt: Dictionary = {
       {
         title: 'Serviços de terceiros',
         body: [
-          'O login, o armazenamento da conta, as notificações, as estatísticas e os anúncios são prestados pelo Google (Firebase e AdMob). Os dados de rating vêm do Lichess e do Chess.com, se você os conectar. Esses serviços têm os próprios termos, e eu não respondo pela disponibilidade deles.',
+          'O login, o armazenamento da conta, as notificações, as estatísticas e os anúncios são prestados pelo Google (Firebase e AdMob), e as compras, pela Google Play. Os dados de rating vêm do Lichess e do Chess.com, se você os conectar. Esses serviços têm os próprios termos, e eu não respondo pela disponibilidade deles.',
         ],
       },
       {
         title: 'Anúncios',
         body: [
-          'O app pode oferecer anúncios premiados, que você escolhe ver em troca de um benefício no app. O benefício não tem valor em dinheiro, não pode ser trocado nem transferido e pode mudar.',
+          'O Lucena é grátis e se mantém com anúncios, que aparecem só ao abrir ou continuar uma lição. A compra “Remover anúncios” é feita uma vez só pela Google Play, fica ligada à sua conta do Google e tira os anúncios nos aparelhos em que você usar essa conta. Pedidos de reembolso seguem as regras da Google Play.',
         ],
       },
       {
@@ -545,9 +547,9 @@ const pt: Dictionary = {
       {
         title: 'O que é apagado',
         body: [
-          'A conta (e-mail, nome e foto), o perfil, o progresso e as partidas guardados nela. Nada disso fica guardado depois: não dá para desfazer.',
+          'A conta (e-mail, nome e foto), o perfil, a foto de perfil, o progresso e as partidas guardados nela. Nada disso fica guardado depois: não dá para desfazer.',
           'O que fica no seu celular não é apagado: o app continua funcionando sem conta. Para apagar também esses dados, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
-          'As estatísticas de uso e os relatórios de falha, que não têm o seu nome nem o seu e-mail, são apagados sozinhos nos prazos da <a href="/privacidade/">Política de privacidade</a>.',
+          'As estatísticas de uso, os relatórios de falha e as respostas de pesquisa e feedback, que não têm o seu nome nem o seu e-mail e não ficam ligados à conta, são apagados sozinhos nos prazos da <a href="/privacidade/">Política de privacidade</a>.',
         ],
       },
     ],

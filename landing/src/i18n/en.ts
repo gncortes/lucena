@@ -341,8 +341,8 @@ const en: Dictionary = {
         body: [
           'You can sign in with your Google account or with an email address. Sign-in is handled by Google’s Firebase Authentication, which stores your email, the name and photo of your Google account (when you use it) and an account ID.',
           'With an account, the app copies to Google’s Cloud Firestore:',
-          '<ul><li>your profile: name, nickname, avatar, country (read from the phone’s region), language, goal, level and your Lichess and Chess.com usernames, if you entered them;</li><li>your progress: lessons, rating, achievements, records, completed challenges and positions;</li><li>your games in the app: the moves, the result, the dates and the opponent (always one of the app’s own engines).</li></ul>',
-          'This data is stored on Google servers, which may be outside your country. The transfer follows Google Cloud’s contractual safeguards (<a href="https://firebase.google.com/support/privacy" rel="noopener">Firebase privacy</a>). Only you, signed in to your account, can read and change this data.',
+          '<ul><li>your profile: name, nickname, country (read from the phone’s region, which you can change), state and city (if you enter them), language, goal, level and your Lichess and Chess.com usernames, if you entered them;</li><li>your progress: lessons, rating, achievements, records, completed challenges and positions;</li><li>your games in the app: the moves, the result, the dates and the opponent (always one of the app’s own engines).</li></ul>',
+          'If you choose a profile photo (from the camera, the gallery or your Google account), it goes to Google’s Firebase Storage at a reduced size. The app only uses the camera and gallery when you tap to change the photo.', 'This data is stored on Google servers, which may be outside your country. The transfer follows Google Cloud’s contractual safeguards (<a href="https://firebase.google.com/support/privacy" rel="noopener">Firebase privacy</a>). Only you, signed in to your account, can read and change this data.',
         ],
       },
       {
@@ -362,15 +362,17 @@ const en: Dictionary = {
       {
         title: 'Usage statistics, crashes and ads',
         body: [
-          '<strong>Usage statistics.</strong> The app uses Google Analytics for Firebase to learn which screens and lessons are used, where people give up and where they came from (for example, a challenge link). It records app events, the device model, the Android version, the approximate country and an app instance ID, without your name or email.',
+          '<strong>Usage statistics.</strong> The app uses Google Analytics for Firebase to learn which screens and lessons are used, where people give up and where they came from (for example, a challenge link). It records app events (such as opening a lesson or finishing a game), the device model, the Android version, the country and state (never the city), whether you have an account and the campaign or link you came from, with an app instance ID. Your name, your email, what you type and the positions you set up are never sent.',
           '<strong>Crashes.</strong> When the app crashes, Firebase Crashlytics sends the error report, with the device model and the system and app versions, so I can fix it.',
-          '<strong>Ads.</strong> The app may offer Google AdMob rewarded ads, which you choose to watch in exchange for an in-app benefit. They never interrupt lessons or games. Before the first ad, the app shows Google’s consent screen, where you choose whether ads may be personalized. AdMob uses the device’s advertising ID, which you can reset or delete in the Android settings (<a href="https://policies.google.com/technologies/ads" rel="noopener">how Google uses data in ads</a>).',
+          '<strong>Ads.</strong> The app shows full-screen Google AdMob ads only when you tap to open or continue a lesson, and never in the first lessons or in the middle of an exercise, a game or a challenge. Before the first ad, the app shows Google’s consent screen, where you choose whether ads may be personalized. AdMob uses the device’s advertising ID, which you can reset or delete in the Android settings (<a href="https://policies.google.com/technologies/ads" rel="noopener">how Google uses data in ads</a>). You can change this choice on the app’s Privacy and ads screen.',
+          '<strong>Remove ads.</strong> The purchase is made through Google Play, which handles the payment. The app only learns whether the purchase was made, so it stops showing ads.',
+          '<strong>Your feedback.</strong> When you answer an in-app survey or send feedback, the answer goes to Cloud Firestore <strong>without identifying you</strong>: no account, email, name or advertising ID. Only the app version, the phone model, your level and how you found the app go with it.',
         ],
       },
       {
         title: 'Internet and external pages',
         body: [
-          'The chess engines, the lessons and the voices run on the device itself. The app uses the internet for the account, notifications, statistics, ads, Lichess and Chess.com, and to open, inside the app, the external pages you tap, such as Wikipedia articles. Those pages follow their own sites’ policies.',
+          'The chess engines, the lessons and the voices run on the device itself. The app uses the internet for the account, notifications, statistics, ads, purchases, feedback, Lichess and Chess.com, and to open, inside the app, the external pages you tap, such as Wikipedia articles. Those pages follow their own sites’ policies.',
           'When you share a game or a challenge, the text, image and link go only to the app you choose.',
         ],
       },
@@ -383,7 +385,7 @@ const en: Dictionary = {
       {
         title: 'Why the data is used, and on what basis',
         body: [
-          '<ul><li><strong>Account, profile, progress and games:</strong> to store and return your progress, as you asked when creating the account (performance of a contract).</li><li><strong>Notifications and personalized ads:</strong> only with your consent, which you can withdraw at any time.</li><li><strong>Usage statistics and crash reports:</strong> to fix errors and improve the lessons (legitimate interest).</li></ul>',
+          '<ul><li><strong>Account, profile, progress and games:</strong> to store and return your progress, as you asked when creating the account (performance of a contract).</li><li><strong>Notifications and personalized ads:</strong> only with your consent, which you can withdraw at any time.</li><li><strong>Usage statistics, crash reports and feedback:</strong> to fix errors and improve the lessons (legitimate interest).</li></ul>',
         ],
       },
       {
@@ -396,7 +398,7 @@ const en: Dictionary = {
         id: 'delete-account',
         title: 'How to delete the account',
         body: [
-          'In the app, open your <strong>Profile</strong> and tap <strong>Delete the account</strong>. The account and the profile, progress and games stored in it are deleted right away. On this phone, the app keeps working without an account.',
+          'In the app, open your <strong>Profile</strong> and tap <strong>Delete the account</strong>. The account and the profile, photo, progress and games stored in it are deleted right away. On this phone, the app keeps working without an account.',
           'Without the app, follow the steps on the <a href="/en/delete-account/">Delete account</a> page.',
         ],
       },
@@ -460,7 +462,7 @@ const en: Dictionary = {
       {
         title: 'Your account',
         body: [
-          'The account is optional. You are responsible for what is done with it and must keep access to your email or Google account safe. Use a name and nickname that do not offend anyone or impersonate someone else.',
+          'The account is optional. You are responsible for what is done with it and must keep access to your email or Google account safe. Use a name, nickname and photo that do not offend anyone or impersonate someone else.',
           'You can delete the account whenever you want, in the app’s Profile or on the <a href="/en/delete-account/">Delete account</a> page. I may suspend or delete an account used to cheat the app, attack the service or break these terms.',
         ],
       },
@@ -480,13 +482,13 @@ const en: Dictionary = {
       {
         title: 'Third-party services',
         body: [
-          'Sign-in, account storage, notifications, statistics and ads are provided by Google (Firebase and AdMob). Rating data comes from Lichess and Chess.com, if you connect them. These services have their own terms, and I am not responsible for their availability.',
+          'Sign-in, account storage, notifications, statistics and ads are provided by Google (Firebase and AdMob), and purchases by Google Play. Rating data comes from Lichess and Chess.com, if you connect them. These services have their own terms, and I am not responsible for their availability.',
         ],
       },
       {
         title: 'Ads',
         body: [
-          'The app may offer rewarded ads, which you choose to watch in exchange for an in-app benefit. The benefit has no cash value, cannot be exchanged or transferred, and may change.',
+          'Lucena is free and supported by ads, which only appear when you open or continue a lesson. The “Remove ads” purchase is a one-time purchase through Google Play, tied to your Google account, and removes ads on the devices where you use that account. Refund requests follow Google Play’s rules.',
         ],
       },
       {
@@ -544,9 +546,9 @@ const en: Dictionary = {
       {
         title: 'What is deleted',
         body: [
-          'The account (email, name and photo) and the profile, progress and games stored in it. None of it is kept afterwards: this cannot be undone.',
+          'The account (email, name and photo) and the profile, profile photo, progress and games stored in it. None of it is kept afterwards: this cannot be undone.',
           'What is on your phone is not deleted: the app keeps working without an account. To erase that data too, clear Lucena’s data in the Android settings or uninstall the app.',
-          'Usage statistics and crash reports, which do not include your name or email, are deleted automatically within the periods in the <a href="/en/privacy/">Privacy policy</a>.',
+          'Usage statistics, crash reports and survey and feedback answers, which do not include your name or email and are not linked to the account, are deleted automatically within the periods in the <a href="/en/privacy/">Privacy policy</a>.',
         ],
       },
     ],
