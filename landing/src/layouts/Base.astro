@@ -4,21 +4,21 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '../styles/global.css';
 import interUrl from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import jakartaUrl from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
-import { asset, defaultLocale, fallbackLocale, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
+import { asset, defaultLocale, fallbackLocale, legalUrl, locales, pageUrl, type LegalPage, type Locale } from '../i18n';
 import { mediaDir } from '../media';
 
 interface Props {
   locale: Locale;
-  /** A página: a landing (padrão) ou a política de privacidade. */
-  page?: 'home' | 'privacy';
+  /** A página: a landing (padrão) ou uma página legal. */
+  page?: 'home' | LegalPage;
 }
 
 const { locale, page = 'home' } = Astro.props;
 const t = locales[locale].dict;
 const home = page === 'home';
-const urlOf = (l: Locale) => (home ? pageUrl(l) : privacyUrl(l));
-const title = home ? t.meta.title : `${t.privacy.title} · Lucena`;
-const description = home ? t.meta.description : t.privacy.description;
+const urlOf = (l: Locale) => (page === 'home' ? pageUrl(l) : legalUrl(l, page));
+const title = page === 'home' ? t.meta.title : `${t[page].title} · Lucena`;
+const description = page === 'home' ? t.meta.description : t[page].description;
 const site = Astro.site!;
 const absolute = (path: string) => new URL(path, site).href;
 const canonical = absolute(urlOf(locale));

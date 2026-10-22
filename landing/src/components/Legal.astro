@@ -1,15 +1,18 @@
 ---
 import SiteFooter from './SiteFooter.astro';
-import { asset, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
+import { asset, legalHtml, legalUrl, locales, pageUrl } from '../i18n';
+import type { LegalPage, Locale } from '../i18n';
 
-// A política de privacidade do app, com o cabeçalho enxuto do site.
+// Uma página legal (política, termos ou exclusão de conta), com o cabeçalho
+// enxuto do site.
 interface Props {
   locale: Locale;
+  doc: LegalPage;
 }
 
-const { locale } = Astro.props;
+const { locale, doc } = Astro.props;
 const t = locales[locale].dict;
-const p = t.privacy;
+const p = t[doc];
 ---
 
 <header class="top">
@@ -23,7 +26,7 @@ const p = t.privacy;
         {
           Object.entries(locales).map(([key, l]) => (
             <a
-              href={privacyUrl(key as Locale)}
+              href={legalUrl(key as Locale, doc)}
               hreflang={l.hreflang}
               lang={l.hreflang}
               aria-current={key === locale ? 'page' : undefined}
@@ -54,9 +57,9 @@ const p = t.privacy;
     <p class="legal__date">{p.updated}</p>
     {
       p.sections.map((section) => (
-        <section>
+        <section id={section.id}>
           <h2>{section.title}</h2>
-          {section.body.map((paragraph) => <p set:html={paragraph} />)}
+          {section.body.map((paragraph) => <Fragment set:html={legalHtml(paragraph)} />)}
         </section>
       ))
     }

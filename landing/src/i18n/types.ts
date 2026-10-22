@@ -98,17 +98,23 @@ export type Dictionary = {
   };
   vision: { kicker: string; title: string; body: string; cta: string };
   refs: { kicker: string; title: string; items: { name: string; body: string }[] };
-  footer: { tagline: string; dev: string; contact: string; privacy: string };
+  footer: { tagline: string; dev: string; contact: string; privacy: string; terms: string; deletion: string };
   media: Record<Clip | Still | 'play' | 'pause', string>;
-  /** A política de privacidade, em <idioma>/<slug>/. */
-  privacy: {
-    slug: string;
-    title: string;
-    description: string;
-    /** A data da versão, já por extenso. */
-    updated: string;
-    back: string;
-    /** Parágrafos com HTML simples (links e ênfase), escritos aqui. */
-    sections: { title: string; body: string[] }[];
-  };
+  /** As páginas legais, cada uma em <idioma>/<slug>/. */
+  privacy: LegalDoc;
+  terms: LegalDoc;
+  /** Como apagar a conta (a Google Play pede um endereço na web). */
+  deletion: LegalDoc;
+};
+
+/** Um documento legal: política, termos ou exclusão de conta. */
+export type LegalDoc = {
+  slug: string;
+  title: string;
+  description: string;
+  /** A data da versão, já por extenso. */
+  updated: string;
+  back: string;
+  /** Parágrafos com HTML simples (links, ênfase e listas), escritos aqui. */
+  sections: { id?: string; title: string; body: string[] }[];
 };

@@ -279,6 +279,8 @@ const en: Dictionary = {
     dev: 'I am a programmer. If you need a landing page, an app, or want to learn more about my services, get in touch:',
     contact: 'Contact',
     privacy: 'Privacy policy',
+    terms: 'Terms of use',
+    deletion: 'Delete account',
   },
   media: {
     blindMode: 'New game in Lucena: choosing between normal and blindfold mode',
@@ -310,58 +312,241 @@ const en: Dictionary = {
   privacy: {
     slug: 'privacy',
     title: 'Privacy policy',
-    description: 'How Lucena handles your data: the app works offline, has no account or ads, and does not collect, send or sell personal data.',
-    updated: 'Version of October 10, 2026',
+    description: 'How Lucena handles your data: without an account, everything stays on your phone; with the optional account, your progress is stored in Firebase so you can get it back on another device. Nothing is sold.',
+    updated: 'Version of October 22, 2026',
     back: 'Back to home',
     sections: [
       {
         title: 'In short',
         body: [
-          'Lucena is a free Android app for training chess endgames. It works offline and <strong>does not collect, send or sell personal data</strong>. It has no account, no login, no ads and no tracking tools.',
+          'Lucena is a free Android app for training chess endgames. It works offline and <strong>without an account</strong>. The account is optional: it saves your progress so you can get it back on another device.',
+          '<strong>I do not sell or rent personal data</strong>, and I do not use your data for anything beyond what is written here.',
         ],
       },
       {
-        title: 'What stays on your device',
+        title: 'Who is responsible',
         body: [
-          'Your progress (lessons, games, rating, achievements and records) and your preferences (theme, language, voice, board) are stored only in the app’s storage on your phone. None of it goes to a server: Lucena has no server.',
+          'Lucena is made by Gabriel Novais Cortes, an independent developer in Brazil, who is the data controller under Brazil’s General Data Protection Law (LGPD) and the EU GDPR. Contact: <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+      {
+        title: 'Without an account: everything stays on the device',
+        body: [
+          'Your progress (lessons, games, rating, achievements and records), your profile (nickname, avatar color, goal and level) and your preferences (theme, language, voice, board) are stored in the app’s storage on your phone.',
           'To erase everything, clear Lucena’s data in the Android settings or uninstall the app.',
         ],
       },
       {
-        title: 'Internet',
+        title: 'With an account: what is stored',
         body: [
-          'The app asks for internet permission only to open, inside the app, the external pages you tap: Wikipedia articles and games on Lichess. Those pages belong to other sites and follow their own privacy policies (<a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" rel="noopener">Wikipedia</a> and <a href="https://lichess.org/privacy" rel="noopener">Lichess</a>).',
-          'The chess engines, the lessons and the voices run on the device itself. When you tap share on a game, the text goes only to the app you choose.',
+          'You can sign in with your Google account or with an email address. Sign-in is handled by Google’s Firebase Authentication, which stores your email, the name and photo of your Google account (when you use it) and an account ID.',
+          'With an account, the app copies to Google’s Cloud Firestore:',
+          '<ul><li>your profile: name, nickname, avatar, country (read from the phone’s region), language, goal, level and your Lichess and Chess.com usernames, if you entered them;</li><li>your progress: lessons, rating, achievements, records, completed challenges and positions;</li><li>your games in the app: the moves, the result, the dates and the opponent (always one of the app’s own engines).</li></ul>',
+          'This data is stored on Google servers, which may be outside your country. The transfer follows Google Cloud’s contractual safeguards (<a href="https://firebase.google.com/support/privacy" rel="noopener">Firebase privacy</a>). Only you, signed in to your account, can read and change this data.',
+        ],
+      },
+      {
+        title: 'Lichess and Chess.com',
+        body: [
+          'If you connect Lichess, you sign in on the Lichess website itself. The app receives an access token that stays <strong>only in your phone’s secure storage</strong>, never in the Lucena account, and is used to read your rating. Your Lichess username goes to your profile.',
+          'If you enter your Chess.com username, the app reads your public rating from the Chess.com API. There is no password or sign-in.',
+          'These sites follow their own policies (<a href="https://lichess.org/privacy" rel="noopener">Lichess</a> and <a href="https://www.chess.com/legal/privacy" rel="noopener">Chess.com</a>).',
+        ],
+      },
+      {
+        title: 'Notifications',
+        body: [
+          'If you allow it, the app receives notifications through Firebase Cloud Messaging (the daily endgame, for example). For that, the phone creates a delivery token, and the app subscribes to the topics of the notifications you turned on. You turn each one off in the app, and all of them in the Android settings.',
+        ],
+      },
+      {
+        title: 'Usage statistics, crashes and ads',
+        body: [
+          '<strong>Usage statistics.</strong> The app uses Google Analytics for Firebase to learn which screens and lessons are used, where people give up and where they came from (for example, a challenge link). It records app events, the device model, the Android version, the approximate country and an app instance ID, without your name or email.',
+          '<strong>Crashes.</strong> When the app crashes, Firebase Crashlytics sends the error report, with the device model and the system and app versions, so I can fix it.',
+          '<strong>Ads.</strong> The app may offer Google AdMob rewarded ads, which you choose to watch in exchange for an in-app benefit. They never interrupt lessons or games. Before the first ad, the app shows Google’s consent screen, where you choose whether ads may be personalized. AdMob uses the device’s advertising ID, which you can reset or delete in the Android settings (<a href="https://policies.google.com/technologies/ads" rel="noopener">how Google uses data in ads</a>).',
+        ],
+      },
+      {
+        title: 'Internet and external pages',
+        body: [
+          'The chess engines, the lessons and the voices run on the device itself. The app uses the internet for the account, notifications, statistics, ads, Lichess and Chess.com, and to open, inside the app, the external pages you tap, such as Wikipedia articles. Those pages follow their own sites’ policies.',
+          'When you share a game or a challenge, the text, image and link go only to the app you choose.',
         ],
       },
       {
         title: 'Microphone',
         body: [
-          'In blindfold mode you can speak your moves. Only then does the app ask for microphone access. Lucena does not record or keep the audio. Recognition is done by the Android speech service: on the device whenever possible; if the offline speech pack for your language is not installed, Android may use Google’s online service. Without the permission, you play with the keyboard or by tapping.',
+          'In blind mode, you can speak your moves. Only then does the app ask for microphone access. Lucena does not record or store the audio. Recognition is done by the Android speech service: on the device whenever possible; if the offline voice pack for the language is not installed, Android may use Google’s online service. Without the permission, you play with the keyboard or by tapping.',
         ],
       },
       {
-        title: 'Google Play',
+        title: 'Why the data is used, and on what basis',
         body: [
-          'Lucena is distributed through Google Play. Google handles your account and install data under its <a href="https://policies.google.com/privacy" rel="noopener">own privacy policy</a>. I only receive the anonymous, aggregated statistics Google Play shows every developer, such as the number of installs.',
+          '<ul><li><strong>Account, profile, progress and games:</strong> to store and return your progress, as you asked when creating the account (performance of a contract).</li><li><strong>Notifications and personalized ads:</strong> only with your consent, which you can withdraw at any time.</li><li><strong>Usage statistics and crash reports:</strong> to fix errors and improve the lessons (legitimate interest).</li></ul>',
         ],
       },
       {
-        title: 'Children',
+        title: 'How long',
         body: [
-          'Since the app collects no personal data from anyone, it collects none from children either. It can be used by people of any age.',
+          'Account data is kept while the account exists. When you delete the account, it is deleted right away (see below). Usage statistics are kept for up to 14 months, and crash reports for up to 90 days.',
+        ],
+      },
+      {
+        id: 'delete-account',
+        title: 'How to delete the account',
+        body: [
+          'In the app, open your <strong>Profile</strong> and tap <strong>Delete the account</strong>. The account and the profile, progress and games stored in it are deleted right away. On this phone, the app keeps working without an account.',
+          'Without the app, follow the steps on the <a href="/en/delete-account/">Delete account</a> page.',
+        ],
+      },
+      {
+        title: 'Your rights',
+        body: [
+          'You can ask for confirmation that I process your data, access to it, correction, portability, deletion and information about who it is shared with, and you can withdraw a consent. Write to <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>: you will get an answer within 15 days. You may also complain to Brazil’s data protection authority (ANPD) or to the authority in your country.',
+        ],
+      },
+      {
+        title: 'Minimum age',
+        body: [
+          'Lucena is for people aged 13 and over. Users under 18 should use the account with the permission of a parent or guardian. If you learn that a child under 13 has created an account, write to me and I will delete their data.',
+        ],
+      },
+      {
+        title: 'Security',
+        body: [
+          'Data travels encrypted (HTTPS) and is stored with Google Cloud’s protections. The database rules let each person read and change only their own account.',
         ],
       },
       {
         title: 'Changes to this policy',
         body: [
-          'If anything changes, this page is updated and the version date at the top changes with it.',
+          'If something changes, this page is updated and the version date at the top changes with it.',
         ],
       },
       {
         title: 'Contact',
         body: [
           'Questions about privacy? Write to <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
+  },
+  terms: {
+    slug: 'terms',
+    title: 'Terms of use',
+    description: 'The rules for using Lucena, the free app for training chess endgames: the account, permitted use, open source and the limits of liability.',
+    updated: 'Version of October 22, 2026',
+    back: 'Back to home',
+    sections: [
+      {
+        title: 'Acceptance',
+        body: [
+          'These terms apply between you and Gabriel Novais Cortes, the developer of Lucena. By using the app or creating an account, you agree to them and to the <a href="/en/privacy/">Privacy policy</a>. If you do not agree, do not use the app.',
+        ],
+      },
+      {
+        title: 'What Lucena is',
+        body: [
+          'Lucena is a free app for training chess endgames: lessons, exercises and games against engines that run on the device. It works without an account and without internet. Features may change, improve or be removed in new versions.',
+        ],
+      },
+      {
+        title: 'Age',
+        body: [
+          'The app is for people aged 13 and over. Users under 18 need the permission of a parent or guardian to create an account.',
+        ],
+      },
+      {
+        title: 'Your account',
+        body: [
+          'The account is optional. You are responsible for what is done with it and must keep access to your email or Google account safe. Use a name and nickname that do not offend anyone or impersonate someone else.',
+          'You can delete the account whenever you want, in the app’s Profile or on the <a href="/en/delete-account/">Delete account</a> page. I may suspend or delete an account used to cheat the app, attack the service or break these terms.',
+        ],
+      },
+      {
+        title: 'Permitted use',
+        body: [
+          'Use Lucena for your own study and enjoyment. Do not try to access other people’s data, overload or attack the servers, or use the app for illegal purposes.',
+        ],
+      },
+      {
+        title: 'Open source',
+        body: [
+          'Lucena’s code is free software under the <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL 3.0</a> license, which defines what you can do with it. The Lucena name, the logo, the illustrations and the lesson texts are not granted by that license without permission.',
+          'The app uses third-party software under their own licenses, among them the Stockfish engine (GPL 3.0) and the Maia models. The full list is in Settings → About Lucena → Open source licenses.',
+        ],
+      },
+      {
+        title: 'Third-party services',
+        body: [
+          'Sign-in, account storage, notifications, statistics and ads are provided by Google (Firebase and AdMob). Rating data comes from Lichess and Chess.com, if you connect them. These services have their own terms, and I am not responsible for their availability.',
+        ],
+      },
+      {
+        title: 'Ads',
+        body: [
+          'The app may offer rewarded ads, which you choose to watch in exchange for an in-app benefit. The benefit has no cash value, cannot be exchanged or transferred, and may change.',
+        ],
+      },
+      {
+        title: 'No warranty',
+        body: [
+          'Lucena is offered free of charge, “as is”. I work to keep the lessons and analyses correct and the app running well, but I do not guarantee that it is free of errors or always available. The app’s rating is an estimate for your training, not an official rating.',
+        ],
+      },
+      {
+        title: 'Limitation of liability',
+        body: [
+          'To the extent permitted by law, I am not liable for indirect losses from using the app, such as the loss of progress stored only on the device. Nothing here limits the rights that consumer protection law gives you.',
+        ],
+      },
+      {
+        title: 'Changes to these terms',
+        body: [
+          'If these terms change, this page is updated and the version date changes with it. Continuing to use the app after that means you accept the new version.',
+        ],
+      },
+      {
+        title: 'Governing law',
+        body: [
+          'These terms are governed by the laws of Brazil, without prejudice to the mandatory consumer protection rules of the country where you live. Disputes may be brought in the courts of your place of residence.',
+        ],
+      },
+      {
+        title: 'Contact',
+        body: [
+          'Questions about these terms? Write to <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
+  },
+  deletion: {
+    slug: 'delete-account',
+    title: 'Delete account',
+    description: 'How to delete your Lucena account and the data stored in it, in the app or by email.',
+    updated: 'Version of October 22, 2026',
+    back: 'Back to home',
+    sections: [
+      {
+        title: 'In the app',
+        body: [
+          '<ol><li>Open Lucena and sign in to your account.</li><li>Open your <strong>Profile</strong>.</li><li>Tap <strong>Delete account</strong> and confirm.</li></ol>',
+          'You need an internet connection. For security, the app may ask you to sign in again before deleting.',
+        ],
+      },
+      {
+        title: 'Without the app',
+        body: [
+          'Write to <a href="mailto:gncortes.apps@gmail.com?subject=Delete%20my%20Lucena%20account">gncortes.apps@gmail.com</a> from the account’s email address, with the subject “Delete my Lucena account”. The account is deleted within 15 days, and you get a confirmation by email.',
+        ],
+      },
+      {
+        title: 'What is deleted',
+        body: [
+          'The account (email, name and photo) and the profile, progress and games stored in it. None of it is kept afterwards: this cannot be undone.',
+          'What is on your phone is not deleted: the app keeps working without an account. To erase that data too, clear Lucena’s data in the Android settings or uninstall the app.',
+          'Usage statistics and crash reports, which do not include your name or email, are deleted automatically within the periods in the <a href="/en/privacy/">Privacy policy</a>.',
         ],
       },
     ],

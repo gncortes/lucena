@@ -280,6 +280,8 @@ const pt: Dictionary = {
     dev: 'Sou programador. Se você precisa de uma landing page, de um aplicativo ou quer conhecer meus serviços, fale comigo:',
     contact: 'Contato',
     privacy: 'Política de privacidade',
+    terms: 'Termos de uso',
+    deletion: 'Apagar a conta',
   },
   media: {
     blindMode: 'Nova partida no Lucena: a escolha entre o modo normal e o às cegas',
@@ -311,28 +313,66 @@ const pt: Dictionary = {
   privacy: {
     slug: 'privacidade',
     title: 'Política de privacidade',
-    description: 'Como o Lucena trata os seus dados: o app funciona offline, não tem conta nem anúncios e não coleta, não envia nem vende dados pessoais.',
-    updated: 'Versão de 10 de outubro de 2026',
+    description: 'Como o Lucena trata os seus dados: sem conta, tudo fica no celular; com a conta opcional, o progresso é guardado no Firebase para voltar em outro aparelho. Nada é vendido.',
+    updated: 'Versão de 22 de outubro de 2026',
     back: 'Voltar para o início',
     sections: [
       {
         title: 'Em resumo',
         body: [
-          'O Lucena é um app gratuito para treinar finais de xadrez no Android. Ele funciona sem internet e <strong>não coleta, não envia e não vende dados pessoais</strong>. Não tem conta, login, anúncios nem ferramentas de rastreamento.',
+          'O Lucena é um app gratuito para treinar finais de xadrez no Android. Ele funciona sem internet e <strong>sem conta</strong>. A conta é opcional: serve para guardar o seu progresso e recuperá-lo em outro aparelho.',
+          '<strong>Eu não vendo nem alugo dados pessoais</strong>, e não uso os seus dados para nada além do que está escrito aqui.',
         ],
       },
       {
-        title: 'O que fica no seu aparelho',
+        title: 'Quem é o responsável',
         body: [
-          'O seu progresso (aulas, partidas, rating, conquistas e recordes) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados só no armazenamento do app, no seu celular. Nada disso vai para um servidor: o Lucena não tem servidor.',
+          'O Lucena é feito por Gabriel Novais Cortes, desenvolvedor independente no Brasil, que é o controlador dos dados nos termos da Lei Geral de Proteção de Dados (LGPD). Contato: <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+      {
+        title: 'Sem conta: tudo fica no aparelho',
+        body: [
+          'O seu progresso (aulas, partidas, rating, conquistas e recordes), o seu perfil (apelido, cor do avatar, objetivo e nível) e as suas preferências (tema, idioma, voz, tabuleiro) ficam guardados no armazenamento do app, no seu celular.',
           'Para apagar tudo, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
         ],
       },
       {
-        title: 'Internet',
+        title: 'Com conta: o que é guardado',
         body: [
-          'O app pede permissão de internet só para abrir, dentro dele, as páginas externas que você toca: artigos da Wikipedia e partidas no Lichess. Essas páginas são de outros sites e seguem as políticas de privacidade deles (<a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" rel="noopener">Wikipedia</a> e <a href="https://lichess.org/privacy" rel="noopener">Lichess</a>).',
-          'Os motores de xadrez, as aulas e as vozes rodam no próprio aparelho. Quando você toca em compartilhar uma partida, o texto vai só para o app que você escolher.',
+          'Você pode entrar com a sua conta do Google ou com um e-mail. O login é feito pelo Firebase Authentication, do Google, que guarda o seu e-mail, o nome e a foto da conta do Google (quando você entra com ela) e um identificador da conta.',
+          'Com a conta, o app copia para o Cloud Firestore, também do Google:',
+          '<ul><li>o seu perfil: nome, apelido, avatar, país (lido da região do celular), idioma, objetivo, nível e os usuários do Lichess e do Chess.com, se você os informou;</li><li>o seu progresso: aulas, rating, conquistas, recordes, desafios e posições cumpridas;</li><li>as suas partidas no app: os lances, o resultado, as datas e o adversário (sempre um motor do próprio app).</li></ul>',
+          'Esses dados ficam em servidores do Google, que podem estar fora do Brasil. A transferência segue as garantias contratuais do Google Cloud (<a href="https://firebase.google.com/support/privacy" rel="noopener">privacidade do Firebase</a>). Só você, entrando na sua conta, lê e altera esses dados.',
+        ],
+      },
+      {
+        title: 'Lichess e Chess.com',
+        body: [
+          'Se você conectar o Lichess, o login é feito no próprio site do Lichess. O app recebe um token de acesso que fica <strong>só no armazenamento seguro do seu celular</strong>, nunca na conta do Lucena, e é usado para ler o seu rating. O nome de usuário do Lichess vai para o seu perfil.',
+          'Se você informar o seu usuário do Chess.com, o app lê o seu rating público na API do Chess.com. Não há senha nem login.',
+          'Esses sites seguem as políticas deles (<a href="https://lichess.org/privacy" rel="noopener">Lichess</a> e <a href="https://www.chess.com/legal/privacy" rel="noopener">Chess.com</a>).',
+        ],
+      },
+      {
+        title: 'Notificações',
+        body: [
+          'Se você permitir, o app recebe avisos pelo Firebase Cloud Messaging (o final do dia, por exemplo). Para isso, o celular gera um código de envio, e o app se inscreve nos tópicos dos avisos que você ligou. Você desliga cada aviso no app e todos nas configurações do Android.',
+        ],
+      },
+      {
+        title: 'Estatísticas de uso, falhas e anúncios',
+        body: [
+          '<strong>Estatísticas de uso.</strong> O app usa o Google Analytics for Firebase para saber quais telas e aulas são usadas, onde as pessoas desistem e de onde vieram (por exemplo, de um link de desafio). Ele registra eventos do app, o modelo do aparelho, a versão do Android, o país aproximado e um identificador do app, sem o seu nome nem o seu e-mail.',
+          '<strong>Falhas.</strong> Quando o app trava, o Firebase Crashlytics envia o relatório do erro, com o modelo do aparelho, a versão do sistema e a do app, para eu poder corrigir.',
+          '<strong>Anúncios.</strong> O app pode oferecer anúncios premiados do Google AdMob, que você escolhe ver em troca de um benefício no app. Eles não interrompem as aulas nem as partidas. Antes do primeiro anúncio, o app mostra a tela de consentimento do Google, onde você escolhe se os anúncios podem ser personalizados. O AdMob usa o identificador de publicidade do aparelho, que você pode redefinir ou apagar nas configurações do Android (<a href="https://policies.google.com/technologies/ads" rel="noopener">como o Google usa dados em anúncios</a>).',
+        ],
+      },
+      {
+        title: 'Internet e páginas externas',
+        body: [
+          'Os motores de xadrez, as aulas e as vozes rodam no próprio aparelho. O app usa a internet para a conta, as notificações, as estatísticas, os anúncios, o Lichess e o Chess.com, e para abrir, dentro dele, as páginas externas que você toca, como artigos da Wikipedia. Essas páginas seguem as políticas dos sites delas.',
+          'Quando você compartilha uma partida ou um desafio, o texto, a imagem e o link vão só para o app que você escolher.',
         ],
       },
       {
@@ -342,15 +382,41 @@ const pt: Dictionary = {
         ],
       },
       {
-        title: 'Google Play',
+        title: 'Para que os dados são usados e com que base',
         body: [
-          'O Lucena é distribuído pela Google Play. A Google trata os dados da sua conta e da instalação conforme a <a href="https://policies.google.com/privacy" rel="noopener">política de privacidade dela</a>. Eu recebo só as estatísticas anônimas e agregadas que a Google Play mostra a todo desenvolvedor, como o número de instalações.',
+          '<ul><li><strong>Conta, perfil, progresso e partidas:</strong> para guardar e devolver o seu progresso, como você pediu ao criar a conta (execução do contrato, LGPD art. 7º, V).</li><li><strong>Notificações e anúncios personalizados:</strong> só com o seu consentimento, que você pode retirar a qualquer momento (art. 7º, I).</li><li><strong>Estatísticas de uso e relatórios de falha:</strong> para corrigir erros e melhorar as aulas (legítimo interesse, art. 7º, IX).</li></ul>',
         ],
       },
       {
-        title: 'Crianças',
+        title: 'Por quanto tempo',
         body: [
-          'Como o app não coleta dados pessoais de ninguém, também não coleta de crianças. Ele pode ser usado por pessoas de qualquer idade.',
+          'Os dados da conta ficam guardados enquanto a conta existir. Ao apagar a conta, eles são apagados na hora (veja abaixo). As estatísticas de uso ficam guardadas por até 14 meses, e os relatórios de falha, por até 90 dias.',
+        ],
+      },
+      {
+        id: 'apagar-conta',
+        title: 'Como apagar a conta',
+        body: [
+          'No app, abra o <strong>Perfil</strong> e toque em <strong>Apagar a conta</strong>. A conta, o perfil, o progresso e as partidas guardados nela são apagados na hora. Neste celular, o app continua funcionando sem conta.',
+          'Sem o app, siga os passos da página <a href="/apagar-conta/">Apagar a conta</a>.',
+        ],
+      },
+      {
+        title: 'Os seus direitos',
+        body: [
+          'Pela LGPD (e, para quem está na União Europeia, pelo GDPR), você pode pedir a confirmação de que eu trato os seus dados, o acesso a eles, a correção, a portabilidade, a exclusão e informações sobre com quem eles são compartilhados, além de retirar um consentimento. Escreva para <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>: a resposta vem em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).',
+        ],
+      },
+      {
+        title: 'Idade mínima',
+        body: [
+          'O Lucena é para pessoas a partir de 13 anos. Quem tem menos de 18 anos deve usar a conta com a autorização dos pais ou responsáveis. Se você souber que uma criança com menos de 13 anos criou uma conta, escreva para mim, e eu apago os dados dela.',
+        ],
+      },
+      {
+        title: 'Segurança',
+        body: [
+          'Os dados viajam criptografados (HTTPS) e ficam guardados com as proteções do Google Cloud. As regras do banco de dados deixam cada pessoa ler e alterar só a própria conta.',
         ],
       },
       {
@@ -363,6 +429,125 @@ const pt: Dictionary = {
         title: 'Contato',
         body: [
           'Dúvidas sobre privacidade? Escreva para <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
+  },
+  terms: {
+    slug: 'termos',
+    title: 'Termos de uso',
+    description: 'As regras para usar o Lucena, o app gratuito para treinar finais de xadrez: a conta, o uso permitido, o código aberto e os limites da responsabilidade.',
+    updated: 'Versão de 22 de outubro de 2026',
+    back: 'Voltar para o início',
+    sections: [
+      {
+        title: 'Aceitação',
+        body: [
+          'Estes termos valem entre você e Gabriel Novais Cortes, o desenvolvedor do Lucena. Ao usar o app ou criar uma conta, você concorda com eles e com a <a href="/privacidade/">Política de privacidade</a>. Se não concordar, não use o app.',
+        ],
+      },
+      {
+        title: 'O que é o Lucena',
+        body: [
+          'O Lucena é um app gratuito para treinar finais de xadrez: aulas, exercícios e partidas contra motores que rodam no aparelho. Ele funciona sem conta e sem internet. As funções podem mudar, ser melhoradas ou deixar de existir com novas versões.',
+        ],
+      },
+      {
+        title: 'Idade',
+        body: [
+          'O app é para pessoas a partir de 13 anos. Quem tem menos de 18 anos precisa da autorização dos pais ou responsáveis para criar uma conta.',
+        ],
+      },
+      {
+        title: 'A sua conta',
+        body: [
+          'A conta é opcional. Você responde pelo que é feito nela e deve manter o acesso ao seu e-mail ou à sua conta do Google em segurança. Use um nome e um apelido que não ofendam ninguém nem se passem por outra pessoa.',
+          'Você pode apagar a conta quando quiser, no Perfil do app ou pela página <a href="/apagar-conta/">Apagar a conta</a>. Posso suspender ou apagar uma conta usada para burlar o app, atacar o serviço ou violar estes termos.',
+        ],
+      },
+      {
+        title: 'Uso permitido',
+        body: [
+          'Use o Lucena para o seu estudo e o seu lazer. Não tente acessar dados de outras pessoas, sobrecarregar ou atacar os servidores, nem usar o app para fins ilegais.',
+        ],
+      },
+      {
+        title: 'Código aberto',
+        body: [
+          'O código do Lucena é livre, sob a licença <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener">GNU AGPL 3.0</a>, que define o que você pode fazer com ele. O nome Lucena, o logotipo, as ilustrações e o texto das aulas não são cedidos por essa licença sem autorização.',
+          'O app usa programas de terceiros, com as licenças deles: entre eles, o motor Stockfish (GPL 3.0) e os modelos Maia. A lista completa está em Configurações → Sobre o Lucena → Licenças de código aberto.',
+        ],
+      },
+      {
+        title: 'Serviços de terceiros',
+        body: [
+          'O login, o armazenamento da conta, as notificações, as estatísticas e os anúncios são prestados pelo Google (Firebase e AdMob). Os dados de rating vêm do Lichess e do Chess.com, se você os conectar. Esses serviços têm os próprios termos, e eu não respondo pela disponibilidade deles.',
+        ],
+      },
+      {
+        title: 'Anúncios',
+        body: [
+          'O app pode oferecer anúncios premiados, que você escolhe ver em troca de um benefício no app. O benefício não tem valor em dinheiro, não pode ser trocado nem transferido e pode mudar.',
+        ],
+      },
+      {
+        title: 'Sem garantia',
+        body: [
+          'O Lucena é oferecido gratuitamente, “no estado em que se encontra”. Eu me esforço para que as aulas e as análises estejam certas e o app funcione bem, mas não garanto que ele esteja livre de erros nem sempre disponível. O rating do app é uma estimativa para o seu treino, não uma medida oficial.',
+        ],
+      },
+      {
+        title: 'Limitação de responsabilidade',
+        body: [
+          'Na medida permitida pela lei, não respondo por perdas indiretas do uso do app, como a perda de progresso guardado só no aparelho. Nada aqui limita os direitos que o Código de Defesa do Consumidor garante a você.',
+        ],
+      },
+      {
+        title: 'Mudanças nestes termos',
+        body: [
+          'Se estes termos mudarem, esta página é atualizada e a data da versão muda junto. Continuar usando o app depois disso vale como aceitar a nova versão.',
+        ],
+      },
+      {
+        title: 'Lei e foro',
+        body: [
+          'Estes termos seguem as leis do Brasil. Fica eleito o foro do seu domicílio para resolver qualquer conflito.',
+        ],
+      },
+      {
+        title: 'Contato',
+        body: [
+          'Dúvidas sobre estes termos? Escreva para <a href="mailto:gncortes.apps@gmail.com">gncortes.apps@gmail.com</a>.',
+        ],
+      },
+    ],
+  },
+  deletion: {
+    slug: 'apagar-conta',
+    title: 'Apagar a conta',
+    description: 'Como apagar a sua conta do Lucena e os dados guardados nela, pelo app ou por e-mail.',
+    updated: 'Versão de 22 de outubro de 2026',
+    back: 'Voltar para o início',
+    sections: [
+      {
+        title: 'Pelo app',
+        body: [
+          '<ol><li>Abra o Lucena e entre na sua conta.</li><li>Abra o <strong>Perfil</strong>.</li><li>Toque em <strong>Apagar a conta</strong> e confirme.</li></ol>',
+          'É preciso estar com internet. Por segurança, o app pode pedir que você entre de novo na conta antes de apagar.',
+        ],
+      },
+      {
+        title: 'Sem o app',
+        body: [
+          'Escreva para <a href="mailto:gncortes.apps@gmail.com?subject=Apagar%20a%20conta%20do%20Lucena">gncortes.apps@gmail.com</a> a partir do e-mail da conta, com o assunto “Apagar a conta do Lucena”. A conta é apagada em até 15 dias, e você recebe a confirmação por e-mail.',
+        ],
+      },
+      {
+        title: 'O que é apagado',
+        body: [
+          'A conta (e-mail, nome e foto), o perfil, o progresso e as partidas guardados nela. Nada disso fica guardado depois: não dá para desfazer.',
+          'O que fica no seu celular não é apagado: o app continua funcionando sem conta. Para apagar também esses dados, limpe os dados do Lucena nas configurações do Android ou desinstale o app.',
+          'As estatísticas de uso e os relatórios de falha, que não têm o seu nome nem o seu e-mail, são apagados sozinhos nos prazos da <a href="/privacidade/">Política de privacidade</a>.',
         ],
       },
     ],

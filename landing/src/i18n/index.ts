@@ -37,6 +37,19 @@ export const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 export const pageUrl = (locale: Locale) =>
   `${import.meta.env.BASE_URL}${locales[locale].path}`;
 
-/** A política de privacidade em [locale] (o caminho muda com o idioma). */
-export const privacyUrl = (locale: Locale) =>
-  `${pageUrl(locale)}${locales[locale].dict.privacy.slug}/`;
+/** As páginas legais do site. */
+export type LegalPage = 'privacy' | 'terms' | 'deletion';
+
+/** A página legal [doc] em [locale] (o caminho muda com o idioma). */
+export const legalUrl = (locale: Locale, doc: LegalPage) =>
+  `${pageUrl(locale)}${locales[locale].dict[doc].slug}/`;
+
+
+/**
+ * Um parágrafo dos textos legais pronto para a página: os links internos, que
+ * começam na raiz, ganham o `base` do site, e o texto que não é lista vira <p>.
+ */
+export const legalHtml = (html: string) => {
+  const body = html.replaceAll('href="/', `href="${import.meta.env.BASE_URL}`);
+  return /^<(ul|ol)>/.test(body) ? body : `<p>${body}</p>`;
+};

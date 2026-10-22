@@ -1,5 +1,5 @@
 ---
-import { asset, links, locales, pageUrl, privacyUrl, type Locale } from '../i18n';
+import { asset, legalUrl, links, locales, pageUrl, type Locale } from '../i18n';
 
 interface Props {
   locale: Locale;
@@ -19,7 +19,9 @@ const t = locales[locale].dict;
       <p>{t.footer.tagline}</p>
     </div>
     <ul class="foot__links">
-      <li><a href={privacyUrl(locale)}>{t.footer.privacy}</a></li>
+      <li><a href={legalUrl(locale, 'privacy')}>{t.footer.privacy}</a></li>
+      <li><a href={legalUrl(locale, 'terms')}>{t.footer.terms}</a></li>
+      <li><a href={legalUrl(locale, 'deletion')}>{t.footer.deletion}</a></li>
     </ul>
     <p class="foot__dev">
       {t.footer.dev} <a href={`mailto:${links.email}?subject=Lucena`}>{links.email}</a>

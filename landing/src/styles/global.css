@@ -1921,14 +1921,25 @@ section {
   font-size: 1.3rem;
 }
 
-.legal section p {
+.legal section p,
+.legal section ul,
+.legal section ol {
   margin: 0 0 12px;
   color: var(--ink-soft);
   font-size: 1.05rem;
   line-height: 1.65;
 }
 
-.legal section p:last-child {
+.legal section ul,
+.legal section ol {
+  padding-inline-start: 1.4em;
+}
+
+.legal section li + li {
+  margin-top: 6px;
+}
+
+.legal section :last-child {
   margin-bottom: 0;
 }
 
