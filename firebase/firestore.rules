@@ -92,6 +92,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // "x% acertaram" do final do dia (E1.24): a função agendada da E1.20
+    // grava pelo Admin SDK, que não passa pelas regras; o app só lê.
+    match /daily/{day} {
+      allow get: if true;
+      allow list, write: if false;
+    }
+
     // A lista de administradores: cada um vê o próprio; ninguém grava pelo app.
     match /admins/{uid} {
       allow get: if isOwner(uid);

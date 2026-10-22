@@ -22,7 +22,8 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | `feedback/{id}` | admin | qualquer um cria (texto até 4000, `createdAt` = hora do servidor) |
 | `challenges/{code}` | quem tem o código (`get`) | o dono cria; o `result` entra uma vez |
 | `candidates/{id}` | admin | admin |
-| `featured/{id}` | todos | admin |
+| `featured/{id}` | todos | admin (o `pct` e o `total` vêm da função) |
+| `daily/{day}` | todos (`get`) | só a função agendada (Admin SDK): `finalId`, `pct`, `total` |
 | `admins/{uid}` | o próprio | ninguém pelo app (criar no console) |
 | Storage `users/{uid}/avatar.jpg` | o dono | o dono, imagem até 1 MB |
 
