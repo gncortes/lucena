@@ -27,7 +27,7 @@ bool _hasScript(LessonPart part) =>
 /// Aulas visíveis com o teste final ainda em escrita (uma sessão por
 /// capítulo): o mínimo de exercícios e a solução em texto só passam a valer
 /// quando o teste delas fechar.
-const _testInProgress = <String>{'rook.lucena'};
+const _testInProgress = <String>{};
 
 /// Aulas ligadas antes do primeiro capítulo escrito (T78, sessão 0): sem
 /// capítulo e sem exercício, o app as esconde. Saem daqui com o primeiro
