@@ -8485,5 +8485,144 @@
   "crowdFewText": "The number shows from 30 people on.",
   "@crowdFewText": {
     "description": "Text under the \"few people played\" title."
+  },
+  "profileRemoveAds": "Remove ads",
+  "@profileRemoveAds": {
+    "description": "Profile row: the one-time purchase that removes ads."
+  },
+  "profileRemoveAdsValue": "{price}, once, forever",
+  "@profileRemoveAdsValue": {
+    "description": "Profile row value: the Play price of removing ads.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "profileRemoveAdsDone": "No ads",
+  "@profileRemoveAdsDone": {
+    "description": "Profile row value after buying \"Remove ads\"."
+  },
+  "profilePrivacy": "Privacy and ads",
+  "@profilePrivacy": {
+    "description": "Profile row that opens the privacy screen."
+  },
+  "profilePrivacyValue": "Ad choices and privacy policy",
+  "@profilePrivacyValue": {
+    "description": "Profile row value under \"Privacy and ads\"."
+  },
+  "profileFeedback": "Send feedback",
+  "@profileFeedback": {
+    "description": "Profile row that opens the feedback screen."
+  },
+  "profileFeedbackValue": "Tell us a problem, an idea or some praise",
+  "@profileFeedbackValue": {
+    "description": "Profile row value under \"Send feedback\"."
+  },
+  "profileRate": "Rate Lucena",
+  "@profileRate": {
+    "description": "Profile row that opens the app page on Google Play."
+  },
+  "profileRateValue": "Opens the app page on Google Play",
+  "@profileRateValue": {
+    "description": "Profile row value under \"Rate Lucena\"."
+  },
+  "privacyTitle": "Privacy and ads",
+  "@privacyTitle": {
+    "description": "Privacy screen title."
+  },
+  "privacyFreeTitle": "Lucena is free",
+  "@privacyFreeTitle": {
+    "description": "Privacy screen card title, with ads."
+  },
+  "privacyFreeText": "An ad shows when you enter a lesson. Never in the middle of an exercise, a game or a challenge.",
+  "@privacyFreeText": {
+    "description": "Privacy screen card text, with ads."
+  },
+  "privacyAdChoices": "Ad choices",
+  "@privacyAdChoices": {
+    "description": "Privacy screen row that reopens the Google privacy options."
+  },
+  "privacyAdChoicesValue": "Opens the Google window with your options",
+  "@privacyAdChoicesValue": {
+    "description": "Privacy screen row value under \"Ad choices\"."
+  },
+  "privacyPolicy": "Privacy policy",
+  "@privacyPolicy": {
+    "description": "Privacy screen row that opens the privacy policy."
+  },
+  "privacyPolicyValue": "playlucena.com/privacy",
+  "@privacyPolicyValue": {
+    "description": "Privacy screen row value: the policy address."
+  },
+  "privacyDelete": "Delete my account and my data",
+  "@privacyDelete": {
+    "description": "Privacy screen row that deletes the account."
+  },
+  "privacyDeleteValue": "Also in Account, on the Profile",
+  "@privacyDeleteValue": {
+    "description": "Privacy screen row value under \"Delete my account\"."
+  },
+  "privacyAdFreeTitle": "No ads",
+  "@privacyAdFreeTitle": {
+    "description": "Privacy screen card title after buying \"Remove ads\"."
+  },
+  "privacyAdFreeText": "Thanks for supporting Lucena. Lessons open right away, forever.",
+  "@privacyAdFreeText": {
+    "description": "Privacy screen card text after buying \"Remove ads\"."
+  },
+  "removeAdsTitle": "Remove ads",
+  "@removeAdsTitle": {
+    "description": "Remove ads sheet title."
+  },
+  "removeAdsText": "A one-time payment of {price} removes the ads forever, on your Google Play account. Everything else stays the same and free.",
+  "@removeAdsText": {
+    "description": "Remove ads sheet text, with the Play price.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAdsHelp": "It helps keep Lucena going and make new lessons.",
+  "@removeAdsHelp": {
+    "description": "Remove ads sheet: why buy."
+  },
+  "removeAdsBuy": "Remove for {price}",
+  "@removeAdsBuy": {
+    "description": "Remove ads sheet button that opens the Google Play payment.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAdsNo": "Not now",
+  "@removeAdsNo": {
+    "description": "Remove ads sheet button that closes the sheet."
+  },
+  "removeAdsNote": "The button opens the Google Play payment window. Price by country. On another phone with the same account, the purchase comes back by itself.",
+  "@removeAdsNote": {
+    "description": "Remove ads sheet: small note under the buttons."
+  },
+  "removeAdsPending": "Waiting for the payment. As soon as Play confirms it, the ads go away.",
+  "@removeAdsPending": {
+    "description": "Remove ads sheet: the payment is pending."
+  },
+  "removeAdsError": "Couldn't finish the purchase. Try again later.",
+  "@removeAdsError": {
+    "description": "Remove ads sheet: the purchase failed."
+  },
+  "adsLabel": "Ad",
+  "@adsLabel": {
+    "description": "Chip on the test interstitial ad."
+  },
+  "adsLessonNote": "You entered a lesson. The lesson opens when you close the ad.",
+  "@adsLessonNote": {
+    "description": "Test interstitial ad: what happens next."
+  },
+  "adsCloseNote": "Tap the X to open the lesson.",
+  "@adsCloseNote": {
+    "description": "Test interstitial ad: how to close it."
   }
 }

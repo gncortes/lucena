@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/ads/ads_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
+import 'package:lucena/data/repositories/store/store_listing_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -22,6 +25,7 @@ import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
+import 'fakes/fake_store_listing_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
@@ -43,6 +47,9 @@ class TestApp extends StatelessWidget {
     this.surveyRepository,
     this.regionPromptRepository,
     this.crowdRepository,
+    this.adsRepository,
+    this.purchaseRepository,
+    this.storeListingRepository,
     super.key,
   });
 
@@ -82,6 +89,15 @@ class TestApp extends StatelessWidget {
   /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
   final RegionPromptRepository? regionPromptRepository;
   final CrowdRepository? crowdRepository;
+
+  /// Os anúncios. Sem ele, nenhum.
+  final AdsRepository? adsRepository;
+
+  /// O "Remover anúncios". Sem ele, a compra não existe (nem a linha).
+  final PurchaseRepository? purchaseRepository;
+
+  /// A página do app na Play. Sem ela, um falso que só conta.
+  final StoreListingRepository? storeListingRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -160,6 +176,15 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<CrowdRepository>.value(
           value: crowdRepository ?? FakeCrowdRepository(),
+        ),
+        RepositoryProvider<AdsRepository>.value(
+          value: adsRepository ?? const NoAdsRepository(),
+        ),
+        RepositoryProvider<PurchaseRepository>.value(
+          value: purchaseRepository ?? const NoPurchaseRepository(),
+        ),
+        RepositoryProvider<StoreListingRepository>.value(
+          value: storeListingRepository ?? FakeStoreListingRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

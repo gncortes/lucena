@@ -443,6 +443,12 @@ abstract final class Routes {
   static const settingsLanguage = '/settings/appearance/language';
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
+
+  /// Privacidade e anúncios (E1.25), aberta do Perfil.
+  static const privacy = '/settings/privacy';
+
+  /// Enviar feedback (E1.26), aberta do Perfil.
+  static const feedback = '/settings/feedback';
   static const settingsBoardAppearance = '/settings/appearance/board';
   static const settingsBoardBehavior = '/settings/game/board';
   static const settingsClock = '/settings/game/clock';

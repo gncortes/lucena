@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/purchase/purchase_repository.dart';
+import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/level_source.dart';
@@ -24,6 +26,7 @@ import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
+import '../../privacy/widgets/remove_ads_sheet.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/profile_account_cubit.dart';
 import '../view_models/profile_cubit.dart';
@@ -206,6 +209,8 @@ class _ProfileView extends StatelessWidget {
                 onDelete: () => _delete(context),
               ),
             ],
+            const SizedBox(height: AppSpacing.lg),
+            _SupportGroups(onDelete: () => _delete(context)),
           ],
         ),
       ),
@@ -479,6 +484,82 @@ class _AccountActions extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Os grupos do fim (E1.25): "Remover anúncios", que some sem preço da Play
+/// e vira "Sem anúncios" depois da compra; Privacidade, feedback e avaliar.
+class _SupportGroups extends StatelessWidget {
+  const _SupportGroups({required this.onDelete});
+
+  /// "Apagar minha conta e meus dados" da Privacidade.
+  final VoidCallback onDelete;
+
+  Future<void> _privacy(BuildContext context) async {
+    final delete = await context.push<bool>(Routes.privacy);
+    if (delete == true) onDelete();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final purchases = context.read<PurchaseRepository>();
+    return StreamBuilder<PurchaseState>(
+      stream: purchases.changes,
+      initialData: purchases.state,
+      builder: (context, snapshot) {
+        final purchase = snapshot.data ?? purchases.state;
+        final price = purchase.price;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (purchase.adFree || price != null) ...[
+              ProfileRowGroup(
+                children: [
+                  ProfileRow(
+                    key: ProfileKeys.rowRemoveAds,
+                    icon: Icons.hide_source,
+                    title: l10n.profileRemoveAds,
+                    value: purchase.adFree || price == null
+                        ? l10n.profileRemoveAdsDone
+                        : l10n.profileRemoveAdsValue(price),
+                    onTap: purchase.adFree
+                        ? null
+                        : () => showRemoveAdsSheet(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+            ProfileRowGroup(
+              children: [
+                ProfileRow(
+                  key: ProfileKeys.rowPrivacy,
+                  icon: Icons.privacy_tip,
+                  title: l10n.profilePrivacy,
+                  value: l10n.profilePrivacyValue,
+                  onTap: () => _privacy(context),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowFeedback,
+                  icon: Icons.feedback,
+                  title: l10n.profileFeedback,
+                  value: l10n.profileFeedbackValue,
+                  onTap: () => context.push(Routes.feedback),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowRate,
+                  icon: Icons.storefront,
+                  title: l10n.profileRate,
+                  value: l10n.profileRateValue,
+                  onTap: context.read<StoreListingRepository>().open,
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

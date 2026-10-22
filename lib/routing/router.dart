@@ -186,6 +186,11 @@ import '../data/repositories/week/week_repository.dart';
 import '../ui/week/view_models/week_cubit.dart';
 import '../ui/week/widgets/week_screen.dart';
 import 'routes.dart';
+import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/purchase/purchase_repository.dart';
+import '../ui/privacy/view_models/privacy_cubit.dart';
+import '../ui/privacy/widgets/privacy_screen.dart';
 import '../domain/use_cases/game_intro.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
@@ -1317,6 +1322,17 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               _route(
                 path: 'profile',
                 builder: (context, state) => const ProfileScreen(),
+              ),
+              _route(
+                path: 'privacy',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => PrivacyCubit(
+                    ads: context.read<AdsRepository>(),
+                    purchases: context.read<PurchaseRepository>(),
+                    accounts: context.read<AccountRepository>(),
+                  )..load(),
+                  child: const PrivacyScreen(),
+                ),
               ),
               _route(
                 path: 'appearance',

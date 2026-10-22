@@ -1,6 +1,12 @@
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
+import '../data/repositories/ads/ads_config_repository.dart';
+import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/purchase/purchase_repository.dart';
+import '../data/repositories/store/store_listing_repository.dart';
+import '../data/services/ads_service.dart';
+import '../data/services/purchase_service.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
 import '../data/repositories/week/week_repository.dart';
 import '../data/services/notification_service.dart';
@@ -208,6 +214,9 @@ class Dependencies {
     this.avatarRepository = const NoAvatarRepository(),
     this.photoRepository = const NoPhotoRepository(),
     this.mailAppRepository = const NoMailAppRepository(),
+    this.adsRepository = const NoAdsRepository(),
+    this.purchaseRepository = const NoPurchaseRepository(),
+    this.storeListingRepository = const NoStoreListingRepository(),
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
@@ -286,6 +295,20 @@ class Dependencies {
       LocalFeaturedProgressRepository(preferences),
       activity,
     );
+    // Anúncios e "Remover anúncios" (E1.25) só no build da Play, que é o que
+    // sobe o Firebase; no do F-Droid ficam desligados.
+    final purchases = firebase
+        ? PlayPurchaseRepository(PlayPurchaseService(), preferences)
+        : const NoPurchaseRepository();
+    final ads = firebase
+        ? ServiceAdsRepository(
+            service: GoogleAdsService(),
+            preferences: preferences,
+            config: const ConstAdsConfigRepository(),
+            purchases: purchases,
+            now: now,
+          )
+        : const NoAdsRepository();
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );
@@ -377,6 +400,11 @@ class Dependencies {
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),
+      adsRepository: ads,
+      purchaseRepository: purchases,
+      storeListingRepository: firebase
+          ? const PlayStoreListingRepository()
+          : const NoStoreListingRepository(),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -494,6 +522,12 @@ class Dependencies {
 
   /// "Abrir o e-mail" depois do link de senha nova.
   final MailAppRepository mailAppRepository;
+
+  /// Os anúncios antes das aulas, a compra que os tira e a página do app na
+  /// Play (E1.25). Fora da Play, nenhum.
+  final AdsRepository adsRepository;
+  final PurchaseRepository purchaseRepository;
+  final StoreListingRepository storeListingRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;
