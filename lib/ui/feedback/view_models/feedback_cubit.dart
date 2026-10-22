@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/feedback/feedback_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/feedback_entry.dart';
 
@@ -46,10 +50,12 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     required this._feedback,
     required this._characters,
     this.language,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const FeedbackState());
 
   final FeedbackRepository _feedback;
   final CharacterRepository _characters;
+  final AnalyticsRepository _analytics;
 
   /// O idioma do app, que vai junto.
   final String? language;
@@ -79,6 +85,16 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     final ok = await _feedback.send(
       FeedbackEntry.free(type: type, text: state.text, language: language),
     );
+    if (ok) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.feedbackEnviado(
+            tipo: type.code,
+            tamanho: FeedbackEntry.clip(state.text).length,
+          ),
+        ),
+      );
+    }
     if (isClosed) return;
     emit(state.copyWith(sending: false, sent: ok));
   }

@@ -20,6 +20,7 @@ class WouldPayScreen extends StatelessWidget {
 
   /// O "X" volta à lista e o rascunho fica.
   void _leave(BuildContext context) {
+    context.read<WouldPayCubit>().leave();
     if (context.canPop()) {
       context.pop();
     } else {

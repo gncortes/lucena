@@ -334,13 +334,21 @@ class Dependencies {
     final purchases = firebase
         ? PlayPurchaseRepository(PlayPurchaseService(), preferences)
         : const NoPurchaseRepository();
+    final analytics = ServiceAnalyticsRepository(
+      firebase && analyticsMode != AnalyticsMode.off
+          ? FirebaseAnalyticsService()
+          : const NoAnalyticsService(),
+      preferences,
+      mode: analyticsMode,
+    );
     final ads = firebase
         ? ServiceAdsRepository(
-            service: GoogleAdsService(),
+            service: GoogleAdsService(testAds: analytics.teamMode),
             preferences: preferences,
             flags: flags,
             purchases: purchases,
             now: now,
+            analytics: analytics,
           )
         : const NoAdsRepository();
     final avatars = CloudAvatarRepository(
@@ -434,13 +442,7 @@ class Dependencies {
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),
-      analyticsRepository: ServiceAnalyticsRepository(
-        firebase && analyticsMode != AnalyticsMode.off
-            ? FirebaseAnalyticsService()
-            : const NoAnalyticsService(),
-        preferences,
-        mode: analyticsMode,
-      ),
+      analyticsRepository: analytics,
       adsRepository: ads,
       purchaseRepository: purchases,
       storeListingRepository: firebase
@@ -448,7 +450,12 @@ class Dependencies {
           : const NoStoreListingRepository(),
       // Sem Firebase (F-Droid): nada vai à nuvem e a Play nunca é chamada.
       feedbackRepository: firebase
-          ? CloudFeedbackRepository(cloudStore, PluginDeviceService(), version)
+          ? CloudFeedbackRepository(
+              cloudStore,
+              PluginDeviceService(),
+              version,
+              origin: analytics.origin,
+            )
           : const NoFeedbackRepository(),
       wouldPayRepository: LocalWouldPayRepository(preferences),
       reviewRepository: LocalReviewRepository(
@@ -583,6 +590,7 @@ class Dependencies {
 
   /// As estatísticas de uso (E1.03).
   final AnalyticsRepository analyticsRepository;
+
   /// Os anúncios antes das aulas, a compra que os tira e a página do app na
   /// Play (E1.25). Fora da Play, nenhum.
   final AdsRepository adsRepository;

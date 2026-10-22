@@ -111,6 +111,7 @@ class TestApp extends StatelessWidget {
 
   /// As estatísticas, quando o teste confere os eventos. Sem elas, nenhuma.
   final AnalyticsRepository? analytics;
+
   /// Os anúncios. Sem ele, nenhum.
   final AdsRepository? adsRepository;
 

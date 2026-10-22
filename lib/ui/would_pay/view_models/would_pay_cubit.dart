@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/feedback/feedback_repository.dart';
@@ -7,6 +10,7 @@ import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/review/review_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../data/repositories/would_pay/would_pay_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/feedback_entry.dart';
 import '../../../domain/models/would_pay.dart';
@@ -68,13 +72,17 @@ class WouldPayCubit extends Cubit<WouldPayState> {
     required this._profile,
     required this._characters,
     required this._review,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const WouldPayState());
+
+  static const _type = 'pagaria';
 
   final WouldPayRepository _wouldPay;
   final FeedbackRepository _feedback;
   final ProfileRepository _profile;
   final CharacterRepository _characters;
   final ReviewRepository _review;
+  final AnalyticsRepository _analytics;
 
   /// O nível ou rating do perfil, quando definido (vai no envio).
   String? _profileLevel;
@@ -90,6 +98,17 @@ class WouldPayCubit extends Cubit<WouldPayState> {
       if (character.id == 'master') viktor = character;
     }
     if (isClosed) return;
+    if (!state.ready) {
+      // O convite é o único caminho até aqui (E1.03).
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.questionarioAberto(
+            tipo: _type,
+            origem: 'cartao_aulas',
+          ),
+        ),
+      );
+    }
     final defined = profile.levelSource != null;
     _profileLevel = defined ? '${profile.rating}' : null;
     final answers = draft?.answers ?? const WouldPayAnswers();
@@ -157,6 +176,29 @@ class WouldPayCubit extends Cubit<WouldPayState> {
   Future<void> next() async {
     if (state.isLast || !state.canAdvance) return;
     await _change(step: state.step + 1);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.questionarioPasso(
+          tipo: _type,
+          passo: state.step + 1,
+          passosTotal: state.total,
+        ),
+      ),
+    );
+  }
+
+  /// O "X" antes de enviar: o rascunho fica, mas conta como dispensado.
+  void leave() {
+    if (!state.ready || state.sent) return;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.questionarioDispensado(
+          tipo: _type,
+          passo: state.step + 1,
+          como: 'fechou',
+        ),
+      ),
+    );
   }
 
   Future<void> back() async {
@@ -177,6 +219,22 @@ class WouldPayCubit extends Cubit<WouldPayState> {
       level: _profileLevel,
     );
     await _wouldPay.markAnswered();
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.questionarioEnviado(
+          tipo: _type,
+          interesse: switch (answers.course) {
+            WouldPayAnswer.yes => 'sim',
+            WouldPayAnswer.maybe => 'talvez',
+            WouldPayAnswer.no => 'nao',
+            null => null,
+          },
+          cursoFaixa: answers.coursePrice?.code,
+          mensalFaixa: answers.coachPrice?.code,
+          temTexto: answers.next?.trim().isNotEmpty ?? false,
+        ),
+      ),
+    );
     if (isClosed) return;
     emit(state.copyWith(sending: false, sent: true));
   }
@@ -189,11 +247,13 @@ class WouldPayInviteCubit extends Cubit<bool> {
     required this._wouldPay,
     required this._school,
     required this._endgames,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(false);
 
   final WouldPayRepository _wouldPay;
   final SchoolProgressRepository _school;
   final EndgameProgressRepository _endgames;
+  final AnalyticsRepository _analytics;
 
   Future<void> load() async {
     final show = WouldPayRules.shouldInvite(
@@ -210,6 +270,15 @@ class WouldPayInviteCubit extends Cubit<bool> {
   /// "Agora não": some e não volta.
   Future<void> dismiss() async {
     emit(false);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.questionarioDispensado(
+          tipo: WouldPayCubit._type,
+          passo: 0,
+          como: 'agora_nao',
+        ),
+      ),
+    );
     await _wouldPay.dismiss();
   }
 }

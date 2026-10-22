@@ -116,19 +116,22 @@ void main() {
       cubit = UpdateCubit(flags: flags, updates: updates, analytics: analytics);
     });
 
-    test('a obrigatória conta atualizacao_vista uma vez por abertura', () async {
-      flags.updateMinBuild = 101;
-      await cubit.start();
-      await cubit.check();
-      await cubit.openStore();
+    test(
+      'a obrigatória conta atualizacao_vista uma vez por abertura',
+      () async {
+        flags.updateMinBuild = 101;
+        await cubit.start();
+        await cubit.check();
+        await cubit.openStore();
 
-      final seen = analytics.eventsNamed('atualizacao_vista').single;
-      expect(seen.params['tipo'], 'obrigatoria');
-      expect(seen.params['build_pedido'], 101);
-      final action = analytics.eventsNamed('atualizacao_acao').single;
-      expect(action.params['acao'], 'atualizar');
-      expect(action.params['via'], 'loja');
-    });
+        final seen = analytics.eventsNamed('atualizacao_vista').single;
+        expect(seen.params['tipo'], 'obrigatoria');
+        expect(seen.params['build_pedido'], 101);
+        final action = analytics.eventsNamed('atualizacao_acao').single;
+        expect(action.params['acao'], 'atualizar');
+        expect(action.params['via'], 'loja');
+      },
+    );
 
     test('a recomendada conta a vista, o agora não e o atualizar', () async {
       flags.updateRecommendedBuild = 110;

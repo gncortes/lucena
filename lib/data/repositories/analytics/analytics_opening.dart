@@ -81,10 +81,8 @@ class AnalyticsOpening {
   }
 
   /// Tocou num aviso: [channel] `push` ou `local`; [path] diz o tipo.
-  Future<void> alertOpened(String path, {required String channel}) =>
-      _analytics.log(
-        AnalyticsEvents.avisoAberto(canal: channel, tipo: alertType(path)),
-      );
+  Future<void> alertOpened(String path, {required String channel}) => _analytics
+      .log(AnalyticsEvents.avisoAberto(canal: channel, tipo: alertType(path)));
 
   /// `dia|aulas|torneios|novidades`, pelo caminho do aviso.
   static String alertType(String path) {
@@ -146,8 +144,7 @@ class AnalyticsOpening {
     if (progress.completed.isEmpty && progress.ongoing == null) {
       return 'nao_iniciada';
     }
-    final done =
-        lessons.isNotEmpty && progress.completed.containsAll(lessons);
+    final done = lessons.isNotEmpty && progress.completed.containsAll(lessons);
     return done ? 'concluida' : 'em_andamento';
   }
 

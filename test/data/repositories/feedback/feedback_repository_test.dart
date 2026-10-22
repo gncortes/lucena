@@ -41,6 +41,19 @@ void main() {
     });
   });
 
+  test('a origem da 1ª abertura vai junto (E1.03)', () async {
+    final ok = await CloudFeedbackRepository(
+      store,
+      const FakeDeviceService(
+        value: DeviceModel(model: 'Pixel 8', manufacturer: 'Google'),
+      ),
+      const AppVersion('1.4.0'),
+      origin: () async => 'link',
+    ).send(const FeedbackEntry.free(type: FeedbackType.idea, text: 'Oi'));
+    expect(ok, isTrue);
+    expect(store.feedback.single['origin'], 'link');
+  });
+
   test('o texto é cortado em 500 letras', () async {
     await repository().send(
       FeedbackEntry.free(type: FeedbackType.problem, text: 'a' * 600),

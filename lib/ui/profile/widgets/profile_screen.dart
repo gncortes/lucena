@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,10 +12,12 @@ import '../../../data/repositories/purchase/purchase_repository.dart';
 import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../routing/routes.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -553,7 +557,14 @@ class _SupportGroups extends StatelessWidget {
                   icon: Icons.storefront,
                   title: l10n.profileRate,
                   value: l10n.profileRateValue,
-                  onTap: context.read<StoreListingRepository>().open,
+                  onTap: () {
+                    unawaited(
+                      context.analytics.log(
+                        AnalyticsEvents.avaliacaoPerfilAberto(),
+                      ),
+                    );
+                    unawaited(context.read<StoreListingRepository>().open());
+                  },
                 ),
               ],
             ),

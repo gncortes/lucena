@@ -32,15 +32,23 @@ void main() {
 
     test('rejeita nome ruim e parâmetros demais', () {
       expect(AnalyticsRules.sanitize('ruim-nome', const {}), isNull);
-      expect(AnalyticsRules.sanitize('evento', const {'ruim-param': 1}), isNull);
       expect(
-        AnalyticsRules.sanitize('evento', {for (var i = 0; i < 26; i++) 'p$i': i}),
+        AnalyticsRules.sanitize('evento', const {'ruim-param': 1}),
+        isNull,
+      );
+      expect(
+        AnalyticsRules.sanitize('evento', {
+          for (var i = 0; i < 26; i++) 'p$i': i,
+        }),
         isNull,
       );
     });
 
     test('a propriedade corta o valor em 36', () {
-      expect(AnalyticsRules.traitValue('origem_fonte', 'y' * 50), hasLength(36));
+      expect(
+        AnalyticsRules.traitValue('origem_fonte', 'y' * 50),
+        hasLength(36),
+      );
       expect(AnalyticsRules.traitValue('a' * 25, 'valor'), isNull);
     });
   });
@@ -125,24 +133,39 @@ void main() {
       expect(AnalyticsRules.mode(release: true), AnalyticsMode.normal);
     });
 
-    test('coleta só com o build medindo, a chave ligada e fora do Modo equipe', () {
-      expect(
-        AnalyticsRules.collects(AnalyticsMode.normal, optIn: true, team: false),
-        isTrue,
-      );
-      expect(
-        AnalyticsRules.collects(AnalyticsMode.normal, optIn: false, team: false),
-        isFalse,
-      );
-      expect(
-        AnalyticsRules.collects(AnalyticsMode.normal, optIn: true, team: true),
-        isFalse,
-      );
-      expect(
-        AnalyticsRules.collects(AnalyticsMode.off, optIn: true, team: false),
-        isFalse,
-      );
-    });
+    test(
+      'coleta só com o build medindo, a chave ligada e fora do Modo equipe',
+      () {
+        expect(
+          AnalyticsRules.collects(
+            AnalyticsMode.normal,
+            optIn: true,
+            team: false,
+          ),
+          isTrue,
+        );
+        expect(
+          AnalyticsRules.collects(
+            AnalyticsMode.normal,
+            optIn: false,
+            team: false,
+          ),
+          isFalse,
+        );
+        expect(
+          AnalyticsRules.collects(
+            AnalyticsMode.normal,
+            optIn: true,
+            team: true,
+          ),
+          isFalse,
+        );
+        expect(
+          AnalyticsRules.collects(AnalyticsMode.off, optIn: true, team: false),
+          isFalse,
+        );
+      },
+    );
   });
 
   group('dado pessoal', () {
@@ -164,5 +187,13 @@ void main() {
       expect(AnalyticsRules.looksPersonal('k7Qe2'), isFalse);
       expect(AnalyticsRules.looksPersonal(1400), isFalse);
     });
+  });
+
+  test('o preço da Play vira o value do purchase', () {
+    expect(AnalyticsRules.priceValue('R\$ 9,90'), 9.9);
+    expect(AnalyticsRules.priceValue('R\$ 1.299,00'), 1299);
+    expect(AnalyticsRules.priceValue('\$4.99'), 4.99);
+    expect(AnalyticsRules.priceValue(null), isNull);
+    expect(AnalyticsRules.priceValue('grátis'), isNull);
   });
 }

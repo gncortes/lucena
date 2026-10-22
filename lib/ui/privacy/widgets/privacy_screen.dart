@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../analytics/widgets/analytics_opt_in_tile.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
@@ -59,6 +61,8 @@ class PrivacyScreen extends StatelessWidget {
                   value: l10n.privacyAdChoicesValue,
                   onTap: context.read<PrivacyCubit>().openAdChoices,
                 ),
+              // As estatísticas (E1.03); sem elas no build (F-Droid), nada.
+              if (context.analytics.measures) const AnalyticsOptInTile(),
               ProfileRow(
                 key: PrivacyKeys.policy,
                 icon: Icons.description,

@@ -104,6 +104,20 @@ abstract final class AnalyticsRules {
     _ => '201_500',
   };
 
+  /// O valor do preço da Play (`R\$ 9,90`, `9.90`), para o `purchase`. Nulo
+  /// sem número.
+  static double? priceValue(String? price) {
+    final digits = price?.replaceAll(RegExp(r'[^0-9,.]'), '') ?? '';
+    if (digits.isEmpty) return null;
+    // A última vírgula ou ponto é a dos centavos.
+    final cut = digits.lastIndexOf(RegExp('[,.]'));
+    final whole = cut < 0 ? digits : digits.substring(0, cut);
+    final cents = cut < 0 ? '' : digits.substring(cut + 1);
+    return double.tryParse(
+      '${whole.replaceAll(RegExp('[,.]'), '')}.${cents.isEmpty ? '0' : cents}',
+    );
+  }
+
   /// O id da posição: o do catálogo ou `custom_<8 hex do FEN>`. O FEN nunca
   /// sai.
   static String positionId(String? catalogId, String fen) {

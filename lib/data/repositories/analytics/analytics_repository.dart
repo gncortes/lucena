@@ -56,6 +56,10 @@ abstract class AnalyticsRepository {
     String? link,
   });
 
+  /// A `origem_primeira` gravada na 1ª abertura (o `origin` do feedback).
+  /// Nula antes dela.
+  Future<String?> origin();
+
   Future<LinkTrail?> lastLink();
 
   Future<void> rememberLink(LinkTrail link);
@@ -103,6 +107,9 @@ class NoAnalyticsRepository implements AnalyticsRepository {
     String? post,
     String? link,
   }) async => false;
+
+  @override
+  Future<String?> origin() async => null;
 
   @override
   Future<LinkTrail?> lastLink() async => null;
@@ -256,6 +263,9 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
     await setTrait(AnalyticsTrait.originLink, link ?? AnalyticsRules.none);
     return true;
   }
+
+  @override
+  Future<String?> origin() => _preferences.getString(originKey);
 
   @override
   Future<LinkTrail?> lastLink() async {

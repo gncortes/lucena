@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/purchase/purchase_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/use_cases/analytics_rules.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -13,20 +17,36 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_sheet.dart';
 
 /// "Remover anúncios" (canvas `PropV1AnuncioRemover`): o botão abre a janela
-/// de pagamento da Play. Compra confirmada fecha a folha.
-Future<void> showRemoveAdsSheet(BuildContext context) {
+/// de pagamento da Play. Compra confirmada fecha a folha. [origin] é de onde
+/// a folha abriu (o `origem` do `anuncio_remocao`).
+Future<void> showRemoveAdsSheet(
+  BuildContext context, {
+  String origin = 'perfil',
+}) {
   final purchases = context.read<PurchaseRepository>();
+  final analytics = context.analytics;
   return showLucenaSheet<void>(
     context,
     sheetKey: PrivacyKeys.removeSheet,
-    builder: (sheet) => RemoveAdsSheet(purchases: purchases),
+    builder: (sheet) => RemoveAdsSheet(
+      purchases: purchases,
+      analytics: analytics,
+      origin: origin,
+    ),
   );
 }
 
 class RemoveAdsSheet extends StatefulWidget {
-  const RemoveAdsSheet({required this.purchases, super.key});
+  const RemoveAdsSheet({
+    required this.purchases,
+    this.analytics = const NoAnalyticsRepository(),
+    this.origin = 'perfil',
+    super.key,
+  });
 
   final PurchaseRepository purchases;
+  final AnalyticsRepository analytics;
+  final String origin;
 
   @override
   State<RemoveAdsSheet> createState() => _RemoveAdsSheetState();
@@ -40,11 +60,28 @@ class _RemoveAdsSheetState extends State<RemoveAdsSheet> {
   void initState() {
     super.initState();
     _changes = widget.purchases.changes.listen(_changed);
+    _count('aberto');
   }
+
+  void _count(String step) => unawaited(
+    widget.analytics.log(
+      AnalyticsEvents.anuncioRemocao(etapa: step, origem: widget.origin),
+    ),
+  );
 
   void _changed(PurchaseState state) {
     if (!mounted) return;
-    if (state.adFree) return Navigator.of(context).pop();
+    if (state.adFree) {
+      _count('comprado');
+      final value = AnalyticsRules.priceValue(state.price ?? _state.price);
+      if (value != null) {
+        unawaited(widget.analytics.log(AnalyticsEvents.purchase(value: value)));
+      }
+      return Navigator.of(context).pop();
+    }
+    if (state.pending && !_state.pending) _count('pendente');
+    // A Play não diz se cancelou ou falhou: os dois contam como cancelado.
+    if (state.error && !_state.error) _count('cancelado');
     setState(() => _state = state);
   }
 

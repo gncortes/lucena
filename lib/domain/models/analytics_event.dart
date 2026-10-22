@@ -127,7 +127,11 @@ abstract final class AnalyticsCatalog {
       'sessoes',
     ],
     'aula_saida': [
-      'aula_id', 'capitulo_id', 'exercicio_id', 'tempo_s', 'seg_apos_anuncio', //
+      'aula_id',
+      'capitulo_id',
+      'exercicio_id',
+      'tempo_s',
+      'seg_apos_anuncio', //
     ],
     // Catálogo de finais.
     'final_aberto': ['final_id', 'grupo', 'origem', 'tem_aula'],
@@ -247,7 +251,8 @@ abstract final class AnalyticsEvents {
   static AnalyticsEvent objetivoDefinido({
     required String objetivo,
     required bool trocado,
-  }) => _e('objetivo_definido', {'objetivo': objetivo, 'trocado': _yn(trocado)});
+  }) =>
+      _e('objetivo_definido', {'objetivo': objetivo, 'trocado': _yn(trocado)});
 
   /// `via`: `teste|lichess|chesscom|manual|zero`.
   static AnalyticsEvent nivelDefinido({
@@ -285,11 +290,10 @@ abstract final class AnalyticsEvents {
       _e('login', {'method': method});
 
   /// `acao`: `conectado|atualizado|desconectado`.
-  static AnalyticsEvent contaLichess({required String acao, int? rating}) =>
-      _e('conta_lichess', {
-        'acao': acao,
-        'faixa': AnalyticsRules.ratingBand(rating),
-      });
+  static AnalyticsEvent contaLichess({required String acao, int? rating}) => _e(
+    'conta_lichess',
+    {'acao': acao, 'faixa': AnalyticsRules.ratingBand(rating)},
+  );
 
   static AnalyticsEvent contaProgressoRecuperado({required int itens}) =>
       _e('conta_progresso_recuperado', {'itens': itens});
@@ -435,7 +439,8 @@ abstract final class AnalyticsEvents {
     required String tela,
     required String codigo,
     required int geracao,
-  }) => _e('link_copiado', {'tela': tela, 'codigo': codigo, 'geracao': geracao});
+  }) =>
+      _e('link_copiado', {'tela': tela, 'codigo': codigo, 'geracao': geracao});
 
   /// `acao`: `jogar_de_novo|compartilhar|conhecer_app`.
   static AnalyticsEvent linkFimAcao({

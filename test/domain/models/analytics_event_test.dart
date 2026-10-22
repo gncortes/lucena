@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/analytics_event.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
-import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/analytics_rules.dart';
 
 const _fen = '8/8/8/8/8/2k5/8/K1Q5 w - - 0 1';
@@ -152,7 +151,10 @@ final _samples = <AnalyticsEvent>[
     emAndamento: true,
     entrada: 'home',
   ),
-  AnalyticsEvents.finalDestaqueAviso(torneioId: 'candidatos_2026', ligado: true),
+  AnalyticsEvents.finalDestaqueAviso(
+    torneioId: 'candidatos_2026',
+    ligado: true,
+  ),
   AnalyticsEvents.finalDestaqueAcheLance(
     finalId: 'f1',
     acertou: true,
@@ -197,7 +199,11 @@ final _samples = <AnalyticsEvent>[
     melhorar: ['ritmo', 'exemplos'],
     temTexto: true,
   ),
-  AnalyticsEvents.questionarioDispensado(tipo: 'aula', passo: 1, como: 'fechar'),
+  AnalyticsEvents.questionarioDispensado(
+    tipo: 'aula',
+    passo: 1,
+    como: 'fechar',
+  ),
   AnalyticsEvents.feedbackEnviado(tipo: 'ideia', tamanho: 120),
   AnalyticsEvents.avaliacaoPedida(numero: 1, gatilho: 'aula_concluida'),
   AnalyticsEvents.avaliacaoPerfilAberto(),

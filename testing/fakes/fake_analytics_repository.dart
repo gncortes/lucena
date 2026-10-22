@@ -92,6 +92,9 @@ class FakeAnalyticsRepository implements AnalyticsRepository {
   Future<LinkTrail?> lastLink() async => trail;
 
   @override
+  Future<String?> origin() async => traits[AnalyticsTrait.firstOrigin];
+
+  @override
   Future<void> rememberLink(LinkTrail link) async => trail = link;
 
   @override

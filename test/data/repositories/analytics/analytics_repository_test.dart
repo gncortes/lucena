@@ -136,18 +136,21 @@ void main() {
     expect(service.events, isEmpty);
   });
 
-  test('a propriedade só vai quando o valor muda, mesmo noutra abertura', () async {
-    final analytics = repository();
-    await analytics.setTrait(AnalyticsTrait.goal, 'finais');
-    await analytics.setTrait(AnalyticsTrait.goal, 'finais');
-    await repository().setTrait(AnalyticsTrait.goal, 'finais');
-    await analytics.setTrait(AnalyticsTrait.goal, 'aberturas');
+  test(
+    'a propriedade só vai quando o valor muda, mesmo noutra abertura',
+    () async {
+      final analytics = repository();
+      await analytics.setTrait(AnalyticsTrait.goal, 'finais');
+      await analytics.setTrait(AnalyticsTrait.goal, 'finais');
+      await repository().setTrait(AnalyticsTrait.goal, 'finais');
+      await analytics.setTrait(AnalyticsTrait.goal, 'aberturas');
 
-    expect(service.properties, [
-      ('objetivo', 'finais'),
-      ('objetivo', 'aberturas'),
-    ]);
-  });
+      expect(service.properties, [
+        ('objetivo', 'finais'),
+        ('objetivo', 'aberturas'),
+      ]);
+    },
+  );
 
   test('a origem da 1ª abertura é gravada uma vez', () async {
     final analytics = repository();
@@ -168,6 +171,12 @@ void main() {
       ('origem_post', 'nenhum'),
       ('origem_link', 'nenhum'),
     ]);
+  });
+
+  test('a origem gravada é a do feedback', () async {
+    expect(await repository().origin(), isNull);
+    await repository().recordOrigin(first: 'organico');
+    expect(await repository().origin(), 'organico');
   });
 
   test('o último link fica guardado entre aberturas', () async {

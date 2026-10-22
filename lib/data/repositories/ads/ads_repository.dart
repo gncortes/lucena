@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../../../domain/models/ads_state.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/ad_policy.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../services/ads_service.dart';
 import '../../services/preferences_service.dart';
+import '../analytics/analytics_repository.dart';
 import '../config/remote_flags_repository.dart';
 import '../purchase/purchase_repository.dart';
 
@@ -56,9 +58,11 @@ class ServiceAdsRepository implements AdsRepository {
     required this._flags,
     required this._purchases,
     required this._now,
+    this._analytics = const NoAnalyticsRepository(),
   });
 
   final AdsService _service;
+  final AnalyticsRepository _analytics;
   final PreferencesService _preferences;
   final RemoteFlagsRepository _flags;
   final PurchaseRepository _purchases;
@@ -118,22 +122,26 @@ class ServiceAdsRepository implements AdsRepository {
   Future<void> requestConsent() async {
     if (_adFree || _consentOpen) return;
     _consentOpen = true;
+    var failed = false;
     try {
       await _service.updateConsent();
       // Quem veio por link vê o formulário na próxima abertura normal.
       if (!_fromLink) await _service.showConsentFormIfRequired();
     } on Exception {
       // Sem rede: vale o que o SDK já guardou.
+      failed = true;
     } finally {
       _consentOpen = false;
     }
-    await _prepare();
+    await _prepare(failed: failed, origin: 'primeira_abertura');
   }
 
-  Future<void> _prepare() async {
+  // [origin]: de onde veio o pedido de consentimento, para a E1.03.
+  Future<void> _prepare({bool failed = false, String? origin}) async {
     if (_adFree) return;
     try {
       _consentReady = await _service.canRequestAds();
+      if (origin != null) _countConsent(origin, failed: failed);
       if (!_consentReady || _adFree) return;
       await _service.initialize();
       _service.preload();
@@ -141,6 +149,46 @@ class ServiceAdsRepository implements AdsRepository {
       _consentReady = false;
     }
   }
+
+  void _countConsent(String origin, {required bool failed}) {
+    unawaited(
+      _analytics.setConsent(analytics: _consentReady, ads: _consentReady),
+    );
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.anuncioConsentimento(
+          resultado: failed
+              ? 'erro'
+              : _consentReady
+              ? 'obtido'
+              : 'negado',
+          origem: origin,
+        ),
+      ),
+    );
+  }
+
+  void _countRequest(String result, String lessonId) => unawaited(
+    _analytics.log(
+      AnalyticsEvents.anuncioPedido(
+        resultado: result,
+        aulaId: lessonId,
+        licoesAbertas: _state.lessonsOpened,
+      ),
+    ),
+  );
+
+  /// O `resultado` do `anuncio_pedido`. Nulo: não houve pedido (anúncio
+  /// desligado ou lição sem anúncio).
+  static String? _requestCode(AdDecision decision) => switch (decision) {
+    AdDecision.show => 'ok',
+    AdDecision.adFree => 'comprado',
+    AdDecision.noConsent => 'sem_consentimento',
+    AdDecision.grace => 'carencia',
+    AdDecision.alreadyThisLesson || AdDecision.gap => 'intervalo',
+    AdDecision.notReady => 'sem_anuncio',
+    AdDecision.disabled || AdDecision.wrongKind => null,
+  };
 
   @override
   Future<AdOutcome> beforeLesson({
@@ -168,6 +216,8 @@ class ServiceAdsRepository implements AdsRepository {
         );
     if (decision == AdDecision.notReady) _service.preload();
     if (decision != AdDecision.show) {
+      final code = _requestCode(decision);
+      if (code != null) _countRequest(code, lessonId);
       unawaited(_save());
       return AdOutcome.none;
     }
@@ -178,9 +228,26 @@ class ServiceAdsRepository implements AdsRepository {
     unawaited(_save());
     _shownThisSession = true;
     _adShown.add(null);
-    if (_service.drawsInApp) return AdOutcome.showInApp;
+    if (_service.drawsInApp) {
+      _countRequest('ok', lessonId);
+      return AdOutcome.showInApp;
+    }
     final shown = await _service.show();
     _service.preload();
+    _countRequest(shown ? 'ok' : 'erro', lessonId);
+    if (shown) {
+      // O intersticial não diz se foi visto até o fim: fechado conta como sim.
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.anuncioVisto(
+            aulaId: lessonId,
+            ateOFim: true,
+            tempo: _now().difference(now),
+            licoesAbertas: _state.lessonsOpened,
+          ),
+        ),
+      );
+    }
     return shown ? AdOutcome.shown : AdOutcome.none;
   }
 
@@ -209,11 +276,14 @@ class ServiceAdsRepository implements AdsRepository {
 
   @override
   Future<void> showPrivacyOptions() async {
+    var failed = false;
     try {
       await _service.showPrivacyOptions();
     } on Exception {
       // A janela do Google não abriu; a tela continua.
+      failed = true;
     }
+    await _prepare(failed: failed, origin: 'privacidade');
   }
 }
 

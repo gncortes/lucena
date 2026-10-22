@@ -83,6 +83,9 @@ class FakeReviewRepository implements ReviewRepository {
   }
 
   @override
+  Future<int> requests() async => asks.length;
+
+  @override
   Future<void> openStoreListing() async => storeOpens++;
 }
 

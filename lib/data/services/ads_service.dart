@@ -45,7 +45,9 @@ abstract class AdsService {
 
 /// `google_mobile_ads` com o UMP do próprio pacote.
 class GoogleAdsService extends AdsService {
-  GoogleAdsService({String? interstitialId})
+  /// Com [testAds] verdadeiro (o Modo equipe da E1.03), o anúncio é o de
+  /// teste do Google.
+  GoogleAdsService({String? interstitialId, this.testAds})
     : _unitId =
           interstitialId ??
           (kReleaseMode && _interstitialId.isNotEmpty
@@ -53,6 +55,7 @@ class GoogleAdsService extends AdsService {
               : _testInterstitialId);
 
   final String _unitId;
+  final Future<bool> Function()? testAds;
   InterstitialAd? _ad;
   bool _loading = false;
   bool _initialized = false;
@@ -98,17 +101,20 @@ class GoogleAdsService extends AdsService {
   void preload() {
     if (!_initialized || _loading || _ad != null) return;
     _loading = true;
-    unawaited(
-      InterstitialAd.load(
-        adUnitId: _unitId,
-        request: const AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            _loading = false;
-            _ad = ad;
-          },
-          onAdFailedToLoad: (_) => _loading = false,
-        ),
+    unawaited(_load());
+  }
+
+  Future<void> _load() async {
+    final test = await testAds?.call() ?? false;
+    await InterstitialAd.load(
+      adUnitId: test ? _testInterstitialId : _unitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _loading = false;
+          _ad = ad;
+        },
+        onAdFailedToLoad: (_) => _loading = false,
       ),
     );
   }

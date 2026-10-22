@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/review/review_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/lesson_count.dart';
 import '../../../domain/use_cases/review_policy.dart';
 
@@ -18,8 +20,14 @@ class ReviewPromptCubit extends Cubit<bool> {
     required this._school,
     required this._endgames,
     required this._progress,
+    this.trigger = 'aula',
+    this._analytics = const NoAnalyticsRepository(),
     this.delay = ReviewPolicy.delay,
   }) : super(false);
+
+  /// O `gatilho` da E1.03: `aula` ou `final`.
+  final String trigger;
+  final AnalyticsRepository _analytics;
 
   final ReviewRepository _review;
   final SchoolProgressRepository _school;
@@ -44,6 +52,16 @@ class ReviewPromptCubit extends Cubit<bool> {
       ),
       endgamesWon: LessonCount.wins(await _progress.allAttempts()),
     );
+    if (asked) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.avaliacaoPedida(
+            numero: await _review.requests(),
+            gatilho: trigger,
+          ),
+        ),
+      );
+    }
     if (!isClosed) emit(asked);
   }
 

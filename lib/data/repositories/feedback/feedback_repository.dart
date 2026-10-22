@@ -15,11 +15,19 @@ abstract class FeedbackRepository {
 }
 
 class CloudFeedbackRepository implements FeedbackRepository {
-  const CloudFeedbackRepository(this._store, this._device, this._version);
+  const CloudFeedbackRepository(
+    this._store,
+    this._device,
+    this._version, {
+    this.origin,
+  });
 
   final CloudStoreService _store;
   final DeviceService _device;
   final AppVersion _version;
+
+  /// De onde a pessoa veio na 1ª abertura (a `origem_primeira` da E1.03).
+  final Future<String?> Function()? origin;
 
   @override
   Future<bool> send(FeedbackEntry entry, {String? level}) async {
@@ -31,6 +39,7 @@ class CloudFeedbackRepository implements FeedbackRepository {
       appVersion: _version.name,
       model: device.model,
       manufacturer: device.manufacturer,
+      origin: await origin?.call(),
     );
     // Sem esperar o servidor: a pessoa já vê o agradecimento.
     unawaited(

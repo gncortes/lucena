@@ -27,6 +27,9 @@ abstract class ReviewRepository {
     required int endgamesWon,
   });
 
+  /// Quantos pedidos já foram feitos (o `numero` da E1.03).
+  Future<int> requests();
+
   /// Perfil > "Avaliar o Lucena": a página na Play, sem contar nos pedidos.
   Future<void> openStoreListing();
 }
@@ -105,6 +108,9 @@ class LocalReviewRepository implements ReviewRepository {
   }
 
   @override
+  Future<int> requests() async => (await _load()).requests;
+
+  @override
   Future<void> openStoreListing() => _service.openStoreListing();
 }
 
@@ -126,6 +132,9 @@ class NoReviewRepository implements ReviewRepository {
     required int lessonsCompleted,
     required int endgamesWon,
   }) async => false;
+
+  @override
+  Future<int> requests() async => 0;
 
   @override
   Future<void> openStoreListing() async {}

@@ -6,6 +6,7 @@ import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../data/repositories/would_pay/would_pay_repository.dart';
 import '../../../routing/routes.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/would_pay_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
@@ -29,6 +30,7 @@ class WouldPayInviteCard extends StatelessWidget {
       wouldPay: context.read<WouldPayRepository>(),
       school: context.read<SchoolProgressRepository>(),
       endgames: context.read<EndgameProgressRepository>(),
+      analytics: context.analytics,
     )..load(),
     child: _InviteView(bottomGap: bottomGap),
   );

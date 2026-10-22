@@ -7,14 +7,18 @@ import '../../../data/repositories/review/review_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../conclusion/view_models/conclusion_cubit.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../view_models/review_prompt_cubit.dart';
 
-ReviewPromptCubit _cubit(BuildContext context) => ReviewPromptCubit(
-  review: context.read<ReviewRepository>(),
-  school: context.read<SchoolProgressRepository>(),
-  endgames: context.read<EndgameProgressRepository>(),
-  progress: context.read<ProgressRepository>(),
-);
+ReviewPromptCubit _cubit(BuildContext context, String trigger) =>
+    ReviewPromptCubit(
+      review: context.read<ReviewRepository>(),
+      school: context.read<SchoolProgressRepository>(),
+      endgames: context.read<EndgameProgressRepository>(),
+      progress: context.read<ProgressRepository>(),
+      trigger: trigger,
+      analytics: context.analytics,
+    );
 
 /// Na "Aula concluída": pede a avaliação (se a política deixa) 1,5 s depois
 /// de a tela abrir.
@@ -25,7 +29,7 @@ class LessonReviewPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => _cubit(context)..ask(),
+    create: (context) => _cubit(context, 'aula')..ask(),
     lazy: false,
     child: child,
   );
@@ -47,7 +51,7 @@ class ConclusionReviewPrompt extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!fresh) return child;
     return BlocProvider(
-      create: _cubit,
+      create: (context) => _cubit(context, 'final'),
       lazy: false,
       child: BlocListener<ConclusionCubit, ConclusionState>(
         listenWhen: (before, after) => !before.ready && after.ready,
