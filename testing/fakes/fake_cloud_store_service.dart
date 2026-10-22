@@ -9,6 +9,9 @@ class FakeCloudStoreService implements CloudStoreService {
   final progress = <String, Map<String, Object?>>{};
   final games = <String, Map<String, Map<String, Object?>>>{};
   final deleted = <String>[];
+
+  /// Os documentos abertos a todos, por `coleção/id`.
+  final public = <String, Map<String, Object?>>{};
   bool offline = false;
 
   /// Quantas vezes cada partida foi mandada (a regra deixa só criar).
@@ -49,5 +52,11 @@ class FakeCloudStoreService implements CloudStoreService {
     users.remove(uid);
     progress.remove(uid);
     games.remove(uid);
+  }
+
+  @override
+  Future<Map<String, Object?>?> readPublic(String collection, String id) async {
+    if (offline) throw const CloudStoreException('unavailable');
+    return public['$collection/$id'];
   }
 }

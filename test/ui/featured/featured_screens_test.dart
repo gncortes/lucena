@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/crowd_stat.dart';
 import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/ui/core/share/share_button.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +22,7 @@ import 'package:lucena/ui/featured/widgets/featured_list_screen.dart';
 import 'package:lucena/ui/featured/widgets/featured_tournament_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
+import '../../../testing/fakes/fake_crowd_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_featured_repositories.dart';
@@ -54,6 +56,7 @@ void main() {
     Widget child, {
     required String location,
     required String path,
+    FakeCrowdRepository? crowd,
   }) async {
     tester.view.physicalSize = const Size(900, 3000);
     tester.view.devicePixelRatio = 2;
@@ -121,6 +124,7 @@ void main() {
       TestApp(
         router: router,
         locale: const Locale('pt'),
+        crowdRepository: crowd,
         child: const SizedBox(),
       ),
     );
@@ -423,6 +427,45 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(FeaturedKeys.nextSheet), findsOneWidget);
       expect(find.byKey(FeaturedKeys.nextLesson), findsOneWidget);
+    });
+
+    testWidgets('o número ainda não saiu: sem o cartão', (tester) async {
+      await pump(
+        tester,
+        Scaffold(body: FeaturedEndBar(onAgain: () {})),
+        location: '/e/a',
+        path: '/e/:id',
+      );
+      expect(find.byKey(FeaturedKeys.crowdCard), findsNothing);
+    });
+
+    testWidgets('o x% acertaram e quantos jogaram este final', (tester) async {
+      await pump(
+        tester,
+        Scaffold(body: FeaturedEndBar(onAgain: () {})),
+        location: '/e/a',
+        path: '/e/:id',
+        crowd: FakeCrowdRepository(
+          featured: {'a': const CrowdStat(percent: 41, total: 1284)},
+        ),
+      );
+      expect(find.byKey(FeaturedKeys.crowdCard), findsOneWidget);
+      expect(find.text('41% acertaram'), findsOneWidget);
+      expect(find.text('1.284 pessoas jogaram este final.'), findsOneWidget);
+    });
+
+    testWidgets('menos de 30 pessoas: sem número', (tester) async {
+      await pump(
+        tester,
+        Scaffold(body: FeaturedEndBar(onAgain: () {})),
+        location: '/e/a',
+        path: '/e/:id',
+        crowd: FakeCrowdRepository(
+          featured: {'a': const CrowdStat(percent: 41, total: 12)},
+        ),
+      );
+      expect(find.byKey(FeaturedKeys.crowdFew), findsOneWidget);
+      expect(find.text('41% acertaram'), findsNothing);
     });
 
     testWidgets('a barra de cima tem o livro e, no fim, compartilhar', (

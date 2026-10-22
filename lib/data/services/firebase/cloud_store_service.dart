@@ -7,7 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// `firebase/firestore.rules` (resumo em `firebase/README.md`):
 /// - `users/{uid}`: o perfil;
 /// - `users/{uid}/progress/summary` e `users/{uid}/games/{id}`: o progresso
-///   (E1.13).
+///   (E1.13);
+/// - `daily/{aaaa-mm-dd}` e `featured/{id}`: abertos a todos, só leitura
+///   (o "x% acertaram" da E1.24 vem neles).
 ///
 /// O Firestore guarda as gravações sem rede e as manda quando ela volta.
 abstract class CloudStoreService {
@@ -28,6 +30,10 @@ abstract class CloudStoreService {
   /// Apaga o perfil e tudo abaixo dele que o app grava. Precisa de rede:
   /// sem ela lança [CloudStoreException] em vez de apagar só a cópia local.
   Future<void> deleteUser(String uid);
+
+  /// Um documento aberto a todos (`daily`, `featured`), sem conta. Nulo: não
+  /// existe. Lança [CloudStoreException] sem rede e sem cópia no aparelho.
+  Future<Map<String, Object?>?> readPublic(String collection, String id);
 }
 
 /// O Firestore não respondeu (sem rede, sem permissão).
@@ -61,6 +67,12 @@ class NoCloudStoreService implements CloudStoreService {
 
   @override
   Future<void> deleteUser(String uid) async {}
+
+  @override
+  Future<Map<String, Object?>?> readPublic(
+    String collection,
+    String id,
+  ) async => null;
 }
 
 class FirestoreCloudStoreService implements CloudStoreService {
@@ -124,6 +136,15 @@ class FirestoreCloudStoreService implements CloudStoreService {
       // lá. Mas a mesma recusa vem sem login ou com o token vencido; aí não
       // é "já gravada".
       if (error.code == 'permission-denied' && _currentUid() == uid) return;
+      throw CloudStoreException(error.code);
+    }
+  }
+
+  @override
+  Future<Map<String, Object?>?> readPublic(String collection, String id) async {
+    try {
+      return (await _db.collection(collection).doc(id).get()).data();
+    } on FirebaseException catch (error) {
       throw CloudStoreException(error.code);
     }
   }

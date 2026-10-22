@@ -1624,5 +1624,16 @@
   "accountPhotoGallery": "Choose from gallery",
   "accountPhotoInitial": "Or your initial, in any color you like",
   "accountPhotoRemove": "Remove photo",
-  "accountPhotoFailed": "Could not upload the photo. Check the internet and try again."
+  "accountPhotoFailed": "Could not upload the photo. Check the internet and try again.",
+  "dailyYesterdayTitle": "Yesterday's endgame",
+  "dailyWonYesterday": "You won yesterday",
+  "dailyDrewYesterday": "You drew yesterday",
+  "dailyHeldYesterday": "You held the draw yesterday",
+  "crowdPercent": "{percent}% got it right",
+  "crowdPlayers": "{count} played",
+  "crowdPlayersFinal": "{count} people played this endgame.",
+  "crowdYouAre": "You are one of them.",
+  "crowdFewYesterday": "Few people played yesterday",
+  "crowdFew": "Few people played this endgame",
+  "crowdFewText": "The number shows from 30 people on."
 }

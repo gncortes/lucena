@@ -1,3 +1,4 @@
+import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/survey/survey_repository.dart';
 import '../domain/models/survey.dart';
 import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
@@ -1460,6 +1461,8 @@ Widget _daily(
         create: (context) => DailyResultCubit(
           date: date,
           daily: context.read<DailyFinalRepository>(),
+          crowd: context.read<CrowdRepository>(),
+          now: context.read<Now>(),
         )..load(),
       ),
       BlocProvider(

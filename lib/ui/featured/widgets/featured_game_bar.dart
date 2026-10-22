@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/crowd/crowd_repository.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../view_models/featured_crowd_cubit.dart';
 import '../view_models/featured_endgame_cubit.dart';
+import 'featured_crowd_card.dart';
 import 'featured_book_sheet.dart';
 import 'featured_labels.dart';
 import 'featured_next_sheet.dart';
@@ -71,30 +74,42 @@ class FeaturedEndBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return ActionsFooter(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        OutlinedButton.icon(
-          key: FeaturedKeys.playAgain,
-          onPressed: onAgain,
-          icon: const Icon(Icons.replay),
-          label: Text(l10n.featuredPlayAgain),
+        BlocProvider(
+          create: (context) => FeaturedCrowdCubit(
+            id: context.read<FeaturedEndgameCubit>().id,
+            crowd: context.read<CrowdRepository>(),
+          )..load(),
+          child: const FeaturedCrowdCard(),
         ),
-        FilledButton.icon(
-          key: FeaturedKeys.continueButton,
-          onPressed: () {
-            final state = context.read<FeaturedEndgameCubit>().state;
-            final endgame = state.endgame;
-            if (endgame == null) return;
-            showFeaturedNext(
-              context,
-              endgame: endgame,
-              tournament: state.tournament,
-              tournamentFinals: state.siblings.length + 1,
-              onAgain: onAgain,
-            );
-          },
-          icon: const Icon(Icons.arrow_forward),
-          label: Text(l10n.featuredContinue),
+        ActionsFooter(
+          children: [
+            OutlinedButton.icon(
+              key: FeaturedKeys.playAgain,
+              onPressed: onAgain,
+              icon: const Icon(Icons.replay),
+              label: Text(l10n.featuredPlayAgain),
+            ),
+            FilledButton.icon(
+              key: FeaturedKeys.continueButton,
+              onPressed: () {
+                final state = context.read<FeaturedEndgameCubit>().state;
+                final endgame = state.endgame;
+                if (endgame == null) return;
+                showFeaturedNext(
+                  context,
+                  endgame: endgame,
+                  tournament: state.tournament,
+                  tournamentFinals: state.siblings.length + 1,
+                  onAgain: onAgain,
+                );
+              },
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(l10n.featuredContinue),
+            ),
+          ],
         ),
       ],
     );

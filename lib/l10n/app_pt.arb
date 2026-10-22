@@ -1623,5 +1623,16 @@
   "accountPhotoGallery": "Escolher da galeria",
   "accountPhotoInitial": "Ou a sua inicial, na cor que quiser",
   "accountPhotoRemove": "Remover a foto",
-  "accountPhotoFailed": "Não deu para enviar a foto. Confira a internet e tente de novo."
+  "accountPhotoFailed": "Não deu para enviar a foto. Confira a internet e tente de novo.",
+  "dailyYesterdayTitle": "Final de ontem",
+  "dailyWonYesterday": "Você ganhou ontem",
+  "dailyDrewYesterday": "Você empatou ontem",
+  "dailyHeldYesterday": "Você segurou o empate ontem",
+  "crowdPercent": "{percent}% acertaram",
+  "crowdPlayers": "{count} jogaram",
+  "crowdPlayersFinal": "{count} pessoas jogaram este final.",
+  "crowdYouAre": "Você está entre eles.",
+  "crowdFewYesterday": "Poucas pessoas jogaram ontem",
+  "crowdFew": "Poucas pessoas jogaram este final",
+  "crowdFewText": "O número aparece a partir de 30 pessoas."
 }

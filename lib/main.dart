@@ -43,6 +43,7 @@ import 'data/repositories/account/avatar_repository.dart';
 import 'data/repositories/account/mail_app_repository.dart';
 import 'data/repositories/activity/activity_repository.dart';
 import 'data/repositories/daily/daily_final_repository.dart';
+import 'data/repositories/crowd/crowd_repository.dart';
 import 'data/repositories/account/account_repository.dart';
 import 'data/repositories/chesscom/chesscom_repository.dart';
 import 'data/repositories/lichess/lichess_repository.dart';
@@ -73,6 +74,7 @@ import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
+import 'routing/push_route.dart';
 import 'routing/router.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
 import 'ui/reminders/view_models/reminders_cubit.dart';
@@ -164,11 +166,29 @@ class _LucenaAppState extends State<LucenaApp> {
     _links = deepLinks.opened.listen(
       (link) => _router?.push(Routes.challenge(link)),
     );
-    // Um aviso pode trazer o link de um desafio ou final.
+    // Um aviso pode trazer o link de um desafio ou o de uma tela (final do
+    // dia, aula, final ou torneio).
     _pushLinks = push.openedLinks.listen((uri) {
       final link = deepLinks.parse(uri);
-      if (link != null) _router?.push(Routes.challenge(link));
+      if (link != null) {
+        _router?.push(Routes.challenge(link));
+      } else {
+        unawaited(_openPushed(uri));
+      }
     });
+    if (pushed != null && deepLinks.parse(pushed) == null) {
+      await _openPushed(pushed);
+    }
+  }
+
+  Future<void> _openPushed(Uri uri) async {
+    final route = await pushRoute(
+      uri,
+      // O idioma só muda o título da aula, que o toque não usa.
+      pausedLesson: () =>
+          widget.dependencies.remindersRepository.pausedLesson('pt'),
+    );
+    if (route != null && mounted) _router?.push(route);
   }
 
   @override
@@ -210,6 +230,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<DailyFinalRepository>.value(
           value: dependencies.dailyFinalRepository,
+        ),
+        RepositoryProvider<CrowdRepository>.value(
+          value: dependencies.crowdRepository,
         ),
         RepositoryProvider<SyncScheduler>.value(value: _sync),
         RepositoryProvider<LichessRepository>.value(

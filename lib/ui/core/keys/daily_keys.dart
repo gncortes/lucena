@@ -17,6 +17,10 @@ abstract final class DailyKeys {
 
   static const streakCard = Key('daily.streakCard');
   static const crowdCard = Key('daily.crowdCard');
+  static const crowdPercent = Key('daily.crowdPercent');
+  static const crowdBar = Key('daily.crowdBar');
+  static const crowdYouAre = Key('daily.crowdYouAre');
+  static const crowdFew = Key('daily.crowdFew');
   static const share = Key('daily.share');
   static const shareScreen = Key('daily.shareScreen');
   static const shareImage = Key('daily.shareImage');

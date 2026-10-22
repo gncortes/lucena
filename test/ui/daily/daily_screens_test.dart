@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/crowd_stat.dart';
 import 'package:lucena/domain/models/daily_final.dart';
 import 'package:lucena/domain/models/maia_level.dart';
 import 'package:lucena/routing/routes.dart';
@@ -17,6 +18,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/streak/view_models/streak_cubit.dart';
 
 import '../../../testing/fakes/fake_activity_repository.dart';
+import '../../../testing/fakes/fake_crowd_repository.dart';
 import '../../../testing/fakes/fake_daily_final_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
@@ -70,10 +72,19 @@ void main() {
     Widget screen, {
     DailyRecord? record,
     FakeShareRepository? share,
+    String date = '2026-10-22',
+    CrowdStat? crowd,
   }) async {
     phone(tester);
-    final daily = FakeDailyFinalRepository(records: {day: ?record});
-    final result = DailyResultCubit(date: '2026-10-22', daily: daily);
+    final daily = FakeDailyFinalRepository(
+      records: {DateTime.parse(date): ?record},
+    );
+    final result = DailyResultCubit(
+      date: date,
+      daily: daily,
+      crowd: FakeCrowdRepository(days: {date: ?crowd}),
+      now: now,
+    );
     final streak = StreakCubit(
       activity: FakeActivityRepository(
         days: {
@@ -137,6 +148,91 @@ void main() {
       expect(find.byKey(DailyKeys.continueButton), findsOneWidget);
     },
   );
+
+  testWidgets('resultado de hoje: amanhã, mesmo com o número na nuvem', (
+    tester,
+  ) async {
+    await pumpDaily(
+      tester,
+      const DailyResultScreen(),
+      record: won,
+      crowd: const CrowdStat(percent: 63, total: 4812),
+    );
+
+    expect(find.text('Final do dia'), findsOneWidget);
+    expect(find.text('Quantos acertaram? Amanhã.'), findsOneWidget);
+    expect(find.byKey(DailyKeys.crowdPercent), findsNothing);
+  });
+
+  group('resultado de ontem', () {
+    final yesterday = DailyRecord(
+      date: DateTime(2026, 10, 21),
+      positionId: samplePositions.first.id,
+      outcome: DailyOutcome.won,
+      fulfilled: true,
+      squares: const [DailySquare.right],
+    );
+
+    testWidgets('o número, a barra e "Você está entre eles."', (tester) async {
+      await pumpDaily(
+        tester,
+        const DailyResultScreen(),
+        record: yesterday,
+        date: '2026-10-21',
+        crowd: const CrowdStat(percent: 63, total: 4812),
+      );
+
+      expect(find.text('Final de ontem'), findsOneWidget);
+      expect(find.text('Você ganhou ontem'), findsOneWidget);
+      expect(find.text('63% acertaram'), findsOneWidget);
+      expect(find.text('4.812 jogaram'), findsOneWidget);
+      expect(find.byKey(DailyKeys.crowdBar), findsOneWidget);
+      expect(find.byKey(DailyKeys.crowdYouAre), findsOneWidget);
+    });
+
+    testWidgets('perdeu: sem "Você está entre eles."', (tester) async {
+      await pumpDaily(
+        tester,
+        const DailyResultScreen(),
+        record: DailyRecord(
+          date: yesterday.date,
+          positionId: yesterday.positionId,
+          outcome: DailyOutcome.lost,
+          fulfilled: false,
+          squares: const [DailySquare.bad],
+        ),
+        date: '2026-10-21',
+        crowd: const CrowdStat(percent: 63, total: 4812),
+      );
+
+      expect(find.text('63% acertaram'), findsOneWidget);
+      expect(find.byKey(DailyKeys.crowdYouAre), findsNothing);
+    });
+
+    testWidgets('menos de 30 pessoas: sem número', (tester) async {
+      await pumpDaily(
+        tester,
+        const DailyResultScreen(),
+        record: yesterday,
+        date: '2026-10-21',
+        crowd: const CrowdStat(percent: 50, total: 29),
+      );
+
+      expect(find.text('Poucas pessoas jogaram ontem'), findsOneWidget);
+      expect(find.byKey(DailyKeys.crowdPercent), findsNothing);
+    });
+
+    testWidgets('o número não saiu: sem o cartão', (tester) async {
+      await pumpDaily(
+        tester,
+        const DailyResultScreen(),
+        record: yesterday,
+        date: '2026-10-21',
+      );
+
+      expect(find.byKey(DailyKeys.crowdCard), findsNothing);
+    });
+  });
 
   testWidgets('resultado sem tentativa: sem o cartão e sem compartilhar', (
     tester,

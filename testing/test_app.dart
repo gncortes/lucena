@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
+import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
@@ -17,6 +18,7 @@ import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
 import 'package:lucena/ui/core/widgets/web_pages.dart';
 
 import 'fakes/fake_alerts_repository.dart';
+import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
@@ -40,6 +42,7 @@ class TestApp extends StatelessWidget {
     this.router,
     this.surveyRepository,
     this.regionPromptRepository,
+    this.crowdRepository,
     super.key,
   });
 
@@ -78,6 +81,7 @@ class TestApp extends StatelessWidget {
 
   /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
   final RegionPromptRepository? regionPromptRepository;
+  final CrowdRepository? crowdRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -153,6 +157,9 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<RegionPromptRepository>.value(
           value: regionPromptRepository ?? const NoRegionPromptRepository(),
+        ),
+        RepositoryProvider<CrowdRepository>.value(
+          value: crowdRepository ?? FakeCrowdRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

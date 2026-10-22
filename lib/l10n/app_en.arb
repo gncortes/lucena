@@ -8424,5 +8424,66 @@
   "accountPhotoFailed": "Could not upload the photo. Check the internet and try again.",
   "@accountPhotoFailed": {
     "description": "Snack bar when the photo upload fails."
+  },
+  "dailyYesterdayTitle": "Yesterday's endgame",
+  "@dailyYesterdayTitle": {
+    "description": "Daily endgame result screen title, the day after."
+  },
+  "dailyWonYesterday": "You won yesterday",
+  "@dailyWonYesterday": {
+    "description": "Daily endgame result title the day after, when the player won."
+  },
+  "dailyDrewYesterday": "You drew yesterday",
+  "@dailyDrewYesterday": {
+    "description": "Daily endgame result title the day after, when the player drew."
+  },
+  "dailyHeldYesterday": "You held the draw yesterday",
+  "@dailyHeldYesterday": {
+    "description": "Daily endgame result title the day after, when the goal was to draw and the player drew."
+  },
+  "crowdPercent": "{percent}% got it right",
+  "@crowdPercent": {
+    "description": "How many players met the endgame goal on the first try.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "crowdPlayers": "{count} played",
+  "@crowdPlayers": {
+    "description": "Daily endgame: how many people played it.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "crowdPlayersFinal": "{count} people played this endgame.",
+  "@crowdPlayersFinal": {
+    "description": "Featured endgame end: how many people played it.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "crowdYouAre": "You are one of them.",
+  "@crowdYouAre": {
+    "description": "Daily endgame: the player got it right on the first try."
+  },
+  "crowdFewYesterday": "Few people played yesterday",
+  "@crowdFewYesterday": {
+    "description": "Daily endgame: too few players to show the percentage."
+  },
+  "crowdFew": "Few people played this endgame",
+  "@crowdFew": {
+    "description": "Featured endgame: too few players to show the percentage."
+  },
+  "crowdFewText": "The number shows from 30 people on.",
+  "@crowdFewText": {
+    "description": "Text under the \"few people played\" title."
   }
 }

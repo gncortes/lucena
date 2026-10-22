@@ -38,6 +38,8 @@ abstract final class FeaturedKeys {
 
   // O final.
   static const endgameScreen = Key('featured.endgame.screen');
+  static const crowdCard = Key('featured.endgame.crowdCard');
+  static const crowdFew = Key('featured.endgame.crowdFew');
   static const endgameMissing = Key('featured.endgame.missing');
   static const endgamePlayers = Key('featured.endgame.players');
   static const endgamePrompt = Key('featured.endgame.prompt');

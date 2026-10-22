@@ -36,7 +36,9 @@ class DailyResultScreen extends StatelessWidget {
         return Scaffold(
           key: DailyKeys.resultScreen,
           appBar: LucenaAppBar(
-            title: Text(l10n.dailyTitle),
+            title: Text(
+              state.past ? l10n.dailyYesterdayTitle : l10n.dailyTitle,
+            ),
             actions: [
               if (record != null)
                 IconButton(
@@ -63,7 +65,11 @@ class DailyResultScreen extends StatelessWidget {
                     ],
                     const _StreakCard(),
                     const SizedBox(height: AppSpacing.betweenCards),
-                    const DailyCrowdCard(),
+                    DailyCrowdCard(
+                      past: state.past,
+                      stat: state.crowd,
+                      gotItRight: state.gotItRight,
+                    ),
                   ],
                 ),
           bottomNavigationBar: ActionsFooter(
@@ -111,7 +117,12 @@ class _ResultCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              dailyResultTitle(l10n, record, state.daily?.position.goal),
+              dailyResultTitle(
+                l10n,
+                record,
+                state.daily?.position.goal,
+                past: state.past,
+              ),
               key: DailyKeys.resultTitle,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineMedium?.copyWith(

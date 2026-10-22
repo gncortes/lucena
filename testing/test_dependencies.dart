@@ -1,10 +1,12 @@
 import 'fakes/fake_activity_repository.dart';
 import 'fakes/fake_daily_final_repository.dart';
+import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
@@ -167,6 +169,7 @@ Dependencies testDependencies({
   RegionPromptRepository? regionPromptRepository,
   ActivityRepository? activityRepository,
   DailyFinalRepository? dailyFinalRepository,
+  CrowdRepository? crowdRepository,
   SyncRepository? syncRepository,
   AvatarRepository? avatarRepository,
   PhotoRepository? photoRepository,
@@ -250,6 +253,7 @@ Dependencies testDependencies({
     activityRepository:
         activityRepository ?? FakeActivityRepository(now: clock),
     dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),
+    crowdRepository: crowdRepository ?? FakeCrowdRepository(),
     syncRepository: syncRepository ?? FakeSyncRepository(),
     avatarRepository: avatarRepository ?? FakeAvatarRepository(),
     photoRepository: photoRepository ?? FakePhotoRepository(),

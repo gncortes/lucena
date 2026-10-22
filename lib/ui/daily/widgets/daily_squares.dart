@@ -115,11 +115,13 @@ String dailyDate(BuildContext context, DateTime date) =>
 String dailyResultTitle(
   AppLocalizations l10n,
   DailyRecord record,
-  PositionGoal? goal,
-) => switch (record.outcome) {
-  DailyOutcome.won => l10n.dailyWon,
-  DailyOutcome.drew when goal == PositionGoal.draw => l10n.dailyHeld,
-  DailyOutcome.drew => l10n.dailyDrew,
+  PositionGoal? goal, {
+  bool past = false,
+}) => switch (record.outcome) {
+  DailyOutcome.won => past ? l10n.dailyWonYesterday : l10n.dailyWon,
+  DailyOutcome.drew when goal == PositionGoal.draw =>
+    past ? l10n.dailyHeldYesterday : l10n.dailyHeld,
+  DailyOutcome.drew => past ? l10n.dailyDrewYesterday : l10n.dailyDrew,
   DailyOutcome.lost => l10n.dailyLost,
 };
 

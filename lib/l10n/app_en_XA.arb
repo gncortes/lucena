@@ -1582,5 +1582,16 @@
   "accountPhotoGallery": "[Çhööšé fŕöm ĝålléŕý one two]",
   "accountPhotoInitial": "[Öŕ ýöûŕ îñîtîål, îñ åñý çölöŕ ýöû lîké one two three four]",
   "accountPhotoRemove": "[Ŕémövé phötö one two]",
-  "accountPhotoFailed": "[Çöûld ñöt ûplöåd thé phötö. Çhéçk thé îñtéŕñét åñd tŕý åĝåîñ. one two three four five six]"
+  "accountPhotoFailed": "[Çöûld ñöt ûplöåd thé phötö. Çhéçk thé îñtéŕñét åñd tŕý åĝåîñ. one two three four five six]",
+  "dailyYesterdayTitle": "[Ýéštéŕdåý'š éñdĝåmé one two]",
+  "dailyWonYesterday": "[Ýöû wöñ ýéštéŕdåý one two]",
+  "dailyDrewYesterday": "[Ýöû dŕéw ýéštéŕdåý one two]",
+  "dailyHeldYesterday": "[Ýöû héld thé dŕåw ýéštéŕdåý one two three]",
+  "crowdPercent": "[{percent}% ĝöt ît ŕîĝht one two three]",
+  "crowdPlayers": "[{count} plåýéd one two]",
+  "crowdPlayersFinal": "[{count} péöplé plåýéd thîš éñdĝåmé. one two three]",
+  "crowdYouAre": "[Ýöû åŕé öñé öf thém. one two]",
+  "crowdFewYesterday": "[Féw péöplé plåýéd ýéštéŕdåý one two three]",
+  "crowdFew": "[Féw péöplé plåýéd thîš éñdĝåmé one two three]",
+  "crowdFewText": "[Thé ñûmbéŕ šhöwš fŕöm 30 péöplé öñ. one two three]"
 }
