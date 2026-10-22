@@ -319,6 +319,9 @@ abstract final class Routes {
   static const account = '/tour/conta';
   static const level = '/tour/nivel';
 
+  /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
+  static const goal = '/tour/objetivo';
+
   /// O teste de nível (T52). [from] diz de onde veio: no tour, a tela
   /// oferece escolher a faixa na mão.
   static const placement = '/placement';

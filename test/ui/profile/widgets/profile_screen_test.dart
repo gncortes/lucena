@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
@@ -78,6 +80,34 @@ void main() {
     expect(nicknameField(tester).controller!.text, 'Ana');
     expect(levelName(tester), 'Intermediate');
     expect(find.text('1300–1599'), findsOneWidget);
+  });
+
+  testWidgets('o objetivo: a linha mostra o gravado e a folha troca', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      profile: const UserProfile(nickname: 'Ana', goal: GoalPreference.learn),
+    );
+    await tester.pumpAndSettle();
+    final row = find.byKey(ProfileKeys.rowGoal);
+    await tester.ensureVisible(row);
+    expect(
+      find.descendant(of: row, matching: find.text('Learn to play')),
+      findsOneWidget,
+    );
+
+    await tester.tap(row);
+    await tester.pumpAndSettle();
+    expect(find.byKey(GoalKeys.sheet), findsOneWidget);
+    await tester.tap(find.byKey(GoalKeys.option(GoalPreference.train)));
+    await tester.pump();
+    await tester.tap(find.byKey(GoalKeys.sheetSave));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(GoalKeys.sheet), findsNothing);
+    expect(repository.profile.goal, GoalPreference.train);
+    expect(repository.profile.nickname, 'Ana');
   });
 
   testWidgets('sem apelido, o campo sugere o apelido padrão', (tester) async {

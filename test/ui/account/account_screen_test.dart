@@ -3,18 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/domain/models/account.dart';
+import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
+import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
   late FakeAccountRepository accounts;
+  late FakeOnboardingRepository onboarding;
 
-  setUp(() => accounts = FakeAccountRepository());
+  setUp(() {
+    accounts = FakeAccountRepository();
+    onboarding = FakeOnboardingRepository();
+  });
 
   Future<void> pumpAccount(WidgetTester tester) async {
     tester.view.devicePixelRatio = 1;
@@ -24,14 +31,17 @@ void main() {
       routes: [
         GoRoute(
           path: Routes.home,
-          builder: (_, _) => RepositoryProvider<AccountRepository>.value(
-            value: accounts,
+          builder: (_, _) => MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AccountRepository>.value(value: accounts),
+              RepositoryProvider<OnboardingRepository>.value(value: onboarding),
+            ],
             child: const AccountScreen(),
           ),
         ),
         GoRoute(
-          path: Routes.level,
-          builder: (_, _) => const Scaffold(body: Text('rota-nivel')),
+          path: Routes.goal,
+          builder: (_, _) => const Scaffold(body: Text('rota-objetivo')),
         ),
       ],
     );
@@ -50,12 +60,12 @@ void main() {
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
   });
 
-  testWidgets('entrar com o Google segue para o nível', (tester) async {
+  testWidgets('entrar com o Google segue para o objetivo', (tester) async {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.google));
     await tester.pumpAndSettle();
     expect(accounts.current, FakeAccountRepository.google);
-    expect(find.text('rota-nivel'), findsOneWidget);
+    expect(find.text('rota-objetivo'), findsOneWidget);
   });
 
   testWidgets('fechar a escolha do Google fica na tela, sem aviso', (
@@ -98,11 +108,24 @@ void main() {
   });
 
   for (final key in [AccountKeys.later, AccountKeys.close]) {
-    testWidgets('${key.toString()} segue para o nível', (tester) async {
+    testWidgets('${key.toString()} segue para o objetivo', (tester) async {
       await pumpAccount(tester);
       await tester.tap(find.byKey(key));
       await tester.pumpAndSettle();
-      expect(find.text('rota-nivel'), findsOneWidget);
+      expect(find.text('rota-objetivo'), findsOneWidget);
     });
   }
+
+  testWidgets('na primeira abertura, o app fechado aqui volta aqui', (
+    tester,
+  ) async {
+    onboarding = FakeOnboardingRepository(const Onboarding());
+    await pumpAccount(tester);
+    expect(onboarding.saved.stage, OnboardingStage.account);
+  });
+
+  testWidgets('com a primeira abertura feita, não mexe nela', (tester) async {
+    await pumpAccount(tester);
+    expect(onboarding.saved.stage, OnboardingStage.tour);
+  });
 }

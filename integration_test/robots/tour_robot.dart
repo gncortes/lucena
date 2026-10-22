@@ -5,9 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
+import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
@@ -106,24 +108,29 @@ class TourRobot {
     }
   }
 
-  /// Termina os passos do tour (o último leva à conta).
+  /// Termina os passos do tour (o último leva ao objetivo).
   Future<void> finishSteps() async {
     await nextUntil(TourStep.play);
     await $(TourKeys.startButton).tap();
     await $.pumpAndSettle();
   }
 
-  /// A conta, opcional: "Agora não" segue para o nível.
-  Future<void> skipAccount() async {
-    await $(AccountKeys.screen).waitUntilVisible();
-    await $(AccountKeys.later).tap();
-    await $.pumpAndSettle();
+  /// "O que você quer fazer?": marca [goal] e segue (aprender a jogar vai
+  /// direto para a tela inicial; os outros, para o nível).
+  Future<void> answerGoal([
+    GoalPreference goal = GoalPreference.endgames,
+  ]) async {
+    await $(GoalKeys.screen).waitUntilVisible();
+    await _tap(GoalKeys.option(goal));
+    await _tap(GoalKeys.continueButton);
   }
 
-  /// Avança o tour inteiro e a conta até "Seu nível".
-  Future<void> nextUntilLevel() async {
+  /// Avança o tour inteiro e o objetivo ([goal]) até "Seu nível".
+  Future<void> nextUntilLevel([
+    GoalPreference goal = GoalPreference.endgames,
+  ]) async {
     await finishSteps();
-    await skipAccount();
+    await answerGoal(goal);
     await $(LevelKeys.screen).waitUntilVisible();
   }
 
@@ -199,11 +206,12 @@ class TourRobot {
     await _tap(LevelKeys.next);
   }
 
-  /// Pula o tour, pula a conta e, em "Seu nível", escolhe [level] e segue.
+  /// Pula o tour, responde o objetivo e, em "Seu nível", escolhe [level] e
+  /// segue.
   Future<void> skip({RatingLevel level = RatingLevel.intermediate}) async {
     await $(TourKeys.skipButton).tap();
     await $.pumpAndSettle();
-    await skipAccount();
+    await answerGoal();
     await $(LevelKeys.screen).waitUntilVisible();
     await chooseLevel(level);
     await start();

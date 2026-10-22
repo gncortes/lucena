@@ -49,8 +49,10 @@ class TourScreen extends StatelessWidget {
     return BlocConsumer<TourCubit, TourState>(
       listenWhen: (previous, current) => current.finished && !previous.finished,
       listener: (context, state) {
-        // A conta, opcional, e depois o nível fecham a primeira abertura.
-        context.go(Routes.account);
+        // A pergunta do objetivo e o nível fecham a primeira abertura. Quem
+        // veio de um link já jogou: a conta, opcional, vem antes (decisão 1a
+        // da E1.11).
+        context.go(state.linkSetupDone ? Routes.account : Routes.goal);
       },
       builder: (context, state) {
         if (!state.ready) return const Scaffold(key: TourKeys.screen);

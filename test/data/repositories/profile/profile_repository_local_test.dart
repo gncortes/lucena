@@ -4,6 +4,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 
 void main() {
@@ -38,6 +39,50 @@ void main() {
     await reopen((repository) => repository.save(profile));
 
     expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o objetivo gravado volta ao reabrir', () async {
+    const profile = UserProfile(
+      nickname: 'Ana',
+      rating: 1450,
+      goal: GoalPreference.train,
+    );
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o perfil de antes do objetivo (versão 8) volta sem objetivo', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, PRIMARY KEY (id))',
+            )
+            ..execute(
+              "INSERT INTO profiles (id, nickname, rating) VALUES (1, 'Ana', 1650)",
+            )
+            ..execute('PRAGMA user_version = 8');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    final repository = LocalProfileRepository(database);
+
+    expect(
+      await repository.load(),
+      const UserProfile(nickname: 'Ana', rating: 1650),
+    );
+    await repository.save(
+      const UserProfile(
+        nickname: 'Ana',
+        rating: 1650,
+        goal: GoalPreference.learn,
+      ),
+    );
+    expect((await repository.load()).goal, GoalPreference.learn);
   });
 
   test('gravar de novo substitui o perfil anterior', () async {

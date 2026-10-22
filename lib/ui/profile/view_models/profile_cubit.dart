@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/profile_rules.dart';
@@ -21,7 +22,15 @@ class ProfileCubit extends Cubit<UserProfile?> {
     final profile = UserProfile(
       nickname: ProfileRules.cleanNickname(nickname),
       rating: level.rating,
+      goal: state?.goal,
     );
+    await _repository.save(profile);
+    emit(profile);
+  }
+
+  /// Troca o objetivo na hora (a folha do Perfil tem o próprio "Salvar").
+  Future<void> setGoal(GoalPreference goal) async {
+    final profile = (await _repository.load()).copyWith(goal: goal);
     await _repository.save(profile);
     emit(profile);
   }

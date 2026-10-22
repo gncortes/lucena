@@ -11,6 +11,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../goal/widgets/goal_sheet.dart';
+import '../../goal/widgets/goal_ui.dart';
 import '../view_models/profile_cubit.dart';
 import 'rating_level_sheet.dart';
 import 'rating_level_ui.dart';
@@ -64,6 +66,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  Future<void> _pickGoal(UserProfile? profile) async {
+    final cubit = context.read<ProfileCubit>();
+    _nicknameFocus.unfocus();
+    final goal = await showGoalSheet(context, selected: profile?.goal);
+    if (goal != null) await cubit.setGoal(goal);
+  }
+
   Future<void> _takeTest() async {
     final cubit = context.read<ProfileCubit>();
     final used = await context.push<bool>(Routes.placementFrom('settings'));
@@ -112,6 +121,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: const Icon(Icons.quiz_outlined),
                     label: Text(l10n.placementTake),
                   ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                // Grava na hora: a folha tem o próprio "Salvar".
+                ListTile(
+                  key: ProfileKeys.rowGoal,
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.flag),
+                  title: Text(l10n.profileGoal),
+                  subtitle: Text(
+                    profile?.goal?.title(l10n) ?? l10n.profileGoalNone,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _pickGoal(profile),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 FilledButton(

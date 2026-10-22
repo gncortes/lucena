@@ -9,6 +9,9 @@ class Profiles extends Table {
   TextColumn get nickname => text()();
   IntColumn get rating => integer()();
 
+  /// O objetivo da primeira abertura (`GoalPreference`). Desde a versão 9.
+  TextColumn get goal => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -125,7 +128,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -174,6 +177,9 @@ class AppDatabase extends _$AppDatabase {
       if (from < 8) {
         await migrator.createIndex(ratingHistorySpeedrunAttempt);
       }
+      // 8 -> 9: o objetivo da primeira abertura. O perfil existe desde a
+      // versão 1; quem já tinha o app fica sem objetivo.
+      if (from < 9) await migrator.addColumn(profiles, profiles.goal);
     },
   );
 

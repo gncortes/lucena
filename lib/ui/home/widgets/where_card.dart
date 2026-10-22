@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/character.dart';
 import '../../../domain/models/home_layout.dart';
-import '../../../domain/models/journey.dart';
 import '../../../domain/models/race.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -43,56 +41,6 @@ class WhereCard extends StatelessWidget {
       default:
         return _journey(context);
     }
-  }
-
-  // Antes da partida, oferece o aquecimento com problemas (E1.31); sem a
-  // oferta, ou recusada, segue direto para o desafio.
-  Future<void> _continue(
-    BuildContext context, {
-    required String rung,
-    required String position,
-    required JourneyState state,
-    required String opponent,
-    required Character? character,
-    required int? level,
-    required String subcategory,
-    required Challenge challenge,
-  }) async {
-    final router = GoRouter.of(context);
-    final theme = RaceTheme.ofSubcategory(subcategory);
-    final choice = await offerRaceWarmUp(
-      context,
-      opponent: opponent,
-      endgame: endgameName(context.l10n, subcategory),
-      theme: theme,
-      character: character,
-    );
-    if (choice == RaceOfferChoice.skip) {
-      unawaited(
-        router.push(Routes.journeyChallenge(rung, position), extra: state),
-      );
-      return;
-    }
-    // A tela do desafio entra na pilha por baixo do aquecimento: a partida
-    // que sai dele volta para ela, não para a Início.
-    unawaited(
-      router.push(Routes.journeyChallenge(rung, position), extra: state),
-    );
-    unawaited(
-      router.push(
-        Routes.raceWarmUp,
-        extra: RaceWarmUpArgs(
-          opponent: opponent,
-          character: character,
-          level: level,
-          theme: theme,
-          // Vai direto à partida do desafio (o mesmo "Jogar" da tela dele:
-          // escolhe o ritmo e abre); ela entra no lugar do aquecimento.
-          onPlay: (context) =>
-              unawaited(playChallenge(context, challenge, replace: true)),
-        ),
-      ),
-    );
   }
 
   Widget _journey(BuildContext context) {
@@ -194,22 +142,7 @@ class WhereCard extends StatelessWidget {
                     key: HomeKeys.whereContinue,
                     // A tela do desafio abre por cima desta, já com o
                     // desafio pronto: o tabuleiro e o retrato voam até ela.
-                    onPressed: () => _continue(
-                      context,
-                      rung: current.rung.id,
-                      position: next.position.id,
-                      state: JourneyState(
-                        challenge: next,
-                        characters: [?character],
-                      ),
-                      opponent:
-                          character?.name ??
-                          opponentRefLabel(l10n, current.rung.opponent),
-                      character: character,
-                      level: current.rung.opponent.level,
-                      subcategory: next.position.subcategory,
-                      challenge: next,
-                    ),
+                    onPressed: () => continueJourney(context, state),
                     child: Text(l10n.homeContinue),
                   ),
                 ],
@@ -220,6 +153,59 @@ class WhereCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// O "Continuar" da Jornada: o desafio da vez de [state]. Antes da partida,
+/// oferece o aquecimento com problemas (E1.31); sem a oferta, ou recusada,
+/// segue direto para o desafio.
+Future<void> continueJourney(BuildContext context, HomeState state) async {
+  final current = state.current;
+  final challenge = state.next;
+  if (current == null || challenge == null) return;
+  final l10n = context.l10n;
+  final character = state.character;
+  final rung = current.rung.id;
+  final position = challenge.position.id;
+  final journey = JourneyState(challenge: challenge, characters: [?character]);
+  final opponent =
+      character?.name ?? opponentRefLabel(l10n, current.rung.opponent);
+  final level = current.rung.opponent.level;
+  final subcategory = challenge.position.subcategory;
+  final router = GoRouter.of(context);
+  final theme = RaceTheme.ofSubcategory(subcategory);
+  final choice = await offerRaceWarmUp(
+    context,
+    opponent: opponent,
+    endgame: endgameName(l10n, subcategory),
+    theme: theme,
+    character: character,
+  );
+  if (choice == RaceOfferChoice.skip) {
+    unawaited(
+      router.push(Routes.journeyChallenge(rung, position), extra: journey),
+    );
+    return;
+  }
+  // A tela do desafio entra na pilha por baixo do aquecimento: a partida
+  // que sai dele volta para ela, não para a Início.
+  unawaited(
+    router.push(Routes.journeyChallenge(rung, position), extra: journey),
+  );
+  unawaited(
+    router.push(
+      Routes.raceWarmUp,
+      extra: RaceWarmUpArgs(
+        opponent: opponent,
+        character: character,
+        level: level,
+        theme: theme,
+        // Vai direto à partida do desafio (o mesmo "Jogar" da tela dele:
+        // escolhe o ritmo e abre); ela entra no lugar do aquecimento.
+        onPlay: (context) =>
+            unawaited(playChallenge(context, challenge, replace: true)),
+      ),
+    ),
+  );
 }
 
 /// Para o iniciante: as aulas do Viktor vêm antes da Jornada.
@@ -289,6 +275,34 @@ class _SchoolCard extends StatelessWidget {
   }
 }
 
+/// Onde a aula parou e para onde o "Continuar" leva.
+extension EndgameSummaryUi on EndgameSummary {
+  String where(AppLocalizations l10n) {
+    final exercise = exerciseNumber;
+    if (exercise != null) {
+      return l10n.exerciseTitle(exercise, exerciseCount!);
+    }
+    final part = partNumber;
+    if (part != null) return l10n.homeEndgamePart(part, partCount!);
+    return l10n.endgameScore(score, maxScore);
+  }
+
+  String get route {
+    final exerciseId = openExerciseId;
+    if (exerciseId != null) {
+      return Routes.endgameExercise(lessonId, exerciseId);
+    }
+    if (lessonOpen) {
+      return Routes.endgameLessonScript(
+        lessonId,
+        part: partId,
+        stage: partStage,
+      );
+    }
+    return Routes.endgameLesson(lessonId);
+  }
+}
+
 /// A aula de final em andamento ou a próxima recomendada pelo roteiro.
 /// Retoma o ponto salvo ou abre a apresentação da aula ainda não iniciada.
 /// Com um exercício da vez, sua miniatura toma o lugar do retrato.
@@ -296,31 +310,6 @@ class _EndgameCard extends StatelessWidget {
   const _EndgameCard({required this.endgame});
 
   final EndgameSummary endgame;
-
-  String _where(AppLocalizations l10n) {
-    final exercise = endgame.exerciseNumber;
-    if (exercise != null) {
-      return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
-    }
-    final part = endgame.partNumber;
-    if (part != null) return l10n.homeEndgamePart(part, endgame.partCount!);
-    return l10n.endgameScore(endgame.score, endgame.maxScore);
-  }
-
-  String get _route {
-    final exerciseId = endgame.openExerciseId;
-    if (exerciseId != null) {
-      return Routes.endgameExercise(endgame.lessonId, exerciseId);
-    }
-    if (endgame.lessonOpen) {
-      return Routes.endgameLessonScript(
-        endgame.lessonId,
-        part: endgame.partId,
-        stage: endgame.partStage,
-      );
-    }
-    return Routes.endgameLesson(endgame.lessonId);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -374,7 +363,7 @@ class _EndgameCard extends StatelessWidget {
                   if (!endgame.recommended) ...[
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      _where(l10n),
+                      endgame.where(l10n),
                       key: HomeKeys.endgameWhere,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSecondaryContainer,
@@ -392,7 +381,7 @@ class _EndgameCard extends StatelessWidget {
               child: FilledButton(
                 key: HomeKeys.endgameContinue,
                 // A posição vai junto, para a miniatura voar até o tabuleiro.
-                onPressed: () => context.push(_route, extra: fen),
+                onPressed: () => context.push(endgame.route, extra: fen),
                 child: Text(
                   endgame.recommended
                       ? l10n.endgameLessonStart

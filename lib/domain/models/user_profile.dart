@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'goal_preference.dart';
 import 'rating_level.dart';
 
 part 'user_profile.freezed.dart';
@@ -13,6 +14,10 @@ abstract class UserProfile with _$UserProfile {
 
     /// Rating aproximado: o da faixa que o jogador escolheu.
     @Default(UserProfile.defaultRating) int rating,
+
+    /// O objetivo escolhido na primeira abertura. Nulo: quem já usava o app
+    /// antes da pergunta (a tela inicial fica como era).
+    GoalPreference? goal,
   }) = _UserProfile;
 
   const UserProfile._();

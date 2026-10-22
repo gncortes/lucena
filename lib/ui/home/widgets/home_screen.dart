@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/home_layout.dart';
+import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../routing/routes.dart';
@@ -21,6 +22,7 @@ import '../../core/widgets/staggered_entrance.dart';
 import 'home_path_ui.dart';
 import 'path_card.dart';
 import 'player_card.dart';
+import 'goal_card.dart';
 import 'where_card.dart';
 import '../../core/theme/app_motion.dart';
 
@@ -72,13 +74,19 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocListener<HomeCubit, HomeState>(
-      // Primeira abertura: o tour antes de tudo. Com outra tela por cima (o
-      // desafio de um link), o tour espera: "Conhecer o app" volta aqui.
+      // Primeira abertura: o tour antes de tudo (ou a tela em que a pessoa
+      // parou). Com outra tela por cima (o desafio de um link), o tour
+      // espera: "Conhecer o app" volta aqui.
       listenWhen: (previous, current) =>
           current.ready && current.tourPending && !previous.tourPending,
       listener: (context, state) {
         if (ModalRoute.of(context)?.isCurrent ?? true) {
-          context.go(Routes.tour);
+          context.go(switch (state.stage) {
+            OnboardingStage.tour => Routes.tour,
+            OnboardingStage.account => Routes.account,
+            OnboardingStage.goal => Routes.goal,
+            OnboardingStage.level => Routes.level,
+          });
         }
       },
       child: _scaffold(context, theme),
@@ -168,6 +176,14 @@ class _HomeScreenState extends State<HomeScreen>
                               const SizedBox(height: AppSpacing.md),
                               _LayoutNotice(onCustomize: _customize),
                             ],
+                            if (state.goalPath != null) ...[
+                              const SizedBox(height: AppSpacing.md),
+                              GoalCard(state: state),
+                            ],
+                            if (state.resumePath != null) ...[
+                              const SizedBox(height: AppSpacing.md),
+                              ResumeCard(state: state),
+                            ],
                             if (state.continuePath != null) ...[
                               const SizedBox(height: AppSpacing.md),
                               WhereCard(state: state),
@@ -236,7 +252,8 @@ class _HomeScreenState extends State<HomeScreen>
             ],
           ),
         ),
-        for (final (index, path) in layout.shown.indexed) ...[
+        // O caminho do objetivo já é o cartão grande.
+        for (final (index, path) in state.shownPaths.indexed) ...[
           if (index > 0) const SizedBox(height: AppSpacing.sm),
           card(path, index),
         ],

@@ -102,6 +102,10 @@ void main() {
           path: Routes.account,
           builder: (_, _) => const Scaffold(body: Text('rota-conta')),
         ),
+        GoRoute(
+          path: Routes.goal,
+          builder: (_, _) => const Scaffold(body: Text('rota-objetivo')),
+        ),
       ],
     );
     await tester.pumpWidget(
@@ -247,19 +251,23 @@ void main() {
       expect(find.byKey(TourKeys.step(TourStep.board)), findsOneWidget);
     });
 
-    testWidgets('Pular leva à conta, sem dar o tour por visto', (tester) async {
+    testWidgets('Pular leva à pergunta do objetivo, sem dar o tour por visto', (
+      tester,
+    ) async {
       await pumpTour(tester);
       await tester.tap(find.byKey(TourKeys.skipButton));
       await tester.pumpAndSettle();
-      expect(find.text('rota-conta'), findsOneWidget);
+      expect(find.text('rota-objetivo'), findsOneWidget);
       expect(onboarding.saved.done, isFalse);
     });
 
-    testWidgets('Continuar no último passo leva à conta', (tester) async {
+    testWidgets('Continuar no último passo leva à pergunta do objetivo', (
+      tester,
+    ) async {
       await pumpTour(tester, step: TourStep.play);
       await tester.tap(find.byKey(TourKeys.startButton));
       await tester.pumpAndSettle();
-      expect(find.text('rota-conta'), findsOneWidget);
+      expect(find.text('rota-objetivo'), findsOneWidget);
     });
   });
 

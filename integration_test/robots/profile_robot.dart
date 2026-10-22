@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -63,6 +65,15 @@ class ProfileRobot {
   /// Um texto (nome ou intervalo de uma faixa) aparece no painel.
   void expectInLevels(String text) {
     expectTextIn(find.byKey(ProfileKeys.levelSheet), text);
+  }
+
+  /// "Seu objetivo": abre a folha, marca [goal] e salva (grava na hora).
+  Future<void> chooseGoal(GoalPreference goal) async {
+    await $(ProfileKeys.rowGoal).scrollTo().tap();
+    await $(GoalKeys.sheet).waitUntilVisible();
+    await $(GoalKeys.option(goal)).tap();
+    await $(GoalKeys.sheetSave).tap();
+    await $.pumpAndSettle();
   }
 
   /// Salvar volta para Configurações.

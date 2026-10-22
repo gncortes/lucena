@@ -6983,5 +6983,157 @@
   "allModesRaceBody": "Endgame race: 3 minutes, 3 mistakes",
   "@allModesRaceBody": {
     "description": "All modes: short description of the problem race."
+  },
+  "goalViktorSay": "So I can set up your home screen: what do you want to do here?",
+  "@goalViktorSay": {
+    "description": "Viktor's line on the first-launch question about the user's goal."
+  },
+  "goalTitle": "What do you want to do?",
+  "@goalTitle": {
+    "description": "Title of the goal question."
+  },
+  "goalLearnTitle": "Learn to play",
+  "@goalLearnTitle": {
+    "description": "Goal option: learn chess from scratch."
+  },
+  "goalLearnText": "From scratch: how the pieces move, check and mate, with Viktor.",
+  "@goalLearnText": {
+    "description": "Text of the learn-to-play goal option. Viktor is the teacher's name."
+  },
+  "goalEndgamesTitle": "Learn endgames",
+  "@goalEndgamesTitle": {
+    "description": "Goal option: endgame lessons."
+  },
+  "goalEndgamesText": "Lessons on Lucena, Philidor and the endgames that come up most.",
+  "@goalEndgamesText": {
+    "description": "Text of the learn-endgames goal option. Lucena and Philidor are endgame positions (names, keep)."
+  },
+  "goalTrainTitle": "Practice endgames",
+  "@goalTrainTitle": {
+    "description": "Goal option: practice endgame positions."
+  },
+  "goalTrainText": "I know the theory: I want to practice the positions.",
+  "@goalTrainText": {
+    "description": "Text of the practice-endgames goal option."
+  },
+  "goalHint": "The other paths stay on the home screen. You can change this later in Profile.",
+  "@goalHint": {
+    "description": "Note under the goal options."
+  },
+  "goalContinue": "Continue",
+  "@goalContinue": {
+    "description": "Button that saves the goal and moves on."
+  },
+  "goalHaveAccount": "I already have an account",
+  "@goalHaveAccount": {
+    "description": "Button on the goal question that opens sign-in."
+  },
+  "goalSheetTitle": "Your goal",
+  "@goalSheetTitle": {
+    "description": "Title of the sheet that changes the goal, opened from Profile."
+  },
+  "goalSheetText": "Changes the first card on the home screen. The other paths stay there.",
+  "@goalSheetText": {
+    "description": "Text of the goal sheet."
+  },
+  "goalSheetSave": "Save",
+  "@goalSheetSave": {
+    "description": "Saves the goal on the sheet."
+  },
+  "homeGoalLabel": "Your goal",
+  "@homeGoalLabel": {
+    "description": "Small label on top of the big goal card on the home screen."
+  },
+  "homeResumeLabel": "Pick up where you left off",
+  "@homeResumeLabel": {
+    "description": "Small label on top of the resume card on the home screen (shown in capitals)."
+  },
+  "homeGoalLearnLine": "Learn to play · lesson {number} of the School",
+  "@homeGoalLearnLine": {
+    "description": "Goal card subtitle: the next lesson of Viktor's School.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGoalLessons": "{done} of {total} lessons",
+  "@homeGoalLessons": {
+    "description": "Goal card progress: lessons done.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGoalEndgamesLine": "Learn endgames · lesson {number} of {total}",
+  "@homeGoalEndgamesLine": {
+    "description": "Goal card subtitle: the next endgame lesson and its place in the trail.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGoalTrainLine": "Practice endgames · suggested for your level",
+  "@homeGoalTrainLine": {
+    "description": "Goal card subtitle: the endgame suggested for the player's level."
+  },
+  "homeGoalPositions": "{done} of {total} positions",
+  "@homeGoalPositions": {
+    "description": "Goal card progress: positions of the endgame already completed.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGoalTrain": "Practice",
+  "@homeGoalTrain": {
+    "description": "Button on the practice goal card."
+  },
+  "homeGoalJourneyLine": "Journey · {endgame}",
+  "@homeGoalJourneyLine": {
+    "description": "Goal or resume card line: the Journey and the endgame of the next challenge.",
+    "placeholders": {
+      "endgame": {
+        "type": "String"
+      }
+    }
+  },
+  "homeResumeJourneyLine": "Game against {opponent}",
+  "@homeResumeJourneyLine": {
+    "description": "Resume card line for the Journey: the current opponent.",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      }
+    }
+  },
+  "homeResumeEndgameLine": "Endgame lesson · {where}",
+  "@homeResumeEndgameLine": {
+    "description": "Resume card line for an endgame lesson; {where} is e.g. 'Exercise 6 of 6'.",
+    "placeholders": {
+      "where": {
+        "type": "String"
+      }
+    }
+  },
+  "profileGoal": "Your goal",
+  "@profileGoal": {
+    "description": "Profile row that opens the goal sheet."
+  },
+  "profileGoalNone": "Not chosen",
+  "@profileGoalNone": {
+    "description": "Profile goal row value when the user never chose a goal."
   }
 }

@@ -63,8 +63,8 @@ void main() {
           ),
         ),
         GoRoute(
-          path: Routes.account,
-          builder: (_, _) => const Scaffold(body: Text('rota-conta')),
+          path: Routes.goal,
+          builder: (_, _) => const Scaffold(body: Text('rota-objetivo')),
         ),
         GoRoute(
           path: Routes.school,
@@ -109,11 +109,11 @@ void main() {
     },
   );
 
-  testWidgets('a seta de voltar leva à conta', (tester) async {
+  testWidgets('a seta de voltar leva à pergunta do objetivo', (tester) async {
     await pumpLevel(tester);
     await tester.tap(find.byKey(LevelKeys.back));
     await tester.pumpAndSettle();
-    expect(find.text('rota-conta'), findsOneWidget);
+    expect(find.text('rota-objetivo'), findsOneWidget);
   });
 
   testWidgets('"Não sei jogar" libera o Continuar, grava "começando" e leva '

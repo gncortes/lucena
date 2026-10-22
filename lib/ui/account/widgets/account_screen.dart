@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../domain/models/account.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/level_keys.dart';
@@ -15,7 +16,8 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
 
-/// A conta, opcional (canvas `PropV1LinkConta`), entre o tour e "Seu nível".
+/// A conta, opcional (canvas `PropV1LinkConta`): vindo de um link, entre o
+/// tour e "O que você quer fazer?"; e no "Já tenho conta" da pergunta.
 /// O Google entra pelo Firebase (E1.02); o e-mail ainda só avisa que vem aí
 /// (o formulário espera o canvas). Sem Firebase no build, os dois avisam.
 class AccountScreen extends StatelessWidget {
@@ -23,7 +25,10 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (context) => AccountCubit(context.read<AccountRepository>()),
+    create: (context) => AccountCubit(
+      context.read<AccountRepository>(),
+      onboarding: context.read<OnboardingRepository>(),
+    )..enter(),
     child: const _AccountView(),
   );
 }
@@ -36,7 +41,7 @@ class _AccountView extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    void next() => context.go(Routes.level);
+    void next() => context.go(Routes.goal);
     void soon() => showLucenaSnackBar(context, l10n.accountSoon);
     final busy = context.select((AccountCubit cubit) => cubit.state.busy);
     final benefits = [

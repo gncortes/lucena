@@ -66,6 +66,15 @@ void main() {
     expect(loaded.done, isFalse);
   });
 
+  test('a tela da primeira abertura volta ao reabrir', () async {
+    final repository = LocalOnboardingRepository(PreferencesService());
+    expect((await repository.load()).stage, OnboardingStage.tour);
+    await repository.save(const Onboarding(stage: OnboardingStage.goal));
+    final loaded = await LocalOnboardingRepository(PreferencesService()).load();
+    expect(loaded.stage, OnboardingStage.goal);
+    expect(loaded.done, isFalse);
+  });
+
   test('done legado não exige novo onboarding nem infere escolha', () async {
     final preferences = PreferencesService();
     await preferences.setBool('tour.done', value: true);

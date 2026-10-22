@@ -37,8 +37,17 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _goalMeta = const VerificationMeta('goal');
   @override
-  List<GeneratedColumn> get $columns => [id, nickname, rating];
+  late final GeneratedColumn<String> goal = GeneratedColumn<String>(
+    'goal',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, nickname, rating, goal];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -70,6 +79,12 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     } else if (isInserting) {
       context.missing(_ratingMeta);
     }
+    if (data.containsKey('goal')) {
+      context.handle(
+        _goalMeta,
+        goal.isAcceptableOrUnknown(data['goal']!, _goalMeta),
+      );
+    }
     return context;
   }
 
@@ -91,6 +106,10 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         DriftSqlType.int,
         data['${effectivePrefix}rating'],
       )!,
+      goal: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}goal'],
+      ),
     );
   }
 
@@ -104,10 +123,14 @@ class Profile extends DataClass implements Insertable<Profile> {
   final int id;
   final String nickname;
   final int rating;
+
+  /// O objetivo da primeira abertura (`GoalPreference`). Desde a versão 9.
+  final String? goal;
   const Profile({
     required this.id,
     required this.nickname,
     required this.rating,
+    this.goal,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -115,6 +138,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     map['id'] = Variable<int>(id);
     map['nickname'] = Variable<String>(nickname);
     map['rating'] = Variable<int>(rating);
+    if (!nullToAbsent || goal != null) {
+      map['goal'] = Variable<String>(goal);
+    }
     return map;
   }
 
@@ -123,6 +149,7 @@ class Profile extends DataClass implements Insertable<Profile> {
       id: Value(id),
       nickname: Value(nickname),
       rating: Value(rating),
+      goal: goal == null && nullToAbsent ? const Value.absent() : Value(goal),
     );
   }
 
@@ -135,6 +162,7 @@ class Profile extends DataClass implements Insertable<Profile> {
       id: serializer.fromJson<int>(json['id']),
       nickname: serializer.fromJson<String>(json['nickname']),
       rating: serializer.fromJson<int>(json['rating']),
+      goal: serializer.fromJson<String?>(json['goal']),
     );
   }
   @override
@@ -144,19 +172,27 @@ class Profile extends DataClass implements Insertable<Profile> {
       'id': serializer.toJson<int>(id),
       'nickname': serializer.toJson<String>(nickname),
       'rating': serializer.toJson<int>(rating),
+      'goal': serializer.toJson<String?>(goal),
     };
   }
 
-  Profile copyWith({int? id, String? nickname, int? rating}) => Profile(
+  Profile copyWith({
+    int? id,
+    String? nickname,
+    int? rating,
+    Value<String?> goal = const Value.absent(),
+  }) => Profile(
     id: id ?? this.id,
     nickname: nickname ?? this.nickname,
     rating: rating ?? this.rating,
+    goal: goal.present ? goal.value : this.goal,
   );
   Profile copyWithCompanion(ProfilesCompanion data) {
     return Profile(
       id: data.id.present ? data.id.value : this.id,
       nickname: data.nickname.present ? data.nickname.value : this.nickname,
       rating: data.rating.present ? data.rating.value : this.rating,
+      goal: data.goal.present ? data.goal.value : this.goal,
     );
   }
 
@@ -165,46 +201,53 @@ class Profile extends DataClass implements Insertable<Profile> {
     return (StringBuffer('Profile(')
           ..write('id: $id, ')
           ..write('nickname: $nickname, ')
-          ..write('rating: $rating')
+          ..write('rating: $rating, ')
+          ..write('goal: $goal')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, nickname, rating);
+  int get hashCode => Object.hash(id, nickname, rating, goal);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Profile &&
           other.id == this.id &&
           other.nickname == this.nickname &&
-          other.rating == this.rating);
+          other.rating == this.rating &&
+          other.goal == this.goal);
 }
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<int> id;
   final Value<String> nickname;
   final Value<int> rating;
+  final Value<String?> goal;
   const ProfilesCompanion({
     this.id = const Value.absent(),
     this.nickname = const Value.absent(),
     this.rating = const Value.absent(),
+    this.goal = const Value.absent(),
   });
   ProfilesCompanion.insert({
     this.id = const Value.absent(),
     required String nickname,
     required int rating,
+    this.goal = const Value.absent(),
   }) : nickname = Value(nickname),
        rating = Value(rating);
   static Insertable<Profile> custom({
     Expression<int>? id,
     Expression<String>? nickname,
     Expression<int>? rating,
+    Expression<String>? goal,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (nickname != null) 'nickname': nickname,
       if (rating != null) 'rating': rating,
+      if (goal != null) 'goal': goal,
     });
   }
 
@@ -212,11 +255,13 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Value<int>? id,
     Value<String>? nickname,
     Value<int>? rating,
+    Value<String?>? goal,
   }) {
     return ProfilesCompanion(
       id: id ?? this.id,
       nickname: nickname ?? this.nickname,
       rating: rating ?? this.rating,
+      goal: goal ?? this.goal,
     );
   }
 
@@ -232,6 +277,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     if (rating.present) {
       map['rating'] = Variable<int>(rating.value);
     }
+    if (goal.present) {
+      map['goal'] = Variable<String>(goal.value);
+    }
     return map;
   }
 
@@ -240,7 +288,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     return (StringBuffer('ProfilesCompanion(')
           ..write('id: $id, ')
           ..write('nickname: $nickname, ')
-          ..write('rating: $rating')
+          ..write('rating: $rating, ')
+          ..write('goal: $goal')
           ..write(')'))
         .toString();
   }
@@ -2540,11 +2589,13 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   Value<int> id,
   required String nickname,
   required int rating,
+  Value<String?> goal,
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<int> id,
   Value<String> nickname,
   Value<int> rating,
+  Value<String?> goal,
 });
 
 class $$ProfilesTableFilterComposer
@@ -2568,6 +2619,11 @@ class $$ProfilesTableFilterComposer
 
   ColumnFilters<int> get rating => $composableBuilder(
     column: $table.rating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get goal => $composableBuilder(
+    column: $table.goal,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2595,6 +2651,11 @@ class $$ProfilesTableOrderingComposer
     column: $table.rating,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get goal => $composableBuilder(
+    column: $table.goal,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProfilesTableAnnotationComposer
@@ -2614,6 +2675,9 @@ class $$ProfilesTableAnnotationComposer
 
   GeneratedColumn<int> get rating =>
       $composableBuilder(column: $table.rating, builder: (column) => column);
+
+  GeneratedColumn<String> get goal =>
+      $composableBuilder(column: $table.goal, builder: (column) => column);
 }
 
 class $$ProfilesTableTableManager
@@ -2642,20 +2706,29 @@ class $$ProfilesTableTableManager
               $$ProfilesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$ProfilesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> nickname = const Value.absent(),
-            Value<int> rating = const Value.absent(),
-          }) => ProfilesCompanion(id: id, nickname: nickname, rating: rating),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> nickname = const Value.absent(),
+                Value<int> rating = const Value.absent(),
+                Value<String?> goal = const Value.absent(),
+              }) => ProfilesCompanion(
+                id: id,
+                nickname: nickname,
+                rating: rating,
+                goal: goal,
+              ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String nickname,
                 required int rating,
+                Value<String?> goal = const Value.absent(),
               }) => ProfilesCompanion.insert(
                 id: id,
                 nickname: nickname,
                 rating: rating,
+                goal: goal,
               ),
           withReferenceMapper: (p0) => p0
               .map(

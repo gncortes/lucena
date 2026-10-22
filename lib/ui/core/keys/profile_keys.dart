@@ -7,6 +7,9 @@ abstract final class ProfileKeys {
   static const placementTest = Key('profile.placementTest');
 
   static const screen = Key('profile.screen');
+
+  /// A linha "Seu objetivo", que abre a folha do objetivo.
+  static const rowGoal = Key('profile.rowGoal');
   static const nicknameField = Key('profile.nickname');
   static const saveButton = Key('profile.save');
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -123,6 +125,9 @@ class LevelCubit extends Cubit<LevelState> {
       if (character.id == 'master') viktor = character;
     }
     final selected = _saved.selectedRating;
+    if (!_saved.done) {
+      unawaited(_save(_saved.copyWith(stage: OnboardingStage.level)));
+    }
     emit(
       LevelState(
         ready: true,
@@ -177,7 +182,7 @@ class LevelCubit extends Cubit<LevelState> {
       await _onboardingSaved;
       final profile = await _profile.load();
       await _profile.save(profile.copyWith(rating: state.rating));
-      await _home?.save(HomeSuggestion.of(state.level));
+      await _home?.save(HomeSuggestion.of(state.level, goal: profile.goal));
       await _home?.markNoticeSeen();
       await _save(
         _saved.copyWith(

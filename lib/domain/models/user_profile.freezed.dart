@@ -17,7 +17,9 @@ mixin _$UserProfile {
 
 /// Apelido escolhido. Vazio usa o apelido padrão, traduzido na tela.
  String get nickname;/// Rating aproximado: o da faixa que o jogador escolheu.
- int get rating;
+ int get rating;/// O objetivo escolhido na primeira abertura. Nulo: quem já usava o app
+/// antes da pergunta (a tela inicial fica como era).
+ GoalPreference? get goal;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +31,20 @@ $UserProfileCopyWith<UserProfile> get copyWith => _$UserProfileCopyWithImpl<User
 @override
 bool operator ==(Object other) {
   final _this = this as UserProfile;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.nickname, _this.nickname) || other.nickname == _this.nickname)&&(identical(other.rating, _this.rating) || other.rating == _this.rating));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.nickname, _this.nickname) || other.nickname == _this.nickname)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&(identical(other.goal, _this.goal) || other.goal == _this.goal));
 }
 
 
 @override
 int get hashCode {
   final _this = this as UserProfile;
-  return Object.hash(runtimeType,_this.nickname,_this.rating);
+  return Object.hash(runtimeType,_this.nickname,_this.rating,_this.goal);
 }
 
 @override
 String toString() {
   final _this = this as UserProfile;
-  return 'UserProfile(nickname: ${_this.nickname}, rating: ${_this.rating})';
+  return 'UserProfile(nickname: ${_this.nickname}, rating: ${_this.rating}, goal: ${_this.goal})';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $UserProfileCopyWith<$Res>  {
   factory $UserProfileCopyWith(UserProfile value, $Res Function(UserProfile) _then) = _$UserProfileCopyWithImpl;
 @useResult
 $Res call({
- String nickname, int rating
+ String nickname, int rating, GoalPreference? goal
 });
 
 
@@ -70,11 +72,12 @@ class _$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? nickname = null,Object? rating = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? nickname = null,Object? rating = null,Object? goal = freezed,}) {
   return _then(UserProfile(
 nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
-as int,
+as int,goal: freezed == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
+as GoalPreference?,
   ));
 }
 
@@ -159,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String nickname,  int rating)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String nickname,  int rating,  GoalPreference? goal)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.nickname,_that.rating);case _:
+return $default(_that.nickname,_that.rating,_that.goal);case _:
   return orElse();
 
 }
@@ -180,10 +183,10 @@ return $default(_that.nickname,_that.rating);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String nickname,  int rating)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String nickname,  int rating,  GoalPreference? goal)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile():
-return $default(_that.nickname,_that.rating);case _:
+return $default(_that.nickname,_that.rating,_that.goal);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +203,10 @@ return $default(_that.nickname,_that.rating);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String nickname,  int rating)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String nickname,  int rating,  GoalPreference? goal)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.nickname,_that.rating);case _:
+return $default(_that.nickname,_that.rating,_that.goal);case _:
   return null;
 
 }
@@ -215,13 +218,16 @@ return $default(_that.nickname,_that.rating);case _:
 
 
 class _UserProfile extends UserProfile {
-  const _UserProfile({this.nickname = '', this.rating = UserProfile.defaultRating}): super._();
+  const _UserProfile({this.nickname = '', this.rating = UserProfile.defaultRating, this.goal}): super._();
   
 
 /// Apelido escolhido. Vazio usa o apelido padrão, traduzido na tela.
 @override@JsonKey() final  String nickname;
 /// Rating aproximado: o da faixa que o jogador escolheu.
 @override@JsonKey() final  int rating;
+/// O objetivo escolhido na primeira abertura. Nulo: quem já usava o app
+/// antes da pergunta (a tela inicial fica como era).
+@override final  GoalPreference? goal;
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -233,18 +239,18 @@ _$UserProfileCopyWith<_UserProfile> get copyWith => __$UserProfileCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.rating, rating) || other.rating == rating));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.goal, goal) || other.goal == goal));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,nickname,rating);
+    return Object.hash(runtimeType,nickname,rating,goal);
 }
 
 @override
 String toString() {
-    return 'UserProfile(nickname: $nickname, rating: $rating)';
+    return 'UserProfile(nickname: $nickname, rating: $rating, goal: $goal)';
 }
 
 
@@ -255,7 +261,7 @@ abstract mixin class _$UserProfileCopyWith<$Res> implements $UserProfileCopyWith
   factory _$UserProfileCopyWith(_UserProfile value, $Res Function(_UserProfile) _then) = __$UserProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String nickname, int rating
+ String nickname, int rating, GoalPreference? goal
 });
 
 
@@ -272,11 +278,12 @@ class __$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? nickname = null,Object? rating = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? nickname = null,Object? rating = null,Object? goal = freezed,}) {
   return _then(_UserProfile(
 nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
-as int,
+as int,goal: freezed == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
+as GoalPreference?,
   ));
 }
 

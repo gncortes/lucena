@@ -121,6 +121,8 @@ import '../ui/placement/widgets/placement_screen.dart';
 import '../ui/challenge/view_models/link_setup_cubit.dart';
 import '../ui/challenge/widgets/link_setup_screen.dart';
 import '../ui/account/widgets/account_screen.dart';
+import '../ui/goal/view_models/goal_cubit.dart';
+import '../ui/goal/widgets/goal_screen.dart';
 import '../ui/level/view_models/level_cubit.dart';
 import '../ui/level/widgets/level_screen.dart';
 import '../ui/tour/view_models/tour_cubit.dart';
@@ -239,6 +241,18 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
         builder: (context, state) => const AccountScreen(),
       ),
       _route(
+        path: Routes.goal,
+        builder: (context, state) => BlocProvider(
+          create: (_) => GoalCubit(
+            onboarding: context.read<OnboardingRepository>(),
+            profile: context.read<ProfileRepository>(),
+            characters: context.read<CharacterRepository>(),
+            home: context.read<HomeLayoutRepository>(),
+          )..load(),
+          child: const GoalScreen(),
+        ),
+      ),
+      _route(
         path: Routes.level,
         builder: (context, state) => BlocProvider(
           create: (_) => LevelCubit(
@@ -300,6 +314,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             featured: context.read<FeaturedRepository>(),
             featuredProgress: context.read<FeaturedProgressRepository>(),
             now: context.read<Now>(),
+            positions: context.read<PositionsRepository>(),
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(

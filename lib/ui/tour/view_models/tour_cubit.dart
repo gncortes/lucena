@@ -72,7 +72,8 @@ class TourState {
   /// O nome dado no passo da voz (o apelido do perfil). Vazio: o padrão.
   final String nickname;
 
-  /// O tour terminou (ou foi pulado): a tela sai para a conta.
+  /// O tour terminou (ou foi pulado): a tela sai para a pergunta do objetivo
+  /// (vindo de um link, para a conta).
   final bool finished;
 
   /// O que o Viktor diz no passo aberto. Vindo de um link, ele abre a
@@ -111,7 +112,7 @@ class TourState {
 
 /// O tour da primeira abertura, conduzido pelo Viktor: cada passo é gravado,
 /// e o app fechado no meio volta no mesmo passo. No fim (ou ao pular), a tela
-/// sai para a conta opcional e para o nível, que fecham a primeira abertura.
+/// sai para a pergunta do objetivo (vindo de um link, antes para a conta).
 class TourCubit extends Cubit<TourState> {
   TourCubit({
     required this._onboarding,
@@ -174,7 +175,13 @@ class TourCubit extends Cubit<TourState> {
         linkSetupDone: _saved.linkSetupDone,
       ),
     );
-    await _save(_saved.copyWith(step: step, inProgress: true));
+    await _save(
+      _saved.copyWith(
+        step: step,
+        inProgress: true,
+        stage: OnboardingStage.tour,
+      ),
+    );
   }
 
   Future<void> next() async {
@@ -204,7 +211,7 @@ class TourCubit extends Cubit<TourState> {
     });
   }
 
-  /// Pular vai direto para a conta; o nível ainda é perguntado depois.
+  /// Pular vai direto para a pergunta; o nível ainda é perguntado depois.
   Future<void> skip() => finish();
 
   /// O fim do tour: a tela sai. O tour só conta como visto quando o nível é

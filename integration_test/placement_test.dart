@@ -6,7 +6,6 @@ import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
-import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -35,12 +34,10 @@ void main() {
     await placement.dontKnow(5);
     await placement.expectQuestion(6);
 
-    // Fechar à força no meio: o tour volta no último passo (o nível só fecha
-    // a primeira abertura), e o teste continua na mesma pergunta.
+    // Fechar à força no meio: a primeira abertura volta em "Seu nível" (só
+    // ele a fecha), e o teste continua na mesma pergunta.
     await app.restart();
-    await tour.expectStep(TourStep.play);
-    await tour.finishSteps();
-    await tour.skipAccount();
+    await $(LevelKeys.screen).waitUntilVisible();
     await tour.takeTest();
     await placement.expectIntro();
     await placement.resume();

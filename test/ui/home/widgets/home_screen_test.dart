@@ -5,6 +5,7 @@ import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/user_profile.dart';
@@ -265,6 +266,31 @@ void main() {
         ),
       ),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('com objetivo: o cartão dele no alto e o caminho fora da lista', (
+    tester,
+  ) async {
+    await pumpTall(
+      tester,
+      profile: const UserProfile(rating: 800, goal: GoalPreference.endgames),
+    );
+
+    expect(find.byKey(HomeKeys.goalCard), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.byKey(HomeKeys.goalTitle)).data,
+      'The Lucena position',
+    );
+    expect(find.byKey(HomeKeys.goalAction), findsOneWidget);
+    expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
+    expect(find.byKey(HomeKeys.journeyButton), findsOneWidget);
+    // O objetivo toma o lugar do "Continuar"; nada mais em andamento.
+    expect(find.byKey(HomeKeys.whereCard), findsNothing);
+    expect(find.byKey(HomeKeys.resumeCard), findsNothing);
+    expect(
+      top(tester, HomeKeys.goalCard),
+      lessThan(top(tester, HomeKeys.journeyButton)),
     );
   });
 

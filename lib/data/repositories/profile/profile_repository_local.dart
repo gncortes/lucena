@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../services/database/app_database.dart';
 import 'profile_repository.dart';
@@ -19,7 +20,11 @@ class LocalProfileRepository implements ProfileRepository {
       ..where((profile) => profile.id.equals(_rowId));
     final row = await query.getSingleOrNull();
     if (row == null) return const UserProfile();
-    return UserProfile(nickname: row.nickname, rating: row.rating);
+    return UserProfile(
+      nickname: row.nickname,
+      rating: row.rating,
+      goal: GoalPreference.fromCode(row.goal),
+    );
   }
 
   @override
@@ -31,6 +36,7 @@ class LocalProfileRepository implements ProfileRepository {
             id: const Value(_rowId),
             nickname: profile.nickname,
             rating: profile.rating,
+            goal: Value(profile.goal?.name),
           ),
         );
   }

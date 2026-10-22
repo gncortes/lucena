@@ -25,6 +25,7 @@ class LocalOnboardingRepository implements OnboardingRepository {
   static const _byHandKey = 'tour.byHand';
   static const _inProgressKey = 'tour.inProgress';
   static const _linkSetupKey = 'tour.linkSetupDone';
+  static const _stageKey = 'tour.stage';
 
   final PreferencesService _preferences;
 
@@ -53,6 +54,10 @@ class LocalOnboardingRepository implements OnboardingRepository {
     byHand: await _preferences.getBool(_byHandKey) ?? false,
     inProgress: await _preferences.getBool(_inProgressKey) ?? false,
     linkSetupDone: await _preferences.getBool(_linkSetupKey) ?? false,
+    // Sem a chave (antes da E1.11): o tour, que leva às telas seguintes.
+    stage:
+        OnboardingStage.fromCode(await _preferences.getString(_stageKey)) ??
+        OnboardingStage.tour,
     done: await _preferences.getBool(_doneKey) ?? false,
     startRung: await _preferences.getString(_startRungKey),
   );
@@ -69,6 +74,7 @@ class LocalOnboardingRepository implements OnboardingRepository {
     await _preferences.setBool(_byHandKey, value: onboarding.byHand);
     await _preferences.setBool(_inProgressKey, value: onboarding.inProgress);
     await _preferences.setBool(_linkSetupKey, value: onboarding.linkSetupDone);
+    await _preferences.setString(_stageKey, onboarding.stage.name);
     await _preferences.setBool(_doneKey, value: onboarding.done);
     await _preferences.setString(_stepKey, onboarding.step.toString());
     final startRung = onboarding.startRung;
