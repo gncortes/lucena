@@ -23,30 +23,35 @@ void main() {
     repository = AssetPositionsRepository(AssetService(_ProjectBundle()));
   });
 
-  test('o catálogo do app tem as categorias dos finais de iniciante', () async {
-    final catalog = await repository.catalog();
+  test(
+    'o catálogo do app tem todos os finais da fonte, por categoria',
+    () async {
+      final catalog = await repository.catalog();
 
-    // Os mates de dois bispos e de bispo e cavalo entraram pelo speedrun.
-    expect(catalog.map((c) => c.key), [
-      'basic',
-      'pawn',
-      'bishop',
-      'knightBishop',
-      'rookPawn',
-      'queen',
-    ]);
-    final total = catalog.fold(0, (sum, c) => sum + c.count(GoalFilter.all));
-    expect(total, inInclusiveRange(40, 60));
-  });
+      expect(catalog.map((c) => c.key), [
+        'basic',
+        'pawn',
+        'bishop',
+        'knight',
+        'knightBishop',
+        'rookPawn',
+        'rookPieces',
+        'queen',
+      ]);
+      final total = catalog.fold(0, (sum, c) => sum + c.count(GoalFilter.all));
+      expect(total, 3571);
+    },
+  );
 
-  test('toda posição do catálogo é jogável e foi conferida', () async {
+  // Por enquanto só os finais de iniciante passaram pelo tablebase; os
+  // outros entraram como vieram da fonte (E1.06, versão simples).
+  test('toda posição do catálogo é jogável', () async {
     final catalog = await repository.catalog();
     for (final category in catalog) {
       for (final sub in category.subcategories) {
         for (final position in await repository.bySubcategory(sub.key)) {
           final check = PositionValidation.check(position.fen);
           expect(check.problem, isNull, reason: position.id);
-          expect(position.verified, isTrue, reason: position.id);
         }
       }
     }

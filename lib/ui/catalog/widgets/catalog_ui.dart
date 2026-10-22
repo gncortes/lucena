@@ -21,6 +21,8 @@ String categoryName(AppLocalizations l10n, String key) => switch (key) {
   'queen' => l10n.catalogCategoryQueen,
   'bishop' => l10n.catalogCategoryBishop,
   'knightBishop' => l10n.catalogCategoryKnightBishop,
+  'knight' => l10n.catalogCategoryKnight,
+  'rookPieces' => l10n.catalogCategoryRookPieces,
   _ => key,
 };
 
@@ -32,11 +34,14 @@ String categoryFigurines(String key) => switch (key) {
   'queen' => '♕',
   'bishop' => '♗',
   'knightBishop' => '♗♘',
+  'knight' => '♘',
+  'rookPieces' => '♖♗',
   _ => '♙',
 };
 
-/// O nome do final por extenso ("Dama contra torre"). Subcategoria nova
-/// precisa de nome aqui e nos arquivos de tradução; sem ele, fica a chave.
+/// O nome do final por extenso ("Dama contra torre"). Os finais mais
+/// conhecidos têm nome próprio; os outros têm o nome montado do material
+/// ("Torre e dois peões contra bispo e peão").
 String endgameName(AppLocalizations l10n, String subcategory) =>
     switch (subcategory) {
       'queen' => l10n.endgameQueen,
@@ -49,8 +54,42 @@ String endgameName(AppLocalizations l10n, String subcategory) =>
       'rookVsPawn' => l10n.endgameRookVsPawn,
       'twoBishopsVsKing' => l10n.endgameTwoBishops,
       'knightBishopVsKing' => l10n.endgameKnightBishop,
-      _ => subcategory,
+      _ => _materialName(l10n, subcategory),
     };
+
+String _materialName(AppLocalizations l10n, String subcategory) {
+  final (first, second) = SubcategoryMaterial.of(subcategory);
+  final name = l10n.endgameMaterialVs(
+    _sideName(l10n, first),
+    _sideName(l10n, second),
+  );
+  return name.isEmpty ? name : name[0].toUpperCase() + name.substring(1);
+}
+
+// O plural do gerador de traduções só aceita =0, =1 e =2; de três peças em
+// diante o número por extenso vem de uma chave à parte.
+const _numberWords = {3: 'three', 4: 'four', 5: 'five'};
+
+/// As peças de um lado por extenso ("torre, bispo e dois peões").
+String _sideName(AppLocalizations l10n, List<Role> roles) {
+  final counts = <Role, int>{};
+  for (final role in roles) {
+    counts[role] = (counts[role] ?? 0) + 1;
+  }
+  final names = [
+    for (final MapEntry(key: role, value: count) in counts.entries)
+      l10n.endgameMaterialPiece(
+        role.name,
+        count,
+        l10n.endgameMaterialNumber(_numberWords[count] ?? 'other', count),
+      ),
+  ];
+  if (names.length == 1) return names.single;
+  final init = names
+      .sublist(0, names.length - 1)
+      .reduce((a, b) => l10n.endgameMaterialList(a, b));
+  return l10n.endgameMaterialAnd(init, names.last);
+}
 
 /// O que o jogador precisa fazer, em palavras.
 String goalLabel(AppLocalizations l10n, PositionGoal goal) => switch (goal) {

@@ -19,6 +19,9 @@ abstract final class CatalogKeys {
   /// fecha a seção.
   static Key subcategory(String key) => Key('catalog.subcategory.$key');
   static Key categoryDone(String key) => Key('catalog.category.$key.done');
+
+  /// O selo "+N" dos finais que não cabem no cartão da categoria.
+  static Key moreEndgames(String key) => Key('catalog.category.$key.more');
   static Key position(String id) => Key('catalog.position.$id');
 
   /// A marca de objetivo cumprido de uma posição.

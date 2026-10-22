@@ -33,12 +33,17 @@ abstract class CatalogState with _$CatalogState {
     /// As posições em que o objetivo já foi cumprido.
     @Default(<String>{}) Set<String> fulfilled,
 
-    /// Os finais que o jogador fechou na tela da categoria. Toda seção começa
-    /// aberta; o estado não é gravado.
-    @Default(<String>{}) Set<String> collapsed,
+    /// Os finais que o jogador abriu ou fechou na tela da categoria, ao
+    /// contrário de como começam (ver [sections]); o estado não é gravado.
+    @Default(<String>{}) Set<String> toggled,
   }) = _CatalogState;
 
   const CatalogState._();
+
+  /// Até quantas posições a categoria abre com todos os finais à mostra.
+  /// Acima disso, só o primeiro começa aberto, para a tela não montar
+  /// centenas de tabuleiros de uma vez.
+  static const openAllLimit = 40;
 
   /// As posições da categoria que passam pelo filtro.
   List<EndgamePosition>? get visiblePositions =>
@@ -53,13 +58,14 @@ abstract class CatalogState with _$CatalogState {
     for (final position in visible) {
       (bySubcategory[position.subcategory] ??= []).add(position);
     }
+    final openAll = visible.length <= openAllLimit;
     return [
-      for (final MapEntry(key: subcategory, value: positions)
-          in bySubcategory.entries)
+      for (final (index, MapEntry(key: subcategory, value: positions))
+          in bySubcategory.entries.indexed)
         CatalogSection(
           subcategory: subcategory,
           positions: positions,
-          expanded: !collapsed.contains(subcategory),
+          expanded: (openAll || index == 0) != toggled.contains(subcategory),
         ),
     ];
   }
@@ -108,8 +114,8 @@ class CatalogCubit extends Cubit<CatalogState> {
 
   /// Abre ou fecha a seção de um final na tela da categoria.
   void toggleSection(String subcategory) {
-    final collapsed = {...state.collapsed};
-    if (!collapsed.remove(subcategory)) collapsed.add(subcategory);
-    emit(state.copyWith(collapsed: collapsed));
+    final toggled = {...state.toggled};
+    if (!toggled.remove(subcategory)) toggled.add(subcategory);
+    emit(state.copyWith(toggled: toggled));
   }
 }

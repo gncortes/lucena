@@ -1678,6 +1678,86 @@
   "@endgameKnightBishop": {
     "description": "Endgame name: king, bishop and knight against a lone king."
   },
+  "catalogCategoryKnight": "Knight endgames",
+  "@catalogCategoryKnight": {
+    "description": "Catalog category name."
+  },
+  "catalogCategoryRookPieces": "Rook against pieces",
+  "@catalogCategoryRookPieces": {
+    "description": "Catalog category name: rook against minor pieces."
+  },
+  "endgameMaterialPiece": "{piece, select, queen{{count, plural, =1{queen} =2{two queens} other{{number} queens}}} rook{{count, plural, =1{rook} =2{two rooks} other{{number} rooks}}} bishop{{count, plural, =1{bishop} =2{two bishops} other{{number} bishops}}} knight{{count, plural, =1{knight} =2{two knights} other{{number} knights}}} pawn{{count, plural, =1{pawn} =2{two pawns} other{{number} pawns}}} other{king}}",
+  "@endgameMaterialPiece": {
+    "description": "One kind of piece in an endgame name built from the material (lowercase unless the language capitalizes nouns). piece is queen, rook, bishop, knight, pawn or king.",
+    "placeholders": {
+      "piece": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameMaterialNumber": "{number, select, three{three} four{four} five{five} other{{count}}}",
+  "@endgameMaterialNumber": {
+    "description": "A count of pieces from three up, in an endgame name, as it goes in endgameMaterialPiece (number). number is three, four, five or other; other is shown as the digits.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "endgameMaterialAnd": "{first} and {second}",
+  "@endgameMaterialAnd": {
+    "description": "Joins the pieces of one side in an endgame name (\"rook and pawn\").",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameMaterialList": "{first}, {second}",
+  "@endgameMaterialList": {
+    "description": "Joins all but the last piece of one side when it has three kinds (\"rook, bishop and pawn\").",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "endgameMaterialVs": "{first} vs {second}",
+  "@endgameMaterialVs": {
+    "description": "Endgame name from the material: one side against the other (\"rook and pawn vs rook\").",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "catalogMoreEndgames": "+{count}",
+  "@catalogMoreEndgames": {
+    "description": "Chip after the first endgames of a catalog category: how many more there are.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "speedrunStoppedAt": "Gave up at stage {stage} of {total}",
   "@speedrunStoppedAt": {
     "description": "Speedrun history: an abandoned attempt and how far it got.",

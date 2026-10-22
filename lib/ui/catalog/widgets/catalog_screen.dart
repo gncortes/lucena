@@ -77,12 +77,19 @@ class _CategoryCard extends StatelessWidget {
   /// Quantas posições da categoria já tiveram o objetivo cumprido.
   final int done;
 
+  /// Quantos finais o cartão mostra pelo nome; os outros viram "+N".
+  static const _shownEndgames = 6;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = context.l10n;
     final total = category.count(GoalFilter.all);
+    final subcategories = [
+      for (final sub in category.subcategories)
+        if (sub.count(filter) > 0) sub,
+    ];
     return Card(
       key: CatalogKeys.category(category.key),
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -163,14 +170,20 @@ class _CategoryCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
-              // Os finais da categoria, pelo nome.
+              // Os primeiros finais da categoria, pelo nome, e quantos mais.
               Wrap(
                 spacing: AppSpacing.sm,
                 runSpacing: AppSpacing.sm,
                 children: [
-                  for (final sub in category.subcategories)
-                    if (sub.count(filter) > 0)
-                      InfoChip(label: endgameName(l10n, sub.key)),
+                  for (final sub in subcategories.take(_shownEndgames))
+                    InfoChip(label: endgameName(l10n, sub.key)),
+                  if (subcategories.length > _shownEndgames)
+                    InfoChip(
+                      key: CatalogKeys.moreEndgames(category.key),
+                      label: l10n.catalogMoreEndgames(
+                        subcategories.length - _shownEndgames,
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: AppSpacing.md),
