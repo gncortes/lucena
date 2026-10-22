@@ -1,5 +1,8 @@
 import '../../../domain/models/survey.dart';
+import '../../../domain/models/ads_state.dart';
+import '../../core/ads/lesson_gate.dart';
 import '../../survey/widgets/survey_invite_card.dart';
+import '../../would_pay/widgets/would_pay_invite_card.dart';
 
 import 'package:flutter/material.dart';
 
@@ -100,7 +103,12 @@ class EndgamesScreen extends StatelessWidget {
                         ? l10n.schoolContinue(texts.lessonTitle(next))
                         : l10n.schoolStart,
                   ),
-                  onPressed: () => context.push(Routes.endgameLesson(next)),
+                  onPressed: () => LessonGate.open(
+                    context,
+                    lessonId: next,
+                    kind: LessonKind.endgame,
+                    open: () => context.push(Routes.endgameLesson(next)),
+                  ),
                 ),
               ],
               if (!state.tested) ...[
@@ -171,8 +179,9 @@ class EndgamesScreen extends StatelessWidget {
                 if (state.filteredLessons.isEmpty && state.total > 0)
                   const EndgamesFiltersEmpty(),
               ],
-              // O convite "Sua opinião", depois do último tile.
+              // O "Você pagaria?" e o "Sua opinião", depois do último tile.
               const SizedBox(height: AppSpacing.lg),
+              const WouldPayInviteCard(),
               const SurveyInviteCard(
                 kind: SurveyKind.endgames,
                 source: SurveyInviteSource.trail,
@@ -366,7 +375,12 @@ class _LessonTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.betweenCards),
         clipBehavior: Clip.antiAlias,
         child: ListTile(
-          onTap: () => context.push(Routes.endgameLesson(lesson.id)),
+          onTap: () => LessonGate.open(
+            context,
+            lessonId: lesson.id,
+            kind: LessonKind.endgame,
+            open: () => context.push(Routes.endgameLesson(lesson.id)),
+          ),
           leading: CircleAvatar(
             backgroundColor: background,
             child: Icon(icon, color: foreground),
@@ -487,7 +501,12 @@ class _NextEndgames extends StatelessWidget {
       color: colors.primaryContainer,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push(Routes.endgameLesson(next.lessonId)),
+        onTap: () => LessonGate.open(
+          context,
+          lessonId: next.lessonId,
+          kind: LessonKind.endgame,
+          open: () => context.push(Routes.endgameLesson(next.lessonId)),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(

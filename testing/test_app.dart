@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/ads/ads_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
+import 'package:lucena/data/repositories/store/store_listing_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -24,7 +27,18 @@ import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
+import 'fakes/fake_store_listing_repository.dart';
 import 'fakes/fake_survey_repository.dart';
+import 'fakes/fake_endgame_repositories.dart';
+import 'fakes/fake_feedback_repositories.dart';
+import 'fakes/fake_school_repositories.dart';
+
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
+import 'package:lucena/data/repositories/review/review_repository.dart';
+import 'package:lucena/data/repositories/school/school_progress_repository.dart';
+import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
+
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
 
@@ -46,7 +60,15 @@ class TestApp extends StatelessWidget {
     this.regionPromptRepository,
     this.crowdRepository,
     this.analytics,
+    this.adsRepository,
+    this.purchaseRepository,
+    this.storeListingRepository,
     this.updateCubit,
+    this.wouldPayRepository,
+    this.feedbackRepository,
+    this.reviewRepository,
+    this.schoolProgressRepository,
+    this.endgameProgressRepository,
     super.key,
   });
 
@@ -89,8 +111,27 @@ class TestApp extends StatelessWidget {
 
   /// As estatísticas, quando o teste confere os eventos. Sem elas, nenhuma.
   final AnalyticsRepository? analytics;
+  /// Os anúncios. Sem ele, nenhum.
+  final AdsRepository? adsRepository;
+
+  /// O "Remover anúncios". Sem ele, a compra não existe (nem a linha).
+  final PurchaseRepository? purchaseRepository;
+
+  /// A página do app na Play. Sem ela, um falso que só conta.
+  final StoreListingRepository? storeListingRepository;
+
   /// A atualização (E1.32), quando a tela testada é uma das duas.
   final UpdateCubit? updateCubit;
+
+  /// O "Você pagaria?" e o "Enviar feedback" (E1.26). Sem eles, o cartão
+  /// nunca aparece e o envio vai para um falso.
+  final WouldPayRepository? wouldPayRepository;
+  final FeedbackRepository? feedbackRepository;
+  final ReviewRepository? reviewRepository;
+
+  /// O progresso que conta as aulas concluídas do convite.
+  final SchoolProgressRepository? schoolProgressRepository;
+  final EndgameProgressRepository? endgameProgressRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -166,6 +207,21 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
         ),
+        RepositoryProvider<WouldPayRepository>.value(
+          value: wouldPayRepository ?? const NoWouldPayRepository(),
+        ),
+        RepositoryProvider<FeedbackRepository>.value(
+          value: feedbackRepository ?? FakeFeedbackRepository(),
+        ),
+        RepositoryProvider<ReviewRepository>.value(
+          value: reviewRepository ?? FakeReviewRepository(),
+        ),
+        RepositoryProvider<SchoolProgressRepository>.value(
+          value: schoolProgressRepository ?? FakeSchoolProgressRepository(),
+        ),
+        RepositoryProvider<EndgameProgressRepository>.value(
+          value: endgameProgressRepository ?? FakeEndgameProgressRepository(),
+        ),
         RepositoryProvider<RegionPromptRepository>.value(
           value: regionPromptRepository ?? const NoRegionPromptRepository(),
         ),
@@ -174,6 +230,15 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<AnalyticsRepository>.value(
           value: analytics ?? const NoAnalyticsRepository(),
+        ),
+        RepositoryProvider<AdsRepository>.value(
+          value: adsRepository ?? const NoAdsRepository(),
+        ),
+        RepositoryProvider<PurchaseRepository>.value(
+          value: purchaseRepository ?? const NoPurchaseRepository(),
+        ),
+        RepositoryProvider<StoreListingRepository>.value(
+          value: storeListingRepository ?? FakeStoreListingRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

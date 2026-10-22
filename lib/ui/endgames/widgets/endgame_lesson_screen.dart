@@ -1,5 +1,7 @@
 import '../../../domain/models/explanation.dart';
 
+import '../../../domain/models/ads_state.dart';
+import '../../core/ads/lesson_gate.dart';
 import '../../core/theme/app_chip.dart';
 
 import 'package:flutter/material.dart';
@@ -914,8 +916,13 @@ class _FinalCardState extends State<_FinalCard> {
                   key: EndgameLessonKeys.nextLessonButton,
                   icon: const Icon(Icons.arrow_forward_rounded),
                   label: Text(l10n.lessonNext(state.texts.lessonTitle(next))),
-                  onPressed: () =>
-                      context.pushReplacement(Routes.endgameLesson(next)),
+                  onPressed: () => LessonGate.open(
+                    context,
+                    lessonId: next,
+                    kind: LessonKind.endgame,
+                    open: () =>
+                        context.pushReplacement(Routes.endgameLesson(next)),
+                  ),
                 ),
               ],
             ],

@@ -35,4 +35,11 @@ abstract final class ProfileKeys {
 
   /// O histórico do rating de finais.
   static const ratingCard = Key('profile.rating');
+
+  /// Os grupos do fim (E1.25): "Remover anúncios"; Privacidade, feedback e
+  /// avaliar.
+  static const rowRemoveAds = Key('profile.rowRemoveAds');
+  static const rowPrivacy = Key('profile.rowPrivacy');
+  static const rowFeedback = Key('profile.rowFeedback');
+  static const rowRate = Key('profile.rowRate');
 }

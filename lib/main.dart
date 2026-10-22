@@ -9,9 +9,12 @@ import 'domain/models/challenge_link.dart';
 import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
+import 'data/repositories/ads/ads_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
+import 'data/repositories/purchase/purchase_repository.dart';
+import 'data/repositories/store/store_listing_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
 import 'data/repositories/week/week_repository.dart';
@@ -31,6 +34,9 @@ import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/feedback/feedback_repository.dart';
+import 'data/repositories/review/review_repository.dart';
+import 'data/repositories/would_pay/would_pay_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
@@ -182,11 +188,24 @@ class _LucenaAppState extends State<LucenaApp> {
     final deepLinks = widget.dependencies.deepLinkRepository;
     final push = widget.dependencies.pushRepository;
     unawaited(push.start());
+    // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
+    unawaited(widget.dependencies.reviewRepository.markFirstOpen());
     final pushed = await push.initialLink();
     final opened = await deepLinks.initial();
     final link = opened ?? (pushed == null ? null : deepLinks.parse(pushed));
     unawaited(
       _analytics.launched(link: link, pushed: opened == null && pushed != null),
+    );
+    // O anúncio (E1.25): sessão nova e, para quem já respondeu "O que você
+    // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
+    // formulário agora.
+    final onboarding = await widget.dependencies.onboardingRepository.load();
+    final profile = await widget.dependencies.profileRepository.load();
+    unawaited(
+      widget.dependencies.adsRepository.start(
+        fromLink: link != null,
+        goalAnswered: onboarding.done || profile.goal != null,
+      ),
     );
     if (!mounted) return;
     setState(() {
@@ -458,11 +477,29 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<SurveyRepository>.value(
           value: dependencies.surveyRepository,
         ),
+        RepositoryProvider<FeedbackRepository>.value(
+          value: dependencies.feedbackRepository,
+        ),
+        RepositoryProvider<WouldPayRepository>.value(
+          value: dependencies.wouldPayRepository,
+        ),
+        RepositoryProvider<ReviewRepository>.value(
+          value: dependencies.reviewRepository,
+        ),
         RepositoryProvider<WeekRepository>.value(
           value: dependencies.weekRepository,
         ),
         RepositoryProvider<RemoteFlagsRepository>.value(
           value: dependencies.remoteFlagsRepository,
+        ),
+        RepositoryProvider<AdsRepository>.value(
+          value: dependencies.adsRepository,
+        ),
+        RepositoryProvider<PurchaseRepository>.value(
+          value: dependencies.purchaseRepository,
+        ),
+        RepositoryProvider<StoreListingRepository>.value(
+          value: dependencies.storeListingRepository,
         ),
         RepositoryProvider<AppUpdateRepository>.value(
           value: dependencies.appUpdateRepository,
@@ -575,7 +612,12 @@ class _QuietInBackground extends StatefulWidget {
 
 class _QuietInBackgroundState extends State<_QuietInBackground> {
   late final AppLifecycleListener _listener = AppLifecycleListener(
-    onHide: () => context.read<SpeechCubit>().stop(),
+    onHide: () {
+      context.read<SpeechCubit>().stop();
+      context.read<AdsRepository>().hidden();
+    },
+    // Mais de 30 minutos fora: sessão nova do anúncio (E1.25).
+    onShow: () => context.read<AdsRepository>().visible(),
     // De volta (talvez das configurações de voz do aparelho): uma voz nova
     // pode ter sido baixada.
     onResume: () => context.read<SpeechCubit>().reloadVoices(),

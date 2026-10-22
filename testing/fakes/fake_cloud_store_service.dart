@@ -14,6 +14,9 @@ class FakeCloudStoreService implements CloudStoreService {
   final public = <String, Map<String, Object?>>{};
   bool offline = false;
 
+  /// Os documentos criados em `feedback/` (sem o `createdAt` do servidor).
+  final feedback = <Map<String, Object?>>[];
+
   /// Quantas vezes cada partida foi mandada (a regra deixa só criar).
   final gameWrites = <String, int>{};
 
@@ -58,5 +61,12 @@ class FakeCloudStoreService implements CloudStoreService {
   Future<Map<String, Object?>?> readPublic(String collection, String id) async {
     if (offline) throw const CloudStoreException('unavailable');
     return public['$collection/$id'];
+  }
+
+  @override
+  Future<void> addFeedback(Map<String, Object?> data) {
+    if (offline) return Completer<void>().future;
+    feedback.add(data);
+    return Future.value();
   }
 }

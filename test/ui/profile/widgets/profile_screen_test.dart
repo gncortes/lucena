@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/app_language.dart';
@@ -26,7 +27,9 @@ import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
+import '../../../../testing/fakes/fake_purchase_service.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
+import '../../../../testing/fakes/fake_store_listing_repository.dart';
 import '../../../../testing/fakes/fake_sync_repository.dart';
 import '../../../../testing/test_app.dart';
 
@@ -52,6 +55,8 @@ void main() {
   Future<void> pumpScreen(
     WidgetTester tester, {
     UserProfile profile = const UserProfile(),
+    PurchaseRepository? purchases,
+    FakeStoreListingRepository? store,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 1400);
@@ -96,6 +101,14 @@ void main() {
           path: Routes.level,
           builder: (_, state) => stub('rota-nivel ${state.uri}'),
         ),
+        GoRoute(
+          path: Routes.privacy,
+          builder: (_, state) => stub('rota-privacidade'),
+        ),
+        GoRoute(
+          path: Routes.feedback,
+          builder: (_, state) => stub('rota-feedback'),
+        ),
       ],
     );
     await tester.pumpWidget(
@@ -104,6 +117,8 @@ void main() {
         profileCubit: cubit,
         settingsCubit: settings,
         locale: const Locale('pt', 'BR'),
+        purchaseRepository: purchases,
+        storeListingRepository: store,
         child: const SizedBox(),
       ),
     );
@@ -324,5 +339,56 @@ void main() {
     );
 
     expect(inRow(ProfileKeys.rowRegion, 'Paraná · Curitiba'), findsOneWidget);
+  });
+
+  group('anúncios e ajuda (E1.25)', () {
+    testWidgets('sem a compra na Play, só privacidade, feedback e avaliar', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      expect(find.byKey(ProfileKeys.rowRemoveAds), findsNothing);
+      expect(find.byKey(ProfileKeys.rowPrivacy), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowFeedback), findsOneWidget);
+      expect(find.byKey(ProfileKeys.rowRate), findsOneWidget);
+    });
+
+    testWidgets('"Remover anúncios" mostra o preço da Play', (tester) async {
+      await pumpScreen(
+        tester,
+        purchases: FakePurchaseRepository(
+          const PurchaseState(price: 'R\$ 9,90'),
+        ),
+      );
+      expect(
+        inRow(ProfileKeys.rowRemoveAds, 'R\$ 9,90, uma vez só, para sempre'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('depois da compra, a linha diz "Sem anúncios"', (tester) async {
+      final purchases = FakePurchaseRepository(
+        const PurchaseState(price: 'R\$ 9,90'),
+      );
+      await pumpScreen(tester, purchases: purchases);
+      purchases.state = const PurchaseState(adFree: true, price: 'R\$ 9,90');
+      await tester.pumpAndSettle();
+      expect(inRow(ProfileKeys.rowRemoveAds, 'Sem anúncios'), findsOneWidget);
+    });
+
+    testWidgets('"Avaliar o Lucena" abre a página na Play', (tester) async {
+      final store = FakeStoreListingRepository();
+      await pumpScreen(tester, store: store);
+      await tester.ensureVisible(find.byKey(ProfileKeys.rowRate));
+      await tester.tap(find.byKey(ProfileKeys.rowRate));
+      expect(store.opened, 1);
+    });
+
+    testWidgets('"Privacidade e anúncios" abre a tela', (tester) async {
+      await pumpScreen(tester);
+      await tester.ensureVisible(find.byKey(ProfileKeys.rowPrivacy));
+      await tester.tap(find.byKey(ProfileKeys.rowPrivacy));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-privacidade'), findsOneWidget);
+    });
   });
 }

@@ -4,6 +4,11 @@ import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/analytics/analytics_repository.dart';
 import '../data/services/firebase/analytics_service.dart';
 import '../domain/use_cases/analytics_rules.dart';
+import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/purchase/purchase_repository.dart';
+import '../data/repositories/store/store_listing_repository.dart';
+import '../data/services/ads_service.dart';
+import '../data/services/purchase_service.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
 import '../data/repositories/week/week_repository.dart';
 import '../data/repositories/config/remote_flags_repository.dart';
@@ -129,6 +134,11 @@ import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/repositories/feedback/feedback_repository.dart';
+import '../data/repositories/review/review_repository.dart';
+import '../data/repositories/would_pay/would_pay_repository.dart';
+import '../data/services/device_service.dart';
+import '../data/services/review_service.dart';
 import '../data/services/firebase/file_store_service.dart';
 import '../data/services/firebase/push_service.dart';
 import '../domain/models/app_language.dart';
@@ -226,6 +236,12 @@ class Dependencies {
     this.photoRepository = const NoPhotoRepository(),
     this.mailAppRepository = const NoMailAppRepository(),
     this.analyticsRepository = const NoAnalyticsRepository(),
+    this.adsRepository = const NoAdsRepository(),
+    this.purchaseRepository = const NoPurchaseRepository(),
+    this.storeListingRepository = const NoStoreListingRepository(),
+    this.feedbackRepository = const NoFeedbackRepository(),
+    this.wouldPayRepository = const NoWouldPayRepository(),
+    this.reviewRepository = const NoReviewRepository(),
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
@@ -306,6 +322,27 @@ class Dependencies {
       LocalFeaturedProgressRepository(preferences),
       activity,
     );
+    // Anúncios e "Remover anúncios" (E1.25) só no build da Play, que é o que
+    // sobe o Firebase; no do F-Droid ficam desligados.
+    final flags = RemoteConfigFlagsRepository(
+      firebase ? FirebaseRemoteConfigService() : NoRemoteConfigService(),
+      // Nas versões de teste, o valor novo do console vale na hora.
+      minimumFetchInterval: showsDevTools
+          ? Duration.zero
+          : const Duration(hours: 12),
+    );
+    final purchases = firebase
+        ? PlayPurchaseRepository(PlayPurchaseService(), preferences)
+        : const NoPurchaseRepository();
+    final ads = firebase
+        ? ServiceAdsRepository(
+            service: GoogleAdsService(),
+            preferences: preferences,
+            flags: flags,
+            purchases: purchases,
+            now: now,
+          )
+        : const NoAdsRepository();
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );
@@ -404,6 +441,21 @@ class Dependencies {
         preferences,
         mode: analyticsMode,
       ),
+      adsRepository: ads,
+      purchaseRepository: purchases,
+      storeListingRepository: firebase
+          ? const PlayStoreListingRepository()
+          : const NoStoreListingRepository(),
+      // Sem Firebase (F-Droid): nada vai à nuvem e a Play nunca é chamada.
+      feedbackRepository: firebase
+          ? CloudFeedbackRepository(cloudStore, PluginDeviceService(), version)
+          : const NoFeedbackRepository(),
+      wouldPayRepository: LocalWouldPayRepository(preferences),
+      reviewRepository: LocalReviewRepository(
+        preferences,
+        firebase ? PlayReviewService() : const NoReviewService(),
+        now,
+      ),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -426,13 +478,7 @@ class Dependencies {
         progress: endgames,
         lessons: endgameLessons,
       ),
-      remoteFlagsRepository: RemoteConfigFlagsRepository(
-        firebase ? FirebaseRemoteConfigService() : NoRemoteConfigService(),
-        // Nas versões de teste, o valor novo do console vale na hora.
-        minimumFetchInterval: showsDevTools
-            ? Duration.zero
-            : const Duration(hours: 12),
-      ),
+      remoteFlagsRepository: flags,
       appUpdateRepository: PlayAppUpdateRepository(
         firebase ? const PlayAppUpdateService() : const NoAppUpdateService(),
         preferences,
@@ -537,6 +583,18 @@ class Dependencies {
 
   /// As estatísticas de uso (E1.03).
   final AnalyticsRepository analyticsRepository;
+  /// Os anúncios antes das aulas, a compra que os tira e a página do app na
+  /// Play (E1.25). Fora da Play, nenhum.
+  final AdsRepository adsRepository;
+  final PurchaseRepository purchaseRepository;
+  final StoreListingRepository storeListingRepository;
+
+  /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
+  final FeedbackRepository feedbackRepository;
+  final WouldPayRepository wouldPayRepository;
+
+  /// O pedido de avaliação da Play (E1.26).
+  final ReviewRepository reviewRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;

@@ -39,6 +39,11 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
+        // O app do AdMob (E1.25): o CI passa o de verdade com -PadmobAppId; sem
+        // ele, o de teste do Google.
+        manifestPlaceholders["admobAppId"] =
+            (project.findProperty("admobAppId") as String?)
+                ?: "ca-app-pub-3940256099942544~3347511713"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
 

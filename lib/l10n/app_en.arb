@@ -8546,5 +8546,381 @@
   "analyticsOptInBody": "Sends how you use the app: screens, lessons and games. No name, email or anything you type.",
   "@analyticsOptInBody": {
     "description": "Explains what the usage statistics send."
+  },
+  "profileRemoveAds": "Remove ads",
+  "@profileRemoveAds": {
+    "description": "Profile row: the one-time purchase that removes ads."
+  },
+  "profileRemoveAdsValue": "{price}, once, forever",
+  "@profileRemoveAdsValue": {
+    "description": "Profile row value: the Play price of removing ads.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "profileRemoveAdsDone": "No ads",
+  "@profileRemoveAdsDone": {
+    "description": "Profile row value after buying \"Remove ads\"."
+  },
+  "profilePrivacy": "Privacy and ads",
+  "@profilePrivacy": {
+    "description": "Profile row that opens the privacy screen."
+  },
+  "profilePrivacyValue": "Ad choices and privacy policy",
+  "@profilePrivacyValue": {
+    "description": "Profile row value under \"Privacy and ads\"."
+  },
+  "profileFeedback": "Send feedback",
+  "@profileFeedback": {
+    "description": "Profile row that opens the feedback screen."
+  },
+  "profileFeedbackValue": "Tell us a problem, an idea or some praise",
+  "@profileFeedbackValue": {
+    "description": "Profile row value under \"Send feedback\"."
+  },
+  "profileRate": "Rate Lucena",
+  "@profileRate": {
+    "description": "Profile row that opens the app page on Google Play."
+  },
+  "profileRateValue": "Opens the app page on Google Play",
+  "@profileRateValue": {
+    "description": "Profile row value under \"Rate Lucena\"."
+  },
+  "privacyTitle": "Privacy and ads",
+  "@privacyTitle": {
+    "description": "Privacy screen title."
+  },
+  "privacyFreeTitle": "Lucena is free",
+  "@privacyFreeTitle": {
+    "description": "Privacy screen card title, with ads."
+  },
+  "privacyFreeText": "An ad shows when you enter a lesson. Never in the middle of an exercise, a game or a challenge.",
+  "@privacyFreeText": {
+    "description": "Privacy screen card text, with ads."
+  },
+  "privacyAdChoices": "Ad choices",
+  "@privacyAdChoices": {
+    "description": "Privacy screen row that reopens the Google privacy options."
+  },
+  "privacyAdChoicesValue": "Opens the Google window with your options",
+  "@privacyAdChoicesValue": {
+    "description": "Privacy screen row value under \"Ad choices\"."
+  },
+  "privacyPolicy": "Privacy policy",
+  "@privacyPolicy": {
+    "description": "Privacy screen row that opens the privacy policy."
+  },
+  "privacyPolicyValue": "playlucena.com/privacy",
+  "@privacyPolicyValue": {
+    "description": "Privacy screen row value: the policy address."
+  },
+  "privacyDelete": "Delete my account and my data",
+  "@privacyDelete": {
+    "description": "Privacy screen row that deletes the account."
+  },
+  "privacyDeleteValue": "Also in Account, on the Profile",
+  "@privacyDeleteValue": {
+    "description": "Privacy screen row value under \"Delete my account\"."
+  },
+  "privacyAdFreeTitle": "No ads",
+  "@privacyAdFreeTitle": {
+    "description": "Privacy screen card title after buying \"Remove ads\"."
+  },
+  "privacyAdFreeText": "Thanks for supporting Lucena. Lessons open right away, forever.",
+  "@privacyAdFreeText": {
+    "description": "Privacy screen card text after buying \"Remove ads\"."
+  },
+  "removeAdsTitle": "Remove ads",
+  "@removeAdsTitle": {
+    "description": "Remove ads sheet title."
+  },
+  "removeAdsText": "A one-time payment of {price} removes the ads forever, on your Google Play account. Everything else stays the same and free.",
+  "@removeAdsText": {
+    "description": "Remove ads sheet text, with the Play price.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAdsHelp": "It helps keep Lucena going and make new lessons.",
+  "@removeAdsHelp": {
+    "description": "Remove ads sheet: why buy."
+  },
+  "removeAdsBuy": "Remove for {price}",
+  "@removeAdsBuy": {
+    "description": "Remove ads sheet button that opens the Google Play payment.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "removeAdsNo": "Not now",
+  "@removeAdsNo": {
+    "description": "Remove ads sheet button that closes the sheet."
+  },
+  "removeAdsNote": "The button opens the Google Play payment window. Price by country. On another phone with the same account, the purchase comes back by itself.",
+  "@removeAdsNote": {
+    "description": "Remove ads sheet: small note under the buttons."
+  },
+  "removeAdsPending": "Waiting for the payment. As soon as Play confirms it, the ads go away.",
+  "@removeAdsPending": {
+    "description": "Remove ads sheet: the payment is pending."
+  },
+  "removeAdsError": "Couldn't finish the purchase. Try again later.",
+  "@removeAdsError": {
+    "description": "Remove ads sheet: the purchase failed."
+  },
+  "adsLabel": "Ad",
+  "@adsLabel": {
+    "description": "Chip on the test interstitial ad."
+  },
+  "adsLessonNote": "You entered a lesson. The lesson opens when you close the ad.",
+  "@adsLessonNote": {
+    "description": "Test interstitial ad: what happens next."
+  },
+  "adsCloseNote": "Tap the X to open the lesson.",
+  "@adsCloseNote": {
+    "description": "Test interstitial ad: how to close it."
+  },
+  "payInviteTitle": "Help decide the future of Lucena",
+  "@payInviteTitle": {
+    "description": "Title of the \"Would you pay?\" invite card in the lesson list."
+  },
+  "payInviteText": "3 questions, 1 minute: what you would pay for a course or a coach. It does not exist yet, we just want to know.",
+  "@payInviteText": {
+    "description": "Text of the \"Would you pay?\" invite card."
+  },
+  "payInviteYes": "Answer",
+  "@payInviteYes": {
+    "description": "Invite card button that opens the survey."
+  },
+  "payInviteNo": "Not now",
+  "@payInviteNo": {
+    "description": "Invite card button that hides the card for good."
+  },
+  "payTitle": "Would you pay?",
+  "@payTitle": {
+    "description": "Title of the \"Would you pay?\" survey."
+  },
+  "payStep": "{n} of 3",
+  "@payStep": {
+    "description": "Survey progress label, for example 1 of 3.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "payCourseQuestion": "Would you buy a course with about 60 endgames to practice?",
+  "@payCourseQuestion": {
+    "description": "Step 1 question about a course."
+  },
+  "payCourseHelp": "One-time payment, with all lessons and positions. The course does not exist yet: we want to know if it makes sense.",
+  "@payCourseHelp": {
+    "description": "Help under the course question."
+  },
+  "payHowMuch": "How much would you pay?",
+  "@payHowMuch": {
+    "description": "Price range question."
+  },
+  "payHowMuchHelp": "Pick the range closest to what you would pay.",
+  "@payHowMuchHelp": {
+    "description": "Help under the price range question."
+  },
+  "payCoachQuestion": "Would you pay a monthly fee for a coach that reads your Lichess games?",
+  "@payCoachQuestion": {
+    "description": "Step 2 question about a coach."
+  },
+  "payCoachHelp": "It finds the endgames you do badly in and suggests similar lessons and endgames to play. It does not exist yet either.",
+  "@payCoachHelp": {
+    "description": "Help under the coach question."
+  },
+  "payYes": "Yes",
+  "@payYes": {
+    "description": "Answer: yes."
+  },
+  "payMaybe": "Maybe",
+  "@payMaybe": {
+    "description": "Answer: maybe."
+  },
+  "payNo": "No",
+  "@payNo": {
+    "description": "Answer: no."
+  },
+  "payCourseNone": "Would not buy",
+  "@payCourseNone": {
+    "description": "Course price range: would not buy."
+  },
+  "payCourse1": "Up to R$ 29",
+  "@payCourse1": {
+    "description": "Course price range 1."
+  },
+  "payCourse2": "R$ 30 to R$ 59",
+  "@payCourse2": {
+    "description": "Course price range 2."
+  },
+  "payCourse3": "R$ 60 to R$ 99",
+  "@payCourse3": {
+    "description": "Course price range 3."
+  },
+  "payCourse4": "R$ 100 or more",
+  "@payCourse4": {
+    "description": "Course price range 4."
+  },
+  "payMonthNone": "Would not pay",
+  "@payMonthNone": {
+    "description": "Monthly price range: would not pay."
+  },
+  "payMonth1": "Up to R$ 9 a month",
+  "@payMonth1": {
+    "description": "Monthly price range 1."
+  },
+  "payMonth2": "R$ 10 to R$ 19 a month",
+  "@payMonth2": {
+    "description": "Monthly price range 2."
+  },
+  "payMonth3": "R$ 20 to R$ 39 a month",
+  "@payMonth3": {
+    "description": "Monthly price range 3."
+  },
+  "payMonth4": "R$ 40 or more a month",
+  "@payMonth4": {
+    "description": "Monthly price range 4."
+  },
+  "payLearnQuestion": "Is the way the app is built making you learn?",
+  "@payLearnQuestion": {
+    "description": "Step 3 question about learning."
+  },
+  "payLearnHelp": "Lesson, exercises, test and a game against Maia.",
+  "@payLearnHelp": {
+    "description": "Help under the learning question."
+  },
+  "payLearnYes": "Yes",
+  "@payLearnYes": {
+    "description": "Learning answer: yes."
+  },
+  "payLearnSome": "Somewhat",
+  "@payLearnSome": {
+    "description": "Learning answer: somewhat."
+  },
+  "payLearnNo": "No",
+  "@payLearnNo": {
+    "description": "Learning answer: no."
+  },
+  "payNextQuestion": "Which endgame do you want to learn next?",
+  "@payNextQuestion": {
+    "description": "Step 3 question about the next endgame."
+  },
+  "payNextHint": "Write it in your own words (optional)",
+  "@payNextHint": {
+    "description": "Hint of the next endgame text box."
+  },
+  "payWhyQuestion": "Why did you download Lucena?",
+  "@payWhyQuestion": {
+    "description": "Step 3 question about why."
+  },
+  "payWhyHelp": "Pick as many as you like.",
+  "@payWhyHelp": {
+    "description": "Help under the why question."
+  },
+  "payWhyLearn": "Learn endgames",
+  "@payWhyLearn": {
+    "description": "Why chip."
+  },
+  "payWhyTournament": "Train for a tournament",
+  "@payWhyTournament": {
+    "description": "Why chip."
+  },
+  "payWhyRating": "Improve my rating",
+  "@payWhyRating": {
+    "description": "Why chip."
+  },
+  "payWhyTeach": "Teach someone",
+  "@payWhyTeach": {
+    "description": "Why chip."
+  },
+  "payWhyCurious": "Curiosity",
+  "@payWhyCurious": {
+    "description": "Why chip."
+  },
+  "payLevelQuestion": "Your level",
+  "@payLevelQuestion": {
+    "description": "Step 3 question about the level."
+  },
+  "payLevelHelp": "Only shows if you have not set your level yet.",
+  "@payLevelHelp": {
+    "description": "Help under the level question."
+  },
+  "payLevelBeginner": "Beginner",
+  "@payLevelBeginner": {
+    "description": "Level chip."
+  },
+  "payLevelMiddle": "Intermediate",
+  "@payLevelMiddle": {
+    "description": "Level chip."
+  },
+  "payLevelAdvanced": "Advanced",
+  "@payLevelAdvanced": {
+    "description": "Level chip."
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button to the next step."
+  },
+  "paySend": "Send",
+  "@paySend": {
+    "description": "Button that sends the survey."
+  },
+  "feedbackTitle": "Send feedback",
+  "@feedbackTitle": {
+    "description": "Title of the feedback screen."
+  },
+  "feedbackIntro": "I read everything. Tell me what is going on, your way.",
+  "@feedbackIntro": {
+    "description": "Intro line of the feedback screen."
+  },
+  "feedbackKindQuestion": "About what?",
+  "@feedbackKindQuestion": {
+    "description": "Feedback type question."
+  },
+  "feedbackKindProblem": "A problem",
+  "@feedbackKindProblem": {
+    "description": "Feedback type chip."
+  },
+  "feedbackKindIdea": "An idea",
+  "@feedbackKindIdea": {
+    "description": "Feedback type chip."
+  },
+  "feedbackKindPraise": "A compliment",
+  "@feedbackKindPraise": {
+    "description": "Feedback type chip."
+  },
+  "feedbackTextTitle": "Tell me",
+  "@feedbackTextTitle": {
+    "description": "Feedback text card title."
+  },
+  "feedbackTextHelp": "Up to 500 letters.",
+  "@feedbackTextHelp": {
+    "description": "Help under the feedback text title."
+  },
+  "feedbackTextHint": "Tell it in your own words",
+  "@feedbackTextHint": {
+    "description": "Hint of the feedback text box."
+  },
+  "feedbackAttached": "Sent along, without identifying you: the app version and the phone model, so I can find the problem faster.",
+  "@feedbackAttached": {
+    "description": "Note about what is sent with the feedback."
+  },
+  "feedbackSend": "Send",
+  "@feedbackSend": {
+    "description": "Button that sends the feedback."
+  },
+  "feedbackBack": "Back to profile",
+  "@feedbackBack": {
+    "description": "Thanks screen button back to the profile."
   }
 }
