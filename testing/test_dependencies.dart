@@ -5,6 +5,8 @@ import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 
+import 'package:lucena/data/repositories/config/remote_flags_repository.dart';
+import 'package:lucena/data/repositories/update/app_update_repository.dart';
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
 import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
@@ -176,6 +178,8 @@ Dependencies testDependencies({
   MailAppRepository? mailAppRepository,
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
+  RemoteFlagsRepository? remoteFlagsRepository,
+  AppUpdateRepository? appUpdateRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
@@ -258,6 +262,8 @@ Dependencies testDependencies({
     avatarRepository: avatarRepository ?? FakeAvatarRepository(),
     photoRepository: photoRepository ?? FakePhotoRepository(),
     mailAppRepository: mailAppRepository ?? FakeMailAppRepository(),
+    remoteFlagsRepository: remoteFlagsRepository,
+    appUpdateRepository: appUpdateRepository,
     languages: languages ?? AppLanguage.selectable,
   );
 }

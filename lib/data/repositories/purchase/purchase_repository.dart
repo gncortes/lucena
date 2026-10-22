@@ -65,8 +65,8 @@ class PlayPurchaseRepository implements PurchaseRepository {
   PlayPurchaseRepository(
     this._service,
     this._preferences, {
-    String productId = removeAdsProductId,
-  }) : _productId = productId;
+    this._productId = removeAdsProductId,
+  });
 
   final PurchaseService _service;
   final PreferencesService _preferences;

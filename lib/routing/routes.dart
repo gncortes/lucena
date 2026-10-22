@@ -10,6 +10,12 @@ abstract final class Routes {
   static const home = '/';
   static const freeBoard = '/board';
 
+  /// "Atualize o Lucena": por cima de tudo, sem voltar (E1.32).
+  static const updateRequired = '/update/required';
+
+  /// "Versão nova do Lucena", aberta só sobre a home (E1.32).
+  static const updateRecommended = '/update/recommended';
+
   /// A partida às cegas, falando os lances (experimental).
   static const blind = '/blind';
 

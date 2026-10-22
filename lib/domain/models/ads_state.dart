@@ -60,12 +60,11 @@ class AdsState {
   );
 
   /// Sessão nova: as lições com anúncio voltam a poder ter.
-  AdsState newSession() =>
-      AdsState(
-        sessions: sessions + 1,
-        lessonsOpened: lessonsOpened,
-        lastShownAt: lastShownAt,
-      );
+  AdsState newSession() => AdsState(
+    sessions: sessions + 1,
+    lessonsOpened: lessonsOpened,
+    lastShownAt: lastShownAt,
+  );
 
   Map<String, Object?> toJson() => {
     'sessions': sessions,

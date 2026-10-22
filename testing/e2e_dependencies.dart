@@ -9,6 +9,11 @@ import 'fakes/fake_photo_repository.dart';
 import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
+import 'fakes/fake_ads_service.dart';
+import 'fakes/fake_remote_flags_repository.dart';
+
+import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 
 import 'package:lucena/data/repositories/activity/activity_repository.dart';
 import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
@@ -245,7 +250,10 @@ AppDatabase? _database;
 /// cenários de persistência (reiniciar o app e conferir o dado) valerem.
 ///
 /// Cada chamada fecha o banco da anterior e abre outro, como um app reaberto.
-Future<Dependencies> e2eDependencies() async {
+///
+/// Com [ads], o anúncio falso da E1.25 (desenhado pelo app, sem SDK) entra
+/// antes das aulas; sem ele, os outros cenários não veem anúncio.
+Future<Dependencies> e2eDependencies({bool ads = false}) async {
   await _database?.close();
   final database = _database = AppDatabase();
   final positions = AssetPositionsRepository(const AssetService());
@@ -256,8 +264,19 @@ Future<Dependencies> e2eDependencies() async {
     progress,
     e2eNow,
   );
+  final flags = FakeRemoteFlagsRepository();
   return Dependencies(
     now: e2eNow,
+    remoteFlagsRepository: flags,
+    adsRepository: ads
+        ? ServiceAdsRepository(
+            service: FakeAdsService(),
+            preferences: PreferencesService(),
+            flags: flags,
+            purchases: const NoPurchaseRepository(),
+            now: e2eNow,
+          )
+        : const NoAdsRepository(),
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: e2eHaptics,

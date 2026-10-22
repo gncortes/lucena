@@ -9,10 +9,15 @@ import 'domain/models/challenge_link.dart';
 import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
+import 'data/repositories/ads/ads_repository.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
+import 'data/repositories/purchase/purchase_repository.dart';
+import 'data/repositories/store/store_listing_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
 import 'data/repositories/week/week_repository.dart';
+import 'data/repositories/config/remote_flags_repository.dart';
+import 'data/repositories/update/app_update_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
 import 'data/repositories/characters/character_repository.dart';
@@ -76,6 +81,9 @@ import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
 import 'routing/router.dart';
+import 'routing/stream_refresh.dart';
+import 'ui/update/view_models/update_cubit.dart';
+import 'ui/update/widgets/update_bridge.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
 import 'ui/reminders/view_models/reminders_cubit.dart';
 import 'ui/reminders/widgets/reminders_bridge.dart';
@@ -126,10 +134,22 @@ class _LucenaAppState extends State<LucenaApp> {
     changes: widget.dependencies.localChanges,
   );
 
+  // A versão contra o Remote Config e a Play (E1.32).
+  late final UpdateCubit _update = UpdateCubit(
+    flags: widget.dependencies.remoteFlagsRepository,
+    updates: widget.dependencies.appUpdateRepository,
+  );
+
+  // Refaz o redirect da atualização obrigatória quando ela muda.
+  late final StreamRefresh _updateRefresh = StreamRefresh(
+    _update.stream.map((state) => state.required).distinct(),
+  );
+
   @override
   void initState() {
     super.initState();
     _sync.start();
+    unawaited(_update.start());
     _openRouter();
   }
 
@@ -148,6 +168,17 @@ class _LucenaAppState extends State<LucenaApp> {
     final link =
         await deepLinks.initial() ??
         (pushed == null ? null : deepLinks.parse(pushed));
+    // O anúncio (E1.25): sessão nova e, para quem já respondeu "O que você
+    // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
+    // formulário agora.
+    final onboarding = await widget.dependencies.onboardingRepository.load();
+    final profile = await widget.dependencies.profileRepository.load();
+    unawaited(
+      widget.dependencies.adsRepository.start(
+        fromLink: link != null,
+        goalAnswered: onboarding.done || profile.goal != null,
+      ),
+    );
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
@@ -161,6 +192,8 @@ class _LucenaAppState extends State<LucenaApp> {
           showSchool: VisibleLessons.school,
           visibleEndgameLessons: VisibleLessons.endgameLessonIds,
         ),
+        updateRequired: () => _update.state.required,
+        refresh: _updateRefresh,
       );
     });
     _links = deepLinks.opened.listen(
@@ -197,6 +230,8 @@ class _LucenaAppState extends State<LucenaApp> {
     unawaited(_pushLinks?.cancel());
     unawaited(_sync.dispose());
     _router?.dispose();
+    _updateRefresh.dispose();
+    unawaited(_update.close());
     super.dispose();
   }
 
@@ -403,9 +438,25 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<WeekRepository>.value(
           value: dependencies.weekRepository,
         ),
+        RepositoryProvider<RemoteFlagsRepository>.value(
+          value: dependencies.remoteFlagsRepository,
+        ),
+        RepositoryProvider<AdsRepository>.value(
+          value: dependencies.adsRepository,
+        ),
+        RepositoryProvider<PurchaseRepository>.value(
+          value: dependencies.purchaseRepository,
+        ),
+        RepositoryProvider<StoreListingRepository>.value(
+          value: dependencies.storeListingRepository,
+        ),
+        RepositoryProvider<AppUpdateRepository>.value(
+          value: dependencies.appUpdateRepository,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider<UpdateCubit>.value(value: _update),
           BlocProvider(
             create: (context) => SettingsCubit(
               dependencies.settingsRepository,
@@ -477,9 +528,12 @@ class _LucenaAppState extends State<LucenaApp> {
                 supportedLocales: appSupportedLocales,
                 routerConfig: router,
                 // Abaixo das traduções: os textos dos lembretes vêm delas.
-                builder: (context, child) => RemindersBridge(
-                  onOpen: (route) => _router?.push(route),
-                  child: child ?? const SizedBox.shrink(),
+                builder: (context, child) => UpdateBridge(
+                  router: router,
+                  child: RemindersBridge(
+                    onOpen: (route) => _router?.push(route),
+                    child: child ?? const SizedBox.shrink(),
+                  ),
                 ),
               ),
             );
@@ -502,7 +556,12 @@ class _QuietInBackground extends StatefulWidget {
 
 class _QuietInBackgroundState extends State<_QuietInBackground> {
   late final AppLifecycleListener _listener = AppLifecycleListener(
-    onHide: () => context.read<SpeechCubit>().stop(),
+    onHide: () {
+      context.read<SpeechCubit>().stop();
+      context.read<AdsRepository>().hidden();
+    },
+    // Mais de 30 minutos fora: sessão nova do anúncio (E1.25).
+    onShow: () => context.read<AdsRepository>().visible(),
     // De volta (talvez das configurações de voz do aparelho): uma voz nova
     // pode ter sido baixada.
     onResume: () => context.read<SpeechCubit>().reloadVoices(),

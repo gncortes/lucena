@@ -43,13 +43,10 @@ class PrivacyState {
 /// Privacidade e anúncios (E1.25, item 2).
 class PrivacyCubit extends Cubit<PrivacyState> {
   PrivacyCubit({
-    required AdsRepository ads,
-    required PurchaseRepository purchases,
-    required AccountRepository accounts,
-  }) : _ads = ads,
-       _purchases = purchases,
-       _accounts = accounts,
-       super(const PrivacyState());
+    required this._ads,
+    required this._purchases,
+    required this._accounts,
+  }) : super(const PrivacyState());
 
   final AdsRepository _ads;
   final PurchaseRepository _purchases;

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
-import '../data/repositories/ads/ads_config_repository.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/store/store_listing_repository.dart';
@@ -9,6 +8,10 @@ import '../data/services/ads_service.dart';
 import '../data/services/purchase_service.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
 import '../data/repositories/week/week_repository.dart';
+import '../data/repositories/config/remote_flags_repository.dart';
+import '../data/repositories/update/app_update_repository.dart';
+import '../data/services/app_update_service.dart';
+import '../data/services/firebase/remote_config_service.dart';
 import '../data/services/notification_service.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
 import '../data/repositories/crowd/crowd_repository.dart';
@@ -220,6 +223,8 @@ class Dependencies {
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
+    this._remoteFlagsRepository,
+    this._appUpdateRepository,
     required this.languages,
     this.version = const AppVersion(appVersion),
   });
@@ -297,6 +302,13 @@ class Dependencies {
     );
     // Anúncios e "Remover anúncios" (E1.25) só no build da Play, que é o que
     // sobe o Firebase; no do F-Droid ficam desligados.
+    final flags = RemoteConfigFlagsRepository(
+      firebase ? FirebaseRemoteConfigService() : NoRemoteConfigService(),
+      // Nas versões de teste, o valor novo do console vale na hora.
+      minimumFetchInterval: showsDevTools
+          ? Duration.zero
+          : const Duration(hours: 12),
+    );
     final purchases = firebase
         ? PlayPurchaseRepository(PlayPurchaseService(), preferences)
         : const NoPurchaseRepository();
@@ -304,7 +316,7 @@ class Dependencies {
         ? ServiceAdsRepository(
             service: GoogleAdsService(),
             preferences: preferences,
-            config: const ConstAdsConfigRepository(),
+            flags: flags,
             purchases: purchases,
             now: now,
           )
@@ -426,6 +438,13 @@ class Dependencies {
         DeviceNotificationService(),
         progress: endgames,
         lessons: endgameLessons,
+      ),
+      remoteFlagsRepository: flags,
+      appUpdateRepository: PlayAppUpdateRepository(
+        firebase ? const PlayAppUpdateService() : const NoAppUpdateService(),
+        preferences,
+        build: () async =>
+            int.tryParse((await PackageInfo.fromPlatform()).buildNumber) ?? 0,
       ),
       languages: AppLanguage.selectable,
       version: version,
@@ -550,6 +569,16 @@ class Dependencies {
     now: now,
   );
   WeekRepository? _weekRepository;
+
+  /// As chaves do Remote Config (E1.32), com os padrões do app sem rede.
+  RemoteFlagsRepository get remoteFlagsRepository => _remoteFlagsRepository ??=
+      RemoteConfigFlagsRepository(NoRemoteConfigService());
+  RemoteFlagsRepository? _remoteFlagsRepository;
+
+  /// A versão instalada contra a da Play (E1.32).
+  AppUpdateRepository get appUpdateRepository =>
+      _appUpdateRepository ??= const NoAppUpdateRepository();
+  AppUpdateRepository? _appUpdateRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

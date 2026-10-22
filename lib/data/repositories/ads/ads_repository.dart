@@ -6,8 +6,8 @@ import '../../../domain/use_cases/ad_policy.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../services/ads_service.dart';
 import '../../services/preferences_service.dart';
+import '../config/remote_flags_repository.dart';
 import '../purchase/purchase_repository.dart';
-import 'ads_config_repository.dart';
 
 /// O que aconteceu no toque que abre a lição: nada, o anúncio do SDK já
 /// passou, ou o app tem que desenhar o anúncio (o falso do modo E2E).
@@ -51,20 +51,16 @@ abstract class AdsRepository {
 
 class ServiceAdsRepository implements AdsRepository {
   ServiceAdsRepository({
-    required AdsService service,
-    required PreferencesService preferences,
-    required AdsConfigRepository config,
-    required PurchaseRepository purchases,
-    required Now now,
-  }) : _service = service,
-       _preferences = preferences,
-       _config = config,
-       _purchases = purchases,
-       _now = now;
+    required this._service,
+    required this._preferences,
+    required this._flags,
+    required this._purchases,
+    required this._now,
+  });
 
   final AdsService _service;
   final PreferencesService _preferences;
-  final AdsConfigRepository _config;
+  final RemoteFlagsRepository _flags;
   final PurchaseRepository _purchases;
   final Now _now;
 
@@ -154,15 +150,22 @@ class ServiceAdsRepository implements AdsRepository {
     await _loaded;
     final now = _now();
     _state = _state.copyWith(lessonsOpened: _state.lessonsOpened + 1);
-    final decision = AdPolicy(_config.config).decide(
-      state: _state,
-      kind: kind,
-      lessonId: lessonId,
-      now: now,
-      consentReady: _consentReady && !_consentOpen,
-      adReady: _service.ready,
-      adFree: _adFree,
-    );
+    final decision =
+        AdPolicy(
+          AdsConfig(
+            enabled: _flags.adsEnabled,
+            freeLessons: _flags.adsFreeLessons,
+            minGapSeconds: _flags.adsMinGapSeconds,
+          ),
+        ).decide(
+          state: _state,
+          kind: kind,
+          lessonId: lessonId,
+          now: now,
+          consentReady: _consentReady && !_consentOpen,
+          adReady: _service.ready,
+          adFree: _adFree,
+        );
     if (decision == AdDecision.notReady) _service.preload();
     if (decision != AdDecision.show) {
       unawaited(_save());

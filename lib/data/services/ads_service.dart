@@ -77,8 +77,7 @@ class GoogleAdsService extends AdsService {
 
   @override
   Future<bool> privacyOptionsRequired() async =>
-      await ConsentInformation.instance
-          .getPrivacyOptionsRequirementStatus() ==
+      await ConsentInformation.instance.getPrivacyOptionsRequirementStatus() ==
       PrivacyOptionsRequirementStatus.required;
 
   @override

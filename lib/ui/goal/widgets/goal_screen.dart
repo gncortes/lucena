@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../data/repositories/ads/ads_repository.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/goal_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -27,6 +30,8 @@ class GoalScreen extends StatelessWidget {
       listenWhen: (previous, current) =>
           current.exit != null && previous.exit == null,
       listener: (context, state) {
+        // Respondeu a pergunta: é a hora do consentimento do Google (E1.25).
+        unawaited(context.read<AdsRepository>().requestConsent());
         if (state.exit == GoalExit.level) return context.go(Routes.level);
         // O objetivo e a faixa de iniciante já estão no perfil.
         context.read<ProfileCubit>().load();

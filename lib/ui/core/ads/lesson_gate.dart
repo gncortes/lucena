@@ -72,7 +72,8 @@ class FakeInterstitial extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     key: AdsKeys.fakeClose,
-                    tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                    tooltip: MaterialLocalizations.of(context)
+                        .closeButtonTooltip,
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
