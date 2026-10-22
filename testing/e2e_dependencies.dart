@@ -1,4 +1,6 @@
 import 'fakes/fake_deep_link_service.dart';
+import 'fakes/fake_account_repository.dart';
+import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
@@ -239,6 +241,8 @@ Future<Dependencies> e2eDependencies() async {
     hapticsRepository: e2eHaptics,
     shareRepository: e2eShare,
     deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
+    accountRepository: FakeAccountRepository(),
+    pushRepository: FakePushRepository(),
     placementRepository: LocalPlacementRepository(
       const AssetService(),
       PreferencesService(),

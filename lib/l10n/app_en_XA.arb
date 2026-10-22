@@ -1170,6 +1170,8 @@
   "accountEmail": "[Çöñtîñûé wîth é-måîl one two]",
   "accountLater": "[Ñöt ñöw one]",
   "accountSoon": "[Šîĝñîñĝ îñ îš çömîñĝ šööñ. one two three]",
+  "accountFailedNetwork": "[Ñö îñtéŕñét. Tŕý åĝåîñ whéñ thé çöññéçtîöñ îš båçk. one two three four five]",
+  "accountFailed": "[Çöûld ñöt šîĝñ îñ ñöw. Tŕý åĝåîñ. one two three]",
   "freeBoardNoRating": "[Ñö ŕåtîñĝ one]",
   "challengeSetupSound": "[Pîéçé šöûñdš one two]",
   "featuredTitle": "[Féåtûŕéd éñdĝåméš one two]",

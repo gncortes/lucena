@@ -6227,6 +6227,14 @@
   "@accountSoon": {
     "description": "Message shown while the sign-in is not available yet."
   },
+  "accountFailedNetwork": "No internet. Try again when the connection is back.",
+  "@accountFailedNetwork": {
+    "description": "Message shown when signing in fails for lack of internet."
+  },
+  "accountFailed": "Could not sign in now. Try again.",
+  "@accountFailed": {
+    "description": "Message shown when signing in fails for any other reason."
+  },
   "freeBoardNoRating": "No rating",
   "@freeBoardNoRating": {
     "description": "Shown under the player name before the level is chosen"

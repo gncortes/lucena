@@ -1211,6 +1211,8 @@
   "accountEmail": "Continuar com e-mail",
   "accountLater": "Agora não",
   "accountSoon": "Entrar com conta chega em breve.",
+  "accountFailedNetwork": "Sem internet. Tente de novo quando a conexão voltar.",
+  "accountFailed": "Não deu para entrar agora. Tente de novo.",
   "freeBoardNoRating": "Sem rating",
   "challengeSetupSound": "Som das peças",
   "featuredTitle": "Finais em destaque",

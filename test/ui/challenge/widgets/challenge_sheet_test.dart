@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -78,7 +79,7 @@ void main() {
     expect(find.byKey(ChallengeKeys.summary), findsOne);
     expect(find.text('Maia 1400 · 5+0'), findsOne);
     expect(find.text('You play white · Normal'), findsOne);
-    expect(find.text('playlucena.com/p/${_link.code}'), findsOne);
+    expect(find.text('${AppLinks.host}/p/${_link.code}'), findsOne);
   });
 
   testWidgets('Compartilhar manda o link do desafio', (tester) async {

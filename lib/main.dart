@@ -35,7 +35,10 @@ import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/account/account_repository.dart';
 import 'data/repositories/deep_link/deep_link_repository.dart';
+import 'data/repositories/push/push_repository.dart';
+import 'data/services/firebase/firebase_bootstrap.dart';
 import 'data/repositories/share/share_repository.dart';
 import 'data/repositories/placement/placement_repository.dart';
 import 'data/repositories/conclusion/conclusion_repository.dart';
@@ -73,7 +76,12 @@ import 'ui/wiki/view_models/wiki_links_cubit.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final version = await Dependencies.installedVersion();
-  runApp(LucenaApp(dependencies: Dependencies.normal(version: version)));
+  final firebase = await startFirebase();
+  runApp(
+    LucenaApp(
+      dependencies: Dependencies.normal(version: version, firebase: firebase),
+    ),
+  );
 }
 
 class LucenaApp extends StatefulWidget {
@@ -92,6 +100,9 @@ class _LucenaAppState extends State<LucenaApp> {
   // Os desafios que chegam por link com o app aberto.
   StreamSubscription<ChallengeLink>? _links;
 
+  // Os avisos de push tocados com o app em segundo plano.
+  StreamSubscription<Uri>? _pushLinks;
+
   @override
   void initState() {
     super.initState();
@@ -106,7 +117,13 @@ class _LucenaAppState extends State<LucenaApp> {
     final school = await widget.dependencies.schoolProgressRepository.load();
     final endgames = await widget.dependencies.endgameProgressRepository.load();
     final stars = await widget.dependencies.starChallengeRepository.open();
-    final link = await widget.dependencies.deepLinkRepository.initial();
+    final deepLinks = widget.dependencies.deepLinkRepository;
+    final push = widget.dependencies.pushRepository;
+    unawaited(push.start());
+    final pushed = await push.initialLink();
+    final link =
+        await deepLinks.initial() ??
+        (pushed == null ? null : deepLinks.parse(pushed));
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
@@ -122,14 +139,20 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
       );
     });
-    _links = widget.dependencies.deepLinkRepository.opened.listen(
+    _links = deepLinks.opened.listen(
       (link) => _router?.push(Routes.challenge(link)),
     );
+    // Um aviso pode trazer o link de um desafio ou final.
+    _pushLinks = push.openedLinks.listen((uri) {
+      final link = deepLinks.parse(uri);
+      if (link != null) _router?.push(Routes.challenge(link));
+    });
   }
 
   @override
   void dispose() {
     unawaited(_links?.cancel());
+    unawaited(_pushLinks?.cancel());
     _router?.dispose();
     super.dispose();
   }
@@ -152,6 +175,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<DeepLinkRepository>.value(
           value: dependencies.deepLinkRepository,
+        ),
+        RepositoryProvider<AccountRepository>.value(
+          value: dependencies.accountRepository,
+        ),
+        RepositoryProvider<PushRepository>.value(
+          value: dependencies.pushRepository,
         ),
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,
