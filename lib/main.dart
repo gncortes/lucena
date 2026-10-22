@@ -36,6 +36,7 @@ import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/account/account_invite_repository.dart';
+import 'data/repositories/account/avatar_repository.dart';
 import 'data/repositories/activity/activity_repository.dart';
 import 'data/repositories/daily/daily_final_repository.dart';
 import 'data/repositories/account/account_repository.dart';
@@ -213,6 +214,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<PushRepository>.value(
           value: dependencies.pushRepository,
+        ),
+        RepositoryProvider<AvatarRepository>.value(
+          value: dependencies.avatarRepository,
         ),
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,

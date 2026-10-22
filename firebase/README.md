@@ -8,6 +8,7 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 |---|---|
 | Auth | Google e e-mail/senha. A proteção contra enumeração de e-mail está ligada. |
 | Firestore | `(default)` em `nam5` (EUA multirregião), regras em `firestore.rules`. |
+| Storage | Só a foto de perfil enviada (`users/{uid}/avatar.jpg`), regras em `storage.rules`. O bucket padrão precisa ser criado no console (pede o plano Blaze). |
 | Cloud Messaging | Tópico `all` (todo aparelho entra ao abrir o app). Aviso com `link` nos dados abre o desafio. |
 | Hosting | https://lucena-2f4de.web.app: a landing, `/.well-known/assetlinks.json` e `/p/**` (link de desafio sem o app → landing). |
 
@@ -23,6 +24,7 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | `candidates/{id}` | admin | admin |
 | `featured/{id}` | todos | admin |
 | `admins/{uid}` | o próprio | ninguém pelo app (criar no console) |
+| Storage `users/{uid}/avatar.jpg` | o dono | o dono, imagem até 1 MB |
 
 Direito pago (premium) nunca é gravado pelo app: vem do servidor (Admin SDK).
 
@@ -30,6 +32,7 @@ Direito pago (premium) nunca é gravado pelo app: vem do servidor (Admin SDK).
 
 ```sh
 firebase deploy --only firestore
+firebase deploy --only storage
 LANDING_SITE=https://lucena-2f4de.web.app LANDING_BASE=/ npm --prefix landing run build
 firebase deploy --only hosting
 ```

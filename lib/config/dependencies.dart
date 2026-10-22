@@ -101,6 +101,7 @@ import '../data/services/preferences_service.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../data/repositories/account/account_invite_repository.dart';
+import '../data/repositories/account/avatar_repository.dart';
 import '../data/repositories/account/account_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository_remote.dart';
@@ -114,6 +115,7 @@ import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/services/firebase/file_store_service.dart';
 import '../data/services/firebase/push_service.dart';
 import '../domain/models/app_language.dart';
 import '../domain/models/app_version.dart';
@@ -194,6 +196,7 @@ class Dependencies {
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     this.syncRepository = const NoSyncRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
+    this.avatarRepository = const NoAvatarRepository(),
     this.localChanges = const Stream.empty(),
     required this.languages,
     this.version = const AppVersion(appVersion),
@@ -351,6 +354,9 @@ class Dependencies {
         preferences,
       ),
       accountInviteRepository: LocalAccountInviteRepository(preferences),
+      avatarRepository: CloudAvatarRepository(
+        firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
+      ),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -448,6 +454,9 @@ class Dependencies {
   /// O progresso na conta (E1.13). Sem conta, ninguém chama.
   final SyncRepository syncRepository;
   final AccountInviteRepository accountInviteRepository;
+
+  /// A foto de perfil enviada (§2.12), no Storage da conta.
+  final AvatarRepository avatarRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;
