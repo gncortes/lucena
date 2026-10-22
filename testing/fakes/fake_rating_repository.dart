@@ -27,6 +27,12 @@ class FakeRatingRepository implements RatingRepository {
       entries.isEmpty ? PlayerRating.start(initial) : entries.last.rating;
 
   @override
+  Future<void> restore(PlayerRating rating) async {
+    if (rating.rating <= (await current()).rating) return;
+    entries.add(RatingEntry(rating: rating, at: _now?.call() ?? DateTime(0)));
+  }
+
+  @override
   Future<PlayerRating> start() async => PlayerRating.start(initial);
 
   @override

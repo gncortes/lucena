@@ -30,6 +30,10 @@ abstract class RatingRepository {
     required int points,
   });
 
+  /// O rating veio da conta (E1.13) e é maior que o daqui: vira o atual,
+  /// sem partida nem bônus. Menor ou igual, nada muda.
+  Future<void> restore(PlayerRating rating);
+
   /// Conta a partida [game], gravada com o id [gameId], em que o jogador
   /// jogou com [userSide]; [drawGoal]: o objetivo era empatar. Devolve o
   /// rating novo; nulo se ela não conta.

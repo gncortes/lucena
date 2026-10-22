@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/tablebase/engine_judge_repository.dart';
@@ -60,6 +62,8 @@ import '../data/services/speech_input_service.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
 import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/survey/survey_repository.dart';
+import '../data/repositories/sync/sync_repository.dart';
+import '../data/repositories/endgames/endgame_progress_repository_notifying.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
 import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/voice/voice_repository_local.dart';
@@ -82,6 +86,7 @@ import '../data/repositories/positions/positions_repository_asset.dart';
 import '../data/repositories/profile/profile_repository.dart';
 import '../data/repositories/progress/progress_repository.dart';
 import '../data/repositories/progress/progress_repository_local.dart';
+import '../data/repositories/progress/progress_repository_restored.dart';
 import '../data/repositories/profile/profile_repository_local.dart';
 import '../data/repositories/settings/settings_repository.dart';
 import '../data/repositories/settings/settings_repository_local.dart';
@@ -180,6 +185,8 @@ class Dependencies {
     required this.featuredRepository,
     required this.featuredProgressRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
+    this.syncRepository = const NoSyncRepository(),
+    this.localChanges = const Stream.empty(),
     required this.languages,
     this.version = const AppVersion(appVersion),
   });
@@ -211,6 +218,34 @@ class Dependencies {
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
     final lessons = AssetLessonRepository(assets);
+    final cloudStore = firebase
+        ? FirestoreCloudStoreService()
+        : const NoCloudStoreService();
+    // Partida ou aula gravada: a conta recebe o progresso pouco depois.
+    final changes = StreamController<void>.broadcast();
+    void changed() => changes.add(null);
+    final progress = RestoredProgressRepository(
+      LocalProgressRepository(database),
+      preferences,
+      onAdded: changed,
+    );
+    final journey = AssetJourneyRepository(assets, positions);
+    final speedruns = LocalSpeedrunRepository(database);
+    final race = LocalRaceRepository(assets, preferences, now);
+    final rating = LocalRatingRepository(
+      database,
+      maia: maiaRepository,
+      profile: profile,
+      now: now,
+    );
+    final onboarding = LocalOnboardingRepository(preferences);
+    final school = LocalSchoolProgressRepository(preferences);
+    final stars = LocalStarChallengeRepository(preferences);
+    final endgames = NotifyingEndgameProgressRepository(
+      LocalEndgameProgressRepository(preferences),
+      changed,
+    );
+    final featured = LocalFeaturedProgressRepository(preferences);
     return Dependencies(
       now: now,
       settingsRepository: settings,
@@ -220,7 +255,7 @@ class Dependencies {
       deepLinkRepository: ServiceDeepLinkRepository(AppLinksDeepLinkService()),
       accountRepository: CloudAccountRepository(
         firebase ? FirebaseAuthService() : const NoAuthService(),
-        firebase ? FirestoreCloudStoreService() : const NoCloudStoreService(),
+        cloudStore,
         now: now,
         language: () async => (await settings.load()).languageCode,
       ),
@@ -247,28 +282,23 @@ class Dependencies {
         stockfish: StockfishOpponentRepository(stockfish),
       ),
       maiaRepository: maiaRepository,
-      progressRepository: LocalProgressRepository(database),
-      journeyRepository: AssetJourneyRepository(assets, positions),
-      speedrunRepository: LocalSpeedrunRepository(database),
-      raceRepository: LocalRaceRepository(assets, preferences, now),
-      ratingRepository: LocalRatingRepository(
-        database,
-        maia: maiaRepository,
-        profile: profile,
-        now: now,
-      ),
+      progressRepository: progress,
+      journeyRepository: journey,
+      speedrunRepository: speedruns,
+      raceRepository: race,
+      ratingRepository: rating,
       achievementsRepository: LocalAchievementsRepository(assets, database),
       characterRepository: AssetCharacterRepository(assets),
       // O mesmo Stockfish do adversário: contra o Maia ele está livre.
       evaluationRepository: evaluation,
       talkRepository: LocalTalkRepository(preferences),
-      onboardingRepository: LocalOnboardingRepository(preferences),
+      onboardingRepository: onboarding,
       homeLayoutRepository: LocalHomeLayoutRepository(preferences),
       unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: VisibleLessonRepository(lessons),
-      schoolProgressRepository: LocalSchoolProgressRepository(preferences),
-      starChallengeRepository: LocalStarChallengeRepository(preferences),
+      schoolProgressRepository: school,
+      starChallengeRepository: stars,
       // Só as aulas liberadas (VisibleLessons); as falas comuns vêm todas.
       endgameLessonRepository: VisibleEndgameLessonRepository(
         AssetEndgameLessonRepository(assets, school: lessons),
@@ -278,7 +308,7 @@ class Dependencies {
       scriptTableRepository: AssetScriptTableRepository(assets),
       // O juiz de reserva da lição em roteiro: o mesmo Stockfish (T76).
       engineJudge: StockfishJudgeRepository(stockfish),
-      endgameProgressRepository: LocalEndgameProgressRepository(preferences),
+      endgameProgressRepository: endgames,
       exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
       drawOfferRepository: DeviceDrawOfferRepository(
         maia: maiaRepository,
@@ -291,7 +321,24 @@ class Dependencies {
       surveyRepository: LocalSurveyRepository(preferences, now),
       wikiLinksRepository: AssetWikiLinksRepository(assets),
       featuredRepository: AssetFeaturedRepository(assets),
-      featuredProgressRepository: LocalFeaturedProgressRepository(preferences),
+      featuredProgressRepository: featured,
+      syncRepository: CloudSyncRepository(
+        store: cloudStore,
+        preferences: preferences,
+        now: now,
+        profile: profile,
+        rating: rating,
+        progress: progress,
+        endgames: endgames,
+        school: school,
+        stars: stars,
+        onboarding: onboarding,
+        journey: journey,
+        speedruns: speedruns,
+        race: race,
+        featured: featured,
+      ),
+      localChanges: changes.stream,
       languages: AppLanguage.selectable,
       version: version,
     );
@@ -363,6 +410,12 @@ class Dependencies {
   final FeaturedRepository featuredRepository;
   final FeaturedProgressRepository featuredProgressRepository;
   final FeaturedAlertsRepository featuredAlertsRepository;
+
+  /// O progresso na conta (E1.13). Sem conta, ninguém chama.
+  final SyncRepository syncRepository;
+
+  /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
+  final Stream<void> localChanges;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

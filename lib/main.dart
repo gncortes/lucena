@@ -57,6 +57,7 @@ import 'data/repositories/profile/profile_repository.dart';
 import 'data/repositories/positions/positions_repository.dart';
 import 'data/repositories/progress/progress_repository.dart';
 import 'data/repositories/settings/settings_repository.dart';
+import 'data/repositories/sync/sync_scheduler.dart';
 import 'data/repositories/training/training_repository.dart';
 import 'data/repositories/voice/voice_repository.dart';
 import 'data/repositories/blind/blind_log_repository.dart';
@@ -105,9 +106,17 @@ class _LucenaAppState extends State<LucenaApp> {
   // Os avisos de push tocados com o app em segundo plano.
   StreamSubscription<Uri>? _pushLinks;
 
+  // O progresso indo para a conta (E1.13).
+  late final SyncScheduler _sync = SyncScheduler(
+    widget.dependencies.accountRepository,
+    widget.dependencies.syncRepository,
+    changes: widget.dependencies.localChanges,
+  );
+
   @override
   void initState() {
     super.initState();
+    _sync.start();
     _openRouter();
   }
 
@@ -155,6 +164,7 @@ class _LucenaAppState extends State<LucenaApp> {
   void dispose() {
     unawaited(_links?.cancel());
     unawaited(_pushLinks?.cancel());
+    unawaited(_sync.dispose());
     _router?.dispose();
     super.dispose();
   }
@@ -181,6 +191,7 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<AccountRepository>.value(
           value: dependencies.accountRepository,
         ),
+        RepositoryProvider<SyncScheduler>.value(value: _sync),
         RepositoryProvider<LichessRepository>.value(
           value: dependencies.lichessRepository,
         ),

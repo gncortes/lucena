@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../domain/models/account.dart';
@@ -135,6 +138,13 @@ class FirebaseAuthService implements AuthService {
       password: password,
     );
     final user = result.user!;
+    // A confirmação do endereço vai por e-mail; a pessoa joga enquanto isso
+    // (regra 11), então a conta não espera por ela.
+    unawaited(
+      user.sendEmailVerification().catchError(
+        (Object error) => debugPrint('Confirmação não enviada: $error'),
+      ),
+    );
     final trimmed = name?.trim();
     if (trimmed != null && trimmed.isNotEmpty) {
       await user.updateDisplayName(trimmed);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/now.dart';
@@ -95,6 +96,20 @@ class LocalRaceRepository implements RaceRepository {
       await _preferences.remove(_ongoingKey);
       return null;
     }
+  }
+
+  @override
+  Future<void> restoreRecord(RaceRecord record) async {
+    final before = await this.record();
+    await _preferences.setString(
+      _recordKey,
+      jsonEncode(
+        RaceRecord(
+          corrects: max(before.corrects, record.corrects),
+          hardest: max(before.hardest, record.hardest),
+        ).toJson(),
+      ),
+    );
   }
 
   @override

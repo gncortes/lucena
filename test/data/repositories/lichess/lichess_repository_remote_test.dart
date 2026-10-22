@@ -259,4 +259,18 @@ void main() {
     online = false;
     await expectLater(lichess.account(), throwsA(isA<LichessException>()));
   });
+
+  test('a última leitura fica guardada e some ao desconectar', () async {
+    storage.values[RemoteLichessRepository.tokenKey] = 'lio_secret';
+    final lichess = repository();
+    expect(await lichess.lastRead(), isNull);
+
+    final read = await lichess.account();
+
+    // Reabrir o app: a leitura volta igual, sem rede.
+    online = false;
+    expect(await repository().lastRead(), read);
+    await lichess.disconnect();
+    expect(await lichess.lastRead(), isNull);
+  });
 }

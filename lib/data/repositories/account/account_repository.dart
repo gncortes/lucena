@@ -30,6 +30,9 @@ abstract class AccountRepository {
 
   Future<void> sendPasswordReset(String email);
 
+  /// Troca o nome da conta ("Seus dados"). Sem conta, nada acontece.
+  Future<void> updateProfile({required String name});
+
   Future<void> signOut();
 
   /// Apaga o perfil no Firestore e a conta no Auth.
@@ -51,6 +54,9 @@ class CloudAccountRepository implements AccountRepository {
 
   /// O idioma escolhido no app (nulo: o do aparelho).
   final Future<String?> Function() _language;
+
+  /// O tamanho máximo do nome nas regras do Firestore.
+  static const maxName = 80;
 
   @override
   Account? get current => _auth.current;
@@ -88,6 +94,13 @@ class CloudAccountRepository implements AccountRepository {
       _auth.sendPasswordReset(email);
 
   @override
+  Future<void> updateProfile({required String name}) async {
+    final account = _auth.current;
+    if (account == null) return;
+    _touchProfile(account, name: name);
+  }
+
+  @override
   Future<void> signOut() => _auth.signOut();
 
   @override
@@ -100,13 +113,17 @@ class CloudAccountRepository implements AccountRepository {
 
   // A gravação do Firestore só termina quando o servidor confirma; sem rede
   // ela fica na fila do aparelho. O login não espera por ela.
-  void _touchProfile(Account account, {bool created = false}) {
+  void _touchProfile(Account account, {bool created = false, String? name}) {
     final now = _now();
+    final trimmed = (name ?? account.name)?.trim();
     unawaited(() async {
       try {
         final language = await _language();
         await _store.mergeUser(account.uid, {
-          'name': ?account.name,
+          if (trimmed != null && trimmed.isNotEmpty)
+            'name': trimmed.length > maxName
+                ? trimmed.substring(0, maxName)
+                : trimmed,
           'language': ?language,
           'updatedAt': now,
           if (created) 'createdAt': now,

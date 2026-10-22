@@ -8,6 +8,9 @@ abstract class RaceRepository {
 
   Future<RaceRecord> record();
 
+  /// O recorde veio da conta (E1.13): fica o maior de cada campo.
+  Future<void> restoreRecord(RaceRecord record);
+
   /// As últimas Corridas, a mais recente primeiro.
   Future<List<RaceResult>> history();
 

@@ -27,6 +27,9 @@ class RemoteLichessRepository implements LichessRepository {
   static const tokenKey = 'lichess.token';
   static const pendingKey = 'lichess.pending';
 
+  /// A última leitura, junto do token (some com ele ao desconectar).
+  static const lastKey = 'lichess.last';
+
   final LichessService _service;
   final SecureStorageService _storage;
   final DeepLinkService _links;
@@ -81,9 +84,22 @@ class RemoteLichessRepository implements LichessRepository {
     final token = await _storage.read(tokenKey);
     if (token == null) throw const LichessException(LichessFailure.cancelled);
     try {
-      return parseAccount(await _service.account(token), _now());
+      return await _remember(
+        parseAccount(await _service.account(token), _now()),
+      );
     } on LichessServiceException {
       throw const LichessException(LichessFailure.network);
+    }
+  }
+
+  @override
+  Future<PlatformRating?> lastRead() async {
+    final saved = await _storage.read(lastKey);
+    if (saved == null) return null;
+    try {
+      return decodeRating(jsonDecode(saved) as Map<String, Object?>);
+    } on Object {
+      return null;
     }
   }
 
@@ -91,6 +107,7 @@ class RemoteLichessRepository implements LichessRepository {
   Future<void> disconnect() async {
     final token = await _storage.read(tokenKey);
     await _storage.delete(tokenKey);
+    await _storage.delete(lastKey);
     if (token != null) await _service.revoke(token);
   }
 
@@ -112,10 +129,17 @@ class RemoteLichessRepository implements LichessRepository {
     try {
       final token = await _service.exchange(code: code, verifier: pending[1]);
       await _storage.write(tokenKey, token);
-      return parseAccount(await _service.account(token), _now());
+      return await _remember(
+        parseAccount(await _service.account(token), _now()),
+      );
     } on LichessServiceException {
       throw const LichessException(LichessFailure.network);
     }
+  }
+
+  Future<PlatformRating> _remember(PlatformRating rating) async {
+    await _storage.write(lastKey, jsonEncode(encodeRating(rating)));
+    return rating;
   }
 
   static bool _isCallback(Uri uri) =>
@@ -157,6 +181,40 @@ class RemoteLichessRepository implements LichessRepository {
       bullet: mode('bullet'),
       blitz: mode('blitz'),
       rapid: mode('rapid'),
+    );
+  }
+
+  static Map<String, Object?> encodeRating(PlatformRating rating) {
+    Map<String, Object?>? mode(ModeRating? mode) => mode == null
+        ? null
+        : {
+            'rating': mode.rating,
+            'games': mode.games,
+            'prov': mode.provisional,
+          };
+    return {
+      'user': rating.user,
+      'readAt': rating.readAt.toIso8601String(),
+      'bullet': mode(rating.bullet),
+      'blitz': mode(rating.blitz),
+      'rapid': mode(rating.rapid),
+    };
+  }
+
+  static PlatformRating decodeRating(Map<String, Object?> json) {
+    ModeRating? mode(Object? value) => value is Map
+        ? ModeRating(
+            rating: value['rating'] as int,
+            games: value['games'] as int,
+            provisional: value['prov'] == true,
+          )
+        : null;
+    return PlatformRating(
+      user: json['user']! as String,
+      readAt: DateTime.parse(json['readAt']! as String),
+      bullet: mode(json['bullet']),
+      blitz: mode(json['blitz']),
+      rapid: mode(json['rapid']),
     );
   }
 }

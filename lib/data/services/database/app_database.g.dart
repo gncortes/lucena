@@ -79,6 +79,44 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _avatarColorMeta = const VerificationMeta(
+    'avatarColor',
+  );
+  @override
+  late final GeneratedColumn<int> avatarColor = GeneratedColumn<int>(
+    'avatar_color',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _googlePhotoMeta = const VerificationMeta(
+    'googlePhoto',
+  );
+  @override
+  late final GeneratedColumn<bool> googlePhoto = GeneratedColumn<bool>(
+    'google_photo',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("google_photo" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _countryMeta = const VerificationMeta(
+    'country',
+  );
+  @override
+  late final GeneratedColumn<String> country = GeneratedColumn<String>(
+    'country',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -88,6 +126,9 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     levelSource,
     lichessUser,
     chessComUser,
+    avatarColor,
+    googlePhoto,
+    country,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -153,6 +194,30 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         ),
       );
     }
+    if (data.containsKey('avatar_color')) {
+      context.handle(
+        _avatarColorMeta,
+        avatarColor.isAcceptableOrUnknown(
+          data['avatar_color']!,
+          _avatarColorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('google_photo')) {
+      context.handle(
+        _googlePhotoMeta,
+        googlePhoto.isAcceptableOrUnknown(
+          data['google_photo']!,
+          _googlePhotoMeta,
+        ),
+      );
+    }
+    if (data.containsKey('country')) {
+      context.handle(
+        _countryMeta,
+        country.isAcceptableOrUnknown(data['country']!, _countryMeta),
+      );
+    }
     return context;
   }
 
@@ -190,6 +255,18 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         DriftSqlType.string,
         data['${effectivePrefix}chess_com_user'],
       ),
+      avatarColor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}avatar_color'],
+      )!,
+      googlePhoto: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}google_photo'],
+      )!,
+      country: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}country'],
+      ),
     );
   }
 
@@ -212,6 +289,11 @@ class Profile extends DataClass implements Insertable<Profile> {
   final String? levelSource;
   final String? lichessUser;
   final String? chessComUser;
+
+  /// O avatar e o país (E1.13). Desde a versão 11.
+  final int avatarColor;
+  final bool googlePhoto;
+  final String? country;
   const Profile({
     required this.id,
     required this.nickname,
@@ -220,6 +302,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     this.levelSource,
     this.lichessUser,
     this.chessComUser,
+    required this.avatarColor,
+    required this.googlePhoto,
+    this.country,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -239,6 +324,11 @@ class Profile extends DataClass implements Insertable<Profile> {
     if (!nullToAbsent || chessComUser != null) {
       map['chess_com_user'] = Variable<String>(chessComUser);
     }
+    map['avatar_color'] = Variable<int>(avatarColor);
+    map['google_photo'] = Variable<bool>(googlePhoto);
+    if (!nullToAbsent || country != null) {
+      map['country'] = Variable<String>(country);
+    }
     return map;
   }
 
@@ -257,6 +347,11 @@ class Profile extends DataClass implements Insertable<Profile> {
       chessComUser: chessComUser == null && nullToAbsent
           ? const Value.absent()
           : Value(chessComUser),
+      avatarColor: Value(avatarColor),
+      googlePhoto: Value(googlePhoto),
+      country: country == null && nullToAbsent
+          ? const Value.absent()
+          : Value(country),
     );
   }
 
@@ -273,6 +368,9 @@ class Profile extends DataClass implements Insertable<Profile> {
       levelSource: serializer.fromJson<String?>(json['levelSource']),
       lichessUser: serializer.fromJson<String?>(json['lichessUser']),
       chessComUser: serializer.fromJson<String?>(json['chessComUser']),
+      avatarColor: serializer.fromJson<int>(json['avatarColor']),
+      googlePhoto: serializer.fromJson<bool>(json['googlePhoto']),
+      country: serializer.fromJson<String?>(json['country']),
     );
   }
   @override
@@ -286,6 +384,9 @@ class Profile extends DataClass implements Insertable<Profile> {
       'levelSource': serializer.toJson<String?>(levelSource),
       'lichessUser': serializer.toJson<String?>(lichessUser),
       'chessComUser': serializer.toJson<String?>(chessComUser),
+      'avatarColor': serializer.toJson<int>(avatarColor),
+      'googlePhoto': serializer.toJson<bool>(googlePhoto),
+      'country': serializer.toJson<String?>(country),
     };
   }
 
@@ -297,6 +398,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     Value<String?> levelSource = const Value.absent(),
     Value<String?> lichessUser = const Value.absent(),
     Value<String?> chessComUser = const Value.absent(),
+    int? avatarColor,
+    bool? googlePhoto,
+    Value<String?> country = const Value.absent(),
   }) => Profile(
     id: id ?? this.id,
     nickname: nickname ?? this.nickname,
@@ -305,6 +409,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     levelSource: levelSource.present ? levelSource.value : this.levelSource,
     lichessUser: lichessUser.present ? lichessUser.value : this.lichessUser,
     chessComUser: chessComUser.present ? chessComUser.value : this.chessComUser,
+    avatarColor: avatarColor ?? this.avatarColor,
+    googlePhoto: googlePhoto ?? this.googlePhoto,
+    country: country.present ? country.value : this.country,
   );
   Profile copyWithCompanion(ProfilesCompanion data) {
     return Profile(
@@ -321,6 +428,13 @@ class Profile extends DataClass implements Insertable<Profile> {
       chessComUser: data.chessComUser.present
           ? data.chessComUser.value
           : this.chessComUser,
+      avatarColor: data.avatarColor.present
+          ? data.avatarColor.value
+          : this.avatarColor,
+      googlePhoto: data.googlePhoto.present
+          ? data.googlePhoto.value
+          : this.googlePhoto,
+      country: data.country.present ? data.country.value : this.country,
     );
   }
 
@@ -333,7 +447,10 @@ class Profile extends DataClass implements Insertable<Profile> {
           ..write('goal: $goal, ')
           ..write('levelSource: $levelSource, ')
           ..write('lichessUser: $lichessUser, ')
-          ..write('chessComUser: $chessComUser')
+          ..write('chessComUser: $chessComUser, ')
+          ..write('avatarColor: $avatarColor, ')
+          ..write('googlePhoto: $googlePhoto, ')
+          ..write('country: $country')
           ..write(')'))
         .toString();
   }
@@ -347,6 +464,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     levelSource,
     lichessUser,
     chessComUser,
+    avatarColor,
+    googlePhoto,
+    country,
   );
   @override
   bool operator ==(Object other) =>
@@ -358,7 +478,10 @@ class Profile extends DataClass implements Insertable<Profile> {
           other.goal == this.goal &&
           other.levelSource == this.levelSource &&
           other.lichessUser == this.lichessUser &&
-          other.chessComUser == this.chessComUser);
+          other.chessComUser == this.chessComUser &&
+          other.avatarColor == this.avatarColor &&
+          other.googlePhoto == this.googlePhoto &&
+          other.country == this.country);
 }
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
@@ -369,6 +492,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<String?> levelSource;
   final Value<String?> lichessUser;
   final Value<String?> chessComUser;
+  final Value<int> avatarColor;
+  final Value<bool> googlePhoto;
+  final Value<String?> country;
   const ProfilesCompanion({
     this.id = const Value.absent(),
     this.nickname = const Value.absent(),
@@ -377,6 +503,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     this.levelSource = const Value.absent(),
     this.lichessUser = const Value.absent(),
     this.chessComUser = const Value.absent(),
+    this.avatarColor = const Value.absent(),
+    this.googlePhoto = const Value.absent(),
+    this.country = const Value.absent(),
   });
   ProfilesCompanion.insert({
     this.id = const Value.absent(),
@@ -386,6 +515,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     this.levelSource = const Value.absent(),
     this.lichessUser = const Value.absent(),
     this.chessComUser = const Value.absent(),
+    this.avatarColor = const Value.absent(),
+    this.googlePhoto = const Value.absent(),
+    this.country = const Value.absent(),
   }) : nickname = Value(nickname),
        rating = Value(rating);
   static Insertable<Profile> custom({
@@ -396,6 +528,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Expression<String>? levelSource,
     Expression<String>? lichessUser,
     Expression<String>? chessComUser,
+    Expression<int>? avatarColor,
+    Expression<bool>? googlePhoto,
+    Expression<String>? country,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -405,6 +540,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       if (levelSource != null) 'level_source': levelSource,
       if (lichessUser != null) 'lichess_user': lichessUser,
       if (chessComUser != null) 'chess_com_user': chessComUser,
+      if (avatarColor != null) 'avatar_color': avatarColor,
+      if (googlePhoto != null) 'google_photo': googlePhoto,
+      if (country != null) 'country': country,
     });
   }
 
@@ -416,6 +554,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Value<String?>? levelSource,
     Value<String?>? lichessUser,
     Value<String?>? chessComUser,
+    Value<int>? avatarColor,
+    Value<bool>? googlePhoto,
+    Value<String?>? country,
   }) {
     return ProfilesCompanion(
       id: id ?? this.id,
@@ -425,6 +566,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       levelSource: levelSource ?? this.levelSource,
       lichessUser: lichessUser ?? this.lichessUser,
       chessComUser: chessComUser ?? this.chessComUser,
+      avatarColor: avatarColor ?? this.avatarColor,
+      googlePhoto: googlePhoto ?? this.googlePhoto,
+      country: country ?? this.country,
     );
   }
 
@@ -452,6 +596,15 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     if (chessComUser.present) {
       map['chess_com_user'] = Variable<String>(chessComUser.value);
     }
+    if (avatarColor.present) {
+      map['avatar_color'] = Variable<int>(avatarColor.value);
+    }
+    if (googlePhoto.present) {
+      map['google_photo'] = Variable<bool>(googlePhoto.value);
+    }
+    if (country.present) {
+      map['country'] = Variable<String>(country.value);
+    }
     return map;
   }
 
@@ -464,7 +617,10 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
           ..write('goal: $goal, ')
           ..write('levelSource: $levelSource, ')
           ..write('lichessUser: $lichessUser, ')
-          ..write('chessComUser: $chessComUser')
+          ..write('chessComUser: $chessComUser, ')
+          ..write('avatarColor: $avatarColor, ')
+          ..write('googlePhoto: $googlePhoto, ')
+          ..write('country: $country')
           ..write(')'))
         .toString();
   }
@@ -2768,6 +2924,9 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   Value<String?> levelSource,
   Value<String?> lichessUser,
   Value<String?> chessComUser,
+  Value<int> avatarColor,
+  Value<bool> googlePhoto,
+  Value<String?> country,
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<int> id,
@@ -2777,6 +2936,9 @@ typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<String?> levelSource,
   Value<String?> lichessUser,
   Value<String?> chessComUser,
+  Value<int> avatarColor,
+  Value<bool> googlePhoto,
+  Value<String?> country,
 });
 
 class $$ProfilesTableFilterComposer
@@ -2820,6 +2982,21 @@ class $$ProfilesTableFilterComposer
 
   ColumnFilters<String> get chessComUser => $composableBuilder(
     column: $table.chessComUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get avatarColor => $composableBuilder(
+    column: $table.avatarColor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get googlePhoto => $composableBuilder(
+    column: $table.googlePhoto,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get country => $composableBuilder(
+    column: $table.country,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2867,6 +3044,21 @@ class $$ProfilesTableOrderingComposer
     column: $table.chessComUser,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get avatarColor => $composableBuilder(
+    column: $table.avatarColor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get googlePhoto => $composableBuilder(
+    column: $table.googlePhoto,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get country => $composableBuilder(
+    column: $table.country,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProfilesTableAnnotationComposer
@@ -2904,6 +3096,19 @@ class $$ProfilesTableAnnotationComposer
     column: $table.chessComUser,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get avatarColor => $composableBuilder(
+    column: $table.avatarColor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get googlePhoto => $composableBuilder(
+    column: $table.googlePhoto,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get country =>
+      $composableBuilder(column: $table.country, builder: (column) => column);
 }
 
 class $$ProfilesTableTableManager
@@ -2941,6 +3146,9 @@ class $$ProfilesTableTableManager
                 Value<String?> levelSource = const Value.absent(),
                 Value<String?> lichessUser = const Value.absent(),
                 Value<String?> chessComUser = const Value.absent(),
+                Value<int> avatarColor = const Value.absent(),
+                Value<bool> googlePhoto = const Value.absent(),
+                Value<String?> country = const Value.absent(),
               }) => ProfilesCompanion(
                 id: id,
                 nickname: nickname,
@@ -2949,6 +3157,9 @@ class $$ProfilesTableTableManager
                 levelSource: levelSource,
                 lichessUser: lichessUser,
                 chessComUser: chessComUser,
+                avatarColor: avatarColor,
+                googlePhoto: googlePhoto,
+                country: country,
               ),
           createCompanionCallback:
               ({
@@ -2959,6 +3170,9 @@ class $$ProfilesTableTableManager
                 Value<String?> levelSource = const Value.absent(),
                 Value<String?> lichessUser = const Value.absent(),
                 Value<String?> chessComUser = const Value.absent(),
+                Value<int> avatarColor = const Value.absent(),
+                Value<bool> googlePhoto = const Value.absent(),
+                Value<String?> country = const Value.absent(),
               }) => ProfilesCompanion.insert(
                 id: id,
                 nickname: nickname,
@@ -2967,6 +3181,9 @@ class $$ProfilesTableTableManager
                 levelSource: levelSource,
                 lichessUser: lichessUser,
                 chessComUser: chessComUser,
+                avatarColor: avatarColor,
+                googlePhoto: googlePhoto,
+                country: country,
               ),
           withReferenceMapper: (p0) => p0
               .map(

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:lucena/data/repositories/race/race_repository.dart';
 import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/now.dart';
@@ -35,6 +37,12 @@ class FakeRaceRepository implements RaceRepository {
 
   @override
   Future<RaceRecord> record() async => _record;
+
+  @override
+  Future<void> restoreRecord(RaceRecord record) async => _record = RaceRecord(
+    corrects: max(_record.corrects, record.corrects),
+    hardest: max(_record.hardest, record.hardest),
+  );
 
   @override
   Future<List<RaceResult>> history() async => List.of(_history);

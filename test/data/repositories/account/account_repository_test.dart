@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/services/firebase/auth_service.dart';
 import 'package:lucena/data/services/firebase/cloud_store_service.dart';
 import 'package:lucena/domain/models/account.dart';
 
+import '../../../../testing/fakes/fake_cloud_store_service.dart';
 import '../../../../testing/fakes/fake_now.dart';
 
 const _google = Account(
@@ -41,33 +40,15 @@ class _Auth extends NoAuthService {
   Future<void> delete() async => deleted = true;
 }
 
-class _Store implements CloudStoreService {
-  final merged = <String, Map<String, Object?>>{};
-  final deleted = <String>[];
-
-  /// Sem rede: a gravação não termina.
-  bool offline = false;
-
-  @override
-  Future<void> mergeUser(String uid, Map<String, Object?> data) {
-    if (offline) return Completer<void>().future;
-    merged[uid] = data;
-    return Future.value();
-  }
-
-  @override
-  Future<void> deleteUser(String uid) async => deleted.add(uid);
-}
-
 void main() {
   final now = FakeNow(DateTime.utc(2026, 10, 22, 12));
   late _Auth auth;
-  late _Store store;
+  late FakeCloudStoreService store;
   late CloudAccountRepository repository;
 
   setUp(() {
     auth = _Auth();
-    store = _Store();
+    store = FakeCloudStoreService();
     repository = CloudAccountRepository(
       auth,
       store,
@@ -80,7 +61,7 @@ void main() {
     expect(await repository.signInWithGoogle(), _google);
     await pumpEventQueue();
 
-    expect(store.merged['u1'], {
+    expect(store.users['u1'], {
       'name': 'Ana',
       'language': 'pt',
       'updatedAt': now.value,
@@ -93,14 +74,14 @@ void main() {
     expect(await repository.signInWithGoogle(), isNull);
     await pumpEventQueue();
 
-    expect(store.merged, isEmpty);
+    expect(store.users, isEmpty);
   });
 
   test('criar a conta marca a data de criação', () async {
     await repository.createWithEmail('a@b.com', 'segredo1', name: 'Bia');
     await pumpEventQueue();
 
-    expect(store.merged['u2']?['createdAt'], now.value);
+    expect(store.users['u2']?['createdAt'], now.value);
   });
 
   test('sem rede o login não espera o perfil', () async {
@@ -110,6 +91,18 @@ void main() {
       repository.signInWithGoogle().timeout(const Duration(seconds: 1)),
       completion(_google),
     );
+  });
+
+  test('trocar o nome grava só o nome, cortado em 80 letras', () async {
+    await repository.signInWithGoogle();
+    await pumpEventQueue();
+
+    await repository.updateProfile(name: '  ${'a' * 90}  ');
+    await pumpEventQueue();
+
+    expect(store.users['u1']?['name'], 'a' * 80);
+    expect(store.users['u1']?['updatedAt'], now.value);
+    expect(store.users['u1']?.keys, {'name', 'language', 'updatedAt'});
   });
 
   test('apagar a conta apaga o perfil antes da conta', () async {

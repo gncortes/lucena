@@ -28,6 +28,9 @@ class LocalProfileRepository implements ProfileRepository {
       levelSource: LevelSource.fromCode(row.levelSource),
       lichessUser: row.lichessUser,
       chessComUser: row.chessComUser,
+      avatarColor: row.avatarColor,
+      googlePhoto: row.googlePhoto,
+      country: row.country,
     );
   }
 
@@ -44,6 +47,9 @@ class LocalProfileRepository implements ProfileRepository {
             levelSource: Value(profile.levelSource?.name),
             lichessUser: Value(profile.lichessUser),
             chessComUser: Value(profile.chessComUser),
+            avatarColor: Value(profile.avatarColor),
+            googlePhoto: Value(profile.googlePhoto),
+            country: Value(profile.country),
           ),
         );
   }

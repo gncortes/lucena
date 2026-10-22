@@ -58,6 +58,9 @@ class FakeLichessRepository implements LichessRepository {
   Future<PlatformRating> account() => Future.sync(_result);
 
   @override
+  Future<PlatformRating?> lastRead() async => connected ? rating : null;
+
+  @override
   Future<void> disconnect() async {
     disconnects++;
     connected = false;

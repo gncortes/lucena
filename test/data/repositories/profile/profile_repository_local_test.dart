@@ -65,6 +65,45 @@ void main() {
     expect(await reopen((repository) => repository.load()), profile);
   });
 
+  test('o avatar e o país voltam ao reabrir', () async {
+    const profile = UserProfile(
+      nickname: 'Ana',
+      avatarColor: 3,
+      googlePhoto: true,
+      country: 'BR',
+    );
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o perfil da versão 10 volta com o avatar padrão e sem país', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, goal TEXT NULL, level_source '
+              'TEXT NULL, lichess_user TEXT NULL, chess_com_user TEXT NULL, '
+              'PRIMARY KEY (id))',
+            )
+            ..execute(
+              'INSERT INTO profiles (id, nickname, rating, lichess_user) '
+              "VALUES (1, 'Ana', 1712, 'ana_xadrez')",
+            )
+            ..execute('PRAGMA user_version = 10');
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    expect(
+      await LocalProfileRepository(database).load(),
+      const UserProfile(nickname: 'Ana', rating: 1712, lichessUser: 'ana_xadrez'),
+    );
+  });
+
   test('o perfil da versão 9 volta sem origem nem contas', () async {
     final database = AppDatabase(
       NativeDatabase.memory(

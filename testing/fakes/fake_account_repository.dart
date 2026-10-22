@@ -84,6 +84,24 @@ class FakeAccountRepository implements AccountRepository {
     resets.add(email);
   }
 
+  final List<String> names = [];
+
+  @override
+  Future<void> updateProfile({required String name}) async {
+    if (account == null) return;
+    names.add(name);
+    final current = account!;
+    _set(
+      Account(
+        uid: current.uid,
+        provider: current.provider,
+        email: current.email,
+        name: name,
+        photoUrl: current.photoUrl,
+      ),
+    );
+  }
+
   @override
   Future<void> signOut() async => _set(null);
 

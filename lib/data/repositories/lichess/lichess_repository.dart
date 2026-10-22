@@ -35,6 +35,10 @@ abstract class LichessRepository {
   /// Lê os ratings de novo, com o token gravado. Lança [LichessException].
   Future<PlatformRating> account();
 
+  /// A última leitura dos ratings (a do [connect] ou do [account]), para a
+  /// folha do Perfil mostrar sem rede. Nulo: desconectado.
+  Future<PlatformRating?> lastRead();
+
   /// Revoga o token no Lichess e apaga do aparelho.
   Future<void> disconnect();
 

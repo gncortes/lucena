@@ -18,6 +18,11 @@ class Profiles extends Table {
   TextColumn get lichessUser => text().nullable()();
   TextColumn get chessComUser => text().nullable()();
 
+  /// O avatar e o país (E1.13). Desde a versão 11.
+  IntColumn get avatarColor => integer().withDefault(const Constant(0))();
+  BoolColumn get googlePhoto => boolean().withDefault(const Constant(false))();
+  TextColumn get country => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -134,7 +139,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -191,6 +196,12 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(profiles, profiles.levelSource);
         await migrator.addColumn(profiles, profiles.lichessUser);
         await migrator.addColumn(profiles, profiles.chessComUser);
+      }
+      // 10 -> 11: o avatar e o país da conta.
+      if (from < 11) {
+        await migrator.addColumn(profiles, profiles.avatarColor);
+        await migrator.addColumn(profiles, profiles.googlePhoto);
+        await migrator.addColumn(profiles, profiles.country);
       }
     },
   );
