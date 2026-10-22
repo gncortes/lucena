@@ -179,6 +179,9 @@ import '../ui/core/theme/app_motion.dart';
 import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/sound/game_haptics.dart';
 import '../ui/core/sound/game_sounds.dart';
+import '../data/repositories/week/week_repository.dart';
+import '../ui/week/view_models/week_cubit.dart';
+import '../ui/week/widgets/week_screen.dart';
 import 'routes.dart';
 import '../domain/use_cases/game_intro.dart';
 
@@ -269,6 +272,14 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             now: context.read<Now>(),
           )..load(),
           child: const StreakScreen(),
+        ),
+      ),
+      _route(
+        path: Routes.week,
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              WeekCubit(context.read<WeekRepository>())..load(),
+          child: const WeekScreen(),
         ),
       ),
       _route(

@@ -22,6 +22,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // As notificações locais agendadas (flutter_local_notifications, E1.23).
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -107,4 +109,5 @@ tasks.withType<Copy>().matching { it.name.startsWith("copyFlutterAssets") }.conf
 
 dependencies {
     androidTestUtil("androidx.test:orchestrator:1.5.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
