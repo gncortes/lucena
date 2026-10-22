@@ -21,6 +21,7 @@ class ActionsFooter extends StatelessWidget {
     this.stacked = false,
     this.margin = AppSpacing.lg,
     this.note,
+    this.noteAfter,
     super.key,
   });
 
@@ -29,6 +30,10 @@ class ActionsFooter extends StatelessWidget {
   /// Um texto curto embaixo dos botões, na altura dele (o aviso dos termos
   /// na conta).
   final Widget? note;
+
+  /// Com [stacked], a [note] entra logo depois deste filho em vez de no fim
+  /// (o aviso que fala do botão fica colado nele).
+  final int? noteAfter;
   final bool fade;
   final bool stacked;
 
@@ -39,13 +44,16 @@ class ActionsFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final background = Theme.of(context).scaffoldBackgroundColor;
     final note = this.note;
+    final after = stacked ? noteAfter : null;
     final items = [
-      for (final child in children)
+      for (final (i, child) in children.indexed) ...[
         stacked
             ? SizedBox(height: kButtonHeight, child: child)
             : Expanded(
                 child: SizedBox(height: kButtonHeight, child: child),
               ),
+        if (note != null && i == after) note,
+      ],
     ];
     final buttons = stacked
         ? Column(
@@ -77,7 +85,7 @@ class ActionsFooter extends StatelessWidget {
             AppSpacing.sm,
           ),
           child: FooterButtonTheme(
-            child: note == null
+            child: note == null || after != null
                 ? buttons
                 : Column(
                     mainAxisSize: MainAxisSize.min,

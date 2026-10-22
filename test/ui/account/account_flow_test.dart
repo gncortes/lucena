@@ -141,7 +141,10 @@ void main() {
       tester,
     ) async {
       await pump(tester, Routes.accountEmailFrom('tour'));
-      expect(find.byKey(AccountKeys.legal), findsOneWidget);
+      // O aviso fala do botão: fica entre ele e "Já tem conta? Entrar".
+      double top(Key key) => tester.getTopLeft(find.byKey(key)).dy;
+      expect(top(AccountKeys.emailSubmit), lessThan(top(AccountKeys.legal)));
+      expect(top(AccountKeys.legal), lessThan(top(AccountKeys.toSignIn)));
       await fill(tester, ' ana@example.com ', '12345678');
 
       expect(accounts.current?.email, 'ana@example.com');

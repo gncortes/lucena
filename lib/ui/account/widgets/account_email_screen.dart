@@ -174,7 +174,9 @@ class _EmailViewState extends State<_EmailView> {
         ),
         bottomNavigationBar: ActionsFooter(
           stacked: true,
+          // "Ao criar a conta, você concorda...": colado no botão (§2.12).
           note: create ? const AccountLegalNote(create: true) : null,
+          noteAfter: 0,
           children: [
             FilledButton(
               key: AccountKeys.emailSubmit,
