@@ -4,9 +4,117 @@
   "skills": [
     "rook.lucena"
   ],
-  "parts": [],
-  "exercises": [],
-  "passScore": 0,
+  "parts": [
+    {
+      "id": "ponte",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/rook.lucena/ponte.json"
+    },
+    {
+      "id": "corte",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/rook.lucena/corte.json"
+    },
+    {
+      "id": "lateral",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/rook.lucena/lateral.json"
+    },
+    {
+      "id": "chegar",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/rook.lucena/chegar.json"
+    },
+    {
+      "id": "convert",
+      "steps": [],
+      "roteiro": "assets/lessons/roteiros/rook.lucena/convert.json"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ponteAssessment01",
+      "capitulo": "ponte",
+      "stars": 1,
+      "fen": "8/5P2/2k5/6K1/4R3/8/6r1/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e4g4",
+          "accept": [
+            "e4g4",
+            "g5f5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "corteAssessment01",
+      "capitulo": "corte",
+      "stars": 2,
+      "fen": "5K2/3k1P2/8/8/8/6r1/8/1R6 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "b1d1",
+          "accept": [
+            "b1d1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lateralAssessment01",
+      "capitulo": "lateral",
+      "stars": 2,
+      "fen": "8/5P1k/2r1K3/8/6R1/8/8/8 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "e6d7",
+          "accept": [
+            "e6d7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "chegarAssessment01",
+      "capitulo": "chegar",
+      "stars": 1,
+      "fen": "8/8/3k4/5P2/5K1r/8/8/4R3 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "f4g5",
+          "accept": [
+            "f4g5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "convertAssessment01",
+      "capitulo": "convert",
+      "stars": 2,
+      "fen": "8/8/4k3/2P5/1K6/8/7r/R7 w - - 0 1",
+      "goal": "win",
+      "origin": "own",
+      "line": [
+        {
+          "teach": "a1d1",
+          "accept": [
+            "a1d1"
+          ]
+        }
+      ]
+    }
+  ],
+  "passScore": 5,
   "keyPositions": [
     {
       "id": "lucena",
@@ -83,18 +191,9 @@
       "url": "https://lichess.org/study/Jww8Ta5h"
     },
     {
-      "id": "topalov",
-      "kind": "game",
-      "white": "Veselin Topalov",
-      "black": "Anatoly Karpov",
-      "event": "NAO Masters, Cannes",
-      "year": 2002,
-      "url": "https://lichess.org/analysis/pgn/e4_c6_d4_d5_Nc3_dxe4_Nxe4_Nd7_Ng5_Ngf6_Bd3_e6_N1f3_Bd6_Qe2_h6_Ne4_Nxe4_Qxe4_Qc7_Qg4_Kf8_O-O_c5_b3_e5_dxc5_Nxc5_Bf5_h5_Qh3_Ne6_Rd1_Be7_Qg3_Nf4_Bxf4_exf4_Qh3_Bf6_Rac1_g6_Bxc8_Qxc8_Qxc8+_Rxc8_Rd7_Rb8_c4_Kg7_Kf1_g5_Rcd1_Rhe8_R1d5_Kg6_h3_a6_R5d6_Re6_Rxe6_fxe6_Nd2_g4_Ne4_b6_f3_gxf3_gxf3_Bb2_Re7_Kf5_Ra7_a5_c5_bxc5_Rxa5_Bd4_Nxc5_Rc8_b4_e5_Ne4_Ke6_Ke2_Rc2+_Kd3_Rh2_Ra6+_Kd7_Ng5_Rg2_h4_Rh2_Ne6_Bf2_Nf8+_Kc7_Ng6_Be1_b5_Rb2_a4_Rb3+_Ke4_Re3+_Kf5_Rxf3_Nxe5_Rb3_Kxf4_Bxh4_Ke4_Bg3_Rc6+_Kd8_Nd3_h4_Rh6_Ra3_Nc5_Bf2_Kd5_Bxc5_Kxc5_Rxa4_Kc6_Rc4+_Kb7_Kd7_b6_Rb4_Ka7_Ra4+_Kb8_Rb4_b7_Ra4_Rh7+_Kd8_Rh8+_Kd7_Rh6_Kd8_Rh7_Rb4_Ka7_Ra4+_Kb6#140"
-    },
-    {
       "id": "pgnmentor",
       "kind": "web",
-      "title": "PGN Mentor: partidas de Andersson e de Topalov (arquivos públicos)",
+      "title": "PGN Mentor: partidas de Andersson (arquivos públicos)",
       "url": "https://www.pgnmentor.com/files.html"
     },
     {
@@ -111,5 +210,5 @@
       "url": "https://tablebase.lichess.ovh"
     }
   ],
-  "maxScore": 0
+  "maxScore": 8
 }
