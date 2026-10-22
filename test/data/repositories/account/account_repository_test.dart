@@ -114,6 +114,23 @@ void main() {
     expect(auth.deleted, isTrue);
   });
 
+  test('sem rede, apagar falha sem apagar a conta', () async {
+    await repository.signInWithGoogle();
+    store.offline = true;
+
+    await expectLater(
+      repository.deleteAccount(),
+      throwsA(
+        isA<AccountException>().having(
+          (e) => e.failure,
+          'failure',
+          AccountFailure.network,
+        ),
+      ),
+    );
+    expect(auth.deleted, isFalse);
+  });
+
   test('sem conta, apagar não faz nada', () async {
     await repository.deleteAccount();
 

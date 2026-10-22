@@ -107,7 +107,12 @@ class CloudAccountRepository implements AccountRepository {
   Future<void> deleteAccount() async {
     final account = _auth.current;
     if (account == null) return;
-    await _store.deleteUser(account.uid);
+    try {
+      await _store.deleteUser(account.uid);
+    } on CloudStoreException {
+      // Sem rede não dá para apagar o que está na nuvem: nada é apagado.
+      throw const AccountException(AccountFailure.network);
+    }
     await _auth.delete();
   }
 

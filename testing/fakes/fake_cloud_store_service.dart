@@ -44,6 +44,7 @@ class FakeCloudStoreService implements CloudStoreService {
 
   @override
   Future<void> deleteUser(String uid) async {
+    if (offline) throw const CloudStoreException('unavailable');
     deleted.add(uid);
     users.remove(uid);
     progress.remove(uid);
