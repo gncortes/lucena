@@ -39,6 +39,16 @@ class AppColors extends ThemeExtension<AppColors> {
   static const chessWhiteColor = Color(0xffffffff);
   static const chessBlackColor = Color(0xff2b2b2b);
 
+  /// As cores do avatar (canvas `PropV1PerfilDados`): a inicial na cor da
+  /// frente, sobre o fundo. Fixas, iguais em todo tema de destaque.
+  static const avatars = <({Color foreground, Color background})>[
+    (foreground: Color(0xff24508f), background: Color(0xffd6e4fb)),
+    (foreground: Color(0xff2e6b3a), background: Color(0xffddebdd)),
+    (foreground: Color(0xff7a5900), background: Color(0xffffe2a6)),
+    (foreground: Color(0xff6b3fa0), background: Color(0xffeaddff)),
+    (foreground: Color(0xff8c1d18), background: Color(0xffffdad6)),
+  ];
+
   // Neutros e sombras.
   static const white = Color(0xffffffff);
   static const black = Color(0xff000000);

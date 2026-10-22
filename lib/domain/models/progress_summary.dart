@@ -161,7 +161,6 @@ class ProgressSummary {
   };
 
   static Map<String, int> _ints(Object? value) => {
-    for (final MapEntry(:key, :value) in _map(value).entries)
-      key: ?_int(value),
+    for (final MapEntry(:key, :value) in _map(value).entries) key: ?_int(value),
   };
 }

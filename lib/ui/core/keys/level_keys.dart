@@ -35,11 +35,3 @@ abstract final class LevelKeys {
       Key('level.rating.source.${origin.name}');
   static const ratingUse = Key('level.rating.use');
 }
-
-abstract final class AccountKeys {
-  static const screen = Key('account.screen');
-  static const close = Key('account.close');
-  static const google = Key('account.google');
-  static const email = Key('account.email');
-  static const later = Key('account.later');
-}

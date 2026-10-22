@@ -10,7 +10,6 @@ import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
-import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
@@ -20,6 +19,7 @@ import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
@@ -361,39 +361,32 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> pickLevel(WidgetTester tester, RatingLevel level) async {
-    await tester.tap(find.byKey(ProfileKeys.levelField));
+  Future<void> editNickname(WidgetTester tester, String text) async {
+    await tester.tap(find.byKey(ProfileKeys.editData));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(ProfileKeys.levelOption(level)));
-    await tester.tap(find.byKey(ProfileKeys.levelOption(level)));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
-    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AccountKeys.nickname), text);
   }
 
-  testWidgets('salvar o perfil volta para Configurações com os dados novos', (
-    tester,
-  ) async {
+  testWidgets('salvar "Seus dados" volta ao Perfil e Configurações mostra o '
+      'apelido novo', (tester) async {
     useSystemLocale(tester, const Locale('en', 'US'));
     final profile = FakeProfileRepository();
     await pumpApp(tester, profile: profile);
     await openProfile(tester);
 
-    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Ana');
-    await pickLevel(tester, RatingLevel.advanced);
-    await tester.tap(find.byKey(ProfileKeys.saveButton));
+    await editNickname(tester, 'Ana');
+    await tester.tap(find.byKey(AccountKeys.dataSave));
     await tester.pumpAndSettle();
+    expect(find.byKey(ProfileKeys.screen), findsOneWidget);
+    expect(textOf(tester, ProfileKeys.headerName), 'Ana');
 
-    expect(find.byKey(ProfileKeys.screen), findsNothing);
-    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Advanced');
-    expect(profile.saved, [
-      UserProfile(nickname: 'Ana', rating: RatingLevel.advanced.rating),
-    ]);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Casual');
+    expect(profile.saved.last.nickname, 'Ana');
   });
 
-  testWidgets('editar o perfil e sair sem salvar não muda nada', (
-    tester,
-  ) async {
+  testWidgets('sair de "Seus dados" sem salvar não muda nada', (tester) async {
     useSystemLocale(tester, const Locale('en', 'US'));
     final profile = FakeProfileRepository(
       const UserProfile(nickname: 'Ana', rating: 1750),
@@ -401,21 +394,12 @@ void main() {
     await pumpApp(tester, profile: profile);
     await openProfile(tester);
 
-    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Outro');
-    await pickLevel(tester, RatingLevel.beginner);
+    await editNickname(tester, 'Outro');
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
 
-    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Advanced');
-    expect(profile.saved, isEmpty);
-
-    await tester.tap(find.byKey(SettingsKeys.profileTile));
-    await tester.pumpAndSettle();
-    final nickname = tester.widget<TextField>(
-      find.byKey(ProfileKeys.nicknameField),
-    );
-    expect(nickname.controller!.text, 'Ana');
-    expect(textOf(tester, ProfileKeys.levelName), 'Advanced');
+    expect(textOf(tester, ProfileKeys.headerName), 'Ana');
+    expect(profile.profile.nickname, 'Ana');
   });
 
   testWidgets('o botão da tela inicial abre o tabuleiro livre', (tester) async {

@@ -98,6 +98,7 @@ import '../data/services/maia_service.dart';
 import '../data/services/preferences_service.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
+import '../data/repositories/account/account_invite_repository.dart';
 import '../data/repositories/account/account_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository.dart';
 import '../data/repositories/chesscom/chesscom_repository_remote.dart';
@@ -186,6 +187,7 @@ class Dependencies {
     required this.featuredProgressRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     this.syncRepository = const NoSyncRepository(),
+    this.accountInviteRepository = const NoAccountInviteRepository(),
     this.localChanges = const Stream.empty(),
     required this.languages,
     this.version = const AppVersion(appVersion),
@@ -322,6 +324,7 @@ class Dependencies {
       wikiLinksRepository: AssetWikiLinksRepository(assets),
       featuredRepository: AssetFeaturedRepository(assets),
       featuredProgressRepository: featured,
+      accountInviteRepository: LocalAccountInviteRepository(preferences),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -413,6 +416,7 @@ class Dependencies {
 
   /// O progresso na conta (E1.13). Sem conta, ninguém chama.
   final SyncRepository syncRepository;
+  final AccountInviteRepository accountInviteRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;

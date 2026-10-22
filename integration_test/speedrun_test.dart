@@ -251,7 +251,6 @@ void main() {
     await home.openSettings();
     await profile.open();
     await profile.chooseLevel(RatingLevel.beginner);
-    await profile.save();
     await app.restart();
 
     // Iniciante: o maior ritmo, 15+10.

@@ -1,32 +1,37 @@
 import 'package:flutter/widgets.dart';
 
-import '../../../domain/models/rating_level.dart';
-
 abstract final class ProfileKeys {
-  /// Abre o teste de nível (T52).
-  static const placementTest = Key('profile.placementTest');
-
   static const screen = Key('profile.screen');
+
+  /// Avatar, nome e a linha da conta; o lápis abre "Seus dados".
+  static const header = Key('profile.header');
+  static const headerName = Key('profile.header.name');
+  static const editData = Key('profile.editData');
+
+  /// Sem conta: "Seu progresso está só neste celular".
+  static const localCard = Key('profile.localCard');
+  static const createAccount = Key('profile.createAccount');
+
+  /// Com conta: "Tudo guardado na conta".
+  static const syncCard = Key('profile.syncCard');
+
+  static const rowCountry = Key('profile.rowCountry');
+  static const rowLanguage = Key('profile.rowLanguage');
 
   /// A linha "Seu objetivo", que abre a folha do objetivo.
   static const rowGoal = Key('profile.rowGoal');
 
   /// A linha "Seu nível", que abre a tela do nível (E1.12).
   static const rowLevel = Key('profile.rowLevel');
-  static const nicknameField = Key('profile.nickname');
-  static const saveButton = Key('profile.save');
+  static const rowLichess = Key('profile.rowLichess');
 
-  /// Campo que mostra a faixa de rating e abre o painel de escolha.
-  static const levelField = Key('profile.level');
-  static const levelName = Key('profile.level.name');
+  static const signOut = Key('profile.signOut');
+  static const delete = Key('profile.delete');
 
-  static const levelSheet = Key('profile.level.sheet');
-  static const levelConfirmButton = Key('profile.level.confirm');
+  static const lichessSheet = Key('profile.lichessSheet');
+  static const lichessRefresh = Key('profile.lichessRefresh');
+  static const lichessDisconnect = Key('profile.lichessDisconnect');
 
-  /// Opção de uma faixa no painel de escolha; só vale depois de confirmar.
-  static Key levelOption(RatingLevel level) =>
-      Key('profile.level.option.${level.name}');
-
-  /// O rating de finais: o cartão, o número, quantas partidas e a curva.
+  /// O histórico do rating de finais.
   static const ratingCard = Key('profile.rating');
 }

@@ -8,11 +8,7 @@ import 'progress_repository.dart';
 /// e as posições cumpridos em outro celular contam como cumpridos aqui, sem
 /// virar partida no histórico (as partidas de lá não descem).
 class RestoredProgressRepository implements ProgressRepository {
-  RestoredProgressRepository(
-    this._local,
-    this._preferences, {
-    this._onAdded,
-  });
+  RestoredProgressRepository(this._local, this._preferences, {this._onAdded});
 
   static const _challengesKey = 'sync.restored.challenges';
   static const _positionsKey = 'sync.restored.positions';

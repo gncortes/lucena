@@ -62,7 +62,10 @@ void main() {
         ),
         GoRoute(path: Routes.level, builder: (_, _) => route('rota-nivel')),
         GoRoute(path: Routes.tour, builder: (_, _) => route('rota-tour')),
-        GoRoute(path: Routes.account, builder: (_, _) => route('rota-conta')),
+        GoRoute(
+          path: Routes.accountEnter,
+          builder: (_, _) => route('rota-conta'),
+        ),
         GoRoute(path: Routes.school, builder: (_, _) => route('rota-aulas')),
       ],
     );

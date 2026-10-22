@@ -35,6 +35,7 @@ import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/account/account_invite_repository.dart';
 import 'data/repositories/account/account_repository.dart';
 import 'data/repositories/chesscom/chesscom_repository.dart';
 import 'data/repositories/lichess/lichess_repository.dart';
@@ -190,6 +191,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AccountRepository>.value(
           value: dependencies.accountRepository,
+        ),
+        RepositoryProvider<AccountInviteRepository>.value(
+          value: dependencies.accountInviteRepository,
         ),
         RepositoryProvider<SyncScheduler>.value(value: _sync),
         RepositoryProvider<LichessRepository>.value(
@@ -356,8 +360,12 @@ class _LucenaAppState extends State<LucenaApp> {
             )..load(),
           ),
           BlocProvider(
-            create: (context) =>
-                ProfileCubit(dependencies.profileRepository)..load(),
+            create: (context) => ProfileCubit(
+              dependencies.profileRepository,
+              // O país do Perfil vem da região do celular, sem permissão.
+              region: () =>
+                  WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+            )..load(),
           ),
           BlocProvider(
             create: (context) =>

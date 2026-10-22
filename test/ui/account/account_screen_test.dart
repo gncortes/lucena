@@ -4,14 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
-import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
+import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -27,6 +29,8 @@ void main() {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
+    final scheduler = SyncScheduler(accounts, FakeSyncRepository());
+    addTearDown(scheduler.dispose);
     final router = GoRouter(
       routes: [
         GoRoute(
@@ -35,9 +39,20 @@ void main() {
             providers: [
               RepositoryProvider<AccountRepository>.value(value: accounts),
               RepositoryProvider<OnboardingRepository>.value(value: onboarding),
+              RepositoryProvider<SyncScheduler>.value(value: scheduler),
             ],
             child: const AccountScreen(),
           ),
+        ),
+        GoRoute(
+          path: Routes.accountEmail,
+          builder: (_, state) =>
+              Scaffold(body: Text('rota-email ${state.uri}')),
+        ),
+        GoRoute(
+          path: Routes.accountData,
+          builder: (_, state) =>
+              Scaffold(body: Text('rota-dados ${state.uri}')),
         ),
         GoRoute(
           path: Routes.goal,
@@ -60,12 +75,14 @@ void main() {
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
   });
 
-  testWidgets('entrar com o Google segue para o objetivo', (tester) async {
+  testWidgets('entrar com o Google (conta vazia) segue para "Seus dados"', (
+    tester,
+  ) async {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.google));
     await tester.pumpAndSettle();
     expect(accounts.current, FakeAccountRepository.google);
-    expect(find.text('rota-objetivo'), findsOneWidget);
+    expect(find.text('rota-dados /conta/dados?from=tour'), findsOneWidget);
   });
 
   testWidgets('fechar a escolha do Google fica na tela, sem aviso', (
@@ -99,12 +116,11 @@ void main() {
     });
   }
 
-  testWidgets('e-mail avisa que vem aí e fica na tela', (tester) async {
+  testWidgets('e-mail abre a tela do e-mail', (tester) async {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.email));
-    await tester.pump();
-    expect(find.text('Signing in is coming soon.'), findsOneWidget);
-    expect(find.byKey(AccountKeys.screen), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('rota-email /conta/email?from=tour'), findsOneWidget);
   });
 
   for (final key in [AccountKeys.later, AccountKeys.close]) {

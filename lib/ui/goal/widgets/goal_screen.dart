@@ -104,7 +104,8 @@ class GoalScreen extends StatelessWidget {
                 ),
                 TextButton.icon(
                   key: GoalKeys.haveAccount,
-                  onPressed: () => context.go(Routes.account),
+                  onPressed: () =>
+                      context.push(Routes.accountEnterFrom('tour')),
                   icon: const Icon(Icons.cloud_sync),
                   label: Text(l10n.goalHaveAccount),
                 ),

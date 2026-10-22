@@ -7366,5 +7366,398 @@
   "profileGoalNone": "Not chosen",
   "@profileGoalNone": {
     "description": "Profile goal row value when the user never chose a goal."
+  },
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Profile screen: app bar title."
+  },
+  "profileNoAccount": "No account",
+  "@profileNoAccount": {
+    "description": "Profile header: shown under the name when not signed in."
+  },
+  "profileAccountLine": "{email} · {provider}",
+  "@profileAccountLine": {
+    "description": "Profile header: the account e-mail and how it signs in (Google or E-mail).",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      },
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "profileProviderGoogle": "Google",
+  "@profileProviderGoogle": {
+    "description": "Profile header: account signs in with Google."
+  },
+  "profileProviderEmail": "E-mail",
+  "@profileProviderEmail": {
+    "description": "Profile header: account signs in with e-mail and password."
+  },
+  "profileLocalOnlyTitle": "Your progress is only on this phone",
+  "@profileLocalOnlyTitle": {
+    "description": "Profile without account: card title."
+  },
+  "profileLocalOnlyText": "With an account, it stays saved and shows up on another device.",
+  "@profileLocalOnlyText": {
+    "description": "Profile without account: card text."
+  },
+  "profileCreateOrSignIn": "Create account or sign in",
+  "@profileCreateOrSignIn": {
+    "description": "Profile without account: button that opens the account screen."
+  },
+  "profileCountry": "Country",
+  "@profileCountry": {
+    "description": "Profile row: the country, taken from the phone region."
+  },
+  "profileCountryNone": "Not set",
+  "@profileCountryNone": {
+    "description": "Profile row: the phone did not report a country."
+  },
+  "profileLanguage": "Language",
+  "@profileLanguage": {
+    "description": "Profile row: the app language."
+  },
+  "profileLevel": "Your level",
+  "@profileLevel": {
+    "description": "Profile row: opens Your level."
+  },
+  "profileLevelValue": "{rating} · {source}",
+  "@profileLevelValue": {
+    "description": "Profile row: the rating and where it came from, e.g. \"1712 · from Lichess\".",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      },
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "profileLevelSourceTest": "from the test",
+  "@profileLevelSourceTest": {
+    "description": "Profile level source: placement test."
+  },
+  "profileLevelSourceLichess": "from Lichess",
+  "@profileLevelSourceLichess": {
+    "description": "Profile level source: Lichess account."
+  },
+  "profileLevelSourceChessCom": "from Chess.com",
+  "@profileLevelSourceChessCom": {
+    "description": "Profile level source: Chess.com rating."
+  },
+  "profileLevelSourceManual": "entered by you",
+  "@profileLevelSourceManual": {
+    "description": "Profile level source: typed by the player."
+  },
+  "profileLevelSourceZero": "from scratch",
+  "@profileLevelSourceZero": {
+    "description": "Profile level source: learning from scratch."
+  },
+  "profileLichess": "Lichess",
+  "@profileLichess": {
+    "description": "Profile row: the Lichess connection."
+  },
+  "profileLichessNone": "Not connected",
+  "@profileLichessNone": {
+    "description": "Profile row: Lichess is not connected."
+  },
+  "profileEditData": "Edit your details",
+  "@profileEditData": {
+    "description": "Profile header: tooltip of the pencil button."
+  },
+  "profileSyncedTitle": "Everything saved to the account",
+  "@profileSyncedTitle": {
+    "description": "Profile with account: sync card title."
+  },
+  "profileSyncedAt": "Last sync: {when}",
+  "@profileSyncedAt": {
+    "description": "Profile with account: when it last synced.",
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSyncedToday": "today, {time}",
+  "@profileSyncedToday": {
+    "description": "Profile sync time today, e.g. \"today, 21:40\".",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSyncedNever": "not yet",
+  "@profileSyncedNever": {
+    "description": "Profile sync time: never synced."
+  },
+  "profileSyncOffline": "Without internet, what you do stays on the phone and goes up by itself when the connection is back.",
+  "@profileSyncOffline": {
+    "description": "Profile with account: offline note on the sync card."
+  },
+  "profileSignOut": "Sign out",
+  "@profileSignOut": {
+    "description": "Profile with account: sign-out button."
+  },
+  "profileDeleteAccount": "Delete the account",
+  "@profileDeleteAccount": {
+    "description": "Profile with account: delete-account button."
+  },
+  "profileDeleteWeb": "Without the app, you can ask at playlucena.com/apagar-conta.",
+  "@profileDeleteWeb": {
+    "description": "Profile with account: note about deleting on the web."
+  },
+  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones. It is optional: without an account, everything keeps working.",
+  "@accountInviteTextSheet": {
+    "description": "Account invite sheet after the first game: text."
+  },
+  "accountEnterTitle": "Create account or sign in",
+  "@accountEnterTitle": {
+    "description": "Account screen opened from the Profile: title."
+  },
+  "accountEnterText": "With the same account, your progress shows up on any phone.",
+  "@accountEnterText": {
+    "description": "Account screen opened from the Profile: text."
+  },
+  "accountEmailTitle": "Continue with e-mail",
+  "@accountEmailTitle": {
+    "description": "E-mail account screen: app bar title."
+  },
+  "accountSegCreate": "Create account",
+  "@accountSegCreate": {
+    "description": "E-mail account screen: segment to create an account."
+  },
+  "accountSegSignIn": "Sign in",
+  "@accountSegSignIn": {
+    "description": "E-mail account screen: segment and button to sign in."
+  },
+  "accountEmailField": "E-mail",
+  "@accountEmailField": {
+    "description": "E-mail account screen: e-mail field label."
+  },
+  "accountEmailHint": "you@email.com",
+  "@accountEmailHint": {
+    "description": "E-mail account screen: e-mail field hint."
+  },
+  "accountPasswordField": "Password",
+  "@accountPasswordField": {
+    "description": "E-mail account screen: password field label."
+  },
+  "accountPasswordHelp": "At least 8 characters.",
+  "@accountPasswordHelp": {
+    "description": "E-mail account screen: password help."
+  },
+  "accountEmailNote": "We will send an e-mail to confirm the address. You can play in the meantime.",
+  "@accountEmailNote": {
+    "description": "E-mail account screen: note."
+  },
+  "accountCreate": "Create account",
+  "@accountCreate": {
+    "description": "E-mail account screen: create button."
+  },
+  "accountHaveAccountSignIn": "I have an account: sign in",
+  "@accountHaveAccountSignIn": {
+    "description": "E-mail account screen: switches to signing in."
+  },
+  "accountWrongCredentials": "Wrong e-mail or password.",
+  "@accountWrongCredentials": {
+    "description": "Account error: wrong credentials."
+  },
+  "accountEmailInUse": "This e-mail already has an account. Tap Sign in.",
+  "@accountEmailInUse": {
+    "description": "Account error: e-mail already in use."
+  },
+  "accountWeakPassword": "The password needs at least 8 characters.",
+  "@accountWeakPassword": {
+    "description": "Account error: password too short."
+  },
+  "accountInvalidEmail": "Check the e-mail.",
+  "@accountInvalidEmail": {
+    "description": "Account error: malformed e-mail."
+  },
+  "accountTooManyAttempts": "Too many attempts. Wait a little and try again.",
+  "@accountTooManyAttempts": {
+    "description": "Account error: too many attempts."
+  },
+  "accountDataTitle": "Your details",
+  "@accountDataTitle": {
+    "description": "Your details screen: app bar title."
+  },
+  "accountAvatar": "Avatar",
+  "@accountAvatar": {
+    "description": "Your details screen: avatar section title."
+  },
+  "accountAvatarNote": "Optional. Your initial in the color you like, or your Google photo.",
+  "@accountAvatarNote": {
+    "description": "Your details screen: avatar note."
+  },
+  "accountAvatarColor": "Color {number}",
+  "@accountAvatarColor": {
+    "description": "Your details screen: accessibility label of an avatar color.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "accountAvatarGoogle": "Use the Google photo",
+  "@accountAvatarGoogle": {
+    "description": "Your details screen: use the Google photo."
+  },
+  "accountNickname": "Name or nickname",
+  "@accountNickname": {
+    "description": "Your details screen: name field label."
+  },
+  "accountNicknameHelp": "It is what Viktor will call you.",
+  "@accountNicknameHelp": {
+    "description": "Your details screen: name help."
+  },
+  "accountCountryFromPhone": "{country} · from the phone",
+  "@accountCountryFromPhone": {
+    "description": "Your details screen: the country, read from the phone.",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "accountDataNote": "What you already did on this phone goes up to the account now.",
+  "@accountDataNote": {
+    "description": "Your details screen: note (with account)."
+  },
+  "accountSave": "Save",
+  "@accountSave": {
+    "description": "Your details screen: save button."
+  },
+  "accountRestoredTitle": "Welcome back, {name}",
+  "@accountRestoredTitle": {
+    "description": "Restored progress screen: title.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accountRestoredText": "I found your progress in the account.",
+  "@accountRestoredText": {
+    "description": "Restored progress screen: text."
+  },
+  "accountRestoredRating": "Rating",
+  "@accountRestoredRating": {
+    "description": "Restored progress screen: rating row."
+  },
+  "accountRestoredJourney": "Journey",
+  "@accountRestoredJourney": {
+    "description": "Restored progress screen: journey row."
+  },
+  "accountRestoredJourneyValue": "{count, plural, =0{no challenges} =1{1 challenge} other{{count} challenges}}",
+  "@accountRestoredJourneyValue": {
+    "description": "Restored progress screen: journey challenges done.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountRestoredLessons": "Endgame lessons",
+  "@accountRestoredLessons": {
+    "description": "Restored progress screen: endgame lessons row."
+  },
+  "accountRestoredLessonsValue": "{count, plural, =0{none done} =1{1 done} other{{count} done}}",
+  "@accountRestoredLessonsValue": {
+    "description": "Restored progress screen: lessons done.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountRestoredSpeedrun": "Speedrun",
+  "@accountRestoredSpeedrun": {
+    "description": "Restored progress screen: speedrun row."
+  },
+  "accountRestoredSpeedrunValue": "{count, plural, =0{no records} =1{1 record} other{{count} records}}",
+  "@accountRestoredSpeedrunValue": {
+    "description": "Restored progress screen: speedrun records.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountRestoredMerged": "If this phone already had progress, I joined both: each item keeps the higher one.",
+  "@accountRestoredMerged": {
+    "description": "Restored progress screen: note."
+  },
+  "accountRestoredContinue": "Continue",
+  "@accountRestoredContinue": {
+    "description": "Restored progress screen: continue button."
+  },
+  "accountDeleteTitle": "Delete the account?",
+  "@accountDeleteTitle": {
+    "description": "Delete account dialog: title."
+  },
+  "accountDeleteText": "Deletes the account and the progress saved in it. It cannot be undone. On this phone, the app keeps working without an account.",
+  "@accountDeleteText": {
+    "description": "Delete account dialog: text."
+  },
+  "accountDeleteCancel": "Cancel",
+  "@accountDeleteCancel": {
+    "description": "Delete account dialog: cancel."
+  },
+  "accountDeleteConfirm": "Delete",
+  "@accountDeleteConfirm": {
+    "description": "Delete account dialog: confirm."
+  },
+  "accountDeleteOffline": "Without internet the account cannot be deleted. Nothing was deleted.",
+  "@accountDeleteOffline": {
+    "description": "Delete account error: offline."
+  },
+  "accountDeleteRelogin": "For safety, sign in again to delete the account.",
+  "@accountDeleteRelogin": {
+    "description": "Delete account: the provider asks for a recent sign-in."
+  },
+  "accountDeleteFailed": "Could not delete the account now. Try again.",
+  "@accountDeleteFailed": {
+    "description": "Delete account error: other."
+  },
+  "accountDeleted": "Account deleted. On this phone, everything keeps working without an account.",
+  "@accountDeleted": {
+    "description": "Delete account: done."
+  },
+  "lichessSheetTitle": "Lichess",
+  "@lichessSheetTitle": {
+    "description": "Lichess sheet on the Profile: title."
+  },
+  "lichessSheetText": "Connected with the Lichess sign-in. We only read your profile and ratings.",
+  "@lichessSheetText": {
+    "description": "Lichess sheet: text."
+  },
+  "lichessReadAt": "read on {date}",
+  "@lichessReadAt": {
+    "description": "Lichess sheet: when the ratings were read.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "lichessRefresh": "Update the rating",
+  "@lichessRefresh": {
+    "description": "Lichess sheet: reads the ratings again."
+  },
+  "lichessDisconnect": "Disconnect",
+  "@lichessDisconnect": {
+    "description": "Lichess sheet: disconnects Lichess."
+  },
+  "lichessDisconnectNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating stays as it is.",
+  "@lichessDisconnectNote": {
+    "description": "Lichess sheet: note."
+  },
+  "lichessRefreshFailed": "No internet. The rating stays as before.",
+  "@lichessRefreshFailed": {
+    "description": "Lichess sheet: refresh failed."
   }
 }

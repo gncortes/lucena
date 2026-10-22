@@ -16,6 +16,7 @@ class NicknameField extends StatelessWidget {
     this.onChanged,
     this.autocorrect = true,
     this.focusNode,
+    this.helper,
     super.key,
   });
 
@@ -26,6 +27,9 @@ class NicknameField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final bool autocorrect;
   final FocusNode? focusNode;
+
+  /// O texto de ajuda embaixo do campo.
+  final String? helper;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,7 @@ class NicknameField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
+        helperText: helper,
         floatingLabelBehavior: FloatingLabelBehavior.always,
         prefixIcon: const Icon(Icons.person_outline),
       ),

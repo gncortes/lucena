@@ -66,7 +66,7 @@ void main() {
 
     await HomeRobot($).openSettings();
     await ProfileRobot($).open();
-    await $(ProfileKeys.placementTest).scrollTo().tap();
+    await ProfileRobot($).openPlacement();
     await placement.expectIntro();
     await placement.start();
     await placement.dontKnow(20);

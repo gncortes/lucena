@@ -37,6 +37,7 @@ import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
+import '../data/repositories/sync/sync_repository.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
@@ -73,6 +74,7 @@ import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
+import '../data/repositories/account/account_invite_repository.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
@@ -122,6 +124,9 @@ import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
 import '../ui/challenge/view_models/link_setup_cubit.dart';
 import '../ui/challenge/widgets/link_setup_screen.dart';
+import '../ui/account/widgets/account_data_screen.dart';
+import '../ui/account/widgets/account_email_screen.dart';
+import '../ui/account/widgets/account_restored_screen.dart';
 import '../ui/account/widgets/account_screen.dart';
 import '../ui/goal/view_models/goal_cubit.dart';
 import '../ui/goal/widgets/goal_screen.dart';
@@ -152,7 +157,6 @@ import '../ui/speedrun/widgets/speedrun_history_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
-import '../ui/profile/view_models/rating_cubit.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/settings/widgets/about_screen.dart';
@@ -244,6 +248,36 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
       _route(
         path: Routes.account,
         builder: (context, state) => const AccountScreen(),
+      ),
+      _route(
+        path: Routes.accountEnter,
+        builder: (context, state) => AccountScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          enter: true,
+        ),
+      ),
+      _route(
+        path: Routes.accountEmail,
+        builder: (context, state) => AccountEmailScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          reauth: state.uri.queryParameters['reauth'] == '1',
+        ),
+      ),
+      _route(
+        path: Routes.accountData,
+        builder: (context, state) => AccountDataScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+        ),
+      ),
+      // Sem o resultado da leitura (link aberto de fora), volta ao início.
+      _route(
+        path: Routes.accountRestored,
+        redirect: (context, state) =>
+            state.extra is SyncResult ? null : Routes.home,
+        builder: (context, state) => AccountRestoredScreen(
+          result: state.extra! as SyncResult,
+          from: state.uri.queryParameters['from'] ?? 'tour',
+        ),
       ),
       _route(
         path: Routes.goal,
@@ -518,6 +552,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     _conclusionCubit(context)..load(id ?? -1, language),
                 child: ConclusionScreen(
                   fresh: state.uri.queryParameters['fresh'] == '1',
+                  invite: context.read<AccountInviteRepository>(),
                 ),
               );
             },
@@ -1204,11 +1239,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             routes: [
               _route(
                 path: 'profile',
-                builder: (context, state) => BlocProvider(
-                  create: (context) =>
-                      RatingCubit(context.read<RatingRepository>())..load(),
-                  child: const ProfileScreen(),
-                ),
+                builder: (context, state) => const ProfileScreen(),
               ),
               _route(
                 path: 'appearance',

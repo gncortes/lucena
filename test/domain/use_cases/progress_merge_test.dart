@@ -88,10 +88,7 @@ void main() {
 
   test('só no aparelho ou só na conta: fica o que existe', () {
     const empty = ProgressSummary();
-    expect(
-      ProgressMerge.merge(local, empty).toJson(),
-      local.toJson(),
-    );
+    expect(ProgressMerge.merge(local, empty).toJson(), local.toJson());
     final restored = ProgressMerge.merge(empty, remote);
     expect(restored.rating, remote.rating);
     expect(restored.challenges, {'c2'});

@@ -97,7 +97,9 @@ import 'fakes/fake_settings_repository.dart';
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
 import 'fakes/fake_sync_repository.dart';
+
 import 'package:lucena/data/repositories/sync/sync_repository.dart';
+
 import 'fakes/fake_speech_input_repository.dart';
 import 'fakes/fake_blind_log_repository.dart';
 

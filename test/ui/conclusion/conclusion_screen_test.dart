@@ -5,6 +5,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/conclusion.dart';
@@ -17,12 +19,15 @@ import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/achievements/widgets/achievement_toast.dart';
 import 'package:lucena/ui/conclusion/widgets/conclusion_screen.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+import '../../../testing/fakes/fake_account_invite_repository.dart';
+import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -36,6 +41,7 @@ import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_share_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
+import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/test_app.dart';
 
 // Uma partida longa: 16 lances (a dama e o rei indo e voltando).
@@ -86,6 +92,8 @@ void main() {
     Locale locale = const Locale('en'),
     bool fresh = false,
     bool settled = true,
+    FakeAccountInviteRepository? invite,
+    FakeAccountRepository? accounts,
   }) async {
     final rating = FakeRatingRepository();
     final achievements = FakeAchievementsRepository();
@@ -160,9 +168,23 @@ void main() {
             textScaler: TextScaler.linear(scale),
             disableAnimations: disableAnimations,
           ),
-          child: BlocProvider.value(
-            value: cubit,
-            child: ConclusionScreen(fresh: fresh),
+          child: MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AccountRepository>.value(
+                value: accounts ?? FakeAccountRepository(),
+              ),
+              RepositoryProvider<SyncScheduler>(
+                create: (_) => SyncScheduler(
+                  accounts ?? FakeAccountRepository(),
+                  FakeSyncRepository(),
+                ),
+                dispose: (scheduler) => scheduler.dispose(),
+              ),
+            ],
+            child: BlocProvider.value(
+              value: cubit,
+              child: ConclusionScreen(fresh: fresh, invite: invite),
+            ),
           ),
         ),
       ),
@@ -504,5 +526,51 @@ void main() {
         expect(find.byKey(ConclusionKeys.title).hitTestable(), findsOneWidget);
       });
     }
+  });
+
+  group('convite da conta', () {
+    testWidgets('no fim de uma partida que acabou agora, sai uma vez', (
+      tester,
+    ) async {
+      final invite = FakeAccountInviteRepository();
+      await open(tester, fresh: true, invite: invite);
+
+      expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
+      expect(invite.shown, isTrue);
+
+      // "Agora não" só fecha: a conclusão fica.
+      await tester.tap(find.byKey(AccountKeys.notNow));
+      await tester.pumpAndSettle();
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('já mostrado, não volta', (tester) async {
+      await open(
+        tester,
+        fresh: true,
+        invite: FakeAccountInviteRepository(shown: true),
+      );
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+    });
+
+    testWidgets('reaberta (não acabou agora), não convida', (tester) async {
+      final invite = FakeAccountInviteRepository();
+      await open(tester, invite: invite);
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(invite.shown, isFalse);
+    });
+
+    testWidgets('com conta, não convida', (tester) async {
+      final invite = FakeAccountInviteRepository();
+      await open(
+        tester,
+        fresh: true,
+        invite: invite,
+        accounts: FakeAccountRepository(account: FakeAccountRepository.google),
+      );
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(invite.shown, isFalse);
+    });
   });
 }

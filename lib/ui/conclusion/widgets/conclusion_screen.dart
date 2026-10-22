@@ -11,11 +11,14 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../data/repositories/account/account_invite_repository.dart';
+import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
+import '../../account/widgets/account_invite_sheet.dart';
 import '../../achievements/widgets/achievement_detail.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
@@ -62,12 +65,16 @@ import '../../core/theme/app_button_text.dart';
 /// partida". Ela substitui a partida na pilha: fechar volta para onde o
 /// jogador estava antes de jogar.
 class ConclusionScreen extends StatefulWidget {
-  const ConclusionScreen({this.fresh = false, super.key});
+  const ConclusionScreen({this.fresh = false, this.invite, super.key});
 
   /// A partida acabou agora: as conquistas novas avisam por cima, como no
   /// fim da partida. Reaberta (o app fechado na conclusão), não avisam de
   /// novo.
   final bool fresh;
+
+  /// O convite da conta, uma vez por instalação, no fim de uma partida que
+  /// acabou agora (sem ele, nunca convida).
+  final AccountInviteRepository? invite;
 
   @override
   State<ConclusionScreen> createState() => _ConclusionScreenState();
@@ -78,6 +85,30 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
   // o resumo dela, logo abaixo.
   final _card = GlobalKey();
   final _analysis = GlobalKey();
+  bool _inviteChecked = false;
+
+  // Sem conta e com a partida pronta, fora do meio de um speedrun.
+  Future<void> _invite(ConclusionState state) async {
+    final invite = widget.invite;
+    final conclusion = state.conclusion;
+    if (_inviteChecked || invite == null || !widget.fresh) return;
+    if (!state.ready || conclusion == null) return;
+    if (conclusion.run?.nextChallenge != null) return;
+    _inviteChecked = true;
+    if (context.read<AccountRepository>().current != null) return;
+    if (!await invite.pending()) return;
+    await invite.markShown();
+    if (!mounted) return;
+    await showAccountInviteSheet(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _invite(context.read<ConclusionCubit>().state);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +171,11 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        scaffold,
+        BlocListener<ConclusionCubit, ConclusionState>(
+          listenWhen: (before, now) => !before.ready && now.ready,
+          listener: (context, state) => _invite(state),
+          child: scaffold,
+        ),
         if (widget.fresh &&
             conclusion != null &&
             conclusion.achievements.isNotEmpty)

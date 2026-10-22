@@ -27,6 +27,13 @@ class SyncScheduler {
   StreamSubscription<void>? _changeSubscription;
   Timer? _timer;
   ({String uid, Future<SyncResult> result})? _running;
+  final _synced = StreamController<String>.broadcast();
+
+  /// Avisa o uid de cada sincronização que terminou bem.
+  Stream<String> get synced => _synced.stream;
+
+  /// Quando a conta [uid] sincronizou pela última vez neste aparelho.
+  Future<DateTime?> lastSyncedAt(String uid) => _sync.lastSyncedAt(uid);
 
   void start() {
     _accountSubscription ??= _accounts.changes.listen((account) {
@@ -46,7 +53,13 @@ class SyncScheduler {
   Future<SyncResult> syncNow(String uid) {
     final running = _running;
     if (running != null && running.uid == uid) return running.result;
-    final result = _sync.sync(uid).whenComplete(() => _running = null);
+    final result = _sync
+        .sync(uid)
+        .then((result) {
+          if (!_synced.isClosed) _synced.add(uid);
+          return result;
+        })
+        .whenComplete(() => _running = null);
     _running = (uid: uid, result: result);
     return result;
   }
@@ -65,5 +78,6 @@ class SyncScheduler {
     _timer?.cancel();
     await _accountSubscription?.cancel();
     await _changeSubscription?.cancel();
+    await _synced.close();
   }
 }

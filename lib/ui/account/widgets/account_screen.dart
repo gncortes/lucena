@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
-import '../../../domain/models/account.dart';
+import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../routing/routes.dart';
-import '../../core/keys/level_keys.dart';
+import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -15,34 +15,45 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../view_models/account_cubit.dart';
+import 'account_flow.dart';
 
-/// A conta, opcional (canvas `PropV1LinkConta`): vindo de um link, entre o
-/// tour e "O que você quer fazer?"; e no "Já tenho conta" da pergunta.
-/// O Google entra pelo Firebase (E1.02); o e-mail ainda só avisa que vem aí
-/// (o formulário espera o canvas). Sem Firebase no build, os dois avisam.
+/// A conta, opcional. Com [enter] falso, o convite em tela cheia (canvas
+/// `PropV1LinkConta`): vindo de um link, entre o tour e "O que você quer
+/// fazer?". Com [enter], "Criar conta ou entrar" (`PropV1PerfilEntrar`),
+/// aberto pelo Perfil ou pelo "Já tenho conta" da pergunta. [from] diz para
+/// onde seguir no fim (`tour` ou `profile`).
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({super.key});
+  const AccountScreen({this.from = 'tour', this.enter = false, super.key});
+
+  final String from;
+  final bool enter;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
     create: (context) => AccountCubit(
       context.read<AccountRepository>(),
-      onboarding: context.read<OnboardingRepository>(),
+      onboarding: enter ? null : context.read<OnboardingRepository>(),
+      sync: context.read<SyncScheduler>(),
     )..enter(),
-    child: const _AccountView(),
+    child: _AccountView(from: from, enter: enter),
   );
 }
 
 class _AccountView extends StatelessWidget {
-  const _AccountView();
+  const _AccountView({required this.from, required this.enter});
+
+  final String from;
+  final bool enter;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    void next() => context.go(Routes.goal);
-    void soon() => showLucenaSnackBar(context, l10n.accountSoon);
+    // Aberta por cima (Perfil ou "Já tenho conta"), fechar volta.
+    void next() => enter && context.canPop()
+        ? context.pop()
+        : context.go(Routes.afterAccount(from));
     final busy = context.select((AccountCubit cubit) => cubit.state.busy);
     final benefits = [
       (Icons.cloud_done, l10n.accountBenefitSaved),
@@ -51,17 +62,13 @@ class _AccountView extends StatelessWidget {
     ];
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
-        if (state.done) return next();
+        if (state.done) return continueAfterSignIn(context, state, from);
         final failure = state.failure;
         if (failure == null) return;
-        showLucenaSnackBar(context, switch (failure) {
-          AccountFailure.unavailable => l10n.accountSoon,
-          AccountFailure.network => l10n.accountFailedNetwork,
-          _ => l10n.accountFailed,
-        });
+        showLucenaSnackBar(context, accountFailureText(l10n, failure));
       },
       child: Scaffold(
-        key: AccountKeys.screen,
+        key: enter ? AccountKeys.enterScreen : AccountKeys.screen,
         appBar: LucenaAppBar(
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -98,14 +105,14 @@ class _AccountView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xl),
               Text(
-                l10n.accountTitle,
+                enter ? l10n.accountEnterTitle : l10n.accountTitle,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                l10n.accountHint,
+                enter ? l10n.accountEnterText : l10n.accountHint,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
@@ -144,15 +151,18 @@ class _AccountView extends StatelessWidget {
             ),
             OutlinedButton.icon(
               key: AccountKeys.email,
-              onPressed: soon,
+              onPressed: busy
+                  ? null
+                  : () => context.push(Routes.accountEmailFrom(from)),
               icon: const Icon(Icons.mail),
               label: Text(l10n.accountEmail),
             ),
-            TextButton(
-              key: AccountKeys.later,
-              onPressed: busy ? null : next,
-              child: Text(l10n.accountLater),
-            ),
+            if (!enter)
+              TextButton(
+                key: AccountKeys.later,
+                onPressed: busy ? null : next,
+                child: Text(l10n.accountLater),
+              ),
           ],
         ),
       ),

@@ -2,27 +2,38 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../domain/models/goal_preference.dart';
-import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/profile_rules.dart';
 
 /// Perfil do jogador. O estado é nulo até a primeira leitura terminar.
 class ProfileCubit extends Cubit<UserProfile?> {
-  ProfileCubit(this._repository) : super(null);
+  /// [region] é a região do celular (código ISO, como `BR`): sem país
+  /// gravado, o perfil fica com ela (regra 17).
+  ProfileCubit(this._repository, {this._region}) : super(null);
 
   final ProfileRepository _repository;
+  final String? Function()? _region;
 
-  Future<void> load() async => emit(await _repository.load());
+  Future<void> load() async {
+    var profile = await _repository.load();
+    final region = _region?.call();
+    if (profile.country == null && region != null && region.isNotEmpty) {
+      profile = profile.copyWith(country: region.toUpperCase());
+      await _repository.save(profile);
+    }
+    emit(profile);
+  }
 
-  /// Grava o apelido digitado (já limpo) e o rating da faixa escolhida.
-  Future<void> save({
+  /// "Seus dados": o apelido (já limpo) e o avatar. O resto fica.
+  Future<void> saveData({
     required String nickname,
-    required RatingLevel level,
+    required int avatarColor,
+    required bool googlePhoto,
   }) async {
-    final profile = UserProfile(
+    final profile = (await _repository.load()).copyWith(
       nickname: ProfileRules.cleanNickname(nickname),
-      rating: level.rating,
-      goal: state?.goal,
+      avatarColor: avatarColor.clamp(0, UserProfile.avatarColors - 1),
+      googlePhoto: googlePhoto,
     );
     await _repository.save(profile);
     emit(profile);

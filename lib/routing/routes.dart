@@ -329,6 +329,39 @@ abstract final class Routes {
   static const levelChess = '/tour/nivel/chess';
   static const levelRating = '/tour/nivel/rating';
 
+  /// A conta pelo Perfil ou pelo "Já tenho conta" (E1.13). [from] diz para
+  /// onde ir no fim: `tour` (a pergunta) ou `profile` (o Perfil).
+  static const accountEnter = '/conta';
+  static String accountEnterFrom(String from) => _from(accountEnter, from);
+
+  /// "Continuar com e-mail". Com [reauth], só entra de novo e volta `true`
+  /// (apagar a conta pede um login recente).
+  static const accountEmail = '/conta/email';
+  static String accountEmailFrom(String from, {bool reauth = false}) => Uri(
+    path: accountEmail,
+    queryParameters: {'from': from, if (reauth) 'reauth': '1'},
+  ).toString();
+
+  /// "Seus dados", depois de criar a conta (e pelo lápis do Perfil).
+  static const accountData = '/conta/dados';
+  static String accountDataFrom(String from) => _from(accountData, from);
+
+  /// "Bem-vindo de volta": recebe o `SyncResult` como `extra`.
+  static const accountRestored = '/conta/de-volta';
+  static String accountRestoredFrom(String from) =>
+      _from(accountRestored, from);
+
+  /// Para onde a conta segue no fim, vinda de [from] (`game`: o convite no
+  /// fim da 1ª partida).
+  static String afterAccount(String? from) => switch (from) {
+    'profile' => settingsProfile,
+    'game' => home,
+    _ => goal,
+  };
+
+  static String _from(String path, String from) =>
+      Uri(path: path, queryParameters: {'from': from}).toString();
+
   /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
   static const goal = '/tour/objetivo';
 

@@ -196,10 +196,7 @@ class CloudSyncRepository implements SyncRepository {
         ...summary.toJson(),
         'updatedAt': _now(),
       });
-      await _preferences.setString(
-        _syncedKey(uid),
-        _now().toIso8601String(),
-      );
+      await _preferences.setString(_syncedKey(uid), _now().toIso8601String());
       await _pushGames(uid);
     } on Object catch (error) {
       debugPrint('Progresso não enviado: $error');

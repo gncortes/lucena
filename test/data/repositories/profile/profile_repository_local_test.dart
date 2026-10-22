@@ -100,7 +100,11 @@ void main() {
 
     expect(
       await LocalProfileRepository(database).load(),
-      const UserProfile(nickname: 'Ana', rating: 1712, lichessUser: 'ana_xadrez'),
+      const UserProfile(
+        nickname: 'Ana',
+        rating: 1712,
+        lichessUser: 'ana_xadrez',
+      ),
     );
   });
 
