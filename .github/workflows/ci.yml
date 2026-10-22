@@ -33,6 +33,11 @@ jobs:
       - name: Traduções
         run: python3 tools/check_l10n.py
 
+      # Reprova se lib/config/remote_defaults.dart não bater com
+      # firebase/remoteconfig.template.json (E1.32).
+      - name: Padrões do Remote Config
+        run: python3 tools/gen_remote_defaults.py --check
+
       - name: Falas dos personagens
         run: python3 tools/check_lines.py
 

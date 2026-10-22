@@ -1,0 +1,93 @@
+name: Remote Config
+
+# Modelo das chaves em firebase/remoteconfig.template.json (E1.32 §2).
+# PR: mostra no resumo a diferença contra o que está publicado. main (ou
+# manual): publica. Nunca editar no console: o mesmo arquivo gera os padrões
+# do app (tools/gen_remote_defaults.py).
+#
+# Login sem chave JSON, por Workload Identity. Variáveis do repositório
+# (Settings > Secrets and variables > Actions > Variables), não segredos:
+#   GCP_WORKLOAD_IDENTITY_PROVIDER  projects/<número>/locations/global/workloadIdentityPools/<pool>/providers/<provider>
+#   GCP_SERVICE_ACCOUNT             ga-admin@lucena-2f4de.iam.gserviceaccount.com (papel "Firebase Remote Config Admin")
+# O deploy lê o caminho do modelo na entrada "remoteconfig" do firebase.json.
+on:
+  pull_request:
+    branches: [main, develop]
+    paths: ['firebase/remoteconfig.template.json', '.github/workflows/remote-config.yml']
+  push:
+    branches: [main]
+    paths: ['firebase/remoteconfig.template.json']
+  workflow_dispatch:
+
+concurrency:
+  group: remote-config-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  FIREBASE_PROJECT: lucena-2f4de
+
+jobs:
+  remote-config:
+    name: ${{ github.event_name == 'pull_request' && 'Diferença' || 'Publicar' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Modelo e padrões do app
+        run: |
+          python3 -m json.tool firebase/remoteconfig.template.json > /dev/null
+          python3 tools/gen_remote_defaults.py --check
+
+      - name: Entrada no firebase.json
+        run: |
+          if ! python3 -c 'import json,sys; sys.exit(0 if "remoteconfig" in json.load(open("firebase.json")) else 1)'; then
+            echo '::error::Falta "remoteconfig": {"template": "firebase/remoteconfig.template.json"} no firebase.json'
+            exit 1
+          fi
+
+      - name: Variáveis do Workload Identity
+        env:
+          PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        run: |
+          if [[ -z "$PROVIDER" || -z "$SERVICE_ACCOUNT" ]]; then
+            echo '::error::Faltam as variáveis GCP_WORKLOAD_IDENTITY_PROVIDER e GCP_SERVICE_ACCOUNT (ver o topo deste arquivo)'
+            exit 1
+          fi
+
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Firebase CLI
+        run: npm install --global --no-fund --no-audit firebase-tools@15.32.1
+
+      - name: Diferença contra o publicado
+        if: github.event_name == 'pull_request'
+        run: |
+          firebase remoteconfig:get --project "$FIREBASE_PROJECT" -o "$RUNNER_TEMP/publicado.json"
+          python3 - "$RUNNER_TEMP/publicado.json" firebase/remoteconfig.template.json >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          import json, sys
+          def valores(path):
+              data = json.load(open(path))
+              return {k: v.get('defaultValue', {}).get('value') for k, v in data.get('parameters', {}).items()}
+          antes, depois = valores(sys.argv[1]), valores(sys.argv[2])
+          linhas = [(k, antes.get(k), depois.get(k)) for k in sorted(antes.keys() | depois.keys()) if antes.get(k) != depois.get(k)]
+          print('### Remote Config: o que muda ao juntar\n')
+          if not linhas:
+              print('Nenhum valor muda.')
+          else:
+              print('| Chave | Publicado | Neste PR |\n|---|---|---|')
+              for k, a, d in linhas:
+                  print(f'| `{k}` | {a if a is not None else "—"} | {d if d is not None else "—"} |')
+          EOF
+
+      - name: Publicar
+        if: github.event_name != 'pull_request'
+        run: firebase deploy --only remoteconfig --project "$FIREBASE_PROJECT" --non-interactive

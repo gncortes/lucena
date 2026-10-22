@@ -1634,5 +1634,13 @@
   "crowdYouAre": "Você está entre eles.",
   "crowdFewYesterday": "Poucas pessoas jogaram ontem",
   "crowdFew": "Poucas pessoas jogaram este final",
-  "crowdFewText": "O número aparece a partir de 30 pessoas."
+  "crowdFewText": "O número aparece a partir de 30 pessoas.",
+  "updateRequiredTitle": "Atualize o Lucena",
+  "updateRequiredBody": "Esta versão parou de funcionar. A nova leva menos de um minuto para instalar, e o seu progresso continua aqui.",
+  "updateRequiredAction": "Atualizar na Play",
+  "updateRecommendedTitle": "Versão nova do Lucena",
+  "updateRecommendedBody": "Tem correções e melhorias. Atualize quando puder.",
+  "updateRecommendedAction": "Atualizar",
+  "updateRecommendedLater": "Agora não",
+  "updateReadyRestart": "Pronto. Reiniciar o Lucena"
 }
