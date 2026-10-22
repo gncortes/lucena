@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/voice/voice_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/onboarding.dart';
@@ -120,8 +124,10 @@ class TourCubit extends Cubit<TourState> {
     required this._characters,
     required this._lessons,
     this._voice,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const TourState());
 
+  final AnalyticsRepository _analytics;
   final OnboardingRepository _onboarding;
   final ProfileRepository _profile;
   final CharacterRepository _characters;
@@ -163,6 +169,16 @@ class TourCubit extends Cubit<TourState> {
         voice != null &&
         TtsVoice.forLanguage(await voice.voices(), language).isNotEmpty;
     if (isClosed) return;
+    // O tour que volta no meio já contou o começo.
+    if (!_saved.inProgress) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.tutorialBegin(
+            entrada: _saved.linkSetupDone ? 'link' : 'loja',
+          ),
+        ),
+      );
+    }
     emit(
       TourState(
         ready: true,
@@ -212,13 +228,21 @@ class TourCubit extends Cubit<TourState> {
   }
 
   /// Pular vai direto para a pergunta; o nível ainda é perguntado depois.
-  Future<void> skip() => finish();
+  Future<void> skip() => finish(skipped: true);
 
   /// O fim do tour: a tela sai. O tour só conta como visto quando o nível é
   /// escolhido; fechado o app antes, ele volta no último passo.
-  Future<void> finish() async {
+  Future<void> finish({bool skipped = false}) async {
     if (!state.ready || state.finished || _finishing) return;
     _finishing = true;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.tutorialComplete(
+          pulado: skipped,
+          passosVistos: state.position + 1,
+        ),
+      ),
+    );
     try {
       await _nicknameSaved;
       await _onboardingSaved;

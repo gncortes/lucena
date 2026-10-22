@@ -164,11 +164,13 @@ class UpdateCubit extends Cubit<UpdateState> {
   /// Play, abre a página da loja.
   Future<void> updateRecommended() async {
     if (state.downloading || state.ready) return;
-    await _analytics.log(
-      AnalyticsEvents.atualizacaoAcao(
-        tipo: 'recomendada',
-        acao: 'atualizar',
-        via: _via,
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.atualizacaoAcao(
+          tipo: 'recomendada',
+          acao: 'atualizar',
+          via: _via,
+        ),
       ),
     );
     if (!_play.flexibleAllowed) return _updates.openStore();

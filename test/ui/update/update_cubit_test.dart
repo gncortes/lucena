@@ -6,6 +6,7 @@ import 'package:lucena/data/repositories/update/app_update_repository.dart';
 import 'package:lucena/domain/use_cases/update_policy.dart';
 import 'package:lucena/ui/update/view_models/update_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_app_update_repository.dart';
 import '../../../testing/fakes/fake_remote_flags_repository.dart';
 
@@ -104,5 +105,49 @@ void main() {
 
     expect(updates.flexibles, 0);
     expect(updates.storeOpens, 1);
+  });
+
+  group('estatísticas', () {
+    late FakeAnalyticsRepository analytics;
+
+    setUp(() async {
+      analytics = FakeAnalyticsRepository();
+      await cubit.close();
+      cubit = UpdateCubit(flags: flags, updates: updates, analytics: analytics);
+    });
+
+    test('a obrigatória conta atualizacao_vista uma vez por abertura', () async {
+      flags.updateMinBuild = 101;
+      await cubit.start();
+      await cubit.check();
+      await cubit.openStore();
+
+      final seen = analytics.eventsNamed('atualizacao_vista').single;
+      expect(seen.params['tipo'], 'obrigatoria');
+      expect(seen.params['build_pedido'], 101);
+      final action = analytics.eventsNamed('atualizacao_acao').single;
+      expect(action.params['acao'], 'atualizar');
+      expect(action.params['via'], 'loja');
+    });
+
+    test('a recomendada conta a vista, o agora não e o atualizar', () async {
+      flags.updateRecommendedBuild = 110;
+      await cubit.start();
+      await cubit.recommendedShown();
+      await cubit.recommendedLater();
+      await cubit.updateRecommended();
+
+      final seen = analytics.eventsNamed('atualizacao_vista').single;
+      expect(seen.params['tipo'], 'recomendada');
+      expect(seen.params['build_pedido'], 110);
+      expect(
+        analytics.eventsNamed('atualizacao_acao').map((e) => e.params['acao']),
+        ['agora_nao', 'atualizar'],
+      );
+      expect(
+        analytics.eventsNamed('atualizacao_acao').first.params['via'],
+        'play_no_app',
+      );
+    });
   });
 }

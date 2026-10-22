@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/draw/draw_offer_repository.dart';
 import '../../../data/repositories/haptics/haptics_repository.dart';
 import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
@@ -10,6 +11,7 @@ import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -17,6 +19,7 @@ import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_mode.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/game_snapshot.dart';
+import '../../../domain/use_cases/analytics_rules.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -60,6 +63,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     this._draws,
     this._speedruns,
     this._sounds,
+    this._analytics = const NoAnalyticsRepository(),
     Position? start,
     Side? playerSide,
     Side? orientation,
@@ -94,6 +98,11 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   final OngoingGameRepository _games;
   final OpponentRepository _opponent;
   final ProgressRepository _progress;
+  final AnalyticsRepository _analytics;
+
+  // O começo, o primeiro lance e o fim desta partida já foram contados.
+  bool _firstMoveCounted = false;
+  bool _endCounted = false;
 
   // Conta a partida terminada no rating, nas mensagens e nas conquistas. Nulo:
   // só grava o histórico.
@@ -127,12 +136,18 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// A tela abriu. Partida nova (criada com posição) é só gravada; sem ela,
   /// continua a partida em andamento ou, se não há, começa uma do início.
   Future<void> open() async {
+    // Partida em andamento que volta já contou o começo.
+    if (state.ready) _countStart();
     if (!state.ready) {
       final snapshot = await _games.load();
       if (isClosed) return;
       final now = _now();
+      final restored = _restored(snapshot, now);
+      // A que volta já contou o começo e, se teve, o primeiro lance.
+      _firstMoveCounted = restored != null && restored.ucis.isNotEmpty;
+      _endCounted = restored?.end != null;
       emit(
-        _restored(snapshot, now) ??
+        restored ??
             _fresh(
               start: GameRules.initial,
               playerSide: null,
@@ -142,6 +157,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
               now: now,
             ),
       );
+      if (restored == null) _countStart();
       // A bandeira pode ter caído com o app fechado.
       tick();
     }
@@ -317,6 +333,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     // Com a partida terminada, o tempo da vez para.
     if (next.end != null) next = next.copyWith(turnStartedAt: null);
     emit(_timed(next, now));
+    if (player == null || player == mover) _countFirstMove(now);
     _changed();
   }
 
@@ -441,6 +458,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (!confirmed || attemptId == null || _left) return;
     _left = true;
     final now = _now();
+    if (state.end == null) _countEnd(now, quit: true);
     final clock = state.clock;
     if (clock != null) {
       emit(_timed(state.copyWith(clock: ClockEngine.stop(clock, now)), now));
@@ -459,6 +477,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     if (!_active) return;
     _lowTimeWarned.clear();
     _recorded = false;
+    _firstMoveCounted = false;
+    _endCounted = false;
     emit(
       _fresh(
         start: state.start,
@@ -469,12 +489,14 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         now: _now(),
       ).copyWith(userRating: state.userRating),
     );
+    _countStart();
     _changed();
   }
 
   // Depois de cada mudança da partida: grava, registra a tentativa se ela
   // terminou e, se for a vez da máquina, pede o lance.
   void _changed() {
+    if (state.end != null) _countEnd(_now());
     _persist();
     _record();
     _askMachine();
@@ -544,6 +566,121 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
       // Sem o resumo a partida continua valendo: o histórico já foi gravado.
     }
   }
+
+  // O `modo` do E1.03.
+  String get _modeCode {
+    final mode = state.mode;
+    if (mode.isMarathon) return 'maratona';
+    if (mode.isSpeedrun) return 'speedrun';
+    if (mode.fromLink) return 'link';
+    if (mode.featuredId != null) return 'final_destaque';
+    if (mode.dailyDate != null) return 'final_dia';
+    if (mode.challengeId != null) return 'jornada';
+    if (mode.positionId != null) return 'catalogo';
+    return 'livre';
+  }
+
+  String get _positionCode =>
+      AnalyticsRules.positionId(state.mode.positionId, state.start.fen);
+
+  String get _goalCode => state.mode.goal?.code ?? 'livre';
+
+  String get _opponentCode => switch (state.mode.opponent) {
+    OpponentKind.maia => 'maia',
+    OpponentKind.stockfish => 'stockfish',
+    OpponentKind.twoPlayers => 'dois_jogadores',
+  };
+
+  int? get _levelCode =>
+      state.mode.opponent == OpponentKind.maia ? state.mode.level : null;
+
+  void _countStart() {
+    final mode = state.mode;
+    final user = mode.userSide ?? state.playerSide;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.partidaIniciada(
+          modo: _modeCode,
+          posicaoId: _positionCode,
+          meta: _goalCode,
+          lado: switch (user) {
+            Side.white => 'brancas',
+            Side.black => 'pretas',
+            null => 'ambos',
+          },
+          adversario: _opponentCode,
+          nivel: _levelCode,
+          relogio: state.clock?.config.of(user ?? Side.white).code,
+          asCegas: mode.link?.blind ?? false,
+          travado: mode.link?.locked ?? false,
+          codigo: mode.link?.code,
+        ),
+      ),
+    );
+  }
+
+  void _countFirstMove(DateTime now) {
+    if (_firstMoveCounted) return;
+    _firstMoveCounted = true;
+    final startedAt = state.startedAt;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.partidaPrimeiroLance(
+          modo: _modeCode,
+          posicaoId: _positionCode,
+          tempo: startedAt == null ? Duration.zero : now.difference(startedAt),
+        ),
+      ),
+    );
+  }
+
+  // O fim, uma vez por partida. [quit]: o jogador saiu no meio.
+  void _countEnd(DateTime now, {bool quit = false}) {
+    if (_endCounted) return;
+    _endCounted = true;
+    final end = state.end;
+    final outcome = state.outcome;
+    final startedAt = state.startedAt;
+    final resultado = quit
+        ? 'abandono'
+        : end?.reason == GameEndReason.timeout && outcome == AttemptOutcome.loss
+        ? 'tempo'
+        : switch (outcome) {
+            AttemptOutcome.win => 'vitoria',
+            AttemptOutcome.draw => 'empate',
+            AttemptOutcome.loss => 'derrota',
+            // O tabuleiro livre não tem lado: só o fim conta.
+            null => end?.winner == null ? 'empate' : 'vitoria',
+          };
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.partidaFim(
+          modo: _modeCode,
+          posicaoId: _positionCode,
+          meta: _goalCode,
+          adversario: _opponentCode,
+          nivel: _levelCode,
+          resultado: resultado,
+          motivo: quit || end == null ? 'saiu' : _reasonCode(end.reason),
+          lances: state.ucis.length,
+          tempo: startedAt == null ? Duration.zero : now.difference(startedAt),
+          codigo: state.mode.link?.code,
+        ),
+      ),
+    );
+  }
+
+  static String _reasonCode(GameEndReason reason) => switch (reason) {
+    GameEndReason.checkmate => 'mate',
+    GameEndReason.stalemate => 'afogamento',
+    GameEndReason.insufficientMaterial => 'material',
+    GameEndReason.repetition => 'repeticao',
+    GameEndReason.fiftyMoves => 'regra_50',
+    GameEndReason.timeout ||
+    GameEndReason.timeoutVsInsufficientMaterial => 'tempo',
+    GameEndReason.resign => 'saiu',
+    GameEndReason.drawAgreed => 'acordo',
+  };
 
   // Quanto o relógio de [side] gastou na partida: o tempo inicial mais os
   // incrementos dos lances dele, menos o que sobrou.

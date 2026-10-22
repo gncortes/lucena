@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/home/home_layout_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/maia_level.dart';
@@ -55,8 +57,10 @@ class GoalCubit extends Cubit<GoalState> {
     required this._profile,
     required this._characters,
     this._home,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const GoalState());
 
+  final AnalyticsRepository _analytics;
   final OnboardingRepository _onboarding;
   final ProfileRepository _profile;
   final CharacterRepository _characters;
@@ -99,6 +103,7 @@ class GoalCubit extends Cubit<GoalState> {
     try {
       final goal = state.goal;
       final profile = await _profile.load();
+      unawaited(_counted(goal, before: profile.goal));
       if (goal != GoalPreference.learn) {
         await _profile.save(profile.copyWith(goal: goal));
         if (!isClosed) emit(state.copyWith(exit: GoalExit.level));
@@ -124,4 +129,22 @@ class GoalCubit extends Cubit<GoalState> {
       _finishing = false;
     }
   }
+
+  Future<void> _counted(GoalPreference goal, {GoalPreference? before}) async {
+    final code = goalCode(goal);
+    await _analytics.log(
+      AnalyticsEvents.objetivoDefinido(
+        objetivo: code,
+        trocado: before != null && before != goal,
+      ),
+    );
+    await _analytics.setTrait(AnalyticsTrait.goal, code);
+  }
+
+  /// O `objetivo` do E1.03.
+  static String goalCode(GoalPreference goal) => switch (goal) {
+    GoalPreference.learn => 'aprender_jogar',
+    GoalPreference.endgames => 'aprender_finais',
+    GoalPreference.train => 'treinar_finais',
+  };
 }

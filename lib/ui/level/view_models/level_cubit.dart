@@ -2,18 +2,21 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/chesscom/chesscom_repository.dart';
 import '../../../data/repositories/home/home_layout_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/level_source.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/platform_rating.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/use_cases/analytics_rules.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/rating_conversion.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
@@ -157,8 +160,10 @@ class LevelCubit extends Cubit<LevelState> {
     required this._chessCom,
     this._home,
     this.fromProfile = false,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const LevelState());
 
+  final AnalyticsRepository _analytics;
   final OnboardingRepository _onboarding;
   final ProfileRepository _profile;
   final CharacterRepository _characters;
@@ -219,6 +224,14 @@ class LevelCubit extends Cubit<LevelState> {
     emit(state.copyWith(choice: LevelChoice.lichess, lichessBusy: true));
     try {
       final rating = await _lichess.connect();
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.contaLichess(
+            acao: 'conectado',
+            rating: rating.main?.rating,
+          ),
+        ),
+      );
       if (isClosed) return;
       emit(state.copyWith(lichessBusy: false, lichess: () => rating));
     } on LichessException catch (e) {
@@ -354,6 +367,7 @@ class LevelCubit extends Cubit<LevelState> {
         goal: zero ? GoalPreference.learn : saved.goal,
       );
       await _profile.save(profile);
+      unawaited(_counted(source, rating));
       final home = _home;
       if (home != null && (await home.load())?.custom != true) {
         await home.save(
@@ -382,6 +396,24 @@ class LevelCubit extends Cubit<LevelState> {
     } finally {
       _finishing = false;
     }
+  }
+
+  Future<void> _counted(LevelSource source, int rating) async {
+    final via = switch (source) {
+      LevelSource.test => 'teste',
+      LevelSource.lichess => 'lichess',
+      LevelSource.chesscom => 'chesscom',
+      LevelSource.manual => 'manual',
+      LevelSource.zero => 'zero',
+    };
+    await _analytics.log(
+      AnalyticsEvents.nivelDefinido(via: via, rating: rating),
+    );
+    await _analytics.setTrait(AnalyticsTrait.levelVia, via);
+    await _analytics.setTrait(
+      AnalyticsTrait.levelBand,
+      AnalyticsRules.ratingBand(rating),
+    );
   }
 
   Future<void> _save(Onboarding onboarding) {

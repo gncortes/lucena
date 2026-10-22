@@ -12,6 +12,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../catalog/widgets/catalog_ui.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
@@ -33,11 +34,13 @@ Future<void> showChallengeSheet(
   List<Character> characters = const [],
 }) {
   final share = context.read<ShareRepository>();
+  final analytics = context.analytics;
   return showLucenaSheet<void>(
     context,
     sheetKey: ChallengeKeys.sheet,
     builder: (context) => BlocProvider(
-      create: (_) => ChallengeSheetCubit(share, link: link),
+      create: (_) =>
+          ChallengeSheetCubit(share, link: link, analytics: analytics)..load(),
       child: ChallengeSheet(characters: characters),
     ),
   );
@@ -97,7 +100,7 @@ class ChallengeSheet extends StatelessWidget {
               ),
               OutlinedButton.icon(
                 key: ChallengeKeys.copy,
-                onPressed: () => copyChallengeLink(context, link),
+                onPressed: () => _copy(context, link),
                 icon: const Icon(Icons.content_copy),
                 label: Text(l10n.challengeCopyLink),
               ),
@@ -107,6 +110,12 @@ class ChallengeSheet extends StatelessWidget {
       ),
     );
   }
+}
+
+// Copiar de dentro da folha também conta o `link_copiado`.
+void _copy(BuildContext context, ChallengeLink link) {
+  unawaited(context.read<ChallengeSheetCubit>().copied());
+  unawaited(copyChallengeLink(context, link));
 }
 
 /// Copia o endereço de [link] e avisa. O aviso usa a camada de cima do app: o
@@ -272,7 +281,7 @@ class _LinkField extends StatelessWidget {
     return InkWell(
       key: ChallengeKeys.linkField,
       borderRadius: BorderRadius.circular(AppShape.large),
-      onTap: () => copyChallengeLink(context, link),
+      onTap: () => _copy(context, link),
       child: Ink(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,

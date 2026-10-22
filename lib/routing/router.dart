@@ -29,6 +29,7 @@ import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
 import '../ui/conclusion/view_models/conclusion_cubit.dart';
 import '../ui/conclusion/widgets/conclusion_screen.dart';
+import '../ui/core/analytics/analytics_context.dart';
 import '../domain/models/app_version.dart';
 import '../domain/models/conclusion.dart';
 import '../ui/blind/view_models/blind_game_cubit.dart';
@@ -239,6 +240,7 @@ GoRouter buildRouter({
             characters: context.read<CharacterRepository>(),
             lessons: context.read<LessonRepository>(),
             voice: context.read<VoiceRepository>(),
+            analytics: context.analytics,
           )..load(_language(context)),
           child: const TourScreen(),
         ),
@@ -366,6 +368,7 @@ GoRouter buildRouter({
             profile: context.read<ProfileRepository>(),
             characters: context.read<CharacterRepository>(),
             home: context.read<HomeLayoutRepository>(),
+            analytics: context.analytics,
           )..load(),
           child: const GoalScreen(),
         ),
@@ -381,6 +384,7 @@ GoRouter buildRouter({
             chessCom: context.read<ChessComRepository>(),
             home: context.read<HomeLayoutRepository>(),
             fromProfile: state.uri.queryParameters['from'] == 'profile',
+            analytics: context.analytics,
           )..load(),
           child: const LevelScreen(),
         ),
@@ -405,6 +409,7 @@ GoRouter buildRouter({
               language: _language(context),
               // Nos testes de ponta a ponta, sempre as mesmas perguntas.
               seed: isE2E ? 52 : null,
+              analytics: context.analytics,
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(
@@ -543,6 +548,7 @@ GoRouter buildRouter({
                       progress: context.read<ProgressRepository>(),
                       draws: context.read<DrawOfferRepository>(),
                       speedruns: context.read<SpeedrunRepository>(),
+                      analytics: context.analytics,
                       reporter: GameReporter(
                         rating: context.read<RatingRepository>(),
                         achievements: context.read<AchievementsRepository>(),

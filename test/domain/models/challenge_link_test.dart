@@ -89,4 +89,28 @@ void main() {
     );
     expect(ChallengeLink.tryParse(uri)!.userSide, Side.black);
   });
+
+  test('o link criado no app leva utm_source=app e a geração', () {
+    final link = ChallengeLink(
+      fen: _fen,
+      userSide: Side.white,
+    ).sharedFrom('fim_partida', generation: 3);
+    final query = link.uri.queryParameters;
+    expect(query['utm_source'], 'app');
+    expect(query['utm_medium'], 'compartilhar');
+    expect(query['utm_campaign'], 'fim_partida');
+    expect(query['g'], '3');
+
+    final back = ChallengeLink.tryParse(link.uri)!;
+    expect(back.generation, 3);
+    expect(back.utm['utm_source'], 'app');
+    // A geração e as utm não mudam o desafio.
+    expect(back.code, ChallengeLink(fen: _fen, userSide: Side.white).code);
+  });
+
+  test('sem geração, o link não leva g', () {
+    final link = ChallengeLink(fen: _fen, userSide: Side.white);
+    expect(link.uri.queryParameters.containsKey('g'), isFalse);
+    expect(ChallengeLink.tryParse(link.uri)!.generation, 0);
+  });
 }
