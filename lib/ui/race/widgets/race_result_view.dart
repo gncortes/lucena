@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -123,10 +125,11 @@ class RaceResultView extends StatelessWidget {
               // O título sem o recuo próprio: alinhado aos cartões de cima.
               SectionTitle(l10n.raceProblemsTitle, inset: 0),
               _ProblemGrid(
-                tiles: [
+                tiles: (size) => [
                   for (final (index, answer) in run.answers.indexed)
                     _ProblemTile(
                       key: RaceKeys.problemTile(index),
+                      size: size,
                       answer: answer,
                       problem: state.problems
                           .where((p) => p.id == answer.problemId)
@@ -206,19 +209,27 @@ class _ProblemGrid extends StatelessWidget {
 
   static const _columns = 4;
 
-  final List<Widget> tiles;
+  /// O vão mínimo entre as miniaturas: numa tela estreita elas diminuem, para
+  /// o selo de uma não encostar na vizinha.
+  static const _minGap = AppSpacing.md;
+
+  /// As miniaturas, no tamanho que cabe.
+  final List<Widget> Function(double size) tiles;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      final gap =
-          ((box.maxWidth - _columns * _ProblemTile.size) / (_columns - 1))
-              .floorToDouble();
+      final size = math.min(
+        _ProblemTile.maxSize,
+        ((box.maxWidth - (_columns - 1) * _minGap) / _columns).floorToDouble(),
+      );
+      final gap = ((box.maxWidth - _columns * size) / (_columns - 1))
+          .floorToDouble();
       return Wrap(
         alignment: WrapAlignment.start,
-        spacing: gap < 0 ? 0 : gap,
+        spacing: gap,
         runSpacing: AppSpacing.lg,
-        children: tiles,
+        children: tiles(size),
       );
     },
   );
@@ -227,12 +238,18 @@ class _ProblemGrid extends StatelessWidget {
 /// A miniatura de um problema: o selo de certo ou de errado e o nível
 /// embaixo.
 class _ProblemTile extends StatelessWidget {
-  const _ProblemTile({required this.answer, required this.problem, super.key});
+  const _ProblemTile({
+    required this.size,
+    required this.answer,
+    required this.problem,
+    super.key,
+  });
 
-  static const size = 88.0;
-  static const _size = size;
+  /// O tamanho do canvas (PropV1CorridaResultado), quando cabe.
+  static const maxSize = 88.0;
   static const _badge = 22.0;
 
+  final double size;
   final RaceAnswer answer;
   final RaceProblem? problem;
 
@@ -245,7 +262,7 @@ class _ProblemTile extends StatelessWidget {
         : colors.error;
     final problem = this.problem;
     return SizedBox(
-      width: _size,
+      width: size,
       child: Column(
         spacing: AppSpacing.xs,
         children: [
@@ -253,11 +270,11 @@ class _ProblemTile extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               if (problem == null)
-                const SizedBox.square(dimension: _size)
+                SizedBox.square(dimension: size)
               else
                 PositionBoard(
                   fen: problem.fen,
-                  size: _size,
+                  size: size,
                   radius: AppShape.small,
                 ),
               PositionedDirectional(

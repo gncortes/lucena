@@ -2,6 +2,7 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
@@ -167,6 +168,24 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(RaceKeys.gameView), findsOneWidget);
     expect(tester.widget<Text>(find.byKey(RaceKeys.count)).data, '0');
+  });
+
+  testWidgets('num celular de 384 de largura, as miniaturas têm vão entre si', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(384, 860);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpRace(tester);
+    await start(tester);
+    for (final (from, to) in [('a1', 'b1'), ('d5', 'e5'), ('b7', 'b8')]) {
+      await move(tester, from, to);
+      await tester.pumpAndSettle();
+    }
+
+    final first = tester.getRect(find.byKey(RaceKeys.problemTile(0)));
+    final second = tester.getRect(find.byKey(RaceKeys.problemTile(1)));
+    expect(second.left - first.right, greaterThanOrEqualTo(AppSpacing.md));
   });
 
   testWidgets('acabou o tempo: o relógio do aparelho fecha a Corrida', (
