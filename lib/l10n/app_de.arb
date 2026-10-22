@@ -1738,5 +1738,7 @@
   "feedbackTextHint": "Tell it in your own words",
   "feedbackAttached": "Sent along, without identifying you: the app version and the phone model, so I can find the problem faster.",
   "feedbackSend": "Send",
-  "feedbackBack": "Back to profile"
+  "feedbackBack": "Back to profile",
+  "privacyTitleNoAds": "Privacy",
+  "profilePrivacyNoAdsValue": "Your data and privacy policy"
 }

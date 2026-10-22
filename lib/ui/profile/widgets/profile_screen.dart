@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/ads/ads_repository.dart';
 import '../../../data/repositories/purchase/purchase_repository.dart';
 import '../../../data/repositories/store/store_listing_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
@@ -509,6 +510,7 @@ class _SupportGroups extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final purchases = context.read<PurchaseRepository>();
+    final ads = context.read<AdsRepository>().enabled;
     return StreamBuilder<PurchaseState>(
       stream: purchases.changes,
       initialData: purchases.state,
@@ -541,8 +543,10 @@ class _SupportGroups extends StatelessWidget {
                 ProfileRow(
                   key: ProfileKeys.rowPrivacy,
                   icon: Icons.privacy_tip,
-                  title: l10n.profilePrivacy,
-                  value: l10n.profilePrivacyValue,
+                  title: ads ? l10n.profilePrivacy : l10n.privacyTitleNoAds,
+                  value: ads
+                      ? l10n.profilePrivacyValue
+                      : l10n.profilePrivacyNoAdsValue,
                   onTap: () => _privacy(context),
                 ),
                 ProfileRow(

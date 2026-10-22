@@ -1696,5 +1696,7 @@
   "feedbackTextHint": "[Téll ît îñ ýöûŕ öwñ wöŕdš one two three]",
   "feedbackAttached": "[Šéñt ålöñĝ, wîthöût îdéñtîfýîñĝ ýöû: thé åpp véŕšîöñ åñd thé phöñé mödél, šö Î çåñ fîñd thé pŕöblém fåštéŕ. one two three four five six seven eight nine]",
   "feedbackSend": "[Šéñd one]",
-  "feedbackBack": "[Båçk tö pŕöfîlé one two]"
+  "feedbackBack": "[Båçk tö pŕöfîlé one two]",
+  "privacyTitleNoAds": "[Pŕîvåçý one]",
+  "profilePrivacyNoAdsValue": "[Ýöûŕ dåtå åñd pŕîvåçý pölîçý one two three]"
 }

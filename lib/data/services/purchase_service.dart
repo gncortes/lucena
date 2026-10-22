@@ -1,7 +1,3 @@
-import 'dart:async';
-
-import 'package:in_app_purchase/in_app_purchase.dart';
-
 /// O id do produto "Remover anúncios" na Play Console (não consumível).
 const removeAdsProductId = String.fromEnvironment(
   'REMOVE_ADS_PRODUCT',
@@ -33,6 +29,9 @@ class StorePurchase {
 }
 
 /// A Play Billing atrás de interface (E1.25).
+///
+/// A V1 sai sem "Remover anúncios": só há o [NoPurchaseService]. O
+/// `PlayPurchaseService`, com o `in_app_purchase`, está no commit b3fa571e.
 abstract class PurchaseService {
   /// As atualizações de compra (comprar, restaurar, pendente que confirmou).
   Stream<StorePurchase> get purchases;
@@ -52,66 +51,7 @@ abstract class PurchaseService {
   Future<void> restore();
 }
 
-/// `in_app_purchase` (Play Billing).
-class PlayPurchaseService implements PurchaseService {
-  PlayPurchaseService([InAppPurchase? store])
-    : _store = store ?? InAppPurchase.instance;
-
-  final InAppPurchase _store;
-  final _products = <String, ProductDetails>{};
-  final _raw = <StorePurchase, PurchaseDetails>{};
-
-  @override
-  Stream<StorePurchase> get purchases => _store.purchaseStream.expand(
-    (list) => list.map((details) {
-      final purchase = StorePurchase(
-        productId: details.productID,
-        status: switch (details.status) {
-          PurchaseStatus.pending => StorePurchaseStatus.pending,
-          PurchaseStatus.purchased => StorePurchaseStatus.purchased,
-          PurchaseStatus.restored => StorePurchaseStatus.restored,
-          PurchaseStatus.canceled => StorePurchaseStatus.canceled,
-          PurchaseStatus.error => StorePurchaseStatus.error,
-        },
-        needsCompletion: details.pendingCompletePurchase,
-      );
-      if (details.pendingCompletePurchase) _raw[purchase] = details;
-      return purchase;
-    }),
-  );
-
-  @override
-  Future<bool> available() => _store.isAvailable();
-
-  @override
-  Future<StoreProduct?> product(String id) async {
-    final response = await _store.queryProductDetails({id});
-    if (response.productDetails.isEmpty) return null;
-    final details = response.productDetails.first;
-    _products[details.id] = details;
-    return StoreProduct(id: details.id, price: details.price);
-  }
-
-  @override
-  Future<void> buy(StoreProduct product) async {
-    final details = _products[product.id];
-    if (details == null) return;
-    await _store.buyNonConsumable(
-      purchaseParam: PurchaseParam(productDetails: details),
-    );
-  }
-
-  @override
-  Future<void> complete(StorePurchase purchase) async {
-    final details = _raw.remove(purchase);
-    if (details != null) await _store.completePurchase(details);
-  }
-
-  @override
-  Future<void> restore() => _store.restorePurchases();
-}
-
-/// Sem Play (F-Droid, testes): nada à venda.
+/// Sem Play (V1, F-Droid, testes): nada à venda.
 class NoPurchaseService implements PurchaseService {
   const NoPurchaseService();
 

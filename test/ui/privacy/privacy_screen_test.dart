@@ -33,15 +33,19 @@ void main() {
     Future<void> pumpScreen(
       WidgetTester tester, {
       FakeAccountRepository? accounts,
+      AdsRepository? ads,
     }) async {
+      final repository =
+          ads ??
+          ServiceAdsRepository(
+            service: service,
+            preferences: PreferencesService(),
+            flags: FakeRemoteFlagsRepository(),
+            purchases: purchases,
+            now: FakeNow(DateTime.utc(2026, 10, 22)),
+          );
       final cubit = PrivacyCubit(
-        ads: ServiceAdsRepository(
-          service: service,
-          preferences: PreferencesService(),
-          flags: FakeRemoteFlagsRepository(),
-          purchases: purchases,
-          now: FakeNow(DateTime.utc(2026, 10, 22)),
-        ),
+        ads: repository,
         purchases: purchases,
         accounts: accounts ?? FakeAccountRepository(),
       );
@@ -50,6 +54,7 @@ void main() {
       await tester.pumpWidget(
         TestApp(
           locale: const Locale('pt', 'BR'),
+          adsRepository: repository,
           child: BlocProvider.value(value: cubit, child: const PrivacyScreen()),
         ),
       );
@@ -78,6 +83,18 @@ void main() {
       await tester.tap(find.byKey(PrivacyKeys.adChoices));
       await tester.pumpAndSettle();
       expect(service.privacyOptionsShown, 1);
+    });
+
+    testWidgets('V1, sem anúncios no build: só "Privacidade", sem cartão', (
+      tester,
+    ) async {
+      await pumpScreen(tester, ads: const NoAdsRepository());
+      expect(find.text('Privacidade'), findsOneWidget);
+      expect(find.text('Privacidade e anúncios'), findsNothing);
+      expect(find.byKey(PrivacyKeys.freeCard), findsNothing);
+      expect(find.byKey(PrivacyKeys.adFreeCard), findsNothing);
+      expect(find.byKey(PrivacyKeys.adChoices), findsNothing);
+      expect(find.byKey(PrivacyKeys.policy), findsOneWidget);
     });
 
     testWidgets('sem anúncios: o cartão agradece', (tester) async {

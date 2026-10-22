@@ -45,6 +45,10 @@ abstract class AdsRepository {
   /// Avisa cada anúncio mostrado.
   Stream<void> get adShown;
 
+  /// O build tem anúncios. A V1 não tem: a Privacidade e o Perfil não falam
+  /// deles.
+  bool get enabled;
+
   /// "Escolhas de anúncios" aparece na Privacidade.
   Future<bool> privacyOptionsRequired();
 
@@ -52,6 +56,9 @@ abstract class AdsRepository {
 }
 
 class ServiceAdsRepository implements AdsRepository {
+  @override
+  bool get enabled => true;
+
   ServiceAdsRepository({
     required this._service,
     required this._preferences,
@@ -290,6 +297,9 @@ class ServiceAdsRepository implements AdsRepository {
 /// Sem anúncios (F-Droid, sem Firebase, testes).
 class NoAdsRepository implements AdsRepository {
   const NoAdsRepository();
+
+  @override
+  bool get enabled => false;
 
   @override
   Future<void> start({

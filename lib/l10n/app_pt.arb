@@ -1737,5 +1737,7 @@
   "feedbackTextHint": "Conte com suas palavras",
   "feedbackAttached": "Vai junto, sem identificar você: a versão do app e o modelo do celular, para eu achar o problema mais rápido.",
   "feedbackSend": "Enviar",
-  "feedbackBack": "Voltar ao perfil"
+  "feedbackBack": "Voltar ao perfil",
+  "privacyTitleNoAds": "Privacidade",
+  "profilePrivacyNoAdsValue": "Seus dados e política de privacidade"
 }

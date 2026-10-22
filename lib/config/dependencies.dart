@@ -7,8 +7,6 @@ import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../data/repositories/store/store_listing_repository.dart';
-import '../data/services/ads_service.dart';
-import '../data/services/purchase_service.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
 import '../data/repositories/week/week_repository.dart';
 import '../data/repositories/config/remote_flags_repository.dart';
@@ -322,8 +320,6 @@ class Dependencies {
       LocalFeaturedProgressRepository(preferences),
       activity,
     );
-    // Anúncios e "Remover anúncios" (E1.25) só no build da Play, que é o que
-    // sobe o Firebase; no do F-Droid ficam desligados.
     final flags = RemoteConfigFlagsRepository(
       firebase ? FirebaseRemoteConfigService() : NoRemoteConfigService(),
       // Nas versões de teste, o valor novo do console vale na hora.
@@ -331,9 +327,9 @@ class Dependencies {
           ? Duration.zero
           : const Duration(hours: 12),
     );
-    final purchases = firebase
-        ? PlayPurchaseRepository(PlayPurchaseService(), preferences)
-        : const NoPurchaseRepository();
+    // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
+    // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
+    const purchases = NoPurchaseRepository();
     final analytics = ServiceAnalyticsRepository(
       firebase && analyticsMode != AnalyticsMode.off
           ? FirebaseAnalyticsService()
@@ -341,16 +337,7 @@ class Dependencies {
       preferences,
       mode: analyticsMode,
     );
-    final ads = firebase
-        ? ServiceAdsRepository(
-            service: GoogleAdsService(testAds: analytics.teamMode),
-            preferences: preferences,
-            flags: flags,
-            purchases: purchases,
-            now: now,
-            analytics: analytics,
-          )
-        : const NoAdsRepository();
+    const ads = NoAdsRepository();
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );

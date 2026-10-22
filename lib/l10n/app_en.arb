@@ -8922,5 +8922,13 @@
   "feedbackBack": "Back to profile",
   "@feedbackBack": {
     "description": "Thanks screen button back to the profile."
+  },
+  "privacyTitleNoAds": "Privacy",
+  "@privacyTitleNoAds": {
+    "description": "Privacy screen title in a build without ads."
+  },
+  "profilePrivacyNoAdsValue": "Your data and privacy policy",
+  "@profilePrivacyNoAdsValue": {
+    "description": "Profile row subtitle for the privacy screen in a build without ads."
   }
 }

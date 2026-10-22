@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/repositories/ads/ads_repository.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,10 +27,13 @@ class PrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<PrivacyCubit>().state;
+    final ads = context.read<AdsRepository>().enabled;
     final language = Localizations.localeOf(context).languageCode;
     return Scaffold(
       key: PrivacyKeys.screen,
-      appBar: LucenaAppBar(title: Text(l10n.privacyTitle)),
+      appBar: LucenaAppBar(
+        title: Text(ads ? l10n.privacyTitle : l10n.privacyTitleNoAds),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg,
@@ -36,21 +42,24 @@ class PrivacyScreen extends StatelessWidget {
           AppSpacing.xl,
         ),
         children: [
-          if (state.adFree)
-            _InfoCard(
-              key: PrivacyKeys.adFreeCard,
-              icon: Icons.hide_source,
-              title: l10n.privacyAdFreeTitle,
-              text: l10n.privacyAdFreeText,
-            )
-          else
-            _InfoCard(
-              key: PrivacyKeys.freeCard,
-              icon: Icons.campaign,
-              title: l10n.privacyFreeTitle,
-              text: l10n.privacyFreeText,
-            ),
-          const SizedBox(height: AppSpacing.lg),
+          // A V1 sai sem anúncios: nenhum cartão sobre eles.
+          if (ads) ...[
+            if (state.adFree)
+              _InfoCard(
+                key: PrivacyKeys.adFreeCard,
+                icon: Icons.hide_source,
+                title: l10n.privacyAdFreeTitle,
+                text: l10n.privacyAdFreeText,
+              )
+            else
+              _InfoCard(
+                key: PrivacyKeys.freeCard,
+                icon: Icons.campaign,
+                title: l10n.privacyFreeTitle,
+                text: l10n.privacyFreeText,
+              ),
+            const SizedBox(height: AppSpacing.lg),
+          ],
           ProfileRowGroup(
             children: [
               if (state.showsAdChoices)
