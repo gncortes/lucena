@@ -9,6 +9,7 @@ import '../../../domain/models/account.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../alerts/view_models/alerts_cubit.dart';
+import '../../analytics/widgets/version_footer.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
@@ -33,7 +34,6 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     return Scaffold(
       key: SettingsKeys.screen,
       appBar: LucenaAppBar(
@@ -105,14 +105,7 @@ class SettingsScreen extends StatelessWidget {
           if (version.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.lg),
-              child: Text(
-                l10n.homeVersion(version),
-                key: SettingsKeys.version,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
+              child: VersionFooter(version: version),
             ),
         ],
       ),

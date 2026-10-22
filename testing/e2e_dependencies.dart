@@ -4,6 +4,7 @@ import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
 import 'fakes/fake_sync_repository.dart';
 import 'fakes/fake_avatar_repository.dart';
+import 'fakes/fake_analytics_repository.dart';
 import 'fakes/fake_mail_app_repository.dart';
 import 'fakes/fake_photo_repository.dart';
 import 'fakes/fake_chesscom_repository.dart';
@@ -245,6 +246,9 @@ AppDatabase? _database;
 /// cenários de persistência (reiniciar o app e conferir o dado) valerem.
 ///
 /// Cada chamada fecha o banco da anterior e abre outro, como um app reaberto.
+/// O Analytics dos cenários Patrol: só anota, para a varredura de dado pessoal.
+final e2eAnalytics = FakeAnalyticsRepository();
+
 Future<Dependencies> e2eDependencies() async {
   await _database?.close();
   final database = _database = AppDatabase();
@@ -268,6 +272,8 @@ Future<Dependencies> e2eDependencies() async {
     avatarRepository: FakeAvatarRepository(),
     photoRepository: FakePhotoRepository(),
     mailAppRepository: FakeMailAppRepository(),
+    // Patrol nunca manda nada (E1.03 §10).
+    analyticsRepository: e2eAnalytics,
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
     pushRepository: FakePushRepository(allowed: true),

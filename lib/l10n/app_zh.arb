@@ -1635,5 +1635,11 @@
   "crowdYouAre": "You are one of them.",
   "crowdFewYesterday": "Few people played yesterday",
   "crowdFew": "Few people played this endgame",
-  "crowdFewText": "The number shows from 30 people on."
+  "crowdFewText": "The number shows from 30 people on.",
+  "teamModeTitle": "团队模式",
+  "teamModeSwitch": "不统计我的使用",
+  "teamModeBody": "供制作 Lucena 的人使用。你的课程和对局不计入统计，广告为测试广告。",
+  "versionTeamMode": "版本 {version} · 团队模式",
+  "analyticsOptInTitle": "帮助改进 Lucena",
+  "analyticsOptInBody": "发送你使用应用的方式：页面、课程和对局。不含姓名、邮箱或你输入的内容。"
 }

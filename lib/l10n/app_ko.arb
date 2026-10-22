@@ -1635,5 +1635,11 @@
   "crowdYouAre": "You are one of them.",
   "crowdFewYesterday": "Few people played yesterday",
   "crowdFew": "Few people played this endgame",
-  "crowdFewText": "The number shows from 30 people on."
+  "crowdFewText": "The number shows from 30 people on.",
+  "teamModeTitle": "팀 모드",
+  "teamModeSwitch": "내 사용량 제외",
+  "teamModeBody": "Lucena를 만드는 사람용입니다. 레슨과 대국이 통계에 포함되지 않고 광고는 테스트 광고입니다.",
+  "versionTeamMode": "버전 {version} · 팀 모드",
+  "analyticsOptInTitle": "Lucena 개선에 도움 주기",
+  "analyticsOptInBody": "앱 사용 방식(화면, 레슨, 대국)을 보냅니다. 이름, 이메일, 입력한 내용은 보내지 않습니다."
 }

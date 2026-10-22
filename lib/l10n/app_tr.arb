@@ -1635,5 +1635,11 @@
   "crowdYouAre": "You are one of them.",
   "crowdFewYesterday": "Few people played yesterday",
   "crowdFew": "Few people played this endgame",
-  "crowdFewText": "The number shows from 30 people on."
+  "crowdFewText": "The number shows from 30 people on.",
+  "teamModeTitle": "Ekip modu",
+  "teamModeSwitch": "Kullanımımı sayma",
+  "teamModeBody": "Lucena'yı yapanlar için. Dersleriniz ve oyunlarınız istatistiklere girmez, reklamlar test reklamıdır.",
+  "versionTeamMode": "Sürüm {version} · ekip modu",
+  "analyticsOptInTitle": "Lucena'yı geliştirmeye yardım et",
+  "analyticsOptInBody": "Uygulamayı nasıl kullandığınızı gönderir: ekranlar, dersler ve oyunlar. Ad, e-posta veya yazdıklarınız olmadan."
 }

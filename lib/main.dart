@@ -10,6 +10,8 @@ import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/alerts/region_prompt_repository.dart';
+import 'data/repositories/analytics/analytics_opening.dart';
+import 'data/repositories/analytics/analytics_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
 import 'data/repositories/week/week_repository.dart';
@@ -76,6 +78,7 @@ import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/push_route.dart';
 import 'routing/router.dart';
+import 'routing/screen_tracker.dart';
 import 'ui/alerts/view_models/alerts_cubit.dart';
 import 'ui/reminders/view_models/reminders_cubit.dart';
 import 'ui/reminders/widgets/reminders_bridge.dart';
@@ -113,11 +116,28 @@ class _LucenaAppState extends State<LucenaApp> {
   // Nulo até saber em que tela o app abre.
   GoRouter? _router;
 
+  // O screen_view de cada tela (E1.03).
+  ScreenTracker? _screens;
+
   // Os desafios que chegam por link com o app aberto.
   StreamSubscription<ChallengeLink>? _links;
 
   // Os avisos de push tocados com o app em segundo plano.
   StreamSubscription<Uri>? _pushLinks;
+
+  // As estatísticas da abertura e dos links (E1.03).
+  late final AnalyticsOpening _analytics = AnalyticsOpening(
+    widget.dependencies.analyticsRepository,
+    account: widget.dependencies.accountRepository,
+    push: widget.dependencies.pushRepository,
+    school: widget.dependencies.schoolProgressRepository,
+    endgames: widget.dependencies.endgameProgressRepository,
+    activity: widget.dependencies.activityRepository,
+    now: widget.dependencies.now,
+    country: () =>
+        WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+    schoolLessons: VisibleLessons.schoolLessonIds,
+  );
 
   // O progresso indo para a conta (E1.13).
   late final SyncScheduler _sync = SyncScheduler(
@@ -145,9 +165,11 @@ class _LucenaAppState extends State<LucenaApp> {
     final push = widget.dependencies.pushRepository;
     unawaited(push.start());
     final pushed = await push.initialLink();
-    final link =
-        await deepLinks.initial() ??
-        (pushed == null ? null : deepLinks.parse(pushed));
+    final opened = await deepLinks.initial();
+    final link = opened ?? (pushed == null ? null : deepLinks.parse(pushed));
+    unawaited(
+      _analytics.launched(link: link, pushed: opened == null && pushed != null),
+    );
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
@@ -162,20 +184,30 @@ class _LucenaAppState extends State<LucenaApp> {
           visibleEndgameLessons: VisibleLessons.endgameLessonIds,
         ),
       );
+      _screens = ScreenTracker(
+        _router!,
+        widget.dependencies.analyticsRepository,
+      );
     });
-    _links = deepLinks.opened.listen(
-      (link) => _router?.push(Routes.challenge(link)),
-    );
+    _links = deepLinks.opened.listen((link) {
+      unawaited(_analytics.opened(link));
+      _router?.push(Routes.challenge(link));
+    });
     // Um aviso pode trazer o link de um desafio ou o de uma tela (final do
     // dia, aula, final ou torneio).
     _pushLinks = push.openedLinks.listen((uri) {
+      unawaited(_analytics.alertOpened(uri.path, channel: 'push'));
       final link = deepLinks.parse(uri);
       if (link != null) {
+        unawaited(_analytics.opened(link));
         _router?.push(Routes.challenge(link));
       } else {
         unawaited(_openPushed(uri));
       }
     });
+    if (pushed != null) {
+      unawaited(_analytics.alertOpened(pushed.path, channel: 'push'));
+    }
     if (pushed != null && deepLinks.parse(pushed) == null) {
       await _openPushed(pushed);
     }
@@ -196,6 +228,7 @@ class _LucenaAppState extends State<LucenaApp> {
     unawaited(_links?.cancel());
     unawaited(_pushLinks?.cancel());
     unawaited(_sync.dispose());
+    _screens?.dispose();
     _router?.dispose();
     super.dispose();
   }
@@ -207,6 +240,9 @@ class _LucenaAppState extends State<LucenaApp> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<Now>.value(value: dependencies.now),
+        RepositoryProvider<AnalyticsRepository>.value(
+          value: dependencies.analyticsRepository,
+        ),
         RepositoryProvider<SettingsRepository>.value(
           value: dependencies.settingsRepository,
         ),
@@ -478,7 +514,10 @@ class _LucenaAppState extends State<LucenaApp> {
                 routerConfig: router,
                 // Abaixo das traduções: os textos dos lembretes vêm delas.
                 builder: (context, child) => RemindersBridge(
-                  onOpen: (route) => _router?.push(route),
+                  onOpen: (route) {
+                    unawaited(_analytics.alertOpened(route, channel: 'local'));
+                    _router?.push(route);
+                  },
                   child: child ?? const SizedBox.shrink(),
                 ),
               ),

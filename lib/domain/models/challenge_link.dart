@@ -42,8 +42,14 @@ abstract class ChallengeLink with _$ChallengeLink {
     @Default(false) bool locked,
 
     /// O que a E1.16 conta por post (`utm_source`, `utm_medium`,
-    /// `utm_campaign`): passa de quem mandou para quem abre.
+    /// `utm_campaign`, `utm_content`): passa de quem mandou para quem abre.
+    /// O link criado no app leva `utm_source=app` (E1.03 §9).
     @Default(<String, String>{}) Map<String, String> utm,
+
+    /// Quantas vezes o link foi repassado (`g`, E1.03 §9): 0 no nosso post,
+    /// 1 no link de quem nunca chegou por link, e assim por diante. Fica fora
+    /// do código.
+    @Default(0) int generation,
   }) = _ChallengeLink;
 
   const ChallengeLink._();
@@ -64,7 +70,15 @@ abstract class ChallengeLink with _$ChallengeLink {
   /// O parâmetro do Stockfish no link (`opp=sf`).
   static const stockfishCode = 'sf';
 
-  static const _utmKeys = ['utm_source', 'utm_medium', 'utm_campaign'];
+  static const _utmKeys = [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_content',
+  ];
+
+  /// O parâmetro da geração no link.
+  static const generationKey = 'g';
 
   /// Os parâmetros do link, sem os `utm_*`.
   Map<String, String> get params => {
@@ -100,9 +114,22 @@ abstract class ChallengeLink with _$ChallengeLink {
   /// O endereço do desafio: `https://playlucena.com/p/<código>?...`.
   Uri get uri => AppLinks.uri('/${AppLinks.challengeSegment}/$code', {
     ...params,
+    if (generation > 0) generationKey: '$generation',
     for (final entry in utm.entries)
       if (_utmKeys.contains(entry.key)) entry.key: entry.value,
   });
+
+  /// O link que a pessoa manda de [screen] (`criar_desafio`, `fim_partida`...),
+  /// na geração [generation]: marcado como criado no app.
+  ChallengeLink sharedFrom(String screen, {required int generation}) =>
+      copyWith(
+        utm: {
+          'utm_source': 'app',
+          'utm_medium': 'compartilhar',
+          'utm_campaign': screen,
+        },
+        generation: generation,
+      );
 
   /// O endereço curto, como a tela mostra (`playlucena.com/p/k7Qe2`).
   String get shortAddress =>
@@ -146,6 +173,7 @@ abstract class ChallengeLink with _$ChallengeLink {
         for (final key in _utmKeys)
           if (query[key] != null) key: query[key]!,
       },
+      generation: int.tryParse(query[generationKey] ?? '') ?? 0,
     );
   }
 }

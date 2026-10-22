@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
+import '../data/repositories/analytics/analytics_repository.dart';
+import '../data/services/firebase/analytics_service.dart';
+import '../domain/use_cases/analytics_rules.dart';
 import '../data/repositories/reminders/reminders_repository.dart';
 import '../data/repositories/week/week_repository.dart';
 import '../data/services/notification_service.dart';
@@ -131,6 +134,16 @@ import '../domain/use_cases/now.dart';
 /// Ligado por `--dart-define=E2E=true` nos cenários Patrol.
 const isE2E = bool.fromEnvironment('E2E');
 
+/// O modo das estatísticas deste build (E1.03 §10): `FDROID=true` no build do
+/// F-Droid, `ANALYTICS_DEBUG=true` para o DebugView e `CANAL=qa` na QA.
+final analyticsMode = AnalyticsRules.mode(
+  release: kReleaseMode,
+  e2e: isE2E,
+  fdroid: const bool.fromEnvironment('FDROID'),
+  debugView: const bool.fromEnvironment('ANALYTICS_DEBUG'),
+  channel: const String.fromEnvironment('CANAL'),
+);
+
 /// A versão do app (`0.3.2-rc.1`), passada pelo CI ao montar o APK assinado.
 /// Vazia nos builds locais: aí vale a do aparelho ([Dependencies.installedVersion]).
 const appVersion = String.fromEnvironment('APP_VERSION');
@@ -208,6 +221,7 @@ class Dependencies {
     this.avatarRepository = const NoAvatarRepository(),
     this.photoRepository = const NoPhotoRepository(),
     this.mailAppRepository = const NoMailAppRepository(),
+    this.analyticsRepository = const NoAnalyticsRepository(),
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
@@ -377,6 +391,13 @@ class Dependencies {
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),
+      analyticsRepository: ServiceAnalyticsRepository(
+        firebase && analyticsMode != AnalyticsMode.off
+            ? FirebaseAnalyticsService()
+            : const NoAnalyticsService(),
+        preferences,
+        mode: analyticsMode,
+      ),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -494,6 +515,9 @@ class Dependencies {
 
   /// "Abrir o e-mail" depois do link de senha nova.
   final MailAppRepository mailAppRepository;
+
+  /// As estatísticas de uso (E1.03).
+  final AnalyticsRepository analyticsRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;

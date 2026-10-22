@@ -1593,5 +1593,11 @@
   "crowdYouAre": "[Ýöû åŕé öñé öf thém. one two]",
   "crowdFewYesterday": "[Féw péöplé plåýéd ýéštéŕdåý one two three]",
   "crowdFew": "[Féw péöplé plåýéd thîš éñdĝåmé one two three]",
-  "crowdFewText": "[Thé ñûmbéŕ šhöwš fŕöm 30 péöplé öñ. one two three]"
+  "crowdFewText": "[Thé ñûmbéŕ šhöwš fŕöm 30 péöplé öñ. one two three]",
+  "teamModeTitle": "[Téåm mödé one]",
+  "teamModeSwitch": "[Döñ't çöûñt mý ûšåĝé one two]",
+  "teamModeBody": "[Föŕ thé péöplé whö måké Lûçéñå. Ýöûŕ léššöñš åñd ĝåméš štåý öût öf thé štåtîštîçš, åñd ådš åŕé téšt ådš. one two three four five six seven eight nine]",
+  "versionTeamMode": "[Véŕšîöñ {version} · téåm mödé one two three]",
+  "analyticsOptInTitle": "[Hélp împŕövé Lûçéñå one two]",
+  "analyticsOptInBody": "[Šéñdš höw ýöû ûšé thé åpp: šçŕééñš, léššöñš åñd ĝåméš. Ñö ñåmé, émåîl öŕ åñýthîñĝ ýöû týpé. one two three four five six seven eight]"
 }

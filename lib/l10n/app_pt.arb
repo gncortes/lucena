@@ -1634,5 +1634,11 @@
   "crowdYouAre": "Você está entre eles.",
   "crowdFewYesterday": "Poucas pessoas jogaram ontem",
   "crowdFew": "Poucas pessoas jogaram este final",
-  "crowdFewText": "O número aparece a partir de 30 pessoas."
+  "crowdFewText": "O número aparece a partir de 30 pessoas.",
+  "teamModeTitle": "Modo equipe",
+  "teamModeSwitch": "Não contar meu uso",
+  "teamModeBody": "Para quem faz o Lucena. Suas aulas e partidas não entram nas estatísticas, e os anúncios são de teste.",
+  "versionTeamMode": "Versão {version} · modo equipe",
+  "analyticsOptInTitle": "Ajudar a melhorar o Lucena",
+  "analyticsOptInBody": "Envia como você usa o app: telas, aulas e partidas. Sem nome, e-mail nem o que você escreve."
 }

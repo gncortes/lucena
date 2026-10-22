@@ -1635,5 +1635,11 @@
   "crowdYouAre": "You are one of them.",
   "crowdFewYesterday": "Few people played yesterday",
   "crowdFew": "Few people played this endgame",
-  "crowdFewText": "The number shows from 30 people on."
+  "crowdFewText": "The number shows from 30 people on.",
+  "teamModeTitle": "Режим команди",
+  "teamModeSwitch": "Не враховувати моє використання",
+  "teamModeBody": "Для тих, хто створює Lucena. Ваші уроки й партії не потрапляють у статистику, а реклама тестова.",
+  "versionTeamMode": "Версія {version} · режим команди",
+  "analyticsOptInTitle": "Допомогти покращити Lucena",
+  "analyticsOptInBody": "Надсилає, як ви користуєтеся застосунком: екрани, уроки й партії. Без імені, пошти й того, що ви пишете."
 }

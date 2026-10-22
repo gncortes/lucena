@@ -1635,5 +1635,11 @@
   "crowdYouAre": "You are one of them.",
   "crowdFewYesterday": "Few people played yesterday",
   "crowdFew": "Few people played this endgame",
-  "crowdFewText": "The number shows from 30 people on."
+  "crowdFewText": "The number shows from 30 people on.",
+  "teamModeTitle": "Teammodus",
+  "teamModeSwitch": "Mijn gebruik niet meetellen",
+  "teamModeBody": "Voor wie Lucena maakt. Je lessen en partijen tellen niet mee in de statistieken, en advertenties zijn testadvertenties.",
+  "versionTeamMode": "Versie {version} · teammodus",
+  "analyticsOptInTitle": "Help Lucena verbeteren",
+  "analyticsOptInBody": "Stuurt hoe je de app gebruikt: schermen, lessen en partijen. Zonder naam, e-mail of wat je typt."
 }

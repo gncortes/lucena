@@ -8485,5 +8485,34 @@
   "crowdFewText": "The number shows from 30 people on.",
   "@crowdFewText": {
     "description": "Text under the \"few people played\" title."
+  },
+  "teamModeTitle": "Team mode",
+  "@teamModeTitle": {
+    "description": "Title of the hidden team mode sheet (7 taps on the version footer)."
+  },
+  "teamModeSwitch": "Don't count my usage",
+  "@teamModeSwitch": {
+    "description": "Switch in the team mode sheet that stops counting the usage."
+  },
+  "teamModeBody": "For the people who make Lucena. Your lessons and games stay out of the statistics, and ads are test ads.",
+  "@teamModeBody": {
+    "description": "Explains the team mode under its switch."
+  },
+  "versionTeamMode": "Version {version} · team mode",
+  "@versionTeamMode": {
+    "description": "Settings footer with the app version when team mode is on.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "analyticsOptInTitle": "Help improve Lucena",
+  "@analyticsOptInTitle": {
+    "description": "Switch in Privacy and ads that turns usage statistics on or off."
+  },
+  "analyticsOptInBody": "Sends how you use the app: screens, lessons and games. No name, email or anything you type.",
+  "@analyticsOptInBody": {
+    "description": "Explains what the usage statistics send."
   }
 }

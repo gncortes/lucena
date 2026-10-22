@@ -1635,5 +1635,11 @@
   "crowdYouAre": "You are one of them.",
   "crowdFewYesterday": "Few people played yesterday",
   "crowdFew": "Few people played this endgame",
-  "crowdFewText": "The number shows from 30 people on."
+  "crowdFewText": "The number shows from 30 people on.",
+  "teamModeTitle": "Chế độ nhóm",
+  "teamModeSwitch": "Không tính lượt dùng của tôi",
+  "teamModeBody": "Dành cho người làm Lucena. Bài học và ván cờ của bạn không vào thống kê, và quảng cáo là quảng cáo thử.",
+  "versionTeamMode": "Phiên bản {version} · chế độ nhóm",
+  "analyticsOptInTitle": "Giúp cải thiện Lucena",
+  "analyticsOptInBody": "Gửi cách bạn dùng ứng dụng: màn hình, bài học và ván cờ. Không có tên, email hay những gì bạn viết."
 }
