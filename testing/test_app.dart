@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
@@ -32,6 +33,7 @@ class TestApp extends StatelessWidget {
     this.settingsCubit,
     this.profileCubit,
     this.alertsCubit,
+    this.pushRepository,
     this.speechCubit,
     this.shareRepository,
     this.wikiLinksCubit,
@@ -61,6 +63,10 @@ class TestApp extends StatelessWidget {
 
   /// Os avisos. Sem ele, um com as chaves de fábrica e o push permitido.
   final AlertsCubit? alertsCubit;
+
+  /// O push. Sem ele, um com a permissão já dada: a folha "Quer receber
+  /// avisos?" não aparece.
+  final PushRepository? pushRepository;
 
   /// A voz, quando o teste confere o que é falado. Sem ela, uma voz falsa
   /// desligada.
@@ -108,6 +114,7 @@ class TestApp extends StatelessWidget {
             builder: (context, settings) => build(settings?.accent),
           );
     final profileCubit = this.profileCubit;
+    final push = pushRepository ?? FakePushRepository(allowed: true);
     final providers = [
       if (settingsCubit != null)
         BlocProvider<SettingsCubit>.value(value: settingsCubit),
@@ -124,7 +131,7 @@ class TestApp extends StatelessWidget {
         BlocProvider<AlertsCubit>(
           create: (_) => AlertsCubit(
             alerts: FakeAlertsRepository(),
-            push: FakePushRepository(allowed: true),
+            push: push,
             profile: FakeProfileRepository(),
           )..load(),
         ),
@@ -143,6 +150,7 @@ class TestApp extends StatelessWidget {
           value: shareRepository ?? FakeShareRepository(),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
+        RepositoryProvider<PushRepository>.value(value: push),
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
         ),

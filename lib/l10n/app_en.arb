@@ -7999,6 +7999,22 @@
   "@alertsTitle": {
     "description": "Alerts screen title and its row in Settings."
   },
+  "alertsAskTitle": "Get notifications from Lucena?",
+  "@alertsAskTitle": {
+    "description": "Sheet shown once, after the first finished endgame: asks whether the person wants notifications."
+  },
+  "alertsAskText": "A new tournament endgame and your streak about to end, at most one a day. You can turn each one off in Settings.",
+  "@alertsAskText": {
+    "description": "Sheet body: what the notifications are and that each can be turned off in Settings."
+  },
+  "alertsAskYes": "Yes, notify me",
+  "@alertsAskYes": {
+    "description": "Sheet button: opens the Android notification permission dialog."
+  },
+  "alertsAskLater": "Not now",
+  "@alertsAskLater": {
+    "description": "Sheet button: closes the sheet; it is never shown again."
+  },
   "alertsCount": "{on} of {total} on",
   "@alertsCount": {
     "description": "Settings: how many alert switches are on.",

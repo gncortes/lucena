@@ -43,6 +43,15 @@ class FakePushRepository implements PushRepository {
   @override
   Future<bool> permitted() async => allowed;
 
+  /// A folha "Quer receber avisos?" já apareceu.
+  bool asked = false;
+
+  @override
+  Future<bool> shouldAsk() async => available && !asked && !allowed;
+
+  @override
+  Future<void> markAsked() async => asked = true;
+
   @override
   Future<void> follow(Set<String> topics) async => followed = {...topics};
 

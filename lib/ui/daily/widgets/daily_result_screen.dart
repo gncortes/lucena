@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/daily_final.dart';
 import '../../../routing/routes.dart';
+import '../../alerts/widgets/alerts_ask_sheet.dart';
 import '../../core/keys/daily_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -33,56 +34,58 @@ class DailyResultScreen extends StatelessWidget {
     return BlocBuilder<DailyResultCubit, DailyResultState>(
       builder: (context, state) {
         final record = state.record;
-        return Scaffold(
-          key: DailyKeys.resultScreen,
-          appBar: LucenaAppBar(
-            title: Text(l10n.dailyTitle),
-            actions: [
-              if (record != null)
-                IconButton(
-                  tooltip: l10n.dailyShareTitle,
-                  icon: const Icon(Icons.share_rounded),
-                  onPressed: () =>
-                      unawaited(context.push(Routes.dailyShareOf(date))),
-                ),
-            ],
-          ),
-          body: !state.ready
-              ? const SizedBox.shrink()
-              : ListView(
-                  padding: scrollPadding(
-                    context,
-                    left: AppSpacing.screen,
-                    top: AppSpacing.sm,
-                    right: AppSpacing.screen,
+        return AlertsAskGate(
+          child: Scaffold(
+            key: DailyKeys.resultScreen,
+            appBar: LucenaAppBar(
+              title: Text(l10n.dailyTitle),
+              actions: [
+                if (record != null)
+                  IconButton(
+                    tooltip: l10n.dailyShareTitle,
+                    icon: const Icon(Icons.share_rounded),
+                    onPressed: () =>
+                        unawaited(context.push(Routes.dailyShareOf(date))),
                   ),
-                  children: [
-                    if (record != null) ...[
-                      _ResultCard(record: record, state: state),
+              ],
+            ),
+            body: !state.ready
+                ? const SizedBox.shrink()
+                : ListView(
+                    padding: scrollPadding(
+                      context,
+                      left: AppSpacing.screen,
+                      top: AppSpacing.sm,
+                      right: AppSpacing.screen,
+                    ),
+                    children: [
+                      if (record != null) ...[
+                        _ResultCard(record: record, state: state),
+                        const SizedBox(height: AppSpacing.betweenCards),
+                      ],
+                      const _StreakCard(),
                       const SizedBox(height: AppSpacing.betweenCards),
+                      const DailyCrowdCard(),
                     ],
-                    const _StreakCard(),
-                    const SizedBox(height: AppSpacing.betweenCards),
-                    const DailyCrowdCard(),
-                  ],
+                  ),
+            bottomNavigationBar: ActionsFooter(
+              stacked: true,
+              children: [
+                if (record != null)
+                  FilledButton.icon(
+                    key: DailyKeys.share,
+                    onPressed: () =>
+                        unawaited(context.push(Routes.dailyShareOf(date))),
+                    icon: const Icon(Icons.share_rounded),
+                    label: Text(l10n.dailyShareTitle),
+                  ),
+                TextButton(
+                  key: DailyKeys.continueButton,
+                  onPressed: () => context.go(Routes.home),
+                  child: Text(l10n.dailyContinue),
                 ),
-          bottomNavigationBar: ActionsFooter(
-            stacked: true,
-            children: [
-              if (record != null)
-                FilledButton.icon(
-                  key: DailyKeys.share,
-                  onPressed: () =>
-                      unawaited(context.push(Routes.dailyShareOf(date))),
-                  icon: const Icon(Icons.share_rounded),
-                  label: Text(l10n.dailyShareTitle),
-                ),
-              TextButton(
-                key: DailyKeys.continueButton,
-                onPressed: () => context.go(Routes.home),
-                child: Text(l10n.dailyContinue),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

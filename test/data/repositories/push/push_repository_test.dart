@@ -131,4 +131,26 @@ void main() {
 
     expect(await repository.permitted(), isTrue);
   });
+
+  test('a folha dos avisos aparece uma vez só, e só sem a permissão', () async {
+    expect(await repository.shouldAsk(), isTrue);
+
+    await repository.markAsked();
+
+    expect(await repository.shouldAsk(), isFalse);
+    // Grava no aparelho: abrir o app de novo não pergunta.
+    final again = FirebasePushRepository(service, PreferencesService());
+    expect(await again.shouldAsk(), isFalse);
+  });
+
+  test('com a permissão dada ou sem Firebase, não pergunta', () async {
+    service.allowed = true;
+    expect(await repository.shouldAsk(), isFalse);
+
+    final none = FirebasePushRepository(
+      const NoPushService(),
+      PreferencesService(),
+    );
+    expect(await none.shouldAsk(), isFalse);
+  });
 }

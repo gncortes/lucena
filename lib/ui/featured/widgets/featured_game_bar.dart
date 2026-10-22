@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../alerts/widgets/alerts_ask_sheet.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
@@ -71,32 +72,35 @@ class FeaturedEndBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return ActionsFooter(
-      children: [
-        OutlinedButton.icon(
-          key: FeaturedKeys.playAgain,
-          onPressed: onAgain,
-          icon: const Icon(Icons.replay),
-          label: Text(l10n.featuredPlayAgain),
-        ),
-        FilledButton.icon(
-          key: FeaturedKeys.continueButton,
-          onPressed: () {
-            final state = context.read<FeaturedEndgameCubit>().state;
-            final endgame = state.endgame;
-            if (endgame == null) return;
-            showFeaturedNext(
-              context,
-              endgame: endgame,
-              tournament: state.tournament,
-              tournamentFinals: state.siblings.length + 1,
-              onAgain: onAgain,
-            );
-          },
-          icon: const Icon(Icons.arrow_forward),
-          label: Text(l10n.featuredContinue),
-        ),
-      ],
+    // A partida acabou: o primeiro final concluído pode pedir os avisos.
+    return AlertsAskGate(
+      child: ActionsFooter(
+        children: [
+          OutlinedButton.icon(
+            key: FeaturedKeys.playAgain,
+            onPressed: onAgain,
+            icon: const Icon(Icons.replay),
+            label: Text(l10n.featuredPlayAgain),
+          ),
+          FilledButton.icon(
+            key: FeaturedKeys.continueButton,
+            onPressed: () {
+              final state = context.read<FeaturedEndgameCubit>().state;
+              final endgame = state.endgame;
+              if (endgame == null) return;
+              showFeaturedNext(
+                context,
+                endgame: endgame,
+                tournament: state.tournament,
+                tournamentFinals: state.siblings.length + 1,
+                onAgain: onAgain,
+              );
+            },
+            icon: const Icon(Icons.arrow_forward),
+            label: Text(l10n.featuredContinue),
+          ),
+        ],
+      ),
     );
   }
 }

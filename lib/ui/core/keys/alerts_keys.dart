@@ -12,4 +12,9 @@ abstract final class AlertsKeys {
   static const news = Key('alerts.news');
   static const lessons = Key('alerts.lessons');
   static const reminder = Key('alerts.reminder');
+
+  /// "Quer receber avisos do Lucena?", no fim do primeiro final.
+  static const askSheet = Key('alerts.ask.sheet');
+  static const askYes = Key('alerts.ask.yes');
+  static const askLater = Key('alerts.ask.later');
 }

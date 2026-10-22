@@ -22,6 +22,13 @@ abstract class PushRepository {
   /// Se o Android deixa o Lucena mostrar avisos agora. Não pergunta nada.
   Future<bool> permitted();
 
+  /// Se a folha "Quer receber avisos?" ainda deve aparecer: uma vez só, com
+  /// o Firebase e com a permissão ainda não dada (decisão 3c da E1.21).
+  Future<bool> shouldAsk();
+
+  /// A folha apareceu: não aparece de novo, qualquer que seja a resposta.
+  Future<void> markAsked();
+
   /// Falso sem o Firebase (build do F-Droid): as chaves de push somem.
   bool get available;
 
@@ -47,6 +54,7 @@ class FirebasePushRepository implements PushRepository {
   });
 
   static const _followedKey = 'push.topics';
+  static const _askedKey = 'push.askedForPermission';
 
   final PushService _service;
   final PreferencesService _preferences;
@@ -73,6 +81,16 @@ class FirebasePushRepository implements PushRepository {
       return false;
     }
   }
+
+  @override
+  Future<bool> shouldAsk() async {
+    if (!_service.available) return false;
+    if (await _preferences.getBool(_askedKey) ?? false) return false;
+    return !await permitted();
+  }
+
+  @override
+  Future<void> markAsked() => _preferences.setBool(_askedKey, value: true);
 
   @override
   bool get available => _service.available;
