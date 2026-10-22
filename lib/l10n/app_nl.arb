@@ -609,6 +609,8 @@
   "aboutSource": "Broncode",
   "aboutSourceHint": "Vrije software, AGPL-3.0",
   "aboutLicenses": "Opensourcelicenties",
+  "aboutPrivacy": "Privacybeleid",
+  "aboutTerms": "Gebruiksvoorwaarden",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Vorige zet",

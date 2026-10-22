@@ -609,6 +609,8 @@
   "aboutSource": "源代码",
   "aboutSourceHint": "自由软件，AGPL-3.0",
   "aboutLicenses": "开源许可",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "上一步",

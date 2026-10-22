@@ -609,6 +609,8 @@
   "aboutSource": "Código fuente",
   "aboutSourceHint": "Software libre, AGPL-3.0",
   "aboutLicenses": "Licencias de código abierto",
+  "aboutPrivacy": "Política de privacidad",
+  "aboutTerms": "Términos de uso",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Jugada anterior",

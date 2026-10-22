@@ -609,6 +609,8 @@
   "aboutSource": "الشيفرة المصدرية",
   "aboutSourceHint": "برنامج حر، AGPL-3.0",
   "aboutLicenses": "تراخيص المصادر المفتوحة",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "النقلة السابقة",

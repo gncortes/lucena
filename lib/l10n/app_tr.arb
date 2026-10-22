@@ -609,6 +609,8 @@
   "aboutSource": "Kaynak kodu",
   "aboutSourceHint": "Özgür yazılım, AGPL-3.0",
   "aboutLicenses": "Açık kaynak lisansları",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Önceki hamle",

@@ -609,6 +609,8 @@
   "aboutSource": "Вихідний код",
   "aboutSourceHint": "Вільне ПЗ, AGPL-3.0",
   "aboutLicenses": "Ліцензії відкритого ПЗ",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "Попередній хід",

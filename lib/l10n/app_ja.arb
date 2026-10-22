@@ -609,6 +609,8 @@
   "aboutSource": "ソースコード",
   "aboutSourceHint": "フリーソフトウェア、AGPL-3.0",
   "aboutLicenses": "オープンソースライセンス",
+  "aboutPrivacy": "Privacy policy",
+  "aboutTerms": "Terms of use",
   "lessonVariationAlternative": "Alternative to {move}",
   "lessonLineResultDraw": "draw",
   "lessonDemoBack": "前の手",
