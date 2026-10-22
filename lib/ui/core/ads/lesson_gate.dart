@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/ads/ads_repository.dart';
+import '../../../data/repositories/review/review_repository.dart';
 import '../../../domain/models/ads_state.dart';
 import '../keys/ads_keys.dart';
 import '../l10n/l10n.dart';
@@ -28,12 +29,19 @@ abstract final class LessonGate {
       await showFakeInterstitial(context);
       if (!context.mounted) return;
     }
+    // Logo depois de um anúncio, a Play não pede avaliação (E1.26).
+    if (outcome != AdOutcome.none) {
+      _read<ReviewRepository>(context)?.noteSetback();
+    }
     open();
   }
 
-  static AdsRepository? _ads(BuildContext context) {
+  static AdsRepository? _ads(BuildContext context) =>
+      _read<AdsRepository>(context);
+
+  static T? _read<T>(BuildContext context) {
     try {
-      return context.read<AdsRepository>();
+      return context.read<T>();
     } on ProviderNotFoundException {
       return null;
     }

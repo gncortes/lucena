@@ -5,6 +5,7 @@ import 'package:lucena/domain/models/ads_state.dart';
 import 'package:lucena/ui/core/ads/lesson_gate.dart';
 import 'package:lucena/ui/core/keys/ads_keys.dart';
 
+import '../../../../testing/fakes/fake_feedback_repositories.dart';
 import '../../../../testing/test_app.dart';
 
 /// Decide sempre o mesmo, para a tela conferir só o caminho.
@@ -21,11 +22,15 @@ class _AdsAnswering extends NoAdsRepository {
 }
 
 void main() {
+  late FakeReviewRepository review;
+
   Future<List<String>> pumpGate(WidgetTester tester, AdOutcome outcome) async {
     final opened = <String>[];
+    review = FakeReviewRepository();
     await tester.pumpWidget(
       TestApp(
         adsRepository: _AdsAnswering(outcome),
+        reviewRepository: review,
         child: Builder(
           builder: (context) => Scaffold(
             body: TextButton(
@@ -50,6 +55,15 @@ void main() {
     final opened = await pumpGate(tester, AdOutcome.none);
     expect(find.byKey(AdsKeys.fakeInterstitial), findsNothing);
     expect(opened, ['opposition']);
+    expect(review.setbacks, 0);
+  });
+
+  testWidgets('o anúncio do SDK conta como tropeço para a avaliação', (
+    tester,
+  ) async {
+    final opened = await pumpGate(tester, AdOutcome.shown);
+    expect(opened, ['opposition']);
+    expect(review.setbacks, 1);
   });
 
   testWidgets('o anúncio falso aparece e a lição abre ao fechar', (
@@ -62,5 +76,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(AdsKeys.fakeInterstitial), findsNothing);
     expect(opened, ['opposition']);
+    expect(review.setbacks, 1);
   });
 }

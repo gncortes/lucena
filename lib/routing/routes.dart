@@ -338,6 +338,13 @@ abstract final class Routes {
     queryParameters: fromLesson ? {'from': 'lesson'} : null,
   ).toString();
 
+  /// O "Você pagaria?" (E1.26), no passo [step] (1 a 3) ou no do rascunho.
+  static const wouldPay = '/survey/pagaria';
+  static String wouldPayAt({int? step}) => Uri(
+    path: wouldPay,
+    queryParameters: step == null ? null : {'step': '$step'},
+  ).toString();
+
   /// A tela "Aula concluída" da aula [id]: de [kind] `school` (Escola) ou
   /// `endgames` (aula de finais, com os capítulos todos feitos).
   /// [next] é a aula seguinte, se houver.
@@ -453,12 +460,13 @@ abstract final class Routes {
   /// Privacidade e anúncios (E1.25), aberta do Perfil.
   static const privacy = '/settings/privacy';
 
-  /// Enviar feedback (E1.26), aberta do Perfil.
-  static const feedback = '/settings/feedback';
   static const settingsBoardAppearance = '/settings/appearance/board';
   static const settingsBoardBehavior = '/settings/game/board';
   static const settingsClock = '/settings/game/clock';
   static const settingsVoice = '/settings/sound/voice';
+
+  /// "Enviar feedback" (E1.26), aberto pelo Perfil.
+  static const feedback = '/settings/feedback';
 
   /// A configuração da tela inicial: os caminhos e a ordem.
   static const homeLayout = '/settings/appearance/home';

@@ -8656,5 +8656,242 @@
   "adsCloseNote": "Tap the X to open the lesson.",
   "@adsCloseNote": {
     "description": "Test interstitial ad: how to close it."
+  },
+  "payInviteTitle": "Help decide the future of Lucena",
+  "@payInviteTitle": {
+    "description": "Title of the \"Would you pay?\" invite card in the lesson list."
+  },
+  "payInviteText": "3 questions, 1 minute: what you would pay for a course or a coach. It does not exist yet, we just want to know.",
+  "@payInviteText": {
+    "description": "Text of the \"Would you pay?\" invite card."
+  },
+  "payInviteYes": "Answer",
+  "@payInviteYes": {
+    "description": "Invite card button that opens the survey."
+  },
+  "payInviteNo": "Not now",
+  "@payInviteNo": {
+    "description": "Invite card button that hides the card for good."
+  },
+  "payTitle": "Would you pay?",
+  "@payTitle": {
+    "description": "Title of the \"Would you pay?\" survey."
+  },
+  "payStep": "{n} of 3",
+  "@payStep": {
+    "description": "Survey progress label, for example 1 of 3.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "payCourseQuestion": "Would you buy a course with about 60 endgames to practice?",
+  "@payCourseQuestion": {
+    "description": "Step 1 question about a course."
+  },
+  "payCourseHelp": "One-time payment, with all lessons and positions. The course does not exist yet: we want to know if it makes sense.",
+  "@payCourseHelp": {
+    "description": "Help under the course question."
+  },
+  "payHowMuch": "How much would you pay?",
+  "@payHowMuch": {
+    "description": "Price range question."
+  },
+  "payHowMuchHelp": "Pick the range closest to what you would pay.",
+  "@payHowMuchHelp": {
+    "description": "Help under the price range question."
+  },
+  "payCoachQuestion": "Would you pay a monthly fee for a coach that reads your Lichess games?",
+  "@payCoachQuestion": {
+    "description": "Step 2 question about a coach."
+  },
+  "payCoachHelp": "It finds the endgames you do badly in and suggests similar lessons and endgames to play. It does not exist yet either.",
+  "@payCoachHelp": {
+    "description": "Help under the coach question."
+  },
+  "payYes": "Yes",
+  "@payYes": {
+    "description": "Answer: yes."
+  },
+  "payMaybe": "Maybe",
+  "@payMaybe": {
+    "description": "Answer: maybe."
+  },
+  "payNo": "No",
+  "@payNo": {
+    "description": "Answer: no."
+  },
+  "payCourseNone": "Would not buy",
+  "@payCourseNone": {
+    "description": "Course price range: would not buy."
+  },
+  "payCourse1": "Up to R$ 29",
+  "@payCourse1": {
+    "description": "Course price range 1."
+  },
+  "payCourse2": "R$ 30 to R$ 59",
+  "@payCourse2": {
+    "description": "Course price range 2."
+  },
+  "payCourse3": "R$ 60 to R$ 99",
+  "@payCourse3": {
+    "description": "Course price range 3."
+  },
+  "payCourse4": "R$ 100 or more",
+  "@payCourse4": {
+    "description": "Course price range 4."
+  },
+  "payMonthNone": "Would not pay",
+  "@payMonthNone": {
+    "description": "Monthly price range: would not pay."
+  },
+  "payMonth1": "Up to R$ 9 a month",
+  "@payMonth1": {
+    "description": "Monthly price range 1."
+  },
+  "payMonth2": "R$ 10 to R$ 19 a month",
+  "@payMonth2": {
+    "description": "Monthly price range 2."
+  },
+  "payMonth3": "R$ 20 to R$ 39 a month",
+  "@payMonth3": {
+    "description": "Monthly price range 3."
+  },
+  "payMonth4": "R$ 40 or more a month",
+  "@payMonth4": {
+    "description": "Monthly price range 4."
+  },
+  "payLearnQuestion": "Is the way the app is built making you learn?",
+  "@payLearnQuestion": {
+    "description": "Step 3 question about learning."
+  },
+  "payLearnHelp": "Lesson, exercises, test and a game against Maia.",
+  "@payLearnHelp": {
+    "description": "Help under the learning question."
+  },
+  "payLearnYes": "Yes",
+  "@payLearnYes": {
+    "description": "Learning answer: yes."
+  },
+  "payLearnSome": "Somewhat",
+  "@payLearnSome": {
+    "description": "Learning answer: somewhat."
+  },
+  "payLearnNo": "No",
+  "@payLearnNo": {
+    "description": "Learning answer: no."
+  },
+  "payNextQuestion": "Which endgame do you want to learn next?",
+  "@payNextQuestion": {
+    "description": "Step 3 question about the next endgame."
+  },
+  "payNextHint": "Write it in your own words (optional)",
+  "@payNextHint": {
+    "description": "Hint of the next endgame text box."
+  },
+  "payWhyQuestion": "Why did you download Lucena?",
+  "@payWhyQuestion": {
+    "description": "Step 3 question about why."
+  },
+  "payWhyHelp": "Pick as many as you like.",
+  "@payWhyHelp": {
+    "description": "Help under the why question."
+  },
+  "payWhyLearn": "Learn endgames",
+  "@payWhyLearn": {
+    "description": "Why chip."
+  },
+  "payWhyTournament": "Train for a tournament",
+  "@payWhyTournament": {
+    "description": "Why chip."
+  },
+  "payWhyRating": "Improve my rating",
+  "@payWhyRating": {
+    "description": "Why chip."
+  },
+  "payWhyTeach": "Teach someone",
+  "@payWhyTeach": {
+    "description": "Why chip."
+  },
+  "payWhyCurious": "Curiosity",
+  "@payWhyCurious": {
+    "description": "Why chip."
+  },
+  "payLevelQuestion": "Your level",
+  "@payLevelQuestion": {
+    "description": "Step 3 question about the level."
+  },
+  "payLevelHelp": "Only shows if you have not set your level yet.",
+  "@payLevelHelp": {
+    "description": "Help under the level question."
+  },
+  "payLevelBeginner": "Beginner",
+  "@payLevelBeginner": {
+    "description": "Level chip."
+  },
+  "payLevelMiddle": "Intermediate",
+  "@payLevelMiddle": {
+    "description": "Level chip."
+  },
+  "payLevelAdvanced": "Advanced",
+  "@payLevelAdvanced": {
+    "description": "Level chip."
+  },
+  "payContinue": "Continue",
+  "@payContinue": {
+    "description": "Button to the next step."
+  },
+  "paySend": "Send",
+  "@paySend": {
+    "description": "Button that sends the survey."
+  },
+  "feedbackTitle": "Send feedback",
+  "@feedbackTitle": {
+    "description": "Title of the feedback screen."
+  },
+  "feedbackIntro": "I read everything. Tell me what is going on, your way.",
+  "@feedbackIntro": {
+    "description": "Intro line of the feedback screen."
+  },
+  "feedbackKindQuestion": "About what?",
+  "@feedbackKindQuestion": {
+    "description": "Feedback type question."
+  },
+  "feedbackKindProblem": "A problem",
+  "@feedbackKindProblem": {
+    "description": "Feedback type chip."
+  },
+  "feedbackKindIdea": "An idea",
+  "@feedbackKindIdea": {
+    "description": "Feedback type chip."
+  },
+  "feedbackKindPraise": "A compliment",
+  "@feedbackKindPraise": {
+    "description": "Feedback type chip."
+  },
+  "feedbackTextTitle": "Tell me",
+  "@feedbackTextTitle": {
+    "description": "Feedback text card title."
+  },
+  "feedbackTextHelp": "Up to 500 letters.",
+  "@feedbackTextHelp": {
+    "description": "Help under the feedback text title."
+  },
+  "feedbackTextHint": "Tell it in your own words",
+  "@feedbackTextHint": {
+    "description": "Hint of the feedback text box."
+  },
+  "feedbackAttached": "Sent along, without identifying you: the app version and the phone model, so I can find the problem faster.",
+  "@feedbackAttached": {
+    "description": "Note about what is sent with the feedback."
+  },
+  "feedbackSend": "Send",
+  "@feedbackSend": {
+    "description": "Button that sends the feedback."
+  },
+  "feedbackBack": "Back to profile",
+  "@feedbackBack": {
+    "description": "Thanks screen button back to the profile."
   }
 }

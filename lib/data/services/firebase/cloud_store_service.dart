@@ -9,7 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// - `users/{uid}/progress/summary` e `users/{uid}/games/{id}`: o progresso
 ///   (E1.13);
 /// - `daily/{aaaa-mm-dd}` e `featured/{id}`: abertos a todos, só leitura
-///   (o "x% acertaram" da E1.24 vem neles).
+///   (o "x% acertaram" da E1.24 vem neles);
+/// - `feedback/{id}`: só criação, sem conta (E1.26).
 ///
 /// O Firestore guarda as gravações sem rede e as manda quando ela volta.
 abstract class CloudStoreService {
@@ -34,6 +35,10 @@ abstract class CloudStoreService {
   /// Um documento aberto a todos (`daily`, `featured`), sem conta. Nulo: não
   /// existe. Lança [CloudStoreException] sem rede e sem cópia no aparelho.
   Future<Map<String, Object?>?> readPublic(String collection, String id);
+
+  /// Cria um documento em `feedback/{id automático}` com o `createdAt` do
+  /// servidor. Termina quando o servidor confirma; sem rede, fica na fila.
+  Future<void> addFeedback(Map<String, Object?> data);
 }
 
 /// O Firestore não respondeu (sem rede, sem permissão).
@@ -73,6 +78,9 @@ class NoCloudStoreService implements CloudStoreService {
     String collection,
     String id,
   ) async => null;
+
+  @override
+  Future<void> addFeedback(Map<String, Object?> data) async {}
 }
 
 class FirestoreCloudStoreService implements CloudStoreService {
@@ -144,6 +152,18 @@ class FirestoreCloudStoreService implements CloudStoreService {
   Future<Map<String, Object?>?> readPublic(String collection, String id) async {
     try {
       return (await _db.collection(collection).doc(id).get()).data();
+    } on FirebaseException catch (error) {
+      throw CloudStoreException(error.code);
+    }
+  }
+
+  @override
+  Future<void> addFeedback(Map<String, Object?> data) async {
+    try {
+      await _db.collection('feedback').add({
+        ...data,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     } on FirebaseException catch (error) {
       throw CloudStoreException(error.code);
     }
