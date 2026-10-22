@@ -29,6 +29,10 @@ import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
+import 'package:lucena/data/repositories/account/avatar_repository.dart';
+
+import 'fakes/fake_avatar_repository.dart';
+
 import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 
@@ -160,6 +164,7 @@ Dependencies testDependencies({
   ActivityRepository? activityRepository,
   DailyFinalRepository? dailyFinalRepository,
   SyncRepository? syncRepository,
+  AvatarRepository? avatarRepository,
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
   List<AppLanguage>? languages,
@@ -240,6 +245,7 @@ Dependencies testDependencies({
         activityRepository ?? FakeActivityRepository(now: clock),
     dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),
     syncRepository: syncRepository ?? FakeSyncRepository(),
+    avatarRepository: avatarRepository ?? FakeAvatarRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

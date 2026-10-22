@@ -3,6 +3,7 @@ import 'dart:async';
 import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
 import 'fakes/fake_sync_repository.dart';
+import 'fakes/fake_avatar_repository.dart';
 import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
@@ -262,6 +263,7 @@ Future<Dependencies> e2eDependencies() async {
     deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
     accountRepository: FakeAccountRepository(),
     syncRepository: FakeSyncRepository(),
+    avatarRepository: FakeAvatarRepository(),
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
     pushRepository: FakePushRepository(allowed: true),
