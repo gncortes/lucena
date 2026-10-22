@@ -24,9 +24,11 @@ import 'fakes/fake_lichess_repository.dart';
 import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
 
+import 'fakes/fake_alerts_repository.dart';
 import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
@@ -123,6 +125,7 @@ Dependencies testDependencies({
   LichessRepository? lichessRepository,
   ChessComRepository? chessComRepository,
   PushRepository? pushRepository,
+  AlertsRepository? alertsRepository,
   PlacementRepository? placementRepository,
   OngoingGameRepository? ongoingGameRepository,
   ConclusionRepository? conclusionRepository,
@@ -173,6 +176,7 @@ Dependencies testDependencies({
     lichessRepository: lichessRepository ?? FakeLichessRepository(),
     chessComRepository: chessComRepository ?? FakeChessComRepository(),
     pushRepository: pushRepository ?? FakePushRepository(),
+    alertsRepository: alertsRepository ?? FakeAlertsRepository(),
     placementRepository: placementRepository ?? FakePlacementRepository(),
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),

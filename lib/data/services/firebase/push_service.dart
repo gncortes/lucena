@@ -16,7 +16,15 @@ abstract class PushService {
   /// Pede a permissão de notificação. Verdadeiro: pode mostrar avisos.
   Future<bool> requestPermission();
 
+  /// Se pode mostrar avisos agora, sem perguntar nada.
+  Future<bool> permitted();
+
+  /// Falso sem o Firebase (build do F-Droid): não há push.
+  bool get available;
+
   Future<void> subscribe(String topic);
+
+  Future<void> unsubscribe(String topic);
 
   /// O aviso tocado que abriu o app (partida fria).
   Future<PushMessage?> initialOpened();
@@ -32,7 +40,16 @@ class NoPushService implements PushService {
   Future<bool> requestPermission() async => false;
 
   @override
+  Future<bool> permitted() async => false;
+
+  @override
+  bool get available => false;
+
+  @override
   Future<void> subscribe(String topic) async {}
+
+  @override
+  Future<void> unsubscribe(String topic) async {}
 
   @override
   Future<PushMessage?> initialOpened() async => null;
@@ -50,14 +67,29 @@ class FirebasePushService implements PushService {
   @override
   Future<bool> requestPermission() async {
     final settings = await _messaging.requestPermission();
-    return switch (settings.authorizationStatus) {
-      AuthorizationStatus.authorized || AuthorizationStatus.provisional => true,
-      _ => false,
-    };
+    return _allowed(settings.authorizationStatus);
+  }
+
+  static bool _allowed(AuthorizationStatus status) => switch (status) {
+    AuthorizationStatus.authorized || AuthorizationStatus.provisional => true,
+    _ => false,
+  };
+
+  @override
+  Future<bool> permitted() async {
+    final settings = await _messaging.getNotificationSettings();
+    return _allowed(settings.authorizationStatus);
   }
 
   @override
+  bool get available => true;
+
+  @override
   Future<void> subscribe(String topic) => _messaging.subscribeToTopic(topic);
+
+  @override
+  Future<void> unsubscribe(String topic) =>
+      _messaging.unsubscribeFromTopic(topic);
 
   @override
   Future<PushMessage?> initialOpened() async {

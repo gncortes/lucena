@@ -7986,5 +7986,81 @@
   "profileSectionRegion": "Region",
   "@profileSectionRegion": {
     "description": "Profile: section title of country, state and city."
+  },
+  "alertsTitle": "Notifications",
+  "@alertsTitle": {
+    "description": "Alerts screen title and its row in Settings."
+  },
+  "alertsCount": "{on} of {total} on",
+  "@alertsCount": {
+    "description": "Settings: how many alert switches are on.",
+    "placeholders": {
+      "on": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "alertsIntro": "Choose what Lucena may notify you about. You can change it any time.",
+  "@alertsIntro": {
+    "description": "Alerts: text above the switches."
+  },
+  "alertsAllowed": "Android: notifications allowed for Lucena",
+  "@alertsAllowed": {
+    "description": "Alerts: system permission is granted."
+  },
+  "alertsAllowedSettings": "Settings",
+  "@alertsAllowedSettings": {
+    "description": "Alerts: link that opens the Android notification settings."
+  },
+  "alertsOffTitle": "Notifications are off in Android",
+  "@alertsOffTitle": {
+    "description": "Alerts: banner title when the system permission is denied."
+  },
+  "alertsOffBody": "Even with the switches below on, nothing reaches this phone. Turn them on in the system settings.",
+  "@alertsOffBody": {
+    "description": "Alerts: banner text when the system permission is denied."
+  },
+  "alertsOffOpen": "Open Android settings",
+  "@alertsOffOpen": {
+    "description": "Alerts: button that opens the Android notification settings."
+  },
+  "alertsTournaments": "Tournament endgames",
+  "@alertsTournaments": {
+    "description": "Alerts switch: a new tournament endgame."
+  },
+  "alertsTournamentsBody": "A new endgame from your region, at most one a day.",
+  "@alertsTournamentsBody": {
+    "description": "Alerts switch subtitle."
+  },
+  "alertsDaily": "Daily endgame and reminders",
+  "@alertsDaily": {
+    "description": "Alerts switch: local reminders."
+  },
+  "alertsDailyBody": "Streak, continue the lesson and weekly summary.",
+  "@alertsDailyBody": {
+    "description": "Alerts switch subtitle."
+  },
+  "alertsNews": "News",
+  "@alertsNews": {
+    "description": "Alerts switch: new app features."
+  },
+  "alertsNewsBody": "New Lucena features. A few a month.",
+  "@alertsNewsBody": {
+    "description": "Alerts switch subtitle."
+  },
+  "alertsLessons": "New lessons",
+  "@alertsLessons": {
+    "description": "Alerts switch: a new endgame lesson."
+  },
+  "alertsLessonsBody": "When a new endgame lesson comes out.",
+  "@alertsLessonsBody": {
+    "description": "Alerts switch subtitle."
+  },
+  "alertsReminder": "Reminder time",
+  "@alertsReminder": {
+    "description": "Alerts: row with the time of local reminders."
   }
 }

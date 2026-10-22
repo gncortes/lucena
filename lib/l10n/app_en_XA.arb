@@ -1501,5 +1501,22 @@
   "settingsSectionApp": "[Åpp one]",
   "settingsSectionHelp": "[Hélp åñd åböût one two]",
   "profileSectionChess": "[Ýöûŕ çhéšš one]",
-  "profileSectionRegion": "[Ŕéĝîöñ one]"
+  "profileSectionRegion": "[Ŕéĝîöñ one]",
+  "alertsTitle": "[Ñötîfîçåtîöñš one two]",
+  "alertsCount": "[{on} öf {total} öñ one two]",
+  "alertsIntro": "[Çhööšé whåt Lûçéñå måý ñötîfý ýöû åböût. Ýöû çåñ çhåñĝé ît åñý tîmé. one two three four five six]",
+  "alertsAllowed": "[Åñdŕöîd: ñötîfîçåtîöñš ållöwéd föŕ Lûçéñå one two three four]",
+  "alertsAllowedSettings": "[Šéttîñĝš one]",
+  "alertsOffTitle": "[Ñötîfîçåtîöñš åŕé öff îñ Åñdŕöîd one two three]",
+  "alertsOffBody": "[Évéñ wîth thé šwîtçhéš bélöw öñ, ñöthîñĝ ŕéåçhéš thîš phöñé. Tûŕñ thém öñ îñ thé šýštém šéttîñĝš. one two three four five six seven eight]",
+  "alertsOffOpen": "[Öpéñ Åñdŕöîd šéttîñĝš one two three]",
+  "alertsTournaments": "[Töûŕñåméñt éñdĝåméš one two]",
+  "alertsTournamentsBody": "[Å ñéw éñdĝåmé fŕöm ýöûŕ ŕéĝîöñ, åt möšt öñé å dåý. one two three four five]",
+  "alertsDaily": "[Dåîlý éñdĝåmé åñd ŕémîñdéŕš one two three]",
+  "alertsDailyBody": "[Štŕéåk, çöñtîñûé thé léššöñ åñd wééklý šûmmåŕý. one two three four]",
+  "alertsNews": "[Ñéwš one]",
+  "alertsNewsBody": "[Ñéw Lûçéñå féåtûŕéš. Å féw å möñth. one two three]",
+  "alertsLessons": "[Ñéw léššöñš one two]",
+  "alertsLessonsBody": "[Whéñ å ñéw éñdĝåmé léššöñ çöméš öût. one two three four]",
+  "alertsReminder": "[Ŕémîñdéŕ tîmé one two]"
 }

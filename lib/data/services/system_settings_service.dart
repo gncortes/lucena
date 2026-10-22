@@ -17,4 +17,14 @@ class SystemSettingsService {
       return false;
     }
   }
+
+  /// Os ajustes de notificação do Lucena (ou os do app, em Android antigo).
+  Future<bool> openAppNotifications() async {
+    try {
+      return await _channel.invokeMethod<bool>('openAppNotifications') ?? false;
+    } on Object catch (error) {
+      debugPrint('SystemSettingsService.openAppNotifications: $error');
+      return false;
+    }
+  }
 }

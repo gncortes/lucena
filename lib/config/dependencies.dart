@@ -109,6 +109,7 @@ import '../data/repositories/lichess/lichess_repository_remote.dart';
 import '../data/services/chesscom_service.dart';
 import '../data/services/lichess_service.dart';
 import '../data/services/secure_storage_service.dart';
+import '../data/repositories/alerts/alerts_repository.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
@@ -145,6 +146,7 @@ class Dependencies {
     required this.lichessRepository,
     required this.chessComRepository,
     required this.pushRepository,
+    required this.alertsRepository,
     required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
@@ -286,7 +288,9 @@ class Dependencies {
       chessComRepository: RemoteChessComRepository(ChessComService(), now: now),
       pushRepository: FirebasePushRepository(
         firebase ? FirebasePushService() : const NoPushService(),
+        preferences,
       ),
+      alertsRepository: LocalAlertsRepository(preferences),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
@@ -381,6 +385,7 @@ class Dependencies {
   final LichessRepository lichessRepository;
   final ChessComRepository chessComRepository;
   final PushRepository pushRepository;
+  final AlertsRepository alertsRepository;
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;

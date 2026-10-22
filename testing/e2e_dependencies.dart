@@ -15,6 +15,7 @@ import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 
+import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'dart:math';
@@ -263,7 +264,8 @@ Future<Dependencies> e2eDependencies() async {
     syncRepository: FakeSyncRepository(),
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
-    pushRepository: FakePushRepository(),
+    pushRepository: FakePushRepository(allowed: true),
+    alertsRepository: LocalAlertsRepository(PreferencesService()),
     placementRepository: LocalPlacementRepository(
       const AssetService(),
       PreferencesService(),

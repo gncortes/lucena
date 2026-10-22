@@ -8,6 +8,7 @@ import '../../../data/repositories/account/account_repository.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
+import '../../alerts/view_models/alerts_cubit.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
@@ -71,6 +72,7 @@ class SettingsScreen extends StatelessWidget {
                 hint: l10n.settingsSoundGroupHint,
                 route: Routes.settingsSound,
               ),
+              const _AlertsGroup(),
             ],
           ),
           SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
@@ -233,4 +235,22 @@ class _Group extends StatelessWidget {
     value: hint,
     onTap: () => context.go(route),
   );
+}
+
+/// Avisos, com quantas chaves estão ligadas.
+class _AlertsGroup extends StatelessWidget {
+  const _AlertsGroup();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final state = context.watch<AlertsCubit>().state;
+    return _Group(
+      tileKey: SettingsKeys.alertsTile,
+      icon: Icons.notifications_outlined,
+      title: l10n.alertsTitle,
+      hint: l10n.alertsCount(state.enabled, state.total),
+      route: Routes.alerts,
+    );
+  }
 }

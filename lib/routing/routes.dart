@@ -421,6 +421,7 @@ abstract final class Routes {
   static const settingsGame = '/settings/game';
   static const settingsSound = '/settings/sound';
   static const settingsAbout = '/settings/about';
+  static const alerts = '/settings/alerts';
   static const settingsLanguage = '/settings/appearance/language';
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
