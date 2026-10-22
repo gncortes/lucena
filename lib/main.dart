@@ -27,6 +27,9 @@ import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
 import 'data/repositories/endgames/endgame_lesson_repository.dart';
+import 'data/repositories/feedback/feedback_repository.dart';
+import 'data/repositories/review/review_repository.dart';
+import 'data/repositories/would_pay/would_pay_repository.dart';
 import 'data/repositories/endgames/exercise_feedback_repository.dart';
 import 'data/repositories/endgames/endgame_progress_repository.dart';
 import 'data/repositories/school/lesson_repository.dart';
@@ -144,6 +147,8 @@ class _LucenaAppState extends State<LucenaApp> {
     final deepLinks = widget.dependencies.deepLinkRepository;
     final push = widget.dependencies.pushRepository;
     unawaited(push.start());
+    // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
+    unawaited(widget.dependencies.reviewRepository.markFirstOpen());
     final pushed = await push.initialLink();
     final link =
         await deepLinks.initial() ??
@@ -399,6 +404,15 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<SurveyRepository>.value(
           value: dependencies.surveyRepository,
+        ),
+        RepositoryProvider<FeedbackRepository>.value(
+          value: dependencies.feedbackRepository,
+        ),
+        RepositoryProvider<WouldPayRepository>.value(
+          value: dependencies.wouldPayRepository,
+        ),
+        RepositoryProvider<ReviewRepository>.value(
+          value: dependencies.reviewRepository,
         ),
         RepositoryProvider<WeekRepository>.value(
           value: dependencies.weekRepository,

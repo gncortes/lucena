@@ -23,6 +23,16 @@ import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_survey_repository.dart';
+import 'fakes/fake_endgame_repositories.dart';
+import 'fakes/fake_feedback_repositories.dart';
+import 'fakes/fake_school_repositories.dart';
+
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
+import 'package:lucena/data/repositories/review/review_repository.dart';
+import 'package:lucena/data/repositories/school/school_progress_repository.dart';
+import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
+
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
 
@@ -43,6 +53,11 @@ class TestApp extends StatelessWidget {
     this.surveyRepository,
     this.regionPromptRepository,
     this.crowdRepository,
+    this.wouldPayRepository,
+    this.feedbackRepository,
+    this.reviewRepository,
+    this.schoolProgressRepository,
+    this.endgameProgressRepository,
     super.key,
   });
 
@@ -82,6 +97,16 @@ class TestApp extends StatelessWidget {
   /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
   final RegionPromptRepository? regionPromptRepository;
   final CrowdRepository? crowdRepository;
+
+  /// O "Você pagaria?" e o "Enviar feedback" (E1.26). Sem eles, o cartão
+  /// nunca aparece e o envio vai para um falso.
+  final WouldPayRepository? wouldPayRepository;
+  final FeedbackRepository? feedbackRepository;
+  final ReviewRepository? reviewRepository;
+
+  /// O progresso que conta as aulas concluídas do convite.
+  final SchoolProgressRepository? schoolProgressRepository;
+  final EndgameProgressRepository? endgameProgressRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -154,6 +179,21 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
+        ),
+        RepositoryProvider<WouldPayRepository>.value(
+          value: wouldPayRepository ?? const NoWouldPayRepository(),
+        ),
+        RepositoryProvider<FeedbackRepository>.value(
+          value: feedbackRepository ?? FakeFeedbackRepository(),
+        ),
+        RepositoryProvider<ReviewRepository>.value(
+          value: reviewRepository ?? FakeReviewRepository(),
+        ),
+        RepositoryProvider<SchoolProgressRepository>.value(
+          value: schoolProgressRepository ?? FakeSchoolProgressRepository(),
+        ),
+        RepositoryProvider<EndgameProgressRepository>.value(
+          value: endgameProgressRepository ?? FakeEndgameProgressRepository(),
         ),
         RepositoryProvider<RegionPromptRepository>.value(
           value: regionPromptRepository ?? const NoRegionPromptRepository(),

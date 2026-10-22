@@ -122,6 +122,11 @@ import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
 import '../data/services/firebase/cloud_store_service.dart';
+import '../data/repositories/feedback/feedback_repository.dart';
+import '../data/repositories/review/review_repository.dart';
+import '../data/repositories/would_pay/would_pay_repository.dart';
+import '../data/services/device_service.dart';
+import '../data/services/review_service.dart';
 import '../data/services/firebase/file_store_service.dart';
 import '../data/services/firebase/push_service.dart';
 import '../domain/models/app_language.dart';
@@ -208,6 +213,9 @@ class Dependencies {
     this.avatarRepository = const NoAvatarRepository(),
     this.photoRepository = const NoPhotoRepository(),
     this.mailAppRepository = const NoMailAppRepository(),
+    this.feedbackRepository = const NoFeedbackRepository(),
+    this.wouldPayRepository = const NoWouldPayRepository(),
+    this.reviewRepository = const NoReviewRepository(),
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
@@ -377,6 +385,16 @@ class Dependencies {
       avatarRepository: avatars,
       photoRepository: DevicePhotoRepository(),
       mailAppRepository: const DeviceMailAppRepository(),
+      // Sem Firebase (F-Droid): nada vai à nuvem e a Play nunca é chamada.
+      feedbackRepository: firebase
+          ? CloudFeedbackRepository(cloudStore, PluginDeviceService(), version)
+          : const NoFeedbackRepository(),
+      wouldPayRepository: LocalWouldPayRepository(preferences),
+      reviewRepository: LocalReviewRepository(
+        preferences,
+        firebase ? PlayReviewService() : const NoReviewService(),
+        now,
+      ),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
         preferences: preferences,
@@ -494,6 +512,13 @@ class Dependencies {
 
   /// "Abrir o e-mail" depois do link de senha nova.
   final MailAppRepository mailAppRepository;
+
+  /// "Enviar feedback" e o "Você pagaria?" (E1.26), em `feedback/{id}`.
+  final FeedbackRepository feedbackRepository;
+  final WouldPayRepository wouldPayRepository;
+
+  /// O pedido de avaliação da Play (E1.26).
+  final ReviewRepository reviewRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;

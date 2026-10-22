@@ -5,6 +5,14 @@ import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
 import '../ui/lesson_finished/widgets/lesson_finished_screen.dart';
 import '../ui/survey/view_models/survey_cubit.dart';
 import '../ui/survey/widgets/survey_screen.dart';
+import '../data/repositories/feedback/feedback_repository.dart';
+import '../data/repositories/review/review_repository.dart';
+import '../data/repositories/would_pay/would_pay_repository.dart';
+import '../ui/feedback/view_models/feedback_cubit.dart';
+import '../ui/feedback/widgets/feedback_screen.dart';
+import '../ui/review/widgets/review_prompt.dart';
+import '../ui/would_pay/view_models/would_pay_cubit.dart';
+import '../ui/would_pay/widgets/would_pay_screen.dart';
 
 import 'package:animations/animations.dart';
 import 'package:dartchess/dartchess.dart';
@@ -223,6 +231,20 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           child: const TourScreen(),
         ),
       ),
+      // Antes de `/survey/:kind`, que pegaria o "pagaria" como tipo.
+      _route(
+        path: Routes.wouldPay,
+        builder: (context, state) => BlocProvider(
+          create: (_) => WouldPayCubit(
+            wouldPay: context.read<WouldPayRepository>(),
+            feedback: context.read<FeedbackRepository>(),
+            profile: context.read<ProfileRepository>(),
+            characters: context.read<CharacterRepository>(),
+            review: context.read<ReviewRepository>(),
+          )..load(step: int.tryParse(state.uri.queryParameters['step'] ?? '')),
+          child: const WouldPayScreen(),
+        ),
+      ),
       _route(
         path: '/survey/:kind',
         redirect: (context, state) =>
@@ -232,11 +254,15 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
         builder: (context, state) {
           final kind = SurveyKind.byCode(state.pathParameters['kind']!)!;
           return BlocProvider(
-            create: (_) => SurveyCubit(
-              kind: kind,
-              surveys: context.read<SurveyRepository>(),
-              characters: context.read<CharacterRepository>(),
-            )..load(),
+            create: (_) {
+              // Viu o questionário: nesta sessão não pede avaliação.
+              context.read<ReviewRepository>().noteSurveySeen();
+              return SurveyCubit(
+                kind: kind,
+                surveys: context.read<SurveyRepository>(),
+                characters: context.read<CharacterRepository>(),
+              )..load();
+            },
             child: SurveyScreen(
               fromLesson: state.uri.queryParameters['from'] == 'lesson',
             ),
@@ -259,7 +285,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               school: context.read<LessonRepository>(),
               endgames: context.read<EndgameLessonRepository>(),
             )..load(_language(context)),
-            child: LessonFinishedScreen(kind: kind),
+            child: LessonReviewPrompt(child: LessonFinishedScreen(kind: kind)),
           );
         },
       ),
@@ -622,9 +648,12 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 key: ValueKey(state.uri),
                 create: (context) =>
                     _conclusionCubit(context)..load(id ?? -1, language),
-                child: ConclusionScreen(
+                child: ConclusionReviewPrompt(
                   fresh: state.uri.queryParameters['fresh'] == '1',
-                  invite: context.read<AccountInviteRepository>(),
+                  child: ConclusionScreen(
+                    fresh: state.uri.queryParameters['fresh'] == '1',
+                    invite: context.read<AccountInviteRepository>(),
+                  ),
                 ),
               );
             },
@@ -1369,6 +1398,17 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     builder: (context, state) => const VoiceSettingsScreen(),
                   ),
                 ],
+              ),
+              _route(
+                path: 'feedback',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => FeedbackCubit(
+                    feedback: context.read<FeedbackRepository>(),
+                    characters: context.read<CharacterRepository>(),
+                    language: _language(context),
+                  )..load(),
+                  child: const FeedbackScreen(),
+                ),
               ),
               _route(
                 path: 'alerts',

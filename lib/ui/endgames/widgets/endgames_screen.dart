@@ -1,5 +1,6 @@
 import '../../../domain/models/survey.dart';
 import '../../survey/widgets/survey_invite_card.dart';
+import '../../would_pay/widgets/would_pay_invite_card.dart';
 
 import 'package:flutter/material.dart';
 
@@ -171,8 +172,9 @@ class EndgamesScreen extends StatelessWidget {
                 if (state.filteredLessons.isEmpty && state.total > 0)
                   const EndgamesFiltersEmpty(),
               ],
-              // O convite "Sua opinião", depois do último tile.
+              // O "Você pagaria?" e o "Sua opinião", depois do último tile.
               const SizedBox(height: AppSpacing.lg),
+              const WouldPayInviteCard(),
               const SurveyInviteCard(
                 kind: SurveyKind.endgames,
                 source: SurveyInviteSource.trail,

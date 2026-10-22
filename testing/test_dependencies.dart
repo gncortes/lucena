@@ -1,4 +1,10 @@
 import 'fakes/fake_activity_repository.dart';
+
+import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
+import 'package:lucena/data/repositories/review/review_repository.dart';
+import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
+
+import 'fakes/fake_feedback_repositories.dart';
 import 'fakes/fake_daily_final_repository.dart';
 import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_position_judge.dart';
@@ -176,6 +182,9 @@ Dependencies testDependencies({
   MailAppRepository? mailAppRepository,
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
+  FeedbackRepository? feedbackRepository,
+  WouldPayRepository? wouldPayRepository,
+  ReviewRepository? reviewRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
@@ -258,6 +267,9 @@ Dependencies testDependencies({
     avatarRepository: avatarRepository ?? FakeAvatarRepository(),
     photoRepository: photoRepository ?? FakePhotoRepository(),
     mailAppRepository: mailAppRepository ?? FakeMailAppRepository(),
+    feedbackRepository: feedbackRepository ?? FakeFeedbackRepository(),
+    wouldPayRepository: wouldPayRepository ?? const NoWouldPayRepository(),
+    reviewRepository: reviewRepository ?? FakeReviewRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }
