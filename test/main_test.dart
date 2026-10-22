@@ -59,12 +59,10 @@ void main() {
     FakeStarChallengeRepository? stars,
     FakeDeepLinkService? links,
     OnboardingRepository? onboarding,
-    bool darkTheme = true,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
         dependencies: testDependencies(
-          darkTheme: darkTheme,
           now: now,
           settingsRepository: settings,
           profileRepository: profile,
@@ -223,26 +221,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(appBrightness(tester), Brightness.light);
-  });
-
-  testWidgets('sem o tema escuro liberado, o app fica claro e não oferece a '
-      'troca', (tester) async {
-    useSystemBrightness(tester, Brightness.dark);
-    await pumpApp(
-      tester,
-      darkTheme: false,
-      settings: FakeSettingsRepository(
-        const AppSettings(themeMode: AppThemeMode.dark),
-      ),
-    );
-
-    expect(appBrightness(tester), Brightness.light);
-    await tester.tap(find.byKey(HomeKeys.settingsButton));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(SettingsKeys.appearanceTile));
-    await tester.pumpAndSettle();
-    expect(find.byKey(SettingsKeys.themeTile), findsNothing);
-    expect(find.byKey(SettingsKeys.languageTile), findsOneWidget);
   });
 
   testWidgets('o tema escolhido vence o tema do aparelho', (tester) async {

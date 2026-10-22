@@ -7,7 +7,6 @@ import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_chip.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -224,7 +223,7 @@ class _QuestionCard extends StatelessWidget {
     final theme = Theme.of(context);
     // `Material` e não `DecoratedBox`: as opções com toque pintam nele.
     return Material(
-      color: AppColors.white,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(AppShape.large),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.insideCard),
@@ -613,7 +612,7 @@ class _Chips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ChipSurface(
-    color: AppColors.white,
+    color: Theme.of(context).colorScheme.surfaceContainerLow,
     child: Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,

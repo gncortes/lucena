@@ -12,12 +12,8 @@ import '../../../domain/models/game_sound.dart';
 
 /// Preferências do app. O estado é nulo até a primeira leitura terminar.
 class SettingsCubit extends Cubit<AppSettings?> {
-  SettingsCubit(
-    this._repository, {
-    required this.languages,
-    this.darkTheme = true,
-    this._sound,
-  }) : super(null);
+  SettingsCubit(this._repository, {required this.languages, this._sound})
+    : super(null);
 
   final SettingsRepository _repository;
 
@@ -26,9 +22,6 @@ class SettingsCubit extends Cubit<AppSettings?> {
 
   /// Idiomas oferecidos na tela de idioma.
   final List<AppLanguage> languages;
-
-  /// Se a troca de tema aparece em Configurações (tema escuro liberado).
-  final bool darkTheme;
 
   Future<void> load() async => emit(await _repository.load());
 

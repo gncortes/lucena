@@ -8,7 +8,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -65,7 +64,7 @@ class _InviteView extends StatelessWidget {
       key: SurveyKeys.invite(kind),
       padding: const EdgeInsets.all(AppSpacing.insideCard),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppShape.large),
       ),
       child: Column(

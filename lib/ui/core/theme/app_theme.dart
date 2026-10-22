@@ -39,7 +39,7 @@ abstract final class AppTheme {
     ),
     AppAccent.green: _LightPalette(
       seed: Color(0xFF1B6B45),
-      primary: Color(0xFF1F7A4F),
+      primary: Color(0xFF1B6E47),
       primaryContainer: Color(0xFFD2F0DF),
       onPrimaryContainer: Color(0xFF0C3F27),
       onSecondaryContainer: Color(0xFF24503A),
@@ -58,14 +58,16 @@ abstract final class AppTheme {
       primary: Color(0xFFB02E76),
       primaryContainer: Color(0xFFFBDAEA),
       onPrimaryContainer: Color(0xFF570B35),
+      secondaryContainer: Color(0xFFF5D5E3),
       onSecondaryContainer: Color(0xFF632947),
       background: Color(0xFFF9F5F7),
     ),
     AppAccent.orange: _LightPalette(
       seed: Color(0xFF9A4A10),
-      primary: Color(0xFFB85410),
+      primary: Color(0xFFA14A0E),
       primaryContainer: Color(0xFFFCE1CB),
       onPrimaryContainer: Color(0xFF512305),
+      secondaryContainer: Color(0xFFF5DCC9),
       onSecondaryContainer: Color(0xFF5E3B24),
       background: Color(0xFFF9F6F2),
     ),
@@ -123,6 +125,8 @@ abstract final class AppTheme {
       primary: palette.primary,
       primaryContainer: palette.primaryContainer,
       onPrimaryContainer: palette.onPrimaryContainer,
+      // O gerado no rosa e no laranja sai saturado demais atrás do texto.
+      secondaryContainer: palette.secondaryContainer,
       onSecondaryContainer: palette.onSecondaryContainer,
       // Fundos do canvas: `surface` na cor do fundo e painéis/cartões brancos,
       // sem o lilás que a semente gera.
@@ -140,12 +144,46 @@ abstract final class AppTheme {
   static const _tertiaryContainer = Color(0xFFFFE2A6);
   static const _onTertiaryContainer = Color(0xFF3B2A00);
 
+  // No escuro, a cor principal viva da semente, mas os destaques (fundo de
+  // ficha, de selo e do segmentado) num tom escuro da mesma família com texto
+  // claro: o esquema gerado põe a própria semente, berrante, atrás do texto.
+  // Cartão e painel um degrau acima do fundo, nunca brancos.
   static ThemeData _buildDark(_DarkPalette palette) => _build(
     Brightness.dark,
     seed: palette.seed,
     background: palette.background,
     sheet: palette.sheet,
+    adjust: (scheme) {
+      final tonal = ColorScheme.fromSeed(
+        seedColor: palette.seed,
+        brightness: Brightness.dark,
+      );
+      Color lift(double amount) =>
+          Color.lerp(palette.background, _white, amount)!;
+      return scheme.copyWith(
+        primaryContainer: tonal.primaryContainer,
+        onPrimaryContainer: tonal.onPrimaryContainer,
+        secondaryContainer: tonal.secondaryContainer,
+        onSecondaryContainer: tonal.onSecondaryContainer,
+        surface: palette.background,
+        surfaceContainerLowest: Color.lerp(palette.background, _black, 0.3),
+        surfaceContainerLow: palette.sheet,
+        surfaceContainer: lift(0.09),
+        surfaceContainerHigh: lift(0.13),
+        surfaceContainerHighest: lift(0.17),
+        // O mesmo dourado do claro (D26), no tom do escuro.
+        tertiary: _tertiaryDark,
+        onTertiary: _onTertiaryDark,
+        tertiaryContainer: _tertiaryContainerDark,
+        onTertiaryContainer: _tertiaryContainer,
+      );
+    },
   );
+
+  static const _black = Color(0xFF000000);
+  static const _tertiaryDark = Color(0xFFF2C14E);
+  static const _onTertiaryDark = Color(0xFF3F2E00);
+  static const _tertiaryContainerDark = Color(0xFF5A4300);
 
   static ThemeData _build(
     Brightness brightness, {
@@ -181,12 +219,13 @@ abstract final class AppTheme {
         modalBarrierColor: AppSheet.scrim,
         dragHandleSize: AppSheet.handleSize,
       ),
-      // Cartão branco, sem sombra, com o raio grande dos tokens (D24).
-      cardTheme: const CardThemeData(
+      // Cartão sem sombra, com o raio grande dos tokens (D24): branco no
+      // claro, um degrau acima do fundo no escuro.
+      cardTheme: CardThemeData(
         elevation: 0,
-        color: AppColors.white,
+        color: colors.surfaceContainerLow,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppShape.large)),
         ),
       ),
@@ -279,6 +318,7 @@ class _LightPalette {
     required this.onPrimaryContainer,
     required this.onSecondaryContainer,
     required this.background,
+    this.secondaryContainer,
   });
 
   final Color seed;
@@ -287,6 +327,7 @@ class _LightPalette {
   final Color onPrimaryContainer;
   final Color onSecondaryContainer;
   final Color background;
+  final Color? secondaryContainer;
 }
 
 class _DarkPalette {

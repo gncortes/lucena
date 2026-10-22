@@ -333,7 +333,6 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) => SettingsCubit(
               dependencies.settingsRepository,
               languages: dependencies.languages,
-              darkTheme: dependencies.darkTheme,
               sound: dependencies.soundRepository,
             )..load(),
           ),
@@ -357,7 +356,7 @@ class _LucenaAppState extends State<LucenaApp> {
             // Até as preferências chegarem, só o fundo: o app nunca aparece
             // no idioma errado nem na tela errada.
             if (settings == null || router == null) {
-              return _LaunchBackground(darkTheme: dependencies.darkTheme);
+              return const _LaunchBackground();
             }
             return _QuietInBackground(
               child: MaterialApp.router(
@@ -368,9 +367,7 @@ class _LucenaAppState extends State<LucenaApp> {
                   Brightness.dark,
                   accent: settings.accent,
                 ),
-                themeMode: dependencies.darkTheme
-                    ? settings.themeMode.material
-                    : ThemeMode.light,
+                themeMode: settings.themeMode.material,
                 locale: localeFromCode(settings.languageCode),
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 supportedLocales: appSupportedLocales,
@@ -420,15 +417,11 @@ class _QuietInBackgroundState extends State<_QuietInBackground> {
 
 /// O mesmo fundo da abertura nativa e da tela inicial.
 class _LaunchBackground extends StatelessWidget {
-  const _LaunchBackground({required this.darkTheme});
-
-  final bool darkTheme;
+  const _LaunchBackground();
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        darkTheme &&
-        MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
     final theme = isDark ? AppTheme.dark : AppTheme.light;
     return ColoredBox(color: theme.scaffoldBackgroundColor);
   }
