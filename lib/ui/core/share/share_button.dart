@@ -10,9 +10,9 @@ import '../../../data/repositories/share/share_repository.dart';
 import 'share_cubit.dart';
 import '../theme/app_colors.dart';
 
-/// A imagem do que está dentro do [RepaintBoundary] de [boundary], em PNG.
-/// Com [footer], ela ganha margem na cor [background] e o texto embaixo (a
-/// marca do app). Nula se ele ainda não foi desenhado.
+/// A imagem do que está dentro do [RepaintBoundary] de [boundary], em PNG,
+/// com margem na cor [background] e, com [footer], o texto embaixo (a marca
+/// do app). Nula se ele ainda não foi desenhado.
 Future<Uint8List?> capturePng(
   GlobalKey boundary, {
   List<GlobalKey> extra = const [],
@@ -59,19 +59,17 @@ Future<Uint8List?> captureBoundaryPng(
     }
     image = stacked;
   }
-  if (footer != null) {
-    final framed = _framed(
-      image,
-      footer: footer,
-      background: background,
-      style: (footerStyle ?? const TextStyle()).copyWith(
-        fontSize: (footerStyle?.fontSize ?? 14) * pixelRatio,
-      ),
-      margin: 16 * pixelRatio,
-    );
-    image.dispose();
-    image = framed;
-  }
+  final framed = _framed(
+    image,
+    footer: footer,
+    background: background,
+    style: (footerStyle ?? const TextStyle()).copyWith(
+      fontSize: (footerStyle?.fontSize ?? 14) * pixelRatio,
+    ),
+    margin: 16 * pixelRatio,
+  );
+  image.dispose();
+  image = framed;
   final data = await image.toByteData(format: ui.ImageByteFormat.png);
   image.dispose();
   return data?.buffer.asUint8List();
@@ -93,26 +91,29 @@ ui.Image _stacked(List<ui.Image> images, {required double gap}) {
   return recorder.endRecording().toImageSync(width, height.round());
 }
 
-// A imagem com margem e o rodapé.
+// A imagem com margem e, se houver, o rodapé.
 ui.Image _framed(
   ui.Image image, {
-  required String footer,
+  required String? footer,
   required Color background,
   required TextStyle style,
   required double margin,
 }) {
-  final text = TextPainter(
-    text: TextSpan(text: footer, style: style),
-    textDirection: TextDirection.ltr,
-    textAlign: TextAlign.center,
-  )..layout(maxWidth: image.width.toDouble());
+  final text = footer == null
+      ? null
+      : (TextPainter(
+          text: TextSpan(text: footer, style: style),
+          textDirection: TextDirection.ltr,
+          textAlign: TextAlign.center,
+        )..layout(maxWidth: image.width.toDouble()));
   final width = image.width + 2 * margin;
-  final height = image.height + 3 * margin + text.height;
+  final height =
+      image.height + 2 * margin + (text == null ? 0 : margin + text.height);
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder)
     ..drawRect(Rect.fromLTWH(0, 0, width, height), Paint()..color = background)
     ..drawImage(image, Offset(margin, margin), Paint());
-  text.paint(
+  text?.paint(
     canvas,
     Offset((width - text.width) / 2, image.height + 2 * margin),
   );

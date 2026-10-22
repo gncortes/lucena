@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_links.dart';
+import 'package:lucena/ui/core/share/share_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
@@ -439,6 +441,10 @@ void main() {
       );
       expect(find.byKey(FeaturedKeys.bookButton), findsOneWidget);
       expect(find.byKey(FeaturedKeys.shareButton), findsOneWidget);
+      final share = tester.widget<ShareIconButton>(
+        find.byKey(FeaturedKeys.shareButton),
+      );
+      expect(share.text, contains('https://${AppLinks.host}/p/'));
     });
   });
 }

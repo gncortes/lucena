@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 
+import 'challenge_link.dart';
 import 'clock.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
@@ -332,6 +333,22 @@ class FeaturedEndgame {
   Side get userSide => fen.split(' ')[1] == 'b' ? Side.black : Side.white;
 
   bool get isFindMove => kind == FeaturedKind.findMove;
+
+  /// O desafio que o compartilhar manda: a mesma posição, contra o adversário
+  /// e no relógio de [choice] (o que o final traz, sem ela). Quem abre o link
+  /// joga no app; sem o app, cai na landing.
+  ChallengeLink challenge([FeaturedChoice? choice]) {
+    final picked = choice ?? suggested;
+    final stockfish = picked.opponent == OpponentKind.stockfish;
+    return ChallengeLink(
+      fen: fen,
+      goal: goal,
+      userSide: userSide,
+      opponent: stockfish ? OpponentKind.stockfish : OpponentKind.maia,
+      level: stockfish ? null : picked.level,
+      clock: TimeControl.tryParse(picked.clock),
+    );
+  }
 
   /// O final é novo para quem ainda não o jogou, até [days] dias depois de
   /// publicado.

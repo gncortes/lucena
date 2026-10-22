@@ -1277,7 +1277,7 @@
   "featuredPlayAgain": "Jogar de novo",
   "featuredContinue": "Continuar",
   "featuredShare": "Compartilhar este final",
-  "featuredShareText": "{players}: tente este final no Lucena.",
+  "featuredShareText": "{players}: tente este final no Lucena. {link}",
   "featuredFindTitle": "Ache o lance",
   "featuredFindRight": "Isso mesmo: {move}.",
   "featuredFindAnswer": "O lance era {move}.",

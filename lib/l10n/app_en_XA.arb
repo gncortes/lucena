@@ -1236,7 +1236,7 @@
   "featuredPlayAgain": "[Plåý åĝåîñ one]",
   "featuredContinue": "[Çöñtîñûé one]",
   "featuredShare": "[Šhåŕé thîš éñdĝåmé one two]",
-  "featuredShareText": "[{players}: tŕý thîš éñdĝåmé öñ Lûçéñå. one two three four]",
+  "featuredShareText": "[{players}: tŕý thîš éñdĝåmé öñ Lûçéñå. {link} one two three four]",
   "featuredFindTitle": "[Fîñd thé mövé one two]",
   "featuredFindRight": "[Éxåçtlý: {move}. one two]",
   "featuredFindAnswer": "[Thé mövé wåš {move}. one two]",

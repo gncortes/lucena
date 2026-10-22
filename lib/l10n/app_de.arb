@@ -1278,7 +1278,7 @@
   "featuredPlayAgain": "Play again",
   "featuredContinue": "Continue",
   "featuredShare": "Share this endgame",
-  "featuredShareText": "{players}: try this endgame on Lucena.",
+  "featuredShareText": "{players}: try this endgame on Lucena. {link}",
   "featuredFindTitle": "Find the move",
   "featuredFindRight": "Exactly: {move}.",
   "featuredFindAnswer": "The move was {move}.",

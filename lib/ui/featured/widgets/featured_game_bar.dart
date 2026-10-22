@@ -51,6 +51,7 @@ class FeaturedGameActions extends StatelessWidget {
                 fileName: 'lucena-${endgame.id}.png',
                 text: l10n.featuredShareText(
                   FeaturedLabels.players(l10n, endgame),
+                  endgame.challenge(state.choice).uri.toString(),
                 ),
               ),
           ],
