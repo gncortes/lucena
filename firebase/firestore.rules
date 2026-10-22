@@ -82,7 +82,7 @@ service cloud.firestore {
         && shortString('appVersion', 32)
         && shortString('model', 64)
         && shortString('manufacturer', 64)
-        && shortString('language', 16)
+        && shortString('language', 32)
         && request.resource.data.createdAt == request.time;
       allow read, update, delete: if isAdmin();
     }
