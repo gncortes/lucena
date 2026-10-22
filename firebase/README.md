@@ -19,7 +19,7 @@ Projeto `lucena-2f4de` (número 456466277039). O app Android é `com.gncortes.lu
 | `users/{uid}` | o dono | o dono, só `name`, `language`, `createdAt` e `updatedAt` |
 | `users/{uid}/progress/{doc}` | o dono | o dono |
 | `users/{uid}/games/{id}` | o dono | o dono cria e apaga; não muda |
-| `feedback/{id}` | admin | qualquer um cria (texto até 4000, `createdAt` = hora do servidor) |
+| `feedback/{id}` | admin | qualquer um cria, anônimo: `pagaria` (`answers` em códigos) ou `livre` (`type` + `text` até 500); `createdAt` = hora do servidor |
 | `challenges/{code}` | quem tem o código (`get`) | o dono cria; o `result` entra uma vez |
 | `candidates/{id}` | admin | admin |
 | `featured/{id}` | todos | admin (o `pct` e o `total` vêm da função) |

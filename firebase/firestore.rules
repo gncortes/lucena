@@ -50,18 +50,39 @@ service cloud.firestore {
       }
     }
 
-    // Os avisos de problema e as sugestões (E1.19). Com ou sem conta.
+    // A opinião (E1.25/E1.26): "pagaria?" (respostas em códigos) ou livre
+    // (problema, ideia ou elogio). Anônima: sem uid, e-mail nem nome.
+    function validAnswers(answers) {
+      return answers is map
+        && answers.keys().hasOnly(['course', 'coursePrice', 'coach',
+                                   'coachPrice', 'learn', 'next', 'why',
+                                   'level'])
+        && (!('next' in answers) ||
+            (answers.next is string && answers.next.size() <= 200))
+        && (!('why' in answers) ||
+            (answers.why is list && answers.why.size() <= 10));
+    }
+
     match /feedback/{id} {
-      allow create: if onlyKeys(['uid', 'kind', 'text', 'appVersion',
-                                 'language', 'context', 'createdAt'])
-        && request.resource.data.text is string
-        && request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 4000
-        && shortString('kind', 32)
+      allow create: if onlyKeys(['kind', 'type', 'text', 'answers', 'level',
+                                 'origin', 'appVersion', 'model',
+                                 'manufacturer', 'language', 'createdAt'])
+        && (request.resource.data.kind == 'livre'
+          ? request.resource.data.type in ['problema', 'ideia', 'elogio']
+            && request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 500
+            && !('answers' in request.resource.data)
+          : request.resource.data.kind == 'pagaria'
+            && validAnswers(request.resource.data.answers)
+            && !('type' in request.resource.data)
+            && !('text' in request.resource.data))
+        && shortString('level', 32)
+        && shortString('origin', 32)
         && shortString('appVersion', 32)
+        && shortString('model', 64)
+        && shortString('manufacturer', 64)
         && shortString('language', 16)
-        && (!('uid' in request.resource.data) ||
-            isOwner(request.resource.data.uid))
         && request.resource.data.createdAt == request.time;
       allow read, update, delete: if isAdmin();
     }
