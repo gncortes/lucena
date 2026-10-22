@@ -1504,5 +1504,14 @@
   "lichessRefresh": "Atualizar o rating",
   "lichessDisconnect": "Desconectar",
   "lichessDisconnectNote": "Desconectar tira o acesso do Lucena ao seu Lichess. O seu rating no Lucena fica como está.",
-  "lichessRefreshFailed": "Sem internet. O rating continua o de antes."
+  "lichessRefreshFailed": "Sem internet. O rating continua o de antes.",
+  "streakTitle": "Sequência",
+  "streakDayCount": "{count, plural, =1{1 dia} other{{count} dias}}",
+  "streakFollowing": "{count, plural, =1{seguido} other{seguidos}}",
+  "streakRecord": "recorde",
+  "streakRules": "O dia conta quando você joga uma partida, faz uma aula ou joga um final. Perdeu um dia, a sequência volta a zero; o recorde fica.",
+  "streakLostTitle": "A sequência de {days} dias acabou",
+  "streakLostText": "Ontem ficou sem jogar. O recorde de {record} dias continua seu, e hoje dá para começar uma sequência nova.",
+  "streakLostPlay": "Jogar o final do dia",
+  "streakLostNo": "Agora não"
 }

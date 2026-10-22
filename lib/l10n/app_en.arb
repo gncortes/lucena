@@ -7759,5 +7759,61 @@
   "lichessRefreshFailed": "No internet. The rating stays as before.",
   "@lichessRefreshFailed": {
     "description": "Lichess sheet: refresh failed."
+  },
+  "streakTitle": "Streak",
+  "@streakTitle": {
+    "description": "Streak screen: app bar title."
+  },
+  "streakDayCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@streakDayCount": {
+    "description": "Streak screen: the big number of days in a row (the next line says \"in a row\").",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakFollowing": "{count, plural, =1{in a row} other{in a row}}",
+  "@streakFollowing": {
+    "description": "Streak screen: line under the number of days, agreeing with it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakRecord": "record",
+  "@streakRecord": {
+    "description": "Streak screen: label under the longest streak."
+  },
+  "streakRules": "A day counts when you play a game, take a lesson or play an endgame. Miss a day and the streak goes back to zero; the record stays.",
+  "@streakRules": {
+    "description": "Streak screen: how the streak counts."
+  },
+  "streakLostTitle": "Your {days}-day streak ended",
+  "@streakLostTitle": {
+    "description": "Sheet shown once after missing a day: title.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "streakLostText": "You did not play yesterday. Your {record}-day record is still yours, and today you can start a new streak.",
+  "@streakLostText": {
+    "description": "Sheet shown once after missing a day: text.",
+    "placeholders": {
+      "record": {
+        "type": "int"
+      }
+    }
+  },
+  "streakLostPlay": "Play the daily endgame",
+  "@streakLostPlay": {
+    "description": "Lost streak sheet: main button."
+  },
+  "streakLostNo": "Not now",
+  "@streakLostNo": {
+    "description": "Lost streak sheet: closes the sheet."
   }
 }

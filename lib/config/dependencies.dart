@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/tablebase/engine_judge_repository.dart';
@@ -185,6 +186,7 @@ class Dependencies {
     required this.wikiLinksRepository,
     required this.featuredRepository,
     required this.featuredProgressRepository,
+    required this.activityRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     this.syncRepository = const NoSyncRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
@@ -225,12 +227,18 @@ class Dependencies {
         : const NoCloudStoreService();
     // Partida ou aula gravada: a conta recebe o progresso pouco depois.
     final changes = StreamController<void>.broadcast();
-    void changed() => changes.add(null);
     final progress = RestoredProgressRepository(
       LocalProgressRepository(database),
       preferences,
-      onAdded: changed,
+      onAdded: () => changes.add(null),
     );
+    final activity = LocalActivityRepository(preferences, progress, now);
+    // Capítulo terminado: também é dia com atividade (decisão 2b da E1.22).
+    void changed() {
+      changes.add(null);
+      unawaited(activity.markToday());
+    }
+
     final journey = AssetJourneyRepository(assets, positions);
     final speedruns = LocalSpeedrunRepository(database);
     final race = LocalRaceRepository(assets, preferences, now);
@@ -241,13 +249,19 @@ class Dependencies {
       now: now,
     );
     final onboarding = LocalOnboardingRepository(preferences);
-    final school = LocalSchoolProgressRepository(preferences);
+    final school = ActiveSchoolProgressRepository(
+      LocalSchoolProgressRepository(preferences),
+      activity,
+    );
     final stars = LocalStarChallengeRepository(preferences);
     final endgames = NotifyingEndgameProgressRepository(
       LocalEndgameProgressRepository(preferences),
       changed,
     );
-    final featured = LocalFeaturedProgressRepository(preferences);
+    final featured = ActiveFeaturedProgressRepository(
+      LocalFeaturedProgressRepository(preferences),
+      activity,
+    );
     return Dependencies(
       now: now,
       settingsRepository: settings,
@@ -324,6 +338,7 @@ class Dependencies {
       wikiLinksRepository: AssetWikiLinksRepository(assets),
       featuredRepository: AssetFeaturedRepository(assets),
       featuredProgressRepository: featured,
+      activityRepository: activity,
       accountInviteRepository: LocalAccountInviteRepository(preferences),
       syncRepository: CloudSyncRepository(
         store: cloudStore,
@@ -413,6 +428,9 @@ class Dependencies {
   final FeaturedRepository featuredRepository;
   final FeaturedProgressRepository featuredProgressRepository;
   final FeaturedAlertsRepository featuredAlertsRepository;
+
+  /// Os dias com atividade, para a sequência (E1.22).
+  final ActivityRepository activityRepository;
 
   /// O progresso na conta (E1.13). Sem conta, ninguém chama.
   final SyncRepository syncRepository;

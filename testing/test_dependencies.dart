@@ -1,7 +1,9 @@
+import 'fakes/fake_activity_repository.dart';
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 
+import 'package:lucena/data/repositories/activity/activity_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'package:lucena/config/dependencies.dart';
@@ -148,6 +150,7 @@ Dependencies testDependencies({
   FeaturedRepository? featuredRepository,
   FeaturedProgressRepository? featuredProgressRepository,
   FeaturedAlertsRepository? featuredAlertsRepository,
+  ActivityRepository? activityRepository,
   SyncRepository? syncRepository,
   VoiceRepository? voiceRepository,
   SurveyRepository? surveyRepository,
@@ -222,6 +225,8 @@ Dependencies testDependencies({
         featuredProgressRepository ?? FakeFeaturedProgressRepository(),
     featuredAlertsRepository:
         featuredAlertsRepository ?? const NoFeaturedAlertsRepository(),
+    activityRepository:
+        activityRepository ?? FakeActivityRepository(now: clock),
     syncRepository: syncRepository ?? FakeSyncRepository(),
     languages: languages ?? AppLanguage.selectable,
   );

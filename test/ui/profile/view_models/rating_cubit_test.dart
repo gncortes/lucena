@@ -94,7 +94,6 @@ void main() {
       final numbers = cubit.state.numbers!;
       expect(numbers.stats.games, 4);
       expect(numbers.stats.wins, 3);
-      expect(numbers.stats.streakDays, 1);
       expect(numbers.achievementsUnlocked, 0);
       expect(numbers.achievementsTotal, greaterThan(0));
       expect(numbers.bestSpeedrun, const Duration(minutes: 1));

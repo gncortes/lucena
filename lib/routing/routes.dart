@@ -316,6 +316,9 @@ abstract final class Routes {
 
   /// Depois do tour: a conta, opcional (E1.11 a E1.13 ligam o login), e o
   /// nível, que fecha a primeira abertura.
+  /// A Sequência de dias (E1.22).
+  static const streak = '/streak';
+
   static const account = '/tour/conta';
   static const level = '/tour/nivel';
 

@@ -75,6 +75,9 @@ import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../data/repositories/account/account_invite_repository.dart';
+import '../data/repositories/activity/activity_repository.dart';
+import '../ui/streak/view_models/streak_cubit.dart';
+import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
@@ -248,6 +251,16 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
       _route(
         path: Routes.account,
         builder: (context, state) => const AccountScreen(),
+      ),
+      _route(
+        path: Routes.streak,
+        builder: (context, state) => BlocProvider(
+          create: (context) => StreakCubit(
+            activity: context.read<ActivityRepository>(),
+            now: context.read<Now>(),
+          )..load(),
+          child: const StreakScreen(),
+        ),
       ),
       _route(
         path: Routes.accountEnter,

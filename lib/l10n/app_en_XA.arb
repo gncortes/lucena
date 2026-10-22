@@ -1463,5 +1463,14 @@
   "lichessRefresh": "[Ûpdåté thé ŕåtîñĝ one two]",
   "lichessDisconnect": "[Dîšçöññéçt one]",
   "lichessDisconnectNote": "[Dîšçöññéçtîñĝ ŕémövéš Lûçéñå'š åççéšš tö ýöûŕ Lîçhéšš. Ýöûŕ Lûçéñå ŕåtîñĝ štåýš åš ît îš. one two three four five six seven eight]",
-  "lichessRefreshFailed": "[Ñö îñtéŕñét. Thé ŕåtîñĝ štåýš åš béföŕé. one two three four]"
+  "lichessRefreshFailed": "[Ñö îñtéŕñét. Thé ŕåtîñĝ štåýš åš béföŕé. one two three four]",
+  "streakTitle": "[Štŕéåk one]",
+  "streakDayCount": "{count, plural, =1{[1 dåý one]} other{[{count} dåýš one two]}}",
+  "streakFollowing": "{count, plural, =1{[îñ å ŕöw one]} other{[îñ å ŕöw one]}}",
+  "streakRecord": "[ŕéçöŕd one]",
+  "streakRules": "[Å dåý çöûñtš whéñ ýöû plåý å ĝåmé, tåké å léššöñ öŕ plåý åñ éñdĝåmé. Mîšš å dåý åñd thé štŕéåk ĝöéš båçk tö žéŕö; thé ŕéçöŕd štåýš. one two three four five six seven eight nine ten one]",
+  "streakLostTitle": "[Ýöûŕ {days}-dåý štŕéåk éñdéd one two three]",
+  "streakLostText": "[Ýöû dîd ñöt plåý ýéštéŕdåý. Ýöûŕ {record}-dåý ŕéçöŕd îš štîll ýöûŕš, åñd tödåý ýöû çåñ štåŕt å ñéw štŕéåk. one two three four five six seven eight nine]",
+  "streakLostPlay": "[Plåý thé dåîlý éñdĝåmé one two three]",
+  "streakLostNo": "[Ñöt ñöw one]"
 }

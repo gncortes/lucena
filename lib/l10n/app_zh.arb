@@ -1505,5 +1505,14 @@
   "lichessRefresh": "Update the rating",
   "lichessDisconnect": "Disconnect",
   "lichessDisconnectNote": "Disconnecting removes Lucena's access to your Lichess. Your Lucena rating stays as it is.",
-  "lichessRefreshFailed": "No internet. The rating stays as before."
+  "lichessRefreshFailed": "No internet. The rating stays as before.",
+  "streakTitle": "Streak",
+  "streakDayCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "streakFollowing": "{count, plural, =1{in a row} other{in a row}}",
+  "streakRecord": "record",
+  "streakRules": "A day counts when you play a game, take a lesson or play an endgame. Miss a day and the streak goes back to zero; the record stays.",
+  "streakLostTitle": "Your {days}-day streak ended",
+  "streakLostText": "You did not play yesterday. Your {record}-day record is still yours, and today you can start a new streak.",
+  "streakLostPlay": "Play the daily endgame",
+  "streakLostNo": "Not now"
 }

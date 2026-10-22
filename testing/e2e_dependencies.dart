@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
 import 'fakes/fake_sync_repository.dart';
@@ -5,6 +7,8 @@ import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
 
+import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository_notifying.dart';
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
 import 'fakes/fake_position_judge.dart';
@@ -241,6 +245,12 @@ Future<Dependencies> e2eDependencies() async {
   final database = _database = AppDatabase();
   final positions = AssetPositionsRepository(const AssetService());
   final lessons = AssetLessonRepository(const AssetService());
+  final progress = LocalProgressRepository(database);
+  final activity = LocalActivityRepository(
+    PreferencesService(),
+    progress,
+    e2eNow,
+  );
   return Dependencies(
     now: e2eNow,
     settingsRepository: LocalSettingsRepository(PreferencesService()),
@@ -268,7 +278,7 @@ Future<Dependencies> e2eDependencies() async {
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
     maiaRepository: e2eMaia,
-    progressRepository: LocalProgressRepository(database),
+    progressRepository: progress,
     // A Jornada e os speedruns de verdade.
     journeyRepository: E2EJourneyRepository(
       AssetJourneyRepository(const AssetService(), positions),
@@ -301,8 +311,9 @@ Future<Dependencies> e2eDependencies() async {
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: VisibleLessonRepository(lessons),
-    schoolProgressRepository: LocalSchoolProgressRepository(
-      PreferencesService(),
+    schoolProgressRepository: ActiveSchoolProgressRepository(
+      LocalSchoolProgressRepository(PreferencesService()),
+      activity,
     ),
     starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
     // Só as aulas liberadas, como no app (VisibleLessons).
@@ -313,8 +324,9 @@ Future<Dependencies> e2eDependencies() async {
     kpkRepository: AssetKpkRepository(const AssetService()),
     scriptTableRepository: AssetScriptTableRepository(const AssetService()),
     engineJudge: FakePositionJudge(),
-    endgameProgressRepository: LocalEndgameProgressRepository(
-      PreferencesService(),
+    endgameProgressRepository: NotifyingEndgameProgressRepository(
+      LocalEndgameProgressRepository(PreferencesService()),
+      () => unawaited(activity.markToday()),
     ),
     // As explicações de erro de verdade (o painel da lição V2).
     exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
@@ -334,9 +346,11 @@ Future<Dependencies> e2eDependencies() async {
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
     featuredRepository: AssetFeaturedRepository(const AssetService()),
-    featuredProgressRepository: LocalFeaturedProgressRepository(
-      PreferencesService(),
+    featuredProgressRepository: ActiveFeaturedProgressRepository(
+      LocalFeaturedProgressRepository(PreferencesService()),
+      activity,
     ),
+    activityRepository: activity,
     languages: AppLanguage.values,
   );
 }

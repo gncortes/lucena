@@ -200,7 +200,7 @@ class RatingCubit extends Cubit<RatingState> {
     final numbers = progress == null
         ? null
         : PlayerNumbers(
-            stats: PlayerStats.of(all.values.toList(), now),
+            stats: PlayerStats.of(all.values.toList()),
             achievementsUnlocked: achievements == null
                 ? 0
                 : (await achievements.unlocked()).length,
