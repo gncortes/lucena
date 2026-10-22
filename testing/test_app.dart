@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
@@ -38,6 +39,7 @@ class TestApp extends StatelessWidget {
     this.webPages,
     this.router,
     this.surveyRepository,
+    this.regionPromptRepository,
     super.key,
   });
 
@@ -73,6 +75,9 @@ class TestApp extends StatelessWidget {
   /// O questionário "Sua opinião" (o convite e a tela). Sem ele, um falso
   /// vazio.
   final SurveyRepository? surveyRepository;
+
+  /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
+  final RegionPromptRepository? regionPromptRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -145,6 +150,9 @@ class TestApp extends StatelessWidget {
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
         RepositoryProvider<SurveyRepository>.value(
           value: surveyRepository ?? FakeSurveyRepository(),
+        ),
+        RepositoryProvider<RegionPromptRepository>.value(
+          value: regionPromptRepository ?? const NoRegionPromptRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

@@ -38,9 +38,17 @@ abstract class UserProfile with _$UserProfile {
     /// O avatar é a foto da conta do Google, no lugar da inicial.
     @Default(false) bool googlePhoto,
 
-    /// O país (código ISO, como `BR`): vem da região do celular, sem
-    /// seletor. Nulo: o celular não informou.
+    /// O país (código ISO, como `BR`): vem da região do celular e a pessoa
+    /// troca em "Seu país". Nulo: o celular não informou.
     String? country,
+
+    /// O estado, opcional (E1.21). No Brasil é a sigla (`PR`), que também
+    /// escolhe o tópico de torneios; nos outros países, o que a pessoa
+    /// escreveu.
+    String? state,
+
+    /// A cidade, opcional, como a pessoa escreveu.
+    String? city,
   }) = _UserProfile;
 
   const UserProfile._();

@@ -15,6 +15,7 @@ class AlertsState {
     this.permitted = true,
     this.push = true,
     this.country,
+    this.state,
   });
 
   final bool ready;
@@ -29,6 +30,9 @@ class AlertsState {
   /// O país do Perfil (código ISO), para os torneios da região.
   final String? country;
 
+  /// O estado do Perfil, se houver.
+  final String? state;
+
   int get enabled => settings.enabled(push: push);
   int get total => AlertSettings.total(push: push);
 
@@ -39,6 +43,7 @@ class AlertsState {
         permitted: permitted ?? this.permitted,
         push: push,
         country: country,
+        state: state,
       );
 }
 
@@ -58,15 +63,21 @@ class AlertsCubit extends Cubit<AlertsState> {
   final ProfileRepository _profile;
   final String? Function()? _region;
 
-  Future<String?> _country() async {
-    final country = (await _profile.load()).country ?? _region?.call();
-    return country == null || country.isEmpty ? null : country.toUpperCase();
+  Future<({String? country, String? state})> _place() async {
+    final profile = await _profile.load();
+    final country = profile.country ?? _region?.call();
+    return (
+      country: country == null || country.isEmpty
+          ? null
+          : country.toUpperCase(),
+      state: profile.country == null ? null : profile.state,
+    );
   }
 
   Future<void> load() async {
     final settings = await _alerts.load();
     final permitted = await _push.permitted();
-    final country = await _country();
+    final place = await _place();
     if (isClosed) return;
     emit(
       AlertsState(
@@ -74,7 +85,8 @@ class AlertsCubit extends Cubit<AlertsState> {
         settings: settings,
         permitted: permitted,
         push: _push.available,
-        country: country,
+        country: place.country,
+        state: place.state,
       ),
     );
     await _follow();
@@ -104,7 +116,7 @@ class AlertsCubit extends Cubit<AlertsState> {
 
   /// O país (ou o estado) mudou: relê o Perfil e reinscreve.
   Future<void> regionChanged() async {
-    final country = await _country();
+    final place = await _place();
     if (isClosed) return;
     emit(
       AlertsState(
@@ -112,12 +124,18 @@ class AlertsCubit extends Cubit<AlertsState> {
         settings: state.settings,
         permitted: state.permitted,
         push: state.push,
-        country: country,
+        country: place.country,
+        state: place.state,
       ),
     );
     await _follow();
   }
 
-  Future<void> _follow() =>
-      _push.follow(AlertsRules.topics(state.settings, country: state.country));
+  Future<void> _follow() => _push.follow(
+    AlertsRules.topics(
+      state.settings,
+      country: state.country,
+      state: state.state,
+    ),
+  );
 }

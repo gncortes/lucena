@@ -38,15 +38,19 @@ class FeaturedCatalogState {
 }
 
 class FeaturedCatalogCubit extends Cubit<FeaturedCatalogState> {
+  /// [country] é o país do perfil: a lista abre filtrada por ele quando há
+  /// final de lá (E1.21); o filtro de país continua à mão para ver outros.
   FeaturedCatalogCubit({
     required this._featured,
     required this._progress,
     required this._now,
+    this._country,
   }) : super(const FeaturedCatalogState());
 
   final FeaturedRepository _featured;
   final FeaturedProgressRepository _progress;
   final Now _now;
+  final String? _country;
 
   List<FeaturedItem> _all = const [];
 
@@ -56,7 +60,15 @@ class FeaturedCatalogCubit extends Cubit<FeaturedCatalogState> {
     if (isClosed) return;
     final now = _now();
     _all = FeaturedRules.items(catalog, played, now: now);
-    emit(_build(catalog, state.filter));
+    final country = _country;
+    final first = !state.ready;
+    final filter =
+        first &&
+            country != null &&
+            FeaturedRules.countries(catalog).contains(country)
+        ? state.filter.copyWith(country: country)
+        : state.filter;
+    emit(_build(catalog, filter));
   }
 
   void setCountry(String? country) => _filter(

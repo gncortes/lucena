@@ -99,4 +99,44 @@ void main() {
     expect: () => [saved.copyWith(goal: GoalPreference.train)],
     verify: (_) => expect(repository.saved, hasLength(1)),
   );
+
+  blocTest<ProfileCubit, UserProfile?>(
+    'trocar o país apaga o estado e a cidade do país antigo',
+    setUp: () => repository = FakeProfileRepository(
+      saved.copyWith(country: 'BR', state: 'PR', city: 'Curitiba'),
+    ),
+    build: build,
+    act: (cubit) => cubit.setCountry('pt'),
+    expect: () => [saved.copyWith(country: 'PT')],
+    verify: (cubit) => expect(repository.saved.last, cubit.state),
+  );
+
+  blocTest<ProfileCubit, UserProfile?>(
+    'o mesmo país mantém o estado e a cidade e não grava',
+    setUp: () => repository = FakeProfileRepository(
+      saved.copyWith(country: 'BR', state: 'PR', city: 'Curitiba'),
+    ),
+    build: build,
+    act: (cubit) => cubit.setCountry('BR'),
+    expect: () => [
+      saved.copyWith(country: 'BR', state: 'PR', city: 'Curitiba'),
+    ],
+    verify: (_) => expect(repository.saved, isEmpty),
+  );
+
+  blocTest<ProfileCubit, UserProfile?>(
+    'estado e cidade: limpa os espaços e campo vazio apaga',
+    setUp: () => repository = FakeProfileRepository(
+      saved.copyWith(country: 'BR', state: 'SP', city: 'Santos'),
+    ),
+    build: build,
+    act: (cubit) => cubit.setRegion(state: 'PR', city: '  '),
+    expect: () => [saved.copyWith(country: 'BR', state: 'PR')],
+  );
+
+  test('o país do celular vem em maiúsculas; vazio é nenhum', () {
+    expect(ProfileCubit(repository, region: () => 'br').phoneCountry, 'BR');
+    expect(ProfileCubit(repository, region: () => '').phoneCountry, isNull);
+    expect(ProfileCubit(repository).phoneCountry, isNull);
+  });
 }

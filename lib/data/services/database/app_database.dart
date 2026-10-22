@@ -23,6 +23,10 @@ class Profiles extends Table {
   BoolColumn get googlePhoto => boolean().withDefault(const Constant(false))();
   TextColumn get country => text().nullable()();
 
+  /// O estado e a cidade (E1.21). Desde a versão 12.
+  TextColumn get state => text().nullable()();
+  TextColumn get city => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -139,7 +143,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -202,6 +206,11 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(profiles, profiles.avatarColor);
         await migrator.addColumn(profiles, profiles.googlePhoto);
         await migrator.addColumn(profiles, profiles.country);
+      }
+      // 11 -> 12: o estado e a cidade.
+      if (from < 12) {
+        await migrator.addColumn(profiles, profiles.state);
+        await migrator.addColumn(profiles, profiles.city);
       }
     },
   );

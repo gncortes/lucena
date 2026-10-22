@@ -166,8 +166,15 @@ void main() {
       ),
     );
 
-    expect(inRow(ProfileKeys.rowCountry, 'Brasil'), findsOneWidget);
+    expect(inRow(ProfileKeys.rowCountry, '🇧🇷 Brasil'), findsOneWidget);
     expect(inRow(ProfileKeys.rowGoal, 'Não escolhido'), findsOneWidget);
+    expect(
+      inRow(
+        ProfileKeys.rowRegion,
+        'Opcional · para ver torneios perto de você',
+      ),
+      findsOneWidget,
+    );
     expect(inRow(ProfileKeys.rowLevel, '1450 · pelo teste'), findsOneWidget);
     expect(inRow(ProfileKeys.rowLichess, 'Não conectado'), findsOneWidget);
   });
@@ -306,5 +313,16 @@ void main() {
   ) async {
     await pumpScreen(tester);
     expect(find.byKey(ProfileKeys.ratingCard), findsOneWidget);
+  });
+
+  testWidgets('"Estado e cidade" mostra o nome do estado e a cidade', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      profile: const UserProfile(country: 'BR', state: 'PR', city: 'Curitiba'),
+    );
+
+    expect(inRow(ProfileKeys.rowRegion, 'Paraná · Curitiba'), findsOneWidget);
   });
 }

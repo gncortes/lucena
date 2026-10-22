@@ -41,6 +41,17 @@ void main() {
       );
     });
 
+    test('estado digitado (fora do Brasil) não vira tópico', () {
+      expect(
+        AlertsRules.topics(
+          const AlertSettings(),
+          country: 'PT',
+          state: 'Lisboa',
+        ),
+        {'all', 'torneio_PT', 'aulas'},
+      );
+    });
+
     test('sem país, sem torneio', () {
       expect(AlertsRules.topics(const AlertSettings()), {'all', 'aulas'});
     });

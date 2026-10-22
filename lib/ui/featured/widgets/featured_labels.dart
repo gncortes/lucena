@@ -5,6 +5,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/featured.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
 
 /// Os textos e os ícones dos finais em destaque. Um conceito, um ícone, em
@@ -38,7 +39,7 @@ abstract final class FeaturedLabels {
 
   /// O nome do país por extenso. Código sem nome volta como veio.
   static String country(AppLocalizations l10n, String code) =>
-      l10n.featuredCountry(code);
+      Countries.name(l10n, code);
 
   static String players(AppLocalizations l10n, FeaturedEndgame endgame) =>
       l10n.featuredPlayers(endgame.white.name, endgame.black.name);

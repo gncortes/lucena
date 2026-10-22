@@ -77,6 +77,41 @@ void main() {
     expect(await reopen((repository) => repository.load()), profile);
   });
 
+  test('o estado e a cidade voltam ao reabrir', () async {
+    const profile = UserProfile(country: 'BR', state: 'PR', city: 'Curitiba');
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o perfil da versão 11 volta sem estado nem cidade', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, goal TEXT NULL, level_source '
+              'TEXT NULL, lichess_user TEXT NULL, chess_com_user TEXT NULL, '
+              'avatar_color INTEGER NOT NULL DEFAULT 0, google_photo INTEGER '
+              'NOT NULL DEFAULT 0, country TEXT NULL, PRIMARY KEY (id))',
+            )
+            ..execute(
+              'INSERT INTO profiles (id, nickname, rating, country) '
+              "VALUES (1, 'Ana', 1712, 'BR')",
+            )
+            ..execute('PRAGMA user_version = 11');
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    expect(
+      await LocalProfileRepository(database).load(),
+      const UserProfile(nickname: 'Ana', rating: 1712, country: 'BR'),
+    );
+  });
+
   test('o perfil da versão 10 volta com o avatar padrão e sem país', () async {
     final database = AppDatabase(
       NativeDatabase.memory(

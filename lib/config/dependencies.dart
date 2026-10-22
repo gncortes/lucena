@@ -113,6 +113,7 @@ import '../data/services/chesscom_service.dart';
 import '../data/services/lichess_service.dart';
 import '../data/services/secure_storage_service.dart';
 import '../data/repositories/alerts/alerts_repository.dart';
+import '../data/repositories/alerts/region_prompt_repository.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
@@ -195,6 +196,7 @@ class Dependencies {
     required this.activityRepository,
     required this.dailyFinalRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
+    this.regionPromptRepository = const NoRegionPromptRepository(),
     this.syncRepository = const NoSyncRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
     this.localChanges = const Stream.empty(),
@@ -300,6 +302,7 @@ class Dependencies {
         preferences,
       ),
       alertsRepository: LocalAlertsRepository(preferences),
+      regionPromptRepository: LocalRegionPromptRepository(preferences),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
@@ -451,6 +454,9 @@ class Dependencies {
   final FeaturedRepository featuredRepository;
   final FeaturedProgressRepository featuredProgressRepository;
   final FeaturedAlertsRepository featuredAlertsRepository;
+
+  /// A folha de estado e cidade, uma vez só (E1.21).
+  final RegionPromptRepository regionPromptRepository;
 
   /// Os dias com atividade, para a sequência (E1.22).
   final ActivityRepository activityRepository;

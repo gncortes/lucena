@@ -117,6 +117,24 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _stateMeta = const VerificationMeta('state');
+  @override
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
+    'state',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cityMeta = const VerificationMeta('city');
+  @override
+  late final GeneratedColumn<String> city = GeneratedColumn<String>(
+    'city',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -129,6 +147,8 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     avatarColor,
     googlePhoto,
     country,
+    state,
+    city,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -218,6 +238,18 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         country.isAcceptableOrUnknown(data['country']!, _countryMeta),
       );
     }
+    if (data.containsKey('state')) {
+      context.handle(
+        _stateMeta,
+        state.isAcceptableOrUnknown(data['state']!, _stateMeta),
+      );
+    }
+    if (data.containsKey('city')) {
+      context.handle(
+        _cityMeta,
+        city.isAcceptableOrUnknown(data['city']!, _cityMeta),
+      );
+    }
     return context;
   }
 
@@ -267,6 +299,14 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         DriftSqlType.string,
         data['${effectivePrefix}country'],
       ),
+      state: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state'],
+      ),
+      city: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}city'],
+      ),
     );
   }
 
@@ -294,6 +334,10 @@ class Profile extends DataClass implements Insertable<Profile> {
   final int avatarColor;
   final bool googlePhoto;
   final String? country;
+
+  /// O estado e a cidade (E1.21). Desde a versão 12.
+  final String? state;
+  final String? city;
   const Profile({
     required this.id,
     required this.nickname,
@@ -305,6 +349,8 @@ class Profile extends DataClass implements Insertable<Profile> {
     required this.avatarColor,
     required this.googlePhoto,
     this.country,
+    this.state,
+    this.city,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -329,6 +375,12 @@ class Profile extends DataClass implements Insertable<Profile> {
     if (!nullToAbsent || country != null) {
       map['country'] = Variable<String>(country);
     }
+    if (!nullToAbsent || state != null) {
+      map['state'] = Variable<String>(state);
+    }
+    if (!nullToAbsent || city != null) {
+      map['city'] = Variable<String>(city);
+    }
     return map;
   }
 
@@ -352,6 +404,10 @@ class Profile extends DataClass implements Insertable<Profile> {
       country: country == null && nullToAbsent
           ? const Value.absent()
           : Value(country),
+      state: state == null && nullToAbsent
+          ? const Value.absent()
+          : Value(state),
+      city: city == null && nullToAbsent ? const Value.absent() : Value(city),
     );
   }
 
@@ -371,6 +427,8 @@ class Profile extends DataClass implements Insertable<Profile> {
       avatarColor: serializer.fromJson<int>(json['avatarColor']),
       googlePhoto: serializer.fromJson<bool>(json['googlePhoto']),
       country: serializer.fromJson<String?>(json['country']),
+      state: serializer.fromJson<String?>(json['state']),
+      city: serializer.fromJson<String?>(json['city']),
     );
   }
   @override
@@ -387,6 +445,8 @@ class Profile extends DataClass implements Insertable<Profile> {
       'avatarColor': serializer.toJson<int>(avatarColor),
       'googlePhoto': serializer.toJson<bool>(googlePhoto),
       'country': serializer.toJson<String?>(country),
+      'state': serializer.toJson<String?>(state),
+      'city': serializer.toJson<String?>(city),
     };
   }
 
@@ -401,6 +461,8 @@ class Profile extends DataClass implements Insertable<Profile> {
     int? avatarColor,
     bool? googlePhoto,
     Value<String?> country = const Value.absent(),
+    Value<String?> state = const Value.absent(),
+    Value<String?> city = const Value.absent(),
   }) => Profile(
     id: id ?? this.id,
     nickname: nickname ?? this.nickname,
@@ -412,6 +474,8 @@ class Profile extends DataClass implements Insertable<Profile> {
     avatarColor: avatarColor ?? this.avatarColor,
     googlePhoto: googlePhoto ?? this.googlePhoto,
     country: country.present ? country.value : this.country,
+    state: state.present ? state.value : this.state,
+    city: city.present ? city.value : this.city,
   );
   Profile copyWithCompanion(ProfilesCompanion data) {
     return Profile(
@@ -435,6 +499,8 @@ class Profile extends DataClass implements Insertable<Profile> {
           ? data.googlePhoto.value
           : this.googlePhoto,
       country: data.country.present ? data.country.value : this.country,
+      state: data.state.present ? data.state.value : this.state,
+      city: data.city.present ? data.city.value : this.city,
     );
   }
 
@@ -450,7 +516,9 @@ class Profile extends DataClass implements Insertable<Profile> {
           ..write('chessComUser: $chessComUser, ')
           ..write('avatarColor: $avatarColor, ')
           ..write('googlePhoto: $googlePhoto, ')
-          ..write('country: $country')
+          ..write('country: $country, ')
+          ..write('state: $state, ')
+          ..write('city: $city')
           ..write(')'))
         .toString();
   }
@@ -467,6 +535,8 @@ class Profile extends DataClass implements Insertable<Profile> {
     avatarColor,
     googlePhoto,
     country,
+    state,
+    city,
   );
   @override
   bool operator ==(Object other) =>
@@ -481,7 +551,9 @@ class Profile extends DataClass implements Insertable<Profile> {
           other.chessComUser == this.chessComUser &&
           other.avatarColor == this.avatarColor &&
           other.googlePhoto == this.googlePhoto &&
-          other.country == this.country);
+          other.country == this.country &&
+          other.state == this.state &&
+          other.city == this.city);
 }
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
@@ -495,6 +567,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<int> avatarColor;
   final Value<bool> googlePhoto;
   final Value<String?> country;
+  final Value<String?> state;
+  final Value<String?> city;
   const ProfilesCompanion({
     this.id = const Value.absent(),
     this.nickname = const Value.absent(),
@@ -506,6 +580,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     this.avatarColor = const Value.absent(),
     this.googlePhoto = const Value.absent(),
     this.country = const Value.absent(),
+    this.state = const Value.absent(),
+    this.city = const Value.absent(),
   });
   ProfilesCompanion.insert({
     this.id = const Value.absent(),
@@ -518,6 +594,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     this.avatarColor = const Value.absent(),
     this.googlePhoto = const Value.absent(),
     this.country = const Value.absent(),
+    this.state = const Value.absent(),
+    this.city = const Value.absent(),
   }) : nickname = Value(nickname),
        rating = Value(rating);
   static Insertable<Profile> custom({
@@ -531,6 +609,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Expression<int>? avatarColor,
     Expression<bool>? googlePhoto,
     Expression<String>? country,
+    Expression<String>? state,
+    Expression<String>? city,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -543,6 +623,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       if (avatarColor != null) 'avatar_color': avatarColor,
       if (googlePhoto != null) 'google_photo': googlePhoto,
       if (country != null) 'country': country,
+      if (state != null) 'state': state,
+      if (city != null) 'city': city,
     });
   }
 
@@ -557,6 +639,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Value<int>? avatarColor,
     Value<bool>? googlePhoto,
     Value<String?>? country,
+    Value<String?>? state,
+    Value<String?>? city,
   }) {
     return ProfilesCompanion(
       id: id ?? this.id,
@@ -569,6 +653,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       avatarColor: avatarColor ?? this.avatarColor,
       googlePhoto: googlePhoto ?? this.googlePhoto,
       country: country ?? this.country,
+      state: state ?? this.state,
+      city: city ?? this.city,
     );
   }
 
@@ -605,6 +691,12 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     if (country.present) {
       map['country'] = Variable<String>(country.value);
     }
+    if (state.present) {
+      map['state'] = Variable<String>(state.value);
+    }
+    if (city.present) {
+      map['city'] = Variable<String>(city.value);
+    }
     return map;
   }
 
@@ -620,7 +712,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
           ..write('chessComUser: $chessComUser, ')
           ..write('avatarColor: $avatarColor, ')
           ..write('googlePhoto: $googlePhoto, ')
-          ..write('country: $country')
+          ..write('country: $country, ')
+          ..write('state: $state, ')
+          ..write('city: $city')
           ..write(')'))
         .toString();
   }
@@ -2927,6 +3021,8 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   Value<int> avatarColor,
   Value<bool> googlePhoto,
   Value<String?> country,
+  Value<String?> state,
+  Value<String?> city,
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<int> id,
@@ -2939,6 +3035,8 @@ typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<int> avatarColor,
   Value<bool> googlePhoto,
   Value<String?> country,
+  Value<String?> state,
+  Value<String?> city,
 });
 
 class $$ProfilesTableFilterComposer
@@ -2997,6 +3095,16 @@ class $$ProfilesTableFilterComposer
 
   ColumnFilters<String> get country => $composableBuilder(
     column: $table.country,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get city => $composableBuilder(
+    column: $table.city,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3059,6 +3167,16 @@ class $$ProfilesTableOrderingComposer
     column: $table.country,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get state => $composableBuilder(
+    column: $table.state,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get city => $composableBuilder(
+    column: $table.city,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProfilesTableAnnotationComposer
@@ -3109,6 +3227,12 @@ class $$ProfilesTableAnnotationComposer
 
   GeneratedColumn<String> get country =>
       $composableBuilder(column: $table.country, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+
+  GeneratedColumn<String> get city =>
+      $composableBuilder(column: $table.city, builder: (column) => column);
 }
 
 class $$ProfilesTableTableManager
@@ -3149,6 +3273,8 @@ class $$ProfilesTableTableManager
                 Value<int> avatarColor = const Value.absent(),
                 Value<bool> googlePhoto = const Value.absent(),
                 Value<String?> country = const Value.absent(),
+                Value<String?> state = const Value.absent(),
+                Value<String?> city = const Value.absent(),
               }) => ProfilesCompanion(
                 id: id,
                 nickname: nickname,
@@ -3160,6 +3286,8 @@ class $$ProfilesTableTableManager
                 avatarColor: avatarColor,
                 googlePhoto: googlePhoto,
                 country: country,
+                state: state,
+                city: city,
               ),
           createCompanionCallback:
               ({
@@ -3173,6 +3301,8 @@ class $$ProfilesTableTableManager
                 Value<int> avatarColor = const Value.absent(),
                 Value<bool> googlePhoto = const Value.absent(),
                 Value<String?> country = const Value.absent(),
+                Value<String?> state = const Value.absent(),
+                Value<String?> city = const Value.absent(),
               }) => ProfilesCompanion.insert(
                 id: id,
                 nickname: nickname,
@@ -3184,6 +3314,8 @@ class $$ProfilesTableTableManager
                 avatarColor: avatarColor,
                 googlePhoto: googlePhoto,
                 country: country,
+                state: state,
+                city: city,
               ),
           withReferenceMapper: (p0) => p0
               .map(

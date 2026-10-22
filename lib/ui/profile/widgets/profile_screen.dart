@@ -24,6 +24,7 @@ import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_sheet.dart';
 import '../../goal/widgets/goal_ui.dart';
+import '../../region/widgets/region_sheet.dart';
 import '../view_models/profile_account_cubit.dart';
 import '../view_models/profile_cubit.dart';
 import 'account_delete_dialog.dart';
@@ -166,7 +167,26 @@ class _ProfileView extends StatelessWidget {
                   key: ProfileKeys.rowCountry,
                   icon: Icons.public,
                   title: l10n.profileCountry,
-                  value: profileCountryName(l10n, profile?.country),
+                  value: profileCountryValue(
+                    l10n,
+                    profile?.country,
+                    phone: context.read<ProfileCubit>().phoneCountry,
+                  ),
+                  onTap: () => context.push(Routes.country),
+                ),
+                ProfileRow(
+                  key: ProfileKeys.rowRegion,
+                  icon: Icons.location_on,
+                  title: l10n.profileRegion,
+                  value:
+                      regionLabel(
+                        l10n,
+                        country: profile?.country,
+                        state: profile?.state,
+                        city: profile?.city,
+                      ) ??
+                      l10n.profileRegionNone,
+                  onTap: () => showRegionSheet(context),
                 ),
               ],
             ),

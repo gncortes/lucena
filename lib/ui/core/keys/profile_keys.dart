@@ -16,6 +16,7 @@ abstract final class ProfileKeys {
   static const syncCard = Key('profile.syncCard');
 
   static const rowCountry = Key('profile.rowCountry');
+  static const rowRegion = Key('profile.rowRegion');
   static const rowLanguage = Key('profile.rowLanguage');
 
   /// A linha "Seu objetivo", que abre a folha do objetivo.

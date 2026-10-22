@@ -77,6 +77,8 @@ class ProgressSummary {
       'avatarColor': profile.avatarColor,
       'googlePhoto': profile.googlePhoto,
       'country': ?profile.country,
+      'state': ?profile.state,
+      'city': ?profile.city,
     },
     if (rating case final rating?)
       'rating': {
@@ -115,6 +117,8 @@ class ProgressSummary {
         avatarColor: _int(profile['avatarColor']) ?? 0,
         googlePhoto: profile['googlePhoto'] == true,
         country: profile['country'] as String?,
+        state: profile['state'] as String?,
+        city: profile['city'] as String?,
       ),
       rating: rating['rating'] is num
           ? PlayerRating(

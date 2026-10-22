@@ -125,4 +125,17 @@ void main() {
     expect(find.byKey(AlertsKeys.offBanner), findsNothing);
     expect(find.text('08:05'), findsOneWidget);
   });
+
+  testWidgets('a linha da região mostra o país e o estado', (tester) async {
+    await pump(tester);
+
+    expect(
+      find.descendant(
+        of: find.byKey(AlertsKeys.region),
+        matching: find.textContaining('Brasil'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Mudar'), findsOneWidget);
+  });
 }

@@ -26,11 +26,12 @@ void main() {
   });
 
   group('FeaturedCatalogCubit', () {
-    FeaturedCatalogCubit newCatalog() {
+    FeaturedCatalogCubit newCatalog({String? country}) {
       final cubit = FeaturedCatalogCubit(
         featured: repository,
         progress: progress,
         now: now,
+        country: country,
       );
       addTearDown(cubit.close);
       return cubit;
@@ -69,6 +70,23 @@ void main() {
       cubit.setOrigin(null);
       cubit.setCountry(null);
       expect(cubit.state.filter.isActive, isFalse);
+    });
+
+    test('abre filtrada pelo país do perfil, se houver final de lá', () async {
+      final cubit = newCatalog(country: 'US');
+      await cubit.load();
+      expect(cubit.state.filter.country, 'US');
+      expect([for (final i in cubit.state.items) i.id], ['a']);
+      cubit.setCountry(null);
+      await cubit.load();
+      expect(cubit.state.filter.isActive, isFalse);
+    });
+
+    test('sem final do país do perfil, abre com todos', () async {
+      final cubit = newCatalog(country: 'BR');
+      await cubit.load();
+      expect(cubit.state.filter.isActive, isFalse);
+      expect(cubit.state.items, hasLength(3));
     });
 
     test('os jogados vão para o fim', () async {

@@ -31,6 +31,8 @@ class LocalProfileRepository implements ProfileRepository {
       avatarColor: row.avatarColor,
       googlePhoto: row.googlePhoto,
       country: row.country,
+      state: row.state,
+      city: row.city,
     );
   }
 
@@ -50,6 +52,8 @@ class LocalProfileRepository implements ProfileRepository {
             avatarColor: Value(profile.avatarColor),
             googlePhoto: Value(profile.googlePhoto),
             country: Value(profile.country),
+            state: Value(profile.state),
+            city: Value(profile.city),
           ),
         );
   }

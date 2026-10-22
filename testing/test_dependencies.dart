@@ -28,6 +28,7 @@ import 'fakes/fake_alerts_repository.dart';
 import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 
@@ -155,6 +156,7 @@ Dependencies testDependencies({
   FeaturedRepository? featuredRepository,
   FeaturedProgressRepository? featuredProgressRepository,
   FeaturedAlertsRepository? featuredAlertsRepository,
+  RegionPromptRepository? regionPromptRepository,
   ActivityRepository? activityRepository,
   DailyFinalRepository? dailyFinalRepository,
   SyncRepository? syncRepository,
@@ -232,6 +234,8 @@ Dependencies testDependencies({
         featuredProgressRepository ?? FakeFeaturedProgressRepository(),
     featuredAlertsRepository:
         featuredAlertsRepository ?? const NoFeaturedAlertsRepository(),
+    regionPromptRepository:
+        regionPromptRepository ?? const NoRegionPromptRepository(),
     activityRepository:
         activityRepository ?? FakeActivityRepository(now: clock),
     dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),

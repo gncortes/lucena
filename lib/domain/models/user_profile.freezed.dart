@@ -26,9 +26,13 @@ mixin _$UserProfile {
  String? get lichessUser;/// O usuário do Chess.com informado em "Seu nível".
  String? get chessComUser;/// A cor do avatar (índice em [avatarColors]), com a inicial do nome.
  int get avatarColor;/// O avatar é a foto da conta do Google, no lugar da inicial.
- bool get googlePhoto;/// O país (código ISO, como `BR`): vem da região do celular, sem
-/// seletor. Nulo: o celular não informou.
- String? get country;
+ bool get googlePhoto;/// O país (código ISO, como `BR`): vem da região do celular e a pessoa
+/// troca em "Seu país". Nulo: o celular não informou.
+ String? get country;/// O estado, opcional (E1.21). No Brasil é a sigla (`PR`), que também
+/// escolhe o tópico de torneios; nos outros países, o que a pessoa
+/// escreveu.
+ String? get state;/// A cidade, opcional, como a pessoa escreveu.
+ String? get city;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -40,20 +44,20 @@ $UserProfileCopyWith<UserProfile> get copyWith => _$UserProfileCopyWithImpl<User
 @override
 bool operator ==(Object other) {
   final _this = this as UserProfile;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.nickname, _this.nickname) || other.nickname == _this.nickname)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.levelSource, _this.levelSource) || other.levelSource == _this.levelSource)&&(identical(other.lichessUser, _this.lichessUser) || other.lichessUser == _this.lichessUser)&&(identical(other.chessComUser, _this.chessComUser) || other.chessComUser == _this.chessComUser)&&(identical(other.avatarColor, _this.avatarColor) || other.avatarColor == _this.avatarColor)&&(identical(other.googlePhoto, _this.googlePhoto) || other.googlePhoto == _this.googlePhoto)&&(identical(other.country, _this.country) || other.country == _this.country));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.nickname, _this.nickname) || other.nickname == _this.nickname)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.levelSource, _this.levelSource) || other.levelSource == _this.levelSource)&&(identical(other.lichessUser, _this.lichessUser) || other.lichessUser == _this.lichessUser)&&(identical(other.chessComUser, _this.chessComUser) || other.chessComUser == _this.chessComUser)&&(identical(other.avatarColor, _this.avatarColor) || other.avatarColor == _this.avatarColor)&&(identical(other.googlePhoto, _this.googlePhoto) || other.googlePhoto == _this.googlePhoto)&&(identical(other.country, _this.country) || other.country == _this.country)&&(identical(other.state, _this.state) || other.state == _this.state)&&(identical(other.city, _this.city) || other.city == _this.city));
 }
 
 
 @override
 int get hashCode {
   final _this = this as UserProfile;
-  return Object.hash(runtimeType,_this.nickname,_this.rating,_this.goal,_this.levelSource,_this.lichessUser,_this.chessComUser,_this.avatarColor,_this.googlePhoto,_this.country);
+  return Object.hash(runtimeType,_this.nickname,_this.rating,_this.goal,_this.levelSource,_this.lichessUser,_this.chessComUser,_this.avatarColor,_this.googlePhoto,_this.country,_this.state,_this.city);
 }
 
 @override
 String toString() {
   final _this = this as UserProfile;
-  return 'UserProfile(nickname: ${_this.nickname}, rating: ${_this.rating}, goal: ${_this.goal}, levelSource: ${_this.levelSource}, lichessUser: ${_this.lichessUser}, chessComUser: ${_this.chessComUser}, avatarColor: ${_this.avatarColor}, googlePhoto: ${_this.googlePhoto}, country: ${_this.country})';
+  return 'UserProfile(nickname: ${_this.nickname}, rating: ${_this.rating}, goal: ${_this.goal}, levelSource: ${_this.levelSource}, lichessUser: ${_this.lichessUser}, chessComUser: ${_this.chessComUser}, avatarColor: ${_this.avatarColor}, googlePhoto: ${_this.googlePhoto}, country: ${_this.country}, state: ${_this.state}, city: ${_this.city})';
 }
 
 
@@ -64,7 +68,7 @@ abstract mixin class $UserProfileCopyWith<$Res>  {
   factory $UserProfileCopyWith(UserProfile value, $Res Function(UserProfile) _then) = _$UserProfileCopyWithImpl;
 @useResult
 $Res call({
- String nickname, int rating, GoalPreference? goal, LevelSource? levelSource, String? lichessUser, String? chessComUser, int avatarColor, bool googlePhoto, String? country
+ String nickname, int rating, GoalPreference? goal, LevelSource? levelSource, String? lichessUser, String? chessComUser, int avatarColor, bool googlePhoto, String? country, String? state, String? city
 });
 
 
@@ -81,7 +85,7 @@ class _$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? nickname = null,Object? rating = null,Object? goal = freezed,Object? levelSource = freezed,Object? lichessUser = freezed,Object? chessComUser = freezed,Object? avatarColor = null,Object? googlePhoto = null,Object? country = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? nickname = null,Object? rating = null,Object? goal = freezed,Object? levelSource = freezed,Object? lichessUser = freezed,Object? chessComUser = freezed,Object? avatarColor = null,Object? googlePhoto = null,Object? country = freezed,Object? state = freezed,Object? city = freezed,}) {
   return _then(UserProfile(
 nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
@@ -92,6 +96,8 @@ as String?,chessComUser: freezed == chessComUser ? _self.chessComUser : chessCom
 as String?,avatarColor: null == avatarColor ? _self.avatarColor : avatarColor // ignore: cast_nullable_to_non_nullable
 as int,googlePhoto: null == googlePhoto ? _self.googlePhoto : googlePhoto // ignore: cast_nullable_to_non_nullable
 as bool,country: freezed == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as String?,state: freezed == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
+as String?,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -177,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String nickname,  int rating,  GoalPreference? goal,  LevelSource? levelSource,  String? lichessUser,  String? chessComUser,  int avatarColor,  bool googlePhoto,  String? country)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String nickname,  int rating,  GoalPreference? goal,  LevelSource? levelSource,  String? lichessUser,  String? chessComUser,  int avatarColor,  bool googlePhoto,  String? country,  String? state,  String? city)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.lichessUser,_that.chessComUser,_that.avatarColor,_that.googlePhoto,_that.country);case _:
+return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.lichessUser,_that.chessComUser,_that.avatarColor,_that.googlePhoto,_that.country,_that.state,_that.city);case _:
   return orElse();
 
 }
@@ -198,10 +204,10 @@ return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.l
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String nickname,  int rating,  GoalPreference? goal,  LevelSource? levelSource,  String? lichessUser,  String? chessComUser,  int avatarColor,  bool googlePhoto,  String? country)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String nickname,  int rating,  GoalPreference? goal,  LevelSource? levelSource,  String? lichessUser,  String? chessComUser,  int avatarColor,  bool googlePhoto,  String? country,  String? state,  String? city)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile():
-return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.lichessUser,_that.chessComUser,_that.avatarColor,_that.googlePhoto,_that.country);case _:
+return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.lichessUser,_that.chessComUser,_that.avatarColor,_that.googlePhoto,_that.country,_that.state,_that.city);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -218,10 +224,10 @@ return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.l
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String nickname,  int rating,  GoalPreference? goal,  LevelSource? levelSource,  String? lichessUser,  String? chessComUser,  int avatarColor,  bool googlePhoto,  String? country)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String nickname,  int rating,  GoalPreference? goal,  LevelSource? levelSource,  String? lichessUser,  String? chessComUser,  int avatarColor,  bool googlePhoto,  String? country,  String? state,  String? city)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.lichessUser,_that.chessComUser,_that.avatarColor,_that.googlePhoto,_that.country);case _:
+return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.lichessUser,_that.chessComUser,_that.avatarColor,_that.googlePhoto,_that.country,_that.state,_that.city);case _:
   return null;
 
 }
@@ -233,7 +239,7 @@ return $default(_that.nickname,_that.rating,_that.goal,_that.levelSource,_that.l
 
 
 class _UserProfile extends UserProfile {
-  const _UserProfile({this.nickname = '', this.rating = UserProfile.defaultRating, this.goal, this.levelSource, this.lichessUser, this.chessComUser, this.avatarColor = 0, this.googlePhoto = false, this.country}): super._();
+  const _UserProfile({this.nickname = '', this.rating = UserProfile.defaultRating, this.goal, this.levelSource, this.lichessUser, this.chessComUser, this.avatarColor = 0, this.googlePhoto = false, this.country, this.state, this.city}): super._();
   
 
 /// Apelido escolhido. Vazio usa o apelido padrão, traduzido na tela.
@@ -255,9 +261,15 @@ class _UserProfile extends UserProfile {
 @override@JsonKey() final  int avatarColor;
 /// O avatar é a foto da conta do Google, no lugar da inicial.
 @override@JsonKey() final  bool googlePhoto;
-/// O país (código ISO, como `BR`): vem da região do celular, sem
-/// seletor. Nulo: o celular não informou.
+/// O país (código ISO, como `BR`): vem da região do celular e a pessoa
+/// troca em "Seu país". Nulo: o celular não informou.
 @override final  String? country;
+/// O estado, opcional (E1.21). No Brasil é a sigla (`PR`), que também
+/// escolhe o tópico de torneios; nos outros países, o que a pessoa
+/// escreveu.
+@override final  String? state;
+/// A cidade, opcional, como a pessoa escreveu.
+@override final  String? city;
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -269,18 +281,18 @@ _$UserProfileCopyWith<_UserProfile> get copyWith => __$UserProfileCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.levelSource, levelSource) || other.levelSource == levelSource)&&(identical(other.lichessUser, lichessUser) || other.lichessUser == lichessUser)&&(identical(other.chessComUser, chessComUser) || other.chessComUser == chessComUser)&&(identical(other.avatarColor, avatarColor) || other.avatarColor == avatarColor)&&(identical(other.googlePhoto, googlePhoto) || other.googlePhoto == googlePhoto)&&(identical(other.country, country) || other.country == country));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.levelSource, levelSource) || other.levelSource == levelSource)&&(identical(other.lichessUser, lichessUser) || other.lichessUser == lichessUser)&&(identical(other.chessComUser, chessComUser) || other.chessComUser == chessComUser)&&(identical(other.avatarColor, avatarColor) || other.avatarColor == avatarColor)&&(identical(other.googlePhoto, googlePhoto) || other.googlePhoto == googlePhoto)&&(identical(other.country, country) || other.country == country)&&(identical(other.state, state) || other.state == state)&&(identical(other.city, city) || other.city == city));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,nickname,rating,goal,levelSource,lichessUser,chessComUser,avatarColor,googlePhoto,country);
+    return Object.hash(runtimeType,nickname,rating,goal,levelSource,lichessUser,chessComUser,avatarColor,googlePhoto,country,state,city);
 }
 
 @override
 String toString() {
-    return 'UserProfile(nickname: $nickname, rating: $rating, goal: $goal, levelSource: $levelSource, lichessUser: $lichessUser, chessComUser: $chessComUser, avatarColor: $avatarColor, googlePhoto: $googlePhoto, country: $country)';
+    return 'UserProfile(nickname: $nickname, rating: $rating, goal: $goal, levelSource: $levelSource, lichessUser: $lichessUser, chessComUser: $chessComUser, avatarColor: $avatarColor, googlePhoto: $googlePhoto, country: $country, state: $state, city: $city)';
 }
 
 
@@ -291,7 +303,7 @@ abstract mixin class _$UserProfileCopyWith<$Res> implements $UserProfileCopyWith
   factory _$UserProfileCopyWith(_UserProfile value, $Res Function(_UserProfile) _then) = __$UserProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String nickname, int rating, GoalPreference? goal, LevelSource? levelSource, String? lichessUser, String? chessComUser, int avatarColor, bool googlePhoto, String? country
+ String nickname, int rating, GoalPreference? goal, LevelSource? levelSource, String? lichessUser, String? chessComUser, int avatarColor, bool googlePhoto, String? country, String? state, String? city
 });
 
 
@@ -308,7 +320,7 @@ class __$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? nickname = null,Object? rating = null,Object? goal = freezed,Object? levelSource = freezed,Object? lichessUser = freezed,Object? chessComUser = freezed,Object? avatarColor = null,Object? googlePhoto = null,Object? country = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? nickname = null,Object? rating = null,Object? goal = freezed,Object? levelSource = freezed,Object? lichessUser = freezed,Object? chessComUser = freezed,Object? avatarColor = null,Object? googlePhoto = null,Object? country = freezed,Object? state = freezed,Object? city = freezed,}) {
   return _then(_UserProfile(
 nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
@@ -319,6 +331,8 @@ as String?,chessComUser: freezed == chessComUser ? _self.chessComUser : chessCom
 as String?,avatarColor: null == avatarColor ? _self.avatarColor : avatarColor // ignore: cast_nullable_to_non_nullable
 as int,googlePhoto: null == googlePhoto ? _self.googlePhoto : googlePhoto // ignore: cast_nullable_to_non_nullable
 as bool,country: freezed == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as String?,state: freezed == state ? _self.state : state // ignore: cast_nullable_to_non_nullable
+as String?,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

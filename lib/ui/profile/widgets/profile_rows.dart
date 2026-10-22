@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/app_language.dart';
+import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -51,7 +52,22 @@ class ProfileRow extends StatelessWidget {
 
 /// O nome do país [code] (região do celular), ou "Não informado".
 String profileCountryName(AppLocalizations l10n, String? code) =>
-    code == null ? l10n.profileCountryNone : l10n.featuredCountry(code);
+    code == null ? l10n.profileCountryNone : Countries.name(l10n, code);
+
+/// A bandeira e o nome do país [code], com "· veio do celular" quando é o
+/// da região do celular ([phone]); ou "Não informado".
+String profileCountryValue(
+  AppLocalizations l10n,
+  String? code, {
+  String? phone,
+}) {
+  if (code == null) return l10n.profileCountryNone;
+  final name = l10n.profileCountryValue(
+    Countries.flag(code),
+    Countries.name(l10n, code),
+  );
+  return code == phone ? l10n.accountCountryFromPhone(name) : name;
+}
 
 /// O idioma escolhido nas Configurações, no próprio idioma.
 String profileLanguageName(BuildContext context) {

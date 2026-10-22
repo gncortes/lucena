@@ -86,6 +86,31 @@ void main() {
     expect(profile.country, 'BR');
   });
 
+  test('estado e cidade da conta só valem no mesmo país', () {
+    const account = ProgressSummary(
+      profile: UserProfile(country: 'BR', state: 'PR', city: 'Curitiba'),
+    );
+    const sameCountry = ProgressSummary(profile: UserProfile(country: 'BR'));
+    const otherCountry = ProgressSummary(profile: UserProfile(country: 'PT'));
+
+    final same = ProgressMerge.merge(sameCountry, account).profile;
+    expect((same.state, same.city), ('PR', 'Curitiba'));
+    final other = ProgressMerge.merge(otherCountry, account).profile;
+    expect((other.country, other.state, other.city), ('PT', null, null));
+  });
+
+  test('o estado e a cidade vão e voltam pelo JSON; sem eles, nulos', () {
+    const summary = ProgressSummary(
+      profile: UserProfile(country: 'BR', state: 'PR', city: 'Curitiba'),
+    );
+    expect(ProgressSummary.fromJson(summary.toJson()).profile, summary.profile);
+    final old = ProgressSummary.fromJson(
+      const ProgressSummary(profile: UserProfile(country: 'BR')).toJson()
+        ..['profile'] = {'country': 'BR'},
+    );
+    expect(old.profile.state, isNull);
+  });
+
   test('só no aparelho ou só na conta: fica o que existe', () {
     const empty = ProgressSummary();
     expect(ProgressMerge.merge(local, empty).toJson(), local.toJson());

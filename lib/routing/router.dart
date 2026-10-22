@@ -168,9 +168,11 @@ import '../ui/speedrun/widgets/speedrun_history_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
+import '../ui/profile/view_models/profile_cubit.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
 import '../ui/alerts/widgets/alerts_screen.dart';
+import '../ui/region/widgets/country_screen.dart';
 import '../ui/settings/widgets/about_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/settings_tiles.dart';
@@ -1131,6 +1133,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 featured: context.read<FeaturedRepository>(),
                 progress: context.read<FeaturedProgressRepository>(),
                 now: context.read<Now>(),
+                country: context.read<ProfileCubit>().state?.country,
               )..load(),
               child: const FeaturedListScreen(),
             ),
@@ -1278,6 +1281,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     ..load(),
               child: const CustomPositionScreen(),
             ),
+          ),
+          _route(
+            path: 'country',
+            builder: (context, state) => const CountryScreen(),
           ),
           _route(
             path: 'rating',

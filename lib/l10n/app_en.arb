@@ -8213,5 +8213,115 @@
   "weekSeeStreak": "See the streak",
   "@weekSeeStreak": {
     "description": "Week screen button."
+  },
+  "profileRegion": "State and city",
+  "@profileRegion": {
+    "description": "Profile row: the optional state and city."
+  },
+  "profileRegionValue": "{state} · {city}",
+  "@profileRegionValue": {
+    "description": "Profile row value with state and city.",
+    "placeholders": {
+      "state": {
+        "type": "String"
+      },
+      "city": {
+        "type": "String"
+      }
+    }
+  },
+  "alertsRegionLabel": "Tournaments in your region:",
+  "@alertsRegionLabel": {
+    "description": "Alerts screen: before the country and state, in bold."
+  },
+  "alertsRegionChange": "Change",
+  "@alertsRegionChange": {
+    "description": "Alerts screen: opens the country picker."
+  },
+  "regionSheetTitle": "Want to see tournaments near you?",
+  "@regionSheetTitle": {
+    "description": "Region sheet title, shown once on the tournament endgames list."
+  },
+  "regionSheetText": "I will show endgames from your state and city first, and let you know when a new one comes out nearby. It is optional.",
+  "@regionSheetText": {
+    "description": "Region sheet text."
+  },
+  "regionState": "State",
+  "@regionState": {
+    "description": "Region sheet field."
+  },
+  "regionCity": "City (optional)",
+  "@regionCity": {
+    "description": "Region sheet field."
+  },
+  "regionCountryNote": "Country: {country}, from your phone. It stays on this device only; with an account, it goes with it.",
+  "@regionCountryNote": {
+    "description": "Region sheet note.",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "regionCountryNoteChosen": "Country: {country}. It stays on this device only; with an account, it goes with it.",
+  "@regionCountryNoteChosen": {
+    "description": "Region sheet note when the country was picked, not from the phone.",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "regionSave": "Save",
+  "@regionSave": {
+    "description": "Region sheet button."
+  },
+  "regionNotNow": "Not now",
+  "@regionNotNow": {
+    "description": "Region sheet button: closes and never asks again."
+  },
+  "countryTitle": "Your country",
+  "@countryTitle": {
+    "description": "Country picker title."
+  },
+  "countrySearch": "Search country",
+  "@countrySearch": {
+    "description": "Country picker search label."
+  },
+  "countrySearchHint": "E.g. Portugal",
+  "@countrySearchHint": {
+    "description": "Country picker search hint."
+  },
+  "countryFromPhone": "From your phone",
+  "@countryFromPhone": {
+    "description": "Country picker section: the phone country."
+  },
+  "countryFromPhoneNote": "Picked from your phone language and region",
+  "@countryFromPhoneNote": {
+    "description": "Country picker: under the phone country."
+  },
+  "countryAll": "All countries",
+  "@countryAll": {
+    "description": "Country picker section: every country in alphabetical order."
+  },
+  "countryNotFound": "No country with that name.",
+  "@countryNotFound": {
+    "description": "Country picker: the search found nothing."
+  },
+  "profileRegionNone": "Optional · to see tournaments near you",
+  "@profileRegionNone": {
+    "description": "Profile row value when there is no state or city."
+  },
+  "profileCountryValue": "{flag} {country}",
+  "@profileCountryValue": {
+    "description": "Profile row value: the flag emoji and the country name.",
+    "placeholders": {
+      "flag": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
   }
 }

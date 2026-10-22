@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/alert_settings.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/alerts_keys.dart';
+import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -12,6 +15,7 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../profile/widgets/profile_rows.dart';
+import '../../region/widgets/region_sheet.dart';
 import '../view_models/alerts_cubit.dart';
 
 /// Perfil > Avisos (canvas `PropV1RetencaoAvisos` e `AvisosOff`): o estado
@@ -124,6 +128,8 @@ class _AlertsScreenState extends State<AlertsScreen> {
             opacity: state.push && !state.permitted ? _muted : 1,
             child: ProfileRowGroup(children: switches),
           ),
+          if (state.push && state.country != null)
+            _RegionRow(country: state.country!, state: state.state),
           const SizedBox(height: AppSpacing.lg),
           ProfileRowGroup(
             children: [
@@ -151,6 +157,72 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   static const _muted = 0.5;
+}
+
+/// "Torneios da região: Brasil · Paraná" e "Mudar" (abre "Seu país").
+class _RegionRow extends StatelessWidget {
+  const _RegionRow({required this.country, required this.state});
+
+  final String country;
+  final String? state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final name = stateName(country: country, state: state);
+    final place = [Countries.name(l10n, country), ?name].join(' · ');
+    return InkWell(
+      key: AlertsKeys.region,
+      onTap: () => context.push(Routes.country),
+      borderRadius: BorderRadius.circular(AppShape.small),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.sm,
+          0,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.location_on,
+              size: AppIconSize.button,
+              color: colors.onSurfaceVariant,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text.rich(
+                TextSpan(
+                  text: '${l10n.alertsRegionLabel} ',
+                  children: [
+                    TextSpan(
+                      text: place,
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            Text(
+              l10n.alertsRegionChange,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _AlertSwitch extends StatelessWidget {

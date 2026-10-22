@@ -14,6 +14,12 @@ class ProfileCubit extends Cubit<UserProfile?> {
   final ProfileRepository _repository;
   final String? Function()? _region;
 
+  /// O país da região do celular, se ele informar.
+  String? get phoneCountry {
+    final region = _region?.call();
+    return region == null || region.isEmpty ? null : region.toUpperCase();
+  }
+
   Future<void> load() async {
     var profile = await _repository.load();
     final region = _region?.call();
@@ -34,6 +40,31 @@ class ProfileCubit extends Cubit<UserProfile?> {
       nickname: ProfileRules.cleanNickname(nickname),
       avatarColor: avatarColor.clamp(0, UserProfile.avatarColors - 1),
       googlePhoto: googlePhoto,
+    );
+    await _repository.save(profile);
+    emit(profile);
+  }
+
+  /// "Seu país": troca o país. Estado e cidade eram do país antigo e saem.
+  Future<void> setCountry(String country) async {
+    final current = await _repository.load();
+    final code = country.toUpperCase();
+    if (current.country == code) return emit(current);
+    final profile = current.copyWith(country: code, state: null, city: null);
+    await _repository.save(profile);
+    emit(profile);
+  }
+
+  /// A folha "Estado e cidade" (E1.21). Campo vazio apaga.
+  Future<void> setRegion({String? state, String? city}) async {
+    String? clean(String? text) {
+      final trimmed = text?.trim();
+      return trimmed == null || trimmed.isEmpty ? null : trimmed;
+    }
+
+    final profile = (await _repository.load()).copyWith(
+      state: clean(state),
+      city: clean(city),
     );
     await _repository.save(profile);
     emit(profile);

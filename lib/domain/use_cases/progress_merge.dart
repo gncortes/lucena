@@ -50,6 +50,8 @@ abstract final class ProgressMerge {
   // ele ainda não tem (num celular novo, quase tudo).
   static UserProfile _profile(UserProfile local, UserProfile remote) {
     final fromRemote = local.levelSource == null && remote.levelSource != null;
+    final country = local.country ?? remote.country;
+    final sameCountry = country == remote.country;
     return local.copyWith(
       nickname: local.nickname.isEmpty ? remote.nickname : local.nickname,
       rating: fromRemote ? remote.rating : local.rating,
@@ -57,7 +59,10 @@ abstract final class ProgressMerge {
       goal: local.goal ?? remote.goal,
       lichessUser: local.lichessUser ?? remote.lichessUser,
       chessComUser: local.chessComUser ?? remote.chessComUser,
-      country: local.country ?? remote.country,
+      country: country,
+      // Estado e cidade da conta só valem para o mesmo país.
+      state: local.state ?? (sameCountry ? remote.state : null),
+      city: local.city ?? (sameCountry ? remote.city : null),
     );
   }
 

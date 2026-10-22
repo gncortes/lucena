@@ -12,4 +12,5 @@ abstract final class AlertsKeys {
   static const news = Key('alerts.news');
   static const lessons = Key('alerts.lessons');
   static const reminder = Key('alerts.reminder');
+  static const region = Key('alerts.region');
 }

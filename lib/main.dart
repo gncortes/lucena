@@ -9,6 +9,7 @@ import 'domain/models/challenge_link.dart';
 import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
+import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
 import 'data/repositories/week/week_repository.dart';
@@ -306,6 +307,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<FeaturedAlertsRepository>.value(
           value: dependencies.featuredAlertsRepository,
+        ),
+        RepositoryProvider<RegionPromptRepository>.value(
+          value: dependencies.regionPromptRepository,
         ),
         RepositoryProvider<UnlockRepository>.value(
           value: dependencies.unlockRepository,

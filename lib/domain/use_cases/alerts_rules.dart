@@ -3,9 +3,12 @@ import '../models/alert_settings.dart';
 /// Quais tópicos do FCM o aparelho segue, pelas chaves de Avisos e pela
 /// região (E1.21, 3.13).
 abstract final class AlertsRules {
+  static final _uf = RegExp(r'^[A-Z]{2}$');
+
   /// Os tópicos de [settings]: o de todos sempre; os de torneio do [country]
-  /// (e do [state], se houver) com "Finais de torneios"; um global para
-  /// "Novidades" e outro para "Aulas novas". Sem país, sem torneio.
+  /// (e do [state], se for uma sigla, como `PR`) com "Finais de torneios";
+  /// um global para "Novidades" e outro para "Aulas novas". Sem país, sem
+  /// torneio. Estado escrito por extenso não vira tópico.
   static Set<String> topics(
     AlertSettings settings, {
     String? country,
@@ -17,7 +20,7 @@ abstract final class AlertsRules {
       AlertTopics.everyone,
       if (settings.tournaments && code != null && code.isNotEmpty) ...[
         AlertTopics.tournament(code),
-        if (uf != null && uf.isNotEmpty) AlertTopics.tournament(code, uf),
+        if (uf != null && _uf.hasMatch(uf)) AlertTopics.tournament(code, uf),
       ],
       if (settings.news) AlertTopics.news,
       if (settings.lessons) AlertTopics.lessons,

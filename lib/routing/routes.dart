@@ -425,6 +425,9 @@ abstract final class Routes {
   static const settingsSound = '/settings/sound';
   static const settingsAbout = '/settings/about';
   static const alerts = '/settings/alerts';
+
+  /// "Seu país" (E1.21): do Perfil, de Avisos e de "Seu perfil".
+  static const country = '/country';
   static const settingsLanguage = '/settings/appearance/language';
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
