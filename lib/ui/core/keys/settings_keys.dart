@@ -67,6 +67,7 @@ abstract final class SettingsKeys {
 
   static const soundTile = Key('settings.soundGroup');
   static const soundScreen = Key('settings.soundGroup.screen');
+  static const alertsTile = Key('settings.alerts');
 
   /// Sobre o Lucena.
   static const aboutTile = Key('settings.about');

@@ -1542,5 +1542,22 @@
   "settingsSectionApp": "App",
   "settingsSectionHelp": "Ajuda e sobre",
   "profileSectionChess": "Seu xadrez",
-  "profileSectionRegion": "Região"
+  "profileSectionRegion": "Região",
+  "alertsTitle": "Avisos",
+  "alertsCount": "{on} de {total} ligados",
+  "alertsIntro": "Escolha o que o Lucena pode avisar. Dá para mudar quando quiser.",
+  "alertsAllowed": "Android: avisos permitidos para o Lucena",
+  "alertsAllowedSettings": "Ajustes",
+  "alertsOffTitle": "Os avisos estão desligados no Android",
+  "alertsOffBody": "Mesmo com as chaves ligadas abaixo, nada chega neste celular. Ligue nos ajustes do sistema.",
+  "alertsOffOpen": "Abrir os ajustes do Android",
+  "alertsTournaments": "Finais de torneios",
+  "alertsTournamentsBody": "Um final novo na sua região, no máximo um por dia.",
+  "alertsDaily": "Final do dia e lembretes",
+  "alertsDailyBody": "Sequência, continue a lição e resumo da semana.",
+  "alertsNews": "Novidades",
+  "alertsNewsBody": "Recursos novos do Lucena. Poucos por mês.",
+  "alertsLessons": "Aulas novas",
+  "alertsLessonsBody": "Quando sair uma aula de finais nova.",
+  "alertsReminder": "Horário dos lembretes"
 }

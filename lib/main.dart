@@ -69,6 +69,7 @@ import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
+import 'ui/alerts/view_models/alerts_cubit.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
@@ -371,6 +372,17 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) => ProfileCubit(
               dependencies.profileRepository,
               // O país do Perfil vem da região do celular, sem permissão.
+              region: () =>
+                  WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+            )..load(),
+          ),
+          BlocProvider(
+            // Na abertura, já acerta os tópicos do push com as chaves.
+            lazy: false,
+            create: (context) => AlertsCubit(
+              alerts: dependencies.alertsRepository,
+              push: dependencies.pushRepository,
+              profile: dependencies.profileRepository,
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,
             )..load(),

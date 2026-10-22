@@ -191,6 +191,7 @@ void main() {
       SettingsKeys.appearanceTile,
       SettingsKeys.gameTile,
       SettingsKeys.soundTile,
+      SettingsKeys.alertsTile,
       SettingsKeys.aboutTile,
     ]) {
       expect(find.byKey(key), findsOneWidget);
@@ -198,6 +199,19 @@ void main() {
     // As opções ficam dentro dos grupos, não no menu.
     expect(find.byKey(SettingsKeys.languageTile), findsNothing);
     expect(find.byKey(SettingsKeys.soundSwitch), findsNothing);
+  });
+
+  testWidgets('Avisos diz quantas chaves estão ligadas', (tester) async {
+    await pumpScreen(tester, const AppSettings());
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: find.byKey(SettingsKeys.alertsTile),
+        matching: find.text('3 of 4 on'),
+      ),
+      findsOneWidget,
+    );
   });
 
   test('o site abre no idioma de quem usa', () {

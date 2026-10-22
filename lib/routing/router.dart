@@ -170,6 +170,7 @@ import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
+import '../ui/alerts/widgets/alerts_screen.dart';
 import '../ui/settings/widgets/about_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/settings_tiles.dart';
@@ -1347,6 +1348,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                     builder: (context, state) => const VoiceSettingsScreen(),
                   ),
                 ],
+              ),
+              _route(
+                path: 'alerts',
+                builder: (context, state) => const AlertsScreen(),
               ),
               _route(
                 path: 'about',

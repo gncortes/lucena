@@ -6,6 +6,7 @@ import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
@@ -14,7 +15,9 @@ import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
 import 'package:lucena/ui/core/widgets/web_pages.dart';
 
+import 'fakes/fake_alerts_repository.dart';
 import 'fakes/fake_profile_repository.dart';
+import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_voice_repository.dart';
@@ -28,6 +31,7 @@ class TestApp extends StatelessWidget {
     this.themeMode = ThemeMode.light,
     this.settingsCubit,
     this.profileCubit,
+    this.alertsCubit,
     this.speechCubit,
     this.shareRepository,
     this.wikiLinksCubit,
@@ -54,6 +58,9 @@ class TestApp extends StatelessWidget {
 
   /// View model do perfil, quando a tela testada precisa dele.
   final ProfileCubit? profileCubit;
+
+  /// Os avisos. Sem ele, um com as chaves de fábrica e o push permitido.
+  final AlertsCubit? alertsCubit;
 
   /// A voz, quando o teste confere o que é falado. Sem ela, uma voz falsa
   /// desligada.
@@ -110,6 +117,16 @@ class TestApp extends StatelessWidget {
       else
         BlocProvider<ProfileCubit>(
           create: (_) => ProfileCubit(FakeProfileRepository())..load(),
+        ),
+      if (alertsCubit case final alerts?)
+        BlocProvider<AlertsCubit>.value(value: alerts)
+      else
+        BlocProvider<AlertsCubit>(
+          create: (_) => AlertsCubit(
+            alerts: FakeAlertsRepository(),
+            push: FakePushRepository(allowed: true),
+            profile: FakeProfileRepository(),
+          )..load(),
         ),
       if (wikiLinksCubit case final wiki?)
         BlocProvider<WikiLinksCubit>.value(value: wiki),

@@ -1543,5 +1543,22 @@
   "settingsSectionApp": "App",
   "settingsSectionHelp": "Help and about",
   "profileSectionChess": "Your chess",
-  "profileSectionRegion": "Region"
+  "profileSectionRegion": "Region",
+  "alertsTitle": "Notifications",
+  "alertsCount": "{on} of {total} on",
+  "alertsIntro": "Choose what Lucena may notify you about. You can change it any time.",
+  "alertsAllowed": "Android: notifications allowed for Lucena",
+  "alertsAllowedSettings": "Settings",
+  "alertsOffTitle": "Notifications are off in Android",
+  "alertsOffBody": "Even with the switches below on, nothing reaches this phone. Turn them on in the system settings.",
+  "alertsOffOpen": "Open Android settings",
+  "alertsTournaments": "Tournament endgames",
+  "alertsTournamentsBody": "A new endgame from your region, at most one a day.",
+  "alertsDaily": "Daily endgame and reminders",
+  "alertsDailyBody": "Streak, continue the lesson and weekly summary.",
+  "alertsNews": "News",
+  "alertsNewsBody": "New Lucena features. A few a month.",
+  "alertsLessons": "New lessons",
+  "alertsLessonsBody": "When a new endgame lesson comes out.",
+  "alertsReminder": "Reminder time"
 }
