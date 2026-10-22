@@ -65,3 +65,6 @@ GEMINI.md
 .codex/
 .agents/
 AGENTS.md
+
+# Cache do Firebase CLI (E1.02).
+.firebase/

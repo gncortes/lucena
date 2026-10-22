@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/challenge_result.dart';
 import 'package:lucena/domain/models/clock.dart';
@@ -139,7 +140,7 @@ void main() {
     // Assinatura de PNG.
     expect(sent.png.sublist(0, 4), [0x89, 0x50, 0x4e, 0x47]);
     expect(sent.text, contains('Can you do it faster?'));
-    expect(sent.text, contains('https://playlucena.com/p/'));
+    expect(sent.text, contains('https://${AppLinks.host}/p/'));
     expect(share.texts, isEmpty);
   });
 }

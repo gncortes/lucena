@@ -13,6 +13,11 @@ import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
 import 'fakes/fake_deep_link_service.dart';
+import 'fakes/fake_account_repository.dart';
+import 'fakes/fake_push_repository.dart';
+
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
 
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 import 'package:lucena/data/repositories/conclusion/conclusion_repository.dart';
@@ -100,6 +105,8 @@ Dependencies testDependencies({
   HapticsRepository? hapticsRepository,
   ShareRepository? shareRepository,
   DeepLinkRepository? deepLinkRepository,
+  AccountRepository? accountRepository,
+  PushRepository? pushRepository,
   PlacementRepository? placementRepository,
   OngoingGameRepository? ongoingGameRepository,
   ConclusionRepository? conclusionRepository,
@@ -143,6 +150,8 @@ Dependencies testDependencies({
     shareRepository: shareRepository ?? FakeShareRepository(),
     deepLinkRepository:
         deepLinkRepository ?? ServiceDeepLinkRepository(FakeDeepLinkService()),
+    accountRepository: accountRepository ?? FakeAccountRepository(),
+    pushRepository: pushRepository ?? FakePushRepository(),
     placementRepository: placementRepository ?? FakePlacementRepository(),
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),

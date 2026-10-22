@@ -1201,6 +1201,8 @@
   "accountEmail": "Continuar com e-mail",
   "accountLater": "Agora não",
   "accountSoon": "Entrar com conta chega em breve.",
+  "accountFailedNetwork": "Sem internet. Tente de novo quando a ligação voltar.",
+  "accountFailed": "Não foi possível entrar agora. Tente de novo.",
   "levelBeginnerBodyHome": "Starts with the easiest opponents.",
   "challengeSummaryTitle": "{goal} with {pieces}",
   "challengeAnd": "{first} and {last}",

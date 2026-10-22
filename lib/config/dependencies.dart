@@ -10,7 +10,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../data/repositories/deep_link/deep_link_repository.dart';
 import '../data/repositories/draw/draw_offer_repository.dart';
-import '../data/services/deep_link_service.dart';
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import '../data/repositories/endgames/visible_endgame_lesson_repository.dart';
@@ -94,6 +93,12 @@ import '../data/services/maia_service.dart';
 import '../data/services/preferences_service.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
+import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/push/push_repository.dart';
+import '../data/services/app_links_deep_link_service.dart';
+import '../data/services/firebase/auth_service.dart';
+import '../data/services/firebase/cloud_store_service.dart';
+import '../data/services/firebase/push_service.dart';
 import '../domain/models/app_language.dart';
 import '../domain/models/app_version.dart';
 import '../domain/use_cases/now.dart';
@@ -121,6 +126,8 @@ class Dependencies {
     required this.hapticsRepository,
     required this.shareRepository,
     required this.deepLinkRepository,
+    required this.accountRepository,
+    required this.pushRepository,
     required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
@@ -176,10 +183,14 @@ class Dependencies {
     return AppVersion(info.version);
   }
 
+  /// [firebase] diz se o Firebase subiu (`startFirebase`). Sem ele, a conta e
+  /// o push ficam desligados e o resto do app funciona igual.
   factory Dependencies.normal({
     AppVersion version = const AppVersion(appVersion),
+    bool firebase = false,
   }) {
     final preferences = PreferencesService();
+    final settings = LocalSettingsRepository(preferences);
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
@@ -193,12 +204,20 @@ class Dependencies {
     final lessons = AssetLessonRepository(assets);
     return Dependencies(
       now: now,
-      settingsRepository: LocalSettingsRepository(preferences),
+      settingsRepository: settings,
       profileRepository: profile,
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       shareRepository: const DeviceShareRepository(ShareService()),
-      // Sem App Links até a E1.01: troque por um serviço que leia o sistema.
-      deepLinkRepository: const ServiceDeepLinkRepository(NoDeepLinkService()),
+      deepLinkRepository: ServiceDeepLinkRepository(AppLinksDeepLinkService()),
+      accountRepository: CloudAccountRepository(
+        firebase ? FirebaseAuthService() : const NoAuthService(),
+        firebase ? FirestoreCloudStoreService() : const NoCloudStoreService(),
+        now: now,
+        language: () async => (await settings.load()).languageCode,
+      ),
+      pushRepository: FirebasePushRepository(
+        firebase ? FirebasePushService() : const NoPushService(),
+      ),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
@@ -270,6 +289,8 @@ class Dependencies {
   final HapticsRepository hapticsRepository;
   final ShareRepository shareRepository;
   final DeepLinkRepository deepLinkRepository;
+  final AccountRepository accountRepository;
+  final PushRepository pushRepository;
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;

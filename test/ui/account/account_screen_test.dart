@@ -1,20 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 
+import '../../../testing/fakes/fake_account_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
+  late FakeAccountRepository accounts;
+
+  setUp(() => accounts = FakeAccountRepository());
+
   Future<void> pumpAccount(WidgetTester tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
     final router = GoRouter(
       routes: [
-        GoRoute(path: Routes.home, builder: (_, _) => const AccountScreen()),
+        GoRoute(
+          path: Routes.home,
+          builder: (_, _) => RepositoryProvider<AccountRepository>.value(
+            value: accounts,
+            child: const AccountScreen(),
+          ),
+        ),
         GoRoute(
           path: Routes.level,
           builder: (_, _) => const Scaffold(body: Text('rota-nivel')),
@@ -36,11 +50,48 @@ void main() {
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
   });
 
-  testWidgets('Google e e-mail avisam que o login vem aí e ficam na tela', (
-    tester,
-  ) async {
+  testWidgets('entrar com o Google segue para o nível', (tester) async {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.google));
+    await tester.pumpAndSettle();
+    expect(accounts.current, FakeAccountRepository.google);
+    expect(find.text('rota-nivel'), findsOneWidget);
+  });
+
+  testWidgets('fechar a escolha do Google fica na tela, sem aviso', (
+    tester,
+  ) async {
+    accounts.canceled = true;
+    await pumpAccount(tester);
+    await tester.tap(find.byKey(AccountKeys.google));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AccountKeys.screen), findsOneWidget);
+    expect(find.byType(SnackBar), findsNothing);
+  });
+
+  for (final (failure, message) in [
+    (
+      AccountFailure.network,
+      'No internet. Try again when the connection is back.',
+    ),
+    (AccountFailure.unknown, 'Could not sign in now. Try again.'),
+    (AccountFailure.unavailable, 'Signing in is coming soon.'),
+  ]) {
+    testWidgets('Google com falha ${failure.name} avisa e fica na tela', (
+      tester,
+    ) async {
+      accounts.failure = failure;
+      await pumpAccount(tester);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pump();
+      expect(find.text(message), findsOneWidget);
+      expect(find.byKey(AccountKeys.screen), findsOneWidget);
+    });
+  }
+
+  testWidgets('e-mail avisa que vem aí e fica na tela', (tester) async {
+    await pumpAccount(tester);
+    await tester.tap(find.byKey(AccountKeys.email));
     await tester.pump();
     expect(find.text('Signing in is coming soon.'), findsOneWidget);
     expect(find.byKey(AccountKeys.screen), findsOneWidget);

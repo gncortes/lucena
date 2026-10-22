@@ -30,6 +30,21 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Os links do app chegam pelo app_links, não pelo roteador. -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <!-- App Links dos desafios (E1.14): /p/<código>. Sem o app, o
+                 endereço abre a landing (firebase.json). O domínio definitivo
+                 entra junto do provisório até a troca. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"/>
+                <data android:host="lucena-2f4de.web.app"/>
+                <data android:host="playlucena.com"/>
+                <data android:host="www.playlucena.com"/>
+                <data android:pathPrefix="/p/"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

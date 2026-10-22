@@ -1,5 +1,6 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
@@ -21,7 +22,7 @@ ChallengeLink _link() => ChallengeLink(
 void main() {
   test('o endereço usa o domínio e o caminho /p/<código>', () {
     final uri = _link().uri;
-    expect(uri.host, 'playlucena.com');
+    expect(uri.host, AppLinks.host);
     expect(uri.pathSegments.first, 'p');
     expect(uri.pathSegments.last, _link().code);
     expect(_link().code, hasLength(5));
