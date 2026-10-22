@@ -8486,6 +8486,38 @@
   "@crowdFewText": {
     "description": "Text under the \"few people played\" title."
   },
+  "updateRequiredTitle": "Update Lucena",
+  "@updateRequiredTitle": {
+    "description": "Required update screen title: this app version no longer works."
+  },
+  "updateRequiredBody": "This version stopped working. The new one takes less than a minute to install, and your progress stays here.",
+  "@updateRequiredBody": {
+    "description": "Required update screen text."
+  },
+  "updateRequiredAction": "Update on Play",
+  "@updateRequiredAction": {
+    "description": "Required update screen button: opens the app page on Google Play."
+  },
+  "updateRecommendedTitle": "New Lucena version",
+  "@updateRecommendedTitle": {
+    "description": "Recommended update screen title, shown once per version."
+  },
+  "updateRecommendedBody": "It has fixes and improvements. Update when you can.",
+  "@updateRecommendedBody": {
+    "description": "Recommended update screen text."
+  },
+  "updateRecommendedAction": "Update",
+  "@updateRecommendedAction": {
+    "description": "Recommended update button: downloads the new version in the background."
+  },
+  "updateRecommendedLater": "Not now",
+  "@updateRecommendedLater": {
+    "description": "Recommended update button: closes the screen and goes back home."
+  },
+  "updateReadyRestart": "Done. Restart Lucena",
+  "@updateReadyRestart": {
+    "description": "The new version finished downloading: tapping installs it and restarts the app."
+  },
   "teamModeTitle": "Team mode",
   "@teamModeTitle": {
     "description": "Title of the hidden team mode sheet (7 taps on the version footer)."

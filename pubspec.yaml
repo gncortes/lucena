@@ -20,6 +20,7 @@ dependencies:
   firebase_auth: ^7.0.0
   firebase_core: ^5.0.0
   firebase_messaging: ^17.0.0
+  firebase_remote_config: ^7.0.0
   firebase_storage: ^14.0.0
   flutter:
     sdk: flutter
@@ -35,6 +36,7 @@ dependencies:
   http: ^1.6.0
   image: ^4.10.1
   image_picker: ^1.2.4
+  in_app_update: ^5.0.0
   intl: ^0.20.3
   multistockfish: ^0.6.1
   package_info_plus: ^10.2.2
