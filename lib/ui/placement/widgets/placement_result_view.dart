@@ -26,16 +26,10 @@ import '../../core/widgets/actions_footer.dart';
 /// jogador domina e do que falta, os três primeiros passos do roteiro e, fixo
 /// embaixo, "Usar este nível".
 class PlacementResultView extends StatefulWidget {
-  const PlacementResultView({
-    required this.state,
-    this.onDone,
-    this.onChooseByHand,
-    super.key,
-  });
+  const PlacementResultView({required this.state, this.onDone, super.key});
 
   final PlacementViewState state;
   final VoidCallback? onDone;
-  final VoidCallback? onChooseByHand;
 
   @override
   State<PlacementResultView> createState() => _PlacementResultViewState();
@@ -106,7 +100,6 @@ class _PlacementResultViewState extends State<PlacementResultView> {
             await context.read<PlacementCubit>().apply(level: chosen);
             widget.onDone?.call();
           },
-          onChooseByHand: widget.onChooseByHand,
         ),
       ],
     );
@@ -628,31 +621,22 @@ class _Sources extends StatelessWidget {
   }
 }
 
-/// Fixo embaixo: "Usar este nível" e, no tour, "Prefiro escolher minha
-/// faixa".
+/// Fixo embaixo: "Usar este nível".
 class _Actions extends StatelessWidget {
-  const _Actions({required this.onUse, this.onChooseByHand});
+  const _Actions({required this.onUse});
 
   final VoidCallback onUse;
-  final VoidCallback? onChooseByHand;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return ActionsFooter(
-      stacked: true,
       children: [
         FilledButton(
           key: PlacementKeys.useLevel,
           onPressed: onUse,
           child: Text(l10n.placementUseLevel),
         ),
-        if (onChooseByHand != null)
-          TextButton(
-            key: PlacementKeys.chooseByHand,
-            onPressed: onChooseByHand,
-            child: Text(l10n.placementChooseByHand),
-          ),
       ],
     );
   }

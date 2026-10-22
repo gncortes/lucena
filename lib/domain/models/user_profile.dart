@@ -1,11 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'goal_preference.dart';
+import 'level_source.dart';
 import 'rating_level.dart';
 
 part 'user_profile.freezed.dart';
 
-/// Perfil local do jogador. Não sai do aparelho.
+/// Perfil do jogador, gravado no aparelho.
 @freezed
 abstract class UserProfile with _$UserProfile {
   const factory UserProfile({
@@ -18,6 +19,17 @@ abstract class UserProfile with _$UserProfile {
     /// O objetivo escolhido na primeira abertura. Nulo: quem já usava o app
     /// antes da pergunta (a tela inicial fica como era).
     GoalPreference? goal,
+
+    /// De onde veio o [rating]. Nulo: quem já usava o app antes de "Seu
+    /// nível".
+    LevelSource? levelSource,
+
+    /// O usuário do Lichess conectado (o token fica só no armazenamento
+    /// seguro do aparelho, nunca aqui).
+    String? lichessUser,
+
+    /// O usuário do Chess.com informado em "Seu nível".
+    String? chessComUser,
   }) = _UserProfile;
 
   const UserProfile._();

@@ -36,6 +36,8 @@ import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
 import 'data/repositories/account/account_repository.dart';
+import 'data/repositories/chesscom/chesscom_repository.dart';
+import 'data/repositories/lichess/lichess_repository.dart';
 import 'data/repositories/deep_link/deep_link_repository.dart';
 import 'data/repositories/push/push_repository.dart';
 import 'data/services/firebase/firebase_bootstrap.dart';
@@ -178,6 +180,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AccountRepository>.value(
           value: dependencies.accountRepository,
+        ),
+        RepositoryProvider<LichessRepository>.value(
+          value: dependencies.lichessRepository,
+        ),
+        RepositoryProvider<ChessComRepository>.value(
+          value: dependencies.chessComRepository,
         ),
         RepositoryProvider<PushRepository>.value(
           value: dependencies.pushRepository,

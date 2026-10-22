@@ -14,6 +14,12 @@ import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
 
 import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
+import 'fakes/fake_chesscom_repository.dart';
+import 'fakes/fake_lichess_repository.dart';
+
+import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
+import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
+
 import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/account/account_repository.dart';
@@ -106,6 +112,8 @@ Dependencies testDependencies({
   ShareRepository? shareRepository,
   DeepLinkRepository? deepLinkRepository,
   AccountRepository? accountRepository,
+  LichessRepository? lichessRepository,
+  ChessComRepository? chessComRepository,
   PushRepository? pushRepository,
   PlacementRepository? placementRepository,
   OngoingGameRepository? ongoingGameRepository,
@@ -151,6 +159,8 @@ Dependencies testDependencies({
     deepLinkRepository:
         deepLinkRepository ?? ServiceDeepLinkRepository(FakeDeepLinkService()),
     accountRepository: accountRepository ?? FakeAccountRepository(),
+    lichessRepository: lichessRepository ?? FakeLichessRepository(),
+    chessComRepository: chessComRepository ?? FakeChessComRepository(),
     pushRepository: pushRepository ?? FakePushRepository(),
     placementRepository: placementRepository ?? FakePlacementRepository(),
     soundRepository: FakeSoundRepository(),

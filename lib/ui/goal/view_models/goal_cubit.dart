@@ -113,7 +113,7 @@ class GoalCubit extends Cubit<GoalState> {
         onboarding.copyWith(
           done: true,
           step: 0,
-          startRung: '${MaiaLevels.nearest(rating.rating)}',
+          startRung: '${MaiaLevels.atOrBelow(rating.rating)}',
           selectedRating: () => rating.rating,
           byHand: true,
           inProgress: false,

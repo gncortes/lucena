@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../../domain/models/goal_preference.dart';
+import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../services/database/app_database.dart';
 import 'profile_repository.dart';
@@ -24,6 +25,9 @@ class LocalProfileRepository implements ProfileRepository {
       nickname: row.nickname,
       rating: row.rating,
       goal: GoalPreference.fromCode(row.goal),
+      levelSource: LevelSource.fromCode(row.levelSource),
+      lichessUser: row.lichessUser,
+      chessComUser: row.chessComUser,
     );
   }
 
@@ -37,6 +41,9 @@ class LocalProfileRepository implements ProfileRepository {
             nickname: profile.nickname,
             rating: profile.rating,
             goal: Value(profile.goal?.name),
+            levelSource: Value(profile.levelSource?.name),
+            lichessUser: Value(profile.lichessUser),
+            chessComUser: Value(profile.chessComUser),
           ),
         );
   }

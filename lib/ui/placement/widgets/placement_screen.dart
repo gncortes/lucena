@@ -39,13 +39,10 @@ import '../../core/widgets/character_avatar.dart';
 /// dizer se acertou) e o resultado. [onDone] recebe o fim: o tour segue, as
 /// outras entradas voltam.
 class PlacementScreen extends StatelessWidget {
-  const PlacementScreen({this.onDone, this.onChooseByHand, super.key});
+  const PlacementScreen({this.onDone, super.key});
 
   /// O jogador terminou e usou o resultado.
   final VoidCallback? onDone;
-
-  /// O jogador prefere escolher a faixa na mão (só no tour).
-  final VoidCallback? onChooseByHand;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +82,6 @@ class PlacementScreen extends StatelessWidget {
             PlacementView.intro => _Intro(
               key: const ValueKey('intro'),
               state: state,
-              onChooseByHand: onChooseByHand,
             ),
             PlacementView.question => _Question(
               key: ValueKey('q${state.number}'),
@@ -98,7 +94,6 @@ class PlacementScreen extends StatelessWidget {
               key: const ValueKey('result'),
               state: state,
               onDone: onDone,
-              onChooseByHand: onChooseByHand,
             ),
           },
         ),
@@ -109,10 +104,9 @@ class PlacementScreen extends StatelessWidget {
 
 /// A abertura: o Viktor explica, três selos e "Começar" (ou continuar).
 class _Intro extends StatelessWidget {
-  const _Intro({required this.state, this.onChooseByHand, super.key});
+  const _Intro({required this.state, super.key});
 
   final PlacementViewState state;
-  final VoidCallback? onChooseByHand;
 
   @override
   Widget build(BuildContext context) {
@@ -228,12 +222,6 @@ class _Intro extends StatelessWidget {
                 key: PlacementKeys.restart,
                 onPressed: cubit.restart,
                 child: Text(l10n.placementRestart),
-              )
-            else if (onChooseByHand != null)
-              TextButton(
-                key: PlacementKeys.chooseByHand,
-                onPressed: onChooseByHand,
-                child: Text(l10n.placementChooseByHand),
               ),
           ],
         ),

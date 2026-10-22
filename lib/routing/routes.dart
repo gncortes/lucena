@@ -319,11 +319,20 @@ abstract final class Routes {
   static const account = '/tour/conta';
   static const level = '/tour/nivel';
 
+  /// "Seu nível" aberto por [from] (`profile`: volta para o Perfil).
+  static String levelFrom(String from) =>
+      Uri(path: level, queryParameters: {'from': from}).toString();
+
+  /// As telas ligadas a "Seu nível" (E1.12). Recebem o `LevelCubit` dela
+  /// como `extra`.
+  static const levelLichess = '/tour/nivel/lichess';
+  static const levelChess = '/tour/nivel/chess';
+  static const levelRating = '/tour/nivel/rating';
+
   /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
   static const goal = '/tour/objetivo';
 
-  /// O teste de nível (T52). [from] diz de onde veio: no tour, a tela
-  /// oferece escolher a faixa na mão.
+  /// O teste de nível (T52). [from] diz de onde veio (`level`, `settings`).
   static const placement = '/placement';
   static String placementFrom(String from) =>
       Uri(path: placement, queryParameters: {'from': from}).toString();

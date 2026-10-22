@@ -6,12 +6,12 @@ import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -25,6 +25,9 @@ class TourRobot {
   const TourRobot(this.$);
 
   final PatrolIntegrationTester $;
+
+  // A faixa de [chooseLevel] até o [start] (o robô é const).
+  static final _level = Expando<RatingLevel>();
 
   /// O passo aberto. A tela do tour rola inteira e um passo alto pode ter o
   /// meio fora da tela: basta ele existir.
@@ -164,46 +167,32 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
-  /// No passo do nível: "Estou começando" é o cartão do iniciante; as outras
-  /// faixas vêm da folha de "Escolher minha faixa" (marca e confirma).
+  /// No passo do nível: "Não sei jogar" para o iniciante; as outras faixas
+  /// marcam "Informar o meu rating", e [start] digita o rating delas como do
+  /// Lichess (que não converte).
   Future<void> chooseLevel(RatingLevel level) async {
-    if (level == RatingLevel.beginner) {
-      await _tap(LevelKeys.option(LevelChoice.beginner));
-      return;
-    }
-    await _tap(LevelKeys.option(LevelChoice.band));
-    await $(ProfileKeys.levelSheet).waitUntilVisible();
-    await $(ProfileKeys.levelOption(level))
-        .scrollTo(
-          view: find.descendant(
-            of: find.byKey(ProfileKeys.levelSheet),
-            matching: find.byType(Scrollable),
-          ),
-        )
-        .tap();
-    await $(ProfileKeys.levelConfirmButton).tap();
-    await $.pumpAndSettle();
-  }
-
-  /// No passo do nível: abre a folha das faixas, sem escolher nenhuma.
-  Future<void> openBandSheet() async {
-    await _tap(LevelKeys.option(LevelChoice.band));
-    await $(ProfileKeys.levelSheet).waitUntilVisible();
-  }
-
-  /// Fecha a folha das faixas tocando fora dela, sem confirmar.
-  Future<void> dismissBandSheet() async {
-    await $.tester.tapAt(const Offset(20, 100));
-    await $.pumpAndSettle();
-    expect(find.byKey(ProfileKeys.levelSheet), findsNothing);
+    _level[this] = level;
+    await _tap(
+      LevelKeys.option(
+        level == RatingLevel.beginner ? LevelChoice.zero : LevelChoice.manual,
+      ),
+    );
   }
 
   /// No passo do nível: abre o teste de nível.
   Future<void> takeTest() => _tap(LevelKeys.option(LevelChoice.test));
 
-  /// Em "Seu nível": "Continuar" (com o teste marcado e sem teste feito, abre o teste).
+  /// Em "Seu nível": "Continuar" (com o teste marcado e sem teste feito, abre
+  /// o teste). Com "Informar o meu rating", digita a faixa de [chooseLevel].
   Future<void> start() async {
-    await _tap(LevelKeys.next);
+    await _tap(LevelKeys.continueButton);
+    final level = _level[this];
+    if (level == null || level == RatingLevel.beginner) return;
+    await $(LevelKeys.ratingScreen).waitUntilVisible();
+    await $(LevelKeys.ratingField).enterText(level.rating.toString());
+    await $(LevelKeys.ratingSource(RatingOrigin.lichess)).scrollTo().tap();
+    await $(LevelKeys.ratingUse).tap();
+    await $.pumpAndSettle();
   }
 
   /// Pula o tour, responde o objetivo e, em "Seu nível", escolhe [level] e

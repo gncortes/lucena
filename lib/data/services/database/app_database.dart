@@ -12,6 +12,12 @@ class Profiles extends Table {
   /// O objetivo da primeira abertura (`GoalPreference`). Desde a versão 9.
   TextColumn get goal => text().nullable()();
 
+  /// De onde veio o rating (`LevelSource`) e as contas ligadas. Desde a
+  /// versão 10.
+  TextColumn get levelSource => text().nullable()();
+  TextColumn get lichessUser => text().nullable()();
+  TextColumn get chessComUser => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -128,7 +134,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -180,6 +186,12 @@ class AppDatabase extends _$AppDatabase {
       // 8 -> 9: o objetivo da primeira abertura. O perfil existe desde a
       // versão 1; quem já tinha o app fica sem objetivo.
       if (from < 9) await migrator.addColumn(profiles, profiles.goal);
+      // 9 -> 10: a origem do rating e as contas do Lichess e do Chess.com.
+      if (from < 10) {
+        await migrator.addColumn(profiles, profiles.levelSource);
+        await migrator.addColumn(profiles, profiles.lichessUser);
+        await migrator.addColumn(profiles, profiles.chessComUser);
+      }
     },
   );
 

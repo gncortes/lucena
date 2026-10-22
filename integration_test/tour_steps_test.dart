@@ -51,9 +51,11 @@ void main() {
     await tour.nextUntilLevel();
 
     expect(tour.levelCubit.state.choice, LevelChoice.test);
-    expect(tour.levelCubit.state.levelChosen, isFalse);
+    expect(tour.levelCubit.state.placed, isNull);
     expect(
-      $.tester.widget<FilledButton>(find.byKey(LevelKeys.next)).onPressed,
+      $.tester
+          .widget<FilledButton>(find.byKey(LevelKeys.continueButton))
+          .onPressed,
       isNotNull,
     );
 
@@ -70,29 +72,13 @@ void main() {
     expect(saved.selectedRating, RatingLevel.beginner.rating);
   });
 
-  patrolTest('Seu nível: escolher outra faixa pela folha, confirmar e '
-      'continuar grava a faixa', ($) async {
+  patrolTest('Seu nível: informar o rating e usar grava a faixa', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
 
     await tour.chooseLevel(RatingLevel.advanced);
-    expect(tour.levelCubit.state.choice, LevelChoice.band);
-    expect(tour.levelCubit.state.level, RatingLevel.advanced);
-    expect(tour.levelCubit.state.levelChosen, isTrue);
-    final selected = await tour.savedOnboarding();
-    expect(selected.selectedRating, RatingLevel.advanced.rating);
-
-    // Abrir a folha e sair sem confirmar não muda a faixa.
-    await tour.openBandSheet();
-    await tour.dismissBandSheet();
-    expect(tour.levelCubit.state.level, RatingLevel.advanced);
-
-    // Voltar ao iniciante pelo cartão dele.
-    await tour.chooseLevel(RatingLevel.beginner);
-    expect(tour.levelCubit.state.choice, LevelChoice.beginner);
-    await tour.chooseLevel(RatingLevel.advanced);
-
+    expect(tour.levelCubit.state.choice, LevelChoice.manual);
     await tour.start();
     await HomeRobot($).expectVisible();
     final saved = await tour.savedOnboarding();

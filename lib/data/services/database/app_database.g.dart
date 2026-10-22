@@ -46,8 +46,49 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _levelSourceMeta = const VerificationMeta(
+    'levelSource',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, nickname, rating, goal];
+  late final GeneratedColumn<String> levelSource = GeneratedColumn<String>(
+    'level_source',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lichessUserMeta = const VerificationMeta(
+    'lichessUser',
+  );
+  @override
+  late final GeneratedColumn<String> lichessUser = GeneratedColumn<String>(
+    'lichess_user',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _chessComUserMeta = const VerificationMeta(
+    'chessComUser',
+  );
+  @override
+  late final GeneratedColumn<String> chessComUser = GeneratedColumn<String>(
+    'chess_com_user',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    nickname,
+    rating,
+    goal,
+    levelSource,
+    lichessUser,
+    chessComUser,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -85,6 +126,33 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         goal.isAcceptableOrUnknown(data['goal']!, _goalMeta),
       );
     }
+    if (data.containsKey('level_source')) {
+      context.handle(
+        _levelSourceMeta,
+        levelSource.isAcceptableOrUnknown(
+          data['level_source']!,
+          _levelSourceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('lichess_user')) {
+      context.handle(
+        _lichessUserMeta,
+        lichessUser.isAcceptableOrUnknown(
+          data['lichess_user']!,
+          _lichessUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('chess_com_user')) {
+      context.handle(
+        _chessComUserMeta,
+        chessComUser.isAcceptableOrUnknown(
+          data['chess_com_user']!,
+          _chessComUserMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -110,6 +178,18 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         DriftSqlType.string,
         data['${effectivePrefix}goal'],
       ),
+      levelSource: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}level_source'],
+      ),
+      lichessUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lichess_user'],
+      ),
+      chessComUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}chess_com_user'],
+      ),
     );
   }
 
@@ -126,11 +206,20 @@ class Profile extends DataClass implements Insertable<Profile> {
 
   /// O objetivo da primeira abertura (`GoalPreference`). Desde a versão 9.
   final String? goal;
+
+  /// De onde veio o rating (`LevelSource`) e as contas ligadas. Desde a
+  /// versão 10.
+  final String? levelSource;
+  final String? lichessUser;
+  final String? chessComUser;
   const Profile({
     required this.id,
     required this.nickname,
     required this.rating,
     this.goal,
+    this.levelSource,
+    this.lichessUser,
+    this.chessComUser,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -141,6 +230,15 @@ class Profile extends DataClass implements Insertable<Profile> {
     if (!nullToAbsent || goal != null) {
       map['goal'] = Variable<String>(goal);
     }
+    if (!nullToAbsent || levelSource != null) {
+      map['level_source'] = Variable<String>(levelSource);
+    }
+    if (!nullToAbsent || lichessUser != null) {
+      map['lichess_user'] = Variable<String>(lichessUser);
+    }
+    if (!nullToAbsent || chessComUser != null) {
+      map['chess_com_user'] = Variable<String>(chessComUser);
+    }
     return map;
   }
 
@@ -150,6 +248,15 @@ class Profile extends DataClass implements Insertable<Profile> {
       nickname: Value(nickname),
       rating: Value(rating),
       goal: goal == null && nullToAbsent ? const Value.absent() : Value(goal),
+      levelSource: levelSource == null && nullToAbsent
+          ? const Value.absent()
+          : Value(levelSource),
+      lichessUser: lichessUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lichessUser),
+      chessComUser: chessComUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(chessComUser),
     );
   }
 
@@ -163,6 +270,9 @@ class Profile extends DataClass implements Insertable<Profile> {
       nickname: serializer.fromJson<String>(json['nickname']),
       rating: serializer.fromJson<int>(json['rating']),
       goal: serializer.fromJson<String?>(json['goal']),
+      levelSource: serializer.fromJson<String?>(json['levelSource']),
+      lichessUser: serializer.fromJson<String?>(json['lichessUser']),
+      chessComUser: serializer.fromJson<String?>(json['chessComUser']),
     );
   }
   @override
@@ -173,6 +283,9 @@ class Profile extends DataClass implements Insertable<Profile> {
       'nickname': serializer.toJson<String>(nickname),
       'rating': serializer.toJson<int>(rating),
       'goal': serializer.toJson<String?>(goal),
+      'levelSource': serializer.toJson<String?>(levelSource),
+      'lichessUser': serializer.toJson<String?>(lichessUser),
+      'chessComUser': serializer.toJson<String?>(chessComUser),
     };
   }
 
@@ -181,11 +294,17 @@ class Profile extends DataClass implements Insertable<Profile> {
     String? nickname,
     int? rating,
     Value<String?> goal = const Value.absent(),
+    Value<String?> levelSource = const Value.absent(),
+    Value<String?> lichessUser = const Value.absent(),
+    Value<String?> chessComUser = const Value.absent(),
   }) => Profile(
     id: id ?? this.id,
     nickname: nickname ?? this.nickname,
     rating: rating ?? this.rating,
     goal: goal.present ? goal.value : this.goal,
+    levelSource: levelSource.present ? levelSource.value : this.levelSource,
+    lichessUser: lichessUser.present ? lichessUser.value : this.lichessUser,
+    chessComUser: chessComUser.present ? chessComUser.value : this.chessComUser,
   );
   Profile copyWithCompanion(ProfilesCompanion data) {
     return Profile(
@@ -193,6 +312,15 @@ class Profile extends DataClass implements Insertable<Profile> {
       nickname: data.nickname.present ? data.nickname.value : this.nickname,
       rating: data.rating.present ? data.rating.value : this.rating,
       goal: data.goal.present ? data.goal.value : this.goal,
+      levelSource: data.levelSource.present
+          ? data.levelSource.value
+          : this.levelSource,
+      lichessUser: data.lichessUser.present
+          ? data.lichessUser.value
+          : this.lichessUser,
+      chessComUser: data.chessComUser.present
+          ? data.chessComUser.value
+          : this.chessComUser,
     );
   }
 
@@ -202,13 +330,24 @@ class Profile extends DataClass implements Insertable<Profile> {
           ..write('id: $id, ')
           ..write('nickname: $nickname, ')
           ..write('rating: $rating, ')
-          ..write('goal: $goal')
+          ..write('goal: $goal, ')
+          ..write('levelSource: $levelSource, ')
+          ..write('lichessUser: $lichessUser, ')
+          ..write('chessComUser: $chessComUser')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, nickname, rating, goal);
+  int get hashCode => Object.hash(
+    id,
+    nickname,
+    rating,
+    goal,
+    levelSource,
+    lichessUser,
+    chessComUser,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -216,7 +355,10 @@ class Profile extends DataClass implements Insertable<Profile> {
           other.id == this.id &&
           other.nickname == this.nickname &&
           other.rating == this.rating &&
-          other.goal == this.goal);
+          other.goal == this.goal &&
+          other.levelSource == this.levelSource &&
+          other.lichessUser == this.lichessUser &&
+          other.chessComUser == this.chessComUser);
 }
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
@@ -224,17 +366,26 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<String> nickname;
   final Value<int> rating;
   final Value<String?> goal;
+  final Value<String?> levelSource;
+  final Value<String?> lichessUser;
+  final Value<String?> chessComUser;
   const ProfilesCompanion({
     this.id = const Value.absent(),
     this.nickname = const Value.absent(),
     this.rating = const Value.absent(),
     this.goal = const Value.absent(),
+    this.levelSource = const Value.absent(),
+    this.lichessUser = const Value.absent(),
+    this.chessComUser = const Value.absent(),
   });
   ProfilesCompanion.insert({
     this.id = const Value.absent(),
     required String nickname,
     required int rating,
     this.goal = const Value.absent(),
+    this.levelSource = const Value.absent(),
+    this.lichessUser = const Value.absent(),
+    this.chessComUser = const Value.absent(),
   }) : nickname = Value(nickname),
        rating = Value(rating);
   static Insertable<Profile> custom({
@@ -242,12 +393,18 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Expression<String>? nickname,
     Expression<int>? rating,
     Expression<String>? goal,
+    Expression<String>? levelSource,
+    Expression<String>? lichessUser,
+    Expression<String>? chessComUser,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (nickname != null) 'nickname': nickname,
       if (rating != null) 'rating': rating,
       if (goal != null) 'goal': goal,
+      if (levelSource != null) 'level_source': levelSource,
+      if (lichessUser != null) 'lichess_user': lichessUser,
+      if (chessComUser != null) 'chess_com_user': chessComUser,
     });
   }
 
@@ -256,12 +413,18 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Value<String>? nickname,
     Value<int>? rating,
     Value<String?>? goal,
+    Value<String?>? levelSource,
+    Value<String?>? lichessUser,
+    Value<String?>? chessComUser,
   }) {
     return ProfilesCompanion(
       id: id ?? this.id,
       nickname: nickname ?? this.nickname,
       rating: rating ?? this.rating,
       goal: goal ?? this.goal,
+      levelSource: levelSource ?? this.levelSource,
+      lichessUser: lichessUser ?? this.lichessUser,
+      chessComUser: chessComUser ?? this.chessComUser,
     );
   }
 
@@ -280,6 +443,15 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     if (goal.present) {
       map['goal'] = Variable<String>(goal.value);
     }
+    if (levelSource.present) {
+      map['level_source'] = Variable<String>(levelSource.value);
+    }
+    if (lichessUser.present) {
+      map['lichess_user'] = Variable<String>(lichessUser.value);
+    }
+    if (chessComUser.present) {
+      map['chess_com_user'] = Variable<String>(chessComUser.value);
+    }
     return map;
   }
 
@@ -289,7 +461,10 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
           ..write('id: $id, ')
           ..write('nickname: $nickname, ')
           ..write('rating: $rating, ')
-          ..write('goal: $goal')
+          ..write('goal: $goal, ')
+          ..write('levelSource: $levelSource, ')
+          ..write('lichessUser: $lichessUser, ')
+          ..write('chessComUser: $chessComUser')
           ..write(')'))
         .toString();
   }
@@ -2590,12 +2765,18 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   required String nickname,
   required int rating,
   Value<String?> goal,
+  Value<String?> levelSource,
+  Value<String?> lichessUser,
+  Value<String?> chessComUser,
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<int> id,
   Value<String> nickname,
   Value<int> rating,
   Value<String?> goal,
+  Value<String?> levelSource,
+  Value<String?> lichessUser,
+  Value<String?> chessComUser,
 });
 
 class $$ProfilesTableFilterComposer
@@ -2624,6 +2805,21 @@ class $$ProfilesTableFilterComposer
 
   ColumnFilters<String> get goal => $composableBuilder(
     column: $table.goal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get levelSource => $composableBuilder(
+    column: $table.levelSource,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lichessUser => $composableBuilder(
+    column: $table.lichessUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get chessComUser => $composableBuilder(
+    column: $table.chessComUser,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2656,6 +2852,21 @@ class $$ProfilesTableOrderingComposer
     column: $table.goal,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get levelSource => $composableBuilder(
+    column: $table.levelSource,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lichessUser => $composableBuilder(
+    column: $table.lichessUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get chessComUser => $composableBuilder(
+    column: $table.chessComUser,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProfilesTableAnnotationComposer
@@ -2678,6 +2889,21 @@ class $$ProfilesTableAnnotationComposer
 
   GeneratedColumn<String> get goal =>
       $composableBuilder(column: $table.goal, builder: (column) => column);
+
+  GeneratedColumn<String> get levelSource => $composableBuilder(
+    column: $table.levelSource,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lichessUser => $composableBuilder(
+    column: $table.lichessUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get chessComUser => $composableBuilder(
+    column: $table.chessComUser,
+    builder: (column) => column,
+  );
 }
 
 class $$ProfilesTableTableManager
@@ -2712,11 +2938,17 @@ class $$ProfilesTableTableManager
                 Value<String> nickname = const Value.absent(),
                 Value<int> rating = const Value.absent(),
                 Value<String?> goal = const Value.absent(),
+                Value<String?> levelSource = const Value.absent(),
+                Value<String?> lichessUser = const Value.absent(),
+                Value<String?> chessComUser = const Value.absent(),
               }) => ProfilesCompanion(
                 id: id,
                 nickname: nickname,
                 rating: rating,
                 goal: goal,
+                levelSource: levelSource,
+                lichessUser: lichessUser,
+                chessComUser: chessComUser,
               ),
           createCompanionCallback:
               ({
@@ -2724,11 +2956,17 @@ class $$ProfilesTableTableManager
                 required String nickname,
                 required int rating,
                 Value<String?> goal = const Value.absent(),
+                Value<String?> levelSource = const Value.absent(),
+                Value<String?> lichessUser = const Value.absent(),
+                Value<String?> chessComUser = const Value.absent(),
               }) => ProfilesCompanion.insert(
                 id: id,
                 nickname: nickname,
                 rating: rating,
                 goal: goal,
+                levelSource: levelSource,
+                lichessUser: lichessUser,
+                chessComUser: chessComUser,
               ),
           withReferenceMapper: (p0) => p0
               .map(

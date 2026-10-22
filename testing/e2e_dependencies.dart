@@ -1,5 +1,7 @@
 import 'fakes/fake_deep_link_service.dart';
 import 'fakes/fake_account_repository.dart';
+import 'fakes/fake_chesscom_repository.dart';
+import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
 
 import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
@@ -142,6 +144,10 @@ final e2eHaptics = FakeHapticsRepository();
 final e2eShare = FakeShareRepository();
 final e2eDeepLinks = FakeDeepLinkService();
 
+/// Sem rede nos testes de ponta a ponta: o Lichess e o Chess.com são falsos.
+final e2eLichess = FakeLichessRepository();
+final e2eChessCom = FakeChessComRepository();
+
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
 
@@ -242,6 +248,8 @@ Future<Dependencies> e2eDependencies() async {
     shareRepository: e2eShare,
     deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
     accountRepository: FakeAccountRepository(),
+    lichessRepository: e2eLichess,
+    chessComRepository: e2eChessCom,
     pushRepository: FakePushRepository(),
     placementRepository: LocalPlacementRepository(
       const AssetService(),

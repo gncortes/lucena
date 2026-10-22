@@ -45,6 +45,13 @@
                 <data android:host="www.playlucena.com"/>
                 <data android:pathPrefix="/p/"/>
             </intent-filter>
+            <!-- A volta do login do Lichess (OAuth com PKCE, E1.12). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="com.gncortes.lucena" android:host="lichess-auth"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

@@ -244,8 +244,8 @@ class PlacementCubit extends Cubit<PlacementViewState> {
 
   /// Leva o resultado para o perfil: o rating vira o estimado (o Glicko
   /// ajusta rápido nas primeiras partidas) e a Jornada começa no degrau
-  /// mais perto dele. [level], se o intervalo cruza duas faixas e o jogador
-  /// escolheu uma.
+  /// igual ou abaixo dele. [level], se o intervalo cruza duas faixas e o
+  /// jogador escolheu uma.
   Future<void> apply({RatingLevel? level}) async {
     final result = state.result;
     if (result == null) return;
@@ -258,7 +258,7 @@ class PlacementCubit extends Cubit<PlacementViewState> {
     if (onboarding != null) {
       final saved = await onboarding.load();
       await onboarding.save(
-        saved.copyWith(startRung: '${MaiaLevels.nearest(rating)}'),
+        saved.copyWith(startRung: '${MaiaLevels.atOrBelow(rating)}'),
       );
     }
     if (!isClosed) emit(state.copyWith(applied: true));

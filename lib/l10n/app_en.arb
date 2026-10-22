@@ -3708,10 +3708,6 @@
   "@placementUseLevel": {
     "description": "Placement result: button that saves the level and continues."
   },
-  "placementChooseByHand": "I'd rather enter my rating",
-  "@placementChooseByHand": {
-    "description": "Placement: discreet option to pick the band by hand."
-  },
   "placementTwoLevels": "Between two levels. Which one fits you better?",
   "@placementTwoLevels": {
     "description": "Placement result when the interval spans two bands."
@@ -6162,26 +6158,6 @@
   "@levelTestBody": {
     "description": "Level card text: what the placement test is like."
   },
-  "levelBandTitle": "Choose my level",
-  "@levelBandTitle": {
-    "description": "Level card: pick the rating band by hand."
-  },
-  "levelBandBody": "You pick the closest rating band.",
-  "@levelBandBody": {
-    "description": "Level card text: the player picks the band."
-  },
-  "levelBeginnerTitle": "I can't play, I want to learn from scratch",
-  "@levelBeginnerTitle": {
-    "description": "Level card: the player does not know chess."
-  },
-  "levelBeginnerBody": "Starts with Viktor's school.",
-  "@levelBeginnerBody": {
-    "description": "Level card text: the beginner goes to the lessons."
-  },
-  "levelBeginnerBodyHome": "Starts with the easiest opponents.",
-  "@levelBeginnerBodyHome": {
-    "description": "Level card text: the beginner goes to the home screen while the school is hidden."
-  },
   "levelStart": "Journey starts at {rung}",
   "@levelStart": {
     "description": "Level card text once chosen: where the Journey starts.",
@@ -6190,6 +6166,261 @@
         "type": "String"
       }
     }
+  },
+  "levelViktorSay": "To pick the right opponents for you: where are you in chess?",
+  "@levelViktorSay": {
+    "description": "Viktor's line at the top of the level screen."
+  },
+  "levelLichessTitle": "Sign in with Lichess",
+  "@levelLichessTitle": {
+    "description": "Level card: sign in with Lichess to read the ratings."
+  },
+  "levelLichessText": "Log in on the Lichess site, no password here. I read your ratings.",
+  "@levelLichessText": {
+    "description": "Level card text for Lichess."
+  },
+  "levelChessTitle": "I have a Chess.com account",
+  "@levelChessTitle": {
+    "description": "Level card: read the public Chess.com rating."
+  },
+  "levelChessText": "Type your username and I read your public rating.",
+  "@levelChessText": {
+    "description": "Level card text for Chess.com."
+  },
+  "levelManualTitle": "Enter my rating",
+  "@levelManualTitle": {
+    "description": "Level card: type a rating by hand."
+  },
+  "levelManualText": "The number and where it comes from: FIDE, national federation, Lichess…",
+  "@levelManualText": {
+    "description": "Level card text for typing a rating."
+  },
+  "levelZeroTitle": "I can't play, I want to learn from scratch",
+  "@levelZeroTitle": {
+    "description": "Level card for someone who does not know how to play."
+  },
+  "levelZeroText": "Starts with Viktor's School.",
+  "@levelZeroText": {
+    "description": "Level card text for the beginner."
+  },
+  "levelZeroTextHome": "Starts with the easiest opponents.",
+  "@levelZeroTextHome": {
+    "description": "Level card text: the beginner goes to the home screen while the school is hidden."
+  },
+  "levelContinue": "Continue",
+  "@levelContinue": {
+    "description": "Button at the bottom of the level screen."
+  },
+  "levelLichessConnectedTitle": "Lichess connected",
+  "@levelLichessConnectedTitle": {
+    "description": "Title of the screen shown after signing in with Lichess."
+  },
+  "levelLichessBack": "Back from Lichess. The access stays on this phone only, and no Lucena account is needed.",
+  "@levelLichessBack": {
+    "description": "Text at the top of the Lichess connected screen."
+  },
+  "levelConnectedAs": "Connected as {user}",
+  "@levelConnectedAs": {
+    "description": "Lichess username after signing in.",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "levelRatingBullet": "Bullet",
+  "@levelRatingBullet": {
+    "description": "Rating cell label: bullet games."
+  },
+  "levelRatingBlitz": "Blitz",
+  "@levelRatingBlitz": {
+    "description": "Rating cell label: blitz games."
+  },
+  "levelRatingRapid": "Rapid",
+  "@levelRatingRapid": {
+    "description": "Rating cell label: rapid games."
+  },
+  "levelRatingNone": "—",
+  "@levelRatingNone": {
+    "description": "Rating cell with no rating in that mode."
+  },
+  "levelRatingProvisional": "{rating}?",
+  "@levelRatingProvisional": {
+    "description": "Provisional rating (few games), shown with a question mark like on Lichess.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "levelGamesCount": "{count, plural, =1{1 game} other{{count} games}}",
+  "@levelGamesCount": {
+    "description": "Number of games under a rating cell.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "levelStartsAt": "From your {mode, select, bullet{bullet rating} rapid{rapid rating} other{blitz rating}}, the Journey starts at {rung} and your Lucena rating starts at {rating}.",
+  "@levelStartsAt": {
+    "description": "Where the Journey starts with the rating read from a site. mode is bullet, blitz or rapid; rung is like 'Valdini (1600)'.",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "rung": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "levelRung": "{name} ({level})",
+  "@levelRung": {
+    "description": "Journey opponent with its level, like 'Valdini (1600)'.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "levelLichessTip": "Lichess ratings tend to be higher than FIDE and Chess.com. If it feels easy or hard, Lucena adjusts by itself.",
+  "@levelLichessTip": {
+    "description": "Tip on the Lichess connected screen."
+  },
+  "levelUseRating": "Use this rating",
+  "@levelUseRating": {
+    "description": "Button: use the rating read or typed."
+  },
+  "levelPreferTest": "I'd rather take the test",
+  "@levelPreferTest": {
+    "description": "Text button: take the placement test instead."
+  },
+  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. With the test I get your level right.",
+  "@levelProvisionalText": {
+    "description": "Text when the Lichess rating is provisional."
+  },
+  "levelProvisionalTip": "If you prefer, I start at {rating} and adjust by myself after a few games.",
+  "@levelProvisionalTip": {
+    "description": "Tip when the Lichess rating is provisional.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "levelTakeTest": "Take the test",
+  "@levelTakeTest": {
+    "description": "Button: take the placement test (provisional Lichess rating)."
+  },
+  "levelUseDefault": "Use {rating} anyway",
+  "@levelUseDefault": {
+    "description": "Text button: use the provisional Lichess rating anyway.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "levelChessAppBar": "Chess.com rating",
+  "@levelChessAppBar": {
+    "description": "Title of the Chess.com username screen."
+  },
+  "levelChessField": "Your Chess.com username",
+  "@levelChessField": {
+    "description": "Label of the Chess.com username field."
+  },
+  "levelChessHelp": "We read the public Chess.com rating. No login and no password.",
+  "@levelChessHelp": {
+    "description": "Helper under the Chess.com username field."
+  },
+  "levelChessNotFound": "I couldn't find this user on Chess.com.",
+  "@levelChessNotFound": {
+    "description": "Error under the Chess.com username field."
+  },
+  "levelChessOffline": "Couldn't reach Chess.com. Check your connection.",
+  "@levelChessOffline": {
+    "description": "Snack bar when Chess.com cannot be reached."
+  },
+  "levelLichessOffline": "Couldn't reach Lichess. Check your connection.",
+  "@levelLichessOffline": {
+    "description": "Snack bar when Lichess cannot be reached."
+  },
+  "levelFoundUser": "Found: {user}",
+  "@levelFoundUser": {
+    "description": "Chess.com username found.",
+    "placeholders": {
+      "user": {
+        "type": "String"
+      }
+    }
+  },
+  "levelChessTip": "Chess.com ratings tend to be lower than Lichess, so I convert them. If it feels easy or hard, Lucena adjusts by itself.",
+  "@levelChessTip": {
+    "description": "Tip on the Chess.com screen."
+  },
+  "levelManualAppBar": "Enter your rating",
+  "@levelManualAppBar": {
+    "description": "Title of the screen for typing a rating."
+  },
+  "levelManualField": "Your rating",
+  "@levelManualField": {
+    "description": "Label of the rating field."
+  },
+  "levelManualHelp": "Just the number, from 400 to 3000.",
+  "@levelManualHelp": {
+    "description": "Helper (and error) under the rating field."
+  },
+  "levelManualSource": "Where is this number from?",
+  "@levelManualSource": {
+    "description": "Title above the rating sources."
+  },
+  "levelSourceLichess": "Lichess",
+  "@levelSourceLichess": {
+    "description": "Rating source: Lichess."
+  },
+  "levelSourceChess": "Chess.com",
+  "@levelSourceChess": {
+    "description": "Rating source: Chess.com."
+  },
+  "levelSourceFide": "FIDE",
+  "@levelSourceFide": {
+    "description": "Rating source: FIDE."
+  },
+  "levelSourceCbx": "National federation",
+  "@levelSourceCbx": {
+    "description": "Rating source: the national chess federation (CBX in Brazil)."
+  },
+  "levelSourceUnknown": "I don't know",
+  "@levelSourceUnknown": {
+    "description": "Rating source: unknown."
+  },
+  "levelManualConverted": "{rating}{source, select, lichess{ on Lichess} chesscom{ on Chess.com} fide{ FIDE} cbx{ national} other{}} is close to {lucena} on Lucena. The Journey starts at {rung}.",
+  "@levelManualConverted": {
+    "description": "Typed rating converted to Lucena. source is lichess, chesscom, fide, cbx or unknown; rung is like 'Valdini (1600)'.",
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      },
+      "source": {
+        "type": "String"
+      },
+      "lucena": {
+        "type": "int"
+      },
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "levelManualTip": "Your level adjusts with your games: if it feels easy or hard, Lucena corrects it by itself.",
+  "@levelManualTip": {
+    "description": "Tip on the rating screen."
   },
   "accountTitle": "Want to keep your progress?",
   "@accountTitle": {

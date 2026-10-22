@@ -21,6 +21,8 @@ import '../ui/featured/widgets/featured_endgame_screen.dart';
 import '../ui/featured/widgets/featured_list_screen.dart';
 import '../ui/featured/widgets/featured_tournament_screen.dart';
 import '../data/repositories/conclusion/conclusion_repository.dart';
+import '../data/repositories/chesscom/chesscom_repository.dart';
+import '../data/repositories/lichess/lichess_repository.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
 import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
@@ -124,6 +126,9 @@ import '../ui/account/widgets/account_screen.dart';
 import '../ui/goal/view_models/goal_cubit.dart';
 import '../ui/goal/widgets/goal_screen.dart';
 import '../ui/level/view_models/level_cubit.dart';
+import '../ui/level/widgets/level_chess_screen.dart';
+import '../ui/level/widgets/level_lichess_screen.dart';
+import '../ui/level/widgets/level_rating_screen.dart';
 import '../ui/level/widgets/level_screen.dart';
 import '../ui/tour/view_models/tour_cubit.dart';
 import '../ui/tour/widgets/tour_screen.dart';
@@ -259,16 +264,20 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             onboarding: context.read<OnboardingRepository>(),
             profile: context.read<ProfileRepository>(),
             characters: context.read<CharacterRepository>(),
-            lessons: context.read<LessonRepository>(),
+            lichess: context.read<LichessRepository>(),
+            chessCom: context.read<ChessComRepository>(),
             home: context.read<HomeLayoutRepository>(),
-          )..load(_language(context)),
+            fromProfile: state.uri.queryParameters['from'] == 'profile',
+          )..load(),
           child: const LevelScreen(),
         ),
       ),
+      _levelPart(Routes.levelLichess, const LevelLichessScreen()),
+      _levelPart(Routes.levelChess, const LevelChessScreen()),
+      _levelPart(Routes.levelRating, const LevelRatingScreen()),
       _route(
         path: Routes.placement,
         builder: (context, state) {
-          final fromTour = state.uri.queryParameters['from'] == 'tour';
           return BlocProvider(
             create: (_) => PlacementCubit(
               placement: context.read<PlacementRepository>(),
@@ -286,10 +295,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(
-              builder: (context) => PlacementScreen(
-                onDone: () => context.pop(true),
-                onChooseByHand: fromTour ? () => context.pop(false) : null,
-              ),
+              builder: (context) =>
+                  PlacementScreen(onDone: () => context.pop(true)),
             ),
           );
         },
@@ -1322,6 +1329,15 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   characters: context.read<CharacterRepository>(),
   profile: context.read<ProfileRepository>(),
   rating: context.read<RatingRepository>(),
+);
+
+/// Uma tela ligada a "Seu nível", com o `LevelCubit` dela no `extra`. Sem ele
+/// (o app reaberto nesse endereço), volta para "Seu nível".
+GoRoute _levelPart(String path, Widget screen) => _route(
+  path: path,
+  redirect: (context, state) => state.extra is LevelCubit ? null : Routes.level,
+  builder: (context, state) =>
+      BlocProvider.value(value: state.extra! as LevelCubit, child: screen),
 );
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18

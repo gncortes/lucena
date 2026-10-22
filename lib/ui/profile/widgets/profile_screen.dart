@@ -79,6 +79,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (used == true) await cubit.load();
   }
 
+  // "Seu nível" grava o rating na hora; a faixa acima passa a ser a dele.
+  Future<void> _openLevel() async {
+    final cubit = context.read<ProfileCubit>();
+    _nicknameFocus.unfocus();
+    await context.push(Routes.levelFrom('profile'));
+    await cubit.load();
+    if (!mounted) return;
+    setState(() => _level = cubit.state?.level ?? _level);
+  }
+
   Future<void> _save(RatingLevel level) async {
     await context.read<ProfileCubit>().save(
       nickname: _nickname.text,
@@ -123,6 +133,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
+                ListTile(
+                  key: ProfileKeys.rowLevel,
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.show_chart),
+                  title: Text(l10n.levelTitle),
+                  subtitle: profile == null
+                      ? null
+                      : Text(profile.rating.toString()),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _openLevel,
+                ),
                 // Grava na hora: a folha tem o próprio "Salvar".
                 ListTile(
                   key: ProfileKeys.rowGoal,

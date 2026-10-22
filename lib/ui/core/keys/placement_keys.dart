@@ -13,7 +13,6 @@ abstract final class PlacementKeys {
   static const stoppedAt = Key('placement.stoppedAt');
   static const answersSaved = Key('placement.answersSaved');
   static const restart = Key('placement.restart');
-  static const chooseByHand = Key('placement.chooseByHand');
 
   /// Na pergunta.
   static const counter = Key('placement.counter');

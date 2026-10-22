@@ -1,162 +1,257 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../domain/models/game_setup.dart';
-import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/level_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/choice_card.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../profile/view_models/profile_cubit.dart';
-import '../../profile/widgets/rating_level_sheet.dart';
 import '../view_models/level_cubit.dart';
+import 'level_ui.dart';
 
-/// "Seu nível" (canvas `PropV1LinkNivel`): o último passo da primeira
-/// abertura. Quem não sabe jogar vai para as aulas; os outros, para a tela
-/// inicial. O rating por conta do Lichess ou do Chess.com ainda não existe.
-class LevelScreen extends StatelessWidget {
+/// "Seu nível" (canvas `PropV1PerfilNivel`): o teste, o Lichess, o Chess.com,
+/// o rating informado ou "aprender do zero". Na primeira abertura, quem não
+/// sabe jogar vai para as aulas e os outros para a tela inicial; pelo Perfil,
+/// a tela volta para ele.
+class LevelScreen extends StatefulWidget {
   const LevelScreen({super.key});
+
+  @override
+  State<LevelScreen> createState() => _LevelScreenState();
+}
+
+class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
+  // O app voltou do navegador; sem a volta do Lichess logo depois, a pessoa
+  // desistiu do login.
+  static const _returnGrace = Duration(seconds: 2);
+  Timer? _returned;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    _returned?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    final cubit = context.read<LevelCubit>();
+    if (!cubit.state.lichessBusy) return;
+    _returned?.cancel();
+    _returned = Timer(_returnGrace, cubit.cancelLichess);
+  }
+
+  void _back() {
+    if (context.read<LevelCubit>().fromProfile) {
+      context.pop();
+    } else {
+      // Volta para a pergunta do objetivo (o voltar do sistema fecharia o
+      // app).
+      context.go(Routes.goal);
+    }
+  }
+
+  void _onFinished(LevelState state) {
+    // O nível escolhido já está no perfil.
+    context.read<ProfileCubit>().load();
+    final fromProfile = context.read<LevelCubit>().fromProfile;
+    if (fromProfile && !state.toSchool && state.choice != LevelChoice.zero) {
+      // Fecha as telas ligadas e o próprio "Seu nível".
+      final route = ModalRoute.of(context);
+      Navigator.of(context).popUntil((each) => each == route);
+      Navigator.of(context).pop();
+      return;
+    }
+    // O iniciante vai direto para as aulas (a tela inicial fica embaixo).
+    context.go(state.toSchool ? Routes.school : Routes.home);
+  }
+
+  Future<void> _continue(LevelState state) async {
+    final cubit = context.read<LevelCubit>();
+    switch (state.choice) {
+      case LevelChoice.test:
+        if (state.testPending) {
+          await takeLevelTest(context, finish: false);
+        } else {
+          await cubit.finish();
+        }
+      case LevelChoice.lichess:
+        final lichess = state.lichess;
+        if (lichess == null) {
+          await cubit.connectLichess();
+        } else {
+          await _open(Routes.levelLichess);
+        }
+      case LevelChoice.chess:
+        await _open(Routes.levelChess);
+      case LevelChoice.manual:
+        await _open(Routes.levelRating);
+      case LevelChoice.zero:
+        await cubit.finish();
+    }
+  }
+
+  Future<void> _open(String route) =>
+      context.push(route, extra: context.read<LevelCubit>());
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final cubit = context.read<LevelCubit>();
-    return BlocConsumer<LevelCubit, LevelState>(
-      listenWhen: (previous, current) => current.finished && !previous.finished,
-      listener: (context, state) {
-        // A faixa escolhida já está no perfil.
-        context.read<ProfileCubit>().load();
-        // O iniciante vai direto para as aulas (a tela inicial fica embaixo).
-        context.go(state.toSchool ? Routes.school : Routes.home);
-      },
-      builder: (context, state) {
-        if (!state.ready) return const Scaffold(key: LevelKeys.screen);
-        final choice = state.choice;
-        // "A Jornada começa no …", com o degrau do teste ou da faixa marcada.
-        String start() => l10n.levelStart(
-          state.startCharacter?.name ??
-              OpponentKind.maia.label(l10n, level: int.parse(state.startRung)),
-        );
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) context.go(Routes.goal);
-          },
-          child: Scaffold(
-            key: LevelKeys.screen,
-            appBar: LucenaAppBar(
-              // Volta para a pergunta do objetivo (o voltar do sistema fecharia o
-              // app).
-              leading: BackButton(
-                key: LevelKeys.back,
-                onPressed: () => context.go(Routes.goal),
-              ),
-              title: Text(l10n.levelTitle),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<LevelCubit, LevelState>(
+          listenWhen: (previous, current) =>
+              current.finished && !previous.finished,
+          listener: (context, state) => _onFinished(state),
+        ),
+        // A volta do Lichess (também com o app reaberto por ela).
+        BlocListener<LevelCubit, LevelState>(
+          listenWhen: (previous, current) =>
+              previous.lichess == null && current.lichess != null,
+          listener: (context, state) => _open(Routes.levelLichess),
+        ),
+        BlocListener<LevelCubit, LevelState>(
+          listenWhen: (previous, current) =>
+              current.errorCount != previous.errorCount &&
+              current.error == LevelError.lichessOffline,
+          listener: (context, state) =>
+              showLucenaSnackBar(context, l10n.levelLichessOffline),
+        ),
+      ],
+      child: BlocBuilder<LevelCubit, LevelState>(
+        builder: (context, state) {
+          if (!state.ready) return const Scaffold(key: LevelKeys.screen);
+          final choice = state.choice;
+          final placed = state.placed;
+          Widget card(
+            LevelChoice option,
+            IconData icon,
+            String title,
+            String body,
+          ) => Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: ChoiceCard(
+              key: LevelKeys.option(option),
+              icon: icon,
+              title: title,
+              body: body,
+              selected: choice == option,
+              onTap: () => cubit.select(option),
             ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+          );
+          return PopScope(
+            canPop: cubit.fromProfile,
+            onPopInvokedWithResult: (didPop, _) {
+              if (!didPop) _back();
+            },
+            child: Scaffold(
+              key: LevelKeys.screen,
+              appBar: LucenaAppBar(
+                leading: BackButton(key: LevelKeys.back, onPressed: _back),
+                title: Text(l10n.levelTitle),
+              ),
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ViktorConversation(
+                      viktor: state.viktor,
+                      speech: l10n.levelViktorSay,
+                      viktorKey: LevelKeys.viktor,
+                      speechKey: LevelKeys.speech,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.xl,
+                        AppSpacing.lg,
+                        AppSpacing.xl,
+                        0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          card(
+                            LevelChoice.test,
+                            Icons.quiz,
+                            l10n.levelTestTitle,
+                            placed == null
+                                ? l10n.levelTestBody
+                                : l10n.levelStart(
+                                    levelRung(context, state, placed),
+                                  ),
+                          ),
+                          card(
+                            LevelChoice.lichess,
+                            Icons.link,
+                            l10n.levelLichessTitle,
+                            l10n.levelLichessText,
+                          ),
+                          card(
+                            LevelChoice.chess,
+                            Icons.link,
+                            l10n.levelChessTitle,
+                            l10n.levelChessText,
+                          ),
+                          card(
+                            LevelChoice.manual,
+                            Icons.trending_up,
+                            l10n.levelManualTitle,
+                            l10n.levelManualText,
+                          ),
+                          card(
+                            LevelChoice.zero,
+                            Icons.school,
+                            l10n.levelZeroTitle,
+                            // Com a Escola escondida, quem não sabe jogar cai
+                            // na tela inicial: o texto não promete a Escola.
+                            VisibleLessons.school
+                                ? l10n.levelZeroText
+                                : l10n.levelZeroTextHome,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              bottomNavigationBar: ActionsFooter(
                 children: [
-                  ViktorConversation(
-                    viktor: state.viktor,
-                    speech: state.texts.say('tour.level'),
-                    viktorKey: LevelKeys.viktor,
-                    speechKey: LevelKeys.speech,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.xl,
-                      AppSpacing.lg,
-                      AppSpacing.xl,
-                      0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ChoiceCard(
-                          key: LevelKeys.option(LevelChoice.test),
-                          icon: Icons.quiz,
-                          title: l10n.levelTestTitle,
-                          body: state.placed != null
-                              ? start()
-                              : l10n.levelTestBody,
-                          selected: choice == LevelChoice.test,
-                          onTap: () => _takeTest(context),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        ChoiceCard(
-                          key: LevelKeys.option(LevelChoice.band),
-                          icon: Icons.trending_up,
-                          title: l10n.levelBandTitle,
-                          body: choice == LevelChoice.band
-                              ? start()
-                              : l10n.levelBandBody,
-                          selected: choice == LevelChoice.band,
-                          onTap: () => _pickBand(context),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        ChoiceCard(
-                          key: LevelKeys.option(LevelChoice.beginner),
-                          icon: Icons.school,
-                          title: l10n.levelBeginnerTitle,
-                          // Com a Escola escondida, o iniciante cai na tela
-                          // inicial: o texto não promete a Escola.
-                          body: VisibleLessons.school
-                              ? l10n.levelBeginnerBody
-                              : l10n.levelBeginnerBodyHome,
-                          selected: choice == LevelChoice.beginner,
-                          onTap: () => cubit.setLevel(RatingLevel.beginner),
-                        ),
-                      ],
-                    ),
+                  FilledButton(
+                    key: LevelKeys.continueButton,
+                    onPressed: state.lichessBusy
+                        ? null
+                        : () => _continue(state),
+                    child: state.lichessBusy
+                        ? const SizedBox.square(
+                            dimension: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.levelContinue),
                   ),
                 ],
               ),
             ),
-            bottomNavigationBar: ActionsFooter(
-              children: [
-                FilledButton(
-                  key: LevelKeys.next,
-                  onPressed: state.testPending
-                      ? () => _takeTest(context)
-                      : cubit.finish,
-                  child: Text(l10n.tourNext),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
-  }
-}
-
-/// A folha das faixas (com confirmar); a faixa confirmada fica marcada.
-Future<void> _pickBand(BuildContext context) async {
-  final cubit = context.read<LevelCubit>();
-  final level = await showRatingLevelSheet(
-    context,
-    selected: cubit.state.level,
-  );
-  if (level != null) await cubit.setLevel(level);
-}
-
-/// Abre o teste de nível. Usado o resultado, o cartão do teste fica marcado;
-/// "Prefiro escolher minha faixa" lá dentro volta com a folha das faixas.
-Future<void> _takeTest(BuildContext context) async {
-  final cubit = context.read<LevelCubit>();
-  final used = await context.push<bool>(Routes.placementFrom('tour'));
-  if (used == true) {
-    await cubit.usePlacement();
-  } else if (used == false && context.mounted) {
-    await _pickBand(context);
   }
 }

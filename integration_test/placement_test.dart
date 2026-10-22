@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
-import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
@@ -49,19 +48,6 @@ void main() {
 
     await $(LevelKeys.screen).waitUntilVisible();
     await tour.start();
-  });
-
-  patrolTest('no teste, "prefiro informar meu rating" volta ao tour com a '
-      'folha das faixas', ($) async {
-    final tour = TourRobot($);
-    final placement = PlacementRobot($);
-    await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.nextUntilLevel();
-    await tour.takeTest();
-    await placement.expectIntro();
-    await $(PlacementKeys.chooseByHand).scrollTo().tap();
-    await $.pumpAndSettle();
-    await $(ProfileKeys.levelSheet).waitUntilVisible();
   });
 
   patrolTest('perfil: refazer o teste; a escola e a trilha de finais passam '

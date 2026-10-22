@@ -10,6 +10,9 @@ abstract final class ProfileKeys {
 
   /// A linha "Seu objetivo", que abre a folha do objetivo.
   static const rowGoal = Key('profile.rowGoal');
+
+  /// A linha "Seu nível", que abre a tela do nível (E1.12).
+  static const rowLevel = Key('profile.rowLevel');
   static const nicknameField = Key('profile.nickname');
   static const saveButton = Key('profile.save');
 

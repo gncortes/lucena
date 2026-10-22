@@ -40,7 +40,6 @@ void main() {
   Future<(PlacementCubit, FakeProfileRepository)> pump(
     WidgetTester tester, {
     VoidCallback? onDone,
-    VoidCallback? onChooseByHand,
     Size size = const Size(400, 800),
     bool systemBars = false,
     bool geometry = false,
@@ -88,10 +87,7 @@ void main() {
             ),
             child: BlocProvider.value(
               value: cubit,
-              child: PlacementScreen(
-                onDone: onDone,
-                onChooseByHand: onChooseByHand,
-              ),
+              child: PlacementScreen(onDone: onDone),
             ),
           ),
         ),
@@ -106,8 +102,6 @@ void main() {
     var done = false;
     final (cubit, profile) = await pump(tester, onDone: () => done = true);
     expect(find.byKey(PlacementKeys.start), findsOneWidget);
-    // Fora do tour, sem "prefiro escolher".
-    expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
 
     await tester.tap(find.byKey(PlacementKeys.start));
     await tester.pumpAndSettle();
@@ -130,13 +124,12 @@ void main() {
   });
 
   for (final size in [const Size(412, 915), const Size(360, 640)]) {
-    testWidgets('abertura, $size: rodapé em coluna, "Começar" na largura '
-        'toda e "Prefiro informar" em texto abaixo', (tester) async {
-      await pump(tester, size: size, onChooseByHand: () {});
+    testWidgets('abertura, $size: "Começar" na largura toda, encostado na '
+        'base', (tester) async {
+      await pump(tester, size: size);
       final footerFinder = find.byKey(PlacementKeys.footer);
       final footer = tester.getRect(footerFinder);
       final start = tester.getRect(find.byKey(PlacementKeys.start));
-      final choose = tester.getRect(find.byKey(PlacementKeys.chooseByHand));
       // O rodapé encosta na base da tela (canvas PropV2TesteAbertura).
       expect(footer.bottom, size.height);
       expect(footer.left, 0);
@@ -145,26 +138,7 @@ void main() {
       expect(start.height, 52);
       expect(start.left, 16);
       expect(start.right, size.width - 16);
-      expect(
-        find.descendant(
-          of: footerFinder,
-          matching: find.byKey(PlacementKeys.chooseByHand),
-        ),
-        findsOneWidget,
-      );
-      expect(choose.top - start.bottom, 8);
-      // Os dois botões do ActionsFooter têm 52.
-      expect(choose.height, 52);
-      expect(choose.left, 16);
-      expect(choose.right, size.width - 16);
-      expect(size.height - choose.bottom, 8);
-      final label = tester.getRect(
-        find.descendant(
-          of: find.byKey(PlacementKeys.chooseByHand),
-          matching: find.byType(Text),
-        ),
-      );
-      expect(label.center.dx, closeTo(size.width / 2, 0.5));
+      expect(size.height - start.bottom, 8);
     });
   }
 
@@ -221,9 +195,10 @@ void main() {
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
     final w = size.width;
     testWidgets('${w.toInt()}: abertura retomada: card de onde parou abaixo '
-        'dos selos; "Continuar teste" cheio e "Recomeçar" em texto, sem o '
-        'link de rating', (tester) async {
-      final (cubit, _) = await pump(tester, size: size, onChooseByHand: () {});
+        'dos selos; "Continuar teste" cheio e "Recomeçar" em texto', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, size: size);
       await tester.tap(find.byKey(PlacementKeys.start));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(PlacementKeys.dontKnow));
@@ -245,7 +220,6 @@ void main() {
       expect(restart.top - resume.bottom, 8);
       expect(size.height - restart.bottom, 8);
       expect(find.byKey(PlacementKeys.start), findsNothing);
-      expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
       expect(find.text('Continuar teste'), findsOneWidget);
 
       // O card (variante B): fora do rodapé, 24 abaixo dos selos, na
@@ -413,15 +387,6 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
-
-  testWidgets('no tour, "prefiro informar meu rating" aparece e avisa', (
-    tester,
-  ) async {
-    var byHand = false;
-    await pump(tester, onChooseByHand: () => byHand = true);
-    await tester.tap(find.byKey(PlacementKeys.chooseByHand));
-    expect(byHand, isTrue);
-  });
 
   testWidgets('pergunta de escolha: as opções cabem em 320 dp', (tester) async {
     final (cubit, _) = await pump(tester, size: const Size(320, 640));

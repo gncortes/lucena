@@ -94,6 +94,13 @@ import '../data/services/preferences_service.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/chesscom/chesscom_repository.dart';
+import '../data/repositories/chesscom/chesscom_repository_remote.dart';
+import '../data/repositories/lichess/lichess_repository.dart';
+import '../data/repositories/lichess/lichess_repository_remote.dart';
+import '../data/services/chesscom_service.dart';
+import '../data/services/lichess_service.dart';
+import '../data/services/secure_storage_service.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
@@ -127,6 +134,8 @@ class Dependencies {
     required this.shareRepository,
     required this.deepLinkRepository,
     required this.accountRepository,
+    required this.lichessRepository,
+    required this.chessComRepository,
     required this.pushRepository,
     required this.placementRepository,
     required this.soundRepository,
@@ -215,6 +224,13 @@ class Dependencies {
         now: now,
         language: () async => (await settings.load()).languageCode,
       ),
+      lichessRepository: RemoteLichessRepository(
+        service: LichessService(),
+        storage: DeviceSecureStorageService(),
+        links: AppLinksDeepLinkService(),
+        now: now,
+      ),
+      chessComRepository: RemoteChessComRepository(ChessComService(), now: now),
       pushRepository: FirebasePushRepository(
         firebase ? FirebasePushService() : const NoPushService(),
       ),
@@ -290,6 +306,8 @@ class Dependencies {
   final ShareRepository shareRepository;
   final DeepLinkRepository deepLinkRepository;
   final AccountRepository accountRepository;
+  final LichessRepository lichessRepository;
+  final ChessComRepository chessComRepository;
   final PushRepository pushRepository;
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
