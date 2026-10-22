@@ -4,6 +4,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/journey.dart';
@@ -13,7 +14,8 @@ import '../../../domain/use_cases/subcategory_material.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
@@ -27,6 +29,7 @@ import '../../history/widgets/history_labels.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_pace_chip.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/actions_footer.dart';
 
 /// O nome de um speedrun: contra quem (`Contra o Coco`), o nome do final
 /// (`Dama contra torre`), a série de exercícios ou a Jornada completa.
@@ -58,24 +61,6 @@ Duration recordTime(Speedrun speedrun, Duration total) =>
     speedrun.kind == SpeedrunKind.marathon
     ? Marathon.left(speedrun.time, total)
     : total;
-
-/// O nome de um speedrun como texto.
-class SpeedrunTitle extends StatelessWidget {
-  const SpeedrunTitle(
-    this.speedrun, {
-    required this.characters,
-    this.style,
-    super.key,
-  });
-
-  final Speedrun speedrun;
-  final List<Character> characters;
-  final TextStyle? style;
-
-  @override
-  Widget build(BuildContext context) =>
-      Text(speedrunName(context.l10n, characters, speedrun), style: style);
-}
 
 /// A imagem de um speedrun: o retrato do adversário, o material do final ou
 /// um ícone.
@@ -167,7 +152,7 @@ class _Material extends StatelessWidget {
       color: color,
     );
     return Padding(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child: Column(
@@ -287,7 +272,7 @@ class SpeedrunStageRow extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Row(
               children: [
                 SizedBox(
@@ -303,12 +288,14 @@ class SpeedrunStageRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   // A linha cresce com o texto (fonte grande, árabe); a
                   // trilha acompanha.
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,13 +307,12 @@ class SpeedrunStageRow extends StatelessWidget {
                                       ? theme.textTheme.titleLarge
                                       : theme.textTheme.titleMedium)
                                   ?.copyWith(
-                                    fontWeight: FontWeight.w700,
                                     color: ahead
                                         ? colors.onSurfaceVariant
                                         : null,
                                   ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           key: noteKey,
                           note != null
@@ -354,7 +340,7 @@ class SpeedrunStageRow extends StatelessWidget {
                           ),
                         ),
                         if (last) ...[
-                          const SizedBox(height: 6),
+                          const SizedBox(height: AppSpacing.sm),
                           TrailBadge(
                             text: l10n.journeyBoss,
                             color: colors.tertiary,
@@ -364,7 +350,7 @@ class SpeedrunStageRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 ?trailing,
               ],
             ),
@@ -391,7 +377,6 @@ class SpeedrunHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final level = switch (SpeedrunCategories.of(speedrun)) {
       SpeedrunCategory.beginner => l10n.profileLevelBeginner,
       SpeedrunCategory.intermediate => l10n.profileLevelIntermediate,
@@ -402,32 +387,40 @@ class SpeedrunHeader extends StatelessWidget {
         ? endgameName(l10n, speedrun.stages.first.position.subcategory)
         : speedrunName(l10n, characters, speedrun);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
       child: Row(
         children: [
           SpeedrunPicture(speedrun, characters: characters, size: 72),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: AppWeight.heavy),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
                   children: [
                     SpeedrunPaceChip(
                       speedrun.time,
                       key: SpeedrunKeys.paceBadge,
                     ),
                     if (level != null)
-                      InfoChip(icon: Icons.signal_cellular_alt, label: level),
+                      InfoChip(
+                        icon: Icons.signal_cellular_alt,
+                        label: level,
+                        outlined: true,
+                      ),
                   ],
                 ),
               ],
@@ -465,8 +458,7 @@ Future<void> startSpeedrun(
   if (context.mounted) await cubit.load(speedrunId: speedrun.id);
 }
 
-/// O rodapé fixo das telas do speedrun: fundo da tela, borda de cima e um
-/// botão de 52 (como o da conclusão da partida).
+/// O rodapé fixo das telas do speedrun: um [ActionsFooter] com um botão.
 class SpeedrunActionBar extends StatelessWidget {
   const SpeedrunActionBar({
     required this.buttonKey,
@@ -483,29 +475,15 @@ class SpeedrunActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(color: theme.scaffoldBackgroundColor),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screen,
-            AppSpacing.sm,
-            AppSpacing.screen,
-            AppSpacing.sm,
-          ),
-          child: FilledButton.icon(
-            key: buttonKey,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
-            icon: Icon(icon),
-            label: Text(label),
-            onPressed: onPressed,
-          ),
+    return ActionsFooter(
+      children: [
+        FilledButton.icon(
+          key: buttonKey,
+          icon: Icon(icon),
+          label: Text(label),
+          onPressed: onPressed,
         ),
-      ),
+      ],
     );
   }
 }
@@ -536,7 +514,7 @@ class SpeedrunOfferLine extends StatelessWidget {
     final short = l10n.speedrunRatingBonusShort(points);
     final at = full.indexOf(short);
     if (at < 0) return Text(full, style: style);
-    final strong = style?.copyWith(fontWeight: FontWeight.w700, color: color);
+    final strong = style?.copyWith(fontWeight: AppWeight.strong, color: color);
     return Text.rich(
       TextSpan(
         style: style,
@@ -545,7 +523,11 @@ class SpeedrunOfferLine extends StatelessWidget {
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: ExcludeSemantics(
-              child: Icon(Icons.trending_up, size: 16, color: color),
+              child: Icon(
+                Icons.trending_up,
+                size: AppIconSize.small,
+                color: color,
+              ),
             ),
           ),
           const WidgetSpan(child: SizedBox(width: AppSpacing.xs)),
@@ -572,5 +554,46 @@ class SpeedrunOfferLine extends StatelessWidget {
     final la = a.computeLuminance();
     final lb = b.computeLuminance();
     return (math.max(la, lb) + 0.05) / (math.min(la, lb) + 0.05);
+  }
+}
+
+/// O ritmo, quando a tentativa terminou e, na [marathon], o chip "Maratona",
+/// em chips que quebram de linha (o mesmo na tentativa do speedrun e na da
+/// Maratona).
+class RunChips extends StatelessWidget {
+  const RunChips({
+    required this.speedrun,
+    required this.run,
+    this.marathon = false,
+    super.key,
+  });
+
+  final Speedrun speedrun;
+  final SpeedrunRun run;
+  final bool marathon;
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).toString();
+    final endedAt = run.finishedAt ?? run.attempt.abandonedAt;
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
+      children: [
+        SpeedrunPaceChip(speedrun.time),
+        if (marathon)
+          InfoChip(
+            icon: Icons.all_inclusive,
+            label: context.l10n.marathonSection,
+          ),
+        if (endedAt != null)
+          InfoChip(
+            icon: Icons.calendar_today,
+            label: HistoryLabels.capitalize(
+              DateFormat.MMMd(locale).add_Hm().format(endedAt.toLocal()),
+            ),
+          ),
+      ],
+    );
   }
 }

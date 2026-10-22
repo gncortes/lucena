@@ -15,6 +15,7 @@ import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../race/widgets/warm_up_offer_switch.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../view_models/settings_cubit.dart';
 
@@ -154,6 +155,7 @@ class GameSettingsScreen extends StatelessWidget {
           onChanged: (value) =>
               context.read<SettingsCubit>().setCharacterTalk(enabled: value),
         ),
+        const WarmUpOfferSwitch(),
       ],
     );
   }

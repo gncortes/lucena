@@ -1,4 +1,7 @@
 import 'package:chessground/chessground.dart';
+
+import '../../core/theme/app_chip.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -7,15 +10,17 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/actions_footer.dart';
 
 /// O fim do teste: a faixa (com o intervalo numa régua), o mapa do que o
 /// jogador domina e do que falta, os três primeiros passos do roteiro e, fixo
@@ -121,9 +126,8 @@ class _LevelCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Card.filled(
+    return Card(
       key: PlacementKeys.level,
-      margin: EdgeInsets.zero,
       color: colors.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.insideCard),
@@ -158,8 +162,7 @@ class _LevelCard extends StatelessWidget {
                                 shown.name(l10n),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                style: context.bigNumber?.copyWith(
                                   color: colors.onPrimaryContainer,
                                 ),
                               ),
@@ -170,7 +173,6 @@ class _LevelCard extends StatelessWidget {
                                   ? '${result.theta}'
                                   : '${shown.rating}',
                               style: theme.textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w600,
                                 color: colors.onPrimaryContainer,
                               ),
                             ),
@@ -352,6 +354,8 @@ class _TwoLevels extends StatelessWidget {
           children: [
             for (final level in levels)
               ChoiceChip(
+                materialTapTargetSize: AppChip.tapTarget,
+                visualDensity: AppChip.density,
                 key: PlacementKeys.levelChoice(level),
                 label: Text(level.name(l10n)),
                 selected: level == chosen,
@@ -388,12 +392,7 @@ class _SkillMapSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.placementMapTitle,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Text(l10n.placementMapTitle, style: context.sectionTitle),
         const SizedBox(height: AppSpacing.sm),
         // A legenda.
         Wrap(
@@ -408,7 +407,11 @@ class _SkillMapSection extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(_icon(state), size: 16, color: _color(colors, state)),
+                  Icon(
+                    _icon(state),
+                    size: AppIconSize.small,
+                    color: _color(colors, state),
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     _label(l10n, state),
@@ -454,14 +457,9 @@ IconData _icon(NodeState state) => switch (state) {
 Color _color(ColorScheme colors, NodeState state) => switch (state) {
   NodeState.mastered => colors.primary,
   NodeState.likely => colors.primary.withValues(alpha: 0.6),
-  NodeState.gap => _amber(colors),
+  NodeState.gap => AppColors.goldInk,
   NodeState.unknown => colors.outline,
 };
-
-// "Para estudar": âmbar, um aviso sem cara de erro.
-Color _amber(ColorScheme colors) => colors.brightness == Brightness.dark
-    ? AppColors.amberLight
-    : AppColors.amberDark;
 
 String _label(AppLocalizations l10n, NodeState state) => switch (state) {
   NodeState.mastered => l10n.placementMastered,
@@ -491,7 +489,7 @@ class _NodeChip extends StatelessWidget {
       // A lacuna em contorno, para saltar aos olhos sem pesar.
       decoration: BoxDecoration(
         color: gap ? colors.surface : colors.surfaceContainerHighest,
-        border: gap ? Border.all(color: _amber(colors), width: 1.5) : null,
+        border: gap ? Border.all(color: AppColors.goldColor, width: 1.5) : null,
         borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Row(
@@ -499,7 +497,7 @@ class _NodeChip extends StatelessWidget {
         children: [
           Icon(
             _icon(status.state),
-            size: 16,
+            size: AppIconSize.small,
             color: _color(colors, status.state),
           ),
           const SizedBox(width: AppSpacing.xs),
@@ -529,27 +527,18 @@ class _Roadmap extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final steps = state.roadmap!.steps.take(3).toList();
-    // Aula que ainda não existe não tem título nos textos: vale o nome
-    // traduzido do final, com "em breve".
-    String titleOf(RoadmapStep step) => step.soon
-        ? skillName(l10n, step.node)
-        : state.titles[step.lessonId] ?? step.lessonId;
+    String titleOf(RoadmapStep step) =>
+        state.titles[step.lessonId] ?? step.lessonId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.placementRoadmapTitle,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        Text(l10n.placementRoadmapTitle, style: context.sectionTitle),
         const SizedBox(height: AppSpacing.sm),
         for (final (index, step) in steps.indexed)
           Padding(
             key: PlacementKeys.step(index),
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Card.outlined(
-              margin: EdgeInsets.zero,
+            child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
@@ -596,18 +585,9 @@ class _Roadmap extends StatelessWidget {
                       step.school
                           ? Icons.school_outlined
                           : Icons.auto_stories_outlined,
-                      size: 20,
+                      size: AppIconSize.button,
                       color: colors.onSurfaceVariant,
                     ),
-                    if (step.soon) ...[
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(
-                        l10n.placementSoon,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -631,7 +611,11 @@ class _Sources extends StatelessWidget {
     return Row(
       key: PlacementKeys.sources,
       children: [
-        Icon(Icons.info_outline_rounded, size: 16, color: colors.outline),
+        Icon(
+          Icons.info_outline_rounded,
+          size: AppIconSize.small,
+          color: colors.outline,
+        ),
         const SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Text(
@@ -655,37 +639,21 @@ class _Actions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(color: colors.surface),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.screen,
-          AppSpacing.md,
-          AppSpacing.screen,
-          AppSpacing.md,
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        FilledButton(
+          key: PlacementKeys.useLevel,
+          onPressed: onUse,
+          child: Text(l10n.placementUseLevel),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            FilledButton(
-              key: PlacementKeys.useLevel,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              onPressed: onUse,
-              child: Text(l10n.placementUseLevel),
-            ),
-            if (onChooseByHand != null)
-              TextButton(
-                key: PlacementKeys.chooseByHand,
-                onPressed: onChooseByHand,
-                child: Text(l10n.placementChooseByHand),
-              ),
-          ],
-        ),
-      ),
+        if (onChooseByHand != null)
+          TextButton(
+            key: PlacementKeys.chooseByHand,
+            onPressed: onChooseByHand,
+            child: Text(l10n.placementChooseByHand),
+          ),
+      ],
     );
   }
 }

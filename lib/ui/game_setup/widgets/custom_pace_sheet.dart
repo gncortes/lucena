@@ -4,10 +4,13 @@ import '../../../domain/models/clock.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// O ritmo montado à mão: o tempo de cada lado.
 class CustomPace {
@@ -89,20 +92,13 @@ class _CustomPaceSheetState extends State<_CustomPaceSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = context.l10n;
     return Column(
       key: GameSetupKeys.customSheet,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
-          child: Text(
-            l10n.setupPaceCustomTitle,
-            style: theme.textTheme.titleLarge,
-          ),
-        ),
+        SheetHeader(title: l10n.setupPaceCustomTitle),
         // Em tela pequena os controles rolam; o botão fica sempre à vista.
         Flexible(
           child: SingleChildScrollView(
@@ -130,7 +126,9 @@ class _CustomPaceSheetState extends State<_CustomPaceSheet> {
                 ),
                 SwitchListTile(
                   key: GameSetupKeys.customSame,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                  ),
                   title: Text(l10n.clockSameForBoth),
                   value: _same,
                   onChanged: (value) => setState(() {
@@ -143,18 +141,17 @@ class _CustomPaceSheetState extends State<_CustomPaceSheet> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-          child: FilledButton(
-            key: GameSetupKeys.customConfirm,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
+        ActionsFooter(
+          margin: AppSpacing.xl,
+          children: [
+            FilledButton(
+              key: GameSetupKeys.customConfirm,
+              onPressed: () => Navigator.of(context).pop(
+                CustomPace(user: _user, opponent: _same ? _user : _opponent),
+              ),
+              child: Text(l10n.commonConfirm),
             ),
-            onPressed: () => Navigator.of(
-              context,
-            ).pop(CustomPace(user: _user, opponent: _same ? _user : _opponent)),
-            child: Text(l10n.commonConfirm),
-          ),
+          ],
         ),
       ],
     );
@@ -184,19 +181,25 @@ class _TimeEditor extends StatelessWidget {
     final minutes = time.initial.inMinutes;
     final increment = time.increment.inSeconds;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Card(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 14, 8, 8),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.sm,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 child: Row(
                   children: [
                     Expanded(
@@ -210,8 +213,7 @@ class _TimeEditor extends StatelessWidget {
                     Text(
                       paceLabel(l10n, time),
                       key: GameSetupKeys.customValue(who),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: context.bigNumber?.copyWith(
                         color: colors.primary,
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
@@ -219,7 +221,7 @@ class _TimeEditor extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               _StepSlider(
                 sliderKey: GameSetupKeys.customSlider(who, 'minutes'),
                 icon: Icons.av_timer_outlined,
@@ -281,11 +283,20 @@ class _StepSlider extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(12, 8, 12, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            0,
+          ),
           child: Row(
             children: [
-              Icon(icon, size: 18, color: colors.onSurfaceVariant),
-              const SizedBox(width: 8),
+              Icon(
+                icon,
+                size: AppIconSize.button,
+                color: colors.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(child: Text(label, style: theme.textTheme.bodyLarge)),
             ],
           ),

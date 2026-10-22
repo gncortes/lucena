@@ -21,8 +21,7 @@ abstract final class SchoolKeys {
 }
 
 /// As chaves que sobraram da lição antiga: a faixa de variantes
-/// (`variation_strip.dart`, usada pelo exercício e pela lista de lances) e o
-/// balão de teste do `CharacterSpeech`.
+/// (`variation_strip.dart`, usada pelo exercício e pela lista de lances).
 abstract final class LessonKeys {
   static const variationStripList = Key('lesson.variation.strip.list');
   static const variationStripCurrent = Key('lesson.variation.strip.current');
@@ -43,10 +42,6 @@ abstract final class LessonKeys {
   static Key variationHiddenBlock(int row) =>
       Key('lesson.variation.hidden.$row');
   static const variationHiddenComment = Key('lesson.variation.hidden.comment');
-
-  static const practiceSpeech = Key('lesson.practice.speech');
-  static const practiceViktor = Key('lesson.practice.viktor');
-  static const practiceTyping = Key('lesson.practice.typing');
 }
 
 /// Os desafios das estrelas: a lista e um desafio.

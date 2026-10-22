@@ -17,7 +17,17 @@ class AppColors extends ThemeExtension<AppColors> {
     this.chessBlack = chessBlackColor,
   });
 
+  /// O verde do recorde novo (texto e ícone do troféu).
+  static const record = Color(0xff2e6b3a);
+
   static const goldColor = Color(0xfff2b705);
+
+  /// Texto sobre o dourado (D26): selos, medalha e relatório.
+  static const goldInk = Color(0xff5a3c00);
+
+  /// O preto quente do relógio e do confronto (D26). [chessBlackColor] é só
+  /// a peça.
+  static const ink = Color(0xff312e2b);
   static const silverColor = Color(0xffa8b3bd);
   static const bronzeColor = Color(0xffcd7f32);
 
@@ -37,17 +47,8 @@ class AppColors extends ThemeExtension<AppColors> {
   static const clear = Color(0x00000000);
   static const scrimBottom = Color(0xb3000000);
 
-  /// Fundo escuro quente da abertura do confronto e do jogo às cegas.
-  static const inkWarm = Color(0xff312e2b);
-
-  // Relógios.
-  static const clockDark = Color(0xff262421);
-  static const clockOnGreen = Color(0xff0b2e10);
-
   // Revisão da partida.
   static const paper = Color(0xfff2f2f0);
-  static const paperInk = Color(0xff1e1e1e);
-  static const graphite = Color(0xff3a3a3a);
   static const markBlue = Color(0xcc3e7bc4);
   static const markGreen = Color(0xcc5fa14a);
 
@@ -67,25 +68,11 @@ class AppColors extends ThemeExtension<AppColors> {
   static const resultUpDk = Color(0xff3fa55a);
   static const resultDownDk = Color(0xffd9534f);
 
-  // Ouro de celebração, relatório e medalha.
-  static const confetti = Color(0xffffc107);
-  static const reportGold = Color(0xfff2b33d);
-  static const reportGoldLight = Color(0xffffd976);
-  static const reportGoldInk = Color(0xff5a3c00);
-  static const medalLight = Color(0xffffe08a);
-  static const medalDark = Color(0xffb97a00);
-  static const medalInk = Color(0xff4a3000);
   static const shine = Color(0xccffffff);
   static const shineClear = Color(0x00ffffff);
 
-  // Desafio de estrelas: nível médio e nomeado.
-  static const levelMedium = Color(0xffe65100);
-  static const levelNamed = Color(0xff6a1b9a);
-
-  // Jogo às cegas e "Para estudar".
+  // Jogo às cegas.
   static const greenBlind = Color(0xff43a047);
-  static const amberLight = Color(0xffffd54f);
-  static const amberDark = Color(0xffff6f00);
 
   /// A opacidade das marcas de lance sobre o tabuleiro (0xcc).
   static const boardMarkAlpha = 0.8;

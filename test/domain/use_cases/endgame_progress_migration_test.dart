@@ -324,19 +324,19 @@ void main() {
             approved: true,
             stars: {'e05': 2},
           ),
-          'rook.lucena': kept,
+          'pawns.keySquares': kept,
         },
         ongoing: checkpoint,
       );
       final migrated = EndgameProgressMigration.apply(progress);
-      expect(migrated.lessons.keys, ['rook.lucena']);
-      expect(migrated.of('rook.lucena'), same(kept));
+      expect(migrated.lessons.keys, ['pawns.keySquares']);
+      expect(migrated.of('pawns.keySquares'), same(kept));
       expect(migrated.ongoing, isNull);
       expect(EndgameProgressMigration.apply(migrated), same(migrated));
     });
 
     test('lição aberta em outra aula continua aberta', () {
-      const other = LessonCheckpoint(lessonId: 'rook.lucena', step: 1);
+      const other = LessonCheckpoint(lessonId: 'pawns.keySquares', step: 1);
       const progress = EndgameProgress(
         lessons: {'mates.bishopKnight.w': EndgameLessonProgress()},
         ongoing: other,
@@ -396,6 +396,47 @@ void main() {
           ),
         },
         ongoing: LessonCheckpoint(lessonId: queen, part: 'segunda', step: 1),
+      );
+      expect(EndgameProgressMigration.apply(progress), same(progress));
+    });
+  });
+
+  group('T79: Lucena', () {
+    const lucena = EndgameProgressMigration.lucenaId;
+
+    test('sai o formato antigo: nenhum capítulo velho fica', () {
+      const progress = EndgameProgress(
+        lessons: {
+          lucena: EndgameLessonProgress(
+            lessonDone: true,
+            approved: true,
+            parts: {'lucena', 'bridge', 'summary'},
+            stars: {'e12': 3, 'e16': 2},
+            exercise: ExerciseCheckpoint(exerciseId: 'e14'),
+          ),
+        },
+        ongoing: LessonCheckpoint(lessonId: lucena, part: 'bridge', step: 4),
+      );
+      final migrated = EndgameProgressMigration.apply(progress);
+      final lesson = migrated.of(lucena);
+      expect(lesson.lessonDone, isFalse);
+      expect(lesson.approved, isFalse);
+      expect(lesson.parts, isEmpty);
+      expect(lesson.stars, isEmpty);
+      expect(lesson.exercise, isNull);
+      expect(migrated.ongoing, isNull);
+      expect(EndgameProgressMigration.apply(migrated), same(migrated));
+    });
+
+    test('o progresso novo não muda', () {
+      const progress = EndgameProgress(
+        lessons: {
+          lucena: EndgameLessonProgress(
+            parts: {'ponte', 'corte'},
+            stars: {'ponteAssessment01': 3},
+          ),
+        },
+        ongoing: LessonCheckpoint(lessonId: lucena, part: 'lateral', step: 1),
       );
       expect(EndgameProgressMigration.apply(progress), same(progress));
     });

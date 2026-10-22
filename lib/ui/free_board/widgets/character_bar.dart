@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/character.dart';
 import '../../core/keys/free_board_keys.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import 'sound_dialog.dart';
 import 'clock_row.dart';
@@ -29,17 +31,12 @@ import '../../core/theme/app_colors.dart';
 class CharacterBar extends StatelessWidget {
   const CharacterBar({
     required this.talk,
-    this.avatarSize = maxAvatar,
+    this.avatarSize = CharacterAvatar.player,
     this.showName = true,
     this.speechTop,
     this.playerRow,
     super.key,
   });
-
-  /// O tamanho do retrato: menor em tela baixa, para o tabuleiro ocupar a
-  /// largura toda.
-  static const maxAvatar = 84.0;
-  static const minAvatar = 44.0;
 
   /// O espaço acima do retrato e o respiro entre a faixa e o tabuleiro.
   static const topGap = 6.0;
@@ -96,9 +93,9 @@ class CharacterBar extends StatelessWidget {
       height: heightFor(avatarSize),
       child: Padding(
         padding: const EdgeInsetsDirectional.fromSTEB(
-          12,
+          AppSpacing.md,
           topGap,
-          12,
+          AppSpacing.md,
           bottomGap,
         ),
         child: Row(
@@ -250,8 +247,8 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
         info.childPaintTransform,
         Offset(12, widget.top),
       );
-      // A base do balão (com o vão de 6 até o retrato) fica em `top + 84`,
-      // e a ponta em `top + 78`; o balão cresce para cima.
+      // A base do balão fica em `top + 84` (os chamadores medem `top` a
+      // partir daí); o balão cresce para cima.
       return Positioned(
         left: origin.dx,
         bottom: info.overlaySize.height - (origin.dy + 84),
@@ -298,12 +295,9 @@ class _TransientSpeechState extends State<_TransientSpeech> {
   void _restart() {
     _hide?.cancel();
     _visible = true;
-    _hide = Timer(
-      Duration(milliseconds: math.max(6000, widget.text.length * 60)),
-      () {
-        if (mounted) setState(() => _visible = false);
-      },
-    );
+    _hide = Timer(AppMotion.floatingSpeech(widget.text.length), () {
+      if (mounted) setState(() => _visible = false);
+    });
   }
 
   @override
@@ -348,7 +342,7 @@ class CharacterSoundButton extends StatelessWidget {
           onPressed: () => showGameSoundDialog(context),
           style: TextButton.styleFrom(
             foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -357,10 +351,13 @@ class CharacterSoundButton extends StatelessWidget {
                 isLabelVisible: heard && speech.availableFor(language),
                 label: Text(l10n.voiceSpeedValue(speech.settings.speed)),
                 child: sound
-                    ? const Icon(Icons.volume_up_outlined, size: 22)
-                    : const SoundOffIcon(size: 22),
+                    ? const Icon(
+                        Icons.volume_up_outlined,
+                        size: AppIconSize.standard,
+                      )
+                    : const SoundOffIcon(size: AppIconSize.standard),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Flexible(
                 child: Text(
                   sound ? l10n.gameSoundLabelOn : l10n.gameSoundLabelOff,
@@ -368,7 +365,6 @@ class CharacterSoundButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -395,7 +391,12 @@ class _NameTag extends StatelessWidget {
       ),
       child: Container(
         width: width,
-        padding: const EdgeInsets.fromLTRB(4, 6, 4, 3),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.xs,
+          AppSpacing.sm,
+          AppSpacing.xs,
+          AppSpacing.xs,
+        ),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -410,7 +411,7 @@ class _NameTag extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelMedium
-              ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
+              ?.copyWith(color: AppColors.white),
         ),
       ),
     );

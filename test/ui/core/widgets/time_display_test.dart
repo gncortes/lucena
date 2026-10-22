@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 
@@ -129,7 +130,7 @@ void main() {
           ),
           findsNothing,
         );
-        expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 1);
+        expect(find.byType(Opacity), findsNothing);
         final number = tester.widget<Text>(
           find.descendant(of: find.byKey(textKey), matching: find.byType(Text)),
         );
@@ -271,58 +272,79 @@ void main() {
                   widget.decoration is BoxDecoration &&
                   (widget.decoration as BoxDecoration).shape == BoxShape.circle,
             );
-        expect(cue, hasLength(1));
+        // A cor, a borda e o ícone bastam: sem a bolinha vermelha.
+        expect(cue, isEmpty);
       }
     }
   });
 
-  testWidgets('clock side colors and border width survive all states/themes', (
+  testWidgets('clock side colors and border width follow the state', (
     tester,
   ) async {
-    for (final brightness in Brightness.values) {
-      for (final side in Side.values) {
-        for (final state in TimeDisplayState.values) {
-          await tester.pumpWidget(
-            app(
-              TimeDisplay(
-                value: '5:00',
-                semanticsLabel: 'Localized clock',
-                type: TimeDisplayType.clock,
-                side: side,
-                state: state,
-                textKey: textKey,
-              ),
-              brightness: brightness,
+    for (final side in Side.values) {
+      for (final state in TimeDisplayState.values) {
+        await tester.pumpWidget(
+          app(
+            TimeDisplay(
+              value: '5:00',
+              semanticsLabel: 'Localized clock',
+              type: TimeDisplayType.clock,
+              side: side,
+              state: state,
+              textKey: textKey,
             ),
-          );
-          await tester.pumpAndSettle();
-          final box = decoration(tester);
-          expect(
-            box.color,
-            side == Side.white
-                ? const Color(0xFFFFFFFF)
-                : const Color(0xFF262421),
-          );
-          expect((box.border! as Border).top.width, 2);
-          expect(
-            tester.widget<Opacity>(find.byType(Opacity)).opacity,
-            state == TimeDisplayState.paused ? 0.55 : 1,
-          );
-          expect(
-            tester.widget<Text>(find.byKey(textKey)).style!.color,
-            side == Side.white
-                ? const Color(0xFF262421)
-                : const Color(0xFFFFFFFF),
-          );
-          expect(
-            find.byIcon(Icons.av_timer_outlined),
-            state == TimeDisplayState.active || state == TimeDisplayState.low
-                ? findsOneWidget
-                : findsNothing,
-          );
+          ),
+        );
+        await tester.pumpAndSettle();
+        final colors = Theme.of(tester.element(find.byType(TimeDisplay)))
+            .colorScheme;
+        final white = side == Side.white;
+        final box = decoration(tester);
+        final text = tester.widget<Text>(find.byKey(textKey)).style!.color;
+        expect(find.byType(Opacity), findsNothing);
+        expect((box.border! as Border).top.width, 2);
+        switch (state) {
+          case TimeDisplayState.low:
+            expect(box.color, colors.errorContainer);
+            expect((box.border! as Border).top.color, colors.error);
+            expect(text, colors.onErrorContainer);
+          case TimeDisplayState.paused:
+            expect(box.color, white ? AppColors.white : AppColors.ink);
+            expect((box.border! as Border).top.color, colors.outlineVariant);
+            expect(
+              text,
+              white
+                  ? colors.onSurfaceVariant
+                  : AppColors.white.withValues(alpha: 0.72),
+            );
+          default:
+            expect(box.color, white ? AppColors.white : AppColors.ink);
+            expect((box.border! as Border).top.color, colors.onSurface);
+            expect(text, white ? AppColors.ink : AppColors.white);
         }
+        expect(
+          find.byIcon(Icons.av_timer_outlined),
+          state == TimeDisplayState.active || state == TimeDisplayState.low
+              ? findsOneWidget
+              : findsNothing,
+        );
       }
     }
+  });
+
+  testWidgets('icon replaces the icon of the type', (tester) async {
+    await tester.pumpWidget(
+      app(
+        const TimeDisplay(
+          value: '1:00',
+          semanticsLabel: 'Time',
+          type: TimeDisplayType.countdown,
+          icon: Icons.schedule,
+        ),
+      ),
+    );
+    expect(find.byIcon(Icons.schedule), findsOneWidget);
+    expect(find.byIcon(Icons.hourglass_top_rounded), findsNothing);
   });
 
   testWidgets(

@@ -277,7 +277,7 @@ void main() {
       await pump(tester);
 
       final chip = tester.getRect(find.byKey(SpeedrunKeys.paceChip));
-      expect(chip.height, closeTo(28, 1));
+      expect(chip.height, closeTo(32, 1));
       expect(
         find.descendant(
           of: find.byKey(SpeedrunKeys.paceChip),
@@ -492,10 +492,10 @@ void main() {
             .first,
       );
       final decoration = chip.decoration! as BoxDecoration;
+      // Nível no cabeçalho: contorno outline-variant, sem fundo, raio 8.
       expect(decoration.color, isNull);
       expect(decoration.border, isNotNull);
-      // Pílula de 28 (T73, D15: InfoChip).
-      expect(decoration.borderRadius, BorderRadius.circular(AppShape.full));
+      expect(decoration.borderRadius, BorderRadius.circular(AppShape.small));
       final bonus = tester.widget<Text>(
         find.descendant(
           of: find.byKey(SpeedrunKeys.historyBonus),

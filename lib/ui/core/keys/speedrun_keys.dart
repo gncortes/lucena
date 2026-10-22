@@ -44,10 +44,6 @@ abstract final class SpeedrunKeys {
   static const paceBadge = Key('speedrun.paceBadge');
   static Key stageCard(int index) => Key('speedrun.stage.$index');
 
-  /// Na tentativa: a etapa da vez em destaque e o menu (desistir).
-  static const current = Key('speedrun.attempt.current');
-  static const menu = Key('speedrun.attempt.menu');
-
   /// O melhor tempo total e o melhor de cada etapa.
   static const best = Key('speedrun.best');
 
@@ -67,9 +63,6 @@ abstract final class SpeedrunKeys {
   static Key stage(int index) => Key('speedrun.attempt.stage.$index');
   static Key stageTime(int index) => Key('speedrun.attempt.stage.$index.time');
   static const total = Key('speedrun.attempt.total');
-  static const play = Key('speedrun.attempt.play');
-  static const abandon = Key('speedrun.attempt.abandon');
-  static const abandonConfirm = Key('speedrun.attempt.abandon.confirm');
   static const abandoned = Key('speedrun.attempt.abandoned');
 
   /// No fim: o herói do recorde novo, a frase da diferença para o recorde,

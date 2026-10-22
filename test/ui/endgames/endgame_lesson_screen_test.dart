@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
@@ -291,5 +293,89 @@ void main() {
     expect(find.text('Second'), findsOneWidget);
     expect(find.text('Summary of the first.'), findsOneWidget);
     expect(find.text('Summary of the second.'), findsNothing);
+  });
+
+  testWidgets('capítulo começado: "Retomar" volta na etapa em que o aluno '
+      'saiu', (tester) async {
+    final sample = FakeEndgameLessonRepository.sample.lessons.first;
+    const steps = [
+      TalkStep(id: 'a', fen: FakeEndgameLessonRepository.lucenaFen),
+    ];
+    final multi = EndgameLesson(
+      id: sample.id,
+      module: sample.module,
+      lesson: Lesson.parted(
+        id: sample.id,
+        parts: const [
+          LessonPart(id: 'p1', steps: steps, script: 'p1.json'),
+          LessonPart(id: 'p2', steps: steps, script: 'p2.json'),
+        ],
+      ),
+      exercises: sample.exercises,
+      passScore: sample.passScore,
+      keyPositions: sample.keyPositions,
+      practice: sample.practice,
+      references: sample.references,
+    );
+    final cubit = EndgameLessonCubit(
+      lessons: FakeEndgameLessonRepository(
+        trail: EndgameTrail(
+          modules: [
+            EndgameModule(id: multi.module, lessons: [multi]),
+          ],
+        ),
+      ),
+      progress: FakeEndgameProgressRepository(
+        EndgameProgress(
+          lessons: {
+            multi.id: const EndgameLessonProgress(parts: {'p1'}),
+          },
+          ongoing: LessonCheckpoint(lessonId: multi.id, part: 'p2', step: 2),
+        ),
+      ),
+      journey: FakeJourneyRepository(),
+      characters: FakeCharacterRepository(),
+    );
+    addTearDown(cubit.close);
+    await cubit.load(multi.id, 'en');
+    final settings = SettingsCubit(
+      FakeSettingsRepository(const AppSettings()),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
+    Uri? opened;
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) => BlocProvider.value(
+            value: cubit,
+            child: const EndgameLessonScreen(),
+          ),
+          routes: [
+            GoRoute(
+              path: 'endgames/:lesson/roteiro',
+              builder: (context, state) {
+                opened = state.uri;
+                return const SizedBox();
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      TestApp(settingsCubit: settings, router: router, child: const SizedBox()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Resume chapter 2'), findsOneWidget);
+    await tester.tap(find.byKey(EndgameLessonKeys.continueButton));
+    await tester.pumpAndSettle();
+
+    expect(opened?.queryParameters['part'], 'p2');
+    expect(opened?.queryParameters['etapa'], '2');
   });
 }

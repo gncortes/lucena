@@ -337,7 +337,7 @@ void main() {
           )
           .first,
     );
-    expect(storyPadding.padding, const EdgeInsets.only(top: 8, bottom: 14));
+    expect(storyPadding.padding, const EdgeInsets.only(top: 8, bottom: 16));
     final sheetTop = tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
     final board = tester.getRect(find.byKey(GameDetailsKeys.board));
     expect(board.bottom, lessThanOrEqualTo(sheetTop));

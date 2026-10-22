@@ -4,6 +4,7 @@ import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -127,5 +128,19 @@ void main() {
     await home.openSettings();
     await settings.openAppearance();
     await settings.expectBoardAppearanceValue('Green · Merida');
+  });
+
+  patrolTest('depois do tour vem a conta, opcional: Google avisa que vem aí, '
+      'e "Agora não" segue para "Seu nível"', ($) async {
+    final tour = TourRobot($);
+    await AppRobot($).open(systemLocale: _english, tour: true);
+    await tour.finishSteps();
+    await $(AccountKeys.screen).waitUntilVisible();
+    // Fechado o app aqui, o tour volta no último passo (nada foi dado por visto).
+    expect((await tour.savedOnboarding()).done, isFalse);
+    await $(AccountKeys.google).tap();
+    expect(find.text('Signing in is coming soon.'), findsOneWidget);
+    await $(AccountKeys.later).tap();
+    await $(LevelKeys.screen).waitUntilVisible();
   });
 }

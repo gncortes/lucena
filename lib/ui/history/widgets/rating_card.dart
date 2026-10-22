@@ -7,6 +7,7 @@ import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/rating_chart.dart';
 import '../../core/widgets/rating_value.dart';
 import '../view_models/history_cubit.dart';
@@ -46,8 +47,6 @@ class HistoryRatingCard extends StatelessWidget {
         0,
       ),
       child: Card(
-        margin: EdgeInsets.zero,
-        color: colors.surfaceContainerLow,
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.insideCard),
           child: Column(
@@ -102,8 +101,7 @@ class HistoryRatingCard extends StatelessWidget {
                         Text(
                           '${highest.rating.rounded}',
                           maxLines: 1,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
+                          style: context.bigNumber?.copyWith(
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),

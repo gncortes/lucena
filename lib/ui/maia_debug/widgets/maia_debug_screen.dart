@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/app_chip.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,9 +11,10 @@ import '../../../domain/models/move_prediction.dart';
 import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_spacing.dart';
 import '../view_models/maia_debug_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/widgets/animated_progress.dart';
 
 /// Tela de depuração do Maia (só em build de desenvolvimento e de teste):
 /// avalia uma posição num nível e mostra o que o modelo respondeu e em quanto
@@ -65,7 +69,6 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
               style: const TextStyle(fontFamily: 'monospace'),
               decoration: InputDecoration(
                 labelText: l10n.maiaDebugPosition,
-                border: const OutlineInputBorder(),
                 errorText: state.status == MaiaDebugStatus.invalidPosition
                     ? l10n.positionErrorInvalidFen
                     : null,
@@ -73,29 +76,30 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
               onChanged: cubit.setFen,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Text(
             l10n.setupMaiaLevel,
             style: theme.textTheme.titleSmall?.copyWith(
               color: theme.colorScheme.primary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
-            runSpacing: 4,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
               for (final level in MaiaLevels.all)
                 ChoiceChip(
+                  materialTapTargetSize: AppChip.tapTarget,
+                  visualDensity: AppChip.density,
                   key: MaiaDebugKeys.level(level),
-                  showCheckmark: false,
                   label: Text(level.toString()),
                   selected: level == state.level,
                   onSelected: (_) => cubit.setLevel(level),
                 ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           FilledButton(
             key: MaiaDebugKeys.evaluate,
             style: FilledButton.styleFrom(
@@ -104,7 +108,7 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
             onPressed: running ? null : cubit.evaluate,
             child: Text(l10n.maiaDebugEvaluate),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
             key: MaiaDebugKeys.measure,
             style: OutlinedButton.styleFrom(
@@ -114,7 +118,7 @@ class _MaiaDebugScreenState extends State<MaiaDebugScreen> {
             icon: const Icon(Icons.speed),
             label: Text(l10n.maiaDebugMeasure),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           if (timing != null) _Timing(timing: timing),
           if (state.status == MaiaDebugStatus.invalidPosition)
             const SizedBox.shrink(key: MaiaDebugKeys.invalid),
@@ -140,14 +144,11 @@ class _Timing extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.secondaryContainer,
-          borderRadius: BorderRadius.circular(AppShape.medium),
-        ),
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Card(
+        color: theme.colorScheme.secondaryContainer,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Text(
             context.l10n.maiaDebugTiming(
               timing.median.inMilliseconds,
@@ -186,7 +187,7 @@ class _Result extends StatelessWidget {
           key: MaiaDebugKeys.elapsed,
           style: theme.textTheme.titleMedium,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           l10n.maiaDebugOutcome(
             percent(prediction.win),
@@ -198,11 +199,11 @@ class _Result extends StatelessWidget {
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         for (final (index, MapEntry(key: move, value: probability))
             in moves.indexed)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
             child: Row(
               children: [
                 SizedBox(
@@ -217,15 +218,7 @@ class _Result extends StatelessWidget {
                     ),
                   ),
                 ),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                    child: LinearProgressIndicator(
-                      value: probability,
-                      minHeight: 8,
-                    ),
-                  ),
-                ),
+                Expanded(child: AnimatedProgress(value: probability)),
                 SizedBox(
                   width: 72,
                   child: Text(

@@ -228,6 +228,5 @@ void main() {
       find.descendant(of: button, matching: find.text('Rating history')),
       findsOneWidget,
     );
-    expect(find.byKey(ProfileKeys.ratingHelp), findsNothing);
   });
 }

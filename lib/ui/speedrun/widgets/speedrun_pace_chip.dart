@@ -25,7 +25,6 @@ class SpeedrunPaceChip extends StatelessWidget {
       child: InfoChip(
         icon: paceIcon(PaceCategory.of(time)),
         label: HistoryLabels.ltr(label),
-        filled: true,
       ),
     );
   }

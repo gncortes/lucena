@@ -10,6 +10,9 @@ class DeviceShareRepository implements ShareRepository {
   final ShareService _share;
 
   @override
+  Future<bool> shareText(String text) => _share.shareText(text);
+
+  @override
   Future<bool> shareImage(
     Uint8List png, {
     required String name,

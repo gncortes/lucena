@@ -96,6 +96,8 @@ void main() {
     String group,
     String value,
   ) async {
+    // A fileira de chips rola: o chip pode estar fora da tela.
+    await tester.ensureVisible(find.byKey(HistoryKeys.filterChip(chip)));
     await tester.tap(find.byKey(HistoryKeys.filterChip(chip)));
     await tester.pumpAndSettle();
     final option = find.byKey(HistoryKeys.filterOption(group, value));
@@ -370,7 +372,8 @@ void main() {
                 }) {
                   final chip = find.byKey(HistoryKeys.filterChip(name));
                   expect(chip, findsOneWidget);
-                  expect(tester.getSize(chip).height, greaterThanOrEqualTo(48));
+                  // CompChip: 32 de altura visual (E1.08, QA r1).
+                  expect(tester.getSize(chip).height, greaterThanOrEqualTo(32));
                 }
               }
               await openTab(tester, 1);

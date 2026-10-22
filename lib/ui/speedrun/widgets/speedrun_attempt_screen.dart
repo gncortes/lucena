@@ -17,10 +17,11 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
@@ -29,7 +30,7 @@ import '../view_models/speedrun_cubit.dart';
 import 'marathon_attempt_view.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
-import 'speedrun_pace_chip.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// O resumo de uma tentativa terminada do clássico (artboards
 /// `SpeedrunTentativa*`): concluída, com o tempo, a comparação com o recorde e
@@ -49,9 +50,7 @@ class SpeedrunAttemptScreen extends StatelessWidget {
       return Scaffold(
         key: SpeedrunKeys.attemptScreen,
         appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
-        body: state.all != null
-            ? null
-            : const Center(child: CircularProgressIndicator()),
+        body: state.all != null ? null : const SkeletonList(),
       );
     }
     final speedrun = summary.speedrun;
@@ -82,7 +81,12 @@ class SpeedrunAttemptScreen extends StatelessWidget {
         padding: scrollPadding(context),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: AppSpacing.md,
@@ -91,17 +95,18 @@ class SpeedrunAttemptScreen extends StatelessWidget {
                   ..._finish(context, state, summary, run)
                 else
                   ..._ended(context, state, summary, run, end, stopped),
-                _Chips(speedrun: speedrun, run: run),
+                RunChips(speedrun: speedrun, run: run),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
-            child: Text(
-              l10n.speedrunStages,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.sm,
             ),
+            child: Text(l10n.speedrunStages, style: context.cardTitle),
           ),
           for (final (index, stage) in run.stages.indexed)
             SpeedrunStageRow(
@@ -237,39 +242,14 @@ String _ltr(BuildContext context, String text) =>
     ? HistoryLabels.ltr(text)
     : text;
 
-/// O ritmo e quando a tentativa terminou.
-class _Chips extends StatelessWidget {
-  const _Chips({required this.speedrun, required this.run});
-
-  final Speedrun speedrun;
-  final SpeedrunRun run;
-
-  @override
-  Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context).toString();
-    final endedAt = run.finishedAt ?? run.attempt.abandonedAt;
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: [
-        SpeedrunPaceChip(speedrun.time),
-        if (endedAt != null)
-          InfoChip(
-            icon: Icons.calendar_today,
-            label: HistoryLabels.capitalize(
-              DateFormat.MMMd(locale).add_Hm().format(endedAt.toLocal()),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 // O cartão cinza (surfaceContainerLow, raio 16) dos avisos e comparações.
 class _SurfaceCard extends StatelessWidget {
   const _SurfaceCard({
     required this.child,
-    this.padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: AppSpacing.lg,
+      vertical: AppSpacing.lg,
+    ),
     this.cardKey,
   });
 
@@ -278,14 +258,9 @@ class _SurfaceCard extends StatelessWidget {
   final Key? cardKey;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => Card(
     key: cardKey,
-    padding: padding,
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
-    ),
-    child: child,
+    child: Padding(padding: padding, child: child),
   );
 }
 
@@ -326,11 +301,11 @@ class _AlreadyEarned extends StatelessWidget {
       children: [
         // Alinha o ícone de 16 com a primeira linha de 18.
         Padding(
-          padding: const EdgeInsets.only(top: 1),
+          padding: const EdgeInsets.only(top: AppSpacing.xs),
           child: ExcludeSemantics(
             child: Icon(
               Icons.trending_flat,
-              size: 16,
+              size: AppIconSize.small,
               color: colors.onSurfaceVariant,
             ),
           ),
@@ -413,23 +388,22 @@ class _CompareCard extends StatelessWidget {
           ];
     final style = theme.textTheme.bodyMedium?.copyWith(
       color: record ? ChangeColors.of(context, up: true) : null,
-      fontWeight: record ? FontWeight.w700 : null,
     );
     return _SurfaceCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 10,
+        spacing: AppSpacing.md,
         children: [
           // Tempo igual ao recorde: sem frase.
           if (difference > Duration.zero)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 10,
+              spacing: AppSpacing.md,
               children: [
                 ExcludeSemantics(
                   child: Icon(
                     record ? Icons.speed : Icons.schedule,
-                    size: 18,
+                    size: AppIconSize.button,
                     color: record
                         ? ChangeColors.of(context, up: true)
                         : colors.onSurfaceVariant,
@@ -451,11 +425,14 @@ class _CompareCard extends StatelessWidget {
           Column(
             key: SpeedrunKeys.recordBars,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 10,
+            spacing: AppSpacing.md,
             children: bars,
           ),
           if (footer != null)
-            Padding(padding: const EdgeInsets.only(top: 10), child: footer),
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: footer,
+            ),
         ],
       ),
     );
@@ -503,7 +480,6 @@ class _Bar extends StatelessWidget {
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.end,
       style: theme.textTheme.bodyMedium?.copyWith(
-        fontWeight: strong ? FontWeight.w700 : null,
         fontFeatures: const [FontFeature.tabularFigures()],
       ),
     );
@@ -524,7 +500,7 @@ class _Bar extends StatelessWidget {
               color: color,
               borderRadius: BorderRadius.circular(AppShape.full),
             ),
-            child: const SizedBox(height: 10),
+            child: const SizedBox(height: AppSpacing.md),
           ),
         ),
       ),
@@ -539,7 +515,7 @@ class _Bar extends StatelessWidget {
               spacing: AppSpacing.xs,
               children: [
                 Row(
-                  spacing: 10,
+                  spacing: AppSpacing.md,
                   children: [
                     Expanded(child: labelText),
                     valueText,
@@ -549,7 +525,7 @@ class _Bar extends StatelessWidget {
               ],
             )
           : Row(
-              spacing: 10,
+              spacing: AppSpacing.md,
               children: [
                 SizedBox(width: 64, child: labelText),
                 Expanded(child: track),
@@ -610,7 +586,10 @@ class _EndCard extends StatelessWidget {
     return _SurfaceCard(
       cardKey: SpeedrunKeys.abandonedHero,
       // 20/16 no artboard.
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.lg,
+      ),
       child: Column(
         spacing: AppSpacing.sm,
         children: [
@@ -622,7 +601,11 @@ class _EndCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: ExcludeSemantics(
-              child: Icon(icon, size: 28, color: colors.onSurfaceVariant),
+              child: Icon(
+                icon,
+                size: AppIconSize.large,
+                color: colors.onSurfaceVariant,
+              ),
             ),
           ),
           Semantics(
@@ -634,7 +617,6 @@ class _EndCard extends StatelessWidget {
               style: theme.textTheme.titleLarge?.copyWith(
                 fontSize: 20,
                 height: 28 / 20,
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -682,53 +664,54 @@ class _NotFinished extends StatelessWidget {
     final colors = theme.colorScheme;
     final onContainer = colors.onSecondaryContainer;
     final body = theme.textTheme.bodyMedium?.copyWith(color: onContainer);
-    return Container(
+    return Card(
       key: SpeedrunKeys.notFinishedNotice,
-      // 14/16 no artboard.
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.md,
-        children: [
-          ExcludeSemantics(
-            child: Icon(Icons.info, size: 22, color: onContainer),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.xs,
-              children: [
-                Text(
-                  l10n.speedrunNotFinishedYet,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontSize: 15,
-                    height: 20 / 15,
-                    fontWeight: FontWeight.w700,
-                    color: onContainer,
-                  ),
-                ),
-                Text(
-                  l10n.speedrunBestReached(
-                    reached + 1,
-                    speedrun.stages.length,
-                    opponentName(
-                      l10n,
-                      characters,
-                      speedrun.stages[reached].opponent,
+      color: colors.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.md,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.info,
+                size: AppIconSize.standard,
+                color: onContainer,
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.xs,
+                children: [
+                  Text(
+                    l10n.speedrunNotFinishedYet,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontSize: 15,
+                      height: 20 / 15,
+                      color: onContainer,
                     ),
                   ),
-                  key: SpeedrunKeys.bestReached,
-                  style: body,
-                ),
-                if (offer > 0) SpeedrunOfferLine(points: offer, style: body),
-              ],
+                  Text(
+                    l10n.speedrunBestReached(
+                      reached + 1,
+                      speedrun.stages.length,
+                      opponentName(
+                        l10n,
+                        characters,
+                        speedrun.stages[reached].opponent,
+                      ),
+                    ),
+                    key: SpeedrunKeys.bestReached,
+                    style: body,
+                  ),
+                  if (offer > 0) SpeedrunOfferLine(points: offer, style: body),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -749,7 +732,10 @@ class _RecordCard extends StatelessWidget {
     final spoken = '$label: $value';
     return _SurfaceCard(
       cardKey: SpeedrunKeys.recordCard,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       child: Row(
         spacing: AppSpacing.md,
         children: [

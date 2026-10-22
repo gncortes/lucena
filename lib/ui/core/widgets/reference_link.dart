@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
 import 'external_page_sheet.dart';
 
 /// Um link discreto para a referência de onde vem uma posição. Abre dentro do
@@ -73,12 +75,15 @@ class ReferenceLink extends StatelessWidget {
         onTap: () =>
             showExternalPage(context, blackBelow ? forBlack(uri) : uri),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.sm,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.open_in_new, size: 16, color: color),
-              const SizedBox(width: 6),
+              Icon(Icons.open_in_new, size: AppIconSize.small, color: color),
+              const SizedBox(width: AppSpacing.sm),
               Flexible(
                 child: Text(
                   label,

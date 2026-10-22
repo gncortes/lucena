@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/share/share_repository.dart';
-import '../theme/app_button.dart';
 import 'share_cubit.dart';
 import '../theme/app_colors.dart';
 
@@ -118,46 +117,6 @@ ui.Image _framed(
     Offset((width - text.width) / 2, image.height + 2 * margin),
   );
   return recorder.endRecording().toImageSync(width.round(), height.round());
-}
-
-/// O botão de compartilhar uma conquista: tira a imagem de [boundary] (o
-/// [RepaintBoundary] com o cartão) e abre o menu do sistema com ela e o
-/// texto [text].
-class ShareButton extends StatelessWidget {
-  const ShareButton({
-    required this.boundary,
-    required this.label,
-    required this.fileName,
-    this.text,
-    super.key,
-  });
-
-  final GlobalKey boundary;
-  final String label;
-  final String fileName;
-  final String? text;
-
-  @override
-  Widget build(BuildContext context) => BlocProvider(
-    create: (context) => ShareCubit(context.read<ShareRepository>()),
-    child: BlocBuilder<ShareCubit, bool>(
-      builder: (context, sharing) => FilledButton.tonalIcon(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(kButtonHeight),
-        ),
-        icon: const Icon(Icons.share_rounded),
-        label: Text(label),
-        onPressed: sharing
-            ? null
-            : () async {
-                final cubit = context.read<ShareCubit>();
-                final png = await capturePng(boundary);
-                if (png == null) return;
-                await cubit.share(png, name: fileName, text: text);
-              },
-      ),
-    ),
-  );
 }
 
 /// O mesmo compartilhar, como ícone (na barra do app).

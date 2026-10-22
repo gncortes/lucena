@@ -43,7 +43,8 @@ class HistoryGamesTab extends StatelessWidget {
     if (state.history.isEmpty) {
       return ListView(
         key: RatingKeys.screen,
-        padding: padding,
+        // 32 acima do vazio, como no canvas.
+        padding: padding + const EdgeInsets.only(top: AppSpacing.xxl),
         children: [_empty(context)],
       );
     }
@@ -118,7 +119,7 @@ class HistoryGamesTab extends StatelessWidget {
         message: l10n.ratingHistoryEmpty,
         messageKey: RatingKeys.emptyHistory,
         actionLabel: l10n.emptyFirstEndgame,
-        primaryAction: true,
+        style: EmptyStateStyle.primary,
         actionIcon: Icons.play_arrow_rounded,
         actionKey: RatingKeys.emptyHistoryAction,
         onAction: () {
@@ -167,14 +168,7 @@ class HistoryGamesTab extends StatelessWidget {
           ),
         );
       } else {
-        children.add(
-          Divider(
-            height: 1,
-            indent: AppSpacing.lg,
-            endIndent: AppSpacing.lg,
-            color: colors.outlineVariant.withValues(alpha: 0.4),
-          ),
-        );
+        children.add(Divider());
       }
       children.add(
         HistoryGameRow(

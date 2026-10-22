@@ -30,7 +30,7 @@ void main() {
   // O jogador sem nível escolhido é casual: o speedrun abre em 10+0.
   const id = 'rung.1000@600+0';
 
-  // O texto na key, simples ou com partes (o RunClock escreve os décimos
+  // O texto na key, simples ou com partes (o relógio escreve os décimos
   // menores).
   String runClock(WidgetTester tester, Key key) {
     final text = tester.widget<Text>(find.byKey(key));

@@ -120,7 +120,11 @@ void main() {
   // artboard reserva 108, ver "Ajuste no canvas" no contrato). O tabuleiro
   // ocupa a largura e o bloco fica no meio do que sobra (T65, "Centralizar
   // igual"): ao tocar em Vai!, o convite e o botão somem e o bloco recentra.
-  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+  for (final size in [
+    const Size(360, 740),
+    const Size(412, 917),
+    const Size(448, 997),
+  ]) {
     testWidgets('V2 $size: medidas do Pronto, Jogando, Pausa e Fim', (
       tester,
     ) async {
@@ -138,7 +142,7 @@ void main() {
       // A contagem no topo do bloco: 40 dp.
       final timer = rectOf(tester, StarChallengeKeys.timer);
       final block = rectOf(tester, StarChallengeKeys.blockTop);
-      expect(timer.top, closeTo(block.top + 10, 1));
+      expect(timer.top, closeTo(block.top + 8, 1));
       expect(timer.height, closeTo(24, 1));
 
       final board = rectOf(tester, StarChallengeKeys.board);
@@ -148,10 +152,10 @@ void main() {
       expectBalanced(tester, size);
       expect(board.width, size.width);
       expect(board.center.dx, closeTo(size.width / 2, .01));
-      // O convite: margem 16, 8 dp acima do tabuleiro, altura do conteúdo.
+      // O convite: margem 16, 8 dp acima do tabuleiro (a altura do cartão cabe: o ícone é de 24), altura do conteúdo.
       expect(intro.left, 16);
       expect(intro.width, size.width - 32);
-      expect(intro.height, closeTo(112, 1));
+      expect(intro.height, closeTo(114, 1));
       expect(intro.top, greaterThanOrEqualTo(timer.bottom + 6 - 1));
       expect(intro.bottom, closeTo(board.top - 8, 1));
       expect(
@@ -213,7 +217,11 @@ void main() {
   }
 
   // A matriz: tamanhos, fonte, tema e direção, em todos os estados.
-  for (final size in [const Size(360, 740), const Size(412, 917)]) {
+  for (final size in [
+    const Size(360, 740),
+    const Size(412, 917),
+    const Size(448, 997),
+  ]) {
     for (final scale in [1.0, 2.0]) {
       for (final mode in [ThemeMode.light, ThemeMode.dark]) {
         for (final locale in [const Locale('pt'), const Locale('ar')]) {
@@ -257,9 +265,7 @@ void main() {
             );
             // D2: o mesmo papel nos dois cartões.
             Color? colorOf(Key key) =>
-                (tester.widget<Container>(find.byKey(key)).decoration!
-                        as BoxDecoration)
-                    .color;
+                tester.widget<Card>(find.byKey(key)).color;
             expect(colorOf(StarChallengeKeys.intro), starCardColor(theme));
             expect(colorOf(StarChallengeKeys.scoreboard), starCardColor(theme));
             expect(

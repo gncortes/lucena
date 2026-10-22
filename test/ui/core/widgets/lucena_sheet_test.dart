@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/theme/app_sheet.dart';
-import 'package:lucena/ui/core/widgets/info_chip.dart';
 import 'package:lucena/ui/core/widgets/lucena_sheet.dart';
 import 'package:lucena/ui/core/widgets/sheet_close_button.dart';
 
@@ -59,18 +58,5 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(SheetKeys.surface), findsNothing);
     expect(result, isNull);
-  });
-
-  testWidgets('o chip informativo é uma pílula de 28', (tester) async {
-    await tester.pumpWidget(
-      const TestApp(
-        child: Scaffold(
-          body: Center(
-            child: InfoChip(icon: Icons.timer, label: '5+3'),
-          ),
-        ),
-      ),
-    );
-    expect(tester.getSize(find.byType(InfoChip)).height, InfoChip.height);
   });
 }

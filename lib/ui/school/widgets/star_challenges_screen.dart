@@ -10,6 +10,9 @@ import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -47,10 +50,10 @@ class StarChallengesScreen extends StatelessWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               for (final piece in ChallengePiece.values) ...[
                 _PieceCard(piece: piece, progress: state.progress),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
               ],
             ],
           );
@@ -72,35 +75,33 @@ class _PieceCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Card(
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerLow,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 _PieceTile(piece: piece),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        pieceName(l10n, piece),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      Text(pieceName(l10n, piece), style: context.cardTitle),
                       Row(
                         children: [
                           const Icon(
                             Icons.star_rounded,
-                            size: 16,
+                            size: AppIconSize.small,
                             color: StarsRow.color,
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             l10n.starChallengePointsTotal(
                               [
@@ -119,11 +120,11 @@ class _PieceCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 for (final (index, level) in ChallengeLevel.values.indexed) ...[
-                  if (index > 0) const SizedBox(width: 8),
+                  if (index > 0) const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: _LevelButton(
                       piece: piece,
@@ -169,7 +170,10 @@ class _LevelButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppShape.medium),
         onTap: () => context.push(Routes.starChallenge(piece.name, level.name)),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.md,
+          ),
           child: Column(
             children: [
               Text(
@@ -178,7 +182,7 @@ class _LevelButton extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: AppSpacing.sm),
               // O nível vale tantas estrelas quanto a dificuldade; acendem
               // pela melhor marca.
               StarsRow(
@@ -186,7 +190,7 @@ class _LevelButton extends StatelessWidget {
                 earned: best == null ? 0 : earnedOf(level, best),
                 size: 16,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 best == null
                     ? l10n.starChallengeNotPlayed
@@ -222,7 +226,7 @@ class _PieceTile extends StatelessWidget {
       child: ColoredBox(
         color: settings.colorScheme.lightSquare,
         child: Padding(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(AppSpacing.xs),
           // A imagem direto do conjunto: o PieceWidget depende do cache que
           // só o tabuleiro enche.
           child: Image(

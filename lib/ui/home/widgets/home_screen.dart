@@ -8,8 +8,13 @@ import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../routing/routes.dart';
+import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../core/keys/home_keys.dart';
+import '../../featured/widgets/featured_home_section.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
@@ -30,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late final _entrance = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1400),
+    duration: AppMotion.entrance,
   );
 
   // Entrada em sequência: o nome do app primeiro, depois o painel.
@@ -67,10 +72,15 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocListener<HomeCubit, HomeState>(
-      // Primeira abertura: o tour antes de tudo.
+      // Primeira abertura: o tour antes de tudo. Com outra tela por cima (o
+      // desafio de um link), o tour espera: "Conhecer o app" volta aqui.
       listenWhen: (previous, current) =>
           current.ready && current.tourPending && !previous.tourPending,
-      listener: (context, state) => context.go(Routes.tour),
+      listener: (context, state) {
+        if (ModalRoute.of(context)?.isCurrent ?? true) {
+          context.go(Routes.tour);
+        }
+      },
       child: _scaffold(context, theme),
     );
   }
@@ -92,21 +102,25 @@ class _HomeScreenState extends State<HomeScreen>
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.xs,
+              ),
               child: _Entrance(
                 animation: _title,
                 child: Row(
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsetsDirectional.only(start: 4),
+                        padding: const EdgeInsetsDirectional.only(
+                          start: AppSpacing.xs,
+                        ),
                         child: Text(
                           l10n.appTitle,
                           key: HomeKeys.title,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1,
-                          ),
+                          style: context.bigNumber?.copyWith(letterSpacing: 1),
                         ),
                       ),
                     ),
@@ -147,15 +161,15 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             PlayerCard(state: state),
                             if (state.unlockedBlind) ...[
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.md),
                               const _UnlockedCard(),
                             ],
                             if (state.layoutNotice) ...[
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.md),
                               _LayoutNotice(onCustomize: _customize),
                             ],
                             if (state.continuePath != null) ...[
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.md),
                               WhereCard(state: state),
                             ],
                             _shortcuts(context, theme, state),
@@ -194,8 +208,14 @@ class _HomeScreenState extends State<HomeScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (state.featured != null) FeaturedHomeSection(item: state.featured!),
         Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(4, 12, 0, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.xs,
+            AppSpacing.md,
+            0,
+            0,
+          ),
           child: Row(
             children: [
               Expanded(
@@ -209,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               TextButton.icon(
                 key: HomeKeys.customizeButton,
-                icon: const Icon(Icons.tune, size: 18),
+                icon: const Icon(Icons.tune, size: AppIconSize.button),
                 label: Text(l10n.homeCustomize),
                 onPressed: _customize,
               ),
@@ -217,18 +237,21 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ),
         for (final (index, path) in layout.shown.indexed) ...[
-          if (index > 0) const SizedBox(height: 8),
+          if (index > 0) const SizedBox(height: AppSpacing.sm),
           card(path, index),
         ],
         if (layout.hidden.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: AppSpacing.sm),
             child: Theme(
               // Sem as linhas do ExpansionTile.
               data: theme.copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
                 key: HomeKeys.otherModes,
-                tilePadding: const EdgeInsetsDirectional.only(start: 4, end: 8),
+                tilePadding: const EdgeInsetsDirectional.only(
+                  start: AppSpacing.xs,
+                  end: AppSpacing.sm,
+                ),
                 childrenPadding: EdgeInsets.zero,
                 title: Text(
                   l10n.homeOtherModes,
@@ -238,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 children: [
                   for (final (index, path) in layout.hidden.indexed) ...[
-                    if (index > 0) const SizedBox(height: 8),
+                    if (index > 0) const SizedBox(height: AppSpacing.sm),
                     card(path, index),
                   ],
                 ],
@@ -247,20 +270,23 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         _sectionTitle(theme, l10n.homeTools),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
           children: [
             OutlinedButton.icon(
               key: HomeKeys.customPositionButton,
-              icon: const Icon(Icons.edit_outlined, size: 18),
+              icon: const Icon(Icons.edit_outlined, size: AppIconSize.button),
               label: Text(l10n.customPositionTitle),
               onPressed: () => context.go(Routes.customPosition),
             ),
             OutlinedButton.icon(
               key: HomeKeys.freeBoardButton,
-              icon: const Icon(Icons.grid_on_outlined, size: 18),
+              icon: const Icon(
+                Icons.grid_on_outlined,
+                size: AppIconSize.button,
+              ),
               label: Text(l10n.freeBoardTitle),
-              onPressed: () => context.go(Routes.freeBoard),
+              onPressed: () => openFreeBoard(context),
             ),
           ],
         ),
@@ -278,7 +304,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _sectionTitle(ThemeData theme, String text, {Key? key}) {
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(4, 20, 4, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.sm,
+      ),
       child: Text(
         text,
         key: key,
@@ -308,10 +339,14 @@ class _UnlockedCard extends StatelessWidget {
           Transform.scale(scale: value, child: child),
       child: Card(
         key: HomeKeys.unlockedCard,
-        margin: EdgeInsets.zero,
         color: colors.primaryContainer,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -321,13 +356,12 @@ class _UnlockedCard extends StatelessWidget {
                     Icons.record_voice_over,
                     color: colors.onPrimaryContainer,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
                       l10n.homeUnlockedBlindTitle,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: context.cardTitle?.copyWith(
                         color: colors.onPrimaryContainer,
-                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
@@ -341,7 +375,7 @@ class _UnlockedCard extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: const EdgeInsetsDirectional.only(end: 8),
+                padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
                 child: Text(
                   l10n.homeUnlockedBlindBody,
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -349,7 +383,7 @@ class _UnlockedCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               FilledButton.icon(
                 key: HomeKeys.unlockedAction,
                 icon: const Icon(Icons.grid_view_rounded),
@@ -381,17 +415,21 @@ class _LayoutNotice extends StatelessWidget {
     final colors = theme.colorScheme;
     return Card(
       key: HomeKeys.layoutNotice,
-      margin: EdgeInsets.zero,
       color: colors.tertiaryContainer,
       child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(14, 8, 4, 8),
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.xs,
+          AppSpacing.sm,
+        ),
         child: Row(
           children: [
             Icon(
               Icons.dashboard_customize_outlined,
               color: colors.onTertiaryContainer,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 l10n.homeLayoutNotice,

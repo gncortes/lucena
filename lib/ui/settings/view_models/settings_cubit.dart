@@ -54,13 +54,6 @@ class SettingsCubit extends Cubit<AppSettings?> {
     return _update((state ?? const AppSettings()).copyWith(lessonMarks: shown));
   }
 
-  /// Cobre ou mostra os lances ainda não vistos no modo variante (T69).
-  Future<void> setLessonHiddenMoves({required bool hidden}) {
-    return _update(
-      (state ?? const AppSettings()).copyWith(lessonHiddenMoves: hidden),
-    );
-  }
-
   /// Cobre ou mostra o que o aluno não viu na notação do exercício.
   Future<void> setExerciseHiddenMoves({required bool hidden}) {
     return _update(

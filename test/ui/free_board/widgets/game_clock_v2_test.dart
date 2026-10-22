@@ -8,104 +8,145 @@ import 'package:lucena/ui/core/widgets/time_display.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
-  testWidgets('relógio parado fica a 55% de opacidade (CompTempo parado)', (
-    tester,
-  ) async {
-    Future<double> opacity(bool running) async {
-      await tester.pumpWidget(
-        TestApp(
-          child: Scaffold(
-            body: Center(
-              child: GameClock(
-                key: FreeBoardKeys.clock(Side.black),
-                side: Side.black,
-                time: const Duration(minutes: 3),
-                running: running,
-              ),
+  Future<void> pump(
+    WidgetTester tester,
+    Side side, {
+    required bool running,
+    required Duration time,
+  }) async {
+    await tester.pumpWidget(
+      TestApp(
+        child: Scaffold(
+          body: Center(
+            child: GameClock(
+              key: FreeBoardKeys.clock(side),
+              timeKey: FreeBoardKeys.clockTime(side),
+              side: side,
+              time: time,
+              running: running,
             ),
           ),
         ),
-      );
-      await tester.pumpAndSettle();
-      return tester
-          .widget<Opacity>(
-            find.descendant(
-              of: find.byKey(FreeBoardKeys.clock(Side.black)),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity;
-    }
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
 
-    expect(await opacity(false), 0.55);
-    expect(await opacity(true), 1);
-  });
+  BoxDecoration decoration(WidgetTester tester, Side side) =>
+      tester
+              .widget<Container>(
+                find.descendant(
+                  of: find.byKey(FreeBoardKeys.clock(side)),
+                  matching: find.byType(Container),
+                ),
+              )
+              .decoration!
+          as BoxDecoration;
+
+  Color numberColor(WidgetTester tester, Side side) => tester
+      .widget<ClockText>(find.byKey(FreeBoardKeys.clockTime(side)))
+      .style!
+      .color!;
 
   for (final side in Side.values) {
-    testWidgets('$side: cor e tamanho fixos; só borda e ícone indicam a vez', (
+    testWidgets('$side: parado sem opacidade, sem ícone, borda suave', (
       tester,
     ) async {
-      Future<void> pump(bool running, Duration time) async {
-        await tester.pumpWidget(
-          TestApp(
-            child: Scaffold(
-              body: Center(
-                child: GameClock(
-                  key: FreeBoardKeys.clock(side),
-                  side: side,
-                  time: time,
-                  running: running,
-                ),
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-      }
-
-      BoxDecoration decoration() =>
-          tester
-                  .widget<Container>(
-                    find.descendant(
-                      of: find.byKey(FreeBoardKeys.clock(side)),
-                      matching: find.byType(Container),
-                    ),
-                  )
-                  .decoration!
-              as BoxDecoration;
-
-      await pump(false, const Duration(minutes: 3));
-      final stopped = decoration();
-      final stoppedRect = tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
-      await pump(true, const Duration(minutes: 3));
-      final running = decoration();
-      expect(running.color, stopped.color);
-      expect((running.border! as Border).top.width, 2);
-      expect(
-        (running.border! as Border).top.color,
-        Theme.of(tester.element(find.byType(TimeDisplay))).colorScheme.primary,
+      await pump(
+        tester,
+        side,
+        running: false,
+        time: const Duration(minutes: 3),
       );
-      expect((stopped.border! as Border).top.width, 2);
-      expect(running.border, isNot(stopped.border));
+      expect(find.byType(Opacity), findsNothing);
+      expect(find.byIcon(Icons.av_timer_outlined), findsNothing);
+      final scheme = Theme.of(tester.element(find.byType(TimeDisplay)))
+          .colorScheme;
+      final border = decoration(tester, side).border! as Border;
+      expect(border.top.width, 2);
+      expect(border.top.color, scheme.outlineVariant);
+    });
+
+    testWidgets('$side: correndo, borda onSurface e av_timer; mesmo tamanho', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        side,
+        running: false,
+        time: const Duration(minutes: 3),
+      );
+      final stoppedRect = tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
+      final stopped = decoration(tester, side);
+      await pump(tester, side, running: true, time: const Duration(minutes: 3));
+      final scheme = Theme.of(tester.element(find.byType(TimeDisplay)))
+          .colorScheme;
+      final running = decoration(tester, side);
+      expect(running.color, stopped.color);
+      expect((running.border! as Border).top.color, scheme.onSurface);
+      expect(find.byIcon(Icons.av_timer_outlined), findsOneWidget);
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.clock(side))),
         stoppedRect,
       );
-      await pump(true, const Duration(seconds: 2));
-      expect(decoration().color, stopped.color);
-      expect(find.byType(TimeDisplay), findsOneWidget);
+    });
+
+    testWidgets('$side: abaixo de 10 s correndo, o alerta é igual nos dois '
+        'lados', (tester) async {
+      await pump(tester, side, running: true, time: const Duration(seconds: 9));
+      final scheme = Theme.of(tester.element(find.byType(TimeDisplay)))
+          .colorScheme;
+      final low = decoration(tester, side);
+      expect(low.color, scheme.errorContainer);
+      expect((low.border! as Border).top.color, scheme.error);
+      expect((low.border! as Border).top.width, 2);
+      expect(numberColor(tester, side), scheme.onErrorContainer);
+      expect(find.byIcon(Icons.av_timer_outlined), findsOneWidget);
+      // Sem a bolinha vermelha de antes.
       expect(
-        tester
-            .widget<Opacity>(
-              find.descendant(
-                of: find.byType(TimeDisplay),
-                matching: find.byType(Opacity),
-              ),
-            )
-            .opacity,
-        1,
+        find.byWidgetPredicate(
+          (w) =>
+              w is DecoratedBox &&
+              (w.decoration as BoxDecoration).shape == BoxShape.circle,
+        ),
+        findsNothing,
       );
-      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('$side: parado com menos de 10 s vale o parado', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        side,
+        running: false,
+        time: const Duration(seconds: 5),
+      );
+      final scheme = Theme.of(tester.element(find.byType(TimeDisplay)))
+          .colorScheme;
+      expect(decoration(tester, side).color, isNot(scheme.errorContainer));
+      expect(
+        (decoration(tester, side).border! as Border).top.color,
+        scheme.outlineVariant,
+      );
+    });
+
+    testWidgets('$side: número do relógio parado tem contraste >= 4,5:1', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        side,
+        running: false,
+        time: const Duration(minutes: 3),
+      );
+      final box = decoration(tester, side).color!;
+      final number = Color.alphaBlend(numberColor(tester, side), box);
+      double luminance(Color c) => c.computeLuminance();
+      final hi = luminance(number) > luminance(box) ? number : box;
+      final lo = hi == number ? box : number;
+      final ratio = (luminance(hi) + 0.05) / (luminance(lo) + 0.05);
+      expect(ratio, greaterThanOrEqualTo(4.5));
     });
   }
 
@@ -143,7 +184,7 @@ void main() {
           );
           final display = tester.widget<TimeDisplay>(find.byType(TimeDisplay));
           expect(display.type, TimeDisplayType.clock);
-          expect(display.state, TimeDisplayState.active);
+          expect(display.state, TimeDisplayState.low);
           expect(display.side, side);
           expect(display.value, '0:09.4');
           expect(display.semanticsLabel, '0:09.4');

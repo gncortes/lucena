@@ -4,7 +4,8 @@ import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
-import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
@@ -25,10 +26,7 @@ void main() {
     final placement = PlacementRobot($);
     await app.open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
-    expect(
-      find.byKey(TourKeys.levelOption(TourLevelChoice.test)),
-      findsOneWidget,
-    );
+    expect(find.byKey(LevelKeys.option(LevelChoice.test)), findsOneWidget);
 
     await tour.takeTest();
     await placement.expectIntro();
@@ -37,10 +35,12 @@ void main() {
     await placement.dontKnow(5);
     await placement.expectQuestion(6);
 
-    // Fechar à força no meio: volta ao passo do nível, e o teste continua
-    // na mesma pergunta.
+    // Fechar à força no meio: o tour volta no último passo (o nível só fecha
+    // a primeira abertura), e o teste continua na mesma pergunta.
     await app.restart();
-    await tour.expectStep(TourStep.level);
+    await tour.expectStep(TourStep.play);
+    await tour.finishSteps();
+    await tour.skipAccount();
     await tour.takeTest();
     await placement.expectIntro();
     await placement.resume();
@@ -50,7 +50,7 @@ void main() {
     await placement.expectResult();
     await placement.useLevel();
 
-    await tour.expectStep(TourStep.level);
+    await $(LevelKeys.screen).waitUntilVisible();
     await tour.start();
   });
 

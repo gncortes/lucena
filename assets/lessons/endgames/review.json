@@ -36,7 +36,6 @@
     "basics.queenMate",
     "basics.rookMate",
     "basics.kingPawn",
-    "pawns.keySquares",
     "pawns.rookPawnDraw",
     "pawns.race",
     "basics.twoBishops",

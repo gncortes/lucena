@@ -7,7 +7,3 @@ import '../../../domain/use_cases/clock_format.dart';
 /// chess.com fazem assim em qualquer idioma).
 String runTime(BuildContext context, Duration time) =>
     RunTimeFormat.clock(time);
-
-/// A diferença para o recorde, em segundos com sinal (`+3.2`).
-String runTimeDifference(BuildContext context, Duration difference) =>
-    RunTimeFormat.difference(difference);

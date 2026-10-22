@@ -3,6 +3,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/app_bar_progress.dart';
+import '../../core/theme/app_text.dart';
+import '../../core/theme/app_icon_size.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +31,9 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
 import 'placement_result_view.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/character_avatar.dart';
 
 /// O teste de nível (T52): a abertura com o Viktor, as 20 perguntas (sem
 /// dizer se acertou) e o resultado. [onDone] recebe o fim: o tour segue, as
@@ -142,7 +147,7 @@ class _Intro extends StatelessWidget {
                     teacher: viktor,
                     text: l10n.placementIntroSpeech,
                     emotion: Emotion.happy,
-                    avatarSize: 56,
+                    avatarSize: CharacterAvatar.speech,
                     speaks: true,
                   ),
                 const SizedBox(height: AppSpacing.xl),
@@ -153,13 +158,7 @@ class _Intro extends StatelessWidget {
                   children: [
                     // CompChip informativo: cheio, sem contorno.
                     for (final (icon, label) in chips)
-                      Chip(
-                        avatar: Icon(icon, size: 18, color: colors.onSurface),
-                        label: Text(label),
-                        labelStyle: TextStyle(color: colors.onSurface),
-                        backgroundColor: colors.surfaceContainer,
-                        side: BorderSide.none,
-                      ),
+                      InfoChip(icon: icon, label: label),
                   ],
                 ),
                 // Na retomada (Gabriel, variante B; canvas
@@ -167,42 +166,40 @@ class _Intro extends StatelessWidget {
                 // card abaixo dos selos.
                 if (state.resuming) ...[
                   const SizedBox(height: AppSpacing.xl),
-                  Container(
+                  Card(
                     key: PlacementKeys.stoppedCard,
-                    padding: const EdgeInsets.all(AppSpacing.insideCard),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainer,
-                      borderRadius: BorderRadius.circular(AppShape.medium),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: AppSpacing.md,
-                      children: [
-                        Icon(Icons.history_rounded, color: colors.primary),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 2,
-                            children: [
-                              Text(
-                                l10n.placementStoppedAt(
-                                  state.number,
-                                  PlacementState.questionCount,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.insideCard),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: AppSpacing.md,
+                        children: [
+                          Icon(Icons.history_rounded, color: colors.primary),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: AppSpacing.xs,
+                              children: [
+                                Text(
+                                  l10n.placementStoppedAt(
+                                    state.number,
+                                    PlacementState.questionCount,
+                                  ),
+                                  key: PlacementKeys.stoppedAt,
+                                  style: theme.textTheme.titleMedium,
                                 ),
-                                key: PlacementKeys.stoppedAt,
-                                style: theme.textTheme.titleMedium,
-                              ),
-                              Text(
-                                l10n.placementAnswersSaved,
-                                key: PlacementKeys.answersSaved,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colors.onSurfaceVariant,
+                                Text(
+                                  l10n.placementAnswersSaved,
+                                  key: PlacementKeys.answersSaved,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colors.onSurfaceVariant,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -212,56 +209,38 @@ class _Intro extends StatelessWidget {
         ),
         // Fixo no rodapé (Gabriel, 14/10/2026; canvas PropV2TesteAbertura): o
         // principal cheio na largura toda e a saída em texto logo abaixo.
-        ColoredBox(
+        ActionsFooter(
           key: PlacementKeys.footer,
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.xs,
-              children: [
-                FilledButton(
-                  key: state.resuming
-                      ? PlacementKeys.resume
-                      : PlacementKeys.start,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(kButtonHeight),
-                    textStyle: AppButtonText.footer(context),
-                  ),
-                  onPressed: cubit.start,
-                  child: Text(
-                    state.resuming ? l10n.placementResume : l10n.placementStart,
-                  ),
-                ),
-                if (state.resuming)
-                  TextButton(
-                    key: PlacementKeys.restart,
-                    style: _footerText,
-                    onPressed: cubit.restart,
-                    child: Text(l10n.placementRestart),
-                  )
-                else if (onChooseByHand != null)
-                  TextButton(
-                    key: PlacementKeys.chooseByHand,
-                    style: _footerText,
-                    onPressed: onChooseByHand,
-                    child: Text(l10n.placementChooseByHand),
-                  ),
-              ],
+          stacked: true,
+          children: [
+            FilledButton(
+              key: state.resuming ? PlacementKeys.resume : PlacementKeys.start,
+              style: FilledButton.styleFrom(
+                textStyle: AppButtonText.footer(context),
+              ),
+              onPressed: cubit.start,
+              child: Text(
+                state.resuming ? l10n.placementResume : l10n.placementStart,
+              ),
             ),
-          ),
+            if (state.resuming)
+              TextButton(
+                key: PlacementKeys.restart,
+                onPressed: cubit.restart,
+                child: Text(l10n.placementRestart),
+              )
+            else if (onChooseByHand != null)
+              TextButton(
+                key: PlacementKeys.chooseByHand,
+                onPressed: onChooseByHand,
+                child: Text(l10n.placementChooseByHand),
+              ),
+          ],
         ),
       ],
     );
   }
 }
-
-/// A saída em texto do rodapé da abertura: 40 de altura, largura toda.
-final _footerText = TextButton.styleFrom(
-  minimumSize: const Size.fromHeight(40),
-);
 
 /// Uma pergunta: enunciado no alto, tabuleiro centralizado na área entre
 /// as barras do sistema e respostas no rodapé.
@@ -274,7 +253,6 @@ class _Question extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final cubit = context.read<PlacementCubit>();
     final item = state.item;
     if (item == null) return const SizedBox.shrink();
@@ -284,9 +262,7 @@ class _Question extends StatelessWidget {
         placementPrompt(l10n, item),
         key: PlacementKeys.prompt,
         textAlign: TextAlign.center,
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
+        style: context.cardTitle,
       ),
     );
     return LayoutBuilder(
@@ -339,7 +315,7 @@ class _Answers extends StatelessWidget {
         AppSpacing.screen,
         AppSpacing.sm,
         AppSpacing.screen,
-        AppSpacing.md,
+        AppSpacing.sm,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -367,6 +343,7 @@ class _Answers extends StatelessWidget {
               key: PlacementKeys.confirm,
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(kButtonHeight),
+                textStyle: AppButtonText.footer(context),
               ),
               onPressed: state.selected.isEmpty ? null : cubit.confirmSquares,
               child: Text(l10n.placementConfirm),
@@ -401,9 +378,7 @@ class _Option extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppShape.medium),
         ),
-        textStyle: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: context.cardTitle,
       ),
       onPressed: () => cubit.choose(option),
       child: Row(
@@ -458,12 +433,14 @@ class _OptionBadge extends StatelessWidget {
         ),
       );
     }
-    if (icon != null) return Icon(icon, size: 20, color: colors.primary);
+    if (icon != null) {
+      return Icon(icon, size: AppIconSize.button, color: colors.primary);
+    }
     return Text(
       text ?? '',
       style: TextStyle(
         fontSize: 20,
-        fontWeight: FontWeight.w800,
+        fontWeight: AppWeight.heavy,
         color: colors.primary,
       ),
     );

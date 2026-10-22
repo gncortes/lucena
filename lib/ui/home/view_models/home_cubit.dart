@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
+import '../../../data/repositories/featured/featured_progress_repository.dart';
+import '../../../data/repositories/featured/featured_repository.dart';
 import '../../../data/repositories/home/home_layout_repository.dart';
 import '../../../data/repositories/home/unlock_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
@@ -21,6 +23,8 @@ import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
+import '../../../domain/use_cases/featured_rules.dart';
+import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
 
@@ -42,6 +46,7 @@ class HomeState {
     this.layout,
     this.layoutNotice = false,
     this.unlockedBlind = false,
+    this.featured,
   });
 
   final bool ready;
@@ -83,6 +88,9 @@ class HomeState {
   /// às cegas vencido na Jornada. Aparece uma vez.
   final bool unlockedBlind;
 
+  /// O final em destaque da seção "Finais em destaque". Nulo: a seção some.
+  final FeaturedItem? featured;
+
   /// O caminho do cartão "Continuar": o da vez (a aula de final aberta, as
   /// aulas do iniciante ou a Jornada) se estiver em destaque; senão, o
   /// primeiro em destaque com progresso. Nulo: o cartão some.
@@ -120,6 +128,7 @@ class HomeState {
     layout: layout,
     layoutNotice: layoutNotice ?? this.layoutNotice,
     unlockedBlind: unlockedBlind ?? this.unlockedBlind,
+    featured: featured,
   );
 }
 
@@ -155,6 +164,7 @@ class EndgameSummary {
     this.exerciseCount,
     this.lessonOpen = false,
     this.partId,
+    this.partStage = 0,
     this.partNumber,
     this.partCount,
     this.recommended = false,
@@ -167,6 +177,9 @@ class EndgameSummary {
 
   /// Numa aula em partes: a parte em que o aluno parou (T51).
   final String? partId;
+
+  /// A etapa da parte em que o aluno saiu: o "Continuar" volta nela.
+  final int partStage;
   final int? partNumber;
   final int? partCount;
   final String title;
@@ -204,7 +217,15 @@ class HomeCubit extends Cubit<HomeState> {
     this._homeLayout,
     this._unlocks,
     this._placement,
+    this._featured,
+    this._featuredProgress,
+    this._now,
   }) : super(const HomeState());
+
+  // Os finais em destaque: sem eles (ou sem o relógio), a seção não aparece.
+  final FeaturedRepository? _featured;
+  final FeaturedProgressRepository? _featuredProgress;
+  final Now? _now;
 
   final UnlockRepository? _unlocks;
   final PlacementRepository? _placement;
@@ -273,6 +294,7 @@ class HomeCubit extends Cubit<HomeState> {
         onboarding.done &&
         saved == null &&
         !await _homeLayout.noticeSeen();
+    final featured = await _featuredItem();
     if (isClosed) return;
     emit(
       HomeState(
@@ -296,8 +318,20 @@ class HomeCubit extends Cubit<HomeState> {
         layout: layout,
         layoutNotice: notice,
         unlockedBlind: unlockedBlind,
+        featured: featured,
       ),
     );
+  }
+
+  /// O final da seção "Finais em destaque": o primeiro da lista.
+  Future<FeaturedItem?> _featuredItem() async {
+    final repository = _featured;
+    final progress = _featuredProgress;
+    final now = _now;
+    if (repository == null || progress == null || now == null) return null;
+    final catalog = await repository.catalog();
+    final played = await progress.played();
+    return FeaturedRules.home(FeaturedRules.items(catalog, played, now: now()));
   }
 
   /// O cartão do modo novo saiu (fechado ou tocado): não volta.
@@ -373,9 +407,7 @@ class HomeCubit extends Cubit<HomeState> {
         endgames: _endgameLessons,
         endgameProgress: _endgameProgress,
       ).load();
-      final next = roadmap?.steps
-          .where((step) => !step.school && !step.soon)
-          .firstOrNull;
+      final next = roadmap?.steps.where((step) => !step.school).firstOrNull;
       if (next != null) {
         lesson = trail.lesson(next.lessonId);
         recommended = lesson != null;
@@ -424,6 +456,7 @@ class HomeCubit extends Cubit<HomeState> {
       exerciseCount: exerciseIndex < 0 ? null : lesson.exercises.length,
       lessonOpen: lessonOpen,
       partId: part?.id,
+      partStage: part == null ? 0 : checkpoint!.step,
       partNumber: part == null ? null : lesson.lesson.parts.indexOf(part) + 1,
       partCount: part == null ? null : lesson.lesson.parts.length,
     );

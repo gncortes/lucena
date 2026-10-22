@@ -147,8 +147,8 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     }
     _changed();
     // O rating do jogador, na linha de detalhe da faixa dele.
-    final rating = await _reporter?.currentRating();
-    if (rating != null && !isClosed) {
+    final rating = await _reporter?.shownRating(fromLink: state.mode.fromLink);
+    if (!isClosed) {
       emit(state.copyWith(userRating: rating));
     }
     await _saving;
@@ -351,11 +351,6 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     );
   }
 
-  /// Um lance para trás e um para a frente na revisão.
-  void viewPrevious() => view(state.shownPly - 1);
-
-  void viewNext() => view(state.shownPly + 1);
-
   /// Atualiza os tempos pelo relógio do aparelho e confere a bandeira. A tela
   /// chama várias vezes por segundo; o resultado só depende do instante atual,
   /// então vale igual depois de o app ficar em segundo plano.
@@ -421,15 +416,6 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
     emit(_timed(paused, now));
     _persist(onScreen: false);
     await _saving;
-  }
-
-  /// Depois de perder uma etapa: uma tentativa nova do mesmo speedrun.
-  /// Devolve o id dela.
-  Future<int?> restartSpeedrun(String speedrunId) async {
-    final speedruns = _speedruns;
-    if (speedruns == null) return null;
-    await _saving;
-    return (await speedruns.start(speedrunId, _now())).id;
   }
 
   /// Etapas já vencidas, para a confirmação de desistência da tentativa.
@@ -546,6 +532,7 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         gameId: gameId,
         userSide: userSide,
         drawGoal: state.mode.goal == PositionGoal.draw,
+        rated: !state.mode.fromLink,
       );
       // A partida recomeçou enquanto a conta era feita: o resumo é da outra.
       if (isClosed || state.startedAt != startedAt) return;

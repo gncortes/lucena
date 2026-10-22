@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -15,18 +14,15 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/run_clock.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/speedrun_cubit.dart';
-import 'speedrun_pace_chip.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
 import '../../core/theme/app_colors.dart';
@@ -65,25 +61,22 @@ class MarathonAttemptView extends StatelessWidget {
       ),
       bottomNavigationBar: completed
           ? null
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: FilledButton.icon(
-                  key: SpeedrunKeys.retry,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(kButtonHeight),
-                  ),
-                  icon: const Icon(Icons.replay),
-                  label: Text(l10n.speedrunRetry),
-                  onPressed: () => _retry(context, speedrun),
-                ),
-              ),
+          : SpeedrunActionBar(
+              buttonKey: SpeedrunKeys.retry,
+              icon: Icons.replay,
+              label: l10n.speedrunRetry,
+              onPressed: () => _retry(context, speedrun),
             ),
       body: ListView(
         padding: scrollPadding(context),
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: AppSpacing.md,
@@ -122,17 +115,18 @@ class MarathonAttemptView extends StatelessWidget {
                       offer: state.offer,
                     ),
                 ],
-                _Chips(speedrun: speedrun, run: run),
+                RunChips(speedrun: speedrun, run: run, marathon: true),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
-            child: Text(
-              l10n.speedrunStages,
-              style: Theme.of(context).textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.sm,
             ),
+            child: Text(l10n.speedrunStages, style: context.cardTitle),
           ),
           for (final (index, stage) in run.stages.indexed)
             SpeedrunStageRow(
@@ -150,18 +144,15 @@ class MarathonAttemptView extends StatelessWidget {
                   ? SpeedrunStageStatus.current
                   : SpeedrunStageStatus.ahead,
               trailing: stage.done || stage.losses > 0
-                  ? Semantics(
-                      container: true,
-                      excludeSemantics: true,
-                      label: l10n.speedrunStageTimeValue(
+                  ? TimeDisplay(
+                      value: runTime(context, stage.time),
+                      semanticsLabel: l10n.speedrunStageTimeValue(
                         index + 1,
                         total,
                         runTime(context, stage.time),
                       ),
-                      child: RunClock(
-                        stage.time,
-                        textKey: SpeedrunKeys.stageTime(index),
-                      ),
+                      size: TimeDisplaySize.inline,
+                      textKey: SpeedrunKeys.stageTime(index),
                     )
                   : null,
             ),
@@ -244,59 +235,59 @@ class _EndCard extends StatelessWidget {
     final muted = theme.textTheme.bodyMedium?.copyWith(
       color: colors.onSurfaceVariant,
     );
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        // 20 no artboard.
-        vertical: AppSpacing.lg + AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Column(
-        spacing: AppSpacing.sm,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHigh,
-              shape: BoxShape.circle,
-            ),
-            child: ExcludeSemantics(
-              child: Icon(icon, size: 28, color: colors.onSurfaceVariant),
-            ),
-          ),
-          Semantics(
-            header: true,
-            child: Text(
-              hero,
-              key: SpeedrunKeys.marathonEndHero,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          // 20 no artboard.
+          vertical: AppSpacing.lg + AppSpacing.xs,
+        ),
+        child: Column(
+          spacing: AppSpacing.sm,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHigh,
+                shape: BoxShape.circle,
               ),
-            ),
-          ),
-          Text(
-            l10n.speedrunRungTitle(opponent),
-            key: SpeedrunKeys.marathonEndOpponent,
-            textAlign: TextAlign.center,
-            style: muted,
-          ),
-          if (end != SpeedrunRunEnd.timeout)
-            Text(
-              l10n.marathonLeftValue(
-                HistoryLabels.ltr(
-                  runTime(context, Marathon.bank(run, speedrun.time)),
+              child: ExcludeSemantics(
+                child: Icon(
+                  icon,
+                  size: AppIconSize.large,
+                  color: colors.onSurfaceVariant,
                 ),
               ),
-              key: SpeedrunKeys.marathonEndLeft,
+            ),
+            Semantics(
+              header: true,
+              child: Text(
+                hero,
+                key: SpeedrunKeys.marathonEndHero,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+            Text(
+              l10n.speedrunRungTitle(opponent),
+              key: SpeedrunKeys.marathonEndOpponent,
               textAlign: TextAlign.center,
               style: muted,
             ),
-        ],
+            if (end != SpeedrunRunEnd.timeout)
+              Text(
+                l10n.marathonLeftValue(
+                  HistoryLabels.ltr(
+                    runTime(context, Marathon.bank(run, speedrun.time)),
+                  ),
+                ),
+                key: SpeedrunKeys.marathonEndLeft,
+                textAlign: TextAlign.center,
+                style: muted,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -329,49 +320,51 @@ class _NotFinished extends StatelessWidget {
     );
     final onContainer = colors.onSecondaryContainer;
     final body = theme.textTheme.bodyMedium?.copyWith(color: onContainer);
-    return Container(
+    return Card(
       key: SpeedrunKeys.marathonNotFinished,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        // 14 no artboard.
-        vertical: AppSpacing.md,
-      ),
-      decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.md,
-        children: [
-          ExcludeSemantics(
-            child: Icon(Icons.info, size: 22, color: onContainer),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.xs,
-              children: [
-                Text(
-                  l10n.marathonNotFinishedYet,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: onContainer,
-                  ),
-                ),
-                Text(
-                  l10n.speedrunBestReached(
-                    reached + 1,
-                    speedrun.stages.length,
-                    opponent,
-                  ),
-                  style: body,
-                ),
-                if (offer > 0) _Offer(points: offer, style: body),
-              ],
+      color: colors.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          // 14 no artboard.
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.md,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.info,
+                size: AppIconSize.standard,
+                color: onContainer,
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.xs,
+                children: [
+                  Text(
+                    l10n.marathonNotFinishedYet,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: onContainer,
+                    ),
+                  ),
+                  Text(
+                    l10n.speedrunBestReached(
+                      reached + 1,
+                      speedrun.stages.length,
+                      opponent,
+                    ),
+                    style: body,
+                  ),
+                  if (offer > 0) _Offer(points: offer, style: body),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -398,7 +391,7 @@ class _Offer extends StatelessWidget {
     final short = l10n.speedrunRatingBonusShort(points);
     final at = full.indexOf(short);
     if (at < 0) return Text(full, style: style);
-    final strong = style?.copyWith(fontWeight: FontWeight.w700, color: color);
+    final strong = style?.copyWith(fontWeight: AppWeight.strong, color: color);
     return Text.rich(
       TextSpan(
         style: style,
@@ -407,7 +400,11 @@ class _Offer extends StatelessWidget {
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: ExcludeSemantics(
-              child: Icon(Icons.trending_up, size: 16, color: color),
+              child: Icon(
+                Icons.trending_up,
+                size: AppIconSize.small,
+                color: color,
+              ),
             ),
           ),
           const WidgetSpan(child: SizedBox(width: AppSpacing.xs)),
@@ -451,81 +448,52 @@ class _RecordCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final value = runTime(context, recordTime(speedrun, best));
     final green = GoalStyle.of(context, PositionGoal.win).color;
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.md,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        spacing: AppSpacing.md,
-        children: [
-          Expanded(
-            child: Text(
-              l10n.marathonBest,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          spacing: AppSpacing.md,
+          children: [
+            Expanded(
+              child: Text(
+                l10n.marathonBest,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ),
-          ),
-          Semantics(
-            container: true,
-            excludeSemantics: true,
-            label: l10n.marathonBestValue(value),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: AppSpacing.sm,
-              children: [
-                Icon(Icons.emoji_events_rounded, size: 24, color: green),
-                Text(
-                  value,
-                  key: SpeedrunKeys.marathonRecord,
-                  textDirection: TextDirection.ltr,
-                  style: theme.textTheme.titleLarge?.copyWith(
+            Semantics(
+              container: true,
+              excludeSemantics: true,
+              label: l10n.marathonBestValue(value),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: AppSpacing.sm,
+                children: [
+                  Icon(
+                    Icons.emoji_events_rounded,
+                    size: AppIconSize.standard,
                     color: green,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
-                ),
-              ],
+                  Text(
+                    value,
+                    key: SpeedrunKeys.marathonRecord,
+                    textDirection: TextDirection.ltr,
+                    style: context.bigNumber?.copyWith(
+                      color: green,
+                      fontSize: 24,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
-}
-
-/// O ritmo, "Maratona" e quando terminou, em chips que quebram de linha.
-class _Chips extends StatelessWidget {
-  const _Chips({required this.speedrun, required this.run});
-
-  final Speedrun speedrun;
-  final SpeedrunRun run;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final locale = Localizations.localeOf(context).toString();
-    final endedAt = run.finishedAt ?? run.attempt.abandonedAt;
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      children: [
-        SpeedrunPaceChip(speedrun.time),
-        InfoChip(icon: Icons.all_inclusive, label: l10n.marathonSection),
-        if (endedAt != null)
-          InfoChip(
-            icon: Icons.calendar_today,
-            label: HistoryLabels.capitalize(
-              DateFormat.MMMd(locale).add_Hm().format(endedAt.toLocal()),
-            ),
-          ),
-      ],
     );
   }
 }

@@ -6,14 +6,17 @@ import '../../../domain/models/achievement.dart';
 import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/widgets/filled_segments.dart';
+import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../view_models/achievements_cubit.dart';
 import 'achievement_detail.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/widgets/progress_pill.dart';
+import '../../core/widgets/animated_progress.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/section_title.dart';
+import '../../core/widgets/empty_state.dart';
 
 /// As conquistas: a barra do progresso geral, o filtro (todas, conquistadas,
 /// faltando e o histórico) e a lista por grupo, com as obtidas em cor e a
@@ -31,7 +34,7 @@ class AchievementsScreen extends StatelessWidget {
       key: AchievementsKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.achievementsTitle)),
       body: all == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const SkeletonList()
           : ListView(
               padding: scrollPadding(context),
               children: [
@@ -48,16 +51,12 @@ class AchievementsScreen extends StatelessWidget {
     final visible = state.visible;
     if (visible.isEmpty) {
       return [
-        Padding(
+        EmptyState(
           key: AchievementsKeys.empty,
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Text(
-            state.filter == AchievementsFilter.locked
-                ? l10n.achievementsEmptyLocked
-                : l10n.achievementsEmptyUnlocked,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
+          style: EmptyStateStyle.text,
+          message: state.filter == AchievementsFilter.locked
+              ? l10n.achievementsEmptyLocked
+              : l10n.achievementsEmptyUnlocked,
         ),
       ];
     }
@@ -74,16 +73,19 @@ class AchievementsScreen extends StatelessWidget {
     return [
       for (final category in AchievementCategory.values)
         if (visible.any((a) => a.category == category)) ...[
-          _GroupHeader(
-            category: category,
-            done: all
-                .where(
-                  (a) =>
-                      a.category == category &&
-                      state.unlocked.containsKey(a.id),
-                )
-                .length,
-            total: all.where((a) => a.category == category).length,
+          SectionTitle(
+            l10n.achievementsGroupHeader(
+              category.label(l10n),
+              all
+                  .where(
+                    (a) =>
+                        a.category == category &&
+                        state.unlocked.containsKey(a.id),
+                  )
+                  .length,
+              all.where((a) => a.category == category).length,
+            ),
+            textKey: AchievementsKeys.group(category.name),
           ),
           for (final achievement in visible)
             if (achievement.category == category) row(achievement),
@@ -118,7 +120,7 @@ class _Overall extends StatelessWidget {
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: AppSpacing.sm),
-          ProgressPill(
+          AnimatedProgress(
             key: AchievementsKeys.progressBar,
             value: total == 0 ? 0 : done / total,
           ),
@@ -140,56 +142,25 @@ class _Filter extends StatelessWidget {
     final cubit = context.read<AchievementsCubit>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
-      child: FilledSegments<AchievementsFilter>(
-        values: AchievementsFilter.values,
-        selected: selected,
-        labelKey: (filter) => AchievementsKeys.filter(filter.name),
-        label: (filter) => switch (filter) {
-          AchievementsFilter.all => l10n.achievementsFilterAll,
-          AchievementsFilter.unlocked => l10n.achievementsFilterUnlocked,
-          AchievementsFilter.locked => l10n.achievementsFilterLocked,
-          AchievementsFilter.history => l10n.achievementsFilterHistory,
-        },
-        onChanged: cubit.filter,
-      ),
-    );
-  }
-}
-
-/// "Adversários · 8 de 12".
-class _GroupHeader extends StatelessWidget {
-  const _GroupHeader({
-    required this.category,
-    required this.done,
-    required this.total,
-  });
-
-  final AchievementCategory category;
-  final int done;
-  final int total;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.screen,
-        AppSpacing.xl,
-        AppSpacing.screen,
-        AppSpacing.xs,
-      ),
-      child: Semantics(
-        header: true,
-        child: Text(
-          context.l10n.achievementsGroupHeader(
-            category.label(context.l10n),
-            done,
-            total,
-          ),
-          key: AchievementsKeys.group(category.name),
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: theme.colorScheme.primary,
-          ),
+      child: SizedBox(
+        width: double.infinity,
+        child: SegmentedButton<AchievementsFilter>(
+          showSelectedIcon: false,
+          segments: [
+            for (final filter in AchievementsFilter.values)
+              ButtonSegment(
+                value: filter,
+                label: OneLine(switch (filter) {
+                  AchievementsFilter.all => l10n.achievementsFilterAll,
+                  AchievementsFilter.unlocked =>
+                    l10n.achievementsFilterUnlocked,
+                  AchievementsFilter.locked => l10n.achievementsFilterLocked,
+                  AchievementsFilter.history => l10n.achievementsFilterHistory,
+                }, key: AchievementsKeys.filter(filter.name)),
+              ),
+          ],
+          selected: {selected},
+          onSelectionChanged: (selection) => cubit.filter(selection.single),
         ),
       ),
     );
@@ -246,7 +217,7 @@ class _AchievementRow extends StatelessWidget {
                 Text(achievement.description(l10n, state.characters)),
                 if (progress != null) ...[
                   const SizedBox(height: AppSpacing.xs),
-                  ProgressPill(value: progress.fraction),
+                  AnimatedProgress(value: progress.fraction),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     progress.label(l10n),

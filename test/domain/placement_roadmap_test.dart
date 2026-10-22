@@ -13,7 +13,6 @@ void main() {
     int theta = 1450,
     Set<String> completedSchool = const {},
     Set<String> completedEndgames = const {},
-    bool soon = true,
   }) => PlacementRoadmap.build(
     result: resultWith(nodes, theta: theta),
     skills: skills,
@@ -21,7 +20,6 @@ void main() {
     endgameLessons: smallEndgames,
     completedSchool: completedSchool,
     completedEndgames: completedEndgames,
-    soon: soon,
   );
 
   group('Escola do Viktor', () {
@@ -95,31 +93,26 @@ void main() {
         'rook.lucena': gap,
       }, theta: mid(RatingLevel.intermediate));
       expect(roadmap.endgameBadges['basics.queenMate'], EndgameBadge.mastered);
-      final ready = roadmap.endgameSteps.firstWhere((step) => !step.soon);
+      final ready = roadmap.endgameSteps.firstWhere((step) => true);
       expect(roadmap.endgameBadges[ready.lessonId], EndgameBadge.recommended);
       expect(roadmap.endgameBadges, isNot(contains('rook.philidor')));
       expect(roadmap.nextEndgame!.lessonId, 'rook.lucena');
+      // Aula que não existe no app não vira passo.
       expect(roadmap.followingEndgames().map((s) => s.lessonId), [
         'rook.philidor',
-        'pawns.reti',
-        'tactics.endgameTricks',
       ]);
     });
 
-    test('aula do catálogo aparece como "em breve"', () {
+    test('aula do catálogo que não existe no app não vira passo', () {
       final roadmap = build({
         'pawns.opposition': mastered,
         'pawns.reti': gap,
       }, theta: mid(RatingLevel.advanced));
-      final reti = roadmap.nextEndgame!;
-      expect(reti.node, 'pawns.reti');
-      expect(reti.soon, isTrue);
-      expect(reti.school, isFalse);
-      // Só aula que existe ganha o selo de recomendada: a primeira feita do
-      // roteiro.
-      expect(roadmap.endgameBadges, isNot(contains('pawns.reti')));
-      final ready = roadmap.endgameSteps.firstWhere((step) => !step.soon);
-      expect(roadmap.endgameBadges[ready.lessonId], EndgameBadge.recommended);
+      expect(roadmap.nodes, isNot(contains('pawns.reti')));
+      expect(
+        roadmap.steps.map((step) => step.node),
+        isNot(contains('pawns.reti')),
+      );
       expect(
         roadmap.skippedSchool['technique.opposition'],
         SkipReason.confirmed,
@@ -144,13 +137,10 @@ void main() {
         'rules.queen': likely,
         'mate.queen': likely,
         'pawns.opposition': likely,
-        'pawns.reti': gap,
+        'rook.philidor': gap,
       }, theta: mid(RatingLevel.intermediate));
-      expect(roadmap.nodes.first, 'pawns.reti');
-      expect(
-        roadmap.nodes,
-        containsAllInOrder(['rook.lucena', 'rook.philidor']),
-      );
+      expect(roadmap.nodes.first, 'rook.philidor');
+      expect(roadmap.nodes, contains('rook.lucena'));
     });
   });
 
@@ -168,32 +158,4 @@ void main() {
       isEmpty,
     );
   });
-
-  test('sem "em breve" (aulas escondidas): o nó sem aula não vira passo', () {
-    final nodes = {'pawns.opposition': mastered, 'pawns.reti': gap};
-    final theta = mid(RatingLevel.advanced);
-    final roadmap = build(nodes, theta: theta, soon: false);
-    expect(roadmap.steps.where((step) => step.soon), isEmpty);
-    expect(roadmap.nodes, isNot(contains('pawns.reti')));
-    final ready = build(
-      nodes,
-      theta: theta,
-    ).endgameSteps.firstWhere((step) => !step.soon);
-    expect(roadmap.nextEndgame!.lessonId, ready.lessonId);
-  });
-
-  test(
-    'aula nova de nó avançado vai para a trilha de finais como em breve',
-    () {
-      final roadmap = build({
-        'tactics.endgame': gap,
-      }, theta: mid(RatingLevel.advanced));
-      final step = roadmap.steps.firstWhere(
-        (step) => step.node == 'tactics.endgame',
-      );
-      expect(step.soon, isTrue);
-      expect(step.school, isFalse);
-      expect(step.lessonId, 'tactics.endgameTricks');
-    },
-  );
 }

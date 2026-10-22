@@ -5,7 +5,6 @@ import '../../../domain/models/explanation.dart';
 import '../keys/explanation_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_motion.dart';
-import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 import 'lesson_quote.dart';
 
@@ -311,7 +310,6 @@ class _ExplanationCardsState extends State<ExplanationCards> {
     ExplanationVariation variation, {
     bool principal = true,
   }) {
-    final colors = Theme.of(context).colorScheme;
     final children = _children(block, variation.id);
     final expandable = principal && children.isNotEmpty;
     final expanded = _expanded.contains(variation.id);
@@ -408,17 +406,15 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         if (showText)
           for (final (i, child) in children.indexed)
             if (principal)
-              Container(
+              Card(
                 margin: EdgeInsets.only(top: i == 0 ? 0 : AppSpacing.sm),
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(AppShape.medium),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: _line(context, block, child, principal: false),
                 ),
-                child: _line(context, block, child, principal: false),
               )
             else ...[
-              const Divider(height: AppSpacing.lg, indent: 0, endIndent: 0),
+              const Divider(),
               _line(context, block, child, principal: false),
             ],
       ],
@@ -536,7 +532,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
               children: [
                 // Entre ideias: 12 (o fim do bloco anterior) + linha + 12.
                 if (index > 0) ...[
-                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  Divider(),
                   const SizedBox(height: AppSpacing.md),
                 ],
                 if (_isQuote(context, block))
@@ -643,7 +639,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
           for (final block in widget.payload.explanations)
             Padding(
               key: ExplanationKeys.paragraph(block.id, 0),
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: _body(block),
             ),
         ],
@@ -655,9 +651,9 @@ class _ExplanationCardsState extends State<ExplanationCards> {
         for (final block in widget.payload.explanations)
           Card(
             key: ExplanationKeys.block(block.id),
-            margin: const EdgeInsets.only(bottom: 8),
+            margin: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -670,8 +666,8 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                   ),
                   if (block.variations.isNotEmpty)
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
                       children: [
                         for (final variation in block.variations)
                           if ((variation.parentId == null ||
@@ -708,7 +704,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                   if (_texts(block).isNotEmpty)
                     Padding(
                       key: ExplanationKeys.paragraph(block.id, 0),
-                      padding: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.only(top: AppSpacing.sm),
                       child: _body(block),
                     ),
                   if (_unavailable != null &&
@@ -736,7 +732,7 @@ class _ExplanationCardsState extends State<ExplanationCards> {
                     ),
                     if (cursor.moves.length > 1)
                       Wrap(
-                        spacing: 4,
+                        spacing: AppSpacing.xs,
                         children: [
                           IconButton(
                             key: ExplanationKeys.first,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../wiki/widgets/linked_text.dart';
 import '../keys/explanation_keys.dart';
+import '../theme/app_spacing.dart';
 
 /// Contexto e história da lição V2 (LICOES-V2 §10): uma citação com barra
 /// lateral, texto menor e apagado, sem rótulo nem ícone. Os nomes marcados
@@ -26,7 +27,7 @@ class LessonQuote extends StatelessWidget {
       onTap: () {},
       child: Container(
         key: ExplanationKeys.quote(id),
-        padding: const EdgeInsetsDirectional.only(start: 12),
+        padding: const EdgeInsetsDirectional.only(start: AppSpacing.md),
         decoration: BoxDecoration(
           border: BorderDirectional(
             start: BorderSide(

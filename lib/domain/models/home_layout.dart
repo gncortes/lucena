@@ -17,7 +17,10 @@ enum HomePath {
   speedrun,
 
   /// Os finais avulsos do catálogo.
-  train;
+  train,
+
+  /// A Corrida de problemas.
+  race;
 
   static HomePath? fromCode(Object? code) => values.asNameMap()[code];
 }

@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "problems": [
+    {
+      "id": "race.001",
+      "fen": "8/8/K7/8/8/5p2/6k1/Q7 w - - 0 1",
+      "solution": "a1g7",
+      "theme": "queen",
+      "level": 900,
+      "dtm": 27
+    },
+    {
+      "id": "race.002",
+      "fen": "8/8/7K/8/8/2p5/1k6/7Q w - - 0 1",
+      "solution": "h1b7",
+      "theme": "queen",
+      "level": 980,
+      "dtm": 27
+    },
+    {
+      "id": "race.003",
+      "fen": "8/2k5/8/3K4/2P5/8/8/8 w - - 0 1",
+      "solution": "d5c5",
+      "theme": "pawns",
+      "level": 1060,
+      "dtm": 29
+    },
+    {
+      "id": "race.004",
+      "fen": "1Q6/1K6/8/8/8/5p2/8/7k w - - 0 1",
+      "solution": "b8h8",
+      "theme": "queen",
+      "level": 1140,
+      "dtm": 29
+    },
+    {
+      "id": "race.005",
+      "fen": "8/8/8/1p6/1k4KP/8/8/8 w - - 0 1",
+      "solution": "h4h5",
+      "theme": "pawns",
+      "level": 1220,
+      "dtm": 33
+    },
+    {
+      "id": "race.006",
+      "fen": "8/8/2k5/8/1K6/8/2P5/8 w - - 0 1",
+      "solution": "b4c4",
+      "theme": "pawns",
+      "level": 1300,
+      "dtm": 37
+    },
+    {
+      "id": "race.007",
+      "fen": "8/8/8/8/8/p7/k1K5/2R5 w - - 0 1",
+      "solution": "c2d2",
+      "theme": "rook",
+      "level": 1380,
+      "dtm": 41
+    },
+    {
+      "id": "race.008",
+      "fen": "2k5/8/8/8/8/5P2/8/4K3 w - - 0 1",
+      "solution": "e1f2",
+      "theme": "pawns",
+      "level": 1460,
+      "dtm": 43
+    },
+    {
+      "id": "race.009",
+      "fen": "K7/1R6/8/8/kp6/8/8/8 w - - 0 1",
+      "solution": "a8a7",
+      "theme": "rook",
+      "level": 1540,
+      "dtm": 45
+    },
+    {
+      "id": "race.010",
+      "fen": "8/8/P3k3/4r3/8/8/8/1K5R w - - 0 1",
+      "solution": "a6a7",
+      "theme": "rook",
+      "level": 1620,
+      "dtm": 49
+    },
+    {
+      "id": "race.011",
+      "fen": "8/1R6/6P1/8/6r1/7k/8/7K w - - 0 1",
+      "solution": "g6g7",
+      "theme": "rook",
+      "level": 1700,
+      "dtm": 67
+    },
+    {
+      "id": "race.012",
+      "fen": "8/8/5R1P/8/8/8/3r4/K1k5 w - - 0 1",
+      "solution": "h6h7",
+      "theme": "rook",
+      "level": 1780,
+      "dtm": 75
+    }
+  ]
+}

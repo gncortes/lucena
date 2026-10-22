@@ -29,24 +29,44 @@ abstract final class HomeSuggestion {
     const endgames = HomePath.endgames;
     const speedrun = HomePath.speedrun;
     const train = HomePath.train;
+    const race = HomePath.race;
     final (order, marked) = switch (level) {
-      RatingLevel.beginner => ([learn, journey, endgames, train, speedrun], 2),
-      RatingLevel.casual => ([journey, endgames, train, speedrun, learn], 3),
+      RatingLevel.beginner => (
+        [learn, journey, endgames, train, speedrun, race],
+        2,
+      ),
+      RatingLevel.casual => (
+        [journey, endgames, train, speedrun, race, learn],
+        3,
+      ),
       RatingLevel.intermediate => (
-        [journey, endgames, train, speedrun, learn],
+        [journey, endgames, train, speedrun, race, learn],
         4,
       ),
-      RatingLevel.advanced => ([endgames, journey, speedrun, train, learn], 4),
-      RatingLevel.expert => ([endgames, speedrun, train, journey, learn], 3),
-      RatingLevel.master => ([speedrun, endgames, train, journey, learn], 3),
+      RatingLevel.advanced => (
+        [endgames, journey, speedrun, race, train, learn],
+        4,
+      ),
+      RatingLevel.expert => (
+        [endgames, speedrun, race, train, journey, learn],
+        3,
+      ),
+      RatingLevel.master => (
+        [speedrun, endgames, race, train, journey, learn],
+        3,
+      ),
     };
     if (!(school ?? VisibleLessons.school)) order.remove(learn);
-    final visible = order.take(marked).toSet();
+    final visible = order.where((p) => p != race).take(marked).toSet();
     final at = order.indexOf(endgames);
     final withForYou = [...order]..insert(at, HomePath.forYou);
     return HomeLayout(
       order: withForYou,
-      visible: {...visible, if (visible.contains(endgames)) HomePath.forYou},
+      visible: {
+        ...visible,
+        if (visible.contains(endgames)) HomePath.forYou,
+        race,
+      },
     );
   }
 
@@ -131,7 +151,8 @@ abstract final class HomeSuggestion {
               : HomePathText.standard,
         HomePath.forYou ||
         HomePath.endgames ||
-        HomePath.train => HomePathText.standard,
+        HomePath.train ||
+        HomePath.race => HomePathText.standard,
       };
 
   /// O caminho do cartão "Continuar": o da vez ([current]) se estiver

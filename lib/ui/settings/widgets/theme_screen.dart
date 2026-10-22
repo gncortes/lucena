@@ -4,14 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
-import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_accent_ui.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
 import '../../core/widgets/accent_picker.dart';
 import '../../core/widgets/choice_tile.dart';
 import '../view_models/settings_cubit.dart';
+import '../../core/widgets/section_title.dart';
 
 /// Claro, escuro ou o do aparelho, e a cor predominante do app.
 class ThemeScreen extends StatelessWidget {
@@ -43,14 +44,19 @@ class ThemeScreen extends StatelessWidget {
               selected: selected == mode,
               onTap: () => cubit.setThemeMode(mode),
             ),
-          const Divider(height: 24),
-          AppearanceSectionTitle(
+          const SizedBox(height: AppSpacing.xl),
+          SectionTitle(
             l10n.settingsAccent,
             value: accent.label(l10n),
             valueKey: SettingsKeys.accentValue,
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.xs,
+              AppSpacing.lg,
+              AppSpacing.xl,
+            ),
             child: AccentPicker(
               selected: accent,
               keyOf: SettingsKeys.accentOption,

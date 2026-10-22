@@ -362,7 +362,9 @@ SimReport simulate({
       // dele (faixa do nó ≤ faixa verdadeira).
       final relevant = [
         for (final node in scenario.wrong)
-          if (skills.node(node)!.band.index <= band) node,
+          if (skills.node(node)!.band.index <= band &&
+              _hasAppLesson(skills.node(node)!, schoolLessons, endgameLessons))
+            node,
       ];
       if (relevant.isEmpty) continue;
       bool inRoadmap(String node) => gapRun.roadmap.nodes.contains(node);
@@ -407,6 +409,16 @@ SimReport simulate({
   return report;
 }
 
+/// O nó tem alguma aula que existe no app? Sem aula, o nó não entra no
+/// roteiro (não há mais "em breve"), então não conta como lacuna achada.
+bool _hasAppLesson(
+  SkillNode node,
+  List<String> school,
+  List<String> endgames,
+) => node.lessons.any(
+  (lesson) => school.any(lesson.matches) || endgames.any(lesson.matches),
+);
+
 /// A dificuldade mediana das perguntas de cada nó (o centro da faixa, se o
 /// nó não tiver pergunta).
 Map<String, int> _medians(SkillMap skills, PlacementBank bank) => {
@@ -419,38 +431,3 @@ Map<String, int> _medians(SkillMap skills, PlacementBank bank) => {
       return values.isEmpty ? node.band.rating : values[values.length ~/ 2];
     }(),
 };
-
-/// Gráfico ASCII de θ verdadeiro (horizontal) × θ estimado (vertical), de 400
-/// a 2800, células de 100 × 100; a diagonal é marcada com `/`.
-String asciiPlot(List<(double, int)> points) {
-  const low = 400;
-  const high = 2800;
-  const cell = 100;
-  const size = (high - low) ~/ cell;
-  final grid = List.generate(size, (_) => List.filled(size, 0));
-  for (final (truth, estimate) in points) {
-    final x = ((truth - low) / cell).floor().clamp(0, size - 1);
-    final y = ((estimate - low) / cell).floor().clamp(0, size - 1);
-    grid[y][x]++;
-  }
-  final top = grid.expand((row) => row).fold(0, max);
-  const shades = ' .:-=+*#%@';
-  final buffer = StringBuffer();
-  for (var y = size - 1; y >= 0; y--) {
-    final label = '${low + y * cell}'.padLeft(5);
-    buffer.write('$label |');
-    for (var x = 0; x < size; x++) {
-      final count = grid[y][x];
-      if (count == 0) {
-        buffer.write(x == y ? '/' : ' ');
-      } else {
-        final shade = (count * (shades.length - 1) / top).ceil();
-        buffer.write(shades[shade.clamp(1, shades.length - 1)]);
-      }
-    }
-    buffer.writeln();
-  }
-  buffer.writeln('      +${'-' * size}');
-  buffer.writeln('       400       1400      2400  (θ verdadeiro)');
-  return buffer.toString();
-}

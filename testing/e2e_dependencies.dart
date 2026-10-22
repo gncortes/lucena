@@ -1,5 +1,11 @@
+import 'fakes/fake_deep_link_service.dart';
+
+import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
+
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
+
+import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'dart:math';
 
@@ -11,6 +17,7 @@ import 'package:lucena/data/repositories/placement/placement_repository_local.da
 import 'package:lucena/data/repositories/conclusion/conclusion_repository_local.dart';
 import 'package:lucena/data/repositories/journey/journey_repository_asset.dart';
 import 'package:lucena/data/repositories/maia/maia_repository_device.dart';
+import 'package:lucena/data/repositories/race/race_repository_local.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository_maia.dart';
 import 'package:lucena/data/services/maia_service.dart';
@@ -72,6 +79,8 @@ import 'fakes/fake_speech_input_repository.dart';
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
+import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
+import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
 
 import 'fakes/fake_evaluation_repository.dart';
@@ -129,6 +138,7 @@ final e2eHaptics = FakeHapticsRepository();
 
 /// O que foi compartilhado (o menu do sistema não abre nos testes).
 final e2eShare = FakeShareRepository();
+final e2eDeepLinks = FakeDeepLinkService();
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
@@ -228,6 +238,7 @@ Future<Dependencies> e2eDependencies() async {
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: e2eHaptics,
     shareRepository: e2eShare,
+    deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
     placementRepository: LocalPlacementRepository(
       const AssetService(),
       PreferencesService(),
@@ -249,6 +260,13 @@ Future<Dependencies> e2eDependencies() async {
       AssetJourneyRepository(const AssetService(), positions),
     ),
     speedrunRepository: LocalSpeedrunRepository(database),
+    // Sem a oferta de aquecimento: os cenários seguem direto para a partida.
+    raceRepository: LocalRaceRepository(
+      const AssetService(),
+      PreferencesService(),
+      e2eNow,
+      offersWarmUpByDefault: false,
+    ),
     ratingRepository: LocalRatingRepository(
       database,
       maia: e2eMaia,
@@ -297,8 +315,14 @@ Future<Dependencies> e2eDependencies() async {
     ),
     speechInputRepository: e2eSpeechInput,
     blindCheckpointRepository: FakeBlindCheckpointRepository(),
+    // Real: o rascunho e a resposta têm de sobreviver ao restart() do cenário.
+    surveyRepository: LocalSurveyRepository(PreferencesService(), e2eNow),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
+    featuredRepository: AssetFeaturedRepository(const AssetService()),
+    featuredProgressRepository: LocalFeaturedProgressRepository(
+      PreferencesService(),
+    ),
     languages: AppLanguage.values,
   );
 }

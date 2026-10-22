@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/widgets/character_speech.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/character_bar.dart';
@@ -174,10 +173,6 @@ void main() {
                   texts: const ['Lição'],
                   metrics: ScriptSpeechMetrics.of(context),
                 ),
-                const CharacterSpeech(
-                  character: FakeCharacterRepository.viktor,
-                  text: 'Partida',
-                ),
                 const CharacterBar(
                   talk: TalkState(
                     character: FakeCharacterRepository.viktor,
@@ -211,7 +206,7 @@ void main() {
         .map((p) => p.painter)
         .whereType<BalloonPainter>()
         .toList();
-    expect(painters, hasLength(3));
+    expect(painters, hasLength(2));
     for (final painter in painters) {
       expect(painter.color, scheme.surfaceContainerLowest);
       expect(painter.shadow, scheme.shadow.withValues(alpha: 0.25));

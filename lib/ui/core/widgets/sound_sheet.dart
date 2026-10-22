@@ -9,8 +9,11 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../keys/game_sound_keys.dart';
 import '../keys/lesson_sound_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 import 'lucena_sheet.dart';
+import 'sheet_header.dart';
 import 'one_line.dart';
 import 'sound_off_icon.dart';
 
@@ -75,103 +78,105 @@ class _SoundSheetBody extends StatelessWidget {
     final heard = _game
         ? settings.sound && settings.characterTalk && speech.charactersHeard
         : settings.sound && speech.settings.enabled;
+    final body = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _PreferenceSwitch(
+          switchKey: _game ? GameSoundKeys.sound : LessonSoundKeys.sound,
+          icon: settings.sound
+              ? const Icon(Icons.volume_up_outlined, size: AppIconSize.standard)
+              : const SoundOffIcon(size: AppIconSize.standard),
+          title: l10n.settingsSound,
+          subtitle: _game ? l10n.settingsSoundHint : l10n.lessonSoundHint,
+          value: settings.sound,
+          onChanged: (value) {
+            unawaited(settingsCubit.setSound(enabled: value));
+            if (_game) {
+              unawaited(
+                speechCubit.setCharactersHeard(
+                  heard: value && settings.characterTalk,
+                ),
+              );
+            } else if (!value &&
+                speechCubit.state.speakerId == SpeechCubit.teacherId) {
+              unawaited(speechCubit.stop());
+            }
+          },
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        _PreferenceSwitch(
+          switchKey: _game
+              ? GameSoundKeys.comments
+              : LessonSoundKeys.teacherVoice,
+          icon: Icon(
+            secondOn
+                ? Icons.chat_bubble_outline
+                : Icons.speaker_notes_off_outlined,
+            size: AppIconSize.standard,
+          ),
+          title: _game ? l10n.settingsCharacterTalk : l10n.lessonTeacherVoice,
+          subtitle: _game
+              ? l10n.settingsCharacterTalkHint
+              : l10n.lessonTeacherVoiceHint,
+          value: secondOn,
+          onChanged: (value) {
+            if (_game) {
+              onCharacterTalkChanged?.call(value);
+              unawaited(settingsCubit.setCharacterTalk(enabled: value));
+              unawaited(
+                speechCubit.setCharactersHeard(heard: settings.sound && value),
+              );
+            } else {
+              unawaited(speechCubit.setEnabled(enabled: value));
+            }
+          },
+        ),
+        if (heard && speech.availableFor(language)) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(l10n.voiceSpeed, style: theme.textTheme.labelLarge),
+          const SizedBox(height: AppSpacing.sm),
+          SegmentedButton<double>(
+            key: _game ? GameSoundKeys.speeds : LessonSoundKeys.speeds,
+            expandedInsets: EdgeInsets.zero,
+            showSelectedIcon: false,
+            style: SegmentedButton.styleFrom(
+              minimumSize: const Size(0, 40),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+              tapTargetSize: MaterialTapTargetSize.padded,
+              selectedBackgroundColor: theme.colorScheme.secondaryContainer,
+              selectedForegroundColor: theme.colorScheme.onSecondaryContainer,
+            ),
+            segments: [
+              for (final speed in speeds)
+                ButtonSegment(
+                  value: speed,
+                  label: OneLine(
+                    l10n.voiceSpeedValue(speed),
+                    key: _game
+                        ? GameSoundKeys.speed(speed)
+                        : LessonSoundKeys.speed(speed),
+                  ),
+                ),
+            ],
+            selected: {speech.settings.speed},
+            onSelectionChanged: (values) =>
+                unawaited(speechCubit.setSpeed(values.single)),
+          ),
+        ],
+      ],
+    );
     return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.xl,
-        0,
-        AppSpacing.xl,
-        AppSpacing.xl,
-      ),
+      padding: const EdgeInsetsDirectional.only(bottom: AppSpacing.xl),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.gameSoundAndVoice, style: theme.textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.sm),
-          _PreferenceSwitch(
-            switchKey: _game ? GameSoundKeys.sound : LessonSoundKeys.sound,
-            icon: settings.sound
-                ? const Icon(Icons.volume_up_outlined, size: 22)
-                : const SoundOffIcon(size: 22),
-            title: l10n.settingsSound,
-            subtitle: _game ? l10n.settingsSoundHint : l10n.lessonSoundHint,
-            value: settings.sound,
-            onChanged: (value) {
-              unawaited(settingsCubit.setSound(enabled: value));
-              if (_game) {
-                unawaited(
-                  speechCubit.setCharactersHeard(
-                    heard: value && settings.characterTalk,
-                  ),
-                );
-              } else if (!value &&
-                  speechCubit.state.speakerId == SpeechCubit.teacherId) {
-                unawaited(speechCubit.stop());
-              }
-            },
+          SheetHeader(title: l10n.gameSoundAndVoice),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: body,
           ),
-          const SizedBox(height: AppSpacing.xs),
-          _PreferenceSwitch(
-            switchKey: _game
-                ? GameSoundKeys.comments
-                : LessonSoundKeys.teacherVoice,
-            icon: Icon(
-              secondOn
-                  ? Icons.chat_bubble_outline
-                  : Icons.speaker_notes_off_outlined,
-              size: 22,
-            ),
-            title: _game ? l10n.settingsCharacterTalk : l10n.lessonTeacherVoice,
-            subtitle: _game
-                ? l10n.settingsCharacterTalkHint
-                : l10n.lessonTeacherVoiceHint,
-            value: secondOn,
-            onChanged: (value) {
-              if (_game) {
-                onCharacterTalkChanged?.call(value);
-                unawaited(settingsCubit.setCharacterTalk(enabled: value));
-                unawaited(
-                  speechCubit.setCharactersHeard(
-                    heard: settings.sound && value,
-                  ),
-                );
-              } else {
-                unawaited(speechCubit.setEnabled(enabled: value));
-              }
-            },
-          ),
-          if (heard && speech.availableFor(language)) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Text(l10n.voiceSpeed, style: theme.textTheme.labelLarge),
-            const SizedBox(height: AppSpacing.sm),
-            SegmentedButton<double>(
-              key: _game ? GameSoundKeys.speeds : LessonSoundKeys.speeds,
-              expandedInsets: EdgeInsets.zero,
-              showSelectedIcon: false,
-              style: SegmentedButton.styleFrom(
-                minimumSize: const Size(0, 40),
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-                tapTargetSize: MaterialTapTargetSize.padded,
-                selectedBackgroundColor: theme.colorScheme.secondaryContainer,
-                selectedForegroundColor: theme.colorScheme.onSecondaryContainer,
-              ),
-              segments: [
-                for (final speed in speeds)
-                  ButtonSegment(
-                    value: speed,
-                    label: OneLine(
-                      l10n.voiceSpeedValue(speed),
-                      key: _game
-                          ? GameSoundKeys.speed(speed)
-                          : LessonSoundKeys.speed(speed),
-                    ),
-                  ),
-              ],
-              selected: {speech.settings.speed},
-              onSelectionChanged: (values) =>
-                  unawaited(speechCubit.setSpeed(values.single)),
-            ),
-          ],
         ],
       ),
     );
@@ -214,12 +219,7 @@ class _PreferenceSwitch extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Text(title, style: context.cardTitle),
                     Text(subtitle, style: textTheme.bodySmall),
                   ],
                 ),

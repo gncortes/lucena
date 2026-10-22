@@ -6,7 +6,10 @@ import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// As cores do rodapé da demonstração (canvas `T70-etapa1-estados`, `.cb`):
 /// o trilho e o arco do anel, e o cinza do anel pausado e do botão sem uso.
@@ -99,7 +102,7 @@ class ScriptDemoControls extends StatelessWidget {
         if (full)
           Padding(
             // O anel passa 4 dp do botão: o rodapé guarda o espaço dele.
-            padding: const EdgeInsetsDirectional.only(end: 6),
+            padding: const EdgeInsetsDirectional.only(end: AppSpacing.sm),
             child: SizedBox.square(
               dimension: _DemoRing.diameter,
               child: Stack(
@@ -174,7 +177,7 @@ class ScriptDemoButton extends StatelessWidget {
       key: buttonKey,
       tooltip: tooltip,
       onPressed: onPressed,
-      icon: Icon(icon, size: 24),
+      icon: Icon(icon, size: AppIconSize.standard),
       style: IconButton.styleFrom(
         fixedSize: Size.square(side),
         minimumSize: Size.square(side),
@@ -338,7 +341,7 @@ class _FillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-    borderRadius: BorderRadius.circular(kButtonHeightCompact / 2),
+    borderRadius: BorderRadius.circular(AppShape.full),
     child: Stack(
       children: [
         FilledButton(
@@ -348,7 +351,7 @@ class _FillButton extends StatelessWidget {
               Size(0, kButtonHeightCompact),
             ),
             padding: const WidgetStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 22),
+              EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             ),
             textStyle: WidgetStatePropertyAll(
               AppButtonText.footer(context)

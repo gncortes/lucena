@@ -4,8 +4,11 @@ import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson_script.dart';
 import '../../core/keys/curiosities_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/script_sheet_route.dart';
+import '../../core/widgets/sheet_header.dart';
 
 /// Abre a folha Curiosidades do exemplo (o livro da barra da lição): o texto
 /// sobre a posição, a citação (se houver) e, no fim, as referências. Visual do
@@ -61,43 +64,36 @@ class CuriositiesSheet extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(24, 20, 24, 0),
-          child: Text(
-            l10n.curiositiesTitle,
-            key: CuriositiesKeys.title,
-            style: theme.textTheme.titleLarge,
-          ),
-        ),
+        SheetHeader(title: l10n.curiositiesTitle),
         Flexible(
           child: SingleChildScrollView(
             padding: EdgeInsetsDirectional.fromSTEB(
-              24,
-              8,
-              24,
+              AppSpacing.xl,
+              0,
+              AppSpacing.xl,
               24 + MediaQuery.viewPaddingOf(context).bottom,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _SectionLabel(l10n.curiositiesAbout),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   texts.say(curiosities.t),
                   key: CuriositiesKeys.about,
                   style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
                 ),
                 if (quote != null) ...[
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
                   _Quote(
                     text: texts.say(quote),
                     author: curiosities.quoteAuthor,
                   ),
                 ],
                 if (refs.isNotEmpty) ...[
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
                   _SectionLabel(l10n.curiositiesReferences),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Column(
                     key: CuriositiesKeys.references,
                     children: [
@@ -132,7 +128,6 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         style: theme.textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w600,
           letterSpacing: 0.8,
           color: theme.colorScheme.onSurfaceVariant,
         ),
@@ -156,7 +151,12 @@ class _Quote extends StatelessWidget {
     final author = this.author;
     return Container(
       key: CuriositiesKeys.quote,
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 0, 4),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        0,
+        AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         border: BorderDirectional(
           start: BorderSide(color: colors.primary, width: 4),
@@ -175,7 +175,7 @@ class _Quote extends StatelessWidget {
             ),
           ),
           if (author != null && author.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               author,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -237,17 +237,17 @@ class _ReferenceRow extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 64),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
             child: Row(
               children: [
                 Icon(
                   reference.kind == 'book'
                       ? Icons.menu_book_outlined
                       : Icons.link_rounded,
-                  size: 24,
+                  size: AppIconSize.standard,
                   color: colors.onSurfaceVariant,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +260,7 @@ class _ReferenceRow extends StatelessWidget {
                         ),
                       ),
                       if (detail.isNotEmpty) ...[
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           detail,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -273,8 +273,12 @@ class _ReferenceRow extends StatelessWidget {
                   ),
                 ),
                 if (uri != null) ...[
-                  const SizedBox(width: 16),
-                  Icon(Icons.open_in_new, size: 20, color: colors.primary),
+                  const SizedBox(width: AppSpacing.lg),
+                  Icon(
+                    Icons.open_in_new,
+                    size: AppIconSize.button,
+                    color: colors.primary,
+                  ),
                 ],
               ],
             ),

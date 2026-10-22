@@ -11,16 +11,19 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/share/share_button.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/character_avatar.dart';
 
 /// O resultado dos exercícios de uma aula de final, depois do último: a
 /// medalha da faixa, a nota e, com a aula aprovada, o diploma.
@@ -50,6 +53,12 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
       key: ExercisesDoneKeys.screen,
       // Compartilhar o diploma: só o ícone, no canto da barra.
       appBar: LucenaAppBar(
+        leading: IconButton(
+          key: ExercisesDoneKeys.close,
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+          icon: const Icon(Icons.close_rounded),
+          onPressed: () => context.pop(),
+        ),
         actions: [
           if (!below)
             ShareIconButton(
@@ -102,8 +111,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                                 gradeName(l10n, grade),
                                 key: ExercisesDoneKeys.current,
                                 textAlign: TextAlign.center,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                style: context.bigNumber?.copyWith(
                                   color: colors.primary,
                                 ),
                               ),
@@ -132,9 +140,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     Text(
                       l10n.endgameFailedTitle,
                       textAlign: TextAlign.center,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: context.bigNumber,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
@@ -165,7 +171,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                         teacher: viktor,
                         text: l10n.exercisesDoneRetrySpeech,
                         emotion: Emotion.calm,
-                        avatarSize: 56,
+                        avatarSize: CharacterAvatar.speech,
                         speaks: true,
                       ),
                     ],
@@ -173,89 +179,63 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screen,
-                AppSpacing.sm,
-                AppSpacing.screen,
-                AppSpacing.md,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Passou: praticar o final de verdade. Não passou: refazer.
-                  if (below)
-                    FilledButton.icon(
-                      key: ExercisesDoneKeys.redo,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      icon: const Icon(Icons.replay),
-                      onPressed: () async {
-                        final cubit = context.read<EndgameLessonCubit>();
-                        final router = GoRouter.of(context);
-                        final id = state.lesson!.id;
-                        await cubit.redoExercises();
-                        router.pushReplacement(
-                          Routes.endgameExercisesIntro(id),
-                        );
-                      },
-                      label: Text(l10n.endgameRedoExercises),
-                    )
-                  else
-                    FilledButton.icon(
-                      key: ExercisesDoneKeys.practice,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      icon: const Icon(Icons.sports_esports_outlined),
-                      onPressed: () {
-                        final practice = state.lesson!.practice;
-                        context.pushReplacement(
-                          Routes.setup(
-                            practice.fen,
-                            goal: practice.goal.code,
-                            position: practice.positionId,
-                          ),
-                        );
-                      },
-                      label: Text(l10n.exercisesDonePractice),
-                    ),
-                  const SizedBox(height: AppSpacing.sm),
-                  // Passou: concluir. Não passou: rever a lição, do começo.
-                  if (below)
-                    OutlinedButton.icon(
-                      key: ExercisesDoneKeys.reviewLesson,
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      icon: const Icon(Icons.menu_book_outlined),
-                      onPressed: () {
-                        final lesson = state.lesson!;
-                        final first = lesson.lesson.sections.firstOrNull;
-                        context.pushReplacement(
-                          Routes.endgameLessonScript(
-                            lesson.id,
-                            part: lesson.lesson.parts.isEmpty
-                                ? null
-                                : first?.id,
-                          ),
-                        );
-                      },
-                      label: Text(l10n.endgameLessonReview),
-                    )
-                  else
-                    OutlinedButton(
-                      key: ExercisesDoneKeys.back,
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
-                      ),
-                      onPressed: () => context.pop(),
-                      child: Text(l10n.exercisesDoneFinish),
-                    ),
-                ],
-              ),
+            ActionsFooter(
+              stacked: true,
+              children: [
+                // Passou: praticar o final de verdade. Não passou: refazer.
+                if (below)
+                  FilledButton.icon(
+                    key: ExercisesDoneKeys.redo,
+                    icon: const Icon(Icons.replay),
+                    onPressed: () async {
+                      final cubit = context.read<EndgameLessonCubit>();
+                      final router = GoRouter.of(context);
+                      final id = state.lesson!.id;
+                      await cubit.redoExercises();
+                      router.pushReplacement(Routes.endgameExercisesIntro(id));
+                    },
+                    label: Text(l10n.endgameRedoExercises),
+                  )
+                else
+                  FilledButton.icon(
+                    key: ExercisesDoneKeys.practice,
+                    icon: const Icon(Icons.sports_esports_outlined),
+                    onPressed: () {
+                      final practice = state.lesson!.practice;
+                      context.pushReplacement(
+                        Routes.setup(
+                          practice.fen,
+                          goal: practice.goal.code,
+                          position: practice.positionId,
+                        ),
+                      );
+                    },
+                    label: Text(l10n.exercisesDonePractice),
+                  ),
+                // Passou: concluir. Não passou: rever a lição, do começo.
+                if (below)
+                  OutlinedButton.icon(
+                    key: ExercisesDoneKeys.reviewLesson,
+                    icon: const Icon(Icons.menu_book_outlined),
+                    onPressed: () {
+                      final lesson = state.lesson!;
+                      final first = lesson.lesson.sections.firstOrNull;
+                      context.pushReplacement(
+                        Routes.endgameLessonScript(
+                          lesson.id,
+                          part: lesson.lesson.parts.isEmpty ? null : first?.id,
+                        ),
+                      );
+                    },
+                    label: Text(l10n.endgameLessonReview),
+                  )
+                else
+                  OutlinedButton(
+                    key: ExercisesDoneKeys.back,
+                    onPressed: () => context.pop(),
+                    child: Text(l10n.exercisesDoneFinish),
+                  ),
+              ],
             ),
           ],
         ),
@@ -286,102 +266,98 @@ class _Diploma extends StatelessWidget {
         : DateFormat.yMMMMd(Localizations.localeOf(context).toString())
               .format(now);
     final summary = state.texts.lessonSummary(lesson.id);
-    return Container(
+    return Card(
       key: ExercisesDoneKeys.diploma,
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
+      color: colors.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppShape.large),
-        border: Border.all(color: colors.primary, width: 2),
+        side: BorderSide(color: colors.primary, width: 2),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.xl,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppShape.medium),
-          border: Border.all(color: colors.outlineVariant),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              Icons.workspace_premium_rounded,
-              size: 48,
-              color: colors.primary,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              l10n.endgamesTitle.toUpperCase(),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelMedium?.copyWith(
-                letterSpacing: 2,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              l10n.graduationDiploma,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              l10n.graduationAwardedTo,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            Text(
-              nickname.isEmpty ? l10n.profileNicknameDefault : nickname,
-              key: ExercisesDoneKeys.diplomaName,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineMedium?.copyWith(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.xl,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppShape.medium),
+            border: Border.all(color: colors.outlineVariant),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                Icons.workspace_premium_rounded,
+                size: AppIconSize.illustration,
                 color: colors.primary,
-                fontWeight: FontWeight.w700,
               ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              // Resume o desempenho, sem números.
-              l10n.exercisesDoneDiplomaFor(
-                state.grade.name,
-                state.texts.lessonTitle(lesson.id),
-              ),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium,
-            ),
-            if (summary != null) ...[
               const SizedBox(height: AppSpacing.sm),
               Text(
-                summary,
+                l10n.endgamesTitle.toUpperCase(),
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.labelMedium?.copyWith(
+                  letterSpacing: 2,
                   color: colors.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
                 ),
               ),
-            ],
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: _SignatureLine(
-                    value: date,
-                    label: l10n.graduationDate,
-                  ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(l10n.graduationDiploma, style: context.bigNumber),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                l10n.graduationAwardedTo,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
                 ),
-                const SizedBox(width: AppSpacing.lg),
-                Expanded(
-                  child: _SignatureLine(
-                    value: state.viktor?.name ?? '',
-                    label: l10n.graduationTeacher,
+              ),
+              Text(
+                nickname.isEmpty ? l10n.profileNicknameDefault : nickname,
+                key: ExercisesDoneKeys.diplomaName,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: colors.primary,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                // Resume o desempenho, sem números.
+                l10n.exercisesDoneDiplomaFor(
+                  state.grade.name,
+                  state.texts.lessonTitle(lesson.id),
+                ),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+              if (summary != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  summary,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ],
-            ),
-          ],
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SignatureLine(
+                      value: date,
+                      label: l10n.graduationDate,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.lg),
+                  Expanded(
+                    child: _SignatureLine(
+                      value: state.viktor?.name ?? '',
+                      label: l10n.graduationTeacher,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -406,12 +382,10 @@ class _SignatureLine extends StatelessWidget {
           textAlign: TextAlign.center,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: AppSpacing.xs),
-        Divider(height: 1, color: colors.outline),
+        Divider(),
         const SizedBox(height: AppSpacing.xs),
         Text(
           label,

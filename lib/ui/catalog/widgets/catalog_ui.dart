@@ -6,8 +6,10 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../domain/use_cases/subcategory_material.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/figurine.dart';
 import '../view_models/catalog_cubit.dart';
+import '../../core/widgets/empty_state.dart';
 
 /// O nome traduzido de uma categoria do catálogo. O app leva só as categorias
 /// dos finais de iniciante (ver `tools/import_positions.py`); categoria nova
@@ -117,7 +119,12 @@ class GoalFilterBar extends StatelessWidget {
     final cubit = context.read<CatalogCubit>();
     final filter = context.select((CatalogCubit cubit) => cubit.state.filter);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.md,
+      ),
       child: SizedBox(
         width: double.infinity,
         child: SegmentedButton<GoalFilter>(
@@ -150,18 +157,9 @@ class CatalogEmpty extends StatelessWidget {
   const CatalogEmpty({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Text(
-        context.l10n.catalogEmpty,
-        key: CatalogKeys.empty,
-        textAlign: TextAlign.center,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => EmptyState(
+    style: EmptyStateStyle.text,
+    message: context.l10n.catalogEmpty,
+    messageKey: CatalogKeys.empty,
+  );
 }

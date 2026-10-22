@@ -8,9 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
+import 'package:lucena/ui/core/theme/app_motion.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/clock_settings.dart';
@@ -20,9 +22,11 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
+import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
+import 'package:lucena/ui/featured/view_models/featured_endgame_cubit.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
@@ -37,6 +41,7 @@ import '../../../../testing/fakes/fake_positions_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
 import '../../../../testing/fakes/fake_speedrun_repository.dart';
 import '../../../../testing/fakes/fake_character_repository.dart';
+import '../../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../../testing/fakes/fake_evaluation_repository.dart';
 import '../../../../testing/fakes/fake_haptics_repository.dart';
 import '../../../../testing/fakes/fake_talk_repository.dart';
@@ -145,6 +150,15 @@ void main() {
             providers: [
               BlocProvider.value(value: cubit),
               BlocProvider.value(value: talk),
+              if (mode.featuredId != null)
+                BlocProvider(
+                  create: (_) => FeaturedEndgameCubit(
+                    id: mode.featuredId!,
+                    featured: FakeFeaturedRepository(sampleFeaturedCatalog()),
+                    progress: FakeFeaturedProgressRepository(),
+                    characters: FakeCharacterRepository(),
+                  ),
+                ),
             ],
             child: const FreeBoardScreen(),
           ),
@@ -1759,6 +1773,45 @@ void main() {
       expect(progress.attempts.single.endReason, GameEndReason.resign);
     });
 
+    testWidgets('desafio de link sem rating ainda: "No rating" no lugar do '
+        'número', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(fromLink: true),
+      );
+      expect(
+        textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+        'No rating',
+      );
+    });
+
+    testWidgets('desafio de link: o fim oferece jogar de novo, compartilhar '
+        'e conhecer o app, no lugar de "Ver o resultado"', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(fromLink: true),
+        withReporter: true,
+      );
+      expect(find.byKey(ChallengeKeys.endShare), findsNothing);
+
+      await resign(tester);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsNothing);
+      expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
+      expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
+      expect(find.byKey(ChallengeKeys.endMeetApp), findsOneWidget);
+      expect(cubit.state.challengeResult?.outcome, AttemptOutcome.loss);
+
+      await tester.tap(find.byKey(ChallengeKeys.endPlayAgain));
+      await tester.pumpAndSettle();
+      expect(cubit.state.end, isNull);
+      expect(find.byKey(ChallengeKeys.endPlayAgain), findsNothing);
+    });
+
     testWidgets(
       'posição sem histórico (personalizada): a conclusão vai pronta',
       (tester) async {
@@ -1911,6 +1964,22 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
       expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+    });
+
+    testWidgets('final em destaque: o selo aparece, pisca por 1,5 s e some', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        mode: vsMachine.copyWith(featuredId: 'carlsen-so-2017'),
+      );
+      await moveNow(tester, 'h1', 'h8');
+      expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      await tester.pump(AppMotion.featuredFlash ~/ 2);
+      expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      await tester.pump(AppMotion.featuredFlash);
+      expect(find.byKey(FreeBoardKeys.endFlash), findsNothing);
     });
 
     testWidgets('empate (afogamento): o selo mostra o empate e some em 1,6 s', (

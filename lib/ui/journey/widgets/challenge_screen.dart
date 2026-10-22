@@ -11,16 +11,20 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/widgets/attempt_history.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
+import '../../core/widgets/opponent_card.dart';
 import 'journey_ui.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/section_title.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
@@ -48,7 +52,6 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final state = context.watch<JourneyCubit>().state;
     final challenge = state.challenge;
     return Scaffold(
@@ -62,14 +65,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       ),
       bottomNavigationBar: challenge == null
           ? null
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: FilledButton.icon(
+          : ActionsFooter(
+              children: [
+                FilledButton.icon(
                   key: JourneyKeys.play,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(kButtonHeight),
-                  ),
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: Text(l10n.journeyPlay),
                   onPressed: () async {
@@ -90,10 +89,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                     );
                   },
                 ),
-              ),
+              ],
             ),
       body: challenge == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const SkeletonList()
           // O tabuleiro e os selos no centro do espaço entre a barra do app
           // e o painel do adversário e das partidas (T64), que rola; o botão
           // de jogar fica fixo embaixo.
@@ -117,10 +116,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                         launching: _launching,
                       ),
                       bottom: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
                         child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
+                          spacing: AppSpacing.sm,
+                          runSpacing: AppSpacing.sm,
                           alignment: WrapAlignment.center,
                           children: [
                             _GoalChip(challenge: challenge),
@@ -146,47 +147,16 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                     child: BoardOptionsPanel(
                       key: JourneyKeys.challengePanel,
                       child: ListView(
-                        padding: const EdgeInsets.only(bottom: 24),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.xl),
                         children: [
-                          _OpponentCard(
-                            opponent: challenge.opponent,
-                            rungId: rungId,
-                          ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                              16,
-                              16,
-                              16,
-                              0,
-                            ),
-                            child: Text(
-                              l10n.setupHistory,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
+                          _journeyOpponent(context, challenge.opponent, rungId),
+                          SectionTitle(l10n.setupHistory),
                           if (state.attempts.isEmpty)
-                            Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.sports_esports_outlined,
-                                    size: 40,
-                                    color: theme.colorScheme.outline,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    l10n.challengeHistoryInvite,
-                                    key: JourneyKeys.emptyHistory,
-                                    textAlign: TextAlign.center,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            EmptyState(
+                              style: EmptyStateStyle.filters,
+                              icon: Icons.sports_esports_outlined,
+                              message: l10n.challengeHistoryInvite,
+                              messageKey: JourneyKeys.emptyHistory,
                             )
                           else
                             AttemptHistory(
@@ -223,7 +193,7 @@ class _BigBoard extends StatelessWidget {
         fen: challenge.position.fen,
         size: constraints.maxWidth,
         coordinates: true,
-        radius: 0,
+        radius: AppShape.none,
         // A partida é vista pelo lado que joga, como este tabuleiro.
         heroTag: launching
             ? gameBoardTag(
@@ -254,71 +224,26 @@ class _GoalChip extends StatelessWidget {
   }
 }
 
-/// Contra quem: o retrato, o nome, o nível e a frase do personagem.
-class _OpponentCard extends StatelessWidget {
-  const _OpponentCard({required this.opponent, required this.rungId});
-
-  final OpponentRef opponent;
-  final String rungId;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final l10n = context.l10n;
-    final characters = context.select(
-      (JourneyCubit cubit) => cubit.state.characters,
-    );
-    final character = opponentCharacter(characters, opponent);
-    final language = Localizations.localeOf(context).languageCode;
-    final tagline = character?.taglineIn(language) ?? '';
-    return Card(
-      key: JourneyKeys.opponentCard,
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      color: colors.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            if (character != null) ...[
-              Hero(
-                tag: opponentHeroTag(rungId),
-                child: CharacterAvatar(character: character, size: 64),
-              ),
-              const SizedBox(width: 12),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.challengeOpponent,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                  Text(
-                    [
-                      opponentName(l10n, characters, opponent),
-                      if (opponent.level case final level?) '$level',
-                    ].join(' · '),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (tagline.isNotEmpty)
-                    Text(
-                      '“$tagline”',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+/// Contra quem: o retrato (que chega voando), o nome, o nível e a frase.
+Widget _journeyOpponent(
+  BuildContext context,
+  OpponentRef opponent,
+  String rungId,
+) {
+  final l10n = context.l10n;
+  final characters = context.select(
+    (JourneyCubit cubit) => cubit.state.characters,
+  );
+  final character = opponentCharacter(characters, opponent);
+  final language = Localizations.localeOf(context).languageCode;
+  return OpponentCard(
+    key: JourneyKeys.opponentCard,
+    character: character,
+    heroTag: opponentHeroTag(rungId),
+    name: [
+      opponentName(l10n, characters, opponent),
+      if (opponent.level case final level?) '$level',
+    ].join(' · '),
+    tagline: character?.taglineIn(language) ?? '',
+  );
 }

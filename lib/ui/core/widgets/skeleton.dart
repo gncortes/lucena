@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../keys/core_keys.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
@@ -19,7 +20,7 @@ class SkeletonBlock extends StatefulWidget {
   final double radius;
 
   /// Uma volta do brilho.
-  static const sweep = Duration(milliseconds: 1400);
+  static const sweep = AppMotion.shimmer;
 
   @override
   State<SkeletonBlock> createState() => _SkeletonBlockState();
@@ -98,6 +99,7 @@ class SkeletonList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      key: CoreKeys.skeleton,
       label: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
       child: Column(
         children: [

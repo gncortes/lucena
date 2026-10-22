@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import 'rating_level_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// Abre o painel de escolha da faixa de rating. Devolve a faixa confirmada,
 /// ou nulo se o painel for fechado sem confirmar.
@@ -39,28 +41,15 @@ class _RatingLevelSheetState extends State<_RatingLevelSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = context.l10n;
     return Column(
       key: ProfileKeys.levelSheet,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.profileRating, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(
-                l10n.profileRatingSheetHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
+        SheetHeader(
+          title: l10n.profileRating,
+          hint: l10n.profileRatingSheetHint,
         ),
         // Em tela pequena a lista rola; o botão de confirmar fica sempre à vista.
         Flexible(
@@ -78,16 +67,15 @@ class _RatingLevelSheetState extends State<_RatingLevelSheet> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-          child: FilledButton(
-            key: ProfileKeys.levelConfirmButton,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
+        ActionsFooter(
+          margin: AppSpacing.xl,
+          children: [
+            FilledButton(
+              key: ProfileKeys.levelConfirmButton,
+              onPressed: () => Navigator.of(context).pop(_marked),
+              child: Text(l10n.profileLevelConfirm),
             ),
-            onPressed: () => Navigator.of(context).pop(_marked),
-            child: Text(l10n.profileLevelConfirm),
-          ),
+          ],
         ),
       ],
     );
@@ -112,7 +100,10 @@ class RatingLevelOption extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
       child: ListTile(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppShape.large),

@@ -26,7 +26,6 @@ class RoadmapStep {
     required this.node,
     required this.lessonId,
     required this.school,
-    this.soon = false,
   });
 
   final String node;
@@ -35,22 +34,18 @@ class RoadmapStep {
   /// Aula da Escola do Viktor (senão, da trilha de finais).
   final bool school;
 
-  /// A aula ainda não existe (catálogo ou nova): a tela mostra "em breve".
-  final bool soon;
-
   @override
   bool operator ==(Object other) =>
       other is RoadmapStep &&
       other.node == node &&
       other.lessonId == lessonId &&
-      other.school == school &&
-      other.soon == soon;
+      other.school == school;
 
   @override
-  int get hashCode => Object.hash(node, lessonId, school, soon);
+  int get hashCode => Object.hash(node, lessonId, school);
 
   @override
-  String toString() => '$node→$lessonId${soon ? ' (em breve)' : ''}';
+  String toString() => '$node→$lessonId';
 }
 
 /// O roteiro do jogador (T52, Parte 5): do resultado do teste e do progresso
@@ -70,8 +65,7 @@ class PlacementRoadmap {
   ///
   /// [schoolLessons] e [endgameLessons] são as aulas que existem no app, na
   /// ordem do curso e da trilha; [completedSchool] e [completedEndgames], as
-  /// já concluídas. Sem [soon], o nó sem aula no app não vira passo "em
-  /// breve" (com aulas escondidas, o "em breve" enganaria).
+  /// já concluídas. O nó sem aula no app não vira passo.
   factory PlacementRoadmap.build({
     required PlacementResult result,
     required SkillMap skills,
@@ -79,7 +73,6 @@ class PlacementRoadmap {
     required List<String> endgameLessons,
     Set<String> completedSchool = const {},
     Set<String> completedEndgames = const {},
-    bool soon = true,
   }) {
     final band = RatingLevel.of(result.theta).index;
     final routed = [
@@ -119,8 +112,7 @@ class PlacementRoadmap {
     final nodes = <String>[];
     for (final node in pending) {
       final all = lessons[node.id]!;
-      final existing = all.where((lesson) => !lesson.soon);
-      final open = existing.where((lesson) => !done(lesson)).toList();
+      final open = all.where((lesson) => !done(lesson)).toList();
       final nodeSteps = <RoadmapStep>[
         for (final lesson in open)
           RoadmapStep(
@@ -129,19 +121,6 @@ class PlacementRoadmap {
             school: lesson.school,
           ),
       ];
-      if (existing.isEmpty && soon) {
-        final later = all.where((lesson) => lesson.soon).firstOrNull;
-        if (later != null) {
-          nodeSteps.add(
-            RoadmapStep(
-              node: node.id,
-              lessonId: later.id,
-              school: later.school,
-              soon: true,
-            ),
-          );
-        }
-      }
       if (nodeSteps.isEmpty) continue;
       nodes.add(node.id);
       steps.addAll(nodeSteps);
@@ -169,7 +148,7 @@ class PlacementRoadmap {
 
     final nextSchool =
         steps
-            .where((step) => step.school && !step.soon)
+            .where((step) => step.school)
             .map((step) => step.lessonId)
             .firstOrNull ??
         schoolLessons
@@ -191,9 +170,7 @@ class PlacementRoadmap {
         badges[id] = EndgameBadge.mastered;
       }
     }
-    final recommended = steps
-        .where((step) => !step.school && !step.soon)
-        .firstOrNull;
+    final recommended = steps.where((step) => !step.school).firstOrNull;
     if (recommended != null) {
       badges[recommended.lessonId] = EndgameBadge.recommended;
     }
@@ -226,8 +203,7 @@ class PlacementRoadmap {
   /// O próximo passo de qualquer lado.
   RoadmapStep? get next => steps.firstOrNull;
 
-  /// Os passos da trilha de finais, com os "em breve".
-  /// Uma aula ensinada por dois nós aparece uma vez só, na primeira vez.
+  /// Os passos da trilha de finais. Uma aula ensinada por dois nós aparece uma vez só, na primeira vez.
   List<RoadmapStep> get endgameSteps {
     final seen = <String>{};
     return [
@@ -251,9 +227,7 @@ class PlacementRoadmap {
 
   /// Liga as aulas de [node] ao que existe no app. A aula de tipo `school`
   /// procura na escola; `endgame` e `catalog`, na trilha; `new` (proposta),
-  /// nos dois. Aula que ainda não existe vira "em breve": `new` fica na
-  /// escola se o nó for de faixa até `casual` (as aulas novas da Parte 6.1),
-  /// senão na trilha de finais (6.2).
+  /// nos dois. Aula que não existe no app não vira passo.
   static List<_Lesson> _resolve(
     SkillNode node,
     List<String> schoolLessons,
@@ -281,24 +255,9 @@ class PlacementRoadmap {
       for (final id in inTrail) {
         add(_Lesson(id, school: false));
       }
-      if (inSchool.isEmpty && inTrail.isEmpty) {
-        final school = switch (lesson.kind) {
-          SkillLessonKind.school => true,
-          SkillLessonKind.endgame || SkillLessonKind.catalog => false,
-          SkillLessonKind.proposed =>
-            node.band.index <= RatingLevel.casual.index,
-        };
-        // Prefixo sem nenhuma aula feita: o "em breve" leva o prefixo.
-        final id = lesson.id.endsWith('.*')
-            ? lesson.id.substring(0, lesson.id.length - 2)
-            : lesson.id;
-        add(_Lesson(id, school: school, soon: true));
-      }
     }
-    // Aulas que existem primeiro, na ordem do curso e da trilha.
-    int order(_Lesson lesson) => lesson.soon
-        ? 1 << 20
-        : lesson.school
+    // Na ordem do curso e da trilha.
+    int order(_Lesson lesson) => lesson.school
         ? schoolLessons.indexOf(lesson.id)
         : (1 << 10) + endgameLessons.indexOf(lesson.id);
     return result..sort((x, y) => order(x).compareTo(order(y)));
@@ -306,9 +265,8 @@ class PlacementRoadmap {
 }
 
 class _Lesson {
-  const _Lesson(this.id, {required this.school, this.soon = false});
+  const _Lesson(this.id, {required this.school});
 
   final String id;
   final bool school;
-  final bool soon;
 }

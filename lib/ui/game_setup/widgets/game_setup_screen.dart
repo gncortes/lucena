@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import '../../core/theme/app_chip.dart';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -11,11 +13,13 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_text.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
+import '../../challenge/widgets/challenge_sheet.dart';
+import '../../core/keys/challenge_keys.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -30,6 +34,9 @@ import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/section_title.dart';
 
 /// Antes de jogar: a posição, o objetivo, o lado do jogador, o adversário e o
 /// relógio de cada lado.
@@ -64,7 +71,37 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
         );
     return Scaffold(
       key: GameSetupKeys.screen,
-      appBar: LucenaAppBar(title: Text(l10n.setupTitle)),
+      appBar: LucenaAppBar(
+        title: state.fromLink
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.setupTitle),
+                  Text(
+                    l10n.challengeLinkSetup,
+                    key: ChallengeKeys.linkSetupSubtitle,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              )
+            : Text(l10n.setupTitle),
+        actions: [
+          // Só contra a máquina: o desafio é uma partida contra ela.
+          if (state.ready && state.setup.opponent != OpponentKind.twoPlayers)
+            IconButton(
+              key: ChallengeKeys.sendButton,
+              tooltip: l10n.challengeSendTitle,
+              icon: const Icon(Icons.share_outlined),
+              onPressed: () => showChallengeSheet(
+                context,
+                link: state.challenge,
+                characters: state.characters,
+              ),
+            ),
+        ],
+      ),
       // A posição já aparece antes de a configuração ser lida: é nela que o
       // tabuleiro do catálogo pousa. O resto entra quando estiver pronto.
       // O tabuleiro fica no centro do espaço entre a barra do app e o painel
@@ -89,33 +126,36 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
               Expanded(
                 child: BoardOptionsPanel(
                   key: GameSetupKeys.panel,
-                  footer: SafeArea(
-                    top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: FilledButton(
+                  footer: ActionsFooter(
+                    margin: AppSpacing.xl,
+                    children: [
+                      FilledButton(
                         key: GameSetupKeys.startButton,
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size.fromHeight(kButtonHeight),
-                        ),
                         onPressed: state.canStart
                             ? () => _start(context, state)
                             : null,
                         child: Text(l10n.clockStartGame),
                       ),
-                    ),
+                    ],
                   ),
                   child: ListView(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    // Margem de 24 como a das folhas (E1.08, P11): 8 aqui e
+                    // 16 em cada bloco.
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.sm,
+                      0,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                    ),
                     children: [
                       if (state.ready) ...[
-                        const _SectionTitle.yourSide(),
+                        SectionTitle(context.l10n.setupYourSide),
                         _SidePicker(state: state),
-                        const _SectionTitle.opponent(),
+                        SectionTitle(context.l10n.setupOpponent),
                         _OpponentPicker(state: state),
                         // Às cegas: só contra a máquina e com voz no idioma.
                         if (blind) _ModePicker(state: state),
-                        const Divider(height: 24),
+                        const SizedBox(height: AppSpacing.xl),
                         _ClockSection(state: state),
                         if (state.attempts.isNotEmpty) _History(state: state),
                       ],
@@ -141,20 +181,19 @@ class _ModePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final cubit = context.read<GameSetupCubit>();
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.setupMode,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text(l10n.setupMode, style: context.sectionTitle),
+          const SizedBox(height: AppSpacing.sm),
           SegmentedButton<bool>(
             key: GameSetupKeys.mode,
             showSelectedIcon: false,
@@ -217,56 +256,28 @@ class _Header extends StatelessWidget {
           size: box.maxWidth,
           orientation: state.userSide,
           coordinates: true,
-          radius: 8,
           heroTag: launching
               ? gameBoardTag(state.userSide)
               : setupBoardTag(positionId: positionId, fen: state.position.fen),
         ),
       ),
       bottom: Wrap(
-        spacing: 8,
-        runSpacing: 8,
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
         alignment: WrapAlignment.center,
         children: [
-          Chip(
+          InfoChip(
             key: GameSetupKeys.goal,
-            avatar: Icon(
-              GoalStyle.of(context, state.goal).icon,
-              size: 18,
-              color: GoalStyle.of(context, state.goal).onContainer,
-            ),
-            label: Text(
-              goalLabel(l10n, state.goal),
-              style: TextStyle(
-                color: GoalStyle.of(context, state.goal).onContainer,
-              ),
-            ),
-            backgroundColor: GoalStyle.of(context, state.goal).container,
-            side: BorderSide.none,
+            icon: GoalStyle.of(context, state.goal).icon,
+            label: goalLabel(l10n, state.goal),
+          ),
+          // A vez de jogar, lida do FEN (campo 2).
+          InfoChip(
+            label: state.position.fen.split(' ')[1] == 'b'
+                ? l10n.freeBoardBlackToMove
+                : l10n.freeBoardWhiteToMove,
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle.yourSide() : _yourSide = true;
-  const _SectionTitle.opponent() : _yourSide = false;
-
-  final bool _yourSide;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = context.l10n;
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
-      child: Text(
-        _yourSide ? l10n.setupYourSide : l10n.setupOpponent,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.primary,
-        ),
       ),
     );
   }
@@ -282,7 +293,7 @@ class _SidePicker extends StatelessWidget {
     final l10n = context.l10n;
     final cubit = context.read<GameSetupCubit>();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: SizedBox(
         width: double.infinity,
         child: SegmentedButton<Side>(
@@ -294,19 +305,6 @@ class _SidePicker extends StatelessWidget {
             ])
               ButtonSegment(
                 value: side,
-                icon: Container(
-                  width: 14,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: side == Side.white
-                        ? AppColors.chessWhiteColor
-                        : AppColors.chessBlackColor,
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                  ),
-                ),
                 label: Text(label, key: GameSetupKeys.side(side)),
               ),
           ],
@@ -329,12 +327,12 @@ class _OpponentPicker extends StatelessWidget {
     final cubit = context.read<GameSetupCubit>();
     final colors = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
         children: [
-          for (final kind in OpponentKind.training)
+          for (final kind in OpponentKind.training) ...[
             Padding(
-              padding: const EdgeInsets.only(bottom: 4),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
               child: ListTile(
                 key: GameSetupKeys.opponent(kind),
                 shape: RoundedRectangleBorder(
@@ -358,14 +356,17 @@ class _OpponentPicker extends StatelessWidget {
                 onTap: () => cubit.setOpponent(kind),
               ),
             ),
-          AnimatedSize(
-            duration: AppMotion.state,
-            curve: AppMotion.enter,
-            alignment: Alignment.topCenter,
-            child: state.setup.opponent == OpponentKind.maia
-                ? _LevelPicker(state: state)
-                : const SizedBox(width: double.infinity),
-          ),
+            // O nível vem logo depois do Maia (ordem do canvas).
+            if (kind == OpponentKind.maia)
+              AnimatedSize(
+                duration: AppMotion.state,
+                curve: AppMotion.enter,
+                alignment: Alignment.topCenter,
+                child: state.setup.opponent == OpponentKind.maia
+                    ? _LevelPicker(state: state)
+                    : const SizedBox(width: double.infinity),
+              ),
+          ],
         ],
       ),
     );
@@ -386,29 +387,30 @@ class _LevelPicker extends StatelessWidget {
     final cubit = context.read<GameSetupCubit>();
     return Padding(
       key: GameSetupKeys.levels,
-      padding: const EdgeInsetsDirectional.fromSTEB(4, 8, 4, 4),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        0,
+        AppSpacing.sm,
+        0,
+        AppSpacing.xs,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.setupMaiaLevel,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text(l10n.setupMaiaLevel, style: context.sectionTitle),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
-            runSpacing: 4,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
               for (final level in MaiaLevels.all)
                 ChoiceChip(
+                  materialTapTargetSize: AppChip.tapTarget,
+                  visualDensity: AppChip.density,
                   key: GameSetupKeys.level(level),
-                  showCheckmark: false,
                   avatar: switch (state.characters.forLevel(level)) {
                     final character? => CharacterAvatar(
                       character: character,
-                      size: 24,
+                      size: CharacterAvatar.mini,
                     ),
                     null => null,
                   },
@@ -428,8 +430,11 @@ class _LevelPicker extends StatelessWidget {
                         ),
                       ),
                       if (level == state.suggestedLevel) ...[
-                        const SizedBox(width: 4),
-                        const Icon(Icons.recommend_rounded, size: 16),
+                        const SizedBox(width: AppSpacing.xs),
+                        const Icon(
+                          Icons.recommend_rounded,
+                          size: AppIconSize.small,
+                        ),
                       ],
                     ],
                   ),
@@ -438,15 +443,15 @@ class _LevelPicker extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Row(
             children: [
               Icon(
                 Icons.recommend_rounded,
-                size: 16,
+                size: AppIconSize.small,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   switch (state.rating) {
@@ -491,15 +496,20 @@ class _ClockSection extends StatelessWidget {
         _PacePicker(state: state),
         if (state.hasZeroTime)
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              0,
+            ),
             child: Row(
               children: [
                 Icon(
                   Icons.error_outline,
                   color: theme.colorScheme.error,
-                  size: 20,
+                  size: AppIconSize.button,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     l10n.setupTimeZero,
@@ -542,23 +552,25 @@ class _PacePicker extends StatelessWidget {
               '${paceShort(l10n, setup.opponentTime)}';
     return Padding(
       key: GameSetupKeys.paces,
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        0,
+        AppSpacing.lg,
+        AppSpacing.xs,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.setupPace,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text(l10n.setupPace, style: context.sectionTitle),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
-            runSpacing: 4,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
               for (final pace in state.paces)
                 ChoiceChip(
+                  materialTapTargetSize: AppChip.tapTarget,
+                  visualDensity: AppChip.density,
                   key: GameSetupKeys.pace(pace.id),
                   label: Text(
                     l10n.paceChip(pace.id, pace.category.label(l10n)),
@@ -567,8 +579,12 @@ class _PacePicker extends StatelessWidget {
                   onSelected: enabled ? (_) => cubit.setPace(pace) : null,
                 ),
               ChoiceChip(
+                materialTapTargetSize: AppChip.tapTarget,
+                visualDensity: AppChip.density,
                 key: GameSetupKeys.customPace,
-                avatar: custom ? null : const Icon(Icons.tune, size: 18),
+                avatar: custom
+                    ? null
+                    : const Icon(Icons.tune, size: AppIconSize.button),
                 label: Text(
                   custom
                       ? l10n.setupPaceCustomValue(customTime)
@@ -592,7 +608,7 @@ class _PacePicker extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.setupPaceHint,
             style: theme.textTheme.bodySmall?.copyWith(
@@ -619,18 +635,23 @@ class _History extends StatelessWidget {
     final locale = Localizations.localeOf(context).toString();
     final date = DateFormat.yMd(locale).add_Hm();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 16, 4, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.xs,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 12, 4),
-            child: Text(
-              l10n.setupHistory,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: colors.primary,
-              ),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              0,
+              AppSpacing.md,
+              AppSpacing.xs,
             ),
+            child: Text(l10n.setupHistory, style: context.sectionTitle),
           ),
           for (final (index, attempt) in state.attempts.indexed)
             ListTile(

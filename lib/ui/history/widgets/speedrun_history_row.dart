@@ -9,7 +9,9 @@ import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/time_display.dart';
 import '../../speedrun/widgets/speedrun_ui.dart';
@@ -101,9 +103,7 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
                         ? 2
                         : 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: context.cardTitle,
                   ),
                   Text(
                     HistoryLabels.ltr(paceLabel(l10n, speedrun.time)),
@@ -114,18 +114,17 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
                       key: HistoryKeys.rowStatus(index),
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(statusIcon, size: 16, color: statusColor),
+                        Icon(
+                          statusIcon,
+                          size: AppIconSize.small,
+                          color: statusColor,
+                        ),
                         const SizedBox(width: AppSpacing.xs),
                         Flexible(
                           child: Text(
                             statusText,
                             key: statusKey,
-                            style: small?.copyWith(
-                              color: statusColor,
-                              fontWeight: row.bonus != null || row.newRecord
-                                  ? FontWeight.w700
-                                  : null,
-                            ),
+                            style: small?.copyWith(color: statusColor),
                           ),
                         ),
                       ],

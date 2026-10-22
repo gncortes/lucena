@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/character.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_shadow.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// O retrato redondo de um adversário numa trilha (a da Jornada e a das
 /// etapas do speedrun).
@@ -73,21 +76,14 @@ class TrailPortrait extends StatelessWidget {
               shape: BoxShape.circle,
               color: colors.surfaceContainerHighest,
               border: Border.all(color: ring, width: current ? 4 : 3),
-              boxShadow: current
-                  ? [
-                      BoxShadow(
-                        color: colors.primary.withValues(alpha: 0.35),
-                        blurRadius: 12,
-                      ),
-                    ]
-                  : null,
+              boxShadow: current ? [AppShadow.glow(colors)] : null,
             ),
             child: ClipOval(child: image),
           ),
           if (locked)
             Center(
               child: Container(
-                padding: const EdgeInsets.all(6),
+                padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
                   color: colors.surface.withValues(alpha: 0.9),
                   shape: BoxShape.circle,
@@ -113,7 +109,7 @@ class TrailPortrait extends StatelessWidget {
                 child: Icon(
                   Icons.check_circle,
                   key: doneKey,
-                  size: 24,
+                  size: AppIconSize.standard,
                   color: doneColor,
                   semanticLabel: l10n.journeyCompletedLabel,
                 ),
@@ -135,15 +131,17 @@ class TrailBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.labelSmall
-            ?.copyWith(color: color, fontWeight: FontWeight.w700),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
       ),
     );
   }

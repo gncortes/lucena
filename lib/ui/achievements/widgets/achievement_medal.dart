@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 
-/// A medalha de uma conquista: disco dourado com o ícone quando obtida; cinza,
+/// A medalha de uma conquista: disco de ouro liso com o ícone quando obtida; cinza,
 /// com um cadeado por cima, quando falta. O [shine] passa um brilho pelo
 /// disco (o aviso e o detalhe usam).
 class AchievementMedal extends StatelessWidget {
@@ -25,20 +25,10 @@ class AchievementMedal extends StatelessWidget {
   final Key? lockKey;
   final String? lockLabel;
 
-  /// O dourado da medalha, do claro ao escuro (o troféu de recorde usa o
-  /// mesmo).
-  static const gold = _gold;
-
-  static const _gold = [
-    AppColors.medalLight,
-    AppColors.goldColor,
-    AppColors.medalDark,
-  ];
-  static const _ink = AppColors.medalInk;
-
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final gold = AppColors.of(context).gold;
     final shine = this.shine;
     final disc = SizedBox.square(
       dimension: size,
@@ -48,19 +38,13 @@ class AchievementMedal extends StatelessWidget {
           children: [
             DecoratedBox(
               decoration: unlocked
-                  ? const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: _gold,
-                      ),
-                    )
+                  ? BoxDecoration(color: gold)
                   : BoxDecoration(color: colors.surfaceContainerHighest),
             ),
             Icon(
               icon,
               size: size * 0.58,
-              color: unlocked ? _ink : colors.outline,
+              color: unlocked ? AppColors.goldInk : colors.outline,
             ),
             if (unlocked && shine != null)
               AnimatedBuilder(

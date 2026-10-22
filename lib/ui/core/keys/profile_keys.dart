@@ -23,13 +23,4 @@ abstract final class ProfileKeys {
 
   /// O rating de finais: o cartão, o número, quantas partidas e a curva.
   static const ratingCard = Key('profile.rating');
-  static const ratingDelta = Key('profile.rating.delta');
-  static Key ratingPeriod(int? games) =>
-      Key('profile.rating.period.${games ?? 'all'}');
-  static const ratingValue = Key('profile.rating.value');
-  static const ratingGames = Key('profile.rating.games');
-  static const ratingChart = Key('profile.rating.chart');
-
-  /// O ⓘ do cartão do rating, que abre a explicação.
-  static const ratingHelp = Key('profile.rating.help');
 }

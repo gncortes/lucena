@@ -547,15 +547,6 @@
   "@gameDrawDeclined": {
     "description": "Short notice when the machine refuses the draw offer."
   },
-  "gameMachineThinking": "{name} is thinking…",
-  "@gameMachineThinking": {
-    "description": "Shown while the computer opponent chooses its move; {name} is the opponent, e.g. 'Maia 1400' or 'Stockfish'.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "gameOfferDraw": "Offer a draw",
   "@gameOfferDraw": {
     "description": "Training game button: the player offers a draw to the machine."
@@ -580,10 +571,6 @@
   "@gameResigned": {
     "description": "Reason the game ended: the player resigned."
   },
-  "gameYourTurn": "Your turn",
-  "@gameYourTurn": {
-    "description": "Badge on the player's row during a game without a clock, when it is the player's turn to move."
-  },
   "goalDraw": "Defend",
   "@goalDraw": {
     "description": "Goal of a position: the player must hold the draw (a draw or a win counts). Also a catalog filter option."
@@ -603,10 +590,6 @@
   "homeJourney": "Journey",
   "@homeJourney": {
     "description": "Main home screen button: opens the Journey, the ladder of levels from Maia 1000 to Stockfish."
-  },
-  "homeMascotLabel": "Lucena mascot: a chess pawn lifting dumbbells",
-  "@homeMascotLabel": {
-    "description": "Screen reader label for the mascot image on the home screen."
   },
   "homeRating": "Rating {rating}",
   "@homeRating": {
@@ -646,18 +629,6 @@
   "@homeWhereDone": {
     "description": "Home card when the whole Journey is done."
   },
-  "homeWhereNext": "Next: {position} against {opponent}",
-  "@homeWhereNext": {
-    "description": "Home card: the next challenge, e.g. \"Next: ♕ vs ♚ against Coco\".",
-    "placeholders": {
-      "position": {
-        "type": "String"
-      },
-      "opponent": {
-        "type": "String"
-      }
-    }
-  },
   "homeWhereProgress": "{done} of {total} challenges",
   "@homeWhereProgress": {
     "description": "Home card: progress in the current level.",
@@ -670,24 +641,6 @@
       }
     }
   },
-  "homeWhereTitle": "You are at {rung}",
-  "@homeWhereTitle": {
-    "description": "Home card: the Journey level the player is working on.",
-    "placeholders": {
-      "rung": {
-        "type": "String"
-      }
-    }
-  },
-  "journeyAgainst": "Against {opponent}",
-  "@journeyAgainst": {
-    "description": "Who the challenge is played against, e.g. 'Against Maia 1200'.",
-    "placeholders": {
-      "opponent": {
-        "type": "String"
-      }
-    }
-  },
   "journeyChallengeTitle": "Challenge",
   "@journeyChallengeTitle": {
     "description": "Title of the screen of one Journey challenge."
@@ -696,22 +649,9 @@
   "@journeyCompletedLabel": {
     "description": "Accessibility label of the check mark of a completed challenge or level."
   },
-  "journeyCurrent": "You are at {rung}",
-  "@journeyCurrent": {
-    "description": "Journey summary: the level the player is working on, e.g. 'You are at Maia 1000'.",
-    "placeholders": {
-      "rung": {
-        "type": "String"
-      }
-    }
-  },
   "journeyFinished": "Journey complete!",
   "@journeyFinished": {
     "description": "Journey summary when every level has been completed."
-  },
-  "journeyHistoryEmpty": "No games yet",
-  "@journeyHistoryEmpty": {
-    "description": "Shown in the history of a challenge that was never played."
   },
   "journeyLocked": "{count, plural, =1{Complete 1 more challenge against {rung} to unlock} other{Complete {count} more challenges against {rung} to unlock}}",
   "@journeyLocked": {
@@ -728,15 +668,6 @@
   "journeyLockedLabel": "Locked",
   "@journeyLockedLabel": {
     "description": "Accessibility label of the lock icon of a level not yet unlocked."
-  },
-  "journeyNext": "Next: {rung}",
-  "@journeyNext": {
-    "description": "Journey summary: the level unlocked after the current one.",
-    "placeholders": {
-      "rung": {
-        "type": "String"
-      }
-    }
   },
   "journeyPlay": "Play",
   "@journeyPlay": {
@@ -784,18 +715,6 @@
     "description": "Under the lesson title: its position in the course.",
     "placeholders": {
       "number": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "lessonStepShort": "{step}/{total}",
-  "@lessonStepShort": {
-    "description": "Short step counter beside the lesson progress bar.",
-    "placeholders": {
-      "step": {
         "type": "int"
       },
       "total": {
@@ -1007,10 +926,6 @@
   "@positionErrorTooManyKings": {
     "description": "Error: a side has more than one king."
   },
-  "profileEndgameRating": "Endgame rating",
-  "@profileEndgameRating": {
-    "description": "Title of the player rating card in the profile (the rating that changes with every game)."
-  },
   "profileLevelAbove": "{min} or more",
   "@profileLevelAbove": {
     "description": "Rating range of the highest level, e.g. '2200 or more'.",
@@ -1089,18 +1004,6 @@
         "type": "int"
       }
     }
-  },
-  "profileRatingHint": "It changes after every game against the Maia or Stockfish outside a speedrun, taking into account how hard the position was, and when you finish a speedrun for the first time at a pace. It measures endgames against the Maia: it is not comparable to Lichess or chess.com ratings.",
-  "@profileRatingHint": {
-    "description": "Explanation under the player rating."
-  },
-  "profileRatingHistory": "History",
-  "@profileRatingHistory": {
-    "description": "Header of the list of rating changes."
-  },
-  "profileRatingProvisional": "Provisional",
-  "@profileRatingProvisional": {
-    "description": "Badge shown while the rating is still uncertain (few games)."
   },
   "profileRatingSheetHint": "Pick the range closest to your rating, online or over the board.",
   "@profileRatingSheetHint": {
@@ -1319,10 +1222,6 @@
   "@setupOpponent": {
     "description": "Section title: who the player plays against."
   },
-  "setupOpponentCharacter": "Opponent",
-  "@setupOpponentCharacter": {
-    "description": "Title above the list of Maia characters, one per level."
-  },
   "setupOpponentMaia": "Maia",
   "@setupOpponentMaia": {
     "description": "Name of the Maia opponent (a neural network that plays like a human). Proper noun: do not translate."
@@ -1396,10 +1295,6 @@
   "@speedrunAbandon": {
     "description": "Button that abandons the speedrun attempt."
   },
-  "speedrunAbandonQuestion": "Give up this attempt? It stays in the history without a record.",
-  "@speedrunAbandonQuestion": {
-    "description": "Confirmation before abandoning a speedrun attempt."
-  },
   "speedrunBest": "Your best time",
   "@speedrunBest": {
     "description": "Label of the best total time of a speedrun."
@@ -1407,22 +1302,6 @@
   "speedrunContinue": "Continue",
   "@speedrunContinue": {
     "description": "Button at the end of a speedrun stage game: back to the attempt."
-  },
-  "speedrunContinueGame": "Continue the game",
-  "@speedrunContinueGame": {
-    "description": "Button that goes back to the stage game left on the board."
-  },
-  "speedrunEndingDescription": "From {first} to {last}",
-  "@speedrunEndingDescription": {
-    "description": "What the endgame speedrun contains: the same endgame against each level, e.g. 'From Maia 1000 to Stockfish'.",
-    "placeholders": {
-      "first": {
-        "type": "String"
-      },
-      "last": {
-        "type": "String"
-      }
-    }
   },
   "speedrunEndingSection": "One endgame, every opponent",
   "@speedrunEndingSection": {
@@ -1444,10 +1323,6 @@
   "@speedrunFullTitle": {
     "description": "Name of the speedrun that plays every Journey challenge, from Maia 1000 to Stockfish."
   },
-  "speedrunIntro": "Play every stage as fast as you can. Only your clock counts; a lost stage is played again with the timer running.",
-  "@speedrunIntro": {
-    "description": "Explanation at the top of the speedrun list."
-  },
   "speedrunKeepGoing": "Keep going",
   "@speedrunKeepGoing": {
     "description": "Cancels giving up the attempt."
@@ -1459,49 +1334,6 @@
   "speedrunNoRecord": "No time yet",
   "@speedrunNoRecord": {
     "description": "Speedrun without a completed attempt yet."
-  },
-  "speedrunPauseHint": "Take a break whenever you want: the timer only runs during your games.",
-  "@speedrunPauseHint": {
-    "description": "Hint below the button of the next stage."
-  },
-  "speedrunPlayStage": "Play stage {stage}",
-  "@speedrunPlayStage": {
-    "description": "Button that starts the next stage of the attempt.",
-    "placeholders": {
-      "stage": {
-        "type": "int"
-      }
-    }
-  },
-  "speedrunResume": "Continue: stage {stage} of {total}",
-  "@speedrunResume": {
-    "description": "Button that goes back to the speedrun attempt in progress.",
-    "placeholders": {
-      "stage": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "speedrunRetryStage": "Play stage {stage} again",
-  "@speedrunRetryStage": {
-    "description": "Button that plays a lost stage again.",
-    "placeholders": {
-      "stage": {
-        "type": "int"
-      }
-    }
-  },
-  "speedrunRungDescription": "{count, plural, =1{1 challenge} other{All {count} challenges}}",
-  "@speedrunRungDescription": {
-    "description": "What the level speedrun contains.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "speedrunRungSection": "Challenges by opponent",
   "@speedrunRungSection": {
@@ -1519,10 +1351,6 @@
   "speedrunStages": "Stages",
   "@speedrunStages": {
     "description": "Header of the list of stages of a speedrun, with the best time of each."
-  },
-  "speedrunStart": "Start",
-  "@speedrunStart": {
-    "description": "Button that starts a new speedrun attempt."
   },
   "speedrunTimeControl": "{minutes} min + {increment} s",
   "@speedrunTimeControl": {
@@ -1561,15 +1389,6 @@
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
   },
-  "tourLevelStart": "Journey starts at {rung}",
-  "@tourLevelStart": {
-    "description": "Under the level choice: where the Journey will start.",
-    "placeholders": {
-      "rung": {
-        "type": "String"
-      }
-    }
-  },
   "tourNext": "Continue",
   "@tourNext": {
     "description": "Button that goes to the next step of the tour."
@@ -1577,10 +1396,6 @@
   "tourSkip": "Skip",
   "@tourSkip": {
     "description": "Button that skips the first-run tour."
-  },
-  "tourStart": "Start",
-  "@tourStart": {
-    "description": "Last button of the tour: confirms the level and opens the app."
   },
   "tourStep": "Step {step} of {total}",
   "@tourStep": {
@@ -1764,46 +1579,9 @@
       }
     }
   },
-  "homeStatGames": "Games",
-  "@homeStatGames": {
-    "description": "Home stat: games played."
-  },
-  "homeStatWins": "Wins",
-  "@homeStatWins": {
-    "description": "Home stat: games won."
-  },
-  "homeStatStreak": "Day streak",
-  "@homeStatStreak": {
-    "description": "Home stat: days in a row with at least one game."
-  },
-  "homeStatAchievements": "{unlocked} of {total}",
-  "@homeStatAchievements": {
-    "description": "Home stat: achievements unlocked out of total.",
-    "placeholders": {
-      "unlocked": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "homeStatBestRun": "Best speedrun",
-  "@homeStatBestRun": {
-    "description": "Home stat: best speedrun time."
-  },
   "homeTools": "Tools",
   "@homeTools": {
     "description": "Home: title of the tools shortcuts (custom position, free board)."
-  },
-  "profileRatingPeriodGames": "Last {count}",
-  "@profileRatingPeriodGames": {
-    "description": "Rating chart period: the last N games.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "profileRatingPeriodAll": "All",
   "@profileRatingPeriodAll": {
@@ -1900,10 +1678,6 @@
   "@endgameKnightBishop": {
     "description": "Endgame name: king, bishop and knight against a lone king."
   },
-  "speedrunListIntro": "Pick an endgame. You play it against every opponent, from the weakest up to Stockfish, and your clock adds up to your time.",
-  "@speedrunListIntro": {
-    "description": "Speedrun list: one-sentence explanation at the top."
-  },
   "speedrunStoppedAt": "Gave up at stage {stage} of {total}",
   "@speedrunStoppedAt": {
     "description": "Speedrun history: an abandoned attempt and how far it got.",
@@ -1949,21 +1723,9 @@
   "@journeyIntro": {
     "description": "Journey screen: one-sentence note at the top saying the Journey comes after the lessons."
   },
-  "gameMoveBack": "Back",
-  "@gameMoveBack": {
-    "description": "Game screen: button that steps one move back to review the game (the board only shows the position)."
-  },
-  "gameMoveForward": "Forward",
-  "@gameMoveForward": {
-    "description": "Game screen: button that steps one move forward while reviewing the game."
-  },
   "statsGamesTitle": "Game history",
   "@statsGamesTitle": {
     "description": "Statistics screen: title of the list of all games played, most recent first."
-  },
-  "statsGamesEmpty": "The games you play show up here, most recent first.",
-  "@statsGamesEmpty": {
-    "description": "Statistics screen: shown in place of the game history while no game was played."
   },
   "speedrunRetry": "Try again",
   "@speedrunRetry": {
@@ -2050,21 +1812,9 @@
   "@endgameLessonPartLesson": {
     "description": "First part of an endgame lesson: Viktor teaches."
   },
-  "endgameLessonPartExercises": "The exercises",
-  "@endgameLessonPartExercises": {
-    "description": "Second part of an endgame lesson: the exercises with stars."
-  },
-  "endgameLessonPartFinal": "The real endgame",
-  "@endgameLessonPartFinal": {
-    "description": "Third part of an endgame lesson: play the real endgame."
-  },
   "endgameLessonStart": "Start the lesson",
   "@endgameLessonStart": {
     "description": "Button that opens the lesson steps for the first time."
-  },
-  "endgameLessonContinue": "Continue the lesson",
-  "@endgameLessonContinue": {
-    "description": "Button that reopens a lesson started and not finished."
   },
   "endgameLessonReview": "Review the lesson",
   "@endgameLessonReview": {
@@ -2115,15 +1865,6 @@
       }
     }
   },
-  "endgameStars": "{count, plural, =1{1 star} other{{count} stars}}",
-  "@endgameStars": {
-    "description": "How many stars an exercise is worth.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "endgameEarnedStars": "{earned} of {stars}",
   "@endgameEarnedStars": {
     "description": "Stars earned in a solved exercise, over its value.",
@@ -2147,10 +1888,6 @@
   "endgameRedoExercises": "Redo the exercises",
   "@endgameRedoExercises": {
     "description": "Button that clears the score and reopens all exercises."
-  },
-  "endgameFinalLocked": "Finish the lesson and reach the minimum score to unlock the real endgame.",
-  "@endgameFinalLocked": {
-    "description": "Explanation on the locked final step."
   },
   "endgameSpeedrunChallenge": "Challenge the speedrun",
   "@endgameSpeedrunChallenge": {
@@ -2260,14 +1997,6 @@
       }
     }
   },
-  "exerciseCorrect": "Correct!",
-  "@exerciseCorrect": {
-    "description": "Badge that pops up below the exercise board when the student solves it with the right moves."
-  },
-  "exerciseSolved": "Solved!",
-  "@exerciseSolved": {
-    "description": "Title of the card after solving an exercise."
-  },
   "exerciseEarned": "{earned} of {stars, plural, =1{1 point} other{{stars} points}}",
   "@exerciseEarned": {
     "description": "Stars earned after solving an exercise.",
@@ -2317,14 +2046,6 @@
         "example": "win"
       }
     }
-  },
-  "exerciseSolution": "Solution",
-  "@exerciseSolution": {
-    "description": "Label before the solution line of a solved exercise (e.g. 'Solution: 1.Kd4 Kg5')."
-  },
-  "exerciseYourMove": "Your move",
-  "@exerciseYourMove": {
-    "description": "Under the exercise board while the student has to move."
   },
   "starChallengesTitle": "Star challenges",
   "@starChallengesTitle": {
@@ -2384,7 +2105,6 @@
     "description": "Shown while the challenge clock is paused (app in background)."
   },
   "starChallengeTitle": "{piece, select, rook{Rook challenge} bishop{Bishop challenge} knight{Knight challenge} queen{Queen challenge} king{King challenge} pawn{Pawn challenge} other{Star challenge}}",
-  "lessonToChallenge": "Star challenge: {piece}",
   "@starChallengeTitle": {
     "description": "App bar of a star challenge: the challenge named after its piece (the level shows as a chip beside it).",
     "placeholders": {
@@ -2394,25 +2114,7 @@
       }
     }
   },
-  "@lessonToChallenge": {
-    "description": "Button at the end of a piece lesson that opens that piece's star challenge.",
-    "placeholders": {
-      "piece": {
-        "type": "String",
-        "example": "Rook"
-      }
-    }
-  },
-  "starChallengePoints": "{count, plural, =1{1 point} other{{count} points}}",
   "starChallengePointsTotal": "{count} points in all",
-  "@starChallengePoints": {
-    "description": "Points of a star challenge.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "@starChallengePointsTotal": {
     "description": "Sum of the best scores of a piece across levels.",
     "placeholders": {
@@ -2492,18 +2194,6 @@
   "qualityBlunder": "Blunder",
   "@qualityBlunder": {
     "description": "Move rating (??): a serious mistake."
-  },
-  "reviewMoveQuality": "{move}: {quality}",
-  "@reviewMoveQuality": {
-    "description": "Game details: the rating of the move on the board, e.g. 'Qg6: Blunder'. {quality} is one of the move ratings.",
-    "placeholders": {
-      "move": {
-        "type": "String"
-      },
-      "quality": {
-        "type": "String"
-      }
-    }
   },
   "reviewBestWas": "Best was {move}",
   "@reviewBestWas": {
@@ -2587,10 +2277,6 @@
   "@reviewLegend": {
     "description": "Game details: title of the card at the end that explains each move symbol."
   },
-  "reviewEvalBar": "Evaluation bar",
-  "@reviewEvalBar": {
-    "description": "Game details menu: shows or hides the engine evaluation bar beside the board."
-  },
   "qualityForcedHint": "The only legal move",
   "@qualityForcedHint": {
     "description": "Legend: meaning of the 'forced' move symbol."
@@ -2646,10 +2332,6 @@
   "reviewDeeper": "Review deeper",
   "@reviewDeeper": {
     "description": "Game details: label above the buttons that review the game again with more engine time, after a lighter review."
-  },
-  "resultReview": "Review game",
-  "@resultReview": {
-    "description": "End of game panel: button that opens the game details to review it with the engine."
   },
   "voiceListen": "Listen",
   "@voiceListen": {
@@ -2746,10 +2428,6 @@
   "@blindTitle": {
     "description": "Blindfold mode (T40 spike): blindTitle"
   },
-  "blindPlay": "Play blindfold (experimental)",
-  "@blindPlay": {
-    "description": "Blindfold mode (T40 spike): blindPlay"
-  },
   "blindViewBoard": "Board",
   "@blindViewBoard": {
     "description": "Blindfold mode (T40 spike): blindViewBoard"
@@ -2777,41 +2455,6 @@
   "blindStatusWhich": "Which piece?",
   "@blindStatusWhich": {
     "description": "Blindfold mode (T40 spike): blindStatusWhich"
-  },
-  "blindStatusFinished": "Game over",
-  "@blindStatusFinished": {
-    "description": "Blindfold mode (T40 spike): blindStatusFinished"
-  },
-  "blindHeard": "Heard: “{text}”",
-  "@blindHeard": {
-    "description": "Blindfold mode (T40 spike): blindHeard",
-    "placeholders": {
-      "text": {
-        "type": "String"
-      }
-    }
-  },
-  "blindLastMoves": "{you}: {mine} · {opponent}: {theirs}",
-  "@blindLastMoves": {
-    "description": "Blindfold mode (T40 spike): blindLastMoves",
-    "placeholders": {
-      "you": {
-        "type": "String"
-      },
-      "mine": {
-        "type": "String"
-      },
-      "opponent": {
-        "type": "String"
-      },
-      "theirs": {
-        "type": "String"
-      }
-    }
-  },
-  "blindYou": "You",
-  "@blindYou": {
-    "description": "Blindfold mode (T40 spike): blindYou"
   },
   "blindMicTooltip": "Say your move",
   "@blindMicTooltip": {
@@ -2852,10 +2495,6 @@
   "blindCopied": "Measurements copied",
   "@blindCopied": {
     "description": "Blindfold mode (T40 spike): blindCopied"
-  },
-  "blindShowMoves": "Show the last moves",
-  "@blindShowMoves": {
-    "description": "Blindfold mode (T40 spike): blindShowMoves"
   },
   "blindSayYourTurn": "Your move.",
   "@blindSayYourTurn": {
@@ -2929,23 +2568,6 @@
   "blindNarrateGame": "Narrate the game",
   "@blindNarrateGame": {
     "description": "Blindfold mode (T40 spike): blindNarrateGame"
-  },
-  "blindRepeat": "Repeat the opponent's move",
-  "@blindRepeat": {
-    "description": "Blindfold mode (T40 spike): blindRepeat"
-  },
-  "blindReleaseToSend": "Recording… release to send, slide away to cancel",
-  "@blindReleaseToSend": {
-    "description": "Blindfold mode (T40 spike): blindReleaseToSend"
-  },
-  "blindConfirmQuestion": "{move}: is that it?",
-  "@blindConfirmQuestion": {
-    "description": "Blindfold mode (T40 spike): blindConfirmQuestion",
-    "placeholders": {
-      "move": {
-        "type": "String"
-      }
-    }
   },
   "blindConfirmYes": "Yes, play it",
   "@blindConfirmYes": {
@@ -3033,20 +2655,12 @@
     "description": "Blindfold mode: the mic was only tapped, not held"
   },
   "blindTitleShort": "Blindfold",
-  "blindBeta": "Beta",
   "@blindTitleShort": {
     "description": "Blindfold mode: short screen title"
   },
-  "@blindBeta": {
-    "description": "Badge next to the blindfold title: experimental feature"
-  },
   "blindHearAgain": "Hear again",
-  "blindSlideToCancel": "slide to cancel",
   "@blindHearAgain": {
     "description": "Blindfold: hear the opponent's last move again"
-  },
-  "@blindSlideToCancel": {
-    "description": "Blindfold: while recording, slide the finger away to cancel"
   },
   "blindProcessing": "Understanding…",
   "@blindProcessing": {
@@ -3071,28 +2685,20 @@
     }
   },
   "blindTypeHint": "Type the move",
-  "blindTypeToggle": "Type the move",
   "blindTypeSend": "Play",
   "@blindTypeHint": {
     "description": "Blindfold: typing the move (blindTypeHint)"
-  },
-  "@blindTypeToggle": {
-    "description": "Blindfold: typing the move (blindTypeToggle)"
   },
   "@blindTypeSend": {
     "description": "Blindfold: typing the move (blindTypeSend)"
   },
   "blindDiscard": "Discard",
   "blindSend": "Send",
-  "blindIsThatIt": "Is that it?",
   "@blindDiscard": {
     "description": "Blindfold recording panel: blindDiscard"
   },
   "@blindSend": {
     "description": "Blindfold recording panel: blindSend"
-  },
-  "@blindIsThatIt": {
-    "description": "Blindfold recording panel: blindIsThatIt"
   },
   "blindHelpTitle": "How to say the moves",
   "@blindHelpTitle": {
@@ -3134,14 +2740,6 @@
   "@setupModeBlind": {
     "description": "Game setup: play mode (setupModeBlind)"
   },
-  "characterSoundOff": "Mute the character",
-  "characterSoundOn": "Hear the character",
-  "@characterSoundOff": {
-    "description": "Tooltip of the speaker button in the game bar: stops the opponent character from speaking aloud (remembered)."
-  },
-  "@characterSoundOn": {
-    "description": "Tooltip of the muted speaker button in the game bar: the opponent character speaks aloud again."
-  },
   "paceUltraBullet": "Ultra Bullet",
   "@paceUltraBullet": {
     "description": "Name of the fastest time-control group (30 s or less per side)."
@@ -3158,10 +2756,6 @@
   "marathonSection": "Marathon",
   "@marathonSection": {
     "description": "Title of the Marathon section in the speedrun list."
-  },
-  "marathonIntro": "One clock for the whole run, from 1000 to Stockfish: each stage starts with the time left from the last one, and the next game starts right away. A loss, a draw or running out of time ends the run.",
-  "@marathonIntro": {
-    "description": "One-sentence explanation of the Marathon speedrun mode: a single time bank for the player across all stages, games chained without pause."
   },
   "speedrunMarathonTitle": "Marathon: {ending}",
   "@speedrunMarathonTitle": {
@@ -3406,27 +3000,6 @@
       }
     }
   },
-  "marathonLostTitle": "End of the Marathon",
-  "@marathonLostTitle": {
-    "description": "Marathon ended: the player lost the current stage."
-  },
-  "marathonDrawTitle": "A draw: end of the Marathon",
-  "@marathonDrawTitle": {
-    "description": "Marathon ended: the current stage was a draw."
-  },
-  "marathonLostBody": "You reached stage {stage}. In the Marathon, a loss or a draw ends the attempt.",
-  "@marathonLostBody": {
-    "description": "Marathon ended: the stage reached; a loss or draw ends the attempt.",
-    "placeholders": {
-      "stage": {
-        "type": "int"
-      }
-    }
-  },
-  "marathonSummary": "See the summary",
-  "@marathonSummary": {
-    "description": "Button after the Marathon ends: open the attempt summary."
-  },
   "versusLabel": "VS",
   "marathonStage": "Stage {stage}",
   "@versusLabel": {
@@ -3447,10 +3020,6 @@
   "settingsVibrationHint": "A light touch on your moves, wins and achievements",
   "@settingsVibrationHint": {
     "description": "Short explanation under the vibration switch."
-  },
-  "emptyPlayNow": "Play now",
-  "@emptyPlayNow": {
-    "description": "Button in an empty list (no games yet): opens the endgames to play one now."
   },
   "settingsAppearance": "Appearance",
   "@settingsAppearance": {
@@ -3504,49 +3073,6 @@
   "@aboutLicenses": {
     "description": "About screen: opens the list of open source licenses of the libraries used."
   },
-  "lessonPartStep": "Chapter {part} of {parts} · step {step} of {steps}",
-  "@lessonPartStep": {
-    "description": "Lesson progress label: part X of Y and step A of B inside the part.",
-    "placeholders": {
-      "part": {
-        "type": "int"
-      },
-      "parts": {
-        "type": "int"
-      },
-      "step": {
-        "type": "int"
-      },
-      "steps": {
-        "type": "int"
-      }
-    }
-  },
-  "lessonThinkReset": "Reset position",
-  "@lessonThinkReset": {
-    "description": "Button in the think step: put the pieces back to the step's position."
-  },
-  "lessonSeeExplanation": "See explanation",
-  "@lessonSeeExplanation": {
-    "description": "Button after the think time: go on to the teacher's explanation."
-  },
-  "lessonStepTimer": "{time} elapsed",
-  "@lessonStepTimer": {
-    "description": "Screen reader label of the lesson step timer, which counts up: the time elapsed since the step opened (m:ss).",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonReviewPoint": "Review this point",
-  "@lessonReviewPoint": {
-    "description": "Lesson button after a wrong move in a practice step: open the lesson step that explains this point."
-  },
-  "lessonVariationShow": "See the line",
-  "@lessonVariationShow": {
-    "description": "Lesson footer button (tooltip): step through, move by move, the line of moves the teacher cites in the speech."
-  },
   "lessonVariationAlternative": "Alternative to {move}",
   "@lessonVariationAlternative": {
     "description": "Screen reader label of a side line in the variation strip; {move} is the main-line move it replaces.",
@@ -3576,19 +3102,6 @@
   "@lessonDemoPlay": {
     "description": "Lesson demo control: resume the moves playing by themselves."
   },
-  "lessonNextPart": "Go to chapter {part}",
-  "@lessonNextPart": {
-    "description": "Button at the end of a lesson part: open the next part.",
-    "placeholders": {
-      "part": {
-        "type": "int"
-      }
-    }
-  },
-  "lessonCloseSpeech": "Close",
-  "@lessonCloseSpeech": {
-    "description": "Tooltip of the button that lowers the teacher's speech sheet back under the board."
-  },
   "lessonHideMarks": "Hide the marks",
   "@lessonHideMarks": {
     "description": "Tooltip: hide the teacher's arrows and circled squares on the lesson board."
@@ -3596,10 +3109,6 @@
   "lessonShowMarks": "Show the marks",
   "@lessonShowMarks": {
     "description": "Tooltip: show the teacher's arrows and circled squares on the lesson board."
-  },
-  "lessonBackToLesson": "Back to the lesson",
-  "@lessonBackToLesson": {
-    "description": "Button at the end of a lesson part: back to the lesson screen with all parts."
   },
   "endgameFinalTest": "Final test",
   "@endgameFinalTest": {
@@ -3613,9 +3122,9 @@
   "@endgameStartLesson": {
     "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
   },
-  "endgameRestartPart": "Restart chapter {part}",
-  "@endgameRestartPart": {
-    "description": "Fixed bottom button on the endgame lesson screen: restart the part the student left in the middle (closing the app reopens it at its first step).",
+  "endgameResumePart": "Resume chapter {part}",
+  "@endgameResumePart": {
+    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student already started.",
     "placeholders": {
       "part": {
         "type": "int"
@@ -3659,33 +3168,6 @@
   "@endgameChallengeTitle": {
     "description": "Section title on the endgame lesson screen: challenge yourself in this endgame in several modes (speedrun, training). Always open."
   },
-  "lessonThinkTurn": "{side, select, white{White to move.} other{Black to move.}}",
-  "@lessonThinkTurn": {
-    "description": "Teacher's first sentence in a think step: which side is to move in the position. side is white or black.",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonThinkAsk": "{ask, select, line{What is the winning sequence?} other{What is the best plan?}}",
-  "@lessonThinkAsk": {
-    "description": "Teacher's question in a think step: 'plan' asks for the best plan (no forced line), 'line' asks for the winning sequence.",
-    "placeholders": {
-      "ask": {
-        "type": "String"
-      }
-    }
-  },
-  "lessonThinkCalm": "{ask, select, line{Take your time: what is the winning sequence?} other{Take your time: what is the idea here?}}",
-  "@lessonThinkCalm": {
-    "description": "Teacher's short prompt in a think step, after who moves: take your time and find the winning sequence ('line') or the idea of the position (other). The step's own context comes later, in the explanation.",
-    "placeholders": {
-      "ask": {
-        "type": "String"
-      }
-    }
-  },
   "endgameTestCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
   "@endgameTestCount": {
     "description": "Final test card title: number of exercises.",
@@ -3694,10 +3176,6 @@
         "type": "int"
       }
     }
-  },
-  "lessonFinishPart": "Finish the chapter",
-  "@lessonFinishPart": {
-    "description": "Button on the last step of a lesson part: finish this part."
   },
   "endgameModulePlace": "{module} · lesson {number} of {count}",
   "@endgameModulePlace": {
@@ -3711,18 +3189,6 @@
       },
       "count": {
         "type": "int"
-      }
-    }
-  },
-  "lessonPartTitle": "Chapter {part} · {title}",
-  "@lessonPartTitle": {
-    "description": "Lesson step screen title in a lesson split into parts: the part number and its title.",
-    "placeholders": {
-      "part": {
-        "type": "int"
-      },
-      "title": {
-        "type": "String"
       }
     }
   },
@@ -3774,26 +3240,9 @@
   "@graduationTeacher": {
     "description": "Label under the teacher's signature line on the diploma."
   },
-  "graduationLessons": "{count} lessons completed",
-  "@graduationLessons": {
-    "description": "Graduation summary chip: number of lessons completed.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "graduationShare": "Share achievement",
   "@graduationShare": {
     "description": "Button at graduation that shares an image of the diploma and the path on social networks."
-  },
-  "ratingHelp": "How the rating works",
-  "@ratingHelp": {
-    "description": "Tooltip of the info button in the rating screen's app bar (and on the rating card) that opens the explanation of the endgame rating."
-  },
-  "ratingResultsTitle": "Results",
-  "@ratingResultsTitle": {
-    "description": "Title of the card with the bar of wins, draws and losses on the rating screen."
   },
   "achievementsFilterAll": "All",
   "@achievementsFilterAll": {
@@ -3931,10 +3380,6 @@
   "achievementsEmptyLocked": "You unlocked them all!",
   "@achievementsEmptyLocked": {
     "description": "Achievements list filtered to missing ones, with every achievement already unlocked."
-  },
-  "achievementDetailUnlockedLabel": "Unlocked",
-  "@achievementDetailUnlockedLabel": {
-    "description": "Accessibility label of an unlocked achievement medal."
   },
   "conclusionDraw": "Draw",
   "@conclusionDraw": {
@@ -4078,14 +3523,6 @@
   "@conclusionPace": {
     "description": "Conclusion card label: the time control of the game."
   },
-  "ratingPeriodTitle": "Period",
-  "@ratingPeriodTitle": {
-    "description": "Rating screen: title of the period filter sheet (7 days, 30 days, ...)."
-  },
-  "conclusionTimeSpent": "Time spent",
-  "@conclusionTimeSpent": {
-    "description": "Speedrun/Marathon conclusion after a lost stage: the time spent until then."
-  },
   "placementTitle": "Level test",
   "@placementTitle": {
     "description": "Title of the placement test screen."
@@ -4186,10 +3623,6 @@
   "placementRoadmapTitle": "Your study plan",
   "@placementRoadmapTitle": {
     "description": "Placement result: heading of the study plan."
-  },
-  "placementSoon": "coming soon",
-  "@placementSoon": {
-    "description": "Placement roadmap: lesson not available yet."
   },
   "placementUseLevel": "Use this level",
   "@placementUseLevel": {
@@ -4735,14 +4168,6 @@
   "@skillTacticsEndgame": {
     "description": "Placement test: name of the skill 'tactics.endgame' in the skill map (result screen, roadmap)."
   },
-  "tourLevelTestTitle": "Take the test",
-  "@tourLevelTestTitle": {
-    "description": "Tour, level step: main card that opens the placement test."
-  },
-  "tourLevelTestBody": "20 questions, no clock, about 8 to 12 minutes.",
-  "@tourLevelTestBody": {
-    "description": "Tour, level step: under the test card title."
-  },
   "placementTake": "Take the level test",
   "@placementTake": {
     "description": "Profile settings and school/endgames: button that opens the placement test."
@@ -4812,10 +4237,6 @@
   "@exerciseSeeResult": {
     "description": "Button after the last exercise of a series: opens the result screen."
   },
-  "exercisesDoneTitle": "Exercises complete",
-  "@exercisesDoneTitle": {
-    "description": "Title of the result screen after the last exercise of a lesson."
-  },
   "exercisesDoneNeedMore": "You need at least {min} points to pass. Redo the exercises to improve.",
   "@exercisesDoneNeedMore": {
     "description": "Result screen: shown when the score is below the minimum.",
@@ -4841,27 +4262,11 @@
   "@exerciseGradePerfect": {
     "description": "Result screen: name of the top grade (all stars)."
   },
-  "exerciseGradeYou": "You",
-  "@exerciseGradeYou": {
-    "description": "Result screen: marker on the grade the student reached."
-  },
   "exercisesDoneScore": "{score} of {max} possible points",
   "@exercisesDoneScore": {
     "description": "Headline score on the exercises-done screen: points earned over the possible total.",
     "placeholders": {
       "score": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
-  },
-  "exerciseGradePoints": "{min} of {max} points",
-  "@exerciseGradePoints": {
-    "description": "On a grade tier of the exercises-done ladder: the points the tier requires, over the total.",
-    "placeholders": {
-      "min": {
         "type": "int"
       },
       "max": {
@@ -4884,18 +4289,6 @@
   "exercisesIntroSpeech": "Time to show what you learned. Your first try is what counts: after that it is free practice, and to count again just redo the exercises.",
   "@exercisesIntroSpeech": {
     "description": "Viktor's speech on the screen before the exercises of an endgame lesson: mistakes and hints cost a star, the grade is set once all are solved."
-  },
-  "exercisesIntroChipMinimum": "at least {min} of {max} points",
-  "@exercisesIntroChipMinimum": {
-    "description": "Chip on the exercises intro: the minimum stars to pass, over the total.",
-    "placeholders": {
-      "min": {
-        "type": "int"
-      },
-      "max": {
-        "type": "int"
-      }
-    }
   },
   "exercisesIntroChipThink": "No time limit",
   "@exercisesIntroChipThink": {
@@ -4944,24 +4337,6 @@
   "@exerciseLichess": {
     "description": "Button on a solved-series exercise: open the position in the Lichess analysis board."
   },
-  "exerciseTurn": "{side, select, white{White to play} other{Black to play}}",
-  "@exerciseTurn": {
-    "description": "Under the exercise board: whose move it is, without saying whether the side wins or holds.",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
-  "exerciseYourTurn": "{side, select, white{Your turn: White to play} other{Your turn: Black to play}}",
-  "@exerciseYourTurn": {
-    "description": "Right below the exercise board while the student solves: it is their turn, with the side they play.",
-    "placeholders": {
-      "side": {
-        "type": "String"
-      }
-    }
-  },
   "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
   "@exercisesIntroAfter": {
     "description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."
@@ -5008,7 +4383,7 @@
   "@externalPageOfflineTitle": {
     "description": "Title shown in the in-app page sheet (Wikipedia, Lichess) when the page cannot load (no internet)."
   },
-  "externalPageOfflineBody": "Connect to the internet to read this page. The lesson goes on as normal.",
+  "externalPageOfflineBody": "Connect to the internet to read this page. The app works as normal.",
   "@externalPageOfflineBody": {
     "description": "Body shown in the in-app page sheet when the page cannot load; the lesson is not affected."
   },
@@ -5330,10 +4705,6 @@
     "description": "Canvas V2 lesson feedback heading; presentation only."
   },
   "@lessonFailedAlternatives": {
-    "description": "Canvas V2 lesson feedback heading; presentation only."
-  },
-  "lessonStillUnsure": "Still unsure?",
-  "@lessonStillUnsure": {
     "description": "Canvas V2 lesson feedback heading; presentation only."
   },
   "lessonTeacherVoice": "Viktor's voice",
@@ -5976,10 +5347,6 @@
   "@lessonFullSpeech": {
     "description": "Screen reader hint of the teacher's speech bubble in the scripted lesson: tapping it opens a sheet with the whole speech."
   },
-  "lessonShowSpeech": "Show Viktor's message",
-  "@lessonShowSpeech": {
-    "description": "Tooltip to show Viktor's speech again."
-  },
   "curiositiesTitle": "Curiosities",
   "@curiositiesTitle": {
     "description": "Title of the Curiosities sheet opened by the book icon in the lesson."
@@ -6049,22 +5416,6 @@
   "@tourStockfishMax": {
     "description": "Tour, games step: rating label under the Stockfish square."
   },
-  "tourLevelBeginnerTitle": "I'm just starting",
-  "@tourLevelBeginnerTitle": {
-    "description": "Tour, level step: first card title."
-  },
-  "tourLevelBeginnerBody": "Viktor's lessons, from how the pieces move to the first checkmates.",
-  "@tourLevelBeginnerBody": {
-    "description": "Tour, level step: first card text."
-  },
-  "tourLevelBandTitle": "Choose my level",
-  "@tourLevelBandTitle": {
-    "description": "Tour, level step: third card title."
-  },
-  "tourLevelBandBody": "You pick your rating band, and the Journey starts at the right opponent.",
-  "@tourLevelBandBody": {
-    "description": "Tour, level step: third card text."
-  },
   "exerciseSayCorrect": "Correct.",
   "@exerciseSayCorrect": {
     "description": "The opening word of the teacher's balloon after a right move."
@@ -6092,22 +5443,41 @@
   "exerciseSolvedBut": "Solved, but with {what}.",
   "@exerciseSolvedBut": {
     "description": "Opens the balloon when an exercise ends after several mistakes or hints.",
-    "placeholders": {"what": {"type": "String"}}
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
   },
   "exerciseSolvedMistakes": "{count, plural, one{one mistake} other{{count} mistakes}}",
   "@exerciseSolvedMistakes": {
     "description": "How many mistakes, inside the solved balloon.",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "exerciseSolvedHints": "{count, plural, one{one hint} other{{count} hints}}",
   "@exerciseSolvedHints": {
     "description": "How many hints, inside the solved balloon.",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "exerciseSolvedAnd": "{first} and {second}",
   "@exerciseSolvedAnd": {
     "description": "Joins mistakes and hints inside the solved balloon.",
-    "placeholders": {"first": {"type": "String"}, "second": {"type": "String"}}
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
   },
   "exerciseNoMorePoints": "No longer worth points",
   "@exerciseNoMorePoints": {
@@ -6186,5 +5556,1341 @@
     "description": "Closing sentence for a move marked with ?? and no comment."
   },
   "lessonRetry": "Try again",
-  "@lessonRetry": {"description": "Button that restarts the position after a stalemate or a draw."}
+  "@lessonRetry": {
+    "description": "Button that restarts the position after a stalemate or a draw."
+  },
+  "surveyInviteTitle": "What did you think of the lessons?",
+  "@surveyInviteTitle": {
+    "description": "Title of the card that invites the person to answer the survey."
+  },
+  "surveyInviteTrail": "Takes 1 minute. We are preparing an endgame course and want to build it with what you tell us.",
+  "@surveyInviteTrail": {
+    "description": "Text of the survey card at the end of the endgame trail."
+  },
+  "surveyInviteEndgameLesson": "You finished a lesson. It takes 1 minute and helps improve this one and the next ones.",
+  "@surveyInviteEndgameLesson": {
+    "description": "Text of the survey card on the finished endgame lesson screen."
+  },
+  "surveyInviteSchoolLesson": "You finished a School lesson. It takes 1 minute and helps us build the next ones.",
+  "@surveyInviteSchoolLesson": {
+    "description": "Text of the survey card on the finished School lesson screen."
+  },
+  "surveyInviteAction": "Answer",
+  "@surveyInviteAction": {
+    "description": "Button of the survey card that opens the survey."
+  },
+  "surveyTitle": "Your opinion",
+  "@surveyTitle": {
+    "description": "Title of the survey screen."
+  },
+  "surveyStep": "{step} of {total}",
+  "@surveyStep": {
+    "description": "Survey progress label, for example 1 of 2.",
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "surveyContinue": "Continue",
+  "@surveyContinue": {
+    "description": "Survey button that goes to the next step."
+  },
+  "surveySend": "Send",
+  "@surveySend": {
+    "description": "Survey button that sends the answers."
+  },
+  "surveyRatingEndgames": "What did you think of the lessons?",
+  "@surveyRatingEndgames": {
+    "description": "Rating question of the endgame survey."
+  },
+  "surveyRatingSchool": "What did you think of the School lessons?",
+  "@surveyRatingSchool": {
+    "description": "Rating question of the School survey."
+  },
+  "surveyRating1": "Did not like",
+  "@surveyRating1": {
+    "description": "Survey rating 1 of 5."
+  },
+  "surveyRating2": "Liked a little",
+  "@surveyRating2": {
+    "description": "Survey rating 2 of 5."
+  },
+  "surveyRating3": "So-so",
+  "@surveyRating3": {
+    "description": "Survey rating 3 of 5."
+  },
+  "surveyRating4": "Liked",
+  "@surveyRating4": {
+    "description": "Survey rating 4 of 5."
+  },
+  "surveyRating5": "Liked a lot",
+  "@surveyRating5": {
+    "description": "Survey rating 5 of 5."
+  },
+  "surveyImproveTitle": "What could be better?",
+  "@surveyImproveTitle": {
+    "description": "Survey question about what to improve."
+  },
+  "surveyMultiHint": "Pick as many as you like.",
+  "@surveyMultiHint": {
+    "description": "Hint under survey questions that accept several options."
+  },
+  "surveyImproveTextHint": "Tell us in your own words (optional)",
+  "@surveyImproveTextHint": {
+    "description": "Hint of the free text field about improvements."
+  },
+  "surveyInterestEndgamesTitle": "If we launch a full endgame course, would you be interested?",
+  "@surveyInterestEndgamesTitle": {
+    "description": "Interest question of the endgame survey."
+  },
+  "surveyInterestEndgamesHint": "With all the endgames, the features of these lessons improved and what students ask for.",
+  "@surveyInterestEndgamesHint": {
+    "description": "Hint under the interest question of the endgame survey."
+  },
+  "surveyInterestSchoolTitle": "If we launch a course for you to keep improving, would you be interested?",
+  "@surveyInterestSchoolTitle": {
+    "description": "Interest question of the School survey."
+  },
+  "surveyInterestSchoolHint": "With endgames at the center, plus openings, tactics and how to think about the game.",
+  "@surveyInterestSchoolHint": {
+    "description": "Hint under the interest question of the School survey."
+  },
+  "surveyInterestYes": "Yes, I am interested",
+  "@surveyInterestYes": {
+    "description": "Survey interest option: yes."
+  },
+  "surveyInterestMaybe": "Maybe",
+  "@surveyInterestMaybe": {
+    "description": "Survey interest option: maybe."
+  },
+  "surveyInterestNo": "Not for now",
+  "@surveyInterestNo": {
+    "description": "Survey interest option: no."
+  },
+  "surveyReReviewTitle": "When we revise a lesson with the suggestions, do you want to see it again and give your opinion?",
+  "@surveyReReviewTitle": {
+    "description": "Survey question about reviewing a revised lesson."
+  },
+  "surveyYes": "Yes",
+  "@surveyYes": {
+    "description": "Survey yes answer."
+  },
+  "surveyNo": "No",
+  "@surveyNo": {
+    "description": "Survey no answer."
+  },
+  "surveyWishTitle": "What would you like it to have more of?",
+  "@surveyWishTitle": {
+    "description": "Survey question about missing features."
+  },
+  "surveyWishHint": "An ending, a feature, an idea (optional)",
+  "@surveyWishHint": {
+    "description": "Hint of the free text field about wishes."
+  },
+  "surveyTopicsTitle": "What would you like to learn in it?",
+  "@surveyTopicsTitle": {
+    "description": "School survey question about topics."
+  },
+  "surveyDifficultyTitle": "Where do you struggle most in your games?",
+  "@surveyDifficultyTitle": {
+    "description": "School survey question about difficulties."
+  },
+  "surveyDifficultyTextHint": "Tell us about a situation where you get stuck (optional)",
+  "@surveyDifficultyTextHint": {
+    "description": "Hint of the free text field about difficulties."
+  },
+  "surveyThanks": "Thank you so much for taking the time to tell me what you thought. Your opinion is very important for Lucena to grow and will surely make a big difference in building the best endgame app possible.",
+  "@surveyThanks": {
+    "description": "Viktor's thanks after the survey is sent."
+  },
+  "surveyBackToLessons": "Back to lessons",
+  "@surveyBackToLessons": {
+    "description": "Button that returns to the endgame lessons."
+  },
+  "surveyBackToSchool": "Back to school",
+  "@surveyBackToSchool": {
+    "description": "Button that returns to the School."
+  },
+  "lessonFinishedTitle": "{lesson}: done!",
+  "@lessonFinishedTitle": {
+    "description": "Title of the finished lesson screen.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "surveyImproveViktor": "Viktor's explanation",
+  "@surveyImproveViktor": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveVoice": "Voice and pace",
+  "@surveyImproveVoice": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveExamples": "More examples",
+  "@surveyImproveExamples": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveExercises": "Exercises",
+  "@surveyImproveExercises": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveBoardMarks": "Arrows and marks on the board",
+  "@surveyImproveBoardMarks": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveDifficulty": "Difficulty",
+  "@surveyImproveDifficulty": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveLength": "Lesson length",
+  "@surveyImproveLength": {
+    "description": "Survey improvement chip."
+  },
+  "surveyImproveNotation": "Coordinates and notation",
+  "@surveyImproveNotation": {
+    "description": "Survey improvement chip."
+  },
+  "surveyTopicSolidOpenings": "Solid openings",
+  "@surveyTopicSolidOpenings": {
+    "description": "Survey topic chip."
+  },
+  "surveyTopicAggressiveOpenings": "Aggressive openings",
+  "@surveyTopicAggressiveOpenings": {
+    "description": "Survey topic chip."
+  },
+  "surveyTopicTactics": "Tactics",
+  "@surveyTopicTactics": {
+    "description": "Survey topic chip."
+  },
+  "surveyTopicPositional": "Positional concepts",
+  "@surveyTopicPositional": {
+    "description": "Survey topic chip."
+  },
+  "surveyTopicEndgames": "Endgames",
+  "@surveyTopicEndgames": {
+    "description": "Survey topic chip."
+  },
+  "surveyTopicTournament": "Tournament preparation",
+  "@surveyTopicTournament": {
+    "description": "Survey topic chip."
+  },
+  "surveyTopicAnnotatedGames": "Annotated games",
+  "@surveyTopicAnnotatedGames": {
+    "description": "Survey topic chip."
+  },
+  "surveyDifficultyAfterOpening": "What to do after the opening",
+  "@surveyDifficultyAfterOpening": {
+    "description": "Survey difficulty chip."
+  },
+  "surveyDifficultyHangingPieces": "I lose pieces without seeing it",
+  "@surveyDifficultyHangingPieces": {
+    "description": "Survey difficulty chip."
+  },
+  "surveyDifficultyMissTactics": "I do not see the tactic",
+  "@surveyDifficultyMissTactics": {
+    "description": "Survey difficulty chip."
+  },
+  "surveyDifficultyPlan": "Making a plan",
+  "@surveyDifficultyPlan": {
+    "description": "Survey difficulty chip."
+  },
+  "surveyDifficultyConvertWin": "Winning a won game",
+  "@surveyDifficultyConvertWin": {
+    "description": "Survey difficulty chip."
+  },
+  "surveyDifficultyEndgames": "Endgames",
+  "@surveyDifficultyEndgames": {
+    "description": "Survey difficulty chip."
+  },
+  "surveyDifficultyClock": "Clock and nerves",
+  "@surveyDifficultyClock": {
+    "description": "Survey difficulty chip."
+  },
+  "savedGameTitle": "You have a game in progress",
+  "@savedGameTitle": {
+    "description": "Title of the sheet shown before opening the free board when a game is saved."
+  },
+  "savedGameHint": "The free board uses the same spot. Go back to it or start from scratch.",
+  "@savedGameHint": {
+    "description": "Hint under the saved-game sheet title: the free board and the saved game share one slot."
+  },
+  "savedGameContinue": "Continue the game",
+  "@savedGameContinue": {
+    "description": "Button: go back to the saved game."
+  },
+  "savedGameNew": "Start a new board",
+  "@savedGameNew": {
+    "description": "Button: discard the saved game and open an empty free board."
+  },
+  "savedGamePlace": "{side, select, white{You're playing white · move {move}} black{You're playing black · move {move}} other{Move {move}}}",
+  "@savedGamePlace": {
+    "description": "Where the saved game stopped: the player's side (absent when one person moves both sides) and the move number.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      },
+      "move": {
+        "type": "int"
+      }
+    }
+  },
+  "savedGameMode": "{mode} · {endgame}",
+  "@savedGameMode": {
+    "description": "The kind of saved game and its endgame, e.g. \"Journey · Queen mate\".",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "endgame": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeSendTitle": "Send as a challenge",
+  "@challengeSendTitle": {
+    "description": "Title of the sheet (and tooltip of the app bar button on the new game screen) that makes a link for the current game setup."
+  },
+  "challengeSendHint": "Whoever opens the link plays this same game, in the app or after installing it from Google Play.",
+  "@challengeSendHint": {
+    "description": "Hint under the title of the send-as-a-challenge sheet."
+  },
+  "challengeSummarySide": "You play {side} · {mode}",
+  "@challengeSummarySide": {
+    "description": "Second line of the challenge summary card: the side of whoever plays and the mode (normal or blind). Side is already lowercase text, mode is Normal or Blind.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeSideWhite": "white",
+  "@challengeSideWhite": {
+    "description": "The white side in lowercase, used inside 'You play white' of the challenge summary card."
+  },
+  "challengeSideBlack": "black",
+  "@challengeSideBlack": {
+    "description": "The black side in lowercase, used inside 'You play black' of the challenge summary card."
+  },
+  "challengeSummaryOpponent": "{opponent} · {clock}",
+  "@challengeSummaryOpponent": {
+    "description": "Opponent and clock of the challenge summary card, for example 'Percival · 1400 · 5+0' (the opponent already carries the level).",
+    "placeholders": {
+      "opponent": {
+        "type": "String"
+      },
+      "clock": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeLockTitle": "Lock the setup",
+  "@challengeLockTitle": {
+    "description": "Switch of the send-as-a-challenge sheet: whoever opens the link cannot change the setup."
+  },
+  "challengeLockHint": "Nobody changes the opponent or the clock",
+  "@challengeLockHint": {
+    "description": "Subtitle of the lock switch of the send-as-a-challenge sheet."
+  },
+  "challengeShare": "Share",
+  "@challengeShare": {
+    "description": "Button that opens the system share menu with the challenge link."
+  },
+  "challengeCopyLink": "Copy link",
+  "@challengeCopyLink": {
+    "description": "Button (and tooltip of the copy icon) that copies the challenge link."
+  },
+  "challengeLinkCopied": "Link copied",
+  "@challengeLinkCopied": {
+    "description": "Message shown after the challenge link was copied."
+  },
+  "challengeShareText": "I challenge you! Play this same game on Lucena: {link}",
+  "@challengeShareText": {
+    "description": "Text sent with the challenge link.",
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeLockedNote": "Whoever sent the link locked the challenge: everyone plays the same and the time is comparable.",
+  "@challengeLockedNote": {
+    "description": "Note on the locked challenge screen, explaining why the clock and the mode cannot be changed."
+  },
+  "challengeLinkSetup": "Link setup",
+  "@challengeLinkSetup": {
+    "description": "Subtitle of the new game screen when it was opened from a challenge link, with the setup already filled in."
+  },
+  "devOpenLinkTitle": "Open challenge link",
+  "@devOpenLinkTitle": {
+    "description": "Developer tile in Settings: pastes a challenge link to test without App Links"
+  },
+  "devOpenLinkHint": "Paste a playlucena.com/p/... link",
+  "@devOpenLinkHint": {
+    "description": "Hint of the field where the tester pastes a challenge link"
+  },
+  "devOpenLinkInvalid": "This is not a challenge link",
+  "@devOpenLinkInvalid": {
+    "description": "Error under the field when the pasted text is not a challenge link"
+  },
+  "devOpenLinkOpen": "Open",
+  "@devOpenLinkOpen": {
+    "description": "Button that opens the pasted challenge link"
+  },
+  "challengeEndPlayAgain": "Play again",
+  "@challengeEndPlayAgain": {
+    "description": "End of a challenge opened by link: plays the same challenge again"
+  },
+  "challengeEndMeetApp": "Meet the app",
+  "@challengeEndMeetApp": {
+    "description": "End of a challenge opened by link: text button that leads to the home"
+  },
+  "challengeImageWon": "CHALLENGE COMPLETE",
+  "@challengeImageWon": {
+    "description": "Header of the result image when the player won"
+  },
+  "challengeImageDrawn": "CHALLENGE DRAWN",
+  "@challengeImageDrawn": {
+    "description": "Header of the result image when the game was drawn"
+  },
+  "challengeImageLost": "CHALLENGE LOST",
+  "@challengeImageLost": {
+    "description": "Header of the result image when the player lost"
+  },
+  "challengeResultMate": "I checkmated with the {piece, select, queen{queen} rook{rook} bishop{bishop} knight{knight} pawn{pawn} other{king}} in {moves, plural, one{1 move} other{{moves} moves}}",
+  "@challengeResultMate": {
+    "description": "Result sentence: checkmate with a piece in some moves",
+    "placeholders": {
+      "piece": {
+        "type": "String"
+      },
+      "moves": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeResultWin": "I won the challenge in {moves, plural, one{1 move} other{{moves} moves}}",
+  "@challengeResultWin": {
+    "description": "Result sentence: won without a checkmate (resign or flag)",
+    "placeholders": {
+      "moves": {
+        "type": "int"
+      }
+    }
+  },
+  "challengeResultDraw": "I drew the challenge",
+  "@challengeResultDraw": {
+    "description": "Result sentence: draw"
+  },
+  "challengeResultLoss": "The challenge beat me this time",
+  "@challengeResultLoss": {
+    "description": "Result sentence: loss"
+  },
+  "challengeResultWithClock": "{result}, with {time} on the clock",
+  "@challengeResultWithClock": {
+    "description": "Result sentence plus the time left on the clock",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeCanYouFaster": "Can you do it faster?",
+  "@challengeCanYouFaster": {
+    "description": "Challenge to the person who receives the result"
+  },
+  "challengeImageAgainst": "against {name}",
+  "@challengeImageAgainst": {
+    "description": "Result image: the opponent",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeSummaryTitle": "{goal} with {pieces}",
+  "@challengeSummaryTitle": {
+    "description": "Challenge summary title: the goal and the player's pieces (Win with king and queen).",
+    "placeholders": {
+      "goal": {
+        "type": "String"
+      },
+      "pieces": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeAnd": "{first} and {last}",
+  "@challengeAnd": {
+    "description": "Joins two parts of a list of pieces (king and queen).",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeResultShareText": "{result}. {question} {link}",
+  "@challengeResultShareText": {
+    "description": "Text sent with the result",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      },
+      "question": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeSetupTitle": "Before the challenge",
+  "@challengeSetupTitle": {
+    "description": "Title of the one screen shown the first time the app opens from a challenge link"
+  },
+  "challengeSetupHint": "Choose how you want to see the board. The rest can wait.",
+  "@challengeSetupHint": {
+    "description": "Hint under the title of the first-open screen of a challenge link"
+  },
+  "challengeSetupPlay": "Play the challenge",
+  "@challengeSetupPlay": {
+    "description": "Footer button of the first-open screen: starts the challenge"
+  },
+  "levelTitle": "Your level",
+  "@levelTitle": {
+    "description": "Title of the screen where the player says how well they play chess, the last step of the first opening."
+  },
+  "levelTestTitle": "Take the test",
+  "@levelTestTitle": {
+    "description": "Level card: take the placement test."
+  },
+  "levelTestBody": "20 questions, no clock, about 8 to 12 minutes.",
+  "@levelTestBody": {
+    "description": "Level card text: what the placement test is like."
+  },
+  "levelBandTitle": "Choose my level",
+  "@levelBandTitle": {
+    "description": "Level card: pick the rating band by hand."
+  },
+  "levelBandBody": "You pick the closest rating band.",
+  "@levelBandBody": {
+    "description": "Level card text: the player picks the band."
+  },
+  "levelBeginnerTitle": "I can't play, I want to learn from scratch",
+  "@levelBeginnerTitle": {
+    "description": "Level card: the player does not know chess."
+  },
+  "levelBeginnerBody": "Starts with Viktor's school.",
+  "@levelBeginnerBody": {
+    "description": "Level card text: the beginner goes to the lessons."
+  },
+  "levelBeginnerBodyHome": "Starts with the easiest opponents.",
+  "@levelBeginnerBodyHome": {
+    "description": "Level card text: the beginner goes to the home screen while the school is hidden."
+  },
+  "levelStart": "Journey starts at {rung}",
+  "@levelStart": {
+    "description": "Level card text once chosen: where the Journey starts.",
+    "placeholders": {
+      "rung": {
+        "type": "String"
+      }
+    }
+  },
+  "accountTitle": "Want to keep your progress?",
+  "@accountTitle": {
+    "description": "Title of the optional account screen after the tour."
+  },
+  "accountHint": "It is optional. You can create one later, in Profile.",
+  "@accountHint": {
+    "description": "Account screen: it is optional."
+  },
+  "accountBenefitSaved": "Your progress stays saved, even if you change phones",
+  "@accountBenefitSaved": {
+    "description": "Account screen, first benefit."
+  },
+  "accountBenefitDevices": "Lessons, Journey and records the same on another device",
+  "@accountBenefitDevices": {
+    "description": "Account screen, second benefit."
+  },
+  "accountBenefitOffline": "Without an account, everything still works offline, only on this phone",
+  "@accountBenefitOffline": {
+    "description": "Account screen, third benefit."
+  },
+  "accountGoogle": "Continue with Google",
+  "@accountGoogle": {
+    "description": "Account screen button."
+  },
+  "accountEmail": "Continue with e-mail",
+  "@accountEmail": {
+    "description": "Account screen button."
+  },
+  "accountLater": "Not now",
+  "@accountLater": {
+    "description": "Account screen: skip the account."
+  },
+  "accountSoon": "Signing in is coming soon.",
+  "@accountSoon": {
+    "description": "Message shown while the sign-in is not available yet."
+  },
+  "freeBoardNoRating": "No rating",
+  "@freeBoardNoRating": {
+    "description": "Shown under the player name before the level is chosen"
+  },
+  "challengeSetupSound": "Piece sounds",
+  "@challengeSetupSound": {
+    "description": "Sound switch label on the \"Before the challenge\" screen"
+  },
+  "featuredTitle": "Featured endgames",
+  "@featuredTitle": {
+    "description": "Title of the home section and of the featured endgames list."
+  },
+  "featuredSeeAll": "See all",
+  "@featuredSeeAll": {
+    "description": "Home section action that opens the full list of featured endgames."
+  },
+  "featuredNew": "New",
+  "@featuredNew": {
+    "description": "Badge on a featured endgame that was published recently and not played yet."
+  },
+  "featuredPlayed": "Played",
+  "@featuredPlayed": {
+    "description": "Badge on a featured endgame the player already tried."
+  },
+  "featuredOriginTournament": "Tournament",
+  "@featuredOriginTournament": {
+    "description": "Origin of a featured endgame: a game from a tournament."
+  },
+  "featuredOriginVideo": "Video",
+  "@featuredOriginVideo": {
+    "description": "Origin of a featured endgame: a game shown in a video."
+  },
+  "featuredOriginOnline": "Online game",
+  "@featuredOriginOnline": {
+    "description": "Origin of a featured endgame: a game played online."
+  },
+  "featuredOriginHistorical": "Historic",
+  "@featuredOriginHistorical": {
+    "description": "Origin of a featured endgame: a famous game from the past."
+  },
+  "featuredOriginChallenge": "Challenge",
+  "@featuredOriginChallenge": {
+    "description": "Origin of a featured endgame: a challenge from the community."
+  },
+  "featuredOriginAll": "All",
+  "@featuredOriginAll": {
+    "description": "Origin filter chip that shows every origin."
+  },
+  "featuredThemeEscapedWin": "Win that slipped away",
+  "@featuredThemeEscapedWin": {
+    "description": "Theme label of a featured endgame where a won position was not converted."
+  },
+  "featuredThemePerfectConversion": "Perfect conversion",
+  "@featuredThemePerfectConversion": {
+    "description": "Theme label of a featured endgame where a won position was converted with precision."
+  },
+  "featuredThemeResourcefulDefense": "Resourceful defense",
+  "@featuredThemeResourcefulDefense": {
+    "description": "Theme label of a featured endgame where the defender found the saving resource."
+  },
+  "featuredThemeDecisiveMistake": "Decisive mistake",
+  "@featuredThemeDecisiveMistake": {
+    "description": "Theme label of a featured endgame decided by one mistake."
+  },
+  "featuredCountry": "{code, select, NO{Norway} US{United States} CZ{Czechia} RS{Serbia} HU{Hungary} NL{Netherlands} BR{Brazil} RU{Russia} IN{India} CN{China} FR{France} DE{Germany} ES{Spain} AM{Armenia} UA{Ukraine} AZ{Azerbaijan} other{{code}}}",
+  "@featuredCountry": {
+    "description": "Name of a country from its two-letter code (tournament country filter and player country).",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredCountryAll": "All countries",
+  "@featuredCountryAll": {
+    "description": "Country filter chip that shows every country."
+  },
+  "featuredFilterCountry": "Filter by country",
+  "@featuredFilterCountry": {
+    "description": "Tooltip of the country filter chip."
+  },
+  "featuredPlayers": "{white} × {black}",
+  "@featuredPlayers": {
+    "description": "The two players of a game, white first.",
+    "placeholders": {
+      "white": {
+        "type": "String"
+      },
+      "black": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredTournamentRound": "{tournament} · Round {round}",
+  "@featuredTournamentRound": {
+    "description": "Tournament name followed by the round of the game.",
+    "placeholders": {
+      "tournament": {
+        "type": "String"
+      },
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "featuredRound": "Round {round}",
+  "@featuredRound": {
+    "description": "Round of a tournament game.",
+    "placeholders": {
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "featuredOpponentMaia": "Maia · {level}",
+  "@featuredOpponentMaia": {
+    "description": "Opponent label: the Maia engine at a rating level.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "featuredOpponentStockfish": "Stockfish",
+  "@featuredOpponentStockfish": {
+    "description": "Opponent label: the Stockfish engine at full strength."
+  },
+  "featuredNoClock": "No clock",
+  "@featuredNoClock": {
+    "description": "Clock label when the game has no clock."
+  },
+  "featuredEmpty": "No featured endgames yet. Check back soon.",
+  "@featuredEmpty": {
+    "description": "Empty state of the featured endgames list."
+  },
+  "featuredEmptyFilters": "No endgames match these filters.",
+  "@featuredEmptyFilters": {
+    "description": "Empty state when the filters hide every featured endgame."
+  },
+  "featuredClearFilters": "Clear filters",
+  "@featuredClearFilters": {
+    "description": "Button that removes the country and origin filters."
+  },
+  "featuredOngoing": "Happening now",
+  "@featuredOngoing": {
+    "description": "List section with the tournaments in progress."
+  },
+  "featuredRecent": "Recent endgames",
+  "@featuredRecent": {
+    "description": "List section with the featured endgames."
+  },
+  "featuredLive": "In progress",
+  "@featuredLive": {
+    "description": "Chip on a tournament that is happening now."
+  },
+  "featuredTournamentMissing": "This tournament is no longer available.",
+  "@featuredTournamentMissing": {
+    "description": "Message when a tournament id is not in the catalog."
+  },
+  "featuredTournamentFinals": "Endgames from this tournament",
+  "@featuredTournamentFinals": {
+    "description": "Section of the tournament screen with its featured endgames."
+  },
+  "featuredTournamentNoFinals": "Endgames show up here when the games finish.",
+  "@featuredTournamentNoFinals": {
+    "description": "Shown on a tournament screen that has no endgames yet."
+  },
+  "featuredNoRating": "No rating",
+  "@featuredNoRating": {
+    "description": "Detail line of the player strip in a featured endgame: the game does not change the rating."
+  },
+  "featuredCardRound": "{tournament} · round {round}",
+  "@featuredCardRound": {
+    "description": "Tournament name and round inside the list card (lowercase, runs on after the players).",
+    "placeholders": {
+      "tournament": {
+        "type": "String"
+      },
+      "round": {
+        "type": "int"
+      }
+    }
+  },
+  "featuredLinkResults": "Results",
+  "@featuredLinkResults": {
+    "description": "Link to the results page of a tournament."
+  },
+  "featuredLinkBroadcast": "Live broadcast",
+  "@featuredLinkBroadcast": {
+    "description": "Link to the live broadcast of a tournament."
+  },
+  "featuredLinkInfo": "About the tournament",
+  "@featuredLinkInfo": {
+    "description": "Link to a page about a tournament."
+  },
+  "featuredAlertTournament": "Notify me about new endgames from this tournament",
+  "@featuredAlertTournament": {
+    "description": "Switch on the tournament screen to receive a notice for each new endgame of the tournament."
+  },
+  "featuredEndgameTitle": "Featured endgame",
+  "@featuredEndgameTitle": {
+    "description": "App bar title of a featured endgame (before and during the game)."
+  },
+  "featuredEndgameMissing": "This endgame is no longer available.",
+  "@featuredEndgameMissing": {
+    "description": "Message when a featured endgame id is not in the catalog."
+  },
+  "featuredPromptWhite": "White to move. What would you play?",
+  "@featuredPromptWhite": {
+    "description": "Prompt above the board when White moves."
+  },
+  "featuredPromptBlack": "Black to move. What would you play?",
+  "@featuredPromptBlack": {
+    "description": "Prompt above the board when Black moves."
+  },
+  "featuredOpponent": "Opponent",
+  "@featuredOpponent": {
+    "description": "Label of the opponent row."
+  },
+  "featuredClock": "Clock",
+  "@featuredClock": {
+    "description": "Label of the clock row."
+  },
+  "featuredNoteLocked": "Chosen for this endgame. After the first try you can change the opponent.",
+  "@featuredNoteLocked": {
+    "description": "Note under the opponent and clock when they cannot be changed yet."
+  },
+  "featuredNoteUnlocked": "You already tried this endgame: tap to change the opponent and the clock.",
+  "@featuredNoteUnlocked": {
+    "description": "Note under the opponent and clock when they can be changed after the first try."
+  },
+  "featuredNoteSuggested": "Suggested for this endgame. Tap to change.",
+  "@featuredNoteSuggested": {
+    "description": "Note under the opponent and clock when they are only a suggestion."
+  },
+  "featuredPlay": "Play",
+  "@featuredPlay": {
+    "description": "Button that starts the featured endgame."
+  },
+  "featuredChoiceTitle": "Opponent and clock",
+  "@featuredChoiceTitle": {
+    "description": "Title of the sheet to change the opponent and the clock."
+  },
+  "featuredDone": "Done",
+  "@featuredDone": {
+    "description": "Button that confirms the opponent and clock sheet."
+  },
+  "featuredBookTitle": "About the game",
+  "@featuredBookTitle": {
+    "description": "Title of the booklet sheet with the tournament, the players and the story of the game; also the tooltip of its button."
+  },
+  "featuredHappened": "What happened in the game",
+  "@featuredHappened": {
+    "description": "Collapsed section of the booklet with the story of the game."
+  },
+  "featuredHappenedClosed": "Closed so it is not a spoiler",
+  "@featuredHappenedClosed": {
+    "description": "Subtitle of the collapsed story: it is closed so it does not give away the answer."
+  },
+  "featuredFullGame": "See the full game",
+  "@featuredFullGame": {
+    "description": "Button that opens the full game on a website."
+  },
+  "featuredNextTitle": "What next?",
+  "@featuredNextTitle": {
+    "description": "Title of the sheet opened by Continue at the end of a featured endgame."
+  },
+  "featuredNextLesson": "Learn this endgame",
+  "@featuredNextLesson": {
+    "description": "Option that opens the lesson of the endgame."
+  },
+  "featuredNextSimilar": "Similar endgames",
+  "@featuredNextSimilar": {
+    "description": "Option that opens the catalog category of similar endgames."
+  },
+  "featuredNextMore": "More endgames from the tournament",
+  "@featuredNextMore": {
+    "description": "Option that opens the tournament screen."
+  },
+  "featuredNextMoreAll": "More featured endgames",
+  "@featuredNextMoreAll": {
+    "description": "Option that opens the featured endgames list (the endgame has no tournament)."
+  },
+  "featuredPlayAgain": "Play again",
+  "@featuredPlayAgain": {
+    "description": "Button that starts the featured endgame again."
+  },
+  "featuredContinue": "Continue",
+  "@featuredContinue": {
+    "description": "Button that opens the next steps after a featured endgame."
+  },
+  "featuredShare": "Share this endgame",
+  "@featuredShare": {
+    "description": "Tooltip of the share button of a featured endgame."
+  },
+  "featuredShareText": "{players}: try this endgame on Lucena.",
+  "@featuredShareText": {
+    "description": "Text sent with the shared image of a featured endgame.",
+    "placeholders": {
+      "players": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredFindTitle": "Find the move",
+  "@featuredFindTitle": {
+    "description": "App bar title of the find the move screen."
+  },
+  "featuredFindRight": "Exactly: {move}.",
+  "@featuredFindRight": {
+    "description": "Feedback when the player found the move.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredFindAnswer": "The move was {move}.",
+  "@featuredFindAnswer": {
+    "description": "Feedback after the player asked for the answer.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredFindWrong": "That move does not work. Try again.",
+  "@featuredFindWrong": {
+    "description": "Feedback when the player played a wrong move."
+  },
+  "featuredFindHint": "Hint: move {piece, select, king{the king} queen{the queen} rook{the rook} bishop{the bishop} knight{the knight} pawn{a pawn} other{a piece}}.",
+  "@featuredFindHint": {
+    "description": "Hint that names the piece of the right move.",
+    "placeholders": {
+      "piece": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredFindNote": "No clock. The move is checked against the tablebase.",
+  "@featuredFindNote": {
+    "description": "Note under the board of the find the move screen."
+  },
+  "featuredFindShowAnswer": "Show answer",
+  "@featuredFindShowAnswer": {
+    "description": "Button that shows the right move."
+  },
+  "featuredFindRetry": "Try again",
+  "@featuredFindRetry": {
+    "description": "Button that restores the position after a wrong move."
+  },
+  "featuredFindHintButton": "Hint",
+  "@featuredFindHintButton": {
+    "description": "Button that shows a hint."
+  },
+  "featuredOriginFilter": "{origin, select, tournament{Tournaments} video{Videos} online{Online games} historical{Historic} challenge{Challenges} other{Other}}",
+  "@featuredOriginFilter": {
+    "description": "Origin filter chip on the featured list (plural).",
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredNextLessonSub": "Lesson: {title}",
+  "@featuredNextLessonSub": {
+    "description": "Subtitle of \"Learn this endgame\": the lesson name.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "featuredNextMoreSub": "{tournament} · {count, plural, =1{1 endgame} other{{count} endgames}}",
+  "@featuredNextMoreSub": {
+    "description": "Subtitle of \"More endgames from the tournament\".",
+    "placeholders": {
+      "tournament": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsWarmUp": "Offer a warm-up",
+  "@settingsWarmUp": {
+    "description": "Game settings: switch for the warm-up offer before a game."
+  },
+  "settingsWarmUpHint": "Before a game, a few quick problems on the same ending.",
+  "@settingsWarmUpHint": {
+    "description": "Game settings: what the warm-up offer is."
+  },
+  "homeRace": "Problems",
+  "@homeRace": {
+    "description": "Home: title of the endgame race path."
+  },
+  "homeRaceBody": "Endgame race: 3 minutes, 3 mistakes",
+  "@homeRaceBody": {
+    "description": "Home: text of the endgame race path."
+  },
+  "raceTitle": "Endgame race",
+  "@raceTitle": {
+    "description": "Title of the endgame problem race screens."
+  },
+  "raceIntroSubtitle": "Problems on endgames only",
+  "@raceIntroSubtitle": {
+    "description": "Intro header: what the race is."
+  },
+  "raceIntroBody": "Solve one right move at a time, with no opponent thinking. It trains your eye for the positions in the lessons.",
+  "@raceIntroBody": {
+    "description": "Intro: what the race is."
+  },
+  "raceRuleTimeTitle": "3 minutes",
+  "@raceRuleTimeTitle": {
+    "description": "Intro rule: the time limit."
+  },
+  "raceRuleTimeBody": "Solve as many problems as you can before time runs out.",
+  "@raceRuleTimeBody": {
+    "description": "Intro rule: body for the time limit."
+  },
+  "raceRuleHarderTitle": "It gets harder",
+  "@raceRuleHarderTitle": {
+    "description": "Intro rule: difficulty rises."
+  },
+  "raceRuleHarderBody": "It starts easy and each correct answer raises the next level.",
+  "@raceRuleHarderBody": {
+    "description": "Intro rule: body for rising difficulty."
+  },
+  "raceRuleErrorsTitle": "Three mistakes and it is over",
+  "@raceRuleErrorsTitle": {
+    "description": "Intro rule: the error limit."
+  },
+  "raceRuleErrorsBody": "A wrong move moves you to the next problem. You see the right moves at the end.",
+  "@raceRuleErrorsBody": {
+    "description": "Intro rule: what happens on a mistake."
+  },
+  "raceWhichEndings": "Which endings",
+  "@raceWhichEndings": {
+    "description": "Intro: title of the theme filter."
+  },
+  "raceThemeAll": "All endings",
+  "@raceThemeAll": {
+    "description": "Theme filter: no filter."
+  },
+  "raceThemeRook": "Rook",
+  "@raceThemeRook": {
+    "description": "Theme filter: rook endings."
+  },
+  "raceThemePawns": "Pawns",
+  "@raceThemePawns": {
+    "description": "Theme filter: pawn endings."
+  },
+  "raceThemeQueen": "Queen",
+  "@raceThemeQueen": {
+    "description": "Theme filter: queen endings."
+  },
+  "raceThemeMinor": "Bishop and knight",
+  "@raceThemeMinor": {
+    "description": "Theme filter: minor piece endings."
+  },
+  "raceRecordCorrects": "Your record: {count, plural, =0{0 correct} =1{1 correct} other{{count} correct}}",
+  "@raceRecordCorrects": {
+    "description": "Intro record card: best number of correct answers.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceRecordHardest": "Hardest problem solved: level {level}",
+  "@raceRecordHardest": {
+    "description": "Intro record card: hardest level solved.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "raceRecordEmpty": "No record yet. Your first race sets it.",
+  "@raceRecordEmpty": {
+    "description": "Intro record card when there is no record."
+  },
+  "raceFootnote": "Endgame problems checked on the tablebase. Works offline.",
+  "@raceFootnote": {
+    "description": "Intro footnote about where the problems come from."
+  },
+  "raceStart": "Start",
+  "@raceStart": {
+    "description": "Intro button that starts the race."
+  },
+  "raceExit": "Leave",
+  "@raceExit": {
+    "description": "Race footer button that leaves the race."
+  },
+  "raceCorrectsCount": "{count, plural, =0{correct} =1{correct} other{correct}}",
+  "@raceCorrectsCount": {
+    "description": "Label under the big counter of correct answers.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceChances": "{count, plural, =1{1 chance left} other{{count} chances left}}",
+  "@raceChances": {
+    "description": "Accessibility label of the chances row under the clock.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceFeedbackCorrect": "Correct",
+  "@raceFeedbackCorrect": {
+    "description": "Accessibility label of the correct-move icon."
+  },
+  "raceFeedbackWrong": "Wrong",
+  "@raceFeedbackWrong": {
+    "description": "Accessibility label of the wrong-move icon."
+  },
+  "raceEndTime": "Time is up",
+  "@raceEndTime": {
+    "description": "Result title when the clock ran out."
+  },
+  "raceEndErrors": "Three mistakes",
+  "@raceEndErrors": {
+    "description": "Result title when the third mistake ended the race."
+  },
+  "raceEndQuit": "Race ended",
+  "@raceEndQuit": {
+    "description": "Result title when the player left the race."
+  },
+  "raceNewRecord": "New record! It was {previous}",
+  "@raceNewRecord": {
+    "description": "Result: the player beat the record.",
+    "placeholders": {
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "raceStatErrors": "{count, plural, =1{mistake} other{mistakes}}",
+  "@raceStatErrors": {
+    "description": "Result stat card: label under the mistakes count.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceStatHardest": "hardest",
+  "@raceStatHardest": {
+    "description": "Result stat card: label under the hardest level solved."
+  },
+  "raceStatPace": "per problem",
+  "@raceStatPace": {
+    "description": "Result stat card: label under the seconds per problem."
+  },
+  "raceStatPaceValue": "{seconds} s",
+  "@raceStatPaceValue": {
+    "description": "Result stat card: whole seconds per problem.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "raceProblemsTitle": "The problems",
+  "@raceProblemsTitle": {
+    "description": "Result: title of the list of problems played."
+  },
+  "raceAgain": "Play again",
+  "@raceAgain": {
+    "description": "Result button that starts another race."
+  },
+  "raceReviewMistakes": "{count, plural, =1{Review the mistake} other{Review the {count} mistakes}}",
+  "@raceReviewMistakes": {
+    "description": "Result button that opens the review of the mistakes.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceReviewTitle": "Mistake {number} of {total}",
+  "@raceReviewTitle": {
+    "description": "Review title.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceReviewPlayed": "You played {move}",
+  "@raceReviewPlayed": {
+    "description": "Review: the move the player made.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "raceReviewRight": "The right move was {move}",
+  "@raceReviewRight": {
+    "description": "Review: the winning move.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "raceReviewMeta": "Problem {number} · {theme} · level {level}",
+  "@raceReviewMeta": {
+    "description": "Review: which problem it was.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "theme": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "raceReviewNext": "Next mistake",
+  "@raceReviewNext": {
+    "description": "Review button that shows the next mistake."
+  },
+  "raceReviewDone": "Done",
+  "@raceReviewDone": {
+    "description": "Review button on the last mistake."
+  },
+  "raceOfferTitle": "Warm up first?",
+  "@raceOfferTitle": {
+    "description": "Sheet that offers the warm-up before a game."
+  },
+  "raceOfferAgainst": "{endgame} · {name}",
+  "@raceOfferAgainst": {
+    "description": "Warm-up sheet subtitle: the endgame of the challenge and the opponent name.",
+    "placeholders": {
+      "endgame": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "raceOfferBody": "{count} quick {endgame} problems, about 2 minutes. No clock and no rating.",
+  "@raceOfferBody": {
+    "description": "Warm-up sheet: what the warm-up is. The endgame name is in lower case.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "endgame": {
+        "type": "String"
+      }
+    }
+  },
+  "raceOfferWarm": "Warm up",
+  "@raceOfferWarm": {
+    "description": "Warm-up sheet: accept button."
+  },
+  "raceOfferSkip": "Play now",
+  "@raceOfferSkip": {
+    "description": "Warm-up sheet: decline button."
+  },
+  "raceOfferNever": "Do not ask again",
+  "@raceOfferNever": {
+    "description": "Warm-up sheet: option to stop being asked."
+  },
+  "raceOfferNeverHint": "You can turn it on in Settings › Game",
+  "@raceOfferNeverHint": {
+    "description": "Warm-up sheet: where to turn the offer back on."
+  },
+  "raceWarmUpTitle": "Warm-up",
+  "@raceWarmUpTitle": {
+    "description": "Warm-up screen title."
+  },
+  "raceWarmUpProgress": "Problem {number} of {total}",
+  "@raceWarmUpProgress": {
+    "description": "Warm-up: which problem the player is on.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceWarmUpSkip": "Skip and play",
+  "@raceWarmUpSkip": {
+    "description": "Warm-up footer button that skips to the game."
+  },
+  "raceWarmUpDoneTitle": "Warmed up!",
+  "@raceWarmUpDoneTitle": {
+    "description": "Warm-up end title."
+  },
+  "raceWarmUpDoneBody": "{corrects} of {total} right. {name} is waiting.",
+  "@raceWarmUpDoneBody": {
+    "description": "Warm-up end: score and the opponent waiting.",
+    "placeholders": {
+      "corrects": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "raceWarmUpPlay": "Play {name}",
+  "@raceWarmUpPlay": {
+    "description": "Warm-up end button that goes to the game.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "raceEmptyTitle": "No problems yet",
+  "@raceEmptyTitle": {
+    "description": "Empty state when the bank has no problems."
+  },
+  "raceEmptyBody": "Come back after the next update.",
+  "@raceEmptyBody": {
+    "description": "Empty state body."
+  },
+  "allModesRaceTitle": "Problems",
+  "@allModesRaceTitle": {
+    "description": "All modes: name of the problem race."
+  },
+  "allModesRaceBody": "Endgame race: 3 minutes, 3 mistakes",
+  "@allModesRaceBody": {
+    "description": "All modes: short description of the problem race."
+  }
 }

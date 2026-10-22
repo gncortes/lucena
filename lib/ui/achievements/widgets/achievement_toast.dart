@@ -8,6 +8,8 @@ import 'achievement_medal.dart';
 import 'achievement_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 
 /// O aviso de conquista desbloqueada, como o troféu do PlayStation: desce do
 /// alto da tela, o troféu salta, um brilho passa por ele e o aviso some
@@ -31,7 +33,7 @@ class AchievementToasts extends StatefulWidget {
   final List<Character> characters;
 
   /// Quanto tempo um aviso sozinho fica na tela, da entrada à saída.
-  static const duration = Duration(milliseconds: 3800);
+  static const duration = AppMotion.achievementToast;
 
   /// Quanto tempo cada aviso fica quando são [count] de uma vez: a fila
   /// inteira não passa de uns 8 segundos.
@@ -104,7 +106,12 @@ class _AchievementToastsState extends State<AchievementToasts>
       child: Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            0,
+          ),
           child: AnimatedBuilder(
             animation: _show,
             builder: (context, child) {
@@ -143,10 +150,10 @@ class _AchievementToastsState extends State<AchievementToasts>
                     constraints: const BoxConstraints(maxWidth: 420),
                     child: Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(
-                        10,
-                        10,
-                        24,
-                        10,
+                        AppSpacing.md,
+                        AppSpacing.md,
+                        AppSpacing.xl,
+                        AppSpacing.md,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -167,7 +174,7 @@ class _AchievementToastsState extends State<AchievementToasts>
                                   : shine,
                             ),
                           ),
-                          const SizedBox(width: 14),
+                          const SizedBox(width: AppSpacing.md),
                           Flexible(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
@@ -184,9 +191,8 @@ class _AchievementToastsState extends State<AchievementToasts>
                                 Text(
                                   title,
                                   key: AchievementsKeys.toastTitle,
-                                  style: theme.textTheme.titleMedium?.copyWith(
+                                  style: context.cardTitle?.copyWith(
                                     color: colors.onInverseSurface,
-                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ],

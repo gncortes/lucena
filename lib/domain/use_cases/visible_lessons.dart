@@ -26,6 +26,8 @@ abstract final class VisibleLessons {
     'mates.bishopKnight.deletang',
     // T78: dama contra torre, do mesmo jeito.
     'queen.vsRook.philidor',
+    // T79: final de torre (posição de Lucena), do mesmo jeito.
+    'rook.lucena',
   };
 
   /// Os exercícios que cobrem uma ideia sem capítulo visível (T76): ficam nos
@@ -41,11 +43,6 @@ abstract final class VisibleLessons {
 
   /// As aulas da Escola que aparecem. Vazia: a Escola some do app.
   static const schoolLessonIds = <String>{};
-
-  /// O roteiro do teste de nível mostra os passos "em breve" (aula que não
-  /// existe). Desligado enquanto há aulas escondidas: o roteiro mostraria
-  /// como "em breve" aula que existe. Volta quando todas forem liberadas.
-  static const roadmapSoon = false;
 
   /// A Escola tem alguma aula liberada.
   static bool get school => schoolLessonIds.isNotEmpty;

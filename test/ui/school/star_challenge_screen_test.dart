@@ -563,25 +563,33 @@ void main() {
         final introFinder = find.byKey(StarChallengeKeys.intro);
         final context = tester.element(introFinder);
         final colors = Theme.of(context).colorScheme;
-        final intro = tester.widget<Container>(introFinder);
-        final score = tester.widget<Container>(
+        final intro = tester.widget<Card>(introFinder);
+        final score = tester.widget<Card>(
           find.byKey(StarChallengeKeys.scoreboard),
         );
         // D2: um papel só para os dois cartões, também no escuro.
         expect(
-          (intro.decoration! as BoxDecoration).color,
+          intro.color,
           mode == ThemeMode.light
               ? colors.surfaceContainerLowest
               : colors.surfaceContainerHigh,
         );
         expect(
-          (score.decoration! as BoxDecoration).color,
+          score.color,
           mode == ThemeMode.light
               ? colors.surfaceContainerLowest
               : colors.surfaceContainerHigh,
         );
-        final padding = intro.padding! as EdgeInsets;
-        expect(padding, const EdgeInsets.all(16));
+        // 16 de respiro mais 1 da borda dourada, que o cartão não soma.
+        expect(
+          find.descendant(
+            of: introFinder,
+            matching: find.byWidgetPredicate(
+              (w) => w is Padding && w.padding == const EdgeInsets.all(17),
+            ),
+          ),
+          findsWidgets,
+        );
         await tester.tap(find.byKey(StarChallengeKeys.goButton));
         await tester.pumpAndSettle();
         now.advance(const Duration(seconds: 61));

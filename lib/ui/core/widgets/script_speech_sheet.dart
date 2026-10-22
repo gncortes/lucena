@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../domain/models/character.dart';
 import '../keys/lesson_script_keys.dart';
+import '../theme/app_spacing.dart';
 import 'character_avatar.dart';
 import 'script_sheet_route.dart';
 import 'speech_balloon.dart';
@@ -110,7 +111,7 @@ class ScriptSpeechSheet extends StatelessWidget {
         Padding(
           padding: EdgeInsets.fromLTRB(
             horizontalPadding,
-            8,
+            AppSpacing.sm,
             horizontalPadding,
             0,
           ),
@@ -124,11 +125,11 @@ class ScriptSpeechSheet extends StatelessWidget {
                         tag: scriptViktorHeroTag,
                         child: CharacterAvatar(
                           character: viktor,
-                          size: 40,
+                          size: CharacterAvatar.lesson,
                           radius: 6,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Text(
                           title,
@@ -147,7 +148,7 @@ class ScriptSpeechSheet extends StatelessWidget {
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               horizontalPadding,
-              8,
+              AppSpacing.sm,
               horizontalPadding,
               bottomGap + MediaQuery.viewPaddingOf(context).bottom,
             ),

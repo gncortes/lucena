@@ -6,8 +6,9 @@ import '../../../domain/models/player_rating.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../history/widgets/history_labels.dart';
 
@@ -62,59 +63,61 @@ class SpeedrunRatingBonusCard extends StatelessWidget {
         ? l10n.speedrunRatingBonusOfferHint(group!.label(l10n))
         : null;
     return MergeSemantics(
-      child: Container(
+      child: Card(
         key: _isOffer
             ? SpeedrunKeys.ratingBonusOffer
             : SpeedrunKeys.ratingBonusEarned,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: style.container,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
-        child: Row(
-          children: [
-            // Círculo de 40 com o ícone de 24 (artboard da Maratona).
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                shape: BoxShape.circle,
-              ),
-              child: ExcludeSemantics(
-                child: Icon(Icons.trending_up, size: 24, color: style.color),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: style.onContainer,
-                    ),
+        color: style.container,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Row(
+            children: [
+              // Círculo de 40 com o ícone de 24 (artboard da Maratona).
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                  shape: BoxShape.circle,
+                ),
+                child: ExcludeSemantics(
+                  child: Icon(
+                    Icons.trending_up,
+                    size: AppIconSize.standard,
+                    color: style.color,
                   ),
-                  if (hint != null) ...[
-                    // 2 no artboard.
-                    const SizedBox(height: 2),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      hint,
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      title,
+                      style: context.cardTitle?.copyWith(
                         color: style.onContainer,
                       ),
                     ),
+                    if (hint != null) ...[
+                      // 2 no artboard.
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        hint,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: style.onContainer,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

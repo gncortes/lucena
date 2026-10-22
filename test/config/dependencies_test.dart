@@ -3,6 +3,7 @@ import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
@@ -39,5 +40,19 @@ void main() {
     expect(dependencies.now().difference(inicio), const Duration(seconds: 5));
     expect(dependencies.settingsRepository, isA<FakeSettingsRepository>());
     expect(dependencies.profileRepository, isA<FakeProfileRepository>());
+  });
+
+  test('sem versão do CI, a versão vem do aparelho', () async {
+    PackageInfo.setMockInitialValues(
+      appName: 'Lucena',
+      packageName: 'com.gncortes.lucena',
+      version: '0.0.1',
+      buildNumber: '1',
+      buildSignature: '',
+    );
+
+    final version = await Dependencies.installedVersion();
+
+    expect(version.name, '0.0.1');
   });
 }

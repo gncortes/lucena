@@ -8,19 +8,22 @@ import '../theme/app_motion.dart';
 class CharacterAvatar extends StatelessWidget {
   const CharacterAvatar({
     required this.character,
-    this.size = 44,
+    this.size = player,
     this.radius,
     this.emotion,
     super.key,
   });
 
   /// Os tamanhos do retrato (T73, D9; canvas 96d710e): fala em cartão fora do
-  /// tabuleiro, linha da lição, jogador em linha, tour e confronto (VS).
+  /// tabuleiro, linha da lição, jogador em linha, tour e confronto (VS), mais o mini dos chips.
   static const speech = 56.0;
-  static const lessonRow = 40.0;
+  static const lesson = 40.0;
   static const player = 44.0;
   static const tour = 64.0;
   static const versus = 72.0;
+
+  /// O retrato pequeno dentro de chip e de linha compacta.
+  static const mini = 28.0;
 
   final Character character;
   final double size;

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_chip.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/widgets/empty_state.dart';
 
 /// Um chip da faixa de filtros: [name] é o grupo (`period`, `result`...),
 /// [label] o que ele diz e [active] se há um valor escolhido.
@@ -64,7 +68,11 @@ class HistoryFilterBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppShape.small),
                       border: Border.all(color: colors.outline),
                     ),
-                    child: Icon(Icons.tune, size: 18, color: colors.onSurface),
+                    child: Icon(
+                      Icons.tune,
+                      size: AppIconSize.button,
+                      color: colors.onSurface,
+                    ),
                   ),
                 ),
               ),
@@ -88,56 +96,17 @@ class _MenuChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final active = chip.active;
-    final foreground = active ? colors.onSecondaryContainer : colors.onSurface;
-    return Semantics(
-      button: true,
-      selected: active,
-      child: InkWell(
-        key: HistoryKeys.filterChip(chip.name),
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppShape.small),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 48),
-          child: Center(
-            child: Ink(
-              decoration: BoxDecoration(
-                color: active ? colors.secondaryContainer : null,
-                borderRadius: BorderRadius.circular(AppShape.small),
-                border: active ? null : Border.all(color: colors.outline),
-              ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 32),
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.md,
-                    end: AppSpacing.sm,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (active) ...[
-                        Icon(Icons.check, size: 18, color: foreground),
-                        const SizedBox(width: AppSpacing.xs),
-                      ],
-                      Text(
-                        chip.label,
-                        maxLines: 1,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: foreground,
-                        ),
-                      ),
-                      Icon(Icons.arrow_drop_down, size: 20, color: foreground),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    return FilterChip(
+      materialTapTargetSize: AppChip.tapTarget,
+      visualDensity: AppChip.density,
+      key: HistoryKeys.filterChip(chip.name),
+      label: Text(chip.label, maxLines: 1),
+      selected: chip.active,
+      onSelected: (_) => onTap(),
+      // A seta é o ícone de apagar do chip: abre a mesma folha.
+      deleteIcon: const Icon(Icons.arrow_drop_down),
+      deleteButtonTooltipMessage: '',
+      onDeleted: onTap,
     );
   }
 }
@@ -182,7 +151,6 @@ Future<Map<String, String?>?> showHistoryFilterSheet(
   required String Function(int count) applyLabel,
 }) => showLucenaSheet<Map<String, String?>>(
   context,
-  color: Theme.of(context).colorScheme.surfaceContainerLowest,
   builder: (_) => _FilterSheet(
     groups: groups,
     initial: initial,
@@ -236,33 +204,23 @@ class _FilterSheetState extends State<_FilterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 8, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.historyFilters,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                ),
-                TextButton(
-                  key: HistoryKeys.filterClear,
-                  onPressed: _dirty ? _clear : null,
-                  child: Text(l10n.historyFiltersClear),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+          SheetHeader(
+            title: l10n.historyFilters,
+            trailing: TextButton(
+              key: HistoryKeys.filterClear,
+              onPressed: _dirty ? _clear : null,
+              child: Text(l10n.historyFiltersClear),
             ),
           ),
           Flexible(
             child: ListView(
               shrinkWrap: true,
-              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 16),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.xl,
+                0,
+                AppSpacing.xl,
+                AppSpacing.lg,
+              ),
               children: [
                 for (final group in widget.groups) ...[
                   Padding(
@@ -283,13 +241,14 @@ class _FilterSheetState extends State<_FilterSheet> {
                     children: [
                       for (final option in group.options)
                         FilterChip(
+                          materialTapTargetSize: AppChip.tapTarget,
+                          visualDensity: AppChip.density,
                           key: HistoryKeys.filterOption(
                             group.name,
                             option.value,
                           ),
                           label: Text(option.label),
                           selected: _draft[group.name] == option.value,
-                          showCheckmark: true,
                           onSelected: (_) => _toggle(group, option.value),
                         ),
                     ],
@@ -298,21 +257,20 @@ class _FilterSheetState extends State<_FilterSheet> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-            child: FilledButton(
-              key: HistoryKeys.filterApply,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
+          ActionsFooter(
+            margin: AppSpacing.xl,
+            children: [
+              FilledButton(
+                key: HistoryKeys.filterApply,
+                onPressed: shown == 0
+                    ? null
+                    : () => Navigator.of(context).pop(_draft),
+                child: Text(
+                  widget.applyLabel(shown),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              onPressed: shown == 0
-                  ? null
-                  : () => Navigator.of(context).pop(_draft),
-              child: Text(
-                widget.applyLabel(shown),
-                textAlign: TextAlign.center,
-              ),
-            ),
+            ],
           ),
         ],
       ),
@@ -333,38 +291,14 @@ class HistoryFilteredEmpty extends StatelessWidget {
   final VoidCallback onClear;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      key: HistoryKeys.emptyFiltered,
-      padding: const EdgeInsets.symmetric(
-        vertical: AppSpacing.xxl,
-        horizontal: AppSpacing.screen,
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.filter_list_off, size: 48, color: colors.outline),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          OutlinedButton.icon(
-            key: HistoryKeys.emptyClear,
-            icon: const Icon(Icons.filter_list_off),
-            label: Text(l10n.endgamesFiltersClearAll),
-            onPressed: onClear,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => EmptyState(
+    key: HistoryKeys.emptyFiltered,
+    style: EmptyStateStyle.filters,
+    message: message,
+    actionLabel: context.l10n.endgamesFiltersClearAll,
+    actionKey: HistoryKeys.emptyClear,
+    onAction: onClear,
+  );
 }
 
 /// O placar de três colunas iguais: o número em cima e o rótulo embaixo.
@@ -387,42 +321,39 @@ class HistoryScore extends StatelessWidget {
         AppSpacing.lg,
         0,
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: AppSpacing.md,
-          horizontal: AppSpacing.sm,
-        ),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final (index, (number, label)) in items.indexed)
-              Expanded(
-                child: Column(
-                  key: HistoryKeys.score(index),
-                  children: [
-                    Text(
-                      '$number',
-                      maxLines: 1,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontFeatures: const [FontFeature.tabularFigures()],
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.md,
+            horizontal: AppSpacing.sm,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final (index, (number, label)) in items.indexed)
+                Expanded(
+                  child: Column(
+                    key: HistoryKeys.score(index),
+                    children: [
+                      Text(
+                        '$number',
+                        maxLines: 1,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
-                    ),
-                    Text(
-                      label,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                      Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

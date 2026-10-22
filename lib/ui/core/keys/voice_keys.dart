@@ -31,7 +31,6 @@ abstract final class VoiceKeys {
   static const settingsSection = Key('voice.settings');
   static const enabledSwitch = Key('voice.settings.enabled');
   static Key speed(double speed) => Key('voice.settings.speed.$speed');
-  static const teacherTile = Key('voice.settings.teacher');
   static const unavailable = Key('voice.settings.unavailable');
   static const betterVoices = Key('voice.settings.better');
 

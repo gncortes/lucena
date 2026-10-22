@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_motion.dart';
-import '../theme/app_shape.dart';
+import '../theme/app_sheet.dart';
 import 'sheet_close_button.dart';
-import '../theme/app_colors.dart';
+import 'sheet_header.dart';
 
 /// Abre uma folha da lição roteirizada (a fala inteira e as Curiosidades)
 /// numa rota transparente que imita a bottom sheet: o fundo escurece, a folha
@@ -25,7 +25,7 @@ Future<void> showScriptSheet(
       opaque: false,
       barrierDismissible: true,
       barrierLabel: barrier,
-      barrierColor: AppColors.black.withValues(alpha: 0.32),
+      barrierColor: AppSheet.scrim,
       transitionDuration: AppMotion.of(context).panel,
       reverseTransitionDuration: AppMotion.of(context).panel,
       pageBuilder: (context, _, _) => ScriptSheetFrame(
@@ -76,7 +76,7 @@ class ScriptSheetFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final height = MediaQuery.sizeOf(context).height;
     void close() => Navigator.of(context).maybePop();
     return Align(
@@ -106,29 +106,17 @@ class ScriptSheetFrame extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(maxHeight: height * maxHeightFactor),
               child: Material(
-                color: color ?? colors.surfaceContainerLowest,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(AppShape.extraLarge),
-                  ),
-                ),
+                color: color ?? theme.bottomSheetTheme.modalBackgroundColor,
+                shape: AppSheet.shape,
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(
-                      child: Container(
-                        width: 32,
-                        height: 4,
-                        margin: const EdgeInsets.only(top: 12),
-                        decoration: BoxDecoration(
-                          color: colors.outlineVariant,
-                          borderRadius: BorderRadius.circular(
-                            AppShape.hairline,
-                          ),
-                        ),
-                      ),
+                    // Alça do tema, na faixa de 48 como nas outras folhas.
+                    const SizedBox(
+                      height: AppSheet.handleStrip,
+                      child: Center(child: SheetHandle()),
                     ),
                     Flexible(child: child),
                   ],

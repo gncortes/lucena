@@ -1,0 +1,285 @@
+{
+  "version": 1,
+  "source": "Posições conferidas na tablebase do Lichess (T74). Partidas: PGN Mentor, estudos abertos e Wikipedia.",
+  "tournaments": [
+    {
+      "id": "norway-chess-2017",
+      "name": "Norway Chess 2017",
+      "place": "Stavanger",
+      "country": "NO",
+      "year": 2017,
+      "summary": {
+        "pt": "O quinto Norway Chess reuniu em Stavanger alguns dos melhores jogadores do mundo, com Magnus Carlsen em casa.",
+        "en": "The fifth Norway Chess gathered some of the world's best players in Stavanger, with Magnus Carlsen at home."
+      },
+      "links": [
+        {
+          "kind": "info",
+          "url": "https://en.wikipedia.org/wiki/Norway_Chess"
+        }
+      ]
+    },
+    {
+      "id": "candidates-1959",
+      "name": "Torneio de Candidatos 1959",
+      "name_en": "Candidates Tournament 1959",
+      "place": "Bled, Zagreb e Belgrado",
+      "place_en": "Bled, Zagreb and Belgrade",
+      "year": 1959,
+      "summary": {
+        "pt": "O torneio que escolheu o desafiante ao título mundial. Bobby Fischer jogou o seu primeiro Candidatos.",
+        "en": "The tournament that chose the challenger for the world title. Bobby Fischer played his first Candidates."
+      },
+      "links": [
+        {
+          "kind": "info",
+          "url": "https://en.wikipedia.org/wiki/Candidates_Tournament_1959"
+        }
+      ]
+    },
+    {
+      "id": "us-championship-1959",
+      "name": "Campeonato dos EUA 1959",
+      "name_en": "US Championship 1959",
+      "country": "US",
+      "year": 1959,
+      "summary": {
+        "pt": "O campeonato nacional dos Estados Unidos, que Fischer já disputava e vencia naquela época.",
+        "en": "The national championship of the United States, which Fischer was already playing and winning at the time."
+      },
+      "links": [
+        {
+          "kind": "info",
+          "url": "https://en.wikipedia.org/wiki/U.S._Chess_Championship"
+        }
+      ]
+    },
+    {
+      "id": "carlsbad-1929",
+      "name": "Karlsbad 1929",
+      "name_en": "Carlsbad 1929",
+      "place": "Karlsbad (Karlovy Vary)",
+      "country": "CZ",
+      "year": 1929,
+      "summary": {
+        "pt": "Um dos grandes torneios internacionais realizados na cidade de águas de Karlsbad, hoje Karlovy Vary.",
+        "en": "One of the great international tournaments held in the spa city of Carlsbad, today Karlovy Vary."
+      },
+      "links": [
+        {
+          "kind": "info",
+          "url": "https://en.wikipedia.org/wiki/Carlsbad_1929_chess_tournament"
+        }
+      ]
+    },
+    {
+      "id": "pca-intel-gp-1994",
+      "name": "PCA/Intel Grand Prix 1994",
+      "year": 1994,
+      "summary": {
+        "pt": "Etapa do circuito de partidas rápidas da PCA, patrocinado pela Intel.",
+        "en": "A stage of the PCA rapid-game circuit sponsored by Intel."
+      },
+      "links": []
+    }
+  ],
+  "finals": [
+    {
+      "id": "carlsen-so-2017",
+      "kind": "play",
+      "origin": "tournament",
+      "theme": "resourcefulDefense",
+      "tournament": "norway-chess-2017",
+      "white": {
+        "name": "Magnus Carlsen",
+        "title": "GM",
+        "country": "NO",
+        "fideId": 1503014
+      },
+      "black": {
+        "name": "Wesley So",
+        "title": "GM",
+        "country": "US",
+        "fideId": 5202213
+      },
+      "fen": "8/8/5k1p/8/6PP/5K2/8/8 b - - 2 55",
+      "goal": "draw",
+      "result": "1/2-1/2",
+      "publishedOn": "2026-10-15",
+      "opponent": "maia",
+      "level": 1800,
+      "clock": null,
+      "playerCanChange": false,
+      "title": {
+        "pt": "Carlsen aperta, So segura",
+        "en": "Carlsen presses, So holds"
+      },
+      "hook": {
+        "pt": "As pretas precisam achar um único lance atrás do outro para segurar o empate.",
+        "en": "Black must find one only move after another to hold the draw."
+      },
+      "whatHappened": {
+        "pt": "55...Rf7 56.Re3 Re7 57.Rd3 Rd7 58.Rc4 Re6 59.Rd4 Rd6 60.Re4 Re6 61.Rf4 Rf6 62.Re4 Re6 63.Rf4 Rf6 64.Re4, empate.",
+        "en": "55...Kf7 56.Ke3 Ke7 57.Kd3 Kd7 58.Kc4 Ke6 59.Kd4 Kd6 60.Ke4 Ke6 61.Kf4 Kf6 62.Ke4 Ke6 63.Kf4 Kf6 64.Ke4, draw."
+      },
+      "gameUrl": "https://lichess.org/study/HwXovdRZ/eLtolzD4",
+      "similar": "pawn",
+      "lesson": "pawns.distantOpposition"
+    },
+    {
+      "id": "gligoric-fischer-1959",
+      "kind": "findMove",
+      "origin": "historical",
+      "theme": "resourcefulDefense",
+      "tournament": "candidates-1959",
+      "round": 25,
+      "white": {
+        "name": "Svetozar Gligorić",
+        "title": "GM",
+        "country": "RS"
+      },
+      "black": {
+        "name": "Bobby Fischer",
+        "country": "US"
+      },
+      "fen": "2k5/8/8/8/1PK5/8/8/8 b - - 1 57",
+      "goal": "draw",
+      "result": "1/2-1/2",
+      "publishedOn": "2026-10-10",
+      "opponent": "stockfish",
+      "level": null,
+      "clock": null,
+      "playerCanChange": false,
+      "solutions": [
+        "c8b8"
+      ],
+      "title": {
+        "pt": "O único lance de Fischer",
+        "en": "Fischer's only move"
+      },
+      "hook": {
+        "pt": "Rei contra rei e um peão: só um lance mantém a oposição e salva a partida.",
+        "en": "King and pawn against king: only one move keeps the opposition and saves the game."
+      },
+      "whatHappened": {
+        "pt": "57...Rb8 58.Rc5 Rc7 59.Rb5 Rb7 60.Ra5 Ra7, e os jogadores combinaram o empate.",
+        "en": "57...Kb8 58.Kc5 Kc7 59.Kb5 Kb7 60.Ka5 Ka7, and the players agreed to a draw."
+      },
+      "similar": "pawn",
+      "lesson": "pawns.keySquares",
+      "hint": {
+        "pt": "Só há reis e um peão. Qual lance mantém a oposição ao rei branco?",
+        "en": "Only kings and one pawn. Which move keeps the opposition against the white king?"
+      }
+    },
+    {
+      "id": "fischer-bisguier-1959",
+      "kind": "play",
+      "origin": "historical",
+      "theme": "decisiveMistake",
+      "tournament": "us-championship-1959",
+      "white": {
+        "name": "Bobby Fischer",
+        "country": "US"
+      },
+      "black": {
+        "name": "Arthur Bisguier",
+        "country": "US"
+      },
+      "fen": "8/1p6/8/8/2P5/1K1k4/1P6/8 b - - 6 55",
+      "goal": "draw",
+      "result": "1-0",
+      "publishedOn": "2026-10-05",
+      "opponent": "maia",
+      "level": 1600,
+      "clock": null,
+      "playerCanChange": true,
+      "title": {
+        "pt": "Um lance de espera que custou a partida",
+        "en": "A waiting move that cost the game"
+      },
+      "hook": {
+        "pt": "Bisguier jogou b6 e perdeu. Só o rei na casa certa segurava o empate.",
+        "en": "Bisguier played b6 and lost. Only the king on the right square held the draw."
+      },
+      "whatHappened": {
+        "pt": "55...b6? 56.Rb4 Rc2 57.Ra3 Rd3 58.Rb3 Rd2 59.Ra4 Rc2 60.b4, e as brancas ganharam.",
+        "en": "55...b6? 56.Kb4 Kc2 57.Ka3 Kd3 58.Kb3 Kd2 59.Ka4 Kc2 60.b4, and White won."
+      },
+      "similar": "pawn",
+      "lesson": "pawns.keySquares"
+    },
+    {
+      "id": "maroczy-euwe-1929",
+      "kind": "play",
+      "origin": "historical",
+      "theme": "escapedWin",
+      "tournament": "carlsbad-1929",
+      "white": {
+        "name": "Géza Maróczy",
+        "country": "HU"
+      },
+      "black": {
+        "name": "Max Euwe",
+        "country": "NL"
+      },
+      "fen": "8/1p6/1P4p1/6k1/3p4/3K4/2P5/8 b - - 1 45",
+      "goal": "win",
+      "result": "1/2-1/2",
+      "publishedOn": "2026-09-20",
+      "opponent": "maia",
+      "level": 1400,
+      "clock": null,
+      "playerCanChange": true,
+      "title": {
+        "pt": "A vitória que escapou de Euwe",
+        "en": "The win that slipped from Euwe"
+      },
+      "hook": {
+        "pt": "As pretas ganham, mas só com um lance entre dois certos. Euwe escolheu outro e a partida terminou empatada.",
+        "en": "Black wins, but only with one of two exact moves. Euwe chose another and the game was drawn."
+      },
+      "whatHappened": {
+        "pt": "45...Rh4? 46.Rxd4 g5 47.Re3 Rh3 48.Rf2 Rh2 49.Rf3 Rh3 50.Rf2, empate por repetição.",
+        "en": "45...Kh4? 46.Kxd4 g5 47.Ke3 Kh3 48.Kf2 Kh2 49.Kf3 Kh3 50.Kf2, draw by repetition."
+      },
+      "similar": "pawn",
+      "lesson": "pawns.keySquares"
+    },
+    {
+      "id": "kasparov-nikolic-1994",
+      "kind": "play",
+      "origin": "historical",
+      "theme": "decisiveMistake",
+      "tournament": "pca-intel-gp-1994",
+      "white": {
+        "name": "Garry Kasparov"
+      },
+      "black": {
+        "name": "Predrag Nikolić"
+      },
+      "fen": "8/1p6/p7/P1PK1k2/8/8/8/8 b - - 0 68",
+      "goal": "draw",
+      "result": "1-0",
+      "publishedOn": "2026-09-25",
+      "opponent": "maia",
+      "level": 2000,
+      "clock": null,
+      "playerCanChange": true,
+      "title": {
+        "pt": "Kasparov contra o rei que fugiu",
+        "en": "Kasparov against the king that ran"
+      },
+      "hook": {
+        "pt": "Só um lance segura as pretas. O outro deixa o rei branco entrar pelo lado.",
+        "en": "Only one move holds Black. The other lets the white king in from the side."
+      },
+      "whatHappened": {
+        "pt": "68...Rf6? 69.Rd6 Rf5 70.Rc7 Re5 71.Rxb7, e as brancas ganharam.",
+        "en": "68...Kf6? 69.Kd6 Kf5 70.Kc7 Ke5 71.Kxb7, and White won."
+      },
+      "similar": "pawn",
+      "lesson": "pawns.keySquares"
+    }
+  ]
+}

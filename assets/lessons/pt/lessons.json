@@ -75,7 +75,7 @@
   "tour.school": "Nas lições, primeiro eu explico a ideia, lance por lance. Depois mostro exemplos. No fim, você pratica no tabuleiro.",
   "tour.help": "Travou? Na lição, clique em Ver resposta. No exercício, clique na lâmpada, e eu dou uma pista. Errou um lance? Eu mostro por que, e você tenta de novo.",
   "tour.play": "Fora das aulas, você joga finais contra adversários que jogam como gente de verdade, do Coco ao Stockfish. As partidas contra eles mexem no seu rating, que fica no alto da tela inicial.",
-  "tour.level": "Por último, com sinceridade: em que ponto você está no xadrez?",
+  "tour.level": "Para eu escolher os adversários certos: em que ponto você está no xadrez?",
   "school.welcome": "Esta é a minha escola. Todo grande jogador já esteve exatamente onde você está agora. Vamos aprender, um passo de cada vez.",
   "school.welcomeBack": [
     "Que bom que voltou. A constância vale mais que o talento.",
@@ -643,5 +643,7 @@
   "tricks.principles.develop.hint": "Ordem boa: peão do centro, cavalo para f3, bispo para fora, roque.",
   "tricks.principles.develop.done": "Isso é uma abertura saudável: centro, peças em jogo e rei seguro. Nesta posição, 4.c3 também é bom: prepara d4.",
   "tricks.principles.rules": "Resumo: centro, desenvolva os cavalos e os bispos, faça o roque cedo. E não mova a mesma peça duas vezes sem motivo.",
-  "tricks.principles.online": "Agora vem a parte boa: jogar contra pessoas. Crie uma conta grátis no Lichess, em lichess.org, e use estes truques nas suas primeiras partidas, inclusive para se defender deles. Depois volte aqui: os finais é que ganham as partidas."
+  "tricks.principles.online": "Agora vem a parte boa: jogar contra pessoas. Crie uma conta grátis no Lichess, em lichess.org, e use estes truques nas suas primeiras partidas, inclusive para se defender deles. Depois volte aqui: os finais é que ganham as partidas.",
+  "tour.voice.link": "Bela partida! Eu sou o Viktor, o seu professor. Posso ler em voz alta tudo o que eu disser. Escolha a minha voz e diga como devo chamar você.",
+  "tour.voice.link.none": "Bela partida! Eu sou o Viktor, o seu professor. Antes de seguir, diga como devo chamar você."
 }

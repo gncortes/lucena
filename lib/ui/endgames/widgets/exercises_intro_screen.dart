@@ -8,14 +8,16 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
 import 'stars_row.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/character_avatar.dart';
 
 /// Antes dos exercícios: o Viktor explica como pensar (uns 5 minutos por
 /// posição) e como a nota fecha; chips com o tamanho do teste e a nota
@@ -84,7 +86,7 @@ class ExercisesIntroScreen extends StatelessWidget {
                               teacher: viktor,
                               text: l10n.exercisesIntroSpeech,
                               emotion: Emotion.focused,
-                              avatarSize: 56,
+                              avatarSize: CharacterAvatar.speech,
                               speaks: true,
                             ),
                           const SizedBox(height: AppSpacing.lg),
@@ -165,7 +167,7 @@ class ExercisesIntroScreen extends StatelessWidget {
                                                     .titleSmall
                                                     ?.copyWith(
                                                       fontWeight:
-                                                          FontWeight.w700,
+                                                          AppWeight.strong,
                                                     ),
                                               ),
                                               Text(
@@ -215,30 +217,23 @@ class ExercisesIntroScreen extends StatelessWidget {
                     ),
                   ),
                   // Fixo embaixo, como o "Continuar" da aula.
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.screen,
-                      AppSpacing.sm,
-                      AppSpacing.screen,
-                      AppSpacing.md,
-                    ),
-                    child: FilledButton.icon(
-                      key: ExercisesIntroKeys.start,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(kButtonHeight),
+                  ActionsFooter(
+                    children: [
+                      FilledButton.icon(
+                        key: ExercisesIntroKeys.start,
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        onPressed: next == null
+                            ? null
+                            : () => context.pushReplacement(
+                                Routes.endgameExercise(lesson.id, next.id),
+                              ),
+                        label: Text(
+                          state.solved == 0
+                              ? l10n.endgameExercisesStart
+                              : l10n.endgameExercisesContinue,
+                        ),
                       ),
-                      icon: const Icon(Icons.play_arrow_rounded),
-                      onPressed: next == null
-                          ? null
-                          : () => context.pushReplacement(
-                              Routes.endgameExercise(lesson.id, next.id),
-                            ),
-                      label: Text(
-                        state.solved == 0
-                            ? l10n.endgameExercisesStart
-                            : l10n.endgameExercisesContinue,
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -255,14 +250,11 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.medium),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: child,
       ),
-      child: child,
     );
   }
 }
@@ -289,7 +281,11 @@ class _FactCard extends StatelessWidget {
           CircleAvatar(
             radius: 20,
             backgroundColor: colors.primaryContainer,
-            child: Icon(icon, size: 22, color: colors.onPrimaryContainer),
+            child: Icon(
+              icon,
+              size: AppIconSize.standard,
+              color: colors.onPrimaryContainer,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -299,10 +295,10 @@ class _FactCard extends StatelessWidget {
                 Text(
                   title,
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: AppWeight.strong,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   body,
                   style: theme.textTheme.bodySmall?.copyWith(

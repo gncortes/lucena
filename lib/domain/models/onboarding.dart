@@ -8,6 +8,7 @@ class Onboarding {
     this.selectedRating,
     this.byHand = false,
     this.inProgress = false,
+    this.linkSetupDone = false,
   });
 
   /// O tour já foi visto ou pulado.
@@ -27,6 +28,10 @@ class Onboarding {
   /// Also records an unfinished replay without making old done users repeat it.
   final bool inProgress;
 
+  /// Quem abriu o app por um link de desafio já passou pelo "Antes do
+  /// desafio" (cores, peças e som): o tour pula o passo do tabuleiro.
+  final bool linkSetupDone;
+
   Onboarding copyWith({
     bool? done,
     int? step,
@@ -34,12 +39,14 @@ class Onboarding {
     int? Function()? selectedRating,
     bool? byHand,
     bool? inProgress,
+    bool? linkSetupDone,
   }) => Onboarding(
     selectedRating: selectedRating == null
         ? this.selectedRating
         : selectedRating(),
     byHand: byHand ?? this.byHand,
     inProgress: inProgress ?? this.inProgress,
+    linkSetupDone: linkSetupDone ?? this.linkSetupDone,
     done: done ?? this.done,
     step: step ?? this.step,
     startRung: startRung ?? this.startRung,
@@ -53,9 +60,17 @@ class Onboarding {
       other.startRung == startRung &&
       other.selectedRating == selectedRating &&
       other.byHand == byHand &&
-      other.inProgress == inProgress;
+      other.inProgress == inProgress &&
+      other.linkSetupDone == linkSetupDone;
 
   @override
-  int get hashCode =>
-      Object.hash(done, step, startRung, selectedRating, byHand, inProgress);
+  int get hashCode => Object.hash(
+    done,
+    step,
+    startRung,
+    selectedRating,
+    byHand,
+    inProgress,
+    linkSetupDone,
+  );
 }

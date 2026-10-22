@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/keys/free_board_keys.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -125,7 +126,7 @@ class _MoveListState extends State<MoveList> {
           key: FreeBoardKeys.moveList,
           controller: _scroll,
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           child: Row(
             children: [
               for (final (index, san) in widget.moves.indexed) ...[
@@ -187,7 +188,6 @@ class _MoveCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final style = theme.textTheme.titleSmall?.copyWith(
-      fontWeight: FontWeight.w600,
       color: selected ? theme.colorScheme.onSecondaryContainer : null,
     );
     final figurineStyle = TextStyle(
@@ -213,10 +213,16 @@ class _MoveCell extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppShape.small),
         child: Padding(
           // A área de toque passa da marca do lance.
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.xs,
+          ),
           child: AnimatedContainer(
             duration: AppMotion.state,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
               color: selected
                   ? theme.colorScheme.secondaryContainer

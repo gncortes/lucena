@@ -12,7 +12,9 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -20,6 +22,7 @@ import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_history_cubit.dart';
 import 'speedrun_pace_chip.dart';
 import 'speedrun_ui.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// O histórico de um speedrun (um final num ritmo): o recorde, as contagens e
 /// as tentativas terminadas por mês. Cada uma abre o resumo dela.
@@ -35,9 +38,7 @@ class SpeedrunHistoryScreen extends StatelessWidget {
       key: SpeedrunKeys.historyScreen,
       appBar: LucenaAppBar(title: Text(l10n.historyTitle)),
       body: speedrun == null
-          ? (state.loaded
-                ? null
-                : const Center(child: CircularProgressIndicator()))
+          ? (state.loaded ? null : const SkeletonList())
           : ListView(
               padding: scrollPadding(context),
               children: [
@@ -71,7 +72,12 @@ class SpeedrunHistoryScreen extends StatelessWidget {
     return [
       for (final (index, (label, runs)) in groups.indexed) ...[
         Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.sm,
+          ),
           child: Text(
             label,
             key: SpeedrunKeys.historyMonth(index),
@@ -79,16 +85,13 @@ class SpeedrunHistoryScreen extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Material(
-            color: colors.surfaceContainerLow,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: Card(
             clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(AppShape.large),
             child: Column(
               children: [
                 for (final (position, (index, run)) in runs.indexed) ...[
-                  if (position > 0)
-                    Divider(height: 1, color: colors.outlineVariant),
+                  if (position > 0) Divider(),
                   _RunRow(
                     key: SpeedrunKeys.historyRun(index),
                     speedrun: speedrun,
@@ -114,7 +117,6 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final level = switch (SpeedrunCategories.of(speedrun)) {
       SpeedrunCategory.beginner => l10n.profileLevelBeginner,
       SpeedrunCategory.intermediate => l10n.profileLevelIntermediate,
@@ -122,11 +124,16 @@ class _Header extends StatelessWidget {
       null => null,
     };
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
       child: Row(
         children: [
           SpeedrunPicture(speedrun, characters: state.characters, size: 72),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,23 +145,27 @@ class _Header extends StatelessWidget {
                           speedrun.stages.first.position.subcategory,
                         )
                       : speedrunName(l10n, state.characters, speedrun),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: AppWeight.heavy),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
                   children: [
                     SpeedrunPaceChip(speedrun.time),
                     if (speedrun.kind == SpeedrunKind.marathon)
                       InfoChip(
                         icon: Icons.all_inclusive,
                         label: l10n.marathonSection,
+                        outlined: true,
                       ),
                     if (level != null)
-                      InfoChip(icon: Icons.signal_cellular_alt, label: level),
+                      InfoChip(
+                        icon: Icons.signal_cellular_alt,
+                        label: level,
+                        outlined: true,
+                      ),
                   ],
                 ),
               ],
@@ -205,7 +216,7 @@ class _Numbers extends StatelessWidget {
           style: theme.textTheme.titleLarge?.copyWith(
             fontSize: 20,
             height: 24 / 20,
-            fontWeight: FontWeight.w700,
+            fontWeight: AppWeight.heavy,
           ),
         ),
         Text(label, style: muted),
@@ -219,7 +230,7 @@ class _Numbers extends StatelessWidget {
           attempts,
           l10n.historyStatAttempts(attempts),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.md),
         count(
           SpeedrunKeys.historyFinished,
           finished,
@@ -239,7 +250,7 @@ class _Numbers extends StatelessWidget {
                 marathon ? l10n.marathonBest : l10n.speedrunYourRecord,
                 style: muted,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Semantics(
                 container: true,
                 excludeSemantics: true,
@@ -250,8 +261,12 @@ class _Numbers extends StatelessWidget {
                     : '${l10n.speedrunYourRecord}: ${runTime(context, recordTime(speedrun, best))}',
                 child: Row(
                   children: [
-                    Icon(Icons.emoji_events_rounded, size: 32, color: green),
-                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.emoji_events_rounded,
+                      size: AppIconSize.large,
+                      color: green,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
                     Flexible(
                       child: Text(
                         runTime(context, recordTime(speedrun, best)),
@@ -261,7 +276,6 @@ class _Numbers extends StatelessWidget {
                           color: green,
                           fontSize: 36,
                           height: 44 / 36,
-                          fontWeight: FontWeight.w800,
                           fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
@@ -269,7 +283,7 @@ class _Numbers extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 recordAtLabel(
                   l10n,
@@ -295,7 +309,6 @@ class _Numbers extends StatelessWidget {
             style: theme.textTheme.titleLarge?.copyWith(
               fontSize: 20,
               height: 24 / 20,
-              fontWeight: FontWeight.w700,
             ),
           ),
           Text(label, textAlign: TextAlign.center, style: muted),
@@ -311,7 +324,7 @@ class _Numbers extends StatelessWidget {
             attempts,
             l10n.historyStatAttempts(attempts),
           ),
-          VerticalDivider(width: 1, color: colors.outlineVariant),
+          VerticalDivider(),
           centered(
             SpeedrunKeys.historyFinished,
             finished,
@@ -321,12 +334,18 @@ class _Numbers extends StatelessWidget {
       ),
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Material(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Card(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.lg,
+          ),
           // Sem conclusão, só as contagens.
           child: best == null || bestAt == null
               ? Column(
@@ -336,22 +355,16 @@ class _Numbers extends StatelessWidget {
                       Text(
                         l10n.marathonNotFinishedYet,
                         key: SpeedrunKeys.historyNotFinished,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: theme.textTheme.titleSmall,
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: AppSpacing.md),
                     ],
                     counts,
                   ],
                 )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    record,
-                    Divider(height: 24, color: colors.outlineVariant),
-                    strip,
-                  ],
+                  children: [record, Divider(), strip],
                 ),
         ),
       ),
@@ -438,7 +451,12 @@ class _RunRow extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 56),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 8, 8),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.sm,
+            AppSpacing.sm,
+          ),
           child: Row(
             children: [
               Expanded(
@@ -467,10 +485,10 @@ class _RunRow extends StatelessWidget {
                           children: [
                             Icon(
                               icon,
-                              size: 18,
+                              size: AppIconSize.button,
                               color: colors.onSurfaceVariant,
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Text(
                                 stopped,
@@ -482,7 +500,7 @@ class _RunRow extends StatelessWidget {
                           ],
                         ),
                       ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       marathon && stopped == null
                           ? l10n.marathonDayLeft(day)
@@ -494,7 +512,7 @@ class _RunRow extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               // Espelha sozinha no RTL.
               Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
             ],
@@ -525,17 +543,17 @@ class _Bonus extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Icon(Icons.trending_up, size: 16, color: color),
+          padding: const EdgeInsets.only(top: AppSpacing.xs),
+          child: Icon(Icons.trending_up, size: AppIconSize.small, color: color),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
                   text: bold,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  style: const TextStyle(fontWeight: AppWeight.strong),
                 ),
                 TextSpan(text: text.substring(bold.length)),
               ],

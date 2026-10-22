@@ -9,6 +9,7 @@ import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/training/training_repository.dart';
 import '../../../domain/models/attempt.dart';
+import '../../../domain/models/challenge_link.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -58,6 +59,9 @@ abstract class GameSetupState with _$GameSetupState {
 
     /// Falso até a última configuração ser lida.
     @Default(false) bool ready,
+
+    /// A configuração veio de um link de desafio: a partida é a dele.
+    @Default(false) bool fromLink,
   }) = _GameSetupState;
 
   const GameSetupState._();
@@ -69,6 +73,22 @@ abstract class GameSetupState with _$GameSetupState {
           setup.opponentTime.initial == Duration.zero);
 
   bool get canStart => ready && !hasZeroTime;
+
+  /// O desafio desta configuração, para mandar por link. Contra duas pessoas
+  /// não há desafio: vira o Maia. O relógio do link é um só: o do jogador. O
+  /// modo às cegas não vai no link (E1.14, QA r2 N1).
+  ChallengeLink get challenge {
+    final stockfish = setup.opponent == OpponentKind.stockfish;
+    return ChallengeLink(
+      fen: position.fen,
+      goal: goal,
+      positionId: positionId,
+      userSide: userSide,
+      opponent: stockfish ? OpponentKind.stockfish : OpponentKind.maia,
+      level: stockfish ? null : maiaLevel,
+      clock: setup.clock ? setup.userTime : null,
+    );
+  }
 
   /// O ritmo nomeado em uso: relógio ligado com o mesmo tempo dos dois lados.
   NamedTimeControl? get pace {
@@ -98,6 +118,7 @@ abstract class GameSetupState with _$GameSetupState {
         level: setup.opponent == OpponentKind.maia ? '$maiaLevel' : null,
         white: clocks.white,
         black: clocks.black,
+        fromLink: fromLink,
       );
     }
     return Routes.freeBoardAt(
@@ -110,6 +131,7 @@ abstract class GameSetupState with _$GameSetupState {
       user: userSide.name,
       goal: goal.code,
       position: positionId,
+      fromLink: fromLink,
     );
   }
 
@@ -138,12 +160,14 @@ class GameSetupCubit extends Cubit<GameSetupState> {
     required Position position,
     required PositionGoal goal,
     String? positionId,
+    this._link,
   }) : super(
          GameSetupState(
            position: position,
            goal: goal,
            positionId: positionId,
-           userSide: position.turn,
+           userSide: _link?.userSide ?? position.turn,
+           fromLink: _link != null,
          ),
        );
 
@@ -154,8 +178,15 @@ class GameSetupCubit extends Cubit<GameSetupState> {
   final PaceRepository? _pace;
   final CharacterRepository? _characters;
 
+  /// O desafio que preenche a configuração (aberto por link).
+  final ChallengeLink? _link;
+
   Future<void> load() async {
-    final setup = await _training.loadSetup();
+    var setup = await _training.loadSetup();
+    // O link manda: o adversário, o nível, o relógio e o modo vêm dele (sem
+    // gravar, para não trocar a configuração de quem abriu).
+    final link = _link;
+    if (link != null) setup = _withLink(setup, link);
     final profile = await _profile.load();
     // Com partidas contadas, a sugestão vem do rating; antes, da faixa.
     final history = await _rating?.history() ?? const [];
@@ -177,6 +208,18 @@ class GameSetupCubit extends Cubit<GameSetupState> {
         characters: characters,
         ready: true,
       ),
+    );
+  }
+
+  static GameSetup _withLink(GameSetup setup, ChallengeLink link) {
+    final clock = link.clock;
+    return setup.copyWith(
+      opponent: link.opponent,
+      maiaLevel: link.level,
+      clock: clock != null,
+      userTime: clock ?? setup.userTime,
+      opponentTime: clock ?? setup.opponentTime,
+      blind: false,
     );
   }
 

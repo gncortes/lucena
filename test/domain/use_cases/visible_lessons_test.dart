@@ -63,14 +63,15 @@ class _ScriptedSchool extends FakeLessonRepository {
 }
 
 void main() {
-  test('a Oposição, o bispo e cavalo, a dama contra torre e a Escola '
-      'escondida', () {
+  test('a Oposição, o bispo e cavalo, a dama contra torre, a Lucena e a '
+      'Escola escondida', () {
     expect(VisibleLessons.endgameLessonIds, {
       'pawns.keySquares',
       'pawns.distantOpposition',
       'pawns.waitingMoves',
       'mates.bishopKnight.deletang',
       'queen.vsRook.philidor',
+      'rook.lucena',
     });
     expect(VisibleLessons.school, isFalse);
   });
@@ -166,6 +167,7 @@ void main() {
         HomePath.journey,
         HomePath.forYou,
         HomePath.endgames,
+        HomePath.race,
       ]);
     });
 
@@ -176,7 +178,7 @@ void main() {
       ).copyWith(custom: true);
       final layout = HomeSuggestion.resolve(saved, RatingLevel.beginner);
       expect(layout.order, isNot(contains(HomePath.learn)));
-      expect(layout.shown, [HomePath.journey]);
+      expect(layout.shown, [HomePath.journey, HomePath.race]);
     });
 
     test('só a Escola marcada: o primeiro caminho aparece', () {

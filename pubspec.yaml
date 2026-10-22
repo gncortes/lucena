@@ -23,6 +23,7 @@ dependencies:
   go_router: ^18.0.2
   intl: ^0.20.3
   multistockfish: ^0.6.1
+  package_info_plus: ^10.2.2
   share_plus: ^13.3.1
   shared_preferences: ^2.5.5
   sound_effect: ^0.2.0
@@ -58,7 +59,9 @@ flutter:
     - assets/progression/speedruns.json
     - assets/progression/speedrun_positions.json
     - assets/progression/time_controls.json
+    - assets/race/race_problems.json
     - assets/achievements.json
+    - assets/featured/featured.json
     - assets/characters/
     - assets/voices/
     - assets/characters/youngster/
@@ -86,6 +89,7 @@ flutter:
     - assets/lessons/roteiros/pawns.keySquares/
     - assets/lessons/roteiros/pawns.waitingMoves/
     - assets/lessons/roteiros/queen.vsRook.philidor/
+    - assets/lessons/roteiros/rook.lucena/
     - assets/tablebase/
     - assets/tablebase/roteiros/
     - assets/lessons/en/endgames/

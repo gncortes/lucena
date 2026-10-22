@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../keys/external_page_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_icon_size.dart';
+import '../theme/app_spacing.dart';
+import 'animated_progress.dart';
 import 'lucena_sheet.dart';
+import 'sheet_header.dart';
 import 'web_pages.dart';
 
 /// Abre uma página da web dentro do app (a Wikipedia de um nome da fala, a
@@ -20,7 +24,7 @@ Future<void> showExternalPage(BuildContext context, Uri url) {
     closeKey: ExternalPageKeys.close,
     builder: (context) => SizedBox(
       // Folha alta: o que sobra abaixo do ✕ e da alça.
-      height: MediaQuery.sizeOf(context).height * 0.8,
+      height: MediaQuery.sizeOf(context).height * 0.96,
       child: ExternalPageSheet(url: url, pages: pages),
     ),
   );
@@ -73,47 +77,19 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
   }
 
   Widget _content(ThemeData theme, String domain, String? title) {
-    final colors = theme.colorScheme;
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 12),
-          child: Row(
-            children: [
-              Icon(Icons.public, size: 20, color: colors.onSurfaceVariant),
-              const SizedBox(width: 12),
-              // O título da página (quando abriu) e o domínio embaixo; antes,
-              // só o domínio.
-              Expanded(
-                child: Column(
-                  key: ExternalPageKeys.title,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title ?? domain,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (title != null)
-                      Text(
-                        domain,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
+        // O título da página (quando abriu) e o domínio embaixo; antes, só o
+        // domínio.
+        KeyedSubtree(
+          key: ExternalPageKeys.title,
+          child: SheetHeader(
+            title: title ?? domain,
+            hint: title == null ? null : domain,
+            titleMaxLines: 2,
           ),
         ),
-        const Divider(height: 1),
+        const Divider(),
         Expanded(
           child: _phase == _Phase.failed
               ? _Offline(theme: theme)
@@ -128,8 +104,9 @@ class _ExternalPageSheetState extends State<ExternalPageSheet> {
                     if (_phase == _Phase.loading)
                       const Align(
                         alignment: AlignmentDirectional.topCenter,
-                        child: LinearProgressIndicator(
+                        child: AnimatedProgress(
                           key: ExternalPageKeys.loading,
+                          value: null,
                         ),
                       ),
                   ],
@@ -151,22 +128,22 @@ class _Offline extends StatelessWidget {
     return Center(
       key: ExternalPageKeys.offline,
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               Icons.wifi_off_rounded,
-              size: 48,
+              size: AppIconSize.illustration,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               l10n.externalPageOfflineTitle,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               l10n.externalPageOfflineBody,
               textAlign: TextAlign.center,

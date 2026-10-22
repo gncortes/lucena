@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/app_chip.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +15,9 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
@@ -23,6 +29,8 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/one_line.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {
@@ -31,7 +39,6 @@ class SpeedrunListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final state = context.watch<SpeedrunCubit>().state;
     final all = state.all;
     final marathon = state.marathonMode;
@@ -45,13 +52,13 @@ class SpeedrunListScreen extends StatelessWidget {
     }
 
     Widget section(String title) => Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
-      child: Text(
-        title,
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.sm,
       ),
+      child: Text(title, style: context.sectionTitle),
     );
     return Scaffold(
       key: SpeedrunKeys.listScreen,
@@ -67,7 +74,7 @@ class SpeedrunListScreen extends StatelessWidget {
         ],
       ),
       body: all == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const SkeletonList()
           : ListView(
               // Espaço no fim: o último cartão rola até sair da barra do
               // sistema.
@@ -145,19 +152,23 @@ class SpeedrunListScreen extends StatelessWidget {
         ? l10n.paceSeconds(pace.initial.inSeconds)
         : l10n.setupPaceCustomMinutes(pace.initial.inMinutes);
     Widget section(IconData icon, String title, Widget body) => Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, size: 22, color: theme.colorScheme.primary),
-              const SizedBox(width: 10),
+              Icon(
+                icon,
+                size: AppIconSize.standard,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: AppSpacing.md),
               Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           body,
         ],
       ),
@@ -177,7 +188,7 @@ class SpeedrunListScreen extends StatelessWidget {
       };
       if (names.isEmpty) continue;
       levels.addAll([
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Text(label, style: theme.textTheme.titleSmall),
         Text(names.join(', '), style: theme.textTheme.bodyLarge),
       ]);
@@ -188,57 +199,67 @@ class SpeedrunListScreen extends StatelessWidget {
         heightFactor: 0.85,
         child: Scrollbar(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              24,
-              0,
-              24,
-              24 + MediaQuery.paddingOf(context).bottom,
+            padding: EdgeInsets.only(
+              bottom: 24 + MediaQuery.paddingOf(context).bottom,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l10n.speedrunHelp, style: theme.textTheme.headlineSmall),
-                section(
-                  Icons.timer_outlined,
-                  l10n.speedrunModeClassic,
-                  Text(
-                    l10n.speedrunHelpClassic,
-                    key: SpeedrunKeys.intro,
-                    style: theme.textTheme.bodyLarge,
+                SheetHeader(title: l10n.speedrunHelp),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
                   ),
-                ),
-                section(
-                  Icons.hourglass_bottom,
-                  l10n.marathonSection,
-                  Text(
-                    l10n.speedrunHelpMarathon,
-                    key: SpeedrunKeys.helpText,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                ),
-                section(
-                  Icons.av_timer_outlined,
-                  l10n.speedrunPaceLine(paceShort(l10n, pace)),
-                  Text(
-                    l10n.speedrunHelpClock(initial, pace.increment.inSeconds),
-                    key: SpeedrunKeys.paceHelp,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                ),
-                section(
-                  Icons.school_outlined,
-                  l10n.speedrunHelpLevels,
-                  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: levels,
-                  ),
-                ),
-                section(
-                  Icons.pause_circle_outline,
-                  l10n.lessonDemoPause,
-                  Text(
-                    l10n.speedrunHelpPause,
-                    style: theme.textTheme.bodyLarge,
+                    children: [
+                      section(
+                        Icons.timer_outlined,
+                        l10n.speedrunModeClassic,
+                        Text(
+                          l10n.speedrunHelpClassic,
+                          key: SpeedrunKeys.intro,
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
+                      section(
+                        Icons.all_inclusive,
+                        l10n.marathonSection,
+                        Text(
+                          l10n.speedrunHelpMarathon,
+                          key: SpeedrunKeys.helpText,
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
+                      section(
+                        Icons.av_timer_outlined,
+                        l10n.speedrunPaceLine(paceShort(l10n, pace)),
+                        Text(
+                          l10n.speedrunHelpClock(
+                            initial,
+                            pace.increment.inSeconds,
+                          ),
+                          key: SpeedrunKeys.paceHelp,
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
+                      section(
+                        Icons.school_outlined,
+                        l10n.speedrunHelpLevels,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: levels,
+                        ),
+                      ),
+                      section(
+                        Icons.pause_circle_outline,
+                        l10n.lessonDemoPause,
+                        Text(
+                          l10n.speedrunHelpPause,
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -268,8 +289,12 @@ class _Card extends StatelessWidget {
     final best = summary.records.best;
     return Card(
       key: SpeedrunKeys.item(speedrun.id),
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      color: colors.surfaceContainerLow,
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        0,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () async {
@@ -278,11 +303,11 @@ class _Card extends StatelessWidget {
           if (context.mounted) await cubit.load();
         },
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
               SpeedrunPicture(speedrun, characters: characters),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,9 +320,7 @@ class _Card extends StatelessWidget {
                               speedrun.stages.first.position.subcategory,
                             )
                           : speedrunName(l10n, characters, speedrun),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.cardTitle,
                     ),
                     // Sem recorde, o aviso fica embaixo do nome, junto das
                     // etapas: o nome não disputa espaço com ele.
@@ -318,7 +341,7 @@ class _Card extends StatelessWidget {
               ),
               // O lado direito é só do melhor tempo, em destaque.
               if (best != null) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 Flexible(
                   child: TimeDisplay(
                     value: runTime(context, recordTime(speedrun, best)),
@@ -349,7 +372,6 @@ class _CompactPace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final time = current.initial < const Duration(minutes: 1)
         ? l10n.paceSeconds(current.initial.inSeconds)
         : l10n.speedrunTimeControl(
@@ -357,10 +379,13 @@ class _CompactPace extends StatelessWidget {
             current.increment.inSeconds,
           );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Material(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(AppShape.large),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
+      child: Card(
         child: ListTile(
           key: SpeedrunKeys.compactPace,
           shape: RoundedRectangleBorder(
@@ -392,7 +417,12 @@ class _CategoryPicker extends StatelessWidget {
       (SpeedrunCubit cubit) => cubit.state.category,
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
       child: SegmentedButton<SpeedrunCategory>(
         key: SpeedrunKeys.category,
         showSelectedIcon: false,
@@ -432,7 +462,12 @@ class _ModePicker extends StatelessWidget {
       (SpeedrunCubit cubit) => cubit.state.marathonMode,
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
       child: SegmentedButton<bool>(
         key: SpeedrunKeys.mode,
         showSelectedIcon: false,
@@ -490,14 +525,19 @@ class _PacePickerState extends State<_PacePicker> {
     final l10n = context.l10n;
     final groups = SpeedrunPaces.groups;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SegmentedButton<PaceCategory>(
             showSelectedIcon: false,
             style: SegmentedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             ),
             segments: [
               for (final category in groups.keys)
@@ -507,12 +547,14 @@ class _PacePickerState extends State<_PacePicker> {
                   value: category,
                   tooltip: category.label(l10n),
                   label: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(paceIcon(category), size: 20),
-                        const SizedBox(height: 2),
+                        Icon(paceIcon(category), size: AppIconSize.button),
+                        const SizedBox(height: AppSpacing.xs),
                         OneLine(
                           category.label(l10n),
                           key: SpeedrunKeys.paceCategory(category.name),
@@ -526,7 +568,7 @@ class _PacePickerState extends State<_PacePicker> {
             onSelectionChanged: (selection) =>
                 setState(() => _category = selection.single),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
           // Os ritmos da categoria, entrando com um fade quando ela muda.
           AnimatedSwitcher(
             duration: AppMotion.of(context).state,
@@ -537,14 +579,15 @@ class _PacePickerState extends State<_PacePicker> {
             ),
             child: Wrap(
               key: ValueKey(_category),
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: [
                 for (final time in groups[_category] ?? const <TimeControl>[])
                   ChoiceChip(
+                    materialTapTargetSize: AppChip.tapTarget,
+                    visualDensity: AppChip.density,
                     key: SpeedrunKeys.paceOption(time.code),
                     // O ícone da categoria já está no seletor de cima.
-                    showCheckmark: false,
                     label: Text(paceShort(l10n, time)),
                     selected: time == widget.current,
                     onSelected: (_) => widget.onChosen(time),

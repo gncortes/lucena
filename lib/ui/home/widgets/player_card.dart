@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
 import '../../../routing/review_destinations.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/keys/home_keys.dart';
@@ -41,13 +42,16 @@ class PlayerCard extends StatelessWidget {
       },
       closedBuilder: (context, open) => Card(
         key: HomeKeys.playerCard,
-        margin: EdgeInsets.zero,
-        color: colors.surfaceContainerLow,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: open,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 12, 12),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.md,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -58,9 +62,7 @@ class PlayerCard extends StatelessWidget {
                       Text(
                         l10n.homeHello(nickname),
                         key: HomeKeys.hello,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: context.cardTitle,
                       ),
                     ],
                   ),

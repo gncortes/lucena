@@ -7,6 +7,11 @@ abstract final class SettingsKeys {
   /// "Tela inicial": os caminhos da tela inicial.
   static const homeLayoutTile = Key('settings.homeLayout');
 
+  /// Só em build de teste: abre um link de desafio colado, sem App Links.
+  static const openLinkTile = Key('settings.openLink');
+  static const openLinkField = Key('settings.openLink.field');
+  static const openLinkConfirm = Key('settings.openLink.confirm');
+
   static const screen = Key('settings.screen');
   static const version = Key('settings.version');
   static const title = Key('settings.title');
@@ -48,6 +53,7 @@ abstract final class SettingsKeys {
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
 
   static const characterTalkSwitch = Key('settings.characterTalk');
+  static const warmUpSwitch = Key('settings.warmUp');
   static const soundSwitch = Key('settings.sound');
   static const vibrationSwitch = Key('settings.vibration');
   static const tourTile = Key('settings.tour');

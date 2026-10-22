@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_motion.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 import 'goal_style.dart';
 
 /// O rating em destaque com a variação ao lado, em verde (+) ou vermelho (−),
@@ -54,7 +57,7 @@ class RatingValue extends StatelessWidget {
     final style =
         (large ? theme.textTheme.displaySmall : theme.textTheme.headlineSmall)
             ?.copyWith(
-              fontWeight: FontWeight.w800,
+              fontWeight: AppWeight.heavy,
               fontFeatures: const [FontFeature.tabularFigures()],
             );
     return Row(
@@ -63,7 +66,7 @@ class RatingValue extends StatelessWidget {
       children: [
         Text(rating.toString(), key: valueKey, style: style),
         if (change != null) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           ..._change(context, theme, change, up ?? change >= 0),
         ],
       ],
@@ -84,7 +87,7 @@ class RatingValue extends StatelessWidget {
         children: [
           Icon(
             up ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-            size: large ? 28 : 24,
+            size: large ? AppIconSize.large : AppIconSize.standard,
             color: ChangeColors.of(context, up: up),
           ),
           Text(
@@ -96,7 +99,7 @@ class RatingValue extends StatelessWidget {
                         : theme.textTheme.titleMedium)
                     ?.copyWith(
                       color: ChangeColors.of(context, up: up),
-                      fontWeight: FontWeight.w700,
+                      fontWeight: AppWeight.strong,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
           ),

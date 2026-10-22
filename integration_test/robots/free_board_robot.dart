@@ -30,6 +30,18 @@ class FreeBoardRobot {
     await expectVisible();
   }
 
+  /// A partir da tela inicial, com uma partida guardada: o aviso aparece
+  /// antes do tabuleiro. Com [keep], volta a ela; sem, começa um tabuleiro
+  /// novo.
+  Future<void> openWithSavedGame({required bool keep}) async {
+    await $(HomeKeys.freeBoardButton).scrollTo().tap();
+    await $(FreeBoardKeys.savedGameSheet).waitUntilVisible();
+    expect(find.byKey(FreeBoardKeys.savedGameCard), findsOneWidget);
+    await $(keep ? FreeBoardKeys.savedGameContinue : FreeBoardKeys.savedGameNew)
+        .tap();
+    await expectVisible();
+  }
+
   /// A partir da tela inicial, já numa posição preparada (FEN). Com [side], o
   /// jogador só move as peças desse lado. Com [white] e [black] (tempo de cada
   /// lado, `segundos+incremento`), a partida abre com relógio.

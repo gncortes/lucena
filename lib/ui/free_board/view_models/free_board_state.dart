@@ -2,6 +2,9 @@ import 'package:dartchess/dartchess.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/models/attempt.dart';
+import '../../../domain/models/challenge_link.dart';
+import '../../../domain/models/challenge_result.dart';
+import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
@@ -129,6 +132,55 @@ abstract class FreeBoardState with _$FreeBoardState {
     final winner = end.winner;
     if (winner == null) return AttemptOutcome.draw;
     return winner == user ? AttemptOutcome.win : AttemptOutcome.loss;
+  }
+
+  /// O desafio de link refeito desta partida: a posição de início, o lado, o
+  /// adversário e o relógio do jogador. Nulo fora de partida de link.
+  ChallengeLink? get challengeLink {
+    final user = mode.userSide;
+    if (!mode.fromLink || user == null || !mode.opponent.isMachine) return null;
+    final origin = mode.link;
+    if (origin != null) return origin;
+    return ChallengeLink(
+      fen: start.fen,
+      goal: mode.goal ?? PositionGoal.win,
+      positionId: mode.positionId,
+      userSide: user,
+      opponent: mode.opponent == OpponentKind.stockfish
+          ? OpponentKind.stockfish
+          : OpponentKind.maia,
+      level: mode.level,
+      clock: clock?.config.of(user),
+    );
+  }
+
+  /// Como o desafio de link terminou, pronto para compartilhar. Nulo
+  /// enquanto a partida continua ou fora de partida de link.
+  ChallengeResult? get challengeResult {
+    final link = challengeLink;
+    final outcome = this.outcome;
+    final end = this.end;
+    if (link == null || outcome == null || end == null) return null;
+    final user = link.userSide;
+    final mated =
+        end.reason == GameEndReason.checkmate && outcome == AttemptOutcome.win;
+    final target = lastMove is NormalMove ? (lastMove! as NormalMove).to : null;
+    return ChallengeResult(
+      link: link,
+      outcome: outcome,
+      moves: ChallengeResult.movesOf(
+        plies: ucis.length,
+        userFirst: start.turn == user,
+      ),
+      remaining: clock == null
+          ? null
+          : (user == Side.white ? whiteTime : blackTime),
+      matingPiece: mated && target != null
+          ? position.board.roleAt(target)
+          : null,
+      finalFen: position.fen,
+      lastMove: lastMove,
+    );
   }
 
   /// O objetivo do treino foi cumprido. Nulo enquanto a partida continua ou

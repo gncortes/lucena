@@ -32,6 +32,8 @@ import 'character_avatar.dart';
 import 'external_page_sheet.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 import '../theme/lesson_text_colors.dart';
 import 'sound_off_icon.dart';
 import 'speech_sheet_fade.dart';
@@ -68,7 +70,7 @@ class TeacherSpeech extends StatelessWidget {
     required this.text,
     required this.speechContext,
     this.emotion = Emotion.calm,
-    this.avatarSize = 64,
+    this.avatarSize = CharacterAvatar.speech,
     this.compactInSheet = false,
     this.bubbleKey,
     this.typed = false,
@@ -167,8 +169,8 @@ class TeacherSpeech extends StatelessWidget {
       emotion: emotion,
       // LICOES-V2 §9: retrato de 28 dp, raio 8, na linha de 48 dp.
       size: lessonV2
-          ? (headerAvatar ?? 28)
-          : (_compact(context) ? 32 : avatarSize),
+          ? (headerAvatar ?? CharacterAvatar.mini)
+          : (_compact(context) ? CharacterAvatar.mini : avatarSize),
       radius: lessonV2 ? (headerAvatar == null ? 8 : 6) : null,
     );
     if (avatarHeroTag case final tag?) avatar = Hero(tag: tag, child: avatar);
@@ -311,7 +313,9 @@ class TeacherSpeech extends StatelessWidget {
                           ? VisualDensity.standard
                           : VisualDensity.compact,
                       minimumSize: Size(48, lessonV2 ? 48 : 36),
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                      ),
                     ),
                     onPressed: soundEnabled ? speech.nextSpeed : null,
                     child: Tooltip(
@@ -415,10 +419,10 @@ class TeacherSpeech extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsetsDirectional.only(start: 14),
+                padding: const EdgeInsetsDirectional.only(start: AppSpacing.lg),
                 child: _header(context),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               _closable(context),
             ],
           ),
@@ -464,7 +468,7 @@ class TeacherSpeech extends StatelessWidget {
         _label(context),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: theme.textTheme.titleSmall?.copyWith(
+        style: theme.textTheme.titleMedium?.copyWith(
           color: theme.colorScheme.primary,
           fontWeight: FontWeight.w500,
         ),
@@ -728,7 +732,7 @@ class TeacherSpeech extends StatelessWidget {
     // carrega o resultado); fora dela, seminegrito.
     final linkStyle = TextStyle(
       color: colors.primary,
-      fontWeight: section ? FontWeight.w500 : FontWeight.w700,
+      fontWeight: section ? FontWeight.w500 : AppWeight.strong,
     );
     // A casa citada (variante A): um tom mais claro que o do lance.
     final squareStyle = linkStyle.copyWith(
@@ -1072,10 +1076,7 @@ class _TypedTextState extends State<_TypedText>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: widget.paced
-          // Uns 15 caracteres por segundo, como quem fala.
-          ? Duration(milliseconds: (_length * 65).clamp(600, 60000))
-          : Duration(milliseconds: (_length * 14).clamp(300, 2800)),
+      duration: AppMotion.typedText(_length, paced: widget.paced),
     )..forward();
   }
 
@@ -1505,7 +1506,9 @@ class LessonVoiceButton extends StatelessWidget {
                 child: ExcludeSemantics(
                   child: Container(
                     height: 16,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xs,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.primary,
                       borderRadius: BorderRadius.circular(AppShape.full),
@@ -1519,7 +1522,7 @@ class LessonVoiceButton extends StatelessWidget {
                         color: colors.onPrimary,
                         fontSize: 10,
                         height: 1.6,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: AppWeight.heavy,
                       ),
                     ),
                   ),

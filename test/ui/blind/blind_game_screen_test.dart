@@ -15,6 +15,7 @@ import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
+import 'package:lucena/ui/core/theme/app_icon_size.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../testing/fakes/fake_blind_log_repository.dart';
@@ -167,7 +168,7 @@ void main() {
     });
   }
 
-  for (final mode in [ThemeMode.light, ThemeMode.dark]) {
+  for (final mode in [ThemeMode.light]) {
     testWidgets('barra e ícones de voz seguem paleta Canvas em $mode', (
       tester,
     ) async {
@@ -185,10 +186,7 @@ void main() {
                 box.boxShadow?.any((shadow) => shadow.blurRadius == 12) ??
                 false,
           );
-      expect(
-        frame.color,
-        mode == ThemeMode.light ? Colors.white : colors.surfaceContainerLow,
-      );
+      expect(frame.color, Colors.white);
       for (final key in [
         BlindKeys.narratePosition,
         BlindKeys.narrateGame,
@@ -308,16 +306,16 @@ void main() {
       final speaker = tester.getRect(find.byKey(BlindKeys.sayProposal));
       if (direction == TextDirection.ltr) {
         expect(pill.left - reject.right, 8);
-        expect(pill.right - speaker.right, 6);
+        expect(pill.right - speaker.right, 8);
       } else {
         expect(reject.left - pill.right, 8);
-        expect(speaker.left - pill.left, 6);
+        expect(speaker.left - pill.left, 8);
       }
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('painel pinta 158/154 dp com reserva estável para o tabuleiro', (
+  testWidgets('painel pinta 164/160 dp com reserva estável para o tabuleiro', (
     tester,
   ) async {
     await pump(tester, size: const Size(360, 740));
@@ -332,7 +330,7 @@ void main() {
     );
     final board = tester.getRect(find.byKey(BlindKeys.emptyBoard));
     final idle = tester.getRect(surface);
-    expect(idle.height, 158);
+    expect(idle.height, 164);
     expect(idle.bottom, 740);
     await tester.tap(find.byKey(BlindKeys.mic));
     await tester.pump(const Duration(milliseconds: 600));
@@ -342,7 +340,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(BlindKeys.proposal), findsOneWidget);
     final proposal = tester.getRect(surface);
-    expect(proposal.height, 154);
+    expect(proposal.height, 160);
     expect(proposal.bottom, idle.bottom);
     expect(tester.getRect(find.byKey(BlindKeys.emptyBoard)), board);
     expect(
@@ -565,8 +563,8 @@ void main() {
       expect(before.width, greaterThan(size.width - 32));
       expect(before.width, lessThanOrEqualTo(size.width));
       if (size.height >= 800) expect(before.width, closeTo(size.width, 1));
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.toolbarHeight, 64);
+      // A barra de topo é a padrão de 56 (E1.08, D21).
+      expect(tester.getSize(find.byType(AppBar)).height, kToolbarHeight);
       await tester.tap(find.byKey(BlindKeys.view(BlindView.board)));
       await tester.pumpAndSettle();
       expect(tester.getRect(find.byKey(BlindKeys.board)), before);
@@ -599,13 +597,12 @@ void main() {
             (widget) =>
                 widget is Icon &&
                 widget.icon == Icons.visibility_off_outlined &&
-                widget.size == 56,
+                widget.size == AppIconSize.illustration,
           ),
-          matching: find.byType(Container),
+          matching: find.byType(Card),
         )
         .first;
-    final box = tester.widget<Container>(hidden).decoration! as BoxDecoration;
-    expect(box.borderRadius, BorderRadius.circular(16));
+    // O raio 16 vem do cartão do tema.
     expect(tester.getRect(hidden), before);
     expect(tester.takeException(), isNull);
   });

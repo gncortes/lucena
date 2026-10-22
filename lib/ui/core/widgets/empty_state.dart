@@ -1,85 +1,158 @@
 import 'package:flutter/material.dart';
 
+import '../keys/core_keys.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_spacing.dart';
 
-/// Uma lista ainda vazia (T51, G5): um desenho simples, uma frase e, quando
-/// houver, a ação que enche a lista ("Jogar agora").
+/// Como o estado vazio se apresenta (canvas `CompEstadoVazio`).
+enum EmptyStateStyle {
+  /// Lista que o usuário enche com a ação principal ("Jogar agora").
+  primary,
+
+  /// Lista vazia sem urgência: ação tonal.
+  tonal,
+
+  /// Algo deu errado: círculo de erro e, se der, "Tentar de novo".
+  error,
+
+  /// Só a frase, sem ícone nem ação.
+  text,
+
+  /// Os filtros não acharam nada: ícone solto e "Limpar filtros".
+  filters,
+}
+
+/// Uma lista ainda vazia: um desenho simples, uma frase e, quando houver, a
+/// ação que resolve.
 class EmptyState extends StatelessWidget {
   const EmptyState({
-    required this.icon,
     required this.message,
+    this.icon,
+    this.style = EmptyStateStyle.tonal,
     this.actionLabel,
     this.onAction,
     this.actionKey,
     this.messageKey,
-    this.primaryAction = false,
     this.actionIcon,
     super.key,
   });
 
-  final IconData icon;
+  /// O círculo do desenho.
+  static const circle = 72.0;
+
+  final IconData? icon;
   final String message;
+  final EmptyStateStyle style;
   final String? actionLabel;
   final VoidCallback? onAction;
   final Key? actionKey;
   final Key? messageKey;
-  final bool primaryAction;
   final IconData? actionIcon;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionLabel = this.actionLabel;
+    final text = style == EmptyStateStyle.text;
+    final filters = style == EmptyStateStyle.filters;
+    final loud = text || filters;
+    final label = actionLabel;
+    final action = text || label == null || onAction == null
+        ? null
+        : _action(label);
     return Padding(
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      key: CoreKeys.emptyState,
+      padding: text
+          ? const EdgeInsets.all(AppSpacing.xxl)
+          : filters
+          ? const EdgeInsets.symmetric(vertical: AppSpacing.xxl)
+          : const EdgeInsets.all(AppSpacing.xl),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // O desenho: o ícone num círculo suave.
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.primaryContainer.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Icon(icon, size: 40, color: colors.primary),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
+          if (!text && icon != null || filters) ...[
+            if (filters)
+              Icon(
+                icon ?? Icons.filter_list_off,
+                size: AppIconSize.illustration,
+                color: colors.outline,
+              )
+            else
+              _circle(colors),
+            const SizedBox(height: AppSpacing.md),
+          ],
           Text(
             message,
             key: messageKey,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
+            style: loud
+                ? theme.textTheme.bodyLarge?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  )
+                : theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
           ),
-          if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            if (primaryAction)
-              FilledButton.icon(
-                key: actionKey,
-                onPressed: onAction,
-                icon: actionIcon == null ? null : Icon(actionIcon),
-                label: Text(actionLabel),
-              )
-            else
-              FilledButton.tonal(
-                key: actionKey,
-                onPressed: onAction,
-                child: Text(actionLabel),
-              ),
+          if (action != null) ...[
+            SizedBox(height: filters ? AppSpacing.md : AppSpacing.lg),
+            action,
           ],
         ],
       ),
     );
   }
+
+  // O ícone de 48 num círculo suave de 72.
+  Widget _circle(ColorScheme colors) {
+    final error = style == EmptyStateStyle.error;
+    return Container(
+      width: circle,
+      height: circle,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: (error ? colors.errorContainer : colors.primaryContainer)
+            .withValues(alpha: 0.5),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        icon,
+        size: AppIconSize.illustration,
+        color: error ? colors.error : colors.primary,
+      ),
+    );
+  }
+
+  Widget _action(String label) {
+    final text = Text(label);
+    switch (style) {
+      case EmptyStateStyle.primary:
+        return FilledButton.icon(
+          key: actionKey ?? CoreKeys.emptyAction,
+          onPressed: onAction,
+          icon: actionIcon == null ? null : Icon(actionIcon),
+          label: text,
+        );
+      case EmptyStateStyle.filters:
+        return OutlinedButton.icon(
+          key: actionKey ?? CoreKeys.emptyAction,
+          onPressed: onAction,
+          icon: const Icon(Icons.filter_list_off),
+          label: text,
+        );
+      case EmptyStateStyle.tonal:
+      case EmptyStateStyle.error:
+      case EmptyStateStyle.text:
+        return FilledButton.tonal(
+          key: actionKey ?? CoreKeys.emptyAction,
+          onPressed: onAction,
+          child: text,
+        );
+    }
+  }
 }
 
-/// Algo deu errado (T51, G5): nunca texto técnico, só uma frase e, quando
-/// der, "Tentar de novo".
+/// Algo deu errado: nunca texto técnico, só uma frase e, quando der,
+/// "Tentar de novo".
 class ErrorState extends StatelessWidget {
   const ErrorState({
     required this.message,
@@ -97,6 +170,7 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EmptyState(
+      style: EmptyStateStyle.error,
       icon: Icons.cloud_off_rounded,
       message: message,
       messageKey: messageKey,

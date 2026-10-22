@@ -1,17 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'domain/models/challenge_link.dart';
+import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
+import 'data/repositories/survey/survey_repository.dart';
 import 'data/repositories/rating/rating_repository.dart';
 import 'data/repositories/achievements/achievements_repository.dart';
 import 'data/repositories/characters/character_repository.dart';
 import 'data/repositories/evaluation/evaluation_repository.dart';
 import 'data/repositories/characters/talk_repository.dart';
 import 'data/repositories/home/home_layout_repository.dart';
+import 'data/repositories/featured/featured_alerts_repository.dart';
+import 'data/repositories/featured/featured_progress_repository.dart';
+import 'data/repositories/featured/featured_repository.dart';
 import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
@@ -27,6 +35,7 @@ import 'data/repositories/school/school_progress_repository.dart';
 import 'data/repositories/school/star_challenge_repository.dart';
 import 'data/repositories/draw/draw_offer_repository.dart';
 import 'data/repositories/haptics/haptics_repository.dart';
+import 'data/repositories/deep_link/deep_link_repository.dart';
 import 'data/repositories/share/share_repository.dart';
 import 'data/repositories/placement/placement_repository.dart';
 import 'data/repositories/conclusion/conclusion_repository.dart';
@@ -36,6 +45,7 @@ import 'data/repositories/sound/sound_repository.dart';
 import 'data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'data/repositories/journey/journey_repository.dart';
 import 'data/repositories/maia/maia_repository.dart';
+import 'data/repositories/race/race_repository.dart';
 import 'data/repositories/speedrun/speedrun_repository.dart';
 import 'data/repositories/opponent/opponent_repository.dart';
 import 'data/repositories/profile/profile_repository.dart';
@@ -47,6 +57,7 @@ import 'data/repositories/voice/voice_repository.dart';
 import 'data/repositories/blind/blind_log_repository.dart';
 import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
+import 'domain/models/app_version.dart';
 import 'domain/use_cases/now.dart';
 import 'routing/router.dart';
 import 'ui/core/sound/game_haptics.dart';
@@ -59,8 +70,10 @@ import 'ui/settings/view_models/settings_cubit.dart';
 import 'ui/voice/view_models/speech_cubit.dart';
 import 'ui/wiki/view_models/wiki_links_cubit.dart';
 
-void main() {
-  runApp(LucenaApp(dependencies: Dependencies.normal()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final version = await Dependencies.installedVersion();
+  runApp(LucenaApp(dependencies: Dependencies.normal(version: version)));
 }
 
 class LucenaApp extends StatefulWidget {
@@ -76,6 +89,9 @@ class _LucenaAppState extends State<LucenaApp> {
   // Nulo até saber em que tela o app abre.
   GoRouter? _router;
 
+  // Os desafios que chegam por link com o app aberto.
+  StreamSubscription<ChallengeLink>? _links;
+
   @override
   void initState() {
     super.initState();
@@ -90,6 +106,7 @@ class _LucenaAppState extends State<LucenaApp> {
     final school = await widget.dependencies.schoolProgressRepository.load();
     final endgames = await widget.dependencies.endgameProgressRepository.load();
     final stars = await widget.dependencies.starChallengeRepository.open();
+    final link = await widget.dependencies.deepLinkRepository.initial();
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
@@ -99,15 +116,20 @@ class _LucenaAppState extends State<LucenaApp> {
           school: school,
           endgames: endgames,
           stars: stars,
+          link: link,
           showSchool: VisibleLessons.school,
           visibleEndgameLessons: VisibleLessons.endgameLessonIds,
         ),
       );
     });
+    _links = widget.dependencies.deepLinkRepository.opened.listen(
+      (link) => _router?.push(Routes.challenge(link)),
+    );
   }
 
   @override
   void dispose() {
+    unawaited(_links?.cancel());
     _router?.dispose();
     super.dispose();
   }
@@ -127,6 +149,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<ShareRepository>.value(
           value: dependencies.shareRepository,
+        ),
+        RepositoryProvider<DeepLinkRepository>.value(
+          value: dependencies.deepLinkRepository,
         ),
         RepositoryProvider<HapticsRepository>.value(
           value: dependencies.hapticsRepository,
@@ -157,6 +182,7 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<ConclusionRepository>.value(
           value: dependencies.conclusionRepository,
         ),
+        RepositoryProvider<AppVersion>.value(value: dependencies.version),
         RepositoryProvider<OngoingGameRepository>.value(
           value: dependencies.ongoingGameRepository,
         ),
@@ -177,6 +203,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<SpeedrunRepository>.value(
           value: dependencies.speedrunRepository,
+        ),
+        RepositoryProvider<RaceRepository>.value(
+          value: dependencies.raceRepository,
         ),
         RepositoryProvider<MaiaRepository>.value(
           value: dependencies.maiaRepository,
@@ -204,6 +233,15 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<HomeLayoutRepository>.value(
           value: dependencies.homeLayoutRepository,
+        ),
+        RepositoryProvider<FeaturedRepository>.value(
+          value: dependencies.featuredRepository,
+        ),
+        RepositoryProvider<FeaturedProgressRepository>.value(
+          value: dependencies.featuredProgressRepository,
+        ),
+        RepositoryProvider<FeaturedAlertsRepository>.value(
+          value: dependencies.featuredAlertsRepository,
         ),
         RepositoryProvider<UnlockRepository>.value(
           value: dependencies.unlockRepository,
@@ -255,6 +293,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<BlindLogRepository>.value(
           value: dependencies.blindLogRepository,
+        ),
+        RepositoryProvider<SurveyRepository>.value(
+          value: dependencies.surveyRepository,
         ),
       ],
       child: MultiBlocProvider(

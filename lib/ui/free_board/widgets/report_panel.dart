@@ -9,6 +9,8 @@ import '../../achievements/widgets/achievement_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
 import '../view_models/game_reporter.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
@@ -37,7 +39,12 @@ class ReportPanel extends StatelessWidget {
     ];
     return Padding(
       key: FreeBoardKeys.report,
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.xs,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -52,7 +59,12 @@ class ReportPanel extends StatelessWidget {
           // outra.
           if (unlocked.isNotEmpty) ...[
             Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(4, 10, 4, 6),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.xs,
+                AppSpacing.md,
+                AppSpacing.xs,
+                AppSpacing.sm,
+              ),
               child: Text(
                 l10n.achievementUnlocked,
                 style: theme.textTheme.titleSmall?.copyWith(
@@ -126,18 +138,22 @@ class _Message extends StatelessWidget {
     final theme = Theme.of(context);
     final color = theme.colorScheme.primary;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xs,
+        vertical: AppSpacing.sm,
+      ),
       child: Row(
         children: [
-          Icon(Icons.celebration_rounded, size: 22, color: color),
-          const SizedBox(width: 10),
+          Icon(
+            Icons.celebration_rounded,
+            size: AppIconSize.standard,
+            color: color,
+          ),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(
               text,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w700,
-              ),
+              style: theme.textTheme.titleSmall?.copyWith(color: color),
             ),
           ),
         ],
@@ -162,8 +178,6 @@ class _AchievementCard extends StatelessWidget {
   final String spoken;
   final List<Character> characters;
 
-  static const _gold = AppColors.reportGold;
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -187,54 +201,52 @@ class _AchievementCard extends StatelessWidget {
         container: true,
         label: spoken,
         excludeSemantics: true,
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerHigh,
+        child: Card(
+          color: colors.surfaceContainerHigh,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppShape.large),
-            border: Border.all(color: _gold.withValues(alpha: 0.35)),
+            side: BorderSide(
+              color: AppColors.goldColor.withValues(alpha: 0.35),
+            ),
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [AppColors.reportGoldLight, _gold],
+          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.goldColor,
+                  ),
+                  child: Icon(
+                    achievement?.iconData ?? Icons.military_tech,
+                    color: AppColors.goldInk,
                   ),
                 ),
-                child: Icon(
-                  achievement?.iconData ?? Icons.military_tech,
-                  color: AppColors.reportGoldInk,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      achievement?.title(l10n, characters) ?? spoken,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    if (achievement != null)
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        achievement.description(l10n, characters),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
+                        achievement?.title(l10n, characters) ?? spoken,
+                        style: theme.textTheme.titleSmall,
                       ),
-                  ],
+                      if (achievement != null)
+                        Text(
+                          achievement.description(l10n, characters),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/choice_tile.dart';
 import '../view_models/settings_cubit.dart';
 
@@ -27,7 +28,7 @@ class LanguageScreen extends StatelessWidget {
             selected: languageCode == null,
             onTap: () => cubit.setLanguage(null),
           ),
-          const Divider(height: 1),
+          const Divider(indent: AppSpacing.lg, endIndent: AppSpacing.lg),
           // O nome de cada idioma fica sempre na escrita dele.
           for (final language in cubit.languages)
             ChoiceTile(

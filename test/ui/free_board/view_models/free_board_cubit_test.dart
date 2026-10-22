@@ -107,8 +107,8 @@ void main() {
     expect(cubit.state.position, live);
 
     // A posição de início, e nada antes dela.
-    cubit.viewPrevious();
-    cubit.viewPrevious();
+    cubit.view(cubit.state.shownPly - 1);
+    cubit.view(cubit.state.shownPly - 1);
     expect(cubit.state.viewedPly, 0);
     expect(cubit.state.shownPosition, GameRules.initial);
     expect(cubit.state.shownMove, isNull);
@@ -119,7 +119,7 @@ void main() {
     expect(cubit.state.shownPosition, live);
 
     cubit.view(2);
-    cubit.viewNext();
+    cubit.view(cubit.state.shownPly + 1);
     expect(cubit.state.browsing, isFalse);
 
     // Um lance jogado enquanto se revê (o do adversário, por exemplo) traz o
@@ -1366,21 +1366,6 @@ void main() {
       // A partida segue viva: ainda aceita lance.
       cubit.play(NormalMove.fromUci('c1h1'));
       expect(cubit.state.moves, isNotEmpty);
-    });
-
-    test('tentar de novo depois de perder começa uma tentativa nova', () async {
-      final attempt = await speedruns.start('rung.1000', now());
-      final cubit = stage(attempt.id);
-      addTearDown(cubit.close);
-      await cubit.open();
-
-      final again = await cubit.restartSpeedrun('rung.1000');
-
-      expect(again, isNot(attempt.id));
-      expect((await speedruns.attempts('rung.1000')).map((a) => a.id), [
-        attempt.id,
-        again,
-      ]);
     });
   });
 

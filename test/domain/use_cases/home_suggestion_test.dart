@@ -10,34 +10,35 @@ void main() {
   const forYou = HomePath.forYou;
   const speedrun = HomePath.speedrun;
   const train = HomePath.train;
+  const race = HomePath.race;
 
   test('a sugestão de cada nível: a ordem e os marcados', () {
     final expected = {
       // Os finais para você vêm logo antes das aulas de finais e são
       // marcados com elas.
       RatingLevel.beginner: (
-        [learn, journey, forYou, endgames, train, speedrun],
-        {learn, journey},
+        [learn, journey, forYou, endgames, train, speedrun, race],
+        {learn, journey, race},
       ),
       RatingLevel.casual: (
-        [journey, forYou, endgames, train, speedrun, learn],
-        {journey, forYou, endgames, train},
+        [journey, forYou, endgames, train, speedrun, race, learn],
+        {journey, forYou, endgames, train, race},
       ),
       RatingLevel.intermediate: (
-        [journey, forYou, endgames, train, speedrun, learn],
-        {journey, forYou, endgames, train, speedrun},
+        [journey, forYou, endgames, train, speedrun, race, learn],
+        {journey, forYou, endgames, train, speedrun, race},
       ),
       RatingLevel.advanced: (
-        [forYou, endgames, journey, speedrun, train, learn],
-        {forYou, endgames, journey, speedrun, train},
+        [forYou, endgames, journey, speedrun, race, train, learn],
+        {forYou, endgames, journey, speedrun, train, race},
       ),
       RatingLevel.expert: (
-        [forYou, endgames, speedrun, train, journey, learn],
-        {forYou, endgames, speedrun, train},
+        [forYou, endgames, speedrun, race, train, journey, learn],
+        {forYou, endgames, speedrun, train, race},
       ),
       RatingLevel.master: (
-        [speedrun, forYou, endgames, train, journey, learn],
-        {speedrun, forYou, endgames, train},
+        [speedrun, forYou, endgames, race, train, journey, learn],
+        {speedrun, forYou, endgames, train, race},
       ),
     };
     for (final MapEntry(key: level, value: (order, visible))
@@ -70,6 +71,7 @@ void main() {
   test('pelo menos um caminho fica visível', () {
     var layout = HomeSuggestion.of(RatingLevel.beginner, school: true);
     layout = HomeSuggestion.toggle(layout, learn, RatingLevel.beginner);
+    layout = HomeSuggestion.toggle(layout, race, RatingLevel.beginner);
     expect(HomeSuggestion.canHide(layout, journey), isFalse);
     layout = HomeSuggestion.toggle(layout, journey, RatingLevel.beginner);
     expect(layout.visible, {journey});

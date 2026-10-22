@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_chip.dart';
+import '../../core/theme/app_spacing.dart';
 import '../view_models/speech_cubit.dart';
 import 'voice_pickers.dart';
 
@@ -23,7 +25,12 @@ class VoiceSettingsScreen extends StatelessWidget {
     final available = state.availableFor(language);
     final settings = state.settings;
     Widget header(String text) => Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.xs,
+      ),
       child: Text(
         text,
         style: theme.textTheme.titleSmall?.copyWith(
@@ -52,13 +59,17 @@ class VoiceSettingsScreen extends StatelessWidget {
                   ),
                   header(l10n.voiceSpeed),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
                       children: [
                         for (final speed in VoiceSettings.speeds)
                           ChoiceChip(
+                            materialTapTargetSize: AppChip.tapTarget,
+                            visualDensity: AppChip.density,
                             key: VoiceKeys.speed(speed),
                             label: Text(switch (speed) {
                               < 1 => l10n.voiceSpeedSlow,

@@ -6,6 +6,8 @@ import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/theme/lesson_text_colors.dart';
 import '../../school/widgets/variation_strip.dart' show GrainFill;
 import '../view_models/lesson_script_state.dart';
@@ -48,12 +50,17 @@ class ScriptMoveList extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Padding(
           key: LessonScriptKeys.moveList,
-          padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+            AppSpacing.lg,
+          ),
           child: SizedBox(
             width: double.infinity,
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
-              runSpacing: 2,
+              runSpacing: AppSpacing.xs,
               children: _items(context),
             ),
           ),
@@ -126,13 +133,13 @@ class ScriptMoveList extends StatelessWidget {
 
   Widget _result(BuildContext context, ScriptMoveEntry entry) => _cover(
     Padding(
-      padding: const EdgeInsets.only(left: 8, right: 6),
+      padding: const EdgeInsets.only(left: AppSpacing.sm, right: AppSpacing.sm),
       child: Text(
         entry.result!,
         key: LessonScriptKeys.moveResult(entry.id),
         style: TextStyle(
           fontSize: entry.depth > 0 ? 14 : 15,
-          fontWeight: FontWeight.w800,
+          fontWeight: AppWeight.heavy,
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
@@ -144,7 +151,7 @@ class ScriptMoveList extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return _cover(
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
         child: Text(
           text,
           style: TextStyle(fontSize: 15, height: 2, color: colors.outline),
@@ -162,7 +169,7 @@ class ScriptMoveList extends StatelessWidget {
       fontSize: variant ? 14 : 15,
       height: 1.2,
       fontWeight: selected
-          ? FontWeight.w800
+          ? AppWeight.heavy
           : (variant ? FontWeight.w400 : FontWeight.w500),
       color: selected
           ? colors.onPrimary
@@ -175,7 +182,10 @@ class ScriptMoveList extends StatelessWidget {
         children: [
           if (number != null)
             Padding(
-              padding: const EdgeInsets.only(left: 5, right: 1),
+              padding: const EdgeInsets.only(
+                left: AppSpacing.xs,
+                right: AppSpacing.xs,
+              ),
               child: Text(
                 number,
                 style: TextStyle(
@@ -198,7 +208,7 @@ class ScriptMoveList extends StatelessWidget {
               child: AnimatedContainer(
                 duration: AppMotion.of(context).state,
                 height: 30,
-                padding: const EdgeInsets.symmetric(horizontal: 6),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   color: selected ? colors.primary : Colors.transparent,

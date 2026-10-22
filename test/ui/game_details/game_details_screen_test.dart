@@ -126,29 +126,32 @@ void main() {
   double sheetTop(WidgetTester tester) =>
       tester.getTopLeft(find.byKey(GameDetailsKeys.panel)).dy;
 
-  testWidgets('o painel da análise é uma superfície contínua `surface`, sem '
-      'cartões com cor própria', (tester) async {
-    final id = await progress.addAttempt(game);
-    await pump(tester, id, screen: const Size(1080, 2400));
-    final surface = Theme.of(tester.element(find.byKey(GameDetailsKeys.panel)))
-        .colorScheme
-        .surface;
-    final sheet = tester.widget<DecoratedBox>(
-      find
-          .ancestor(
-            of: find.byKey(GameDetailsKeys.panel),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
-    expect((sheet.decoration as BoxDecoration).color, surface);
-    final cards = tester.widgetList<Card>(find.byType(Card));
-    expect(cards, isNotEmpty);
-    for (final card in cards) {
-      expect(card.color, Colors.transparent);
-      expect(card.elevation, 0);
-    }
-  });
+  testWidgets(
+    'o painel da análise é a folha padrão (`surfaceContainerLow`), sem '
+    'cartões com cor própria',
+    (tester) async {
+      final id = await progress.addAttempt(game);
+      await pump(tester, id, screen: const Size(1080, 2400));
+      final surface = Theme.of(
+        tester.element(find.byKey(GameDetailsKeys.panel)),
+      ).colorScheme.surfaceContainerLow;
+      final sheet = tester.widget<DecoratedBox>(
+        find
+            .ancestor(
+              of: find.byKey(GameDetailsKeys.panel),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      expect((sheet.decoration as BoxDecoration).color, surface);
+      final cards = tester.widgetList<Card>(find.byType(Card));
+      expect(cards, isNotEmpty);
+      for (final card in cards) {
+        expect(card.color, Colors.transparent);
+        expect(card.elevation, 0);
+      }
+    },
+  );
 
   testWidgets('a folha: recolhida embaixo do tabuleiro; puxada, sobe por '
       'cima dele com o x; o x a desce de volta', (tester) async {

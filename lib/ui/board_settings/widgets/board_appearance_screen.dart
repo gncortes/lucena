@@ -8,7 +8,9 @@ import '../../../domain/models/board_settings.dart';
 import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/board_settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
+import '../../core/widgets/section_title.dart';
 
 /// Cores, peças e coordenadas do tabuleiro, com uma amostra que muda na hora.
 class BoardAppearanceScreen extends StatelessWidget {
@@ -35,26 +37,27 @@ class BoardAppearanceScreen extends StatelessWidget {
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                   child: BoardPreview(
                     boardKey: BoardSettingsKeys.preview,
                     size: previewSize,
                     board: board,
                   ),
                 ),
-                const Divider(height: 1),
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
                     children: [
-                      AppearanceSectionTitle(l10n.boardColors),
+                      SectionTitle(l10n.boardColors),
                       BoardColorsCarousel(
                         selected: board.colors,
                         keyOf: BoardSettingsKeys.colorsOption,
                         onSelected: (colors) =>
                             cubit.setBoard(board.copyWith(colors: colors)),
                       ),
-                      AppearanceSectionTitle(l10n.boardPieces),
+                      SectionTitle(l10n.boardPieces),
                       PieceStyleCarousel(
                         selected: board.pieces,
                         colors: board.colors,
@@ -71,12 +74,20 @@ class BoardAppearanceScreen extends StatelessWidget {
                             cubit.setBoard(board.copyWith(coordinates: value)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: OutlinedButton.icon(
-                          key: BoardSettingsKeys.resetButton,
-                          icon: const Icon(Icons.restart_alt),
-                          label: Text(l10n.boardRestoreDefault),
-                          onPressed: cubit.resetBoardAppearance,
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                          AppSpacing.lg,
+                          AppSpacing.lg,
+                        ),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: OutlinedButton.icon(
+                            key: BoardSettingsKeys.resetButton,
+                            icon: const Icon(Icons.restart_alt),
+                            label: Text(l10n.boardRestoreDefault),
+                            onPressed: cubit.resetBoardAppearance,
+                          ),
                         ),
                       ),
                     ],

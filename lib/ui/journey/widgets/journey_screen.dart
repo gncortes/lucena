@@ -7,6 +7,9 @@ import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -15,7 +18,8 @@ import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 import 'trail_widgets.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 
 /// A Jornada: o adversário atual em destaque e, embaixo, a trilha dos
 /// personagens, do mais fraco ao mais forte, com o Stockfish no fim, como
@@ -33,13 +37,18 @@ class JourneyScreen extends StatelessWidget {
       key: JourneyKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.journeyTitle)),
       body: progress == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const SkeletonList()
           : ListView(
               padding: scrollPadding(context),
               children: [
                 // Para quem chega: a Jornada é o passo seguinte às aulas.
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.xs,
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                  ),
                   child: Text(
                     l10n.journeyIntro,
                     key: JourneyKeys.intro,
@@ -49,7 +58,7 @@ class JourneyScreen extends StatelessWidget {
                   ),
                 ),
                 _Summary(progress: progress),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 // A trilha vai do mais fraco ao mais forte: o Stockfish no
                 // fim, como chefe final.
                 for (final (index, rung) in progress.rungs.indexed)
@@ -98,20 +107,28 @@ class _Summary extends StatelessWidget {
     final next = progress.next;
     if (current == null) {
       return Card(
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        margin: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.sm,
+        ),
         color: colors.primaryContainer,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Row(
             children: [
-              Icon(Icons.hiking_rounded, size: 40, color: colors.primary),
-              const SizedBox(width: 16),
+              Icon(
+                Icons.hiking_rounded,
+                size: AppIconSize.large,
+                color: colors.primary,
+              ),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Text(
                   l10n.journeyFinished,
                   key: JourneyKeys.current,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
                     color: colors.onPrimaryContainer,
                   ),
                 ),
@@ -129,18 +146,26 @@ class _Summary extends StatelessWidget {
     final total = current.rung.challenges.length;
     final done = current.completed.length;
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
       color: colors.primaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               children: [
                 if (character != null) ...[
-                  CharacterAvatar(character: character, size: 72),
-                  const SizedBox(width: 16),
+                  CharacterAvatar(
+                    character: character,
+                    size: CharacterAvatar.versus,
+                  ),
+                  const SizedBox(width: AppSpacing.lg),
                 ],
                 Expanded(
                   child: Column(
@@ -155,8 +180,7 @@ class _Summary extends StatelessWidget {
                       Text(
                         opponentName(l10n, characters, opponent),
                         key: JourneyKeys.current,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
+                        style: context.bigNumber?.copyWith(
                           color: colors.onPrimaryContainer,
                         ),
                       ),
@@ -172,29 +196,28 @@ class _Summary extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppShape.small),
-              child: AnimatedProgress(
-                value: total == 0 ? 0 : done / total,
-                minHeight: 10,
-                backgroundColor: colors.surface.withValues(alpha: 0.6),
-              ),
+            const SizedBox(height: AppSpacing.lg),
+            AnimatedProgress(
+              value: total == 0 ? 0 : done / total,
+              backgroundColor: colors.surface,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               l10n.journeyRungProgress(done, total),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onPrimaryContainer,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Row(
               children: [
                 if (next != null) ...[
                   if (nextCharacter != null) ...[
-                    CharacterAvatar(character: nextCharacter, size: 28),
-                    const SizedBox(width: 8),
+                    CharacterAvatar(
+                      character: nextCharacter,
+                      size: CharacterAvatar.mini,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
                   ],
                   Expanded(
                     child: Text(
@@ -209,7 +232,7 @@ class _Summary extends StatelessWidget {
                   ),
                 ] else
                   const Spacer(),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 FilledButton(
                   key: JourneyKeys.continueButton,
                   onPressed: () => _openRung(context, current.rung.id),
@@ -279,7 +302,7 @@ class _TrailNode extends StatelessWidget {
               child: ColoredBox(color: colors.outlineVariant),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: Row(
                 children: [
                   SizedBox(
@@ -301,7 +324,7 @@ class _TrailNode extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -314,11 +337,11 @@ class _TrailNode extends StatelessWidget {
                                       ? theme.textTheme.titleLarge
                                       : theme.textTheme.titleMedium)
                                   ?.copyWith(
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: AppWeight.strong,
                                     color: locked ? colors.outline : null,
                                   ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           [
                             if (opponent.level case final level?)
@@ -336,7 +359,7 @@ class _TrailNode extends StatelessWidget {
                         ),
                         // O último da trilha é o chefe final.
                         if (last || completed) ...[
-                          const SizedBox(height: 6),
+                          const SizedBox(height: AppSpacing.sm),
                           TrailBadge(
                             text: completed
                                 ? l10n.journeyDone
@@ -362,18 +385,13 @@ class _TrailNode extends StatelessWidget {
     final before = progress.before(rung.rung.id);
     if (before == null) return;
     final characters = context.read<JourneyCubit>().state.characters;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n.journeyLocked(
-              before.remaining,
-              opponentName(l10n, characters, before.rung.opponent),
-            ),
-            key: JourneyKeys.lockedMessage,
-          ),
-        ),
-      );
+    showLucenaSnackBar(
+      context,
+      l10n.journeyLocked(
+        before.remaining,
+        opponentName(l10n, characters, before.rung.opponent),
+      ),
+      key: JourneyKeys.lockedMessage,
+    );
   }
 }

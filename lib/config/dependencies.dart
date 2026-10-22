@@ -6,8 +6,11 @@ import '../data/repositories/tablebase/script_table_repository.dart';
 import '../domain/use_cases/position_judge.dart';
 
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../data/repositories/deep_link/deep_link_repository.dart';
 import '../data/repositories/draw/draw_offer_repository.dart';
+import '../data/services/deep_link_service.dart';
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import '../data/repositories/endgames/visible_endgame_lesson_repository.dart';
@@ -42,6 +45,8 @@ import '../data/repositories/characters/character_repository_asset.dart';
 import '../data/repositories/evaluation/evaluation_repository_stockfish.dart';
 import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/journey/journey_repository_asset.dart';
+import '../data/repositories/race/race_repository.dart';
+import '../data/repositories/race/race_repository_local.dart';
 import '../data/repositories/speedrun/speedrun_repository.dart';
 import '../data/repositories/speedrun/speedrun_repository_local.dart';
 import '../data/repositories/haptics/haptics_repository_device.dart';
@@ -55,9 +60,14 @@ import '../data/services/tts_service.dart';
 import '../data/services/speech_input_service.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
 import '../data/repositories/blind/blind_checkpoint_repository.dart';
+import '../data/repositories/survey/survey_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
 import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/voice/voice_repository_local.dart';
+import '../data/repositories/featured/featured_alerts_repository.dart';
+import '../data/repositories/featured/featured_progress_repository.dart';
+import '../data/repositories/featured/featured_repository.dart';
+import '../data/repositories/featured/featured_repository_asset.dart';
 import '../data/repositories/wiki/wiki_links_repository.dart';
 import '../data/repositories/wiki/wiki_links_repository_asset.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
@@ -85,13 +95,14 @@ import '../data/services/preferences_service.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../domain/models/app_language.dart';
+import '../domain/models/app_version.dart';
 import '../domain/use_cases/now.dart';
 
 /// Ligado por `--dart-define=E2E=true` nos cenários Patrol.
 const isE2E = bool.fromEnvironment('E2E');
 
 /// A versão do app (`0.3.2-rc.1`), passada pelo CI ao montar o APK assinado.
-/// Vazia nos builds locais.
+/// Vazia nos builds locais: aí vale a do aparelho ([Dependencies.installedVersion]).
 const appVersion = String.fromEnvironment('APP_VERSION');
 
 /// As telas de desenvolvimento aparecem nos builds de depuração, nos cenários
@@ -109,6 +120,7 @@ class Dependencies {
     required this.profileRepository,
     required this.hapticsRepository,
     required this.shareRepository,
+    required this.deepLinkRepository,
     required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
@@ -122,6 +134,7 @@ class Dependencies {
     required this.progressRepository,
     required this.journeyRepository,
     required this.speedrunRepository,
+    required this.raceRepository,
     required this.ratingRepository,
     required this.achievementsRepository,
     required this.characterRepository,
@@ -146,11 +159,26 @@ class Dependencies {
     required this.speechInputRepository,
     required this.blindLogRepository,
     required this.blindCheckpointRepository,
+    required this.surveyRepository,
     required this.wikiLinksRepository,
+    required this.featuredRepository,
+    required this.featuredProgressRepository,
+    this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     required this.languages,
+    this.version = const AppVersion(appVersion),
   });
 
-  factory Dependencies.normal() {
+  /// A versão do CI ou, nos builds locais, a do `pubspec.yaml` lida do
+  /// aparelho.
+  static Future<AppVersion> installedVersion() async {
+    if (appVersion.isNotEmpty) return const AppVersion(appVersion);
+    final info = await PackageInfo.fromPlatform();
+    return AppVersion(info.version);
+  }
+
+  factory Dependencies.normal({
+    AppVersion version = const AppVersion(appVersion),
+  }) {
     final preferences = PreferencesService();
     final database = AppDatabase();
     const now = SystemNow();
@@ -169,6 +197,8 @@ class Dependencies {
       profileRepository: profile,
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       shareRepository: const DeviceShareRepository(ShareService()),
+      // Sem App Links até a E1.01: troque por um serviço que leia o sistema.
+      deepLinkRepository: const ServiceDeepLinkRepository(NoDeepLinkService()),
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
@@ -185,6 +215,7 @@ class Dependencies {
       progressRepository: LocalProgressRepository(database),
       journeyRepository: AssetJourneyRepository(assets, positions),
       speedrunRepository: LocalSpeedrunRepository(database),
+      raceRepository: LocalRaceRepository(assets, preferences, now),
       ratingRepository: LocalRatingRepository(
         database,
         maia: maiaRepository,
@@ -222,16 +253,23 @@ class Dependencies {
       speechInputRepository: DeviceSpeechInputRepository(SpeechInputService()),
       blindLogRepository: LocalBlindLogRepository(preferences),
       blindCheckpointRepository: LocalBlindCheckpointRepository(preferences),
+      surveyRepository: LocalSurveyRepository(preferences, now),
       wikiLinksRepository: AssetWikiLinksRepository(assets),
+      featuredRepository: AssetFeaturedRepository(assets),
+      featuredProgressRepository: LocalFeaturedProgressRepository(preferences),
       languages: AppLanguage.selectable,
+      version: version,
     );
   }
+
+  final AppVersion version;
 
   final Now now;
   final SettingsRepository settingsRepository;
   final ProfileRepository profileRepository;
   final HapticsRepository hapticsRepository;
   final ShareRepository shareRepository;
+  final DeepLinkRepository deepLinkRepository;
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;
@@ -245,6 +283,7 @@ class Dependencies {
   final ProgressRepository progressRepository;
   final JourneyRepository journeyRepository;
   final SpeedrunRepository speedrunRepository;
+  final RaceRepository raceRepository;
   final RatingRepository ratingRepository;
   final AchievementsRepository achievementsRepository;
   final CharacterRepository characterRepository;
@@ -274,8 +313,17 @@ class Dependencies {
   final BlindLogRepository blindLogRepository;
   final BlindCheckpointRepository blindCheckpointRepository;
 
+  /// O questionário "Sua opinião" (E1.05), guardado no aparelho.
+  final SurveyRepository surveyRepository;
+
   /// As páginas da Wikipedia dos nomes marcados nas falas das aulas.
   final WikiLinksRepository wikiLinksRepository;
+
+  /// Os finais em destaque, o que o jogador já fez com eles e o aviso de
+  /// final novo (sem canal por enquanto: E1.20 e E1.21).
+  final FeaturedRepository featuredRepository;
+  final FeaturedProgressRepository featuredProgressRepository;
+  final FeaturedAlertsRepository featuredAlertsRepository;
 
   /// Idiomas oferecidos em Configurações.
   final List<AppLanguage> languages;

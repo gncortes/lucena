@@ -13,9 +13,9 @@ import 'package:lucena/ui/free_board/widgets/clock_row.dart';
   if (find.byKey(FreeBoardKeys.actionsBar).evaluate().isNotEmpty) {
     footerTop = tester.getRect(find.byKey(FreeBoardKeys.actionsBar)).top;
   } else {
-    // O rodapé do fim da partida: botão de 52 com 12 de respiro.
+    // O rodapé do fim da partida: botão de 52 com 8 de respiro (ActionsFooter).
     footerTop =
-        tester.getRect(find.byKey(FreeBoardKeys.seeResultButton)).top - 12;
+        tester.getRect(find.byKey(FreeBoardKeys.seeResultButton)).top - 8;
   }
   var top = board.top;
   var bottom = board.bottom;

@@ -45,6 +45,8 @@ class ClockRow extends StatelessWidget {
     final nickname = context.select(
       (ProfileCubit cubit) => cubit.state?.nickname ?? '',
     );
+    // O final em destaque não mexe no rating: "Você · Sem rating" (canvas).
+    final featured = mode.featuredId != null;
     PlayerEntry entry(Side side) {
       // O lado da máquina leva o nome dela (`Maia 1400`, `Stockfish`).
       final character = side == mode.machineSide ? talk?.character : null;
@@ -54,7 +56,11 @@ class ClockRow extends StatelessWidget {
           ? mode.opponent.label(l10n, level: mode.level)
           // Contra a máquina, o lado do jogador leva o apelido dele.
           : side == mode.userSide && mode.opponent.isMachine
-          ? (nickname.isEmpty ? l10n.profileNicknameDefault : nickname)
+          ? (featured
+                ? l10n.reviewYou
+                : nickname.isEmpty
+                ? l10n.profileNicknameDefault
+                : nickname)
           : side == Side.white
           ? l10n.sideWhite
           : l10n.sideBlack;
@@ -67,8 +73,15 @@ class ClockRow extends StatelessWidget {
           ? (character != null && !(talk?.isEngine ?? false) && level != null
                 ? l10n.journeyOpponentLevel('$level')
                 : null)
-          : side == mode.userSide && mode.opponent.isMachine && rating != null
-          ? '$rating'
+          : side == mode.userSide && mode.opponent.isMachine && featured
+          ? l10n.featuredNoRating
+          : side == mode.userSide && mode.opponent.isMachine
+          // Partida de link antes do "Seu nível": ainda não há rating.
+          ? (rating != null
+                ? '$rating'
+                : mode.fromLink
+                ? l10n.freeBoardNoRating
+                : null)
           : null;
       final clock = state.clock;
       return PlayerEntry(
@@ -90,7 +103,7 @@ class ClockRow extends StatelessWidget {
                 key: FreeBoardKeys.characterAvatar(talk!.emotion),
                 character: character,
                 emotion: talk!.isEngine ? null : talk!.emotion,
-                size: 44,
+                size: CharacterAvatar.player,
               ),
       );
     }

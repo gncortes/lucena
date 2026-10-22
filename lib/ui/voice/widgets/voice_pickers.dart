@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/app_chip.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
 import '../view_models/speech_cubit.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/sound_off_icon.dart';
@@ -37,7 +42,7 @@ class VoiceGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
     child: LayoutBuilder(
       builder: (context, constraints) {
         final width = (constraints.maxWidth - 2 * _spacing) / 3;
@@ -97,7 +102,12 @@ class VoiceCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 12, 8, 10),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.sm,
+              AppSpacing.md,
+              AppSpacing.sm,
+              AppSpacing.md,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -108,12 +118,12 @@ class VoiceCard extends StatelessWidget {
                         leading ??
                         Icon(
                           selected ? Icons.check : icon,
-                          size: 30,
+                          size: AppIconSize.large,
                           color: selected ? colors.primary : foreground,
                         ),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   label,
                   maxLines: 1,
@@ -121,7 +131,6 @@ class VoiceCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: foreground,
-                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 if (detail != null)
@@ -227,7 +236,12 @@ class SystemVoicesHelp extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -236,10 +250,10 @@ class SystemVoicesHelp extends StatelessWidget {
             children: [
               Icon(
                 Icons.info_outline,
-                size: 20,
+                size: AppIconSize.button,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
                   missing ? l10n.voiceUnavailable : l10n.voiceBetterHint,
@@ -251,7 +265,7 @@ class SystemVoicesHelp extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: OutlinedButton.icon(
@@ -296,18 +310,25 @@ class VoiceTonePicker extends StatelessWidget {
     void choose(VoiceTone tone) =>
         speech.setTone(characterId, tone, sample: sample, language: language);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.voiceTone, style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
               for (final option in VoiceTone.values)
                 ChoiceChip(
+                  materialTapTargetSize: AppChip.tapTarget,
+                  visualDensity: AppChip.density,
                   key: VoiceKeys.tone(option),
                   label: Text(label(option)),
                   selected: tone == option,

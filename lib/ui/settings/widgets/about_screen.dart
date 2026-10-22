@@ -3,20 +3,19 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../config/dependencies.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/scroll_padding.dart';
 
 /// Sobre o Lucena: o site, o código aberto, as licenças, o tour e a versão.
 class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key, this.version = appVersion});
+  const AboutScreen({super.key, this.version = ''});
 
-  /// A versão do app, para quem relata um problema. Vazia (build local, sem
-  /// versão): não aparece.
+  /// A versão do app, para quem relata um problema. Vazia: não aparece.
   final String version;
 
   /// O site do app, no idioma de quem usa (pt na raiz; en e es com prefixo;
@@ -86,7 +85,7 @@ class AboutScreen extends StatelessWidget {
             key: SettingsKeys.aboutWebsite,
             leading: const Icon(Icons.public),
             title: Text(l10n.aboutWebsite),
-            trailing: const Icon(Icons.open_in_new, size: 18),
+            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
             onTap: () => launchUrl(
               websiteFor(language),
               mode: LaunchMode.externalApplication,
@@ -97,7 +96,7 @@ class AboutScreen extends StatelessWidget {
             leading: const Icon(Icons.code),
             title: Text(l10n.aboutSource),
             subtitle: Text(l10n.aboutSourceHint),
-            trailing: const Icon(Icons.open_in_new, size: 18),
+            trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
             onTap: () =>
                 launchUrl(source, mode: LaunchMode.externalApplication),
           ),

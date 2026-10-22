@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
+import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
@@ -15,6 +16,7 @@ import 'package:lucena/ui/core/widgets/web_pages.dart';
 
 import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_share_repository.dart';
+import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
 
@@ -31,6 +33,7 @@ class TestApp extends StatelessWidget {
     this.wikiLinksCubit,
     this.webPages,
     this.router,
+    this.surveyRepository,
     super.key,
   });
 
@@ -59,6 +62,10 @@ class TestApp extends StatelessWidget {
   /// O compartilhar, quando o teste confere o que foi enviado. Sem ele, um
   /// falso que só guarda.
   final ShareRepository? shareRepository;
+
+  /// O questionário "Sua opinião" (o convite e a tela). Sem ele, um falso
+  /// vazio.
+  final SurveyRepository? surveyRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -119,6 +126,9 @@ class TestApp extends StatelessWidget {
           value: shareRepository ?? FakeShareRepository(),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
+        RepositoryProvider<SurveyRepository>.value(
+          value: surveyRepository ?? FakeSurveyRepository(),
+        ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),
     );

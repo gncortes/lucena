@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+
+import '../keys/core_keys.dart';
+import '../theme/app_button.dart';
+import '../theme/app_button_text.dart';
+import '../theme/app_spacing.dart';
+
+/// O rodapé de ações das telas (E1.08, D18; canvas `CompRodapeAcoes`): na cor
+/// de quem está atrás, sem sombra, faixa nem divisor, com margem 16 dos lados
+/// e 8 em cima e embaixo (mais a área segura). Cada filho ganha a altura de
+/// 52 dos botões de rodapé (D19) e o texto de 16/24: ninguém declara altura
+/// nem letra por fora.
+///
+/// Os filhos ficam lado a lado, cada um com a mesma largura, ou um sobre o
+/// outro ([stacked], o principal em cima). [fade] só serve à Aula de final,
+/// onde o conteúdo rola por baixo: o fundo vira um degradê que some no alto.
+class ActionsFooter extends StatelessWidget {
+  const ActionsFooter({
+    required this.children,
+    this.fade = false,
+    this.stacked = false,
+    this.margin = AppSpacing.lg,
+    super.key,
+  });
+
+  final List<Widget> children;
+  final bool fade;
+  final bool stacked;
+
+  /// A margem dos lados: 16 na tela; 24 na folha e no painel da Nova partida.
+  final double margin;
+
+  @override
+  Widget build(BuildContext context) {
+    final background = Theme.of(context).scaffoldBackgroundColor;
+    final items = [
+      for (final child in children)
+        stacked
+            ? SizedBox(height: kButtonHeight, child: child)
+            : Expanded(
+                child: SizedBox(height: kButtonHeight, child: child),
+              ),
+    ];
+    return DecoratedBox(
+      key: CoreKeys.actionsFooter,
+      decoration: BoxDecoration(
+        gradient: fade
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [background.withValues(alpha: 0), background],
+                stops: const [0, 0.35],
+              )
+            : null,
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            margin,
+            fade ? AppSpacing.xl : AppSpacing.sm,
+            margin,
+            AppSpacing.sm,
+          ),
+          child: FooterButtonTheme(
+            child: stacked
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: AppSpacing.sm,
+                    children: items,
+                  )
+                : Row(spacing: AppSpacing.sm, children: items),
+          ),
+        ),
+      ),
+    );
+  }
+}

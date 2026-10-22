@@ -25,6 +25,22 @@ void main() {
     );
   });
 
+  patrolTest('partida guardada: o tabuleiro livre pergunta antes se volta a '
+      'ela ou começa do zero', ($) async {
+    final board = FreeBoardRobot($);
+    await AppRobot($).open(systemLocale: const Locale('en', 'US'));
+    await board.open();
+    await board.move('e2', 'e4');
+    await board.leave();
+
+    await board.openWithSavedGame(keep: true);
+    await board.expectMoves(['e4']);
+    await board.leave();
+
+    await board.openWithSavedGame(keep: false);
+    board.expectFen(_initialFen);
+  });
+
   patrolTest('tabuleiro virado: o anel da vez segue o retrato de quem joga, '
       'inclusive o de cima', ($) async {
     final board = FreeBoardRobot($);

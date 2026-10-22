@@ -6,6 +6,14 @@ import 'package:lucena/data/repositories/share/share_repository.dart';
 class FakeShareRepository implements ShareRepository {
   final shared = <({Uint8List png, String name, String? text})>[];
 
+  final texts = <String>[];
+
+  @override
+  Future<bool> shareText(String text) async {
+    texts.add(text);
+    return true;
+  }
+
   @override
   Future<bool> shareImage(
     Uint8List png, {

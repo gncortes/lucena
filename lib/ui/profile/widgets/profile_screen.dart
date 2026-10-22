@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,10 +9,13 @@ import '../../../routing/routes.dart';
 import '../../core/keys/profile_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
+import '../../core/theme/app_spacing.dart';
 import '../view_models/profile_cubit.dart';
 import 'rating_level_sheet.dart';
 import 'rating_level_ui.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/nickname_field.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -88,29 +90,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           appBar: LucenaAppBar(title: Text(l10n.settingsProfile)),
           body: SafeArea(
             child: ListView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               children: [
-                TextField(
-                  key: ProfileKeys.nicknameField,
+                NicknameField(
+                  fieldKey: ProfileKeys.nicknameField,
                   controller: _nickname,
                   focusNode: _nicknameFocus,
-                  textInputAction: TextInputAction.done,
-                  textCapitalization: TextCapitalization.words,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(
-                      UserProfile.maxNicknameLength,
-                    ),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: l10n.profileNickname,
-                    hintText: l10n.profileNicknameDefault,
-                    // O apelido padrão fica à vista enquanto o campo está vazio.
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    prefixIcon: const Icon(Icons.person_outline),
-                    border: const OutlineInputBorder(),
-                  ),
+                  label: l10n.profileNickname,
+                  hint: l10n.profileNicknameDefault,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
                 if (level != null)
                   _LevelField(level: level, onTap: () => _pickLevel(level)),
                 // O teste de nível de novo: não apaga progresso; usado o
@@ -124,18 +113,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     label: Text(l10n.placementTake),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
                 FilledButton(
                   key: ProfileKeys.saveButton,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(kButtonHeight),
+                    textStyle: AppButtonText.footer(context),
+                  ),
                   onPressed: level == null ? null : () => _save(level),
                   child: Text(l10n.profileSave),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 // O rating de finais fica no histórico, com os detalhes.
                 OutlinedButton.icon(
                   key: ProfileKeys.ratingCard,
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(kButtonHeight),
+                    textStyle: AppButtonText.footer(context),
                   ),
                   onPressed: () => context.push(Routes.rating),
                   icon: const Icon(Icons.show_chart_rounded),
@@ -171,14 +165,18 @@ class _LevelField extends StatelessWidget {
           decoration: InputDecoration(
             labelText: l10n.profileRating,
             floatingLabelBehavior: FloatingLabelBehavior.always,
-            contentPadding: const EdgeInsetsDirectional.fromSTEB(12, 12, 4, 12),
+            contentPadding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.md,
+              AppSpacing.md,
+              AppSpacing.xs,
+              AppSpacing.md,
+            ),
             suffixIcon: const Icon(Icons.expand_more),
-            border: const OutlineInputBorder(),
           ),
           child: Row(
             children: [
               LevelBadge(level: level),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

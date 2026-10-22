@@ -6,6 +6,8 @@ import 'package:flutter/rendering.dart';
 
 import '../l10n/l10n.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 import 'animated_speech_switcher.dart';
 import 'speech_sheet_fade.dart';
 
@@ -309,8 +311,8 @@ class SpeechBalloon extends StatelessWidget {
   static double get tailExtent => tailHeight + tailGap;
 
   static const defaultPadding = EdgeInsetsDirectional.symmetric(
-    horizontal: 16,
-    vertical: 14,
+    horizontal: AppSpacing.lg,
+    vertical: AppSpacing.lg,
   );
 
   /// `pontaX` para a ponta cair no centro de um retrato de [avatar] dp.
@@ -418,7 +420,7 @@ class SpeechBalloon extends StatelessWidget {
   }
 }
 
-/// O texto da fala; as marcas [mainLineMark] e [showAnswerMark] viram o
+/// O texto da fala; as marcas `{linhaPrincipal}` e `{verResposta}` viram o
 /// rótulo do botão, sublinhado na cor primária, sem o ponto colado depois, e o
 /// clique faz o mesmo que o botão. Com [maxLines], corta com reticências; se o
 /// trecho cortado tem link, o corte vai para o meio e a frase do link fica.
@@ -444,12 +446,9 @@ class SpeechText extends StatefulWidget {
   /// com o nome dela. Nulo, a casa solta fica como texto comum.
   final ValueChanged<String>? onSquareTap;
 
-  /// As marcas na fala que viram o rótulo do botão, sublinhado e clicável
-  /// (Gabriel, 14/10/2026): todo botão citado na fala é link.
-  static const mainLineMark = '{linhaPrincipal}';
-  static const showAnswerMark = '{verResposta}';
-
-  /// Uma marca e o ponto logo depois dela (o link não leva ponto colado).
+  /// Uma marca (`{linhaPrincipal}`, `{verResposta}`) e o ponto logo depois
+  /// dela: ela vira o rótulo do botão, sublinhado e clicável (o link não leva
+  /// ponto colado).
   static final markPattern = RegExp(r'\{(linhaPrincipal|verResposta)\}\.?');
 
   /// Uma casa entre colchetes, como `[c6]`: na tela vira negrito azul; fora
@@ -556,7 +555,7 @@ class _SpeechTextState extends State<SpeechText> {
     );
     final square = widget.style.copyWith(
       color: primary,
-      fontWeight: FontWeight.w700,
+      fontWeight: AppWeight.strong,
     );
     final spans = <InlineSpan>[];
     var at = 0;

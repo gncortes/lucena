@@ -11,6 +11,9 @@ import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_text.dart';
+import '../../core/widgets/animated_progress.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
@@ -26,6 +29,7 @@ import 'star_shape.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/actions_footer.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
@@ -136,21 +140,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                      ),
-                      child: SafeArea(
-                        top: false,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: action,
-                        ),
-                      ),
-                    ),
+                    child: ActionsFooter(children: [action]),
                   ),
               ],
             ),
@@ -208,18 +198,12 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     return switch (state.phase) {
       ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(kButtonHeight),
-        ),
         icon: const Icon(Icons.play_arrow_rounded),
         label: label(l10n.starChallengeGo),
         onPressed: cubit.start,
       ),
       ChallengePhase.finished => FilledButton.icon(
         key: StarChallengeKeys.retryButton,
-        style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(kButtonHeight),
-        ),
         icon: const Icon(Icons.replay_rounded),
         label: label(l10n.starChallengePlayAgain),
         onPressed: cubit.retry,
@@ -228,10 +212,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     };
   }
 
-  /// A ação fixa, suas margens e a borda; a área segura fica fora da reserva.
-  /// O botão tem 52 ou a linha do rótulo, se for maior.
-  static double _actionRoom(TextScaler scaler) =>
-      max(52.0, scaler.scale(20).ceilToDouble()) + 8 + 8 + 1;
+  /// A ação fixa e suas margens; a área segura fica fora da reserva.
+  static const _actionRoom = kButtonHeight + 8 + 8;
 
   /// O placar sob o tabuleiro (duas linhas de texto e as margens). Na pausa
   /// o aviso vai na sobra de baixo, sem mexer no bloco.
@@ -251,7 +233,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     final timerHeight = 16 + scaler.scale(24).ceilToDouble();
     final lowTime =
         state.phase == ChallengePhase.running &&
-        state.timeLeft <= const Duration(seconds: 10);
+        state.timeLeft <= StarChallengeCubit.lowTime;
     // O bloco (relógio, convite ou resultado, tabuleiro e placar) centrado
     // entre a barra do app e o rodapé, a sobra meio a meio (T65, "Centralizar
     // igual"). Ao tocar em Vai!, o convite e o botão somem e o bloco é
@@ -274,7 +256,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
         // Fonte grande em tela baixa: o tabuleiro não passa de metade da
         // largura para baixo; o que vem em cima ganha só a altura que sobra e
         // rola.
-        final footer = _hasAction(state) ? _actionRoom(scaler) : 0.0;
+        final footer = _hasAction(state) ? _actionRoom : 0.0;
         final room =
             box.maxHeight -
             footer -
@@ -318,7 +300,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       bottomAlignment: Alignment.topCenter,
       // O lugar da ação fixa (o "Vai!" ou o "Jogar de novo", desenhados por
       // cima, fora da área segura): o bloco centra acima dela.
-      footer: withAction ? SizedBox(height: _actionRoom(scaler)) : null,
+      footer: withAction ? SizedBox(height: _actionRoom) : null,
       // O relógio fica; o convite e o resultado rolam na fonte normal quando
       // falta altura (fonte grande em tela baixa), sem cortar o cartão.
       shrinkSides: false,
@@ -330,15 +312,20 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
           children: [
             // O relógio e a barra do tempo.
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.sm,
+              ),
               child: Row(
                 children: [
                   Icon(
                     Icons.timer_outlined,
-                    size: 20,
+                    size: AppIconSize.button,
                     color: lowTime ? colors.error : colors.onSurfaceVariant,
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: AppSpacing.sm),
                   TimeDisplay(
                     value: clockText(state.timeLeft),
                     semanticsLabel:
@@ -356,16 +343,11 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                         : TimeDisplayState.normal,
                     textKey: StarChallengeKeys.timer,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppShape.small),
-                      child: LinearProgressIndicator(
-                        value: 1 - state.elapsedFraction,
-                        minHeight: 8,
-                        color: lowTime ? colors.error : colors.primary,
-                        backgroundColor: colors.surfaceContainerHighest,
-                      ),
+                    child: AnimatedProgress(
+                      value: 1 - state.elapsedFraction,
+                      role: lowTime ? ProgressRole.error : ProgressRole.primary,
                     ),
                   ),
                 ],
@@ -456,7 +438,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       case ChallengePhase.running:
       case ChallengePhase.paused:
         // Às cegas: a casa da estrela pelo nome, grande, no lugar do desenho.
-        if (!level.announcesSquare) return const SizedBox(width: 1);
+        if (!level.announcesSquare) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
           child: AnimatedSwitcher(
@@ -468,7 +450,6 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               textDirection: TextDirection.ltr,
               style: theme.textTheme.displaySmall?.copyWith(
                 color: starColor(state.starKind),
-                fontWeight: FontWeight.w800,
               ),
             ),
           ),
@@ -483,9 +464,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               Text(
                 l10n.starChallengeTimeUp,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: context.cardTitle,
               ),
               const SizedBox(height: AppSpacing.xs),
               Semantics(
@@ -509,7 +488,6 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
                   color: state.newBest
                       ? colors.primary
                       : colors.onSurfaceVariant,
-                  fontWeight: state.newBest ? FontWeight.w700 : null,
                 ),
               ),
               TextButton(
@@ -597,11 +575,10 @@ class _IntroCard extends StatelessWidget {
   static const _padding = AppSpacing.insideCard;
   static const _border = 1.0;
 
-  /// O círculo da estrela: 22 do ícone e 4 de cada lado (CompInfoCard).
-  static const _badge = 22 + 2 * AppSpacing.xs;
+  /// O círculo da estrela: o ícone e 4 de cada lado (CompInfoCard).
+  static const _badge = AppIconSize.standard + 2 * AppSpacing.xs;
 
-  static TextStyle? _titleStyle(ThemeData theme) =>
-      theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700);
+  static TextStyle? _titleStyle(ThemeData theme) => theme.cardTitle;
 
   static TextStyle? _bodyStyle(ThemeData theme) => theme.textTheme.bodyMedium;
 
@@ -666,53 +643,61 @@ class _IntroCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final gold = starColor(StarKind.gold);
-    return Container(
+    return Card(
       key: StarChallengeKeys.intro,
-      width: double.infinity,
-      padding: const EdgeInsets.all(_padding),
-      decoration: BoxDecoration(
-        color: starCardColor(theme),
+      color: starCardColor(theme),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppShape.large),
-        border: Border.all(color: gold.withValues(alpha: 0.5), width: _border),
+        side: BorderSide(color: gold.withValues(alpha: 0.5), width: _border),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(_padding + _border),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: gold.withValues(alpha: 0.18),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.star_rounded, color: gold, size: 22),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.xs),
+                    decoration: BoxDecoration(
+                      color: gold.withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.star_rounded,
+                      color: gold,
+                      size: AppIconSize.standard,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      l10n.starChallengeIntroTitle,
+                      style: _titleStyle(theme),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  l10n.starChallengeIntroTitle,
-                  style: _titleStyle(theme),
-                ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                l10n.starChallengeIntroBody(level.seconds),
+                style: _bodyStyle(theme),
               ),
+              // Com peões no tabuleiro: eles só atrapalham, não se capturam.
+              if (level.obstacles > 0) ...[
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  l10n.starChallengeObstacles,
+                  key: StarChallengeKeys.obstacles,
+                  style: _noteStyle(theme),
+                ),
+              ],
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.starChallengeIntroBody(level.seconds),
-            style: _bodyStyle(theme),
-          ),
-          // Com peões no tabuleiro: eles só atrapalham, não se capturam.
-          if (level.obstacles > 0) ...[
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              l10n.starChallengeObstacles,
-              key: StarChallengeKeys.obstacles,
-              style: _noteStyle(theme),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

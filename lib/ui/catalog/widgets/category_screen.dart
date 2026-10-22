@@ -7,13 +7,16 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// Os finais de uma categoria, cada um numa seção com as posições dele já
 /// abertas em grade: o jogador toca na posição e vai direto para a partida.
@@ -37,7 +40,7 @@ class CategoryScreen extends StatelessWidget {
           const GoalFilterBar(),
           Expanded(
             child: sections == null
-                ? const Center(child: CircularProgressIndicator())
+                ? const SkeletonList()
                 : sections.isEmpty
                 ? const CatalogEmpty()
                 : ListView.builder(
@@ -70,7 +73,12 @@ class _Section extends StatelessWidget {
         _Collapsible(
           expanded: section.expanded,
           child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 16),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.xs,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
             child: _PositionGrid(positions: section.positions),
           ),
         ),
@@ -99,7 +107,12 @@ class _SectionHeader extends StatelessWidget {
         key: CatalogKeys.subcategory(subcategory),
         onTap: () => context.read<CatalogCubit>().toggleSection(subcategory),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 8, 12),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.sm,
+            AppSpacing.md,
+          ),
           child: Row(
             children: [
               Expanded(
@@ -108,13 +121,11 @@ class _SectionHeader extends StatelessWidget {
                   children: [
                     Text(
                       endgameName(l10n, subcategory),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.cardTitle,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.xs),
                     Wrap(
-                      spacing: 8,
+                      spacing: AppSpacing.sm,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         SubcategoryMaterialText(
@@ -134,7 +145,7 @@ class _SectionHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               // A seta gira para baixo com a seção aberta e para cima fechada.
               AnimatedRotation(
                 turns: section.expanded ? 0 : 0.5,
@@ -250,62 +261,26 @@ class _PositionCell extends StatelessWidget {
         Text(
           l10n.catalogPositionNumber(position.number),
           style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: AppWeight.strong,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Wrap(
           children: [
-            _Tag(
-              label: goalLabel(l10n, position.goal),
-              icon: goal.icon,
-              color: goal.container,
-              onColor: goal.onContainer,
-            ),
+            InfoChip(label: goalLabel(l10n, position.goal), icon: goal.icon),
           ],
         ),
-      ],
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  const _Tag({
-    required this.label,
-    required this.color,
-    required this.onColor,
-    this.icon,
-  });
-
-  final String label;
-  final IconData? icon;
-  final Color color;
-  final Color onColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(AppShape.small),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon case final icon?) ...[
-            Icon(icon, size: 14, color: onColor),
-            const SizedBox(width: 4),
-          ],
-          Flexible(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelMedium
-                  ?.copyWith(color: onColor),
-            ),
+        const SizedBox(height: AppSpacing.xs),
+        // Quem joga, lido do FEN (campo 2).
+        Text(
+          position.fen.split(' ')[1] == 'b'
+              ? l10n.freeBoardBlackToMove
+              : l10n.freeBoardWhiteToMove,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

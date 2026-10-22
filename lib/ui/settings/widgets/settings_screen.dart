@@ -8,17 +8,19 @@ import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/rating_level_ui.dart';
+import 'open_link_dialog.dart';
 
 /// O menu principal das Configurações: o perfil e os grupos (aparência,
 /// partida, som), cada um com a sua tela, e o "Sobre".
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key, this.version = appVersion});
+  const SettingsScreen({super.key, this.version = ''});
 
-  /// A versão do app, no rodapé, para quem relata um problema. Vazia (build
-  /// local, sem versão): não aparece.
+  /// A versão do app, no rodapé, para quem relata um problema. Vazia: não
+  /// aparece.
   final String version;
 
   @override
@@ -44,7 +46,11 @@ class SettingsScreen extends StatelessWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(Routes.settingsProfile),
           ),
-          const Divider(indent: 16, endIndent: 16),
+          const Divider(
+            indent: AppSpacing.lg,
+            endIndent: AppSpacing.lg,
+            height: AppSpacing.xl,
+          ),
           _Group(
             tileKey: SettingsKeys.appearanceTile,
             icon: Icons.palette_outlined,
@@ -66,7 +72,11 @@ class SettingsScreen extends StatelessWidget {
             hint: l10n.settingsSoundGroupHint,
             route: Routes.settingsSound,
           ),
-          const Divider(indent: 16, endIndent: 16),
+          const Divider(
+            indent: AppSpacing.lg,
+            endIndent: AppSpacing.lg,
+            height: AppSpacing.xl,
+          ),
           _Group(
             tileKey: SettingsKeys.aboutTile,
             icon: Icons.info_outline,
@@ -83,9 +93,22 @@ class SettingsScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.go(Routes.settingsMaia),
             ),
+          if (showsDevTools)
+            ListTile(
+              key: SettingsKeys.openLinkTile,
+              leading: const Icon(Icons.link),
+              title: Text(l10n.devOpenLinkTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => showOpenLinkDialog(context),
+            ),
           if (version.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.xl,
+                AppSpacing.lg,
+                AppSpacing.xl,
+              ),
               child: Text(
                 l10n.homeVersion(version),
                 key: SettingsKeys.version,

@@ -1,7 +1,10 @@
 import 'dart:io' as io;
 
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/visible_endgame_lesson_repository.dart';
+import 'package:lucena/domain/models/challenge_link.dart';
+import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/lesson.dart';
@@ -122,11 +125,15 @@ void main() {
   });
 
   group('retomada', () {
-    test('capítulo com roteiro reabre nele', () async {
-      final location = launchLocation(endgames: ongoing('distant'));
-      expect(await landing(location), location);
-      expect(Uri.parse(location).queryParameters['part'], 'distant');
-    });
+    test(
+      'capítulo com roteiro reabre nele, na etapa em que o aluno saiu',
+      () async {
+        final location = launchLocation(endgames: ongoing('distant'));
+        expect(await landing(location), location);
+        expect(Uri.parse(location).queryParameters['part'], 'distant');
+        expect(Uri.parse(location).queryParameters['etapa'], '3');
+      },
+    );
 
     test('capítulo antigo (sem roteiro) ou sem parte cai no início', () async {
       for (final part in <String?>['diagonal', 'wrapUp', 'sumiu', null]) {
@@ -186,6 +193,18 @@ void main() {
       RegExp(r"path: 'roteiro',[\s\S]{0,400}resolveScriptPart\(")
           .hasMatch(router),
       isTrue,
+    );
+  });
+
+  test('o link que abriu o app vale mais que a partida e a aula abertas', () {
+    final link = ChallengeLink(
+      fen: fen,
+      userSide: Side.white,
+      opponent: OpponentKind.stockfish,
+    );
+    expect(
+      launchLocation(link: link, resumeGame: true, conclusion: 3),
+      Routes.challenge(link),
     );
   });
 }

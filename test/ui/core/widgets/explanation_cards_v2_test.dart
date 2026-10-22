@@ -563,7 +563,7 @@ void main() {
       find
           .ancestor(
             of: find.textContaining('1...Kf7'),
-            matching: find.byType(Container),
+            matching: find.byType(Card),
           )
           .first,
     );
