@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Um cartão de escolha única, com ícone, título, texto e o rádio no fim:
 /// os de "O que você quer fazer?" e "Seu nível".

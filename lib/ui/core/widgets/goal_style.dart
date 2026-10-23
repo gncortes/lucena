@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/endgame_position.dart';
-import '../theme/app_colors.dart';
 
 /// As cores e o ícone de cada objetivo, iguais no catálogo, na Jornada e na
 /// configuração: verde com troféu para ganhar e azul com escudo para defender

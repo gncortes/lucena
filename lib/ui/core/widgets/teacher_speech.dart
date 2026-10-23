@@ -15,6 +15,7 @@ import '../keys/viktor_sheet_keys.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/app_settings.dart';
@@ -30,10 +31,6 @@ import '../keys/voice_keys.dart';
 import '../l10n/l10n.dart';
 import 'character_avatar.dart';
 import 'external_page_sheet.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 import '../theme/lesson_text_colors.dart';
 import 'sound_off_icon.dart';
 import 'speech_sheet_fade.dart';

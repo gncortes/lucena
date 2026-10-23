@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
-import '../../core/theme/app_chip.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
 

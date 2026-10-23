@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 import 'goal_style.dart';
 
 /// O rating em destaque com a variação ao lado, em verde (+) ou vermelho (−),

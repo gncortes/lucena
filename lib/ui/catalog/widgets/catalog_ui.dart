@@ -1,12 +1,12 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/use_cases/subcategory_material.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/figurine.dart';
 import '../view_models/catalog_cubit.dart';
 import '../../core/widgets/empty_state.dart';

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
-import '../theme/app_colors.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_shape.dart';
 import 'goal_style.dart';
 
 /// Para que serve a barra: dá a cor do preenchimento (E1.08, D23).

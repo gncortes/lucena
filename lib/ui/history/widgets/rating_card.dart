@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/use_cases/history_games.dart';
 import '../../../domain/use_cases/rating_period.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/rating_chart.dart';
 import '../../core/widgets/rating_value.dart';
 import '../view_models/history_cubit.dart';

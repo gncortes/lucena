@@ -3,13 +3,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/main.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 import 'package:patrol/patrol.dart';
 
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
-import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/onboarding.dart';
-import 'package:lucena/ui/core/theme/app_theme.dart';
 
 import '../../testing/e2e_dependencies.dart';
 

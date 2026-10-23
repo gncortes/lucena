@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
-import '../../../domain/models/app_accent.dart';
 import '../l10n/l10n.dart';
 
 /// Como cada cor do app aparece nas telas de escolha.

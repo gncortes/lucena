@@ -1,9 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
-import '../theme/app_colors.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Uma chuva curta de confete, uma vez, para os grandes momentos (degrau
 /// concluído, formatura, recorde). Não pega toques. Com "remover animações",

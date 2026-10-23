@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// A dica em caixa (canvas `CompAviso`, tipo dica): fundo
 /// `secondaryContainer`, ícone e texto pequeno.

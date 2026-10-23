@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/star_challenge.dart';
@@ -10,15 +11,11 @@ import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
-import '../../core/theme/app_shape.dart';
 
 /// A lista dos desafios das estrelas: uma peça por cartão, três níveis em
 /// cada, com a melhor marca.

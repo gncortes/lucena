@@ -12,10 +12,10 @@ import 'package:lucena/ui/core/pace/pace_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
-import 'package:lucena/ui/core/theme/app_shape.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/speedrun/view_models/speedrun_history_cubit.dart';
 import 'package:lucena/ui/speedrun/widgets/speedrun_history_screen.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';

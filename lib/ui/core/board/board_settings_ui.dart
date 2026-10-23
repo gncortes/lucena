@@ -1,10 +1,10 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_motion.dart';
 
 /// Como as cores do tabuleiro aparecem na tela e no `chessground`.
 extension BoardColorsUi on BoardColors {

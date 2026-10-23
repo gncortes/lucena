@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/lesson_script.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/widgets/square_flash.dart';
 import '../view_models/lesson_script_state.dart';
 import 'board_coordinates.dart';

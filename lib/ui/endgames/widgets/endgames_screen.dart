@@ -6,20 +6,13 @@ import '../../would_pay/widgets/would_pay_invite_card.dart';
 
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_chip.dart';
-
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_button_text.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/widgets/placement_test_card.dart';

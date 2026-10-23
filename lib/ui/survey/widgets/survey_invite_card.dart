@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/survey/survey_repository.dart';
 import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../view_models/survey_invite_cubit.dart';
 
 /// De onde o convite aparece, que decide o texto dele.

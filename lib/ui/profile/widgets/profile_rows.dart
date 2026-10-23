@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/app_language.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
 import '../../settings/view_models/settings_cubit.dart';
 
 /// O grupo branco de linhas do Perfil e de "Seus dados" (canvas

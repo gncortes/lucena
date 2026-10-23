@@ -1,4 +1,5 @@
-import '../../../domain/models/app_accent.dart';
+import 'package:lucena_ui/lucena_ui.dart';
+
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';
 import '../../../domain/models/board_settings.dart';

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../keys/sheet_keys.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_sheet.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O cabeçalho de toda folha (E1.08, D20; canvas `CompCabecalhoFolha`): margem
 /// 24 dos lados, título em `titleLarge`, 24 até a dica e 16 até o conteúdo.

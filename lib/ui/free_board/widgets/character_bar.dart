@@ -3,11 +3,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../../core/keys/free_board_keys.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import 'sound_dialog.dart';
 import 'clock_row.dart';
@@ -21,9 +20,7 @@ import '../../core/widgets/teacher_speech.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../view_models/talk_cubit.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/widgets/sound_off_icon.dart';
-import '../../core/theme/app_colors.dart';
 
 /// O adversário acima do tabuleiro: o retrato e, ao lado, o balão com a
 /// última fala, que aparece letra por letra. O relógio dele fica na linha de

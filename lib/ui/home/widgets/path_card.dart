@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Um caminho da tela inicial: o que dá para fazer no app, com o nome e uma
 /// linha dizendo o que acontece ali.

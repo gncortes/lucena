@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/goal_preference.dart';
 import '../../core/keys/goal_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/sheet_header.dart';

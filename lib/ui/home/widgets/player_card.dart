@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../routing/routes.dart';
 import '../../../routing/review_destinations.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/container_navigation.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/rating_value.dart';
 import '../view_models/home_cubit.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// O jogador no alto da tela inicial: o apelido e a faixa, e o rating em
 /// destaque com a variação da última partida. Tocar abre os detalhes do

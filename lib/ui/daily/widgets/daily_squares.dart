@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/daily_final.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/keys/daily_keys.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// Os quadradinhos dos lances, em fileiras de [perRow], centradas.
 class DailySquares extends StatelessWidget {

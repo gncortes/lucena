@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
@@ -27,12 +28,6 @@ import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/share/share_button.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/celebration.dart';
@@ -56,8 +51,6 @@ import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/actions_footer.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_button_text.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o

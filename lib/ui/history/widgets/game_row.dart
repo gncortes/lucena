@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/attempt.dart';
@@ -14,10 +15,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/review/move_quality_ui.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/goal_style.dart';

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/crowd_stat.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../view_models/featured_crowd_cubit.dart';
 
 /// O cartão compacto acima dos botões do fim de um final em destaque

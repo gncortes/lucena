@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../keys/core_keys.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Como o estado vazio se apresenta (canvas `CompEstadoVazio`).
 enum EmptyStateStyle {

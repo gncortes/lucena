@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
-import 'package:lucena/ui/core/theme/app_shape.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/test_app.dart';

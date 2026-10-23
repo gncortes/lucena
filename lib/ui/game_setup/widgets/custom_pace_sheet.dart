@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/clock.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/sheet_header.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// O ritmo montado à mão: o tempo de cada lado.
 class CustomPace {

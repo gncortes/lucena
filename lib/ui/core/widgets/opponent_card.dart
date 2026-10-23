@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 import 'character_avatar.dart';
 
 /// Contra quem: o retrato, o nome, o nível e a frase do personagem.

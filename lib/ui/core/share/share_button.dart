@@ -5,10 +5,10 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/share/share_repository.dart';
 import 'share_cubit.dart';
-import '../theme/app_colors.dart';
 
 /// A imagem do que está dentro do [RepaintBoundary] de [boundary], em PNG,
 /// com margem na cor [background] e, com [footer], o texto embaixo (a marca

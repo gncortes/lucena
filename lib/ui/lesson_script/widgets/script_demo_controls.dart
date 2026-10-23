@@ -1,15 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_button_text.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// As cores do rodapé da demonstração (canvas `T70-etapa1-estados`, `.cb`):
 /// o trilho e o arco do anel, e o cinza do anel pausado e do botão sem uso.

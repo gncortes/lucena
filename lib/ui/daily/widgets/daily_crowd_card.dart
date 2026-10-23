@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/crowd_stat.dart';
 import '../../core/keys/daily_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// O "quantos acertaram" do final do dia (E1.24, canvas
 /// `PropV1RetencaoOntem`). No próprio dia: "Quantos acertaram? Amanhã.",

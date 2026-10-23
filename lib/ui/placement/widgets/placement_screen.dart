@@ -3,11 +3,10 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/widgets/app_bar_progress.dart';
-import '../../core/theme/app_text.dart';
-import '../../core/theme/app_icon_size.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
@@ -17,12 +16,6 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_button_text.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/skeleton.dart';

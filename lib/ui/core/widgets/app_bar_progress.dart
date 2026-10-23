@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// A barra de progresso de 4 dp colada na base da barra do app (`bottom` do
 /// `LucenaAppBar`): do teste de nível e do tour. [value] vai de 0 a 1 e

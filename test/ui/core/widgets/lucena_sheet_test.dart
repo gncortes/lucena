@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/sheet_keys.dart';
-import 'package:lucena/ui/core/theme/app_sheet.dart';
 import 'package:lucena/ui/core/widgets/lucena_sheet.dart';
 import 'package:lucena/ui/core/widgets/sheet_close_button.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/test_app.dart';
 

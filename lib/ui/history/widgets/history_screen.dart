@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/history_filter.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../view_models/history_cubit.dart';
 import 'history_games_tab.dart';

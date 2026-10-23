@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Um texto que aparece letra por letra, como alguém falando. O espaço do
 /// texto inteiro fica reservado desde o começo: o balão não muda de tamanho

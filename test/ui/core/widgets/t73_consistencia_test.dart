@@ -2,11 +2,11 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
-import 'package:lucena/ui/core/theme/app_button_text.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:lucena/ui/core/widgets/round_footer_button.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/test_app.dart';

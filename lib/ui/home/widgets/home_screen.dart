@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/onboarding.dart';
@@ -15,9 +16,6 @@ import '../../daily/widgets/daily_home_card.dart';
 import '../../featured/widgets/featured_home_section.dart';
 import '../../streak/widgets/streak_lost_sheet.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
@@ -26,7 +24,6 @@ import 'path_card.dart';
 import 'player_card.dart';
 import 'goal_card.dart';
 import 'where_card.dart';
-import '../../core/theme/app_motion.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

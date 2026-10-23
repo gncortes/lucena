@@ -4,14 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/ads/ads_repository.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../analytics/widgets/analytics_opt_in_tile.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../settings/widgets/about_screen.dart';

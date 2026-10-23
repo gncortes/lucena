@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../keys/core_keys.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O chip informativo do app (canvas `CompChip` info): caixa de 32 (28 no
 /// [compact]) com raio 8, sem borda, ícone opcional e uma linha de texto,

@@ -6,6 +6,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/attempt.dart';
@@ -14,10 +15,6 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
@@ -28,10 +25,7 @@ import '../../core/widgets/figurine.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.

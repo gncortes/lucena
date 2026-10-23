@@ -1,16 +1,10 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../keys/free_board_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_shadow.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 
 /// A entrada de uma partida contra a máquina (T51, A2), sobre o tabuleiro: o
 /// cartão do adversário em cima, o do jogador embaixo (cada um na cor das

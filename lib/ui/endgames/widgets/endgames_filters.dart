@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_chip.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/endgames_keys.dart';
@@ -12,7 +11,6 @@ import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/endgames_cubit.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../../core/widgets/actions_footer.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 
 /// Como cada tipo de final aparece nas telas.

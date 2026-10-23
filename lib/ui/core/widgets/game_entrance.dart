@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Que parte da partida entra: cada uma com o seu tempo e o seu movimento.
 enum GameEntrancePart {

@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/services/preferences_service.dart';
-import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -14,6 +13,7 @@ import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/domain/models/speedrun.dart';
 import 'package:lucena/domain/use_cases/rating_period.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 

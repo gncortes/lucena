@@ -1,11 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import '../keys/core_keys.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O aviso do app (canvas `CompSnackbar`): fundo do tema, ícone opcional,
 /// uma ação opcional e 4 s na tela. Troca o aviso que estiver aberto.

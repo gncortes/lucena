@@ -1,9 +1,9 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 void main() {
   const textKey = ValueKey('time value');

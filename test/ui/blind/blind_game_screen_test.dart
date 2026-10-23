@@ -12,11 +12,10 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/blind/view_models/blind_game_cubit.dart';
 import 'package:lucena/ui/blind/widgets/blind_game_screen.dart';
 import 'package:lucena/ui/core/keys/blind_keys.dart';
-import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
-import 'package:lucena/ui/core/theme/app_icon_size.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_blind_log_repository.dart';
 import '../../../testing/fakes/fake_now.dart';

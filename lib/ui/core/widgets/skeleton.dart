@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../keys/core_keys.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Um bloco cinza no lugar do que ainda está carregando, com um brilho que
 /// passa (T51, G5). Com "remover animações", fica parado.

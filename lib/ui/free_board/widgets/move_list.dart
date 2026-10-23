@@ -1,11 +1,9 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/free_board_keys.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/figurine.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
 
 /// Os lances numa faixa que rola para o lado, como no chess.com: o número e
 /// os dois lances de cada jogada, com o lance que está no tabuleiro em

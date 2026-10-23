@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson_script.dart';
 import '../../core/keys/curiosities_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/script_sheet_route.dart';
 import '../../core/widgets/sheet_header.dart';

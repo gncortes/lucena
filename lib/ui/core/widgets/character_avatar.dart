@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
-import '../theme/app_motion.dart';
 
 /// O retrato do personagem, no quadrado de cantos arredondados do chess.com.
 /// Com [emotion], a imagem é a da emoção, quando o personagem tem uma.

@@ -4,6 +4,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/featured/featured_progress_repository.dart';
@@ -15,10 +16,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../core/theme/app_chip.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/empty_state.dart';

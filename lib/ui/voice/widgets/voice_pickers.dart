@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_chip.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/voice.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
 import '../view_models/speech_cubit.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/widgets/sound_off_icon.dart';
 
 /// O idioma do app, para escolher as vozes que falam nele.

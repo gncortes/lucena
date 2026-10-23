@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/attempt.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../l10n/l10n.dart';
 import '../opponent/opponent_ui.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_spacing.dart';
 import 'goal_style.dart';
 
 /// Partidas agrupadas por mês, da mais recente para a mais antiga, com o

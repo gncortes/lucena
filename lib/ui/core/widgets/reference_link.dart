@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/endgame_lesson.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
 import 'external_page_sheet.dart';
 
 /// Um link discreto para a referência de onde vem uma posição. Abre dentro do

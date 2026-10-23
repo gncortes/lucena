@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_button_text.dart';
 
 /// Abre o detalhe de [achievement] num painel inferior. Obtida ([unlocked]),
 /// mostra a data e a hora e, quando a origem foi gravada, o botão para a

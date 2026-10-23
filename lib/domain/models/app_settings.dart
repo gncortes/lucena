@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
-import 'app_accent.dart';
 import 'app_theme_mode.dart';
 import 'board_settings.dart';
 import 'clock_settings.dart';

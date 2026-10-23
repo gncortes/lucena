@@ -6,6 +6,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/board_settings.dart';
@@ -17,10 +18,6 @@ import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
@@ -45,7 +42,6 @@ import 'endgame_ui.dart';
 import '../../../domain/use_cases/wiki_markup.dart';
 import 'move_sentence.dart';
 import '../../core/keys/lesson_script_keys.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// Um exercício (T72): como a lição roteirizada, o balão do Viktor em cima,
 /// o tabuleiro e, embaixo, a notação dos lances. O feedback do lance vem na

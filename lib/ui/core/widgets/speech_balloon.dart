@@ -3,11 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../l10n/l10n.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 import 'animated_speech_switcher.dart';
 import 'speech_sheet_fade.dart';
 

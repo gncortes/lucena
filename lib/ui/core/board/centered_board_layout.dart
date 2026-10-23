@@ -2,10 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
-import '../theme/app_chip.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Referência explícita do centro da tela de jogo. Deve envolver o SafeArea
 /// do body; [usefulHeight] é medido fora do Scaffold, antes de ele remover

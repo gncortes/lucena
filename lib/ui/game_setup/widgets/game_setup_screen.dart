@@ -1,20 +1,17 @@
 import 'dart:math' as math;
 
-import '../../core/theme/app_chip.dart';
-
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
-import '../../core/theme/app_text.dart';
-import '../../core/theme/app_icon_size.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
@@ -31,9 +28,6 @@ import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/section_title.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_colors.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// A medalha de uma conquista: disco de ouro liso com o ícone quando obtida; cinza,
 /// com um cadeado por cima, quando falta. O [shine] passa um brilho pelo

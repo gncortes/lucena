@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// A pílula da sequência (ícone `event_repeat` e os dias): na home, no
 /// resultado do final do dia e na folha da sequência perdida ([muted]).

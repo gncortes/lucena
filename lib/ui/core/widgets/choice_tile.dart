@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Opção de uma lista de escolha única (idioma, tema): a escolhida ganha a
 /// marca, que troca com animação.

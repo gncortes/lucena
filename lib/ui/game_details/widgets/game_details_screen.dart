@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/attempt.dart';
@@ -17,8 +18,6 @@ import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
@@ -29,9 +28,6 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/viktor_sheet.dart';
 import '../view_models/game_details_cubit.dart';
 import 'review_widgets.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/skeleton.dart';
 

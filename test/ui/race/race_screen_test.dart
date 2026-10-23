@@ -2,7 +2,6 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
@@ -12,6 +11,7 @@ import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
 import 'package:lucena/ui/race/widgets/race_screen.dart';
 import 'package:lucena/ui/race/widgets/race_warm_up_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/board_gestures.dart';
 import '../../../testing/fakes/fake_now.dart';

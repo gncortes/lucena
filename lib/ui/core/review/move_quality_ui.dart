@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/game_review.dart';
 import '../../../l10n/app_localizations.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text.dart';
 
 /// Como cada qualidade de lance aparece: o símbolo do xadrez, a cor (a dos
 /// grandes sites de análise) e o nome.

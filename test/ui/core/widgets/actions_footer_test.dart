@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/core_keys.dart';
-import 'package:lucena/ui/core/theme/app_button.dart';
 import 'package:lucena/ui/core/widgets/actions_footer.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/test_app.dart';
 

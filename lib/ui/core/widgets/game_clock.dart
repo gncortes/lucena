@@ -1,12 +1,10 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 import 'game_entrance.dart';
 import 'time_display.dart';
 

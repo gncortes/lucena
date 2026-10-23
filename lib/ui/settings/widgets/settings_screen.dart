@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../config/dependencies.dart';
 import '../../../data/repositories/account/account_repository.dart';
@@ -12,8 +13,6 @@ import '../../alerts/view_models/alerts_cubit.dart';
 import '../../analytics/widgets/version_footer.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';

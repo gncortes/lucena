@@ -1,12 +1,11 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/challenge_result.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/position_board.dart';
 import 'challenge_result_ui.dart';
 

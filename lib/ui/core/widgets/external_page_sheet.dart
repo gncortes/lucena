@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../keys/external_page_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_spacing.dart';
 import 'animated_progress.dart';
 import 'lucena_sheet.dart';
 import 'sheet_header.dart';

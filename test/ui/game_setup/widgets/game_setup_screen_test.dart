@@ -11,7 +11,6 @@ import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
-import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
 import 'package:lucena/ui/game_setup/widgets/custom_pace_sheet.dart';
 import 'package:lucena/ui/game_setup/widgets/game_setup_screen.dart';
@@ -24,6 +23,7 @@ import '../../../../testing/fakes/fake_training_repository.dart';
 import '../../../../testing/test_app.dart';
 
 import 'package:lucena/ui/core/keys/blind_keys.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 void main() {
   late GameSetupCubit cubit;

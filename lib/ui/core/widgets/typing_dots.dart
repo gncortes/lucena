@@ -1,8 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Os três pontinhos de "digitando" (T70): a máquina está respondendo. Ciclo
 /// de 1200 ms, defasagem de 150 ms entre os pontos; com "remover animações"

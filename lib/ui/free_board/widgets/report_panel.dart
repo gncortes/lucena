@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
@@ -9,12 +10,7 @@ import '../../achievements/widgets/achievement_ui.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
 import '../view_models/game_reporter.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_colors.dart';
 
 /// Depois da partida: o que o jogador conquistou
 /// ("Primeira vitória contra a Zuri", "Novo recorde").

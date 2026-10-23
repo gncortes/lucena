@@ -1,8 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import '../theme/app_shape.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O rating partida a partida, num gráfico de linha com a escala ao lado.
 /// Tocar ou arrastar o dedo mostra o rating daquela partida.

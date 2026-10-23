@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/board/centered_board_layout.dart';
-import 'package:lucena/ui/core/theme/app_chip.dart';
-import 'package:lucena/ui/core/theme/app_text.dart';
-import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/core/widgets/lucena_sheet.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 // Os ajustes da 2ª rodada de QA da E1.08: fundo do chip, altura e pesos.
 Widget _app(Widget child) => MaterialApp(

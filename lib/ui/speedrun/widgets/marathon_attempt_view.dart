@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -14,9 +15,6 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
@@ -25,7 +23,6 @@ import '../../journey/widgets/journey_ui.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
-import '../../core/theme/app_colors.dart';
 
 /// O fim de uma tentativa da Maratona (artboards `MaratonaResumo` e
 /// `MaratonaFim*`, contrato da T67f):

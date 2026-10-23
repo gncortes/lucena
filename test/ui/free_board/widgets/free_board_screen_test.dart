@@ -8,7 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
-import 'package:lucena/ui/core/theme/app_motion.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -33,6 +32,7 @@ import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/clock_row.dart';
 import 'package:lucena/ui/free_board/widgets/free_board_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/board_gestures.dart';
 import '../../../../testing/fakes/fake_achievements_repository.dart';

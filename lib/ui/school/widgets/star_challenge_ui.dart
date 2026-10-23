@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_colors.dart';
 
 /// O nome da peça no idioma.
 String pieceName(AppLocalizations l10n, ChallengePiece piece) =>

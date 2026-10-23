@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O convite para o teste de nível ("Já sabe jogar? Faça o teste..."), para
 /// quem ainda não fez: o mesmo cartão na Escola e nos Finais. [label] é o

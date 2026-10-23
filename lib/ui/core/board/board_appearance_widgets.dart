@@ -1,14 +1,11 @@
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../l10n/l10n.dart';
 import 'board_settings_ui.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
 
 /// Tabuleiro de amostra, que muda junto com as escolhas de aparência.
 class BoardPreview extends StatelessWidget {

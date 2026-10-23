@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/explanation.dart';
 import '../keys/explanation_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_spacing.dart';
 import 'lesson_quote.dart';
 
 typedef ExplanationParagraph = ({String text, ExplanationVariation? variation});

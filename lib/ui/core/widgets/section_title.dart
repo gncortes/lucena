@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../keys/core_keys.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O título de uma seção (canvas `CompSecao`): `titleSmall` em cinza, com um
 /// valor opcional à direita e uma ação de texto opcional.

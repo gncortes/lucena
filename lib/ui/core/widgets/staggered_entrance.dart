@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Um item de lista que entra em cascata: aparece subindo de leve, um pouco
 /// depois do anterior ([index]). Com "remover animações" no sistema, já entra

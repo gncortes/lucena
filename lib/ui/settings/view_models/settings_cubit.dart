@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/sound/sound_repository.dart';
-import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_language.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/app_theme_mode.dart';

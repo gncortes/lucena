@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/app_settings.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -9,9 +10,6 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../keys/game_sound_keys.dart';
 import '../keys/lesson_sound_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text.dart';
 import 'lucena_sheet.dart';
 import 'sheet_header.dart';
 import 'one_line.dart';

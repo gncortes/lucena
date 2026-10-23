@@ -3,16 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../keys/viktor_sheet_keys.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_shadow.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
 import 'sheet_close_button.dart';
 import 'sheet_header.dart';
 import 'speech_text_tap_notification.dart';
-import '../theme/app_colors.dart';
 
 /// Folha do Viktor sobre a área de jogo. O topo recolhido é explícito;
 /// abrir a folha nunca redimensiona ou desloca o tabuleiro atrás dela.

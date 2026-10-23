@@ -1,13 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
-import '../../../domain/models/app_accent.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_accent_ui.dart';
-import '../theme/app_motion.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
 
 /// As cores do app em bolinhas, numa linha: a escolhida ganha o anel e a
 /// marca.

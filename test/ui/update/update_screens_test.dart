@@ -8,11 +8,11 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/routing/stream_refresh.dart';
 import 'package:lucena/ui/core/keys/update_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
-import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/update/view_models/update_cubit.dart';
 import 'package:lucena/ui/update/widgets/update_bridge.dart';
 import 'package:lucena/ui/update/widgets/update_recommended_screen.dart';
 import 'package:lucena/ui/update/widgets/update_required_screen.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_app_update_repository.dart';
 import '../../../testing/fakes/fake_remote_flags_repository.dart';

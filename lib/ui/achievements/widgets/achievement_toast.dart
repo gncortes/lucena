@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/achievement.dart';
 import '../../../domain/models/character.dart';
@@ -6,10 +7,6 @@ import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 
 /// O aviso de conquista desbloqueada, como o troféu do PlayStation: desce do
 /// alto da tela, o troféu salta, um brilho passa por ele e o aviso some

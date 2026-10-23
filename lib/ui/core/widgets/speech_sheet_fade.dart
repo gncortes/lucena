@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Enquanto a folha da fala inteira está aberta, o nome e o balão da faixa de
 /// cima somem (a fala fica em evidência na folha, onde o retrato já foi

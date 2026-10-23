@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/user_profile.dart';
-import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/widgets/nickname_field.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/test_app.dart';
 

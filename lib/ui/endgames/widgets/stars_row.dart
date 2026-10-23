@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_colors.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// As estrelas de um exercício: as ganhas cheias, as outras vazias. Sem
 /// [earned], todas em contorno (ainda por resolver).

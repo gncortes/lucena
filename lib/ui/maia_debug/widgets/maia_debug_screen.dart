@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_chip.dart';
-
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/maia_level.dart';
 import '../../../domain/models/maia_timing.dart';
 import '../../../domain/models/move_prediction.dart';
 import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_spacing.dart';
 import '../view_models/maia_debug_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/animated_progress.dart';

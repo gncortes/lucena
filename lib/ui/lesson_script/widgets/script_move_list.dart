@@ -1,13 +1,10 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/theme/lesson_text_colors.dart';
 import '../../school/widgets/variation_strip.dart' show GrainFill;
 import '../view_models/lesson_script_state.dart';

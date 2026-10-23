@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/history_filter.dart';
@@ -12,8 +13,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/scroll_padding.dart';

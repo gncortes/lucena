@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/ads/ads_repository.dart';
 import '../../../data/repositories/review/review_repository.dart';
 import '../../../domain/models/ads_state.dart';
 import '../keys/ads_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_spacing.dart';
 
 /// O único ponto que abre ou continua uma lição (E1.25, item 3): conta a
 /// lição, mostra o intersticial se o [AdsRepository] decidir e só então

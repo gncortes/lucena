@@ -2,11 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' show PathMetric;
 
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O que o ícone animado desenha.
 enum OutcomeMark { check, cross, record }

@@ -6,19 +6,17 @@ import '../../../domain/use_cases/endgame_difficulty.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/figurine.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/skeleton.dart';
 

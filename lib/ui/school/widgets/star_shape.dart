@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Uma estrela no tabuleiro, que cresce ao aparecer. Com [blinking], pisca
 /// (está para sumir).

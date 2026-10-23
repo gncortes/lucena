@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../keys/core_keys.dart';
-import '../theme/app_button.dart';
-import '../theme/app_button_text.dart';
-import '../theme/app_spacing.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// O rodapé de ações das telas (E1.08, D18; canvas `CompRodapeAcoes`): na cor
 /// de quem está atrás, sem sombra, faixa nem divisor, com margem 16 dos lados

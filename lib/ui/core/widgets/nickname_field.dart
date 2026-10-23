@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/user_profile.dart';
-import '../keys/core_keys.dart';
 
 /// O campo do apelido (canvas `CompCampoTexto`): rótulo sempre no alto, para
 /// o apelido padrão aparecer enquanto o campo está vazio. A tela passa a key

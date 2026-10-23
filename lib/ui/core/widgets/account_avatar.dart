@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/account.dart';
 import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/user_profile.dart';
-import '../theme/app_colors.dart';
 
 /// As cores do avatar, na ordem do `UserProfile.avatarColor`.
 const avatarPalette = AppColors.avatars;

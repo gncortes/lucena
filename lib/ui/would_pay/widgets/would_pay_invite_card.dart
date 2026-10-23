@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
@@ -9,11 +10,6 @@ import '../../../routing/routes.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/would_pay_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
 import '../view_models/would_pay_cubit.dart';
 
 /// O convite do "Você pagaria?" (E1.26) na lista de aulas, acima do "Sua

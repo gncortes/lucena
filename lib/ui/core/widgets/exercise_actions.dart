@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
-import '../theme/app_button.dart';
-import '../theme/app_button_text.dart';
-import '../theme/app_spacing.dart';
 import 'round_footer_button.dart';
 
 /// Um botão do rodapé do exercício.

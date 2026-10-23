@@ -1,8 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// Container transform for Android UI entry points. Canonical/deep-link
 /// navigation remains the caller's responsibility on other platforms.

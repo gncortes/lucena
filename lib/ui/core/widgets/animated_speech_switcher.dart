@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_motion.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// A troca de fala dentro do balão (Gabriel, 14/10/2026; canvas
 /// `T70-etapa1-estados`, E7d): o balão fica no lugar, a fala antiga sai e a

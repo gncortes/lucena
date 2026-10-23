@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/pace.dart';
@@ -19,8 +20,6 @@ import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import '../../core/widgets/opponent_card.dart';
 import 'journey_ui.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/empty_state.dart';

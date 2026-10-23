@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
@@ -10,6 +9,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 
 import 'package:lucena/domain/models/game_sound.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/fakes/fake_sound_repository.dart';
 

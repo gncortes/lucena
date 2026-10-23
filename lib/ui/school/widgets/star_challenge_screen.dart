@@ -6,19 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/use_cases/lesson_rules.dart';
 import '../../../domain/use_cases/star_challenge_rules.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/widgets/time_display.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -26,9 +24,6 @@ import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
 import 'star_scoreboard.dart';
 import 'star_shape.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,

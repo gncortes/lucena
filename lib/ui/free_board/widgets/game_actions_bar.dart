@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/theme/app_spacing.dart';
 import 'character_bar.dart';
 
 /// As ações da partida ficam na borda inferior, fora das faixas dos jogadores.

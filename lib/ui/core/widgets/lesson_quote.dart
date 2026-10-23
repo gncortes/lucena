@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../wiki/widgets/linked_text.dart';
 import '../keys/explanation_keys.dart';
-import '../theme/app_spacing.dart';
 
 /// Contexto e história da lição V2 (LICOES-V2 §10): uma citação com barra
 /// lateral, texto menor e apagado, sem rótulo nem ícone. Os nomes marcados

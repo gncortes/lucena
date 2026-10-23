@@ -7,8 +7,6 @@ import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/theme/app_theme.dart';
-import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
@@ -38,6 +36,7 @@ import '../testing/fakes/fake_deep_link_service.dart';
 import '../testing/fakes/fake_onboarding_repository.dart';
 
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../testing/fakes/fake_now.dart';
 import '../testing/fakes/fake_ongoing_game_repository.dart';

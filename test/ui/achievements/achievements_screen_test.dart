@@ -12,7 +12,7 @@ import 'package:lucena/ui/achievements/widgets/achievement_detail.dart';
 import 'package:lucena/ui/achievements/widgets/achievements_screen.dart';
 import 'package:lucena/ui/core/keys/achievements_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
-import 'package:lucena/ui/core/theme/app_theme.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';

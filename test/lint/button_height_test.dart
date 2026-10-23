@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/theme/app_button.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 /// D6 (T73): botão de largura total = 52, compacto ou em cartão = 48, só pelas
 /// constantes do tema. Nenhum `minimumSize` em `lib/ui` escreve altura de

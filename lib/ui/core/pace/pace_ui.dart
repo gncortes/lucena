@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../keys/pace_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_icon_size.dart';
-import '../theme/app_shape.dart';
-import '../theme/app_text.dart';
 import '../widgets/lucena_sheet.dart';
 import '../widgets/actions_footer.dart';
 import '../widgets/sheet_header.dart';
-import '../theme/app_spacing.dart';
 
 /// O nome de cada categoria de ritmo.
 extension PaceCategoryUi on PaceCategory {

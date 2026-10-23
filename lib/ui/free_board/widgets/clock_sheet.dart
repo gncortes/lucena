@@ -1,18 +1,14 @@
 import 'package:dartchess/dartchess.dart';
 
-import '../../core/theme/app_chip.dart';
-
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/clock.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/sheet_header.dart';
-import '../../core/theme/app_spacing.dart';
 
 /// O que foi confirmado no painel do relógio. [config] nulo: sem relógio.
 class ClockChoice {

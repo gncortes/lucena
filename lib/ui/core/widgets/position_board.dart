@@ -4,11 +4,11 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../board/board_settings_ui.dart';
-import '../theme/app_shape.dart';
 
 /// A miniatura de uma posição (FEN), vista pelo lado que joga (ou pelo
 /// [orientation] pedido), com as cores e as peças escolhidas pelo jogador.
