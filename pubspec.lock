@@ -1072,9 +1072,11 @@ packages:
   lucena_ui:
     dependency: "direct main"
     description:
-      path: "../lucena_ui"
-      relative: true
-    source: path
+      path: "."
+      ref: "tarefa/extracao-componentes"
+      resolved-ref: "229d8b5e2250ace780c9aba1f056013624c13fc1"
+      url: "https://github.com/gncortes/lucena_ui.git"
+    source: git
     version: "0.1.0"
   matcher:
     dependency: transitive
