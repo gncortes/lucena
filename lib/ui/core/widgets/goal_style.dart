@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
-import '../../../domain/models/endgame_position.dart';
+/// O objetivo de uma posição, no que importa para a cor: ganhar ou segurar.
+enum GoalTone { win, draw }
 
 /// As cores e o ícone de cada objetivo, iguais no catálogo, na Jornada e na
 /// configuração: verde com troféu para ganhar e azul com escudo para defender
@@ -14,16 +15,16 @@ class GoalStyle {
     required this.onContainer,
   });
 
-  factory GoalStyle.of(BuildContext context, PositionGoal goal) {
+  factory GoalStyle.of(BuildContext context, GoalTone tone) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    return switch (goal) {
-      PositionGoal.win => GoalStyle._(
+    return switch (tone) {
+      GoalTone.win => GoalStyle._(
         icon: Icons.emoji_events_outlined,
         color: dark ? AppColors.goalWinDk : AppColors.goalWin,
         container: dark ? AppColors.goalWinBgDk : AppColors.goalWinBg,
         onContainer: dark ? AppColors.goalWinOnDk : AppColors.goalWinOn,
       ),
-      PositionGoal.draw => GoalStyle._(
+      GoalTone.draw => GoalStyle._(
         icon: Icons.shield_outlined,
         color: dark ? AppColors.goalDrawDk : AppColors.goalDraw,
         container: dark ? AppColors.goalDrawBgDk : AppColors.goalDrawBg,

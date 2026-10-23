@@ -340,7 +340,7 @@ class _CompareCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final record = total < previous;
     // A cor clara do selo de recorde: o número no claro, o fundo no escuro.
-    final recordColor = GoalStyle.of(context, PositionGoal.win).color;
+    final recordColor = GoalStyle.of(context, GoalTone.win).color;
     final difference = (previous - total).abs();
     // Os segundos com uma casa e a vírgula do idioma, truncados.
     final decimal = NumberFormat.decimalPattern(

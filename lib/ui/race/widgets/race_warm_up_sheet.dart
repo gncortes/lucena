@@ -85,7 +85,7 @@ class _OfferSheetState extends State<_OfferSheet> {
           SheetHeader(
             leading: character == null
                 ? null
-                : CharacterAvatar(
+                : CharacterPortrait(
                     character: character,
                     size: CharacterAvatar.player,
                   ),

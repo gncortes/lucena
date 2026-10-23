@@ -106,7 +106,7 @@ class HistoryGameRow extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.md),
             if (character != null)
-              CharacterAvatar(
+              CharacterPortrait(
                 character: character,
                 size: CharacterAvatar.lesson,
               )

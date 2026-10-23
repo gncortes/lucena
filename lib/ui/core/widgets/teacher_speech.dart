@@ -161,7 +161,7 @@ class TeacherSpeech extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget avatar = CharacterAvatar(
+    Widget avatar = CharacterPortrait(
       character: teacher,
       emotion: emotion,
       // LICOES-V2 §9: retrato de 28 dp, raio 8, na linha de 48 dp.

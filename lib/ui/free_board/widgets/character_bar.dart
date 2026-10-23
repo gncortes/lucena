@@ -103,7 +103,7 @@ class CharacterBar extends StatelessWidget {
               label: character.name,
               child: Stack(
                 children: [
-                  CharacterAvatar(
+                  CharacterPortrait(
                     key: FreeBoardKeys.characterAvatar(talk.emotion),
                     character: character,
                     // O Stockfish não tem emoção: só o logo.

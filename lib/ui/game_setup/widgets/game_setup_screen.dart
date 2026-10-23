@@ -258,7 +258,7 @@ class _Header extends StatelessWidget {
         children: [
           InfoChip(
             key: GameSetupKeys.goal,
-            icon: GoalStyle.of(context, state.goal).icon,
+            icon: GoalStyle.of(context, state.goal.tone).icon,
             label: goalLabel(l10n, state.goal),
           ),
           // A vez de jogar, lida do FEN (campo 2).
@@ -398,7 +398,7 @@ class _LevelPicker extends StatelessWidget {
                   visualDensity: AppChip.density,
                   key: GameSetupKeys.level(level),
                   avatar: switch (state.characters.forLevel(level)) {
-                    final character? => CharacterAvatar(
+                    final character? => CharacterPortrait(
                       character: character,
                       size: CharacterAvatar.mini,
                     ),

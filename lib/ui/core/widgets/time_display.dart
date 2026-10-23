@@ -133,7 +133,7 @@ class TimeDisplay extends StatelessWidget {
             // Recorde: verde de sucesso do GoalStyle, sólido, com troféu e
             // tempo em branco (T67d, variante B; 5,1:1 no claro).
             TimeDisplayState.highlight => (
-              GoalStyle.of(context, PositionGoal.win).color,
+              GoalStyle.of(context, GoalTone.win).color,
               AppColors.white,
               AppColors.white,
             ),

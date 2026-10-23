@@ -78,7 +78,7 @@ class SpeedrunPicture extends StatelessWidget {
         ? opponentCharacter(characters, speedrun.stages.first.opponent)
         : null;
     if (character != null) {
-      return CharacterAvatar(character: character, size: size);
+      return CharacterPortrait(character: character, size: size);
     }
     return Container(
       width: size,

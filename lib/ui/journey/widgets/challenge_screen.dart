@@ -207,7 +207,7 @@ class _GoalChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = GoalStyle.of(context, challenge.goal);
+    final style = GoalStyle.of(context, challenge.goal.tone);
     return InfoChip(
       icon: style.icon,
       label: goalLabel(context.l10n, challenge.goal),
@@ -231,7 +231,8 @@ Widget _journeyOpponent(
   final language = Localizations.localeOf(context).languageCode;
   return OpponentCard(
     key: JourneyKeys.opponentCard,
-    character: character,
+    label: l10n.challengeOpponent,
+    image: portraitImageOrNull(character),
     heroTag: opponentHeroTag(rungId),
     name: [
       opponentName(l10n, characters, opponent),

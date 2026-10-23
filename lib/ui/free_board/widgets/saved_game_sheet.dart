@@ -219,7 +219,7 @@ class _SavedGameCard extends StatelessWidget {
                   spacing: AppSpacing.sm,
                   children: [
                     if (character != null)
-                      CharacterAvatar(
+                      CharacterPortrait(
                         character: character,
                         size: CharacterAvatar.mini,
                       )

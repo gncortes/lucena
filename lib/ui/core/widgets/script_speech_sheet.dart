@@ -123,7 +123,7 @@ class ScriptSpeechSheet extends StatelessWidget {
                     children: [
                       Hero(
                         tag: scriptViktorHeroTag,
-                        child: CharacterAvatar(
+                        child: CharacterPortrait(
                           character: viktor,
                           size: CharacterAvatar.lesson,
                           radius: 6,

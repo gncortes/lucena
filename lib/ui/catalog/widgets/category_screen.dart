@@ -238,7 +238,7 @@ class _PositionCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
-    final goal = GoalStyle.of(context, position.goal);
+    final goal = GoalStyle.of(context, position.goal.tone);
     return PositionCard(
       key: CatalogKeys.position(position.id),
       fen: position.fen,

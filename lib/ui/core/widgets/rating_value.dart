@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
-import '../l10n/l10n.dart';
 import 'goal_style.dart';
 
 /// O rating em destaque com a variação ao lado, em verde (+) ou vermelho (−),
@@ -167,7 +166,3 @@ String signedChange(int change) => change > 0
     : change < 0
     ? '−${-change}'
     : '0';
-
-/// O rating e a variação para o leitor de tela.
-String ratingSemantics(BuildContext context, int rating, int change) =>
-    context.l10n.reportRating(rating, signedChange(change));

@@ -608,7 +608,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                             size: AppIconSize.large,
                                           ),
                                         )
-                                      : CharacterAvatar(
+                                      : CharacterPortrait(
                                           character: character,
                                           size: CharacterAvatar.versus,
                                         ),

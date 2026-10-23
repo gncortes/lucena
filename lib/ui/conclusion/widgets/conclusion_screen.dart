@@ -563,7 +563,7 @@ class _Header extends StatelessWidget {
                                   size: AppIconSize.large,
                                 ),
                               )
-                            : CharacterAvatar(
+                            : CharacterPortrait(
                                 character: opponent,
                                 size: CharacterAvatar.versus,
                               ),

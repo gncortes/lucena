@@ -147,7 +147,7 @@ class _GoalHero extends StatelessWidget {
               Row(
                 children: [
                   if (avatar != null) ...[
-                    CharacterAvatar(
+                    CharacterPortrait(
                       character: avatar,
                       size: CharacterAvatar.speech,
                     ),
@@ -263,7 +263,7 @@ class ResumeCard extends StatelessWidget {
           ),
           leading: character == null
               ? PositionBoard(fen: next.position.fen, size: 64)
-              : CharacterAvatar(
+              : CharacterPortrait(
                   character: character,
                   size: CharacterAvatar.tour,
                 ),
@@ -279,7 +279,7 @@ class ResumeCard extends StatelessWidget {
               ? PositionBoard(fen: fen, size: 64)
               : teacher == null
               ? null
-              : CharacterAvatar(character: teacher, size: CharacterAvatar.tour),
+              : CharacterPortrait(character: teacher, size: CharacterAvatar.tour),
           onTap: () => context.push(endgame.route, extra: fen),
         );
       default:

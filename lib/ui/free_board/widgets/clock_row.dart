@@ -99,7 +99,7 @@ class ClockRow extends StatelessWidget {
         isTurn: state.end == null && state.position.turn == side,
         portrait: character == null
             ? null
-            : CharacterAvatar(
+            : CharacterPortrait(
                 key: FreeBoardKeys.characterAvatar(talk!.emotion),
                 character: character,
                 emotion: talk!.isEngine ? null : talk!.emotion,

@@ -156,7 +156,7 @@ class _Summary extends StatelessWidget {
             Row(
               children: [
                 if (character != null) ...[
-                  CharacterAvatar(
+                  CharacterPortrait(
                     character: character,
                     size: CharacterAvatar.versus,
                   ),
@@ -208,7 +208,7 @@ class _Summary extends StatelessWidget {
               children: [
                 if (next != null) ...[
                   if (nextCharacter != null) ...[
-                    CharacterAvatar(
+                    CharacterPortrait(
                       character: nextCharacter,
                       size: CharacterAvatar.mini,
                     ),

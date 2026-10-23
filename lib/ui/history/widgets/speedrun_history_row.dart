@@ -55,7 +55,7 @@ class SpeedrunHistoryRowTile extends StatelessWidget {
       ),
       SpeedrunHistoryRow(newRecord: true) => (
         Icons.emoji_events,
-        GoalStyle.of(context, PositionGoal.win).color,
+        GoalStyle.of(context, GoalTone.win).color,
         l10n.historyNewRecord,
         null,
       ),

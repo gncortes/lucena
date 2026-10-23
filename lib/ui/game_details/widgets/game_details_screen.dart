@@ -346,7 +346,7 @@ class _Header extends StatelessWidget {
             child: Row(
               children: [
                 if (character != null)
-                  CharacterAvatar(
+                  CharacterPortrait(
                     character: character,
                     size: CharacterAvatar.speech,
                   )

@@ -264,7 +264,8 @@ class _BoardStep extends StatelessWidget {
             size: 216,
             // Amostra pequena: só as cores e as peças, sem as letras e os
             // números da borda.
-            board: board.copyWith(coordinates: false),
+            appearance: board.appearance.copyWith(coordinates: false),
+ animated: board.animation,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -272,6 +273,7 @@ class _BoardStep extends StatelessWidget {
         BoardColorsCarousel(
           selected: board.colors,
           keyOf: TourKeys.boardColors,
+ labelOf: (colors) => colors.label(l10n),
           onSelected: (colors) =>
               settings.setBoard(board.copyWith(colors: colors)),
         ),
@@ -633,7 +635,7 @@ class _PlayStep extends StatelessWidget {
             children: [
               for (final character in opponents.take(4))
                 _Opponent(
-                  avatar: CharacterAvatar(
+                  avatar: CharacterPortrait(
                     character: character,
                     size: CharacterAvatar.speech,
                     radius: AppShape.small,

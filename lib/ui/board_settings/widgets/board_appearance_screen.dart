@@ -39,7 +39,8 @@ class BoardAppearanceScreen extends StatelessWidget {
                   child: BoardPreview(
                     boardKey: BoardSettingsKeys.preview,
                     size: previewSize,
-                    board: board,
+                    appearance: board.appearance,
+ animated: board.animation,
                   ),
                 ),
                 Expanded(
@@ -52,6 +53,7 @@ class BoardAppearanceScreen extends StatelessWidget {
                       BoardColorsCarousel(
                         selected: board.colors,
                         keyOf: BoardSettingsKeys.colorsOption,
+ labelOf: (colors) => colors.label(l10n),
                         onSelected: (colors) =>
                             cubit.setBoard(board.copyWith(colors: colors)),
                       ),

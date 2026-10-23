@@ -30,7 +30,7 @@ class ChallengeLinkScreen extends StatelessWidget {
     final state = context.watch<ChallengeLinkCubit>().state;
     final link = state.link;
     final theme = Theme.of(context);
-    final goal = GoalStyle.of(context, link.goal);
+    final goal = GoalStyle.of(context, link.goal.tone);
     return Scaffold(
       key: ChallengeKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.journeyChallengeTitle)),
@@ -104,7 +104,8 @@ class ChallengeLinkScreen extends StatelessWidget {
                       children: [
                         OpponentCard(
                           key: ChallengeKeys.opponentCard,
-                          character: state.opponent,
+                          label: l10n.challengeOpponent,
+                          image: portraitImageOrNull(state.opponent),
                           name: link.opponent == OpponentKind.stockfish
                               ? l10n.setupOpponentStockfish
                               : [

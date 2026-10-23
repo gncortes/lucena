@@ -295,7 +295,7 @@ class _ConfigCard extends StatelessWidget {
       key: key,
       leading: character == null
           ? Icon(icon)
-          : CharacterAvatar(character: character, size: CharacterAvatar.mini),
+          : CharacterPortrait(character: character, size: CharacterAvatar.mini),
       title: Text(title),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -386,7 +386,7 @@ class _ChoiceSheetState extends State<_ChoiceSheet> {
     final character = widget.characters.forLevel(level);
     return character == null
         ? null
-        : CharacterAvatar(character: character, size: CharacterAvatar.mini);
+        : CharacterPortrait(character: character, size: CharacterAvatar.mini);
   }
 
   @override

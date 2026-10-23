@@ -291,7 +291,7 @@ class _Header extends StatelessWidget {
               if (character != null) ...[
                 Hero(
                   tag: opponentHeroTag(rung.rung.id),
-                  child: CharacterAvatar(
+                  child: CharacterPortrait(
                     character: character,
                     size: CharacterAvatar.versus,
                   ),
@@ -459,7 +459,7 @@ class _GoalIfSpecial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (goal == PositionGoal.win) return const SizedBox.shrink();
-    final style = GoalStyle.of(context, goal);
+    final style = GoalStyle.of(context, goal.tone);
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.xs),
       child: Row(

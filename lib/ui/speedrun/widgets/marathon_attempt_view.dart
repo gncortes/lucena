@@ -443,7 +443,7 @@ class _RecordCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final value = runTime(context, recordTime(speedrun, best));
-    final green = GoalStyle.of(context, PositionGoal.win).color;
+    final green = GoalStyle.of(context, GoalTone.win).color;
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(

@@ -68,7 +68,8 @@ class LinkSetupScreen extends StatelessWidget {
                   boardKey: ChallengeKeys.setupPreview,
                   size: 216,
                   fen: fen,
-                  board: board.copyWith(coordinates: false),
+                  appearance: board.appearance.copyWith(coordinates: false),
+ animated: board.animation,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -76,6 +77,7 @@ class LinkSetupScreen extends StatelessWidget {
               BoardColorsCarousel(
                 selected: board.colors,
                 keyOf: ChallengeKeys.setupColors,
+ labelOf: (colors) => colors.label(l10n),
                 onSelected: (colors) =>
                     settings.setBoard(board.copyWith(colors: colors)),
               ),

@@ -68,13 +68,13 @@ class WhereCard extends StatelessWidget {
                   if (current != null)
                     Hero(
                       tag: opponentHeroTag(current.rung.id),
-                      child: CharacterAvatar(
+                      child: CharacterPortrait(
                         character: character,
                         size: CharacterAvatar.speech,
                       ),
                     )
                   else
-                    CharacterAvatar(
+                    CharacterPortrait(
                       character: character,
                       size: CharacterAvatar.speech,
                     ),
@@ -232,7 +232,7 @@ class _SchoolCard extends StatelessWidget {
         child: Row(
           children: [
             if (teacher != null) ...[
-              CharacterAvatar(character: teacher, size: CharacterAvatar.player),
+              CharacterPortrait(character: teacher, size: CharacterAvatar.player),
               const SizedBox(width: AppSpacing.md),
             ],
             Expanded(
@@ -339,7 +339,7 @@ class _EndgameCard extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.md),
             ] else if (teacher != null) ...[
-              CharacterAvatar(character: teacher, size: CharacterAvatar.player),
+              CharacterPortrait(character: teacher, size: CharacterAvatar.player),
               const SizedBox(width: AppSpacing.md),
             ],
             Expanded(

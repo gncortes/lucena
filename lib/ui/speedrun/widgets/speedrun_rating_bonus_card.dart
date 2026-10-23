@@ -47,7 +47,7 @@ class SpeedrunRatingBonusCard extends StatelessWidget {
     if (amount <= 0) return const SizedBox.shrink();
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final style = GoalStyle.of(context, PositionGoal.win);
+    final style = GoalStyle.of(context, GoalTone.win);
     final title = _isolate(
       _isOffer
           ? l10n.speedrunRatingBonusOffer(amount)

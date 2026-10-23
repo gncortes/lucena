@@ -234,7 +234,7 @@ class _Numbers extends StatelessWidget {
       ],
     );
     // Verde de sucesso do GoalStyle (T67d, variante B): troféu e tempo.
-    final green = GoalStyle.of(context, PositionGoal.win).color;
+    final green = GoalStyle.of(context, GoalTone.win).color;
     final Widget record = best == null || bestAt == null
         ? const SizedBox.shrink()
         : Column(
