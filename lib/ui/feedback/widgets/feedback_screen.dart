@@ -7,8 +7,6 @@ import '../../../domain/models/feedback_entry.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/feedback_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../survey/widgets/survey_parts.dart';
 import '../view_models/feedback_cubit.dart';
 

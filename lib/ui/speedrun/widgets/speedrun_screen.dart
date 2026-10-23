@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -17,7 +16,6 @@ import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// Um speedrun antes de começar (artboards `SpeedrunDetalhe*` e
 /// `MaratonaDetalhe`): quem ou o que é, o ritmo e o nível, o recorde (ou a

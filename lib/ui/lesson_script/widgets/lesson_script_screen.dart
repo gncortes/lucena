@@ -17,7 +17,6 @@ import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';

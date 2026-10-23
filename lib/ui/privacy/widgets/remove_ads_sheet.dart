@@ -11,8 +11,6 @@ import '../../../domain/use_cases/analytics_rules.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/privacy_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_sheet.dart';
 
 /// "Remover anúncios" (canvas `PropV1AnuncioRemover`): o botão abre a janela
 /// de pagamento da Play. Compra confirmada fecha a folha. [origin] é de onde

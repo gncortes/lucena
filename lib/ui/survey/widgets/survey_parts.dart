@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
 
 /// As peças dos questionários: o "Sua opinião" (E1.05), o "Você pagaria?" e o

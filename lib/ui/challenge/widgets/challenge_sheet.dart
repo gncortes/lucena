@@ -17,9 +17,6 @@ import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/sheet_header.dart';
 import '../view_models/challenge_sheet_cubit.dart';
 
 /// Abre a folha "Mandar como desafio" (canvas `PropV1LinkCriar`) para [link].

@@ -10,12 +10,8 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/opponent_card.dart';
-import '../../core/widgets/skeleton.dart';
 import '../view_models/challenge_link_cubit.dart';
 
 /// O desafio fechado, aberto por link (canvas `PropV1LinkDesafio`): a posição,

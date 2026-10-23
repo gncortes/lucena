@@ -5,9 +5,6 @@ import '../../../domain/models/clock.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/sheet_header.dart';
 
 /// O ritmo montado à mão: o tempo de cada lado.
 class CustomPace {

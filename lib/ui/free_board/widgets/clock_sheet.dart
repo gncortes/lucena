@@ -6,9 +6,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/models/clock.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/sheet_header.dart';
 
 /// O que foi confirmado no painel do relógio. [config] nulo: sem relógio.
 class ClockChoice {

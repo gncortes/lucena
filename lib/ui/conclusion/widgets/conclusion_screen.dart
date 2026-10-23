@@ -3,7 +3,6 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -34,7 +33,6 @@ import '../../core/widgets/celebration.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../core/widgets/versus_intro.dart';
@@ -49,7 +47,6 @@ import '../../speedrun/widgets/speedrun_ui.dart';
 import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/widgets/actions_footer.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o

@@ -26,7 +26,6 @@ import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [

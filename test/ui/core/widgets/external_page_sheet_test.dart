@@ -4,7 +4,7 @@ import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/widgets/external_page_sheet.dart';
 import 'package:lucena/ui/core/widgets/reference_link.dart';
-import 'package:lucena/ui/core/widgets/sheet_close_button.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/fakes/fake_wiki.dart';
 import '../../../../testing/test_app.dart';

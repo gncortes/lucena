@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +18,6 @@ import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
-import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/character_avatar.dart';
 
 /// O resultado dos exercícios de uma aula de final, depois do último: a

@@ -4,7 +4,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/analytics_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import '../view_models/team_mode_cubit.dart';
 
 /// A folha do Modo equipe (quadro `PropV1EventosEquipe`). Abrir já liga a

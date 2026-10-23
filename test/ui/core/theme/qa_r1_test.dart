@@ -1,9 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/widgets/actions_footer.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
-import 'package:lucena/ui/core/widgets/info_chip.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 // Os ajustes da 1ª rodada de QA da E1.08: cor, altura e peso medidos.

@@ -9,8 +9,6 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/sheet_header.dart';
 import 'featured_labels.dart';
 
 /// "E agora?" (o "Continuar" do fim da partida): aprender o final, ver finais

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../../core/widgets/app_bar_progress.dart';
 
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
@@ -18,14 +17,11 @@ import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
 import 'placement_result_view.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/character_avatar.dart';
 
 /// O teste de nível (T52): a abertura com o Viktor, as 20 perguntas (sem

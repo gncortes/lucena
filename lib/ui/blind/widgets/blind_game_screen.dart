@@ -13,7 +13,6 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -26,7 +25,6 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/time_display.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/blind_game_cubit.dart';
@@ -34,9 +32,6 @@ import '../../../domain/models/clock_settings.dart';
 import '../../core/widgets/game_clock.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../core/widgets/versus_intro.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/sheet_header.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 
 /// As frases do modo às cegas no idioma da tela.
 BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(

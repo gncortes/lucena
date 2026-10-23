@@ -8,7 +8,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/lesson_finished_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/celebration.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../survey/widgets/survey_invite_card.dart';
 import '../view_models/lesson_finished_cubit.dart';
 

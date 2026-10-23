@@ -4,7 +4,6 @@ import '../../../domain/models/ads_state.dart';
 import '../../core/ads/lesson_gate.dart';
 
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -27,8 +26,6 @@ import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'endgame_ui.dart';
 import 'stars_row.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/section_title.dart';
 
 /// Uma aula de final em três partes: a lição, os exercícios com as estrelas
 /// e, liberado pela nota, o final de verdade (speedrun ou treino).

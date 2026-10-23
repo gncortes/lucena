@@ -3,10 +3,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/sheet_header.dart';
-import '../../core/widgets/empty_state.dart';
 
 /// Um chip da faixa de filtros: [name] é o grupo (`period`, `result`...),
 /// [label] o que ele diz e [active] se há um valor escolhido.

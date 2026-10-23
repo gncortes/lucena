@@ -6,8 +6,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../keys/viktor_sheet_keys.dart';
-import 'sheet_close_button.dart';
-import 'sheet_header.dart';
 import 'speech_text_tap_notification.dart';
 
 /// Folha do Viktor sobre a área de jogo. O topo recolhido é explícito;

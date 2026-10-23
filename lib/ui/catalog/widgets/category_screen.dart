@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -13,8 +12,6 @@ import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
-import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// Os finais de uma categoria, cada um numa seção com as posições dele já
 /// abertas em grade: o jogador toca na posição e vai direto para a partida.

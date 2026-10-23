@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
-import 'lucena_sheet.dart';
-import 'actions_footer.dart';
-import 'sheet_header.dart';
-
 /// Uma opção do painel de escolha.
 class ChoiceSheetOption<T> {
   const ChoiceSheetOption({

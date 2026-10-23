@@ -6,9 +6,6 @@ import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../keys/pace_keys.dart';
 import '../l10n/l10n.dart';
-import '../widgets/lucena_sheet.dart';
-import '../widgets/actions_footer.dart';
-import '../widgets/sheet_header.dart';
 
 /// O nome de cada categoria de ritmo.
 extension PaceCategoryUi on PaceCategory {

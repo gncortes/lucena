@@ -9,8 +9,6 @@ import '../../core/keys/daily_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
 import '../../core/share/share_cubit.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../streak/view_models/streak_cubit.dart';
 import '../view_models/daily_result_cubit.dart';

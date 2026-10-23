@@ -10,8 +10,6 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../keys/game_sound_keys.dart';
 import '../keys/lesson_sound_keys.dart';
 import '../l10n/l10n.dart';
-import 'lucena_sheet.dart';
-import 'sheet_header.dart';
 import 'one_line.dart';
 import 'sound_off_icon.dart';
 

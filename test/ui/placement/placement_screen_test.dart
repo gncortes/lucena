@@ -10,6 +10,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -19,8 +20,6 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/placement_synthetic.dart';
-
-import 'package:lucena/ui/core/widgets/info_chip.dart';
 
 void main() {
   final skills = SkillMap.fromJson(syntheticSkillsJson());

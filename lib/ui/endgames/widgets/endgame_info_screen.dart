@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
@@ -11,7 +10,6 @@ import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
-import '../../core/widgets/info_chip.dart';
 
 /// As informações de uma aula de final: a história, as posições-base com o
 /// crédito de quem as achou e as referências (com link quando há).

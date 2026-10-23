@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 import 'package:lucena_ui/lucena_ui.dart';
@@ -27,7 +26,6 @@ import '../view_models/speedrun_cubit.dart';
 import 'marathon_attempt_view.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// O resumo de uma tentativa terminada do clássico (artboards
 /// `SpeedrunTentativa*`): concluída, com o tempo, a comparação com o recorde e

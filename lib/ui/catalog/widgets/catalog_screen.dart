@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/endgame_difficulty.dart';
@@ -17,8 +16,6 @@ import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {

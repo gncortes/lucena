@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/crowd/crowd_repository.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
-import '../../core/widgets/actions_footer.dart';
 import '../view_models/featured_crowd_cubit.dart';
 import '../view_models/featured_endgame_cubit.dart';
 import 'featured_crowd_card.dart';

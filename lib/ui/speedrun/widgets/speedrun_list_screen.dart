@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -14,7 +13,6 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -23,8 +21,6 @@ import '../../core/widgets/staggered_entrance.dart';
 import 'speedrun_ui.dart';
 import '../../core/widgets/one_line.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
-import '../../core/widgets/sheet_header.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {

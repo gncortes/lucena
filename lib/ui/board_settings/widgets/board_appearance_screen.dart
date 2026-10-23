@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
@@ -10,7 +9,6 @@ import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/board_settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
-import '../../core/widgets/section_title.dart';
 
 /// Cores, peças e coordenadas do tabuleiro, com uma amostra que muda na hora.
 class BoardAppearanceScreen extends StatelessWidget {

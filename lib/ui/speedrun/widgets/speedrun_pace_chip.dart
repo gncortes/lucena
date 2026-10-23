@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/clock.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/info_chip.dart';
 import '../../history/widgets/history_labels.dart';
 
 /// O chip do ritmo de um speedrun (`CompTempo` tipo ritmo, tamanho p): pílula

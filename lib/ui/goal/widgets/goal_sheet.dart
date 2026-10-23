@@ -4,9 +4,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../core/keys/goal_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/sheet_header.dart';
 import 'goal_ui.dart';
 
 /// Abre a folha "Seu objetivo" do Perfil. Devolve o objetivo salvo, ou nulo

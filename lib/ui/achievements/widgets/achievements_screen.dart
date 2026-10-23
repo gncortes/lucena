@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
@@ -14,9 +13,6 @@ import 'achievement_detail.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/widgets/skeleton.dart';
-import '../../core/widgets/section_title.dart';
-import '../../core/widgets/empty_state.dart';
 
 /// As conquistas: a barra do progresso geral, o filtro (todas, conquistadas,
 /// faltando e o histórico) e a lista por grupo, com as obtidas em cor e a

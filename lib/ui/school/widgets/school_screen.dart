@@ -4,7 +4,6 @@ import '../../../domain/models/ads_state.dart';
 import '../../core/ads/lesson_gate.dart';
 
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -19,7 +18,6 @@ import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/placement_test_card.dart';
 
 /// A Escola do Viktor: ele recebe o aluno, e a trilha mostra os módulos com

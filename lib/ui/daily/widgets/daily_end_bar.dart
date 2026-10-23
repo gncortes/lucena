@@ -8,7 +8,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/daily_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
 import '../view_models/daily_game_cubit.dart';
 import 'daily_crowd_card.dart';
 

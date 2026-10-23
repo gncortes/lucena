@@ -4,7 +4,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../core/keys/goal_keys.dart';
-import '../../core/widgets/choice_card.dart';
 
 /// Ícone, nome e texto de cada objetivo, na pergunta e na folha do Perfil.
 extension GoalPreferenceUi on GoalPreference {

@@ -13,7 +13,6 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
-import '../../core/widgets/actions_footer.dart';
 
 /// O fim do teste: a faixa (com o intervalo numa régua), o mapa do que o
 /// jogador domina e do que falta, os três primeiros passos do roteiro e, fixo

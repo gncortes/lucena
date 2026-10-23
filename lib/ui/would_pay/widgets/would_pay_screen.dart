@@ -7,9 +7,7 @@ import '../../../domain/models/would_pay.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/would_pay_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/app_bar_progress.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../survey/widgets/survey_parts.dart';
 import '../view_models/would_pay_cubit.dart';
 

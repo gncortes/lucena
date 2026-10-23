@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
@@ -11,7 +10,6 @@ import '../../core/theme/app_theme_mode_ui.dart';
 import '../../core/widgets/accent_picker.dart';
 import '../../core/widgets/choice_tile.dart';
 import '../view_models/settings_cubit.dart';
-import '../../core/widgets/section_title.dart';
 
 /// Claro, escuro ou o do aparelho, e a cor predominante do app.
 class ThemeScreen extends StatelessWidget {

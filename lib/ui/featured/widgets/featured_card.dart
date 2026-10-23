@@ -4,7 +4,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/info_chip.dart';
 import 'featured_labels.dart';
 
 /// Um final em destaque numa lista: miniatura, origem, título, quem jogou e o

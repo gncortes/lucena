@@ -10,7 +10,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/alerts_keys.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/alerts_cubit.dart';

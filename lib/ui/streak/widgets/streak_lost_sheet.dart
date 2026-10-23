@@ -4,8 +4,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/models/streak.dart';
 import '../../core/keys/streak_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import 'streak_pill.dart';
 
 /// A sequência que acabou (canvas `PropV1RetencaoPerdida`): sai uma vez, ao

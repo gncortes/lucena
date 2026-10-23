@@ -15,7 +15,6 @@ import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/round_footer_button.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../lesson_script/widgets/script_board.dart';
@@ -27,8 +26,6 @@ import '../../voice/widgets/voice_pickers.dart';
 import '../view_models/tour_cubit.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/widgets/sound_off_icon.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/section_title.dart';
 import '../../core/widgets/nickname_field.dart';
 
 /// O tour da primeira abertura (canvas `PropV2TourB*`, layout "Conversa"): o

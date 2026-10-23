@@ -9,7 +9,6 @@ import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/figurine.dart';
 import '../view_models/catalog_cubit.dart';
-import '../../core/widgets/empty_state.dart';
 
 /// O nome traduzido de uma categoria do catálogo. O app leva só as categorias
 /// dos finais de iniciante (ver `tools/import_positions.py`); categoria nova

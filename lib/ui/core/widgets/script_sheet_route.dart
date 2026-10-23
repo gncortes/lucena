@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
-import 'sheet_close_button.dart';
-import 'sheet_header.dart';
-
 /// Abre uma folha da lição roteirizada (a fala inteira e as Curiosidades)
 /// numa rota transparente que imita a bottom sheet: o fundo escurece, a folha
 /// sobe de baixo e o ✕ fica fora dela, acima do canto direito

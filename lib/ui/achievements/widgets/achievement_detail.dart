@@ -7,7 +7,6 @@ import '../../../domain/models/character.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
 import '../../core/widgets/animated_progress.dart';

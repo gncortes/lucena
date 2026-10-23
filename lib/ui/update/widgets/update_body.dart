@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
-import '../../core/widgets/actions_footer.dart';
-
 /// O corpo das duas telas de atualização (canvas `PropV1AtualizarObrigatoria`
 /// e `PropV1AtualizarRecomendada`): o ícone num quadrado, o título e o texto
 /// no meio, e os botões embaixo.

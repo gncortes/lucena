@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../core/board/board_settings_ui.dart';

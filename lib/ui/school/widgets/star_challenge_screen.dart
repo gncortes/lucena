@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -24,7 +23,6 @@ import '../view_models/star_challenge_cubit.dart';
 import 'star_challenge_ui.dart';
 import 'star_scoreboard.dart';
 import 'star_shape.dart';
-import '../../core/widgets/actions_footer.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.

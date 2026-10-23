@@ -18,7 +18,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/info_chip.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../journey/widgets/trail_widgets.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
@@ -26,7 +25,6 @@ import '../../../routing/routes.dart';
 import '../../history/widgets/history_labels.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_pace_chip.dart';
-import '../../core/widgets/actions_footer.dart';
 
 /// O nome de um speedrun: contra quem (`Contra o Coco`), o nome do final
 /// (`Dama contra torre`), a série de exercícios ou a Jornada completa.

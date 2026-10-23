@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/achievements/widgets/achievement_medal.dart';
 import 'package:lucena/ui/core/widgets/choice_sheet.dart';
-import 'package:lucena/ui/core/widgets/skeleton.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/test_app.dart';

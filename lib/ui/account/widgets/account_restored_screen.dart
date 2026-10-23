@@ -8,7 +8,6 @@ import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
 
 /// "Bem-vindo de volta" (canvas `PropV1PerfilRecuperar`): o que a conta
 /// trouxe, já junto com o aparelho (vale o maior em cada item).

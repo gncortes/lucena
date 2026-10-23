@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
@@ -9,8 +8,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../view_models/home_layout_cubit.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// "Tela inicial": os cinco caminhos, com a caixa de marcar (em destaque ou
 /// em "Outros modos") e a alça de arrastar (a ordem). Com leitor de tela, as

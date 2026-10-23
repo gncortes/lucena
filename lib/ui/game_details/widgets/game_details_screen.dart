@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 import 'package:lucena_ui/lucena_ui.dart';
@@ -28,8 +27,6 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/viktor_sheet.dart';
 import '../view_models/game_details_cubit.dart';
 import 'review_widgets.dart';
-import '../../core/widgets/empty_state.dart';
-import '../../core/widgets/skeleton.dart';
 
 /// Os detalhes de uma partida: o resultado e contra quem; a revisão pela
 /// engine (precisão e qualidade de cada lance); o tabuleiro com a anotação

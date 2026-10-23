@@ -6,12 +6,8 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/endgames_cubit.dart';
-import '../../core/widgets/sheet_header.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/empty_state.dart';
 
 /// Como cada tipo de final aparece nas telas.
 extension EndgameKindUi on EndgameKind {

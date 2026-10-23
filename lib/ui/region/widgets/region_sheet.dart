@@ -8,8 +8,6 @@ import '../../alerts/view_models/alerts_cubit.dart';
 import '../../core/keys/region_keys.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/view_models/profile_cubit.dart';
 
 /// "Quer ver torneios perto de você?" (canvas `PropV1RetencaoRegiao`): estado

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
@@ -14,7 +13,6 @@ import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
 import 'stars_row.dart';
-import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/character_avatar.dart';
 
 /// Antes dos exercícios: o Viktor explica como pensar (uns 5 minutos por
