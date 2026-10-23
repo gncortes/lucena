@@ -27,7 +27,6 @@ class LinkSetupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final settings = context.read<SettingsCubit>();
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
@@ -48,60 +47,25 @@ class LinkSetupScreen extends StatelessWidget {
             onPressed: () => context.go(Routes.home),
           ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: Text(
-                  l10n.challengeSetupHint,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Center(
-                child: BoardPreview(
-                  boardKey: ChallengeKeys.setupPreview,
-                  size: 216,
-                  fen: fen,
-                  appearance: board.appearance.copyWith(coordinates: false),
-                  animated: board.animation,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              SectionTitle(l10n.boardColors),
-              BoardColorsCarousel(
-                selected: board.colors,
-                keyOf: ChallengeKeys.setupColors,
-                labelOf: (colors) => colors.label(l10n),
-                onSelected: (colors) =>
-                    settings.setBoard(board.copyWith(colors: colors)),
-              ),
-              SectionTitle(l10n.boardPieces),
-              PieceStyleCarousel(
-                selected: board.pieces,
-                colors: board.colors,
-                keyOf: ChallengeKeys.setupPieces,
-                onSelected: (pieces) =>
-                    settings.setBoard(board.copyWith(pieces: pieces)),
-              ),
-              SwitchListTile(
-                key: ChallengeKeys.setupSound,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                ),
-                secondary: const Icon(Icons.volume_up_outlined),
-                title: Text(l10n.challengeSetupSound),
-                value: sound,
-                onChanged: (value) => settings.setSound(enabled: value),
-              ),
-            ],
-          ),
+        body: LinkSetupForm(
+          hint: l10n.challengeSetupHint,
+          fen: fen,
+          appearance: board.appearance,
+          animated: board.animation,
+          previewKey: ChallengeKeys.setupPreview,
+          colorsTitle: l10n.boardColors,
+          piecesTitle: l10n.boardPieces,
+          colorLabelOf: (colors) => colors.label(l10n),
+          colorKeyOf: ChallengeKeys.setupColors,
+          pieceKeyOf: ChallengeKeys.setupPieces,
+          onColors: (colors) =>
+              settings.setBoard(board.copyWith(colors: colors)),
+          onPieces: (pieces) =>
+              settings.setBoard(board.copyWith(pieces: pieces)),
+          soundKey: ChallengeKeys.setupSound,
+          soundTitle: l10n.challengeSetupSound,
+          sound: sound,
+          onSound: (value) => settings.setSound(enabled: value),
         ),
         bottomNavigationBar: ActionsFooter(
           children: [
