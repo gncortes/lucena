@@ -20,6 +20,25 @@ enum RaceTheme {
   };
 }
 
+/// Quanto dura a Corrida: 3 ou 5 minutos. Cada duração tem o seu recorde.
+enum RaceDuration {
+  threeMinutes(Duration(minutes: 3)),
+  fiveMinutes(Duration(minutes: 5));
+
+  const RaceDuration(this.limit);
+
+  final Duration limit;
+
+  /// Quanto tempo a Corrida tem.
+  int get minutes => limit.inMinutes;
+
+  /// Sem valor (Corridas e preferências de antes da escolha): 3 minutos.
+  static RaceDuration fromMinutes(int? minutes) => values.firstWhere(
+    (duration) => duration.minutes == minutes,
+    orElse: () => threeMinutes,
+  );
+}
+
 /// O que vem depois de um lance certo: a resposta da defesa (sozinha) e a
 /// vez seguinte do jogador. Sem os dois, o lance encerra o problema (mate ou
 /// fim da linha).
@@ -48,6 +67,7 @@ class RaceNode {
     required this.distance,
     required this.moves,
     this.slower = const {},
+    this.alternatives = const {},
   });
 
   factory RaceNode.fromJson(Map<String, dynamic> json) => RaceNode(
@@ -57,6 +77,9 @@ class RaceNode {
         entry.key: RaceBranch.fromJson(entry.value as Map<String, dynamic>),
     },
     slower: {for (final move in (json['w'] as List? ?? const [])) '$move'},
+    alternatives: {
+      for (final move in (json['a'] as List? ?? const [])) '$move',
+    },
   );
 
   /// Meios-lances até o mate, jogando o mais rápido (a DTM da tablebase).
@@ -67,6 +90,11 @@ class RaceNode {
 
   /// Lances que também ganham, só que mais devagar.
   final Set<String> slower;
+
+  /// Lances que ganham um lance mais devagar, mas valem: só em problema de
+  /// objetivo longe (a diferença de um lance, num final de 40, seria sorte).
+  /// Aceitos, encerram o problema.
+  final Set<String> alternatives;
 
   /// Em quantos lances (do jogador) sai o mate pelo caminho mais rápido.
   int get mateIn => (distance + 1) ~/ 2;
@@ -107,14 +135,17 @@ class RaceProblem {
   /// Quem joga na posição.
   Side get side => fen.split(' ')[1] == 'b' ? Side.black : Side.white;
 
-  /// A faixa do problema (de 50 em 50 pontos).
-  int get bucket => level ~/ 50 * 50;
+  /// A faixa do problema: de 50 em 50 pontos até 1500 e de 25 em 25 depois.
+  int get bucket => level < 1500 ? level ~/ 50 * 50 : level ~/ 25 * 25;
 }
 
 /// Como terminou uma Corrida.
 enum RaceEnd { time, errors, quit }
 
 /// O que o jogador fez num problema.
+/// Como terminou um problema: acertou, errou, ou jogou uma vitória mais lenta.
+enum RaceOutcomeKind { correct, wrong, slowWin }
+
 class RaceAnswer {
   const RaceAnswer({
     required this.problemId,
@@ -125,6 +156,7 @@ class RaceAnswer {
     this.best = const [],
     this.distance = 0,
     this.slower = false,
+    this.theme,
   });
 
   factory RaceAnswer.fromJson(Map<String, dynamic> json) => RaceAnswer(
@@ -136,10 +168,22 @@ class RaceAnswer {
     best: [for (final move in (json['best'] as List? ?? const [])) '$move'],
     distance: json['distance'] as int? ?? 0,
     slower: json['slower'] as bool? ?? false,
+    theme: RaceTheme.fromCode(json['theme'] as String?),
   );
 
   final String problemId;
   final int level;
+
+  /// O tema do problema (para saber em que finais o jogador acerta). Nulo nas
+  /// respostas gravadas antes de existir.
+  final RaceTheme? theme;
+
+  /// Acerto, erro ou vitória mais lenta.
+  RaceOutcomeKind get kind => correct
+      ? RaceOutcomeKind.correct
+      : slower
+      ? RaceOutcomeKind.slowWin
+      : RaceOutcomeKind.wrong;
 
   /// O lance jogado, em UCI. Num problema de vários lances, o último (o que
   /// errou, ou o que fechou a sequência).
@@ -165,6 +209,7 @@ class RaceAnswer {
   Map<String, dynamic> toJson() => {
     'id': problemId,
     'level': level,
+    if (theme != null) 'theme': theme!.name,
     'move': move,
     'correct': correct,
     if (fen != null) 'fen': fen,
@@ -178,7 +223,12 @@ class RaceAnswer {
 /// Quanto falta sai do instante de início, como no relógio da partida: sobrevive
 /// ao app em segundo plano e ao fechamento forçado.
 class RaceRun {
-  const RaceRun({required this.startedAt, this.theme, this.answers = const []});
+  const RaceRun({
+    required this.startedAt,
+    this.theme,
+    this.answers = const [],
+    this.duration = RaceDuration.threeMinutes,
+  });
 
   factory RaceRun.fromJson(Map<String, dynamic> json) => RaceRun(
     startedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -190,9 +240,14 @@ class RaceRun {
       for (final answer in json['answers'] as List)
         RaceAnswer.fromJson(answer as Map<String, dynamic>),
     ],
+    // Corrida de antes da escolha de duração: 3 minutos.
+    duration: RaceDuration.fromMinutes(json['minutes'] as int?),
   );
 
   final DateTime startedAt;
+
+  /// A duração com que esta Corrida começou.
+  final RaceDuration duration;
 
   /// Só problemas deste tema. Nulo: todos os finais.
   final RaceTheme? theme;
@@ -210,11 +265,13 @@ class RaceRun {
     startedAt: startedAt,
     theme: theme,
     answers: [...answers, answer],
+    duration: duration,
   );
 
   Map<String, dynamic> toJson() => {
     'startedAt': startedAt.millisecondsSinceEpoch,
     'theme': theme?.name,
+    'minutes': duration.minutes,
     'answers': [for (final answer in answers) answer.toJson()],
   };
 }

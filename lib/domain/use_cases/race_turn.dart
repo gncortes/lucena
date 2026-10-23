@@ -34,7 +34,8 @@ class RaceTurn {
   /// Quantos lances o jogador já fez no problema.
   final int step;
 
-  RaceMoveKind judge(String move) => node.moves.containsKey(move)
+  RaceMoveKind judge(String move) =>
+      node.moves.containsKey(move) || node.alternatives.contains(move)
       ? RaceMoveKind.optimal
       : node.slower.contains(move)
       ? RaceMoveKind.slower
@@ -47,7 +48,8 @@ class RaceTurn {
   String? replyTo(String move) => node.moves[move]?.reply;
 
   /// Se [move] (ótimo) fecha o problema: mate ou fim da linha.
-  bool ends(String move) => node.moves[move]?.isEnd ?? false;
+  bool ends(String move) =>
+      node.alternatives.contains(move) || (node.moves[move]?.isEnd ?? false);
 
   /// A vez seguinte, depois de [move] e da resposta da defesa. Nula se o lance
   /// encerra o problema.
@@ -68,6 +70,7 @@ class RaceTurn {
   RaceAnswer mistake(String move) => RaceAnswer(
     problemId: problem.id,
     level: problem.level,
+    theme: problem.theme,
     move: move,
     correct: false,
     fen: fen,
@@ -80,6 +83,7 @@ class RaceTurn {
   RaceAnswer solved(String move) => RaceAnswer(
     problemId: problem.id,
     level: problem.level,
+    theme: problem.theme,
     move: move,
     correct: true,
   );

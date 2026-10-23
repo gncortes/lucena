@@ -6,10 +6,21 @@ abstract class RaceRepository {
   /// Os problemas do banco.
   Future<List<RaceProblem>> problems();
 
-  Future<RaceRecord> record();
+  /// O recorde da [duration] (cada duração tem o seu).
+  Future<RaceRecord> record({
+    RaceDuration duration = RaceDuration.threeMinutes,
+  });
 
   /// O recorde veio da conta (E1.13): fica o maior de cada campo.
-  Future<void> restoreRecord(RaceRecord record);
+  Future<void> restoreRecord(
+    RaceRecord record, {
+    RaceDuration duration = RaceDuration.threeMinutes,
+  });
+
+  /// A duração escolhida para a próxima Corrida (3 minutos, se nunca escolheu).
+  Future<RaceDuration> duration();
+
+  Future<void> setDuration(RaceDuration duration);
 
   /// As últimas Corridas, a mais recente primeiro.
   Future<List<RaceResult>> history();

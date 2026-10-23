@@ -32,6 +32,47 @@ void main() {
     }
   }
 
+  test('a duração começa em 3 minutos e muda o recorde mostrado', () async {
+    final both = FakeRaceRepository(
+      now: now,
+      record: const RaceRecord(corrects: 14, hardest: 1620),
+      record5: const RaceRecord(corrects: 20, hardest: 1700),
+    );
+    final cubit = RaceCubit(both, now, replyDelay: Duration.zero);
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.duration, RaceDuration.threeMinutes);
+    expect(cubit.state.record.corrects, 14);
+    await cubit.selectDuration(RaceDuration.fiveMinutes);
+    expect(cubit.state.record.corrects, 20);
+    expect(cubit.state.remaining, const Duration(minutes: 5));
+    expect(await both.duration(), RaceDuration.fiveMinutes);
+    await cubit.start();
+    expect(cubit.state.run!.duration, RaceDuration.fiveMinutes);
+    expect(cubit.state.remaining, const Duration(minutes: 5));
+  });
+
+  test(
+    'a Corrida de 5 minutos só acaba aos 5 e grava o recorde dela',
+    () async {
+      await cubit.load();
+      await cubit.selectDuration(RaceDuration.fiveMinutes);
+      await cubit.start();
+      await solveCurrent();
+      now.advance(const Duration(minutes: 4));
+      await cubit.tick();
+      expect(cubit.state.phase, RacePhase.playing);
+      now.advance(const Duration(minutes: 1));
+      await cubit.tick();
+      expect(cubit.state.phase, RacePhase.finished);
+      expect(
+        (await repository.record(duration: RaceDuration.fiveMinutes)).corrects,
+        1,
+      );
+      expect((await repository.record()).isEmpty, isTrue);
+    },
+  );
+
   test('abre na introdução, com o banco e o recorde', () async {
     final stored = FakeRaceRepository(
       now: now,

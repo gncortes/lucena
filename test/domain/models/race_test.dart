@@ -35,6 +35,57 @@ void main() {
     });
   });
 
+  group('RaceNode alternativas', () {
+    test('lê "a" (lance um lance mais lento, aceito) separado de "w"', () {
+      final node = RaceNode.fromJson({
+        'd': 31,
+        'm': {'e1e2': <String, dynamic>{}},
+        'a': ['e1d2'],
+        'w': ['e1f1'],
+      });
+      expect(node.alternatives, {'e1d2'});
+      expect(node.slower, {'e1f1'});
+      expect(
+        RaceNode.fromJson({'d': 1, 'm': <String, dynamic>{}}).alternatives,
+        isEmpty,
+      );
+    });
+  });
+
+  group('RaceRun duração', () {
+    test('guarda a duração no JSON e a Corrida antiga vale 3 minutos', () {
+      final run = RaceRun(
+        startedAt: DateTime.utc(2026),
+        duration: RaceDuration.fiveMinutes,
+      );
+      expect(RaceRun.fromJson(run.toJson()).duration, RaceDuration.fiveMinutes);
+      final old = RaceRun.fromJson({
+        'startedAt': DateTime.utc(2026).millisecondsSinceEpoch,
+        'answers': <dynamic>[],
+      });
+      expect(old.duration, RaceDuration.threeMinutes);
+    });
+  });
+
+  group('RaceAnswer histórico por tema', () {
+    test('guarda tema, nível e resultado (acerto, erro, vitória lenta)', () {
+      const base = {'id': 'p', 'level': 700, 'move': 'a1a2'};
+      RaceAnswer parse(Map<String, dynamic> extra) => RaceAnswer.fromJson(
+        RaceAnswer.fromJson({...base, 'correct': false, ...extra}).toJson(),
+      );
+      final ok = parse({'correct': true, 'theme': 'rook'});
+      expect(ok.theme, RaceTheme.rook);
+      expect(ok.level, 700);
+      expect(ok.kind, RaceOutcomeKind.correct);
+      expect(parse({'theme': 'queen'}).kind, RaceOutcomeKind.wrong);
+      expect(
+        parse({'theme': 'minor', 'slower': true}).kind,
+        RaceOutcomeKind.slowWin,
+      );
+      expect(parse({}).theme, isNull);
+    });
+  });
+
   group('RaceAnswer', () {
     test('guarda a posição, o melhor lance e a distância no JSON', () {
       const answer = RaceAnswer(

@@ -17,6 +17,7 @@ class RaceState {
     this.phase = RacePhase.loading,
     this.problems = const [],
     this.record = const RaceRecord(),
+    this.duration = RaceDuration.threeMinutes,
     this.theme,
     this.run,
     this.turn,
@@ -33,6 +34,9 @@ class RaceState {
   final RacePhase phase;
   final List<RaceProblem> problems;
   final RaceRecord record;
+
+  /// A duração escolhida (o recorde acima é o dela).
+  final RaceDuration duration;
 
   /// O filtro escolhido na abertura. Nulo: todos os finais.
   final RaceTheme? theme;
@@ -80,6 +84,7 @@ class RaceState {
     RacePhase? phase,
     List<RaceProblem>? problems,
     RaceRecord? record,
+    RaceDuration? duration,
     RaceTheme? theme,
     bool clearTheme = false,
     RaceRun? run,
@@ -98,6 +103,7 @@ class RaceState {
     phase: phase ?? this.phase,
     problems: problems ?? this.problems,
     record: record ?? this.record,
+    duration: duration ?? this.duration,
     theme: clearTheme ? null : theme ?? this.theme,
     run: run ?? this.run,
     turn: clearTurn ? null : turn ?? this.turn,
@@ -133,7 +139,8 @@ class RaceCubit extends Cubit<RaceState> {
   /// no meio), continua dela, se ainda há tempo, ou fecha o resultado.
   Future<void> load() async {
     final problems = await _repository.problems();
-    final record = await _repository.record();
+    final duration = await _repository.duration();
+    final record = await _repository.record(duration: duration);
     final ongoing = await _repository.ongoing();
     final saved = await _repository.theme();
     final recent = RaceRules.recentIds(await _repository.history());
@@ -141,6 +148,8 @@ class RaceCubit extends Cubit<RaceState> {
       state.copyWith(
         problems: problems,
         record: record,
+        duration: duration,
+        remaining: duration.limit,
         recent: recent,
         // Um filtro que o banco não tem mais volta a "Todos os finais".
         theme: problems.any((problem) => problem.theme == saved) ? saved : null,
@@ -183,9 +192,27 @@ class RaceCubit extends Cubit<RaceState> {
     return _repository.setTheme(theme);
   }
 
-  /// Começa uma Corrida nova com o filtro escolhido.
+  /// Escolhe a duração (3 ou 5 minutos), a guarda e mostra o recorde dela.
+  Future<void> selectDuration(RaceDuration duration) async {
+    if (duration == state.duration) return;
+    await _repository.setDuration(duration);
+    final record = await _repository.record(duration: duration);
+    emit(
+      state.copyWith(
+        duration: duration,
+        record: record,
+        remaining: duration.limit,
+      ),
+    );
+  }
+
+  /// Começa uma Corrida nova com o filtro e a duração escolhidos.
   Future<void> start() async {
-    final run = RaceRun(startedAt: _now(), theme: state.theme);
+    final run = RaceRun(
+      startedAt: _now(),
+      theme: state.theme,
+      duration: state.duration,
+    );
     final turn = _first(run);
     if (turn == null) return;
     _finishing = false;
@@ -196,7 +223,7 @@ class RaceCubit extends Cubit<RaceState> {
         turn: turn,
         boardFen: turn.fen,
         replying: false,
-        remaining: RaceRules.limit,
+        remaining: run.duration.limit,
         clearFeedback: true,
         feedbackCount: 0,
       ),

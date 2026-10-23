@@ -201,6 +201,31 @@ void main() {
       expect(next!.bucket, 300);
     });
 
+    test(
+      'passou da última faixa e acabou o topo: desce à mais alta com sobra',
+      () {
+        // Topo (450) todo visto; 400 também; sobra a 350 e a 300.
+        var current = run;
+        for (final id in ['b450.1', 'b450.2', 'b400.1', 'b400.2']) {
+          final problem = bank.firstWhere((p) => p.id == id);
+          current = current.withAnswer(solved(problem));
+        }
+        for (var i = 0; i < 6; i++) {
+          current = current.withAnswer(solved(bank.first));
+        }
+        expect(RaceRules.bucketFor(current), greaterThan(450));
+        expect(RaceRules.next(bank, current)!.bucket, 350);
+      },
+    );
+
+    test('depois de tudo visto, repete (dá a volta)', () {
+      var current = run;
+      for (final problem in bank) {
+        current = current.withAnswer(solved(problem));
+      }
+      expect(RaceRules.next(bank, current), isNotNull);
+    });
+
     test('os recentes saem das últimas 3 Corridas do histórico', () {
       RaceResult result(String id) => RaceResult(
         run: run.withAnswer(
@@ -249,6 +274,82 @@ void main() {
         current = current.withAnswer(solved(next));
       }
       expect(buckets, [300, 350, 400, 450, 450]);
+    });
+  });
+
+  group('subida da régua', () {
+    test('+50 por acerto até 1500 e +25 depois', () {
+      expect(RaceRules.targetRating(0), 300);
+      expect(RaceRules.targetRating(1), 350);
+      expect(RaceRules.targetRating(24), 1500);
+      expect(RaceRules.targetRating(25), 1525);
+      expect(RaceRules.targetRating(26), 1550);
+      expect(RaceRules.targetRating(68), 2600);
+    });
+
+    test('quantos acertos levam a cada faixa (inverso do alvo)', () {
+      for (var corrects = 0; corrects <= 68; corrects++) {
+        expect(
+          RaceRules.correctsToReach(RaceRules.targetRating(corrects)),
+          corrects,
+        );
+      }
+      expect(RaceRules.correctsToReach(2600), 68);
+    });
+
+    test('o banco de faixas de 25 sobe uma faixa por acerto', () {
+      RaceProblem q(int bucket) => RaceProblem(
+        id: 'q$bucket',
+        fen: raceTestProblems.first.fen,
+        tree: raceTestProblems.first.tree,
+        theme: RaceTheme.queen,
+        level: bucket,
+      );
+      final bank = [
+        for (final b in [1450, 1500, 1525, 1550]) q(b),
+      ];
+      var current = RaceRun(startedAt: start);
+      // Acertos fictícios até o alvo ser 1450 (23 acertos).
+      for (var i = 0; i < 23; i++) {
+        current = current.withAnswer(
+          RaceAnswer(problemId: 'x$i', level: 300, move: 'x', correct: true),
+        );
+      }
+      final seen = <int>[];
+      for (var i = 0; i < 4; i++) {
+        final next = RaceRules.next(bank, current)!;
+        seen.add(next.bucket);
+        current = current.withAnswer(
+          RaceAnswer(
+            problemId: next.id,
+            level: next.level,
+            move: 'x',
+            correct: true,
+          ),
+        );
+      }
+      expect(seen, [1450, 1500, 1525, 1550]);
+    });
+  });
+
+  group('duração', () {
+    test('5 minutos dão 5 minutos de relógio', () {
+      final five = RaceRun(
+        startedAt: start,
+        duration: RaceDuration.fiveMinutes,
+      );
+      expect(
+        RaceRules.remaining(five, start.add(const Duration(minutes: 3))),
+        const Duration(minutes: 2),
+      );
+      expect(
+        RaceRules.endOf(five, start.add(const Duration(minutes: 3))),
+        isNull,
+      );
+      expect(
+        RaceRules.endOf(five, start.add(const Duration(minutes: 5))),
+        RaceEnd.time,
+      );
     });
   });
 
@@ -323,5 +424,30 @@ void main() {
     expect(RaceTheme.ofSubcategory('pawnVsKing'), RaceTheme.pawns);
     expect(RaceTheme.ofSubcategory('twoBishopsVsKing'), RaceTheme.minor);
     expect(RaceTheme.ofSubcategory('outra'), isNull);
+  });
+
+  group('lance aceito por tolerância (linha longa)', () {
+    final turn = RaceTurn(
+      problem: raceTestProblems[1],
+      fen: raceTestProblems[1].fen,
+      node: const RaceNode(
+        distance: 31,
+        moves: {'f6f7': RaceBranch()},
+        alternatives: {'f6g6'},
+        slower: {'a1a2'},
+      ),
+    );
+
+    test('o lance da tolerância vale como certo e encerra o problema', () {
+      expect(turn.judge('f6f7'), RaceMoveKind.optimal);
+      expect(turn.judge('f6g6'), RaceMoveKind.optimal);
+      expect(turn.ends('f6g6'), isTrue);
+      expect(turn.after('f6g6'), isNull);
+    });
+
+    test('mais lento que isso continua erro "ganhava mais devagar"', () {
+      expect(turn.judge('a1a2'), RaceMoveKind.slower);
+      expect(turn.judge('a1b1'), RaceMoveKind.wrong);
+    });
   });
 }

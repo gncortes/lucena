@@ -15,11 +15,15 @@ abstract final class RaceRules {
   /// Quantos problemas tem o aquecimento.
   static const warmUpLength = 5;
 
-  static final _config = ClockConfig.same(TimeControl(initial: limit));
+  /// O limite de [duration].
+  static Duration limitOf(RaceDuration duration) => duration.limit;
 
   /// O relógio da Corrida: só corre o lado de quem joga, que nunca troca.
-  static ClockState _clock(RaceRun run) =>
-      ClockEngine.start(_config, turn: Side.white, now: run.startedAt);
+  static ClockState _clock(RaceRun run) => ClockEngine.start(
+    ClockConfig.same(TimeControl(initial: run.duration.limit)),
+    turn: Side.white,
+    now: run.startedAt,
+  );
 
   /// Quanto falta no instante [now]. Nunca menos que zero.
   static Duration remaining(RaceRun run, DateTime now) =>
@@ -33,21 +37,40 @@ abstract final class RaceRules {
     return null;
   }
 
-  /// A faixa mais baixa e o passo entre faixas (300, 350, ..., 2600).
+  /// A primeira faixa, onde toda Corrida começa.
   static const firstBucket = 300;
-  static const bucketStep = 50;
+
+  /// Até [slowFrom] cada acerto sobe [bigStep] pontos; dali em diante, [step].
+  /// As faixas do banco seguem o mesmo passo (50 até 1500, 25 depois).
+  static const slowFrom = 1500;
+  static const bigStep = 50;
+  static const smallStep = 25;
 
   /// Quantas Corridas recentes o sorteio evita repetir.
   static const recentRuns = 3;
 
-  /// A faixa em que a Corrida está: sobe uma a cada acerto (como o Puzzle
-  /// Rush); o erro não faz subir.
-  static int bucketFor(RaceRun run) => firstBucket + bucketStep * run.corrects;
+  /// O rating-alvo depois de [corrects] acertos (sobe como o Puzzle Rush, sem
+  /// o erro fazer subir): +50 por acerto até 1500, +25 depois.
+  static int targetRating(int corrects) {
+    final bigSteps = (slowFrom - firstBucket) ~/ bigStep;
+    return corrects <= bigSteps
+        ? firstBucket + bigStep * corrects
+        : slowFrom + smallStep * (corrects - bigSteps);
+  }
+
+  /// A faixa do banco (o piso do alvo) em que a Corrida está.
+  static int bucketFor(RaceRun run) => targetRating(run.corrects);
+
+  /// Quantos acertos levam a [bucket] (o inverso de [targetRating]).
+  static int correctsToReach(int bucket) => bucket <= slowFrom
+      ? (bucket - firstBucket) ~/ bigStep
+      : (slowFrom - firstBucket) ~/ bigStep + (bucket - slowFrom) ~/ smallStep;
 
   /// O próximo problema: sorteado dentro da faixa da Corrida (sobe uma faixa a
   /// cada acerto), sem repetir os da Corrida e evitando os de [recent]. Com o
   /// filtro de final, a faixa sem problema daquele final pula para a próxima
-  /// acima que tenha; passando da última faixa, fica nela. O sorteio sai só do
+  /// acima que tenha; passando da última faixa, fica nela e, esgotada, desce à
+  /// mais alta com problema novo (só então repete). O sorteio sai só do
   /// instante de início e da posição na Corrida: retomar dá o mesmo problema.
   /// Nulo só se não há problema nenhum para o tema.
   static RaceProblem? next(
@@ -62,24 +85,40 @@ abstract final class RaceRules {
     if (pool.isEmpty) return null;
     final seen = {for (final answer in run.answers) answer.problemId};
     final wanted = bucketFor(run);
-    final top = pool.map((problem) => problem.bucket).reduce(max);
+    final buckets = ({for (final problem in pool) problem.bucket}.toList())
+      ..sort();
     final random = Random(
       run.startedAt.millisecondsSinceEpoch ^ (run.answers.length * 7919),
     );
-    // Da faixa pedida para cima. Na faixa, o que não saiu nem é recente; se só
-    // sobrou recente, usa um dele (a régua não pula faixa por isso).
-    for (var bucket = min(wanted, top); bucket <= top; bucket += bucketStep) {
+    RaceProblem? pick(int bucket) {
       final inBucket = [
         for (final problem in pool)
           if (problem.bucket == bucket && !seen.contains(problem.id)) problem,
       ];
-      if (inBucket.isEmpty) continue;
+      if (inBucket.isEmpty) return null;
       final fresh = [
         for (final problem in inBucket)
           if (!recent.contains(problem.id)) problem,
       ];
       final from = fresh.isNotEmpty ? fresh : inBucket;
       return from[random.nextInt(from.length)];
+    }
+
+    // Da faixa pedida para cima, pelas faixas que o banco tem (com o filtro,
+    // a faixa sem problema pula para a próxima). Na faixa, o que não saiu nem
+    // é recente; se só sobrou recente, usa um deles (a régua não pula faixa
+    // por isso). Passando da última faixa, fica nela.
+    var start = buckets.indexWhere((bucket) => bucket >= wanted);
+    if (start < 0) start = buckets.length - 1;
+    for (var i = start; i < buckets.length; i++) {
+      final found = pick(buckets[i]);
+      if (found != null) return found;
+    }
+    // Nada novo daí para cima: as faixas de baixo, da mais alta para a mais
+    // baixa, que ainda tenham problema que não saiu.
+    for (var i = start - 1; i >= 0; i--) {
+      final found = pick(buckets[i]);
+      if (found != null) return found;
     }
     // Acabou tudo do tema: dá a volta no banco.
     return pool[random.nextInt(pool.length)];

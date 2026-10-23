@@ -15,18 +15,24 @@ class FakeRaceRepository implements RaceRepository {
     required Now now,
     List<RaceProblem>? problems,
     RaceRecord record = const RaceRecord(),
+    RaceRecord record5 = const RaceRecord(),
+    RaceDuration duration = RaceDuration.threeMinutes,
     this.offers = false,
     RaceRun? ongoing,
     RaceTheme? theme,
   }) : _now = now,
        _problems = problems ?? raceTestProblems,
        _record = record,
+       _record5 = record5,
+       _duration = duration,
        _ongoing = ongoing,
        _theme = theme;
 
   final Now _now;
   final List<RaceProblem> _problems;
   RaceRecord _record;
+  RaceRecord _record5;
+  RaceDuration _duration;
   RaceRun? _ongoing;
   RaceTheme? _theme;
   bool offers;
@@ -36,13 +42,32 @@ class FakeRaceRepository implements RaceRepository {
   Future<List<RaceProblem>> problems() async => _problems;
 
   @override
-  Future<RaceRecord> record() async => _record;
+  Future<RaceRecord> record({
+    RaceDuration duration = RaceDuration.threeMinutes,
+  }) async => duration == RaceDuration.fiveMinutes ? _record5 : _record;
 
   @override
-  Future<void> restoreRecord(RaceRecord record) async => _record = RaceRecord(
-    corrects: max(_record.corrects, record.corrects),
-    hardest: max(_record.hardest, record.hardest),
-  );
+  Future<RaceDuration> duration() async => _duration;
+
+  @override
+  Future<void> setDuration(RaceDuration duration) async => _duration = duration;
+
+  @override
+  Future<void> restoreRecord(
+    RaceRecord record, {
+    RaceDuration duration = RaceDuration.threeMinutes,
+  }) async {
+    final before = await this.record(duration: duration);
+    final merged = RaceRecord(
+      corrects: max(before.corrects, record.corrects),
+      hardest: max(before.hardest, record.hardest),
+    );
+    if (duration == RaceDuration.fiveMinutes) {
+      _record5 = merged;
+    } else {
+      _record = merged;
+    }
+  }
 
   @override
   Future<List<RaceResult>> history() async => List.of(_history);
@@ -55,8 +80,15 @@ class FakeRaceRepository implements RaceRepository {
 
   @override
   Future<RaceOutcome> finish(RaceRun run, RaceEnd end) async {
-    final outcome = RaceRules.finish(run, end, _record, _now());
-    _record = RaceRules.merge(_record, run);
+    final five = run.duration == RaceDuration.fiveMinutes;
+    final before = five ? _record5 : _record;
+    final outcome = RaceRules.finish(run, end, before, _now());
+    final merged = RaceRules.merge(before, run);
+    if (five) {
+      _record5 = merged;
+    } else {
+      _record = merged;
+    }
     _history.insert(0, outcome.result);
     _ongoing = null;
     return outcome;

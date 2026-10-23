@@ -92,6 +92,93 @@ void main() {
     expect(history.single.finishedAt, now());
   });
 
+  group('duração', () {
+    test('sem escolha vale 3 minutos, e a escolha persiste', () async {
+      expect(await reopen().duration(), RaceDuration.threeMinutes);
+      await reopen().setDuration(RaceDuration.fiveMinutes);
+      expect(await reopen().duration(), RaceDuration.fiveMinutes);
+    });
+
+    test('o recorde de antes (chave antiga) é o de 3 minutos', () async {
+      await PreferencesService().setString(
+        'race.record',
+        '{"corrects":7,"hardest":1200}',
+      );
+      final repository = reopen();
+      expect((await repository.record()).corrects, 7);
+      expect(
+        (await repository.record(duration: RaceDuration.fiveMinutes)).isEmpty,
+        isTrue,
+      );
+    });
+
+    test('cada duração tem o seu recorde e a Corrida guarda a dela', () async {
+      final three = RaceRun(startedAt: start)
+          .withAnswer(answer(correct: true, level: 800));
+      final five = RaceRun(startedAt: start, duration: RaceDuration.fiveMinutes)
+          .withAnswer(answer(correct: true, level: 900))
+          .withAnswer(answer(correct: true, level: 950));
+      await reopen().finish(three, RaceEnd.time);
+      await reopen().finish(five, RaceEnd.time);
+      final repository = reopen();
+      expect((await repository.record()).corrects, 1);
+      expect(
+        (await repository.record(duration: RaceDuration.fiveMinutes)).corrects,
+        2,
+      );
+      final history = await repository.history();
+      expect(history.first.run.duration, RaceDuration.fiveMinutes);
+      expect(history.last.run.duration, RaceDuration.threeMinutes);
+    });
+  });
+
+  test(
+    'o histórico guarda por problema o tema, o nível e o resultado',
+    () async {
+      const right = RaceAnswer(
+        problemId: 'race.300.01',
+        level: 300,
+        theme: RaceTheme.queen,
+        move: 'a1a8',
+        correct: true,
+      );
+      const slow = RaceAnswer(
+        problemId: 'race.350.01',
+        level: 350,
+        theme: RaceTheme.rook,
+        move: 'a1a2',
+        correct: false,
+        slower: true,
+      );
+      const wrong = RaceAnswer(
+        problemId: 'race.400.01',
+        level: 400,
+        theme: RaceTheme.pawns,
+        move: 'a7a8r',
+        correct: false,
+      );
+      final run = RaceRun(startedAt: start)
+          .withAnswer(right)
+          .withAnswer(slow)
+          .withAnswer(wrong);
+      await reopen().finish(run, RaceEnd.errors);
+      final saved = (await reopen().history()).single.run.answers;
+      expect(
+        [for (final a in saved) a.theme],
+        [RaceTheme.queen, RaceTheme.rook, RaceTheme.pawns],
+      );
+      expect([for (final a in saved) a.level], [300, 350, 400]);
+      expect(
+        [for (final a in saved) a.kind],
+        [
+          RaceOutcomeKind.correct,
+          RaceOutcomeKind.slowWin,
+          RaceOutcomeKind.wrong,
+        ],
+      );
+    },
+  );
+
   test('o recorde só sobe', () async {
     final good = RaceRun(startedAt: start)
         .withAnswer(answer(correct: true))

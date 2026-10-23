@@ -19,7 +19,10 @@ class LocalRaceRepository implements RaceRepository {
   });
 
   static const path = 'assets/race/race_problems.json';
+  // O recorde de antes da escolha de duração vale como o de 3 minutos.
   static const _recordKey = 'race.record';
+  static const _record5Key = 'race.record.5min';
+  static const _durationKey = 'race.duration';
   static const _historyKey = 'race.history';
   static const _ongoingKey = 'race.ongoing';
   static const _themeKey = 'race.theme';
@@ -60,9 +63,23 @@ class LocalRaceRepository implements RaceRepository {
     }
   }
 
+  String _keyOf(RaceDuration duration) =>
+      duration == RaceDuration.fiveMinutes ? _record5Key : _recordKey;
+
   @override
-  Future<RaceRecord> record() async {
-    final json = await _readMap(_recordKey);
+  Future<RaceDuration> duration() async => RaceDuration.fromMinutes(
+    int.tryParse(await _preferences.getString(_durationKey) ?? ''),
+  );
+
+  @override
+  Future<void> setDuration(RaceDuration duration) =>
+      _preferences.setString(_durationKey, '${duration.minutes}');
+
+  @override
+  Future<RaceRecord> record({
+    RaceDuration duration = RaceDuration.threeMinutes,
+  }) async {
+    final json = await _readMap(_keyOf(duration));
     if (json == null) return const RaceRecord();
     try {
       return RaceRecord.fromJson(json);
@@ -99,10 +116,13 @@ class LocalRaceRepository implements RaceRepository {
   }
 
   @override
-  Future<void> restoreRecord(RaceRecord record) async {
-    final before = await this.record();
+  Future<void> restoreRecord(
+    RaceRecord record, {
+    RaceDuration duration = RaceDuration.threeMinutes,
+  }) async {
+    final before = await this.record(duration: duration);
     await _preferences.setString(
-      _recordKey,
+      _keyOf(duration),
       jsonEncode(
         RaceRecord(
           corrects: max(before.corrects, record.corrects),
@@ -118,11 +138,11 @@ class LocalRaceRepository implements RaceRepository {
 
   @override
   Future<RaceOutcome> finish(RaceRun run, RaceEnd end) async {
-    final before = await record();
+    final before = await record(duration: run.duration);
     final outcome = RaceRules.finish(run, end, before, _now());
     final history = [outcome.result, ...await this.history()];
     await _preferences.setString(
-      _recordKey,
+      _keyOf(run.duration),
       jsonEncode(RaceRules.merge(before, run).toJson()),
     );
     await _preferences.setString(

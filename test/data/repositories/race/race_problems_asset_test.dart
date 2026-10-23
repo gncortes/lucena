@@ -41,6 +41,17 @@ void main() {
       play(position, uci);
       expect(moves.containsKey(uci), isFalse, reason: '$id: $uci');
     }
+    final accepted = [for (final m in (node['a'] as List? ?? const [])) '$m'];
+    for (final uci in accepted) {
+      play(position, uci);
+      expect(moves.containsKey(uci), isFalse, reason: '$id: $uci');
+      expect(slower.contains(uci), isFalse, reason: '$id: $uci');
+      expect(
+        distance,
+        greaterThan(15),
+        reason: '$id: tolerância só em linha longa',
+      );
+    }
     for (final entry in moves.entries) {
       final after = play(position, entry.key);
       final branch = entry.value as Map<String, dynamic>;
@@ -68,17 +79,70 @@ void main() {
     }
     expect(perBucket.values, everyElement(lessThanOrEqualTo(10)));
     expect(
-      perBucket.keys.every((b) => b >= 300 && b <= 2600 && b % 50 == 0),
+      perBucket.keys.every(
+        (b) => b >= 300 && b <= 2600 && b % (b < 1500 ? 50 : 25) == 0,
+      ),
       isTrue,
     );
   });
 
-  test('as faixas vão de 300 a 2600 e a primeira é a de 300', () {
+  test('as faixas vão de 300 a 2600 (50 até 1500, 25 depois)', () {
     final buckets = problems.map((p) => p['bucket'] as int).toSet();
     expect(buckets.reduce((a, b) => a < b ? a : b), 300);
     expect(buckets.reduce((a, b) => a > b ? a : b), 2600);
     final levels = [for (final p in problems) p['level'] as int];
     expect(levels, [...levels]..sort());
+  });
+
+  test('300 a 850 são mates curtos sintéticos, na ordem da régua', () {
+    for (final p in problems) {
+      final bucket = p['bucket'] as int;
+      if (bucket >= 900) continue;
+      expect(p['source'], 'synthetic', reason: '${p['id']}');
+      expect(p['goal'], 'mate', reason: '${p['id']}');
+      final mateIn = ((p['dtm'] as int) + 1) ~/ 2;
+      final allowed = bucket <= 500
+          ? 1
+          : bucket <= 650
+          ? 2
+          : bucket == 700
+          ? 1
+          : bucket == 750
+          ? 2
+          : 3;
+      expect(mateIn, allowed, reason: '${p['id']}');
+      if (bucket >= 700 && bucket <= 750) {
+        expect(['KBBK', 'KBNK'], contains(p['kind']), reason: '${p['id']}');
+      } else if (bucket <= 650) {
+        expect(['KQK', 'KRK'], contains(p['kind']), reason: '${p['id']}');
+      }
+    }
+  });
+
+  test('de 900 em diante: sem mate trivial e sem linha longa demais', () {
+    for (final p in problems) {
+      final bucket = p['bucket'] as int;
+      if (bucket < 900) continue;
+      expect(p['source'], 'lichess', reason: '${p['id']}');
+      final dtm = p['dtm'] as int;
+      if (p['goal'] == 'mate') {
+        final floor = bucket < 1200
+            ? 3
+            : bucket < 1600
+            ? 5
+            : 7;
+        expect(dtm, greaterThanOrEqualTo(floor), reason: '${p['id']}');
+      } else {
+        final ceiling = bucket <= 1000
+            ? 21
+            : bucket <= 1200
+            ? 31
+            : bucket <= 1500
+            ? 45
+            : 999;
+        expect(dtm, lessThanOrEqualTo(ceiling), reason: '${p['id']}');
+      }
+    }
   });
 
   for (final problem in problems) {
@@ -87,7 +151,11 @@ void main() {
       final fen = problem['fen'] as String;
 
       test('a faixa é a do nível, o tema é do filtro', () {
-        expect((problem['level'] as int) ~/ 50 * 50, problem['bucket']);
+        final level = problem['level'] as int;
+        expect(
+          level < 1500 ? level ~/ 50 * 50 : level ~/ 25 * 25,
+          problem['bucket'],
+        );
         expect(problem['theme'], anyOf('rook', 'pawns', 'queen', 'minor'));
       });
 
