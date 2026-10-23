@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
@@ -19,7 +20,6 @@ import '../../core/widgets/position_board.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/race_cubit.dart';
-import 'race_ui.dart';
 
 /// A revisão dos erros, um de cada vez: a posição, a seta no lance certo, o
 /// que o jogador jogou e o lance certo.
@@ -109,6 +109,10 @@ class RaceReviewView extends StatelessWidget {
                             _san(l10n, position, right, bestUci ?? ''),
                             answer.mateIn,
                           )
+                        : problem.defend
+                        ? l10n.raceReviewDefend(
+                            _san(l10n, position, right, bestUci ?? ''),
+                          )
                         : l10n.raceReviewRight(
                             _san(l10n, position, right, bestUci ?? ''),
                           ),
@@ -156,7 +160,7 @@ class RaceReviewView extends StatelessWidget {
                   name: l10n.reviewYou,
                   detail: l10n.raceReviewMeta(
                     number,
-                    problem.theme.label(context),
+                    categoryName(l10n, problem.category),
                     problem.level,
                   ),
                   detailKey: RaceKeys.reviewMeta,

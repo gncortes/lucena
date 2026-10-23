@@ -50,11 +50,20 @@ class RaceWarmUpCubit extends Cubit<RaceWarmUpState> {
   /// O tempo entre o lance do jogador e a resposta da defesa.
   final Duration replyDelay;
 
-  /// Os problemas do final do desafio ([theme]); faltando, completa com os
-  /// mais fáceis do banco.
-  Future<void> load({RaceTheme? theme}) async {
+  /// Os problemas do tipo de final do desafio ([subcategory]); faltando,
+  /// completa com os da mesma categoria ([category]) e depois com os mais
+  /// fáceis do banco.
+  Future<void> load({String? subcategory, String? category}) async {
     final bank = await _repository.problems();
-    emit(RaceWarmUpState(problems: RaceRules.warmUp(bank, theme: theme)));
+    emit(
+      RaceWarmUpState(
+        problems: RaceRules.warmUp(
+          bank,
+          subcategory: subcategory,
+          category: category,
+        ),
+      ),
+    );
   }
 
   Future<void> answer(String move) async {

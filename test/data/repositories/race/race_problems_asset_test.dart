@@ -3,10 +3,12 @@ import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/race_rules.dart';
 
 /// Valida o arquivo do banco da Corrida (formato versão 2, ver
 /// `tools/build_race_problems.py`): posição legal, e toda a árvore de lances
 /// jogável no tabuleiro. A tablebase confere o resto (`--verify` do gerador).
+/// Os de Defender (goal `draw`) têm `d` 0 em todo nó e nenhum lance lento.
 void main() {
   final json = jsonDecode(
     io.File('assets/race/race_problems.json').readAsStringSync(),
@@ -31,9 +33,20 @@ void main() {
 
   /// Anda por toda a árvore: lances ótimos e lentos legais, resposta legal, e
   /// fim só em mate ou no fim da linha (sem resposta nem continuação).
-  void walk(Position position, Map<String, dynamic> node, String id) {
+  void walk(
+    Position position,
+    Map<String, dynamic> node,
+    String id, {
+    bool draw = false,
+  }) {
     final distance = node['d'] as int;
-    expect(distance.isOdd, isTrue, reason: '$id: o jogador dá o mate');
+    if (draw) {
+      expect(distance, 0, reason: '$id: Defender segura o empate');
+      expect(node['w'], isNull, reason: id);
+      expect(node['a'], isNull, reason: id);
+    } else {
+      expect(distance.isOdd, isTrue, reason: '$id: o jogador dá o mate');
+    }
     final moves = node['m'] as Map<String, dynamic>;
     expect(moves, isNotEmpty, reason: id);
     final slower = [for (final m in (node['w'] as List? ?? const [])) '$m'];
@@ -56,31 +69,32 @@ void main() {
       final after = play(position, entry.key);
       final branch = entry.value as Map<String, dynamic>;
       expect(branch.containsKey('r'), branch.containsKey('n'), reason: id);
-      if (distance == 1) {
+      if (!draw && distance == 1) {
         expect(after.isCheckmate, isTrue, reason: '$id: ${entry.key}');
       }
       if (branch['n'] == null) continue;
       expect(after.isGameOver, isFalse, reason: id);
       final next = play(after, branch['r'] as String);
       final child = branch['n'] as Map<String, dynamic>;
-      expect((child['d'] as int) < distance, isTrue, reason: id);
-      walk(next, child, id);
+      if (!draw) expect((child['d'] as int) < distance, isTrue, reason: id);
+      walk(next, child, id, draw: draw);
     }
   }
 
-  test('versão 2, ids únicos e no máximo 20 por faixa', () {
+  test('versão 2, ids únicos e no máximo 20 por faixa e objetivo', () {
     expect(json['version'], 2);
     final ids = problems.map((p) => p['id']).toSet();
     expect(ids, hasLength(problems.length));
-    final perBucket = <int, int>{};
+    final perBucket = <(int, bool), int>{};
     for (final p in problems) {
-      final bucket = p['bucket'] as int;
-      perBucket[bucket] = (perBucket[bucket] ?? 0) + 1;
+      final key = (p['bucket'] as int, p['goal'] == 'draw');
+      perBucket[key] = (perBucket[key] ?? 0) + 1;
     }
     expect(perBucket.values, everyElement(lessThanOrEqualTo(20)));
     expect(
       perBucket.keys.every(
-        (b) => b >= 300 && b <= 2600 && b % (b < 1500 ? 50 : 25) == 0,
+        (k) =>
+            k.$1 >= 300 && k.$1 <= 2600 && k.$1 % (k.$1 < 1500 ? 50 : 25) == 0,
       ),
       isTrue,
     );
@@ -97,7 +111,7 @@ void main() {
   test('300 a 850 são mates curtos sintéticos, na ordem da régua', () {
     for (final p in problems) {
       final bucket = p['bucket'] as int;
-      if (bucket >= 900) continue;
+      if (bucket >= 900 || p['goal'] == 'draw') continue;
       expect(p['source'], 'synthetic', reason: '${p['id']}');
       expect(p['goal'], 'mate', reason: '${p['id']}');
       final mateIn = ((p['dtm'] as int) + 1) ~/ 2;
@@ -132,7 +146,9 @@ void main() {
         expect([5, 7], contains(p['dtm']), reason: '${p['id']}');
       }
       final dtm = p['dtm'] as int;
-      if (p['goal'] == 'mate') {
+      if (p['goal'] == 'draw') {
+        expect(dtm, 0, reason: '${p['id']}');
+      } else if (p['goal'] == 'mate') {
         final floor = bucket < 1200
             ? 3
             : bucket < 1600
@@ -157,13 +173,16 @@ void main() {
     group(id, () {
       final fen = problem['fen'] as String;
 
-      test('a faixa é a do nível, o tema é do filtro', () {
+      test('a faixa é a do nível, categoria e tipo do catálogo', () {
         final level = problem['level'] as int;
         expect(
           level < 1500 ? level ~/ 50 * 50 : level ~/ 25 * 25,
           problem['bucket'],
         );
-        expect(problem['theme'], anyOf('rook', 'pawns', 'queen', 'minor'));
+        expect(RaceRules.categories, contains(problem['category']));
+        expect(problem['subcategory'], isA<String>());
+        expect(problem['subcategory'] as String, isNotEmpty);
+        expect(['mate', 'line', 'draw'], contains(problem['goal']));
       });
 
       test('a posição é legal e até 7 peças', () {
@@ -177,7 +196,12 @@ void main() {
         expect(size(tree), lessThanOrEqualTo(40));
         expect(tree['d'], problem['dtm']);
         expect((tree['m'] as Map).length, lessThanOrEqualTo(3));
-        walk(Chess.fromSetup(Setup.parseFen(fen)), tree, id);
+        walk(
+          Chess.fromSetup(Setup.parseFen(fen)),
+          tree,
+          id,
+          draw: problem['goal'] == 'draw',
+        );
       });
     });
   }

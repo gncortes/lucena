@@ -58,13 +58,16 @@ void main() {
   test('a Corrida em andamento volta com o instante em que começou', () async {
     final run = RaceRun(
       startedAt: start,
-      theme: RaceTheme.rook,
+      filter: const RaceFilter(goal: RaceGoal.both, excluded: {'queen'}),
     ).withAnswer(answer(correct: true));
     await reopen().saveOngoing(run);
 
     final back = (await reopen().ongoing())!;
     expect(back.startedAt, start);
-    expect(back.theme, RaceTheme.rook);
+    expect(
+      back.filter,
+      const RaceFilter(goal: RaceGoal.both, excluded: {'queen'}),
+    );
     expect(back.corrects, 1);
     // O app ficou fechado 2 minutos: o tempo correu.
     final later = start.add(const Duration(minutes: 2));
@@ -133,19 +136,19 @@ void main() {
   });
 
   test(
-    'o histórico guarda por problema o tema, o nível e o resultado',
+    'o histórico guarda por problema o tipo, o nível e o resultado',
     () async {
       const right = RaceAnswer(
         problemId: 'race.300.01',
         level: 300,
-        theme: RaceTheme.queen,
+        subcategory: 'queen',
         move: 'a1a8',
         correct: true,
       );
       const slow = RaceAnswer(
         problemId: 'race.350.01',
         level: 350,
-        theme: RaceTheme.rook,
+        subcategory: 'rook',
         move: 'a1a2',
         correct: false,
         slower: true,
@@ -153,7 +156,8 @@ void main() {
       const wrong = RaceAnswer(
         problemId: 'race.400.01',
         level: 400,
-        theme: RaceTheme.pawns,
+        subcategory: 'pawnVsKing',
+        defend: true,
         move: 'a7a8r',
         correct: false,
       );
@@ -164,9 +168,10 @@ void main() {
       await reopen().finish(run, RaceEnd.errors);
       final saved = (await reopen().history()).single.run.answers;
       expect(
-        [for (final a in saved) a.theme],
-        [RaceTheme.queen, RaceTheme.rook, RaceTheme.pawns],
+        [for (final a in saved) a.subcategory],
+        ['queen', 'rook', 'pawnVsKing'],
       );
+      expect([for (final a in saved) a.defend], [false, false, true]);
       expect([for (final a in saved) a.level], [300, 350, 400]);
       expect(
         [for (final a in saved) a.kind],
@@ -233,11 +238,12 @@ void main() {
   );
 
   test('o filtro de finais persiste entre aberturas', () async {
-    expect(await reopen().theme(), isNull);
-    await reopen().setTheme(RaceTheme.rook);
-    expect(await reopen().theme(), RaceTheme.rook);
-    await reopen().setTheme(null);
-    expect(await reopen().theme(), isNull);
+    expect(await reopen().filter(), const RaceFilter());
+    const chosen = RaceFilter(goal: RaceGoal.defend, excluded: {'rook'});
+    await reopen().setFilter(chosen);
+    expect(await reopen().filter(), chosen);
+    await reopen().setFilter(const RaceFilter());
+    expect(await reopen().filter(), const RaceFilter());
   });
 
   test(
@@ -253,12 +259,13 @@ void main() {
     },
   );
 
-  test('o banco do app tem problemas de vários temas', () async {
+  test('o banco do app tem as 8 categorias e os dois objetivos', () async {
     final problems = await reopen().problems();
     expect(problems.length, greaterThanOrEqualTo(10));
     expect(
-      problems.map((p) => p.theme).toSet(),
-      containsAll(RaceTheme.values.take(3)),
+      problems.map((p) => p.category).toSet(),
+      containsAll(RaceRules.categories),
     );
+    expect(problems.map((p) => p.defend).toSet(), {false, true});
   });
 }

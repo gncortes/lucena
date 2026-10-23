@@ -18,7 +18,7 @@ class RaceState {
     this.problems = const [],
     this.record = const RaceRecord(),
     this.duration = RaceDuration.threeMinutes,
-    this.theme,
+    this.filter = const RaceFilter(),
     this.run,
     this.turn,
     this.boardFen,
@@ -38,8 +38,8 @@ class RaceState {
   /// A duração escolhida (o recorde acima é o dela).
   final RaceDuration duration;
 
-  /// O filtro escolhido na abertura. Nulo: todos os finais.
-  final RaceTheme? theme;
+  /// O filtro escolhido na abertura: objetivo e tipos de final.
+  final RaceFilter filter;
   final RaceRun? run;
 
   /// A vez do jogador no problema do tabuleiro (a posição e os lances ótimos).
@@ -68,12 +68,6 @@ class RaceState {
   /// Qual erro a revisão mostra (a partir de 0).
   final int reviewIndex;
 
-  /// Os temas que o banco tem, na ordem do filtro.
-  List<RaceTheme> get themes => [
-    for (final theme in RaceTheme.values)
-      if (problems.any((problem) => problem.theme == theme)) theme,
-  ];
-
   /// Os erros da Corrida acabada, na ordem em que vieram.
   List<RaceAnswer> get mistakes => [
     for (final answer in outcome?.result.run.answers ?? const <RaceAnswer>[])
@@ -85,8 +79,7 @@ class RaceState {
     List<RaceProblem>? problems,
     RaceRecord? record,
     RaceDuration? duration,
-    RaceTheme? theme,
-    bool clearTheme = false,
+    RaceFilter? filter,
     RaceRun? run,
     RaceTurn? turn,
     bool clearTurn = false,
@@ -104,7 +97,7 @@ class RaceState {
     problems: problems ?? this.problems,
     record: record ?? this.record,
     duration: duration ?? this.duration,
-    theme: clearTheme ? null : theme ?? this.theme,
+    filter: filter ?? this.filter,
     run: run ?? this.run,
     turn: clearTurn ? null : turn ?? this.turn,
     boardFen: clearTurn ? null : boardFen ?? this.boardFen,
@@ -142,7 +135,7 @@ class RaceCubit extends Cubit<RaceState> {
     final duration = await _repository.duration();
     final record = await _repository.record(duration: duration);
     final ongoing = await _repository.ongoing();
-    final saved = await _repository.theme();
+    final saved = await _repository.filter();
     final recent = RaceRules.recentIds(await _repository.history());
     emit(
       state.copyWith(
@@ -151,8 +144,10 @@ class RaceCubit extends Cubit<RaceState> {
         duration: duration,
         remaining: duration.limit,
         recent: recent,
-        // Um filtro que o banco não tem mais volta a "Todos os finais".
-        theme: problems.any((problem) => problem.theme == saved) ? saved : null,
+        // Um filtro sem problema no banco de hoje volta ao padrão.
+        filter: RaceRules.count(problems, saved) > 0
+            ? saved
+            : const RaceFilter(),
         phase: RacePhase.intro,
       ),
     );
@@ -168,8 +163,7 @@ class RaceCubit extends Cubit<RaceState> {
     emit(
       state.copyWith(
         phase: RacePhase.playing,
-        theme: run.theme,
-        clearTheme: run.theme == null,
+        filter: run.filter,
         run: run,
         turn: _first(run),
         boardFen: _first(run)?.fen,
@@ -186,10 +180,11 @@ class RaceCubit extends Cubit<RaceState> {
     return problem == null ? null : RaceTurn.start(problem);
   }
 
-  /// Escolhe o filtro de finais e o guarda para a próxima vez.
-  Future<void> selectTheme(RaceTheme? theme) {
-    emit(state.copyWith(theme: theme, clearTheme: theme == null));
-    return _repository.setTheme(theme);
+  /// Aplica o filtro (objetivo e tipos de final) e o guarda para a próxima
+  /// vez.
+  Future<void> applyFilter(RaceFilter filter) {
+    emit(state.copyWith(filter: filter));
+    return _repository.setFilter(filter);
   }
 
   /// Escolhe a duração (3 ou 5 minutos), a guarda e mostra o recorde dela.
@@ -210,7 +205,7 @@ class RaceCubit extends Cubit<RaceState> {
   Future<void> start() async {
     final run = RaceRun(
       startedAt: _now(),
-      theme: state.theme,
+      filter: state.filter,
       duration: state.duration,
     );
     final turn = _first(run);

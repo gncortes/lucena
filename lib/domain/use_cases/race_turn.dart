@@ -4,13 +4,13 @@ import '../models/race.dart';
 
 /// O que um lance do jogador foi, comparado com a sequência mais rápida.
 enum RaceMoveKind {
-  /// Mantém a distância ótima até o objetivo: vale.
+  /// Mantém a distância ótima até o objetivo (no Defender, o empate): vale.
   optimal,
 
   /// Ainda ganha, mas leva mais lances: conta como erro.
   slower,
 
-  /// Empata ou perde.
+  /// Empata ou perde (no Defender, perde).
   wrong,
 }
 
@@ -70,7 +70,8 @@ class RaceTurn {
   RaceAnswer mistake(String move) => RaceAnswer(
     problemId: problem.id,
     level: problem.level,
-    theme: problem.theme,
+    subcategory: problem.subcategory,
+    defend: problem.defend,
     move: move,
     correct: false,
     fen: fen,
@@ -83,7 +84,8 @@ class RaceTurn {
   RaceAnswer solved(String move) => RaceAnswer(
     problemId: problem.id,
     level: problem.level,
-    theme: problem.theme,
+    subcategory: problem.subcategory,
+    defend: problem.defend,
     move: move,
     correct: true,
   );

@@ -18,19 +18,25 @@ import '../../core/theme/app_button.dart';
 enum RaceOfferChoice { warm, skip }
 
 /// Antes de uma partida, oferece o aquecimento com problemas do final do
-/// desafio ([endgame], o nome dele; [theme], o tema na Corrida). Devolve
+/// desafio ([endgame], o nome dele; [subcategory] e [category], o tipo e a
+/// categoria). Devolve
 /// [RaceOfferChoice.skip] quando não deve oferecer (o jogador pediu para não
 /// perguntar mais, ou o banco está vazio) ou quando ele fecha a folha.
 Future<RaceOfferChoice> offerRaceWarmUp(
   BuildContext context, {
   required String opponent,
   required String endgame,
-  RaceTheme? theme,
+  String? subcategory,
+  String? category,
   Character? character,
 }) async {
   final repository = context.read<RaceRepository>();
   if (!await repository.offersWarmUp()) return RaceOfferChoice.skip;
-  final problems = RaceRules.warmUp(await repository.problems(), theme: theme);
+  final problems = RaceRules.warmUp(
+    await repository.problems(),
+    subcategory: subcategory,
+    category: category,
+  );
   if (problems.isEmpty || !context.mounted) return RaceOfferChoice.skip;
   final choice = await showLucenaSheet<RaceOfferChoice>(
     context,

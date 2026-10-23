@@ -72,7 +72,7 @@ abstract final class RaceRules {
   /// acima que tenha; passando da última faixa, fica nela e, esgotada, desce à
   /// mais alta com problema novo (só então repete). O sorteio sai só do
   /// instante de início e da posição na Corrida: retomar dá o mesmo problema.
-  /// Nulo só se não há problema nenhum para o tema.
+  /// Nulo só se não há problema nenhum para o filtro.
   static RaceProblem? next(
     List<RaceProblem> bank,
     RaceRun run, {
@@ -80,7 +80,7 @@ abstract final class RaceRules {
   }) {
     final pool = [
       for (final problem in bank)
-        if (run.theme == null || problem.theme == run.theme) problem,
+        if (run.filter.matches(problem)) problem,
     ];
     if (pool.isEmpty) return null;
     final seen = {for (final answer in run.answers) answer.problemId};
@@ -154,17 +154,72 @@ abstract final class RaceRules {
         : record.hardest,
   );
 
-  /// Os problemas do aquecimento: [warmUpLength] do mesmo final do desafio
-  /// ([theme]), do mais fácil ao mais difícil. Faltando no banco, completa no
-  /// fim com os mais fáceis dos outros temas (também do mais fácil ao mais
-  /// difícil), sem reordenar o conjunto.
-  static List<RaceProblem> warmUp(List<RaceProblem> bank, {RaceTheme? theme}) {
+  /// Quantos problemas do filtro [filter] o banco tem.
+  static int count(List<RaceProblem> bank, RaceFilter filter) =>
+      bank.where(filter.matches).length;
+
+  /// As categorias do catálogo de Finais, na ordem dele.
+  static const categories = [
+    'basic',
+    'pawn',
+    'bishop',
+    'knight',
+    'knightBishop',
+    'rookPawn',
+    'rookPieces',
+    'queen',
+  ];
+
+  /// Os tipos de final que o banco tem para [goal], por categoria (na ordem
+  /// de [categories]; categoria sem tipo fica de fora). Na categoria, do
+  /// final com menos peças ao com mais, e pela chave no empate. Assim o
+  /// filtro só mostra o que tem problema.
+  static Map<String, List<RaceEndgameType>> types(
+    List<RaceProblem> bank,
+    RaceGoal goal,
+  ) {
+    final found = <String, RaceEndgameType>{};
+    for (final problem in bank) {
+      if (!goal.accepts(problem)) continue;
+      found.putIfAbsent(problem.subcategory, () => RaceEndgameType.of(problem));
+    }
+    return {
+      for (final category in categories)
+        if (found.values.any((type) => type.category == category))
+          category: [...found.values.where((type) => type.category == category)]
+            ..sort(
+              (a, b) => a.size != b.size
+                  ? a.size.compareTo(b.size)
+                  : a.subcategory.compareTo(b.subcategory),
+            ),
+    };
+  }
+
+  /// Os problemas do aquecimento (de ganhar): [warmUpLength] do mesmo tipo
+  /// de final do desafio ([subcategory]), do mais fácil ao mais difícil.
+  /// Faltando, completa com os da mesma categoria ([category]) e depois com
+  /// os dos outros finais, cada grupo do mais fácil ao mais difícil, sem
+  /// reordenar o conjunto.
+  static List<RaceProblem> warmUp(
+    List<RaceProblem> bank, {
+    String? subcategory,
+    String? category,
+  }) {
     int byLevel(RaceProblem a, RaceProblem b) => a.level.compareTo(b.level);
-    final same = [...bank.where((problem) => problem.theme == theme)]
+    final wins = bank.where((problem) => !problem.defend);
+    final same = [...wins.where((p) => p.subcategory == subcategory)]
       ..sort(byLevel);
-    final others = [...bank.where((problem) => problem.theme != theme)]
-      ..sort(byLevel);
+    final near = [
+      ...wins.where(
+        (p) => p.subcategory != subcategory && p.category == category,
+      ),
+    ]..sort(byLevel);
+    final others = [
+      ...wins.where(
+        (p) => p.subcategory != subcategory && p.category != category,
+      ),
+    ]..sort(byLevel);
     // Os do mesmo final primeiro; os de fora só completam, no fim.
-    return [...same, ...others].take(warmUpLength).toList();
+    return [...same, ...near, ...others].take(warmUpLength).toList();
   }
 }

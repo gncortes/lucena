@@ -1,3 +1,4 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
@@ -129,11 +130,12 @@ void main() {
   });
 
   group('próximo problema', () {
-    RaceProblem p(String id, int level, {RaceTheme? theme}) => RaceProblem(
+    RaceProblem p(String id, int level) => RaceProblem(
       id: id,
       fen: raceTestProblems.first.fen,
       tree: raceTestProblems.first.tree,
-      theme: theme ?? RaceTheme.queen,
+      category: 'basic',
+      subcategory: 'queen',
       level: level,
     );
     final bank = [
@@ -243,14 +245,43 @@ void main() {
       expect(recent, {'a', 'b', 'c'});
     });
 
-    test('respeita o filtro de tema', () {
-      final rook = RaceRun(startedAt: start, theme: RaceTheme.rook);
-      expect(RaceRules.next(raceTestProblems, rook)!.theme, RaceTheme.rook);
+    // Só o mate de torre (350 e 500) no banco de teste.
+    const onlyRook = RaceFilter(
+      excluded: {'queen', 'pawnVsKing', 'knightBishopVsKing'},
+    );
+
+    test('respeita o filtro de tipos de final', () {
+      final rook = RaceRun(startedAt: start, filter: onlyRook);
+      expect(RaceRules.next(raceTestProblems, rook)!.subcategory, 'rook');
+    });
+
+    test('respeita o objetivo: Defender só sorteia os de empate', () {
+      final bank = [
+        ...raceTestProblems,
+        RaceProblem(
+          id: 'race.300.d01',
+          fen: raceTestProblems.first.fen,
+          tree: raceTestProblems.first.tree,
+          category: 'basic',
+          subcategory: 'queen',
+          level: 300,
+          defend: true,
+        ),
+      ];
+      final defend = RaceRun(
+        startedAt: start,
+        filter: const RaceFilter(goal: RaceGoal.defend),
+      );
+      expect(RaceRules.next(bank, defend)!.id, 'race.300.d01');
+      final win = RaceRun(startedAt: start);
+      expect(RaceRules.next(bank, win)!.defend, isFalse);
+      expect(RaceRules.count(bank, const RaceFilter()), 5);
+      expect(RaceRules.count(bank, const RaceFilter(goal: RaceGoal.both)), 6);
     });
 
     test('faixa sem problema do tema pula para a próxima que tenha', () {
       // O banco de teste tem torre em 350 e 500; começando em 300, vem 350.
-      final rook = RaceRun(startedAt: start, theme: RaceTheme.rook);
+      final rook = RaceRun(startedAt: start, filter: onlyRook);
       expect(RaceRules.next(raceTestProblems, rook)!.bucket, 350);
       // Depois do primeiro acerto, a faixa pedida é 350; no segundo, 400
       // não tem torre e pula para 500.
@@ -261,7 +292,7 @@ void main() {
     });
 
     test('sem problema do tema, não há próximo', () {
-      final none = RaceRun(startedAt: start, theme: RaceTheme.minor);
+      final none = RaceRun(startedAt: start, filter: onlyRook);
       expect(RaceRules.next(const [], none), isNull);
     });
 
@@ -302,7 +333,8 @@ void main() {
         id: 'q$bucket',
         fen: raceTestProblems.first.fen,
         tree: raceTestProblems.first.tree,
-        theme: RaceTheme.queen,
+        category: 'basic',
+        subcategory: 'queen',
         level: bucket,
       );
       final bank = [
@@ -396,10 +428,14 @@ void main() {
   });
 
   test(
-    'o aquecimento do tema traz o final do desafio e completa com os fáceis',
+    'o aquecimento traz o tipo de final do desafio e completa com os fáceis',
     () {
-      final rook = raceTestProblems.where((p) => p.theme == RaceTheme.rook);
-      final warm = RaceRules.warmUp(raceTestProblems, theme: RaceTheme.rook);
+      final rook = raceTestProblems.where((p) => p.subcategory == 'rook');
+      final warm = RaceRules.warmUp(
+        raceTestProblems,
+        subcategory: 'rook',
+        category: 'basic',
+      );
       expect(warm, containsAll(rook));
       expect(
         warm.length,
@@ -409,21 +445,46 @@ void main() {
   );
 
   test(
-    'os de outro tema completam o aquecimento no fim, cada grupo por nível',
+    'a mesma categoria vem antes dos outros finais, cada grupo por nível',
     () {
-      final warm = RaceRules.warmUp(raceTestProblems, theme: RaceTheme.rook);
-      // Os 2 de torre (350, 500) primeiro; depois os fáceis dos outros temas.
+      final warm = RaceRules.warmUp(
+        raceTestProblems,
+        subcategory: 'rook',
+        category: 'basic',
+      );
+      // Os 2 de torre (350, 500); o de dama (mesma categoria, 300); depois
+      // os fáceis das outras categorias.
       expect(warm.map((p) => p.level), [350, 500, 300, 400, 450]);
-      expect(warm.map((p) => p.theme).take(2), everyElement(RaceTheme.rook));
+      expect(warm.map((p) => p.subcategory).take(2), everyElement('rook'));
     },
   );
 
-  test('a subcategoria do desafio escolhe o tema do aquecimento', () {
-    expect(RaceTheme.ofSubcategory('rook'), RaceTheme.rook);
-    expect(RaceTheme.ofSubcategory('queenVsPawn'), RaceTheme.queen);
-    expect(RaceTheme.ofSubcategory('pawnVsKing'), RaceTheme.pawns);
-    expect(RaceTheme.ofSubcategory('twoBishopsVsKing'), RaceTheme.minor);
-    expect(RaceTheme.ofSubcategory('outra'), isNull);
+  test('o aquecimento nunca traz problema de Defender', () {
+    final bank = [
+      for (final p in raceTestProblems)
+        RaceProblem(
+          id: '${p.id}.d',
+          fen: p.fen,
+          tree: p.tree,
+          category: p.category,
+          subcategory: p.subcategory,
+          level: p.level - 1,
+          defend: true,
+        ),
+      ...raceTestProblems,
+    ];
+    final warm = RaceRules.warmUp(bank, subcategory: 'rook', category: 'basic');
+    expect(warm.map((p) => p.defend), everyElement(isFalse));
+  });
+
+  test('os tipos do filtro: por categoria, do menor final ao maior', () {
+    final types = RaceRules.types(raceTestProblems, RaceGoal.win);
+    expect(types.keys, ['basic', 'pawn', 'knightBishop']);
+    expect([for (final t in types['basic']!) t.subcategory], ['queen', 'rook']);
+    final kbn = types['knightBishop']!.single;
+    expect(kbn.mine, [Role.bishop, Role.knight]);
+    expect(kbn.theirs, isEmpty);
+    expect(RaceRules.types(raceTestProblems, RaceGoal.defend), isEmpty);
   });
 
   group('lance aceito por tolerância (linha longa)', () {

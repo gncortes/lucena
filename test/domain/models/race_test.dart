@@ -6,7 +6,8 @@ void main() {
     final problem = RaceProblem.fromJson({
       'id': 'race.350.01',
       'fen': '7k/8/5K2/8/8/8/8/R7 w - - 0 1',
-      'theme': 'rook',
+      'category': 'basic',
+      'subcategory': 'rook',
       'level': 360,
       'tree': {
         'd': 3,
@@ -67,22 +68,24 @@ void main() {
     });
   });
 
-  group('RaceAnswer histórico por tema', () {
-    test('guarda tema, nível e resultado (acerto, erro, vitória lenta)', () {
+  group('RaceAnswer histórico por tipo de final', () {
+    test('guarda tipo, Defender, nível e resultado (acerto, erro, lenta)', () {
       const base = {'id': 'p', 'level': 700, 'move': 'a1a2'};
       RaceAnswer parse(Map<String, dynamic> extra) => RaceAnswer.fromJson(
         RaceAnswer.fromJson({...base, 'correct': false, ...extra}).toJson(),
       );
-      final ok = parse({'correct': true, 'theme': 'rook'});
-      expect(ok.theme, RaceTheme.rook);
+      final ok = parse({'correct': true, 'subcategory': 'rook'});
+      expect(ok.subcategory, 'rook');
+      expect(ok.defend, isFalse);
+      expect(parse({'defend': true}).defend, isTrue);
       expect(ok.level, 700);
       expect(ok.kind, RaceOutcomeKind.correct);
-      expect(parse({'theme': 'queen'}).kind, RaceOutcomeKind.wrong);
+      expect(parse({'subcategory': 'queen'}).kind, RaceOutcomeKind.wrong);
       expect(
-        parse({'theme': 'minor', 'slower': true}).kind,
+        parse({'subcategory': 'knightBishopVsKing', 'slower': true}).kind,
         RaceOutcomeKind.slowWin,
       );
-      expect(parse({}).theme, isNull);
+      expect(parse({}).subcategory, isNull);
     });
   });
 

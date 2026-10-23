@@ -82,12 +82,7 @@ void main() {
     await cubit.load();
     expect(cubit.state.phase, RacePhase.intro);
     expect(cubit.state.record.corrects, 14);
-    expect(cubit.state.themes, [
-      RaceTheme.rook,
-      RaceTheme.pawns,
-      RaceTheme.queen,
-      RaceTheme.minor,
-    ]);
+    expect(cubit.state.filter, const RaceFilter());
     await cubit.close();
   });
 
@@ -194,37 +189,41 @@ void main() {
     expect((await repository.record()).isEmpty, isTrue);
   });
 
-  test('o filtro limita os problemas ao tema', () async {
+  // Só o mate de dama (300) no banco de teste.
+  const onlyQueen = RaceFilter(
+    excluded: {'rook', 'pawnVsKing', 'knightBishopVsKing'},
+  );
+
+  test('o filtro limita os problemas aos tipos marcados', () async {
     await cubit.load();
-    await cubit.selectTheme(RaceTheme.queen);
+    await cubit.applyFilter(onlyQueen);
     await cubit.start();
-    expect(cubit.state.problem!.theme, RaceTheme.queen);
-    await cubit.selectTheme(null);
-    expect(cubit.state.theme, isNull);
+    expect(cubit.state.problem!.subcategory, 'queen');
+    expect(cubit.state.run!.filter, onlyQueen);
   });
 
   test('o filtro escolhido persiste e volta na próxima abertura', () async {
     await cubit.load();
-    await cubit.selectTheme(RaceTheme.rook);
-    expect(await repository.theme(), RaceTheme.rook);
+    await cubit.applyFilter(onlyQueen);
+    expect(await repository.filter(), onlyQueen);
     final reopened = RaceCubit(repository, now);
     addTearDown(reopened.close);
     await reopened.load();
-    expect(reopened.state.theme, RaceTheme.rook);
-    await reopened.selectTheme(null);
-    expect(await repository.theme(), isNull);
+    expect(reopened.state.filter, onlyQueen);
+    await reopened.applyFilter(const RaceFilter());
+    expect(await repository.filter(), const RaceFilter());
   });
 
-  test('um filtro que o banco não tem volta a todos os finais', () async {
+  test('um filtro sem problema no banco volta ao padrão', () async {
     final small = FakeRaceRepository(
       now: now,
       problems: raceTestProblems.take(2).toList(),
+      filter: const RaceFilter(goal: RaceGoal.defend),
     );
-    await small.setTheme(RaceTheme.minor);
     final cubit = RaceCubit(small, now);
     addTearDown(cubit.close);
     await cubit.load();
-    expect(cubit.state.theme, isNull);
+    expect(cubit.state.filter, const RaceFilter());
   });
 
   test('revisão passa pelos erros e volta ao resultado', () async {
@@ -369,7 +368,8 @@ void main() {
               id: 'x.$i',
               fen: raceTestProblems.first.fen,
               tree: raceTestProblems.first.tree,
-              theme: RaceTheme.queen,
+              category: 'basic',
+              subcategory: 'queen',
               level: 300,
             ),
         ],

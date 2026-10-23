@@ -19,14 +19,14 @@ class FakeRaceRepository implements RaceRepository {
     RaceDuration duration = RaceDuration.threeMinutes,
     this.offers = false,
     RaceRun? ongoing,
-    RaceTheme? theme,
+    RaceFilter filter = const RaceFilter(),
   }) : _now = now,
        _problems = problems ?? raceTestProblems,
        _record = record,
        _record5 = record5,
        _duration = duration,
        _ongoing = ongoing,
-       _theme = theme;
+       _filter = filter;
 
   final Now _now;
   final List<RaceProblem> _problems;
@@ -34,7 +34,7 @@ class FakeRaceRepository implements RaceRepository {
   RaceRecord _record5;
   RaceDuration _duration;
   RaceRun? _ongoing;
-  RaceTheme? _theme;
+  RaceFilter _filter;
   bool offers;
   final _history = <RaceResult>[];
 
@@ -98,10 +98,10 @@ class FakeRaceRepository implements RaceRepository {
   Future<void> discardOngoing() async => _ongoing = null;
 
   @override
-  Future<RaceTheme?> theme() async => _theme;
+  Future<RaceFilter> filter() async => _filter;
 
   @override
-  Future<void> setTheme(RaceTheme? theme) async => _theme = theme;
+  Future<void> setFilter(RaceFilter filter) async => _filter = filter;
 
   @override
   Future<bool> offersWarmUp() async => offers;
@@ -123,7 +123,8 @@ const raceTestProblems = [
       moves: {'a1a8': RaceBranch(), 'a1g7': RaceBranch()},
       slower: {'a1a2'},
     ),
-    theme: RaceTheme.queen,
+    category: 'basic',
+    subcategory: 'queen',
     level: 300,
   ),
   RaceProblem(
@@ -147,28 +148,32 @@ const raceTestProblems = [
       },
       slower: {'a1a2'},
     ),
-    theme: RaceTheme.rook,
+    category: 'basic',
+    subcategory: 'rook',
     level: 350,
   ),
   RaceProblem(
     id: 'race.400.01',
     fen: '8/P7/8/8/8/k7/8/7K w - - 0 1',
     tree: RaceNode(distance: 5, moves: {'a7a8q': RaceBranch()}),
-    theme: RaceTheme.pawns,
+    category: 'pawn',
+    subcategory: 'pawnVsKing',
     level: 400,
   ),
   RaceProblem(
     id: 'race.450.01',
     fen: '8/8/8/3k4/8/8/1B6/K1N5 w - - 0 1',
     tree: RaceNode(distance: 7, moves: {'c1e2': RaceBranch()}),
-    theme: RaceTheme.minor,
+    category: 'knightBishop',
+    subcategory: 'knightBishopVsKing',
     level: 450,
   ),
   RaceProblem(
     id: 'race.500.01',
     fen: 'k7/2K5/8/8/8/8/8/1R6 w - - 0 1',
     tree: RaceNode(distance: 1, moves: {'b1a1': RaceBranch()}),
-    theme: RaceTheme.rook,
+    category: 'basic',
+    subcategory: 'rook',
     level: 500,
   ),
 ];

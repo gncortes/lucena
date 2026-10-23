@@ -87,14 +87,16 @@ void main() {
       of: find.byKey(RaceKeys.introView),
       matching: find.byType(Scrollable),
     );
-    // Só os temas que o banco tem, mais "todos".
+    // A linha de filtros resume o objetivo e os finais.
     await tester.scrollUntilVisible(
-      find.byKey(RaceKeys.themeChip(null)),
+      find.byKey(RaceKeys.filterRow),
       200,
       scrollable: list,
     );
-    expect(find.byKey(RaceKeys.themeChip(null)), findsOneWidget);
-    expect(find.byKey(RaceKeys.themeChip(RaceTheme.rook)), findsOneWidget);
+    expect(
+      tester.widget<Text>(find.byKey(RaceKeys.filterSummary)).data,
+      'Win · All endings',
+    );
     // O recorde fica no fim da lista, que rola.
     await tester.scrollUntilVisible(
       find.text('No record yet. Your first race sets it.'),
@@ -106,6 +108,83 @@ void main() {
     );
     expect(find.text('No record yet. Your first race sets it.'), findsOne);
     expect(find.byKey(RaceKeys.start), findsOneWidget);
+  });
+
+  testWidgets('filtros: desmarcar uma categoria e aplicar muda o resumo', (
+    tester,
+  ) async {
+    final cubit = await pumpRace(tester);
+    final list = find.descendant(
+      of: find.byKey(RaceKeys.introView),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(RaceKeys.filterRow),
+      200,
+      scrollable: list,
+    );
+    await tester.tap(find.byKey(RaceKeys.filterRow));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterScreen), findsOneWidget);
+    // Limpar começa desligado: o filtro já é o padrão.
+    expect(
+      tester.widget<TextButton>(find.byKey(RaceKeys.filterClear)).onPressed,
+      isNull,
+    );
+
+    // Abre a categoria básica e desmarca tudo dela.
+    await tester.tap(find.byKey(RaceKeys.filterCategory('basic')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterType('queen')), findsOneWidget);
+    expect(find.byKey(RaceKeys.filterType('rook')), findsOneWidget);
+    await tester.tap(find.byKey(RaceKeys.filterCategoryCheck('basic')));
+    await tester.pump();
+    expect(find.text('0 of 2'), findsOneWidget);
+
+    await tester.tap(find.byKey(RaceKeys.filterApply));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterScreen), findsNothing);
+    expect(cubit.state.filter.excluded, {'queen', 'rook'});
+    expect(
+      tester.widget<Text>(find.byKey(RaceKeys.filterSummary)).data,
+      'Win · 2 ending types',
+    );
+  });
+
+  testWidgets('filtros: sem nenhum final marcado, Aplicar fica desligado', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    final list = find.descendant(
+      of: find.byKey(RaceKeys.introView),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(RaceKeys.filterRow),
+      200,
+      scrollable: list,
+    );
+    await tester.tap(find.byKey(RaceKeys.filterRow));
+    await tester.pumpAndSettle();
+    for (final category in ['basic', 'pawn', 'knightBishop']) {
+      await tester.tap(find.byKey(RaceKeys.filterCategoryCheck(category)));
+      await tester.pump();
+    }
+    expect(find.byKey(RaceKeys.filterNone), findsOneWidget);
+    expect(
+      tester
+          .widget<ButtonStyleButton>(find.byKey(RaceKeys.filterApply))
+          .onPressed,
+      isNull,
+    );
+    // Limpar volta ao padrão e libera o Aplicar.
+    await tester.tap(find.byKey(RaceKeys.filterClear));
+    await tester.pump();
+    expect(find.byKey(RaceKeys.filterNone), findsNothing);
+    // O X fecha sem mudar nada.
+    await tester.tap(find.byKey(RaceKeys.filterClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterScreen), findsNothing);
   });
 
   testWidgets('duração: 5 min troca a regra e fica guardada', (tester) async {

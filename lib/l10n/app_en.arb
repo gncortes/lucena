@@ -6942,27 +6942,93 @@
   },
   "raceWhichEndings": "Which endings",
   "@raceWhichEndings": {
-    "description": "Intro: title of the theme filter."
+    "description": "Filter screen: title of the ending types section."
   },
-  "raceThemeAll": "All endings",
-  "@raceThemeAll": {
-    "description": "Theme filter: no filter."
+  "raceFilters": "Filters",
+  "@raceFilters": {
+    "description": "Intro: title of the filter row and of the filter screen."
   },
-  "raceThemeRook": "Rook",
-  "@raceThemeRook": {
-    "description": "Theme filter: rook endings."
+  "raceFilterSummary": "{goal} · {endings}",
+  "@raceFilterSummary": {
+    "description": "Intro filter row: the chosen goal and which endings.",
+    "placeholders": {
+      "goal": {
+        "type": "String"
+      },
+      "endings": {
+        "type": "String"
+      }
+    }
   },
-  "raceThemePawns": "Pawns",
-  "@raceThemePawns": {
-    "description": "Theme filter: pawn endings."
+  "raceFilterAllEndings": "All endings",
+  "@raceFilterAllEndings": {
+    "description": "Filter summary: every ending type is selected."
   },
-  "raceThemeQueen": "Queen",
-  "@raceThemeQueen": {
-    "description": "Theme filter: queen endings."
+  "raceFilterTypeCount": "{count, plural, =1{1 ending type} other{{count} ending types}}",
+  "@raceFilterTypeCount": {
+    "description": "Filter summary: how many ending types are selected.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
-  "raceThemeMinor": "Bishop and knight",
-  "@raceThemeMinor": {
-    "description": "Theme filter: minor piece endings."
+  "raceGoal": "Goal",
+  "@raceGoal": {
+    "description": "Filter screen: title of the goal selector."
+  },
+  "raceGoalWin": "Win",
+  "@raceGoalWin": {
+    "description": "Goal option: winning problems."
+  },
+  "raceGoalDefend": "Defend",
+  "@raceGoalDefend": {
+    "description": "Goal option: hold-the-draw problems."
+  },
+  "raceGoalBoth": "Both",
+  "@raceGoalBoth": {
+    "description": "Goal option: winning and hold-the-draw problems."
+  },
+  "raceGoalDefendHint": "Defend: hold the draw; any move that does not lose counts.",
+  "@raceGoalDefendHint": {
+    "description": "Filter screen: explains the Defend goal."
+  },
+  "raceFilterClear": "Clear",
+  "@raceFilterClear": {
+    "description": "Filter screen: back to Win and all endings."
+  },
+  "raceFilterApply": "Apply",
+  "@raceFilterApply": {
+    "description": "Filter screen: apply the filter and go back."
+  },
+  "raceFilterNone": "Select at least one ending.",
+  "@raceFilterNone": {
+    "description": "Filter screen: no problem matches the selection."
+  },
+  "raceFilterCategoryCount": "{selected} of {total}",
+  "@raceFilterCategoryCount": {
+    "description": "Filter screen: selected ending types in a category.",
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceDefendDetail": "Hold the draw",
+  "@raceDefendDetail": {
+    "description": "Race board: the goal of a Defend problem, under the player."
+  },
+  "raceReviewDefend": "That move lost. {move} held the draw.",
+  "@raceReviewDefend": {
+    "description": "Review of a Defend problem: the move that held the draw.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
   },
   "raceRecordCorrects": "Your record in {minutes} min: {count, plural, =0{0 correct} =1{1 correct} other{{count} correct}}",
   "@raceRecordCorrects": {
@@ -7133,14 +7199,14 @@
       }
     }
   },
-  "raceReviewMeta": "Problem {number} · {theme} · level {level}",
+  "raceReviewMeta": "Problem {number} · {category} · level {level}",
   "@raceReviewMeta": {
     "description": "Review: which problem it was.",
     "placeholders": {
       "number": {
         "type": "int"
       },
-      "theme": {
+      "category": {
         "type": "String"
       },
       "level": {

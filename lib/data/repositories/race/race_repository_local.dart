@@ -25,7 +25,7 @@ class LocalRaceRepository implements RaceRepository {
   static const _durationKey = 'race.duration';
   static const _historyKey = 'race.history';
   static const _ongoingKey = 'race.ongoing';
-  static const _themeKey = 'race.theme';
+  static const _filterKey = 'race.filter';
   static const _warmUpKey = 'race.warmUp.offer';
 
   /// Quantas Corridas o histórico guarda.
@@ -159,13 +159,14 @@ class LocalRaceRepository implements RaceRepository {
   Future<void> discardOngoing() => _preferences.remove(_ongoingKey);
 
   @override
-  Future<RaceTheme?> theme() async =>
-      RaceTheme.fromCode(await _preferences.getString(_themeKey));
+  Future<RaceFilter> filter() async {
+    final json = await _readMap(_filterKey);
+    return json == null ? const RaceFilter() : RaceFilter.fromJson(json);
+  }
 
   @override
-  Future<void> setTheme(RaceTheme? theme) => theme == null
-      ? _preferences.remove(_themeKey)
-      : _preferences.setString(_themeKey, theme.name);
+  Future<void> setFilter(RaceFilter filter) =>
+      _preferences.setString(_filterKey, jsonEncode(filter.toJson()));
 
   @override
   Future<bool> offersWarmUp() async =>

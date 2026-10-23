@@ -84,6 +84,9 @@ class RaceGameView extends StatelessWidget {
                     PlayerEntry(
                       side: problem.side,
                       name: l10n.reviewYou,
+                      // Defender: o objetivo embaixo do nome.
+                      detail: problem.defend ? l10n.raceDefendDetail : null,
+                      detailKey: RaceKeys.defendDetail,
                       time: state.remaining,
                       running: true,
                       clockKey: RaceKeys.clock,

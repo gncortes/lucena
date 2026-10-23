@@ -37,10 +37,11 @@ abstract class RaceRepository {
   /// Esquece a Corrida em andamento sem guardar nada (o jogador saiu).
   Future<void> discardOngoing();
 
-  /// O filtro de finais escolhido na abertura. Nulo: todos os finais.
-  Future<RaceTheme?> theme();
+  /// O filtro escolhido na abertura (objetivo e tipos de final). Nunca
+  /// escolhido: ganhar, todos os finais.
+  Future<RaceFilter> filter();
 
-  Future<void> setTheme(RaceTheme? theme);
+  Future<void> setFilter(RaceFilter filter);
 
   /// Se a Nova partida oferece o aquecimento antes de jogar.
   Future<bool> offersWarmUp();
