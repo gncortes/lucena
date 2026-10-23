@@ -3,7 +3,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../keys/external_page_keys.dart';
 import '../l10n/l10n.dart';
-import 'animated_progress.dart';
 import 'web_pages.dart';
 
 /// Abre uma página da web dentro do app (a Wikipedia de um nome da fala, a

@@ -20,7 +20,6 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../wiki/widgets/linked_text.dart';

@@ -2,10 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../domain/models/board_settings.dart';
-import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/board_settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -40,7 +41,7 @@ class BoardAppearanceScreen extends StatelessWidget {
                     boardKey: BoardSettingsKeys.preview,
                     size: previewSize,
                     appearance: board.appearance,
- animated: board.animation,
+                    animated: board.animation,
                   ),
                 ),
                 Expanded(
@@ -53,7 +54,7 @@ class BoardAppearanceScreen extends StatelessWidget {
                       BoardColorsCarousel(
                         selected: board.colors,
                         keyOf: BoardSettingsKeys.colorsOption,
- labelOf: (colors) => colors.label(l10n),
+                        labelOf: (colors) => colors.label(l10n),
                         onSelected: (colors) =>
                             cubit.setBoard(board.copyWith(colors: colors)),
                       ),

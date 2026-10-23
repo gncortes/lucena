@@ -6,7 +6,6 @@ import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
-import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun.dart';
@@ -17,7 +16,6 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';

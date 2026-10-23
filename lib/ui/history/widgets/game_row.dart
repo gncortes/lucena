@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -15,10 +16,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/review/move_quality_ui.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/container_navigation.dart';
-import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/rating_value.dart';
 import '../view_models/history_cubit.dart';
 
 /// Uma partida do histórico, enxuta como no chess.com: o ícone do ritmo, o

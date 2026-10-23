@@ -8,7 +8,6 @@ import '../../../domain/models/character.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';
 import '../l10n/l10n.dart';
-import 'character_avatar.dart';
 import 'script_speech_sheet.dart';
 import 'speech_balloon.dart';
 import 'teacher_speech.dart';

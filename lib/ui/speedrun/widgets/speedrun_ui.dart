@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
@@ -15,9 +16,7 @@ import '../../../domain/use_cases/subcategory_material.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
-import '../../core/widgets/goal_style.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../journey/widgets/trail_widgets.dart';
 import '../../../domain/use_cases/speedrun_category.dart';

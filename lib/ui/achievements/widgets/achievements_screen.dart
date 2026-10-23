@@ -12,7 +12,6 @@ import '../view_models/achievements_cubit.dart';
 import 'achievement_detail.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/widgets/animated_progress.dart';
 
 /// As conquistas: a barra do progresso geral, o filtro (todas, conquistadas,
 /// faltando e o histórico) e a lista por grupo, com as obtidas em cor e a

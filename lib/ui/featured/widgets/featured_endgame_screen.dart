@@ -4,6 +4,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
@@ -17,7 +18,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/featured_endgame_cubit.dart';
 import '../view_models/find_move_cubit.dart';

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/theme/goal_tone_ui.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';

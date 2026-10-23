@@ -15,7 +15,6 @@ import '../../core/widgets/figurine.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/animated_progress.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {

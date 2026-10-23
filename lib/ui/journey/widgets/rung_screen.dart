@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/theme/goal_tone_ui.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
@@ -10,15 +12,11 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
-import '../../core/widgets/animated_progress.dart';
 
 /// Os desafios contra um adversário: o personagem com a frase dele e o
 /// progresso, o próximo desafio em destaque e todos os desafios em grade, com

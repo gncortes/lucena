@@ -2,6 +2,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/theme/goal_tone_ui.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
@@ -14,9 +16,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/game_board_hero.dart';
-import '../../core/widgets/goal_style.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/opponent_card.dart';
 import 'journey_ui.dart';
 
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o

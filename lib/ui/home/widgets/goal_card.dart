@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
@@ -8,8 +9,6 @@ import '../../../domain/models/home_layout.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/animated_progress.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
@@ -279,7 +278,10 @@ class ResumeCard extends StatelessWidget {
               ? PositionBoard(fen: fen, size: 64)
               : teacher == null
               ? null
-              : CharacterPortrait(character: teacher, size: CharacterAvatar.tour),
+              : CharacterPortrait(
+                  character: teacher,
+                  size: CharacterAvatar.tour,
+                ),
           onTap: () => context.push(endgame.route, extra: fen),
         );
       default:

@@ -6,7 +6,6 @@ import '../../../domain/use_cases/history_games.dart';
 import '../../../domain/use_cases/rating_period.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/rating_value.dart';
 import '../view_models/history_cubit.dart';
 
 /// O rating, quanto ele mudou no período, o mais alto e o gráfico. O período

@@ -1,6 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../core/keys/free_board_keys.dart';
@@ -10,7 +12,6 @@ import '../../profile/view_models/profile_cubit.dart';
 import '../view_models/free_board_state.dart';
 import '../view_models/talk_cubit.dart';
 import '../../core/widgets/game_clock.dart';
-import '../../core/widgets/character_avatar.dart';
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
 /// nome e o relógio na ponta) ou a dos dois juntos, brancas primeiro. Sem

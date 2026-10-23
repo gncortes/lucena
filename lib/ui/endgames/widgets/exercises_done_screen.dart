@@ -18,7 +18,6 @@ import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
-import '../../core/widgets/character_avatar.dart';
 
 /// O resultado dos exercícios de uma aula de final, depois do último: a
 /// medalha da faixa, a nota e, com a aula aprovada, o diploma.

@@ -10,7 +10,6 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/ui/core/widgets/sound_off_icon.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
-import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena/ui/core/widgets/viktor_sheet.dart';
 import 'package:lucena/ui/core/keys/viktor_sheet_keys.dart';
@@ -25,6 +24,7 @@ import 'package:lucena/data/repositories/voice/voice_repository.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 class _DelayedVoiceRepository extends FakeVoiceRepository {
   _DelayedVoiceRepository()

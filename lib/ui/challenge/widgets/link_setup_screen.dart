@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../routing/routes.dart';
-import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -69,7 +70,7 @@ class LinkSetupScreen extends StatelessWidget {
                   size: 216,
                   fen: fen,
                   appearance: board.appearance.copyWith(coordinates: false),
- animated: board.animation,
+                  animated: board.animation,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -77,7 +78,7 @@ class LinkSetupScreen extends StatelessWidget {
               BoardColorsCarousel(
                 selected: board.colors,
                 keyOf: ChallengeKeys.setupColors,
- labelOf: (colors) => colors.label(l10n),
+                labelOf: (colors) => colors.label(l10n),
                 onSelected: (colors) =>
                     settings.setBoard(board.copyWith(colors: colors)),
               ),

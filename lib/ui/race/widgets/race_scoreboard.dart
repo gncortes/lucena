@@ -5,7 +5,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/goal_style.dart';
 import '../view_models/race_cubit.dart';
 
 /// O placar do alto: o contador de acertos, que dá lugar ao ícone de certo ou

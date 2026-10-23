@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
-import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../domain/use_cases/marathon.dart';
 import '../../../routing/routes.dart';
@@ -14,7 +13,6 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';

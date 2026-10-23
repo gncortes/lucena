@@ -13,7 +13,6 @@ import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
 import '../../core/widgets/figurine.dart';

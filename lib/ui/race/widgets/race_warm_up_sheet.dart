@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
@@ -9,7 +10,6 @@ import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/race_rules.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
 
 /// O que o jogador escolheu na folha "Aquecer antes?".
 enum RaceOfferChoice { warm, skip }

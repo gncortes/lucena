@@ -5,17 +5,17 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/board/board_settings_ui.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../config/dependencies.dart' show showsDevTools;
 import '../../../domain/models/board_settings.dart';
 import '../../../routing/routes.dart';
-import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/app_bar_progress.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/round_footer_button.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../lesson_script/widgets/script_board.dart';
@@ -265,7 +265,7 @@ class _BoardStep extends StatelessWidget {
             // Amostra pequena: só as cores e as peças, sem as letras e os
             // números da borda.
             appearance: board.appearance.copyWith(coordinates: false),
- animated: board.animation,
+            animated: board.animation,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -273,7 +273,7 @@ class _BoardStep extends StatelessWidget {
         BoardColorsCarousel(
           selected: board.colors,
           keyOf: TourKeys.boardColors,
- labelOf: (colors) => colors.label(l10n),
+          labelOf: (colors) => colors.label(l10n),
           onSelected: (colors) =>
               settings.setBoard(board.copyWith(colors: colors)),
         ),

@@ -2,9 +2,6 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
-import '../../../domain/models/endgame_position.dart';
-import 'goal_style.dart';
-
 enum TimeDisplayType { clock, stopwatch, countdown, record, duration, pace }
 
 enum TimeDisplaySize { inline, pill, block }

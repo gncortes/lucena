@@ -5,6 +5,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
 
@@ -28,11 +29,8 @@ import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/share/share_button.dart';
-import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/one_line.dart';
-import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -47,7 +45,6 @@ import '../../core/pace/pace_ui.dart';
 import '../../speedrun/widgets/speedrun_ui.dart';
 import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
-import '../../core/widgets/animated_progress.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o

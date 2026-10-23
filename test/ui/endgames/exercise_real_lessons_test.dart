@@ -16,10 +16,10 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/exercise_review.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/widgets/character_avatar.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/exercise_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/goldens/golden_harness.dart';

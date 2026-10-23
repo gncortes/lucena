@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/character_portrait.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../domain/models/character.dart';
 import '../keys/lesson_script_keys.dart';
-import 'character_avatar.dart';
 import 'script_sheet_route.dart';
 import 'speech_balloon.dart';
 import 'speech_sheet_fade.dart';

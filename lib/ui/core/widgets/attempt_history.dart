@@ -6,7 +6,6 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../l10n/l10n.dart';
 import '../opponent/opponent_ui.dart';
-import 'goal_style.dart';
 
 /// Partidas agrupadas por mês, da mais recente para a mais antiga, com o
 /// título de cada mês.

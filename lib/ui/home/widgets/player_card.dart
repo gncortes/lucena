@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/ui/core/widgets/rating_semantics.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../routing/routes.dart';
@@ -7,7 +8,6 @@ import '../../../routing/review_destinations.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/rating_value.dart';
 import '../view_models/home_cubit.dart';
 
 /// O jogador no alto da tela inicial: o apelido e a faixa, e o rating em

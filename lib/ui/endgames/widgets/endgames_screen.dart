@@ -17,12 +17,10 @@ import '../../../routing/routes.dart';
 import '../../core/widgets/placement_test_card.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgames_cubit.dart';
 import 'endgames_filters.dart';
-import '../../core/widgets/animated_progress.dart';
 
 /// A trilha das aulas de finais: o Viktor recebe o aluno e os módulos
 /// listam as aulas, cada uma com a nota (as estrelas) já alcançada.

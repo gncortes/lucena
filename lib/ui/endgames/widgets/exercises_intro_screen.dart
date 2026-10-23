@@ -13,7 +13,6 @@ import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';
 import 'stars_row.dart';
-import '../../core/widgets/character_avatar.dart';
 
 /// Antes dos exercícios: o Viktor explica como pensar (uns 5 minutos por
 /// posição) e como a nota fecha; chips com o tamanho do teste e a nota

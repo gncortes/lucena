@@ -23,7 +23,6 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';
 import 'placement_result_view.dart';
-import '../../core/widgets/character_avatar.dart';
 
 /// O teste de nível (T52): a abertura com o Viktor, as 20 perguntas (sem
 /// dizer se acertou) e o resultado. [onDone] recebe o fim: o tour segue, as
