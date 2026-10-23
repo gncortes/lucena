@@ -40,6 +40,8 @@ dependencies:
   in_app_update: ^5.0.0
   in_app_review: ^2.0.12
   intl: ^0.20.3
+  lucena_ui:
+    path: ../lucena_ui
   multistockfish: ^0.6.1
   package_info_plus: ^10.2.2
   share_plus: ^13.3.1
