@@ -17,7 +17,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/sheet_header.dart';
 
 /// A partida guardada como o aviso a mostra: onde parou e contra quem.

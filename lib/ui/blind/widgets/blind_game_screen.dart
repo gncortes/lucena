@@ -27,7 +27,6 @@ import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/time_display.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/blind_game_cubit.dart';

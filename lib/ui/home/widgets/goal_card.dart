@@ -9,7 +9,6 @@ import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/position_board.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';

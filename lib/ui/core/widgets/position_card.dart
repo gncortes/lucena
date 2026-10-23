@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 import 'goal_style.dart';
-import 'position_board.dart';
 
 /// Um cartão de posição numa grade (a Jornada, o catálogo): o tabuleiro na
 /// largura do cartão, o selo de feito sobre ele e, embaixo, o que identifica

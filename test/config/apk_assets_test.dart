@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 void main() {
   // `android/app/build.gradle.kts` tira do APK os conjuntos de peças do

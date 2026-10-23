@@ -12,7 +12,6 @@ import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/position_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';

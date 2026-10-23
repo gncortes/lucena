@@ -9,7 +9,6 @@ import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/empty_state.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';

@@ -568,33 +568,34 @@ class _LucenaAppState extends State<LucenaApp> {
             return BoardAppearanceScope(
               appearance: settings.board.appearance,
               child: _QuietInBackground(
-              child: MaterialApp.router(
-                onGenerateTitle: (context) => context.l10n.appTitle,
-                debugShowCheckedModeBanner: false,
-                theme: AppTheme.of(Brightness.light, accent: settings.accent),
-                darkTheme: AppTheme.of(
-                  Brightness.dark,
-                  accent: settings.accent,
-                ),
-                themeMode: settings.themeMode.material,
-                locale: localeFromCode(settings.languageCode),
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: appSupportedLocales,
-                routerConfig: router,
-                // Abaixo das traduções: os textos dos lembretes vêm delas.
-                builder: (context, child) => UpdateBridge(
-                  router: router,
-                  child: RemindersBridge(
-                    onOpen: (route) {
-                      unawaited(
-                        _analytics.alertOpened(route, channel: 'local'),
-                      );
-                      _router?.push(route);
-                    },
-                    child: child ?? const SizedBox.shrink(),
+                child: MaterialApp.router(
+                  onGenerateTitle: (context) => context.l10n.appTitle,
+                  debugShowCheckedModeBanner: false,
+                  theme: AppTheme.of(Brightness.light, accent: settings.accent),
+                  darkTheme: AppTheme.of(
+                    Brightness.dark,
+                    accent: settings.accent,
+                  ),
+                  themeMode: settings.themeMode.material,
+                  locale: localeFromCode(settings.languageCode),
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: appSupportedLocales,
+                  routerConfig: router,
+                  // Abaixo das traduções: os textos dos lembretes vêm delas.
+                  builder: (context, child) => UpdateBridge(
+                    router: router,
+                    child: RemindersBridge(
+                      onOpen: (route) {
+                        unawaited(
+                          _analytics.alertOpened(route, channel: 'local'),
+                        );
+                        _router?.push(route);
+                      },
+                      child: child ?? const SizedBox.shrink(),
+                    ),
                   ),
                 ),
-              ),
               ),
             );
           },

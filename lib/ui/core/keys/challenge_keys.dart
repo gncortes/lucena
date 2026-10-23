@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
-
-import '../../../domain/models/board_settings.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 abstract final class ChallengeKeys {
   /// O botão da barra da Nova partida que abre a folha de mandar o desafio.

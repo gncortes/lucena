@@ -6,7 +6,6 @@ import '../../../domain/models/challenge_result.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/position_board.dart';
 import 'challenge_result_ui.dart';
 
 /// O cartão que vira imagem: o cabeçalho azul com o resultado e, embaixo, o

@@ -13,7 +13,6 @@ import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/game_clock.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/position_board.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/race_cubit.dart';

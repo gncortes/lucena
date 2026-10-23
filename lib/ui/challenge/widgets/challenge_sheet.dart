@@ -19,7 +19,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../view_models/challenge_sheet_cubit.dart';
 

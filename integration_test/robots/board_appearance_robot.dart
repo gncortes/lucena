@@ -1,10 +1,9 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/board_settings.dart';
-import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 import 'package:patrol/patrol.dart';
 
 import 'settings_robot.dart';

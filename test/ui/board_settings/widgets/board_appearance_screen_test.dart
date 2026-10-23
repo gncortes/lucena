@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/board_settings/widgets/board_appearance_screen.dart';
 import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/test_app.dart';

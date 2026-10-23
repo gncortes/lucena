@@ -15,7 +15,6 @@ import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/opponent_card.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/skeleton.dart';
 import '../view_models/challenge_link_cubit.dart';
 

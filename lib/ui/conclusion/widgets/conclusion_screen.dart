@@ -32,7 +32,6 @@ import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/one_line.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/rating_value.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/skeleton.dart';

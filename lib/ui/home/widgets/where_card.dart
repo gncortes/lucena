@@ -11,7 +11,6 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/position_board.dart';
 import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/view_models/journey_cubit.dart';
 import '../../race/widgets/race_warm_up_screen.dart';

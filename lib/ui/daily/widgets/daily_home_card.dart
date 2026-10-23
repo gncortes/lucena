@@ -9,7 +9,6 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/daily_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/position_board.dart';
 import '../../featured/widgets/featured_card.dart';
 import '../../streak/widgets/streak_pill.dart';
 import 'daily_squares.dart';

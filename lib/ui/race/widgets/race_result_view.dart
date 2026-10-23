@@ -10,7 +10,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';

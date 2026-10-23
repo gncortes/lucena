@@ -16,7 +16,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/round_footer_button.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../lesson_script/widgets/script_board.dart';

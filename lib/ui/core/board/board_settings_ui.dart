@@ -1,5 +1,4 @@
 import 'package:chessground/chessground.dart';
-import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 

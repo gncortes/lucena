@@ -4,12 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/domain/models/app_language.dart';
-import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/challenge/view_models/link_setup_cubit.dart';
 import 'package:lucena/ui/challenge/widgets/link_setup_screen.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';

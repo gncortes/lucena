@@ -26,7 +26,6 @@ import '../../voice/view_models/speech_cubit.dart';
 import 'custom_pace_sheet.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/info_chip.dart';

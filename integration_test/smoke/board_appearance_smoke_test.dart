@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
-import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 import 'package:patrol/patrol.dart';
 
 import '../robots/app_robot.dart';

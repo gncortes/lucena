@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
-import '../../../domain/models/board_settings.dart';
 import '../../tour/view_models/tour_cubit.dart';
 
 abstract final class TourKeys {

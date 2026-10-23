@@ -16,7 +16,6 @@ import '../../core/widgets/attempt_history.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/position_board.dart';
 import '../view_models/journey_cubit.dart';
 import '../../core/widgets/opponent_card.dart';
 import 'journey_ui.dart';

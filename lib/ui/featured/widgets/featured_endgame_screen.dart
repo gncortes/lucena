@@ -21,7 +21,6 @@ import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_sheet.dart';
-import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../view_models/featured_endgame_cubit.dart';

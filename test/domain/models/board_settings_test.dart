@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 void main() {
   test('cada cor e cada conjunto de peças voltam do código gravado', () {
