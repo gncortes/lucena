@@ -6890,9 +6890,27 @@
   "@raceIntroBody": {
     "description": "Intro: what the race is."
   },
-  "raceRuleTimeTitle": "3 minutes",
+  "raceDuration": "Duration",
+  "@raceDuration": {
+    "description": "Intro: title of the duration selector (3 or 5 minutes)."
+  },
+  "raceDurationMinutes": "{minutes} min",
+  "@raceDurationMinutes": {
+    "description": "Intro: one option of the duration selector.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "raceRuleTimeTitle": "{minutes} minutes",
   "@raceRuleTimeTitle": {
-    "description": "Intro rule: the time limit."
+    "description": "Intro rule: the time limit chosen above.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "raceRuleTimeBody": "Solve as many problems as you can before time runs out.",
   "@raceRuleTimeBody": {
@@ -6946,10 +6964,13 @@
   "@raceThemeMinor": {
     "description": "Theme filter: minor piece endings."
   },
-  "raceRecordCorrects": "Your record: {count, plural, =0{0 correct} =1{1 correct} other{{count} correct}}",
+  "raceRecordCorrects": "Your record in {minutes} min: {count, plural, =0{0 correct} =1{1 correct} other{{count} correct}}",
   "@raceRecordCorrects": {
-    "description": "Intro record card: best number of correct answers.",
+    "description": "Intro record card: best number of correct answers for the chosen duration.",
     "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
       "count": {
         "type": "int"
       }

@@ -14,6 +14,11 @@ abstract final class RaceKeys {
   /// botão de começar.
   static Key themeChip(RaceTheme? theme) =>
       Key('race.theme.${theme?.name ?? 'all'}');
+
+  /// Abertura: o seletor de duração (E1.33) e cada opção.
+  static const duration = Key('race.duration');
+  static Key durationOption(RaceDuration duration) =>
+      Key('race.duration.${duration.minutes}');
   static const recordCard = Key('race.record');
   static const start = Key('race.start');
   static const empty = Key('race.empty');

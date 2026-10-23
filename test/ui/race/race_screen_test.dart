@@ -108,6 +108,24 @@ void main() {
     expect(find.byKey(RaceKeys.start), findsOneWidget);
   });
 
+  testWidgets('duração: 5 min troca a regra e fica guardada', (tester) async {
+    final cubit = await pumpRace(tester);
+
+    // A seção Duração vem acima das regras (E1.33, opção B).
+    expect(
+      tester.getTopLeft(find.byKey(RaceKeys.duration)).dy,
+      lessThan(tester.getTopLeft(find.text('3 minutes')).dy),
+    );
+    await tester.tap(
+      find.byKey(RaceKeys.durationOption(RaceDuration.fiveMinutes)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.duration, RaceDuration.fiveMinutes);
+    expect(find.text('5 minutes'), findsOneWidget);
+    expect(await repository.duration(), RaceDuration.fiveMinutes);
+  });
+
   testWidgets('acerto: o ícone aparece no lugar do contador e o número sobe', (
     tester,
   ) async {

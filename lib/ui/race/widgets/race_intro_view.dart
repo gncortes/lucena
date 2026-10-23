@@ -11,14 +11,15 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';
 import 'race_ui.dart';
 
-/// A abertura da Corrida: o que é, as três regras, o filtro de finais, o
-/// recorde e o "Começar".
+/// A abertura da Corrida: o que é, a duração (3 ou 5 min), as regras, o filtro
+/// de finais, o recorde da duração escolhida e o "Começar".
 class RaceIntroView extends StatelessWidget {
   const RaceIntroView({required this.state, super.key});
 
@@ -86,9 +87,29 @@ class RaceIntroView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
+              // Duração em seção própria, acima das regras (E1.33, opção B).
+              SectionTitle(l10n.raceDuration, inset: 0),
+              SegmentedButton<RaceDuration>(
+                key: RaceKeys.duration,
+                showSelectedIcon: false,
+                segments: [
+                  for (final option in RaceDuration.values)
+                    ButtonSegment(
+                      value: option,
+                      label: OneLine(
+                        l10n.raceDurationMinutes(option.minutes),
+                        key: RaceKeys.durationOption(option),
+                      ),
+                    ),
+                ],
+                selected: {state.duration},
+                onSelectionChanged: (selection) =>
+                    unawaited(cubit.selectDuration(selection.single)),
+              ),
+              const SizedBox(height: AppSpacing.sm),
               _Rule(
                 icon: Icons.timer,
-                title: l10n.raceRuleTimeTitle,
+                title: l10n.raceRuleTimeTitle(state.duration.minutes),
                 body: l10n.raceRuleTimeBody,
               ),
               _Rule(
@@ -125,7 +146,7 @@ class RaceIntroView extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: AppSpacing.lg),
-              _RecordCard(record: state.record),
+              _RecordCard(record: state.record, duration: state.duration),
             ],
           ),
         ),
@@ -215,9 +236,10 @@ class _Rule extends StatelessWidget {
 
 /// O recorde: acertos e o problema mais difícil, ou o convite do primeiro.
 class _RecordCard extends StatelessWidget {
-  const _RecordCard({required this.record});
+  const _RecordCard({required this.record, required this.duration});
 
   final RaceRecord record;
+  final RaceDuration duration;
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +267,10 @@ class _RecordCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.raceRecordCorrects(record.corrects),
+                          l10n.raceRecordCorrects(
+                            duration.minutes,
+                            record.corrects,
+                          ),
                           style: theme.textTheme.titleSmall,
                         ),
                         Text(

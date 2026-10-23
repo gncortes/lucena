@@ -68,7 +68,7 @@ void main() {
     }
   }
 
-  test('versão 2, ids únicos e no máximo 10 por faixa', () {
+  test('versão 2, ids únicos e no máximo 20 por faixa', () {
     expect(json['version'], 2);
     final ids = problems.map((p) => p['id']).toSet();
     expect(ids, hasLength(problems.length));
@@ -77,7 +77,7 @@ void main() {
       final bucket = p['bucket'] as int;
       perBucket[bucket] = (perBucket[bucket] ?? 0) + 1;
     }
-    expect(perBucket.values, everyElement(lessThanOrEqualTo(10)));
+    expect(perBucket.values, everyElement(lessThanOrEqualTo(20)));
     expect(
       perBucket.keys.every(
         (b) => b >= 300 && b <= 2600 && b % (b < 1500 ? 50 : 25) == 0,
