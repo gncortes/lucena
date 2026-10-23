@@ -360,19 +360,17 @@ const es: Dictionary = {
         ],
       },
       {
-        title: 'Estadísticas de uso, fallos y anuncios',
+        title: 'Estadísticas de uso y fallos',
         body: [
           '<strong>Estadísticas de uso.</strong> La app usa Google Analytics for Firebase para saber qué pantallas y lecciones se usan, dónde la gente abandona y de dónde vino (por ejemplo, de un enlace de desafío). Registra eventos de la app (como abrir una lección o terminar una partida), el modelo del dispositivo, la versión de Android, el país y el estado (nunca la ciudad), si tienes cuenta y la campaña o el enlace por el que llegaste, con un identificador de la app. Nunca se envían tu nombre, tu correo, lo que escribes ni las posiciones que montas.',
           '<strong>Fallos.</strong> Cuando la app se cierra por un error, Firebase Crashlytics envía el informe, con el modelo del dispositivo y las versiones del sistema y de la app, para que pueda corregirlo.',
-          '<strong>Anuncios.</strong> La app muestra anuncios de Google AdMob a pantalla completa solo cuando tocas para abrir o continuar una lección, y nunca en las primeras lecciones ni en medio de un ejercicio, una partida o un desafío. Antes del primer anuncio, la app muestra la pantalla de consentimiento de Google, donde eliges si los anuncios pueden ser personalizados. AdMob usa el identificador de publicidad del dispositivo, que puedes restablecer o eliminar en los ajustes de Android (<a href="https://policies.google.com/technologies/ads" rel="noopener">cómo usa Google los datos en los anuncios</a>). Cambias esta elección en la pantalla Privacidad y anuncios de la app.',
-          '<strong>Quitar anuncios.</strong> La compra se hace en Google Play, que gestiona el pago. La app solo sabe si la compra se hizo, para dejar de mostrar anuncios.',
           '<strong>Tu opinión.</strong> Cuando respondes una encuesta de la app o envías un comentario, la respuesta va a Cloud Firestore <strong>sin identificarte</strong>: sin cuenta, correo, nombre ni identificador de publicidad. Solo van la versión de la app, el modelo del móvil, tu nivel y cómo llegaste a la app.',
         ],
       },
       {
         title: 'Internet y páginas externas',
         body: [
-          'Los motores de ajedrez, las lecciones y las voces funcionan en el propio dispositivo. La app usa internet para la cuenta, las notificaciones, las estadísticas, los anuncios, las compras, tu opinión, Lichess y Chess.com, y para abrir, dentro de ella, las páginas externas que tocas, como artículos de Wikipedia. Esas páginas siguen las políticas de sus sitios.',
+          'Los motores de ajedrez, las lecciones y las voces funcionan en el propio dispositivo. La app usa internet para la cuenta, las notificaciones, las estadísticas, tu opinión, Lichess y Chess.com, y para abrir, dentro de ella, las páginas externas que tocas, como artículos de Wikipedia. Esas páginas siguen las políticas de sus sitios.',
           'Cuando compartes una partida o un desafío, el texto, la imagen y el enlace van solo a la app que elijas.',
         ],
       },
@@ -385,7 +383,7 @@ const es: Dictionary = {
       {
         title: 'Para qué se usan los datos y con qué base',
         body: [
-          '<ul><li><strong>Cuenta, perfil, progreso y partidas:</strong> para guardar y devolver tu progreso, como pediste al crear la cuenta (ejecución del contrato).</li><li><strong>Notificaciones y anuncios personalizados:</strong> solo con tu consentimiento, que puedes retirar en cualquier momento.</li><li><strong>Estadísticas de uso, informes de fallos y tu opinión:</strong> para corregir errores y mejorar las lecciones (interés legítimo).</li></ul>',
+          '<ul><li><strong>Cuenta, perfil, progreso y partidas:</strong> para guardar y devolver tu progreso, como pediste al crear la cuenta (ejecución del contrato).</li><li><strong>Notificaciones:</strong> solo con tu consentimiento, que puedes retirar en cualquier momento.</li><li><strong>Estadísticas de uso, informes de fallos y tu opinión:</strong> para corregir errores y mejorar las lecciones (interés legítimo).</li></ul>',
         ],
       },
       {
@@ -482,13 +480,7 @@ const es: Dictionary = {
       {
         title: 'Servicios de terceros',
         body: [
-          'El inicio de sesión, el almacenamiento de la cuenta, las notificaciones, las estadísticas y los anuncios los presta Google (Firebase y AdMob), y las compras, Google Play. Los datos de rating vienen de Lichess y Chess.com, si los conectas. Estos servicios tienen sus propios términos, y no respondo por su disponibilidad.',
-        ],
-      },
-      {
-        title: 'Anuncios',
-        body: [
-          'Lucena es gratis y se mantiene con anuncios, que solo aparecen al abrir o continuar una lección. La compra “Quitar anuncios” se hace una sola vez en Google Play, queda ligada a tu cuenta de Google y quita los anuncios en los dispositivos donde uses esa cuenta. Los reembolsos siguen las reglas de Google Play.',
+          'El inicio de sesión, el almacenamiento de la cuenta, las notificaciones y las estadísticas los presta Google (Firebase). Los datos de rating vienen de Lichess y Chess.com, si los conectas. Estos servicios tienen sus propios términos, y no respondo por su disponibilidad.',
         ],
       },
       {

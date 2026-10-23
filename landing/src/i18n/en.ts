@@ -360,19 +360,17 @@ const en: Dictionary = {
         ],
       },
       {
-        title: 'Usage statistics, crashes and ads',
+        title: 'Usage statistics and crashes',
         body: [
           '<strong>Usage statistics.</strong> The app uses Google Analytics for Firebase to learn which screens and lessons are used, where people give up and where they came from (for example, a challenge link). It records app events (such as opening a lesson or finishing a game), the device model, the Android version, the country and state (never the city), whether you have an account and the campaign or link you came from, with an app instance ID. Your name, your email, what you type and the positions you set up are never sent.',
           '<strong>Crashes.</strong> When the app crashes, Firebase Crashlytics sends the error report, with the device model and the system and app versions, so I can fix it.',
-          '<strong>Ads.</strong> The app shows full-screen Google AdMob ads only when you tap to open or continue a lesson, and never in the first lessons or in the middle of an exercise, a game or a challenge. Before the first ad, the app shows Google’s consent screen, where you choose whether ads may be personalized. AdMob uses the device’s advertising ID, which you can reset or delete in the Android settings (<a href="https://policies.google.com/technologies/ads" rel="noopener">how Google uses data in ads</a>). You can change this choice on the app’s Privacy and ads screen.',
-          '<strong>Remove ads.</strong> The purchase is made through Google Play, which handles the payment. The app only learns whether the purchase was made, so it stops showing ads.',
           '<strong>Your feedback.</strong> When you answer an in-app survey or send feedback, the answer goes to Cloud Firestore <strong>without identifying you</strong>: no account, email, name or advertising ID. Only the app version, the phone model, your level and how you found the app go with it.',
         ],
       },
       {
         title: 'Internet and external pages',
         body: [
-          'The chess engines, the lessons and the voices run on the device itself. The app uses the internet for the account, notifications, statistics, ads, purchases, feedback, Lichess and Chess.com, and to open, inside the app, the external pages you tap, such as Wikipedia articles. Those pages follow their own sites’ policies.',
+          'The chess engines, the lessons and the voices run on the device itself. The app uses the internet for the account, notifications, statistics, feedback, Lichess and Chess.com, and to open, inside the app, the external pages you tap, such as Wikipedia articles. Those pages follow their own sites’ policies.',
           'When you share a game or a challenge, the text, image and link go only to the app you choose.',
         ],
       },
@@ -385,7 +383,7 @@ const en: Dictionary = {
       {
         title: 'Why the data is used, and on what basis',
         body: [
-          '<ul><li><strong>Account, profile, progress and games:</strong> to store and return your progress, as you asked when creating the account (performance of a contract).</li><li><strong>Notifications and personalized ads:</strong> only with your consent, which you can withdraw at any time.</li><li><strong>Usage statistics, crash reports and feedback:</strong> to fix errors and improve the lessons (legitimate interest).</li></ul>',
+          '<ul><li><strong>Account, profile, progress and games:</strong> to store and return your progress, as you asked when creating the account (performance of a contract).</li><li><strong>Notifications:</strong> only with your consent, which you can withdraw at any time.</li><li><strong>Usage statistics, crash reports and feedback:</strong> to fix errors and improve the lessons (legitimate interest).</li></ul>',
         ],
       },
       {
@@ -482,13 +480,7 @@ const en: Dictionary = {
       {
         title: 'Third-party services',
         body: [
-          'Sign-in, account storage, notifications, statistics and ads are provided by Google (Firebase and AdMob), and purchases by Google Play. Rating data comes from Lichess and Chess.com, if you connect them. These services have their own terms, and I am not responsible for their availability.',
-        ],
-      },
-      {
-        title: 'Ads',
-        body: [
-          'Lucena is free and supported by ads, which only appear when you open or continue a lesson. The “Remove ads” purchase is a one-time purchase through Google Play, tied to your Google account, and removes ads on the devices where you use that account. Refund requests follow Google Play’s rules.',
+          'Sign-in, account storage, notifications and statistics are provided by Google (Firebase). Rating data comes from Lichess and Chess.com, if you connect them. These services have their own terms, and I am not responsible for their availability.',
         ],
       },
       {
