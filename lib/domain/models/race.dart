@@ -196,20 +196,22 @@ class RaceEndgameType {
   });
 
   /// O tipo de [problem], com as peças da posição inicial dele.
-  factory RaceEndgameType.of(RaceProblem problem) {
-    final board = problem.fen.split(' ').first;
-    List<Role> pieces(Side side) => [
+  factory RaceEndgameType.of(RaceProblem problem) => RaceEndgameType(
+    subcategory: problem.subcategory,
+    category: problem.category,
+    mine: piecesOf(problem.fen, problem.side),
+    theirs: piecesOf(problem.fen, problem.side.opposite),
+  );
+
+  /// As peças de [side] em [fen], sem o rei, na ordem de [order].
+  static List<Role> piecesOf(String fen, Side side) {
+    final board = fen.split(' ').first;
+    return [
       for (final role in order)
         for (final char in board.split(''))
           if (char == (side == Side.white ? role.uppercaseLetter : role.letter))
             role,
     ];
-    return RaceEndgameType(
-      subcategory: problem.subcategory,
-      category: problem.category,
-      mine: pieces(problem.side),
-      theirs: pieces(problem.side.opposite),
-    );
   }
 
   static const order = [

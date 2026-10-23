@@ -69,6 +69,18 @@ abstract final class RaceKeys {
   static const reviewMistakes = Key('race.result.review');
   static const close = Key('race.result.close');
 
+  /// O diagnóstico (E1.34): o cartão (ainda chegando, o ponto mais fraco ou
+  /// nenhum) e a família de cada chip "Indo bem"; na abertura, a linha "para
+  /// que serve". As opções "Para melhorar" ficam em `NextStepsKeys.option`.
+  static const diagnosis = Key('race.diagnosis');
+  static const diagnosisProgress = Key('race.diagnosis.progress');
+  static const diagnosisWeakest = Key('race.diagnosis.weakest');
+  static const diagnosisAlsoWeak = Key('race.diagnosis.alsoWeak');
+  static const diagnosisNoWeak = Key('race.diagnosis.noWeak');
+  static Key diagnosisGood(String category) =>
+      Key('race.diagnosis.good.$category');
+  static const goalLine = Key('race.goalLine');
+
   /// Revisão dos erros.
   static const reviewTitle = Key('race.review.title');
   static const reviewPlayed = Key('race.review.played');

@@ -87,6 +87,38 @@ class RaceIntroView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
+              // Para que serve a Corrida, além do recorde (E1.34).
+              Container(
+                key: RaceKeys.goalLine,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.secondaryContainer,
+                  borderRadius: BorderRadius.circular(AppShape.medium),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    Icon(
+                      Icons.troubleshoot,
+                      size: AppIconSize.button,
+                      color: colors.onSecondaryContainer,
+                    ),
+                    Expanded(
+                      child: Text(
+                        l10n.raceGoalLine,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSecondaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
               // Duração em seção própria, acima das regras (E1.33, opção B).
               SectionTitle(l10n.raceDuration, inset: 0),
               SegmentedButton<RaceDuration>(

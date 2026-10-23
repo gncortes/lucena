@@ -81,11 +81,17 @@ void main() {
 
     expect(find.byKey(RaceKeys.introView), findsOneWidget);
     expect(find.text('3 minutes'), findsOneWidget);
+    // Para que serve a Corrida, logo abaixo do título (E1.34).
+    expect(find.byKey(RaceKeys.goalLine), findsOneWidget);
     expect(find.text('Three mistakes and it is over'), findsOneWidget);
-    expect(find.text('The shortest path counts'), findsOneWidget);
     final list = find.descendant(
       of: find.byKey(RaceKeys.introView),
       matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.text('The shortest path counts'),
+      200,
+      scrollable: list,
     );
     // A linha de filtros resume o objetivo e os finais.
     await tester.scrollUntilVisible(

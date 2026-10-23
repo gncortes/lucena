@@ -2,8 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/race.dart';
+import '../../../routing/routes.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -12,12 +15,15 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/next_steps.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';
+import 'race_diagnosis_card.dart';
 
-/// O resultado: por que acabou, quantos acertos, o recorde, três números e os
+/// O resultado: por que acabou, quantos acertos, o recorde, três números, o
+/// diagnóstico das últimas Corridas (com o que fazer no ponto mais fraco) e os
 /// problemas que apareceram (certos e errados).
 class RaceResultView extends StatelessWidget {
   const RaceResultView({required this.state, super.key});
@@ -35,6 +41,8 @@ class RaceResultView extends StatelessWidget {
     final result = outcome.result;
     final run = result.run;
     final mistakes = state.mistakes;
+    final diagnosis = state.diagnosis;
+    final weakest = diagnosis.weakest;
     // Quanto tempo a Corrida durou, no máximo o limite.
     final elapsed = result.finishedAt.difference(run.startedAt);
     final limit = run.duration.limit;
@@ -122,6 +130,41 @@ class RaceResultView extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: AppSpacing.md),
+              RaceDiagnosisCard(diagnosis: diagnosis),
+              if (weakest != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                NextSteps(
+                  title: l10n.raceImproveTitle(
+                    categoryName(l10n, weakest.category),
+                  ),
+                  steps: [
+                    NextStep(
+                      id: 'raceFocus',
+                      icon: Icons.timer,
+                      title: l10n.raceFocusTitle(
+                        categoryName(l10n, weakest.category),
+                      ),
+                      body: l10n.raceFocusBody,
+                      onTap: () => cubit.focus(category: weakest.category),
+                    ),
+                    NextStep(
+                      id: 'raceTrain',
+                      icon: Icons.sports_esports,
+                      title: l10n.raceTrainTitle(
+                        categoryName(l10n, weakest.category),
+                      ),
+                      body: l10n.raceTrainBody,
+                      onTap: () =>
+                          context.go(Routes.catalogCategory(weakest.category)),
+                    ),
+                  ],
+                ),
+              ],
+              if (!diagnosis.ready) ...[
+                const SizedBox(height: AppSpacing.lg),
+                const DataNote(),
+              ],
               // O título sem o recuo próprio: alinhado aos cartões de cima.
               SectionTitle(l10n.raceProblemsTitle, inset: 0),
               _ProblemGrid(

@@ -195,6 +195,40 @@ abstract final class RaceRules {
     };
   }
 
+  /// O filtro de uma Corrida só de um tipo de final ([subcategory]) ou só de
+  /// uma família ([category]), de ganhar: todo o resto do banco sai.
+  static RaceFilter only(
+    List<RaceProblem> bank, {
+    String? subcategory,
+    String? category,
+  }) => RaceFilter(
+    excluded: {
+      for (final problem in bank)
+        if (subcategory != null
+            ? problem.subcategory != subcategory
+            : problem.category != category)
+          problem.subcategory,
+    },
+  );
+
+  /// O tipo de final do banco com as mesmas peças de cada lado que [fen]
+  /// (o lado de quem joga contra o outro); nulo se o banco não tem.
+  static String? subcategoryOf(List<RaceProblem> bank, String fen) {
+    final side = fen.split(' ')[1] == 'b' ? Side.black : Side.white;
+    final mine = RaceEndgameType.piecesOf(fen, side);
+    final theirs = RaceEndgameType.piecesOf(fen, side.opposite);
+    bool same(List<Role> a, List<Role> b) =>
+        a.length == b.length && a.indexed.every((e) => b[e.$1] == e.$2);
+    for (final problem in bank) {
+      if (problem.defend) continue;
+      final type = RaceEndgameType.of(problem);
+      if (same(type.mine, mine) && same(type.theirs, theirs)) {
+        return problem.subcategory;
+      }
+    }
+    return null;
+  }
+
   /// Os problemas do aquecimento (de ganhar): [warmUpLength] do mesmo tipo
   /// de final do desafio ([subcategory]), do mais fácil ao mais difícil.
   /// Faltando, completa com os da mesma categoria ([category]) e depois com

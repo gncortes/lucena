@@ -9037,5 +9037,243 @@
   "profilePrivacyNoAdsValue": "Your data and privacy policy",
   "@profilePrivacyNoAdsValue": {
     "description": "Profile row subtitle for the privacy screen in a build without ads."
+  },
+  "nextStepsReadyBar": "All set",
+  "@nextStepsReadyBar": {
+    "description": "Next steps after the level: app bar title (and hero title without a level)."
+  },
+  "nextStepsLevel": "Your level: {level}",
+  "@nextStepsLevel": {
+    "description": "Next steps after the level: hero title with the rating.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "nextStepsReadyBody": "Now we know where to start. Where would you like to begin?",
+  "@nextStepsReadyBody": {
+    "description": "Next steps after the level: hero text."
+  },
+  "nextStepsReadySection": "To begin",
+  "@nextStepsReadySection": {
+    "description": "Next steps after the level: title of the options."
+  },
+  "nextStepsForYou": "For you",
+  "@nextStepsForYou": {
+    "description": "Next steps: badge on the suggested option."
+  },
+  "nextStepsLessonsBody": "Opposition, Bishop and knight, Queen vs rook and Lucena.",
+  "@nextStepsLessonsBody": {
+    "description": "Next steps: what the endgame lessons cover."
+  },
+  "nextStepsRaceBody": "3 min of puzzles. Shows the endgames you miss the most.",
+  "@nextStepsRaceBody": {
+    "description": "Next steps: what the endgame race is for."
+  },
+  "nextStepsTrainTitle": "Train against Maia",
+  "@nextStepsTrainTitle": {
+    "description": "Next steps: option to play an endgame against the engine."
+  },
+  "nextStepsTrainBody": "Play an endgame against an opponent at your level.",
+  "@nextStepsTrainBody": {
+    "description": "Next steps: text of the training option."
+  },
+  "nextStepsHome": "Go to home",
+  "@nextStepsHome": {
+    "description": "Next steps: footer button to the home screen."
+  },
+  "nextStepsSchoolBar": "School completed",
+  "@nextStepsSchoolBar": {
+    "description": "Next steps after the School: app bar title."
+  },
+  "nextStepsSchoolTitle": "You completed the School!",
+  "@nextStepsSchoolTitle": {
+    "description": "Next steps after the School: hero title."
+  },
+  "nextStepsSchoolBody": "The rules and the first mates are yours. What would you like to do now?",
+  "@nextStepsSchoolBody": {
+    "description": "Next steps after the School: hero text."
+  },
+  "nextStepsSchoolSection": "Next steps",
+  "@nextStepsSchoolSection": {
+    "description": "Next steps after the School: title of the options."
+  },
+  "nextStepsRecommended": "Recommended",
+  "@nextStepsRecommended": {
+    "description": "Next steps: badge on the recommended option."
+  },
+  "nextStepsLessonsFirst": "Start with the Opposition: the endgame that shows up the most.",
+  "@nextStepsLessonsFirst": {
+    "description": "Next steps after the School: endgame lessons text."
+  },
+  "nextStepsJourneyBody": "Challenges against opponents, one step at a time.",
+  "@nextStepsJourneyBody": {
+    "description": "Next steps after the School: journey text."
+  },
+  "comingSoonTitle": "Coming soon to Lucena",
+  "@comingSoonTitle": {
+    "description": "Coming soon card: title."
+  },
+  "comingSoonBody": "For now there are 4 endgames. More endgames and the course How to prepare for tournaments are on the way.",
+  "@comingSoonBody": {
+    "description": "Coming soon card: what comes next."
+  },
+  "dataNote": "Everything you do here (games, lessons and Races) is saved and adjusts what Lucena suggests for you.",
+  "@dataNote": {
+    "description": "Note that what the player does is saved and tunes the suggestions."
+  },
+  "lessonFinishedNextTitle": "What now?",
+  "@lessonFinishedNextTitle": {
+    "description": "Lesson finished: title of the options to fix the idea."
+  },
+  "lessonFinishedRaceOnly": "Race with only {name}",
+  "@lessonFinishedRaceOnly": {
+    "description": "Lesson finished: race with only this endgame type.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonFinishedRaceBody": "Puzzles of the endgame you just saw.",
+  "@lessonFinishedRaceBody": {
+    "description": "Lesson finished: text of the race option."
+  },
+  "lessonFinishedFix": "Practice",
+  "@lessonFinishedFix": {
+    "description": "Lesson finished: badge on the race option."
+  },
+  "lessonFinishedTrainTitle": "Train this endgame",
+  "@lessonFinishedTrainTitle": {
+    "description": "Lesson finished: play the lesson endgame against the engine."
+  },
+  "lessonFinishedTrainBody": "Play the lesson endgame against Maia.",
+  "@lessonFinishedTrainBody": {
+    "description": "Lesson finished: text of the training option."
+  },
+  "lessonFinishedExercisesTitle": "Lesson exercises",
+  "@lessonFinishedExercisesTitle": {
+    "description": "Lesson finished: the lesson test."
+  },
+  "lessonFinishedExercisesBody": "The lesson test, with stars.",
+  "@lessonFinishedExercisesBody": {
+    "description": "Lesson finished: text of the exercises option."
+  },
+  "raceGoalLine": "Each Race shows the endgame you miss the most. After 3 Races, Lucena points out the right lesson and training.",
+  "@raceGoalLine": {
+    "description": "Race intro: what the race diagnoses."
+  },
+  "raceDiagnosisTitle": "Your endgames in the Races",
+  "@raceDiagnosisTitle": {
+    "description": "Race result: diagnosis card title while it is not ready."
+  },
+  "raceDiagnosisProgress": "{done} of {total}",
+  "@raceDiagnosisProgress": {
+    "description": "Race result: races done out of the races needed.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceDiagnosisMissing": "{count, plural, =1{1 more Race and Lucena shows the endgames you miss the most, with the lesson and training for each.} other{{count} more Races and Lucena shows the endgames you miss the most, with the lesson and training for each.}}",
+  "@raceDiagnosisMissing": {
+    "description": "Race result: races missing before the diagnosis.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceDiagnosisWeakest": "YOUR WEAKEST SPOT",
+  "@raceDiagnosisWeakest": {
+    "description": "Race result: label over the weakest endgame family."
+  },
+  "raceDiagnosisErrors": "You missed {errors} of {total} puzzles.",
+  "@raceDiagnosisErrors": {
+    "description": "Race result: misses in the weakest family.",
+    "placeholders": {
+      "errors": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceDiagnosisAlsoWeak": "Also worth training:",
+  "@raceDiagnosisAlsoWeak": {
+    "description": "Race result: label before the other weak families."
+  },
+  "raceDiagnosisAlsoItem": "{name} (missed {errors} of {total})",
+  "@raceDiagnosisAlsoItem": {
+    "description": "Race result: one other weak family.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "errors": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceDiagnosisGood": "Going well:",
+  "@raceDiagnosisGood": {
+    "description": "Race result: label before the families going well."
+  },
+  "raceDiagnosisNoWeak": "No weak spot in your latest Races.",
+  "@raceDiagnosisNoWeak": {
+    "description": "Race result: diagnosis with no weak family."
+  },
+  "raceDiagnosisFooter": "From your latest {runs} Races. The more you race, the sharper it gets.",
+  "@raceDiagnosisFooter": {
+    "description": "Race result: how the diagnosis is computed.",
+    "placeholders": {
+      "runs": {
+        "type": "int"
+      }
+    }
+  },
+  "raceImproveTitle": "To improve: {name}",
+  "@raceImproveTitle": {
+    "description": "Race result: title of the options for the weakest family.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "raceFocusTitle": "Race: {name}",
+  "@raceFocusTitle": {
+    "description": "Race result: race with only the weakest family.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "raceFocusBody": "The puzzles of your weakest spot.",
+  "@raceFocusBody": {
+    "description": "Race result: text of the focused race option."
+  },
+  "raceTrainTitle": "Train: {name}",
+  "@raceTrainTitle": {
+    "description": "Race result: train the weakest family against the engine.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "raceTrainBody": "Against Maia, until it becomes automatic.",
+  "@raceTrainBody": {
+    "description": "Race result: text of the training option."
   }
 }

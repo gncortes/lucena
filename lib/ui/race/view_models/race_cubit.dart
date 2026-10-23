@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/race/race_repository.dart';
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/race_diagnosis.dart';
 import '../../../domain/use_cases/race_rules.dart';
 import '../../../domain/use_cases/race_turn.dart';
 
@@ -29,6 +30,7 @@ class RaceState {
     this.feedbackCount = 0,
     this.outcome,
     this.reviewIndex = 0,
+    this.diagnosis = const RaceDiagnosis(runs: 0),
   });
 
   final RacePhase phase;
@@ -68,6 +70,9 @@ class RaceState {
   /// Qual erro a revisão mostra (a partir de 0).
   final int reviewIndex;
 
+  /// Em que finais o jogador mais erra, pelas últimas Corridas.
+  final RaceDiagnosis diagnosis;
+
   /// Os erros da Corrida acabada, na ordem em que vieram.
   List<RaceAnswer> get mistakes => [
     for (final answer in outcome?.result.run.answers ?? const <RaceAnswer>[])
@@ -92,6 +97,7 @@ class RaceState {
     int? feedbackCount,
     RaceOutcome? outcome,
     int? reviewIndex,
+    RaceDiagnosis? diagnosis,
   }) => RaceState(
     phase: phase ?? this.phase,
     problems: problems ?? this.problems,
@@ -108,6 +114,7 @@ class RaceState {
     feedbackCount: feedbackCount ?? this.feedbackCount,
     outcome: outcome ?? this.outcome,
     reviewIndex: reviewIndex ?? this.reviewIndex,
+    diagnosis: diagnosis ?? this.diagnosis,
   );
 }
 
@@ -117,7 +124,14 @@ class RaceCubit extends Cubit<RaceState> {
     this._repository,
     this._now, {
     this.replyDelay = const Duration(milliseconds: 450),
+    this.onlySubcategory,
+    this.onlyCategory,
   }) : super(const RaceState());
+
+  /// A Corrida só de um tipo de final ou de uma família (vinda da aula ou do
+  /// diagnóstico): o filtro vale nesta tela, sem trocar o guardado.
+  final String? onlySubcategory;
+  final String? onlyCategory;
 
   /// O tempo entre o lance do jogador e a resposta da defesa.
   final Duration replyDelay;
@@ -136,7 +150,15 @@ class RaceCubit extends Cubit<RaceState> {
     final record = await _repository.record(duration: duration);
     final ongoing = await _repository.ongoing();
     final saved = await _repository.filter();
-    final recent = RaceRules.recentIds(await _repository.history());
+    final history = await _repository.history();
+    final recent = RaceRules.recentIds(history);
+    final only = onlySubcategory != null || onlyCategory != null
+        ? RaceRules.only(
+            problems,
+            subcategory: onlySubcategory,
+            category: onlyCategory,
+          )
+        : null;
     emit(
       state.copyWith(
         problems: problems,
@@ -144,8 +166,11 @@ class RaceCubit extends Cubit<RaceState> {
         duration: duration,
         remaining: duration.limit,
         recent: recent,
+        diagnosis: RaceDiagnosis.of(history, problems),
         // Um filtro sem problema no banco de hoje volta ao padrão.
-        filter: RaceRules.count(problems, saved) > 0
+        filter: only != null && RaceRules.count(problems, only) > 0
+            ? only
+            : RaceRules.count(problems, saved) > 0
             ? saved
             : const RaceFilter(),
         phase: RacePhase.intro,
@@ -301,6 +326,7 @@ class RaceCubit extends Cubit<RaceState> {
   }) async {
     _finishing = true;
     final outcome = await _repository.finish(run, end);
+    final history = await _repository.history();
     emit(
       state.copyWith(
         phase: RacePhase.finished,
@@ -311,6 +337,7 @@ class RaceCubit extends Cubit<RaceState> {
         feedback: feedback,
         clearFeedback: feedback == null,
         reviewIndex: 0,
+        diagnosis: RaceDiagnosis.of(history, state.problems),
       ),
     );
   }
@@ -334,6 +361,16 @@ class RaceCubit extends Cubit<RaceState> {
   /// Do resultado para a abertura (jogar de novo escolhe o filtro de novo).
   void backToIntro() =>
       emit(state.copyWith(phase: RacePhase.intro, clearTurn: true));
+
+  /// Do resultado para a abertura de uma Corrida só de uma família de finais
+  /// (o ponto fraco do diagnóstico), sem trocar o filtro guardado.
+  void focus({required String category}) {
+    final filter = RaceRules.only(state.problems, category: category);
+    if (RaceRules.count(state.problems, filter) == 0) return;
+    emit(
+      state.copyWith(phase: RacePhase.intro, filter: filter, clearTurn: true),
+    );
+  }
 
   void review() {
     if (state.mistakes.isEmpty) return;

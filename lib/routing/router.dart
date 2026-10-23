@@ -78,6 +78,7 @@ import '../ui/challenge/widgets/challenge_link_screen.dart';
 import '../ui/catalog/view_models/catalog_cubit.dart';
 import '../ui/catalog/widgets/catalog_screen.dart';
 import '../ui/catalog/widgets/category_screen.dart';
+import '../ui/next_steps/widgets/next_steps_screen.dart';
 import '../ui/custom_position/view_models/custom_position_cubit.dart';
 import '../ui/custom_position/widgets/custom_position_screen.dart';
 import '../ui/game_setup/view_models/game_setup_cubit.dart';
@@ -312,6 +313,7 @@ GoRouter buildRouter({
               nextId: state.uri.queryParameters['next'],
               school: context.read<LessonRepository>(),
               endgames: context.read<EndgameLessonRepository>(),
+              race: context.read<RaceRepository>(),
             )..load(_language(context)),
             child: LessonReviewPrompt(child: LessonFinishedScreen(kind: kind)),
           );
@@ -1098,11 +1100,27 @@ GoRouter buildRouter({
             ],
           ),
           _route(
+            path: 'next',
+            builder: (context, state) => NextStepsScreen(
+              level: int.tryParse(state.uri.queryParameters['level'] ?? ''),
+            ),
+            routes: [
+              _route(
+                path: 'school',
+                builder: (context, state) =>
+                    const NextStepsScreen(graduated: true),
+              ),
+            ],
+          ),
+          _route(
             path: 'race',
             builder: (context, state) => BlocProvider(
-              create: (context) =>
-                  RaceCubit(context.read<RaceRepository>(), context.read<Now>())
-                    ..load(),
+              create: (context) => RaceCubit(
+                context.read<RaceRepository>(),
+                context.read<Now>(),
+                onlySubcategory: state.uri.queryParameters['only'],
+                onlyCategory: state.uri.queryParameters['category'],
+              )..load(),
               child: const RaceScreen(),
             ),
             routes: [

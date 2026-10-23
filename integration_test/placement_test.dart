@@ -48,6 +48,7 @@ void main() {
 
     await $(LevelKeys.screen).waitUntilVisible();
     await tour.start();
+    await tour.leaveNextSteps();
   });
 
   patrolTest('perfil: refazer o teste; a escola e a trilha de finais passam '

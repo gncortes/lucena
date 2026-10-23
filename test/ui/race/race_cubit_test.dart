@@ -429,4 +429,53 @@ void main() {
       await warmUp.close();
     });
   });
+
+  group('ligações (E1.34)', () {
+    test('a Corrida só de um tipo usa o filtro dele sem gravá-lo', () async {
+      final only = RaceCubit(
+        repository,
+        now,
+        replyDelay: Duration.zero,
+        onlySubcategory: 'rook',
+      );
+      addTearDown(only.close);
+      await only.load();
+      expect(only.state.filter.matches(raceTestProblems[1]), isTrue);
+      expect(only.state.filter.matches(raceTestProblems[0]), isFalse);
+      expect(await repository.filter(), const RaceFilter());
+    });
+
+    test('tipo sem problemas no banco cai no filtro de sempre', () async {
+      final only = RaceCubit(
+        repository,
+        now,
+        replyDelay: Duration.zero,
+        onlySubcategory: 'queenVsRook',
+      );
+      addTearDown(only.close);
+      await only.load();
+      expect(only.state.filter, const RaceFilter());
+    });
+
+    test('a Corrida conta para o diagnóstico ao acabar', () async {
+      await cubit.load();
+      expect(cubit.state.diagnosis.runs, 0);
+      await cubit.start();
+      for (var i = 0; i < 3; i++) {
+        await cubit.answer(wrong);
+      }
+      expect(cubit.state.phase, RacePhase.finished);
+      expect(cubit.state.diagnosis.runs, 1);
+      expect(cubit.state.diagnosis.ready, isFalse);
+    });
+
+    test('"Corrida: família" volta à abertura com só aquela família', () async {
+      await cubit.load();
+      cubit.focus(category: 'basic');
+      expect(cubit.state.phase, RacePhase.intro);
+      final basic = raceTestProblems.where(cubit.state.filter.matches);
+      expect(basic.map((p) => p.category), everyElement('basic'));
+      expect(basic, isNotEmpty);
+    });
+  });
 }

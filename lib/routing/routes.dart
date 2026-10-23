@@ -246,6 +246,22 @@ abstract final class Routes {
   static const race = '/race';
   static const raceWarmUp = '/race/warm-up';
 
+  /// Os próximos passos: depois do "Seu nível" (com o nível, quando há) e
+  /// com a Escola concluída.
+  static const nextSteps = '/next';
+  static String nextStepsReady({int? level}) => Uri(
+    path: nextSteps,
+    queryParameters: {'level': ?level?.toString()},
+  ).toString();
+  static const nextStepsSchool = '/next/school';
+
+  /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
+  /// ([category]).
+  static String raceOnly({String? subcategory, String? category}) => Uri(
+    path: race,
+    queryParameters: {'only': ?subcategory, 'category': ?category},
+  ).toString();
+
   /// Os speedruns, um speedrun e uma tentativa dele.
   static const speedruns = '/speedruns';
   static String speedrun(String id) => '/speedruns/$id';
