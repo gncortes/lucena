@@ -43,7 +43,7 @@ dependencies:
   lucena_ui:
     git:
       url: https://github.com/gncortes/lucena_ui.git
-      ref: tarefa/extracao-componentes # vira `develop` depois do merge do lucena_ui (E1.19)
+      ref: develop
   multistockfish: ^0.6.1
   package_info_plus: ^10.2.2
   share_plus: ^13.3.1

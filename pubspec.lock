@@ -1073,8 +1073,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "tarefa/extracao-componentes"
-      resolved-ref: "229d8b5e2250ace780c9aba1f056013624c13fc1"
+      ref: develop
+      resolved-ref: "1a2d27fbacc8e21c06322be1a06d4c40360111e1"
       url: "https://github.com/gncortes/lucena_ui.git"
     source: git
     version: "0.1.0"
