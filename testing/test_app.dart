@@ -2,19 +2,43 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
+import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
+import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
+import 'package:lucena/data/repositories/store/store_listing_repository.dart';
+import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/ui/update/view_models/update_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/wiki/view_models/wiki_links_cubit.dart';
 import 'package:lucena/ui/core/widgets/web_pages.dart';
 
+import 'fakes/fake_alerts_repository.dart';
+import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_profile_repository.dart';
+import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
+import 'fakes/fake_store_listing_repository.dart';
+import 'fakes/fake_survey_repository.dart';
+import 'fakes/fake_endgame_repositories.dart';
+import 'fakes/fake_feedback_repositories.dart';
+import 'fakes/fake_school_repositories.dart';
+
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository.dart';
+import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
+import 'package:lucena/data/repositories/review/review_repository.dart';
+import 'package:lucena/data/repositories/school/school_progress_repository.dart';
+import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
+
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
 
@@ -26,11 +50,25 @@ class TestApp extends StatelessWidget {
     this.themeMode = ThemeMode.light,
     this.settingsCubit,
     this.profileCubit,
+    this.alertsCubit,
     this.speechCubit,
     this.shareRepository,
     this.wikiLinksCubit,
     this.webPages,
     this.router,
+    this.surveyRepository,
+    this.regionPromptRepository,
+    this.crowdRepository,
+    this.analytics,
+    this.adsRepository,
+    this.purchaseRepository,
+    this.storeListingRepository,
+    this.updateCubit,
+    this.wouldPayRepository,
+    this.feedbackRepository,
+    this.reviewRepository,
+    this.schoolProgressRepository,
+    this.endgameProgressRepository,
     super.key,
   });
 
@@ -52,6 +90,9 @@ class TestApp extends StatelessWidget {
   /// View model do perfil, quando a tela testada precisa dele.
   final ProfileCubit? profileCubit;
 
+  /// Os avisos. Sem ele, um com as chaves de fábrica e o push permitido.
+  final AlertsCubit? alertsCubit;
+
   /// A voz, quando o teste confere o que é falado. Sem ela, uma voz falsa
   /// desligada.
   final SpeechCubit? speechCubit;
@@ -59,6 +100,39 @@ class TestApp extends StatelessWidget {
   /// O compartilhar, quando o teste confere o que foi enviado. Sem ele, um
   /// falso que só guarda.
   final ShareRepository? shareRepository;
+
+  /// O questionário "Sua opinião" (o convite e a tela). Sem ele, um falso
+  /// vazio.
+  final SurveyRepository? surveyRepository;
+
+  /// A folha de estado e cidade da lista de finais. Sem ele, nunca pergunta.
+  final RegionPromptRepository? regionPromptRepository;
+  final CrowdRepository? crowdRepository;
+
+  /// As estatísticas, quando o teste confere os eventos. Sem elas, nenhuma.
+  final AnalyticsRepository? analytics;
+
+  /// Os anúncios. Sem ele, nenhum.
+  final AdsRepository? adsRepository;
+
+  /// O "Remover anúncios". Sem ele, a compra não existe (nem a linha).
+  final PurchaseRepository? purchaseRepository;
+
+  /// A página do app na Play. Sem ela, um falso que só conta.
+  final StoreListingRepository? storeListingRepository;
+
+  /// A atualização (E1.32), quando a tela testada é uma das duas.
+  final UpdateCubit? updateCubit;
+
+  /// O "Você pagaria?" e o "Enviar feedback" (E1.26). Sem eles, o cartão
+  /// nunca aparece e o envio vai para um falso.
+  final WouldPayRepository? wouldPayRepository;
+  final FeedbackRepository? feedbackRepository;
+  final ReviewRepository? reviewRepository;
+
+  /// O progresso que conta as aulas concluídas do convite.
+  final SchoolProgressRepository? schoolProgressRepository;
+  final EndgameProgressRepository? endgameProgressRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -104,6 +178,16 @@ class TestApp extends StatelessWidget {
         BlocProvider<ProfileCubit>(
           create: (_) => ProfileCubit(FakeProfileRepository())..load(),
         ),
+      if (alertsCubit case final alerts?)
+        BlocProvider<AlertsCubit>.value(value: alerts)
+      else
+        BlocProvider<AlertsCubit>(
+          create: (_) => AlertsCubit(
+            alerts: FakeAlertsRepository(),
+            push: FakePushRepository(allowed: true),
+            profile: FakeProfileRepository(),
+          )..load(),
+        ),
       if (wikiLinksCubit case final wiki?)
         BlocProvider<WikiLinksCubit>.value(value: wiki),
       if (speechCubit case final speech?)
@@ -112,6 +196,8 @@ class TestApp extends StatelessWidget {
         BlocProvider<SpeechCubit>(
           create: (_) => SpeechCubit(FakeVoiceRepository())..load(),
         ),
+      if (updateCubit case final update?)
+        BlocProvider<UpdateCubit>.value(value: update),
     ];
     return MultiRepositoryProvider(
       providers: [
@@ -119,6 +205,42 @@ class TestApp extends StatelessWidget {
           value: shareRepository ?? FakeShareRepository(),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
+        RepositoryProvider<SurveyRepository>.value(
+          value: surveyRepository ?? FakeSurveyRepository(),
+        ),
+        RepositoryProvider<WouldPayRepository>.value(
+          value: wouldPayRepository ?? const NoWouldPayRepository(),
+        ),
+        RepositoryProvider<FeedbackRepository>.value(
+          value: feedbackRepository ?? FakeFeedbackRepository(),
+        ),
+        RepositoryProvider<ReviewRepository>.value(
+          value: reviewRepository ?? FakeReviewRepository(),
+        ),
+        RepositoryProvider<SchoolProgressRepository>.value(
+          value: schoolProgressRepository ?? FakeSchoolProgressRepository(),
+        ),
+        RepositoryProvider<EndgameProgressRepository>.value(
+          value: endgameProgressRepository ?? FakeEndgameProgressRepository(),
+        ),
+        RepositoryProvider<RegionPromptRepository>.value(
+          value: regionPromptRepository ?? const NoRegionPromptRepository(),
+        ),
+        RepositoryProvider<CrowdRepository>.value(
+          value: crowdRepository ?? FakeCrowdRepository(),
+        ),
+        RepositoryProvider<AnalyticsRepository>.value(
+          value: analytics ?? const NoAnalyticsRepository(),
+        ),
+        RepositoryProvider<AdsRepository>.value(
+          value: adsRepository ?? const NoAdsRepository(),
+        ),
+        RepositoryProvider<PurchaseRepository>.value(
+          value: purchaseRepository ?? const NoPurchaseRepository(),
+        ),
+        RepositoryProvider<StoreListingRepository>.value(
+          value: storeListingRepository ?? FakeStoreListingRepository(),
+        ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),
     );

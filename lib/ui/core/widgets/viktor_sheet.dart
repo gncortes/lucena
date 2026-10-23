@@ -6,9 +6,11 @@ import 'package:flutter/scheduler.dart';
 
 import '../keys/viktor_sheet_keys.dart';
 import '../theme/app_motion.dart';
+import '../theme/app_shadow.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 import 'sheet_close_button.dart';
+import 'sheet_header.dart';
 import 'speech_text_tap_notification.dart';
 import '../theme/app_colors.dart';
 
@@ -52,20 +54,10 @@ class ViktorSheet extends StatefulWidget {
       ?.sheet
       ._collapse();
 
-  /// Quanto, no fim da folha, fica coberto por botões flutuantes: a fala
-  /// que aparece aos poucos rola para a linha nova parar acima disso.
-  /// Altura reservada em todos os estados para texto acima das ações.
-  static const peekHeight = 160.0;
-
   /// A folha aberta começa [SheetCloseButton.lift] + 8 dp abaixo do topo da
   /// área: o X (48 dp) fica inteiro, com 8 dp acima e 20 dp até a folha
   /// (LICOES-V2 §5).
   static const openGap = 76.0;
-
-  /// Quanto a folha aberta sozinha fica à vista antes de recolher: 2 s mais
-  /// 50 ms por caractere do texto, entre 4 e 12 s. Só aqui.
-  static Duration readingTime(int length) =>
-      Duration(milliseconds: (2000 + 50 * length).clamp(4000, 12000));
 
   final double top;
 
@@ -326,13 +318,7 @@ class _ViktorSheetState extends State<ViktorSheet> {
                 decoration: BoxDecoration(
                   color: widget.color ?? colors.surfaceContainerLow,
                   borderRadius: radius,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colors.shadow.withValues(alpha: .12),
-                      blurRadius: 12,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
+                  boxShadow: [AppShadow.floating(colors)],
                 ),
                 child: ClipRRect(
                   borderRadius: radius,
@@ -424,17 +410,11 @@ class _ViktorSheetState extends State<ViktorSheet> {
                                 child: Padding(
                                   // Alça do canvas: 32×4, 8 dp em cima e
                                   // nada embaixo (o cabeçalho tem a folga).
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Container(
+                                  padding: const EdgeInsets.only(
+                                    top: AppSpacing.sm,
+                                  ),
+                                  child: const SheetHandle(
                                     key: ViktorSheetKeys.handle,
-                                    width: 32,
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color: colors.outlineVariant,
-                                      borderRadius: BorderRadius.circular(
-                                        AppShape.full,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ),

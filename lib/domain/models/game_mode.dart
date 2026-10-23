@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'challenge_link.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
 
@@ -36,9 +37,26 @@ abstract class GameMode with _$GameMode {
     String? speedrunId,
     int? speedrunAttemptId,
     int? speedrunStage,
+
+    /// A partida é um desafio que veio de um link: o fim dela oferece
+    /// compartilhar o resultado.
+    @Default(false) bool fromLink,
+
+    /// O link de origem, quando o desafio é fechado: o resultado leva o mesmo
+    /// link (mesmo código, trava e modo). Nulo: o link se refaz da partida.
+    ChallengeLink? link,
+
+    /// O final em destaque, quando a partida é um (sem nota e sem anúncio).
+    String? featuredId,
+
+    /// O dia (`aaaa-mm-dd`), quando a partida é o final do dia (sem nota).
+    String? dailyDate,
   }) = _GameMode;
 
   const GameMode._();
+
+  /// Um final para jogar sem nota: o em destaque ou o do dia.
+  bool get isUnratedFinal => featuredId != null || dailyDate != null;
 
   /// O lado da máquina. Nulo quando o jogador move os dois lados.
   bool get isSpeedrun => speedrunAttemptId != null;

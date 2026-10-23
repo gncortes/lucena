@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/domain/use_cases/game_feedback.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
@@ -11,6 +12,7 @@ import 'package:lucena/ui/speedrun/view_models/speedrun_bonus_payer.dart';
 import '../../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../../testing/fakes/fake_positions_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
@@ -42,6 +44,7 @@ void main() {
     required bool fulfilled,
     int level = 2600,
     String? challengeId,
+    bool rated = true,
   }) async {
     final game = Attempt(
       positionId: samplePositions[0].id,
@@ -59,6 +62,7 @@ void main() {
       gameId: id,
       userSide: Side.white,
       drawGoal: false,
+      rated: rated,
     );
   }
 
@@ -100,6 +104,18 @@ void main() {
       isEmpty,
     );
   });
+
+  test(
+    'a partida de link não mexe no rating, nem na vitória nem na derrota',
+    () async {
+      final win = await play(fulfilled: true, rated: false);
+      final loss = await play(fulfilled: false, rated: false);
+
+      expect(rating.entries, isEmpty);
+      expect(win.after, win.before);
+      expect(loss.after, loss.before);
+    },
+  );
 
   test('derrota: o rating desce e não há mensagem', () async {
     final report = await play(fulfilled: false);
@@ -561,6 +577,27 @@ void main() {
       expect(await payer().paidFor(queenRapid), isNull);
       // R 1220 no Rápido: cheio 1220 × 5% × 0,45 = 27,45 → 25; 75% → 20.
       expect(await payer().offer(queenRapid), 20);
+    });
+  });
+
+  group('o rating mostrado na partida de link', () {
+    GameReporter withOnboarding(Onboarding onboarding) => GameReporter(
+      rating: rating,
+      achievements: achievements,
+      journey: FakeJourneyRepository(),
+      progress: progress,
+      speedruns: FakeSpeedrunRepository(progress),
+      positions: FakePositionsRepository(),
+      now: now,
+      onboarding: FakeOnboardingRepository(onboarding),
+    );
+
+    test('antes do "Seu nível" não há rating; depois dele, há', () async {
+      final before = withOnboarding(const Onboarding());
+      expect(await before.shownRating(fromLink: true), isNull);
+      expect(await before.shownRating(fromLink: false), isNotNull);
+      final after = withOnboarding(const Onboarding(done: true));
+      expect(await after.shownRating(fromLink: true), isNotNull);
     });
   });
 }

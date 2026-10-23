@@ -13,7 +13,7 @@ class Celebration extends StatefulWidget {
 
   final int pieces;
 
-  static const duration = Duration(milliseconds: 1600);
+  static const duration = AppMotion.confetti;
 
   @override
   State<Celebration> createState() => _CelebrationState();
@@ -68,7 +68,7 @@ class _CelebrationState extends State<Celebration>
     final palette = [
       colors.primary,
       colors.tertiary,
-      AppColors.confetti,
+      AppColors.goldColor,
       colors.secondary,
     ];
     return IgnorePointer(

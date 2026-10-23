@@ -5,12 +5,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/reference_link.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
+import '../../core/widgets/info_chip.dart';
 
 /// As informações de uma aula de final: a história, as posições-base com o
 /// crédito de quem as achou e as referências (com link quando há).
@@ -39,28 +43,23 @@ class EndgameInfoScreen extends StatelessWidget {
                 bottom: 32,
               ),
               children: [
-                Text(
-                  texts.lessonTitle(lesson.id),
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                _header(theme, l10n.endgameInfoHistory),
+                Text(texts.lessonTitle(lesson.id), style: context.screenTitle),
+                _header(context, l10n.endgameInfoHistory),
                 LinkedText(
                   texts.say('${lesson.id}.history') ?? '',
                   key: EndgameInfoKeys.history,
                   style: theme.textTheme.bodyMedium,
                 ),
-                _header(theme, l10n.endgameInfoKeyPositions),
+                _header(context, l10n.endgameInfoKeyPositions),
                 for (final position in lesson.keyPositions)
                   Padding(
                     key: EndgameInfoKeys.keyPosition(position.id),
-                    padding: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        PositionBoard(fen: position.fen, size: 120, radius: 6),
-                        const SizedBox(width: 12),
+                        PositionBoard(fen: position.fen, size: 120),
+                        const SizedBox(width: AppSpacing.md),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +85,7 @@ class EndgameInfoScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                _header(theme, l10n.endgameInfoReferences),
+                _header(context, l10n.endgameInfoReferences),
                 for (final reference in lesson.references.where(
                   (reference) => reference.isLearnerFacing,
                 ))
@@ -96,12 +95,14 @@ class EndgameInfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _header(ThemeData theme, String text) => Padding(
-    padding: const EdgeInsetsDirectional.fromSTEB(0, 20, 0, 8),
-    child: Text(
-      text,
-      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+  Widget _header(BuildContext context, String text) => Padding(
+    padding: const EdgeInsetsDirectional.fromSTEB(
+      0,
+      AppSpacing.lg,
+      0,
+      AppSpacing.sm,
     ),
+    child: Text(text, style: context.sectionTitle),
   );
 }
 
@@ -150,19 +151,22 @@ class _ReferenceTile extends StatelessWidget {
       title: Text(text),
       subtitle: uri == null
           ? null
-          : Chip(
-              key: EndgameInfoKeys.referenceSource(reference.id),
-              avatar: Icon(
-                _sourceIcon(uri),
-                size: 16,
-                color: colors.onSecondaryContainer,
+          : Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: InfoChip(
+                key: EndgameInfoKeys.referenceSource(reference.id),
+                compact: true,
+                icon: _sourceIcon(uri),
+                label: ExternalPageSheet.domainOf(uri),
               ),
-              label: Text(ExternalPageSheet.domainOf(uri)),
-              visualDensity: VisualDensity.compact,
             ),
       trailing: uri == null
           ? null
-          : Icon(Icons.open_in_new, size: 18, color: colors.primary),
+          : Icon(
+              Icons.open_in_new,
+              size: AppIconSize.button,
+              color: colors.primary,
+            ),
       onTap: uri == null ? null : () => showExternalPage(context, uri),
     );
   }

@@ -1,3 +1,4 @@
+import '../models/goal_preference.dart';
 import '../models/home_layout.dart';
 import '../models/rating_level.dart';
 import 'visible_lessons.dart';
@@ -23,30 +24,66 @@ abstract final class HomeSuggestion {
   ///
   /// Sem a Escola ([school] falso, enquanto [VisibleLessons] não libera aula
   /// dela), as aulas do Viktor saem da lista e o próximo caminho sobe.
-  static HomeLayout of(RatingLevel level, {bool? school}) {
+  ///
+  /// Com o objetivo [goal] (decisão 2a da E1.11), o caminho dele vem
+  /// primeiro, marcado, e o resto segue a ordem e os marcados do nível. Com as aulas de
+  /// finais primeiro, os finais para você vêm logo depois delas.
+  static HomeLayout of(
+    RatingLevel level, {
+    bool? school,
+    GoalPreference? goal,
+  }) {
     const learn = HomePath.learn;
     const journey = HomePath.journey;
     const endgames = HomePath.endgames;
     const speedrun = HomePath.speedrun;
     const train = HomePath.train;
+    const race = HomePath.race;
     final (order, marked) = switch (level) {
-      RatingLevel.beginner => ([learn, journey, endgames, train, speedrun], 2),
-      RatingLevel.casual => ([journey, endgames, train, speedrun, learn], 3),
+      RatingLevel.beginner => (
+        [learn, journey, endgames, train, speedrun, race],
+        2,
+      ),
+      RatingLevel.casual => (
+        [journey, endgames, train, speedrun, race, learn],
+        3,
+      ),
       RatingLevel.intermediate => (
-        [journey, endgames, train, speedrun, learn],
+        [journey, endgames, train, speedrun, race, learn],
         4,
       ),
-      RatingLevel.advanced => ([endgames, journey, speedrun, train, learn], 4),
-      RatingLevel.expert => ([endgames, speedrun, train, journey, learn], 3),
-      RatingLevel.master => ([speedrun, endgames, train, journey, learn], 3),
+      RatingLevel.advanced => (
+        [endgames, journey, speedrun, race, train, learn],
+        4,
+      ),
+      RatingLevel.expert => (
+        [endgames, speedrun, race, train, journey, learn],
+        3,
+      ),
+      RatingLevel.master => (
+        [speedrun, endgames, race, train, journey, learn],
+        3,
+      ),
     };
     if (!(school ?? VisibleLessons.school)) order.remove(learn);
-    final visible = order.take(marked).toSet();
+    // Os marcados são os do nível; o do objetivo entra junto.
+    final first = goal == null ? null : goalPath(goal, school: school);
+    final visible = {...order.where((p) => p != race).take(marked), ?first};
+    if (first != null) {
+      order
+        ..remove(first)
+        ..insert(0, first);
+    }
     final at = order.indexOf(endgames);
-    final withForYou = [...order]..insert(at, HomePath.forYou);
+    final withForYou = [...order]
+      ..insert(first == endgames ? at + 1 : at, HomePath.forYou);
     return HomeLayout(
       order: withForYou,
-      visible: {...visible, if (visible.contains(endgames)) HomePath.forYou},
+      visible: {
+        ...visible,
+        if (visible.contains(endgames)) HomePath.forYou,
+        race,
+      },
     );
   }
 
@@ -56,8 +93,11 @@ abstract final class HomeSuggestion {
     HomeLayout? saved,
     RatingLevel level, {
     bool? school,
+    GoalPreference? goal,
   }) {
-    if (saved == null || !saved.custom) return of(level, school: school);
+    if (saved == null || !saved.custom) {
+      return of(level, school: school, goal: goal);
+    }
     if (school ?? VisibleLessons.school) return saved;
     final order = [...saved.order]..remove(HomePath.learn);
     final visible = {...saved.visible}..remove(HomePath.learn);
@@ -67,16 +107,24 @@ abstract final class HomeSuggestion {
     );
   }
 
+  /// O caminho do cartão do objetivo [goal]. Sem a Escola, aprender a jogar
+  /// cai na Jornada (a tela inicial nunca fica sem o cartão do objetivo).
+  static HomePath goalPath(GoalPreference goal, {bool? school}) =>
+      goal == GoalPreference.learn && !(school ?? VisibleLessons.school)
+      ? HomePath.journey
+      : goal.path;
+
   /// O layout com os caminhos [visible] marcados (no tour ou na
   /// configuração). Diferente da sugestão do nível, ele fica como ajustado.
   /// Nenhum marcado: não muda.
   static HomeLayout withVisible(
     HomeLayout layout,
     Set<HomePath> visible,
-    RatingLevel level,
-  ) {
+    RatingLevel level, {
+    GoalPreference? goal,
+  }) {
     if (visible.isEmpty) return layout;
-    return _marked(layout.copyWith(visible: visible), level);
+    return _marked(layout.copyWith(visible: visible), level, goal);
   }
 
   /// Marca ou desmarca [path]. O último visível não sai: a tela nunca fica
@@ -84,11 +132,12 @@ abstract final class HomeSuggestion {
   static HomeLayout toggle(
     HomeLayout layout,
     HomePath path,
-    RatingLevel level,
-  ) {
+    RatingLevel level, {
+    GoalPreference? goal,
+  }) {
     final visible = {...layout.visible};
     if (!visible.remove(path)) visible.add(path);
-    return withVisible(layout, visible, level);
+    return withVisible(layout, visible, level, goal: goal);
   }
 
   /// Pode desmarcar [path]? Não, se ele for o último visível.
@@ -100,18 +149,24 @@ abstract final class HomeSuggestion {
     HomeLayout layout,
     int from,
     int to,
-    RatingLevel level,
-  ) {
+    RatingLevel level, {
+    GoalPreference? goal,
+  }) {
     final order = [...layout.order];
     if (from < 0 || from >= order.length) return layout;
     final path = order.removeAt(from);
     order.insert(to.clamp(0, order.length), path);
-    return _marked(layout.copyWith(order: order), level);
+    return _marked(layout.copyWith(order: order), level, goal);
   }
 
-  // Igual à sugestão do nível: segue o nível; diferente, fica como ajustado.
-  static HomeLayout _marked(HomeLayout layout, RatingLevel level) {
-    final suggestion = of(level);
+  // Igual à sugestão do nível (e do objetivo): segue o nível; diferente,
+  // fica como ajustado.
+  static HomeLayout _marked(
+    HomeLayout layout,
+    RatingLevel level,
+    GoalPreference? goal,
+  ) {
+    final suggestion = of(level, goal: goal);
     final same =
         suggestion.copyWith(custom: false) == layout.copyWith(custom: false);
     return layout.copyWith(custom: !same);
@@ -131,7 +186,8 @@ abstract final class HomeSuggestion {
               : HomePathText.standard,
         HomePath.forYou ||
         HomePath.endgames ||
-        HomePath.train => HomePathText.standard,
+        HomePath.train ||
+        HomePath.race => HomePathText.standard,
       };
 
   /// O caminho do cartão "Continuar": o da vez ([current]) se estiver

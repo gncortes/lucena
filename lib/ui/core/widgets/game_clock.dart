@@ -2,11 +2,13 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/board_settings.dart';
+import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 import 'game_entrance.dart';
 import 'time_display.dart';
-import '../theme/app_colors.dart';
 
 /// Um jogador numa fileira de relógio: o retrato (o peão do lado), o nome e,
 /// na ponta, o relógio ou de quem é a vez. Só apresentação: quem usa dá os
@@ -109,7 +111,7 @@ class PlayersRow extends StatelessWidget {
             child: Row(
               children: [
                 _withRing(character.portrait!, character),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: ExcludeSemantics(
                     child: _nameAndDetail(
@@ -120,7 +122,7 @@ class PlayersRow extends StatelessWidget {
                   ),
                 ),
                 for (final (index, player) in players.indexed) ...[
-                  if (index > 0) const SizedBox(width: 8),
+                  if (index > 0) const SizedBox(width: AppSpacing.sm),
                   if (player.time != null)
                     Semantics(
                       label: player.name,
@@ -171,9 +173,7 @@ class PlayersRow extends StatelessWidget {
     required TextOverflow overflow,
   }) {
     final theme = Theme.of(context);
-    final nameStyle = theme.textTheme.titleMedium?.copyWith(
-      fontWeight: FontWeight.w600,
-    );
+    final nameStyle = context.cardTitle;
     final name = Text(
       player.name,
       maxLines: 1,
@@ -248,7 +248,7 @@ class PlayersRow extends StatelessWidget {
         player.portrait ?? PlayerPortrait(side: player.side, board: board),
         player,
       ),
-      const SizedBox(width: 12),
+      const SizedBox(width: AppSpacing.md),
       if (showName)
         Expanded(
           child: ExcludeSemantics(
@@ -259,7 +259,8 @@ class PlayersRow extends StatelessWidget {
             ),
           ),
         ),
-      if (showName && detailed && time != null) const SizedBox(width: 12),
+      if (showName && detailed && time != null)
+        const SizedBox(width: AppSpacing.md),
       if (time != null)
         _entering(
           GameClock(
@@ -342,14 +343,23 @@ class GameClock extends StatelessWidget {
 
   static const _width = 124.0;
   static const _height = 44.0;
-  static const _light = AppColors.white;
-  static const _dark = AppColors.clockDark;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final value = ClockFormat.format(time);
-    final foreground = side == Side.white ? _dark : _light;
+    // Parado vale mais que pouco tempo: o relógio que não corre não pede
+    // pressa. Correndo, abaixo de `ClockEngine.lowTime` fica em alerta.
+    final state = !running
+        ? TimeDisplayState.paused
+        : time < ClockEngine.lowTime
+        ? TimeDisplayState.low
+        : TimeDisplayState.active;
+    final foreground = TimeDisplay.clockColors(
+      theme.colorScheme,
+      side,
+      state,
+    ).$2;
     // O adaptador conserva a geometria da faixa e os décimos do relógio;
     // o componente comum possui caixa, borda, ícone e cores por lado.
     return SizedBox(
@@ -361,8 +371,7 @@ class GameClock extends StatelessWidget {
           value: value,
           semanticsLabel: value,
           type: TimeDisplayType.clock,
-          // Relógio parado: 55% de opacidade, como o CompTempo estado=parado.
-          state: running ? TimeDisplayState.active : TimeDisplayState.paused,
+          state: state,
           side: side,
           width: width,
           valueWidget: FittedBox(
@@ -373,7 +382,7 @@ class GameClock extends StatelessWidget {
               key: timeKey,
               style: theme.textTheme.titleLarge?.copyWith(
                 color: foreground,
-                fontWeight: FontWeight.w700,
+                fontWeight: AppWeight.strong,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),

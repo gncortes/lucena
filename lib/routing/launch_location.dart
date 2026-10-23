@@ -1,9 +1,10 @@
+import '../domain/models/challenge_link.dart';
 import '../domain/models/endgame_lesson.dart';
 import '../domain/models/lesson.dart';
 import '../domain/models/star_challenge.dart';
 import 'routes.dart';
 
-/// Onde o app abre: na partida ou na aula que estava na tela quando ele foi
+/// Onde o app abre: no desafio do link que o abriu, na partida ou na aula que estava na tela quando ele foi
 /// fechado, ou no início. Aula escondida não reabre: a da Escola sem
 /// [showSchool], a de final fora de [visibleEndgameLessons] (nulo: todas).
 String launchLocation({
@@ -14,11 +15,13 @@ String launchLocation({
   OpenStarChallenge? stars,
   bool showSchool = true,
   Set<String>? visibleEndgameLessons,
+  ChallengeLink? link,
 }) {
   final lesson = showSchool ? school.ongoing : null;
   final endgameLesson = endgames.ongoing;
   final exercise = endgames.openExercise;
   bool visible(String id) => visibleEndgameLessons?.contains(id) ?? true;
+  if (link != null) return Routes.challenge(link);
   if (conclusion != null) return Routes.conclusion(conclusion);
   if (resumeGame) return Routes.freeBoard;
   if (lesson != null && lesson.open) {
@@ -28,10 +31,13 @@ String launchLocation({
       endgameLesson.open &&
       visible(endgameLesson.lessonId)) {
     // Com a parte: a parte com roteiro vai direto para a tela de roteiro (o
-    // redirect da rota), que grava o checkpoint com ela.
+    // redirect da rota), que grava o checkpoint com ela, na etapa em que o
+    // aluno saiu.
+    final part = endgameLesson.part;
     return Routes.endgameLessonScript(
       endgameLesson.lessonId,
-      part: endgameLesson.part,
+      part: part,
+      stage: part == null ? 0 : endgameLesson.step,
     );
   }
   if (exercise != null && visible(exercise.$1)) {

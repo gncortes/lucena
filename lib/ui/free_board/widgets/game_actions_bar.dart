@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 import 'character_bar.dart';
 
 /// As ações da partida ficam na borda inferior, fora das faixas dos jogadores.
@@ -17,6 +20,9 @@ class GameActionsBar extends StatelessWidget {
     super.key,
   });
 
+  /// A altura da barra (56 dos itens e 8 de respiro): a reserva do tabuleiro.
+  static const height = 72.0;
+
   final bool training;
   final VoidCallback? onResign;
   final VoidCallback? onDraw;
@@ -28,99 +34,129 @@ class GameActionsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colors = Theme.of(context).colorScheme;
-    return Material(
+    return ActionsBar(
       key: FreeBoardKeys.actionsBar,
-      color: colors.surfaceContainerLow,
-      child: SizedBox(
-        height: 76,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-          child: Row(
-            children: [
-              if (training) ...[
-                _action(
-                  context,
-                  FreeBoardKeys.resignButton,
-                  Icons.flag_outlined,
-                  l10n.gameResign,
-                  onResign,
+      children: [
+        if (training) ...[
+          GameActionButton(
+            buttonKey: FreeBoardKeys.resignButton,
+            icon: Icons.flag_outlined,
+            label: l10n.gameResign,
+            onPressed: onResign,
+          ),
+          GameActionButton(
+            buttonKey: FreeBoardKeys.drawButton,
+            icon: Icons.handshake_outlined,
+            label: l10n.freeBoardDraw,
+            onPressed: onDraw,
+          ),
+        ] else ...[
+          GameActionButton(
+            buttonKey: FreeBoardKeys.flipButton,
+            icon: Icons.swap_vert,
+            label: l10n.freeBoardFlip,
+            onPressed: onFlip,
+          ),
+          GameActionButton(
+            buttonKey: FreeBoardKeys.clockButton,
+            icon: Icons.av_timer_outlined,
+            label: l10n.freeBoardClock,
+            onPressed: onClock,
+          ),
+          GameActionButton(
+            buttonKey: FreeBoardKeys.newGameButton,
+            icon: Icons.add,
+            label: l10n.freeBoardNewGame,
+            onPressed: onNewGame,
+          ),
+        ],
+        if (showSound)
+          const Expanded(
+            child: Center(heightFactor: 1, child: CharacterSoundButton()),
+          ),
+      ],
+    );
+  }
+}
+
+/// A faixa de ações da borda inferior: ícone e rótulo, sem fundo (E1.08, D18).
+/// Os filhos são [GameActionButton]. A corrida usa a mesma, com um item só.
+class ActionsBar extends StatelessWidget {
+  const ActionsBar({required this.children, super.key});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.lg,
+      vertical: AppSpacing.sm,
+    ),
+    child: Row(spacing: AppSpacing.xs, children: children),
+  );
+}
+
+/// Uma ação da [ActionsBar].
+class GameActionButton extends StatelessWidget {
+  const GameActionButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    this.buttonKey,
+    super.key,
+  });
+
+  /// A key do botão (a do toque nos testes).
+  final Key? buttonKey;
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      // heightFactor: a barra tem a altura dos itens, não a da área.
+      child: Center(
+        heightFactor: 1,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 160),
+          child: SizedBox(
+            height: 56,
+            child: TextButton(
+              key: buttonKey,
+              onPressed: onPressed,
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.onSurfaceVariant,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(AppShape.large),
+                  ),
                 ),
-                _action(
-                  context,
-                  FreeBoardKeys.drawButton,
-                  Icons.handshake_outlined,
-                  l10n.freeBoardDraw,
-                  onDraw,
-                ),
-              ] else ...[
-                _action(
-                  context,
-                  FreeBoardKeys.flipButton,
-                  Icons.swap_vert,
-                  l10n.freeBoardFlip,
-                  onFlip,
-                ),
-                _action(
-                  context,
-                  FreeBoardKeys.clockButton,
-                  Icons.av_timer_outlined,
-                  l10n.freeBoardClock,
-                  onClock,
-                ),
-                _action(
-                  context,
-                  FreeBoardKeys.newGameButton,
-                  Icons.add,
-                  l10n.freeBoardNewGame,
-                  onNewGame,
-                ),
-              ],
-              if (showSound)
-                const Expanded(child: Center(child: CharacterSoundButton())),
-            ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: AppIconSize.standard),
+                  const SizedBox(height: AppSpacing.xs),
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
-
-  Widget _action(
-    BuildContext context,
-    Key key,
-    IconData icon,
-    String label,
-    VoidCallback? onPressed,
-  ) => Expanded(
-    child: SizedBox(
-      height: 56,
-      child: TextButton(
-        key: key,
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 22),
-            const SizedBox(height: 4),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }

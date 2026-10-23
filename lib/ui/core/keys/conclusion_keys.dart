@@ -32,7 +32,6 @@ abstract final class ConclusionKeys {
   static const blindMoves = Key('conclusion.blindMoves');
   static const close = Key('conclusion.close');
   static const share = Key('conclusion.share');
-  static const card = Key('conclusion.card');
   static const review = Key('conclusion.review');
 
   /// O cartão da análise rápida como entra na imagem de compartilhar.

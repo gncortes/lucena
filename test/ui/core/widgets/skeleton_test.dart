@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/widgets/empty_state.dart';
 import 'package:lucena/ui/core/widgets/skeleton.dart';
 
 void main() {
@@ -28,27 +27,5 @@ void main() {
     await pump(tester, const SkeletonList(), still: true);
     expect(find.byType(ShaderMask), findsNothing);
     expect(tester.hasRunningAnimations, isFalse);
-  });
-
-  testWidgets('estado vazio: frase e a ação que enche a lista', (tester) async {
-    var tapped = false;
-    await pump(
-      tester,
-      EmptyState(
-        icon: Icons.history_rounded,
-        message: 'Ainda sem partidas.',
-        actionLabel: 'Jogar agora',
-        onAction: () => tapped = true,
-      ),
-    );
-    expect(find.text('Ainda sem partidas.'), findsOneWidget);
-    await tester.tap(find.text('Jogar agora'));
-    expect(tapped, isTrue);
-  });
-
-  testWidgets('erro sem "tentar de novo": só a frase', (tester) async {
-    await pump(tester, const ErrorState(message: 'Não deu certo.'));
-    expect(find.text('Não deu certo.'), findsOneWidget);
-    expect(find.byType(FilledButton), findsNothing);
   });
 }

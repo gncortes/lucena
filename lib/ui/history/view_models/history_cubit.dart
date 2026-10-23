@@ -72,7 +72,6 @@ class HistoryState {
   /// As partidas do filtro e o placar delas.
   List<HistoryGame> get filteredGames =>
       HistoryGames.filter(games, gamesFilter, now ?? DateTime.utc(2000));
-  GamesScore get gamesScore => HistoryGames.score(filteredGames);
 
   List<SpeedrunHistoryRow> rows(HistoryTab tab) => switch (tab) {
     HistoryTab.classic => SpeedrunHistoryRows.filter(classic, classicFilter),

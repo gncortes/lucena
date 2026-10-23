@@ -11,6 +11,10 @@ abstract final class MaiaLevels {
   static int nearest(int rating) =>
       ((rating / step).round() * step).clamp(min, max);
 
+  /// O nível igual ou abaixo de um rating (1712 fica no 1600): o adversário
+  /// em que a Jornada começa.
+  static int atOrBelow(int rating) => ((rating ~/ step) * step).clamp(min, max);
+
   /// Quanto o Maia varia os lances. Com 1, ele sorteia o lance na proporção
   /// em que as pessoas daquele rating o jogam; mais perto de 0, fica nos
   /// lances mais prováveis; com 0, joga sempre o mesmo lance.

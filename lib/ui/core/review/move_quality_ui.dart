@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_text.dart';
 
 /// Como cada qualidade de lance aparece: o símbolo do xadrez, a cor (a dos
 /// grandes sites de análise) e o nome.
@@ -132,7 +133,7 @@ class MoveQualityBadge extends StatelessWidget {
                 style: TextStyle(
                   color: AppColors.white,
                   fontSize: size * (quality.symbol.length > 1 ? 0.5 : 0.64),
-                  fontWeight: FontWeight.w900,
+                  fontWeight: AppWeight.heavy,
                   height: 1,
                   letterSpacing: -0.5,
                 ),

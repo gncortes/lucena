@@ -54,10 +54,7 @@ class OutcomeStrip extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: color,
-                  ),
+                  style: theme.textTheme.titleSmall?.copyWith(color: color),
                 ),
                 if (subtitle != null)
                   Text(

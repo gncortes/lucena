@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/app_chip.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/rating_level.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/endgames_cubit.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/empty_state.dart';
 
 /// Como cada tipo de final aparece nas telas.
 extension EndgameKindUi on EndgameKind {
@@ -78,7 +84,6 @@ class _FilterSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     return BlocBuilder<EndgamesCubit, EndgamesState>(
       builder: (context, state) {
         final cubit = context.read<EndgamesCubit>();
@@ -90,29 +95,20 @@ class _FilterSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 12, 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l10n.endgamesFilters,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                  ),
-                  if (!filter.isEmpty)
-                    TextButton(
+            SheetHeader(
+              title: l10n.endgamesFilters,
+              trailing: filter.isEmpty
+                  ? null
+                  : TextButton(
                       key: EndgamesKeys.filtersSheetClear,
                       onPressed: cubit.clearFilter,
                       child: Text(l10n.endgamesFiltersClear),
                     ),
-                ],
-              ),
             ),
             Flexible(
               child: ListView(
                 shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                 children: [
                   if (levels.isNotEmpty) ...[
                     _Heading(l10n.endgamesFilterOrder),
@@ -120,6 +116,8 @@ class _FilterSheet extends StatelessWidget {
                       children: [
                         for (final sort in EndgameSort.values)
                           ChoiceChip(
+                            materialTapTargetSize: AppChip.tapTarget,
+                            visualDensity: AppChip.density,
                             key: EndgamesKeys.filterOption('sort.${sort.name}'),
                             label: Text(switch (sort) {
                               EndgameSort.trail => l10n.endgamesSortTrail,
@@ -135,6 +133,8 @@ class _FilterSheet extends StatelessWidget {
                       children: [
                         for (final level in levels)
                           FilterChip(
+                            materialTapTargetSize: AppChip.tapTarget,
+                            visualDensity: AppChip.density,
                             key: EndgamesKeys.filterOption(_levelCode(level)),
                             label: Text(level.name(l10n)),
                             selected: filter.levels.contains(level),
@@ -148,6 +148,8 @@ class _FilterSheet extends StatelessWidget {
                     children: [
                       for (final kind in state.availableKinds)
                         FilterChip(
+                          materialTapTargetSize: AppChip.tapTarget,
+                          visualDensity: AppChip.density,
                           key: EndgamesKeys.filterOption(kind.code),
                           label: Text(kind.label(l10n)),
                           selected: filter.kinds.contains(kind),
@@ -160,6 +162,8 @@ class _FilterSheet extends StatelessWidget {
                     children: [
                       for (final status in EndgameLessonStatus.values)
                         FilterChip(
+                          materialTapTargetSize: AppChip.tapTarget,
+                          visualDensity: AppChip.density,
                           key: EndgamesKeys.filterOption(status.code),
                           label: Text(status.label(l10n)),
                           selected: filter.statuses.contains(status),
@@ -170,16 +174,15 @@ class _FilterSheet extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: FilledButton(
-                key: EndgamesKeys.filtersApply,
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size.fromHeight(kButtonHeight),
+            ActionsFooter(
+              margin: AppSpacing.xl,
+              children: [
+                FilledButton(
+                  key: EndgamesKeys.filtersApply,
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.endgamesFiltersShow(shown)),
                 ),
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.endgamesFiltersShow(shown)),
-              ),
+              ],
             ),
           ],
         );
@@ -197,7 +200,7 @@ class _Heading extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 8),
+      padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.sm),
       child: Text(
         text,
         style: theme.textTheme.titleSmall?.copyWith(
@@ -214,8 +217,11 @@ class _Options extends StatelessWidget {
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) =>
-      Wrap(spacing: 8, runSpacing: 8, children: children);
+  Widget build(BuildContext context) => Wrap(
+    spacing: AppSpacing.sm,
+    runSpacing: AppSpacing.sm,
+    children: children,
+  );
 }
 
 /// Os filtros ativos, como chips com X, e o "Limpar".
@@ -230,16 +236,18 @@ class EndgamesActiveFilters extends StatelessWidget {
     final cubit = context.read<EndgamesCubit>();
     final filter = state.filter;
     Widget chip(String code, String label, VoidCallback onDeleted) => InputChip(
+      materialTapTargetSize: AppChip.tapTarget,
+      visualDensity: AppChip.density,
       key: EndgamesKeys.filterChip(code),
       label: Text(label),
       onPressed: () => showEndgamesFilterSheet(context),
       onDeleted: onDeleted,
     );
     return Padding(
-      padding: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.only(top: AppSpacing.md),
       child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           if (filter.sort == EndgameSort.easiest)
@@ -281,33 +289,12 @@ class EndgamesFiltersEmpty extends StatelessWidget {
   const EndgamesFiltersEmpty({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Padding(
-      key: EndgamesKeys.filtersEmpty,
-      padding: const EdgeInsets.symmetric(vertical: 32),
-      child: Column(
-        children: [
-          Icon(Icons.filter_list_off, size: 48, color: colors.outline),
-          const SizedBox(height: 12),
-          Text(
-            l10n.endgamesFiltersEmpty,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            key: EndgamesKeys.filtersEmptyClear,
-            icon: const Icon(Icons.filter_list_off),
-            label: Text(l10n.endgamesFiltersClearAll),
-            onPressed: context.read<EndgamesCubit>().clearFilter,
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => EmptyState(
+    key: EndgamesKeys.filtersEmpty,
+    style: EmptyStateStyle.filters,
+    message: context.l10n.endgamesFiltersEmpty,
+    actionLabel: context.l10n.endgamesFiltersClearAll,
+    actionKey: EndgamesKeys.filtersEmptyClear,
+    onAction: context.read<EndgamesCubit>().clearFilter,
+  );
 }

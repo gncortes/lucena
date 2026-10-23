@@ -26,9 +26,13 @@ import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_shadow.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/position_board.dart';
+import '../../core/widgets/time_display.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/blind_game_cubit.dart';
 import '../../core/theme/app_motion.dart';
@@ -38,6 +42,9 @@ import '../../core/widgets/game_clock.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../core/widgets/versus_intro.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 
 /// As frases do modo às cegas no idioma da tela.
 BlindPhrases blindPhrases(AppLocalizations l10n) => BlindPhrases(
@@ -221,42 +228,14 @@ class _BlindGameScreenState extends State<BlindGameScreen>
   BlindState _previous = const BlindState();
 
   /// Um aviso no topo da tela, que some sozinho.
-  void _toast(BuildContext context, String text, IconData icon) {
-    final messenger = ScaffoldMessenger.of(context);
-    final media = MediaQuery.of(context);
-    final colors = Theme.of(context).colorScheme;
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          key: BlindKeys.toast,
-          behavior: SnackBarBehavior.floating,
-          dismissDirection: DismissDirection.up,
-          duration: const Duration(seconds: 3),
-          backgroundColor: colors.inverseSurface,
-          // No alto, logo abaixo da barra do título.
-          margin: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            bottom: max(
-              16,
-              media.size.height -
-                  media.padding.top -
-                  kToolbarHeight -
-                  media.viewInsets.bottom -
-                  110,
-            ),
-          ),
-          content: Row(
-            children: [
-              Icon(icon, color: colors.onInverseSurface, size: 20),
-              const SizedBox(width: 12),
-              Expanded(child: Text(text)),
-            ],
-          ),
-        ),
+  void _toast(BuildContext context, String text, IconData icon) =>
+      showLucenaSnackBar(
+        context,
+        text,
+        icon: icon,
+        top: true,
+        key: BlindKeys.toast,
       );
-  }
 
   /// "Qual peça?" num diálogo, com as peças possíveis.
   Future<void> _chooseOption(BuildContext context) async {
@@ -312,16 +291,10 @@ class _BlindGameScreenState extends State<BlindGameScreen>
         actions: [
           FilledButton(
             key: BlindKeys.resignConfirm,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
             onPressed: () => Navigator.pop(context, true),
             child: Text(l10n.gameResign),
           ),
           OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
             onPressed: () => Navigator.pop(context, false),
             child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
           ),
@@ -343,17 +316,11 @@ class _BlindGameScreenState extends State<BlindGameScreen>
         actions: [
           FilledButton(
             key: BlindKeys.micAllow,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
             onPressed: () => Navigator.pop(context, true),
             child: Text(l10n.blindMicAllow),
           ),
           OutlinedButton(
             key: BlindKeys.micDeny,
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
             onPressed: () => Navigator.pop(context, false),
             child: Text(l10n.blindMicDeny),
           ),
@@ -381,7 +348,6 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       builder: (context, state) => Scaffold(
         key: BlindKeys.screen,
         appBar: LucenaAppBar(
-          toolbarHeight: 64,
           title: Text(l10n.blindTitleShort, overflow: TextOverflow.ellipsis),
           actions: [
             if (state.started && state.phase != BlindPhase.finished) ...[
@@ -449,10 +415,13 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 4),
+                                    padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.xs,
+                                    ),
                                     child: _ViewPicker(state: state),
                                   ),
-                                  if (above) const SizedBox(height: 8),
+                                  if (above)
+                                    const SizedBox(height: AppSpacing.sm),
                                   if (above)
                                     _Clocks(
                                       state: state,
@@ -488,15 +457,16 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                   // "Sua vez" fica à vista (sem tabuleiro, é
                                   // o que orienta), fora da fileira do relógio.
                                   if (state.started) ...[
-                                    if (below) const SizedBox(height: 6),
+                                    if (below)
+                                      const SizedBox(height: AppSpacing.sm),
                                     _Status(state: state),
                                   ],
                                   if (state.offlineMissing)
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(
-                                        16,
-                                        8,
-                                        16,
+                                        AppSpacing.lg,
+                                        AppSpacing.sm,
+                                        AppSpacing.lg,
                                         0,
                                       ),
                                       child: Text(
@@ -602,17 +572,15 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final board = _board;
     final orientation = state.userSide;
     final Widget child = switch (state.view) {
-      BlindView.hidden => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
+      BlindView.hidden => SizedBox.square(
+        dimension: size,
+        child: Card(
           color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(AppShape.large),
-        ),
-        child: Icon(
-          Icons.visibility_off_outlined,
-          size: 56,
-          color: Theme.of(context).colorScheme.outline,
+          child: Icon(
+            Icons.visibility_off_outlined,
+            size: AppIconSize.illustration,
+            color: Theme.of(context).colorScheme.outline,
+          ),
         ),
       ),
       BlindView.empty => _EmptyBoard(
@@ -655,11 +623,11 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                 opponentName: state.kind.label(l10n, level: state.level),
                 opponentRating: state.level,
                 opponentAvatar: const ColoredBox(
-                  color: AppColors.inkWarm,
+                  color: AppColors.ink,
                   child: Icon(
                     Icons.record_voice_over_outlined,
                     color: AppColors.white,
-                    size: 32,
+                    size: AppIconSize.large,
                   ),
                 ),
                 playerSide: state.userSide,
@@ -699,7 +667,7 @@ class _ViewPicker extends StatelessWidget {
         expandedInsets: EdgeInsets.zero,
         showSelectedIcon: false,
         style: SegmentedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           minimumSize: const Size(36, 36),
           // O segmentado parte de 40 dp de altura + densidade (-1 = -4).
           visualDensity: const VisualDensity(vertical: -1),
@@ -718,7 +686,11 @@ class _ViewPicker extends StatelessWidget {
             ButtonSegment(
               value: view,
               tooltip: label,
-              icon: Icon(icon, key: BlindKeys.view(view), size: 20),
+              icon: Icon(
+                icon,
+                key: BlindKeys.view(view),
+                size: AppIconSize.button,
+              ),
             ),
         ],
         selected: {state.view},
@@ -788,16 +760,9 @@ class _Status extends StatelessWidget {
             : BlindKeys.status,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20, color: accent),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              text,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          Icon(icon, size: AppIconSize.button, color: accent),
+          const SizedBox(width: AppSpacing.sm),
+          Flexible(child: Text(text, style: context.cardTitle)),
         ],
       ),
     );
@@ -863,22 +828,19 @@ class _BottomSheetFrame extends StatelessWidget {
         heightFactor: 1,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.light
-                ? AppColors.white
-                : colors.surfaceContainerLow,
+            color: AppColors.white,
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(AppShape.large),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.08),
-                blurRadius: 12,
-                offset: const Offset(0, -2),
-              ),
-            ],
+            boxShadow: [AppShadow.floating(colors)],
           ),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
             child: child,
           ),
         ),
@@ -908,7 +870,7 @@ class _IntroPanel extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
               Expanded(
@@ -919,7 +881,7 @@ class _IntroPanel extends StatelessWidget {
                   onPressed: cubit.narratePosition,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: OutlinedButton.icon(
                   key: BlindKeys.introBoard,
@@ -934,7 +896,7 @@ class _IntroPanel extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           FilledButton(
             key: BlindKeys.start,
             style: FilledButton.styleFrom(
@@ -1029,7 +991,7 @@ class _TalkBarState extends State<_TalkBar> {
       blendMode: BlendMode.dstIn,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsetsDirectional.only(end: 32),
+        padding: const EdgeInsetsDirectional.only(end: AppSpacing.xxl),
         child: Row(
           children: [
             for (final (index, chip) in [
@@ -1059,7 +1021,10 @@ class _TalkBarState extends State<_TalkBar> {
                   label: l10n.blindCopyLog,
                   onPressed: () => copyLog(context),
                 ),
-            ].indexed) ...[if (index > 0) const SizedBox(width: 8), chip],
+            ].indexed) ...[
+              if (index > 0) const SizedBox(width: AppSpacing.sm),
+              chip,
+            ],
           ],
         ),
       ),
@@ -1089,13 +1054,12 @@ class _TalkBarState extends State<_TalkBar> {
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          Text(
-            _clock(state.recorded),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-              fontFeatures: const [FontFeature.tabularFigures()],
-            ),
+          const SizedBox(width: AppSpacing.md),
+          TimeDisplay(
+            value: _clock(state.recorded),
+            semanticsLabel: _clock(state.recorded),
+            size: TimeDisplaySize.inline,
+            presentation: TimeDisplayPresentation.plain,
           ),
         ],
       );
@@ -1106,7 +1070,7 @@ class _TalkBarState extends State<_TalkBar> {
             dimension: 14,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: AppSpacing.md),
           Text(
             l10n.blindProcessing,
             key: BlindKeys.processing,
@@ -1157,7 +1121,12 @@ class _TalkBarState extends State<_TalkBar> {
         onPressed: cubit.reject,
       );
       middle = _Pill(
-        padding: const EdgeInsetsDirectional.fromSTEB(14, 0, 6, 0),
+        padding: const EdgeInsetsDirectional.fromSTEB(
+          AppSpacing.lg,
+          0,
+          AppSpacing.sm,
+          0,
+        ),
         child: Row(
           children: [
             Expanded(
@@ -1166,9 +1135,7 @@ class _TalkBarState extends State<_TalkBar> {
                 key: BlindKeys.proposal,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: theme.textTheme.titleLarge,
               ),
             ),
             IconButton(
@@ -1208,8 +1175,12 @@ class _TalkBarState extends State<_TalkBar> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.graphic_eq, size: 20, color: colors.error),
-            const SizedBox(width: 8),
+            Icon(
+              Icons.graphic_eq,
+              size: AppIconSize.button,
+              color: colors.error,
+            ),
+            const SizedBox(width: AppSpacing.sm),
             Flexible(
               child: Text(
                 l10n.blindStatusListening,
@@ -1237,14 +1208,17 @@ class _TalkBarState extends State<_TalkBar> {
           filled: true,
           fillColor: colors.surfaceContainerHighest,
           isDense: true,
-          prefixIcon: const Icon(Icons.keyboard_outlined, size: 20),
+          prefixIcon: const Icon(
+            Icons.keyboard_outlined,
+            size: AppIconSize.button,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppShape.full),
             borderSide: BorderSide.none,
           ),
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
           ),
         ),
       );
@@ -1262,13 +1236,13 @@ class _TalkBarState extends State<_TalkBar> {
     }
 
     return _BottomSheetFrame(
-      minHeight: 160,
+      minHeight: 164,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(height: max(40, textScaler.scale(20) + 16), child: actions),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           LayoutBuilder(
             builder: (context, constraints) {
               // A dica determina uma reserva comum a todos os estados. Assim
@@ -1305,7 +1279,7 @@ class _TalkBarState extends State<_TalkBar> {
               );
             },
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           // Os filhos sempre nas mesmas vagas: o microfone segurado continua
           // o mesmo widget quando a gravação começa.
           SizedBox(
@@ -1328,7 +1302,7 @@ class _TalkBarState extends State<_TalkBar> {
                 leading,
                 SizedBox(width: leading is SizedBox ? 0 : 8),
                 Expanded(child: middle),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 trailing,
               ],
             ),
@@ -1343,7 +1317,10 @@ class _TalkBarState extends State<_TalkBar> {
 class _Pill extends StatelessWidget {
   const _Pill({
     required this.child,
-    this.padding = const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+    this.padding = const EdgeInsets.symmetric(
+      horizontal: AppSpacing.lg,
+      vertical: AppSpacing.xs,
+    ),
   });
 
   final Widget child;
@@ -1384,44 +1361,44 @@ class _BlindSheetBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SingleChildScrollView(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.xl,
-        0,
-        AppSpacing.xl,
-        AppSpacing.xl,
-      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (icon != null) ...[
-            Icon(icon, size: 32, color: theme.colorScheme.primary),
-            const SizedBox(height: AppSpacing.sm),
-          ],
-          Text(
-            title,
-            textAlign: icon != null ? TextAlign.center : null,
-            style: theme.textTheme.titleLarge,
-          ),
-          if (message != null) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message!,
-              textAlign: icon != null ? TextAlign.center : null,
-              style: theme.textTheme.bodyMedium,
+          if (icon != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.xl,
+                0,
+                AppSpacing.xl,
+                AppSpacing.sm,
+              ),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Icon(
+                  icon,
+                  size: AppIconSize.large,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
             ),
-          ],
-          if (children.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.sm),
-            ...children,
-          ],
-          if (actions.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.lg),
-            for (final action in actions) ...[
-              action,
-              if (action != actions.last) const SizedBox(height: AppSpacing.sm),
-            ],
-          ],
+          SheetHeader(title: title, hint: message),
+          if (children.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
+              ),
+            ),
+          if (actions.isEmpty)
+            const SizedBox(height: AppSpacing.xl)
+          else
+            ActionsFooter(
+              stacked: true,
+              margin: AppSpacing.xl,
+              children: actions,
+            ),
         ],
       ),
     );
@@ -1436,12 +1413,16 @@ void _showHelp(BuildContext context) {
     context,
     builder: (context) {
       Widget item(IconData icon, String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.only(bottom: AppSpacing.lg),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 22, color: theme.colorScheme.primary),
-            const SizedBox(width: 14),
+            Icon(
+              icon,
+              size: AppIconSize.standard,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: AppSpacing.md),
             Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
           ],
         ),
@@ -1450,24 +1431,34 @@ void _showHelp(BuildContext context) {
         top: false,
         child: SingleChildScrollView(
           key: BlindKeys.helpSheet,
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.blindHelpTitle, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(
-                l10n.blindHelpIntro,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+              SheetHeader(
+                title: l10n.blindHelpTitle,
+                hint: l10n.blindHelpIntro,
+              ),
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    item(Icons.extension_outlined, l10n.blindHelpPieces),
+                    item(Icons.keyboard_outlined, l10n.blindHelpTyped),
+                    item(Icons.mic_none, l10n.blindHelpVoice),
+                    item(
+                      Icons.record_voice_over_outlined,
+                      l10n.blindHelpCommands,
+                    ),
+                    item(Icons.touch_app_outlined, l10n.blindHelpTouch),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              item(Icons.extension_outlined, l10n.blindHelpPieces),
-              item(Icons.keyboard_outlined, l10n.blindHelpTyped),
-              item(Icons.mic_none, l10n.blindHelpVoice),
-              item(Icons.record_voice_over_outlined, l10n.blindHelpCommands),
-              item(Icons.touch_app_outlined, l10n.blindHelpTouch),
             ],
           ),
         ),
@@ -1505,7 +1496,7 @@ class _RoundButton extends StatelessWidget {
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.standard,
     ),
-    icon: Icon(icon, size: 22),
+    icon: Icon(icon, size: AppIconSize.standard),
     onPressed: onPressed,
   );
 }
@@ -1530,11 +1521,11 @@ class _ActionChip extends StatelessWidget {
         : VisualDensity.standard,
     padding: EdgeInsets.zero,
     // Canvas (CompChip): texto colado ao ícone e 16 de folga no fim.
-    labelPadding: const EdgeInsetsDirectional.only(end: 16),
+    labelPadding: const EdgeInsetsDirectional.only(end: AppSpacing.lg),
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     avatar: Icon(
       icon,
-      size: 16,
+      size: AppIconSize.small,
       color: Theme.of(context).colorScheme.onSurfaceVariant,
     ),
     label: Text(label),
@@ -1544,11 +1535,10 @@ class _ActionChip extends StatelessWidget {
 
 /// Copia as medições (o relatório do spike).
 Future<void> copyLog(BuildContext context) async {
-  final messenger = ScaffoldMessenger.of(context);
   final text = context.l10n.blindCopied;
   final log = await context.read<BlindGameCubit>().exportLog();
   await Clipboard.setData(ClipboardData(text: log));
-  messenger.showSnackBar(SnackBar(content: Text(text)));
+  if (context.mounted) showLucenaSnackBar(context, text);
 }
 
 /// "dama f4" → "Dama f4".
@@ -1572,7 +1562,7 @@ class _MicButton extends StatefulWidget {
   final BlindGameCubit cubit;
 
   /// Menos que isso é um toque (grava sem segurar), não um aperto.
-  static const minHold = Duration(milliseconds: 350);
+  static const minHold = AppMotion.micHold;
 
   /// Arrastar além disso, segurando, descarta.
   static const cancelDistance = 90.0;
@@ -1678,7 +1668,7 @@ class _MicButtonState extends State<_MicButton> {
           ),
           child: Icon(
             listening ? Icons.send : Icons.mic,
-            size: 22,
+            size: AppIconSize.standard,
             color: !enabled
                 ? colors.onSurfaceVariant
                 : listening
@@ -1733,18 +1723,21 @@ class _RecordingState extends State<_Recording>
               duration: AppMotion.state,
               child: Icon(
                 Icons.fiber_manual_record,
-                size: 14,
+                size: AppIconSize.small,
                 color: colors.error,
               ),
             ),
-            const SizedBox(width: 6),
-            Text(
-              '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
+            const SizedBox(width: AppSpacing.sm),
+            TimeDisplay(
+              value:
+                  '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}',
+              semanticsLabel:
+                  '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}',
+              size: TimeDisplaySize.inline,
+              state: TimeDisplayState.active,
+              presentation: TimeDisplayPresentation.plain,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: SizedBox(
                 height: 28,
@@ -1878,7 +1871,7 @@ class _EmptyBoard extends StatelessWidget {
               PositionBoard(
                 fen: '8/8/8/8/8/8/8/8 w - - 0 1',
                 size: size,
-                radius: 0,
+                radius: AppShape.none,
                 orientation: orientation,
                 coordinates: true,
               ),

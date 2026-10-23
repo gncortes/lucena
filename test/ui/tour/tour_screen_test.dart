@@ -7,10 +7,8 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/user_profile.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/onboarding.dart';
-import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
@@ -44,7 +42,7 @@ final _texts = LessonTexts.fromJson({
   'tour.school': 'Cada lição tem três etapas.',
   'tour.help': 'Ficou difícil? Peça ajuda.',
   'tour.play': 'Depois, jogue contra os adversários.',
-  'tour.level': 'Escolha o seu nível.',
+  'tour.voice.link': 'Bela partida!',
 });
 
 void main() {
@@ -59,6 +57,7 @@ void main() {
     TourStep step = TourStep.board,
     Size size = const Size(412, 915),
     bool voices = true,
+    bool link = false,
     List<Character>? characters,
   }) async {
     tester.view.devicePixelRatio = 1;
@@ -80,7 +79,9 @@ void main() {
     );
     addTearDown(settingsCubit.close);
     await settingsCubit.load();
-    onboarding = FakeOnboardingRepository(Onboarding(step: step.index));
+    onboarding = FakeOnboardingRepository(
+      Onboarding(step: step.index, linkSetupDone: link),
+    );
     profile = FakeProfileRepository();
     final router = GoRouter(
       routes: [
@@ -98,8 +99,12 @@ void main() {
           ),
         ),
         GoRoute(
-          path: Routes.school,
-          builder: (_, _) => const Scaffold(body: Text('rota-aulas')),
+          path: Routes.account,
+          builder: (_, _) => const Scaffold(body: Text('rota-conta')),
+        ),
+        GoRoute(
+          path: Routes.goal,
+          builder: (_, _) => const Scaffold(body: Text('rota-objetivo')),
         ),
       ],
     );
@@ -128,7 +133,7 @@ void main() {
       for (final step in TourStep.values) {
         testWidgets(
           '${step.name} em ${size.width.toInt()}x${size.height.toInt()} '
-          'cabe, com o botão de 52 a 16 dos lados e 24 do fundo',
+          'cabe, com o botão de 52 a 16 dos lados e 8 do fundo',
           (tester) async {
             await pumpTour(tester, step: step, size: size);
             expect(tester.takeException(), isNull);
@@ -146,7 +151,7 @@ void main() {
                 matching: find.byType(LinearProgressIndicator),
               ),
             );
-            expect(bar.value, closeTo((step.index + 1) / 6, 0.001));
+            expect(bar.value, closeTo((step.index + 1) / 5, 0.001));
 
             // Retrato do Viktor: 64, a 16 da esquerda.
             final avatar = rect(tester, avatarImage());
@@ -168,7 +173,7 @@ void main() {
             expect(button.height, 52);
             expect(button.left, closeTo(16, 1));
             expect(size.width - button.right, closeTo(16, 1));
-            expect(size.height - button.bottom, closeTo(24, 1));
+            expect(size.height - button.bottom, closeTo(8, 1));
 
             // O fim da tela rola até acima do botão.
             final scroll = tester.state<ScrollableState>(
@@ -214,8 +219,24 @@ void main() {
       );
     });
 
+    testWidgets('em build de teste, o primeiro passo abre um link de desafio '
+        'colado (QA sem App Links)', (tester) async {
+      await pumpTour(tester);
+      expect(find.byKey(TourKeys.openLink), findsOneWidget);
+      await tester.tap(find.byKey(TourKeys.openLink));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('o atalho do link só aparece no primeiro passo', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.voice);
+      expect(find.byKey(TourKeys.openLink), findsNothing);
+    });
+
     testWidgets('no último passo não há Pular e há Voltar', (tester) async {
-      await pumpTour(tester, step: TourStep.level);
+      await pumpTour(tester, step: TourStep.play);
       expect(find.byKey(TourKeys.skipButton), findsNothing);
       expect(find.byKey(TourKeys.backButton), findsOneWidget);
     });
@@ -230,11 +251,23 @@ void main() {
       expect(find.byKey(TourKeys.step(TourStep.board)), findsOneWidget);
     });
 
-    testWidgets('Pular leva ao último passo', (tester) async {
+    testWidgets('Pular leva à pergunta do objetivo, sem dar o tour por visto', (
+      tester,
+    ) async {
       await pumpTour(tester);
       await tester.tap(find.byKey(TourKeys.skipButton));
       await tester.pumpAndSettle();
-      expect(find.byKey(TourKeys.step(TourStep.level)), findsOneWidget);
+      expect(find.text('rota-objetivo'), findsOneWidget);
+      expect(onboarding.saved.done, isFalse);
+    });
+
+    testWidgets('Continuar no último passo leva à pergunta do objetivo', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.play);
+      await tester.tap(find.byKey(TourKeys.startButton));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-objetivo'), findsOneWidget);
     });
   });
 
@@ -298,6 +331,19 @@ void main() {
       expect(settings.saved.last.board.pieces, PieceStyle.merida);
     });
 
+    testWidgets('o interruptor do som liga e desliga o som das peças', (
+      tester,
+    ) async {
+      await pumpTour(tester);
+      final tile = find.byKey(TourKeys.boardSound);
+      await tester.ensureVisible(tile);
+      expect(tester.widget<SwitchListTile>(tile).value, isTrue);
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+      expect(tester.widget<SwitchListTile>(tile).value, isFalse);
+      expect(settings.saved.last.sound, isFalse);
+    });
+
     testWidgets('a cor escolhida vale nos tabuleiros dos passos 3 e 4', (
       tester,
     ) async {
@@ -317,6 +363,28 @@ void main() {
       await tester.tap(find.byKey(TourKeys.nextButton));
       await tester.pumpAndSettle();
       expect(scheme(), BoardColors.green.scheme);
+    });
+  });
+
+  group('vindo de um link', () {
+    testWidgets('abre na voz, com a fala do Viktor sobre a partida, sem o '
+        'tabuleiro e com quatro passos', (tester) async {
+      await pumpTour(tester, link: true);
+      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
+      expect(find.byKey(TourKeys.backButton), findsNothing);
+      expect(find.text('Bela partida!'), findsOneWidget);
+      final bar = tester.widget<LinearProgressIndicator>(
+        find.descendant(
+          of: find.byKey(TourKeys.progress),
+          matching: find.byType(LinearProgressIndicator),
+        ),
+      );
+      expect(bar.value, closeTo(1 / 4, 0.001));
+      await tester.tap(find.byKey(TourKeys.nextButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(TourKeys.backButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
     });
   });
 
@@ -477,64 +545,6 @@ void main() {
         ),
         findsOneWidget,
       );
-    });
-  });
-
-  group('passo 6, nível', () {
-    testWidgets('abre com "Estou começando" marcado, Começar liberado; 48+', (
-      tester,
-    ) async {
-      await pumpTour(tester, step: TourStep.level);
-      final start = tester.widget<FilledButton>(
-        find.byKey(TourKeys.startButton),
-      );
-      expect(start.onPressed, isNotNull);
-      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
-      for (final choice in TourLevelChoice.values) {
-        final card = find.byKey(TourKeys.levelOption(choice));
-        await tester.ensureVisible(card);
-        expect(tester.getSize(card).height, greaterThanOrEqualTo(48));
-      }
-    });
-
-    testWidgets('Começar grava "começando" e leva às aulas', (tester) async {
-      await pumpTour(tester, step: TourStep.level);
-      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
-      expect(find.textContaining('A Jornada começa no'), findsNothing);
-      final start = tester.widget<FilledButton>(
-        find.byKey(TourKeys.startButton),
-      );
-      expect(start.onPressed, isNotNull);
-      expect(onboarding.saved.selectedRating, isNull);
-      await tester.tap(find.byKey(TourKeys.startButton));
-      await tester.pumpAndSettle();
-      expect(onboarding.saved.selectedRating, RatingLevel.beginner.rating);
-      expect(find.text('rota-aulas'), findsOneWidget);
-      expect(onboarding.saved.done, isTrue);
-    });
-
-    testWidgets('a faixa escolhida pela folha marca o cartão e mostra onde a '
-        'Jornada começa', (tester) async {
-      await pumpTour(tester, step: TourStep.level);
-      final band = find.byKey(TourKeys.levelOption(TourLevelChoice.band));
-      await tester.ensureVisible(band);
-      await tester.tap(band);
-      await tester.pumpAndSettle();
-      final option = find.byKey(ProfileKeys.levelOption(RatingLevel.expert));
-      await tester.ensureVisible(option);
-      await tester.tap(option);
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
-      await tester.pumpAndSettle();
-      expect(
-        find.descendant(
-          of: band,
-          matching: find.textContaining('A Jornada começa no '),
-        ),
-        findsOneWidget,
-      );
-      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
-      expect(onboarding.saved.selectedRating, RatingLevel.expert.rating);
     });
   });
 }

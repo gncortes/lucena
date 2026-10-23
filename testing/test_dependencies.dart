@@ -1,14 +1,63 @@
+import 'fakes/fake_activity_repository.dart';
+
+import 'package:lucena/data/repositories/feedback/feedback_repository.dart';
+import 'package:lucena/data/repositories/review/review_repository.dart';
+import 'package:lucena/data/repositories/would_pay/would_pay_repository.dart';
+
+import 'fakes/fake_feedback_repositories.dart';
+import 'fakes/fake_daily_final_repository.dart';
+import 'fakes/fake_crowd_repository.dart';
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
+import 'fakes/fake_survey_repository.dart';
+
+import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
+import 'package:lucena/data/repositories/config/remote_flags_repository.dart';
+import 'package:lucena/data/repositories/update/app_update_repository.dart';
+import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
+import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
+import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'package:lucena/config/dependencies.dart';
 import 'package:lucena/data/repositories/haptics/haptics_repository.dart';
+import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
+import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
+import 'package:lucena/data/repositories/featured/featured_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
+import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
+
+import 'fakes/fake_deep_link_service.dart';
+import 'fakes/fake_account_repository.dart';
+import 'fakes/fake_chesscom_repository.dart';
+import 'fakes/fake_lichess_repository.dart';
+
+import 'package:lucena/data/repositories/chesscom/chesscom_repository.dart';
+import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
+
+import 'fakes/fake_alerts_repository.dart';
+import 'fakes/fake_push_repository.dart';
+
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
+import 'package:lucena/data/repositories/account/avatar_repository.dart';
+import 'package:lucena/data/repositories/account/mail_app_repository.dart';
+
+import 'fakes/fake_avatar_repository.dart';
+import 'fakes/fake_analytics_repository.dart';
+import 'fakes/fake_mail_app_repository.dart';
+import 'fakes/fake_photo_repository.dart';
+
+import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
+import 'package:lucena/data/repositories/photo/photo_repository.dart';
+
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 import 'package:lucena/data/repositories/conclusion/conclusion_repository.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
 import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
+import 'package:lucena/data/repositories/race/race_repository.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository.dart';
 import 'package:lucena/data/repositories/maia/maia_repository.dart';
@@ -61,8 +110,10 @@ import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_home_layout_repository.dart';
 import 'fakes/fake_unlock_repository.dart';
 import 'fakes/fake_journey_repository.dart';
+import 'fakes/fake_race_repository.dart';
 import 'fakes/fake_speedrun_repository.dart';
 import 'fakes/fake_maia_repository.dart';
+import 'fakes/fake_featured_repositories.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_ongoing_game_repository.dart';
 import 'fakes/fake_opponent_repository.dart';
@@ -72,6 +123,10 @@ import 'fakes/fake_progress_repository.dart';
 import 'fakes/fake_settings_repository.dart';
 import 'fakes/fake_voice_repository.dart';
 import 'fakes/fake_wiki.dart';
+import 'fakes/fake_sync_repository.dart';
+
+import 'package:lucena/data/repositories/sync/sync_repository.dart';
+
 import 'fakes/fake_speech_input_repository.dart';
 import 'fakes/fake_blind_log_repository.dart';
 
@@ -86,6 +141,12 @@ Dependencies testDependencies({
   ProfileRepository? profileRepository,
   HapticsRepository? hapticsRepository,
   ShareRepository? shareRepository,
+  DeepLinkRepository? deepLinkRepository,
+  AccountRepository? accountRepository,
+  LichessRepository? lichessRepository,
+  ChessComRepository? chessComRepository,
+  PushRepository? pushRepository,
+  AlertsRepository? alertsRepository,
   PlacementRepository? placementRepository,
   OngoingGameRepository? ongoingGameRepository,
   ConclusionRepository? conclusionRepository,
@@ -96,6 +157,7 @@ Dependencies testDependencies({
   ProgressRepository? progressRepository,
   JourneyRepository? journeyRepository,
   SpeedrunRepository? speedrunRepository,
+  RaceRepository? raceRepository,
   RatingRepository? ratingRepository,
   AchievementsRepository? achievementsRepository,
   CharacterRepository? characterRepository,
@@ -111,16 +173,42 @@ Dependencies testDependencies({
   EndgameLessonRepository? endgameLessonRepository,
   EndgameProgressRepository? endgameProgressRepository,
   DrawOfferRepository? drawOfferRepository,
+  FeaturedRepository? featuredRepository,
+  FeaturedProgressRepository? featuredProgressRepository,
+  FeaturedAlertsRepository? featuredAlertsRepository,
+  RegionPromptRepository? regionPromptRepository,
+  ActivityRepository? activityRepository,
+  DailyFinalRepository? dailyFinalRepository,
+  CrowdRepository? crowdRepository,
+  SyncRepository? syncRepository,
+  AvatarRepository? avatarRepository,
+  PhotoRepository? photoRepository,
+  MailAppRepository? mailAppRepository,
+  AnalyticsRepository? analyticsRepository,
   VoiceRepository? voiceRepository,
+  SurveyRepository? surveyRepository,
+  RemoteFlagsRepository? remoteFlagsRepository,
+  AppUpdateRepository? appUpdateRepository,
+  FeedbackRepository? feedbackRepository,
+  WouldPayRepository? wouldPayRepository,
+  ReviewRepository? reviewRepository,
   List<AppLanguage>? languages,
 }) {
   final progress = progressRepository ?? FakeProgressRepository();
+  final clock = now ?? FakeNow(DateTime.utc(2026, 1, 1, 12));
   return Dependencies(
-    now: now ?? FakeNow(DateTime.utc(2026, 1, 1, 12)),
+    now: clock,
     settingsRepository: settingsRepository ?? FakeSettingsRepository(),
     profileRepository: profileRepository ?? FakeProfileRepository(),
     hapticsRepository: hapticsRepository ?? FakeHapticsRepository(),
     shareRepository: shareRepository ?? FakeShareRepository(),
+    deepLinkRepository:
+        deepLinkRepository ?? ServiceDeepLinkRepository(FakeDeepLinkService()),
+    accountRepository: accountRepository ?? FakeAccountRepository(),
+    lichessRepository: lichessRepository ?? FakeLichessRepository(),
+    chessComRepository: chessComRepository ?? FakeChessComRepository(),
+    pushRepository: pushRepository ?? FakePushRepository(),
+    alertsRepository: alertsRepository ?? FakeAlertsRepository(),
     placementRepository: placementRepository ?? FakePlacementRepository(),
     soundRepository: FakeSoundRepository(),
     analysisRepository: FakeAnalysisRepository(),
@@ -140,6 +228,7 @@ Dependencies testDependencies({
               ? progress
               : FakeProgressRepository(),
         ),
+    raceRepository: raceRepository ?? FakeRaceRepository(now: clock),
     ratingRepository: ratingRepository ?? FakeRatingRepository(),
     achievementsRepository:
         achievementsRepository ?? FakeAchievementsRepository(),
@@ -167,8 +256,30 @@ Dependencies testDependencies({
     voiceRepository: voiceRepository ?? FakeVoiceRepository(),
     speechInputRepository: FakeSpeechInputRepository(),
     blindCheckpointRepository: FakeBlindCheckpointRepository(),
+    surveyRepository: surveyRepository ?? FakeSurveyRepository(),
     blindLogRepository: FakeBlindLogRepository(),
     wikiLinksRepository: FakeWikiLinksRepository(),
+    featuredRepository: featuredRepository ?? FakeFeaturedRepository(),
+    featuredProgressRepository:
+        featuredProgressRepository ?? FakeFeaturedProgressRepository(),
+    featuredAlertsRepository:
+        featuredAlertsRepository ?? const NoFeaturedAlertsRepository(),
+    regionPromptRepository:
+        regionPromptRepository ?? const NoRegionPromptRepository(),
+    activityRepository:
+        activityRepository ?? FakeActivityRepository(now: clock),
+    dailyFinalRepository: dailyFinalRepository ?? FakeDailyFinalRepository(),
+    crowdRepository: crowdRepository ?? FakeCrowdRepository(),
+    syncRepository: syncRepository ?? FakeSyncRepository(),
+    avatarRepository: avatarRepository ?? FakeAvatarRepository(),
+    photoRepository: photoRepository ?? FakePhotoRepository(),
+    mailAppRepository: mailAppRepository ?? FakeMailAppRepository(),
+    analyticsRepository: analyticsRepository ?? FakeAnalyticsRepository(),
+    remoteFlagsRepository: remoteFlagsRepository,
+    appUpdateRepository: appUpdateRepository,
+    feedbackRepository: feedbackRepository ?? FakeFeedbackRepository(),
+    wouldPayRepository: wouldPayRepository ?? const NoWouldPayRepository(),
+    reviewRepository: reviewRepository ?? FakeReviewRepository(),
     languages: languages ?? AppLanguage.selectable,
   );
 }

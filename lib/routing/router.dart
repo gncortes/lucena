@@ -1,15 +1,44 @@
+import '../data/repositories/crowd/crowd_repository.dart';
+import '../data/repositories/survey/survey_repository.dart';
+import '../domain/models/survey.dart';
+import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
+import '../ui/lesson_finished/widgets/lesson_finished_screen.dart';
+import '../ui/survey/view_models/survey_cubit.dart';
+import '../ui/survey/widgets/survey_screen.dart';
+import '../data/repositories/feedback/feedback_repository.dart';
+import '../data/repositories/review/review_repository.dart';
+import '../data/repositories/would_pay/would_pay_repository.dart';
+import '../ui/feedback/view_models/feedback_cubit.dart';
+import '../ui/feedback/widgets/feedback_screen.dart';
+import '../ui/review/widgets/review_prompt.dart';
+import '../ui/would_pay/view_models/would_pay_cubit.dart';
+import '../ui/would_pay/widgets/would_pay_screen.dart';
+
 import 'package:animations/animations.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/repositories/featured/featured_alerts_repository.dart';
+import '../data/repositories/featured/featured_progress_repository.dart';
+import '../data/repositories/featured/featured_repository.dart';
+import '../ui/featured/view_models/featured_catalog_cubit.dart';
+import '../ui/featured/view_models/featured_endgame_cubit.dart';
+import '../ui/featured/view_models/featured_tournament_cubit.dart';
+import '../ui/featured/widgets/featured_endgame_screen.dart';
+import '../ui/featured/widgets/featured_list_screen.dart';
+import '../ui/featured/widgets/featured_tournament_screen.dart';
 import '../data/repositories/conclusion/conclusion_repository.dart';
+import '../data/repositories/chesscom/chesscom_repository.dart';
+import '../data/repositories/lichess/lichess_repository.dart';
 import '../data/repositories/blind/blind_log_repository.dart';
 import '../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../data/repositories/blind/speech_input_repository.dart';
 import '../ui/conclusion/view_models/conclusion_cubit.dart';
 import '../ui/conclusion/widgets/conclusion_screen.dart';
+import '../ui/core/analytics/analytics_context.dart';
+import '../domain/models/app_version.dart';
 import '../domain/models/conclusion.dart';
 import '../ui/blind/view_models/blind_game_cubit.dart';
 import '../ui/blind/widgets/blind_game_screen.dart';
@@ -18,10 +47,12 @@ import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/haptics/haptics_repository.dart';
 import '../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../data/repositories/settings/settings_repository.dart';
+import '../data/repositories/sync/sync_repository.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/game_rules.dart';
+import '../domain/models/daily_final.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
@@ -40,7 +71,10 @@ import '../data/repositories/progress/progress_repository.dart';
 import '../data/repositories/training/training_repository.dart';
 import '../domain/models/endgame_position.dart';
 import '../domain/models/game_mode.dart';
+import '../domain/models/challenge_link.dart';
 import '../domain/models/game_setup.dart';
+import '../ui/challenge/view_models/challenge_link_cubit.dart';
+import '../ui/challenge/widgets/challenge_link_screen.dart';
 import '../ui/catalog/view_models/catalog_cubit.dart';
 import '../ui/catalog/widgets/catalog_screen.dart';
 import '../ui/catalog/widgets/category_screen.dart';
@@ -51,6 +85,17 @@ import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
+import '../data/repositories/account/account_invite_repository.dart';
+import '../data/repositories/activity/activity_repository.dart';
+import '../ui/streak/view_models/streak_cubit.dart';
+import '../data/repositories/daily/daily_final_repository.dart';
+import '../ui/daily/view_models/daily_game_cubit.dart';
+import '../ui/daily/view_models/daily_result_cubit.dart';
+import '../ui/daily/view_models/daily_start_cubit.dart';
+import '../ui/daily/widgets/daily_result_screen.dart';
+import '../ui/daily/widgets/daily_share_screen.dart';
+import '../ui/daily/widgets/daily_start_screen.dart';
+import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
 import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
@@ -98,6 +143,19 @@ import '../ui/lesson_script/widgets/lesson_script_screen.dart';
 import '../ui/school/widgets/school_screen.dart';
 import '../ui/placement/view_models/placement_cubit.dart';
 import '../ui/placement/widgets/placement_screen.dart';
+import '../ui/challenge/view_models/link_setup_cubit.dart';
+import '../ui/challenge/widgets/link_setup_screen.dart';
+import '../ui/account/widgets/account_data_screen.dart';
+import '../ui/account/widgets/account_email_screen.dart';
+import '../ui/account/widgets/account_restored_screen.dart';
+import '../ui/account/widgets/account_screen.dart';
+import '../ui/goal/view_models/goal_cubit.dart';
+import '../ui/goal/widgets/goal_screen.dart';
+import '../ui/level/view_models/level_cubit.dart';
+import '../ui/level/widgets/level_chess_screen.dart';
+import '../ui/level/widgets/level_lichess_screen.dart';
+import '../ui/level/widgets/level_rating_screen.dart';
+import '../ui/level/widgets/level_screen.dart';
 import '../ui/tour/view_models/tour_cubit.dart';
 import '../ui/tour/widgets/tour_screen.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
@@ -107,6 +165,11 @@ import '../ui/journey/view_models/journey_cubit.dart';
 import '../ui/journey/widgets/challenge_screen.dart';
 import '../ui/journey/widgets/journey_screen.dart';
 import '../ui/journey/widgets/rung_screen.dart';
+import '../data/repositories/race/race_repository.dart';
+import '../ui/race/view_models/race_cubit.dart';
+import '../ui/race/view_models/race_warm_up_cubit.dart';
+import '../ui/race/widgets/race_screen.dart';
+import '../ui/race/widgets/race_warm_up_screen.dart';
 import '../ui/speedrun/view_models/speedrun_cubit.dart';
 import '../ui/speedrun/view_models/speedrun_history_cubit.dart';
 import '../ui/speedrun/widgets/speedrun_attempt_screen.dart';
@@ -115,9 +178,11 @@ import '../ui/speedrun/widgets/speedrun_history_screen.dart';
 import '../ui/speedrun/widgets/speedrun_screen.dart';
 import '../ui/maia_debug/view_models/maia_debug_cubit.dart';
 import '../ui/maia_debug/widgets/maia_debug_screen.dart';
-import '../ui/profile/view_models/rating_cubit.dart';
+import '../ui/profile/view_models/profile_cubit.dart';
 import '../ui/profile/widgets/profile_screen.dart';
 import '../ui/settings/widgets/language_screen.dart';
+import '../ui/alerts/widgets/alerts_screen.dart';
+import '../ui/region/widgets/country_screen.dart';
 import '../ui/settings/widgets/about_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/settings_tiles.dart';
@@ -126,7 +191,17 @@ import '../ui/core/theme/app_motion.dart';
 import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/sound/game_haptics.dart';
 import '../ui/core/sound/game_sounds.dart';
+import '../data/repositories/week/week_repository.dart';
+import '../ui/week/view_models/week_cubit.dart';
+import '../ui/week/widgets/week_screen.dart';
+import '../ui/update/widgets/update_recommended_screen.dart';
+import '../ui/update/widgets/update_required_screen.dart';
 import 'routes.dart';
+import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/ads/ads_repository.dart';
+import '../data/repositories/purchase/purchase_repository.dart';
+import '../ui/privacy/view_models/privacy_cubit.dart';
+import '../ui/privacy/widgets/privacy_screen.dart';
 import '../domain/use_cases/game_intro.dart';
 
 /// [initialLocation] é a tela em que o app abre; as telas de baixo dela na
@@ -147,10 +222,28 @@ Future<String?> resolveScriptPart(
   return Routes.endgameLessonScript(id, part: visible.first.id);
 }
 
-GoRouter buildRouter({String initialLocation = Routes.home}) {
+/// Com [updateRequired] verdadeiro, toda rota vai para a atualização
+/// obrigatória (E1.32); [refresh] avisa quando ele muda. A Política de
+/// privacidade abre no navegador, fora das rotas: continua alcançável.
+GoRouter buildRouter({
+  String initialLocation = Routes.home,
+  bool Function()? updateRequired,
+  Listenable? refresh,
+}) {
   return GoRouter(
     initialLocation: initialLocation,
+    refreshListenable: refresh,
+    redirect: (context, state) =>
+        updateRedirect(state.matchedLocation, required: updateRequired),
     routes: [
+      _route(
+        path: Routes.updateRequired,
+        builder: (context, state) => const UpdateRequiredScreen(),
+      ),
+      _route(
+        path: Routes.updateRecommended,
+        builder: (context, state) => const UpdateRecommendedScreen(),
+      ),
       _route(
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
@@ -160,15 +253,180 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             characters: context.read<CharacterRepository>(),
             lessons: context.read<LessonRepository>(),
             voice: context.read<VoiceRepository>(),
-            home: context.read<HomeLayoutRepository>(),
+            analytics: context.analytics,
           )..load(_language(context)),
           child: const TourScreen(),
         ),
       ),
+      // Antes de `/survey/:kind`, que pegaria o "pagaria" como tipo.
+      _route(
+        path: Routes.wouldPay,
+        builder: (context, state) => BlocProvider(
+          create: (_) => WouldPayCubit(
+            wouldPay: context.read<WouldPayRepository>(),
+            feedback: context.read<FeedbackRepository>(),
+            profile: context.read<ProfileRepository>(),
+            characters: context.read<CharacterRepository>(),
+            review: context.read<ReviewRepository>(),
+            analytics: context.analytics,
+          )..load(step: int.tryParse(state.uri.queryParameters['step'] ?? '')),
+          child: const WouldPayScreen(),
+        ),
+      ),
+      _route(
+        path: '/survey/:kind',
+        redirect: (context, state) =>
+            SurveyKind.byCode(state.pathParameters['kind'] ?? '') == null
+            ? Routes.home
+            : null,
+        builder: (context, state) {
+          final kind = SurveyKind.byCode(state.pathParameters['kind']!)!;
+          return BlocProvider(
+            create: (_) {
+              // Viu o questionário: nesta sessão não pede avaliação.
+              context.read<ReviewRepository>().noteSurveySeen();
+              return SurveyCubit(
+                kind: kind,
+                surveys: context.read<SurveyRepository>(),
+                characters: context.read<CharacterRepository>(),
+              )..load();
+            },
+            child: SurveyScreen(
+              fromLesson: state.uri.queryParameters['from'] == 'lesson',
+            ),
+          );
+        },
+      ),
+      _route(
+        path: '/lesson-finished/:kind/:id',
+        redirect: (context, state) =>
+            SurveyKind.byCode(state.pathParameters['kind'] ?? '') == null
+            ? Routes.home
+            : null,
+        builder: (context, state) {
+          final kind = SurveyKind.byCode(state.pathParameters['kind']!)!;
+          return BlocProvider(
+            create: (_) => LessonFinishedCubit(
+              kind: kind,
+              lessonId: state.pathParameters['id']!,
+              nextId: state.uri.queryParameters['next'],
+              school: context.read<LessonRepository>(),
+              endgames: context.read<EndgameLessonRepository>(),
+            )..load(_language(context)),
+            child: LessonReviewPrompt(child: LessonFinishedScreen(kind: kind)),
+          );
+        },
+      ),
+      _route(
+        path: Routes.account,
+        builder: (context, state) => const AccountScreen(),
+      ),
+      _route(
+        path: Routes.streak,
+        builder: (context, state) => BlocProvider(
+          create: (context) => StreakCubit(
+            activity: context.read<ActivityRepository>(),
+            now: context.read<Now>(),
+          )..load(),
+          child: const StreakScreen(),
+        ),
+      ),
+      _route(
+        path: Routes.week,
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              WeekCubit(context.read<WeekRepository>())..load(),
+          child: const WeekScreen(),
+        ),
+      ),
+      _route(
+        path: Routes.daily,
+        builder: (context, state) => BlocProvider(
+          create: (context) => DailyStartCubit(
+            daily: context.read<DailyFinalRepository>(),
+            rating: context.read<RatingRepository>(),
+            now: context.read<Now>(),
+          )..load(),
+          child: const DailyStartScreen(),
+        ),
+      ),
+      _route(
+        path: Routes.dailyResult,
+        builder: (context, state) =>
+            _daily(context, state, child: const DailyResultScreen()),
+      ),
+      _route(
+        path: Routes.dailyShare,
+        builder: (context, state) =>
+            _daily(context, state, child: const DailyShareScreen()),
+      ),
+      _route(
+        path: Routes.accountEnter,
+        builder: (context, state) => AccountScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          enter: true,
+        ),
+      ),
+      _route(
+        path: Routes.accountEmail,
+        builder: (context, state) => AccountEmailScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          signIn: state.uri.queryParameters['entrar'] == '1',
+          reauth: state.uri.queryParameters['reauth'] == '1',
+        ),
+      ),
+      _route(
+        path: Routes.accountData,
+        builder: (context, state) => AccountDataScreen(
+          from: state.uri.queryParameters['from'] ?? 'tour',
+          welcome: state.uri.queryParameters['novo'] == '1',
+        ),
+      ),
+      // Sem o resultado da leitura (link aberto de fora), volta ao início.
+      _route(
+        path: Routes.accountRestored,
+        redirect: (context, state) =>
+            state.extra is SyncResult ? null : Routes.home,
+        builder: (context, state) => AccountRestoredScreen(
+          result: state.extra! as SyncResult,
+          from: state.uri.queryParameters['from'] ?? 'tour',
+        ),
+      ),
+      _route(
+        path: Routes.goal,
+        builder: (context, state) => BlocProvider(
+          create: (_) => GoalCubit(
+            onboarding: context.read<OnboardingRepository>(),
+            profile: context.read<ProfileRepository>(),
+            characters: context.read<CharacterRepository>(),
+            home: context.read<HomeLayoutRepository>(),
+            analytics: context.analytics,
+          )..load(),
+          child: const GoalScreen(),
+        ),
+      ),
+      _route(
+        path: Routes.level,
+        builder: (context, state) => BlocProvider(
+          create: (_) => LevelCubit(
+            onboarding: context.read<OnboardingRepository>(),
+            profile: context.read<ProfileRepository>(),
+            characters: context.read<CharacterRepository>(),
+            lichess: context.read<LichessRepository>(),
+            chessCom: context.read<ChessComRepository>(),
+            home: context.read<HomeLayoutRepository>(),
+            fromProfile: state.uri.queryParameters['from'] == 'profile',
+            analytics: context.analytics,
+          )..load(),
+          child: const LevelScreen(),
+        ),
+      ),
+      _levelPart(Routes.levelLichess, const LevelLichessScreen()),
+      _levelPart(Routes.levelChess, const LevelChessScreen()),
+      _levelPart(Routes.levelRating, const LevelRatingScreen()),
       _route(
         path: Routes.placement,
         builder: (context, state) {
-          final fromTour = state.uri.queryParameters['from'] == 'tour';
           return BlocProvider(
             create: (_) => PlacementCubit(
               placement: context.read<PlacementRepository>(),
@@ -183,13 +441,12 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
               language: _language(context),
               // Nos testes de ponta a ponta, sempre as mesmas perguntas.
               seed: isE2E ? 52 : null,
+              analytics: context.analytics,
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(
-              builder: (context) => PlacementScreen(
-                onDone: () => context.pop(true),
-                onChooseByHand: fromTour ? () => context.pop(false) : null,
-              ),
+              builder: (context) =>
+                  PlacementScreen(onDone: () => context.pop(true)),
             ),
           );
         },
@@ -211,6 +468,12 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             placement: context.read<PlacementRepository>(),
             homeLayout: context.read<HomeLayoutRepository>(),
             unlocks: context.read<UnlockRepository>(),
+            featured: context.read<FeaturedRepository>(),
+            featuredProgress: context.read<FeaturedProgressRepository>(),
+            now: context.read<Now>(),
+            positions: context.read<PositionsRepository>(),
+            daily: context.read<DailyFinalRepository>(),
+            activity: context.read<ActivityRepository>(),
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -292,6 +555,13 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 speedrunId: query['speedrun'],
                 speedrunAttemptId: int.tryParse(query['attempt'] ?? ''),
                 speedrunStage: int.tryParse(query['stage'] ?? ''),
+                fromLink: query['link'] != null,
+                link: switch (query['link']) {
+                  null || '1' => null,
+                  final url => ChallengeLink.tryParse(Uri.parse(url)),
+                },
+                featuredId: query['featured'],
+                dailyDate: query['daily'],
               );
               final start = fen == null ? null : GameRules.fromFen(fen);
               // As falas vêm no idioma do app (as que faltam, em inglês).
@@ -310,6 +580,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                       progress: context.read<ProgressRepository>(),
                       draws: context.read<DrawOfferRepository>(),
                       speedruns: context.read<SpeedrunRepository>(),
+                      analytics: context.analytics,
                       reporter: GameReporter(
                         rating: context.read<RatingRepository>(),
                         achievements: context.read<AchievementsRepository>(),
@@ -333,6 +604,25 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                           : ClockConfig(white: white, black: black),
                     )..open(),
                   ),
+                  if (mode.dailyDate case final date?)
+                    BlocProvider(
+                      create: (context) => DailyGameCubit(
+                        date: date,
+                        daily: context.read<DailyFinalRepository>(),
+                        activity: context.read<ActivityRepository>(),
+                        kpk: context.read<KpkRepository>(),
+                        engine: context.read<PositionJudge>(),
+                      )..load(),
+                    ),
+                  if (mode.featuredId case final featuredId?)
+                    BlocProvider(
+                      create: (context) => FeaturedEndgameCubit(
+                        id: featuredId,
+                        featured: context.read<FeaturedRepository>(),
+                        progress: context.read<FeaturedProgressRepository>(),
+                        characters: context.read<CharacterRepository>(),
+                      )..load(),
+                    ),
                   BlocProvider(
                     create: (context) => TalkCubit(
                       characters: context.read<CharacterRepository>(),
@@ -390,8 +680,12 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 key: ValueKey(state.uri),
                 create: (context) =>
                     _conclusionCubit(context)..load(id ?? -1, language),
-                child: ConclusionScreen(
+                child: ConclusionReviewPrompt(
                   fresh: state.uri.queryParameters['fresh'] == '1',
+                  child: ConclusionScreen(
+                    fresh: state.uri.queryParameters['fresh'] == '1',
+                    invite: context.read<AccountInviteRepository>(),
+                  ),
                 ),
               );
             },
@@ -804,6 +1098,30 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             ],
           ),
           _route(
+            path: 'race',
+            builder: (context, state) => BlocProvider(
+              create: (context) =>
+                  RaceCubit(context.read<RaceRepository>(), context.read<Now>())
+                    ..load(),
+              child: const RaceScreen(),
+            ),
+            routes: [
+              _route(
+                path: 'warm-up',
+                builder: (context, state) {
+                  final args = state.extra;
+                  if (args is! RaceWarmUpArgs) return const SizedBox.shrink();
+                  return BlocProvider(
+                    create: (context) =>
+                        RaceWarmUpCubit(context.read<RaceRepository>())
+                          ..load(theme: args.theme),
+                    child: RaceWarmUpScreen(args: args),
+                  );
+                },
+              ),
+            ],
+          ),
+          _route(
             path: 'speedruns',
             builder: (context, state) => BlocProvider(
               create: (context) => _speedrunCubit(context)..load(),
@@ -873,6 +1191,45 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             ],
           ),
           _route(
+            path: 'featured',
+            builder: (context, state) => BlocProvider(
+              create: (context) => FeaturedCatalogCubit(
+                featured: context.read<FeaturedRepository>(),
+                progress: context.read<FeaturedProgressRepository>(),
+                now: context.read<Now>(),
+                country: context.read<ProfileCubit>().state?.country,
+              )..load(),
+              child: const FeaturedListScreen(),
+            ),
+            routes: [
+              _route(
+                path: 'tournament/:id',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => FeaturedTournamentCubit(
+                    id: state.pathParameters['id']!,
+                    featured: context.read<FeaturedRepository>(),
+                    progress: context.read<FeaturedProgressRepository>(),
+                    alerts: context.read<FeaturedAlertsRepository>(),
+                    now: context.read<Now>(),
+                  )..load(),
+                  child: const FeaturedTournamentScreen(),
+                ),
+              ),
+              _route(
+                path: ':id',
+                builder: (context, state) => BlocProvider(
+                  create: (context) => FeaturedEndgameCubit(
+                    id: state.pathParameters['id']!,
+                    featured: context.read<FeaturedRepository>(),
+                    progress: context.read<FeaturedProgressRepository>(),
+                    characters: context.read<CharacterRepository>(),
+                  )..load(),
+                  child: const FeaturedEndgameScreen(),
+                ),
+              ),
+            ],
+          ),
+          _route(
             path: 'catalog',
             builder: (context, state) => BlocProvider(
               create: (context) => _catalogCubit(context)..load(),
@@ -891,6 +1248,69 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 },
               ),
             ],
+          ),
+          // O desafio por link (`/p/<código>?...`): fechado, a tela do desafio;
+          // aberto, a Nova partida já preenchida.
+          _route(
+            path: 'p/:code',
+            redirect: (context, state) async {
+              final link = ChallengeLink.tryParse(state.uri);
+              if (link == null) return Routes.home;
+              // Primeira abertura: antes do desafio, uma tela só (cores,
+              // peças e som), sem o tour.
+              final onboarding = await context
+                  .read<OnboardingRepository>()
+                  .load();
+              if (!onboarding.done && !onboarding.linkSetupDone) {
+                return Routes.challengeSetup(link);
+              }
+              return null;
+            },
+            builder: (context, state) {
+              final link = ChallengeLink.tryParse(state.uri)!;
+              if (link.locked) {
+                return BlocProvider(
+                  key: ValueKey(state.uri),
+                  create: (context) => ChallengeLinkCubit(
+                    context.read<CharacterRepository>(),
+                    context.read<ProfileRepository>(),
+                    context.read<RatingRepository>(),
+                    link: link,
+                  )..load(),
+                  child: const ChallengeLinkScreen(),
+                );
+              }
+              return BlocProvider(
+                key: ValueKey(state.uri),
+                create: (context) => GameSetupCubit(
+                  context.read<TrainingRepository>(),
+                  position: GameRules.fromFen(link.fen)!,
+                  progress: context.read<ProgressRepository>(),
+                  profile: context.read<ProfileRepository>(),
+                  rating: context.read<RatingRepository>(),
+                  pace: context.read<PaceRepository>(),
+                  characters: context.read<CharacterRepository>(),
+                  goal: link.goal,
+                  positionId: link.positionId,
+                  link: link,
+                )..load(),
+                child: const GameSetupScreen(),
+              );
+            },
+          ),
+          _route(
+            path: 'p/:code/inicio',
+            redirect: (context, state) =>
+                ChallengeLink.tryParse(state.uri) == null ? Routes.home : null,
+            builder: (context, state) => BlocProvider(
+              key: ValueKey(state.uri),
+              create: (context) =>
+                  LinkSetupCubit(context.read<OnboardingRepository>()),
+              child: LinkSetupScreen(
+                next: Routes.challenge(ChallengeLink.tryParse(state.uri)!),
+                fen: ChallengeLink.tryParse(state.uri)!.fen,
+              ),
+            ),
           ),
           _route(
             path: 'setup',
@@ -927,6 +1347,10 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
             ),
           ),
           _route(
+            path: 'country',
+            builder: (context, state) => const CountryScreen(),
+          ),
+          _route(
             path: 'rating',
             sharedAxis: true,
             builder: (context, state) => ratingDestination(
@@ -948,14 +1372,22 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
           ),
           _route(
             path: 'settings',
-            builder: (context, state) => const SettingsScreen(),
+            builder: (context, state) =>
+                SettingsScreen(version: context.read<AppVersion>().name),
             routes: [
               _route(
                 path: 'profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+              _route(
+                path: 'privacy',
                 builder: (context, state) => BlocProvider(
-                  create: (context) =>
-                      RatingCubit(context.read<RatingRepository>())..load(),
-                  child: const ProfileScreen(),
+                  create: (context) => PrivacyCubit(
+                    ads: context.read<AdsRepository>(),
+                    purchases: context.read<PurchaseRepository>(),
+                    accounts: context.read<AccountRepository>(),
+                  )..load(),
+                  child: const PrivacyScreen(),
                 ),
               ),
               _route(
@@ -1011,8 +1443,25 @@ GoRouter buildRouter({String initialLocation = Routes.home}) {
                 ],
               ),
               _route(
+                path: 'feedback',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => FeedbackCubit(
+                    feedback: context.read<FeedbackRepository>(),
+                    characters: context.read<CharacterRepository>(),
+                    language: _language(context),
+                    analytics: context.analytics,
+                  )..load(),
+                  child: const FeedbackScreen(),
+                ),
+              ),
+              _route(
+                path: 'alerts',
+                builder: (context, state) => const AlertsScreen(),
+              ),
+              _route(
                 path: 'about',
-                builder: (context, state) => const AboutScreen(),
+                builder: (context, state) =>
+                    AboutScreen(version: context.read<AppVersion>().name),
               ),
               _route(
                 path: 'maia',
@@ -1077,6 +1526,56 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
   profile: context.read<ProfileRepository>(),
   rating: context.read<RatingRepository>(),
 );
+
+/// Uma tela ligada a "Seu nível", com o `LevelCubit` dela no `extra`. Sem ele
+/// (o app reaberto nesse endereço), volta para "Seu nível".
+// O resultado e a imagem do final do dia `?date=` (sem ele, o de hoje), com a
+// sequência de agora.
+Widget _daily(
+  BuildContext context,
+  GoRouterState state, {
+  required Widget child,
+}) {
+  final date =
+      state.uri.queryParameters['date'] ??
+      DailyRecord.dayCode(context.read<Now>()());
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider(
+        create: (context) => DailyResultCubit(
+          date: date,
+          daily: context.read<DailyFinalRepository>(),
+          crowd: context.read<CrowdRepository>(),
+          now: context.read<Now>(),
+        )..load(),
+      ),
+      BlocProvider(
+        create: (context) => StreakCubit(
+          activity: context.read<ActivityRepository>(),
+          now: context.read<Now>(),
+        )..load(),
+      ),
+    ],
+    child: child,
+  );
+}
+
+GoRoute _levelPart(String path, Widget screen) => _route(
+  path: path,
+  redirect: (context, state) => state.extra is LevelCubit ? null : Routes.level,
+  builder: (context, state) =>
+      BlocProvider.value(value: state.extra! as LevelCubit, child: screen),
+);
+
+/// Para onde a atualização obrigatória manda quem está em [location]: nulo
+/// fica onde está.
+String? updateRedirect(String location, {bool Function()? required}) {
+  final blocked = required?.call() ?? false;
+  final here = location == Routes.updateRequired;
+  if (blocked && !here) return Routes.updateRequired;
+  if (!blocked && here) return Routes.home;
+  return null;
+}
 
 /// Uma rota com página Material (com a transição do tema). O go_router 18
 /// procura o `MaterialApp` do pacote `material_ui` e não reconhece o do

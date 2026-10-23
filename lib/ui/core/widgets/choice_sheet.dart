@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../theme/app_button.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
 import 'lucena_sheet.dart';
+import 'actions_footer.dart';
+import 'sheet_header.dart';
+import '../theme/app_spacing.dart';
 
 /// Uma opção do painel de escolha.
 class ChoiceSheetOption<T> {
@@ -89,10 +91,7 @@ class _ChoiceSheetState<T> extends State<_ChoiceSheet<T>> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-          child: Text(widget.title, style: theme.textTheme.titleLarge),
-        ),
+        SheetHeader(title: widget.title),
         // Em tela pequena a lista rola; o botão de confirmar fica sempre à vista.
         Flexible(
           child: SingleChildScrollView(
@@ -101,8 +100,8 @@ class _ChoiceSheetState<T> extends State<_ChoiceSheet<T>> {
                 for (final option in widget.options)
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 2,
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.xs,
                     ),
                     child: ListTile(
                       key: option.key,
@@ -138,16 +137,15 @@ class _ChoiceSheetState<T> extends State<_ChoiceSheet<T>> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-          child: FilledButton(
-            key: widget.confirmKey,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
+        ActionsFooter(
+          margin: AppSpacing.xl,
+          children: [
+            FilledButton(
+              key: widget.confirmKey,
+              onPressed: () => Navigator.of(context).pop(_marked),
+              child: Text(widget.confirmLabel),
             ),
-            onPressed: () => Navigator.of(context).pop(_marked),
-            child: Text(widget.confirmLabel),
-          ),
+          ],
         ),
       ],
     );

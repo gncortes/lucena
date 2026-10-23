@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/board_settings.dart';
 import '../l10n/l10n.dart';
 import 'board_settings_ui.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
 
 /// Tabuleiro de amostra, que muda junto com as escolhas de aparência.
 class BoardPreview extends StatelessWidget {
@@ -14,11 +16,15 @@ class BoardPreview extends StatelessWidget {
     required this.size,
     required this.board,
     this.boardKey,
+    this.fen,
     super.key,
   });
 
   final double size;
   final BoardSettings board;
+
+  /// Outra posição no lugar da amostra (sem o último lance).
+  final String? fen;
 
   /// Key do tabuleiro em si, para os testes lerem a aparência dele.
   final Key? boardKey;
@@ -37,8 +43,8 @@ class BoardPreview extends StatelessWidget {
         key: boardKey,
         size: size,
         orientation: Side.white,
-        fen: _fen,
-        lastMove: _lastMove,
+        fen: fen ?? _fen,
+        lastMove: fen == null ? _lastMove : null,
         settings: StaticChessboardSettings.fromBoardSettings(
           board.chessground.copyWith(
             borderRadius: const BorderRadius.all(
@@ -46,51 +52,6 @@ class BoardPreview extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Título de um grupo de opções de aparência.
-class AppearanceSectionTitle extends StatelessWidget {
-  const AppearanceSectionTitle(
-    this.text, {
-    this.value,
-    this.valueKey,
-    super.key,
-  });
-
-  final String text;
-
-  /// O nome da opção escolhida, no fim da linha.
-  final String? value;
-  final Key? valueKey;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final value = this.value;
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              text,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-          ),
-          if (value != null)
-            Text(
-              value,
-              key: valueKey,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -170,7 +131,7 @@ class _Carousel extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children,
@@ -210,7 +171,7 @@ class _Option extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppShape.medium),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(AppSpacing.xs),
           child: SizedBox(
             width: _size + 12,
             child: Column(
@@ -247,10 +208,10 @@ class _Option extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(2),
+                            padding: const EdgeInsets.all(AppSpacing.xs),
                             child: Icon(
                               Icons.check,
-                              size: 14,
+                              size: AppIconSize.small,
                               color: scheme.onPrimary,
                             ),
                           ),
@@ -259,12 +220,11 @@ class _Option extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   label,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: selected ? FontWeight.w700 : null,
                     color: selected ? scheme.primary : null,
                   ),
                 ),
@@ -318,7 +278,7 @@ class _PiecesSample extends StatelessWidget {
     return ColoredBox(
       color: colors.scheme.darkSquare,
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(AppSpacing.xs),
         child: Image(image: pieces.assets[PieceKind.whiteKnight]!),
       ),
     );

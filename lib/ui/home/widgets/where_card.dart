@@ -1,20 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/home_layout.dart';
+import '../../../domain/models/race.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/view_models/journey_cubit.dart';
+import '../../race/widgets/race_warm_up_screen.dart';
+import '../../race/widgets/race_warm_up_sheet.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/theme/app_shape.dart';
-import '../../core/widgets/progress_pill.dart';
 
 /// "Continuar": o adversário atual da Jornada, o progresso contra ele e o
 /// próximo desafio, com o tabuleiro em miniatura.
@@ -50,10 +55,9 @@ class WhereCard extends StatelessWidget {
     final total = current?.rung.challenges.length ?? 0;
     return Card(
       key: HomeKeys.whereCard,
-      margin: EdgeInsets.zero,
       color: colors.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -65,11 +69,17 @@ class WhereCard extends StatelessWidget {
                   if (current != null)
                     Hero(
                       tag: opponentHeroTag(current.rung.id),
-                      child: CharacterAvatar(character: character, size: 56),
+                      child: CharacterAvatar(
+                        character: character,
+                        size: CharacterAvatar.speech,
+                      ),
                     )
                   else
-                    CharacterAvatar(character: character, size: 56),
-                  const SizedBox(width: 12),
+                    CharacterAvatar(
+                      character: character,
+                      size: CharacterAvatar.speech,
+                    ),
+                  const SizedBox(width: AppSpacing.md),
                 ],
                 Expanded(
                   child: Column(
@@ -88,10 +98,7 @@ class WhereCard extends StatelessWidget {
                             : character?.name ??
                                   opponentRefLabel(l10n, current.rung.opponent),
                         key: HomeKeys.whereTitle,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: onColor,
-                        ),
+                        style: context.bigNumber?.copyWith(color: onColor),
                       ),
                     ],
                   ),
@@ -99,58 +106,43 @@ class WhereCard extends StatelessWidget {
               ],
             ),
             if (current != null) ...[
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppShape.small),
-                child: AnimatedProgress(
-                  value: total == 0 ? 0 : done / total,
-                  minHeight: 8,
-                  backgroundColor: colors.surface.withValues(alpha: 0.6),
-                ),
+              const SizedBox(height: AppSpacing.md),
+              AnimatedProgress(
+                value: total == 0 ? 0 : done / total,
+                backgroundColor: colors.surface,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 l10n.homeWhereProgress(done, total),
                 style: theme.textTheme.bodySmall?.copyWith(color: onColor),
               ),
             ],
             if (current != null && next != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
                   PositionBoard(
                     key: HomeKeys.whereBoard,
                     fen: next.position.fen,
                     size: 64,
-                    radius: 4,
                     heroTag: challengeBoardTag(next.id),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
                       endgameName(l10n, next.position.subcategory),
                       key: HomeKeys.whereNext,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: onColor,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   FilledButton(
                     key: HomeKeys.whereContinue,
                     // A tela do desafio abre por cima desta, já com o
                     // desafio pronto: o tabuleiro e o retrato voam até ela.
-                    onPressed: () => context.push(
-                      Routes.journeyChallenge(
-                        current.rung.id,
-                        next.position.id,
-                      ),
-                      extra: JourneyState(
-                        challenge: next,
-                        characters: [?character],
-                      ),
-                    ),
+                    onPressed: () => continueJourney(context, state),
                     child: Text(l10n.homeContinue),
                   ),
                 ],
@@ -161,6 +153,59 @@ class WhereCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// O "Continuar" da Jornada: o desafio da vez de [state]. Antes da partida,
+/// oferece o aquecimento com problemas (E1.31); sem a oferta, ou recusada,
+/// segue direto para o desafio.
+Future<void> continueJourney(BuildContext context, HomeState state) async {
+  final current = state.current;
+  final challenge = state.next;
+  if (current == null || challenge == null) return;
+  final l10n = context.l10n;
+  final character = state.character;
+  final rung = current.rung.id;
+  final position = challenge.position.id;
+  final journey = JourneyState(challenge: challenge, characters: [?character]);
+  final opponent =
+      character?.name ?? opponentRefLabel(l10n, current.rung.opponent);
+  final level = current.rung.opponent.level;
+  final subcategory = challenge.position.subcategory;
+  final router = GoRouter.of(context);
+  final theme = RaceTheme.ofSubcategory(subcategory);
+  final choice = await offerRaceWarmUp(
+    context,
+    opponent: opponent,
+    endgame: endgameName(l10n, subcategory),
+    theme: theme,
+    character: character,
+  );
+  if (choice == RaceOfferChoice.skip) {
+    unawaited(
+      router.push(Routes.journeyChallenge(rung, position), extra: journey),
+    );
+    return;
+  }
+  // A tela do desafio entra na pilha por baixo do aquecimento: a partida
+  // que sai dele volta para ela, não para a Início.
+  unawaited(
+    router.push(Routes.journeyChallenge(rung, position), extra: journey),
+  );
+  unawaited(
+    router.push(
+      Routes.raceWarmUp,
+      extra: RaceWarmUpArgs(
+        opponent: opponent,
+        character: character,
+        level: level,
+        theme: theme,
+        // Vai direto à partida do desafio (o mesmo "Jogar" da tela dele:
+        // escolhe o ritmo e abre); ela entra no lugar do aquecimento.
+        onPlay: (context) =>
+            unawaited(playChallenge(context, challenge, replace: true)),
+      ),
+    ),
+  );
 }
 
 /// Para o iniciante: as aulas do Viktor vêm antes da Jornada.
@@ -177,15 +222,19 @@ class _SchoolCard extends StatelessWidget {
     final teacher = school.teacher;
     return Card(
       key: HomeKeys.schoolCard,
-      margin: EdgeInsets.zero,
       color: colors.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: Row(
           children: [
             if (teacher != null) ...[
-              CharacterAvatar(character: teacher, size: 48),
-              const SizedBox(width: 12),
+              CharacterAvatar(character: teacher, size: CharacterAvatar.player),
+              const SizedBox(width: AppSpacing.md),
             ],
             Expanded(
               child: Column(
@@ -193,16 +242,15 @@ class _SchoolCard extends StatelessWidget {
                 children: [
                   Text(
                     l10n.homeSchool,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    style: context.cardTitle?.copyWith(
                       color: colors.onSecondaryContainer,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  ProgressPill(
+                  const SizedBox(height: AppSpacing.sm),
+                  AnimatedProgress(
                     value: school.total == 0 ? 0 : school.done / school.total,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     l10n.schoolLessonsDone(school.done, school.total),
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -212,7 +260,7 @@ class _SchoolCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             FilledButton(
               key: HomeKeys.schoolContinue,
               onPressed: () => school.ongoingLessonId == null
@@ -227,6 +275,34 @@ class _SchoolCard extends StatelessWidget {
   }
 }
 
+/// Onde a aula parou e para onde o "Continuar" leva.
+extension EndgameSummaryUi on EndgameSummary {
+  String where(AppLocalizations l10n) {
+    final exercise = exerciseNumber;
+    if (exercise != null) {
+      return l10n.exerciseTitle(exercise, exerciseCount!);
+    }
+    final part = partNumber;
+    if (part != null) return l10n.homeEndgamePart(part, partCount!);
+    return l10n.endgameScore(score, maxScore);
+  }
+
+  String get route {
+    final exerciseId = openExerciseId;
+    if (exerciseId != null) {
+      return Routes.endgameExercise(lessonId, exerciseId);
+    }
+    if (lessonOpen) {
+      return Routes.endgameLessonScript(
+        lessonId,
+        part: partId,
+        stage: partStage,
+      );
+    }
+    return Routes.endgameLesson(lessonId);
+  }
+}
+
 /// A aula de final em andamento ou a próxima recomendada pelo roteiro.
 /// Retoma o ponto salvo ou abre a apresentação da aula ainda não iniciada.
 /// Com um exercício da vez, sua miniatura toma o lugar do retrato.
@@ -234,27 +310,6 @@ class _EndgameCard extends StatelessWidget {
   const _EndgameCard({required this.endgame});
 
   final EndgameSummary endgame;
-
-  String _where(AppLocalizations l10n) {
-    final exercise = endgame.exerciseNumber;
-    if (exercise != null) {
-      return l10n.exerciseTitle(exercise, endgame.exerciseCount!);
-    }
-    final part = endgame.partNumber;
-    if (part != null) return l10n.homeEndgamePart(part, endgame.partCount!);
-    return l10n.endgameScore(endgame.score, endgame.maxScore);
-  }
-
-  String get _route {
-    final exerciseId = endgame.openExerciseId;
-    if (exerciseId != null) {
-      return Routes.endgameExercise(endgame.lessonId, exerciseId);
-    }
-    if (endgame.lessonOpen) {
-      return Routes.endgameLessonScript(endgame.lessonId, part: endgame.partId);
-    }
-    return Routes.endgameLesson(endgame.lessonId);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -266,10 +321,14 @@ class _EndgameCard extends StatelessWidget {
     final fen = endgame.exerciseFen;
     return Card(
       key: HomeKeys.endgameCard,
-      margin: EdgeInsets.zero,
       color: colors.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: Row(
           children: [
             if (fen != null && exerciseId != null) ...[
@@ -277,13 +336,12 @@ class _EndgameCard extends StatelessWidget {
                 key: HomeKeys.endgameBoard,
                 fen: fen,
                 size: 64,
-                radius: 4,
                 heroTag: exerciseHeroTag(endgame.lessonId, exerciseId),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
             ] else if (teacher != null) ...[
-              CharacterAvatar(character: teacher, size: 48),
-              const SizedBox(width: 12),
+              CharacterAvatar(character: teacher, size: CharacterAvatar.player),
+              const SizedBox(width: AppSpacing.md),
             ],
             Expanded(
               child: Column(
@@ -298,15 +356,14 @@ class _EndgameCard extends StatelessWidget {
                   Text(
                     endgame.title,
                     key: HomeKeys.endgameTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    style: context.cardTitle?.copyWith(
                       color: colors.onSecondaryContainer,
                     ),
                   ),
                   if (!endgame.recommended) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
-                      _where(l10n),
+                      endgame.where(l10n),
                       key: HomeKeys.endgameWhere,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSecondaryContainer,
@@ -316,7 +373,7 @@ class _EndgameCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: endgame.recommended ? 140 : double.infinity,
@@ -324,7 +381,7 @@ class _EndgameCard extends StatelessWidget {
               child: FilledButton(
                 key: HomeKeys.endgameContinue,
                 // A posição vai junto, para a miniatura voar até o tabuleiro.
-                onPressed: () => context.push(_route, extra: fen),
+                onPressed: () => context.push(endgame.route, extra: fen),
                 child: Text(
                   endgame.recommended
                       ? l10n.endgameLessonStart

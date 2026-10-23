@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../board/board_settings_ui.dart';
+import '../theme/app_shape.dart';
 
 /// A miniatura de uma posição (FEN), vista pelo lado que joga (ou pelo
 /// [orientation] pedido), com as cores e as peças escolhidas pelo jogador.
@@ -17,7 +18,7 @@ class PositionBoard extends StatelessWidget {
     required this.size,
     this.orientation,
     this.coordinates = false,
-    this.radius = 6,
+    this.radius = AppShape.small,
     this.heroTag,
     this.lastMove,
     this.boardKey,

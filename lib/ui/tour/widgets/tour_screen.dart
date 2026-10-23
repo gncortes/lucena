@@ -3,40 +3,38 @@ import 'dart:async';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/dependencies.dart' show showsDevTools;
 import '../../../domain/models/board_settings.dart';
-import '../../../domain/models/game_setup.dart';
-import '../../../domain/models/rating_level.dart';
-import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_appearance_widgets.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/round_footer_button.dart';
-import '../../core/widgets/script_speech_sheet.dart';
-import '../../core/widgets/speech_balloon.dart';
-import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/viktor_conversation.dart';
 import '../../lesson_script/widgets/script_board.dart';
 import '../../profile/view_models/profile_cubit.dart';
-import '../../profile/widgets/rating_level_sheet.dart';
 import '../../settings/view_models/settings_cubit.dart';
+import '../../settings/widgets/open_link_dialog.dart';
 import '../../voice/view_models/speech_cubit.dart';
-import '../../voice/widgets/auto_speak.dart';
 import '../../voice/widgets/voice_pickers.dart';
 import '../view_models/tour_cubit.dart';
 import '../../core/keys/voice_keys.dart';
 import '../../core/widgets/sound_off_icon.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/section_title.dart';
+import '../../core/widgets/nickname_field.dart';
 
 /// O tour da primeira abertura (canvas `PropV2TourB*`, layout "Conversa"): o
 /// Viktor fala num balão e embaixo vem o que o passo mostra ou pede: o
@@ -51,15 +49,15 @@ class TourScreen extends StatelessWidget {
     return BlocConsumer<TourCubit, TourState>(
       listenWhen: (previous, current) => current.finished && !previous.finished,
       listener: (context, state) {
-        // A faixa escolhida já está no perfil.
-        context.read<ProfileCubit>().load();
-        // O iniciante vai direto para as aulas (a tela inicial fica embaixo).
-        context.go(state.toSchool ? Routes.school : Routes.home);
+        // A pergunta do objetivo e o nível fecham a primeira abertura. Quem
+        // veio de um link já jogou: a conta, opcional, vem antes (decisão 1a
+        // da E1.11).
+        context.go(state.linkSetupDone ? Routes.account : Routes.goal);
       },
       builder: (context, state) {
         if (!state.ready) return const Scaffold(key: TourKeys.screen);
         final step = state.step;
-        final total = TourStep.values.length;
+        final total = state.steps.length;
         final rtl = Directionality.of(context) == TextDirection.rtl;
         // Avançando, o passo novo entra pelo fim da linha e o velho sai pelo
         // começo; voltando, ao contrário.
@@ -72,7 +70,7 @@ class TourScreen extends StatelessWidget {
           },
           child: Scaffold(
             key: TourKeys.screen,
-            // Toolbar de 56, como a lição e o teste (INC 16: o canvas desenha 64).
+            // Barra de 64, como a lição e o teste (LucenaAppBar).
             appBar: LucenaAppBar(
               automaticallyImplyLeading: false,
               leading: state.hasPrevious
@@ -84,11 +82,22 @@ class TourScreen extends StatelessWidget {
                     )
                   : const SizedBox(width: 56, key: TourKeys.backSlot),
               actions: [
+                // Só em rc: o QA abre um link de desafio sem App Links, até
+                // na primeira abertura (E1.14).
+                if (showsDevTools && state.position == 0)
+                  IconButton(
+                    key: TourKeys.openLink,
+                    icon: const Icon(Icons.link),
+                    tooltip: l10n.devOpenLinkTitle,
+                    onPressed: () => showOpenLinkDialog(context),
+                  ),
                 if (!step.isLast)
                   // O texto do botão fica a 16 da borda (o botão tem 12 de
                   // folga por dentro).
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 4),
+                    padding: const EdgeInsetsDirectional.only(
+                      end: AppSpacing.xs,
+                    ),
                     child: TextButton(
                       key: TourKeys.skipButton,
                       onPressed: cubit.skip,
@@ -99,10 +108,10 @@ class TourScreen extends StatelessWidget {
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(AppBarProgress.height),
                 child: Semantics(
-                  label: l10n.tourStep(step.index + 1, total),
+                  label: l10n.tourStep(state.position + 1, total),
                   child: AppBarProgress(
                     key: TourKeys.progress,
-                    value: (step.index + 1) / total,
+                    value: (state.position + 1) / total,
                   ),
                 ),
               ),
@@ -112,11 +121,16 @@ class TourScreen extends StatelessWidget {
                 Expanded(
                   child: SingleChildScrollView(
                     key: TourKeys.scroll,
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _Conversation(state: state),
+                        ViktorConversation(
+                          viktor: state.viktor,
+                          speech: state.speech,
+                          viktorKey: TourKeys.viktor,
+                          speechKey: TourKeys.speech,
+                        ),
                         ClipRect(
                           // Corta só os lados (a troca desliza); a sombra dos
                           // botões passa da borda de baixo.
@@ -148,14 +162,15 @@ class TourScreen extends StatelessWidget {
                             },
                             child: Padding(
                               key: currentKey,
-                              padding: const EdgeInsets.only(top: 20),
+                              padding: const EdgeInsets.only(
+                                top: AppSpacing.lg,
+                              ),
                               child: switch (step) {
                                 TourStep.board => const _BoardStep(),
                                 TourStep.voice => _VoiceStep(state: state),
                                 TourStep.school => const _SchoolStep(),
                                 TourStep.help => const _HelpStep(),
                                 TourStep.play => _PlayStep(state: state),
-                                TourStep.level => _LevelStep(state: state),
                               },
                             ),
                           ),
@@ -187,79 +202,7 @@ class _SideClipper extends CustomClipper<Rect> {
 /// A lateral das ilustrações (canvas: 20).
 const _sideInset = 20.0;
 
-/// O cabeçalho do Viktor e o balão com a fala.
-class _Conversation extends StatelessWidget {
-  const _Conversation({required this.state});
-
-  final TourState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final viktor = state.viktor;
-    if (viktor == null) return const SizedBox.shrink();
-    final l10n = context.l10n;
-    final speech = state.speech;
-    final voice = TeacherSpeech.speechOf(context);
-    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
-    Widget balloon = SpeechBalloon(
-      key: TourKeys.speech,
-      tail: BalloonTail.up,
-      // A ponta cai no centro do retrato de 64.
-      tailX: SpeechBalloon.tailXFor(64),
-      speech: speech,
-      tapHint: l10n.lessonFullSpeech,
-      onTap: speech == null
-          ? null
-          : () => unawaited(
-              showScriptSpeechSheet(
-                context,
-                viktor: viktor,
-                title: l10n.teacherName(viktor.name),
-                texts: [speech],
-              ),
-            ),
-      child: SpeechText(
-        text: speech ?? '',
-        style: SpeechBalloon.style(context),
-      ),
-    );
-    if (voice != null) {
-      balloon = AutoSpeak(
-        speech: voice,
-        text: speech,
-        auto: sound,
-        speakerId: 'master',
-        child: balloon,
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: TeacherSpeech(
-            key: TourKeys.viktor,
-            part: TeacherSpeechPart.header,
-            speechContext: SpeechContext.teaching,
-            teacher: viktor,
-            text: speech,
-            avatarSize: 64,
-            speaks: true,
-            controlsOnlyWithVoice: true,
-          ),
-        ),
-        // O vão de 6 da ponta ao retrato vem do balão.
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-          child: balloon,
-        ),
-      ],
-    );
-  }
-}
-
-/// O botão de baixo: "Continuar" (ou "Começar" no último passo), numa faixa
-/// sólida da cor do fundo.
+/// O botão de baixo: "Continuar" (ou "Começar" no último passo).
 class _TourFooter extends StatelessWidget {
   const _TourFooter({required this.state});
 
@@ -270,22 +213,14 @@ class _TourFooter extends StatelessWidget {
     final l10n = context.l10n;
     final cubit = context.read<TourCubit>();
     final last = state.step.isLast;
-    return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          child: FilledButton(
-            key: last ? TourKeys.startButton : TourKeys.nextButton,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
-            onPressed: last ? cubit.finish : cubit.next,
-            child: Text(last ? l10n.tourStart : l10n.tourNext),
-          ),
+    return ActionsFooter(
+      children: [
+        FilledButton(
+          key: last ? TourKeys.startButton : TourKeys.nextButton,
+          onPressed: last ? cubit.finish : cubit.next,
+          child: Text(l10n.tourNext),
         ),
-      ),
+      ],
     );
   }
 }
@@ -324,6 +259,9 @@ class _BoardStep extends StatelessWidget {
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
+    final sound = context.select(
+      (SettingsCubit cubit) => cubit.state?.sound ?? true,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -336,21 +274,29 @@ class _BoardStep extends StatelessWidget {
             board: board.copyWith(coordinates: false),
           ),
         ),
-        const SizedBox(height: 2),
-        AppearanceSectionTitle(l10n.boardColors),
+        const SizedBox(height: AppSpacing.xs),
+        SectionTitle(l10n.boardColors),
         BoardColorsCarousel(
           selected: board.colors,
           keyOf: TourKeys.boardColors,
           onSelected: (colors) =>
               settings.setBoard(board.copyWith(colors: colors)),
         ),
-        AppearanceSectionTitle(l10n.boardPieces),
+        SectionTitle(l10n.boardPieces),
         PieceStyleCarousel(
           selected: board.pieces,
           colors: board.colors,
           keyOf: TourKeys.boardPieces,
           onSelected: (pieces) =>
               settings.setBoard(board.copyWith(pieces: pieces)),
+        ),
+        SwitchListTile(
+          key: TourKeys.boardSound,
+          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          title: Text(l10n.settingsSound),
+          subtitle: Text(l10n.settingsSoundHint),
+          value: sound,
+          onChanged: (value) => settings.setSound(enabled: value),
         ),
       ],
     );
@@ -378,7 +324,7 @@ class _VoiceStep extends StatelessWidget {
           ),
           // O aviso já traz 16 de margem: mais 4 para chegar aos 20.
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             child: SystemVoicesHelp(missing: true),
           ),
         ],
@@ -390,9 +336,9 @@ class _VoiceStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _NameField(initial: state.nickname),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           const _TourVoiceGrid(),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Text(
             l10n.tourVoiceHint,
             key: TourKeys.voiceHint,
@@ -503,24 +449,13 @@ class _NameFieldState extends State<_NameField> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return TextField(
-      key: TourKeys.nameField,
+    return NicknameField(
+      fieldKey: TourKeys.nameField,
       controller: _controller,
-      textInputAction: TextInputAction.done,
-      textCapitalization: TextCapitalization.words,
+      label: l10n.tourNameLabel,
+      hint: l10n.profileNicknameDefault,
       autocorrect: false,
-      inputFormatters: [
-        LengthLimitingTextInputFormatter(UserProfile.maxNicknameLength),
-      ],
       onChanged: context.read<TourCubit>().setNickname,
-      decoration: InputDecoration(
-        labelText: l10n.tourNameLabel,
-        hintText: l10n.profileNicknameDefault,
-        // O apelido padrão fica à vista enquanto o campo está vazio.
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        prefixIcon: const Icon(Icons.person_outline),
-        border: const OutlineInputBorder(),
-      ),
     );
   }
 }
@@ -550,7 +485,7 @@ class _SchoolStep extends StatelessWidget {
             radius: AppShape.small,
             shapes: _rings(const ['e5', 'd5', 'f5']),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
           Stack(
             key: TourKeys.stages,
             children: [
@@ -612,17 +547,15 @@ class _Stage extends StatelessWidget {
           radius: 28,
           backgroundColor: first ? colors.primary : colors.primaryContainer,
           foregroundColor: first ? colors.onPrimary : colors.onPrimaryContainer,
-          child: Icon(icon, size: 28),
+          child: Icon(icon, size: AppIconSize.large),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           title,
           textAlign: TextAlign.center,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.titleSmall,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           body,
           textAlign: TextAlign.center,
@@ -654,18 +587,17 @@ class _HelpStep extends StatelessWidget {
             radius: AppShape.small,
             shapes: _rings(const ['d6', 'f6']),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             key: TourKeys.helpButtons,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Canvas: 44; fica o botão do app até o T73 lote 2.
               RoundFooterButton(
                 icon: Icons.lightbulb_outline,
                 tooltip: l10n.lessonHint,
                 onPressed: () {},
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(0, kButtonHeightCompact),
@@ -710,7 +642,7 @@ class _PlayStep extends StatelessWidget {
                 _Opponent(
                   avatar: CharacterAvatar(
                     character: character,
-                    size: 52,
+                    size: CharacterAvatar.speech,
                     radius: AppShape.small,
                   ),
                   name: character.name,
@@ -718,15 +650,15 @@ class _PlayStep extends StatelessWidget {
                 ),
               _Opponent(
                 avatar: Container(
-                  width: 52,
-                  height: 52,
+                  width: CharacterAvatar.speech,
+                  height: CharacterAvatar.speech,
                   decoration: BoxDecoration(
                     color: colors.surfaceContainer,
                     borderRadius: BorderRadius.circular(AppShape.small),
                   ),
                   child: Icon(
                     Icons.more_horiz,
-                    size: 28,
+                    size: AppIconSize.large,
                     color: colors.onSurfaceVariant,
                   ),
                 ),
@@ -735,12 +667,12 @@ class _PlayStep extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.xl),
           if (rating != null)
             Container(
               key: TourKeys.ratingChip,
               height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               decoration: BoxDecoration(
                 color: colors.primaryContainer,
                 borderRadius: BorderRadius.circular(AppShape.full),
@@ -750,15 +682,14 @@ class _PlayStep extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.trending_up,
-                    size: 20,
+                    size: AppIconSize.button,
                     color: colors.onPrimaryContainer,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     l10n.homeRating(rating),
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: colors.onPrimaryContainer,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -789,15 +720,13 @@ class _Opponent extends StatelessWidget {
       child: Column(
         children: [
           avatar,
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: theme.textTheme.labelMedium,
           ),
           Text(
             rating,
@@ -810,165 +739,6 @@ class _Opponent extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// 6. O nível: três cartões. "Estou começando" já vem marcado até a escolha.
-class _LevelStep extends StatelessWidget {
-  const _LevelStep({required this.state});
-
-  final TourState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final cubit = context.read<TourCubit>();
-    final choice = state.choice;
-    // "A Jornada começa no …", com o degrau do teste ou da faixa marcada.
-    String start() => l10n.tourLevelStart(
-      OpponentKind.maia.label(l10n, level: int.parse(state.startRung)),
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: _sideInset),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _LevelCard(
-            key: TourKeys.levelOption(TourLevelChoice.beginner),
-            icon: Icons.school,
-            title: l10n.tourLevelBeginnerTitle,
-            body: l10n.tourLevelBeginnerBody,
-            selected: choice == TourLevelChoice.beginner,
-            onTap: () => cubit.setLevel(RatingLevel.beginner),
-          ),
-          const SizedBox(height: 8),
-          _LevelCard(
-            key: TourKeys.levelOption(TourLevelChoice.test),
-            icon: Icons.quiz,
-            title: l10n.tourLevelTestTitle,
-            body: choice == TourLevelChoice.test
-                ? start()
-                : l10n.tourLevelTestBody,
-            selected: choice == TourLevelChoice.test,
-            onTap: () => _takeTest(context),
-          ),
-          const SizedBox(height: 8),
-          _LevelCard(
-            key: TourKeys.levelOption(TourLevelChoice.band),
-            icon: Icons.trending_up,
-            title: l10n.tourLevelBandTitle,
-            body: choice == TourLevelChoice.band
-                ? start()
-                : l10n.tourLevelBandBody,
-            selected: choice == TourLevelChoice.band,
-            onTap: () => _pickBand(context),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A folha das faixas (com confirmar); a faixa confirmada fica marcada.
-Future<void> _pickBand(BuildContext context) async {
-  final cubit = context.read<TourCubit>();
-  final level = await showRatingLevelSheet(
-    context,
-    selected: cubit.state.level,
-  );
-  if (level != null) await cubit.setLevel(level);
-}
-
-/// Abre o teste de nível. Usado o resultado, o tour marca o cartão do teste;
-/// "Prefiro escolher minha faixa" lá dentro volta com a folha das faixas.
-Future<void> _takeTest(BuildContext context) async {
-  final cubit = context.read<TourCubit>();
-  final used = await context.push<bool>(Routes.placementFrom('tour'));
-  if (used == true) {
-    await cubit.usePlacement();
-  } else if (used == false && context.mounted) {
-    await _pickBand(context);
-  }
-}
-
-class _LevelCard extends StatelessWidget {
-  const _LevelCard({
-    required this.icon,
-    required this.title,
-    required this.body,
-    required this.selected,
-    required this.onTap,
-    super.key,
-  });
-
-  final IconData icon;
-  final String title;
-  final String body;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppShape.medium),
-      side: selected
-          ? BorderSide(color: colors.primary, width: 2)
-          : BorderSide(color: colors.outlineVariant),
-    );
-    return Semantics(
-      selected: selected,
-      button: true,
-      inMutuallyExclusiveGroup: true,
-      child: Material(
-        color: selected ? colors.primaryContainer : colors.surface,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 17),
-              child: Row(
-                children: [
-                  Icon(icon, size: 28, color: colors.primary),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          body,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    selected
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_unchecked,
-                    color: selected ? colors.primary : colors.onSurfaceVariant,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

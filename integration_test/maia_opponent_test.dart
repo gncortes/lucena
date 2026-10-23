@@ -74,7 +74,7 @@ void main() {
     await profile.open();
     // Faixa de 1600 a 1899.
     await profile.chooseLevel(RatingLevel.advanced);
-    await profile.save();
+    await profile.close();
     await settings.back();
     await home.expectVisible();
 

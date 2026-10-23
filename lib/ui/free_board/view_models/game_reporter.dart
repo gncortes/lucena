@@ -136,15 +136,25 @@ class GameReporter {
   /// O rating atual do jogador, como a tela mostra.
   Future<int> currentRating() async => (await _rating.current()).rounded;
 
+  /// O rating que a faixa do jogador mostra. Nulo numa partida de link antes
+  /// do "Seu nível" (o tour não terminou): a pessoa ainda não tem rating.
+  Future<int?> shownRating({required bool fromLink}) async {
+    if (fromLink && !((await _onboarding?.load())?.done ?? true)) return null;
+    return currentRating();
+  }
+
   Future<GameReport> report(
     Attempt game, {
     required int gameId,
     required Side userSide,
     required bool drawGoal,
+    bool rated = true,
   }) async {
     final before = await _rating.current();
-    // A etapa de speedrun não mexe no rating: só a conclusão, com o bônus.
-    final rated = game.speedrunAttemptId != null
+    // A etapa de speedrun não mexe no rating: só a conclusão, com o bônus. A
+    // partida de um link de desafio também não: ela é para comparar, não para
+    // contar.
+    final result = game.speedrunAttemptId != null || !rated
         ? null
         : await _rating.rate(
             game,
@@ -200,8 +210,8 @@ class GameReporter {
           );
     return GameReport(
       next: next,
-      before: rated == null ? null : before,
-      after: rated?.rating,
+      before: result == null ? null : before,
+      after: result?.rating,
       feedback: [
         ...feedback,
         for (final achievement in earned)

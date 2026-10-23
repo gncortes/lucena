@@ -149,6 +149,46 @@ void main() {
     expect(training.filter, GoalFilter.draw);
   });
 
+  testWidgets('o cartão mostra os seis primeiros finais e quantos mais', (
+    tester,
+  ) async {
+    const subs = [
+      'pawnVsKing',
+      'pawnVsPawn',
+      'twoPawnsVsKing',
+      'twoPawnsVsPawn',
+      'twoPawnsVsTwoPawns',
+      'threePawnsVsTwoPawns',
+      'threePawnsVsThreePawns',
+      'fourPawnsVsThreePawns',
+    ];
+    await pump(
+      tester,
+      const CatalogScreen(),
+      locale: const Locale('pt'),
+      positions: [
+        for (final sub in subs)
+          EndgamePosition(
+            id: 'pawn.$sub.0001',
+            category: 'pawn',
+            subcategory: sub,
+            fen: '8/8/8/4k3/8/8/4P3/4K3 w - - 0 1',
+            goal: PositionGoal.win,
+          ),
+      ],
+    );
+
+    expect(find.text('Três peões contra dois peões'), findsOneWidget);
+    expect(find.text('Três peões contra três peões'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byKey(CatalogKeys.moreEndgames('pawn')),
+        matching: find.text('+2'),
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('a categoria mostra cada final já aberto, com as posições', (
     tester,
   ) async {

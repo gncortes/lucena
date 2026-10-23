@@ -1,3 +1,5 @@
+import '../../../domain/use_cases/clock_engine.dart';
+
 import 'dart:async';
 import 'dart:math';
 
@@ -149,7 +151,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   final Random _random;
 
   /// Com este tempo ou menos, o relógio avisa que está acabando.
-  static const lowTime = Duration(seconds: 10);
+  static const lowTime = ClockEngine.lowTime;
 
   // Os sons do jogo; nulo: o desafio fica mudo.
   final GameSounds? _sounds;

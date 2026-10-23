@@ -7,6 +7,7 @@ abstract final class HomeKeys {
   static const journeyButton = Key('home.journey');
   static const speedrunButton = Key('home.speedrun');
   static const catalogButton = Key('home.catalog');
+  static const raceButton = Key('home.race');
   static const schoolButton = Key('home.school');
   static const endgamesButton = Key('home.endgames');
   static const forYouButton = Key('home.forYou');
@@ -50,6 +51,15 @@ abstract final class HomeKeys {
 
   /// O cartão "onde estou": o degrau, o próximo desafio e o botão.
   static const whereCard = Key('home.where');
+
+  /// O cartão grande "Seu objetivo" (E1.11), o botão e o título dele.
+  static const goalCard = Key('home.goalCard');
+  static const goalTitle = Key('home.goalCard.title');
+  static const goalAction = Key('home.goalCard.action');
+
+  /// "Continuar de onde parou": o que está em andamento fora do objetivo.
+  static const resumeCard = Key('home.resumeCard');
+  static const resumeTitle = Key('home.resumeCard.title');
   static const whereTitle = Key('home.where.title');
   static const whereNext = Key('home.where.next');
   static const whereContinue = Key('home.where.continue');

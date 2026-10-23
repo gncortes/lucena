@@ -12,7 +12,6 @@ abstract final class LessonScriptKeys {
   static const coordinates = Key('lessonScript.coordinates');
   static const speech = Key('lessonScript.speech');
   static const characterBar = Key('lessonScript.characterBar');
-  static const soundButton = Key('lessonScript.soundButton');
 
   /// Ao lado do som: mostrar ou esconder as setas e os círculos.
   static const marksToggle = Key('lessonScript.marksToggle');

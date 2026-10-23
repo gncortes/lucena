@@ -15,13 +15,8 @@ abstract final class RatingKeys {
   /// O rating mais alto.
   static const highest = Key('rating.highest');
 
-  /// O ⓘ da barra do topo e a explicação do rating no painel que ele abre.
-  static const help = Key('rating.help');
-  static const helpText = Key('rating.help.text');
-
   static const emptyHistory = Key('rating.history.empty');
   static const emptyHistoryAction = Key('rating.history.empty.action');
-  static const loading = Key('rating.loading');
 
   /// Uma partida do histórico, da mais recente (0) para a mais antiga: o
   /// adversário, o resultado e, nas que contaram, o rating depois dela e

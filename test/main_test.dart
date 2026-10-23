@@ -1,4 +1,5 @@
-import 'package:lucena/ui/core/widgets/rating_sparkline.dart';
+import 'dart:math' as math;
+
 import 'package:lucena/ui/core/keys/history_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
@@ -11,7 +12,6 @@ import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
-import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
@@ -21,10 +21,23 @@ import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/domain/models/star_challenge.dart';
+import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
+import 'package:lucena/domain/models/challenge_link.dart';
+import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/ui/core/keys/challenge_keys.dart';
+import 'package:lucena/ui/core/keys/tour_keys.dart';
+
+import '../testing/fakes/fake_deep_link_service.dart';
+import '../testing/fakes/fake_onboarding_repository.dart';
+
+import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 
 import '../testing/fakes/fake_now.dart';
 import '../testing/fakes/fake_ongoing_game_repository.dart';
@@ -46,6 +59,8 @@ void main() {
     FakeNow? now,
     FakeOngoingGameRepository? games,
     FakeStarChallengeRepository? stars,
+    FakeDeepLinkService? links,
+    OnboardingRepository? onboarding,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -55,6 +70,10 @@ void main() {
           profileRepository: profile,
           ongoingGameRepository: games,
           starChallengeRepository: stars,
+          onboardingRepository: onboarding,
+          deepLinkRepository: links == null
+              ? null
+              : ServiceDeepLinkRepository(links),
         ),
       ),
     );
@@ -291,7 +310,11 @@ void main() {
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    final flying = tester.getSize(find.byType(StaticChessboard)).width;
+    // O maior tabuleiro: a miniatura do final do dia continua na home.
+    final flying = [
+      for (final board in find.byType(StaticChessboard).evaluate())
+        tester.getSize(find.byWidget(board.widget)).width,
+    ].reduce(math.max);
     expect(flying, greaterThan(small));
     expect(flying, lessThan(screen));
     expect(
@@ -323,14 +346,6 @@ void main() {
   testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
       'voltar cai na tela inicial', (tester) async {
     await pumpApp(tester);
-    // O gráfico saiu do cartão: fica na tela de detalhes.
-    expect(
-      find.descendant(
-        of: find.byKey(HomeKeys.playerCard),
-        matching: find.byType(RatingSparkline),
-      ),
-      findsNothing,
-    );
 
     await tester.tap(find.byKey(HomeKeys.playerCard));
     await tester.pumpAndSettle();
@@ -352,39 +367,32 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> pickLevel(WidgetTester tester, RatingLevel level) async {
-    await tester.tap(find.byKey(ProfileKeys.levelField));
+  Future<void> editNickname(WidgetTester tester, String text) async {
+    await tester.tap(find.byKey(ProfileKeys.editData));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(ProfileKeys.levelOption(level)));
-    await tester.tap(find.byKey(ProfileKeys.levelOption(level)));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(ProfileKeys.levelConfirmButton));
-    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(AccountKeys.nickname), text);
   }
 
-  testWidgets('salvar o perfil volta para Configurações com os dados novos', (
-    tester,
-  ) async {
+  testWidgets('salvar "Seus dados" volta ao Perfil e Configurações mostra o '
+      'apelido novo', (tester) async {
     useSystemLocale(tester, const Locale('en', 'US'));
     final profile = FakeProfileRepository();
     await pumpApp(tester, profile: profile);
     await openProfile(tester);
 
-    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Ana');
-    await pickLevel(tester, RatingLevel.advanced);
-    await tester.tap(find.byKey(ProfileKeys.saveButton));
+    await editNickname(tester, 'Ana');
+    await tester.tap(find.byKey(AccountKeys.dataSave));
     await tester.pumpAndSettle();
+    expect(find.byKey(ProfileKeys.screen), findsOneWidget);
+    expect(textOf(tester, ProfileKeys.headerName), 'Ana');
 
-    expect(find.byKey(ProfileKeys.screen), findsNothing);
-    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Advanced');
-    expect(profile.saved, [
-      UserProfile(nickname: 'Ana', rating: RatingLevel.advanced.rating),
-    ]);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(textOf(tester, SettingsKeys.profileName), 'Ana');
+    expect(profile.saved.last.nickname, 'Ana');
   });
 
-  testWidgets('editar o perfil e sair sem salvar não muda nada', (
-    tester,
-  ) async {
+  testWidgets('sair de "Seus dados" sem salvar não muda nada', (tester) async {
     useSystemLocale(tester, const Locale('en', 'US'));
     final profile = FakeProfileRepository(
       const UserProfile(nickname: 'Ana', rating: 1750),
@@ -392,21 +400,12 @@ void main() {
     await pumpApp(tester, profile: profile);
     await openProfile(tester);
 
-    await tester.enterText(find.byKey(ProfileKeys.nicknameField), 'Outro');
-    await pickLevel(tester, RatingLevel.beginner);
+    await editNickname(tester, 'Outro');
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
 
-    expect(textOf(tester, SettingsKeys.profileValue), 'Ana · Advanced');
-    expect(profile.saved, isEmpty);
-
-    await tester.tap(find.byKey(SettingsKeys.profileTile));
-    await tester.pumpAndSettle();
-    final nickname = tester.widget<TextField>(
-      find.byKey(ProfileKeys.nicknameField),
-    );
-    expect(nickname.controller!.text, 'Ana');
-    expect(textOf(tester, ProfileKeys.levelName), 'Advanced');
+    expect(textOf(tester, ProfileKeys.headerName), 'Ana');
+    expect(profile.profile.nickname, 'Ana');
   });
 
   testWidgets('o botão da tela inicial abre o tabuleiro livre', (tester) async {
@@ -476,7 +475,7 @@ void main() {
     });
 
     testWidgets('partida de que o jogador saiu: abre na tela inicial e o botão '
-        'continua a partida', (tester) async {
+        'pergunta antes de continuar a partida', (tester) async {
       final games = FakeOngoingGameRepository(
         const GameSnapshot(
           startFen: startFen,
@@ -492,6 +491,10 @@ void main() {
       await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(HomeKeys.freeBoardButton));
+      await tester.pumpAndSettle();
+      // A partida guardada: o aviso pergunta antes (decisão 1 do Gabriel).
+      expect(find.byKey(FreeBoardKeys.savedGameSheet), findsOneWidget);
+      await tester.tap(find.byKey(FreeBoardKeys.savedGameContinue));
       await tester.pumpAndSettle();
 
       expect(find.byKey(FreeBoardKeys.move(0)), findsOneWidget);
@@ -530,6 +533,118 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
     expect(find.byKey(CatalogKeys.categoryScreen), findsOneWidget);
+  });
+
+  group('desafio por link', () {
+    ChallengeLink challenge({bool locked = false}) => ChallengeLink(
+      fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+      userSide: Side.white,
+      opponent: OpponentKind.maia,
+      level: 1400,
+      clock: TimeControl.tryParse('300+0'),
+      locked: locked,
+    );
+
+    void phone(WidgetTester tester) {
+      tester.view.physicalSize = const Size(412, 917) * 3;
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('o app aberto pelo link fechado cai na tela do desafio, e '
+        'Jogar abre a partida com o mesmo relógio', (tester) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        links: FakeDeepLinkService(initial: challenge(locked: true).uri),
+      );
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+      expect(find.byKey(ChallengeKeys.lockedNote), findsOneWidget);
+      expect(find.text('5+0'), findsOneWidget);
+
+      await tester.tap(find.byKey(ChallengeKeys.play));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('o link aberto (sem trava) preenche a Nova partida', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        links: FakeDeepLinkService(initial: challenge().uri),
+      );
+      expect(find.byKey(GameSetupKeys.screen), findsOneWidget);
+      expect(find.byKey(ChallengeKeys.linkSetupSubtitle), findsOneWidget);
+    });
+
+    testWidgets('um link que chega com o app aberto abre o desafio por cima', (
+      tester,
+    ) async {
+      phone(tester);
+      final links = FakeDeepLinkService();
+      await pumpApp(tester, links: links);
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+      links.open(challenge(locked: true).uri);
+      await tester.pumpAndSettle();
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('QA cola o link nas Configurações e o desafio abre', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(tester);
+      await tester.tap(find.byKey(HomeKeys.settingsButton));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(SettingsKeys.openLinkTile));
+      await tester.tap(find.byKey(SettingsKeys.openLinkTile));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(SettingsKeys.openLinkField), 'lixo');
+      await tester.tap(find.byKey(SettingsKeys.openLinkConfirm));
+      await tester.pumpAndSettle();
+      expect(find.text('This is not a challenge link'), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(SettingsKeys.openLinkField),
+        challenge(locked: true).uri.toString(),
+      );
+      await tester.tap(find.byKey(SettingsKeys.openLinkConfirm));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('primeira abertura pelo link: o "Antes do desafio" vem antes '
+        'e o tour espera', (tester) async {
+      phone(tester);
+      final onboarding = FakeOnboardingRepository(const Onboarding());
+      await pumpApp(
+        tester,
+        onboarding: onboarding,
+        links: FakeDeepLinkService(initial: challenge(locked: true).uri),
+      );
+      expect(find.byKey(ChallengeKeys.setupScreen), findsOneWidget);
+      expect(find.byKey(TourKeys.screen), findsNothing);
+
+      await tester.tap(find.byKey(ChallengeKeys.setupPlay));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+      expect(onboarding.saved.linkSetupDone, isTrue);
+      expect(find.byKey(TourKeys.screen), findsNothing);
+    });
+
+    testWidgets('um link quebrado cai na tela inicial', (tester) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        links: FakeDeepLinkService(
+          initial: Uri.parse('https://playlucena.com/p/abcde?fen=lixo'),
+        ),
+      );
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
   });
 }
 

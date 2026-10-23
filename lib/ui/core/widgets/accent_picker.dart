@@ -7,6 +7,7 @@ import '../l10n/l10n.dart';
 import '../theme/app_accent_ui.dart';
 import '../theme/app_motion.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
 
 /// As cores do app em bolinhas, numa linha: a escolhida ganha o anel e a
 /// marca.
@@ -83,7 +84,7 @@ class _Dot extends StatelessWidget {
           duration: AppMotion.state,
           width: size,
           height: size,
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(AppSpacing.xs),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(

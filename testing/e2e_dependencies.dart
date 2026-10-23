@@ -1,5 +1,31 @@
+import 'dart:async';
+
+import 'fakes/fake_deep_link_service.dart';
+import 'fakes/fake_account_repository.dart';
+import 'fakes/fake_sync_repository.dart';
+import 'fakes/fake_avatar_repository.dart';
+import 'fakes/fake_analytics_repository.dart';
+import 'fakes/fake_mail_app_repository.dart';
+import 'fakes/fake_photo_repository.dart';
+import 'fakes/fake_chesscom_repository.dart';
+import 'fakes/fake_lichess_repository.dart';
+import 'fakes/fake_push_repository.dart';
+import 'fakes/fake_ads_service.dart';
+import 'fakes/fake_remote_flags_repository.dart';
+
+import 'package:lucena/data/repositories/ads/ads_repository.dart';
+import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+
+import 'package:lucena/data/repositories/activity/activity_repository.dart';
+import 'package:lucena/data/repositories/daily/daily_final_repository.dart';
+import 'package:lucena/data/repositories/endgames/endgame_progress_repository_notifying.dart';
+import 'package:lucena/data/repositories/deep_link/deep_link_repository.dart';
+
 import 'fakes/fake_position_judge.dart';
 import 'fakes/fake_blind_checkpoint_repository.dart';
+
+import 'package:lucena/data/repositories/alerts/alerts_repository.dart';
+import 'package:lucena/data/repositories/survey/survey_repository.dart';
 
 import 'dart:math';
 
@@ -11,6 +37,7 @@ import 'package:lucena/data/repositories/placement/placement_repository_local.da
 import 'package:lucena/data/repositories/conclusion/conclusion_repository_local.dart';
 import 'package:lucena/data/repositories/journey/journey_repository_asset.dart';
 import 'package:lucena/data/repositories/maia/maia_repository_device.dart';
+import 'package:lucena/data/repositories/race/race_repository_local.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository_maia.dart';
 import 'package:lucena/data/services/maia_service.dart';
@@ -72,6 +99,8 @@ import 'fakes/fake_speech_input_repository.dart';
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
+import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
+import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
 
 import 'fakes/fake_evaluation_repository.dart';
@@ -129,6 +158,11 @@ final e2eHaptics = FakeHapticsRepository();
 
 /// O que foi compartilhado (o menu do sistema não abre nos testes).
 final e2eShare = FakeShareRepository();
+final e2eDeepLinks = FakeDeepLinkService();
+
+/// Sem rede nos testes de ponta a ponta: o Lichess e o Chess.com são falsos.
+final e2eLichess = FakeLichessRepository();
+final e2eChessCom = FakeChessComRepository();
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
@@ -217,17 +251,49 @@ AppDatabase? _database;
 /// cenários de persistência (reiniciar o app e conferir o dado) valerem.
 ///
 /// Cada chamada fecha o banco da anterior e abre outro, como um app reaberto.
-Future<Dependencies> e2eDependencies() async {
+///
+/// Com [ads], o anúncio falso da E1.25 (desenhado pelo app, sem SDK) entra
+/// antes das aulas; sem ele, os outros cenários não veem anúncio.
+Future<Dependencies> e2eDependencies({bool ads = false}) async {
   await _database?.close();
   final database = _database = AppDatabase();
   final positions = AssetPositionsRepository(const AssetService());
   final lessons = AssetLessonRepository(const AssetService());
+  final progress = LocalProgressRepository(database);
+  final activity = LocalActivityRepository(
+    PreferencesService(),
+    progress,
+    e2eNow,
+  );
+  final flags = FakeRemoteFlagsRepository();
   return Dependencies(
     now: e2eNow,
+    remoteFlagsRepository: flags,
+    adsRepository: ads
+        ? ServiceAdsRepository(
+            service: FakeAdsService(),
+            preferences: PreferencesService(),
+            flags: flags,
+            purchases: const NoPurchaseRepository(),
+            now: e2eNow,
+          )
+        : const NoAdsRepository(),
     settingsRepository: LocalSettingsRepository(PreferencesService()),
     profileRepository: LocalProfileRepository(database),
     hapticsRepository: e2eHaptics,
     shareRepository: e2eShare,
+    deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
+    accountRepository: FakeAccountRepository(),
+    syncRepository: FakeSyncRepository(),
+    avatarRepository: FakeAvatarRepository(),
+    photoRepository: FakePhotoRepository(),
+    mailAppRepository: FakeMailAppRepository(),
+    // Patrol nunca manda nada (E1.03 §10).
+    analyticsRepository: e2eAnalytics,
+    lichessRepository: e2eLichess,
+    chessComRepository: e2eChessCom,
+    pushRepository: FakePushRepository(allowed: true),
+    alertsRepository: LocalAlertsRepository(PreferencesService()),
     placementRepository: LocalPlacementRepository(
       const AssetService(),
       PreferencesService(),
@@ -243,12 +309,19 @@ Future<Dependencies> e2eDependencies() async {
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
     maiaRepository: e2eMaia,
-    progressRepository: LocalProgressRepository(database),
+    progressRepository: progress,
     // A Jornada e os speedruns de verdade.
     journeyRepository: E2EJourneyRepository(
       AssetJourneyRepository(const AssetService(), positions),
     ),
     speedrunRepository: LocalSpeedrunRepository(database),
+    // Sem a oferta de aquecimento: os cenários seguem direto para a partida.
+    raceRepository: LocalRaceRepository(
+      const AssetService(),
+      PreferencesService(),
+      e2eNow,
+      offersWarmUpByDefault: false,
+    ),
     ratingRepository: LocalRatingRepository(
       database,
       maia: e2eMaia,
@@ -269,8 +342,9 @@ Future<Dependencies> e2eDependencies() async {
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: VisibleLessonRepository(lessons),
-    schoolProgressRepository: LocalSchoolProgressRepository(
-      PreferencesService(),
+    schoolProgressRepository: ActiveSchoolProgressRepository(
+      LocalSchoolProgressRepository(PreferencesService()),
+      activity,
     ),
     starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
     // Só as aulas liberadas, como no app (VisibleLessons).
@@ -281,8 +355,9 @@ Future<Dependencies> e2eDependencies() async {
     kpkRepository: AssetKpkRepository(const AssetService()),
     scriptTableRepository: AssetScriptTableRepository(const AssetService()),
     engineJudge: FakePositionJudge(),
-    endgameProgressRepository: LocalEndgameProgressRepository(
-      PreferencesService(),
+    endgameProgressRepository: NotifyingEndgameProgressRepository(
+      LocalEndgameProgressRepository(PreferencesService()),
+      () => unawaited(activity.markToday()),
     ),
     // As explicações de erro de verdade (o painel da lição V2).
     exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
@@ -297,8 +372,21 @@ Future<Dependencies> e2eDependencies() async {
     ),
     speechInputRepository: e2eSpeechInput,
     blindCheckpointRepository: FakeBlindCheckpointRepository(),
+    // Real: o rascunho e a resposta têm de sobreviver ao restart() do cenário.
+    surveyRepository: LocalSurveyRepository(PreferencesService(), e2eNow),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
+    featuredRepository: AssetFeaturedRepository(const AssetService()),
+    featuredProgressRepository: ActiveFeaturedProgressRepository(
+      LocalFeaturedProgressRepository(PreferencesService()),
+      activity,
+    ),
+    activityRepository: activity,
+    dailyFinalRepository: LocalDailyFinalRepository(
+      const AssetService(),
+      positions,
+      PreferencesService(),
+    ),
     languages: AppLanguage.values,
   );
 }
@@ -545,3 +633,6 @@ class _Version3 extends QueryExecutorUser {
     }
   }
 }
+
+/// O Analytics dos cenários Patrol: só anota, para a varredura de dado pessoal.
+final e2eAnalytics = FakeAnalyticsRepository();

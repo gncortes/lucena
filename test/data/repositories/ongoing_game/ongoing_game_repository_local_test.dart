@@ -2,6 +2,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_mode.dart';
 import 'package:lucena/domain/models/game_setup.dart';
@@ -63,6 +64,34 @@ void main() {
       expect(await reopen().load(), snapshot);
     },
   );
+
+  test('a partida de link volta com o desafio de origem', () async {
+    final link = ChallengeLink(
+      fen: startFen,
+      userSide: Side.white,
+      opponent: OpponentKind.maia,
+      level: 1600,
+      locked: true,
+      blind: true,
+    );
+    final snapshot = GameSnapshot(
+      startFen: startFen,
+      moves: const ['e2e4'],
+      mode: GameMode(
+        opponent: OpponentKind.maia,
+        level: 1600,
+        userSide: Side.white,
+        fromLink: true,
+        link: link,
+      ),
+    );
+    await reopen().save(snapshot);
+
+    final back = (await reopen().load())!;
+    expect(back, snapshot);
+    expect(back.mode.fromLink, isTrue);
+    expect(back.mode.link?.code, link.code);
+  });
 
   test('a partida sem relógio volta igual ao reabrir', () async {
     const snapshot = GameSnapshot(

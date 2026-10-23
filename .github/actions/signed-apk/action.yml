@@ -19,6 +19,12 @@ inputs:
   key-password:
     description: Senha da chave (segredo ANDROID_KEY_PASSWORD).
     required: true
+  google-services-json:
+    description: >
+      google-services.json do Firebase (segredo GOOGLE_SERVICES_JSON). Sem ele o APK sai
+      sem Firebase: sem conta, push nem perfil na nuvem (E1.02).
+    required: false
+    default: ''
 
 outputs:
   apk:
@@ -50,6 +56,31 @@ runs:
         mkdir -p "$RUNNER_TEMP/assinatura"
         printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/assinatura/upload.jks"
 
+    - name: Firebase
+      shell: bash
+      env:
+        GOOGLE_SERVICES_JSON: ${{ inputs.google-services-json }}
+      run: |
+        if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+          echo "::warning::Sem GOOGLE_SERVICES_JSON: o APK sai sem Firebase"
+          exit 0
+        fi
+        printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+        # Confere o conteúdo sem imprimir chave: projeto, pacote e cliente OAuth do login com Google.
+        python3 - <<'PY'
+        import json, sys
+        config = json.load(open('android/app/google-services.json'))
+        project = config['project_info']['project_id']
+        clients = [c for c in config['client']
+                   if c['client_info']['android_client_info']['package_name'] == 'com.gncortes.lucena']
+        oauth = [o for c in clients for o in c.get('oauth_client', [])]
+        android = sum(1 for o in oauth if o.get('client_type') == 1)
+        web = sum(1 for o in oauth if o.get('client_type') == 3)
+        print(f'Firebase: projeto {project}, app encontrado: {bool(clients)}, OAuth android {android}, web {web}')
+        if project != 'lucena-2f4de' or not clients or not android or not web:
+            sys.exit('::error::GOOGLE_SERVICES_JSON não é do lucena-2f4de ou está sem o OAuth do login com Google')
+        PY
+
     # As senhas só existem no ambiente deste passo; o build.gradle.kts lê as variáveis.
     - name: Build
       id: build
@@ -70,7 +101,7 @@ runs:
     - name: Apagar keystore
       if: always()
       shell: bash
-      run: rm -rf "$RUNNER_TEMP/assinatura"
+      run: rm -rf "$RUNNER_TEMP/assinatura" android/app/google-services.json
 
     - name: Conferir assinatura
       shell: bash

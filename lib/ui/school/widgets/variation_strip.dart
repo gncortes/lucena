@@ -303,7 +303,7 @@ class _VariationStripState extends State<VariationStrip> {
             ),
             if (widget.typing) ...[
               const SizedBox(height: AppSpacing.xs),
-              Divider(height: 1, thickness: 1, color: colors.outlineVariant),
+              Divider(),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
                 child: Align(
@@ -313,7 +313,7 @@ class _VariationStripState extends State<VariationStrip> {
               ),
             ] else if (text.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.xs),
-              Divider(height: 1, thickness: 1, color: colors.outlineVariant),
+              Divider(),
               const SizedBox(height: AppSpacing.sm),
               _Comment(
                 text: text,
@@ -838,7 +838,7 @@ class _StripRowState extends State<_StripRow> with TickerProviderStateMixin {
           },
           excludeSemantics: true,
           child: Padding(
-            padding: const EdgeInsetsDirectional.only(start: 6),
+            padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
             child: ConstrainedBox(
               key: _resultKey,
               constraints: const BoxConstraints(
@@ -1039,7 +1039,7 @@ class _MoveButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppShape.tiny),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
         // A medida do texto (o bloco e os 12 dp entre lances) é a dele, sem
         // a folga do fundo.
         child: KeyedSubtree(
@@ -1073,7 +1073,7 @@ class _MoveButton extends StatelessWidget {
               child: Padding(
                 // (4 + 2) + (2 + 4): 12 dp entre os textos (T69, canvas v3);
                 // os 2 de dentro são a folga do fundo do lance da vez.
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
                 child: Center(widthFactor: 1, child: text),
               ),
             ),

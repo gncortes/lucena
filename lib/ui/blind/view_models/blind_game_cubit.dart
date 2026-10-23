@@ -147,7 +147,6 @@ class BlindState {
     this.end,
     this.mic = MicPermission.unknown,
     this.offlineMissing = false,
-    this.showMoves = true,
     this.lastMove,
     this.proposal,
     this.tooShort = false,
@@ -157,7 +156,6 @@ class BlindState {
     this.illegal,
     this.illegalShown,
     this.selected,
-    this.typing = false,
     this.drawDeclines = 0,
     this.offeringDraw = false,
     this.white,
@@ -221,9 +219,6 @@ class BlindState {
   /// A casa de origem tocada no tabuleiro só com as casas.
   final Square? selected;
 
-  /// O jogador está digitando o lance (no lugar do microfone).
-  final bool typing;
-
   /// Quantas propostas de empate a máquina recusou (a tela avisa a cada uma).
   final int drawDeclines;
 
@@ -251,9 +246,6 @@ class BlindState {
 
   /// O idioma não tem reconhecimento sem internet no aparelho.
   final bool offlineMissing;
-
-  /// Os últimos lances em texto, embaixo (dá para esconder).
-  final bool showMoves;
 
   bool get ready => phase != BlindPhase.loading;
 
@@ -291,7 +283,6 @@ class BlindState {
     GameEnd? end,
     MicPermission? mic,
     bool? offlineMissing,
-    bool? showMoves,
     SanMove? Function()? proposal,
     bool? tooShort,
     List<double>? levels,
@@ -300,7 +291,6 @@ class BlindState {
     String? Function()? illegal,
     String? Function()? illegalShown,
     Square? Function()? selected,
-    bool? typing,
     int? drawDeclines,
     bool? offeringDraw,
     Duration? white,
@@ -329,7 +319,6 @@ class BlindState {
     end: end ?? this.end,
     mic: mic ?? this.mic,
     offlineMissing: offlineMissing ?? this.offlineMissing,
-    showMoves: showMoves ?? this.showMoves,
     proposal: proposal == null ? this.proposal : proposal(),
     tooShort: tooShort ?? this.tooShort,
     levels: levels ?? this.levels,
@@ -338,7 +327,6 @@ class BlindState {
     illegal: illegal == null ? this.illegal : illegal(),
     illegalShown: illegalShown == null ? this.illegalShown : illegalShown(),
     selected: selected == null ? this.selected : selected(),
-    typing: typing ?? this.typing,
     drawDeclines: drawDeclines ?? this.drawDeclines,
     offeringDraw: offeringDraw ?? this.offeringDraw,
     white: white ?? this.white,
@@ -553,8 +541,6 @@ class BlindGameCubit extends Cubit<BlindState> {
                     : state.phase)
                 .name,
         'view': state.view.name,
-        'showMoves': state.showMoves,
-        'typing': state.typing,
         'proposal': state.proposal?.move.uci,
         'options': [for (final option in state.options) option.move.uci],
         'illegal': state.illegal,
@@ -677,8 +663,6 @@ class BlindGameCubit extends Cubit<BlindState> {
         lastOpponent: lastOpponent,
         lastMove: lastMove,
         view: BlindView.values.byName(saved['view'] as String),
-        showMoves: saved['showMoves'] as bool,
-        typing: saved['typing'] as bool,
         proposal: proposal,
         options: options,
         illegal: saved['illegal'] as String?,
@@ -837,8 +821,6 @@ class BlindGameCubit extends Cubit<BlindState> {
 
   /// As medições, em JSON, para copiar para o relatório.
   Future<String> exportLog() => _log.export();
-
-  void toggleMoves() => emit(state.copyWith(showMoves: !state.showMoves));
 
   /// O microfone: a tela já explicou para que serve; agora o sistema pede.
   /// Negado, fica o toque no tabuleiro.
@@ -1158,9 +1140,6 @@ class BlindGameCubit extends Cubit<BlindState> {
     Role.bishop: 'B',
     Role.knight: 'N',
   };
-
-  /// Troca o microfone pelo campo de digitar o lance, e de volta.
-  void toggleTyping() => emit(state.copyWith(typing: !state.typing));
 
   /// O lance digitado (`Cf3`, `e2e4`, "cavalo f3"): joga direto; impossível,
   /// avisa; servindo para mais de uma peça, pergunta qual.

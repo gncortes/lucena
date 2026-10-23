@@ -51,6 +51,7 @@ jobs:
           keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          google-services-json: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
       - uses: ./.github/actions/app-distribution
         id: dist

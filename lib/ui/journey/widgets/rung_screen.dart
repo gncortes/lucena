@@ -9,6 +9,9 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
@@ -19,7 +22,8 @@ import '../view_models/journey_cubit.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 import '../../core/widgets/animated_progress.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/section_title.dart';
 
 /// Os desafios contra um adversário: o personagem com a frase dele e o
 /// progresso, o próximo desafio em destaque e todos os desafios em grade, com
@@ -63,7 +67,7 @@ class RungScreen extends StatelessWidget {
         ),
       ),
       body: rung == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const SkeletonList()
           : LayoutBuilder(
               builder: (context, constraints) => ListView(
                 padding: scrollPadding(context),
@@ -72,22 +76,25 @@ class RungScreen extends StatelessWidget {
                   if (teacher != null && reunion != null)
                     Card(
                       key: JourneyKeys.reunion,
-                      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      margin: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.sm,
+                        AppSpacing.lg,
+                        AppSpacing.sm,
+                      ),
                       color: colors.primaryContainer,
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(AppSpacing.lg),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               l10n.rungReunionTitle(teacher.name),
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: colors.onPrimaryContainer,
-                                  ),
+                              style: context.cardTitle?.copyWith(
+                                color: colors.onPrimaryContainer,
+                              ),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: AppSpacing.md),
                             TeacherSpeech(
                               speechContext: SpeechContext.teaching,
                               teacher: teacher,
@@ -99,12 +106,14 @@ class RungScreen extends StatelessWidget {
                       ),
                     ),
                   if (next != null) ...[
-                    _SectionTitle(l10n.journeyNextChallenge),
+                    SectionTitle(l10n.journeyNextChallenge),
                     _NextChallenge(rungId: rungId, challenge: next),
                   ],
-                  _SectionTitle(l10n.journeyAllChallenges),
+                  SectionTitle(l10n.journeyAllChallenges),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                    ),
                     child: Builder(
                       builder: (context) {
                         // Duas colunas no celular, três em tela larga; cada
@@ -140,7 +149,7 @@ class RungScreen extends StatelessWidget {
                   ),
                   // O mesmo final de outro jeito: às cegas. Vale como extra.
                   if (rung.rung.specials.isNotEmpty) ...[
-                    _SectionTitle(l10n.journeySpecialSection),
+                    SectionTitle(l10n.journeySpecialSection),
                     for (final special in rung.rung.specials)
                       _SpecialChallenge(
                         special: special,
@@ -175,12 +184,20 @@ class _SpecialChallenge extends StatelessWidget {
     final colors = theme.colorScheme;
     return Card(
       key: JourneyKeys.special(special.id),
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      color: open ? colors.tertiaryContainer : colors.surfaceContainerLow,
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        0,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
+      color: open ? colors.tertiaryContainer : null,
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         enabled: open,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm,
+        ),
         leading: Icon(
           !open
               ? Icons.lock_outline
@@ -191,17 +208,12 @@ class _SpecialChallenge extends StatelessWidget {
                 },
           color: open ? colors.onTertiaryContainer : colors.outline,
         ),
-        title: Text(
-          switch (special.mode) {
-            ChallengeMode.speedrun => l10n.journeySpecialSpeedrunTitle,
-            ChallengeMode.marathon => l10n.journeySpecialMarathonTitle,
-            _ =>
-              '${l10n.blindTitle} · ${endgameName(l10n, special.position.subcategory)}',
-          },
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        title: Text(switch (special.mode) {
+          ChallengeMode.speedrun => l10n.journeySpecialSpeedrunTitle,
+          ChallengeMode.marathon => l10n.journeySpecialMarathonTitle,
+          _ =>
+            '${l10n.blindTitle} · ${endgameName(l10n, special.position.subcategory)}',
+        }, style: context.cardTitle),
         subtitle: Text(switch (special.mode) {
           _ when !open && special.mode == ChallengeMode.blind =>
             l10n.journeySpecialLocked,
@@ -270,7 +282,12 @@ class _Header extends StatelessWidget {
     final done = rung.completed.length;
     return Padding(
       key: JourneyKeys.rungHeader,
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.sm,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -279,9 +296,12 @@ class _Header extends StatelessWidget {
               if (character != null) ...[
                 Hero(
                   tag: opponentHeroTag(rung.rung.id),
-                  child: CharacterAvatar(character: character, size: 80),
+                  child: CharacterAvatar(
+                    character: character,
+                    size: CharacterAvatar.versus,
+                  ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
               ],
               Expanded(
                 child: Column(
@@ -289,9 +309,7 @@ class _Header extends StatelessWidget {
                   children: [
                     Text(
                       opponentName(l10n, characters, opponent),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: context.bigNumber,
                     ),
                     if (opponent.level case final level?)
                       Text(
@@ -301,7 +319,7 @@ class _Header extends StatelessWidget {
                         ),
                       ),
                     if (tagline.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         '“$tagline”',
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -314,17 +332,13 @@ class _Header extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppShape.small),
-            child: AnimatedProgress(
-              value: total == 0 ? 0 : done / total,
-              minHeight: 10,
-              color: ChangeColors.of(context, up: true),
-              backgroundColor: colors.surfaceContainerHighest,
-            ),
+          const SizedBox(height: AppSpacing.lg),
+          AnimatedProgress(
+            value: total == 0 ? 0 : done / total,
+            role: ProgressRole.success,
+            backgroundColor: colors.surfaceContainerHighest,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             l10n.journeyRungProgress(done, total),
             key: JourneyKeys.rungProgress,
@@ -333,24 +347,6 @@ class _Header extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 8),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.titleMedium
-            ?.copyWith(fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -371,13 +367,13 @@ class _NextChallenge extends StatelessWidget {
     final position = challenge.position;
     return Card(
       key: JourneyKeys.nextChallenge,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       color: colors.secondaryContainer,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _openChallenge(context, rungId, challenge),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             children: [
               PositionBoard(
@@ -385,20 +381,19 @@ class _NextChallenge extends StatelessWidget {
                 size: 120,
                 heroTag: challengeBoardTag(challenge.id),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       endgameName(l10n, position.subcategory),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                      style: context.cardTitle?.copyWith(
                         color: colors.onSecondaryContainer,
                       ),
                     ),
                     _GoalIfSpecial(goal: position.goal),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     FilledButton.icon(
                       key: JourneyKeys.nextChallengePlay,
                       icon: const Icon(Icons.play_arrow_rounded),
@@ -452,9 +447,7 @@ class _ChallengeCell extends StatelessWidget {
       children: [
         Text(
           endgameName(l10n, position.subcategory),
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
+          style: theme.textTheme.titleSmall,
         ),
         _GoalIfSpecial(goal: position.goal),
       ],
@@ -473,16 +466,16 @@ class _GoalIfSpecial extends StatelessWidget {
     if (goal == PositionGoal.win) return const SizedBox.shrink();
     final style = GoalStyle.of(context, goal);
     return Padding(
-      padding: const EdgeInsets.only(top: 2),
+      padding: const EdgeInsets.only(top: AppSpacing.xs),
       child: Row(
         children: [
-          Icon(style.icon, size: 14, color: style.color),
-          const SizedBox(width: 4),
+          Icon(style.icon, size: AppIconSize.small, color: style.color),
+          const SizedBox(width: AppSpacing.xs),
           Flexible(
             child: Text(
               goalLabel(context.l10n, goal),
               style: Theme.of(context).textTheme.bodySmall
-                  ?.copyWith(color: style.color, fontWeight: FontWeight.w600),
+                  ?.copyWith(color: style.color),
             ),
           ),
         ],

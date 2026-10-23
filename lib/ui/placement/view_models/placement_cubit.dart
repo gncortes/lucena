@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
@@ -9,6 +12,7 @@ import '../../../data/repositories/placement/placement_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/placement.dart';
@@ -133,7 +137,10 @@ class PlacementCubit extends Cubit<PlacementViewState> {
     this._endgames,
     this._endgameProgress,
     this.language = 'en',
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const PlacementViewState());
+
+  final AnalyticsRepository _analytics;
 
   final LessonRepository? _school;
   final SchoolProgressRepository? _schoolProgress;
@@ -157,6 +164,9 @@ class PlacementCubit extends Cubit<PlacementViewState> {
 
   // Quando a pergunta apareceu (o tempo de resposta).
   DateTime? _shownAt;
+
+  // Quando o teste começou nesta abertura (o `tempo_s` do fim).
+  DateTime? _startedAt;
 
   /// Abre a abertura do teste, oferecendo continuar o que ficou pela metade.
   Future<void> load() async {
@@ -194,6 +204,7 @@ class PlacementCubit extends Cubit<PlacementViewState> {
       );
       await _placement.saveOngoing(test);
     }
+    _startedAt ??= _now();
     _show(test);
   }
 
@@ -224,6 +235,16 @@ class PlacementCubit extends Cubit<PlacementViewState> {
     if (isClosed) return;
     if (next.isFinished) {
       final result = engine.result(next, takenAt: _now());
+      final started = _startedAt;
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.testeNivelFim(
+            resultado: 'concluido',
+            rating: result.theta,
+            tempo: started == null ? null : _now().difference(started),
+          ),
+        ),
+      );
       await _placement.saveResult(result);
       await _placement.clearOngoing();
       final (roadmap, titles) = await _roadmap(result);
@@ -244,8 +265,8 @@ class PlacementCubit extends Cubit<PlacementViewState> {
 
   /// Leva o resultado para o perfil: o rating vira o estimado (o Glicko
   /// ajusta rápido nas primeiras partidas) e a Jornada começa no degrau
-  /// mais perto dele. [level], se o intervalo cruza duas faixas e o jogador
-  /// escolheu uma.
+  /// igual ou abaixo dele. [level], se o intervalo cruza duas faixas e o
+  /// jogador escolheu uma.
   Future<void> apply({RatingLevel? level}) async {
     final result = state.result;
     if (result == null) return;
@@ -258,7 +279,7 @@ class PlacementCubit extends Cubit<PlacementViewState> {
     if (onboarding != null) {
       final saved = await onboarding.load();
       await onboarding.save(
-        saved.copyWith(startRung: '${MaiaLevels.nearest(rating)}'),
+        saved.copyWith(startRung: '${MaiaLevels.atOrBelow(rating)}'),
       );
     }
     if (!isClosed) emit(state.copyWith(applied: true));

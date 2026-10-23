@@ -4,112 +4,205 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../config/dependencies.dart';
+import '../../../data/repositories/account/account_repository.dart';
+import '../../../domain/models/account.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../../routing/routes.dart';
+import '../../alerts/view_models/alerts_cubit.dart';
+import '../../analytics/widgets/version_footer.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../core/widgets/section_title.dart';
+import '../../goal/widgets/goal_ui.dart';
 import '../../profile/view_models/profile_cubit.dart';
-import '../../profile/widgets/rating_level_ui.dart';
+import '../../profile/widgets/profile_rows.dart';
+import 'open_link_dialog.dart';
 
-/// O menu principal das Configurações: o perfil e os grupos (aparência,
-/// partida, som), cada um com a sua tela, e o "Sobre".
+/// As Configurações (canvas `PropV1ConfigB`): a pessoa no alto, que abre o
+/// Perfil, e o que é do app em seções; a versão no fim.
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key, this.version = appVersion});
+  const SettingsScreen({super.key, this.version = ''});
 
-  /// A versão do app, no rodapé, para quem relata um problema. Vazia (build
-  /// local, sem versão): não aparece.
+  /// A versão do app, no rodapé, para quem relata um problema. Vazia: não
+  /// aparece.
   final String version;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final profile = context.select((ProfileCubit cubit) => cubit.state);
     return Scaffold(
       key: SettingsKeys.screen,
       appBar: LucenaAppBar(
         title: Text(l10n.settingsTitle, key: SettingsKeys.title),
       ),
       body: ListView(
-        padding: scrollPadding(context),
+        padding: scrollPadding(
+          context,
+          left: AppSpacing.screen,
+          top: AppSpacing.sm,
+          right: AppSpacing.screen,
+        ),
         children: [
-          ListTile(
-            key: SettingsKeys.profileTile,
-            leading: const Icon(Icons.person_outline),
-            title: Text(l10n.settingsProfile),
-            subtitle: Text(
-              profile == null ? '' : _profileSummary(context, profile),
-              key: SettingsKeys.profileValue,
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.settingsProfile),
+          const _PersonRow(),
+          SectionTitle(l10n.settingsSectionApp, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
+              _Group(
+                tileKey: SettingsKeys.appearanceTile,
+                icon: Icons.palette_outlined,
+                title: l10n.settingsAppearance,
+                hint: l10n.settingsAppearanceHint,
+                route: Routes.settingsAppearance,
+              ),
+              _Group(
+                tileKey: SettingsKeys.gameTile,
+                icon: Icons.sports_esports_outlined,
+                title: l10n.settingsGame,
+                hint: l10n.settingsGameHint,
+                route: Routes.settingsGame,
+              ),
+              _Group(
+                tileKey: SettingsKeys.soundTile,
+                icon: Icons.volume_up_outlined,
+                title: l10n.settingsSoundGroup,
+                hint: l10n.settingsSoundGroupHint,
+                route: Routes.settingsSound,
+              ),
+              const _AlertsGroup(),
+            ],
           ),
-          const Divider(indent: 16, endIndent: 16),
-          _Group(
-            tileKey: SettingsKeys.appearanceTile,
-            icon: Icons.palette_outlined,
-            title: l10n.settingsAppearance,
-            hint: l10n.settingsAppearanceHint,
-            route: Routes.settingsAppearance,
+          SectionTitle(l10n.settingsSectionHelp, inset: AppSpacing.xs),
+          ProfileRowGroup(
+            children: [
+              _Group(
+                tileKey: SettingsKeys.aboutTile,
+                icon: Icons.info_outline,
+                title: l10n.settingsAbout,
+                hint: l10n.settingsAboutHint,
+                route: Routes.settingsAbout,
+              ),
+              // Só em build de desenvolvimento e de teste.
+              if (showsDevTools)
+                ProfileRow(
+                  key: SettingsKeys.maiaDebugTile,
+                  icon: Icons.bug_report_outlined,
+                  title: l10n.maiaDebugTitle,
+                  onTap: () => context.go(Routes.settingsMaia),
+                ),
+              if (showsDevTools)
+                ProfileRow(
+                  key: SettingsKeys.openLinkTile,
+                  icon: Icons.link,
+                  title: l10n.devOpenLinkTitle,
+                  onTap: () => showOpenLinkDialog(context),
+                ),
+            ],
           ),
-          _Group(
-            tileKey: SettingsKeys.gameTile,
-            icon: Icons.sports_esports_outlined,
-            title: l10n.settingsGame,
-            hint: l10n.settingsGameHint,
-            route: Routes.settingsGame,
-          ),
-          _Group(
-            tileKey: SettingsKeys.soundTile,
-            icon: Icons.volume_up_outlined,
-            title: l10n.settingsSoundGroup,
-            hint: l10n.settingsSoundGroupHint,
-            route: Routes.settingsSound,
-          ),
-          const Divider(indent: 16, endIndent: 16),
-          _Group(
-            tileKey: SettingsKeys.aboutTile,
-            icon: Icons.info_outline,
-            title: l10n.settingsAbout,
-            hint: l10n.settingsAboutHint,
-            route: Routes.settingsAbout,
-          ),
-          // Só em build de desenvolvimento e de teste.
-          if (showsDevTools)
-            ListTile(
-              key: SettingsKeys.maiaDebugTile,
-              leading: const Icon(Icons.bug_report_outlined),
-              title: Text(l10n.maiaDebugTitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.go(Routes.settingsMaia),
-            ),
           if (version.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
-              child: Text(
-                l10n.homeVersion(version),
-                key: SettingsKeys.version,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
+              padding: const EdgeInsets.only(top: AppSpacing.lg),
+              child: VersionFooter(version: version),
             ),
         ],
       ),
     );
   }
-
-  /// "Apelido · faixa", com o apelido padrão quando o jogador não escolheu um.
-  String _profileSummary(BuildContext context, UserProfile profile) {
-    final nickname = profile.nickname.isEmpty
-        ? context.l10n.profileNicknameDefault
-        : profile.nickname;
-    return '$nickname · ${profile.level.name(context.l10n)}';
-  }
 }
 
-/// Um grupo do menu: abre a tela dele.
+/// A pessoa no alto: avatar, nome e "Sem conta · objetivo · rating". Abre o
+/// Perfil.
+class _PersonRow extends StatelessWidget {
+  const _PersonRow();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final profile = context.select((ProfileCubit cubit) => cubit.state);
+    final accounts = context.read<AccountRepository>();
+    return StreamBuilder<Account?>(
+      stream: accounts.changes,
+      initialData: accounts.current,
+      builder: (context, snapshot) {
+        final account = snapshot.data;
+        final nickname = profile?.nickname ?? '';
+        final name = nickname.isNotEmpty
+            ? nickname
+            : account?.name ?? l10n.profileNicknameDefault;
+        return Material(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(AppShape.large),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            key: SettingsKeys.profileTile,
+            onTap: () => context.go(Routes.settingsProfile),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.md,
+              ),
+              child: Row(
+                children: [
+                  AccountAvatar(
+                    name: name,
+                    color: profile?.avatarColor ?? 0,
+                    photoUrl: avatarPhotoUrl(profile, account),
+                    size: 48,
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          key: SettingsKeys.profileName,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Text(
+                          profile == null
+                              ? ''
+                              : _summary(l10n, profile, account),
+                          key: SettingsKeys.profileValue,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// "Sem conta · Aprender finais · 1712" (com conta, o e-mail no lugar).
+  static String _summary(
+    AppLocalizations l10n,
+    UserProfile profile,
+    Account? account,
+  ) => [
+    account == null ? l10n.profileNoAccount : account.email ?? account.name,
+    ?profile.goal?.title(l10n),
+    '${profile.rating}',
+  ].nonNulls.where((part) => part.isNotEmpty).join(' · ');
+}
+
+/// Um grupo das Configurações: abre a tela dele.
 class _Group extends StatelessWidget {
   const _Group({
     required this.tileKey,
@@ -126,14 +219,29 @@ class _Group extends StatelessWidget {
   final String route;
 
   @override
+  Widget build(BuildContext context) => ProfileRow(
+    key: tileKey,
+    icon: icon,
+    title: title,
+    value: hint,
+    onTap: () => context.go(route),
+  );
+}
+
+/// Avisos, com quantas chaves estão ligadas.
+class _AlertsGroup extends StatelessWidget {
+  const _AlertsGroup();
+
+  @override
   Widget build(BuildContext context) {
-    return ListTile(
-      key: tileKey,
-      leading: Icon(icon),
-      title: Text(title),
-      subtitle: Text(hint),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () => context.go(route),
+    final l10n = context.l10n;
+    final state = context.watch<AlertsCubit>().state;
+    return _Group(
+      tileKey: SettingsKeys.alertsTile,
+      icon: Icons.notifications_outlined,
+      title: l10n.alertsTitle,
+      hint: l10n.alertsCount(state.enabled, state.total),
+      route: Routes.alerts,
     );
   }
 }

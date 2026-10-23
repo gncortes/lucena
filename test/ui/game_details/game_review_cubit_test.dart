@@ -342,7 +342,7 @@ void main() {
     await cubit.load();
     cubit.last();
 
-    await cubit.toggleEngine();
+    await cubit.setEngine(on: !cubit.state.engine);
     expect(cubit.state.engine, isTrue);
     expect(cubit.state.shownLines, hasLength(3));
 
@@ -351,7 +351,7 @@ void main() {
     expect(cubit.state.engineLines.keys, containsAll([-1, 1]));
     expect(analysis.requests, contains(start));
 
-    await cubit.toggleEngine();
+    await cubit.setEngine(on: !cubit.state.engine);
     expect(cubit.state.engine, isFalse);
   });
 

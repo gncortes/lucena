@@ -16,9 +16,6 @@ abstract final class RatingRules {
   /// Desvio do adversário equivalente: o modelo é preciso, mas não exato.
   static const opponentDeviation = 60.0;
 
-  /// O rating atribuído ao Stockfish.
-  static const stockfishRating = 3000;
-
   /// O quanto o adversário equivalente sobe quando ele é o Stockfish.
   static const stockfishBonus = 400;
 

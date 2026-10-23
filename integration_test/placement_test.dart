@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
-import 'package:lucena/ui/core/keys/placement_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
-import 'package:lucena/ui/core/keys/tour_keys.dart';
-import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -25,10 +24,7 @@ void main() {
     final placement = PlacementRobot($);
     await app.open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
-    expect(
-      find.byKey(TourKeys.levelOption(TourLevelChoice.test)),
-      findsOneWidget,
-    );
+    expect(find.byKey(LevelKeys.option(LevelChoice.test)), findsOneWidget);
 
     await tour.takeTest();
     await placement.expectIntro();
@@ -37,10 +33,10 @@ void main() {
     await placement.dontKnow(5);
     await placement.expectQuestion(6);
 
-    // Fechar à força no meio: volta ao passo do nível, e o teste continua
-    // na mesma pergunta.
+    // Fechar à força no meio: a primeira abertura volta em "Seu nível" (só
+    // ele a fecha), e o teste continua na mesma pergunta.
     await app.restart();
-    await tour.expectStep(TourStep.level);
+    await $(LevelKeys.screen).waitUntilVisible();
     await tour.takeTest();
     await placement.expectIntro();
     await placement.resume();
@@ -50,21 +46,8 @@ void main() {
     await placement.expectResult();
     await placement.useLevel();
 
-    await tour.expectStep(TourStep.level);
+    await $(LevelKeys.screen).waitUntilVisible();
     await tour.start();
-  });
-
-  patrolTest('no teste, "prefiro informar meu rating" volta ao tour com a '
-      'folha das faixas', ($) async {
-    final tour = TourRobot($);
-    final placement = PlacementRobot($);
-    await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.nextUntilLevel();
-    await tour.takeTest();
-    await placement.expectIntro();
-    await $(PlacementKeys.chooseByHand).scrollTo().tap();
-    await $.pumpAndSettle();
-    await $(ProfileKeys.levelSheet).waitUntilVisible();
   });
 
   patrolTest('perfil: refazer o teste; a escola e a trilha de finais passam '
@@ -83,7 +66,7 @@ void main() {
 
     await HomeRobot($).openSettings();
     await ProfileRobot($).open();
-    await $(ProfileKeys.placementTest).scrollTo().tap();
+    await ProfileRobot($).openPlacement();
     await placement.expectIntro();
     await placement.start();
     await placement.dontKnow(20);

@@ -1,5 +1,9 @@
 import '../../../domain/models/explanation.dart';
 
+import '../../../domain/models/ads_state.dart';
+import '../../core/ads/lesson_gate.dart';
+import '../../core/theme/app_chip.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,12 +18,15 @@ import '../../../domain/models/speedrun_pace.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -28,6 +35,8 @@ import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'endgame_ui.dart';
 import 'stars_row.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/section_title.dart';
 
 /// Uma aula de final em três partes: a lição, os exercícios com as estrelas
 /// e, liberado pela nota, o final de verdade (speedrun ou treino).
@@ -131,12 +140,7 @@ class _Body extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              texts.lessonTitle(lesson.id),
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            Text(texts.lessonTitle(lesson.id), style: context.screenTitle),
             const SizedBox(height: AppSpacing.xs),
             // O progresso das etapas; as estrelas e a meta ficam no teste.
             Text(
@@ -163,13 +167,13 @@ class _Body extends StatelessWidget {
                 speaks: true,
               ),
             ],
-            _Section(title: l10n.endgameLessonPartLesson),
+            SectionTitle(l10n.endgameLessonPartLesson),
             if (state.allPartsDone)
               Row(
                 children: [
                   Icon(
                     Icons.check_circle,
-                    size: 18,
+                    size: AppIconSize.button,
                     color: theme.colorScheme.primary,
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -202,9 +206,9 @@ class _Body extends StatelessWidget {
                 done: done.contains(part.id),
                 recommended: recommended?.id == part.id,
               ),
-            _Section(title: l10n.endgameFinalTest),
+            SectionTitle(l10n.endgameFinalTest),
             _FinalTest(state: state, lesson: lesson),
-            _Section(title: l10n.endgameChallengeTitle),
+            SectionTitle(l10n.endgameChallengeTitle),
             _FinalCard(state: state, lesson: lesson),
           ],
         ),
@@ -236,33 +240,32 @@ class _InReview extends StatelessWidget {
     final foreground = failed
         ? colors.onErrorContainer
         : colors.onSecondaryContainer;
-    return Container(
+    return Card(
       key: failed ? EndgameLessonKeys.reviewFailed : EndgameLessonKeys.inReview,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppShape.medium),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            failed ? Icons.cancel_outlined : Icons.rate_review_outlined,
-            size: 18,
-            color: foreground,
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              failed
-                  ? context.l10n.endgameLessonFailed
-                  : context.l10n.endgameLessonInReview,
-              style: theme.textTheme.bodySmall?.copyWith(color: foreground),
+      color: background,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              failed ? Icons.cancel_outlined : Icons.rate_review_outlined,
+              size: AppIconSize.button,
+              color: foreground,
             ),
-          ),
-        ],
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                failed
+                    ? context.l10n.endgameLessonFailed
+                    : context.l10n.endgameLessonInReview,
+                style: theme.textTheme.bodySmall?.copyWith(color: foreground),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -270,31 +273,6 @@ class _InReview extends StatelessWidget {
 
 /// A altura do botão "Continuar" fixo embaixo, com a margem.
 const _continueHeight = 80.0;
-
-class _Section extends StatelessWidget {
-  const _Section({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.xs,
-        AppSpacing.xl,
-        AppSpacing.xs,
-        AppSpacing.sm,
-      ),
-      child: Text(
-        title,
-        style: theme.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
 
 /// Uma parte da lição: número, título, resumo, tempo e estado. A
 /// recomendada fica em destaque, com "Começar" ou "Continuar"; as outras
@@ -330,12 +308,15 @@ class _PartTile extends StatelessWidget {
       Routes.endgameLessonScript(
         lesson.id,
         part: lesson.lesson.parts.isEmpty ? null : part.id,
+        stage: ongoing && lesson.lesson.parts.isNotEmpty
+            ? state.ongoingStep
+            : 0,
       ),
     );
     return Card(
       key: EndgameLessonKeys.part(part.id),
-      margin: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      color: recommended ? colors.primaryContainer : colors.surfaceContainerLow,
+      margin: const EdgeInsets.only(bottom: AppSpacing.betweenCards),
+      color: recommended ? colors.primaryContainer : null,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: open,
@@ -355,8 +336,8 @@ class _PartTile extends StatelessWidget {
                         : colors.surfaceContainerHighest,
                     child: done
                         ? Icon(
-                            Icons.check_circle,
-                            size: 16,
+                            Icons.check_rounded,
+                            size: AppIconSize.small,
                             color: colors.onPrimary,
                           )
                         : Text(
@@ -373,8 +354,8 @@ class _PartTile extends StatelessWidget {
                     child: Text(
                       title,
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
                         color: recommended ? colors.onPrimaryContainer : null,
+                        fontWeight: AppWeight.strong,
                       ),
                     ),
                   ),
@@ -453,8 +434,7 @@ class _FinalTestState extends State<_FinalTest> {
     final motion = AppMotion.of(context);
     return Card(
       key: EndgameLessonKeys.finalTest,
-      margin: EdgeInsets.zero,
-      color: ready ? colors.secondaryContainer : colors.surfaceContainerLow,
+      color: ready ? colors.secondaryContainer : null,
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -474,7 +454,7 @@ class _FinalTestState extends State<_FinalTest> {
                         backgroundColor: colors.primary,
                         child: Icon(
                           Icons.quiz_outlined,
-                          size: 20,
+                          size: AppIconSize.button,
                           color: colors.onPrimary,
                         ),
                       ),
@@ -485,9 +465,7 @@ class _FinalTestState extends State<_FinalTest> {
                           children: [
                             Text(
                               l10n.endgameTestCount(state.exerciseCount),
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: context.cardTitle,
                             ),
                             Text(
                               // Um retorno, sem a conta da nota mínima.
@@ -514,7 +492,6 @@ class _FinalTestState extends State<_FinalTest> {
                         Text(
                           '${state.score}/$max',
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
@@ -584,7 +561,6 @@ class _ContinueBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final background = Theme.of(context).scaffoldBackgroundColor;
     final part = state.recommendedPart;
     final exercise = state.nextExercise;
     final practice = lesson.practice;
@@ -592,15 +568,14 @@ class _ContinueBar extends StatelessWidget {
     final VoidCallback onPressed;
     if (part != null) {
       final number = lesson.lesson.sections.indexOf(part) + 1;
-      // A parte começada (passou do primeiro passo) recomeça do início, como
-      // ao fechar o app; sem nada feito, a aula começa; senão, segue para a
+      // A parte começada é retomada na etapa em que o aluno saiu (decisão 4
+      // do Gabriel); sem nada feito, a aula começa; senão, segue para a
       // próxima parte.
-      final resume =
-          state.lessonOngoing &&
-          state.ongoingStep > 0 &&
-          (lesson.lesson.parts.isEmpty || state.ongoingPart == part.id);
+      final resume = lesson.lesson.parts.isEmpty
+          ? state.lessonOngoing && state.ongoingStep > 0
+          : state.ongoingPart == part.id;
       label = resume
-          ? l10n.endgameRestartPart(number)
+          ? l10n.endgameResumePart(number)
           : state.partsDone.isEmpty
           ? l10n.endgameStartLesson
           : l10n.endgameNextPart(number);
@@ -608,6 +583,9 @@ class _ContinueBar extends StatelessWidget {
         Routes.endgameLessonScript(
           lesson.id,
           part: lesson.lesson.parts.isEmpty ? null : part.id,
+          stage: resume && lesson.lesson.parts.isNotEmpty
+              ? state.ongoingStep
+              : 0,
         ),
       );
     } else if (exercise != null) {
@@ -625,34 +603,15 @@ class _ContinueBar extends StatelessWidget {
         ),
       );
     }
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [background.withValues(alpha: 0), background],
-          stops: const [0, 0.35],
+    return ActionsFooter(
+      fade: true,
+      children: [
+        FilledButton(
+          key: EndgameLessonKeys.continueButton,
+          onPressed: onPressed,
+          child: Text(label),
         ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screen,
-            AppSpacing.xl,
-            AppSpacing.screen,
-            AppSpacing.md,
-          ),
-          child: FilledButton(
-            key: EndgameLessonKeys.continueButton,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
-            ),
-            onPressed: onPressed,
-            child: Text(label),
-          ),
-        ),
-      ),
+      ],
     );
   }
 }
@@ -683,7 +642,7 @@ class _ExercisesCard extends StatelessWidget {
               earned: state.starsOf(exercise.id),
               isNext: next?.id == exercise.id,
             ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         // Sem nada resolvido, só o botão de começar, no estilo do botão fixo
         // da tela.
         if (state.solved == 0 && next != null)
@@ -691,6 +650,7 @@ class _ExercisesCard extends StatelessWidget {
             key: EndgameLessonKeys.startExercises,
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(kButtonHeight),
+              textStyle: AppButtonText.footer(context),
             ),
             icon: const Icon(Icons.play_arrow_rounded),
             label: Text(l10n.endgameExercisesStart),
@@ -701,14 +661,13 @@ class _ExercisesCard extends StatelessWidget {
           // A nota: as estrelas ganhas sobre o total, e o mínimo.
           Card(
             key: EndgameLessonKeys.score,
-            margin: EdgeInsets.zero,
             color: state.allSolved
                 ? (state.passed
                       ? colors.primaryContainer
                       : colors.errorContainer)
-                : colors.surfaceContainerLow,
+                : null,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -720,9 +679,7 @@ class _ExercisesCard extends StatelessWidget {
                       key: state.passed
                           ? EndgameLessonKeys.passed
                           : EndgameLessonKeys.failed,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.cardTitle,
                     ),
                   // Em andamento, só quantos faltam; os pontos contam no
                   // fim, com todos resolvidos.
@@ -736,10 +693,10 @@ class _ExercisesCard extends StatelessWidget {
                       ),
                       key: EndgameLessonKeys.testSolved,
                     ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
                     children: [
                       if (next != null)
                         FilledButton.icon(
@@ -793,8 +750,8 @@ class _ExerciseTile extends StatelessWidget {
     final lessonId = context.read<EndgameLessonCubit>().state.lesson!.id;
     return Card(
       key: EndgameLessonKeys.exercise(exercise.id),
-      margin: const EdgeInsets.symmetric(vertical: 3),
-      color: isNext ? colors.surfaceContainerHigh : colors.surfaceContainerLow,
+      margin: const EdgeInsets.only(bottom: AppSpacing.betweenCards),
+      color: isNext ? colors.secondaryContainer : null,
       clipBehavior: Clip.antiAlias,
       child: ListTile(
         onTap: () => context.push(
@@ -807,7 +764,6 @@ class _ExerciseTile extends StatelessWidget {
           child: PositionBoard(
             fen: exercise.fen,
             size: 56,
-            radius: 4,
             heroTag: exerciseHeroTag(lessonId, exercise.id),
           ),
         ),
@@ -854,110 +810,123 @@ class _FinalCardState extends State<_FinalCard> {
     final speedrun = state.speedrun;
     return Card(
       key: EndgameLessonKeys.finalStep,
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerLow,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Tocar a miniatura abre o final: ela voa até a preparação.
-                InkWell(
-                  key: EndgameLessonKeys.finalBoard,
-                  borderRadius: BorderRadius.circular(AppShape.small),
-                  onTap: () => context.push(
-                    Routes.setup(
-                      practice.fen,
-                      goal: practice.goal.code,
-                      position: practice.positionId,
+      child: ChipSurface(
+        color: theme.cardTheme.color ?? colors.surfaceContainerLow,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Tocar a miniatura abre o final: ela voa até a preparação.
+                  InkWell(
+                    key: EndgameLessonKeys.finalBoard,
+                    borderRadius: BorderRadius.circular(AppShape.small),
+                    onTap: () => context.push(
+                      Routes.setup(
+                        practice.fen,
+                        goal: practice.goal.code,
+                        position: practice.positionId,
+                      ),
+                    ),
+                    child: PositionBoard(
+                      fen: practice.fen,
+                      size: 96,
+                      heroTag: setupBoardTag(
+                        positionId: practice.positionId,
+                        fen: practice.fen,
+                      ),
                     ),
                   ),
-                  child: PositionBoard(
-                    fen: practice.fen,
-                    size: 96,
-                    radius: 6,
-                    heroTag: setupBoardTag(
-                      positionId: practice.positionId,
-                      fen: practice.fen,
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: LinkedText(
+                      state.texts.say('${lesson.id}.practice') ?? '',
+                      style: theme.textTheme.bodyMedium,
                     ),
+                  ),
+                ],
+              ),
+              if (speedrun != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  l10n.endgameSpeedrunBody,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: LinkedText(
-                    state.texts.say('${lesson.id}.practice') ?? '',
-                    style: theme.textTheme.bodyMedium,
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    for (final time in SpeedrunPaces.all)
+                      ChoiceChip(
+                        materialTapTargetSize: AppChip.tapTarget,
+                        visualDensity: AppChip.density,
+                        // O ícone do ritmo já marca o chip: sem o check por cima.
+                        showCheckmark: false,
+                        key: EndgameLessonKeys.pace(time.code),
+                        avatar: Icon(
+                          paceIcon(PaceCategory.of(time)),
+                          size: AppIconSize.small,
+                        ),
+                        label: Text(paceShort(l10n, time)),
+                        selected: time == _pace,
+                        onSelected: (_) => setState(() => _pace = time),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                FilledButton.icon(
+                  key: EndgameLessonKeys.speedrunButton,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(kButtonHeight),
+                    textStyle: AppButtonText.footer(context),
+                  ),
+                  icon: const Icon(Icons.timer_outlined),
+                  label: Text(l10n.endgameSpeedrunChallenge),
+                  onPressed: () => context.push(
+                    Routes.speedrun(SpeedrunPaces.idFor(speedrun.id, _pace)),
                   ),
                 ),
               ],
-            ),
-            if (speedrun != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                l10n.endgameSpeedrunBody,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  for (final time in SpeedrunPaces.all)
-                    ChoiceChip(
-                      key: EndgameLessonKeys.pace(time.code),
-                      avatar: Icon(paceIcon(PaceCategory.of(time)), size: 16),
-                      showCheckmark: false,
-                      label: Text(paceShort(l10n, time)),
-                      selected: time == _pace,
-                      onSelected: (_) => setState(() => _pace = time),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              FilledButton.icon(
-                key: EndgameLessonKeys.speedrunButton,
-                style: FilledButton.styleFrom(
+              const SizedBox(height: AppSpacing.sm),
+              OutlinedButton.icon(
+                key: EndgameLessonKeys.trainButton,
+                style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(kButtonHeight),
+                  textStyle: AppButtonText.footer(context),
                 ),
-                icon: const Icon(Icons.timer_outlined),
-                label: Text(l10n.endgameSpeedrunChallenge),
+                icon: const Icon(Icons.fitness_center),
+                label: Text(l10n.endgameTrain),
                 onPressed: () => context.push(
-                  Routes.speedrun(SpeedrunPaces.idFor(speedrun.id, _pace)),
+                  Routes.setup(
+                    practice.fen,
+                    goal: practice.goal.code,
+                    position: practice.positionId,
+                  ),
                 ),
               ),
-            ],
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              key: EndgameLessonKeys.trainButton,
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              icon: const Icon(Icons.fitness_center),
-              label: Text(l10n.endgameTrain),
-              onPressed: () => context.push(
-                Routes.setup(
-                  practice.fen,
-                  goal: practice.goal.code,
-                  position: practice.positionId,
+              if (state.nextLesson case final next?) ...[
+                const SizedBox(height: AppSpacing.sm),
+                TextButton.icon(
+                  key: EndgameLessonKeys.nextLessonButton,
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  label: Text(l10n.lessonNext(state.texts.lessonTitle(next))),
+                  onPressed: () => LessonGate.open(
+                    context,
+                    lessonId: next,
+                    kind: LessonKind.endgame,
+                    open: () =>
+                        context.pushReplacement(Routes.endgameLesson(next)),
+                  ),
                 ),
-              ),
-            ),
-            if (state.nextLesson case final next?) ...[
-              const SizedBox(height: 8),
-              TextButton.icon(
-                key: EndgameLessonKeys.nextLessonButton,
-                icon: const Icon(Icons.arrow_forward_rounded),
-                label: Text(l10n.lessonNext(state.texts.lessonTitle(next))),
-                onPressed: () =>
-                    context.pushReplacement(Routes.endgameLesson(next)),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

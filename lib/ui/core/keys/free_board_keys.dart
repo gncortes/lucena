@@ -13,6 +13,12 @@ abstract final class FreeBoardKeys {
   static const title = Key('freeBoard.title');
   static const drawSheet = Key('freeBoard.draw.sheet');
   static const drawConfirmButton = Key('freeBoard.draw.confirm');
+
+  /// O aviso de partida guardada, antes de abrir o tabuleiro livre.
+  static const savedGameSheet = Key('freeBoard.saved.sheet');
+  static const savedGameCard = Key('freeBoard.saved.card');
+  static const savedGameContinue = Key('freeBoard.saved.continue');
+  static const savedGameNew = Key('freeBoard.saved.new');
   static const confirmationClose = Key('freeBoard.confirmation.close');
 
   /// "Continuar jogando" nas folhas de desistir e de empate.
@@ -31,10 +37,6 @@ abstract final class FreeBoardKeys {
   static const speedrunQuitConfirm = Key('freeBoard.speedrun.quit.confirm');
   static const speedrunQuitCancel = Key('freeBoard.speedrun.quit.cancel');
   static const speedrunQuitSheet = Key('freeBoard.speedrun.quit.sheet');
-
-  /// Rever a partida: um lance para trás e um para a frente.
-  static const movePrevious = Key('freeBoard.moves.previous');
-  static const moveNext = Key('freeBoard.moves.next');
 
   static const flipButton = Key('freeBoard.flip');
 

@@ -11,13 +11,16 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/figurine.dart';
-import '../../core/widgets/goal_style.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {
@@ -35,7 +38,7 @@ class CatalogScreen extends StatelessWidget {
           const GoalFilterBar(),
           Expanded(
             child: categories == null
-                ? const Center(child: CircularProgressIndicator())
+                ? const SkeletonList()
                 : ListView(
                     padding: scrollPadding(context, left: 16, right: 16),
                     children: [
@@ -74,21 +77,27 @@ class _CategoryCard extends StatelessWidget {
   /// Quantas posições da categoria já tiveram o objetivo cumprido.
   final int done;
 
+  /// Quantos finais o cartão mostra pelo nome; os outros viram "+N".
+  static const _shownEndgames = 6;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = context.l10n;
     final total = category.count(GoalFilter.all);
+    final subcategories = [
+      for (final sub in category.subcategories)
+        if (sub.count(filter) > 0) sub,
+    ];
     return Card(
       key: CatalogKeys.category(category.key),
-      margin: const EdgeInsets.only(bottom: 12),
-      color: colors.surfaceContainerLow,
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => context.go(Routes.catalogCategory(category.key)),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -102,7 +111,7 @@ class _CategoryCard extends StatelessWidget {
                       color: colors.primaryContainer,
                       borderRadius: BorderRadius.circular(AppShape.large),
                     ),
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     child: ExcludeSemantics(
                       // Duas peças (♖♙) cabem lado a lado, menores.
                       child: FittedBox(
@@ -120,7 +129,7 @@ class _CategoryCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,11 +137,9 @@ class _CategoryCard extends StatelessWidget {
                         Text(
                           categoryName(l10n, category.key),
                           key: CatalogKeys.categoryName(category.key),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: context.cardTitle,
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.xs),
                         Row(
                           children: [
                             Flexible(
@@ -148,7 +155,7 @@ class _CategoryCard extends StatelessWidget {
                             // Por onde começar: o selo da dificuldade.
                             if (EndgameDifficulty.ofCategory(category)
                                 case final difficulty?) ...[
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.sm),
                               _DifficultyBadge(
                                 key: CatalogKeys.difficulty(category.key),
                                 difficulty: difficulty,
@@ -162,43 +169,30 @@ class _CategoryCard extends StatelessWidget {
                   const Icon(Icons.chevron_right),
                 ],
               ),
-              const SizedBox(height: 12),
-              // Os finais da categoria, pelo nome.
+              const SizedBox(height: AppSpacing.md),
+              // Os primeiros finais da categoria, pelo nome, e quantos mais.
               Wrap(
-                spacing: 6,
-                runSpacing: 6,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [
-                  for (final sub in category.subcategories)
-                    if (sub.count(filter) > 0)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colors.secondaryContainer,
-                          borderRadius: BorderRadius.circular(AppShape.medium),
-                        ),
-                        child: Text(
-                          endgameName(l10n, sub.key),
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: colors.onSecondaryContainer,
-                          ),
-                        ),
+                  for (final sub in subcategories.take(_shownEndgames))
+                    InfoChip(label: endgameName(l10n, sub.key)),
+                  if (subcategories.length > _shownEndgames)
+                    InfoChip(
+                      key: CatalogKeys.moreEndgames(category.key),
+                      label: l10n.catalogMoreEndgames(
+                        subcategories.length - _shownEndgames,
                       ),
+                    ),
                 ],
               ),
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppShape.small),
-                child: AnimatedProgress(
-                  value: total == 0 ? 0 : done / total,
-                  minHeight: 6,
-                  color: ChangeColors.of(context, up: true),
-                  backgroundColor: colors.surfaceContainerHighest,
-                ),
+              const SizedBox(height: AppSpacing.md),
+              AnimatedProgress(
+                value: total == 0 ? 0 : done / total,
+                role: ProgressRole.success,
+                backgroundColor: colors.surfaceContainerHighest,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 l10n.catalogDone(done, total),
                 key: CatalogKeys.categoryDone(category.key),
@@ -231,21 +225,10 @@ class _DifficultyBadge extends StatelessWidget {
       SpeedrunCategory.intermediate => l10n.profileLevelIntermediate,
       SpeedrunCategory.advanced => l10n.profileLevelAdvanced,
     };
-    final background = colors.secondaryContainer;
-    final foreground = colors.onSecondaryContainer;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppShape.medium),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
+    return InfoChip(
+      label: label,
+      background: colors.secondaryContainer,
+      foreground: colors.onSecondaryContainer,
     );
   }
 }

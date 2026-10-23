@@ -140,7 +140,7 @@ class _ContainerNavigationState extends State<ContainerNavigation> {
     return OpenContainer<void>(
       tappable: false,
       closedColor: widget.color,
-      openColor: Theme.of(context).colorScheme.surface,
+      openColor: Theme.of(context).scaffoldBackgroundColor,
       closedElevation: 0,
       openElevation: 0,
       closedShape: widget.shape,

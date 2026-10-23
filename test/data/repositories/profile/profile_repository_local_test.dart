@@ -4,6 +4,9 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/services/database/app_database.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/level_source.dart';
+import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 
 void main() {
@@ -38,6 +41,175 @@ void main() {
     await reopen((repository) => repository.save(profile));
 
     expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o objetivo gravado volta ao reabrir', () async {
+    const profile = UserProfile(
+      nickname: 'Ana',
+      rating: 1450,
+      goal: GoalPreference.train,
+    );
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('a origem do rating e as contas voltam ao reabrir', () async {
+    const profile = UserProfile(
+      rating: 1712,
+      levelSource: LevelSource.lichess,
+      lichessUser: 'ana_xadrez',
+      chessComUser: 'ana_cc',
+    );
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o avatar e o país voltam ao reabrir', () async {
+    const profile = UserProfile(
+      nickname: 'Ana',
+      avatarColor: 3,
+      photo: AvatarPhoto.upload,
+      photoUrl: 'https://storage.test/users/u/avatar.jpg',
+      country: 'BR',
+    );
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o estado e a cidade voltam ao reabrir', () async {
+    const profile = UserProfile(country: 'BR', state: 'PR', city: 'Curitiba');
+    await reopen((repository) => repository.save(profile));
+
+    expect(await reopen((repository) => repository.load()), profile);
+  });
+
+  test('o perfil da versão 11 volta sem estado nem cidade', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, goal TEXT NULL, level_source '
+              'TEXT NULL, lichess_user TEXT NULL, chess_com_user TEXT NULL, '
+              'avatar_color INTEGER NOT NULL DEFAULT 0, google_photo INTEGER '
+              'NOT NULL DEFAULT 0, country TEXT NULL, PRIMARY KEY (id))',
+            )
+            ..execute(
+              'INSERT INTO profiles (id, nickname, rating, country) '
+              "VALUES (1, 'Ana', 1712, 'BR')",
+            )
+            ..execute('PRAGMA user_version = 11');
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    expect(
+      await LocalProfileRepository(database).load(),
+      const UserProfile(nickname: 'Ana', rating: 1712, country: 'BR'),
+    );
+  });
+
+  test('o perfil da versão 10 volta com o avatar padrão e sem país', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, goal TEXT NULL, level_source '
+              'TEXT NULL, lichess_user TEXT NULL, chess_com_user TEXT NULL, '
+              'PRIMARY KEY (id))',
+            )
+            ..execute(
+              'INSERT INTO profiles (id, nickname, rating, lichess_user) '
+              "VALUES (1, 'Ana', 1712, 'ana_xadrez')",
+            )
+            ..execute('PRAGMA user_version = 10');
+        },
+      ),
+    );
+    addTearDown(database.close);
+
+    expect(
+      await LocalProfileRepository(database).load(),
+      const UserProfile(
+        nickname: 'Ana',
+        rating: 1712,
+        lichessUser: 'ana_xadrez',
+      ),
+    );
+  });
+
+  test('o perfil da versão 9 volta sem origem nem contas', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, goal TEXT NULL, PRIMARY KEY (id))',
+            )
+            ..execute(
+              'INSERT INTO profiles (id, nickname, rating, goal) '
+              "VALUES (1, 'Ana', 1650, 'train')",
+            )
+            ..execute('PRAGMA user_version = 9');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    final repository = LocalProfileRepository(database);
+
+    expect(
+      await repository.load(),
+      const UserProfile(
+        nickname: 'Ana',
+        rating: 1650,
+        goal: GoalPreference.train,
+      ),
+    );
+    await repository.save(
+      const UserProfile(nickname: 'Ana', levelSource: LevelSource.manual),
+    );
+    expect((await repository.load()).levelSource, LevelSource.manual);
+  });
+
+  test('o perfil de antes do objetivo (versão 8) volta sem objetivo', () async {
+    final database = AppDatabase(
+      NativeDatabase.memory(
+        setup: (raw) {
+          raw
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, PRIMARY KEY (id))',
+            )
+            ..execute(
+              "INSERT INTO profiles (id, nickname, rating) VALUES (1, 'Ana', 1650)",
+            )
+            ..execute('PRAGMA user_version = 8');
+        },
+      ),
+    );
+    addTearDown(database.close);
+    final repository = LocalProfileRepository(database);
+
+    expect(
+      await repository.load(),
+      const UserProfile(nickname: 'Ana', rating: 1650),
+    );
+    await repository.save(
+      const UserProfile(
+        nickname: 'Ana',
+        rating: 1650,
+        goal: GoalPreference.learn,
+      ),
+    );
+    expect((await repository.load()).goal, GoalPreference.learn);
   });
 
   test('gravar de novo substitui o perfil anterior', () async {

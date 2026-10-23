@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../theme/app_chip.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 
@@ -22,11 +23,6 @@ class BoardViewport extends StatelessWidget {
   static double usefulHeightOf(BuildContext context) =>
       MediaQuery.sizeOf(context).height -
       MediaQuery.viewPaddingOf(context).vertical;
-
-  /// Centro nas coordenadas do body seguro. Para uma área que começa abaixo
-  /// de uma faixa local, subtraia somente a altura medida dessa faixa.
-  static double centerYOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_BoardViewportData>()!.centerY;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -667,19 +663,23 @@ class BoardOptionsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final surface = Theme.of(context).colorScheme.surfaceContainerLow;
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      color: surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppShape.extraLarge),
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Expanded(child: child),
-          ?footer,
-        ],
+      child: ChipSurface(
+        color: surface,
+        child: Column(
+          children: [
+            Expanded(child: child),
+            ?footer,
+          ],
+        ),
       ),
     );
   }

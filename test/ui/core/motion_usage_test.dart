@@ -19,67 +19,8 @@ void main() {
   // Arquivo → trechos permitidos, cada um com o motivo.
   const exceptions = <String, Map<String, String>>{
     'lib/ui/core/theme/app_motion.dart': {'': 'os próprios tokens'},
-    'lib/ui/free_board/widgets/free_board_screen.dart': {
-      'Timer.periodic(const Duration(milliseconds: 100)':
-          'relógio da partida: tempo de jogo',
-      'duration: const Duration(milliseconds: 1400)':
-          'coreografia do cartão do resultado (sai na frente B)',
-      'total = Duration(milliseconds: 1600)': 'selo de fim: 200 + 1200 + 200',
-      '_reducedFade = Duration(milliseconds: 150)':
-          'selo de fim com movimento reduzido',
-      'const Duration(milliseconds: 1200)': 'pico do selo de fim',
-    },
-    'lib/ui/free_board/widgets/character_bar.dart': {
-      'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
-      'Duration(milliseconds: math.max(6000, widget.text.length * 60))':
-          'tempo disponível para ler a fala flutuante antes de ocultá-la',
-    },
-    'lib/ui/core/widgets/character_speech.dart': {
-      'perLetter = Duration(milliseconds: 28)': 'ritmo de leitura da fala',
-    },
-    'lib/ui/core/widgets/teacher_speech.dart': {
-      'Duration(milliseconds: (_length': 'ritmo de leitura da fala',
-    },
-    'lib/ui/endgames/widgets/exercise_screen.dart': {
-      'duration: const Duration(milliseconds: 1100)':
-          'tempo para ler o lance errado em vermelho',
-      'Timer.periodic(const Duration(milliseconds: 250)':
-          'cronômetro do exercício: tempo, não animação',
-    },
-    'lib/ui/home/widgets/home_screen.dart': {
-      'duration: const Duration(milliseconds: 1400)':
-          'coreografia da entrada da tela inicial',
-    },
-    'lib/ui/core/widgets/celebration.dart': {
-      'duration = Duration(milliseconds: 1600)': 'coreografia do confete',
-    },
-    'lib/ui/core/widgets/versus_intro.dart': {
-      'duration = Duration(milliseconds: 4600)':
-          'coreografia do versus com a contagem',
-      'shortDuration = Duration(milliseconds: 2000)':
-          'coreografia do versus sem contagem',
-    },
-    'lib/ui/achievements/widgets/achievement_toast.dart': {
-      'duration = Duration(milliseconds: 3800)':
-          'tempo do aviso de conquista na tela',
-    },
-    'lib/ui/blind/widgets/blind_game_screen.dart': {
-      'minHold = Duration(milliseconds: 350)':
-          'toque longo do microfone: gesto, não animação',
-    },
-    'lib/ui/core/widgets/viktor_sheet.dart': {
-      'Duration(milliseconds: (2000 + 50 * length)':
-          'tempo de leitura da folha aberta sozinha: tempo, não animação',
-    },
-    'lib/ui/core/widgets/skeleton.dart': {
-      'sweep = Duration(milliseconds: 1400)': 'volta contínua do brilho',
-    },
-    'lib/ui/core/widgets/typing_dots.dart': {
-      'cycle = Duration(milliseconds: 1200)':
-          'ciclo dos pontinhos de digitando',
-      'stagger = Duration(milliseconds: 150)': 'defasagem entre os pontinhos',
-      'MediaQuery.disableAnimationsOf(context)':
-          'sem animação os pontinhos ficam parados, não só mais curtos',
+    'lib/ui/level/widgets/level_chess_screen.dart': {
+      '_pause = Duration(': 'pausa da digitação antes de buscar o usuário',
     },
   };
 

@@ -58,6 +58,23 @@ void main() {
     },
   );
 
+  test('o "Antes do desafio" feito persiste ao reabrir', () async {
+    final repository = LocalOnboardingRepository(PreferencesService());
+    await repository.save(const Onboarding(linkSetupDone: true));
+    final loaded = await LocalOnboardingRepository(PreferencesService()).load();
+    expect(loaded.linkSetupDone, isTrue);
+    expect(loaded.done, isFalse);
+  });
+
+  test('a tela da primeira abertura volta ao reabrir', () async {
+    final repository = LocalOnboardingRepository(PreferencesService());
+    expect((await repository.load()).stage, OnboardingStage.tour);
+    await repository.save(const Onboarding(stage: OnboardingStage.goal));
+    final loaded = await LocalOnboardingRepository(PreferencesService()).load();
+    expect(loaded.stage, OnboardingStage.goal);
+    expect(loaded.done, isFalse);
+  });
+
   test('done legado não exige novo onboarding nem infere escolha', () async {
     final preferences = PreferencesService();
     await preferences.setBool('tour.done', value: true);
@@ -83,8 +100,8 @@ void main() {
       expect(await migrated(null), 0);
       expect(await migrated('3'), 0);
       expect(await migrated('11'), 0);
-      expect(await migrated('12'), 5);
-      expect(await migrated('13'), 5);
+      expect(await migrated('12'), 4);
+      expect(await migrated('13'), 4);
     },
   );
 

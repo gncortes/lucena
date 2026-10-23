@@ -476,9 +476,9 @@ void main() {
               final chipHeight = tester
                   .getRect(find.byKey(SpeedrunKeys.paceChip))
                   .height;
-              // 28 em fonte 1,0; em 2,0 o texto maior cresce a caixa.
-              expect(chipHeight, greaterThanOrEqualTo(28 - 1));
-              if (scale == 1) expect(chipHeight, closeTo(28, 1));
+              // 32 em fonte 1,0; em 2,0 o texto maior cresce a caixa.
+              expect(chipHeight, greaterThanOrEqualTo(32 - 1));
+              if (scale == 1) expect(chipHeight, closeTo(32, 1));
               expect(
                 find.descendant(
                   of: find.byKey(SpeedrunKeys.paceChip),

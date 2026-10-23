@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/game_setup.dart';
-import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/ui/profile/view_models/rating_cubit.dart';
 
 import '../../../../testing/fakes/fake_achievements_repository.dart';
@@ -17,24 +16,6 @@ import '../../../../testing/fakes/fake_speedrun_repository.dart';
 
 void main() {
   final at = DateTime.utc(2026, 10, 5);
-  RatingEntry entry(double rating) => RatingEntry(
-    rating: PlayerRating(rating: rating),
-    at: at,
-  );
-
-  test('a variação é a da última partida', () {
-    final state = RatingState(
-      current: const PlayerRating(rating: 626),
-      history: [entry(1100), entry(889.4), entry(626.2)],
-    );
-    expect(state.lastChange, -263);
-  });
-
-  test('sem duas partidas, sem variação', () {
-    expect(const RatingState().lastChange, isNull);
-    expect(RatingState(history: [entry(1100)]).lastChange, isNull);
-  });
-
   group('com o histórico das partidas', () {
     Attempt game(AttemptOutcome outcome) => Attempt(
       positionId: 'basic.queen.0001',
@@ -113,7 +94,6 @@ void main() {
       final numbers = cubit.state.numbers!;
       expect(numbers.stats.games, 4);
       expect(numbers.stats.wins, 3);
-      expect(numbers.stats.streakDays, 1);
       expect(numbers.achievementsUnlocked, 0);
       expect(numbers.achievementsTotal, greaterThan(0));
       expect(numbers.bestSpeedrun, const Duration(minutes: 1));

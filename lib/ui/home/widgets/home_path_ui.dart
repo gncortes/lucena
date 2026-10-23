@@ -17,6 +17,7 @@ extension HomePathUi on HomePath {
     HomePath.endgames => Icons.auto_stories_outlined,
     HomePath.speedrun => Icons.timer_outlined,
     HomePath.train => Icons.grid_view_rounded,
+    HomePath.race => Icons.extension,
   };
 
   String title(AppLocalizations l10n) => switch (this) {
@@ -26,6 +27,7 @@ extension HomePathUi on HomePath {
     HomePath.endgames => l10n.homeEndgames,
     HomePath.speedrun => l10n.homeSpeedrun,
     HomePath.train => l10n.homeTrain,
+    HomePath.race => l10n.homeRace,
   };
 
   /// O texto para o nível [level] (sem nível, o de quem começa).
@@ -44,6 +46,7 @@ extension HomePathUi on HomePath {
       (HomePath.forYou, _) => l10n.homeForYouBody,
       (HomePath.endgames, _) => l10n.homeEndgamesBody,
       (HomePath.train, _) => l10n.homeTrainBody,
+      (HomePath.race, _) => l10n.homeRaceBody,
     };
   }
 
@@ -54,6 +57,7 @@ extension HomePathUi on HomePath {
     HomePath.endgames => Routes.endgamesFiltered(forYou: false),
     HomePath.speedrun => Routes.speedruns,
     HomePath.train => Routes.catalog,
+    HomePath.race => Routes.race,
   };
 
   /// A key do cartão na tela inicial (a mesma de antes de dar para
@@ -65,5 +69,6 @@ extension HomePathUi on HomePath {
     HomePath.endgames => HomeKeys.endgamesButton,
     HomePath.speedrun => HomeKeys.speedrunButton,
     HomePath.train => HomeKeys.catalogButton,
+    HomePath.race => HomeKeys.raceButton,
   };
 }

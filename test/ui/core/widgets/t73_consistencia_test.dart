@@ -50,7 +50,7 @@ void main() {
     expect(find.byType(Text), findsOneWidget);
   });
 
-  testWidgets('D1: com relógio, sem anel; o relógio aceso leva borda primária '
+  testWidgets('D1: com relógio, sem anel; o relógio aceso leva borda onSurface '
       'de 2 px', (tester) async {
     await pumpRow(tester, time: const Duration(minutes: 3));
     expect(find.byKey(ringKey), findsNothing);
@@ -66,7 +66,7 @@ void main() {
     expect(border.top.width, 2);
     expect(
       border.top.color,
-      Theme.of(tester.element(find.byType(GameClock))).colorScheme.primary,
+      Theme.of(tester.element(find.byType(GameClock))).colorScheme.onSurface,
     );
   });
 

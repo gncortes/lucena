@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import 'star_challenge_ui.dart';
 
 /// O placar das estrelas sob o tabuleiro, o mesmo no convite, jogando e no
@@ -25,23 +26,22 @@ class StarScoreboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
+    return Card(
       key: StarChallengeKeys.scoreboard,
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: starCardColor(theme),
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        children: [
-          for (final kind in StarKind.values.reversed) ...[
-            Expanded(
-              child: _KindCounter(kind: kind, count: counts[kind] ?? 0),
-            ),
-            const SizedBox(width: AppSpacing.xs),
+      color: starCardColor(theme),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Row(
+          children: [
+            for (final kind in StarKind.values.reversed) ...[
+              Expanded(
+                child: _KindCounter(kind: kind, count: counts[kind] ?? 0),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+            ],
+            _Total(points: points),
           ],
-          _Total(points: points),
-        ],
+        ),
       ),
     );
   }
@@ -83,7 +83,7 @@ class _KindCounter extends StatelessWidget {
                 child: Icon(
                   Icons.star_rounded,
                   color: starColor(kind),
-                  size: 28,
+                  size: AppIconSize.large,
                 ),
               ),
               const SizedBox(width: AppSpacing.xs),
@@ -93,8 +93,8 @@ class _KindCounter extends StatelessWidget {
                   '$value',
                   key: StarChallengeKeys.kindCount(kind.name),
                   style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: AppWeight.heavy,
                     height: 28 / 22,
-                    fontWeight: FontWeight.w800,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
@@ -126,47 +126,46 @@ class _Total extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: colors.primaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.medium),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _Fit(
-            child: _Pop(
-              value: points,
-              child: _Count(
+    return Card(
+      color: colors.primaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _Fit(
+              child: _Pop(
                 value: points,
-                builder: (value) => Text(
-                  '$value',
-                  key: StarChallengeKeys.collected,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    height: 28 / 22,
-                    color: colors.onPrimaryContainer,
-                    fontWeight: FontWeight.w800,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+                child: _Count(
+                  value: points,
+                  builder: (value) => Text(
+                    '$value',
+                    key: StarChallengeKeys.collected,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: AppWeight.heavy,
+                      height: 28 / 22,
+                      color: colors.onPrimaryContainer,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          _Fit(
-            child: Text(
-              context.l10n.starChallengePointsLabel(points),
-              style: theme.textTheme.labelMedium?.copyWith(
-                height: 16 / 12,
-                color: colors.onPrimaryContainer,
+            _Fit(
+              child: Text(
+                context.l10n.starChallengePointsLabel(points),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  height: 16 / 12,
+                  color: colors.onPrimaryContainer,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -113,41 +113,64 @@ class EndgameProgressMigration {
     'convert',
   };
 
+  /// A lição de torre (T79): manteve o id, mas os capítulos e os exercícios
+  /// mudaram (nenhum capítulo antigo tem o nome de um novo).
+  static const lucenaId = 'rook.lucena';
+
+  /// Os capítulos dela depois da T79.
+  static const lucenaChapters = {
+    'ponte',
+    'corte',
+    'lateral',
+    'chegar',
+    'convert',
+  };
+
+  /// As lições que mantiveram o id com capítulos novos, e os capítulos delas.
+  static const _reshaped = {queenId: queenChapters, lucenaId: lucenaChapters};
+
   /// Os exercícios da lição no formato antigo (os novos têm outro nome).
-  static final _queenOldExercise = RegExp(r'^e\d\d$');
+  static final _oldExercise = RegExp(r'^e\d\d$');
 
-  /// Aplica as migrações (T74, T76, T77 e T78); devolve o mesmo objeto se não
-  /// há o que mudar.
+  /// Aplica as migrações (T74, T76, T77, T78 e T79); devolve o mesmo objeto
+  /// se não há o que mudar.
   static EndgameProgress apply(EndgameProgress progress) =>
-      _queen(_removed(_chapters(_split(progress))));
+      _reshaped.entries.fold(
+        _removed(_chapters(_split(progress))),
+        (progress, e) => _reshape(progress, e.key, e.value),
+      );
 
-  /// T78: na [queenId], saem os capítulos e os exercícios do formato antigo
-  /// (fica o `philidor`), e com eles a lição concluída e aprovada; a lição
-  /// aberta num capítulo que saiu fecha.
-  static EndgameProgress _queen(EndgameProgress progress) {
-    final old = progress.lessons[queenId];
+  /// T78 e T79: na lição [id], saem os capítulos que não estão em
+  /// [chapters] e os exercícios do formato antigo, e com eles a lição
+  /// concluída e aprovada; a lição aberta num capítulo que saiu fecha.
+  static EndgameProgress _reshape(
+    EndgameProgress progress,
+    String id,
+    Set<String> chapters,
+  ) {
+    final old = progress.lessons[id];
     final checkpoint = progress.ongoing;
     final ongoing =
-        checkpoint?.lessonId == queenId &&
+        checkpoint?.lessonId == id &&
         checkpoint?.part != null &&
-        !queenChapters.contains(checkpoint?.part);
+        !chapters.contains(checkpoint?.part);
     final stale =
         old != null &&
-        (old.parts.any((part) => !queenChapters.contains(part)) ||
-            old.stars.keys.any(_queenOldExercise.hasMatch) ||
-            _queenOldExercise.hasMatch(old.exercise?.exerciseId ?? ''));
+        (old.parts.any((part) => !chapters.contains(part)) ||
+            old.stars.keys.any(_oldExercise.hasMatch) ||
+            _oldExercise.hasMatch(old.exercise?.exerciseId ?? ''));
     if (!stale && !ongoing) return progress;
     return progress.copyWith(
       lessons: {
         ...progress.lessons,
         if (stale)
-          queenId: EndgameLessonProgress(
-            parts: old.parts.intersection(queenChapters),
+          id: EndgameLessonProgress(
+            parts: old.parts.intersection(chapters),
             stars: {
               for (final e in old.stars.entries)
-                if (!_queenOldExercise.hasMatch(e.key)) e.key: e.value,
+                if (!_oldExercise.hasMatch(e.key)) e.key: e.value,
             },
-            exercise: _queenOldExercise.hasMatch(old.exercise?.exerciseId ?? '')
+            exercise: _oldExercise.hasMatch(old.exercise?.exerciseId ?? '')
                 ? null
                 : old.exercise,
           ),

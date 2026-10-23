@@ -13,6 +13,9 @@ class _SlowShare implements ShareRepository {
   var calls = 0;
 
   @override
+  Future<bool> shareText(String text) async => true;
+
+  @override
   Future<bool> shareImage(Uint8List png, {required String name, String? text}) {
     calls++;
     return closed.future;

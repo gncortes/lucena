@@ -17,6 +17,8 @@ import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
@@ -163,7 +165,7 @@ class _ReviewBodyState extends State<_ReviewBody> {
     ];
     if (state.shownPosition == null) {
       return ColoredBox(
-        color: Theme.of(context).colorScheme.surface,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView(
           padding: scrollPadding(context),
           children: [summary, ...header, ...footer],
@@ -215,7 +217,6 @@ class _ReviewBodyState extends State<_ReviewBody> {
             Positioned.fill(
               child: ViktorSheet(
                 key: GameDetailsKeys.sheet,
-                color: Theme.of(context).colorScheme.surface,
                 top: boardArea,
                 scrollKey: GameDetailsKeys.panel,
                 closeKey: GameDetailsKeys.closeSheet,
@@ -302,7 +303,12 @@ class _Header extends StatelessWidget {
       AttemptOutcome.loss => Icons.sentiment_dissatisfied_outlined,
     };
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        0,
+      ),
       color: Colors.transparent,
       elevation: 0,
       clipBehavior: Clip.antiAlias,
@@ -312,42 +318,52 @@ class _Header extends StatelessWidget {
           // O resultado numa faixa da cor dele, com o rating à direita.
           Container(
             color: color.withValues(alpha: 0.14),
-            padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
             child: Row(
               children: [
-                Icon(icon, color: color, size: 26),
-                const SizedBox(width: 10),
+                Icon(icon, color: color, size: AppIconSize.standard),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
                     [label, ?reason].join(' · '),
                     key: GameDetailsKeys.result,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: context.cardTitle?.copyWith(color: color),
                   ),
                 ),
                 if (after != null) ...[
                   // Um respiro entre o resultado e o rating.
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   RatingValue(rating: after, change: state.ratingChange),
                 ],
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
             child: Row(
               children: [
                 if (character != null)
-                  CharacterAvatar(character: character, size: 52)
+                  CharacterAvatar(
+                    character: character,
+                    size: CharacterAvatar.speech,
+                  )
                 else
                   Icon(
                     Icons.smart_toy_outlined,
-                    size: 40,
+                    size: CharacterAvatar.lesson,
                     color: colors.outline,
                   ),
-                const SizedBox(width: 14),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,7 +376,7 @@ class _Header extends StatelessWidget {
                                   character?.name ??
                                   attempt.opponent.label(l10n, level: level),
                               style: const TextStyle(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: AppWeight.heavy,
                               ),
                             ),
                             if (level != null && character != null)
@@ -377,15 +393,15 @@ class _Header extends StatelessWidget {
                       ),
                       if (endgame != null)
                         Text(endgame, style: theme.textTheme.bodyMedium),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.xs),
                       Row(
                         children: [
                           Icon(
                             Icons.schedule,
-                            size: 14,
+                            size: AppIconSize.small,
                             color: colors.onSurfaceVariant,
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: AppSpacing.xs),
                           Flexible(
                             child: Text(
                               [
@@ -430,7 +446,6 @@ class _MoveTable extends StatelessWidget {
     final theme = Theme.of(context);
     final quality = state.reviewOf(index)?.quality;
     return theme.textTheme.titleSmall!.copyWith(
-      fontWeight: FontWeight.w700,
       height: 1.4,
       color:
           quality?.listColor(theme.brightness) ?? theme.colorScheme.onSurface,
@@ -512,7 +527,12 @@ class _MoveTable extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Card(
-        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        margin: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          0,
+        ),
         color: Colors.transparent,
         elevation: 0,
         clipBehavior: Clip.antiAlias,
@@ -530,14 +550,16 @@ class _MoveTable extends StatelessWidget {
                     color: row.isOdd
                         ? colors.onSurface.withValues(alpha: 0.04)
                         : null,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
                           width: numberWidth,
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 14),
+                            padding: const EdgeInsets.only(top: AppSpacing.lg),
                             child: Text(
                               '${start.fullmoves + row}.',
                               style: theme.textTheme.titleSmall?.copyWith(
@@ -595,15 +617,18 @@ class _MoveTable extends StatelessWidget {
                 ],
                 if (score case final score?)
                   Padding(
-                    padding: EdgeInsets.fromLTRB(16 + numberWidth, 6, 8, 12),
+                    padding: EdgeInsets.fromLTRB(
+                      16 + numberWidth,
+                      AppSpacing.sm,
+                      AppSpacing.sm,
+                      AppSpacing.md,
+                    ),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         score,
                         key: GameDetailsKeys.score,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: theme.textTheme.titleSmall,
                       ),
                     ),
                   ),
@@ -653,8 +678,14 @@ class _MoveTable extends StatelessWidget {
           child: AnimatedContainer(
             duration: AppMotion.of(context).state,
             constraints: const BoxConstraints(minHeight: 44),
-            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            margin: const EdgeInsets.symmetric(
+              vertical: AppSpacing.xs,
+              horizontal: AppSpacing.xs,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
             decoration: BoxDecoration(
               color: selected ? colors.secondaryContainer : Colors.transparent,
               borderRadius: BorderRadius.circular(AppShape.small),
@@ -695,7 +726,7 @@ class _MoveTable extends StatelessWidget {
                       notation,
                       if (time != null)
                         Padding(
-                          padding: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: clock,
@@ -709,7 +740,7 @@ class _MoveTable extends StatelessWidget {
                   textBaseline: TextBaseline.alphabetic,
                   children: [
                     Expanded(child: notation),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.md),
                     clock,
                   ],
                 );
@@ -766,7 +797,10 @@ class _VariationLine extends StatelessWidget {
           onTap: () => cubit.selectVariation(ply),
           child: AnimatedContainer(
             duration: AppMotion.state,
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xs,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
               color: selected ? colors.secondaryContainer : Colors.transparent,
               borderRadius: BorderRadius.circular(AppShape.small),
@@ -792,7 +826,6 @@ class _VariationLine extends StatelessWidget {
                 ],
               ),
               style: base?.copyWith(
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
                 color: selected ? colors.onSecondaryContainer : null,
               ),
             ),
@@ -804,10 +837,15 @@ class _VariationLine extends StatelessWidget {
     return Padding(
       key: GameDetailsKeys.variation,
       // Recuada, como um comentário sob o lance.
-      padding: const EdgeInsets.fromLTRB(48, 2, 8, 6),
+      padding: const EdgeInsets.fromLTRB(
+        48,
+        AppSpacing.xs,
+        AppSpacing.sm,
+        AppSpacing.sm,
+      ),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Wrap(runSpacing: 2, children: children),
+        child: Wrap(runSpacing: AppSpacing.xs, children: children),
       ),
     );
   }

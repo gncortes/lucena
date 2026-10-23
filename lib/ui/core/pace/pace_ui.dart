@@ -5,9 +5,13 @@ import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun_pace.dart';
 import '../keys/pace_keys.dart';
 import '../l10n/l10n.dart';
-import '../theme/app_button.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_text.dart';
 import '../widgets/lucena_sheet.dart';
+import '../widgets/actions_footer.dart';
+import '../widgets/sheet_header.dart';
+import '../theme/app_spacing.dart';
 
 /// O nome de cada categoria de ritmo.
 extension PaceCategoryUi on PaceCategory {
@@ -75,66 +79,77 @@ class _PaceSheetState extends State<_PaceSheet> {
     final l10n = context.l10n;
     return SafeArea(
       top: false,
-      child: SingleChildScrollView(
+      child: Column(
         key: PaceKeys.sheet,
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.paceTitle, style: theme.textTheme.titleLarge),
-            for (final MapEntry(key: category, value: times)
-                in SpeedrunPaces.groups.entries) ...[
-              const SizedBox(height: 16),
-              Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SheetHeader(title: l10n.paceTitle),
+          // Em tela pequena os ritmos rolam; o botão fica sempre à vista.
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(
-                    _icon(category),
-                    size: 18,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    category.label(l10n),
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                  for (final MapEntry(key: category, value: times)
+                      in SpeedrunPaces.groups.entries) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      children: [
+                        Icon(
+                          _icon(category),
+                          size: AppIconSize.button,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          category.label(l10n),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: AppWeight.strong,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _Grid(
-                children: [
-                  for (final time in times)
+                    const SizedBox(height: AppSpacing.sm),
+                    _Grid(
+                      children: [
+                        for (final time in times)
+                          _Option(
+                            key: PaceKeys.option(time.code),
+                            label: paceShort(l10n, time),
+                            selected: _selected == time,
+                            onTap: () => setState(() => _selected = time),
+                          ),
+                      ],
+                    ),
+                  ],
+                  if (widget.allowNoClock) ...[
+                    const SizedBox(height: AppSpacing.lg),
                     _Option(
-                      key: PaceKeys.option(time.code),
-                      label: paceShort(l10n, time),
-                      selected: _selected == time,
-                      onTap: () => setState(() => _selected = time),
+                      key: PaceKeys.noClock,
+                      label: l10n.challengeNoClock,
+                      icon: Icons.timer_off_outlined,
+                      selected: _selected == null,
+                      onTap: () => setState(() => _selected = null),
                     ),
+                  ],
                 ],
               ),
-            ],
-            if (widget.allowNoClock) ...[
-              const SizedBox(height: 16),
-              _Option(
-                key: PaceKeys.noClock,
-                label: l10n.challengeNoClock,
-                icon: Icons.timer_off_outlined,
-                selected: _selected == null,
-                onTap: () => setState(() => _selected = null),
-              ),
-            ],
-            const SizedBox(height: 24),
-            FilledButton(
-              key: PaceKeys.confirm,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(kButtonHeight),
-              ),
-              onPressed: () => Navigator.of(context).pop(PaceChoice(_selected)),
-              child: Text(l10n.commonConfirm),
             ),
-          ],
-        ),
+          ),
+          ActionsFooter(
+            margin: AppSpacing.xl,
+            children: [
+              FilledButton(
+                key: PaceKeys.confirm,
+                onPressed: () =>
+                    Navigator.of(context).pop(PaceChoice(_selected)),
+                child: Text(l10n.commonConfirm),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -193,7 +208,7 @@ class _Option extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Material(
-      color: selected ? colors.primaryContainer : colors.surfaceContainerHigh,
+      color: selected ? colors.primaryContainer : colors.surfaceContainerLow,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppShape.medium),
         side: BorderSide(
@@ -208,20 +223,22 @@ class _Option extends StatelessWidget {
           selected: selected,
           button: true,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+            padding: const EdgeInsets.symmetric(
+              vertical: AppSpacing.lg,
+              horizontal: AppSpacing.sm,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon case final icon?) ...[
-                  Icon(icon, size: 18),
-                  const SizedBox(width: 6),
+                  Icon(icon, size: AppIconSize.button),
+                  const SizedBox(width: AppSpacing.sm),
                 ],
                 Flexible(
                   child: Text(
                     label,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                    style: context.cardTitle?.copyWith(
                       color: selected ? colors.onPrimaryContainer : null,
                     ),
                   ),

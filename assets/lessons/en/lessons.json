@@ -75,7 +75,7 @@
   "tour.school": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
   "tour.help": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
   "tour.play": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
-  "tour.level": "Last, honestly: where are you in chess?",
+  "tour.level": "So I can pick the right opponents: where are you in chess?",
   "school.welcome": "This is my school. Every great player once stood exactly where you stand now. We will learn one step at a time.",
   "school.welcomeBack": [
     "Good to see you back. Consistency beats talent.",
@@ -643,5 +643,7 @@
   "tricks.principles.develop.hint": "A good order: center pawn, knight to f3, bishop out, castle.",
   "tricks.principles.develop.done": "That is a healthy opening: center, pieces in play and a safe king. In this position, 4.c3 is good too: it prepares d4.",
   "tricks.principles.rules": "Summary: take the center, develop the knights and bishops, castle early. And don't move the same piece twice without a reason.",
-  "tricks.principles.online": "Now comes the fun part: playing against people. Create a free account on Lichess, at lichess.org, and use these tricks in your first games, including defending against them. Then come back here: endgames are what win games."
+  "tricks.principles.online": "Now comes the fun part: playing against people. Create a free account on Lichess, at lichess.org, and use these tricks in your first games, including defending against them. Then come back here: endgames are what win games.",
+  "tour.voice.link": "Nice game! I am Viktor, your teacher. I can read aloud everything I say. Choose my voice, and tell me what to call you.",
+  "tour.voice.link.none": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you."
 }

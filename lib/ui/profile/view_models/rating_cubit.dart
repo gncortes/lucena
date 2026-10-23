@@ -137,16 +137,6 @@ class RatingState {
       ? highlightedGame
       : null;
 
-  /// O mesmo estado sem o filtro do final.
-  /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
-  int? get lastChange => history.length < 2
-      ? null
-      : history.last.rating.rounded -
-            history[history.length - 2].rating.rounded;
-
-  /// Poucas partidas: o rating ainda não diz muito.
-  bool get provisional => history.length < provisionalGames;
-
   /// As partidas que contaram, da mais recente para a mais antiga.
   List<RatedGame> get games => [
     for (var index = history.length - 1; index >= 0; index--)
@@ -158,9 +148,6 @@ class RatingState {
         attempt: attempts[history[index].gameId],
       ),
   ];
-
-  /// Até quantas partidas o rating é provisório.
-  static const provisionalGames = 5;
 }
 
 class RatingCubit extends Cubit<RatingState> {
@@ -213,7 +200,7 @@ class RatingCubit extends Cubit<RatingState> {
     final numbers = progress == null
         ? null
         : PlayerNumbers(
-            stats: PlayerStats.of(all.values.toList(), now),
+            stats: PlayerStats.of(all.values.toList()),
             achievementsUnlocked: achievements == null
                 ? 0
                 : (await achievements.unlocked()).length,

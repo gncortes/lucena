@@ -26,7 +26,8 @@ mixin _$GameSetupState {
  int? get rating;/// Os ritmos nomeados (`1+0`, `3+2`...).
  List<NamedTimeControl> get paces;/// Os personagens, um por nível do Maia.
  List<Character> get characters;/// Falso até a última configuração ser lida.
- bool get ready;
+ bool get ready;/// A configuração veio de um link de desafio: a partida é a dele.
+ bool get fromLink;
 /// Create a copy of GameSetupState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -38,20 +39,20 @@ $GameSetupStateCopyWith<GameSetupState> get copyWith => _$GameSetupStateCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as GameSetupState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSetupState&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&const DeepCollectionEquality().equals(other.attempts, _this.attempts)&&(identical(other.userSide, _this.userSide) || other.userSide == _this.userSide)&&(identical(other.setup, _this.setup) || other.setup == _this.setup)&&(identical(other.suggestedLevel, _this.suggestedLevel) || other.suggestedLevel == _this.suggestedLevel)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&const DeepCollectionEquality().equals(other.paces, _this.paces)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.ready, _this.ready) || other.ready == _this.ready));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GameSetupState&&(identical(other.position, _this.position) || other.position == _this.position)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&const DeepCollectionEquality().equals(other.attempts, _this.attempts)&&(identical(other.userSide, _this.userSide) || other.userSide == _this.userSide)&&(identical(other.setup, _this.setup) || other.setup == _this.setup)&&(identical(other.suggestedLevel, _this.suggestedLevel) || other.suggestedLevel == _this.suggestedLevel)&&(identical(other.rating, _this.rating) || other.rating == _this.rating)&&const DeepCollectionEquality().equals(other.paces, _this.paces)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.ready, _this.ready) || other.ready == _this.ready)&&(identical(other.fromLink, _this.fromLink) || other.fromLink == _this.fromLink));
 }
 
 
 @override
 int get hashCode {
   final _this = this as GameSetupState;
-  return Object.hash(runtimeType,_this.position,_this.goal,_this.positionId,const DeepCollectionEquality().hash(_this.attempts),_this.userSide,_this.setup,_this.suggestedLevel,_this.rating,const DeepCollectionEquality().hash(_this.paces),const DeepCollectionEquality().hash(_this.characters),_this.ready);
+  return Object.hash(runtimeType,_this.position,_this.goal,_this.positionId,const DeepCollectionEquality().hash(_this.attempts),_this.userSide,_this.setup,_this.suggestedLevel,_this.rating,const DeepCollectionEquality().hash(_this.paces),const DeepCollectionEquality().hash(_this.characters),_this.ready,_this.fromLink);
 }
 
 @override
 String toString() {
   final _this = this as GameSetupState;
-  return 'GameSetupState(position: ${_this.position}, goal: ${_this.goal}, positionId: ${_this.positionId}, attempts: ${_this.attempts}, userSide: ${_this.userSide}, setup: ${_this.setup}, suggestedLevel: ${_this.suggestedLevel}, rating: ${_this.rating}, paces: ${_this.paces}, characters: ${_this.characters}, ready: ${_this.ready})';
+  return 'GameSetupState(position: ${_this.position}, goal: ${_this.goal}, positionId: ${_this.positionId}, attempts: ${_this.attempts}, userSide: ${_this.userSide}, setup: ${_this.setup}, suggestedLevel: ${_this.suggestedLevel}, rating: ${_this.rating}, paces: ${_this.paces}, characters: ${_this.characters}, ready: ${_this.ready}, fromLink: ${_this.fromLink})';
 }
 
 
@@ -62,7 +63,7 @@ abstract mixin class $GameSetupStateCopyWith<$Res>  {
   factory $GameSetupStateCopyWith(GameSetupState value, $Res Function(GameSetupState) _then) = _$GameSetupStateCopyWithImpl;
 @useResult
 $Res call({
- Position position, PositionGoal goal, String? positionId, List<Attempt> attempts, Side userSide, GameSetup setup, int suggestedLevel, int? rating, List<NamedTimeControl> paces, List<Character> characters, bool ready
+ Position position, PositionGoal goal, String? positionId, List<Attempt> attempts, Side userSide, GameSetup setup, int suggestedLevel, int? rating, List<NamedTimeControl> paces, List<Character> characters, bool ready, bool fromLink
 });
 
 
@@ -79,7 +80,7 @@ class _$GameSetupStateCopyWithImpl<$Res>
 
 /// Create a copy of GameSetupState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? position = null,Object? goal = null,Object? positionId = freezed,Object? attempts = null,Object? userSide = null,Object? setup = null,Object? suggestedLevel = null,Object? rating = freezed,Object? paces = null,Object? characters = null,Object? ready = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? position = null,Object? goal = null,Object? positionId = freezed,Object? attempts = null,Object? userSide = null,Object? setup = null,Object? suggestedLevel = null,Object? rating = freezed,Object? paces = null,Object? characters = null,Object? ready = null,Object? fromLink = null,}) {
   return _then(GameSetupState(
 position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as Position,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
@@ -92,6 +93,7 @@ as int,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullabl
 as int?,paces: null == paces ? _self.paces : paces // ignore: cast_nullable_to_non_nullable
 as List<NamedTimeControl>,characters: null == characters ? _self.characters : characters // ignore: cast_nullable_to_non_nullable
 as List<Character>,ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
+as bool,fromLink: null == fromLink ? _self.fromLink : fromLink // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -186,10 +188,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Position position,  PositionGoal goal,  String? positionId,  List<Attempt> attempts,  Side userSide,  GameSetup setup,  int suggestedLevel,  int? rating,  List<NamedTimeControl> paces,  List<Character> characters,  bool ready)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Position position,  PositionGoal goal,  String? positionId,  List<Attempt> attempts,  Side userSide,  GameSetup setup,  int suggestedLevel,  int? rating,  List<NamedTimeControl> paces,  List<Character> characters,  bool ready,  bool fromLink)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _GameSetupState() when $default != null:
-return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.userSide,_that.setup,_that.suggestedLevel,_that.rating,_that.paces,_that.characters,_that.ready);case _:
+return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.userSide,_that.setup,_that.suggestedLevel,_that.rating,_that.paces,_that.characters,_that.ready,_that.fromLink);case _:
   return orElse();
 
 }
@@ -207,10 +209,10 @@ return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Position position,  PositionGoal goal,  String? positionId,  List<Attempt> attempts,  Side userSide,  GameSetup setup,  int suggestedLevel,  int? rating,  List<NamedTimeControl> paces,  List<Character> characters,  bool ready)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Position position,  PositionGoal goal,  String? positionId,  List<Attempt> attempts,  Side userSide,  GameSetup setup,  int suggestedLevel,  int? rating,  List<NamedTimeControl> paces,  List<Character> characters,  bool ready,  bool fromLink)  $default,) {final _that = this;
 switch (_that) {
 case _GameSetupState():
-return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.userSide,_that.setup,_that.suggestedLevel,_that.rating,_that.paces,_that.characters,_that.ready);case _:
+return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.userSide,_that.setup,_that.suggestedLevel,_that.rating,_that.paces,_that.characters,_that.ready,_that.fromLink);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -227,10 +229,10 @@ return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Position position,  PositionGoal goal,  String? positionId,  List<Attempt> attempts,  Side userSide,  GameSetup setup,  int suggestedLevel,  int? rating,  List<NamedTimeControl> paces,  List<Character> characters,  bool ready)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Position position,  PositionGoal goal,  String? positionId,  List<Attempt> attempts,  Side userSide,  GameSetup setup,  int suggestedLevel,  int? rating,  List<NamedTimeControl> paces,  List<Character> characters,  bool ready,  bool fromLink)?  $default,) {final _that = this;
 switch (_that) {
 case _GameSetupState() when $default != null:
-return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.userSide,_that.setup,_that.suggestedLevel,_that.rating,_that.paces,_that.characters,_that.ready);case _:
+return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.userSide,_that.setup,_that.suggestedLevel,_that.rating,_that.paces,_that.characters,_that.ready,_that.fromLink);case _:
   return null;
 
 }
@@ -242,7 +244,7 @@ return $default(_that.position,_that.goal,_that.positionId,_that.attempts,_that.
 
 
 class _GameSetupState extends GameSetupState {
-  const _GameSetupState({required this.position, required this.goal, this.positionId,  List<Attempt> attempts = const <Attempt>[], required this.userSide, this.setup = const GameSetup(), this.suggestedLevel = MaiaLevels.min, this.rating,  List<NamedTimeControl> paces = const <NamedTimeControl>[],  List<Character> characters = const <Character>[], this.ready = false}): _attempts = attempts,_paces = paces,_characters = characters,super._();
+  const _GameSetupState({required this.position, required this.goal, this.positionId,  List<Attempt> attempts = const <Attempt>[], required this.userSide, this.setup = const GameSetup(), this.suggestedLevel = MaiaLevels.min, this.rating,  List<NamedTimeControl> paces = const <NamedTimeControl>[],  List<Character> characters = const <Character>[], this.ready = false, this.fromLink = false}): _attempts = attempts,_paces = paces,_characters = characters,super._();
   
 
 /// A posição de início.
@@ -289,6 +291,8 @@ class _GameSetupState extends GameSetupState {
 
 /// Falso até a última configuração ser lida.
 @override@JsonKey() final  bool ready;
+/// A configuração veio de um link de desafio: a partida é a dele.
+@override@JsonKey() final  bool fromLink;
 
 /// Create a copy of GameSetupState
 /// with the given fields replaced by the non-null parameter values.
@@ -300,18 +304,18 @@ _$GameSetupStateCopyWith<_GameSetupState> get copyWith => __$GameSetupStateCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSetupState&&(identical(other.position, position) || other.position == position)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&const DeepCollectionEquality().equals(other.attempts, _attempts)&&(identical(other.userSide, userSide) || other.userSide == userSide)&&(identical(other.setup, setup) || other.setup == setup)&&(identical(other.suggestedLevel, suggestedLevel) || other.suggestedLevel == suggestedLevel)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.paces, _paces)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.ready, ready) || other.ready == ready));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _GameSetupState&&(identical(other.position, position) || other.position == position)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&const DeepCollectionEquality().equals(other.attempts, _attempts)&&(identical(other.userSide, userSide) || other.userSide == userSide)&&(identical(other.setup, setup) || other.setup == setup)&&(identical(other.suggestedLevel, suggestedLevel) || other.suggestedLevel == suggestedLevel)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.paces, _paces)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.ready, ready) || other.ready == ready)&&(identical(other.fromLink, fromLink) || other.fromLink == fromLink));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,position,goal,positionId,const DeepCollectionEquality().hash(_attempts),userSide,setup,suggestedLevel,rating,const DeepCollectionEquality().hash(_paces),const DeepCollectionEquality().hash(_characters),ready);
+    return Object.hash(runtimeType,position,goal,positionId,const DeepCollectionEquality().hash(_attempts),userSide,setup,suggestedLevel,rating,const DeepCollectionEquality().hash(_paces),const DeepCollectionEquality().hash(_characters),ready,fromLink);
 }
 
 @override
 String toString() {
-    return 'GameSetupState(position: $position, goal: $goal, positionId: $positionId, attempts: $attempts, userSide: $userSide, setup: $setup, suggestedLevel: $suggestedLevel, rating: $rating, paces: $paces, characters: $characters, ready: $ready)';
+    return 'GameSetupState(position: $position, goal: $goal, positionId: $positionId, attempts: $attempts, userSide: $userSide, setup: $setup, suggestedLevel: $suggestedLevel, rating: $rating, paces: $paces, characters: $characters, ready: $ready, fromLink: $fromLink)';
 }
 
 
@@ -322,7 +326,7 @@ abstract mixin class _$GameSetupStateCopyWith<$Res> implements $GameSetupStateCo
   factory _$GameSetupStateCopyWith(_GameSetupState value, $Res Function(_GameSetupState) _then) = __$GameSetupStateCopyWithImpl;
 @override @useResult
 $Res call({
- Position position, PositionGoal goal, String? positionId, List<Attempt> attempts, Side userSide, GameSetup setup, int suggestedLevel, int? rating, List<NamedTimeControl> paces, List<Character> characters, bool ready
+ Position position, PositionGoal goal, String? positionId, List<Attempt> attempts, Side userSide, GameSetup setup, int suggestedLevel, int? rating, List<NamedTimeControl> paces, List<Character> characters, bool ready, bool fromLink
 });
 
 
@@ -339,7 +343,7 @@ class __$GameSetupStateCopyWithImpl<$Res>
 
 /// Create a copy of GameSetupState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? position = null,Object? goal = null,Object? positionId = freezed,Object? attempts = null,Object? userSide = null,Object? setup = null,Object? suggestedLevel = null,Object? rating = freezed,Object? paces = null,Object? characters = null,Object? ready = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? position = null,Object? goal = null,Object? positionId = freezed,Object? attempts = null,Object? userSide = null,Object? setup = null,Object? suggestedLevel = null,Object? rating = freezed,Object? paces = null,Object? characters = null,Object? ready = null,Object? fromLink = null,}) {
   return _then(_GameSetupState(
 position: null == position ? _self.position : position // ignore: cast_nullable_to_non_nullable
 as Position,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
@@ -352,6 +356,7 @@ as int,rating: freezed == rating ? _self.rating : rating // ignore: cast_nullabl
 as int?,paces: null == paces ? _self._paces : paces // ignore: cast_nullable_to_non_nullable
 as List<NamedTimeControl>,characters: null == characters ? _self._characters : characters // ignore: cast_nullable_to_non_nullable
 as List<Character>,ready: null == ready ? _self.ready : ready // ignore: cast_nullable_to_non_nullable
+as bool,fromLink: null == fromLink ? _self.fromLink : fromLink // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

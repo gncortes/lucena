@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_button.dart';
 import '../theme/app_button_text.dart';
+import '../theme/app_spacing.dart';
 import 'round_footer_button.dart';
 
 /// Um botão do rodapé do exercício.
@@ -50,7 +51,12 @@ class ExerciseActions extends StatelessWidget {
     this.hint,
     this.actions = const [],
     this.fill = false,
-    this.padding = const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
+    this.padding = const EdgeInsetsDirectional.fromSTEB(
+      AppSpacing.lg,
+      AppSpacing.sm,
+      AppSpacing.lg,
+      AppSpacing.lg,
+    ),
     this.color,
     this.leading,
     this.hug = false,

@@ -1,35 +1,45 @@
 import 'package:flutter/widgets.dart';
 
-import '../../../domain/models/rating_level.dart';
-
 abstract final class ProfileKeys {
-  /// Abre o teste de nível (T52).
-  static const placementTest = Key('profile.placementTest');
-
   static const screen = Key('profile.screen');
-  static const nicknameField = Key('profile.nickname');
-  static const saveButton = Key('profile.save');
 
-  /// Campo que mostra a faixa de rating e abre o painel de escolha.
-  static const levelField = Key('profile.level');
-  static const levelName = Key('profile.level.name');
+  /// Avatar, nome e a linha da conta; o lápis abre "Seus dados".
+  static const header = Key('profile.header');
+  static const headerName = Key('profile.header.name');
+  static const editData = Key('profile.editData');
 
-  static const levelSheet = Key('profile.level.sheet');
-  static const levelConfirmButton = Key('profile.level.confirm');
+  /// Sem conta: "Seu progresso está só neste celular".
+  static const localCard = Key('profile.localCard');
+  static const createAccount = Key('profile.createAccount');
 
-  /// Opção de uma faixa no painel de escolha; só vale depois de confirmar.
-  static Key levelOption(RatingLevel level) =>
-      Key('profile.level.option.${level.name}');
+  /// Com conta: "Tudo guardado na conta".
+  static const syncCard = Key('profile.syncCard');
 
-  /// O rating de finais: o cartão, o número, quantas partidas e a curva.
+  static const rowCountry = Key('profile.rowCountry');
+  static const rowRegion = Key('profile.rowRegion');
+  static const rowLanguage = Key('profile.rowLanguage');
+
+  /// A linha "Seu objetivo", que abre a folha do objetivo.
+  static const rowGoal = Key('profile.rowGoal');
+
+  /// A linha "Seu nível", que abre a tela do nível (E1.12).
+  static const rowLevel = Key('profile.rowLevel');
+  static const rowLichess = Key('profile.rowLichess');
+
+  static const signOut = Key('profile.signOut');
+  static const delete = Key('profile.delete');
+
+  static const lichessSheet = Key('profile.lichessSheet');
+  static const lichessRefresh = Key('profile.lichessRefresh');
+  static const lichessDisconnect = Key('profile.lichessDisconnect');
+
+  /// O histórico do rating de finais.
   static const ratingCard = Key('profile.rating');
-  static const ratingDelta = Key('profile.rating.delta');
-  static Key ratingPeriod(int? games) =>
-      Key('profile.rating.period.${games ?? 'all'}');
-  static const ratingValue = Key('profile.rating.value');
-  static const ratingGames = Key('profile.rating.games');
-  static const ratingChart = Key('profile.rating.chart');
 
-  /// O ⓘ do cartão do rating, que abre a explicação.
-  static const ratingHelp = Key('profile.rating.help');
+  /// Os grupos do fim (E1.25): "Remover anúncios"; Privacidade, feedback e
+  /// avaliar.
+  static const rowRemoveAds = Key('profile.rowRemoveAds');
+  static const rowPrivacy = Key('profile.rowPrivacy');
+  static const rowFeedback = Key('profile.rowFeedback');
+  static const rowRate = Key('profile.rowRate');
 }

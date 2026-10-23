@@ -85,7 +85,6 @@ class _RatingChartState extends State<RatingChart> {
                   bubbleText:
                       theme.textTheme.labelLarge?.copyWith(
                         color: colors.onInverseSurface,
-                        fontWeight: FontWeight.w700,
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ) ??
                       const TextStyle(),

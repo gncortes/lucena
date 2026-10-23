@@ -54,11 +54,11 @@ abstract final class ExercisesDoneKeys {
   static const score = Key('exercisesDone.score');
   static const needMore = Key('exercisesDone.needMore');
   static const back = Key('exercisesDone.back');
+  static const close = Key('exercisesDone.close');
   static const practice = Key('exercisesDone.practice');
   static const redo = Key('exercisesDone.redo');
   static const retrySpeech = Key('exercisesDone.retrySpeech');
   static const reviewLesson = Key('exercisesDone.reviewLesson');
-  static Key grade(String name) => Key('exercisesDone.grade.$name');
   static const current = Key('exercisesDone.current');
   static const diploma = Key('exercisesDone.diploma');
   static const shareCard = Key('exercisesDone.shareCard');
@@ -129,22 +129,13 @@ abstract final class ExerciseKeys {
   static const missing = Key('exercise.missing');
   static const board = Key('exercise.board');
   static const speech = Key('exercise.speech');
-  static const viktorSheet = Key('exercise.viktorSheet');
-  static const closeSheet = Key('exercise.sheet.close');
-  static const scroll = Key('exercise.scroll');
   static const hintButton = Key('exercise.hint');
   static const stars = Key('exercise.stars');
-  static const earned = Key('exercise.earned');
-  static const earnedStar = Key('exercise.earnedStar');
   static const solved = Key('exercise.solved');
-  static const explainButton = Key('exercise.explain');
 
   /// O selo "Correto!" que surge sob o tabuleiro ao resolver.
   static const correct = Key('exercise.correct');
 
-  /// O rodapé de resolvido com os botões empilhados (tela estreita).
-  static const footerSurface = Key('exercise.footerSurface');
-  static const solvedStacked = Key('exercise.solvedStacked');
   static const resultButton = Key('exercise.result');
   static const backButton = Key('exercise.back');
   static const locked = Key('exercise.locked');
@@ -154,9 +145,6 @@ abstract final class ExerciseKeys {
 
   /// O cronômetro do exercício (T60).
   static const timer = Key('exercise.timer');
-
-  /// Sob o tabuleiro: o objetivo antes, as estrelas e a solução depois.
-  static const goal = Key('exercise.goal');
 
   /// A página que rola inteira (balão, tabuleiro e lista) e o rodapé fixo.
   static const page = Key('exercise.page');
@@ -168,7 +156,6 @@ abstract final class ExerciseKeys {
   /// Ao lado do som, com a lista completa: cobrir ou mostrar os lances que
   /// o aluno ainda não viu (T69).
   static const hiddenMovesToggle = Key('exercise.hiddenMovesToggle');
-  static const solution = Key('exercise.solution');
 
   /// O exercício aberto (`<aula>.<exercício>`).
   static Key open(String lessonId, String exerciseId) =>

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// Os tokens de movimento do app, sobre os do Material 3 ([Durations] e
@@ -35,6 +37,60 @@ abstract final class AppMotion {
   /// Os três pontinhos de "digitando" (T70): ciclo e defasagem entre pontos.
   static const typingCycle = Duration(milliseconds: 1200);
   static const typingStagger = Durations.short3;
+
+  /// Coreografias longas (D34): uma duração com nome para cada uma.
+  /// Entrada da tela inicial.
+  static const entrance = Duration(milliseconds: 1400);
+
+  /// Volta contínua do brilho do esqueleto de carregamento.
+  static const shimmer = Duration(milliseconds: 1400);
+
+  /// Confete da celebração.
+  /// Quanto o aviso (snackbar) fica na tela.
+  static const snackBar = Duration(seconds: 4);
+
+  static const confetti = Duration(milliseconds: 1600);
+
+  /// Selo de fim da partida: entra, fica no pico ([narrationPeak]) e sai.
+  static const narration = Duration(milliseconds: 1600);
+  static const narrationPeak = Duration(milliseconds: 1200);
+
+  /// Selo de fim do final em destaque: pisca (entra, fica e sai) em 1,5 s.
+  static const featuredFlash = Duration(milliseconds: 1500);
+
+  /// Selo de fim com "remover animações": só um fade curto.
+  static const reducedFade = Duration(milliseconds: 150);
+
+  /// Abertura do confronto com a contagem e sem ela.
+  static const versus = Duration(milliseconds: 4600);
+  static const versusShort = Duration(milliseconds: 2000);
+
+  /// Tempo, não animação (ficam aqui para a tela não escrever milissegundos).
+  /// Tique que repinta o relógio da partida.
+  static const clockRefresh = Duration(milliseconds: 100);
+
+  /// Tique do cronômetro do exercício.
+  static const exerciseTick = Duration(milliseconds: 250);
+
+  /// Toque mínimo no microfone das Às cegas para valer como segurar.
+  static const micHold = Duration(milliseconds: 350);
+
+  /// Quanto um aviso de conquista sozinho fica na tela.
+  static const achievementToast = Duration(milliseconds: 3800);
+
+  /// Ritmo de leitura da fala: uma letra a cada tanto.
+  static const typewriterLetter = Duration(milliseconds: 28);
+
+  /// Quanto a fala flutuante da barra do personagem fica à vista: 60 ms por
+  /// caractere, no mínimo 6 s.
+  static Duration floatingSpeech(int length) =>
+      Duration(milliseconds: math.max(6000, length * 60));
+
+  /// A fala do professor aparecendo: uns 15 caracteres por segundo quando
+  /// no ritmo da voz ([paced]); mais rápido, sem voz.
+  static Duration typedText(int length, {required bool paced}) => paced
+      ? Duration(milliseconds: (length * 65).clamp(600, 60000))
+      : Duration(milliseconds: (length * 14).clamp(300, 2800));
 
   /// Curva da revelação.
   static const revealCurve = Curves.easeOutCubic;

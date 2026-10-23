@@ -106,9 +106,9 @@ void main() {
 
     await profile.open();
     app.expectNoClippedText();
-    await profile.openLevels();
+    await profile.openData();
     app.expectNoClippedText();
-    await profile.dismissLevels();
+    await settings.back();
     await settings.back();
 
     await settings.back();

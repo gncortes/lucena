@@ -2,9 +2,12 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/endgame_position.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_shape.dart';
 import 'goal_style.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 
 enum TimeDisplayType { clock, stopwatch, countdown, record, duration, pace }
 
@@ -31,6 +34,7 @@ class TimeDisplay extends StatelessWidget {
     this.side = Side.white,
     this.width,
     this.valueWidget,
+    this.icon,
     super.key,
   }) : assert(progress == null || (progress >= 0 && progress <= 1)),
        assert(width == null || (width > 0 && width < double.infinity));
@@ -60,6 +64,39 @@ class TimeDisplay extends StatelessWidget {
   /// the formatted source; [semanticsLabel] still replaces child semantics.
   final Widget? valueWidget;
 
+  /// Troca o ícone do tipo (o `icone` do `CompTempo`). Nulo: o do tipo.
+  final IconData? icon;
+
+  /// As cores do relógio por lado e estado (`CompTempo` tipo relógio):
+  /// caixa, número e borda. Parado, a caixa fica como a do lado, sem
+  /// opacidade, com o número mais fraco; pouco tempo é igual nos dois lados.
+  static (Color background, Color foreground, Color border) clockColors(
+    ColorScheme colors,
+    Side side,
+    TimeDisplayState state,
+  ) {
+    final white = side == Side.white;
+    return switch (state) {
+      TimeDisplayState.low => (
+        colors.errorContainer,
+        colors.onErrorContainer,
+        colors.error,
+      ),
+      TimeDisplayState.paused => (
+        white ? AppColors.white : AppColors.ink,
+        white
+            ? colors.onSurfaceVariant
+            : AppColors.white.withValues(alpha: 0.72),
+        colors.outlineVariant,
+      ),
+      _ => (
+        white ? AppColors.white : AppColors.ink,
+        white ? AppColors.ink : AppColors.white,
+        colors.onSurface,
+      ),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -71,14 +108,9 @@ class TimeDisplay extends StatelessWidget {
     final compact = width != null && !block;
     final running =
         state == TimeDisplayState.active || state == TimeDisplayState.low;
-    // Piece-side colors intentionally stay fixed across light/dark themes.
-    const light = AppColors.white;
-    const dark = AppColors.clockDark;
-    final darkTheme = theme.brightness == Brightness.dark;
+    final clockPalette = TimeDisplay.clockColors(colors, side, state);
     final (background, foreground, accent) = clock
-        ? side == Side.white
-              ? (light, dark, dark)
-              : (dark, light, light)
+        ? (clockPalette.$1, clockPalette.$2, clockPalette.$2)
         : switch (state) {
             TimeDisplayState.normal => (
               block
@@ -106,21 +138,23 @@ class TimeDisplay extends StatelessWidget {
             // tempo em branco (T67d, variante B; 5,1:1 no claro).
             TimeDisplayState.highlight => (
               GoalStyle.of(context, PositionGoal.win).color,
-              darkTheme ? AppColors.clockOnGreen : AppColors.white,
-              darkTheme ? AppColors.clockOnGreen : AppColors.white,
+              AppColors.white,
+              AppColors.white,
             ),
           };
-    final icon = switch (type) {
-      TimeDisplayType.clock => running ? Icons.av_timer_outlined : null,
-      TimeDisplayType.stopwatch => Icons.timer_outlined,
-      TimeDisplayType.countdown => Icons.hourglass_top_rounded,
-      TimeDisplayType.record =>
-        state == TimeDisplayState.highlight
-            ? Icons.emoji_events_rounded
-            : Icons.emoji_events_outlined,
-      TimeDisplayType.duration => Icons.schedule_outlined,
-      TimeDisplayType.pace => Icons.bolt_rounded,
-    };
+    final shownIcon =
+        icon ??
+        switch (type) {
+          TimeDisplayType.clock => running ? Icons.av_timer_outlined : null,
+          TimeDisplayType.stopwatch => Icons.timer_outlined,
+          TimeDisplayType.countdown => Icons.hourglass_top_rounded,
+          TimeDisplayType.record =>
+            state == TimeDisplayState.highlight
+                ? Icons.emoji_events_rounded
+                : Icons.emoji_events_outlined,
+          TimeDisplayType.duration => Icons.schedule_outlined,
+          TimeDisplayType.pace => Icons.bolt_rounded,
+        };
     final labelWidget = label == null || label!.isEmpty
         ? null
         : Text(
@@ -131,7 +165,6 @@ class TimeDisplay extends StatelessWidget {
               color: clock || state == TimeDisplayState.highlight
                   ? foreground
                   : colors.onSurfaceVariant,
-              fontWeight: block ? FontWeight.w600 : FontWeight.w500,
             ),
           );
     final numbers = valueWidget == null
@@ -157,7 +190,7 @@ class TimeDisplay extends StatelessWidget {
                           ? 16
                           : (block ? 44 : (inline ? 14 : (clock ? 22 : 20))),
                       height: plain ? 1.5 : null,
-                      fontWeight: inline ? FontWeight.w700 : FontWeight.w800,
+                      fontWeight: inline ? AppWeight.strong : AppWeight.heavy,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
           )
@@ -177,20 +210,14 @@ class TimeDisplay extends StatelessWidget {
       );
     }
     final children = <Widget>[
-      if (state == TimeDisplayState.low)
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.error,
-            shape: BoxShape.circle,
-          ),
-          child: const SizedBox.square(dimension: 8),
-        ),
-      if (icon != null)
+      if (shownIcon != null)
         SizedBox.square(
           dimension: block ? 32 : (inline ? 16 : 20),
           child: Icon(
-            icon,
-            size: block ? 32 : (inline ? 16 : 20),
+            shownIcon,
+            size: block
+                ? AppIconSize.large
+                : (inline ? AppIconSize.small : AppIconSize.button),
             color: accent,
           ),
         ),
@@ -206,7 +233,7 @@ class TimeDisplay extends StatelessWidget {
                 : MainAxisAlignment.center,
             children: [
               for (final (index, child) in children.indexed) ...[
-                if (index > 0) const SizedBox(width: 4),
+                if (index > 0) const SizedBox(width: AppSpacing.xs),
                 child,
               ],
             ],
@@ -215,81 +242,72 @@ class TimeDisplay extends StatelessWidget {
             alignment: clock ? WrapAlignment.end : WrapAlignment.center,
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: inline ? 4 : 8,
-            runSpacing: 4,
+            runSpacing: AppSpacing.xs,
             children: children,
           );
     return Semantics(
       container: true,
       label: semanticsLabel,
       excludeSemantics: true,
-      child: Opacity(
-        opacity: clock && state == TimeDisplayState.paused ? 0.55 : 1,
-        child: Container(
-          width: width,
-          constraints: BoxConstraints(
-            minHeight: block ? 0 : (clock ? 44 : (inline ? 28 : 40)),
-            minWidth: clock && !block && width == null
-                ? (inline ? 72 : 116)
-                : 0,
+      child: Container(
+        width: width,
+        constraints: BoxConstraints(
+          minHeight: block ? 0 : (clock ? 44 : (inline ? 28 : 40)),
+          minWidth: clock && !block && width == null ? (inline ? 72 : 116) : 0,
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: block ? 16 : (compact || inline ? 8 : 12),
+          vertical: block ? 16 : 4,
+        ),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(
+            block ? AppShape.large : (clock ? AppShape.small : AppShape.full),
           ),
-          padding: EdgeInsets.symmetric(
-            horizontal: block ? 16 : (compact || inline ? 8 : 12),
-            vertical: block ? 16 : 4,
-          ),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: BorderRadius.circular(
-              block ? AppShape.large : (clock ? AppShape.small : AppShape.full),
-            ),
-            border: clock
-                ? Border.all(
-                    width: 2,
-                    // O relógio aceso (a vez) leva a borda primária de 2 px (T73, D1).
-                    color: running ? colors.primary : colors.outlineVariant,
-                  )
-                : state == TimeDisplayState.active
-                ? Border.all(color: colors.outlineVariant)
-                : null,
-          ),
-          child: block
-              ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (labelWidget != null) ...[
-                      labelWidget,
-                      const SizedBox(height: 8),
-                    ],
-                    content,
-                    if (type == TimeDisplayType.countdown &&
-                        progress != null) ...[
-                      const SizedBox(height: 8),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(AppShape.full),
-                        child: SizedBox(
-                          height: 8,
-                          child: ColoredBox(
-                            color: colors.surfaceContainerHighest,
-                            child: Align(
-                              alignment: AlignmentDirectional.centerStart,
-                              child: FractionallySizedBox(
-                                widthFactor: progress!.clamp(0.0, 1.0),
-                                heightFactor: 1,
-                                child: ColoredBox(
-                                  color: state == TimeDisplayState.low
-                                      ? colors.error
-                                      : colors.primary,
-                                ),
+          border: clock
+              ? Border.all(width: 2, color: clockPalette.$3)
+              : state == TimeDisplayState.active
+              ? Border.all(color: colors.outlineVariant)
+              : null,
+        ),
+        child: block
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (labelWidget != null) ...[
+                    labelWidget,
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
+                  content,
+                  if (type == TimeDisplayType.countdown &&
+                      progress != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(AppShape.full),
+                      child: SizedBox(
+                        height: 8,
+                        child: ColoredBox(
+                          color: colors.surfaceContainerHighest,
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: FractionallySizedBox(
+                              widthFactor: progress!.clamp(0.0, 1.0),
+                              heightFactor: 1,
+                              child: ColoredBox(
+                                color: state == TimeDisplayState.low
+                                    ? colors.error
+                                    : colors.primary,
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ],
-                )
-              : content,
-        ),
+                ],
+              )
+            : content,
       ),
     );
   }

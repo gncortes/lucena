@@ -10,6 +10,9 @@ abstract final class TourKeys {
   static const backButton = Key('tour.back');
   static const startButton = Key('tour.start');
 
+  /// Só em rc, no primeiro passo: abre um link de desafio colado.
+  static const openLink = Key('tour.openLink');
+
   /// No primeiro passo, o vazio de 56 dp no lugar de "Voltar" (o "Pular" fica
   /// no mesmo lugar nos dois primeiros passos).
   static const backSlot = Key('tour.backSlot');
@@ -40,6 +43,9 @@ abstract final class TourKeys {
   static Key boardPieces(PieceStyle pieces) =>
       Key('tour.board.pieces.${pieces.code}');
 
+  /// O interruptor do som das peças, no fim do passo do tabuleiro.
+  static const boardSound = Key('tour.board.sound');
+
   /// No passo das aulas: as três etapas.
   static const stages = Key('tour.stages');
 
@@ -49,8 +55,4 @@ abstract final class TourKeys {
   /// No passo das partidas: os cinco adversários e o chip do rating.
   static const opponents = Key('tour.opponents');
   static const ratingChip = Key('tour.ratingChip');
-
-  /// Um dos três cartões do último passo.
-  static Key levelOption(TourLevelChoice choice) =>
-      Key('tour.levelOption.${choice.name}');
 }

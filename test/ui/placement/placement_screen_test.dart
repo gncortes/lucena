@@ -20,6 +20,8 @@ import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 import '../../../testing/placement_synthetic.dart';
 
+import 'package:lucena/ui/core/widgets/info_chip.dart';
+
 void main() {
   final skills = SkillMap.fromJson(syntheticSkillsJson());
   final bank = PlacementBank.fromJson(syntheticItemsJson());
@@ -38,7 +40,6 @@ void main() {
   Future<(PlacementCubit, FakeProfileRepository)> pump(
     WidgetTester tester, {
     VoidCallback? onDone,
-    VoidCallback? onChooseByHand,
     Size size = const Size(400, 800),
     bool systemBars = false,
     bool geometry = false,
@@ -86,10 +87,7 @@ void main() {
             ),
             child: BlocProvider.value(
               value: cubit,
-              child: PlacementScreen(
-                onDone: onDone,
-                onChooseByHand: onChooseByHand,
-              ),
+              child: PlacementScreen(onDone: onDone),
             ),
           ),
         ),
@@ -104,8 +102,6 @@ void main() {
     var done = false;
     final (cubit, profile) = await pump(tester, onDone: () => done = true);
     expect(find.byKey(PlacementKeys.start), findsOneWidget);
-    // Fora do tour, sem "prefiro escolher".
-    expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
 
     await tester.tap(find.byKey(PlacementKeys.start));
     await tester.pumpAndSettle();
@@ -128,44 +124,21 @@ void main() {
   });
 
   for (final size in [const Size(412, 915), const Size(360, 640)]) {
-    testWidgets('abertura, $size: rodapé em coluna, "Começar" na largura '
-        'toda e "Prefiro informar" em texto abaixo', (tester) async {
-      await pump(tester, size: size, onChooseByHand: () {});
+    testWidgets('abertura, $size: "Começar" na largura toda, encostado na '
+        'base', (tester) async {
+      await pump(tester, size: size);
       final footerFinder = find.byKey(PlacementKeys.footer);
       final footer = tester.getRect(footerFinder);
       final start = tester.getRect(find.byKey(PlacementKeys.start));
-      final choose = tester.getRect(find.byKey(PlacementKeys.chooseByHand));
       // O rodapé encosta na base da tela (canvas PropV2TesteAbertura).
       expect(footer.bottom, size.height);
       expect(footer.left, 0);
       expect(footer.right, size.width);
-      expect(start.top - footer.top, 12);
+      expect(start.top - footer.top, 8);
       expect(start.height, 52);
       expect(start.left, 16);
       expect(start.right, size.width - 16);
-      expect(
-        find.descendant(
-          of: footerFinder,
-          matching: find.byKey(PlacementKeys.chooseByHand),
-        ),
-        findsOneWidget,
-      );
-      expect(choose.top - start.bottom, 4);
-      // Mínimo de 40 (na fonte de teste o rótulo quebra em duas linhas).
-      final style = tester
-          .widget<TextButton>(find.byKey(PlacementKeys.chooseByHand))
-          .style!;
-      expect(style.minimumSize!.resolve({}), const Size.fromHeight(40));
-      expect(choose.left, 16);
-      expect(choose.right, size.width - 16);
-      expect(size.height - choose.bottom, 24);
-      final label = tester.getRect(
-        find.descendant(
-          of: find.byKey(PlacementKeys.chooseByHand),
-          matching: find.byType(Text),
-        ),
-      );
-      expect(label.center.dx, closeTo(size.width / 2, 0.5));
+      expect(size.height - start.bottom, 8);
     });
   }
 
@@ -190,13 +163,24 @@ void main() {
     tester,
   ) async {
     await pump(tester);
-    final chips = tester.widgetList<Chip>(find.byType(Chip)).toList();
-    expect(chips, hasLength(3));
-    final context = tester.element(find.byType(Chip).first);
-    final colors = Theme.of(context).colorScheme;
-    for (final chip in chips) {
-      expect(chip.side, BorderSide.none);
-      expect(chip.backgroundColor, colors.surfaceContainer);
+    final chips = find.byType(InfoChip);
+    expect(chips, findsNWidgets(3));
+    final colors = Theme.of(tester.element(chips.first)).colorScheme;
+    for (final chip in chips.evaluate()) {
+      final box = (chip.widget as InfoChip);
+      expect(box.background, isNull);
+      final decoration =
+          tester
+                  .widget<Container>(
+                    find.descendant(
+                      of: find.byWidget(box),
+                      matching: find.byType(Container),
+                    ),
+                  )
+                  .decoration!
+              as BoxDecoration;
+      expect(decoration.color, colors.surfaceContainer);
+      expect(decoration.border, isNull);
     }
   });
 
@@ -211,9 +195,10 @@ void main() {
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
     final w = size.width;
     testWidgets('${w.toInt()}: abertura retomada: card de onde parou abaixo '
-        'dos selos; "Continuar teste" cheio e "Recomeçar" em texto, sem o '
-        'link de rating', (tester) async {
-      final (cubit, _) = await pump(tester, size: size, onChooseByHand: () {});
+        'dos selos; "Continuar teste" cheio e "Recomeçar" em texto', (
+      tester,
+    ) async {
+      final (cubit, _) = await pump(tester, size: size);
       await tester.tap(find.byKey(PlacementKeys.start));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(PlacementKeys.dontKnow));
@@ -232,10 +217,9 @@ void main() {
       final restart = tester.getRect(find.byKey(PlacementKeys.restart));
       expect(resume.left, 16);
       expect(resume.right, w - 16);
-      expect(restart.top - resume.bottom, 4);
-      expect(size.height - restart.bottom, 24);
+      expect(restart.top - resume.bottom, 8);
+      expect(size.height - restart.bottom, 8);
       expect(find.byKey(PlacementKeys.start), findsNothing);
-      expect(find.byKey(PlacementKeys.chooseByHand), findsNothing);
       expect(find.text('Continuar teste'), findsOneWidget);
 
       // O card (variante B): fora do rodapé, 24 abaixo dos selos, na
@@ -243,7 +227,7 @@ void main() {
       final card = find.byKey(PlacementKeys.stoppedCard);
       expect(find.descendant(of: footer, matching: card), findsNothing);
       final box = tester.getRect(card);
-      final chips = find.byType(Chip);
+      final chips = find.byType(InfoChip);
       final chipsBottom = [
         for (final e in chips.evaluate())
           tester.getRect(find.byWidget(e.widget)).bottom,
@@ -251,11 +235,9 @@ void main() {
       expect(box.top - chipsBottom, 24);
       expect(box.left, 16);
       expect(box.width, w - 32);
-      final decoration =
-          tester.widget<Container>(card).decoration! as BoxDecoration;
+      // O cartão do tema (D24): sem cor nem raio próprios.
       final colors = Theme.of(tester.element(card)).colorScheme;
-      expect(decoration.color, colors.surfaceContainer);
-      expect(decoration.borderRadius, BorderRadius.circular(12));
+      expect(tester.widget<Card>(card).color, isNull);
       final icon = find.descendant(of: card, matching: find.byType(Icon));
       final iconBox = tester.getRect(icon);
       expect(iconBox.topLeft - box.topLeft, const Offset(16, 16));
@@ -263,7 +245,7 @@ void main() {
       final title = find.byKey(PlacementKeys.stoppedAt);
       final saved = find.byKey(PlacementKeys.answersSaved);
       expect(tester.getRect(title).left - iconBox.right, 12);
-      expect(tester.getRect(saved).top - tester.getRect(title).bottom, 2);
+      expect(tester.getRect(saved).top - tester.getRect(title).bottom, 4);
       expect(box.bottom - tester.getRect(saved).bottom, 16);
       expect(find.text('Você parou na pergunta 2 de 20'), findsOneWidget);
       expect(
@@ -405,15 +387,6 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
-
-  testWidgets('no tour, "prefiro informar meu rating" aparece e avisa', (
-    tester,
-  ) async {
-    var byHand = false;
-    await pump(tester, onChooseByHand: () => byHand = true);
-    await tester.tap(find.byKey(PlacementKeys.chooseByHand));
-    expect(byHand, isTrue);
-  });
 
   testWidgets('pergunta de escolha: as opções cabem em 320 dp', (tester) async {
     final (cubit, _) = await pump(tester, size: const Size(320, 640));

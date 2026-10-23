@@ -164,7 +164,7 @@ void main() {
       'revisão guardada', () async {
     final cubit = await load(engine: true);
     await settle();
-    await cubit.toggleEngine();
+    await cubit.setEngine(on: !cubit.state.engine);
     cubit.select(0);
     await settle();
     final live = cubit.state.live;

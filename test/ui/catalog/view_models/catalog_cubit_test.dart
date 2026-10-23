@@ -87,6 +87,33 @@ void main() {
     expect(cubit.state.sections?.map((s) => s.expanded), [true, true]);
   });
 
+  test('categoria grande começa só com o primeiro final aberto', () async {
+    final cubit = CatalogCubit(
+      FakePositionsRepository([
+        for (final sub in ['pawnVsKing', 'pawnVsPawn', 'twoPawnsVsKing'])
+          for (var i = 0; i < 20; i++)
+            EndgamePosition(
+              id: 'pawn.$sub.$i',
+              category: 'pawn',
+              subcategory: sub,
+              fen: '8/8/8/4k3/8/8/4P3/4K3 w - - 0 1',
+              goal: PositionGoal.win,
+            ),
+      ]),
+      training,
+      FakeProgressRepository(),
+    );
+    addTearDown(cubit.close);
+    await cubit.load(category: 'pawn');
+
+    expect(cubit.state.sections?.map((s) => s.expanded), [true, false, false]);
+
+    cubit.toggleSection('pawnVsPawn');
+    cubit.toggleSection('pawnVsKing');
+
+    expect(cubit.state.sections?.map((s) => s.expanded), [false, true, false]);
+  });
+
   test('a contagem da categoria segue o filtro', () async {
     final cubit = build();
     addTearDown(cubit.close);

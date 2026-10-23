@@ -7,10 +7,16 @@ abstract final class SettingsKeys {
   /// "Tela inicial": os caminhos da tela inicial.
   static const homeLayoutTile = Key('settings.homeLayout');
 
+  /// Só em build de teste: abre um link de desafio colado, sem App Links.
+  static const openLinkTile = Key('settings.openLink');
+  static const openLinkField = Key('settings.openLink.field');
+  static const openLinkConfirm = Key('settings.openLink.confirm');
+
   static const screen = Key('settings.screen');
   static const version = Key('settings.version');
   static const title = Key('settings.title');
   static const profileTile = Key('settings.profile');
+  static const profileName = Key('settings.profile.name');
   static const profileValue = Key('settings.profile.value');
 
   static const languageTile = Key('settings.language');
@@ -48,6 +54,7 @@ abstract final class SettingsKeys {
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
 
   static const characterTalkSwitch = Key('settings.characterTalk');
+  static const warmUpSwitch = Key('settings.warmUp');
   static const soundSwitch = Key('settings.sound');
   static const vibrationSwitch = Key('settings.vibration');
   static const tourTile = Key('settings.tour');
@@ -60,6 +67,7 @@ abstract final class SettingsKeys {
 
   static const soundTile = Key('settings.soundGroup');
   static const soundScreen = Key('settings.soundGroup.screen');
+  static const alertsTile = Key('settings.alerts');
 
   /// Sobre o Lucena.
   static const aboutTile = Key('settings.about');
@@ -67,5 +75,7 @@ abstract final class SettingsKeys {
   static const aboutWebsite = Key('settings.about.website');
   static const aboutSource = Key('settings.about.source');
   static const aboutLicenses = Key('settings.about.licenses');
+  static const aboutPrivacy = Key('settings.about.privacy');
+  static const aboutTerms = Key('settings.about.terms');
   static const aboutVersion = Key('settings.about.version');
 }

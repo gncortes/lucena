@@ -1,3 +1,5 @@
+import '../../../domain/models/survey.dart';
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -12,6 +14,7 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -122,13 +125,27 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       if (lesson == null || outcome.last) {
         context.go(Routes.school);
       } else {
-        context.pushReplacement(Routes.lessonScript(lesson));
+        // A aula concluída, com o convite "Sua opinião" e a próxima aula.
+        context.pushReplacement(
+          Routes.lessonFinished(
+            SurveyKind.school,
+            cubit.lessonId,
+            next: lesson,
+          ),
+        );
       }
       return;
     }
     final next = outcome.nextPart;
     if (next == null) {
-      context.go(Routes.endgameLesson(cubit.lessonId));
+      // Os capítulos todos feitos: a aula concluída, antes do teste final.
+      context.pushReplacement(
+        Routes.lessonFinished(
+          SurveyKind.endgames,
+          cubit.lessonId,
+          next: outcome.next,
+        ),
+      );
     } else {
       context.pushReplacement(
         Routes.endgameLessonScript(cubit.lessonId, part: next),
@@ -274,7 +291,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       key: LessonScriptKeys.characterBar,
       height: ScriptPage.stripHeight,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: viktor == null
             ? null
             : TeacherSpeech(

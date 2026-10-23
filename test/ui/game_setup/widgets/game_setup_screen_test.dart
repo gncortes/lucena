@@ -9,6 +9,7 @@ import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/domain/models/maia_level.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
+import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/game_setup/view_models/game_setup_cubit.dart';
@@ -357,5 +358,16 @@ void main() {
     expect(route.path, '/blind');
     expect(route.queryParameters['opponent'], 'maia');
     expect(route.queryParameters['white'], isNotNull);
+    // O modo às cegas não vai no link de desafio (QA r2, N1).
+    expect(cubit.state.challenge.blind, isFalse);
+  });
+
+  testWidgets('o botão de compartilhar da barra abre a folha do desafio com a '
+      'configuração da tela', (tester) async {
+    await pump(tester, setup: const GameSetup(maiaLevel: 1400));
+    await tester.tap(find.byKey(ChallengeKeys.sendButton));
+    await tester.pumpAndSettle();
+    expect(find.byKey(ChallengeKeys.sheet), findsOne);
+    expect(find.textContaining('Maia 1400'), findsWidgets);
   });
 }

@@ -9,9 +9,12 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/all_modes_keys.dart';
+import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
+import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';
 import '../../profile/view_models/profile_cubit.dart';
@@ -94,6 +97,13 @@ class AllModesScreen extends StatelessWidget {
             body: l10n.allModesSpeedrunBody,
             route: Routes.speedruns,
           ),
+          (
+            id: RaceKeys.allModesItem,
+            icon: Icons.extension,
+            title: l10n.allModesRaceTitle,
+            body: l10n.allModesRaceBody,
+            route: Routes.race,
+          ),
         ],
       ),
       (
@@ -149,7 +159,12 @@ class AllModesScreen extends StatelessWidget {
         children: [
           for (final (title, items) in sections) ...[
             Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(4, 16, 4, 8),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.xs,
+                AppSpacing.lg,
+                AppSpacing.xs,
+                AppSpacing.sm,
+              ),
               child: Text(
                 title,
                 style: theme.textTheme.titleSmall?.copyWith(
@@ -159,7 +174,7 @@ class AllModesScreen extends StatelessWidget {
             ),
             for (final item in items)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 // Os cartões entram um depois do outro.
                 child: StaggeredEntrance(
                   index: index++,
@@ -174,6 +189,10 @@ class AllModesScreen extends StatelessWidget {
                           Uri.parse(_lichessSignup),
                           mode: LaunchMode.externalApplication,
                         );
+                        return;
+                      }
+                      if (item.id == 'freeBoard') {
+                        await openFreeBoard(context);
                         return;
                       }
                       final resume =

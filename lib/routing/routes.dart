@@ -1,9 +1,20 @@
+import '../domain/models/challenge_link.dart';
+import '../domain/models/featured.dart';
 import '../domain/models/clock.dart';
+import '../domain/models/daily_final.dart';
+import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
+import '../domain/models/survey.dart';
 
 abstract final class Routes {
   static const home = '/';
   static const freeBoard = '/board';
+
+  /// "Atualize o Lucena": por cima de tudo, sem voltar (E1.32).
+  static const updateRequired = '/update/required';
+
+  /// "Versão nova do Lucena", aberta só sobre a home (E1.32).
+  static const updateRecommended = '/update/recommended';
 
   /// A partida às cegas, falando os lances (experimental).
   static const blind = '/blind';
@@ -22,6 +33,8 @@ abstract final class Routes {
     String? challenge,
     String? position,
     String? goal,
+    bool fromLink = false,
+    ChallengeLink? origin,
   }) => Uri(
     path: blind,
     queryParameters: {
@@ -36,6 +49,7 @@ abstract final class Routes {
       'challenge': ?challenge,
       'position': ?position,
       'goal': ?goal,
+      if (fromLink) 'link': origin == null ? '1' : origin.uri.toString(),
     },
   ).toString();
 
@@ -78,6 +92,10 @@ abstract final class Routes {
     String? speedrun,
     String? attempt,
     String? stage,
+    bool fromLink = false,
+    ChallengeLink? origin,
+    String? featured,
+    String? daily,
   }) => Uri(
     path: freeBoard,
     queryParameters: {
@@ -95,8 +113,44 @@ abstract final class Routes {
       'speedrun': ?speedrun,
       'attempt': ?attempt,
       'stage': ?stage,
+      if (fromLink) 'link': origin == null ? '1' : origin.uri.toString(),
+      'featured': ?featured,
+      'daily': ?daily,
     },
   ).toString();
+
+  /// O link de desafio [link] aberto no app (`/p/<código>?...`): a tela do
+  /// desafio fechado ou a Nova partida preenchida.
+  static String challenge(ChallengeLink link) =>
+      '${link.uri.path}?${link.uri.query}';
+
+  /// A partida do desafio [link], com o Maia no [level] quando o link não
+  /// traz o nível. Sempre no tabuleiro normal: link com `blind=1` (o app não
+  /// gera mais) abre a partida normal e o resultado leva o mesmo link de origem. O relógio do link vale para os dois lados.
+  static String linkGame(ChallengeLink link, {required int level}) {
+    final user = link.userSide.name;
+    final clock = link.clock?.code;
+    final maia = link.opponent == OpponentKind.maia;
+    final opponent = link.opponent.code;
+    final shownLevel = maia ? '${link.level ?? level}' : null;
+    return freeBoardAt(
+      link.fen,
+      view: user,
+      white: clock,
+      black: clock,
+      opponent: opponent,
+      level: shownLevel,
+      user: user,
+      goal: link.goal.code,
+      position: link.positionId,
+      fromLink: true,
+      origin: link,
+    );
+  }
+
+  /// A tela de antes do primeiro desafio (cores, peças e som).
+  static String challengeSetup(ChallengeLink link) =>
+      '${link.uri.path}/inicio?${link.uri.query}';
 
   /// A partida de um desafio da Jornada (ou de uma etapa de speedrun, com
   /// [speedrunId], [attemptId] e [stage]): o jogador joga o lado que move na
@@ -131,11 +185,66 @@ abstract final class Routes {
     );
   }
 
+  /// Os finais em destaque: a lista, um torneio e um final.
+  static const featured = '/featured';
+  static String featuredTournament(String id) => '/featured/tournament/$id';
+  static String featuredEndgame(String id) => '/featured/$id';
+
+  /// A partida de um final em destaque: o jogador joga o lado que tem a vez na
+  /// posição, contra o adversário e com o relógio de [choice]. Sem posição no
+  /// catálogo: não vale nota nem entra no histórico.
+  static String featuredGame(FeaturedEndgame endgame, FeaturedChoice choice) {
+    final user = endgame.userSide.name;
+    final clock = choice.clock;
+    return freeBoardAt(
+      endgame.fen,
+      view: user,
+      white: clock,
+      black: clock,
+      opponent: choice.opponent.code,
+      level: choice.level?.toString(),
+      user: user,
+      goal: endgame.goal.code,
+      featured: endgame.id,
+    );
+  }
+
+  /// O final do dia: abre a partida de hoje (o toque do lembrete cai aqui).
+  static const daily = '/daily';
+  static const dailyResult = '/daily/result';
+  static const dailyShare = '/daily/share';
+
+  /// O resultado do final do dia [date] (`aaaa-mm-dd`).
+  static String dailyResultOf(String date) =>
+      Uri(path: dailyResult, queryParameters: {'date': date}).toString();
+  static String dailyShareOf(String date) =>
+      Uri(path: dailyShare, queryParameters: {'date': date}).toString();
+
+  /// A partida do final do dia: sem relógio, contra o Maia no nível
+  /// [level], com o lado e o objetivo do próprio final.
+  static String dailyGame(DailyFinal daily, {required int level}) {
+    final position = daily.position;
+    final user = position.fen.split(' ')[1] == 'b' ? 'black' : 'white';
+    return freeBoardAt(
+      position.fen,
+      view: user,
+      opponent: OpponentKind.maia.code,
+      level: '$level',
+      user: user,
+      goal: position.goal.code,
+      daily: DailyRecord.dayCode(daily.date),
+    );
+  }
+
   /// A Jornada, um degrau e um desafio (pelo id da posição dentro do degrau).
   static const journey = '/journey';
   static String journeyRung(String rung) => '/journey/$rung';
   static String journeyChallenge(String rung, String position) =>
       '/journey/$rung/$position';
+
+  /// A Corrida de problemas (E1.31) e o aquecimento que a antecede.
+  static const race = '/race';
+  static const raceWarmUp = '/race/warm-up';
 
   /// Os speedruns, um speedrun e uma tentativa dele.
   static const speedruns = '/speedruns';
@@ -221,11 +330,103 @@ abstract final class Routes {
   /// O resultado dos exercícios da aula, depois do último.
   static String endgameExercisesDone(String id) => '/endgames/$id/done';
 
+  /// O questionário "Sua opinião" de [kind] (`endgames` ou `school`).
+  /// [fromLesson]: aberto pela aula concluída; o agradecimento então volta
+  /// às aulas, não à tela anterior.
+  static String survey(SurveyKind kind, {bool fromLesson = false}) => Uri(
+    path: '/survey/${kind.code}',
+    queryParameters: fromLesson ? {'from': 'lesson'} : null,
+  ).toString();
+
+  /// O "Você pagaria?" (E1.26), no passo [step] (1 a 3) ou no do rascunho.
+  static const wouldPay = '/survey/pagaria';
+  static String wouldPayAt({int? step}) => Uri(
+    path: wouldPay,
+    queryParameters: step == null ? null : {'step': '$step'},
+  ).toString();
+
+  /// A tela "Aula concluída" da aula [id]: de [kind] `school` (Escola) ou
+  /// `endgames` (aula de finais, com os capítulos todos feitos).
+  /// [next] é a aula seguinte, se houver.
+  static String lessonFinished(SurveyKind kind, String id, {String? next}) =>
+      Uri(
+        path: '/lesson-finished/${kind.code}/$id',
+        queryParameters: next == null ? null : {'next': next},
+      ).toString();
+
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 
-  /// O teste de nível (T52). [from] diz de onde veio: no tour, a tela
-  /// oferece escolher a faixa na mão.
+  /// Depois do tour: a conta, opcional (E1.11 a E1.13 ligam o login), e o
+  /// nível, que fecha a primeira abertura.
+  /// A Sequência de dias (E1.22).
+  static const streak = '/streak';
+
+  /// Sua semana (E1.23), aberta pelo resumo de domingo.
+  static const week = '/week';
+
+  static const account = '/tour/conta';
+  static const level = '/tour/nivel';
+
+  /// "Seu nível" aberto por [from] (`profile`: volta para o Perfil).
+  static String levelFrom(String from) =>
+      Uri(path: level, queryParameters: {'from': from}).toString();
+
+  /// As telas ligadas a "Seu nível" (E1.12). Recebem o `LevelCubit` dela
+  /// como `extra`.
+  static const levelLichess = '/tour/nivel/lichess';
+  static const levelChess = '/tour/nivel/chess';
+  static const levelRating = '/tour/nivel/rating';
+
+  /// A conta pelo Perfil ou pelo "Já tenho conta" (E1.13). [from] diz para
+  /// onde ir no fim: `tour` (a pergunta) ou `profile` (o Perfil).
+  static const accountEnter = '/conta';
+  static String accountEnterFrom(String from) => _from(accountEnter, from);
+
+  /// "Criar conta" com e-mail ou, com [signIn], "Entrar". Com [reauth], só
+  /// entra de novo e volta `true` (apagar a conta pede um login recente).
+  static const accountEmail = '/conta/email';
+  static String accountEmailFrom(
+    String from, {
+    bool signIn = false,
+    bool reauth = false,
+  }) => Uri(
+    path: accountEmail,
+    queryParameters: {
+      'from': from,
+      if (signIn || reauth) 'entrar': '1',
+      if (reauth) 'reauth': '1',
+    },
+  ).toString();
+
+  /// "Seu perfil", depois de entrar (e pelo lápis do Perfil). Com [welcome],
+  /// o aviso de que o progresso já está na conta.
+  static const accountData = '/conta/dados';
+  static String accountDataFrom(String from, {bool welcome = false}) => Uri(
+    path: accountData,
+    queryParameters: {'from': from, if (welcome) 'novo': '1'},
+  ).toString();
+
+  /// "Bem-vindo de volta": recebe o `SyncResult` como `extra`.
+  static const accountRestored = '/conta/de-volta';
+  static String accountRestoredFrom(String from) =>
+      _from(accountRestored, from);
+
+  /// Para onde a conta segue no fim, vinda de [from] (`game`: o convite no
+  /// fim da 1ª partida).
+  static String afterAccount(String? from) => switch (from) {
+    'profile' => settingsProfile,
+    'game' => home,
+    _ => goal,
+  };
+
+  static String _from(String path, String from) =>
+      Uri(path: path, queryParameters: {'from': from}).toString();
+
+  /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
+  static const goal = '/tour/objetivo';
+
+  /// O teste de nível (T52). [from] diz de onde veio (`level`, `settings`).
   static const placement = '/placement';
   static String placementFrom(String from) =>
       Uri(path: placement, queryParameters: {'from': from}).toString();
@@ -248,13 +449,24 @@ abstract final class Routes {
   static const settingsGame = '/settings/game';
   static const settingsSound = '/settings/sound';
   static const settingsAbout = '/settings/about';
+  static const alerts = '/settings/alerts';
+
+  /// "Seu país" (E1.21): do Perfil, de Avisos e de "Seu perfil".
+  static const country = '/country';
   static const settingsLanguage = '/settings/appearance/language';
   static const settingsTheme = '/settings/appearance/theme';
   static const settingsProfile = '/settings/profile';
+
+  /// Privacidade e anúncios (E1.25), aberta do Perfil.
+  static const privacy = '/settings/privacy';
+
   static const settingsBoardAppearance = '/settings/appearance/board';
   static const settingsBoardBehavior = '/settings/game/board';
   static const settingsClock = '/settings/game/clock';
   static const settingsVoice = '/settings/sound/voice';
+
+  /// "Enviar feedback" (E1.26), aberto pelo Perfil.
+  static const feedback = '/settings/feedback';
 
   /// A configuração da tela inicial: os caminhos e a ordem.
   static const homeLayout = '/settings/appearance/home';

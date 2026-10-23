@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import '../../../domain/models/ads_state.dart';
+import '../../core/ads/lesson_gate.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +13,13 @@ import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_shadow.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
@@ -18,6 +27,8 @@ import '../../core/widgets/figurine.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
+import '../../core/widgets/placement_test_card.dart';
 
 /// A Escola do Viktor: ele recebe o aluno, e a trilha mostra os módulos com
 /// as aulas em caminho (feitas, liberadas e bloqueadas).
@@ -90,15 +101,16 @@ class _SchoolScreenState extends State<SchoolScreen> {
                     speechContext: SpeechContext.teaching,
                     teacher: viktor,
                     text: greeting,
-                    avatarSize: 56,
+                    avatarSize: CharacterAvatar.speech,
                   ),
                 // Sem a contagem de aulas: o iniciante não vê quanto falta.
                 if (next != null) ...[
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.lg),
                   FilledButton.icon(
                     key: SchoolKeys.continueButton,
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(kButtonHeight),
+                      textStyle: AppButtonText.footer(context),
                     ),
                     icon: const Icon(Icons.play_arrow_rounded),
                     label: Text(
@@ -108,15 +120,21 @@ class _SchoolScreenState extends State<SchoolScreen> {
                           ? l10n.schoolContinue(texts.lessonTitle(next))
                           : l10n.schoolStart,
                     ),
-                    onPressed: () => context.go(Routes.lessonScript(next)),
+                    onPressed: () => LessonGate.open(
+                      context,
+                      lessonId: next,
+                      kind: LessonKind.school,
+                      open: () => context.go(Routes.lessonScript(next)),
+                    ),
                   ),
                 ],
                 if (state.graduated) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   FilledButton.tonalIcon(
                     key: SchoolKeys.endgamesButton,
                     style: FilledButton.styleFrom(
                       minimumSize: const Size.fromHeight(kButtonHeight),
+                      textStyle: AppButtonText.footer(context),
                     ),
                     icon: const Icon(Icons.auto_stories_outlined),
                     label: Text(l10n.endgamesTitle),
@@ -124,8 +142,10 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   ),
                 ],
                 if (!state.tested && !state.graduated) ...[
-                  const SizedBox(height: 12),
-                  _TestCard(
+                  const SizedBox(height: AppSpacing.md),
+                  PlacementTestCard(
+                    label: context.l10n.schoolTestPrompt,
+                    tapKey: SchoolKeys.placementTest,
                     onTap: () async {
                       final cubit = context.read<SchoolCubit>();
                       final language = Localizations.localeOf(context)
@@ -137,10 +157,10 @@ class _SchoolScreenState extends State<SchoolScreen> {
                     },
                   ),
                 ],
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 _ChallengesCard(),
                 if (state.skipped.isNotEmpty) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   _SkippedGroup(state: state),
                 ],
                 for (final (index, module) in state.course.modules.indexed)
@@ -180,39 +200,40 @@ class _ModuleSection extends StatelessWidget {
       key: SchoolKeys.module(module.id),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 28),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: colors.primaryContainer,
-            borderRadius: BorderRadius.circular(AppShape.large),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.schoolModule(index + 1),
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colors.onPrimaryContainer,
+        const SizedBox(height: AppSpacing.xl),
+        Card(
+          color: colors.primaryContainer,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.l10n.schoolModule(index + 1),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: colors.onPrimaryContainer,
+                        ),
                       ),
-                    ),
-                    Text(
-                      state.texts.moduleTitle(module.id),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colors.onPrimaryContainer,
-                        fontWeight: FontWeight.w700,
+                      Text(
+                        state.texts.moduleTitle(module.id),
+                        style: context.cardTitle?.copyWith(
+                          color: colors.onPrimaryContainer,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         for (final (position, lesson) in module.lessons.indexed)
           KeyedSubtree(
             key: state.next == lesson.id ? currentLesson : null,
@@ -274,24 +295,22 @@ class _LessonNode extends StatelessWidget {
     void open() {
       if (status == LessonStatus.locked) {
         final blocker = state.blockedBy(lesson.id);
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: Text(
-                l10n.schoolLocked(
-                  blocker == null ? '' : texts.lessonTitle(blocker),
-                ),
-              ),
-            ),
-          );
+        showLucenaSnackBar(
+          context,
+          l10n.schoolLocked(blocker == null ? '' : texts.lessonTitle(blocker)),
+        );
         return;
       }
-      context.go(Routes.lessonScript(lesson.id));
+      LessonGate.open(
+        context,
+        lessonId: lesson.id,
+        kind: LessonKind.school,
+        open: () => context.go(Routes.lessonScript(lesson.id)),
+      );
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Align(
         alignment: AlignmentDirectional(offset, 0),
         child: InkWell(
@@ -318,19 +337,16 @@ class _LessonNode extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: background,
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          if (isNext)
-                            BoxShadow(
-                              color: colors.primary.withValues(alpha: 0.35),
-                              blurRadius: 14,
-                              spreadRadius: 2,
-                            ),
-                        ],
+                        boxShadow: [if (isNext) AppShadow.glow(colors)],
                       ),
-                      child: Icon(icon, color: foreground, size: 32),
+                      child: Icon(
+                        icon,
+                        color: foreground,
+                        size: AppIconSize.large,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     texts.lessonTitle(lesson.id),
                     textAlign: TextAlign.center,
@@ -340,61 +356,11 @@ class _LessonNode extends StatelessWidget {
                       color: status == LessonStatus.locked
                           ? colors.outline
                           : null,
-                      fontWeight: isNext ? FontWeight.w700 : null,
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// "Já sabe jogar? Faça o teste e pule o que já sabe.", para quem ainda
-/// não fez o teste de nível.
-class _TestCard extends StatelessWidget {
-  const _TestCard({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Material(
-      color: colors.secondaryContainer,
-      borderRadius: BorderRadius.circular(AppShape.large),
-      child: InkWell(
-        key: SchoolKeys.placementTest,
-        borderRadius: BorderRadius.circular(AppShape.large),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 12),
-          child: Row(
-            children: [
-              Icon(Icons.quiz_outlined, color: colors.onSecondaryContainer),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  l10n.schoolTestPrompt,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.onSecondaryContainer,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Directionality.of(context) == TextDirection.rtl
-                    ? Icons.chevron_left
-                    : Icons.chevron_right,
-                color: colors.onSecondaryContainer,
-              ),
-            ],
           ),
         ),
       ),
@@ -420,17 +386,15 @@ class _SkippedGroup extends StatelessWidget {
       for (final lesson in state.course.lessons)
         if (state.skipped[lesson.id] case final reason?) (lesson, reason),
     ];
-    return Card.filled(
+    return Card(
       key: SchoolKeys.skippedGroup,
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerHigh,
       clipBehavior: Clip.antiAlias,
       child: AnimatedSize(
         duration: AppMotion.of(context).component,
         curve: AppMotion.move,
         alignment: Alignment.topCenter,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -447,10 +411,10 @@ class _SkippedGroup extends StatelessWidget {
                     child: Icon(
                       Icons.verified_rounded,
                       color: colors.onPrimary,
-                      size: 22,
+                      size: AppIconSize.standard,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -460,17 +424,15 @@ class _SkippedGroup extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 l10n.schoolKnownTitle,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                style: context.cardTitle,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: AppSpacing.sm),
                             // Quantas aulas.
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 1,
+                                horizontal: AppSpacing.sm,
+                                vertical: AppSpacing.xs,
                               ),
                               decoration: BoxDecoration(
                                 color: colors.primaryContainer,
@@ -482,13 +444,12 @@ class _SkippedGroup extends StatelessWidget {
                                 '${lessons.length}',
                                 style: theme.textTheme.labelMedium?.copyWith(
                                   color: colors.onPrimaryContainer,
-                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           l10n.schoolKnownBody,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -501,16 +462,21 @@ class _SkippedGroup extends StatelessWidget {
                 ],
               ),
               if (state.showSkipped) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 for (final (lesson, reason) in lessons)
                   _KnownLesson(
                     key: SchoolKeys.skippedLesson(lesson.id),
                     title: state.texts.lessonTitle(lesson.id),
                     reason: reason,
-                    onTap: () => context.go(Routes.lessonScript(lesson.id)),
+                    onTap: () => LessonGate.open(
+                      context,
+                      lessonId: lesson.id,
+                      kind: LessonKind.school,
+                      open: () => context.go(Routes.lessonScript(lesson.id)),
+                    ),
                   ),
               ],
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               OutlinedButton.icon(
                 key: SchoolKeys.reviewSkipped,
                 onPressed: cubit.toggleSkipped,
@@ -556,23 +522,26 @@ class _KnownLesson extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppShape.small),
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.sm,
+          horizontal: AppSpacing.xs,
+        ),
         child: Row(
           children: [
             Icon(
               confirmed
                   ? Icons.check_circle_rounded
                   : Icons.check_circle_outline_rounded,
-              size: 20,
+              size: AppIconSize.button,
               color: colors.primary,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: theme.textTheme.bodyLarge),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     confirmed
                         ? l10n.schoolSkippedConfirmed
@@ -584,10 +553,10 @@ class _KnownLesson extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.xs),
             Icon(
               Icons.play_arrow_rounded,
-              size: 20,
+              size: AppIconSize.button,
               color: colors.onSurfaceVariant,
             ),
           ],
@@ -605,15 +574,19 @@ class _ChallengesCard extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    return Material(
+    return Card(
       color: colors.primaryContainer,
-      borderRadius: BorderRadius.circular(AppShape.large),
       child: InkWell(
         key: SchoolKeys.challengesButton,
         borderRadius: BorderRadius.circular(AppShape.large),
         onTap: () => context.push(Routes.starChallenges),
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 12, 14),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.lg,
+          ),
           child: Row(
             children: [
               Container(
@@ -626,29 +599,28 @@ class _ChallengesCard extends StatelessWidget {
                 child: const Icon(
                   Icons.star_rounded,
                   color: AppColors.goldColor,
-                  size: 38,
+                  size: AppIconSize.large,
                 ),
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       l10n.starChallengesTitle,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                      style: context.cardTitle?.copyWith(
                         color: colors.onPrimaryContainer,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       l10n.starChallengesBody,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onPrimaryContainer,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
                       '♖ ♗ ♘ ♕ ♔ ♙',
                       style: TextStyle(
@@ -661,7 +633,7 @@ class _ChallengesCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.xs),
               Icon(
                 Directionality.of(context) == TextDirection.rtl
                     ? Icons.chevron_left

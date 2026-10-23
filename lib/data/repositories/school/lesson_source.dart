@@ -235,6 +235,8 @@ class EndgameLessonSource implements LessonSource {
     return LessonOutcome(
       last: updated.lessonDone,
       nextPart: EndgameLessonRules.recommendedPart(lesson, updated)?.id,
+      // A "Aula concluída" oferece a próxima aula da trilha.
+      next: trail.after(id)?.id,
     );
   }
 }

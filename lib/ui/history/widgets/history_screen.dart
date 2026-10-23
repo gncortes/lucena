@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/history_filter.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../view_models/history_cubit.dart';
@@ -147,11 +148,11 @@ class _HistoryTabs extends StatelessWidget {
                                     ExcludeSemantics(
                                       child: Icon(
                                         selected ? filled : outlined,
-                                        size: 20,
+                                        size: AppIconSize.button,
                                         color: color,
                                       ),
                                     ),
-                                    const SizedBox(width: 6),
+                                    const SizedBox(width: AppSpacing.sm),
                                     // Sem corte com a fonte grande: o rótulo
                                     // encolhe para caber (contrato §9).
                                     Flexible(
@@ -161,12 +162,7 @@ class _HistoryTabs extends StatelessWidget {
                                           label,
                                           maxLines: 1,
                                           style: theme.textTheme.labelLarge
-                                              ?.copyWith(
-                                                color: color,
-                                                fontWeight: selected
-                                                    ? FontWeight.w700
-                                                    : FontWeight.w500,
-                                              ),
+                                              ?.copyWith(color: color),
                                         ),
                                       ),
                                     ),

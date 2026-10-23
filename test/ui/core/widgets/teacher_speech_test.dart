@@ -1025,7 +1025,7 @@ void main() {
       await tester.pumpAndSettle();
       final avatar = tester.getRect(find.byType(CharacterAvatar));
       final words = tester.getRect(find.byKey(speech));
-      expect(avatar.width, 32);
+      expect(avatar.width, CharacterAvatar.mini);
       expect(words.left, greaterThan(avatar.right));
       expect(words.top - avatar.top, lessThan(12));
       expect(find.byKey(const Key('marks')), findsNothing);
@@ -1036,7 +1036,10 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('marks')).hitTestable(), findsOneWidget);
-      expect(tester.getRect(find.byType(CharacterAvatar)).width, 64);
+      expect(
+        tester.getRect(find.byType(CharacterAvatar)).width,
+        CharacterAvatar.speech,
+      );
       expect(tester.widget<Text>(find.byKey(speech)).style!.fontSize, fontSize);
       expect(shown(tester), long);
       expect(tester.takeException(), isNull);

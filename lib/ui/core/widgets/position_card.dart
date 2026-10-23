@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'goal_style.dart';
 import 'position_board.dart';
+import '../theme/app_icon_size.dart';
+import '../theme/app_spacing.dart';
 
 /// Um cartão de posição numa grade (a Jornada, o catálogo): o tabuleiro na
 /// largura do cartão, o selo de feito sobre ele e, embaixo, o que identifica
@@ -35,13 +37,11 @@ class PositionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Card(
-      margin: EdgeInsets.zero,
-      color: colors.surfaceContainerLow,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(AppSpacing.sm),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -65,7 +65,7 @@ class PositionCard extends StatelessWidget {
                           child: Icon(
                             Icons.check_circle,
                             key: doneKey,
-                            size: 28,
+                            size: AppIconSize.large,
                             color: ChangeColors.of(context, up: true),
                             semanticLabel: label,
                           ),
@@ -74,7 +74,7 @@ class PositionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               ...children,
             ],
           ),

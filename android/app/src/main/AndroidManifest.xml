@@ -3,6 +3,10 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- As páginas da Wikipedia dos nomes citados nas aulas (T64). -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Os avisos (E1.21) e os lembretes locais (E1.23). Agendamento não
+         exato: sem SCHEDULE_EXACT_ALARM. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:label="Lucena"
@@ -30,7 +34,52 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Os links do app chegam pelo app_links, não pelo roteador. -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <!-- App Links dos desafios (E1.14): /p/<código>. Sem o app, o
+                 endereço abre a landing (firebase.json). O domínio definitivo
+                 entra junto do provisório até a troca. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"/>
+                <data android:host="lucena-2f4de.web.app"/>
+                <data android:host="playlucena.com"/>
+                <data android:host="www.playlucena.com"/>
+                <data android:pathPrefix="/p/"/>
+            </intent-filter>
+            <!-- A volta do login do Lichess (OAuth com PKCE, E1.12). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="com.gncortes.lucena" android:host="lichess-auth"/>
+            </intent-filter>
         </activity>
+        <!-- Os lembretes agendados e a volta deles depois de reiniciar o
+             aparelho (flutter_local_notifications). -->
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+        <!-- Analytics (E1.03 §10): começa desligado e o Dart liga só em
+             release, com a chave ligada e sem o Modo equipe. O ID de
+             publicidade nunca entra nas estatísticas. -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_default_allow_ad_personalization_signals"
+            android:value="false" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -54,6 +103,11 @@
         <!-- O reconhecimento de voz do aparelho (modo às cegas). -->
         <intent>
             <action android:name="android.speech.RecognitionService"/>
+        </intent>
+        <!-- "Abrir o e-mail" depois de pedir o link de senha nova. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.APP_EMAIL"/>
         </intent>
     </queries>
 </manifest>

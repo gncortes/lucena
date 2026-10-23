@@ -32,7 +32,7 @@ const _testInProgress = <String>{};
 /// Aulas ligadas antes do primeiro capítulo escrito (T78, sessão 0): sem
 /// capítulo e sem exercício, o app as esconde. Saem daqui com o primeiro
 /// roteiro preenchido.
-const _noChapterYet = <String>{};
+const _noChapterYet = <String>{'rook.lucena'};
 
 void main() {
   final index = jsonDecode(

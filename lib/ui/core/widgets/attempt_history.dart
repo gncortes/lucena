@@ -5,6 +5,8 @@ import '../../../domain/models/attempt.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../l10n/l10n.dart';
 import '../opponent/opponent_ui.dart';
+import '../theme/app_icon_size.dart';
+import '../theme/app_spacing.dart';
 import 'goal_style.dart';
 
 /// Partidas agrupadas por mês, da mais recente para a mais antiga, com o
@@ -40,7 +42,12 @@ class AttemptHistory extends StatelessWidget {
         currentMonth = label;
         children.add(
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 4),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.xs,
+            ),
             child: Text(
               label,
               key: monthKey(months++),
@@ -72,10 +79,14 @@ class AttemptHistory extends StatelessWidget {
       children.add(
         Card(
           key: attemptKey(index),
-          margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-          color: colors.surfaceContainerLow,
+          margin: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.xs,
+            AppSpacing.lg,
+            AppSpacing.xs,
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
                 // O resultado em destaque, na cor dele.
@@ -86,9 +97,9 @@ class AttemptHistory extends StatelessWidget {
                     color: color.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: color, size: 22),
+                  child: Icon(icon, color: color, size: AppIconSize.standard),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +108,6 @@ class AttemptHistory extends StatelessWidget {
                         result,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: color,
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       Text(
@@ -122,12 +132,12 @@ class AttemptHistory extends StatelessWidget {
                       color: colors.onSurfaceVariant,
                     ),
                   ),
-                const SizedBox(width: 4),
+                const SizedBox(width: AppSpacing.xs),
                 Icon(
                   attempt.fulfilled
                       ? Icons.check_circle
                       : Icons.cancel_outlined,
-                  size: 20,
+                  size: AppIconSize.button,
                   color: ChangeColors.of(context, up: attempt.fulfilled),
                 ),
               ],

@@ -16,11 +16,13 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/custom_position_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/widgets/actions_footer.dart';
 
 /// Montar uma posição: no editor (tocar na peça da paleta e depois nas casas)
 /// ou colando um FEN. A posição só segue quando é jogável.
@@ -133,24 +135,19 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                     _editor(state, board),
                     Expanded(
                       child: ListView(
-                        padding: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                         children: [
                           _palette(board),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: AppSpacing.md),
                           _turnAndGoal(state),
                           _fenField(state),
                         ],
                       ),
                     ),
-                    SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                        child: FilledButton(
+                    ActionsFooter(
+                      children: [
+                        FilledButton(
                           key: CustomPositionKeys.continueButton,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(kButtonHeight),
-                          ),
                           onPressed: state.position == null
                               ? null
                               : () => context.push(
@@ -161,7 +158,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                                 ),
                           child: Text(l10n.customContinue),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -239,7 +236,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
               duration: AppMotion.tap,
               width: 46,
               height: 46,
-              padding: const EdgeInsets.all(4),
+              padding: const EdgeInsets.all(AppSpacing.xs),
               decoration: BoxDecoration(
                 color: selected
                     ? colors.primaryContainer
@@ -258,7 +255,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
     }
 
     Widget row(Side side) => Wrap(
-      spacing: 6,
+      spacing: AppSpacing.sm,
       alignment: WrapAlignment.center,
       children: [
         for (final role in roles)
@@ -282,9 +279,14 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
     );
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        0,
+      ),
       child: Column(
-        spacing: 6,
+        spacing: AppSpacing.sm,
         children: [
           // A paleta é sempre da esquerda para a direita, como o tabuleiro.
           Directionality(
@@ -296,7 +298,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
             child: row(Side.black),
           ),
           Wrap(
-            spacing: 6,
+            spacing: AppSpacing.sm,
             children: [
               tool(
                 key: CustomPositionKeys.moveTool,
@@ -329,9 +331,9 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
     final l10n = context.l10n;
     final cubit = context.read<CustomPositionCubit>();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: Column(
-        spacing: 10,
+        spacing: AppSpacing.md,
         children: [
           SizedBox(
             width: double.infinity,
@@ -390,7 +392,12 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
     final theme = Theme.of(context);
     final problem = state.problem;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -410,7 +417,6 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
               decoration: InputDecoration(
                 labelText: l10n.customFen,
                 helperText: l10n.customFenHint,
-                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   key: CustomPositionKeys.pasteButton,
                   icon: const Icon(Icons.content_paste),
@@ -426,16 +432,16 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
             child: problem == null
                 ? const SizedBox(width: double.infinity)
                 : Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: AppSpacing.md),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(
                           Icons.error_outline,
                           color: theme.colorScheme.error,
-                          size: 20,
+                          size: AppIconSize.button,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
                             problemMessage(l10n, problem),

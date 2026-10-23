@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dartchess/dartchess.dart';
 
+import '../../../domain/models/challenge_link.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_mode.dart';
@@ -56,6 +57,8 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
         'speedrunId': snapshot.mode.speedrunId,
         'speedrunAttemptId': snapshot.mode.speedrunAttemptId,
         'speedrunStage': snapshot.mode.speedrunStage,
+        'fromLink': snapshot.mode.fromLink,
+        'link': snapshot.mode.link?.uri.toString(),
       },
       'startedAt': snapshot.startedAt?.millisecondsSinceEpoch,
       'moveTimesMs': [
@@ -105,6 +108,11 @@ class LocalOngoingGameRepository implements OngoingGameRepository {
               speedrunId: mode['speedrunId'] as String?,
               speedrunAttemptId: mode['speedrunAttemptId'] as int?,
               speedrunStage: mode['speedrunStage'] as int?,
+              fromLink: mode['fromLink'] as bool? ?? false,
+              link: switch (mode['link']) {
+                final String url => ChallengeLink.tryParse(Uri.parse(url)),
+                _ => null,
+              },
             ),
       startedAt: startedAt == null
           ? null

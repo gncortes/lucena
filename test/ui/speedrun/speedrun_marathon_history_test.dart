@@ -213,7 +213,7 @@ void main() {
       expect(find.text('Maratona'), findsOneWidget);
 
       final chip = tester.getRect(find.byKey(SpeedrunKeys.paceChip));
-      expect(chip.height, closeTo(28, 1));
+      expect(chip.height, closeTo(32, 1));
       expect(
         find.descendant(
           of: find.byKey(SpeedrunKeys.paceChip),
@@ -227,7 +227,7 @@ void main() {
           matching: find.byType(Text),
         ),
       );
-      expect(chipText.style?.fontWeight, FontWeight.w700);
+      expect(chipText.style?.fontWeight, FontWeight.w500);
       expect(chipText.style?.fontSize, 14);
       // O título é só o nome do final, sem "Maratona:" (o chip já diz).
       expect(find.textContaining('Maratona:'), findsNothing);

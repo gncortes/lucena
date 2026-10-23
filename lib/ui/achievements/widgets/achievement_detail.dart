@@ -6,12 +6,15 @@ import '../../../domain/models/character.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/achievements_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import 'achievement_medal.dart';
 import 'achievement_ui.dart';
-import '../../core/widgets/progress_pill.dart';
+import '../../core/widgets/animated_progress.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 
 /// Abre o detalhe de [achievement] num painel inferior. Obtida ([unlocked]),
 /// mostra a data e a hora e, quando a origem foi gravada, o botão para a
@@ -202,7 +205,11 @@ class _AchievementDetailState extends State<AchievementDetail>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.event_available, size: 18, color: colors.primary),
+                Icon(
+                  Icons.event_available,
+                  size: AppIconSize.button,
+                  color: colors.primary,
+                ),
                 const SizedBox(width: AppSpacing.sm),
                 Flexible(
                   child: Text(
@@ -225,11 +232,15 @@ class _AchievementDetailState extends State<AchievementDetail>
               style: theme.textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.sm),
-            ProgressPill(value: progress.fraction),
+            AnimatedProgress(value: progress.fraction),
           ],
           if (source case (final route, final speedrun)) ...[
             const SizedBox(height: AppSpacing.xl),
             FilledButton.tonalIcon(
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(kButtonHeight),
+                textStyle: AppButtonText.footer(context),
+              ),
               key: speedrun
                   ? AchievementsKeys.detailOpenSpeedrun
                   : AchievementsKeys.detailOpenGame,
@@ -246,6 +257,10 @@ class _AchievementDetailState extends State<AchievementDetail>
             const SizedBox(height: AppSpacing.xl),
             FilledButton.icon(
               key: AchievementsKeys.detailShortcut,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(kButtonHeight),
+                textStyle: AppButtonText.footer(context),
+              ),
               onPressed: () => widget.onOpen(shortcut.route),
               icon: const Icon(Icons.arrow_forward),
               label: Text(shortcut.label),

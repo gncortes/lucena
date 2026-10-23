@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 
 import '../keys/free_board_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_motion.dart';
+import '../theme/app_shadow.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_text.dart';
 
 /// A entrada de uma partida contra a máquina (T51, A2), sobre o tabuleiro: o
 /// cartão do adversário em cima, o do jogador embaixo (cada um na cor das
@@ -46,10 +50,10 @@ class VersusIntro extends StatefulWidget {
 
   /// A entrada inteira com a contagem: os cartões, a saída deles e os
   /// números.
-  static const duration = Duration(milliseconds: 4600);
+  static const duration = AppMotion.versus;
 
   /// Sem contagem: os cartões entram, uma pausa curta e saem.
-  static const shortDuration = Duration(milliseconds: 2000);
+  static const shortDuration = AppMotion.versusShort;
 
   @override
   State<VersusIntro> createState() => _VersusIntroState();
@@ -168,7 +172,7 @@ class _VersusIntroState extends State<VersusIntro>
                         child: Icon(
                           Icons.person,
                           color: theme.colorScheme.onPrimary,
-                          size: 32,
+                          size: AppIconSize.large,
                         ),
                       ),
                       name: widget.playerName,
@@ -201,7 +205,6 @@ class _VersusIntroState extends State<VersusIntro>
                         fontSize: 144,
                         height: 1,
                         color: AppColors.white,
-                        fontWeight: FontWeight.w900,
                         shadows: const [
                           Shadow(
                             blurRadius: 18,
@@ -241,20 +244,20 @@ class VersusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dark = side == Side.black;
-    final ink = dark ? AppColors.white : AppColors.inkWarm;
+    final ink = dark ? AppColors.white : AppColors.ink;
     return Container(
       width: 236,
       height: 64,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: dark ? AppColors.inkWarm : AppColors.white,
+        color: dark ? AppColors.ink : AppColors.white,
         borderRadius: BorderRadius.circular(AppShape.small),
-        boxShadow: const [BoxShadow(blurRadius: 12, color: AppColors.black38)],
+        boxShadow: const [AppShadow.portrait],
       ),
       child: Row(
         children: [
           SizedBox.square(dimension: 64, child: avatar),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -264,19 +267,15 @@ class VersusCard extends StatelessWidget {
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: ink,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: theme.textTheme.titleSmall?.copyWith(color: ink),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   detail.toUpperCase(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: ink.withValues(alpha: 0.7),
-                    fontWeight: FontWeight.w700,
                     letterSpacing: 0.6,
                   ),
                 ),
@@ -285,7 +284,7 @@ class VersusCard extends StatelessWidget {
           ),
           // O rei da cor das peças, como o selo da divisão no chess.com.
           Padding(
-            padding: const EdgeInsets.only(right: 10),
+            padding: const EdgeInsets.only(right: AppSpacing.md),
             child: ExcludeSemantics(
               child: Image(
                 width: 30,
@@ -309,16 +308,18 @@ class VersusSeal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.md,
+      vertical: AppSpacing.sm,
+    ),
     decoration: BoxDecoration(
-      color: AppColors.inkWarm,
+      color: AppColors.ink,
       borderRadius: BorderRadius.circular(AppShape.small),
-      boxShadow: const [BoxShadow(blurRadius: 8, color: AppColors.black38)],
+      boxShadow: const [AppShadow.portrait],
     ),
     child: Text(
       context.l10n.versusLabel,
-      style: Theme.of(context).textTheme.titleMedium
-          ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w900),
+      style: context.cardTitle?.copyWith(color: AppColors.white),
     ),
   );
 }

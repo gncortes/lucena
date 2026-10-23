@@ -34,6 +34,10 @@ void main() {
               'rating REAL NOT NULL, deviation REAL NOT NULL, volatility REAL '
               'NOT NULL)',
             )
+            ..execute(
+              'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT '
+              'NULL, rating INTEGER NOT NULL, PRIMARY KEY (id))',
+            )
             ..execute('PRAGMA user_version = 6');
         },
       ),

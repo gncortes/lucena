@@ -15,10 +15,14 @@ import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/theme/app_button.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/character_avatar.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -26,8 +30,9 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
-import '../../core/widgets/progress_pill.dart';
+import '../../core/widgets/animated_progress.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 
 /// As qualidades na ordem do resumo, da melhor para a pior.
 const _summaryOrder = [
@@ -105,8 +110,8 @@ class ReviewSummary extends StatelessWidget {
             l10n.reviewRunning(math.min(done + 1, total), total),
             style: theme.textTheme.titleSmall,
           ),
-          const SizedBox(height: 10),
-          ProgressPill(value: state.reviewProgress),
+          const SizedBox(height: AppSpacing.md),
+          AnimatedProgress(value: state.reviewProgress),
         ],
       );
     } else if (review == null) {
@@ -116,25 +121,23 @@ class ReviewSummary extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.insights, color: colors.primary),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   l10n.reviewStart,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: theme.textTheme.titleSmall,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: AppSpacing.xs),
           Text(
             l10n.reviewSpeedHint,
             style: theme.textTheme.bodySmall?.copyWith(
               color: colors.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
           _speedButtons(context, 0),
         ],
       );
@@ -158,7 +161,7 @@ class ReviewSummary extends StatelessWidget {
               Expanded(child: _name(context, blackName, TextAlign.end)),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
               _AccuracyBox(
@@ -178,25 +181,30 @@ class ReviewSummary extends StatelessWidget {
           // de novo com mais tempo de engine.
           if (review.depth <
               GameDetailsCubit.reviewWeights[ReviewSpeed.deep]!) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.md),
             Text(
               l10n.reviewDeeper,
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.sm),
             _speedButtons(context, review.depth),
           ],
         ],
       );
     }
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
       color: Colors.transparent,
       elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -226,7 +234,7 @@ class ReviewSummary extends StatelessWidget {
     ];
     final style = FilledButton.styleFrom(
       minimumSize: const Size.fromHeight(kButtonHeight),
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
     );
     // A próxima a fazer fica em destaque.
     final next = speeds
@@ -238,7 +246,7 @@ class ReviewSummary extends StatelessWidget {
     return Row(
       children: [
         for (final (i, (speed, key, label)) in speeds.indexed) ...[
-          if (i > 0) const SizedBox(width: 8),
+          if (i > 0) const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: () {
               void onPressed() =>
@@ -250,7 +258,10 @@ class ReviewSummary extends StatelessWidget {
                   key: key,
                   style: style,
                   onPressed: null,
-                  icon: const Icon(Icons.check_rounded, size: 18),
+                  icon: const Icon(
+                    Icons.check_rounded,
+                    size: AppIconSize.button,
+                  ),
                   label: OneLine(label),
                 );
               }
@@ -279,8 +290,7 @@ class ReviewSummary extends StatelessWidget {
     textAlign: align,
     maxLines: 1,
     overflow: TextOverflow.ellipsis,
-    style: Theme.of(context).textTheme.titleSmall
-        ?.copyWith(fontWeight: FontWeight.w700),
+    style: Theme.of(context).textTheme.titleSmall,
   );
 }
 
@@ -355,12 +365,12 @@ class _StoryTellerState extends State<_StoryTeller> {
     if (!_told) return const SizedBox.shrink();
     return Padding(
       // Vão de 8 em cima, como o do balão nas outras telas.
-      padding: const EdgeInsets.only(top: 8, bottom: 14),
+      padding: const EdgeInsets.only(top: AppSpacing.sm, bottom: AppSpacing.lg),
       child: TeacherSpeech(
         key: GameDetailsKeys.story,
         teacher: widget.viktor,
         text: widget.stories[_index % widget.stories.length],
-        avatarSize: 40,
+        avatarSize: CharacterAvatar.lesson,
         speechContext: SpeechContext.teaching,
         typed: true,
       ),
@@ -393,17 +403,26 @@ class ReviewLegend extends StatelessWidget {
     final black = review?.counts(white: false, firstIsWhite: firstIsWhite);
     TextStyle? count(MoveQuality quality, int value) =>
         theme.textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.w800,
           color: value == 0 ? colors.outline : quality.color,
           fontFeatures: const [FontFeature.tabularFigures()],
         );
     return Card(
       key: GameDetailsKeys.legend,
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        0,
+      ),
       color: Colors.transparent,
       elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -412,9 +431,7 @@ class ReviewLegend extends StatelessWidget {
                 Expanded(
                   child: Text(
                     l10n.reviewLegend,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: theme.textTheme.titleSmall,
                   ),
                 ),
                 if (review != null) ...[
@@ -423,14 +440,14 @@ class ReviewLegend extends StatelessWidget {
                 ],
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: AppSpacing.sm),
             for (final quality in _summaryOrder)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                 child: Row(
                   children: [
                     MoveQualityBadge(quality, size: 24),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,7 +455,6 @@ class ReviewLegend extends StatelessWidget {
                           Text(
                             quality.label(l10n),
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
                               color: quality.color,
                             ),
                           ),
@@ -511,7 +527,10 @@ class _AccuracyBox extends StatelessWidget {
     final text = value == null ? '–' : formatAccuracy(value, locale);
     return Container(
       constraints: const BoxConstraints(minWidth: 96),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: light ? AppColors.paper : AppColors.chessBlackColor,
         borderRadius: BorderRadius.circular(AppShape.medium),
@@ -520,9 +539,9 @@ class _AccuracyBox extends StatelessWidget {
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: light ? AppColors.paperInk : AppColors.white,
+          color: light ? AppColors.ink : AppColors.white,
           fontSize: 26,
-          fontWeight: FontWeight.w800,
+          fontWeight: AppWeight.heavy,
           fontFeatures: const [FontFeature.tabularFigures()],
         ),
       ),
@@ -744,7 +763,7 @@ class _EvalBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final share = (whiteWin ?? 50) / 100;
     final white = Container(color: AppColors.paper);
-    final black = Container(color: AppColors.graphite);
+    final black = Container(color: AppColors.chessBlackColor);
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppShape.small),
       child: SizedBox(
@@ -783,14 +802,16 @@ class _EvalBar extends StatelessWidget {
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xs,
+                      ),
                       child: Text(
                         label,
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: AppWeight.heavy,
                           color: whiteAhead
-                              ? AppColors.graphite
+                              ? AppColors.chessBlackColor
                               : AppColors.paper,
                         ),
                       ),
@@ -877,7 +898,6 @@ class MoveExplanation extends StatelessWidget {
           ),
           style: theme.textTheme.titleSmall?.copyWith(
             color: reviewed.quality.color,
-            fontWeight: FontWeight.w800,
           ),
         );
         trailing = Text(
@@ -916,11 +936,22 @@ class MoveExplanation extends StatelessWidget {
     }
     return Container(
       key: GameDetailsKeys.explanation,
-      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       child: Row(
         children: [
-          if (leading != null) ...[leading, const SizedBox(width: 12)],
+          if (leading != null) ...[
+            leading,
+            const SizedBox(width: AppSpacing.md),
+          ],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -977,7 +1008,12 @@ class ReviewNavigation extends StatelessWidget {
     final cubit = context.read<GameDetailsCubit>();
     final colors = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.sm,
+        0,
+      ),
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Row(
@@ -1015,14 +1051,13 @@ class ReviewNavigation extends StatelessWidget {
                 child: FilterChip(
                   key: GameDetailsKeys.engineButton,
                   selected: state.engine,
-                  showCheckmark: false,
                   selectedColor: colors.primary,
                   side: state.engine
                       ? BorderSide(color: colors.primary)
                       : BorderSide(color: colors.outline),
                   avatar: Icon(
                     Icons.memory,
-                    size: 18,
+                    size: AppIconSize.button,
                     color: state.engine
                         ? colors.onPrimary
                         : colors.onSurfaceVariant,
@@ -1033,9 +1068,6 @@ class ReviewNavigation extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: state.engine ? colors.onPrimary : colors.onSurface,
-                      fontWeight: state.engine
-                          ? FontWeight.w700
-                          : FontWeight.w500,
                     ),
                   ),
                   // A escolha fica gravada: a próxima partida abre igual.
@@ -1094,7 +1126,6 @@ class ReviewNavigation extends StatelessWidget {
   Future<void> _export(BuildContext context, _Export choice) async {
     final fen = state.shownPosition?.fen;
     if (fen == null) return;
-    final messenger = ScaffoldMessenger.of(context);
     final copied = context.l10n.reviewCopied;
     switch (choice) {
       case _Export.lichess:
@@ -1109,7 +1140,7 @@ class ReviewNavigation extends StatelessWidget {
         );
       case _Export.fen:
         await Clipboard.setData(ClipboardData(text: fen));
-        messenger.showSnackBar(SnackBar(content: Text(copied)));
+        if (context.mounted) showLucenaSnackBar(context, copied);
       case _Export.pgn:
         final result = switch (attempt.outcome) {
           AttemptOutcome.draw => '1/2-1/2',
@@ -1126,7 +1157,7 @@ class ReviewNavigation extends StatelessWidget {
             ),
           ),
         );
-        messenger.showSnackBar(SnackBar(content: Text(copied)));
+        if (context.mounted) showLucenaSnackBar(context, copied);
     }
   }
 }
@@ -1157,7 +1188,7 @@ class EngineLinesPanel extends StatelessWidget {
               dimension: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.md),
             Text(l10n.reviewEngineThinking),
           ],
         ),
@@ -1169,12 +1200,12 @@ class EngineLinesPanel extends StatelessWidget {
         for (final (index, line) in lines.indexed)
           Padding(
             key: GameDetailsKeys.engineLine(index),
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
             child: Row(
               children: [
                 Container(
                   width: 58,
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: line.score.whiteWinPercent >= 50
@@ -1185,15 +1216,15 @@ class EngineLinesPanel extends StatelessWidget {
                   child: Text(
                     formatScore(line.score, locale),
                     style: TextStyle(
-                      fontWeight: FontWeight.w800,
+                      fontWeight: AppWeight.heavy,
                       color: line.score.whiteWinPercent >= 50
-                          ? AppColors.paperInk
+                          ? AppColors.ink
                           : AppColors.white,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: SanText(
                     _numbered(
@@ -1210,16 +1241,26 @@ class EngineLinesPanel extends StatelessWidget {
     }
     return Card(
       key: GameDetailsKeys.engineLines,
-      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        0,
+      ),
       color: Colors.transparent,
       elevation: 0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ...children,
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
               style: theme.textTheme.labelSmall?.copyWith(

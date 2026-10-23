@@ -17,6 +17,7 @@ import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../domain/placement_fixtures.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
+import '../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
@@ -40,6 +41,8 @@ void main() {
     Onboarding onboarding = const Onboarding(done: true),
     FakeHomeLayoutRepository? layout,
     FakePlacementRepository? placement,
+    FakeFeaturedRepository? featured,
+    FakeFeaturedProgressRepository? featuredProgress,
   }) {
     final cubit = HomeCubit(
       journey: FakeJourneyRepository(),
@@ -56,6 +59,9 @@ void main() {
       endgameProgress: endgames,
       homeLayout: layout,
       placement: placement,
+      featured: featured,
+      featuredProgress: featuredProgress,
+      now: featured == null ? null : now,
     );
     addTearDown(cubit.close);
     return cubit;
@@ -81,6 +87,27 @@ void main() {
     saveResultValue: resultWith({'rook.lucena': gap, 'rook.philidor': gap}),
   );
 
+  test('E1.17: a home destaca o primeiro final em destaque', () async {
+    final home = cubit(
+      featured: FakeFeaturedRepository(sampleFeaturedCatalog()),
+      featuredProgress: FakeFeaturedProgressRepository(),
+    );
+    await home.load();
+    expect(home.state.featured?.id, 'b');
+  });
+
+  test('E1.17: sem finais em destaque, a home não mostra a seção', () async {
+    final home = cubit(
+      featured: FakeFeaturedRepository(),
+      featuredProgress: FakeFeaturedProgressRepository(),
+    );
+    await home.load();
+    expect(home.state.featured, isNull);
+    final plain = cubit();
+    await plain.load();
+    expect(plain.state.featured, isNull);
+  });
+
   test('C9: finais prioritários mostram a mesma próxima aula do roteiro, não iniciada', () async {
     final placement = placed();
     final home = cubit(
@@ -95,9 +122,7 @@ void main() {
       endgames: FakeEndgameLessonRepository(),
       endgameProgress: endgames,
     ).load();
-    final expected = roadmap!.steps.firstWhere(
-      (step) => !step.school && !step.soon,
-    );
+    final expected = roadmap!.steps.firstWhere((step) => !step.school);
     expect(home.state.continuePath, HomePath.endgames);
     expect(home.state.endgame!.lessonId, expected.lessonId);
     expect(home.state.endgame!.lessonId, 'rook.lucena');

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
+import 'package:lucena/domain/models/onboarding.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -11,7 +15,6 @@ import 'robots/home_robot.dart';
 import 'robots/journey_robot.dart';
 import 'robots/settings_robot.dart';
 import 'robots/tour_robot.dart';
-import 'robots/variant.dart';
 
 const _english = Locale('en', 'US');
 
@@ -26,11 +29,9 @@ void main() {
     await tour.start();
 
     await HomeRobot($).expectVisible();
-    await $(HomeKeys.whereTitle).waitUntilVisible();
-    expectText(
-      $.tester.widget<Text>(find.byKey(HomeKeys.whereTitle)).data,
-      'Percival',
-    );
+    // "Aprender finais" (o marcado na pergunta) é o cartão do alto.
+    await $(HomeKeys.goalCard).waitUntilVisible();
+    expect(find.byKey(HomeKeys.whereCard), findsNothing);
     final journey = JourneyRobot($);
     await journey.open();
     await journey.expectCurrent('Percival');
@@ -127,5 +128,23 @@ void main() {
     await home.openSettings();
     await settings.openAppearance();
     await settings.expectBoardAppearanceValue('Green · Merida');
+  });
+
+  patrolTest('depois do tour vem o objetivo; "Já tenho conta" abre a conta, '
+      'que volta ao objetivo, e Continuar segue para "Seu nível"', ($) async {
+    final tour = TourRobot($);
+    await AppRobot($).open(systemLocale: _english, tour: true);
+    await tour.finishSteps();
+    await $(GoalKeys.screen).waitUntilVisible();
+    // Fechado o app aqui, ele volta na pergunta (nada foi dado por visto).
+    final saved = await tour.savedOnboarding();
+    expect(saved.done, isFalse);
+    expect(saved.stage, OnboardingStage.goal);
+    await $(GoalKeys.haveAccount).tap();
+    await $(AccountKeys.enterScreen).waitUntilVisible();
+    await $(AccountKeys.close).tap();
+    await $(GoalKeys.screen).waitUntilVisible();
+    await tour.answerGoal();
+    await $(LevelKeys.screen).waitUntilVisible();
   });
 }

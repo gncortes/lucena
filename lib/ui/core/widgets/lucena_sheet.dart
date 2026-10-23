@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../keys/sheet_keys.dart';
-import '../theme/app_shape.dart';
+import '../theme/app_chip.dart';
 import '../theme/app_sheet.dart';
 import 'sheet_close_button.dart';
+import 'sheet_header.dart';
 
 /// O único jeito de abrir uma folha de baixo no app (T73, D7; canvas 79d4acc):
 /// raio 28, alça 32×4 e o ✕ redondo por fora, acima do canto final
@@ -58,6 +59,10 @@ class LucenaSheetFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final sheet = theme.bottomSheetTheme;
+    final surface =
+        color ??
+        sheet.modalBackgroundColor ??
+        theme.colorScheme.surfaceContainerLow;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -78,38 +83,28 @@ class LucenaSheetFrame extends StatelessWidget {
         Flexible(
           child: Material(
             key: sheetKey ?? SheetKeys.surface,
-            color:
-                color ??
-                sheet.modalBackgroundColor ??
-                theme.colorScheme.surfaceContainerLow,
+            color: surface,
             shape: AppSheet.shape,
             clipBehavior: Clip.antiAlias,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: AppSheet.handleStrip,
-                  child: Center(
-                    child: Container(
-                      key: SheetKeys.handle,
-                      width: AppSheet.handleSize.width,
-                      height: AppSheet.handleSize.height,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.onSurfaceVariant.withValues(
-                          alpha: .4,
-                        ),
-                        borderRadius: BorderRadius.circular(AppShape.hairline),
-                      ),
-                    ),
-                  ),
+                  child: Center(child: SheetHandle(key: SheetKeys.handle)),
                 ),
                 // O `useSafeArea` da folha só guarda o topo e os lados: com a
                 // tela de ponta a ponta, a barra de navegação cobria o fim
                 // da folha ("Som e voz" cortada, Gabriel 16/10/2026). A
                 // superfície desce por trás da barra e o conteúdo para
                 // acima dela; o SafeArea de dentro de cada folha vira no-op.
-                Flexible(child: SafeArea(top: false, child: child)),
+                Flexible(
+                  child: SafeArea(
+                    top: false,
+                    child: ChipSurface(color: surface, child: child),
+                  ),
+                ),
               ],
             ),
           ),

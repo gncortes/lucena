@@ -1,12 +1,18 @@
 import 'package:dartchess/dartchess.dart';
+
+import '../../core/theme/app_chip.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/clock.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/sheet_header.dart';
+import '../../core/theme/app_spacing.dart';
 
 /// O que foi confirmado no painel do relógio. [config] nulo: sem relógio.
 class ClockChoice {
@@ -70,29 +76,13 @@ class _ClockSheetState extends State<_ClockSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = context.l10n;
     return Column(
       key: FreeBoardKeys.clockSheet,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.freeBoardClock, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(
-                l10n.clockSheetHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
+        SheetHeader(title: l10n.freeBoardClock, hint: l10n.clockSheetHint),
         // Em tela pequena as opções rolam; o botão fica sempre à vista.
         Flexible(
           child: SingleChildScrollView(
@@ -101,7 +91,9 @@ class _ClockSheetState extends State<_ClockSheet> {
               children: [
                 SwitchListTile(
                   key: FreeBoardKeys.clockEnabledSwitch,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xl,
+                  ),
                   title: Text(l10n.clockUse),
                   value: _enabled,
                   onChanged: (value) => setState(() => _enabled = value),
@@ -118,7 +110,7 @@ class _ClockSheetState extends State<_ClockSheet> {
                             SwitchListTile(
                               key: FreeBoardKeys.clockSameSwitch,
                               contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 24,
+                                horizontal: AppSpacing.xl,
                               ),
                               title: Text(l10n.clockSameForBoth),
                               value: _same,
@@ -156,16 +148,15 @@ class _ClockSheetState extends State<_ClockSheet> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-          child: FilledButton(
-            key: FreeBoardKeys.clockStartButton,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kButtonHeight),
+        ActionsFooter(
+          margin: AppSpacing.xl,
+          children: [
+            FilledButton(
+              key: FreeBoardKeys.clockStartButton,
+              onPressed: () => Navigator.of(context).pop(_choice),
+              child: Text(l10n.clockStartGame),
             ),
-            onPressed: () => Navigator.of(context).pop(_choice),
-            child: Text(l10n.clockStartGame),
-          ),
+          ],
         ),
       ],
     );
@@ -198,20 +189,21 @@ class _TimePicker extends StatelessWidget {
       color: theme.colorScheme.onSurfaceVariant,
     );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.sm,
+        AppSpacing.xl,
+        AppSpacing.xs,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Text(title, style: context.sectionTitle),
+          const SizedBox(height: AppSpacing.sm),
           Text(l10n.clockMinutes, style: label),
           Wrap(
-            spacing: 8,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
               for (final value in minutes)
                 _TimeChip(
@@ -224,10 +216,11 @@ class _TimePicker extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Text(l10n.clockIncrement, style: label),
           Wrap(
-            spacing: 8,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: [
               for (final value in increments)
                 _TimeChip(
@@ -264,11 +257,14 @@ class _TimeChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return ChoiceChip(
+      materialTapTargetSize: AppChip.tapTarget,
+      visualDensity: AppChip.density,
+      showCheckmark: false,
+      labelPadding: EdgeInsets.zero,
       label: ConstrainedBox(
         constraints: const BoxConstraints(minWidth: 24),
         child: Text(value.toString(), textAlign: TextAlign.center),
       ),
-      showCheckmark: false,
       selected: selected,
       selectedColor: colors.primary,
       labelStyle: TextStyle(

@@ -5,7 +5,6 @@ import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/placement.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
-import '../../../domain/use_cases/visible_lessons.dart';
 
 /// Monta o roteiro do jogador (T52) a partir do resultado gravado e do
 /// progresso real, para a escola, a trilha de finais e o resultado do teste.
@@ -48,7 +47,6 @@ class RoadmapLoader {
         for (final entry in endgamesDone.lessons.entries)
           if (entry.value.lessonDone) entry.key,
       },
-      soon: VisibleLessons.roadmapSoon,
     );
   }
 }

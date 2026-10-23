@@ -740,10 +740,6 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
 
   final _barWeights = <int, int>{};
 
-  /// Liga ou desliga a engine (e, com ela, a barra de avaliação) na
-  /// posição do tabuleiro.
-  Future<void> toggleEngine() => setEngine(on: !state.engine);
-
   Future<void> setEngine({required bool on}) async {
     if (state.engine == on) return;
     emit(state.copyWith(engine: on));

@@ -9,6 +9,31 @@ class Profiles extends Table {
   TextColumn get nickname => text()();
   IntColumn get rating => integer()();
 
+  /// O objetivo da primeira abertura (`GoalPreference`). Desde a versão 9.
+  TextColumn get goal => text().nullable()();
+
+  /// De onde veio o rating (`LevelSource`) e as contas ligadas. Desde a
+  /// versão 10.
+  TextColumn get levelSource => text().nullable()();
+  TextColumn get lichessUser => text().nullable()();
+  TextColumn get chessComUser => text().nullable()();
+
+  /// O avatar e o país (E1.13). Desde a versão 11.
+  IntColumn get avatarColor => integer().withDefault(const Constant(0))();
+
+  /// Só até a versão 12: a 13 passou para [photo].
+  BoolColumn get googlePhoto => boolean().withDefault(const Constant(false))();
+  TextColumn get country => text().nullable()();
+
+  /// O estado e a cidade (E1.21). Desde a versão 12.
+  TextColumn get state => text().nullable()();
+  TextColumn get city => text().nullable()();
+
+  /// A foto do avatar (`AvatarPhoto`) e o endereço da enviada (§2.12).
+  /// Desde a versão 13.
+  TextColumn get photo => text().nullable()();
+  TextColumn get photoUrl => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -125,7 +150,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -173,6 +198,34 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 8) {
         await migrator.createIndex(ratingHistorySpeedrunAttempt);
+      }
+      // 8 -> 9: o objetivo da primeira abertura. O perfil existe desde a
+      // versão 1; quem já tinha o app fica sem objetivo.
+      if (from < 9) await migrator.addColumn(profiles, profiles.goal);
+      // 9 -> 10: a origem do rating e as contas do Lichess e do Chess.com.
+      if (from < 10) {
+        await migrator.addColumn(profiles, profiles.levelSource);
+        await migrator.addColumn(profiles, profiles.lichessUser);
+        await migrator.addColumn(profiles, profiles.chessComUser);
+      }
+      // 10 -> 11: o avatar e o país da conta.
+      if (from < 11) {
+        await migrator.addColumn(profiles, profiles.avatarColor);
+        await migrator.addColumn(profiles, profiles.googlePhoto);
+        await migrator.addColumn(profiles, profiles.country);
+      }
+      // 11 -> 12: o estado e a cidade.
+      if (from < 12) {
+        await migrator.addColumn(profiles, profiles.state);
+        await migrator.addColumn(profiles, profiles.city);
+      }
+      // 12 -> 13: a foto do avatar sai do sim/não do Google para a origem.
+      if (from < 13) {
+        await migrator.addColumn(profiles, profiles.photo);
+        await migrator.addColumn(profiles, profiles.photoUrl);
+        await customStatement(
+          "UPDATE profiles SET photo = 'google' WHERE google_photo = 1",
+        );
       }
     },
   );

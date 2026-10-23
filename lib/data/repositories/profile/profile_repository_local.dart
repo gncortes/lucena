@@ -1,5 +1,8 @@
 import 'package:drift/drift.dart';
 
+import '../../../domain/models/avatar_photo.dart';
+import '../../../domain/models/goal_preference.dart';
+import '../../../domain/models/level_source.dart';
 import '../../../domain/models/user_profile.dart';
 import '../../services/database/app_database.dart';
 import 'profile_repository.dart';
@@ -19,7 +22,20 @@ class LocalProfileRepository implements ProfileRepository {
       ..where((profile) => profile.id.equals(_rowId));
     final row = await query.getSingleOrNull();
     if (row == null) return const UserProfile();
-    return UserProfile(nickname: row.nickname, rating: row.rating);
+    return UserProfile(
+      nickname: row.nickname,
+      rating: row.rating,
+      goal: GoalPreference.fromCode(row.goal),
+      levelSource: LevelSource.fromCode(row.levelSource),
+      lichessUser: row.lichessUser,
+      chessComUser: row.chessComUser,
+      avatarColor: row.avatarColor,
+      photo: AvatarPhoto.fromCode(row.photo),
+      photoUrl: row.photoUrl,
+      country: row.country,
+      state: row.state,
+      city: row.city,
+    );
   }
 
   @override
@@ -31,6 +47,16 @@ class LocalProfileRepository implements ProfileRepository {
             id: const Value(_rowId),
             nickname: profile.nickname,
             rating: profile.rating,
+            goal: Value(profile.goal?.name),
+            levelSource: Value(profile.levelSource?.name),
+            lichessUser: Value(profile.lichessUser),
+            chessComUser: Value(profile.chessComUser),
+            avatarColor: Value(profile.avatarColor),
+            photo: Value(profile.photo.name),
+            photoUrl: Value(profile.photoUrl),
+            country: Value(profile.country),
+            state: Value(profile.state),
+            city: Value(profile.city),
           ),
         );
   }

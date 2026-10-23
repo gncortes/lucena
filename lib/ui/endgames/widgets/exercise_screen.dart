@@ -18,6 +18,7 @@ import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/exercise_actions.dart';
@@ -28,7 +29,8 @@ import '../../core/widgets/position_board.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
-import '../../core/widgets/step_timer.dart';
+import '../../core/widgets/time_display.dart';
+import '../../../domain/use_cases/step_clock.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../lesson_script/widgets/script_board.dart' show ScriptShapes;
@@ -108,7 +110,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
+    _ticker = Timer.periodic(AppMotion.exerciseTick, (_) {
       if (!mounted || _background) {
         return;
       }
@@ -212,7 +214,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               actions: [
                 if (state.exercise case final exercise?)
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 12),
+                    padding: const EdgeInsetsDirectional.only(
+                      end: AppSpacing.md,
+                    ),
                     child: Semantics(
                       label: _starLabel(l10n, state, exercise),
                       excludeSemantics: true,
@@ -223,7 +227,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                             ? Icons.star_rounded
                             : Icons.star_outline_rounded,
                         key: ExerciseKeys.stars,
-                        size: 28,
+                        size: AppIconSize.large,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
@@ -355,7 +359,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
       key: LessonScriptKeys.characterBar,
       height: ScriptPage.stripHeight,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: viktor == null ? null : header(context, viktor, 40),
       ),
     );
@@ -546,7 +550,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             ? PositionBoard(
                 fen: previewFen!,
                 size: size,
-                radius: 0,
+                radius: AppShape.none,
                 coordinates: true,
               )
             : Directionality(
@@ -714,7 +718,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   dimension: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppSpacing.md),
                 Text(l10n.lessonThinking),
               ],
               const Spacer(),
@@ -724,8 +728,19 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   borderRadius: BorderRadius.circular(AppShape.small),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: StepTimer(key: ExerciseKeys.timer, elapsed: _elapsed),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  child: ValueListenableBuilder<Duration>(
+                    valueListenable: _elapsed,
+                    builder: (context, value, _) {
+                      final text = StepClock.format(value);
+                      return TimeDisplay(
+                        key: ExerciseKeys.timer,
+                        value: text,
+                        semanticsLabel: text,
+                        size: TimeDisplaySize.inline,
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -742,7 +757,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              0,
+            ),
             child: Text(
               l10n.exerciseScoreLocked,
               key: ExerciseKeys.locked,

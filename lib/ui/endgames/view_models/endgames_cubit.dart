@@ -154,7 +154,6 @@ class EndgamesState {
   String? get next {
     final placed = roadmap?.nextEndgame;
     if (placed != null &&
-        !placed.soon &&
         status(placed.lessonId) != EndgameLessonStatus.passed) {
       return placed.lessonId;
     }

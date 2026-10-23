@@ -167,8 +167,6 @@ void main() {
     await cubit.playTyped('Ta7');
     await say(cubit, ['torre a6']);
     cubit.setView(BlindView.hidden);
-    cubit.toggleMoves();
-    cubit.toggleTyping();
     await cubit.pauseForBackground();
     final restored = await open(fen, checkpoints: repository);
     expect(restored.state.position!.fen, cubit.state.position!.fen);
@@ -176,8 +174,6 @@ void main() {
     expect(restored.state.phase, BlindPhase.proposing);
     expect(restored.state.proposal!.move.uci, cubit.state.proposal!.move.uci);
     expect(restored.state.view, BlindView.hidden);
-    expect(restored.state.showMoves, false);
-    expect(restored.state.typing, true);
   });
 
   test(

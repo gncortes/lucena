@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gncortes.lucena",
+      "sha256_cert_fingerprints": [
+        "EE:FF:96:EE:85:8F:EC:28:2D:46:BD:71:E7:F7:41:53:24:13:C8:74:6C:DE:75:DF:2C:80:ED:FA:A4:8A:A3:05"
+      ]
+    }
+  }
+]

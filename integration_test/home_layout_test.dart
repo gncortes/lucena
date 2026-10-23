@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
@@ -16,7 +17,8 @@ void main() {
   Future<void> tourAs(PatrolIntegrationTester $, RatingLevel level) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
-    await tour.nextUntilLevel();
+    // Treinar finais: o objetivo sai da lista; as Aulas de finais ficam nela.
+    await tour.nextUntilLevel(GoalPreference.train);
     await tour.chooseLevel(level);
     await tour.start();
   }

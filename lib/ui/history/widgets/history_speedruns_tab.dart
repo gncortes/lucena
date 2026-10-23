@@ -10,7 +10,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/scroll_padding.dart';
@@ -39,7 +38,8 @@ class HistorySpeedrunsTab extends StatelessWidget {
     final padding = scrollPadding(context, bottom: 48);
     if (all.isEmpty) {
       return ListView(
-        padding: padding,
+        // 32 acima do vazio, como no canvas.
+        padding: padding + const EdgeInsets.only(top: AppSpacing.xxl),
         children: [
           KeyedSubtree(
             key: HistoryKeys.empty,
@@ -139,18 +139,13 @@ class HistorySpeedrunsTab extends StatelessWidget {
         ),
       );
       children.add(
-        Container(
+        Card(
           margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(AppShape.large),
-          ),
           child: Column(
             children: [
               for (final (position, (index, row)) in inLevel.indexed) ...[
-                if (position > 0)
-                  Divider(height: 1, color: colors.outlineVariant),
+                if (position > 0) Divider(),
                 SpeedrunHistoryRowTile(
                   row: row,
                   index: index,

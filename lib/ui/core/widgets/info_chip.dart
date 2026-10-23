@@ -1,28 +1,34 @@
 import 'package:flutter/material.dart';
 
+import '../keys/core_keys.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_shape.dart';
+import '../theme/app_spacing.dart';
 
-/// O chip informativo do app (T73, D15; canvas CatalogoControles seção 4,
-/// `CompChip` informativo): pílula de 28 com ícone opcional e uma linha de
-/// texto, para ritmo, nível, objetivo e posição. Não é botão. Tem três tons:
-/// contorno (padrão), [filled] (cinza cheio) ou cores próprias
-/// ([background]/[foreground]).
+/// O chip informativo do app (canvas `CompChip` info): caixa de 32 (28 no
+/// [compact]) com raio 8, sem borda, ícone opcional e uma linha de texto,
+/// para ritmo, nível, objetivo e posição. Não é botão. Os selos coloridos
+/// usam a mesma caixa, com [background]/[foreground].
 class InfoChip extends StatelessWidget {
   const InfoChip({
     required this.label,
     this.icon,
-    this.filled = false,
+    this.compact = false,
+    this.outlined = false,
     this.background,
     this.foreground,
     super.key,
   });
 
-  /// A altura do artboard; o texto maior só cresce a caixa.
-  static const height = 28.0;
+  static const height = 32.0;
+  static const compactHeight = 28.0;
 
   final String label;
   final IconData? icon;
-  final bool filled;
+  final bool compact;
+
+  /// Só o contorno (outline-variant), sem fundo: nível e Maratona do speedrun.
+  final bool outlined;
   final Color? background;
   final Color? foreground;
 
@@ -30,31 +36,33 @@ class InfoChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final tinted = background != null;
-    final color =
-        foreground ?? (filled ? colors.onSurface : colors.onSurfaceVariant);
+    final color = foreground ?? colors.onSurface;
     return Container(
-      constraints: const BoxConstraints(minHeight: height),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      key: CoreKeys.infoChip,
+      constraints: BoxConstraints(minHeight: compact ? compactHeight : height),
+      // 8 do lado do ícone, 16 do outro.
+      padding: EdgeInsetsDirectional.only(
+        start: icon == null ? 16 : 8,
+        end: AppSpacing.lg,
+      ),
       decoration: BoxDecoration(
-        color: background ?? (filled ? colors.surfaceContainerHighest : null),
-        border: filled || tinted
-            ? null
-            : Border.all(color: colors.outlineVariant),
-        borderRadius: BorderRadius.circular(AppShape.full),
+        color: outlined ? null : background ?? colors.surfaceContainer,
+        border: outlined ? Border.all(color: colors.outlineVariant) : null,
+        borderRadius: BorderRadius.circular(AppShape.small),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        spacing: 6,
+        spacing: AppSpacing.sm,
         children: [
           if (icon != null)
-            ExcludeSemantics(child: Icon(icon, size: 16, color: color)),
+            ExcludeSemantics(
+              child: Icon(icon, size: AppIconSize.small, color: color),
+            ),
           Flexible(
             child: Text(
               label,
               style: theme.textTheme.labelLarge?.copyWith(
-                fontSize: filled ? 14 : 13,
-                fontWeight: filled ? FontWeight.w700 : null,
+                fontWeight: FontWeight.w500,
                 color: color,
               ),
             ),

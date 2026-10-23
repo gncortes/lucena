@@ -792,9 +792,7 @@
       "id": "rook.lucena",
       "group": "queenRook",
       "band": "intermediate",
-      "requires": [
-        "mate.rook"
-      ],
+      "requires": [],
       "lessons": [
         {
           "id": "rook.lucena",

@@ -63,7 +63,7 @@ void main() {
       find.byKey(EndgamesKeys.lesson('mates.bishopKnight.deletang')),
       findsOneWidget,
     );
-    for (final module in ['basics', 'rook', 'minor']) {
+    for (final module in ['basics', 'minor']) {
       expect(find.byKey(EndgamesKeys.module(module)), findsNothing);
     }
     expect(find.byKey(EndgamesKeys.lesson('pawns.keySquares')), findsOneWidget);
@@ -77,7 +77,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(EndgamesKeys.lesson('pawns.square')), findsNothing);
-    expect(find.text('0 de 5 concluídas'), findsOneWidget);
+    expect(find.text('0 de 6 concluídas'), findsOneWidget);
     // A dama contra torre (T78) abre o módulo da dama, mais abaixo.
     await tester.scrollUntilVisible(
       find.byKey(EndgamesKeys.lesson('queen.vsRook.philidor')),
@@ -85,6 +85,13 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.byKey(EndgamesKeys.module('queen')), findsOneWidget);
+    // A Lucena (T79) abre o módulo da torre, depois da dama.
+    await tester.scrollUntilVisible(
+      find.byKey(EndgamesKeys.lesson('rook.lucena')),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.byKey(EndgamesKeys.module('rook')), findsOneWidget);
 
     if (_print.isNotEmpty) {
       debugDisableShadows = false;

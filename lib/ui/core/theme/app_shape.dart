@@ -2,6 +2,9 @@
 /// teste `test/ui/core/motion_usage_test.dart` acusa raio com número fora
 /// destes.
 abstract final class AppShape {
+  /// Cantos retos: o tabuleiro de jogar, sem moldura.
+  static const none = 0.0;
+
   /// Barra de rolagem fina e alça do painel (LICOES-V2 §5, A10).
   static const hairline = 2.0;
 

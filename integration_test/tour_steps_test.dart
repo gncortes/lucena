@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
@@ -15,7 +17,7 @@ import 'robots/tour_robot.dart';
 const _english = Locale('en', 'US');
 
 void main() {
-  patrolTest('tour B: os seis passos na ordem, com a barra de progresso '
+  patrolTest('tour B: os cinco passos na ordem, com a barra de progresso '
       'avançando a cada um e o Viktor falando em todos', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
@@ -36,22 +38,28 @@ void main() {
       );
     }
     expect(previous, 1);
-    // O último passo troca "Continuar" por "Começar".
+    // O último passo tem a chave do fim e leva à conta.
     expect(find.byKey(TourKeys.nextButton), findsNothing);
     expect(find.byKey(TourKeys.startButton), findsOneWidget);
+    expect(find.byKey(TourKeys.skipButton), findsNothing);
   });
 
-  patrolTest('tour B, passo do nível: "Estou começando" já vem marcado, '
-      '"Começar" está habilitado e grava a faixa iniciante', ($) async {
+  patrolTest('Seu nível: "Fazer o teste" vem marcado, "Continuar" habilitado e '
+      '"Não sei jogar" grava a faixa iniciante', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
 
-    expect(tour.cubit.state.choice, TourLevelChoice.beginner);
-    expect(tour.cubit.state.levelChosen, isFalse);
-    tour.expectPrimaryEnabled(last: true);
+    expect(tour.levelCubit.state.choice, LevelChoice.test);
+    expect(tour.levelCubit.state.placed, isNull);
+    expect(
+      $.tester
+          .widget<FilledButton>(find.byKey(LevelKeys.continueButton))
+          .onPressed,
+      isNotNull,
+    );
 
-    // Começar sem tocar em nada vale "Estou começando".
+    await tour.chooseLevel(RatingLevel.beginner);
     await tour.start();
     // Com a Escola escondida (VisibleLessons), o tour leva à tela inicial.
     VisibleLessons.school
@@ -64,29 +72,13 @@ void main() {
     expect(saved.selectedRating, RatingLevel.beginner.rating);
   });
 
-  patrolTest('tour B, passo do nível: escolher outra faixa pela folha, '
-      'confirmar e começar grava a faixa', ($) async {
+  patrolTest('Seu nível: informar o rating e usar grava a faixa', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: _english, tour: true);
     await tour.nextUntilLevel();
 
     await tour.chooseLevel(RatingLevel.advanced);
-    expect(tour.cubit.state.choice, TourLevelChoice.band);
-    expect(tour.cubit.state.level, RatingLevel.advanced);
-    expect(tour.cubit.state.levelChosen, isTrue);
-    final selected = await tour.savedOnboarding();
-    expect(selected.selectedRating, RatingLevel.advanced.rating);
-
-    // Abrir a folha e sair sem confirmar não muda a faixa.
-    await tour.openBandSheet();
-    await tour.dismissBandSheet();
-    expect(tour.cubit.state.level, RatingLevel.advanced);
-
-    // Voltar ao iniciante pelo cartão dele.
-    await tour.chooseLevel(RatingLevel.beginner);
-    expect(tour.cubit.state.choice, TourLevelChoice.beginner);
-    await tour.chooseLevel(RatingLevel.advanced);
-
+    expect(tour.levelCubit.state.choice, LevelChoice.manual);
     await tour.start();
     await HomeRobot($).expectVisible();
     final saved = await tour.savedOnboarding();

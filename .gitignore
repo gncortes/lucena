@@ -54,6 +54,7 @@ tools/*
 !tools/check_l10n.py
 !tools/gen_pseudo_l10n.py
 !tools/check_lines.py
+!tools/gen_remote_defaults.py
 CLAUDE.md
 .github/agents/
 GEMINI.md
@@ -65,3 +66,6 @@ GEMINI.md
 .codex/
 .agents/
 AGENTS.md
+
+# Cache do Firebase CLI (E1.02).
+.firebase/

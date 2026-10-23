@@ -14,7 +14,10 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/review/move_quality_ui.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/widgets/goal_style.dart';
@@ -89,21 +92,27 @@ class HistoryGameRow extends StatelessWidget {
       key: RatingKeys.entry(index),
       onTap: open,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
         child: Row(
           children: [
             // O ritmo pelo ícone de sempre: raio, chama, relógio.
             Icon(
               category == null ? Icons.timer_off_outlined : paceIcon(category),
-              size: 24,
+              size: AppIconSize.standard,
               color: ChangeColors.of(context, up: true),
               semanticLabel: time == null
                   ? l10n.challengeNoClock
                   : paceLabel(l10n, time),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: AppSpacing.md),
             if (character != null)
-              CharacterAvatar(character: character, size: 36)
+              CharacterAvatar(
+                character: character,
+                size: CharacterAvatar.lesson,
+              )
             else
               Container(
                 width: 36,
@@ -114,7 +123,7 @@ class HistoryGameRow extends StatelessWidget {
                 ),
                 child: Icon(Icons.smart_toy_outlined, color: colors.outline),
               ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text.rich(
                 TextSpan(
@@ -123,7 +132,7 @@ class HistoryGameRow extends StatelessWidget {
                       text:
                           character?.name ??
                           attempt.opponent.label(l10n, level: level),
-                      style: const TextStyle(fontWeight: FontWeight.w700),
+                      style: const TextStyle(fontWeight: AppWeight.strong),
                     ),
                     if (level != null && character != null)
                       TextSpan(
@@ -144,14 +153,14 @@ class HistoryGameRow extends StatelessWidget {
             // A precisão do jogador, nas partidas já revisadas (como no
             // histórico do chess.com).
             if (game.accuracy case final accuracy?) ...[
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               Tooltip(
                 message: l10n.reviewAccuracy,
                 child: Container(
                   key: RatingKeys.entryAccuracy(index),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 2,
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
                     color: colors.surfaceContainerHighest,
@@ -165,14 +174,13 @@ class HistoryGameRow extends StatelessWidget {
                     semanticsLabel:
                         '${l10n.reviewAccuracy} ${formatAccuracy(accuracy, Localizations.localeOf(context).toString())}',
                     style: theme.textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
               ),
             ],
-            const SizedBox(width: 10),
+            const SizedBox(width: AppSpacing.md),
             Container(
               key: RatingKeys.entryResult(index),
               width: 22,
@@ -183,7 +191,7 @@ class HistoryGameRow extends StatelessWidget {
               ),
               child: Icon(
                 resultIcon,
-                size: 18,
+                size: AppIconSize.button,
                 color: colors.surface,
                 semanticLabel: resultLabel,
               ),
@@ -201,11 +209,10 @@ class HistoryGameRow extends StatelessWidget {
                       signedChange(change),
                       key: RatingKeys.entryChange(index),
                       textDirection: TextDirection.ltr,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: context.cardTitle?.copyWith(
                         color: change == 0
                             ? colors.onSurfaceVariant
                             : ChangeColors.of(context, up: change > 0),
-                        fontWeight: FontWeight.w800,
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
@@ -214,9 +221,7 @@ class HistoryGameRow extends StatelessWidget {
                     key: RatingKeys.entryRating(index),
                     style:
                         (change == null
-                                ? theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  )
+                                ? context.cardTitle
                                 : theme.textTheme.labelMedium?.copyWith(
                                     color: colors.onSurfaceVariant,
                                   ))
@@ -239,7 +244,9 @@ class HistoryGameRow extends StatelessWidget {
             reload();
           })
         : ContainerNavigation(
-            color: highlighted ? colors.primaryContainer : colors.surface,
+            color: highlighted
+                ? colors.primaryContainer
+                : Theme.of(context).scaffoldBackgroundColor,
             routeName: Routes.game(game.id),
             openBuilder: (context) => builder(context, game.id),
             onFallback: canonical,
@@ -249,7 +256,7 @@ class HistoryGameRow extends StatelessWidget {
     if (!highlighted) return row;
     return Material(
       key: RatingKeys.entryHighlighted,
-      color: colors.primaryContainer.withValues(alpha: 0.5),
+      color: colors.primaryContainer,
       child: row,
     );
   }

@@ -12,13 +12,9 @@ abstract final class BlindKeys {
   /// O espaço do tabuleiro, entre a barra do app e o painel de baixo.
   static const boardArea = Key('blind.boardArea');
   static const compactArea = Key('blind.compactArea');
-  static const heard = Key('blind.heard');
-  static const lastMoves = Key('blind.lastMoves');
-  static const toggleMoves = Key('blind.toggleMoves');
   static const copyLog = Key('blind.copyLog');
   static const micAllow = Key('blind.micAllow');
   static const micDeny = Key('blind.micDeny');
-  static const micDenied = Key('blind.micDenied');
   static const offlineMissing = Key('blind.offlineMissing');
   static const result = Key('blind.result');
   static const hint = Key('blind.hint');
@@ -47,8 +43,6 @@ abstract final class BlindKeys {
   /// O tabuleiro só com as casas, que aceita o lance pelo toque.
   static const emptyBoard = Key('blind.emptyBoard');
 
-  /// Digitar o lance: o botão que troca, o campo e o de jogar.
-  static const typeToggle = Key('blind.typeToggle');
   static const typeField = Key('blind.typeField');
   static const typeSend = Key('blind.typeSend');
 

@@ -82,7 +82,17 @@ class JourneyRobot {
   Future<void> tapLockedAndExpectMessage(String id, String text) async {
     await $(JourneyKeys.rung(id)).scrollTo().tap();
     await $(JourneyKeys.lockedMessage).waitUntilVisible();
-    expectText(_text(JourneyKeys.lockedMessage), text);
+    expectText(
+      $.tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byKey(JourneyKeys.lockedMessage),
+              matching: find.byType(Text),
+            ),
+          )
+          .data,
+      text,
+    );
     expect(find.byKey(JourneyKeys.rungScreen), findsNothing);
   }
 

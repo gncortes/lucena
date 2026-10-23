@@ -7,6 +7,8 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/pace.dart';
 import '../../../domain/models/speedrun.dart';
 import '../../../routing/routes.dart';
+import '../../core/theme/app_icon_size.dart';
+import '../../core/theme/app_text.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -18,6 +20,7 @@ import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_rating_bonus_card.dart';
 import 'speedrun_ui.dart';
+import '../../core/widgets/skeleton.dart';
 
 /// Um speedrun antes de começar (artboards `SpeedrunDetalhe*` e
 /// `MaratonaDetalhe`): quem ou o que é, o ritmo e o nível, o recorde (ou a
@@ -30,16 +33,13 @@ class SpeedrunScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
     final state = context.watch<SpeedrunCubit>().state;
     final summary = state.selected;
     if (summary == null) {
       return Scaffold(
         key: SpeedrunKeys.screen,
         appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
-        body: state.all != null
-            ? null
-            : const Center(child: CircularProgressIndicator()),
+        body: state.all != null ? null : const SkeletonList(),
       );
     }
     final characters = state.characters;
@@ -85,17 +85,22 @@ class SpeedrunScreen extends StatelessWidget {
         children: [
           SpeedrunHeader(speedrun: speedrun, characters: characters),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              0,
+            ),
             child: _Block(state: state, summary: summary),
           ),
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
-            child: Text(
-              l10n.speedrunStages,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.sm,
             ),
+            child: Text(l10n.speedrunStages, style: context.cardTitle),
           ),
           // A ordem das etapas, uma embaixo da outra: quem o jogador
           // enfrenta e, com uma tentativa em andamento, até onde ela chegou
@@ -240,10 +245,8 @@ class _RecordCard extends StatelessWidget {
     final link = _HistoryLink(withChevron: true);
     // Com a fonte grande, o link vai para baixo do recorde.
     final large = MediaQuery.textScalerOf(context).scale(14) > 21;
-    return Material(
+    return Card(
       key: SpeedrunKeys.recordCard,
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
       clipBehavior: Clip.antiAlias,
       child: Semantics(
         button: true,
@@ -254,7 +257,12 @@ class _RecordCard extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: 48),
             // 12/8/12/16 no artboard (cima, fim, baixo, início).
             child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 8, 12),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.lg,
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+              ),
               child: large
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,7 +299,9 @@ class _HistoryLink extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: AppSpacing.xs,
       children: [
-        ExcludeSemantics(child: Icon(Icons.history, size: 18, color: primary)),
+        ExcludeSemantics(
+          child: Icon(Icons.history, size: AppIconSize.button, color: primary),
+        ),
         Flexible(
           child: Text(
             l10n.speedrunSeeHistory,
@@ -305,7 +315,7 @@ class _HistoryLink extends StatelessWidget {
           ExcludeSemantics(
             child: Icon(
               rtl ? Icons.chevron_left : Icons.chevron_right,
-              size: 24,
+              size: AppIconSize.standard,
               color: primary,
             ),
           ),
@@ -350,7 +360,7 @@ class _BestAttemptRow extends StatelessWidget {
                 ExcludeSemantics(
                   child: Icon(
                     Icons.stairs,
-                    size: 18,
+                    size: AppIconSize.button,
                     color: colors.onSurfaceVariant,
                   ),
                 ),
@@ -397,63 +407,60 @@ class _OngoingCard extends StatelessWidget {
     final body = theme.textTheme.bodyMedium?.copyWith(
       color: colors.onSecondaryContainer,
     );
-    return Container(
+    return Card(
       key: SpeedrunKeys.ongoingCard,
-      // 14/16 no artboard.
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.md,
-        children: [
-          ExcludeSemantics(
-            child: Icon(
-              Icons.pause_circle,
-              size: 24,
-              color: colors.onSecondaryContainer,
+      color: colors.secondaryContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: AppSpacing.md,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.pause_circle,
+                size: AppIconSize.standard,
+                color: colors.onSecondaryContainer,
+              ),
             ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.speedrunOngoingTitle,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colors.onSecondaryContainer,
-                  ),
-                ),
-                Text(
-                  l10n.speedrunOngoingStoppedAt(
-                    stage + 1,
-                    total,
-                    opponentName(
-                      l10n,
-                      characters,
-                      speedrun.stages[stage].opponent,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.speedrunOngoingTitle,
+                    style: context.cardTitle?.copyWith(
+                      color: colors.onSecondaryContainer,
                     ),
                   ),
-                  style: body,
-                ),
-                Text(
-                  l10n.speedrunTimeSoFar(runTime(context, run.total)),
-                  style: body,
-                ),
-                if (offer > 0) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  KeyedSubtree(
-                    key: SpeedrunKeys.ongoingOffer,
-                    child: SpeedrunOfferLine(points: offer, style: body),
+                  Text(
+                    l10n.speedrunOngoingStoppedAt(
+                      stage + 1,
+                      total,
+                      opponentName(
+                        l10n,
+                        characters,
+                        speedrun.stages[stage].opponent,
+                      ),
+                    ),
+                    style: body,
                   ),
+                  Text(
+                    l10n.speedrunTimeSoFar(runTime(context, run.total)),
+                    style: body,
+                  ),
+                  if (offer > 0) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    KeyedSubtree(
+                      key: SpeedrunKeys.ongoingOffer,
+                      child: SpeedrunOfferLine(points: offer, style: body),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

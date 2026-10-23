@@ -11,13 +11,15 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../data/repositories/account/account_invite_repository.dart';
+import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/conclusion.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
+import '../../account/widgets/account_invite_sheet.dart';
 import '../../achievements/widgets/achievement_detail.dart';
-import '../../achievements/widgets/achievement_medal.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -26,9 +28,11 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
 import '../../core/share/share_button.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/celebration.dart';
@@ -50,7 +54,10 @@ import '../../core/pace/pace_ui.dart';
 import '../../speedrun/widgets/speedrun_ui.dart';
 import '../view_models/conclusion_cubit.dart';
 import 'outcome_badge.dart';
-import '../../core/widgets/progress_pill.dart';
+import '../../core/widgets/animated_progress.dart';
+import '../../core/widgets/actions_footer.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_button_text.dart';
 
 /// A tela de conclusão (T51, frente B): o resultado sobre a posição final,
 /// os dois jogadores frente a frente, as ações, o rating contando, o
@@ -58,12 +65,16 @@ import '../../core/widgets/progress_pill.dart';
 /// partida". Ela substitui a partida na pilha: fechar volta para onde o
 /// jogador estava antes de jogar.
 class ConclusionScreen extends StatefulWidget {
-  const ConclusionScreen({this.fresh = false, super.key});
+  const ConclusionScreen({this.fresh = false, this.invite, super.key});
 
   /// A partida acabou agora: as conquistas novas avisam por cima, como no
   /// fim da partida. Reaberta (o app fechado na conclusão), não avisam de
   /// novo.
   final bool fresh;
+
+  /// O convite da conta, uma vez por instalação, no fim de uma partida que
+  /// acabou agora (sem ele, nunca convida).
+  final AccountInviteRepository? invite;
 
   @override
   State<ConclusionScreen> createState() => _ConclusionScreenState();
@@ -74,6 +85,30 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
   // o resumo dela, logo abaixo.
   final _card = GlobalKey();
   final _analysis = GlobalKey();
+  bool _inviteChecked = false;
+
+  // Sem conta e com a partida pronta, fora do meio de um speedrun.
+  Future<void> _invite(ConclusionState state) async {
+    final invite = widget.invite;
+    final conclusion = state.conclusion;
+    if (_inviteChecked || invite == null || !widget.fresh) return;
+    if (!state.ready || conclusion == null) return;
+    if (conclusion.run?.nextChallenge != null) return;
+    _inviteChecked = true;
+    if (context.read<AccountRepository>().current != null) return;
+    if (!await invite.pending()) return;
+    await invite.markShown();
+    if (!mounted) return;
+    await showAccountInviteSheet(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _invite(context.read<ConclusionCubit>().state);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +171,11 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        scaffold,
+        BlocListener<ConclusionCubit, ConclusionState>(
+          listenWhen: (before, now) => !before.ready && now.ready,
+          listener: (context, state) => _invite(state),
+          child: scaffold,
+        ),
         if (widget.fresh &&
             conclusion != null &&
             conclusion.achievements.isNotEmpty)
@@ -464,7 +503,7 @@ class _Header extends StatelessWidget {
                       fen: fen,
                       size: box.maxWidth,
                       orientation: userSide,
-                      radius: 0,
+                      radius: AppShape.none,
                     ),
                   ),
                 ),
@@ -485,9 +524,7 @@ class _Header extends StatelessWidget {
                 OneLine(
                   _title(l10n, conclusion),
                   key: ConclusionKeys.title,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: context.bigNumber,
                 ),
                 if (end != null) ...[
                   const SizedBox(height: AppSpacing.xs),
@@ -511,7 +548,7 @@ class _Header extends StatelessWidget {
                           child: Icon(
                             Icons.person,
                             color: colors.onPrimary,
-                            size: 32,
+                            size: AppIconSize.large,
                           ),
                         ),
                         name: nickname.isEmpty
@@ -533,7 +570,7 @@ class _Header extends StatelessWidget {
                                 child: const Icon(
                                   Icons.smart_toy_outlined,
                                   color: AppColors.chessWhiteColor,
-                                  size: 32,
+                                  size: AppIconSize.large,
                                 ),
                               )
                             : CharacterAvatar(
@@ -576,7 +613,7 @@ class _Player extends StatelessWidget {
     final frame = Container(
       width: 72,
       height: 72,
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppShape.medium),
         color: winner ? colors.primary : colors.outlineVariant,
@@ -599,12 +636,7 @@ class _Player extends StatelessWidget {
         else
           frame,
         const SizedBox(height: AppSpacing.xs),
-        OneLine(
-          name,
-          style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        OneLine(name, style: theme.textTheme.labelLarge),
       ],
     );
   }
@@ -620,34 +652,12 @@ class _ActionsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(color: theme.scaffoldBackgroundColor),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.screen,
-            AppSpacing.sm,
-            AppSpacing.screen,
-            AppSpacing.sm,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final (index, action) in actions.take(2).indexed) ...[
-                if (index > 0) const SizedBox(height: AppSpacing.sm),
-                _ActionButton(
-                  action: action,
-                  primary: index == 0,
-                  state: state,
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
+    return ActionsFooter(
+      stacked: true,
+      children: [
+        for (final (index, action) in actions.take(2).indexed)
+          _ActionButton(action: action, primary: index == 0, state: state),
+      ],
     );
   }
 }
@@ -692,21 +702,16 @@ class _ActionButton extends StatelessWidget {
       _ => (Icons.arrow_forward_rounded, ''),
     };
     final onPressed = _onPressed(context);
-    final style = ButtonStyle(
-      minimumSize: const WidgetStatePropertyAll(Size.fromHeight(44)),
-    );
     final child = OneLine(label);
     return primary
         ? FilledButton.icon(
             key: ConclusionKeys.action(action),
-            style: style,
             onPressed: onPressed,
             icon: Icon(icon),
             label: child,
           )
         : OutlinedButton.icon(
             key: ConclusionKeys.action(action),
-            style: style,
             onPressed: onPressed,
             icon: Icon(icon),
             label: child,
@@ -781,51 +786,49 @@ class _Mode extends StatelessWidget {
     final speedrun = state.speedrun;
     final time = speedrun?.time ?? conclusion.game?.userTime;
     final pace = time == null ? null : PaceCategory.of(time);
-    return Container(
+    return Card(
       key: ConclusionKeys.mode,
-      padding: const EdgeInsets.all(AppSpacing.insideCard),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: colors.primaryContainer,
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.insideCard),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                pace == null ? Icons.timer_off_outlined : paceIcon(pace),
+                color: colors.onPrimaryContainer,
+                size: AppIconSize.standard,
+              ),
             ),
-            child: Icon(
-              pace == null ? Icons.timer_off_outlined : paceIcon(pace),
-              color: colors.onPrimaryContainer,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  speedrun == null
-                      ? l10n.conclusionPace
-                      : speedrunName(l10n, state.characters, speedrun),
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    speedrun == null
+                        ? l10n.conclusionPace
+                        : speedrunName(l10n, state.characters, speedrun),
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
-                ),
-                Text(
-                  time == null ? l10n.challengeNoClock : paceLabel(l10n, time),
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  Text(
+                    time == null
+                        ? l10n.challengeNoClock
+                        : paceLabel(l10n, time),
+                    style: theme.textTheme.titleSmall,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -874,36 +877,34 @@ class _RatingState extends State<_Rating> with SingleTickerProviderStateMixin {
     final colors = theme.colorScheme;
     final before = widget.conclusion.before!.rating;
     final after = widget.conclusion.after!.rating;
-    return Container(
+    return Card(
       key: ConclusionKeys.rating,
-      padding: const EdgeInsets.all(AppSpacing.insideCard),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.trending_up_rounded, color: colors.primary),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              context.l10n.reportRatingLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.insideCard),
+        child: Row(
+          children: [
+            Icon(Icons.trending_up_rounded, color: colors.primary),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(
+                context.l10n.reportRatingLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall,
+              ),
             ),
-          ),
-          AnimatedBuilder(
-            animation: _counting,
-            builder: (context, _) => RatingValue(
-              rating: (before + (after - before) * _counting.value).round(),
-              change: ((after - before) * _counting.value).round(),
-              up: after >= before,
-              valueKey: ConclusionKeys.ratingValue,
-              changeKey: ConclusionKeys.ratingDelta,
+            AnimatedBuilder(
+              animation: _counting,
+              builder: (context, _) => RatingValue(
+                rating: (before + (after - before) * _counting.value).round(),
+                change: ((after - before) * _counting.value).round(),
+                up: after >= before,
+                valueKey: ConclusionKeys.ratingValue,
+                changeKey: ConclusionKeys.ratingDelta,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -994,94 +995,91 @@ class _RunState extends State<_Run> {
     // Na Maratona o que conta é o tempo que sobrou no banco, o mesmo valor
     // do resumo; nas demais, o tempo gasto.
     final bankLeft = kind == ConclusionKind.marathonEnd ? run.bankLeft : null;
-    return Container(
+    return Card(
       key: ConclusionKeys.run,
-      padding: const EdgeInsets.all(AppSpacing.insideCard),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Perdeu a etapa: o tempo grande não diz nada (o relógio acabou ou
-          // a partida se perdeu); fica só o detalhe, para quem quiser.
-          if (!_lost) ...[
-            Text(
-              bankLeft != null
-                  ? l10n.marathonLeft
-                  : ended
-                  ? l10n.conclusionTotalTime
-                  : l10n.conclusionTotalSoFar,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            Text(
-              bankLeft != null ? RunTimeFormat.clock(bankLeft) : time(spent),
-              key: ConclusionKeys.total,
-              textDirection: bankLeft != null ? TextDirection.ltr : null,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              ),
-            ),
-          ],
-          // A etapa que acabou de ser jogada e, no fim, o recorde de antes.
-          if (!ended && !_lost && stageTime > Duration.zero)
-            Text(
-              '${l10n.conclusionStageTime}: ${time(stageTime)}',
-              key: ConclusionKeys.stageTime,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          if (ended && record != null && !run.newRecord)
-            Text(
-              '${l10n.speedrunBest}: ${time(record)}',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-          if (played.length > 1 || (_lost && played.isNotEmpty)) ...[
-            if (!_lost) const SizedBox(height: AppSpacing.sm),
-            Center(
-              child: TextButton.icon(
-                key: ConclusionKeys.runDetails,
-                onPressed: () => setState(() => _details = !_details),
-                icon: Icon(
-                  _details
-                      ? Icons.expand_less_rounded
-                      : Icons.bar_chart_rounded,
-                ),
-                label: Text(
-                  _details
-                      ? l10n.conclusionHideDetails
-                      : l10n.conclusionDetails,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.insideCard),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Perdeu a etapa: o tempo grande não diz nada (o relógio acabou ou
+            // a partida se perdeu); fica só o detalhe, para quem quiser.
+            if (!_lost) ...[
+              Text(
+                bankLeft != null
+                    ? l10n.marathonLeft
+                    : ended
+                    ? l10n.conclusionTotalTime
+                    : l10n.conclusionTotalSoFar,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
                 ),
               ),
-            ),
-            if (_details)
-              for (final (index, spent) in played)
-                // As etapas entram uma depois da outra.
-                StaggeredEntrance(
-                  index: index,
-                  child: _StageRow(
-                    number: index + 1,
-                    name: _opponentOf(context, index),
-                    time: time(spent),
-                    share: longest == Duration.zero
-                        ? 0
-                        : spent.inMilliseconds / longest.inMilliseconds,
-                    fastest: spent == best,
+              Text(
+                bankLeft != null ? RunTimeFormat.clock(bankLeft) : time(spent),
+                key: ConclusionKeys.total,
+                textDirection: bankLeft != null ? TextDirection.ltr : null,
+                textAlign: TextAlign.center,
+                style: context.bigNumber?.copyWith(
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+            // A etapa que acabou de ser jogada e, no fim, o recorde de antes.
+            if (!ended && !_lost && stageTime > Duration.zero)
+              Text(
+                '${l10n.conclusionStageTime}: ${time(stageTime)}',
+                key: ConclusionKeys.stageTime,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            if (ended && record != null && !run.newRecord)
+              Text(
+                '${l10n.speedrunBest}: ${time(record)}',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            if (played.length > 1 || (_lost && played.isNotEmpty)) ...[
+              if (!_lost) const SizedBox(height: AppSpacing.sm),
+              Center(
+                child: TextButton.icon(
+                  key: ConclusionKeys.runDetails,
+                  onPressed: () => setState(() => _details = !_details),
+                  icon: Icon(
+                    _details
+                        ? Icons.expand_less_rounded
+                        : Icons.bar_chart_rounded,
+                  ),
+                  label: Text(
+                    _details
+                        ? l10n.conclusionHideDetails
+                        : l10n.conclusionDetails,
                   ),
                 ),
+              ),
+              if (_details)
+                for (final (index, spent) in played)
+                  // As etapas entram uma depois da outra.
+                  StaggeredEntrance(
+                    index: index,
+                    child: _StageRow(
+                      number: index + 1,
+                      name: _opponentOf(context, index),
+                      time: time(spent),
+                      share: longest == Duration.zero
+                          ? 0
+                          : spent.inMilliseconds / longest.inMilliseconds,
+                      fastest: spent == best,
+                    ),
+                  ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -1127,10 +1125,7 @@ class _StageRow extends StatelessWidget {
             ),
             child: Text(
               '$number',
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: accent,
-                fontWeight: FontWeight.w800,
-              ),
+              style: theme.textTheme.labelLarge?.copyWith(color: accent),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -1145,9 +1140,7 @@ class _StageRow extends StatelessWidget {
                         name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ),
                     if (fastest) ...[
@@ -1155,7 +1148,7 @@ class _StageRow extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.sm,
-                          vertical: 2,
+                          vertical: AppSpacing.xs,
                         ),
                         decoration: BoxDecoration(
                           color: accent.withValues(alpha: 0.15),
@@ -1166,14 +1159,13 @@ class _StageRow extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.leaderboard_rounded,
-                              size: 14,
+                              size: AppIconSize.small,
                               color: accent,
                             ),
                             Text(
                               l10n.conclusionFastest,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: accent,
-                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
@@ -1213,7 +1205,6 @@ class _StageRow extends StatelessWidget {
           Text(
             time,
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
@@ -1234,12 +1225,11 @@ class _Links extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Card(
-      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           for (final (index, action) in links.indexed) ...[
-            if (index > 0) const Divider(height: 1),
+            if (index > 0) const Divider(),
             ListTile(
               key: ConclusionKeys.action(action),
               leading: Icon(switch (action) {
@@ -1328,10 +1318,9 @@ class _Analysis extends StatelessWidget {
       return const _AnalysisInvite(key: ValueKey('invite'));
     }
 
-    return Material(
+    return Card(
       key: ConclusionKeys.quickReview,
       color: colors.secondaryContainer,
-      borderRadius: BorderRadius.circular(AppShape.large),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: review == null && !state.reviewing
@@ -1396,10 +1385,7 @@ class _AnalysisTitle extends StatelessWidget {
               children: [
                 Text(
                   context.l10n.conclusionQuickReview,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: ink,
-                  ),
+                  style: theme.textTheme.titleSmall?.copyWith(color: ink),
                 ),
                 Text(
                   subtitle,
@@ -1453,11 +1439,7 @@ class _AnalysisRunning extends StatelessWidget {
           child: _ReviewBoard(state: state, size: board),
         ),
         const SizedBox(height: AppSpacing.md),
-        TweenAnimationBuilder<double>(
-          tween: Tween(end: total == 0 ? 0 : state.reviewDone / total),
-          duration: AppMotion.of(context).state,
-          builder: (context, value, _) => ProgressPill(value: value),
-        ),
+        AnimatedProgress(value: total == 0 ? 0 : state.reviewDone / total),
       ],
     );
   }
@@ -1518,14 +1500,11 @@ class _AnalysisSummary extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   '${counts[quality] ?? 0}',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: colors.onSurface,
-                  ),
+                  style: context.cardTitle?.copyWith(color: colors.onSurface),
                 ),
               ],
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               quality.label(l10n),
               maxLines: 1,
@@ -1568,7 +1547,6 @@ class _AnalysisSummary extends StatelessWidget {
                         : '${formatAccuracy(value * 100, locale)}%',
                     key: ConclusionKeys.accuracy,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w900,
                       color: colors.onPrimary,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
@@ -1582,10 +1560,7 @@ class _AnalysisSummary extends StatelessWidget {
                   children: [
                     Text(
                       l10n.reviewAccuracy,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: ink,
-                      ),
+                      style: theme.textTheme.titleSmall?.copyWith(color: ink),
                     ),
                     Text(
                       l10n.conclusionReviewTitle,
@@ -1657,10 +1632,8 @@ class _BestLineState extends State<_BestLine> {
         game.opponent.label(l10n, level: game.opponentLevel);
     final gameId = widget.conclusion.gameId;
     // Um Material próprio: o toque na linha do título aparece no cartão.
-    return Material(
+    return Card(
       key: ConclusionKeys.bestLine,
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1696,8 +1669,9 @@ class _BestLineState extends State<_BestLine> {
                     ),
                     if (running) ...[
                       const SizedBox(height: AppSpacing.xs),
-                      const LinearProgressIndicator(
+                      const AnimatedProgress(
                         key: ConclusionKeys.bestLineRunning,
+                        value: null,
                       ),
                     ],
                     const SizedBox(height: AppSpacing.sm),
@@ -1768,10 +1742,7 @@ Widget? _outcome(
     return OutcomeStrip(
       key: ConclusionKeys.newRecord,
       mark: OutcomeMark.record,
-      // O dourado das medalhas, mais escuro no tema claro para ler bem.
-      color: Theme.of(context).brightness == Brightness.dark
-          ? AchievementMedal.gold[1]
-          : AchievementMedal.gold[2],
+      color: AppColors.record,
       title: l10n.speedrunNewRecord,
     );
   }
@@ -1796,13 +1767,13 @@ class DetailedReviewButton extends StatelessWidget {
   final int gameId;
   final Key buttonKey;
 
-  /// A altura, já com a área de toque.
-  static const height = 48.0;
-
   @override
   Widget build(BuildContext context) => FilledButton.icon(
     key: buttonKey,
-    style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(height)),
+    style: FilledButton.styleFrom(
+      minimumSize: const Size.fromHeight(kButtonHeight),
+      textStyle: AppButtonText.footer(context),
+    ),
     onPressed: () => context.push(Routes.game(gameId)),
     icon: const Icon(Icons.insights_rounded),
     label: OneLine(context.l10n.conclusionDetailedReview),
