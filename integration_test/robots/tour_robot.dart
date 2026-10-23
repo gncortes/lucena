@@ -15,6 +15,7 @@ import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 import 'package:patrol/patrol.dart';
 
 import 'settings_robot.dart';

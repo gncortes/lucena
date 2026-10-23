@@ -6,6 +6,7 @@ import '../../core/widgets/app_bar_progress.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';

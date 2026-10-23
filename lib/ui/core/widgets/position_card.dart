@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import 'goal_style.dart';
 

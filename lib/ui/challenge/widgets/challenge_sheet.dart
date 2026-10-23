@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/share/share_repository.dart';

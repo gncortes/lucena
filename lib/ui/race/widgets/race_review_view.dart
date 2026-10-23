@@ -3,6 +3,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/race.dart';

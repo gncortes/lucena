@@ -15,6 +15,7 @@ import 'package:lucena/ui/core/keys/blind_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../testing/fakes/fake_blind_log_repository.dart';
 import '../../../testing/fakes/fake_now.dart';

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/board_settings_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 import 'package:patrol/patrol.dart';
 
 import 'settings_robot.dart';

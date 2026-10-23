@@ -1,6 +1,7 @@
 import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../domain/models/challenge_result.dart';
 import '../../../domain/use_cases/game_rules.dart';

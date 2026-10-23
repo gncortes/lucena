@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';

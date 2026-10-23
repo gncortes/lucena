@@ -19,6 +19,7 @@ import 'package:lucena/ui/tour/widgets/tour_screen.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 import 'package:lucena/ui/voice/widgets/voice_pickers.dart';
 import 'package:lucena_ui/lucena_ui.dart';
+import 'package:lucena_ui/lucena_ui_board.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
