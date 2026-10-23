@@ -123,7 +123,14 @@ void main() {
     for (final p in problems) {
       final bucket = p['bucket'] as int;
       if (bucket < 900) continue;
-      expect(p['source'], 'lichess', reason: '${p['id']}');
+      // 900 a 1000 podem ser completadas com mates sintéticos de 3 e 4 lances
+      // (--topup); acima disso, só Lichess.
+      if (bucket > 1000 || p['source'] != 'synthetic') {
+        expect(p['source'], 'lichess', reason: '${p['id']}');
+      } else {
+        expect(p['goal'], 'mate', reason: '${p['id']}');
+        expect([5, 7], contains(p['dtm']), reason: '${p['id']}');
+      }
       final dtm = p['dtm'] as int;
       if (p['goal'] == 'mate') {
         final floor = bucket < 1200
