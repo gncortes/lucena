@@ -96,6 +96,7 @@ import 'ui/reminders/view_models/reminders_cubit.dart';
 import 'ui/reminders/widgets/reminders_bridge.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
+import 'ui/core/board/board_settings_ui.dart';
 import 'ui/core/l10n/l10n.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
@@ -564,7 +565,9 @@ class _LucenaAppState extends State<LucenaApp> {
             if (settings == null || router == null) {
               return const _LaunchBackground();
             }
-            return _QuietInBackground(
+            return BoardAppearanceScope(
+              appearance: settings.board.appearance,
+              child: _QuietInBackground(
               child: MaterialApp.router(
                 onGenerateTitle: (context) => context.l10n.appTitle,
                 debugShowCheckedModeBanner: false,
@@ -591,6 +594,7 @@ class _LucenaAppState extends State<LucenaApp> {
                     child: child ?? const SizedBox.shrink(),
                   ),
                 ),
+              ),
               ),
             );
           },

@@ -12,6 +12,7 @@ import 'package:lucena/data/repositories/store/store_listing_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
+import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -164,7 +165,10 @@ class TestApp extends StatelessWidget {
         ? build(null)
         : BlocBuilder<SettingsCubit, AppSettings?>(
             bloc: settingsCubit,
-            builder: (context, settings) => build(settings?.accent),
+            builder: (context, settings) => BoardAppearanceScope(
+              appearance: settings?.board.appearance ?? const BoardAppearance(),
+              child: build(settings?.accent),
+            ),
           );
     final profileCubit = this.profileCubit;
     final providers = [

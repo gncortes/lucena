@@ -1,53 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 part 'board_settings.freezed.dart';
-
-/// Cores das casas do tabuleiro.
-enum BoardColors {
-  blue,
-  green,
-  brown,
-  gray,
-  purple;
-
-  static const fallback = BoardColors.blue;
-
-  /// Valor gravado nas preferências.
-  String get code => name;
-
-  static BoardColors fromCode(String? code) =>
-      values.asNameMap()[code] ?? fallback;
-}
-
-/// Conjunto de peças. Só entram conjuntos de licença livre, compatível com a
-/// AGPL do app (ver `THIRD-PARTY-NOTICES.md`).
-enum PieceStyle {
-  cburnett('Cburnett'),
-  merida('Merida'),
-  chessnut('Chessnut'),
-  pirouetti('Pirouetti'),
-  mpchess('MPChess'),
-  firi('Firi'),
-  rhosgfx('RhosGFX'),
-  fantasy('Fantasy'),
-  celtic('Celtic'),
-  spatial('Spatial'),
-  pixel('Pixel'),
-  letter('Letter');
-
-  const PieceStyle(this.label);
-
-  /// Nome próprio do conjunto: não é traduzido.
-  final String label;
-
-  static const fallback = PieceStyle.cburnett;
-
-  /// Valor gravado nas preferências.
-  String get code => name;
-
-  static PieceStyle fromCode(String? code) =>
-      values.asNameMap()[code] ?? fallback;
-}
 
 /// Como as peças são movidas.
 enum MoveMethod {
