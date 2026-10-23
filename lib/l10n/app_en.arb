@@ -6886,7 +6886,7 @@
   "@raceIntroSubtitle": {
     "description": "Intro header: what the race is."
   },
-  "raceIntroBody": "Solve one right move at a time, with no opponent thinking. It trains your eye for the positions in the lessons.",
+  "raceIntroBody": "You play the sequence to mate, and the opponent answers on its own. It trains your eye for the positions in the lessons.",
   "@raceIntroBody": {
     "description": "Intro: what the race is."
   },
@@ -6913,6 +6913,14 @@
   "raceRuleErrorsBody": "A wrong move moves you to the next problem. You see the right moves at the end.",
   "@raceRuleErrorsBody": {
     "description": "Intro rule: what happens on a mistake."
+  },
+  "raceRuleShortestTitle": "The shortest path counts",
+  "@raceRuleShortestTitle": {
+    "description": "Intro rule: only the fastest win counts."
+  },
+  "raceRuleShortestBody": "A move that wins more slowly counts as a mistake.",
+  "@raceRuleShortestBody": {
+    "description": "Intro rule: body for the fastest-win rule."
   },
   "raceWhichEndings": "Which endings",
   "@raceWhichEndings": {
@@ -6960,7 +6968,7 @@
   "@raceRecordEmpty": {
     "description": "Intro record card when there is no record."
   },
-  "raceFootnote": "Endgame problems checked on the tablebase. Works offline.",
+  "raceFootnote": "Problems from the open Lichess database, checked on the tablebase. Works offline.",
   "@raceFootnote": {
     "description": "Intro footnote about where the problems come from."
   },
@@ -7089,6 +7097,18 @@
     "placeholders": {
       "move": {
         "type": "String"
+      }
+    }
+  },
+  "raceReviewSlower": "Your move also won, but it took more moves. The fastest was {move}, mate in {count}.",
+  "@raceReviewSlower": {
+    "description": "Review: the player's move still won, but slower. The fastest move and its mate distance.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
       }
     }
   },

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dartchess/dartchess.dart';
 
 import '../models/clock.dart';
@@ -31,33 +33,63 @@ abstract final class RaceRules {
     return null;
   }
 
-  /// Se [move] (UCI) é o lance do problema.
-  static bool isSolution(RaceProblem problem, String move) =>
-      move == problem.solution;
+  /// A faixa mais baixa e o passo entre faixas (300, 350, ..., 2600).
+  static const firstBucket = 300;
+  static const bucketStep = 50;
 
-  /// A resposta ao problema com o lance [move].
-  static RaceAnswer answer(RaceProblem problem, String move) => RaceAnswer(
-    problemId: problem.id,
-    level: problem.level,
-    move: move,
-    correct: isSolution(problem, move),
-  );
+  /// Quantas Corridas recentes o sorteio evita repetir.
+  static const recentRuns = 3;
 
-  /// O próximo problema: o mais fácil que ainda não saiu, subindo de nível a
-  /// cada acerto. Acabando os do tema, recomeça do mais fácil. Nulo só se
-  /// não há problema nenhum para o tema.
-  static RaceProblem? next(List<RaceProblem> bank, RaceRun run) {
+  /// A faixa em que a Corrida está: sobe uma a cada acerto (como o Puzzle
+  /// Rush); o erro não faz subir.
+  static int bucketFor(RaceRun run) => firstBucket + bucketStep * run.corrects;
+
+  /// O próximo problema: sorteado dentro da faixa da Corrida (sobe uma faixa a
+  /// cada acerto), sem repetir os da Corrida e evitando os de [recent]. Com o
+  /// filtro de final, a faixa sem problema daquele final pula para a próxima
+  /// acima que tenha; passando da última faixa, fica nela. O sorteio sai só do
+  /// instante de início e da posição na Corrida: retomar dá o mesmo problema.
+  /// Nulo só se não há problema nenhum para o tema.
+  static RaceProblem? next(
+    List<RaceProblem> bank,
+    RaceRun run, {
+    Set<String> recent = const {},
+  }) {
     final pool = [
       for (final problem in bank)
         if (run.theme == null || problem.theme == run.theme) problem,
-    ]..sort((a, b) => a.level.compareTo(b.level));
+    ];
     if (pool.isEmpty) return null;
     final seen = {for (final answer in run.answers) answer.problemId};
-    // Dá a volta no banco quando todos já saíram.
-    final fresh = pool.where((problem) => !seen.contains(problem.id));
-    if (fresh.isNotEmpty) return fresh.first;
-    return pool[run.answers.length % pool.length];
+    final wanted = bucketFor(run);
+    final top = pool.map((problem) => problem.bucket).reduce(max);
+    final random = Random(
+      run.startedAt.millisecondsSinceEpoch ^ (run.answers.length * 7919),
+    );
+    // Da faixa pedida para cima. Na faixa, o que não saiu nem é recente; se só
+    // sobrou recente, usa um dele (a régua não pula faixa por isso).
+    for (var bucket = min(wanted, top); bucket <= top; bucket += bucketStep) {
+      final inBucket = [
+        for (final problem in pool)
+          if (problem.bucket == bucket && !seen.contains(problem.id)) problem,
+      ];
+      if (inBucket.isEmpty) continue;
+      final fresh = [
+        for (final problem in inBucket)
+          if (!recent.contains(problem.id)) problem,
+      ];
+      final from = fresh.isNotEmpty ? fresh : inBucket;
+      return from[random.nextInt(from.length)];
+    }
+    // Acabou tudo do tema: dá a volta no banco.
+    return pool[random.nextInt(pool.length)];
   }
+
+  /// Os ids dos problemas das últimas [recentRuns] Corridas de [history].
+  static Set<String> recentIds(List<RaceResult> history) => {
+    for (final result in history.take(recentRuns))
+      for (final answer in result.run.answers) answer.problemId,
+  };
 
   /// O fim de [run] e o que ele muda no [record].
   static RaceOutcome finish(

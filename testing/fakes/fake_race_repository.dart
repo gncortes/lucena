@@ -78,35 +78,65 @@ class FakeRaceRepository implements RaceRepository {
   Future<void> setOffersWarmUp({required bool value}) async => offers = value;
 }
 
-/// Quatro problemas de teste (posições reais do banco: ver o asset), do mais
-/// fácil ao mais difícil.
+/// Cinco problemas de teste, um por faixa de 300 a 500 (posições legais; os
+/// lances ótimos de verdade estão no asset): mate em 1 de dama, mate em 2 de
+/// torre (duas linhas), uma linha de peão, uma de bispo e cavalo e mate em 1
+/// de torre.
 const raceTestProblems = [
   RaceProblem(
-    id: 'race.001',
-    fen: '8/8/K7/8/8/5p2/6k1/Q7 w - - 0 1',
-    solution: 'a1g7',
+    id: 'race.300.01',
+    fen: '6k1/8/6K1/8/8/8/8/Q7 w - - 0 1',
+    tree: RaceNode(
+      distance: 1,
+      moves: {'a1a8': RaceBranch(), 'a1g7': RaceBranch()},
+      slower: {'a1a2'},
+    ),
     theme: RaceTheme.queen,
-    level: 900,
+    level: 300,
   ),
   RaceProblem(
-    id: 'race.002',
-    fen: '8/2k5/8/3K4/2P5/8/8/8 w - - 0 1',
-    solution: 'd5c5',
+    id: 'race.350.01',
+    fen: '7k/8/5K2/8/8/8/8/R7 w - - 0 1',
+    tree: RaceNode(
+      distance: 3,
+      moves: {
+        'f6f7': RaceBranch(
+          reply: 'h8h7',
+          next: RaceNode(
+            distance: 1,
+            moves: {'a1h1': RaceBranch()},
+            slower: {'a1a2'},
+          ),
+        ),
+        'f6g6': RaceBranch(
+          reply: 'h8g8',
+          next: RaceNode(distance: 1, moves: {'a1a8': RaceBranch()}),
+        ),
+      },
+      slower: {'a1a2'},
+    ),
+    theme: RaceTheme.rook,
+    level: 350,
+  ),
+  RaceProblem(
+    id: 'race.400.01',
+    fen: '8/P7/8/8/8/k7/8/7K w - - 0 1',
+    tree: RaceNode(distance: 5, moves: {'a7a8q': RaceBranch()}),
     theme: RaceTheme.pawns,
-    level: 1060,
+    level: 400,
   ),
   RaceProblem(
-    id: 'race.003',
-    fen: '8/1R6/6P1/8/6r1/7k/8/7K w - - 0 1',
-    solution: 'g6g7',
-    theme: RaceTheme.rook,
-    level: 1140,
+    id: 'race.450.01',
+    fen: '8/8/8/3k4/8/8/1B6/K1N5 w - - 0 1',
+    tree: RaceNode(distance: 7, moves: {'c1e2': RaceBranch()}),
+    theme: RaceTheme.minor,
+    level: 450,
   ),
   RaceProblem(
-    id: 'race.004',
-    fen: '8/8/P3k3/4r3/8/8/8/1K5R w - - 0 1',
-    solution: 'a6a7',
+    id: 'race.500.01',
+    fen: 'k7/2K5/8/8/8/8/8/1R6 w - - 0 1',
+    tree: RaceNode(distance: 1, moves: {'b1a1': RaceBranch()}),
     theme: RaceTheme.rook,
-    level: 1220,
+    level: 500,
   ),
 ];

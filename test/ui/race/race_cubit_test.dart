@@ -11,17 +11,26 @@ void main() {
   late FakeRaceRepository repository;
   late RaceCubit cubit;
 
-  const wrong = 'a1a2';
+  const wrong = 'a2a3';
 
   setUp(() {
     now = FakeNow(DateTime.utc(2026, 1, 1, 12));
     repository = FakeRaceRepository(now: now);
-    cubit = RaceCubit(repository, now);
+    cubit = RaceCubit(repository, now, replyDelay: Duration.zero);
   });
 
   tearDown(() => cubit.close());
 
-  Future<void> solveCurrent() => cubit.answer(cubit.state.problem!.solution);
+  /// Joga a sequência ótima do problema da vez até fechá-lo.
+  Future<void> solveCurrent() async {
+    final id = cubit.state.problem!.id;
+    final answers = cubit.state.run!.answers.length;
+    while (cubit.state.phase == RacePhase.playing &&
+        cubit.state.run!.answers.length == answers &&
+        cubit.state.problem?.id == id) {
+      await cubit.answer(cubit.state.turn!.node.moves.keys.first);
+    }
+  }
 
   test('abre na introdução, com o banco e o recorde', () async {
     final stored = FakeRaceRepository(
@@ -36,6 +45,7 @@ void main() {
       RaceTheme.rook,
       RaceTheme.pawns,
       RaceTheme.queen,
+      RaceTheme.minor,
     ]);
     await cubit.close();
   });
@@ -44,7 +54,7 @@ void main() {
     await cubit.load();
     await cubit.start();
     expect(cubit.state.phase, RacePhase.playing);
-    expect(cubit.state.problem!.level, 900);
+    expect(cubit.state.problem!.level, 300);
     expect(cubit.state.remaining, const Duration(minutes: 3));
     expect((await repository.ongoing())!.startedAt, now());
   });
@@ -56,7 +66,7 @@ void main() {
     expect(cubit.state.run!.corrects, 1);
     expect(cubit.state.feedback, RaceFeedback.correct);
     expect(cubit.state.feedbackCount, 1);
-    expect(cubit.state.problem!.level, 1060);
+    expect(cubit.state.problem!.level, 350);
   });
 
   test('erro gasta uma chance e a Corrida segue até o terceiro', () async {
@@ -106,13 +116,13 @@ void main() {
     await solveCurrent();
     now.advance(const Duration(seconds: 30));
 
-    final reopened = RaceCubit(repository, now);
+    final reopened = RaceCubit(repository, now, replyDelay: Duration.zero);
     await reopened.load();
 
     expect(reopened.state.phase, RacePhase.playing);
     expect(reopened.state.run!.corrects, 1);
     expect(reopened.state.remaining, const Duration(seconds: 150));
-    expect(reopened.state.problem!.level, 1060);
+    expect(reopened.state.problem!.level, 350);
     await reopened.close();
   });
 
@@ -122,7 +132,7 @@ void main() {
     await solveCurrent();
     now.advance(const Duration(minutes: 10));
 
-    final reopened = RaceCubit(repository, now);
+    final reopened = RaceCubit(repository, now, replyDelay: Duration.zero);
     await reopened.load();
 
     expect(reopened.state.phase, RacePhase.finished);
@@ -165,7 +175,13 @@ void main() {
   });
 
   test('um filtro que o banco não tem volta a todos os finais', () async {
-    await repository.setTheme(RaceTheme.minor);
+    final small = FakeRaceRepository(
+      now: now,
+      problems: raceTestProblems.take(2).toList(),
+    );
+    await small.setTheme(RaceTheme.minor);
+    final cubit = RaceCubit(small, now);
+    addTearDown(cubit.close);
     await cubit.load();
     expect(cubit.state.theme, isNull);
   });
@@ -199,18 +215,174 @@ void main() {
     expect(cubit.state.phase, RacePhase.finished);
   });
 
+  group('sequência', () {
+    test('lance ótimo no meio: a defesa responde sozinha e segue', () async {
+      await cubit.load();
+      await cubit.start();
+      await solveCurrent(); // 300: mate em 1
+      expect(cubit.state.problem!.id, 'race.350.01');
+      final first = cubit.state.turn!;
+      await cubit.answer('f6f7');
+      // Ainda é o mesmo problema, na vez seguinte, com a resposta jogada.
+      expect(cubit.state.problem!.id, 'race.350.01');
+      expect(cubit.state.run!.answers, hasLength(1));
+      expect(cubit.state.turn!.step, 1);
+      expect(cubit.state.boardFen, first.after('f6f7')!.fen);
+      expect(cubit.state.replying, isFalse);
+      expect(cubit.state.feedbackCount, 1);
+      await cubit.answer('a1h1');
+      expect(cubit.state.run!.corrects, 2);
+      expect(cubit.state.problem!.level, 400);
+    });
+
+    test('a outra linha ótima também vale', () async {
+      await cubit.load();
+      await cubit.start();
+      await solveCurrent();
+      await cubit.answer('f6g6');
+      await cubit.answer('a1a8');
+      expect(cubit.state.run!.corrects, 2);
+    });
+
+    test('no mate em 1, qualquer mate vale', () async {
+      await cubit.load();
+      await cubit.start();
+      await cubit.answer('a1g7');
+      expect(cubit.state.run!.corrects, 1);
+    });
+
+    test('enquanto a defesa responde, o tabuleiro não aceita lance', () async {
+      final slow = RaceCubit(
+        repository,
+        now,
+        replyDelay: const Duration(seconds: 1),
+      );
+      addTearDown(slow.close);
+      await slow.load();
+      await slow.start();
+      await slow.answer('a1a8');
+      final pending = slow.answer('f6f7');
+      expect(slow.state.replying, isTrue);
+      await slow.answer('f6g6'); // ignorado
+      await pending;
+      expect(slow.state.replying, isFalse);
+      expect(slow.state.turn!.step, 1);
+      expect(slow.state.run!.answers, hasLength(1));
+    });
+
+    test('lance que ganha mais devagar é erro, com o ótimo e o mate', () async {
+      await cubit.load();
+      await cubit.start();
+      await cubit.answer('a1a2');
+      expect(cubit.state.run!.corrects, 0);
+      expect(cubit.state.feedback, RaceFeedback.wrong);
+      final mistake = cubit.state.run!.answers.single;
+      expect(mistake.slower, isTrue);
+      expect(mistake.best, ['a1a8', 'a1g7']);
+      expect(mistake.mateIn, 1);
+      expect(mistake.fen, raceTestProblems.first.fen);
+      // O erro (e o motivo) sobrevive ao histórico gravado.
+      final round = RaceAnswer.fromJson(mistake.toJson());
+      expect(round.slower, isTrue);
+      expect(round.best, mistake.best);
+      expect(round.distance, 1);
+    });
+
+    test('lance que não ganha é erro simples', () async {
+      await cubit.load();
+      await cubit.start();
+      await cubit.answer(wrong);
+      expect(cubit.state.run!.answers.single.slower, isFalse);
+    });
+
+    test('erro na segunda vez guarda a posição daquela vez', () async {
+      await cubit.load();
+      await cubit.start();
+      await solveCurrent();
+      await cubit.answer('f6f7');
+      final fen = cubit.state.turn!.fen;
+      await cubit.answer('a1a2');
+      final mistake = cubit.state.run!.answers.last;
+      expect(mistake.fen, fen);
+      expect(mistake.best, ['a1h1']);
+      expect(mistake.slower, isTrue);
+      expect(mistake.problemId, 'race.350.01');
+      // Errou, vai ao próximo problema da mesma faixa.
+      expect(cubit.state.problem!.id, isNot('race.350.01'));
+    });
+
+    test('só sobe de faixa com acerto', () async {
+      await cubit.load();
+      await cubit.start();
+      await cubit.answer(wrong);
+      expect(cubit.state.problem!.bucket, 350); // só há um em 300: pula
+      expect(cubit.state.run!.errors, 1);
+    });
+
+    test('evita os problemas das Corridas recentes', () async {
+      final many = FakeRaceRepository(
+        now: now,
+        problems: [
+          for (var i = 1; i <= 2; i++)
+            RaceProblem(
+              id: 'x.$i',
+              fen: raceTestProblems.first.fen,
+              tree: raceTestProblems.first.tree,
+              theme: RaceTheme.queen,
+              level: 300,
+            ),
+        ],
+      );
+      final first = RaceCubit(many, now, replyDelay: Duration.zero);
+      addTearDown(first.close);
+      await first.load();
+      await first.start();
+      final id = first.state.problem!.id;
+      await first.answer('a1a8');
+      await first.quit(); // descartada: não conta como recente
+      now.advance(const Duration(minutes: 1));
+      final second = RaceCubit(many, now, replyDelay: Duration.zero);
+      addTearDown(second.close);
+      await second.load();
+      await second.start();
+      await second.answer('a1a8');
+      now.advance(const Duration(minutes: 3));
+      await second.tick();
+      expect(second.state.phase, RacePhase.finished);
+      final played = second.state.run!.answers.single.problemId;
+      now.advance(const Duration(minutes: 1));
+      final third = RaceCubit(many, now, replyDelay: Duration.zero);
+      addTearDown(third.close);
+      await third.load();
+      await third.start();
+      expect(third.state.problem!.id, isNot(played));
+      expect(id, isNotEmpty);
+    });
+  });
+
   group('aquecimento', () {
     test('passa pelos problemas fáceis, sem guardar nada', () async {
-      final warmUp = RaceWarmUpCubit(repository);
+      final warmUp = RaceWarmUpCubit(repository, replyDelay: Duration.zero);
       await warmUp.load();
-      expect(warmUp.state.problems, hasLength(4));
-      warmUp.answer(warmUp.state.problem!.solution);
-      warmUp.answer(wrong);
+      expect(warmUp.state.problems, hasLength(5));
+      Future<void> solve() async {
+        final done = warmUp.state.results.length;
+        while (warmUp.state.results.length == done) {
+          await warmUp.answer(
+            warmUp.state.turn?.node.moves.keys.first ??
+                warmUp.state.problem!.tree.moves.keys.first,
+          );
+        }
+      }
+
+      await solve();
+      await warmUp.answer(wrong);
       expect(warmUp.state.results, [true, false]);
-      warmUp.answer(warmUp.state.problem!.solution);
-      warmUp.answer(warmUp.state.problem!.solution);
+      await solve();
+      await solve();
+      await solve();
       expect(warmUp.state.done, isTrue);
-      expect(warmUp.state.corrects, 3);
+      expect(warmUp.state.corrects, 4);
       expect(warmUp.state.problem, isNull);
       expect(await repository.history(), isEmpty);
       await warmUp.close();

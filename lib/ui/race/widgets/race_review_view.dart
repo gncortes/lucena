@@ -46,8 +46,10 @@ class RaceReviewView extends StatelessWidget {
     final cubit = context.read<RaceCubit>();
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final position = Chess.fromSetup(Setup.parseFen(problem.fen));
-    final right = Move.parse(problem.solution);
+    final fen = answer.fen ?? problem.fen;
+    final position = Chess.fromSetup(Setup.parseFen(fen));
+    final bestUci = answer.best.isEmpty ? null : answer.best.first;
+    final right = bestUci == null ? null : Move.parse(bestUci);
     final played = Move.parse(answer.move);
     final number =
         (state.outcome?.result.run.answers ?? const <RaceAnswer>[]).indexWhere(
@@ -59,7 +61,9 @@ class RaceReviewView extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
     final scaler = MediaQuery.textScalerOf(context);
-    final topRoom = scaler.scale(_headline + _hint).ceilToDouble();
+    final topRoom = scaler
+        .scale(_headline + _hint * (answer.slower ? 3 : 1))
+        .ceilToDouble();
     final bottomRoom = PlayersRow.detailedHeight;
     return Stack(
       key: RaceKeys.reviewView,
@@ -100,9 +104,14 @@ class RaceReviewView extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    l10n.raceReviewRight(
-                      _san(l10n, position, right, problem.solution),
-                    ),
+                    answer.slower
+                        ? l10n.raceReviewSlower(
+                            _san(l10n, position, right, bestUci ?? ''),
+                            answer.mateIn,
+                          )
+                        : l10n.raceReviewRight(
+                            _san(l10n, position, right, bestUci ?? ''),
+                          ),
                     key: RaceKeys.reviewRight,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -114,12 +123,18 @@ class RaceReviewView extends StatelessWidget {
             ),
             board: LayoutBuilder(
               builder: (context, box) => PositionBoard(
-                fen: problem.fen,
+                fen: fen,
                 size: box.maxWidth,
                 orientation: problem.side,
                 coordinates: true,
                 radius: AppShape.none,
                 shapes: {
+                  if (answer.slower && played is NormalMove)
+                    Arrow(
+                      color: colors.error.withValues(alpha: 0.85),
+                      orig: played.from,
+                      dest: played.to,
+                    ),
                   if (right is NormalMove)
                     Arrow(
                       color: ChangeColors.of(

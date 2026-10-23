@@ -101,6 +101,11 @@ class RaceIntroView extends StatelessWidget {
                 title: l10n.raceRuleErrorsTitle,
                 body: l10n.raceRuleErrorsBody,
               ),
+              _Rule(
+                icon: Icons.bolt,
+                title: l10n.raceRuleShortestTitle,
+                body: l10n.raceRuleShortestBody,
+              ),
               if (themes.length > 1) ...[
                 SectionTitle(l10n.raceWhichEndings, inset: 0),
                 Wrap(

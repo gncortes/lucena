@@ -1,0 +1,70 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/race.dart';
+
+void main() {
+  group('RaceProblem.fromJson', () {
+    final problem = RaceProblem.fromJson({
+      'id': 'race.350.01',
+      'fen': '7k/8/5K2/8/8/8/8/R7 w - - 0 1',
+      'theme': 'rook',
+      'level': 360,
+      'tree': {
+        'd': 3,
+        'm': {
+          'f6f7': {
+            'r': 'h8h7',
+            'n': {
+              'd': 1,
+              'm': {'a1h1': <String, dynamic>{}},
+              'w': ['a1a2'],
+            },
+          },
+        },
+      },
+    });
+
+    test('lê a árvore, a resposta da defesa e os lances lentos', () {
+      expect(problem.bucket, 350);
+      expect(problem.tree.distance, 3);
+      expect(problem.tree.mateIn, 2);
+      final branch = problem.tree.moves['f6f7']!;
+      expect(branch.reply, 'h8h7');
+      expect(branch.isEnd, isFalse);
+      expect(branch.next!.slower, {'a1a2'});
+      expect(branch.next!.moves['a1h1']!.isEnd, isTrue);
+    });
+  });
+
+  group('RaceAnswer', () {
+    test('guarda a posição, o melhor lance e a distância no JSON', () {
+      const answer = RaceAnswer(
+        problemId: 'p',
+        level: 350,
+        move: 'a1a2',
+        correct: false,
+        fen: '8/5K1k/8/8/8/8/8/R7 w - - 2 2',
+        best: ['a1h1'],
+        distance: 1,
+        slower: true,
+      );
+      final round = RaceAnswer.fromJson(answer.toJson());
+      expect(round.fen, answer.fen);
+      expect(round.best, ['a1h1']);
+      expect(round.distance, 1);
+      expect(round.slower, isTrue);
+      expect(round.mateIn, 1);
+    });
+
+    test('resposta do formato antigo (sem posição) ainda abre', () {
+      final old = RaceAnswer.fromJson({
+        'id': 'p',
+        'level': 900,
+        'move': 'e2e4',
+        'correct': false,
+      });
+      expect(old.fen, isNull);
+      expect(old.best, isEmpty);
+      expect(old.slower, isFalse);
+    });
+  });
+}

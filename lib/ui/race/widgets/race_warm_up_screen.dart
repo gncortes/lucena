@@ -88,6 +88,8 @@ class RaceWarmUpScreen extends StatelessWidget {
                       builder: (context, box) => RaceFadingBoard(
                         size: box.maxWidth,
                         problem: problem,
+                        fen: state.boardFen ?? problem.fen,
+                        locked: state.replying,
                         turn: state.results.length,
                         settings: settings,
                         onMove: (move) => cubit.answer(move.uci),

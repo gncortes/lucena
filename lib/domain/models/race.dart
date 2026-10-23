@@ -20,14 +20,68 @@ enum RaceTheme {
   };
 }
 
-/// Um problema do banco da Corrida: uma posição ganha em que só um lance
-/// mantém o ganho (conferido na tablebase). O formato do arquivo está em
-/// `docs/tasks/E1.31-corrida-problemas.md`.
+/// O que vem depois de um lance certo: a resposta da defesa (sozinha) e a
+/// vez seguinte do jogador. Sem os dois, o lance encerra o problema (mate ou
+/// fim da linha).
+class RaceBranch {
+  const RaceBranch({this.reply, this.next});
+
+  factory RaceBranch.fromJson(Map<String, dynamic> json) => RaceBranch(
+    reply: json['r'] as String?,
+    next: json['n'] == null
+        ? null
+        : RaceNode.fromJson(json['n'] as Map<String, dynamic>),
+  );
+
+  /// A resposta da defesa, em UCI: o lance que mais demora para perder.
+  final String? reply;
+  final RaceNode? next;
+
+  bool get isEnd => next == null;
+}
+
+/// Uma vez do jogador num problema: os lances que mantêm a distância ótima
+/// até o objetivo (todos valem), cada um com a continuação, e os que ainda
+/// ganham, mas mais devagar (contam como erro).
+class RaceNode {
+  const RaceNode({
+    required this.distance,
+    required this.moves,
+    this.slower = const {},
+  });
+
+  factory RaceNode.fromJson(Map<String, dynamic> json) => RaceNode(
+    distance: json['d'] as int,
+    moves: {
+      for (final entry in (json['m'] as Map<String, dynamic>).entries)
+        entry.key: RaceBranch.fromJson(entry.value as Map<String, dynamic>),
+    },
+    slower: {for (final move in (json['w'] as List? ?? const [])) '$move'},
+  );
+
+  /// Meios-lances até o mate, jogando o mais rápido (a DTM da tablebase).
+  final int distance;
+
+  /// Os lances ótimos (UCI) e o que vem depois de cada um.
+  final Map<String, RaceBranch> moves;
+
+  /// Lances que também ganham, só que mais devagar.
+  final Set<String> slower;
+
+  /// Em quantos lances (do jogador) sai o mate pelo caminho mais rápido.
+  int get mateIn => (distance + 1) ~/ 2;
+
+  List<String> get best => moves.keys.toList();
+}
+
+/// Um problema do banco da Corrida: uma sequência de lances ótimos, conferida
+/// na tablebase, até o mate ou o fim da linha. O formato está em
+/// `tools/build_race_problems.py`.
 class RaceProblem {
   const RaceProblem({
     required this.id,
     required this.fen,
-    required this.solution,
+    required this.tree,
     required this.theme,
     required this.level,
   });
@@ -35,7 +89,7 @@ class RaceProblem {
   factory RaceProblem.fromJson(Map<String, dynamic> json) => RaceProblem(
     id: json['id'] as String,
     fen: json['fen'] as String,
-    solution: json['solution'] as String,
+    tree: RaceNode.fromJson(json['tree'] as Map<String, dynamic>),
     theme: RaceTheme.fromCode(json['theme'] as String?) ?? RaceTheme.rook,
     level: json['level'] as int,
   );
@@ -43,8 +97,8 @@ class RaceProblem {
   final String id;
   final String fen;
 
-  /// O único lance que ganha, em UCI (`a1g7`).
-  final String solution;
+  /// Os lances ótimos da primeira vez do jogador e o que vem depois.
+  final RaceNode tree;
   final RaceTheme theme;
 
   /// A dificuldade, na escala de rating (`1620`).
@@ -52,6 +106,9 @@ class RaceProblem {
 
   /// Quem joga na posição.
   Side get side => fen.split(' ')[1] == 'b' ? Side.black : Side.white;
+
+  /// A faixa do problema (de 50 em 50 pontos).
+  int get bucket => level ~/ 50 * 50;
 }
 
 /// Como terminou uma Corrida.
@@ -64,6 +121,10 @@ class RaceAnswer {
     required this.level,
     required this.move,
     required this.correct,
+    this.fen,
+    this.best = const [],
+    this.distance = 0,
+    this.slower = false,
   });
 
   factory RaceAnswer.fromJson(Map<String, dynamic> json) => RaceAnswer(
@@ -71,20 +132,45 @@ class RaceAnswer {
     level: json['level'] as int,
     move: json['move'] as String,
     correct: json['correct'] as bool,
+    fen: json['fen'] as String?,
+    best: [for (final move in (json['best'] as List? ?? const [])) '$move'],
+    distance: json['distance'] as int? ?? 0,
+    slower: json['slower'] as bool? ?? false,
   );
 
   final String problemId;
   final int level;
 
-  /// O lance jogado, em UCI.
+  /// O lance jogado, em UCI. Num problema de vários lances, o último (o que
+  /// errou, ou o que fechou a sequência).
   final String move;
   final bool correct;
+
+  /// Nos erros: a posição em que o lance foi jogado (a vez do jogador dentro
+  /// da sequência).
+  final String? fen;
+
+  /// Nos erros: os lances mais rápidos (UCI) daquela posição.
+  final List<String> best;
+
+  /// Nos erros: meios-lances até o mate pelo caminho mais rápido.
+  final int distance;
+
+  /// O lance ainda ganhava, só que mais devagar (não é derrota nem empate).
+  final bool slower;
+
+  /// Nos erros: em quantos lances saía o mate pelo caminho mais rápido.
+  int get mateIn => (distance + 1) ~/ 2;
 
   Map<String, dynamic> toJson() => {
     'id': problemId,
     'level': level,
     'move': move,
     'correct': correct,
+    if (fen != null) 'fen': fen,
+    if (best.isNotEmpty) 'best': best,
+    if (distance != 0) 'distance': distance,
+    if (slower) 'slower': true,
   };
 }
 

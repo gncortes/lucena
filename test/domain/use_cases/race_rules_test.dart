@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
+import 'package:lucena/domain/use_cases/race_turn.dart';
 
 import '../../../testing/fakes/fake_race_repository.dart';
 
@@ -75,25 +76,146 @@ void main() {
     });
   });
 
-  group('resposta', () {
-    final problem = raceTestProblems.first;
+  group('lance na sequência', () {
+    final queen = RaceTurn.start(raceTestProblems[0]);
+    final rook = RaceTurn.start(raceTestProblems[1]);
 
-    test('só o lance do problema é certo', () {
-      expect(RaceRules.answer(problem, problem.solution).correct, isTrue);
-      expect(RaceRules.answer(problem, 'a1a2').correct, isFalse);
+    test('todo lance ótimo vale (empate aceita todos)', () {
+      expect(queen.judge('a1a8'), RaceMoveKind.optimal);
+      expect(queen.judge('a1g7'), RaceMoveKind.optimal);
+      expect(rook.judge('f6f7'), RaceMoveKind.optimal);
+      expect(rook.judge('f6g6'), RaceMoveKind.optimal);
+    });
+
+    test('lance que ainda ganha, mas devagar, não é o certo', () {
+      expect(queen.judge('a1a2'), RaceMoveKind.slower);
+      final mistake = queen.mistake('a1a2');
+      expect(mistake.correct, isFalse);
+      expect(mistake.slower, isTrue);
+      expect(mistake.best, ['a1a8', 'a1g7']);
+      expect(mistake.distance, 1);
+      expect(mistake.mateIn, 1);
+      expect(mistake.fen, raceTestProblems[0].fen);
+    });
+
+    test('lance que empata ou perde é erro, sem ser "mais devagar"', () {
+      expect(queen.judge('a2a3'), RaceMoveKind.wrong);
+      expect(queen.mistake('a2a3').slower, isFalse);
+    });
+
+    test('o mate em 2 tem distância 3 e mate em 2 lances', () {
+      expect(rook.node.distance, 3);
+      expect(rook.node.mateIn, 2);
+    });
+
+    test('a defesa responde sozinha e a vez seguinte tem a posição nova', () {
+      expect(rook.ends('f6f7'), isFalse);
+      expect(rook.replyTo('f6f7'), 'h8h7');
+      final next = rook.after('f6f7')!;
+      expect(next.step, 1);
+      expect(next.fen, '8/5K1k/8/8/8/8/8/R7 w - - 2 2');
+      expect(next.judge('a1h1'), RaceMoveKind.optimal);
+      expect(next.ends('a1h1'), isTrue);
+      expect(next.after('a1h1'), isNull);
+    });
+
+    test('o erro no meio da sequência guarda a posição daquela vez', () {
+      final next = rook.after('f6f7')!;
+      final mistake = next.mistake('a1a2');
+      expect(mistake.fen, next.fen);
+      expect(mistake.best, ['a1h1']);
+      expect(mistake.distance, 1);
     });
   });
 
   group('próximo problema', () {
-    test('começa pelo mais fácil e sobe a cada problema', () {
-      var current = run;
-      final levels = <int>[];
-      for (var i = 0; i < raceTestProblems.length; i++) {
-        final next = RaceRules.next(raceTestProblems, current)!;
-        levels.add(next.level);
-        current = current.withAnswer(RaceRules.answer(next, next.solution));
+    RaceProblem p(String id, int level, {RaceTheme? theme}) => RaceProblem(
+      id: id,
+      fen: raceTestProblems.first.fen,
+      tree: raceTestProblems.first.tree,
+      theme: theme ?? RaceTheme.queen,
+      level: level,
+    );
+    final bank = [
+      for (var bucket = 300; bucket <= 450; bucket += 50) ...[
+        p('b$bucket.1', bucket),
+        p('b$bucket.2', bucket + 49),
+      ],
+    ];
+
+    RaceAnswer solved(RaceProblem problem) => RaceAnswer(
+      problemId: problem.id,
+      level: problem.level,
+      move: 'x',
+      correct: true,
+    );
+
+    test('começa sempre na faixa de 300', () {
+      for (var i = 0; i < 20; i++) {
+        final other = RaceRun(startedAt: start.add(Duration(seconds: i)));
+        expect(RaceRules.next(bank, other)!.bucket, 300);
       }
-      expect(levels, [900, 1060, 1140, 1220]);
+    });
+
+    test('sobe uma faixa a cada acerto, e o erro não faz subir', () {
+      var current = run;
+      final buckets = <int>[];
+      for (var i = 0; i < 4; i++) {
+        final next = RaceRules.next(bank, current)!;
+        buckets.add(next.bucket);
+        current = current.withAnswer(solved(next));
+      }
+      expect(buckets, [300, 350, 400, 450]);
+      final missed = run.withAnswer(
+        RaceAnswer(problemId: 'b300.1', level: 300, move: 'x', correct: false),
+      );
+      expect(RaceRules.next(bank, missed)!.bucket, 300);
+      expect(RaceRules.next(bank, missed)!.id, 'b300.2');
+    });
+
+    test('sorteia dentro da faixa, sem repetir na Corrida', () {
+      final ids = <String>{};
+      for (var i = 0; i < 40; i++) {
+        final other = RaceRun(startedAt: start.add(Duration(seconds: i)));
+        ids.add(RaceRules.next(bank, other)!.id);
+      }
+      expect(ids, {'b300.1', 'b300.2'});
+    });
+
+    test('o mesmo ponto da Corrida dá o mesmo problema (retomar)', () {
+      expect(
+        RaceRules.next(bank, run)!.id,
+        RaceRules.next(bank, RaceRun(startedAt: start))!.id,
+      );
+    });
+
+    test('evita os das últimas Corridas, se há outro na faixa', () {
+      for (var i = 0; i < 20; i++) {
+        final other = RaceRun(startedAt: start.add(Duration(seconds: i)));
+        expect(RaceRules.next(bank, other, recent: {'b300.1'})!.id, 'b300.2');
+      }
+    });
+
+    test('se todos da faixa são recentes, usa um deles mesmo assim', () {
+      final next = RaceRules.next(bank, run, recent: {'b300.1', 'b300.2'});
+      expect(next!.bucket, 300);
+    });
+
+    test('os recentes saem das últimas 3 Corridas do histórico', () {
+      RaceResult result(String id) => RaceResult(
+        run: run.withAnswer(
+          RaceAnswer(problemId: id, level: 300, move: 'x', correct: true),
+        ),
+        end: RaceEnd.time,
+        finishedAt: start,
+      );
+      final recent = RaceRules.recentIds([
+        result('a'),
+        result('b'),
+        result('c'),
+        result('d'),
+      ]);
+      expect(recent, {'a', 'b', 'c'});
     });
 
     test('respeita o filtro de tema', () {
@@ -101,18 +223,32 @@ void main() {
       expect(RaceRules.next(raceTestProblems, rook)!.theme, RaceTheme.rook);
     });
 
-    test('sem problema do tema, não há próximo', () {
-      final minor = RaceRun(startedAt: start, theme: RaceTheme.minor);
-      expect(RaceRules.next(raceTestProblems, minor), isNull);
+    test('faixa sem problema do tema pula para a próxima que tenha', () {
+      // O banco de teste tem torre em 350 e 500; começando em 300, vem 350.
+      final rook = RaceRun(startedAt: start, theme: RaceTheme.rook);
+      expect(RaceRules.next(raceTestProblems, rook)!.bucket, 350);
+      // Depois do primeiro acerto, a faixa pedida é 350; no segundo, 400
+      // não tem torre e pula para 500.
+      final two = rook
+          .withAnswer(solved(raceTestProblems[1]))
+          .withAnswer(solved(raceTestProblems[1]));
+      expect(RaceRules.next(raceTestProblems, two)!.bucket, 500);
     });
 
-    test('acabando o banco, dá a volta', () {
+    test('sem problema do tema, não há próximo', () {
+      final none = RaceRun(startedAt: start, theme: RaceTheme.minor);
+      expect(RaceRules.next(const [], none), isNull);
+    });
+
+    test('passando da última faixa, fica nela', () {
       var current = run;
-      for (var i = 0; i < raceTestProblems.length; i++) {
-        final next = RaceRules.next(raceTestProblems, current)!;
-        current = current.withAnswer(RaceRules.answer(next, next.solution));
+      final buckets = <int>[];
+      for (var i = 0; i < 5; i++) {
+        final next = RaceRules.next(bank, current)!;
+        buckets.add(next.bucket);
+        current = current.withAnswer(solved(next));
       }
-      expect(RaceRules.next(raceTestProblems, current)!.level, 900);
+      expect(buckets, [300, 350, 400, 450, 450]);
     });
   });
 
@@ -150,10 +286,11 @@ void main() {
 
   test('o aquecimento são os 5 mais fáceis (ou todos, se forem menos)', () {
     expect(RaceRules.warmUp(raceTestProblems).map((p) => p.level), [
-      900,
-      1060,
-      1140,
-      1220,
+      300,
+      350,
+      400,
+      450,
+      500,
     ]);
   });
 
@@ -174,8 +311,8 @@ void main() {
     'os de outro tema completam o aquecimento no fim, cada grupo por nível',
     () {
       final warm = RaceRules.warmUp(raceTestProblems, theme: RaceTheme.rook);
-      // Os 2 de torre (1140, 1220) primeiro; depois os fáceis dos outros temas.
-      expect(warm.map((p) => p.level), [1140, 1220, 900, 1060]);
+      // Os 2 de torre (350, 500) primeiro; depois os fáceis dos outros temas.
+      expect(warm.map((p) => p.level), [350, 500, 300, 400, 450]);
       expect(warm.map((p) => p.theme).take(2), everyElement(RaceTheme.rook));
     },
   );

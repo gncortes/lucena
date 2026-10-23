@@ -66,6 +66,8 @@ class RaceGameView extends StatelessWidget {
               builder: (context, box) => RaceFadingBoard(
                 size: box.maxWidth,
                 problem: problem,
+                fen: state.boardFen ?? problem.fen,
+                locked: state.replying,
                 // Um tabuleiro novo a cada problema, mesmo repetindo o id.
                 turn: run.answers.length,
                 settings: settings,
@@ -131,14 +133,22 @@ class RaceFadingBoard extends StatelessWidget {
   const RaceFadingBoard({
     required this.size,
     required this.problem,
+    required this.fen,
     required this.turn,
     required this.settings,
     required this.onMove,
+    this.locked = false,
     super.key,
   });
 
   final double size;
   final RaceProblem problem;
+
+  /// A posição a mostrar: muda dentro do problema a cada lance e resposta.
+  final String fen;
+
+  /// A defesa está respondendo: o tabuleiro não aceita lance.
+  final bool locked;
   final int turn;
   final BoardSettings settings;
   final void Function(Move move) onMove;
@@ -160,6 +170,8 @@ class RaceFadingBoard extends StatelessWidget {
           key: current,
           size: size,
           problem: problem,
+          fen: fen,
+          locked: locked,
           settings: settings,
           onMove: onMove,
         ),
@@ -172,6 +184,8 @@ class _ProblemBoard extends StatefulWidget {
   const _ProblemBoard({
     required this.size,
     required this.problem,
+    required this.fen,
+    required this.locked,
     required this.settings,
     required this.onMove,
     super.key,
@@ -179,6 +193,8 @@ class _ProblemBoard extends StatefulWidget {
 
   final double size;
   final RaceProblem problem;
+  final String fen;
+  final bool locked;
   final BoardSettings settings;
   final void Function(Move move) onMove;
 
@@ -189,20 +205,34 @@ class _ProblemBoard extends StatefulWidget {
 class _ProblemBoardState extends State<_ProblemBoard> {
   late final ChessboardController _controller;
 
+  GameData _data({String? last}) {
+    final fen = widget.fen;
+    final position = Chess.fromSetup(Setup.parseFen(fen));
+    final side = widget.problem.side;
+    final mine = position.turn == side && !widget.locked;
+    return GameData(
+      fen: fen,
+      playerSide: mine
+          ? (side == Side.white ? PlayerSide.white : PlayerSide.black)
+          : PlayerSide.none,
+      sideToMove: position.turn,
+      validMoves: mine ? GameRules.legalMoves(position) : const {},
+      lastMove: last == null ? null : Move.parse(last),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    final fen = widget.problem.fen;
-    final position = Chess.fromSetup(Setup.parseFen(fen));
-    final side = widget.problem.side;
-    _controller = ChessboardController(
-      game: GameData(
-        fen: fen,
-        playerSide: side == Side.white ? PlayerSide.white : PlayerSide.black,
-        sideToMove: side,
-        validMoves: GameRules.legalMoves(position),
-      ),
-    );
+    _controller = ChessboardController(game: _data());
+  }
+
+  @override
+  void didUpdateWidget(_ProblemBoard old) {
+    super.didUpdateWidget(old);
+    if (old.fen != widget.fen || old.locked != widget.locked) {
+      _controller.updatePosition(_data());
+    }
   }
 
   @override
