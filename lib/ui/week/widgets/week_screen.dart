@@ -8,7 +8,6 @@ import '../../../domain/models/week_summary.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/week_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/week_cubit.dart';
 import 'week_texts.dart';
 

@@ -10,7 +10,6 @@ import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/star_challenge_cubit.dart';

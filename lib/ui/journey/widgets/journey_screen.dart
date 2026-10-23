@@ -8,9 +8,7 @@ import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 import 'trail_widgets.dart';
 

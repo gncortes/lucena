@@ -12,7 +12,6 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/find_move_cubit.dart';

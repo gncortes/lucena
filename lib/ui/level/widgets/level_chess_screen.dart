@@ -6,7 +6,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/level_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/tip_box.dart';
 import '../view_models/level_cubit.dart';
 import 'level_ui.dart';
 

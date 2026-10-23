@@ -16,7 +16,6 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../history/widgets/history_labels.dart';
 import '../../journey/widgets/journey_ui.dart';

@@ -8,7 +8,6 @@ import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/external_page_sheet.dart';
 import '../../core/widgets/reference_link.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../wiki/widgets/linked_text.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 

@@ -6,7 +6,6 @@ import '../../../domain/models/clock_settings.dart';
 import '../../core/board/clock_settings_ui.dart';
 import '../../core/keys/board_settings_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/choice_sheet.dart';
 import '../../settings/view_models/settings_cubit.dart';
 
 /// Onde o relógio aparece e se ele vibra com pouco tempo.

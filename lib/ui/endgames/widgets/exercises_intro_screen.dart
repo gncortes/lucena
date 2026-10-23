@@ -8,7 +8,6 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 import 'grade_widgets.dart';

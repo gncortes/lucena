@@ -9,7 +9,6 @@ import '../../../domain/models/move_prediction.dart';
 import '../../core/keys/maia_debug_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/maia_debug_cubit.dart';
-import '../../core/widgets/scroll_padding.dart';
 
 /// Tela de depuração do Maia (só em build de desenvolvimento e de teste):
 /// avalia uma posição num nível e mostra o que o modelo respondeu e em quanto

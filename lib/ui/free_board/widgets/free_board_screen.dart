@@ -22,7 +22,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/game_board_hero.dart';
-import '../../core/widgets/game_entrance.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';

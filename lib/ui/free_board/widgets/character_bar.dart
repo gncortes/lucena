@@ -15,7 +15,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/character_speech.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
-import '../../core/widgets/game_entrance.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import '../../voice/widgets/auto_speak.dart';

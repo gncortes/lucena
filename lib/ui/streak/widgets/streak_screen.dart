@@ -5,7 +5,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/streak_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/streak_cubit.dart';
 
 /// A Sequência (canvas `PropV1RetencaoSequencia`): dias seguidos e recorde, a

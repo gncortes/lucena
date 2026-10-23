@@ -10,7 +10,6 @@ import '../../voice/view_models/speech_cubit.dart';
 import '../keys/game_sound_keys.dart';
 import '../keys/lesson_sound_keys.dart';
 import '../l10n/l10n.dart';
-import 'one_line.dart';
 import 'sound_off_icon.dart';
 
 /// Onde a folha "Som e voz" foi aberta (T73, 8.2). A folha é uma só; muda a

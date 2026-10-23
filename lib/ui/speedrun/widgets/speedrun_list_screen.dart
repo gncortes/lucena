@@ -13,13 +13,10 @@ import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../view_models/speedrun_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import 'speedrun_ui.dart';
-import '../../core/widgets/one_line.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.

@@ -5,7 +5,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/use_cases/clock_engine.dart';
 import '../../../domain/use_cases/clock_format.dart';
-import 'game_entrance.dart';
 import 'time_display.dart';
 
 /// Um jogador numa fileira de relógio: o retrato (o peão do lado), o nome e,

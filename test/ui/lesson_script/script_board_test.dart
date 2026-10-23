@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/widgets/square_flash.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/board_coordinates.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 void main() {
   const size = 320.0;

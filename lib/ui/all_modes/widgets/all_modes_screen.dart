@@ -11,8 +11,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/all_modes_keys.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';

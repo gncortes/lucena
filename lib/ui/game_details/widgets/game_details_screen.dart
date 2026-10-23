@@ -20,8 +20,6 @@ import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/review/move_quality_ui.dart';
-import '../../core/widgets/container_navigation.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/viktor_sheet.dart';
 import '../view_models/game_details_cubit.dart';
 import 'review_widgets.dart';

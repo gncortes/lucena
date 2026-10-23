@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
-import 'package:lucena/ui/core/widgets/square_flash.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../../testing/test_app.dart';
 

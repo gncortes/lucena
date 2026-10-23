@@ -12,10 +12,8 @@ import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/journey_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/journey_cubit.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import 'journey_ui.dart';
 
 /// Os desafios contra um adversário: o personagem com a frase dele e o

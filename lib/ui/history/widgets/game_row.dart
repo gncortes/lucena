@@ -16,7 +16,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/review/move_quality_ui.dart';
-import '../../core/widgets/container_navigation.dart';
 import '../view_models/history_cubit.dart';
 
 /// Uma partida do histórico, enxuta como no chess.com: o ícone do ritmo, o

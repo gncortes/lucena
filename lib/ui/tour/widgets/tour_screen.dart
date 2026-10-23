@@ -15,8 +15,6 @@ import '../../../domain/models/board_settings.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/app_bar_progress.dart';
-import '../../core/widgets/round_footer_button.dart';
 import '../../core/widgets/viktor_conversation.dart';
 import '../../lesson_script/widgets/script_board.dart';
 import '../../profile/view_models/profile_cubit.dart';

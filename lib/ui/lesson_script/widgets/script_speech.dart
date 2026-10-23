@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/animated_speech_switcher.dart';
 import '../../core/widgets/speech_balloon.dart';
-import '../../core/widgets/typing_dots.dart';
 import 'script_page.dart';
 
 /// As medidas do balão do Viktor (canvas `T70-balao`, variante A, Gabriel

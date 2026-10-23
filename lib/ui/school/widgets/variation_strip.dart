@@ -8,7 +8,6 @@ import '../../../domain/models/variation_tree.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/typing_dots.dart';
 
 /// O botão que cobre ou mostra os lances ainda não vistos da faixa (T69): no
 /// cabeçalho do Viktor e, no modo variante, sozinho no canto da faixa.

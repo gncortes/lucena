@@ -5,7 +5,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../core/keys/home_layout_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../view_models/home_layout_cubit.dart';
 

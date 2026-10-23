@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/l10n/app_localizations.dart';
-import 'package:lucena/ui/core/widgets/typing_dots.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 Widget _host(Widget child, {bool disableAnimations = false}) => MaterialApp(
   localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/widgets/celebration.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 
 void main() {

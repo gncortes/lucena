@@ -11,7 +11,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/history_cubit.dart';
 import 'history_filters.dart';
 import 'history_games_tab.dart';

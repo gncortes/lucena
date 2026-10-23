@@ -2,8 +2,6 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/widgets/app_bar_progress.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 import 'package:lucena_ui/lucena_ui_board.dart';
@@ -16,8 +14,6 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/one_line.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/placement_cubit.dart';

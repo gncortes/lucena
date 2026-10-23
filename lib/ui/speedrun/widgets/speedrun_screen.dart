@@ -11,7 +11,6 @@ import '../../journey/widgets/journey_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/time_display.dart';
 import '../view_models/speedrun_cubit.dart';
 import 'speedrun_rating_bonus_card.dart';

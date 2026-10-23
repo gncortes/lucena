@@ -17,8 +17,6 @@ import '../../featured/widgets/featured_home_section.dart';
 import '../../streak/widgets/streak_lost_sheet.dart';
 import '../../core/l10n/l10n.dart';
 import '../view_models/home_cubit.dart';
-import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/staggered_entrance.dart';
 import 'home_path_ui.dart';
 import 'path_card.dart';
 import 'player_card.dart';

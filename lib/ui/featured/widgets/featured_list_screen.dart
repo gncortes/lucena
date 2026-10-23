@@ -10,7 +10,6 @@ import '../../../domain/models/featured.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/featured_catalog_cubit.dart';
 import 'featured_card.dart';

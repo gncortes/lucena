@@ -9,7 +9,6 @@ import '../../../domain/models/daily_final.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/daily_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../streak/view_models/streak_cubit.dart';
 import '../../streak/widgets/streak_screen.dart';
 import '../view_models/daily_result_cubit.dart';

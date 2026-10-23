@@ -8,7 +8,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_accent_ui.dart';
 import '../../core/theme/app_theme_mode_ui.dart';
 import '../../core/widgets/accent_picker.dart';
-import '../../core/widgets/choice_tile.dart';
 import '../view_models/settings_cubit.dart';
 
 /// Claro, escuro ou o do aparelho, e a cor predominante do app.

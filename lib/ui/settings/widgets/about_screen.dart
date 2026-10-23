@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 
 /// Sobre o Lucena: o site, o código aberto, as licenças, o tour e a versão.
 class AboutScreen extends StatelessWidget {

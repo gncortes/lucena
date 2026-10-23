@@ -188,7 +188,6 @@ import '../ui/settings/widgets/about_screen.dart';
 import '../ui/settings/widgets/settings_screen.dart';
 import '../ui/settings/widgets/settings_tiles.dart';
 import '../ui/settings/widgets/theme_screen.dart';
-import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/sound/game_haptics.dart';
 import '../ui/core/sound/game_sounds.dart';
 import '../data/repositories/week/week_repository.dart';

@@ -15,7 +15,6 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
-import '../../core/widgets/one_line.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';

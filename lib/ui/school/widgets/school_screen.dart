@@ -16,7 +16,6 @@ import '../../core/l10n/l10n.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/school_cubit.dart';
 import '../../core/widgets/figurine.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/placement_test_card.dart';
 
 /// A Escola do Viktor: ele recebe o aluno, e a trilha mostra os módulos com

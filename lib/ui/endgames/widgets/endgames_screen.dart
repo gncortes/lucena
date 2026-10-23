@@ -17,7 +17,6 @@ import '../../../routing/routes.dart';
 import '../../core/widgets/placement_test_card.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/endgames_cubit.dart';
 import 'endgames_filters.dart';

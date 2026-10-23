@@ -7,7 +7,6 @@ import '../../../domain/models/featured.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/featured_tournament_cubit.dart';
 import 'featured_card.dart';
 import 'featured_labels.dart';

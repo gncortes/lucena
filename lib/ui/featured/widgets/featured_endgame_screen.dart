@@ -18,7 +18,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/featured_endgame_cubit.dart';
 import '../view_models/find_move_cubit.dart';
 import 'featured_game_bar.dart';

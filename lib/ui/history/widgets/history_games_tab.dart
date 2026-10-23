@@ -13,8 +13,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/history_keys.dart';
 import '../../core/keys/rating_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/container_navigation.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/history_cubit.dart';
 import 'game_row.dart';
 import 'history_filters.dart';

@@ -9,7 +9,6 @@ import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../core/keys/placement_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/placement_cubit.dart';
 import 'placement_prompt.dart';

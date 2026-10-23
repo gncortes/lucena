@@ -6,7 +6,6 @@ import '../../alerts/view_models/alerts_cubit.dart';
 import '../../core/keys/region_keys.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../profile/widgets/profile_rows.dart';
 

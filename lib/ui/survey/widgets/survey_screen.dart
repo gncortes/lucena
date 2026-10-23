@@ -7,7 +7,6 @@ import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/survey_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/app_bar_progress.dart';
 import '../view_models/survey_cubit.dart';
 import 'survey_face.dart';
 import 'survey_parts.dart';

@@ -11,7 +11,6 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
-import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
@@ -20,6 +19,7 @@ import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
+import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';

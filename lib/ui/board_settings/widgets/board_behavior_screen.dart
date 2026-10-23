@@ -6,7 +6,6 @@ import '../../../domain/models/board_settings.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/board_settings_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/choice_sheet.dart';
 import '../../core/widgets/figurine.dart';
 import '../../settings/view_models/settings_cubit.dart';
 

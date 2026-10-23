@@ -9,7 +9,6 @@ import '../../../domain/models/endgame_position.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/catalog_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../view_models/catalog_cubit.dart';
 import 'catalog_ui.dart';
 

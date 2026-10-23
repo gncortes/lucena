@@ -4,7 +4,6 @@ import 'package:lucena_ui/lucena_ui.dart';
 
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/choice_tile.dart';
 import '../view_models/settings_cubit.dart';
 
 class LanguageScreen extends StatelessWidget {

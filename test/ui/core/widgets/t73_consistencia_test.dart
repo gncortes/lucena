@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
-import 'package:lucena/ui/core/widgets/round_footer_button.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
 import 'package:lucena_ui/lucena_ui.dart';
 

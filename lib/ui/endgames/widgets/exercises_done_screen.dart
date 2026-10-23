@@ -12,7 +12,6 @@ import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
-import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/widgets/about_screen.dart';
