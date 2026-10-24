@@ -3,9 +3,23 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 /// Um aviso que chegou pelo push. [data] traz o destino (por exemplo
 /// `link`, com o endereço de um desafio ou final).
 class PushMessage {
-  const PushMessage({this.data = const {}});
+  const PushMessage({
+    this.data = const {},
+    this.title,
+    this.body,
+    this.image,
+    this.notified = false,
+  });
 
   final Map<String, String> data;
+
+  /// A parte `notification` (título, texto e a imagem do Android), se veio.
+  final String? title;
+  final String? body;
+  final String? image;
+
+  /// Veio com `notification`: fora do app, o próprio Android mostrou.
+  final bool notified;
 }
 
 /// O push pelo Firebase Cloud Messaging (E1.21).
@@ -31,6 +45,9 @@ abstract class PushService {
 
   /// Os avisos tocados com o app em segundo plano.
   Stream<PushMessage> get opened;
+
+  /// Os avisos que chegam com o app aberto (o Android não mostra nada).
+  Stream<PushMessage> get received;
 }
 
 class NoPushService implements PushService {
@@ -56,6 +73,9 @@ class NoPushService implements PushService {
 
   @override
   Stream<PushMessage> get opened => const Stream.empty();
+
+  @override
+  Stream<PushMessage> get received => const Stream.empty();
 }
 
 class FirebasePushService implements PushService {
@@ -101,10 +121,23 @@ class FirebasePushService implements PushService {
   Stream<PushMessage> get opened =>
       FirebaseMessaging.onMessageOpenedApp.map(_message);
 
-  static PushMessage _message(RemoteMessage message) => PushMessage(
-    data: {
-      for (final entry in message.data.entries)
-        entry.key: entry.value.toString(),
-    },
-  );
+  @override
+  Stream<PushMessage> get received => FirebaseMessaging.onMessage.map(message);
+
+  /// O [RemoteMessage] do FCM sem o Firebase (também no isolate de fundo).
+  static PushMessage message(RemoteMessage message) {
+    final notification = message.notification;
+    return PushMessage(
+      data: {
+        for (final entry in message.data.entries)
+          entry.key: entry.value.toString(),
+      },
+      title: notification?.title,
+      body: notification?.body,
+      image: notification?.android?.imageUrl,
+      notified: notification != null,
+    );
+  }
+
+  static PushMessage _message(RemoteMessage remote) => message(remote);
 }

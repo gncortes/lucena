@@ -14,6 +14,7 @@ import '../data/repositories/update/app_update_repository.dart';
 import '../data/services/app_update_service.dart';
 import '../data/services/firebase/remote_config_service.dart';
 import '../data/services/notification_service.dart';
+import 'push_alerts.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
 import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
@@ -265,6 +266,8 @@ class Dependencies {
   }) {
     final preferences = PreferencesService();
     final settings = LocalSettingsRepository(preferences);
+    // Um plugin só para os lembretes e o push (o toque tem um dono só).
+    final notifications = DeviceNotificationService();
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
@@ -365,6 +368,8 @@ class Dependencies {
       pushRepository: FirebasePushRepository(
         firebase ? FirebasePushService() : const NoPushService(),
         preferences,
+        notifications: notifications,
+        texts: () => loadPushTexts(settings),
       ),
       alertsRepository: LocalAlertsRepository(preferences),
       regionPromptRepository: LocalRegionPromptRepository(preferences),
@@ -468,7 +473,7 @@ class Dependencies {
       ),
       localChanges: changes.stream,
       remindersRepository: LocalRemindersRepository(
-        DeviceNotificationService(),
+        notifications,
         progress: endgames,
         lessons: endgameLessons,
       ),

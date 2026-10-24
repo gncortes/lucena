@@ -1739,5 +1739,7 @@
   "feedbackSend": "Enviar",
   "feedbackBack": "Voltar ao perfil",
   "privacyTitleNoAds": "Privacidade",
-  "profilePrivacyNoAdsValue": "Seus dados e política de privacidade"
+  "profilePrivacyNoAdsValue": "Seus dados e política de privacidade",
+  "pushChannelTournaments": "Finais de torneio",
+  "pushActionTournament": "Ver torneio"
 }

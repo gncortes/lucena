@@ -1740,5 +1740,7 @@
   "feedbackSend": "Send",
   "feedbackBack": "Back to profile",
   "privacyTitleNoAds": "Privacy",
-  "profilePrivacyNoAdsValue": "Your data and privacy policy"
+  "profilePrivacyNoAdsValue": "Your data and privacy policy",
+  "pushChannelTournaments": "Ендшпілі турнірів",
+  "pushActionTournament": "Відкрити турнір"
 }

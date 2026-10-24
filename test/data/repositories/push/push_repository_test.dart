@@ -1,11 +1,18 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 import 'package:lucena/data/services/firebase/push_service.dart';
+import 'package:lucena/data/services/firebase/topic_count_service.dart';
+import 'package:lucena/data/services/image_download_service.dart';
+import 'package:lucena/data/services/notification_service.dart';
 import 'package:lucena/data/services/preferences_service.dart';
+import 'package:lucena/domain/models/push_alert.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
+
+import '../../../../testing/fakes/fake_notification_service.dart';
 
 class _Push extends NoPushService {
   PushMessage? initial;
@@ -14,6 +21,7 @@ class _Push extends NoPushService {
   bool failSubscribe = false;
   bool allowed = false;
   final controller = StreamController<PushMessage>.broadcast();
+  final incoming = StreamController<PushMessage>.broadcast();
 
   @override
   Future<void> subscribe(String topic) async {
@@ -35,17 +43,60 @@ class _Push extends NoPushService {
 
   @override
   Stream<PushMessage> get opened => controller.stream;
+
+  @override
+  Stream<PushMessage> get received => incoming.stream;
 }
+
+class _Images extends ImageDownloadService {
+  final asked = <Uri>[];
+
+  @override
+  Future<Uint8List?> fetch(Uri uri) async {
+    asked.add(uri);
+    return uri.path.endsWith('.png') ? Uint8List.fromList([1, 2, 3]) : null;
+  }
+}
+
+class _Counts implements TopicCountService {
+  final changes = <String>[];
+
+  @override
+  Future<void> changed(String topic, int delta) async =>
+      changes.add('$topic $delta');
+}
+
+const _texts = PushTexts(
+  tournaments: 'Finais de torneio',
+  daily: 'Final do dia',
+  lessons: 'Aulas novas',
+  news: 'Novidades',
+  play: 'Jogar',
+  tournament: 'Ver torneio',
+);
 
 void main() {
   late _Push service;
+  late FakeNotificationService notifications;
+  late _Images images;
+  late _Counts counts;
   late FirebasePushRepository repository;
 
   setUp(() {
     SharedPreferencesAsyncPlatform.instance =
         InMemorySharedPreferencesAsync.empty();
     service = _Push();
-    repository = FirebasePushRepository(service, PreferencesService());
+    notifications = FakeNotificationService();
+    images = _Images();
+    counts = _Counts();
+    repository = FirebasePushRepository(
+      service,
+      PreferencesService(),
+      notifications: notifications,
+      images: images,
+      counts: counts,
+      texts: () async => _texts,
+    );
   });
 
   test('ligar entra no tópico de todos', () async {
@@ -60,34 +111,170 @@ void main() {
     await expectLater(repository.start(), completes);
   });
 
-  test('o aviso que abriu o app entrega o link', () async {
+  test('o aviso que abriu o app entrega o link, o envio e o país', () async {
     service.initial = const PushMessage(
-      data: {'link': 'https://lucena-2f4de.web.app/p/k7Qe2'},
+      data: {
+        'link': 'https://lucena-2f4de.web.app/p/k7Qe2',
+        'pushId': 'p1',
+        'pais': 'BR',
+      },
     );
 
     expect(
-      await repository.initialLink(),
-      Uri.parse('https://lucena-2f4de.web.app/p/k7Qe2'),
+      await repository.initialOpening(),
+      PushOpening(
+        link: Uri.parse('https://lucena-2f4de.web.app/p/k7Qe2'),
+        pushId: 'p1',
+        country: 'BR',
+      ),
     );
   });
 
-  test('aviso sem link não abre nada', () async {
+  test('aviso sem link abre só o app', () async {
     service.initial = const PushMessage(data: {'title': 'oi'});
 
-    expect(await repository.initialLink(), isNull);
+    expect((await repository.initialOpening())!.link, isNull);
   });
 
-  test('avisos tocados depois só passam quando têm link', () async {
-    final links = <Uri>[];
-    final subscription = repository.openedLinks.listen(links.add);
+  test('app fechado: a notificação do app tocada em Jogar abre', () async {
+    const alert = PushAlert(
+      title: 't',
+      body: 'b',
+      id: 'p9',
+      kind: PushKind.featured,
+      link: '/featured/curitiba-r5',
+      tournament: '/featured/tournament/curitiba',
+      country: 'BR',
+    );
+    notifications.launch = NotificationTap(
+      alert.payload,
+      action: PushActions.play,
+    );
 
-    service.controller
-      ..add(const PushMessage())
-      ..add(const PushMessage(data: {'link': 'https://playlucena.com/p/a'}));
+    expect(
+      await repository.initialOpening(),
+      PushOpening(
+        link: Uri.parse('/featured/curitiba-r5'),
+        pushId: 'p9',
+        country: 'BR',
+      ),
+    );
+  });
+
+  test('o lembrete que abriu o app não é do push', () async {
+    notifications.launch = const NotificationTap('/daily');
+
+    expect(await repository.initialOpening(), isNull);
+  });
+
+  test('tocados depois: do Android e da notificação do app', () async {
+    final openings = <PushOpening>[];
+    final subscription = repository.opened.listen(openings.add);
+    const alert = PushAlert(
+      title: 't',
+      body: 'b',
+      id: 'p2',
+      kind: PushKind.featured,
+      link: '/featured/a',
+      tournament: '/featured/tournament/t',
+    );
+
+    service.controller.add(
+      const PushMessage(data: {'link': 'https://playlucena.com/p/a'}),
+    );
+    notifications
+      ..tap(alert.payload, action: PushActions.tournament)
+      ..tap('/daily');
     await pumpEventQueue();
 
-    expect(links, [Uri.parse('https://playlucena.com/p/a')]);
+    expect(openings, [
+      PushOpening(link: Uri.parse('https://playlucena.com/p/a')),
+      PushOpening(link: Uri.parse('/featured/tournament/t'), pushId: 'p2'),
+    ]);
     await subscription.cancel();
+  });
+
+  test('mostra com canal do tipo, imagem, miniatura e botões', () async {
+    await repository.show(
+      const PushAlert(
+        title: 'Open de Curitiba: um final da rodada 5',
+        body: 'Duarte × Lemos. Jogam as brancas.',
+        id: 'p3',
+        kind: PushKind.featured,
+        link: '/featured/curitiba-r5',
+        tournament: '/featured/tournament/curitiba',
+        image: 'https://x.test/d.png',
+        thumbnail: 'https://x.test/m.png',
+      ),
+    );
+
+    final shown = notifications.shown.single;
+    expect(shown.channel.id, 'push_torneios');
+    expect(shown.channel.name, 'Finais de torneio');
+    expect(shown.subText, 'Finais de torneio');
+    expect(shown.picture, isNotNull);
+    expect(shown.thumbnail, isNotNull);
+    expect(shown.actions, [
+      (id: PushActions.play, label: 'Jogar'),
+      (id: PushActions.tournament, label: 'Ver torneio'),
+    ]);
+    expect(shown.id, greaterThanOrEqualTo(PushAlert.firstNotificationId));
+    expect(PushOpening.isPush(shown.payload), isTrue);
+  });
+
+  test('imagem que não baixou: sai só com o texto', () async {
+    await repository.show(
+      const PushAlert(
+        title: 'Aula nova',
+        body: 'Oposição',
+        kind: PushKind.lesson,
+        link: '/lesson/oposicao',
+        image: 'https://x.test/falhou.jpg',
+      ),
+    );
+
+    final shown = notifications.shown.single;
+    expect(shown.channel.id, 'push_aulas');
+    expect(shown.picture, isNull);
+    expect(shown.actions, isEmpty);
+  });
+
+  test('com o app aberto, o aviso que chega aparece', () async {
+    await repository.start();
+
+    service.incoming
+      ..add(
+        const PushMessage(
+          data: {'tipo': 'dia', 'link': '/daily'},
+          title: 'Final do dia',
+          body: 'Brancas jogam e ganham.',
+          notified: true,
+        ),
+      )
+      ..add(const PushMessage(data: {'link': '/daily'}));
+    await pumpEventQueue();
+
+    final shown = notifications.shown.single;
+    expect(shown.title, 'Final do dia');
+    expect(shown.channel.id, 'push_dia');
+    expect(shown.actions.single.id, PushActions.play);
+  });
+
+  test('sem os textos não mostra nada', () async {
+    await FirebasePushRepository(
+      service,
+      PreferencesService(),
+      notifications: notifications,
+    ).show(const PushAlert(title: 't', body: 'b'));
+
+    expect(notifications.shown, isEmpty);
+  });
+
+  test('a contagem acompanha os tópicos', () async {
+    await repository.follow({'all', 'pais_BR'});
+    await repository.follow({'all', 'pais_PT'});
+
+    expect(counts.changes, ['all 1', 'pais_BR 1', 'pais_BR -1', 'pais_PT 1']);
   });
 
   test('seguir entra nos novos e sai só dos que ficaram de fora', () async {

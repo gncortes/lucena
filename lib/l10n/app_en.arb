@@ -8930,5 +8930,13 @@
   "profilePrivacyNoAdsValue": "Your data and privacy policy",
   "@profilePrivacyNoAdsValue": {
     "description": "Profile row subtitle for the privacy screen in a build without ads."
+  },
+  "pushChannelTournaments": "Tournament endgames",
+  "@pushChannelTournaments": {
+    "description": "Android notification channel (and header subtext) for pushes about tournament endgames."
+  },
+  "pushActionTournament": "See tournament",
+  "@pushActionTournament": {
+    "description": "Button on a push notification that opens the tournament summary."
   }
 }
