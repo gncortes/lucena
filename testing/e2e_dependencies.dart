@@ -608,9 +608,16 @@ class _Version3 extends QueryExecutorUser {
       'rating_history',
       'unlocked_achievements',
       'attempts',
+      'profiles',
     ]) {
       await executor.runCustom('DROP TABLE IF EXISTS $table');
     }
+    // O perfil da versão 3 (sem objetivo, contas, avatar nem foto): as
+    // migrações seguintes acrescentam as colunas, como no aparelho de verdade.
+    await executor.runCustom(
+      'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT NULL, '
+      'rating INTEGER NOT NULL, PRIMARY KEY (id))',
+    );
     await executor.runCustom(
       'CREATE TABLE attempts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, '
       'position_id TEXT NOT NULL, played_at INTEGER NOT NULL, '

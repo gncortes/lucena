@@ -1,14 +1,18 @@
 import 'package:chessground/chessground.dart';
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/endgames/widgets/stars_row.dart';
 import 'package:patrol/patrol.dart';
 
@@ -121,8 +125,37 @@ class EndgamesRobot {
   }
 
   /// O que o Viktor está dizendo no exercício.
-  String? get exerciseSpeech =>
-      _plain($.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last));
+  String? get exerciseSpeech => $.tester
+      .widget<SpeechBalloon>(find.byKey(LessonScriptKeys.speech).last)
+      .speech
+      ?.toString();
+
+  /// O tabuleiro do exercício depois do primeiro lance ensinado e da resposta
+  /// (só as peças): calculado da própria aula, que muda com as revisões.
+  String boardAfterFirstTurn(Exercise exercise) {
+    var position = GameRules.fromFen(exercise.fen)!;
+    final turn = exercise.line.first;
+    for (final uci in [turn.accept.first, ?turn.reply]) {
+      position = GameRules.play(position, Move.parse(uci)!)!.position;
+    }
+    return position.fen;
+  }
+
+  /// Um lance legal que o primeiro passo do exercício não aceita: calculado da
+  /// própria aula, que muda com as revisões.
+  String wrongFirstMove(Exercise exercise) {
+    final position = GameRules.fromFen(exercise.fen)!;
+    final accepted = exercise.line.first.accept;
+    for (final MapEntry(key: from, value: targets) in GameRules.legalMoves(
+      position,
+    ).entries) {
+      for (final to in targets) {
+        final uci = '${from.name}${to.name}';
+        if (!accepted.contains(uci)) return uci;
+      }
+    }
+    throw StateError('Sem lance errado em ${exercise.id}');
+  }
 
   /// Os pontos ganhos no exercício resolvido ("1 of 2 points").
   /// Lido da estrela da barra de cima: com a explicação do Viktor na tela,
@@ -157,11 +190,11 @@ class EndgamesRobot {
     // O último exercício leva ao resultado, que volta à aula.
     await $(ExerciseKeys.resultButton).tap();
     await $(ExercisesDoneKeys.screen).waitUntilVisible();
-    // Abaixo do mínimo, o botão de baixo é "rever a lição": volta pela barra.
+    // Abaixo do mínimo, o botão de baixo é "rever a lição": volta pelo X.
     if ($(ExercisesDoneKeys.back).exists) {
       await $(ExercisesDoneKeys.back).tap();
     } else {
-      await $(BackButton).tap();
+      await $(ExercisesDoneKeys.close).tap();
     }
     await expectLessonScreen();
   }
@@ -278,7 +311,4 @@ class EndgamesRobot {
     square,
     orientation: _board(boardKey).orientation,
   );
-
-  // A fala como texto, simples ou com as casas destacadas (texto rico).
-  static String? _plain(Text text) => text.data ?? text.textSpan?.toPlainText();
 }

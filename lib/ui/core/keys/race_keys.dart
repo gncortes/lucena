@@ -10,10 +10,32 @@ abstract final class RaceKeys {
   static const resultView = Key('race.result');
   static const reviewView = Key('race.review');
 
-  /// Abertura: o chip de cada tema (nulo: todos os finais), o recorde, o
-  /// botão de começar.
-  static Key themeChip(RaceTheme? theme) =>
-      Key('race.theme.${theme?.name ?? 'all'}');
+  /// Abertura: a linha "Filtros" (com o resumo), o recorde, o botão de
+  /// começar.
+  static const filterRow = Key('race.filter.row');
+  static const filterSummary = Key('race.filter.summary');
+
+  /// A tela de filtros: fechar, limpar, o objetivo e cada opção, a categoria
+  /// (cabeçalho que abre e fecha e a caixa dela), a caixa de cada tipo de
+  /// final, o aviso de nada marcado e o "Aplicar".
+  static const filterScreen = Key('race.filter.screen');
+  static const filterClose = Key('race.filter.close');
+  static const filterClear = Key('race.filter.clear');
+  static const goal = Key('race.filter.goal');
+  static Key goalOption(RaceGoal goal) => Key('race.filter.goal.${goal.name}');
+  static Key filterCategory(String category) =>
+      Key('race.filter.category.$category');
+  static Key filterCategoryCheck(String category) =>
+      Key('race.filter.category.$category.check');
+  static Key filterType(String subcategory) =>
+      Key('race.filter.type.$subcategory');
+  static const filterNone = Key('race.filter.none');
+  static const filterApply = Key('race.filter.apply');
+
+  /// Abertura: o seletor de duração (E1.33) e cada opção.
+  static const duration = Key('race.duration');
+  static Key durationOption(RaceDuration duration) =>
+      Key('race.duration.${duration.minutes}');
   static const recordCard = Key('race.record');
   static const start = Key('race.start');
   static const empty = Key('race.empty');
@@ -32,6 +54,9 @@ abstract final class RaceKeys {
       Key('race.chance.$index.${lost ? 'lost' : 'kept'}');
   static const exit = Key('race.exit');
 
+  /// Defender: "Segure o empate" embaixo do nome do jogador.
+  static const defendDetail = Key('race.defend');
+
   /// Resultado.
   static const resultTitle = Key('race.result.title');
   static const resultCorrects = Key('race.result.corrects');
@@ -43,6 +68,24 @@ abstract final class RaceKeys {
   static const again = Key('race.result.again');
   static const reviewMistakes = Key('race.result.review');
   static const close = Key('race.result.close');
+
+  /// O desempenho por final (E1.34): no resultado, o cartão de quantas
+  /// Corridas faltam ou a linha que abre a tela "Seu desempenho"; na
+  /// abertura, o quadro "Por que só finais?".
+  static const diagnosisProgress = Key('race.diagnosis.progress');
+  static const performance = Key('race.performance');
+  static const whyEndgames = Key('race.whyEndgames');
+
+  /// A tela "Seu desempenho": os dois cartões, o chip de cada final dominado
+  /// e a linha de cada final a melhorar. As opções dos próximos passos ficam
+  /// em `NextStepsKeys.option` (`lesson.<id>` e `practice`).
+  static const performanceScreen = Key('race.performance.screen');
+  static const performanceMastered = Key('race.performance.mastered');
+  static const performanceToImprove = Key('race.performance.toImprove');
+  static Key performanceChip(String subcategory) =>
+      Key('race.performance.chip.$subcategory');
+  static Key performanceRow(String subcategory) =>
+      Key('race.performance.row.$subcategory');
 
   /// Revisão dos erros.
   static const reviewTitle = Key('race.review.title');

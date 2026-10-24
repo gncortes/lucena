@@ -67,12 +67,12 @@ void main() {
     await profile.chooseLevel(RatingLevel.advanced);
     profile.expectFields(name: 'Ana', rating: RatingLevel.advanced.rating);
     await profile.close();
-    await profile.expectSummary('Ana · Avançado');
+    await profile.expectSummary('Sem conta · ${RatingLevel.advanced.rating}');
 
     await app.restart();
 
     await home.openSettings();
-    await profile.expectSummary('Ana · Avançado');
+    await profile.expectSummary('Sem conta · ${RatingLevel.advanced.rating}');
     await profile.open();
     profile.expectFields(name: 'Ana', rating: RatingLevel.advanced.rating);
   });
@@ -88,14 +88,16 @@ void main() {
     await profile.enterNickname('Ana');
     await profile.saveData();
     await profile.close();
-    await profile.expectSummary('Ana · Casual');
+    await profile.expectSummary('Sem conta · ${RatingLevel.casual.rating}');
 
     await profile.open();
     await profile.enterNickname('');
     await profile.saveData();
     await profile.close();
 
-    await profile.expectSummary('Jogador · Casual');
+    await profile.expectSummary('Sem conta · ${RatingLevel.casual.rating}');
+    await profile.open();
+    profile.expectFields(name: 'Jogador', rating: RatingLevel.casual.rating);
   });
 
   patrolTest('"Seus dados" fechado sem salvar: nada muda', ($) async {
