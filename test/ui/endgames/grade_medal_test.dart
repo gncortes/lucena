@@ -44,9 +44,13 @@ void main() {
     expect(drawingBottom(left), closeTo(drawingBottom(middle), 0.5));
     expect(drawingBottom(right), closeTo(drawingBottom(middle), 0.5));
     expect(drawingBottom(left), drawingBottom(right));
-    // As laterais encostam na do meio (margem de -3 px em 20).
-    expect(middle.left - left.right, closeTo(-3, 0.01));
-    expect(right.left - middle.right, closeTo(-3, 0.01));
+    // As laterais encostam na do meio (0,21 × 20 = 4,2 px de cada lado).
+    expect(middle.left - left.right, closeTo(-4.2, 0.01));
+    expect(right.left - middle.right, closeTo(-4.2, 0.01));
+    // O lado de fora das laterais não sai da caixa da medalha.
+    final medal = tester.getRect(find.byType(GradeMedal));
+    expect(left.left, closeTo(medal.left, 0.01));
+    expect(right.right, closeTo(medal.right, 0.01));
   });
 
   testWidgets('a medalha grande (padrão 0,6) segue como antes: laterais com a '

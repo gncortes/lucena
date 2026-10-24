@@ -29,7 +29,8 @@ Color? gradeColor(ExerciseGrade grade) => switch (grade) {
 /// [sideRatio] é o tamanho das laterais do perfeito em relação à do meio.
 /// O padrão (0,6) é a medalha grande das telas de exercício. A M2 dos cursos
 /// (CompEstrelas proporcao=0.5) usa 0,5: as laterais ficam coladas na do meio
-/// (margem de -3 px em 20, ou seja 0,15 × [size] de cada lado) e sobem
+/// (avançam 0,21 × [size] sobre ela: os -3 px em 20 do canvas mais a folga
+/// lateral, maior no glifo `star_rounded` que no do canvas) e sobem
 /// 0,1 × [size], para a base do desenho ficar na linha da base das pernas da
 /// do meio (o glifo tem uma folga embaixo que encolhe com o tamanho).
 class GradeMedal extends StatelessWidget {
@@ -60,9 +61,9 @@ class GradeMedal extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _side(color),
+          _side(color, Alignment.centerLeft),
           Icon(Icons.star_rounded, size: size, color: color),
-          _side(color),
+          _side(color, Alignment.centerRight),
         ],
       ),
       ExerciseGrade.below => Icon(
@@ -74,18 +75,24 @@ class GradeMedal extends StatelessWidget {
     };
   }
 
-  Widget _side(Color color) {
+  /// Uma lateral; [outer] é o lado de fora, que fica dentro da caixa: só o
+  /// lado de dentro avança sobre a do meio.
+  Widget _side(Color color, Alignment outer) {
     final side = size * sideRatio;
     final star = Icon(Icons.star_rounded, size: side, color: color);
     if (sideRatio == defaultSideRatio) return star;
-    // CompEstrelas proporcao=0.5: margin 0 -3px (em 20) e translateY(-0,1 × size).
-    final overlap = size * 0.15;
+    final overlap = size * 0.21;
     return Transform.translate(
       offset: Offset(0, -0.1 * size),
       child: SizedBox(
-        width: side - 2 * overlap,
+        width: side - overlap,
         height: side,
-        child: OverflowBox(minWidth: side, maxWidth: side, child: star),
+        child: OverflowBox(
+          minWidth: side,
+          maxWidth: side,
+          alignment: outer,
+          child: star,
+        ),
       ),
     );
   }
