@@ -75,7 +75,7 @@ void main() {
             expect(find.byKey(HomeKeys.endgameCard), findsOneWidget);
             expect(find.byKey(HomeKeys.endgameTitle), findsOneWidget);
             expect(find.text('Endgames for you'), findsOneWidget);
-            expect(find.text('Start the lesson'), findsOneWidget);
+            expect(find.text('Start the chapter'), findsOneWidget);
             expect(find.byKey(HomeKeys.endgameWhere), findsNothing);
             final button = find.byKey(HomeKeys.endgameContinue);
             final card = tester.getRect(find.byKey(HomeKeys.endgameCard));

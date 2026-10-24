@@ -107,7 +107,7 @@ void main() {
     expect(find.byKey(EndgameLessonKeys.startExercises), findsNothing);
     expect(find.text('Passed.'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.lessonDone), findsOneWidget);
-    expect(find.text('Review the lesson'), findsOneWidget);
+    expect(find.text('Review the chapter'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.passed), findsOneWidget);
     expect(find.text('4 of 6 points'), findsOneWidget);
     expect(find.byKey(EndgameLessonKeys.redoButton), findsOneWidget);
@@ -194,7 +194,7 @@ void main() {
       ),
     );
     expect(
-      find.text('Score reached: finish the lesson', skipOffstage: false),
+      find.text('Score reached: finish the lessons', skipOffstage: false),
       findsOneWidget,
     );
     expect(find.text('Almost there: redo them to make it stick'), findsNothing);
@@ -371,7 +371,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Resume chapter 2'), findsOneWidget);
+    expect(find.text('Resume lesson 2'), findsOneWidget);
     await tester.tap(find.byKey(EndgameLessonKeys.continueButton));
     await tester.pumpAndSettle();
 

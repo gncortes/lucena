@@ -114,7 +114,7 @@ void main() {
 
     await tester.tap(find.byKey(EndgamesKeys.filterOption('status.passed')));
     await tester.pumpAndSettle();
-    expect(find.text('No lessons'), findsOneWidget);
+    expect(find.text('No chapters'), findsOneWidget);
     await tester.tap(find.byKey(EndgamesKeys.filtersApply));
     await tester.pumpAndSettle();
 

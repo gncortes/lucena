@@ -97,10 +97,10 @@ void main() {
     await cubit.update(settings: const AlertSettings(), texts: texts);
 
     final today = reminders.scheduled.first;
-    expect(today.title, 'Continue a lição');
+    expect(today.title, 'Continue o capítulo');
     expect(
       today.body,
-      'Falta pouco para fechar "A posição de Lucena": você parou no capítulo '
+      'Falta pouco para fechar "A posição de Lucena": você parou na lição '
       '3 de 6.',
     );
     expect(today.action, 'Continuar');

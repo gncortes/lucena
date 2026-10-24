@@ -600,7 +600,7 @@
       }
     }
   },
-  "homeSchool": "Lessons with Viktor",
+  "homeSchool": "Viktor's School",
   "@homeSchool": {
     "description": "Home button that opens the lessons of the beginner course."
   },
@@ -697,7 +697,7 @@
   "@lessonHint": {
     "description": "Button that asks the teacher for the best move."
   },
-  "lessonMissing": "This lesson does not exist.",
+  "lessonMissing": "This chapter does not exist.",
   "@lessonMissing": {
     "description": "When the lesson in the link does not exist."
   },
@@ -1100,7 +1100,7 @@
       }
     }
   },
-  "schoolModule": "Module {number}",
+  "schoolModule": "Part {number}",
   "@schoolModule": {
     "description": "Label above the module title in the lessons trail.",
     "placeholders": {
@@ -1844,7 +1844,7 @@
   "@gameDetailsNotFound": {
     "description": "Game details: shown when the game was not found."
   },
-  "homeEndgames": "Endgame lessons",
+  "homeEndgames": "Endgame course",
   "@homeEndgames": {
     "description": "Home card that opens the endgame lessons trail."
   },
@@ -1856,11 +1856,11 @@
   "@homeForYou": {
     "description": "Home path: the endgame lessons recommended by the level test."
   },
-  "homeForYouBody": "Your own endgame study, built from your level test: the lessons you still need, in order.",
+  "homeForYouBody": "Your own endgame study, built from your level test: the chapters you still need, in order.",
   "@homeForYouBody": {
     "description": "Home path body for the personalised endgame study."
   },
-  "endgamesTitle": "Endgame lessons",
+  "endgamesTitle": "Endgame course",
   "@endgamesTitle": {
     "description": "Title of the endgame lessons trail."
   },
@@ -1888,19 +1888,19 @@
       }
     }
   },
-  "endgameLessonPartLesson": "The lesson",
+  "endgameLessonPartLesson": "The lessons",
   "@endgameLessonPartLesson": {
     "description": "First part of an endgame lesson: Viktor teaches."
   },
-  "endgameLessonStart": "Start the lesson",
+  "endgameLessonStart": "Start the chapter",
   "@endgameLessonStart": {
     "description": "Button that opens the lesson steps for the first time."
   },
-  "endgameLessonReview": "Review the lesson",
+  "endgameLessonReview": "Review the chapter",
   "@endgameLessonReview": {
     "description": "Button that reopens a lesson already done."
   },
-  "endgameLessonDone": "Lesson done",
+  "endgameLessonDone": "Chapter done",
   "@endgameLessonDone": {
     "description": "Mark on a lesson whose steps were all completed."
   },
@@ -2093,7 +2093,7 @@
   "@exerciseNext": {
     "description": "Button that opens the next exercise."
   },
-  "exerciseBack": "Back to the lesson",
+  "exerciseBack": "Back to the chapter",
   "@exerciseBack": {
     "description": "Button that goes back to the endgame lesson screen."
   },
@@ -3202,15 +3202,15 @@
   "@endgameFinalTest": {
     "description": "Section title on the endgame lesson screen: the final test (the exercises with stars)."
   },
-  "endgameTestAdvice": "Tip: do the chapters first. The test is open whenever you want to practice.",
+  "endgameTestAdvice": "Tip: do the lessons first. The test is open whenever you want to practice.",
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
-  "endgameStartLesson": "Start chapter 1",
+  "endgameStartLesson": "Start lesson 1",
   "@endgameStartLesson": {
     "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
   },
-  "endgameResumePart": "Resume chapter {part}",
+  "endgameResumePart": "Resume lesson {part}",
   "@endgameResumePart": {
     "description": "Fixed bottom button on the endgame lesson screen: resume the part the student already started.",
     "placeholders": {
@@ -3219,7 +3219,7 @@
       }
     }
   },
-  "endgameNextPart": "Go to chapter {part}",
+  "endgameNextPart": "Go to lesson {part}",
   "@endgameNextPart": {
     "description": "Fixed bottom button on the endgame lesson screen: go to the next part not started yet.",
     "placeholders": {
@@ -3236,7 +3236,7 @@
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
-  "homeEndgamePart": "Chapter {part} of {parts}",
+  "homeEndgamePart": "Lesson {part} of {parts}",
   "@homeEndgamePart": {
     "description": "Home continue card: the endgame lesson part where the student stopped.",
     "placeholders": {
@@ -3265,7 +3265,7 @@
       }
     }
   },
-  "endgameModulePlace": "{module} · lesson {number} of {count}",
+  "endgameModulePlace": "{module} · chapter {number} of {count}",
   "@endgameModulePlace": {
     "description": "Endgame lesson screen header: the module name and the lesson's position in it, e.g. 'Basic mates · 1 of 4'.",
     "placeholders": {
@@ -3280,11 +3280,11 @@
       }
     }
   },
-  "endgameLessonInReview": "Lesson under review: the content may still change.",
+  "endgameLessonInReview": "Chapter under review: the content may still change.",
   "@endgameLessonInReview": {
     "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
   },
-  "endgameStagesDone": "{done} of {total} chapters done",
+  "endgameStagesDone": "{done} of {total} lessons done",
   "@endgameStagesDone": {
     "description": "Endgame lesson screen header: lesson stages done out of the total.",
     "placeholders": {
@@ -3308,7 +3308,7 @@
   "@endgameTestAlmost": {
     "description": "Final test card subtitle when all exercises were done but the goal was not reached."
   },
-  "endgameTestLessonLeft": "Score reached: finish the lesson",
+  "endgameTestLessonLeft": "Score reached: finish the lessons",
   "@endgameTestLessonLeft": {
     "description": "Final test summary when the exercises reached the minimum but the lesson parts are not done yet."
   },
@@ -4358,7 +4358,7 @@
       }
     }
   },
-  "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the lesson “{title}” with an exceptional performance.} excellent{for completing the lesson “{title}” with excellence.} good{for completing the lesson “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
+  "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the chapter “{title}” with an exceptional performance.} excellent{for completing the chapter “{title}” with excellence.} good{for completing the chapter “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
   "@exercisesDoneDiplomaFor": {
     "description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).",
     "placeholders": {
@@ -4391,7 +4391,7 @@
       }
     }
   },
-  "exercisesIntroMinBody": "Out of {max} possible points, to pass the lesson.",
+  "exercisesIntroMinBody": "Out of {max} possible points, to pass the chapter.",
   "@exercisesIntroMinBody": {
     "description": "Exercises intro card body: out of how many possible points.",
     "placeholders": {
@@ -4421,15 +4421,15 @@
   "@exerciseLichess": {
     "description": "Button on a solved-series exercise: open the position in the Lichess analysis board."
   },
-  "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
+  "exercisesIntroAfter": "Once you solve them all, the list stays open in the chapter: go back to any exercise to review it and analyse the position on Lichess.",
   "@exercisesIntroAfter": {
     "description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."
   },
-  "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the lesson.",
+  "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the chapter.",
   "@exerciseScoreLocked": {
     "description": "Note on a solved exercise when the lesson's grade is already set (all exercises solved): this is free practice."
   },
-  "exercisesDoneShareText": "I completed the lesson “{title}” in Lucena with {score} of {max} points! {link}",
+  "exercisesDoneShareText": "I completed the chapter “{title}” in Lucena with {score} of {max} points! {link}",
   "@exercisesDoneShareText": {
     "description": "Text shared with the endgame lesson diploma image.",
     "placeholders": {
@@ -4447,7 +4447,7 @@
       }
     }
   },
-  "endgamesHideDone": "Hide completed lessons",
+  "endgamesHideDone": "Hide completed chapters",
   "@endgamesHideDone": {
     "description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."
   },
@@ -4459,7 +4459,7 @@
   "@exercisesDoneFinish": {
     "description": "Button on the exercises-done screen: close it and go back to the lesson."
   },
-  "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
+  "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lessons if you need to, take your time on each position, and try again. Next time those points will be yours.",
   "@exercisesDoneRetrySpeech": {
     "description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."
   },
@@ -4611,7 +4611,7 @@
   "@endgamesFiltersClear": {
     "description": "Removes every active filter (short button)."
   },
-  "endgamesFiltersShow": "{count, plural, =0{No lessons} =1{Show 1 lesson} other{Show {count} lessons}}",
+  "endgamesFiltersShow": "{count, plural, =0{No chapters} =1{Show 1 chapter} other{Show {count} chapters}}",
   "@endgamesFiltersShow": {
     "description": "Filter sheet: closes it showing how many lessons match.",
     "placeholders": {
@@ -4620,7 +4620,7 @@
       }
     }
   },
-  "endgamesFiltersEmpty": "No lesson matches these filters.",
+  "endgamesFiltersEmpty": "No chapter matches these filters.",
   "@endgamesFiltersEmpty": {
     "description": "Endgame lessons: no lesson matches the active filters."
   },
@@ -4640,7 +4640,7 @@
       }
     }
   },
-  "endgamesLevelNone": "Other lessons",
+  "endgamesLevelNone": "Other chapters",
   "@endgamesLevelNone": {
     "description": "Section heading for lessons without a difficulty band."
   },
@@ -4653,7 +4653,7 @@
       }
     }
   },
-  "endgameLessonFailed": "Lesson failed review: it will be redone.",
+  "endgameLessonFailed": "Chapter failed review: it will be redone.",
   "@endgameLessonFailed": {
     "description": "Banner on an endgame lesson whose content failed review and will be rewritten."
   },
@@ -6841,7 +6841,7 @@
       }
     }
   },
-  "featuredNextLessonSub": "Lesson: {title}",
+  "featuredNextLessonSub": "Chapter: {title}",
   "@featuredNextLessonSub": {
     "description": "Subtitle of \"Learn this endgame\": the lesson name.",
     "placeholders": {
@@ -7296,7 +7296,7 @@
       }
     }
   },
-  "homeGoalEndgamesLine": "Learn endgames · lesson {number} of {total}",
+  "homeGoalEndgamesLine": "Learn endgames · chapter {number} of {total}",
   "@homeGoalEndgamesLine": {
     "description": "Goal card subtitle: the next endgame lesson and its place in the trail.",
     "placeholders": {
@@ -7346,7 +7346,7 @@
       }
     }
   },
-  "homeResumeEndgameLine": "Endgame lesson · {where}",
+  "homeResumeEndgameLine": "Endgame course · {where}",
   "@homeResumeEndgameLine": {
     "description": "Resume card line for an endgame lesson; {where} is e.g. 'Exercise 6 of 6'.",
     "placeholders": {
@@ -7613,7 +7613,7 @@
       }
     }
   },
-  "accountRestoredLessons": "Endgame lessons",
+  "accountRestoredLessons": "Endgame course",
   "@accountRestoredLessons": {
     "description": "Restored progress screen: endgame lessons row."
   },
@@ -7991,7 +7991,7 @@
   "@alertsDaily": {
     "description": "Alerts switch: local reminders."
   },
-  "alertsDailyBody": "Streak, continue the lesson and weekly summary.",
+  "alertsDailyBody": "Streak, continue the chapter and weekly summary.",
   "@alertsDailyBody": {
     "description": "Alerts switch subtitle."
   },
@@ -8040,11 +8040,11 @@
   "@reminderStreakAction": {
     "description": "Local notification button."
   },
-  "reminderLessonTitle": "Continue the lesson",
+  "reminderLessonTitle": "Continue the chapter",
   "@reminderLessonTitle": {
     "description": "Local notification title."
   },
-  "reminderLessonText": "Almost done with \"{lesson}\": you stopped at chapter {chapter} of {total}.",
+  "reminderLessonText": "Almost done with \"{lesson}\": you stopped at lesson {chapter} of {total}.",
   "@reminderLessonText": {
     "description": "Local notification text.",
     "placeholders": {
@@ -9120,11 +9120,11 @@
   "@lessonFinishedTrainTitle": {
     "description": "Lesson finished: play the lesson endgame against the engine."
   },
-  "lessonFinishedTrainBody": "Play the lesson position as a game.",
+  "lessonFinishedTrainBody": "Play the chapter position as a game.",
   "@lessonFinishedTrainBody": {
     "description": "Lesson finished: text of the training option."
   },
-  "lessonFinishedExercisesTitle": "Lesson exercises",
+  "lessonFinishedExercisesTitle": "Chapter exercises",
   "@lessonFinishedExercisesTitle": {
     "description": "Lesson finished: the lesson test."
   },
@@ -9226,7 +9226,7 @@
       }
     }
   },
-  "racePerformanceLessonTitle": "Lesson: {name}",
+  "racePerformanceLessonTitle": "Chapter: {name}",
   "@racePerformanceLessonTitle": {
     "description": "Performance screen: option to open the lesson of an endgame.",
     "placeholders": {
@@ -9266,5 +9266,17 @@
   "racePerformanceFooter": "Based on your Race history.",
   "@racePerformanceFooter": {
     "description": "Performance screen: footnote."
+  },
+  "homeGoalChapters": "{done} of {total} chapters",
+  "@homeGoalChapters": {
+    "description": "Goal card progress: chapters of the endgame course passed.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }
