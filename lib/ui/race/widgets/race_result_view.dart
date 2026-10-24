@@ -16,7 +16,6 @@ import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';
-import '../../../domain/use_cases/race_rules.dart';
 
 /// O resultado: por que acabou, quantos acertos, o recorde, três números e os
 /// problemas que apareceram (certos e errados).
@@ -38,7 +37,8 @@ class RaceResultView extends StatelessWidget {
     final mistakes = state.mistakes;
     // Quanto tempo a Corrida durou, no máximo o limite.
     final elapsed = result.finishedAt.difference(run.startedAt);
-    final used = elapsed > RaceRules.limit ? RaceRules.limit : elapsed;
+    final limit = run.duration.limit;
+    final used = elapsed > limit ? limit : elapsed;
     final pace = run.answers.isEmpty
         ? '-'
         : l10n.raceStatPaceValue(

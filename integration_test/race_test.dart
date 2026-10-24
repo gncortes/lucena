@@ -17,15 +17,15 @@ void main() {
     await race.openFromAllModes();
     await race.start();
 
-    // O primeiro problema é o mais fácil: a dama em g7.
+    // O problema é sorteado na faixa; o robô lê o lance certo da vez.
     expect(race.corrects, 0);
-    await race.move('a1', 'g7');
+    await race.solve();
     expect(race.corrects, 1);
 
     // Três lances errados seguidos acabam a Corrida.
-    await race.move('h1', 'h2');
-    await race.move('d5', 'e5');
-    await race.move('b8', 'a8');
+    await race.miss();
+    await race.miss();
+    await race.miss();
     await race.waitForResult();
     expect(find.byKey(RaceKeys.reviewMistakes), findsOneWidget);
     expect(find.byKey(RaceKeys.again), findsOneWidget);

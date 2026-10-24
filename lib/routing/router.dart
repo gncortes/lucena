@@ -1113,8 +1113,10 @@ GoRouter buildRouter({
                   if (args is! RaceWarmUpArgs) return const SizedBox.shrink();
                   return BlocProvider(
                     create: (context) =>
-                        RaceWarmUpCubit(context.read<RaceRepository>())
-                          ..load(theme: args.theme),
+                        RaceWarmUpCubit(context.read<RaceRepository>())..load(
+                          subcategory: args.subcategory,
+                          category: args.category,
+                        ),
                     child: RaceWarmUpScreen(args: args),
                   );
                 },

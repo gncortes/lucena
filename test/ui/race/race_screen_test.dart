@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
+import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
@@ -81,10 +82,21 @@ void main() {
     expect(find.byKey(RaceKeys.introView), findsOneWidget);
     expect(find.text('3 minutes'), findsOneWidget);
     expect(find.text('Three mistakes and it is over'), findsOneWidget);
-    // Só os temas que o banco tem, mais "todos".
-    expect(find.byKey(RaceKeys.themeChip(null)), findsOneWidget);
-    expect(find.text('Rook'), findsOneWidget);
-    expect(find.text('Bishop and knight'), findsNothing);
+    expect(find.text('The shortest path counts'), findsOneWidget);
+    final list = find.descendant(
+      of: find.byKey(RaceKeys.introView),
+      matching: find.byType(Scrollable),
+    );
+    // A linha de filtros resume o objetivo e os finais.
+    await tester.scrollUntilVisible(
+      find.byKey(RaceKeys.filterRow),
+      200,
+      scrollable: list,
+    );
+    expect(
+      tester.widget<Text>(find.byKey(RaceKeys.filterSummary)).data,
+      'Win · All endings',
+    );
     // O recorde fica no fim da lista, que rola.
     await tester.scrollUntilVisible(
       find.text('No record yet. Your first race sets it.'),
@@ -96,6 +108,101 @@ void main() {
     );
     expect(find.text('No record yet. Your first race sets it.'), findsOne);
     expect(find.byKey(RaceKeys.start), findsOneWidget);
+  });
+
+  testWidgets('filtros: desmarcar uma categoria e aplicar muda o resumo', (
+    tester,
+  ) async {
+    final cubit = await pumpRace(tester);
+    final list = find.descendant(
+      of: find.byKey(RaceKeys.introView),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(RaceKeys.filterRow),
+      200,
+      scrollable: list,
+    );
+    await tester.tap(find.byKey(RaceKeys.filterRow));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterScreen), findsOneWidget);
+    // Limpar começa desligado: o filtro já é o padrão.
+    expect(
+      tester.widget<TextButton>(find.byKey(RaceKeys.filterClear)).onPressed,
+      isNull,
+    );
+
+    // Abre a categoria básica e desmarca tudo dela.
+    await tester.tap(find.byKey(RaceKeys.filterCategory('basic')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterType('queen')), findsOneWidget);
+    expect(find.byKey(RaceKeys.filterType('rook')), findsOneWidget);
+    await tester.tap(find.byKey(RaceKeys.filterCategoryCheck('basic')));
+    await tester.pump();
+    expect(find.text('0 of 2'), findsOneWidget);
+
+    await tester.tap(find.byKey(RaceKeys.filterApply));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterScreen), findsNothing);
+    expect(cubit.state.filter.excluded, {'queen', 'rook'});
+    expect(
+      tester.widget<Text>(find.byKey(RaceKeys.filterSummary)).data,
+      'Win · 2 ending types',
+    );
+  });
+
+  testWidgets('filtros: sem nenhum final marcado, Aplicar fica desligado', (
+    tester,
+  ) async {
+    await pumpRace(tester);
+    final list = find.descendant(
+      of: find.byKey(RaceKeys.introView),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(RaceKeys.filterRow),
+      200,
+      scrollable: list,
+    );
+    await tester.tap(find.byKey(RaceKeys.filterRow));
+    await tester.pumpAndSettle();
+    for (final category in ['basic', 'pawn', 'knightBishop']) {
+      await tester.tap(find.byKey(RaceKeys.filterCategoryCheck(category)));
+      await tester.pump();
+    }
+    expect(find.byKey(RaceKeys.filterNone), findsOneWidget);
+    expect(
+      tester
+          .widget<ButtonStyleButton>(find.byKey(RaceKeys.filterApply))
+          .onPressed,
+      isNull,
+    );
+    // Limpar volta ao padrão e libera o Aplicar.
+    await tester.tap(find.byKey(RaceKeys.filterClear));
+    await tester.pump();
+    expect(find.byKey(RaceKeys.filterNone), findsNothing);
+    // O X fecha sem mudar nada.
+    await tester.tap(find.byKey(RaceKeys.filterClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.filterScreen), findsNothing);
+  });
+
+  testWidgets('duração: 5 min troca a regra e fica guardada', (tester) async {
+    final cubit = await pumpRace(tester);
+
+    // A seção Duração vem acima das regras (E1.33, opção B).
+    expect(
+      tester.getTopLeft(find.byKey(RaceKeys.duration)).dy,
+      lessThan(tester.getTopLeft(find.text('3 minutes')).dy),
+    );
+    await tester.tap(
+      find.byKey(RaceKeys.durationOption(RaceDuration.fiveMinutes)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.duration, RaceDuration.fiveMinutes);
+    expect(find.text('5 minutes'), findsOneWidget);
+    expect(await repository.duration(), RaceDuration.fiveMinutes);
   });
 
   testWidgets('acerto: o ícone aparece no lugar do contador e o número sobe', (
@@ -114,7 +221,7 @@ void main() {
     expect(find.byKey(RaceKeys.feedbackCorrect), findsNothing);
     expect(tester.widget<Text>(find.byKey(RaceKeys.count)).data, '1');
     // O segundo problema entrou no tabuleiro.
-    expect(cubit.state.problem?.id, 'race.002');
+    expect(cubit.state.problem?.id, 'race.350.01');
     expect(find.byType(Chessboard), findsOneWidget);
   });
 
@@ -139,7 +246,7 @@ void main() {
   ) async {
     await pumpRace(tester);
     await start(tester);
-    for (final (from, to) in [('a1', 'b1'), ('d5', 'e5'), ('b7', 'b8')]) {
+    for (final (from, to) in [('a1', 'a2'), ('a1', 'b1'), ('h1', 'g1')]) {
       await move(tester, from, to);
       await tester.pumpAndSettle();
     }
@@ -153,8 +260,14 @@ void main() {
     await tester.tap(find.byKey(RaceKeys.reviewMistakes));
     await tester.pumpAndSettle();
     expect(find.text('Mistake 1 of 3'), findsOneWidget);
-    expect(find.text('You played Qb1'), findsOneWidget);
-    expect(find.text('The right move was Qg7+'), findsOneWidget);
+    // Lance que também ganhava, só que devagar, tem o texto próprio.
+    expect(
+      find.text(
+        'Your move also won, but it took more moves. '
+        'The fastest was Qa8#, mate in 1.',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(RaceKeys.reviewNext));
     await tester.pumpAndSettle();
     expect(find.text('Mistake 2 of 3'), findsOneWidget);
@@ -178,7 +291,7 @@ void main() {
     addTearDown(tester.view.reset);
     await pumpRace(tester);
     await start(tester);
-    for (final (from, to) in [('a1', 'b1'), ('d5', 'e5'), ('b7', 'b8')]) {
+    for (final (from, to) in [('a1', 'b1'), ('a1', 'b1'), ('h1', 'g1')]) {
       await move(tester, from, to);
       await tester.pumpAndSettle();
     }
@@ -245,20 +358,25 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Problem 1 of 4'), findsOneWidget);
+    expect(find.text('Problem 1 of 5'), findsOneWidget);
 
-    await move(tester, 'a1', 'g7');
-    await tester.pumpAndSettle();
-    expect(find.text('Problem 2 of 4'), findsOneWidget);
-    await move(tester, 'd5', 'e5');
-    await tester.pumpAndSettle();
-    await move(tester, 'g6', 'g7');
-    await tester.pumpAndSettle();
-    await move(tester, 'a6', 'a7');
-    await tester.pumpAndSettle();
+    Future<void> play(String from, String to) async {
+      await move(tester, from, to);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+    }
+
+    await play('a1', 'g7');
+    expect(find.text('Problem 2 of 5'), findsOneWidget);
+    await play('f6', 'f7');
+    await play('a1', 'h1');
+    await play('h1', 'g1');
+    await play('c1', 'e2');
+    await play('b1', 'a1');
 
     expect(find.byKey(RaceKeys.warmUpDone), findsOneWidget);
-    expect(find.text('3 of 4 right. Rafa is waiting.'), findsOneWidget);
+    expect(find.text('4 of 5 right. Rafa is waiting.'), findsOneWidget);
     // O aquecimento não guarda nada.
     expect((await repository.record()).isEmpty, isTrue);
     await tester.tap(find.byKey(RaceKeys.warmUpPlay));
