@@ -9,7 +9,6 @@ void main() {
     'link': '/featured/tournament/7/game/3',
     'pushId': 'p1',
     'pais': 'BR',
-    'imagem': 'https://cdn/x.png',
   };
 
   group('PushAlert.fromData', () {
@@ -19,8 +18,6 @@ void main() {
       expect(alert.title, 'Final da semana');
       expect(alert.body, 'Brancas jogam e ganham');
       expect(alert.kind, PushKind.featured);
-      expect(alert.image, 'https://cdn/x.png');
-      expect(alert.thumbnail, isNull);
     });
 
     test('sem título nem texto não vira notificação', () {
@@ -32,11 +29,9 @@ void main() {
         {'link': '/daily', 'tipo': 'dia'},
         title: 'Final do dia',
         body: 'Novo',
-        image: 'https://cdn/d.png',
       )!;
 
       expect(alert.title, 'Final do dia');
-      expect(alert.image, 'https://cdn/d.png');
     });
 
     test('tipo desconhecido é livre', () {

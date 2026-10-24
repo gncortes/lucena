@@ -27,7 +27,7 @@ enum PushKind {
 }
 
 /// Os campos de `data` que a Function manda (P4). Com [title] e [body] o
-/// push é "data-only" e o app monta a notificação (com a imagem grande).
+/// push é "data-only" e o app monta a notificação (só texto).
 abstract final class PushData {
   static const link = 'link';
   static const kind = 'tipo';
@@ -35,12 +35,6 @@ abstract final class PushData {
   static const country = 'pais';
   static const title = 'titulo';
   static const body = 'texto';
-
-  /// A imagem 2:1 (o diagrama inteiro no centro, fundo transparente: o
-  /// Android corta a imagem grande em 2:1) e a miniatura quadrada, URLs do
-  /// Storage. Sem miniatura, a imagem grande serve de miniatura.
-  static const image = 'imagem';
-  static const thumbnail = 'miniatura';
 }
 
 /// Um push para o app mostrar como notificação própria.
@@ -52,17 +46,14 @@ class PushAlert {
     this.kind = PushKind.free,
     this.link,
     this.country,
-    this.image,
-    this.thumbnail,
   });
 
-  /// O push dos dados [data], com [title], [body] e [image] da parte
+  /// O push dos dados [data], com [title] e [body] da parte
   /// `notification` quando vier (app aberto). Nulo sem título nem texto.
   static PushAlert? fromData(
     Map<String, String> data, {
     String? title,
     String? body,
-    String? image,
   }) {
     final shownTitle = _filled(data[PushData.title]) ?? _filled(title);
     final shownBody = _filled(data[PushData.body]) ?? _filled(body);
@@ -74,8 +65,6 @@ class PushAlert {
       kind: PushKind.of(data[PushData.kind]),
       link: _filled(data[PushData.link]),
       country: _filled(data[PushData.country]),
-      image: _filled(data[PushData.image]) ?? _filled(image),
-      thumbnail: _filled(data[PushData.thumbnail]),
     );
   }
 
@@ -88,8 +77,6 @@ class PushAlert {
   final PushKind kind;
   final String? link;
   final String? country;
-  final String? image;
-  final String? thumbnail;
 
   /// O número da notificação no Android: o mesmo push substitui a anterior.
   /// Fica acima de [firstNotificationId], longe dos lembretes locais.

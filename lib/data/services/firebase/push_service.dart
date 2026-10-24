@@ -7,16 +7,14 @@ class PushMessage {
     this.data = const {},
     this.title,
     this.body,
-    this.image,
     this.notified = false,
   });
 
   final Map<String, String> data;
 
-  /// A parte `notification` (título, texto e a imagem do Android), se veio.
+  /// A parte `notification` (título e texto), se veio.
   final String? title;
   final String? body;
-  final String? image;
 
   /// Veio com `notification`: fora do app, o próprio Android mostrou.
   final bool notified;
@@ -157,7 +155,6 @@ class FirebasePushService implements PushService {
       },
       title: notification?.title,
       body: notification?.body,
-      image: notification?.android?.imageUrl,
       notified: notification != null,
     );
   }

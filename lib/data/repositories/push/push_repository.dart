@@ -7,7 +7,6 @@ import '../../../domain/models/push_alert.dart';
 import '../../../domain/use_cases/alerts_rules.dart';
 import '../../services/firebase/push_service.dart';
 import '../../services/firebase/topic_count_service.dart';
-import '../../services/image_download_service.dart';
 import '../../services/notification_service.dart';
 import '../../services/preferences_service.dart';
 import '../../services/system_settings_service.dart';
@@ -45,8 +44,8 @@ abstract class PushRepository {
   /// O aviso tocado que abriu o app (partida fria).
   Future<PushOpening?> initialOpening();
 
-  /// Mostra [alert] como notificação do Lucena: imagem grande, miniatura e
-  /// canal do tipo, sem botões (E1.19 3.8).
+  /// Mostra [alert] como notificação do Lucena: só o texto, no canal do
+  /// tipo, sem imagem nem botões (E1.19 3.8).
   Future<void> show(PushAlert alert);
 }
 
@@ -58,7 +57,6 @@ class FirebasePushRepository implements PushRepository {
     this._preferences, {
     this._system = const SystemSettingsService(),
     this._notifications = const NoNotificationService(),
-    this._images = const ImageDownloadService(),
     this._counts = const NoTopicCountService(),
     this._texts,
   });
@@ -69,7 +67,6 @@ class FirebasePushRepository implements PushRepository {
   final PreferencesService _preferences;
   final SystemSettingsService _system;
   final NotificationService _notifications;
-  final ImageDownloadService _images;
   final TopicCountService _counts;
   final Future<PushTexts> Function()? _texts;
   StreamSubscription<PushMessage>? _received;
@@ -82,7 +79,6 @@ class FirebasePushRepository implements PushRepository {
         message.data,
         title: message.title,
         body: message.body,
-        image: message.image,
       );
       if (alert != null) unawaited(show(alert));
     });
@@ -217,10 +213,6 @@ class FirebasePushRepository implements PushRepository {
     final texts = await _texts?.call();
     if (texts == null) return;
     final channel = texts.channel(alert.kind);
-    final picture = await _download(alert.image);
-    final thumbnail = alert.thumbnail == null
-        ? null
-        : await _download(alert.thumbnail);
     await _notifications.show(
       ShownNotification(
         id: alert.notificationId,
@@ -229,14 +221,7 @@ class FirebasePushRepository implements PushRepository {
         body: alert.body,
         payload: alert.payload,
         subText: channel.name,
-        picture: picture,
-        thumbnail: thumbnail,
       ),
     );
-  }
-
-  Future<Uint8List?> _download(String? url) async {
-    final uri = url == null ? null : Uri.tryParse(url);
-    return uri == null ? null : _images.fetch(uri);
   }
 }

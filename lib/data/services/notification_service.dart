@@ -49,8 +49,6 @@ class ShownNotification {
     required this.body,
     required this.payload,
     this.subText,
-    this.picture,
-    this.thumbnail,
     this.actions = const [],
   });
 
@@ -62,10 +60,6 @@ class ShownNotification {
 
   /// O texto ao lado do nome do app no cabeçalho ("Lucena · subText").
   final String? subText;
-
-  /// A imagem grande (expandida) e a miniatura (recolhida), em bytes.
-  final Uint8List? picture;
-  final Uint8List? thumbnail;
 
   /// Os botões: id e rótulo.
   final List<({String id, String label})> actions;
@@ -248,8 +242,6 @@ class DeviceNotificationService implements NotificationService {
   @override
   Future<void> show(ShownNotification notification) async {
     if (!await _ready()) return;
-    final picture = notification.picture;
-    final thumbnail = notification.thumbnail ?? picture;
     await _plugin.show(
       id: notification.id,
       title: notification.title,
@@ -264,21 +256,9 @@ class DeviceNotificationService implements NotificationService {
           enableVibration: false,
           silent: true,
           subText: notification.subText,
-          largeIcon: thumbnail == null
-              ? null
-              : ByteArrayAndroidBitmap(thumbnail),
-          // Expandida: a imagem grande no lugar da miniatura. Sem imagem, o
-          // texto inteiro.
-          styleInformation: picture == null
-              ? BigTextStyleInformation(notification.body)
-              : BigPictureStyleInformation(
-                  ByteArrayAndroidBitmap(picture),
-                  largeIcon: thumbnail == null
-                      ? null
-                      : ByteArrayAndroidBitmap(thumbnail),
-                  hideExpandedLargeIcon: true,
-                  summaryText: notification.body,
-                ),
+          // Só texto, como os outros apps de xadrez (Gabriel, 2026-10-24):
+          // expandida, o texto inteiro.
+          styleInformation: BigTextStyleInformation(notification.body),
           actions: [
             for (final action in notification.actions)
               AndroidNotificationAction(

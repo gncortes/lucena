@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/push/push_repository.dart';
 import 'package:lucena/data/services/firebase/push_service.dart';
 import 'package:lucena/data/services/firebase/topic_count_service.dart';
-import 'package:lucena/data/services/image_download_service.dart';
 import 'package:lucena/data/services/notification_service.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/push_alert.dart';
@@ -48,16 +46,6 @@ class _Push extends NoPushService {
   Stream<PushMessage> get received => incoming.stream;
 }
 
-class _Images extends ImageDownloadService {
-  final asked = <Uri>[];
-
-  @override
-  Future<Uint8List?> fetch(Uri uri) async {
-    asked.add(uri);
-    return uri.path.endsWith('.png') ? Uint8List.fromList([1, 2, 3]) : null;
-  }
-}
-
 class _Counts implements TopicCountService {
   final changes = <String>[];
 
@@ -76,7 +64,6 @@ const _texts = PushTexts(
 void main() {
   late _Push service;
   late FakeNotificationService notifications;
-  late _Images images;
   late _Counts counts;
   late FirebasePushRepository repository;
 
@@ -85,13 +72,11 @@ void main() {
         InMemorySharedPreferencesAsync.empty();
     service = _Push();
     notifications = FakeNotificationService();
-    images = _Images();
     counts = _Counts();
     repository = FirebasePushRepository(
       service,
       PreferencesService(),
       notifications: notifications,
-      images: images,
       counts: counts,
       texts: () async => _texts,
     );
@@ -187,7 +172,7 @@ void main() {
     await subscription.cancel();
   });
 
-  test('mostra com canal do tipo, imagem e miniatura, sem botões', () async {
+  test('mostra só o texto, no canal do tipo, sem botões', () async {
     await repository.show(
       const PushAlert(
         title: 'Final do Open de Curitiba',
@@ -195,8 +180,6 @@ void main() {
         id: 'p3',
         kind: PushKind.featured,
         link: '/featured/curitiba-r5',
-        image: 'https://x.test/d.png',
-        thumbnail: 'https://x.test/m.png',
       ),
     );
 
@@ -204,28 +187,9 @@ void main() {
     expect(shown.channel.id, 'push_torneios_quieto');
     expect(shown.channel.name, 'Finais de torneio');
     expect(shown.subText, 'Finais de torneio');
-    expect(shown.picture, isNotNull);
-    expect(shown.thumbnail, isNotNull);
     expect(shown.actions, isEmpty);
     expect(shown.id, greaterThanOrEqualTo(PushAlert.firstNotificationId));
     expect(PushOpening.isPush(shown.payload), isTrue);
-  });
-
-  test('imagem que não baixou: sai só com o texto', () async {
-    await repository.show(
-      const PushAlert(
-        title: 'Aula nova',
-        body: 'Oposição',
-        kind: PushKind.lesson,
-        link: '/lesson/oposicao',
-        image: 'https://x.test/falhou.jpg',
-      ),
-    );
-
-    final shown = notifications.shown.single;
-    expect(shown.channel.id, 'push_aulas_quieto');
-    expect(shown.picture, isNull);
-    expect(shown.actions, isEmpty);
   });
 
   test('com o app aberto, o aviso que chega aparece', () async {
