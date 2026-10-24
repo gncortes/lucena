@@ -1793,7 +1793,7 @@
   "racePerformanceMastered": "O que você já domina",
   "racePerformanceToImprove": "Onde você pode melhorar",
   "racePerformanceCorrects": "{corrects} de {total} acertos",
-  "racePerformanceLessonTitle": "Capítulo: {name}",
+  "racePerformanceLessonTitle": "Estudar: {name}",
   "racePerformanceLessonQueen": "Aprenda a dar mate com a dama.",
   "racePerformanceLessonRook": "Aprenda a dar mate com a torre.",
   "racePerformanceLessonPawnVsKing": "Aprenda as casas-chave e a oposição.",

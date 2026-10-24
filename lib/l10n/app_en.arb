@@ -9226,7 +9226,7 @@
       }
     }
   },
-  "racePerformanceLessonTitle": "Chapter: {name}",
+  "racePerformanceLessonTitle": "Study: {name}",
   "@racePerformanceLessonTitle": {
     "description": "Performance screen: option to open the lesson of an endgame.",
     "placeholders": {
