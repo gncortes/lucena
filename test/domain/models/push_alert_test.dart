@@ -7,7 +7,6 @@ void main() {
     'texto': 'Brancas jogam e ganham',
     'tipo': 'destaque',
     'link': '/featured/tournament/7/game/3',
-    'torneio': '/featured/tournament/7',
     'pushId': 'p1',
     'pais': 'BR',
     'imagem': 'https://cdn/x.png',
@@ -22,7 +21,6 @@ void main() {
       expect(alert.kind, PushKind.featured);
       expect(alert.image, 'https://cdn/x.png');
       expect(alert.thumbnail, isNull);
-      expect(alert.actions, [PushActions.play, PushActions.tournament]);
     });
 
     test('sem título nem texto não vira notificação', () {
@@ -39,15 +37,9 @@ void main() {
 
       expect(alert.title, 'Final do dia');
       expect(alert.image, 'https://cdn/d.png');
-      expect(alert.actions, [PushActions.play]);
     });
 
-    test('aula e novidade não têm botão Jogar; tipo desconhecido é livre', () {
-      expect(
-        PushAlert.fromData({'titulo': 'a', 'tipo': 'aula', 'link': '/x'})!
-            .actions,
-        isEmpty,
-      );
+    test('tipo desconhecido é livre', () {
       expect(
         PushAlert.fromData({'titulo': 'a', 'tipo': '?'})!.kind,
         PushKind.free,
@@ -75,21 +67,14 @@ void main() {
       expect(PushOpening.fromPayload('/daily'), isNull);
     });
 
-    test('toque no corpo ou em Jogar abre o link', () {
+    test('o toque abre o link', () {
       expect(
-        PushOpening.fromPayload(payload, action: PushActions.play),
+        PushOpening.fromPayload(payload),
         PushOpening(
           link: Uri.parse('/featured/tournament/7/game/3'),
           pushId: 'p1',
           country: 'BR',
         ),
-      );
-    });
-
-    test('Ver torneio abre o torneio', () {
-      expect(
-        PushOpening.fromPayload(payload, action: PushActions.tournament)!.link,
-        Uri.parse('/featured/tournament/7'),
       );
     });
   });
@@ -100,13 +85,10 @@ void main() {
       daily: 'D',
       lessons: 'A',
       news: 'N',
-      play: 'Jogar',
-      tournament: 'Ver torneio',
     );
     expect(texts.channel(PushKind.featured).id, 'push_torneios_quieto');
     expect(texts.channel(PushKind.daily).id, 'push_dia_quieto');
     expect(texts.channel(PushKind.lesson).id, 'push_aulas_quieto');
     expect(texts.channel(PushKind.free).id, 'push_novidades_quieto');
-    expect(texts.action(PushActions.tournament), 'Ver torneio');
   });
 }

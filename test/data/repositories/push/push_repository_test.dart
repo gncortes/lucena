@@ -71,8 +71,6 @@ const _texts = PushTexts(
   daily: 'Final do dia',
   lessons: 'Aulas novas',
   news: 'Novidades',
-  play: 'Jogar',
-  tournament: 'Ver torneio',
 );
 
 void main() {
@@ -136,20 +134,16 @@ void main() {
     expect((await repository.initialOpening())!.link, isNull);
   });
 
-  test('app fechado: a notificação do app tocada em Jogar abre', () async {
+  test('app fechado: a notificação do app tocada abre', () async {
     const alert = PushAlert(
       title: 't',
       body: 'b',
       id: 'p9',
       kind: PushKind.featured,
       link: '/featured/curitiba-r5',
-      tournament: '/featured/tournament/curitiba',
       country: 'BR',
     );
-    notifications.launch = NotificationTap(
-      alert.payload,
-      action: PushActions.play,
-    );
+    notifications.launch = NotificationTap(alert.payload);
 
     expect(
       await repository.initialOpening(),
@@ -176,33 +170,31 @@ void main() {
       id: 'p2',
       kind: PushKind.featured,
       link: '/featured/a',
-      tournament: '/featured/tournament/t',
     );
 
     service.controller.add(
       const PushMessage(data: {'link': 'https://playlucena.com/p/a'}),
     );
     notifications
-      ..tap(alert.payload, action: PushActions.tournament)
+      ..tap(alert.payload)
       ..tap('/daily');
     await pumpEventQueue();
 
     expect(openings, [
       PushOpening(link: Uri.parse('https://playlucena.com/p/a')),
-      PushOpening(link: Uri.parse('/featured/tournament/t'), pushId: 'p2'),
+      PushOpening(link: Uri.parse('/featured/a'), pushId: 'p2'),
     ]);
     await subscription.cancel();
   });
 
-  test('mostra com canal do tipo, imagem, miniatura e botões', () async {
+  test('mostra com canal do tipo, imagem e miniatura, sem botões', () async {
     await repository.show(
       const PushAlert(
-        title: 'Open de Curitiba: um final da rodada 5',
+        title: 'Final do Open de Curitiba',
         body: 'Duarte × Lemos. Jogam as brancas.',
         id: 'p3',
         kind: PushKind.featured,
         link: '/featured/curitiba-r5',
-        tournament: '/featured/tournament/curitiba',
         image: 'https://x.test/d.png',
         thumbnail: 'https://x.test/m.png',
       ),
@@ -214,10 +206,7 @@ void main() {
     expect(shown.subText, 'Finais de torneio');
     expect(shown.picture, isNotNull);
     expect(shown.thumbnail, isNotNull);
-    expect(shown.actions, [
-      (id: PushActions.play, label: 'Jogar'),
-      (id: PushActions.tournament, label: 'Ver torneio'),
-    ]);
+    expect(shown.actions, isEmpty);
     expect(shown.id, greaterThanOrEqualTo(PushAlert.firstNotificationId));
     expect(PushOpening.isPush(shown.payload), isTrue);
   });
@@ -257,7 +246,7 @@ void main() {
     final shown = notifications.shown.single;
     expect(shown.title, 'Final do dia');
     expect(shown.channel.id, 'push_dia_quieto');
-    expect(shown.actions.single.id, PushActions.play);
+    expect(shown.actions, isEmpty);
   });
 
   test('sem os textos não mostra nada', () async {

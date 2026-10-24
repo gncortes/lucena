@@ -8934,9 +8934,5 @@
   "pushChannelTournaments": "Tournament endgames",
   "@pushChannelTournaments": {
     "description": "Android notification channel (and header subtext) for pushes about tournament endgames."
-  },
-  "pushActionTournament": "See tournament",
-  "@pushActionTournament": {
-    "description": "Button on a push notification that opens the tournament summary."
   }
 }

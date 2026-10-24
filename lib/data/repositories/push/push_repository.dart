@@ -39,15 +39,14 @@ abstract class PushRepository {
   Future<bool> openSystemSettings();
 
   /// Os avisos tocados com o app em segundo plano: a notificação do
-  /// Android (campo `link` dos dados) ou a que o app mostrou (corpo, "Jogar"
-  /// ou "Ver torneio").
+  /// Android (campo `link` dos dados) ou a que o app mostrou.
   Stream<PushOpening> get opened;
 
   /// O aviso tocado que abriu o app (partida fria).
   Future<PushOpening?> initialOpening();
 
-  /// Mostra [alert] como notificação do Lucena: imagem grande, miniatura,
-  /// canal do tipo e botões (E1.19 3.8).
+  /// Mostra [alert] como notificação do Lucena: imagem grande, miniatura e
+  /// canal do tipo, sem botões (E1.19 3.8).
   Future<void> show(PushAlert alert);
 }
 
@@ -187,10 +186,7 @@ class FirebasePushRepository implements PushRepository {
               (message) => _opened.add(PushOpening.fromData(message.data)),
             ),
             _notifications.taps.listen((tap) {
-              final opening = PushOpening.fromPayload(
-                tap.payload,
-                action: tap.action,
-              );
+              final opening = PushOpening.fromPayload(tap.payload);
               if (opening != null) _opened.add(opening);
             }),
           ];
@@ -213,9 +209,7 @@ class FirebasePushRepository implements PushRepository {
       debugPrint('Push sem o aviso da abertura: $error');
     }
     final tap = await _notifications.launchTap();
-    return tap == null
-        ? null
-        : PushOpening.fromPayload(tap.payload, action: tap.action);
+    return tap == null ? null : PushOpening.fromPayload(tap.payload);
   }
 
   @override
@@ -237,10 +231,6 @@ class FirebasePushRepository implements PushRepository {
         subText: channel.name,
         picture: picture,
         thumbnail: thumbnail,
-        actions: [
-          for (final action in alert.actions)
-            (id: action, label: texts.action(action)),
-        ],
       ),
     );
   }

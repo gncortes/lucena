@@ -30,8 +30,6 @@ Future<PushTexts> loadPushTexts(SettingsRepository settings) async {
     daily: l10n.dailyTitle,
     lessons: l10n.alertsLessons,
     news: l10n.alertsNews,
-    play: l10n.featuredPlay,
-    tournament: l10n.pushActionTournament,
   );
 }
 
@@ -48,7 +46,7 @@ AppLocalizations _lookup(Locale locale) {
 
 /// O push que chega com o app fechado ou em segundo plano. O que veio com
 /// `notification` o Android já mostrou (só com o toque, sem botões); o
-/// "data-only" (com `titulo`/`texto`) o app mostra com a imagem e os botões.
+/// "data-only" (com `titulo`/`texto`) o app mostra com a imagem grande.
 @pragma('vm:entry-point')
 Future<void> showPushInBackground(RemoteMessage remote) async {
   final message = FirebasePushService.message(remote);
