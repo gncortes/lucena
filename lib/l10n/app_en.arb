@@ -1021,7 +1021,7 @@
   "@ratingHistory": {
     "description": "Title above the list of games that changed the player's rating, on the rating details screen."
   },
-  "ratingHistoryEmpty": "Play against the Maia or Stockfish and every game that moves your rating will show up here.",
+  "ratingHistoryEmpty": "Every game that moves your rating shows up here.",
   "@ratingHistoryEmpty": {
     "description": "Shown on the rating details screen when no game has counted for the rating yet."
   },
@@ -1254,7 +1254,7 @@
   "@setupPace": {
     "description": "Section of the game setup with the named time controls (1+0, 3+2...)."
   },
-  "setupPaceHint": "The Maia keeps its strength in every time control: in bullet it plays more on instinct and faster.",
+  "setupPaceHint": "Your opponent keeps its strength in every time control; in bullet, it plays more on instinct.",
   "@setupPaceHint": {
     "description": "Hint under the time control chips."
   },
@@ -8902,7 +8902,7 @@
   "@payLearnQuestion": {
     "description": "Step 3 question about learning."
   },
-  "payLearnHelp": "Lesson, exercises, test and a game against Maia.",
+  "payLearnHelp": "Lesson, exercises, test and a game of the endgame.",
   "@payLearnHelp": {
     "description": "Help under the learning question."
   },
@@ -9071,11 +9071,11 @@
   "@nextStepsRaceBody": {
     "description": "Next steps: what the endgame race is for."
   },
-  "nextStepsTrainTitle": "Train against Maia",
+  "nextStepsTrainTitle": "Practice endgames",
   "@nextStepsTrainTitle": {
     "description": "Next steps: option to play an endgame against the engine."
   },
-  "nextStepsTrainBody": "Play an endgame against an opponent at your level.",
+  "nextStepsTrainBody": "Pick an endgame from the catalog and play.",
   "@nextStepsTrainBody": {
     "description": "Next steps: text of the training option."
   },
@@ -9144,11 +9144,11 @@
   "@lessonFinishedFix": {
     "description": "Lesson finished: badge on the race option."
   },
-  "lessonFinishedTrainTitle": "Train this endgame",
+  "lessonFinishedTrainTitle": "Practice this endgame",
   "@lessonFinishedTrainTitle": {
     "description": "Lesson finished: play the lesson endgame against the engine."
   },
-  "lessonFinishedTrainBody": "Play the lesson endgame against Maia.",
+  "lessonFinishedTrainBody": "Play the lesson position as a game.",
   "@lessonFinishedTrainBody": {
     "description": "Lesson finished: text of the training option."
   },
@@ -9263,7 +9263,7 @@
   "@raceFocusBody": {
     "description": "Race result: text of the focused race option."
   },
-  "raceTrainTitle": "Train: {name}",
+  "raceTrainTitle": "Practice {name}",
   "@raceTrainTitle": {
     "description": "Race result: train the weakest family against the engine.",
     "placeholders": {
@@ -9272,7 +9272,7 @@
       }
     }
   },
-  "raceTrainBody": "Against Maia, until it becomes automatic.",
+  "raceTrainBody": "Pick an endgame of this type and play.",
   "@raceTrainBody": {
     "description": "Race result: text of the training option."
   }
