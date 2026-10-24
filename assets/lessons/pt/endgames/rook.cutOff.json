@@ -90,7 +90,7 @@
   "part.behind.summary": "Com o peão na sétima, a torre fica atrás dele e corta o rei preto por uma fileira. Uhlmann contra Gulko, 1978.",
   "step.d_oneFile": "E com 1.Td1? O rei preto vem para c5, a apenas uma coluna do peão: quatro mais um dá cinco. Observe o que acontece depois de 1...Rc5, quando o rei branco tenta subir.",
   "step.d_oneFile.m1": "2.Rf4. O rei tenta subir ao lado do peão, pelo lado mais distante do rei preto.",
-  "step.d_oneFile.m2": "2...Tf8+. É um xeque frontal, isto é, um xeque dado de longe, pela coluna, vindo da frente do rei. A torre preta está longe do rei branco e pode dar xeques à vontade.",
+  "step.d_oneFile.m2": "2...Tf8+. É um xeque frontal, isto é, um xeque dado à distância, pela coluna, vindo da frente do rei. A torre preta está longe do rei branco e pode dar xeques à vontade.",
   "step.d_oneFile.m3": "3.Rg5. O rei sai do xeque, mas se afasta do peão.",
   "step.d_oneFile.m4": "3...Te8. A torre volta para a frente do peão. Agora 4.e5? perde o peão, por causa de 4...Txe5+.",
   "step.d_oneFile.m5": "4.Rf5. O rei volta para proteger o peão.",

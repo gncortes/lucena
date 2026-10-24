@@ -14,7 +14,7 @@
   "rot.ideia.ex2.e1": "Olhe o cavalo em d6: nenhuma peça preta o protege. O rei preto está longe.",
   "rot.ideia.ex2.e2": "Peça sem proteção se captura. Sem o cavalo, sobra o mate fácil de duas torres.",
   "rot.ideia.ex2.p": "Ache o melhor lance, ou clique em {verResposta}",
-  "rot.ideia.ex2.certo": "Isso mesmo! A torre captura o cavalo. Agora são duas torres contra o rei sozinho.",
+  "rot.ideia.ex2.certo": "Isso mesmo! A torre captura o cavalo. Agora são duas torres contra o rei solitário.",
   "rot.ideia.ex2.revela": "A torre de d1 captura o cavalo em d6. O rei preto fica sozinho.",
   "rot.ideia.ex2.err.a1a8.1": "É xeque, mas o rei sai, e o cavalo continua no jogo.",
   "rot.ideia.ex2.err.a1a8.2": "O rei preto vai para g7.",

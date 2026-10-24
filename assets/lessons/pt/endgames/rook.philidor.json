@@ -42,7 +42,7 @@
   "part.trade.title": "A troca de torres",
   "part.trade.summary": "Se as pretas cobrem o xeque com a torre, troque as torres e, no final de peões, recue o rei em linha reta.",
   "part.beyond.title": "Outros peões",
-  "part.beyond.summary": "Contra qualquer peão, o rei fica na casa de coroação e a torre espera na terceira fileira; quando o peão chegar a ela, a torre desce e dá xeques por trás.",
+  "part.beyond.summary": "Contra qualquer peão, o rei fica na casa de promoção e a torre espera na terceira fileira; quando o peão chegar a ela, a torre desce e dá xeques por trás.",
   "step.t_classic.hint2": "Agora imagine que as pretas apenas movem a torre, de um lado para o outro. Você precisa fazer alguma coisa?",
   "step.intro": "{{François-André Philidor|francois-andre-philidor}}, o jogador mais forte do século XVIII, analisou esta posição em 1777. Ela se apoia em três peças bem colocadas. O seu rei está em e1, a casa de promoção do peão. A sua torre está na terceira fileira e a controla de ponta a ponta. O rei preto fica atrás dessa linha: enquanto a torre estiver ali, ele não pode entrar em e3, f3 nem g3, e, sem o apoio do rei, o peão não consegue avançar.",
   "step.d_wait": "Observe como se defende esta posição: com lances de espera. Um lance de espera é um lance que não muda nada de importante na posição: você apenas passa a vez ao adversário, sem estragar a defesa. As pretas jogam primeiro.",

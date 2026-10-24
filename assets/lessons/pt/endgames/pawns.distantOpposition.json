@@ -32,7 +32,7 @@
   "ex.e18.r1": "1...Rd6. O rei preto vai a d6 e guarda o peão de c5, mas deixa livre o caminho pelo outro lado.",
   "ex.e19": "Jogue de brancas e encontre o melhor lance. Os peões da coluna a estão travados e o rei preto é mais ativo. Seu rei precisa chegar a tempo ao outro lado.",
   "ex.e19.hint": "É uma corrida: seu rei deve ir ao encontro do rei preto pelo centro, sem perder tempo, para ter contrajogo.",
-  "ex.e19.solution": "1.Rd7! começa a corrida contra o rei preto. Depois de 1...Rc5, 2.Re6! segue para o centro; depois de 2...Rc4, 3.Re5 (3.Rf5 também serve) e, depois de 3...Rc3, 4.Re4! O peão de a2 cai, mas seu rei chega a c2 a tempo de prender o rei preto no canto, e o empate está garantido.",
+  "ex.e19.solution": "1.Rd7! começa a corrida contra o rei preto. Depois de 1...Rc5, 2.Re6! segue para o centro; depois de 2...Rc4, 3.Re5 (3.Rf5 também serve) e, depois de 3...Rc3, 4.Re4! O peão de a2 cai, mas seu rei chega a c2 a tempo de encurralar o rei preto no canto, e o empate está garantido.",
   "ex.e19.r1": "1...Rc5. O rei preto corre para o centro e para o lado dos peões da coluna a.",
   "ex.e19.r2": "2...Rc4. O rei preto desce mais uma fileira, ameaçando entrar pela ala da dama.",
   "ex.e19.r3": "3...Rc3. O rei preto chega a c3 e ameaça ir a b2 para atacar o peão de a2.",

@@ -1,6 +1,6 @@
 {
   "rot.ponte.demos.ataque.1": "Ataque: a posição da ideia, com a torre já em d4. Desta vez, as pretas não esperam com a torre: o rei preto, em e6, vem atacar a sua torre.",
-  "rot.ponte.demos.ataque.10": "O seu rei recaptura: o peão saiu, mas a sua torre ficou, e torre contra rei sozinho ganha.",
+  "rot.ponte.demos.ataque.10": "O seu rei recaptura: o peão saiu, mas a sua torre ficou, e torre contra rei solitário ganha.",
   "rot.ponte.demos.ataque.2": "O rei sai de b8 por c7 e continua protegendo o peão.",
   "rot.ponte.demos.ataque.3": "Defesa: xeque pela coluna c.",
   "rot.ponte.demos.ataque.4": "O rei vai a b6, ao lado do peão.",
@@ -47,7 +47,7 @@
   "rot.ponte.ideia.ex1.alt.d1h1.2": "Ataque: agora vamos à linha principal, com a torre na quarta fileira.",
   "rot.ponte.ideia.ex1.certo": "Ataque: a torre vai à quarta fileira, em d4, e continua fechando a coluna d. Mais tarde, ela vai bloquear o último xeque.",
   "rot.ponte.ideia.ex1.e1": "Ataque: esta é a posição de Lucena. O peão está na sétima fileira, o seu rei está na frente dele, em b8, e a sua torre fecha a coluna d: o rei preto, em e7, não chega ao peão.",
-  "rot.ponte.ideia.ex1.e2": "O problema é o seu rei: ele precisa sair de b8 para o peão coroar, mas a torre preta, em a2, dá xeques de longe assim que ele sai. Como preparar a saída?",
+  "rot.ponte.ideia.ex1.e2": "O problema é o seu rei: ele precisa sair de b8 para o peão coroar, mas a torre preta, em a2, dá xeques à distância assim que ele sai. Como preparar a saída?",
   "rot.ponte.ideia.ex1.err.d1a1.1": "Ataque: a torre vai a a1, na coluna da torre preta e sem proteção.",
   "rot.ponte.ideia.ex1.err.d1a1.2": "Defesa: as pretas encontram um recurso: a torre preta captura a sua, e só com o peão não há vitória: empate.",
   "rot.ponte.ideia.ex1.err.d1d2.1": "Ataque: a torre vai a d2, na fileira da torre preta e sem proteção.",
@@ -76,7 +76,7 @@
   "rot.ponte.ideia.ex1.revela": "Ataque: o plano é levar a torre à quarta fileira, em d4, sem sair da coluna d. Mais tarde, ela vai bloquear o último xeque.",
   "rot.ponte.ideia.ex1.volta": "Vamos voltar à posição. Sugira outro lance ou clique em {verResposta}",
   "rot.ponte.pratica.err.coroa.1": "O peão coroou em uma casa vigiada pela torre preta: ela captura a peça nova, e torre contra torre é empate.",
-  "rot.ponte.pratica.err.coroa.2": "Antes de coroar, confira se a torre preta alcança a casa de coroação. Se alcançar, feche primeiro o caminho dela com a torre ou com o rei.",
+  "rot.ponte.pratica.err.coroa.2": "Antes de coroar, confira se a torre preta alcança a casa de promoção. Se alcançar, feche primeiro o caminho dela com a torre ou com o rei.",
   "rot.ponte.pratica.err.desprotege.1": "O seu rei se afastou da torre, e ela ficou sem proteção: as pretas a capturam, e só com o peão não há vitória.",
   "rot.ponte.pratica.err.desprotege.2": "Antes de mexer o rei, confira se a torre continua protegida ou longe das peças pretas.",
   "rot.ponte.pratica.err.pendurada.1": "A sua torre estava ao alcance do rei preto, e o lance não a tirou de lá: ele a captura, e só com o peão não há vitória.",
@@ -96,5 +96,5 @@
   "rot.ponte.pratica.fins.limite": "O limite de lances acabou antes de o peão coroar. Primeiro, a torre vai à quarta fileira; depois, o rei sai e a torre bloqueia o último xeque.",
   "rot.ponte.pratica.fins.repeticao": "Empate por repetição. Em vez de voltar à mesma posição, leve a torre à quarta fileira e tire o rei de g8.",
   "rot.ponte.pratica.lado.fim": "Fim do capítulo: na posição de Lucena, a torre vai à quarta fileira, o rei sai, e a torre bloqueia o último xeque. Isso é construir a ponte.",
-  "rot.ponte.pratica.lado.p": "Ataque: o peão está em g7, e a sua torre fecha a coluna e. Construa a ponte e coroe o peão. Se a torre preta vigiar a casa de coroação, cubra essa casa antes de coroar."
+  "rot.ponte.pratica.lado.p": "Ataque: o peão está em g7, e a sua torre fecha a coluna e. Construa a ponte e coroe o peão. Se a torre preta vigiar a casa de promoção, cubra essa casa antes de coroar."
 }

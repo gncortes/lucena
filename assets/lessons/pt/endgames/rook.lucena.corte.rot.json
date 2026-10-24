@@ -25,7 +25,7 @@
   "rot.corte.pratica.err.soltaRei.1": "O rei preto captura a sua torre, que ficou ao lado dele sem proteção: sem ela, a vitória escapa.",
   "rot.corte.pratica.err.soltaRei.2": "Mantenha a torre longe do rei preto, ou protegida pelo seu rei.",
   "rot.corte.pratica.err.coroa.1": "A peça nova é capturada pela torre preta, e sem o peão não há vitória.",
-  "rot.corte.pratica.err.coroa.2": "Coroe só quando a casa de coroação estiver fora do alcance da torre preta.",
+  "rot.corte.pratica.err.coroa.2": "Coroe só quando a casa de promoção estiver fora do alcance da torre preta.",
   "rot.corte.pratica.err.peao.1": "O seu rei se afasta do peão, e a torre preta o captura: sem o peão, não há vitória.",
   "rot.corte.pratica.err.peao.2": "O rei fica ao lado do peão até a coroação; os xeques da torre preta se fecham com a sua torre."
 }

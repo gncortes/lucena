@@ -3,7 +3,7 @@
   "rot.ideia.ex1.e2": "O primeiro é o corredor: o rei preto está preso atrás dos próprios peões.",
   "rot.ideia.ex1.e3": "A fileira 8 está sem defesa. Procure a peça que chega até ela.",
   "rot.ideia.ex1.p": "Dê xeque-mate com a torre, ou clique em {verResposta}",
-  "rot.ideia.ex1.certo": "Isso mesmo! Mate do corredor: os peões prendem o próprio rei.",
+  "rot.ideia.ex1.certo": "Isso mesmo! Mate do corredor: os peões trancam o próprio rei.",
   "rot.ideia.ex1.revela": "A torre sobe até d8 e dá xeque pela fileira 8. O rei não tem para onde ir.",
   "rot.ideia.ex1.err.d1d7.1": "A torre chega à fileira 7, mas não dá xeque.",
   "rot.ideia.ex1.err.d1d7.2": "Vamos voltar: o xeque vem pela fileira do rei.",
