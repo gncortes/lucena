@@ -87,6 +87,15 @@ class FirebasePushRepository implements PushRepository {
       );
       if (alert != null) unawaited(show(alert));
     });
+    // Só no debug: o token para o tools/push_teste.py --token.
+    if (kDebugMode) {
+      unawaited(
+        _service.token().then(
+          (token) => debugPrint('Push token: $token'),
+          onError: (Object _) {},
+        ),
+      );
+    }
     try {
       await _service.subscribe(PushRepository.everyone);
     } on Object catch (error) {
