@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/next_steps_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:patrol/patrol.dart';
 
@@ -29,5 +30,8 @@ void main() {
     await race.waitForResult();
     expect(find.byKey(RaceKeys.reviewMistakes), findsOneWidget);
     expect(find.byKey(RaceKeys.again), findsOneWidget);
+    // A primeira Corrida: quantas faltam para o desempenho por final.
+    await $(RaceKeys.diagnosisProgress).scrollTo();
+    await $(NextStepsKeys.resultsInfo).scrollTo();
   });
 }
