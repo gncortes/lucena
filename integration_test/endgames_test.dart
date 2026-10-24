@@ -14,6 +14,10 @@ const _english = Locale('en', 'US');
 /// A primeira aula da trilha: o mate de bispo e cavalo pela manobra em W.
 const _lessonId = 'rook.lucena';
 
+/// A aula do speedrun do final: a Lucena não tem posição no catálogo, então
+/// não tem speedrun. Esta tem (pawn.pawnVsKing.0001).
+const _speedrunLessonId = 'pawns.keySquares';
+
 final _hidden = !VisibleLessons.endgameLessonIds.contains(_lessonId);
 
 void main() {
@@ -38,7 +42,7 @@ void main() {
     expect(endgames.exerciseSpeech, isNotNull);
     await endgames.back();
 
-    // Lance errado e dica num exercício de 2 estrelas: cada um custa uma.
+    // Dica e lance errado num exercício de 2 estrelas: zera.
     // Os anteriores entram prontos.
     final index = lesson.exercises.indexWhere(
       (exercise) => exercise.stars == 2,
@@ -60,9 +64,10 @@ void main() {
     await endgames.openFromHome();
     await endgames.openLesson(_lessonId);
     await endgames.startExercises(_lessonId, two.id);
-    await endgames.exerciseMove(_wrongMove);
     await endgames.hint();
     expect(endgames.exerciseSpeech, isNotEmpty);
+    // Errar o primeiro lance zera o exercício, com a dica já descontada.
+    await endgames.exerciseMove(endgames.wrongFirstMove(two));
     await endgames.solveExercise(two);
     expectText(endgames.earned, _points(0, 2));
     await endgames.back();
@@ -107,11 +112,11 @@ void main() {
     final app = AppRobot($);
     await app.open(systemLocale: _english);
     final endgames = EndgamesRobot($);
-    final lesson = await endgames.lesson(_lessonId);
+    final lesson = await endgames.lesson(_speedrunLessonId);
     await seedEndgameProgress(
       EndgameProgress(
         lessons: {
-          _lessonId: EndgameLessonProgress(
+          _speedrunLessonId: EndgameLessonProgress(
             lessonDone: true,
             stars: {
               for (final exercise in lesson.exercises)
@@ -123,7 +128,7 @@ void main() {
     );
     await app.restart();
     await endgames.openFromHome();
-    await endgames.openLesson(_lessonId);
+    await endgames.openLesson(_speedrunLessonId);
     await endgames.expectPassed();
     await endgames.expectFinalStep();
 
@@ -134,50 +139,54 @@ void main() {
   }, skip: _hidden);
 
   // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
-  patrolTest('fechar à força no meio do exercício: reabre no mesmo lance', (
-    $,
-  ) async {
-    final app = AppRobot($);
-    await app.open(systemLocale: _english);
-    final endgames = EndgamesRobot($);
-    final lesson = await endgames.lesson(_lessonId);
-    // O último exercício (o de mais lances); os anteriores entram prontos.
-    final last = lesson.exercises.last;
-    await seedEndgameProgress(
-      EndgameProgress(
-        lessons: {
-          _lessonId: EndgameLessonProgress(
-            stars: {
-              for (final exercise in lesson.exercises.take(
-                lesson.exercises.length - 1,
-              ))
-                exercise.id: exercise.stars,
-            },
-          ),
-        },
-      ),
-    );
-    await app.restart();
-    await endgames.openFromHome();
-    await endgames.openLesson(_lessonId);
-    await endgames.startExercises(_lessonId, last.id);
-    await endgames.exerciseMove(last.line.first.accept.first);
-    endgames.expectExerciseBoard(_afterFirstTurn);
+  patrolTest(
+    'fechar à força no meio do exercício: reabre de onde parou, com a dica',
+    ($) async {
+      final app = AppRobot($);
+      await app.open(systemLocale: _english);
+      final endgames = EndgamesRobot($);
+      final lesson = await endgames.lesson(_lessonId);
+      // O exercício que mais vale (a dica custa uma estrela e não zera); os
+      // outros entram prontos.
+      final open = lesson.exercises.reduce((a, b) => b.stars > a.stars ? b : a);
+      expect(open.stars, greaterThan(1));
+      await seedEndgameProgress(
+        EndgameProgress(
+          lessons: {
+            _lessonId: EndgameLessonProgress(
+              stars: {
+                for (final exercise in lesson.exercises)
+                  if (exercise != open) exercise.id: exercise.stars,
+              },
+            ),
+          },
+        ),
+      );
+      await app.restart();
+      await endgames.openFromHome();
+      await endgames.openLesson(_lessonId);
+      await endgames.startExercises(_lessonId, open.id);
+      await endgames.hint();
+      // Com mais de um lance, larga depois do primeiro.
+      final midway = open.line.length > 1;
+      if (midway) {
+        await endgames.exerciseMove(open.line.first.accept.first);
+        endgames.expectExerciseBoard(endgames.boardAfterFirstTurn(open));
+      }
 
-    await app.restart();
-    await endgames.expectExercise(_lessonId, last.id);
-    endgames.expectExerciseBoard(_afterFirstTurn);
-    await endgames.solveExercise(last, from: 1);
-    expectText(endgames.earned, _points(last.stars, last.stars));
-  }, skip: _hidden);
+      // Fechar à força reabre o mesmo exercício, de onde estava e com a dica
+      // já descontada.
+      await app.restart();
+      await endgames.expectExercise(_lessonId, open.id);
+      if (midway) {
+        endgames.expectExerciseBoard(endgames.boardAfterFirstTurn(open));
+      }
+      await endgames.solveExercise(open, from: midway ? 1 : 0);
+      expectText(endgames.earned, _points(open.stars - 1, open.stars));
+    },
+    skip: _hidden,
+  );
 }
-
-/// Um lance legal que nenhum exercício de 2 estrelas da aula aceita no
-/// começo (o bispo de a6 para b5, no primeiro deles).
-const _wrongMove = 'a6b5';
-
-/// O último exercício depois do primeiro lance e da resposta.
-const _afterFirstTurn = '8/8/4BKNk/8/8/8/8/8 w - - 2 2';
 
 /// Os pontos como o app escreve ("1 of 1 point", "0 of 2 points").
 String _points(int earned, int total) =>

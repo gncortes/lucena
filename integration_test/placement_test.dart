@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -27,6 +26,8 @@ void main() {
     expect(find.byKey(LevelKeys.option(LevelChoice.test)), findsOneWidget);
 
     await tour.takeTest();
+    // O teste marcado em "Seu nível" abre ao tocar em "Continuar".
+    await tour.start(leave: false);
     await placement.expectIntro();
     await placement.start();
     await placement.expectQuestion(1);
@@ -38,6 +39,8 @@ void main() {
     await app.restart();
     await $(LevelKeys.screen).waitUntilVisible();
     await tour.takeTest();
+    // O teste marcado em "Seu nível" abre ao tocar em "Continuar".
+    await tour.start(leave: false);
     await placement.expectIntro();
     await placement.resume();
     await placement.expectQuestion(6);
@@ -73,7 +76,8 @@ void main() {
     await placement.dontKnow(20);
     await placement.expectResult();
     await placement.useLevel();
-    await $(ProfileKeys.screen).waitUntilVisible();
+    // O resultado volta a "Seu nível", de onde o teste foi aberto.
+    await $(LevelKeys.screen).waitUntilVisible();
 
     // A trilha agora tem o filtro, e a escolha fica gravada.
     await app.restart();
