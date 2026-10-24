@@ -57,21 +57,35 @@ void main() {
       )
       .first;
 
-  testWidgets('depois do nível: o nível, as três opções, o "Em breve" e a '
-      'nota dos dados', (tester) async {
+  testWidgets('depois do nível: o nível, as três opções com um selo só e a '
+      'linha dos dados, que abre a folha', (tester) async {
     await pump(tester, Routes.nextStepsReady(level: 1400));
     expect(find.text('Your level: 1400'), findsOneWidget);
+    expect(find.text('Next steps'), findsOneWidget);
     for (final id in ['lessons', 'race', 'train']) {
       expect(find.byKey(NextStepsKeys.option(id)), findsOneWidget);
     }
     expect(find.byKey(NextStepsKeys.option('journey')), findsNothing);
-    expect(find.text('For you'), findsOneWidget);
+    expect(find.text('Recommended'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.byKey(NextStepsKeys.dataNote),
+      find.byKey(NextStepsKeys.resultsInfo),
       200,
       scrollable: scrollable(),
     );
-    expect(find.byKey(NextStepsKeys.comingSoon), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(NextStepsKeys.resultsInfo)).height,
+      greaterThanOrEqualTo(48),
+    );
+    await tester.tap(find.byKey(NextStepsKeys.resultsInfo));
+    await tester.pumpAndSettle();
+    expect(find.byKey(NextStepsKeys.resultsSheet), findsOneWidget);
+    expect(find.text('Your results count'), findsOneWidget);
+    for (var i = 0; i < 3; i++) {
+      expect(find.byKey(NextStepsKeys.resultsItem(i)), findsOneWidget);
+    }
+    await tester.tap(find.byKey(NextStepsKeys.resultsSheetClose));
+    await tester.pumpAndSettle();
+    expect(find.byKey(NextStepsKeys.resultsSheet), findsNothing);
     await tester.tap(find.byKey(NextStepsKeys.home));
     await tester.pumpAndSettle();
     expect(opened.last, Routes.home);
@@ -87,19 +101,22 @@ void main() {
     expect(opened.last, Routes.race);
   });
 
-  testWidgets('Escola concluída: a Jornada entra, sem a nota dos dados', (
+  testWidgets('Escola concluída: a Jornada entra, com a linha dos dados', (
     tester,
   ) async {
     await pump(tester, Routes.nextStepsSchool);
     expect(find.text('You completed the School!'), findsOneWidget);
     expect(find.text('Recommended'), findsOneWidget);
+    expect(
+      find.text('Start with the Opposition, the endgame that comes up most.'),
+      findsOneWidget,
+    );
     await tester.scrollUntilVisible(
-      find.byKey(NextStepsKeys.comingSoon),
+      find.byKey(NextStepsKeys.resultsInfo),
       200,
       scrollable: scrollable(),
     );
     expect(find.byKey(NextStepsKeys.option('journey')), findsOneWidget);
-    expect(find.byKey(NextStepsKeys.dataNote), findsNothing);
     await tester.tap(find.byKey(NextStepsKeys.option('journey')));
     await tester.pumpAndSettle();
     expect(opened.last, Routes.journey);

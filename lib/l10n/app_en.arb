@@ -6882,11 +6882,11 @@
   "@raceTitle": {
     "description": "Title of the endgame problem race screens."
   },
-  "raceIntroSubtitle": "Problems on endgames only",
+  "raceIntroSubtitle": "Selected endgame puzzles",
   "@raceIntroSubtitle": {
     "description": "Intro header: what the race is."
   },
-  "raceIntroBody": "You play the sequence to mate, and the opponent answers on its own. It trains your eye for the positions in the lessons.",
+  "raceIntroBody": "Play the whole sequence; the opponent answers by itself.",
   "@raceIntroBody": {
     "description": "Intro: what the race is."
   },
@@ -6920,7 +6920,7 @@
   "@raceRuleHarderTitle": {
     "description": "Intro rule: difficulty rises."
   },
-  "raceRuleHarderBody": "It starts easy and each correct answer raises the next level.",
+  "raceRuleHarderBody": "It starts easy, and each correct answer makes the next puzzle harder.",
   "@raceRuleHarderBody": {
     "description": "Intro rule: body for rising difficulty."
   },
@@ -6928,7 +6928,7 @@
   "@raceRuleErrorsTitle": {
     "description": "Intro rule: the error limit."
   },
-  "raceRuleErrorsBody": "A wrong move moves you to the next problem. You see the right moves at the end.",
+  "raceRuleErrorsBody": "Missed one? On to the next. At the end, you see the solution to each mistake.",
   "@raceRuleErrorsBody": {
     "description": "Intro rule: what happens on a mistake."
   },
@@ -6936,7 +6936,7 @@
   "@raceRuleShortestTitle": {
     "description": "Intro rule: only the fastest win counts."
   },
-  "raceRuleShortestBody": "A move that wins more slowly counts as a mistake.",
+  "raceRuleShortestBody": "Only the fastest winning move counts.",
   "@raceRuleShortestBody": {
     "description": "Intro rule: body for the fastest-win rule."
   },
@@ -9055,19 +9055,11 @@
   "@nextStepsReadyBody": {
     "description": "Next steps after the level: hero text."
   },
-  "nextStepsReadySection": "To begin",
-  "@nextStepsReadySection": {
-    "description": "Next steps after the level: title of the options."
-  },
-  "nextStepsForYou": "For you",
-  "@nextStepsForYou": {
-    "description": "Next steps: badge on the suggested option."
-  },
-  "nextStepsLessonsBody": "Opposition, Bishop and knight, Queen vs rook and Lucena.",
+  "nextStepsLessonsBody": "Learn Opposition, Bishop and knight, Queen vs rook and Lucena.",
   "@nextStepsLessonsBody": {
     "description": "Next steps: what the endgame lessons cover."
   },
-  "nextStepsRaceBody": "3 min of puzzles. Shows the endgames you miss the most.",
+  "nextStepsRaceBody": "Solve endgame puzzles against the clock.",
   "@nextStepsRaceBody": {
     "description": "Next steps: what the endgame race is for."
   },
@@ -9075,7 +9067,7 @@
   "@nextStepsTrainTitle": {
     "description": "Next steps: option to play an endgame against the engine."
   },
-  "nextStepsTrainBody": "Pick an endgame from the catalog and play.",
+  "nextStepsTrainBody": "Pick a position in the catalog and play.",
   "@nextStepsTrainBody": {
     "description": "Next steps: text of the training option."
   },
@@ -9095,39 +9087,19 @@
   "@nextStepsSchoolBody": {
     "description": "Next steps after the School: hero text."
   },
-  "nextStepsSchoolSection": "Next steps",
-  "@nextStepsSchoolSection": {
-    "description": "Next steps after the School: title of the options."
-  },
   "nextStepsRecommended": "Recommended",
   "@nextStepsRecommended": {
     "description": "Next steps: badge on the recommended option."
   },
-  "nextStepsLessonsFirst": "Start with the Opposition: the endgame that shows up the most.",
+  "nextStepsLessonsFirst": "Start with the Opposition, the endgame that comes up most.",
   "@nextStepsLessonsFirst": {
     "description": "Next steps after the School: endgame lessons text."
   },
-  "nextStepsJourneyBody": "Challenges against opponents, one step at a time.",
+  "nextStepsJourneyBody": "Beat opponents, one step at a time.",
   "@nextStepsJourneyBody": {
     "description": "Next steps after the School: journey text."
   },
-  "comingSoonTitle": "Coming soon to Lucena",
-  "@comingSoonTitle": {
-    "description": "Coming soon card: title."
-  },
-  "comingSoonBody": "For now there are 4 endgames. More endgames and the course How to prepare for tournaments are on the way.",
-  "@comingSoonBody": {
-    "description": "Coming soon card: what comes next."
-  },
-  "dataNote": "Everything you do here (games, lessons and Races) is saved and adjusts what Lucena suggests for you.",
-  "@dataNote": {
-    "description": "Note that what the player does is saved and tunes the suggestions."
-  },
-  "lessonFinishedNextTitle": "What now?",
-  "@lessonFinishedNextTitle": {
-    "description": "Lesson finished: title of the options to fix the idea."
-  },
-  "lessonFinishedRaceOnly": "Race with only {name}",
+  "lessonFinishedRaceOnly": "{name} Race",
   "@lessonFinishedRaceOnly": {
     "description": "Lesson finished: race with only this endgame type.",
     "placeholders": {
@@ -9136,13 +9108,9 @@
       }
     }
   },
-  "lessonFinishedRaceBody": "Puzzles of the endgame you just saw.",
+  "lessonFinishedRaceBody": "Solve puzzles of the endgame you just studied.",
   "@lessonFinishedRaceBody": {
     "description": "Lesson finished: text of the race option."
-  },
-  "lessonFinishedFix": "Practice",
-  "@lessonFinishedFix": {
-    "description": "Lesson finished: badge on the race option."
   },
   "lessonFinishedTrainTitle": "Practice this endgame",
   "@lessonFinishedTrainTitle": {
@@ -9156,20 +9124,61 @@
   "@lessonFinishedExercisesTitle": {
     "description": "Lesson finished: the lesson test."
   },
-  "lessonFinishedExercisesBody": "The lesson test, with stars.",
+  "lessonFinishedExercisesBody": "Test what you learned and earn stars.",
   "@lessonFinishedExercisesBody": {
     "description": "Lesson finished: text of the exercises option."
   },
-  "raceGoalLine": "Each Race shows the endgame you miss the most. After 3 Races, Lucena points out the right lesson and training.",
-  "@raceGoalLine": {
-    "description": "Race intro: what the race diagnoses."
+  "nextStepsTitle": "Next steps",
+  "@nextStepsTitle": {
+    "description": "Title of the next steps block at the end of each flow."
   },
-  "raceDiagnosisTitle": "Your endgames in the Races",
-  "@raceDiagnosisTitle": {
-    "description": "Race result: diagnosis card title while it is not ready."
+  "nextStepsPractice": "Practice {name}",
+  "@nextStepsPractice": {
+    "description": "Next steps: option to play positions of this endgame.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-  "raceDiagnosisProgress": "{done} of {total}",
-  "@raceDiagnosisProgress": {
+  "resultsInfoLine": "How Lucena uses your results",
+  "@resultsInfoLine": {
+    "description": "Line that opens the sheet about saved results."
+  },
+  "resultsInfoTitle": "Your results count",
+  "@resultsInfoTitle": {
+    "description": "Title of the sheet about saved results."
+  },
+  "resultsInfoRace": "In Races, Lucena finds out which endgames you struggle with most and what is worth studying.",
+  "@resultsInfoRace": {
+    "description": "Results sheet: what races are for."
+  },
+  "resultsInfoCourses": "Today the app has 4 free endgames. Coming soon: a complete endgame course and courses for beginners, intermediate and advanced players, including tournament preparation.",
+  "@resultsInfoCourses": {
+    "description": "Results sheet: what the app has today and what is coming."
+  },
+  "resultsInfoSaved": "Everything you do in the app (games, lessons and Races) is saved. With it, Lucena will build a study plan made for you.",
+  "@resultsInfoSaved": {
+    "description": "Results sheet: everything is saved."
+  },
+  "raceWhyEndgamesTitle": "Why only endgames?",
+  "@raceWhyEndgamesTitle": {
+    "description": "Race intro: title of the why box."
+  },
+  "raceWhyEndgamesBody": "Knowing how to play endgames decides many games. And with each Race, Lucena finds out which endgames you already master and which you need to study.",
+  "@raceWhyEndgamesBody": {
+    "description": "Race intro: text of the why box."
+  },
+  "racePerformanceLine": "Your performance by endgame",
+  "@racePerformanceLine": {
+    "description": "Race result: line that opens the performance screen."
+  },
+  "racePerformanceLineBody": "See what you already master and where you can improve.",
+  "@racePerformanceLineBody": {
+    "description": "Race result: text of the performance line."
+  },
+  "raceProgressCount": "{done} of {total}",
+  "@raceProgressCount": {
     "description": "Race result: races done out of the races needed.",
     "placeholders": {
       "done": {
@@ -9180,24 +9189,32 @@
       }
     }
   },
-  "raceDiagnosisMissing": "{count, plural, =1{1 more Race and Lucena shows the endgames you miss the most, with the lesson and training for each.} other{{count} more Races and Lucena shows the endgames you miss the most, with the lesson and training for each.}}",
-  "@raceDiagnosisMissing": {
-    "description": "Race result: races missing before the diagnosis.",
+  "raceProgressMissing": "{count, plural, =1{1 more Race for Lucena to show what you already master and where you can improve.} other{{count} more Races for Lucena to show what you already master and where you can improve.}}",
+  "@raceProgressMissing": {
+    "description": "Race result: races missing before the performance by endgame.",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "raceDiagnosisWeakest": "YOUR WEAKEST SPOT",
-  "@raceDiagnosisWeakest": {
-    "description": "Race result: label over the weakest endgame family."
+  "racePerformanceTitle": "Your performance",
+  "@racePerformanceTitle": {
+    "description": "Performance screen: app bar title."
   },
-  "raceDiagnosisErrors": "You missed {errors} of {total} puzzles.",
-  "@raceDiagnosisErrors": {
-    "description": "Race result: misses in the weakest family.",
+  "racePerformanceMastered": "What you already master",
+  "@racePerformanceMastered": {
+    "description": "Performance screen: card of mastered endgames."
+  },
+  "racePerformanceToImprove": "Where you can improve",
+  "@racePerformanceToImprove": {
+    "description": "Performance screen: card of endgames to improve."
+  },
+  "racePerformanceCorrects": "{corrects} of {total} correct",
+  "@racePerformanceCorrects": {
+    "description": "Performance screen: correct answers in an endgame.",
     "placeholders": {
-      "errors": {
+      "corrects": {
         "type": "int"
       },
       "total": {
@@ -9205,75 +9222,45 @@
       }
     }
   },
-  "raceDiagnosisAlsoWeak": "Also worth training:",
-  "@raceDiagnosisAlsoWeak": {
-    "description": "Race result: label before the other weak families."
-  },
-  "raceDiagnosisAlsoItem": "{name} (missed {errors} of {total})",
-  "@raceDiagnosisAlsoItem": {
-    "description": "Race result: one other weak family.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      },
-      "errors": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "raceDiagnosisGood": "Going well:",
-  "@raceDiagnosisGood": {
-    "description": "Race result: label before the families going well."
-  },
-  "raceDiagnosisNoWeak": "No weak spot in your latest Races.",
-  "@raceDiagnosisNoWeak": {
-    "description": "Race result: diagnosis with no weak family."
-  },
-  "raceDiagnosisFooter": "From your latest {runs} Races. The more you race, the sharper it gets.",
-  "@raceDiagnosisFooter": {
-    "description": "Race result: how the diagnosis is computed.",
-    "placeholders": {
-      "runs": {
-        "type": "int"
-      }
-    }
-  },
-  "raceImproveTitle": "To improve: {name}",
-  "@raceImproveTitle": {
-    "description": "Race result: title of the options for the weakest family.",
+  "racePerformanceLessonTitle": "Lesson: {name}",
+  "@racePerformanceLessonTitle": {
+    "description": "Performance screen: option to open the lesson of an endgame.",
     "placeholders": {
       "name": {
         "type": "String"
       }
     }
   },
-  "raceFocusTitle": "Race: {name}",
-  "@raceFocusTitle": {
-    "description": "Race result: race with only the weakest family.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
+  "racePerformanceLessonQueen": "Learn to checkmate with the queen.",
+  "@racePerformanceLessonQueen": {
+    "description": "Performance screen: what the queen mate lesson teaches."
   },
-  "raceFocusBody": "The puzzles of your weakest spot.",
-  "@raceFocusBody": {
-    "description": "Race result: text of the focused race option."
+  "racePerformanceLessonRook": "Learn to checkmate with the rook.",
+  "@racePerformanceLessonRook": {
+    "description": "Performance screen: what the rook mate lesson teaches."
   },
-  "raceTrainTitle": "Practice {name}",
-  "@raceTrainTitle": {
-    "description": "Race result: train the weakest family against the engine.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
+  "racePerformanceLessonPawnVsKing": "Learn the key squares and the opposition.",
+  "@racePerformanceLessonPawnVsKing": {
+    "description": "Performance screen: what the pawn vs king lesson teaches."
   },
-  "raceTrainBody": "Pick an endgame of this type and play.",
-  "@raceTrainBody": {
-    "description": "Race result: text of the training option."
+  "racePerformanceLessonKnightBishop": "Learn to checkmate with bishop and knight.",
+  "@racePerformanceLessonKnightBishop": {
+    "description": "Performance screen: what the bishop and knight lesson teaches."
+  },
+  "racePerformanceLessonQueenVsRook": "Learn to beat the rook with the queen.",
+  "@racePerformanceLessonQueenVsRook": {
+    "description": "Performance screen: what the queen vs rook lesson teaches."
+  },
+  "racePerformanceLessonLucena": "Learn to build the bridge and promote the pawn.",
+  "@racePerformanceLessonLucena": {
+    "description": "Performance screen: what the Lucena position lesson teaches."
+  },
+  "racePerformancePracticeBody": "Pick a position of this endgame in the catalog and play.",
+  "@racePerformancePracticeBody": {
+    "description": "Performance screen: text of the practice option."
+  },
+  "racePerformanceFooter": "Based on your Race history.",
+  "@racePerformanceFooter": {
+    "description": "Performance screen: footnote."
   }
 }

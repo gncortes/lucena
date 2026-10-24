@@ -366,16 +366,6 @@ class RaceCubit extends Cubit<RaceState> {
   void backToIntro() =>
       emit(state.copyWith(phase: RacePhase.intro, clearTurn: true));
 
-  /// Do resultado para a abertura de uma Corrida só de uma família de finais
-  /// (o ponto fraco do diagnóstico), sem trocar o filtro guardado.
-  void focus({required String category}) {
-    final filter = RaceRules.only(state.problems, category: category);
-    if (RaceRules.count(state.problems, filter) == 0) return;
-    emit(
-      state.copyWith(phase: RacePhase.intro, filter: filter, clearTurn: true),
-    );
-  }
-
   void review() {
     if (state.mistakes.isEmpty) return;
     emit(state.copyWith(phase: RacePhase.reviewing, reviewIndex: 0));

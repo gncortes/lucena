@@ -87,9 +87,10 @@ class RaceIntroView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
-              // Para que serve a Corrida, além do recorde (E1.34).
+              // O porquê de ser só de finais e para que serve (canvas V2 ·
+              // Ligações, L4).
               Container(
-                key: RaceKeys.goalLine,
+                key: RaceKeys.whyEndgames,
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.sm,
@@ -103,13 +104,23 @@ class RaceIntroView extends StatelessWidget {
                   spacing: AppSpacing.sm,
                   children: [
                     Icon(
-                      Icons.troubleshoot,
+                      Icons.lightbulb,
                       size: AppIconSize.button,
                       color: colors.onSecondaryContainer,
                     ),
                     Expanded(
-                      child: Text(
-                        l10n.raceGoalLine,
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: l10n.raceWhyEndgamesTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            TextSpan(text: ' ${l10n.raceWhyEndgamesBody}'),
+                          ],
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.onSecondaryContainer,
                         ),

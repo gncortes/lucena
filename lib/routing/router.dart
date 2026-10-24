@@ -168,7 +168,9 @@ import '../ui/journey/widgets/journey_screen.dart';
 import '../ui/journey/widgets/rung_screen.dart';
 import '../data/repositories/race/race_repository.dart';
 import '../ui/race/view_models/race_cubit.dart';
+import '../ui/race/view_models/race_performance_cubit.dart';
 import '../ui/race/view_models/race_warm_up_cubit.dart';
+import '../ui/race/widgets/race_performance_screen.dart';
 import '../ui/race/widgets/race_screen.dart';
 import '../ui/race/widgets/race_warm_up_screen.dart';
 import '../ui/speedrun/view_models/speedrun_cubit.dart';
@@ -1124,6 +1126,15 @@ GoRouter buildRouter({
               child: const RaceScreen(),
             ),
             routes: [
+              _route(
+                path: 'performance',
+                builder: (context, state) => BlocProvider(
+                  create: (context) =>
+                      RacePerformanceCubit(context.read<RaceRepository>())
+                        ..load(),
+                  child: const RacePerformanceScreen(),
+                ),
+              ),
               _route(
                 path: 'warm-up',
                 builder: (context, state) {

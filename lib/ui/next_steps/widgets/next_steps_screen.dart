@@ -14,8 +14,7 @@ import '../../core/widgets/scroll_padding.dart';
 
 /// Os próximos passos (canvas V2 · Ligações, L1 e L2): depois do "Seu nível"
 /// ([level], quando há número) ou da Escola concluída ([graduated]). Mostra
-/// por onde começar, o que vem aí e, no fim do nível, que o que a pessoa faz
-/// ajusta as sugestões.
+/// por onde começar e a linha que abre "Seus resultados contam".
 class NextStepsScreen extends StatelessWidget {
   const NextStepsScreen({this.graduated = false, this.level, super.key});
 
@@ -37,7 +36,7 @@ class NextStepsScreen extends StatelessWidget {
       icon: Icons.school,
       title: l10n.endgamesTitle,
       body: graduated ? l10n.nextStepsLessonsFirst : l10n.nextStepsLessonsBody,
-      badge: graduated ? l10n.nextStepsRecommended : l10n.nextStepsForYou,
+      recommended: true,
       onTap: () => go(Routes.endgames),
     );
     final race = NextStep(
@@ -56,7 +55,7 @@ class NextStepsScreen extends StatelessWidget {
     );
     final journey = NextStep(
       id: 'journey',
-      icon: Icons.flag,
+      icon: Icons.hiking,
       title: l10n.journeyTitle,
       body: l10n.nextStepsJourneyBody,
       onTap: () => go(Routes.journey),
@@ -130,17 +129,10 @@ class NextStepsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 NextSteps(
-                  title: graduated
-                      ? l10n.nextStepsSchoolSection
-                      : l10n.nextStepsReadySection,
                   steps: [lessons, race, if (graduated) journey, train],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const ComingSoonCard(),
-                if (!graduated) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  const DataNote(),
-                ],
+                const ResultsInfoLine(),
               ],
             ),
           ),

@@ -43,50 +43,87 @@ void main() {
     expect(diagnosis.ready, isFalse);
   });
 
-  test('conta por categoria: mate de dama e de torre juntos em "basic"', () {
+  test('conta por final: mate de dama e de torre separados', () {
     final diagnosis = of([
-      run({'queen': (2, 1), 'rook': (0, 2)}),
+      run({'queen': (3, 1), 'rook': (1, 3)}),
       run({'pawnVsKing': (4, 0)}),
       run({'pawnVsKing': (3, 0)}),
     ]);
     expect(diagnosis.ready, isTrue);
+    expect(diagnosis.weakest?.subcategory, 'rook');
     expect(diagnosis.weakest?.category, 'basic');
-    expect(diagnosis.weakest?.errors, 3);
-    expect(diagnosis.weakest?.total, 5);
-    expect([for (final s in diagnosis.good) s.category], ['pawn']);
+    expect(diagnosis.weakest?.corrects, 1);
+    expect(diagnosis.weakest?.total, 4);
+    // Do melhor para o pior.
+    expect(
+      [for (final s in diagnosis.mastered) s.subcategory],
+      ['pawnVsKing', 'queen'],
+    );
   });
 
-  test('categoria com menos de 5 problemas fica de fora', () {
+  test('final com menos de 4 problemas fica de fora', () {
     final diagnosis = of([
       run({'knightBishopVsKing': (0, 3), 'pawnVsKing': (5, 0)}),
       run({}),
       run({}),
     ]);
-    expect(diagnosis.weak, isEmpty);
-    expect([for (final s in diagnosis.good) s.category], ['pawn']);
+    expect(diagnosis.toImprove, isEmpty);
+    expect([for (final s in diagnosis.mastered) s.subcategory], ['pawnVsKing']);
   });
 
-  test('30% de erro já precisa de treino; o pior vem primeiro', () {
+  test('domina com 70% de acerto; abaixo, a melhorar do pior ao melhor', () {
     final diagnosis = of([
-      run({'pawnVsKing': (7, 3), 'knightBishopVsKing': (2, 3)}),
+      run({
+        'pawnVsKing': (7, 3),
+        'knightBishopVsKing': (2, 3),
+        'queen': (6, 4),
+      }),
       run({}),
       run({}),
     ]);
+    expect([for (final s in diagnosis.mastered) s.subcategory], ['pawnVsKing']);
     expect(
-      [for (final s in diagnosis.weak) s.category],
-      ['knightBishop', 'pawn'],
+      [for (final s in diagnosis.toImprove) s.subcategory],
+      ['knightBishopVsKing', 'queen'],
     );
-    expect(diagnosis.good, isEmpty);
   });
 
-  test('só as 5 Corridas mais recentes entram', () {
+  test('só as 10 Corridas mais recentes entram', () {
     final diagnosis = of([
-      for (var i = 0; i < 5; i++) run({'pawnVsKing': (1, 0)}),
+      for (var i = 0; i < 10; i++) run({'pawnVsKing': (1, 0)}),
       run({'pawnVsKing': (0, 10)}),
     ]);
-    expect(diagnosis.runs, 5);
-    expect(diagnosis.weak, isEmpty);
-    expect(diagnosis.good.single.total, 5);
+    expect(diagnosis.runs, 10);
+    expect(diagnosis.toImprove, isEmpty);
+    expect(diagnosis.mastered.single.total, 10);
+  });
+
+  test('aulas: só as liberadas, na ordem dos finais a melhorar', () {
+    const scores = [
+      RaceFinalScore(
+        category: 'basic',
+        subcategory: 'rook',
+        corrects: 1,
+        total: 5,
+      ),
+      RaceFinalScore(
+        category: 'knightBishop',
+        subcategory: 'knightBishopVsKing',
+        corrects: 2,
+        total: 5,
+      ),
+      RaceFinalScore(
+        category: 'pawn',
+        subcategory: 'pawnVsKing',
+        corrects: 3,
+        total: 5,
+      ),
+    ];
+    // A Escola está escondida: o mate de torre fica sem aula.
+    expect(
+      [for (final l in RaceFinalLesson.forScores(scores)) l.lessonId],
+      ['mates.bishopKnight.deletang', 'pawns.keySquares'],
+    );
   });
 
   test('a Corrida só de um tipo ou de uma família tira o resto', () {

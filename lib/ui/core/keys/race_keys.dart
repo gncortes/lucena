@@ -69,17 +69,23 @@ abstract final class RaceKeys {
   static const reviewMistakes = Key('race.result.review');
   static const close = Key('race.result.close');
 
-  /// O diagnóstico (E1.34): o cartão (ainda chegando, o ponto mais fraco ou
-  /// nenhum) e a família de cada chip "Indo bem"; na abertura, a linha "para
-  /// que serve". As opções "Para melhorar" ficam em `NextStepsKeys.option`.
-  static const diagnosis = Key('race.diagnosis');
+  /// O desempenho por final (E1.34): no resultado, o cartão de quantas
+  /// Corridas faltam ou a linha que abre a tela "Seu desempenho"; na
+  /// abertura, o quadro "Por que só finais?".
   static const diagnosisProgress = Key('race.diagnosis.progress');
-  static const diagnosisWeakest = Key('race.diagnosis.weakest');
-  static const diagnosisAlsoWeak = Key('race.diagnosis.alsoWeak');
-  static const diagnosisNoWeak = Key('race.diagnosis.noWeak');
-  static Key diagnosisGood(String category) =>
-      Key('race.diagnosis.good.$category');
-  static const goalLine = Key('race.goalLine');
+  static const performance = Key('race.performance');
+  static const whyEndgames = Key('race.whyEndgames');
+
+  /// A tela "Seu desempenho": os dois cartões, o chip de cada final dominado
+  /// e a linha de cada final a melhorar. As opções dos próximos passos ficam
+  /// em `NextStepsKeys.option` (`lesson.<id>` e `practice`).
+  static const performanceScreen = Key('race.performance.screen');
+  static const performanceMastered = Key('race.performance.mastered');
+  static const performanceToImprove = Key('race.performance.toImprove');
+  static Key performanceChip(String subcategory) =>
+      Key('race.performance.chip.$subcategory');
+  static Key performanceRow(String subcategory) =>
+      Key('race.performance.row.$subcategory');
 
   /// Revisão dos erros.
   static const reviewTitle = Key('race.review.title');

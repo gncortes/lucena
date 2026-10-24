@@ -500,14 +500,5 @@ void main() {
       expect(cubit.state.diagnosis.runs, 1);
       expect(cubit.state.diagnosis.ready, isFalse);
     });
-
-    test('"Corrida: família" volta à abertura com só aquela família', () async {
-      await cubit.load();
-      cubit.focus(category: 'basic');
-      expect(cubit.state.phase, RacePhase.intro);
-      final basic = raceTestProblems.where(cubit.state.filter.matches);
-      expect(basic.map((p) => p.category), everyElement('basic'));
-      expect(basic, isNotEmpty);
-    });
   });
 }

@@ -246,6 +246,9 @@ abstract final class Routes {
   static const race = '/race';
   static const raceWarmUp = '/race/warm-up';
 
+  /// "Seu desempenho": o desempenho por final nas Corridas (E1.34).
+  static const racePerformance = '/race/performance';
+
   /// Os próximos passos: depois do "Seu nível" (com o nível, quando há) e
   /// com a Escola concluída.
   static const nextSteps = '/next';

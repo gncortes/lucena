@@ -138,7 +138,7 @@ void main() {
     expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsNothing);
   });
 
-  testWidgets('finais: "E agora?" com a Corrida só daquele final e o treino', (
+  testWidgets('finais: "Próximos passos" com a Corrida e o treino do final', (
     tester,
   ) async {
     const lucena = RaceProblem(
@@ -156,7 +156,12 @@ void main() {
       problems: [...raceTestProblems, lucena],
     );
     expect(find.byKey(NextStepsKeys.block), findsOneWidget);
-    expect(find.byKey(NextStepsKeys.dataNote), findsOneWidget);
+    expect(find.byKey(NextStepsKeys.resultsInfo), findsOneWidget);
+    expect(find.text('Next steps'), findsOneWidget);
+    // Sem selo nesta tela.
+    expect(find.text('Recommended'), findsNothing);
+    expect(find.text('Rook and pawn against rook Race'), findsOneWidget);
+    expect(find.text('Practice Rook and pawn against rook'), findsOneWidget);
     // O bloco vem antes do convite e dos botões.
     expect(
       tester.getTopLeft(find.byKey(NextStepsKeys.block)).dy,
@@ -177,9 +182,10 @@ void main() {
     await pump(tester, SurveyKind.endgames, 'rook.lucena');
     expect(find.byKey(NextStepsKeys.option('raceOnly')), findsNothing);
     expect(find.byKey(NextStepsKeys.option('train')), findsOneWidget);
+    expect(find.text('Practice this endgame'), findsOneWidget);
   });
 
-  testWidgets('Escola: sem o "E agora?"', (tester) async {
+  testWidgets('Escola: sem os "Próximos passos"', (tester) async {
     await pump(tester, SurveyKind.school, 'pieces.rook');
     expect(find.byKey(NextStepsKeys.block), findsNothing);
   });

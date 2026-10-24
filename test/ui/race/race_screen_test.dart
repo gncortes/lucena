@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/domain/use_cases/race_rules.dart';
+import 'package:lucena/ui/core/keys/next_steps_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
 import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
@@ -81,8 +82,9 @@ void main() {
 
     expect(find.byKey(RaceKeys.introView), findsOneWidget);
     expect(find.text('3 minutes'), findsOneWidget);
-    // Para que serve a Corrida, logo abaixo do título (E1.34).
-    expect(find.byKey(RaceKeys.goalLine), findsOneWidget);
+    // Por que só finais, logo abaixo do título (canvas V2 · Ligações, L4).
+    expect(find.byKey(RaceKeys.whyEndgames), findsOneWidget);
+    expect(find.textContaining('Why only endgames?'), findsOneWidget);
     expect(find.text('Three mistakes and it is over'), findsOneWidget);
     final list = find.descendant(
       of: find.byKey(RaceKeys.introView),
@@ -129,6 +131,8 @@ void main() {
       200,
       scrollable: list,
     );
+    await tester.ensureVisible(find.byKey(RaceKeys.filterRow));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(RaceKeys.filterRow));
     await tester.pumpAndSettle();
     expect(find.byKey(RaceKeys.filterScreen), findsOneWidget);
@@ -170,6 +174,8 @@ void main() {
       200,
       scrollable: list,
     );
+    await tester.ensureVisible(find.byKey(RaceKeys.filterRow));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(RaceKeys.filterRow));
     await tester.pumpAndSettle();
     for (final category in ['basic', 'pawn', 'knightBishop']) {
@@ -262,6 +268,10 @@ void main() {
     expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '0');
     expect(find.byKey(RaceKeys.problemTile(2)), findsOneWidget);
     expect(find.text('Review the 3 mistakes'), findsOneWidget);
+    // Antes de 3 Corridas: quantas faltam para o desempenho por final (L5).
+    expect(find.byKey(RaceKeys.diagnosisProgress), findsOneWidget);
+    expect(find.text('1 of 3'), findsOneWidget);
+    expect(find.byKey(RaceKeys.performance), findsNothing);
 
     await tester.tap(find.byKey(RaceKeys.reviewMistakes));
     await tester.pumpAndSettle();
@@ -287,6 +297,36 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(RaceKeys.gameView), findsOneWidget);
     expect(tester.widget<Text>(find.byKey(RaceKeys.count)).data, '0');
+  });
+
+  testWidgets('com 3 Corridas, o resultado mostra a linha do desempenho e '
+      'a dos dados, sem ponto fraco', (tester) async {
+    for (var i = 0; i < 3; i++) {
+      var run = RaceRun(startedAt: now());
+      for (var j = 0; j < 4; j++) {
+        run = run.withAnswer(
+          RaceAnswer(
+            problemId: 'p$j',
+            level: 400,
+            move: 'a1a2',
+            correct: j > 0,
+            subcategory: 'queen',
+          ),
+        );
+      }
+      await repository.finish(run, RaceEnd.errors);
+    }
+    await pumpRace(tester);
+    await start(tester);
+    for (final (from, to) in [('a1', 'a2'), ('a1', 'b1'), ('h1', 'g1')]) {
+      await move(tester, from, to);
+      await tester.pumpAndSettle();
+    }
+    expect(find.byKey(RaceKeys.resultView), findsOneWidget);
+    expect(find.byKey(RaceKeys.diagnosisProgress), findsNothing);
+    expect(find.byKey(RaceKeys.performance), findsOneWidget);
+    expect(find.text('Your performance by endgame'), findsOneWidget);
+    expect(find.byKey(NextStepsKeys.resultsInfo), findsOneWidget);
   });
 
   testWidgets('num celular de 384 de largura, as miniaturas têm vão entre si', (
