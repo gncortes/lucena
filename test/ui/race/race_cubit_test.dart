@@ -399,6 +399,38 @@ void main() {
       expect(third.state.problem!.id, isNot(played));
       expect(id, isNotEmpty);
     });
+
+    test(
+      'jogar de novo na mesma tela também evita a Corrida que acabou',
+      () async {
+        final many = FakeRaceRepository(
+          now: now,
+          problems: [
+            for (var i = 1; i <= 2; i++)
+              RaceProblem(
+                id: 'x.$i',
+                fen: raceTestProblems.first.fen,
+                tree: raceTestProblems.first.tree,
+                category: 'basic',
+                subcategory: 'queen',
+                level: 300,
+              ),
+          ],
+        );
+        final cubit = RaceCubit(many, now, replyDelay: Duration.zero);
+        addTearDown(cubit.close);
+        await cubit.load();
+        await cubit.start();
+        final played = cubit.state.problem!.id;
+        await cubit.answer('a1a8');
+        now.advance(const Duration(minutes: 3));
+        await cubit.tick();
+        expect(cubit.state.phase, RacePhase.finished);
+        expect(cubit.state.recent, contains(played));
+        await cubit.start(); // o "Jogar de novo" do resultado
+        expect(cubit.state.problem!.id, isNot(played));
+      },
+    );
   });
 
   group('aquecimento', () {
