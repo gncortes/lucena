@@ -341,6 +341,9 @@ class Dependencies {
       mode: analyticsMode,
     );
     const ads = NoAdsRepository();
+    final PushService pushService = firebase
+        ? FirebasePushService()
+        : const NoPushService();
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );
@@ -357,6 +360,8 @@ class Dependencies {
         avatars: avatars,
         now: now,
         language: () async => (await settings.load()).languageCode,
+        push: pushService,
+        preferences: preferences,
       ),
       lichessRepository: RemoteLichessRepository(
         service: LichessService(),
@@ -366,7 +371,7 @@ class Dependencies {
       ),
       chessComRepository: RemoteChessComRepository(ChessComService(), now: now),
       pushRepository: FirebasePushRepository(
-        firebase ? FirebasePushService() : const NoPushService(),
+        pushService,
         preferences,
         notifications: notifications,
         texts: () => loadPushTexts(settings),

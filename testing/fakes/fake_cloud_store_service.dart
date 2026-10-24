@@ -10,6 +10,9 @@ class FakeCloudStoreService implements CloudStoreService {
   final games = <String, Map<String, Map<String, Object?>>>{};
   final deleted = <String>[];
 
+  /// O token do push de cada conta (`push/device`).
+  final pushTokens = <String, String>{};
+
   /// Os documentos abertos a todos, por `coleção/id`.
   final public = <String, Map<String, Object?>>{};
   bool offline = false;
@@ -55,6 +58,27 @@ class FakeCloudStoreService implements CloudStoreService {
     users.remove(uid);
     progress.remove(uid);
     games.remove(uid);
+    pushTokens.remove(uid);
+  }
+
+  @override
+  Future<String?> readPushToken(String uid) async {
+    if (offline) throw const CloudStoreException('unavailable');
+    return pushTokens[uid];
+  }
+
+  @override
+  Future<void> writePushToken(String uid, String token, DateTime at) {
+    if (offline) return Completer<void>().future;
+    pushTokens[uid] = token;
+    return Future.value();
+  }
+
+  @override
+  Future<void> deletePushToken(String uid) {
+    if (offline) return Completer<void>().future;
+    pushTokens.remove(uid);
+    return Future.value();
   }
 
   @override

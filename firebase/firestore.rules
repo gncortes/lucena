@@ -44,6 +44,18 @@ service cloud.firestore {
         allow read, write: if isOwner(uid);
       }
 
+      // O token do push do último aparelho em que a conta entrou (um só).
+      // O admin lê para mandar o aviso de teste a uma conta.
+      match /push/{doc} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && doc == 'device'
+          && onlyKeys(['token', 'updatedAt'])
+          && request.resource.data.token is string
+          && shortString('token', 4096)
+          && request.resource.data.updatedAt is timestamp;
+      }
+
       // Uma partida terminada por documento: não muda depois de gravada.
       match /games/{game} {
         allow read, create, delete: if isOwner(uid);

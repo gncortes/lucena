@@ -40,6 +40,13 @@ abstract class PushService {
 
   Future<void> unsubscribe(String topic);
 
+  /// O token deste aparelho no FCM (o endereço do push só para ele). Nulo
+  /// sem o Firebase ou sem o Google Play.
+  Future<String?> token();
+
+  /// O token novo quando o FCM troca o deste aparelho.
+  Stream<String> get tokenChanges;
+
   /// O aviso tocado que abriu o app (partida fria).
   Future<PushMessage?> initialOpened();
 
@@ -67,6 +74,12 @@ class NoPushService implements PushService {
 
   @override
   Future<void> unsubscribe(String topic) async {}
+
+  @override
+  Future<String?> token() async => null;
+
+  @override
+  Stream<String> get tokenChanges => const Stream.empty();
 
   @override
   Future<PushMessage?> initialOpened() async => null;
@@ -110,6 +123,16 @@ class FirebasePushService implements PushService {
   @override
   Future<void> unsubscribe(String topic) =>
       _messaging.unsubscribeFromTopic(topic);
+
+  // O register()/onRegistered novo dá o FID, que o envio por token da API
+  // HTTP v1 ainda não aceita: fica o token clássico até o FCM mudar.
+  @override
+  // ignore: deprecated_member_use
+  Future<String?> token() => _messaging.getToken();
+
+  @override
+  // ignore: deprecated_member_use
+  Stream<String> get tokenChanges => _messaging.onTokenRefresh;
 
   @override
   Future<PushMessage?> initialOpened() async {

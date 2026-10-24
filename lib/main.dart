@@ -192,6 +192,8 @@ class _LucenaAppState extends State<LucenaApp> {
     final deepLinks = widget.dependencies.deepLinkRepository;
     final push = widget.dependencies.pushRepository;
     unawaited(push.start());
+    // Só o último aparelho em que a conta entrou recebe o push dela.
+    unawaited(widget.dependencies.accountRepository.linkPushDevice());
     // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
     unawaited(widget.dependencies.reviewRepository.markFirstOpen());
     final pushOpening = await push.initialOpening();

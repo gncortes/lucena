@@ -256,16 +256,19 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 71 eventos (68 do app, com o push_aberto da E1.19, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(68));
-      expect(AnalyticsCatalog.web, hasLength(3));
-      expect(
-        AnalyticsCatalog.app.keys.toSet().intersection(
-          AnalyticsCatalog.web.keys.toSet(),
-        ),
-        isEmpty,
-      );
-    });
+    test(
+      'tem os 71 eventos (68 do app, com o push_aberto da E1.19, e 3 da web)',
+      () {
+        expect(AnalyticsCatalog.app, hasLength(68));
+        expect(AnalyticsCatalog.web, hasLength(3));
+        expect(
+          AnalyticsCatalog.app.keys.toSet().intersection(
+            AnalyticsCatalog.web.keys.toSet(),
+          ),
+          isEmpty,
+        );
+      },
+    );
 
     test('nomes e parâmetros dentro dos limites do Firebase', () {
       for (final MapEntry(key: name, value: params) in {
