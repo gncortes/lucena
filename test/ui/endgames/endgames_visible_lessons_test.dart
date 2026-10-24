@@ -77,7 +77,14 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(EndgamesKeys.lesson('pawns.square')), findsNothing);
-    expect(find.text('0 de 6 concluídas'), findsOneWidget);
+    // A contagem da parte (padrão T1): "0 de N", sem o resumo geral.
+    expect(
+      find.descendant(
+        of: find.byKey(EndgamesKeys.module('pawns')),
+        matching: find.textContaining(RegExp(r'^0 de \d+$')),
+      ),
+      findsOneWidget,
+    );
     // A dama contra torre (T78) abre o módulo da dama, mais abaixo.
     await tester.scrollUntilVisible(
       find.byKey(EndgamesKeys.lesson('queen.vsRook.philidor')),

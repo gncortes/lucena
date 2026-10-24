@@ -4,12 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/widgets/course/course_continue_card.dart';
+import 'package:lucena/ui/core/widgets/course/course_part_header.dart';
 import 'package:lucena/ui/endgames/view_models/endgames_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/endgames_screen.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
@@ -34,56 +37,76 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('o Viktor recebe, o módulo e as aulas com a nota', (
-    tester,
-  ) async {
+  const passed = EndgameProgress(
+    lessons: {
+      'rook.lucena': EndgameLessonProgress(
+        lessonDone: true,
+        stars: {'e01': 1, 'e02': 2, 'e03': 1},
+      ),
+    },
+  );
+
+  testWidgets('sem nada feito: o Continuar no primeiro capítulo e a parte '
+      'com a contagem', (tester) async {
     await pump(tester);
-    expect(find.text('These are the endgame lessons.'), findsOneWidget);
-    expect(find.text('0 of 2 completed'), findsOneWidget);
-    expect(find.text('Start the first lesson'), findsOneWidget);
+    expect(find.text('Rook endgames · chapter 1'), findsOneWidget);
+    expect(find.text('Start'), findsOneWidget);
+    expect(find.byKey(EndgamesKeys.continueButton), findsOneWidget);
     expect(find.byKey(EndgamesKeys.module('rook')), findsOneWidget);
-    expect(find.text('Rook endgames'), findsOneWidget);
+    expect(find.text('0 of 2'), findsOneWidget);
     expect(find.byKey(EndgamesKeys.lesson('rook.lucena')), findsOneWidget);
     expect(find.byKey(EndgamesKeys.lesson('rook.philidor')), findsOneWidget);
-    expect(
-      tester
-          .widget<Text>(find.byKey(EndgamesKeys.lessonScore('rook.lucena')))
-          .data,
-      '0/6',
-    );
+    // Sem nota alcançada, sem medalha.
+    expect(find.byKey(EndgamesKeys.medal('rook.lucena')), findsNothing);
+    expect(find.byKey(EndgamesKeys.filtersButton), findsOneWidget);
   });
 
-  testWidgets('com uma aprovada, continua na seguinte', (tester) async {
-    await pump(
-      tester,
-      progress: const EndgameProgress(
-        lessons: {
-          'rook.lucena': EndgameLessonProgress(
-            lessonDone: true,
-            stars: {'e01': 1, 'e02': 2, 'e03': 1},
-          ),
-        },
-      ),
-    );
-    expect(find.text('Good to see you again.'), findsOneWidget);
-    expect(find.text('1 of 2 completed'), findsOneWidget);
-    expect(find.text('Continue: The Philidor defence'), findsOneWidget);
-    expect(
-      tester
-          .widget<Text>(find.byKey(EndgamesKeys.lessonScore('rook.lucena')))
-          .data,
-      '4/6',
-    );
+  testWidgets('com um aprovado: a medalha nele e o Continuar no seguinte', (
+    tester,
+  ) async {
+    await pump(tester, progress: passed);
+    expect(find.text('1 of 2'), findsOneWidget);
+    expect(find.text('Rook endgames · chapter 2'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
+    expect(find.byKey(EndgamesKeys.medal('rook.lucena')), findsOneWidget);
+    expect(find.byKey(EndgamesKeys.medal('rook.philidor')), findsNothing);
   });
 
-  testWidgets('em árabe a tela espelha', (tester) async {
-    await pump(tester, locale: const Locale('ar'));
-    expect(find.byKey(EndgamesKeys.screen), findsOneWidget);
-    expect(
-      Directionality.of(tester.element(find.byKey(EndgamesKeys.overview))),
-      TextDirection.rtl,
-    );
-  });
+  for (final size in phoneSizes) {
+    testWidgets('geometria do canvas (PropV2FinaisCurso) em '
+        '${size.width.toInt()}×${size.height.toInt()}', (tester) async {
+      setPhoneSize(tester, size);
+      await pump(tester, progress: passed, locale: const Locale('pt'));
+      expect(tester.takeException(), isNull);
+      final width = size.width;
+      final bar = tester.getRect(find.byType(AppBar));
+      // O cartão Continuar: 8 abaixo da barra, 16 das laterais.
+      final card = tester.getRect(find.byType(CourseContinueCard));
+      expect(card.top, closeToDp(bar.bottom + 8));
+      expect(card.left, closeToDp(16));
+      expect(card.right, closeToDp(width - 16));
+      expect(rectOf(tester, EndgamesKeys.continueButton).height, closeToDp(48));
+      // A parte: 12 abaixo do cartão; o primeiro capítulo, 12 abaixo dela; 8
+      // entre os capítulos.
+      final header = tester.getRect(find.byType(CoursePartHeader));
+      expect(header.top, closeToDp(card.bottom + 12));
+      final first = rectOf(tester, EndgamesKeys.lesson('rook.lucena'));
+      final second = rectOf(tester, EndgamesKeys.lesson('rook.philidor'));
+      expect(first.top, closeToDp(header.bottom + 12));
+      expect(second.top, closeToDp(first.bottom + 8));
+      for (final tile in [first, second]) {
+        expect(tile.left, closeToDp(16));
+        expect(tile.right, closeToDp(width - 16));
+        expect(tile.height, greaterThanOrEqualTo(48));
+      }
+      // A medalha: 20 de altura, 16 da borda do cartão do capítulo.
+      final medal = rectOf(tester, EndgamesKeys.medal('rook.lucena'));
+      expect(medal.height, closeToDp(20));
+      expect(medal.right, closeToDp(first.right - 16));
+      expect(medal.top, closeToDp(first.top + 16));
+      expect(find.text('1 de 2'), findsOneWidget);
+    });
+  }
 
   testWidgets('filtros: modal, chip com X, estado vazio e limpar', (
     tester,

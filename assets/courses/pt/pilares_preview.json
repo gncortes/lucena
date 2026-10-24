@@ -1,0 +1,281 @@
+{
+  "sale": {
+    "overline": "Curso",
+    "title": "Pilares do Xadrez",
+    "line": "Tática, jogo posicional, finais, cálculo e aberturas, com exercícios em cada capítulo.",
+    "lessons": 82,
+    "exercises": "+750",
+    "price": "R$ 59,90",
+    "priceNote": "Pagamento único, sem mensalidade",
+    "speech": "Em cada lição, eu explico a ideia numa posição e a mostro em partidas reais. Depois você a aplica: joga a posição e resolve os exercícios.",
+    "how": [
+      {
+        "title": "Entenda a ideia",
+        "summary": "O Viktor mostra o conceito numa posição curta."
+      },
+      {
+        "title": "Veja em partidas reais",
+        "summary": "A mesma ideia aplicada em partidas de verdade."
+      },
+      {
+        "title": "Jogue a posição",
+        "summary": "Você joga posições do tema contra o Maia, no ataque e na defesa."
+      },
+      {
+        "title": "Resolva exercícios",
+        "summary": "Do mais simples ao mais difícil, para fixar o tema."
+      }
+    ],
+    "learn": [
+      {
+        "title": "Reconhecer os temas táticos",
+        "summary": "Garfo, cravada, espeto, desvio, sobrecarga e os mates básicos: você aprende cada tema, aplica em posições jogadas e fixa com exercícios."
+      },
+      {
+        "title": "Reconhecer os temas posicionais",
+        "summary": "Peões fracos, casas fracas, colunas abertas, bispo bom e bispo mau: o que cada um significa e como aproveitar."
+      },
+      {
+        "title": "Montar um plano",
+        "summary": "Identificar os desequilíbrios da posição e decidir onde jogar, passo a passo."
+      },
+      {
+        "title": "Converter a vantagem e defender",
+        "summary": "Aplicar a técnica nas posições melhores e nas difíceis, com os finais de peões, de torre e de bispo, como Lucena e Philidor."
+      }
+    ],
+    "audience": {
+      "title": "Jogadores de 1000 a 2200 no Lichess",
+      "summary": "Por que uma faixa tão larga? Veja com que frequência cada tema aparece em cada faixa."
+    },
+    "audienceItems": [
+      {
+        "icon": "warning",
+        "title": "Quem perde material por descuido"
+      },
+      {
+        "icon": "trending_flat",
+        "title": "Quem quer saber o que falta estudar"
+      },
+      {
+        "icon": "help",
+        "title": "Quem tem lacunas nas aberturas"
+      },
+      {
+        "icon": "auto_stories",
+        "title": "Quem quer uma abertura nova no repertório"
+      }
+    ],
+    "included": [
+      {
+        "icon": "school",
+        "title": "82 lições",
+        "summary": "62 de tática, jogo posicional e finais, e 20 das suas aberturas."
+      },
+      {
+        "icon": "menu_book",
+        "title": "Seu repertório de aberturas",
+        "summary": "Uma abertura de brancas e as respostas de pretas contra 1.e4, 1.d4 e outros primeiros lances."
+      },
+      {
+        "icon": "emoji_events",
+        "title": "Partidas-modelo",
+        "summary": "Partidas de referência com os planos típicos de cada abertura."
+      }
+    ],
+    "app": [
+      {
+        "icon": "record_voice_over",
+        "title": "O motivo de cada lance",
+        "summary": "O Viktor explica a ideia de cada lance, nas lições de tema e de abertura."
+      },
+      {
+        "icon": "smart_toy",
+        "title": "Um adversário que joga como humano",
+        "summary": "Você treina contra o Maia, uma IA treinada em partidas humanas, com níveis por faixa de rating."
+      },
+      {
+        "icon": "rule",
+        "title": "Quando a regra vale",
+        "summary": "Cada lição mostra o tipo de posição em que o conceito vale e uma posição em que ele falha."
+      },
+      {
+        "icon": "tune",
+        "title": "Prática do seu jeito",
+        "summary": "Você define quanto tempo da prática vai para lições, aberturas e exercícios. Dá para mudar quando quiser."
+      },
+      {
+        "icon": "event_repeat",
+        "title": "Revisão do que você estudou",
+        "summary": "Os temas e as aberturas já estudados voltam em exercícios, e o que você erra aparece mais vezes."
+      },
+      {
+        "icon": "cloud_off",
+        "title": "Funciona sem internet",
+        "summary": "Depois de baixadas, as lições abrem sem conexão."
+      }
+    ],
+    "level": {
+      "title": "Já domina um tema? Vá direto aos exercícios",
+      "summary": "Os exercícios de cada capítulo já vêm liberados. Resolva-os e confira se domina o tema ou se algo escapou. O teste de nível marca cada lição como domina, revisar ou aprender.",
+      "examples": [
+        {
+          "title": "Garfo de cavalo",
+          "status": "Você domina",
+          "tone": "mastered"
+        },
+        {
+          "title": "Peão atrasado",
+          "status": "Revisar",
+          "tone": "review"
+        },
+        {
+          "title": "Profilaxia",
+          "status": "Aprender",
+          "tone": "learn"
+        }
+      ]
+    },
+    "summaryNote": "Cada parte tem capítulos numerados (1, 2, 3…). Cada capítulo reúne suas lições (1.1, 1.2…) e fecha com 12 exercícios práticos. O último capítulo da parte é o das aberturas, e o que a parte ensinou entra na sua prática. Você escolhe as aberturas e pode trocar a qualquer momento. Ao terminar uma, dá para estudar outra opção também.",
+    "parts": [
+      {
+        "number": "I",
+        "title": "Tática básica e princípios da abertura",
+        "lessons": 19
+      },
+      {
+        "number": "II",
+        "title": "Tática: mais motivos e a defesa",
+        "lessons": 13
+      },
+      {
+        "number": "III",
+        "title": "Jogo posicional",
+        "lessons": 20
+      },
+      {
+        "number": "IV",
+        "title": "Técnica: converter e defender",
+        "lessons": 17
+      },
+      {
+        "number": "V",
+        "title": "Combinações e cálculo",
+        "lessons": 13
+      }
+    ],
+    "faq": [
+      {
+        "icon": "how_to_reg",
+        "question": "Serve para o meu nível?",
+        "answer": "Serve para quem já sabe as regras e joga partidas, de 1000 a 2200 no Lichess. O teste de nível mostra o que você já domina e por onde começar."
+      },
+      {
+        "icon": "avg_pace",
+        "question": "Quanto tempo preciso por dia?",
+        "answer": "Você decide. Dá para estudar poucos minutos ou mais, e mudar quando quiser."
+      },
+      {
+        "icon": "stacked_line_chart",
+        "question": "Vou ganhar rating?",
+        "answer": "Não prometemos ganho de rating, porque cada jogador evolui de um jeito. O curso ensina os temas que aparecem em todas as faixas, com explicação, posições para jogar e exercícios."
+      },
+      {
+        "icon": "vpn_key",
+        "question": "O acesso expira?",
+        "answer": "Não. Você paga uma vez e o curso é seu, sem mensalidade."
+      },
+      {
+        "icon": "currency_exchange",
+        "question": "E se eu não gostar?",
+        "answer": "Você pode pedir o reembolso em até 7 dias depois da compra."
+      }
+    ]
+  },
+  "map": {
+    "continue": {
+      "part": "Parte I",
+      "number": 5,
+      "title": "Princípios da abertura",
+      "summary": "Centro, desenvolvimento e roque; armadilhas e gambitos."
+    },
+    "test": "Teste de nível: veja o que você já domina.",
+    "part": {
+      "label": "Parte I",
+      "title": "Tática básica e princípios da abertura",
+      "done": 4,
+      "total": 6
+    },
+    "chapters": [
+      {
+        "id": "c1",
+        "state": "approved",
+        "title": "1 · Ataque duplo e peças vulneráveis",
+        "summary": "Ataque duplo, garfo de cavalo, peça pendurada, peça presa.",
+        "medal": "perfect"
+      },
+      {
+        "id": "c2",
+        "state": "approved",
+        "title": "2 · Golpes em linha",
+        "summary": "Cravada, espeto, ataque descoberto.",
+        "medal": "excellent"
+      },
+      {
+        "id": "c3",
+        "state": "approved",
+        "title": "3 · Mates básicos",
+        "summary": "Mate do corredor, mates com dama e torre, mates com cavalo.",
+        "medal": "good"
+      },
+      {
+        "id": "c4",
+        "state": "approved",
+        "title": "4 · Desvio, atração e promoção",
+        "summary": "Desvio, atração, peão avançado e promoção.",
+        "medal": "passed"
+      },
+      {
+        "id": "c5",
+        "state": "next",
+        "title": "5 · Princípios da abertura",
+        "summary": "Centro, desenvolvimento e roque; armadilhas e gambitos.",
+        "medal": null
+      },
+      {
+        "id": "c6",
+        "state": "open",
+        "title": "6 · Aberturas · parte 1 de 5",
+        "summary": "Abertura escolhida de brancas e as respostas de pretas.",
+        "medal": null
+      }
+    ]
+  },
+  "chapter": {
+    "part": "Parte I",
+    "number": 5,
+    "count": 6,
+    "title": "Princípios da abertura",
+    "lessons": [
+      {
+        "id": "5.1",
+        "kind": "recommended",
+        "number": "5.1",
+        "title": "Centro, desenvolvimento e roque",
+        "summary": "A ideia numa posição, partidas reais, a posição para jogar e exercícios."
+      },
+      {
+        "id": "5.2",
+        "kind": "other",
+        "number": "5.2",
+        "title": "Armadilhas e gambitos",
+        "summary": ""
+      }
+    ],
+    "exercises": {
+      "number": "5.3",
+      "count": 12
+    },
+    "start": "5.1"
+  }
+}

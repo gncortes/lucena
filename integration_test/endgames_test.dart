@@ -14,10 +14,6 @@ const _english = Locale('en', 'US');
 /// A primeira aula da trilha: o mate de bispo e cavalo pela manobra em W.
 const _lessonId = 'rook.lucena';
 
-/// A aula do speedrun do final: a Lucena não tem posição no catálogo, então
-/// não tem speedrun. Esta tem (pawn.pawnVsKing.0001).
-const _speedrunLessonId = 'pawns.keySquares';
-
 final _hidden = !VisibleLessons.endgameLessonIds.contains(_lessonId);
 
 void main() {
@@ -71,71 +67,6 @@ void main() {
     await endgames.solveExercise(two);
     expectText(endgames.earned, _points(0, 2));
     await endgames.back();
-    // Em andamento, a aula mostra só quantos foram resolvidos (os pontos
-    // contam no fim, com todos).
-    endgames.expectSolvedCount(
-      '${index + 1} of ${lesson.exercises.length} solved',
-    );
-  }, skip: _hidden);
-
-  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
-  patrolTest('nota abaixo do mínimo: o passo final fica fechado e refazer '
-      'zera a nota', ($) async {
-    await AppRobot($).open(systemLocale: _english);
-    final endgames = EndgamesRobot($);
-    final lesson = await endgames.lesson(_lessonId);
-    await endgames.openFromHome();
-    await endgames.openLesson(_lessonId);
-
-    // Uma dica em cada exercício: cada um perde uma estrela, abaixo do mínimo.
-    final total = lesson.exercises.fold(
-      0,
-      (sum, exercise) => sum + exercise.stars,
-    );
-    final earned = total - lesson.exercises.length;
-    expect(earned, lessThan(lesson.passScore));
-    await endgames.solveAll(lesson, hints: 1);
-    await endgames.expectFailed();
-    endgames.expectScore('$earned of $total points');
-    await endgames.expectFinalStep();
-
-    await endgames.redo();
-    // Zerada, a nota sai e volta o botão de começar os exercícios.
-    await endgames.expectExercisesToStart();
-    endgames.expectNotFailed();
-  }, skip: _hidden);
-
-  // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.
-  patrolTest('nota mínima alcançada: speedrun do final e treino liberados', (
-    $,
-  ) async {
-    final app = AppRobot($);
-    await app.open(systemLocale: _english);
-    final endgames = EndgamesRobot($);
-    final lesson = await endgames.lesson(_speedrunLessonId);
-    await seedEndgameProgress(
-      EndgameProgress(
-        lessons: {
-          _speedrunLessonId: EndgameLessonProgress(
-            lessonDone: true,
-            stars: {
-              for (final exercise in lesson.exercises)
-                exercise.id: exercise.stars,
-            },
-          ),
-        },
-      ),
-    );
-    await app.restart();
-    await endgames.openFromHome();
-    await endgames.openLesson(_speedrunLessonId);
-    await endgames.expectPassed();
-    await endgames.expectFinalStep();
-
-    await endgames.challengeSpeedrun('180+2');
-    await endgames.back();
-
-    await endgames.train();
   }, skip: _hidden);
 
   // Aula escondida (VisibleLessons): o cenário volta quando ela for liberada.

@@ -86,6 +86,8 @@ import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/voice/voice_repository_local.dart';
 import '../data/repositories/featured/featured_alerts_repository.dart';
 import '../data/repositories/featured/featured_progress_repository.dart';
+import '../data/repositories/course_preview/course_preview_repository.dart';
+import '../data/repositories/course_preview/course_preview_repository_asset.dart';
 import '../data/repositories/featured/featured_repository.dart';
 import '../data/repositories/featured/featured_repository_asset.dart';
 import '../data/repositories/wiki/wiki_links_repository.dart';
@@ -223,6 +225,7 @@ class Dependencies {
     required this.surveyRepository,
     required this.wikiLinksRepository,
     required this.featuredRepository,
+    required this.coursePreviewRepository,
     required this.featuredProgressRepository,
     required this.activityRepository,
     required this.dailyFinalRepository,
@@ -427,6 +430,7 @@ class Dependencies {
       surveyRepository: LocalSurveyRepository(preferences, now),
       wikiLinksRepository: AssetWikiLinksRepository(assets),
       featuredRepository: AssetFeaturedRepository(assets),
+      coursePreviewRepository: AssetCoursePreviewRepository(assets),
       featuredProgressRepository: featured,
       activityRepository: activity,
       crowdRepository: CloudCrowdRepository(cloudStore),
@@ -559,6 +563,9 @@ class Dependencies {
   /// Os finais em destaque, o que o jogador já fez com eles e o aviso de
   /// final novo (sem canal por enquanto: E1.20 e E1.21).
   final FeaturedRepository featuredRepository;
+
+  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento).
+  final CoursePreviewRepository coursePreviewRepository;
   final FeaturedProgressRepository featuredProgressRepository;
   final FeaturedAlertsRepository featuredAlertsRepository;
 

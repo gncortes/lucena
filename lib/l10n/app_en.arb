@@ -3228,11 +3228,11 @@
       }
     }
   },
-  "endgameResumeTest": "Continue the final test",
+  "endgameResumeTest": "Continue the exercises",
   "@endgameResumeTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue the final test already started."
   },
-  "endgameContinueTest": "Take the final test",
+  "endgameContinueTest": "Do the practice exercises",
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
@@ -9278,5 +9278,150 @@
         "type": "int"
       }
     }
+  },
+  "courseChapterPlace": "{part} · chapter {number}",
+  "@courseChapterPlace": {
+    "description": "Course continue card label: the part name and the chapter number inside it.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolLessonPlace": "Part {part} · lesson {number}",
+  "@schoolLessonPlace": {
+    "description": "School continue card label: the part number and the lesson number.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "coursePartProgress": "{done} of {total}",
+  "@coursePartProgress": {
+    "description": "Course part header: items done out of the total in the part.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterExercisesCount": "{count, plural, =1{1 practice exercise} other{{count} practice exercises}}",
+  "@chapterExercisesCount": {
+    "description": "Last row of the chapter lesson list: how many practice exercises it has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterContinueLesson": "Continue lesson {number}",
+  "@chapterContinueLesson": {
+    "description": "Chapter footer button: continue the lesson with this number (\"2\" or \"5.1\").",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStartLesson": "Start lesson {number}",
+  "@chapterStartLesson": {
+    "description": "Chapter footer button: start the lesson with this number (\"2\" or \"5.1\").",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "courseSaleOverview": "Overview",
+  "@courseSaleOverview": {
+    "description": "Course sale page tab: overview."
+  },
+  "courseSaleContent": "Contents",
+  "@courseSaleContent": {
+    "description": "Course sale page tab: the course contents."
+  },
+  "courseSaleFaq": "Questions",
+  "@courseSaleFaq": {
+    "description": "Course sale page tab: frequently asked questions."
+  },
+  "courseBuy": "Buy · {price}",
+  "@courseBuy": {
+    "description": "Course sale page fixed button with the price.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "courseSaleLearn": "What you will learn",
+  "@courseSaleLearn": {
+    "description": "Course sale page section title."
+  },
+  "courseSaleAudience": "Who it is for",
+  "@courseSaleAudience": {
+    "description": "Course sale page section title: who the course is for."
+  },
+  "courseSaleIncluded": "What the course includes",
+  "@courseSaleIncluded": {
+    "description": "Course sale page section title: what comes with the course."
+  },
+  "courseSaleHow": "How you learn",
+  "@courseSaleHow": {
+    "description": "Course sale page section title: how the student learns."
+  },
+  "courseSaleSummary": "Contents",
+  "@courseSaleSummary": {
+    "description": "Course sale page section title: the table of contents."
+  },
+  "courseSalePrice": "Course price",
+  "@courseSalePrice": {
+    "description": "Course sale page price card label."
+  },
+  "courseSaleRefund": "Refund within 7 days",
+  "@courseSaleRefund": {
+    "description": "Course sale page price card note."
+  },
+  "courseLessonsCount": "{count, plural, =1{1 lesson} other{{count} lessons}}",
+  "@courseLessonsCount": {
+    "description": "How many lessons a course has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "courseExercisesLabel": "exercises",
+  "@courseExercisesLabel": {
+    "description": "Label under the exercise count in the course sale numbers."
+  },
+  "coursePartLessons": "Part {part} · {count} lessons",
+  "@coursePartLessons": {
+    "description": "Collapsed course part on the sale page: the part (roman numeral) and its lesson count.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pilaresPreviewTile": "Pilares do Xadrez (preview)",
+  "@pilaresPreviewTile": {
+    "description": "Settings tile (development builds only) that opens the course layout preview."
+  },
+  "courseLessonsLabel": "lessons",
+  "@courseLessonsLabel": {
+    "description": "Label under the lesson count in the course sale numbers."
   }
 }

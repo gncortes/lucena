@@ -492,4 +492,10 @@ abstract final class Routes {
 
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';
+
+  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
+  /// mapa e um capítulo.
+  static const pilaresSale = '/settings/pilares';
+  static const pilaresMap = '/settings/pilares/mapa';
+  static const pilaresChapter = '/settings/pilares/mapa/capitulo';
 }

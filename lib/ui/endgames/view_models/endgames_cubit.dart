@@ -185,6 +185,28 @@ class EndgamesState {
     if (lesson == null) return (0, 0);
     return (progress.of(lessonId).scoreOf(lesson), lesson.maxScore);
   }
+
+  /// A medalha da nota de um capítulo (GradeMedal M2): só depois de aprovado
+  /// ou com todos os exercícios resolvidos; nula no que ainda não foi feito.
+  ExerciseGrade? medal(String lessonId) {
+    final lesson = trail.lesson(lessonId);
+    if (lesson == null || lesson.exercises.isEmpty) return null;
+    final each = progress.of(lessonId);
+    if (!EndgameLessonRules.allSolved(lesson, each) &&
+        !EndgameLessonRules.passed(lesson, each)) {
+      return null;
+    }
+    return EndgameLessonRules.grade(lesson, each.scoreOf(lesson));
+  }
+
+  /// A parte (módulo) de um capítulo e o número dele dentro dela (1, 2...).
+  (EndgameModule, int)? place(String lessonId) {
+    for (final module in trail.modules) {
+      final index = module.lessons.indexWhere((l) => l.id == lessonId);
+      if (index >= 0) return (module, index + 1);
+    }
+    return null;
+  }
 }
 
 /// Uma seção da lista filtrada: um módulo da trilha ou uma faixa de

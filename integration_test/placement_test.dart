@@ -59,11 +59,11 @@ void main() {
     final app = AppRobot($);
     final placement = PlacementRobot($);
     await app.open(systemLocale: _english);
-    // Antes do teste: o convite na escola e na trilha.
+    // Antes do teste: o curso de finais abre no cartão "Continuar" (T82:
+    // sem convite do teste nem filtro "Para você").
     final endgames = EndgamesRobot($);
     await endgames.openFromHome();
-    await $(EndgamesKeys.placementTest).scrollTo();
-    expect(find.byKey(EndgamesKeys.filter), findsNothing);
+    await $(EndgamesKeys.continueButton).waitUntilVisible();
     // O voltar pelo widget (a dica "Back" muda com o idioma).
     await $(BackButton).tap();
     await $.pumpAndSettle();
@@ -79,16 +79,11 @@ void main() {
     // O resultado volta a "Seu nível", de onde o teste foi aberto.
     await $(LevelKeys.screen).waitUntilVisible();
 
-    // A trilha agora tem o filtro, e a escolha fica gravada.
+    // O curso de finais segue com o "Continuar", agora no próximo do
+    // roteiro.
     await app.restart();
     await endgames.openFromHome();
-    await $(EndgamesKeys.filter).scrollTo();
-    expect(find.byKey(EndgamesKeys.placementTest), findsNothing);
-    await $(EndgamesKeys.all).tap();
-    await $.pumpAndSettle();
-    await app.restart();
-    await endgames.openFromHome();
-    await $(EndgamesKeys.nextEndgame).scrollTo();
+    await $(EndgamesKeys.continueButton).waitUntilVisible();
     expect(find.byKey(SchoolKeys.placementTest), findsNothing);
   });
 }

@@ -113,6 +113,7 @@ import 'fakes/fake_journey_repository.dart';
 import 'fakes/fake_race_repository.dart';
 import 'fakes/fake_speedrun_repository.dart';
 import 'fakes/fake_maia_repository.dart';
+import 'fakes/fake_course_preview_repository.dart';
 import 'fakes/fake_featured_repositories.dart';
 import 'fakes/fake_now.dart';
 import 'fakes/fake_ongoing_game_repository.dart';
@@ -260,6 +261,7 @@ Dependencies testDependencies({
     blindLogRepository: FakeBlindLogRepository(),
     wikiLinksRepository: FakeWikiLinksRepository(),
     featuredRepository: featuredRepository ?? FakeFeaturedRepository(),
+    coursePreviewRepository: FakeCoursePreviewRepository(),
     featuredProgressRepository:
         featuredProgressRepository ?? FakeFeaturedProgressRepository(),
     featuredAlertsRepository:

@@ -1,3 +1,8 @@
+import '../ui/course_preview/view_models/course_preview_cubit.dart';
+import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
+import '../ui/course_preview/widgets/course_map_preview_screen.dart';
+import '../ui/course_preview/widgets/course_sale_screen.dart';
+import '../data/repositories/course_preview/course_preview_repository.dart';
 import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/survey/survey_repository.dart';
 import '../domain/models/survey.dart';
@@ -1505,6 +1510,29 @@ GoRouter buildRouter({
                   child: const MaiaDebugScreen(),
                 ),
               ),
+              _route(
+                path: 'pilares',
+                // A prévia do Pilares do Xadrez (T82): como o Maia, só em
+                // build de desenvolvimento e de teste.
+                redirect: (context, state) =>
+                    showsDevTools ? null : Routes.settings,
+                builder: (context, state) =>
+                    _coursePreview(const CourseSaleScreen()),
+                routes: [
+                  _route(
+                    path: 'mapa',
+                    builder: (context, state) =>
+                        _coursePreview(const CourseMapPreviewScreen()),
+                    routes: [
+                      _route(
+                        path: 'capitulo',
+                        builder: (context, state) =>
+                            _coursePreview(const CourseChapterPreviewScreen()),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
         ],
@@ -1615,6 +1643,15 @@ String? updateRedirect(String location, {bool Function()? required}) {
 /// Com [fade], a tela só aparece (e some) num fade, e a de baixo fica parada:
 /// é a partida, em que o tabuleiro da tela de antes chega voando até o
 /// centro e o resto aparece em volta dele.
+/// As telas da prévia do Pilares com o view model delas.
+Widget _coursePreview(Widget screen) => BlocProvider(
+  create: (context) => CoursePreviewCubit(
+    context.read<CoursePreviewRepository>(),
+    context.read<CharacterRepository>(),
+  )..load(),
+  child: screen,
+);
+
 GoRoute _route({
   required String path,
   required GoRouterWidgetBuilder builder,

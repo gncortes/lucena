@@ -30,6 +30,7 @@ import 'data/repositories/characters/talk_repository.dart';
 import 'data/repositories/home/home_layout_repository.dart';
 import 'data/repositories/featured/featured_alerts_repository.dart';
 import 'data/repositories/featured/featured_progress_repository.dart';
+import 'data/repositories/course_preview/course_preview_repository.dart';
 import 'data/repositories/featured/featured_repository.dart';
 import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
@@ -430,6 +431,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<FeaturedRepository>.value(
           value: dependencies.featuredRepository,
+        ),
+        RepositoryProvider<CoursePreviewRepository>.value(
+          value: dependencies.coursePreviewRepository,
         ),
         RepositoryProvider<FeaturedProgressRepository>.value(
           value: dependencies.featuredProgressRepository,
