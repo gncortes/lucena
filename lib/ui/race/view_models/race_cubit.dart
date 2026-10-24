@@ -327,6 +327,9 @@ class RaceCubit extends Cubit<RaceState> {
     _finishing = true;
     final outcome = await _repository.finish(run, end);
     final history = await _repository.history();
+    // "Jogar de novo" sorteia sem passar pelo load: a Corrida que acabou já
+    // entra nos recentes.
+    final recent = RaceRules.recentIds(history);
     emit(
       state.copyWith(
         phase: RacePhase.finished,
@@ -334,6 +337,7 @@ class RaceCubit extends Cubit<RaceState> {
         remaining: end == RaceEnd.time ? Duration.zero : null,
         record: RaceRules.merge(outcome.previous, run),
         outcome: outcome,
+        recent: recent,
         feedback: feedback,
         clearFeedback: feedback == null,
         reviewIndex: 0,
