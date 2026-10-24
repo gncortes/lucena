@@ -222,10 +222,10 @@ class PushTexts {
 
   /// O canal de [kind]: id fixo e nome no idioma do app.
   ({String id, String name}) channel(PushKind kind) => switch (kind) {
-    PushKind.featured => (id: 'push_torneios', name: tournaments),
-    PushKind.daily => (id: 'push_dia', name: daily),
-    PushKind.lesson => (id: 'push_aulas', name: lessons),
-    PushKind.news || PushKind.free => (id: 'push_novidades', name: news),
+    PushKind.featured => (id: 'push_torneios_quieto', name: tournaments),
+    PushKind.daily => (id: 'push_dia_quieto', name: daily),
+    PushKind.lesson => (id: 'push_aulas_quieto', name: lessons),
+    PushKind.news || PushKind.free => (id: 'push_novidades_quieto', name: news),
   };
 
   /// O rótulo do botão [action].

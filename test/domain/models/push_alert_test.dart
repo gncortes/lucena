@@ -103,10 +103,10 @@ void main() {
       play: 'Jogar',
       tournament: 'Ver torneio',
     );
-    expect(texts.channel(PushKind.featured).id, 'push_torneios');
-    expect(texts.channel(PushKind.daily).id, 'push_dia');
-    expect(texts.channel(PushKind.lesson).id, 'push_aulas');
-    expect(texts.channel(PushKind.free).id, 'push_novidades');
+    expect(texts.channel(PushKind.featured).id, 'push_torneios_quieto');
+    expect(texts.channel(PushKind.daily).id, 'push_dia_quieto');
+    expect(texts.channel(PushKind.lesson).id, 'push_aulas_quieto');
+    expect(texts.channel(PushKind.free).id, 'push_novidades_quieto');
     expect(texts.action(PushActions.tournament), 'Ver torneio');
   });
 }

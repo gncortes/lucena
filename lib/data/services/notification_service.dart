@@ -135,6 +135,17 @@ class DeviceNotificationService implements NotificationService {
   static const _icon = 'ic_notification';
   static const _actionId = 'open';
 
+  // Os canais de antes, com som e vibração: o Android não deixa mudar o som
+  // de um canal criado, então os novos têm outro id e estes saem.
+  static const _noisyChannels = [
+    'lembretes',
+    'resumo_semana',
+    'push_torneios',
+    'push_dia',
+    'push_aulas',
+    'push_novidades',
+  ];
+
   final FlutterLocalNotificationsPlugin _plugin;
   final _taps = StreamController<NotificationTap>.broadcast();
   Future<bool>? _started;
@@ -177,10 +188,19 @@ class DeviceNotificationService implements NotificationService {
   @override
   Future<void> start(List<NotificationChannelSpec> channels) async {
     if (!await _ready()) return;
-    // Criar de novo só atualiza o nome (outro idioma).
+    for (final id in _noisyChannels) {
+      await _android?.deleteNotificationChannel(channelId: id);
+    }
+    // Criar de novo só atualiza o nome (outro idioma). Sem som e sem
+    // vibração: o aviso aparece na barra e não incomoda.
     for (final channel in channels) {
       await _android?.createNotificationChannel(
-        AndroidNotificationChannel(channel.id, channel.name),
+        AndroidNotificationChannel(
+          channel.id,
+          channel.name,
+          playSound: false,
+          enableVibration: false,
+        ),
       );
     }
   }
@@ -207,6 +227,9 @@ class DeviceNotificationService implements NotificationService {
             notification.channel.id,
             notification.channel.name,
             icon: _icon,
+            playSound: false,
+            enableVibration: false,
+            silent: true,
             styleInformation: BigTextStyleInformation(notification.body),
             actions: [
               if (action != null)
@@ -237,6 +260,9 @@ class DeviceNotificationService implements NotificationService {
           notification.channel.id,
           notification.channel.name,
           icon: _icon,
+          playSound: false,
+          enableVibration: false,
+          silent: true,
           subText: notification.subText,
           largeIcon: thumbnail == null
               ? null

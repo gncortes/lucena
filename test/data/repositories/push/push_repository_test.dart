@@ -209,7 +209,7 @@ void main() {
     );
 
     final shown = notifications.shown.single;
-    expect(shown.channel.id, 'push_torneios');
+    expect(shown.channel.id, 'push_torneios_quieto');
     expect(shown.channel.name, 'Finais de torneio');
     expect(shown.subText, 'Finais de torneio');
     expect(shown.picture, isNotNull);
@@ -234,7 +234,7 @@ void main() {
     );
 
     final shown = notifications.shown.single;
-    expect(shown.channel.id, 'push_aulas');
+    expect(shown.channel.id, 'push_aulas_quieto');
     expect(shown.picture, isNull);
     expect(shown.actions, isEmpty);
   });
@@ -256,7 +256,7 @@ void main() {
 
     final shown = notifications.shown.single;
     expect(shown.title, 'Final do dia');
-    expect(shown.channel.id, 'push_dia');
+    expect(shown.channel.id, 'push_dia_quieto');
     expect(shown.actions.single.id, PushActions.play);
   });
 

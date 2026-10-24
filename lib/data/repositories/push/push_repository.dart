@@ -87,8 +87,9 @@ class FirebasePushRepository implements PushRepository {
       );
       if (alert != null) unawaited(show(alert));
     });
-    // Só no debug: o token para o tools/push_teste.py --token.
-    if (kDebugMode) {
+    // Só no debug e nas versões de QA (rc): o token para o
+    // tools/push_teste.py --token. A versão da loja não mostra.
+    if (kDebugMode || _qaBuild) {
       unawaited(
         _service.token().then(
           (token) => debugPrint('Push token: $token'),
@@ -102,6 +103,9 @@ class FirebasePushRepository implements PushRepository {
       debugPrint('Push sem tópico: $error');
     }
   }
+
+  static final _qaBuild = const String.fromEnvironment('APP_VERSION')
+      .contains('-rc.');
 
   @override
   Future<bool> requestPermission() => _service.requestPermission();
