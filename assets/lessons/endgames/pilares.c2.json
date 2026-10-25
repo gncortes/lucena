@@ -237,24 +237,24 @@
    ]
   },
   {
-   "id": "pin.pqb0n",
+   "id": "pin.TAKy2",
    "capitulo": "pin",
    "stars": 3,
-   "fen": "2kr4/ppp1b2p/4p3/6rq/N2p4/PQ4P1/1PP4P/1K1RR3 w - - 0 22",
+   "fen": "1r5r/6k1/p2pQqn1/2p5/1pP1P3/5PRP/PP5K/R7 w - - 1 30",
    "goal": "win",
-   "origin": "lichess:pqb0n",
+   "origin": "lichess:TAKy2",
    "line": [
     {
-     "teach": "b3e6",
+     "teach": "g3g6",
      "accept": [
-      "b3e6"
+      "g3g6"
      ],
-     "reply": "d8d7"
+     "reply": "f6g6"
     },
     {
-     "teach": "d1d4",
+     "teach": "a1g1",
      "accept": [
-      "d1d4"
+      "a1g1"
      ]
     }
    ]

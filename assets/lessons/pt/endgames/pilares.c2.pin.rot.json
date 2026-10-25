@@ -64,7 +64,7 @@
  "rot.pin.pratica.relativa.err.h4g5": "O bispo captura o cavalo, mas as pretas recapturam em g5, e a cravada some. A torre de f7 continua atacada. Mantenha a cravada: o cavalo de g5 não sai da diagonal sem entregar a dama.",
  "rot.pin.pratica.relativa.err.recuo": "A torre sai do ataque, mas 14...Ch3+ 15.gxh3 Dxh4 troca o cavalo pelo bispo: com xeque, a peça cravada sai sem pagar o preço. Salve a torre sem soltar o cavalo.",
  "rot.pin.pratica.relativa.err.f7f3": "A torre sai do ataque, mas o cavalo a captura em f3 com xeque. Salve a torre sem soltar o cavalo.",
- "rot.pin.pratica.relativa.err.d1f1": "A dama defende a torre, mas 14...Ch3+ 15.Rh1 Dxh4 troca o cavalo pelo bispo: com xeque, a peça cravada sai sem pagar o preço. Salve a torre sem soltar o cavalo.",
+ "rot.pin.pratica.relativa.err.d1f1": "A dama defende a torre, mas 14...Ch3+ 15.Rh1 Dxh4 captura o bispo: com xeque, a peça cravada sai sem pagar o preço. Salve a torre sem soltar o cavalo.",
  "rot.pin.pratica.relativa.err.d1g4": "A dama ataca o cavalo cravado mais uma vez, mas a torre de f7 fica sem defesa, e o rei a captura. Salve a torre sem soltar o cavalo.",
  "rot.pin.pratica.relativa.err2.a1f1": "O cavalo saiu de g5, e a dama de d8 ficou na diagonal do seu bispo. Se você não a capturar agora, ela sai do ataque. Capture o que a cravada protegia."
 }

@@ -64,7 +64,7 @@
  "rot.pin.pratica.relativa.err.h4g5": "The bishop captures the knight, but Black recaptures on g5, and the pin is gone. The rook on f7 is still attacked. Keep the pin: the knight on g5 cannot leave the diagonal without giving up the queen.",
  "rot.pin.pratica.relativa.err.recuo": "The rook gets out of the attack, but 14...Nh3+ 15.gxh3 Qxh4 trades the knight for the bishop: with check, the pinned piece leaves without paying the price. Save the rook without releasing the knight.",
  "rot.pin.pratica.relativa.err.f7f3": "The rook gets out of the attack, but the knight captures it on f3 with check. Save the rook without releasing the knight.",
- "rot.pin.pratica.relativa.err.d1f1": "The queen defends the rook, but 14...Nh3+ 15.Kh1 Qxh4 trades the knight for the bishop: with check, the pinned piece leaves without paying the price. Save the rook without releasing the knight.",
+ "rot.pin.pratica.relativa.err.d1f1": "The queen defends the rook, but 14...Nh3+ 15.Kh1 Qxh4 captures the bishop: with check, the pinned piece leaves without paying the price. Save the rook without releasing the knight.",
  "rot.pin.pratica.relativa.err.d1g4": "The queen attacks the pinned knight once more, but the rook on f7 is left undefended, and the king captures it. Save the rook without releasing the knight.",
  "rot.pin.pratica.relativa.err2.a1f1": "The knight left g5, and the queen on d8 is now on your bishop's diagonal. If you do not capture it now, it gets out of the attack. Capture what the pin was protecting."
 }

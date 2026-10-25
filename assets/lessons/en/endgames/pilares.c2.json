@@ -25,7 +25,7 @@
  "ex.pin.M8uTb": "Play as Black and find the best move.",
  "ex.pin.M8uTb.hint": "Look for a white piece you can pin to the king.",
  "ex.pin.M8uTb.solution": "13...Bh6! The bishop pins the queen on f4 to the king on c1. After 14.Qxh6, 14...Rxh6 recaptures: Black wins the queen for a bishop.",
- "ex.pin.pqb0n": "Play as White and find the best move.",
- "ex.pin.pqb0n.hint": "Look for a move that leaves a black piece pinned to the king and then attack that piece again.",
- "ex.pin.pqb0n.solution": "22.Qxe6+! The queen captures the pawn with check and attacks the bishop on e7. After 22...Rd7, the rook is pinned to the king, and 23.Rxd4 attacks it again."
+ "ex.pin.TAKy2": "Play as White and find the best move.",
+ "ex.pin.TAKy2.hint": "Look for a check that forces the black queen to stop on her king's file. There, she can be pinned.",
+ "ex.pin.TAKy2.solution": "30.Rxg6+! The rook captures the knight with check and also attacks the queen on f6: it is a fork. If the king moves or takes the rook, White mates; so 30...Qxg6. Now the queen stands on the king's file, and 31.Rg1! pins her: attacked by the rook and by the queen on e6, she cannot leave the g-file. After 31...Qxg1+ 32.Kxg1, White has given both rooks and kept the queen and the knight."
 }

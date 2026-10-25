@@ -25,7 +25,7 @@
  "ex.pin.M8uTb": "Jogue de pretas e encontre o melhor lance.",
  "ex.pin.M8uTb.hint": "Procure uma peça branca que você possa cravar contra o rei.",
  "ex.pin.M8uTb.solution": "13...Bh6! O bispo crava a dama de f4 contra o rei de c1. Depois de 14.Dxh6, 14...Txh6 recaptura: as pretas ganham a dama por um bispo.",
- "ex.pin.pqb0n": "Jogue de brancas e encontre o melhor lance.",
- "ex.pin.pqb0n.hint": "Procure um lance que deixe uma peça preta cravada contra o rei e, depois, ataque essa peça de novo.",
- "ex.pin.pqb0n.solution": "22.Dxe6+! A dama captura o peão com xeque e ataca o bispo de e7. Depois de 22...Td7, a torre fica cravada contra o rei, e 23.Txd4 a ataca de novo."
+ "ex.pin.TAKy2": "Jogue de brancas e encontre o melhor lance.",
+ "ex.pin.TAKy2.hint": "Procure um xeque que obrigue a dama preta a parar na coluna do rei dela. Lá, ela pode ser cravada.",
+ "ex.pin.TAKy2.solution": "30.Txg6+! A torre captura o cavalo com xeque e ataca também a dama de f6: é um garfo. Se o rei sai ou captura a torre, as brancas dão mate; por isso, 30...Dxg6. Agora a dama está na coluna do rei, e 31.Tg1! a crava: atacada pela torre e pela dama de e6, ela não pode sair da coluna g. Depois de 31...Dxg1+ 32.Rxg1, as brancas deram as duas torres e ficaram com a dama e o cavalo."
 }
