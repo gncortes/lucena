@@ -614,10 +614,298 @@
      ]
     }
    ]
+  },
+  {
+   "id": "t1.pnFLV",
+   "capitulo": "hangingPiece",
+   "teste": true,
+   "stars": 1,
+   "fen": "rn1q2k1/ppp2ppp/8/4rb2/3PB3/3Q4/PP3PPP/R3K2R w KQ - 0 14",
+   "goal": "win",
+   "origin": "lichess:pnFLV",
+   "line": [
+    {
+     "teach": "d4e5",
+     "accept": [
+      "d4e5"
+     ],
+     "reply": "d8d3"
+    },
+    {
+     "teach": "e4d3",
+     "accept": [
+      "e4d3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.t98e5",
+   "capitulo": "knightFork",
+   "teste": true,
+   "stars": 1,
+   "fen": "8/R7/1p3p1p/1r3kp1/8/5N2/5PK1/8 w - - 0 43",
+   "goal": "win",
+   "origin": "lichess:t98e5",
+   "line": [
+    {
+     "teach": "f3d4",
+     "accept": [
+      "f3d4"
+     ],
+     "reply": "f5e4"
+    },
+    {
+     "teach": "d4b5",
+     "accept": [
+      "d4b5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.qNmln",
+   "capitulo": "doubleAttack",
+   "teste": true,
+   "stars": 1,
+   "fen": "r2qk1nr/2p4p/p1p2p2/4b1pN/4P3/2P3B1/P3QPPP/R3K2R b KQkq - 0 15",
+   "goal": "win",
+   "origin": "lichess:qNmln",
+   "line": [
+    {
+     "teach": "e5c3",
+     "accept": [
+      "e5c3"
+     ],
+     "reply": "e1f1"
+    },
+    {
+     "teach": "c3a1",
+     "accept": [
+      "c3a1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.KTDgw",
+   "capitulo": "knightFork",
+   "teste": true,
+   "stars": 2,
+   "fen": "3r2b1/8/p3p2p/3pk3/1PpN1RP1/P3K3/7P/8 w - - 0 48",
+   "goal": "win",
+   "origin": "lichess:KTDgw",
+   "line": [
+    {
+     "teach": "d4c6",
+     "accept": [
+      "d4c6"
+     ],
+     "reply": "e5d6"
+    },
+    {
+     "teach": "c6d8",
+     "accept": [
+      "c6d8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.zvvGr",
+   "capitulo": "doubleAttack",
+   "teste": true,
+   "stars": 1,
+   "fen": "3r1k1r/1p2nnpp/1pp5/8/4PP2/1P6/PB2B2P/R4R1K b - - 2 21",
+   "goal": "win",
+   "origin": "lichess:zvvGr",
+   "line": [
+    {
+     "teach": "d8d2",
+     "accept": [
+      "d8d2"
+     ],
+     "reply": "e2c4"
+    },
+    {
+     "teach": "d2b2",
+     "accept": [
+      "d2b2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.MYCne",
+   "capitulo": "hangingPiece",
+   "teste": true,
+   "stars": 2,
+   "fen": "rn1q1r1k/pp3pbp/2p1b3/1P1ppB2/P6N/R3P3/2PP1PPP/1N1QK2R b K - 0 12",
+   "goal": "win",
+   "origin": "lichess:MYCne",
+   "line": [
+    {
+     "teach": "d8h4",
+     "accept": [
+      "d8h4"
+     ],
+     "reply": "f5e6"
+    },
+    {
+     "teach": "f7e6",
+     "accept": [
+      "f7e6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.KKdDO",
+   "capitulo": "doubleAttack",
+   "teste": true,
+   "stars": 2,
+   "fen": "7k/1pp3pp/p1nb1r2/3B4/P2P3q/2P1BP2/1P1N2Qn/R5K1 w - - 5 24",
+   "goal": "win",
+   "origin": "lichess:KKdDO",
+   "line": [
+    {
+     "teach": "e3g5",
+     "accept": [
+      "e3g5"
+     ],
+     "reply": "h4g5"
+    },
+    {
+     "teach": "g2g5",
+     "accept": [
+      "g2g5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.KJha4",
+   "capitulo": "knightFork",
+   "teste": true,
+   "stars": 2,
+   "fen": "1rnR1rk1/p1p1ppbp/6p1/2P5/8/1B4QP/PP3PP1/RNn3K1 b - - 0 17",
+   "goal": "win",
+   "origin": "lichess:KJha4",
+   "line": [
+    {
+     "teach": "c1e2",
+     "accept": [
+      "c1e2"
+     ],
+     "reply": "g1h2"
+    },
+    {
+     "teach": "e2g3",
+     "accept": [
+      "e2g3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.tINkk",
+   "capitulo": "hangingPiece",
+   "teste": true,
+   "stars": 2,
+   "fen": "6k1/1ppq3p/p2p1pp1/7n/3P1rnQ/1PP5/2PB2PP/5RK1 w - - 0 23",
+   "goal": "win",
+   "origin": "lichess:tINkk",
+   "line": [
+    {
+     "teach": "d2f4",
+     "accept": [
+      "d2f4"
+     ],
+     "reply": "h5f4"
+    },
+    {
+     "teach": "f1f4",
+     "accept": [
+      "f1f4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.Sx2Mp",
+   "capitulo": "knightFork",
+   "teste": true,
+   "stars": 3,
+   "fen": "r4k2/5p1p/6p1/p7/1p1n1r2/1N5P/3N1PP1/R3R1K1 b - - 1 26",
+   "goal": "win",
+   "origin": "lichess:Sx2Mp",
+   "line": [
+    {
+     "teach": "d4c2",
+     "accept": [
+      "d4c2"
+     ],
+     "reply": "e1f1"
+    },
+    {
+     "teach": "c2a1",
+     "accept": [
+      "c2a1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.7ebT9",
+   "capitulo": "hangingPiece",
+   "teste": true,
+   "stars": 3,
+   "fen": "r1b5/1pp3k1/p3p1p1/2P1n2p/1P2PRnq/PQ5P/4B1P1/3NN1K1 b - - 0 22",
+   "goal": "win",
+   "origin": "lichess:7ebT9",
+   "line": [
+    {
+     "teach": "h4e1",
+     "accept": [
+      "h4e1"
+     ],
+     "reply": "f4f1"
+    },
+    {
+     "teach": "e1e2",
+     "accept": [
+      "e1e2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t1.IH7iZ",
+   "capitulo": "knightFork",
+   "teste": true,
+   "stars": 3,
+   "fen": "2r2rk1/pp3pp1/4q3/5N2/6PQ/P2p3P/1PP2R2/1K6 w - - 0 34",
+   "goal": "win",
+   "origin": "lichess:IH7iZ",
+   "line": [
+    {
+     "teach": "f5e7",
+     "accept": [
+      "f5e7"
+     ],
+     "reply": "e6e7"
+    },
+    {
+     "teach": "h4e7",
+     "accept": [
+      "h4e7"
+     ]
+    }
+   ]
   }
  ],
- "passScore": 36,
- "maxScore": 48,
+ "passScore": 53,
+ "maxScore": 71,
  "keyPositions": [],
  "references": [
   {
@@ -752,6 +1040,90 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle HkHlz)",
    "url": "https://lichess.org/AcsaD2Zf/black#40"
+  },
+  {
+   "id": "lichessGamepnFLV",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle pnFLV)",
+   "url": "https://lichess.org/8NX2P5wY/black#26"
+  },
+  {
+   "id": "lichessGamet98e5",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle t98e5)",
+   "url": "https://lichess.org/loqKK7FF/black#84"
+  },
+  {
+   "id": "lichessGameqNmln",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle qNmln)",
+   "url": "https://lichess.org/QiUiPNSM#29"
+  },
+  {
+   "id": "lichessGameKTDgw",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle KTDgw)",
+   "url": "https://lichess.org/7W0rf8tU/black#94"
+  },
+  {
+   "id": "lichessGamezvvGr",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle zvvGr)",
+   "url": "https://lichess.org/K9XIIYbC#41"
+  },
+  {
+   "id": "lichessGameMYCne",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle MYCne)",
+   "url": "https://lichess.org/PoXTmIJ2#23"
+  },
+  {
+   "id": "lichessGameKKdDO",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle KKdDO)",
+   "url": "https://lichess.org/YFF2AhYC/black#46"
+  },
+  {
+   "id": "lichessGameKJha4",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle KJha4)",
+   "url": "https://lichess.org/l1SarZ6l#33"
+  },
+  {
+   "id": "lichessGametINkk",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle tINkk)",
+   "url": "https://lichess.org/el9IdgEf/black#44"
+  },
+  {
+   "id": "lichessGameSx2Mp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Sx2Mp)",
+   "url": "https://lichess.org/LuMsFXro#51"
+  },
+  {
+   "id": "lichessGame7ebT9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 7ebT9)",
+   "url": "https://lichess.org/Hz5sCCWh#43"
+  },
+  {
+   "id": "lichessGameIH7iZ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle IH7iZ)",
+   "url": "https://lichess.org/CNBO5FWJ/black#66"
   }
  ]
 }
