@@ -1,0 +1,758 @@
+{
+ "licao": "pilares.c10",
+ "parte": "passedPawn",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "maioria",
+     "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+       "t": "rot.passedPawn.ideia.maioria.e1"
+      },
+      {
+       "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+       "t": "rot.passedPawn.ideia.maioria.e2"
+      },
+      {
+       "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+       "marcas": [
+        "a5",
+        "b4",
+        "c5",
+        "a7",
+        "b7"
+       ],
+       "t": "rot.passedPawn.ideia.maioria.e3"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "a5",
+       "b4",
+       "c5",
+       "g2"
+      ],
+      "certos": [
+       "a5a6"
+      ],
+      "t": "rot.passedPawn.ideia.maioria.p",
+      "certo": {
+       "fen": "8/pp6/P7/2P5/1Pk4p/8/6K1/8 b - - 0 43",
+       "lance": "a5a6",
+       "t": "rot.passedPawn.ideia.maioria.certo"
+      },
+      "revela": {
+       "fen": "8/pp6/P7/2P5/1Pk4p/8/6K1/8 b - - 0 43",
+       "lance": "a5a6",
+       "t": "rot.passedPawn.ideia.maioria.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "g2h3": [
+        {
+         "fen": "8/pp6/8/P1P5/1Pk4p/7K/8/8 b - - 2 43",
+         "lance": "g2h3",
+         "t": "rot.passedPawn.ideia.maioria.err.g2h3.1"
+        },
+        {
+         "fen": "8/1p6/p7/P1P5/1Pk4p/7K/8/8 w - - 0 44",
+         "lance": "a7a6",
+         "t": "rot.passedPawn.ideia.maioria.err.g2h3.2"
+        },
+        {
+         "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.maioria.err.g2h3.3"
+        }
+       ],
+       "c5c6": [
+        {
+         "fen": "8/pp6/2P5/P7/1Pk4p/8/6K1/8 b - - 0 43",
+         "lance": "c5c6",
+         "t": "rot.passedPawn.ideia.maioria.err.c5c6.1"
+        },
+        {
+         "fen": "8/p7/2p5/P7/1Pk4p/8/6K1/8 w - - 0 44",
+         "lance": "b7c6",
+         "t": "rot.passedPawn.ideia.maioria.err.c5c6.2"
+        },
+        {
+         "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.maioria.err.c5c6.3"
+        }
+       ],
+       "b4b5": [
+        {
+         "fen": "8/pp6/8/PPP5/2k4p/8/6K1/8 b - - 0 43",
+         "lance": "b4b5",
+         "t": "rot.passedPawn.ideia.maioria.err.b4b5.1"
+        },
+        {
+         "fen": "8/pp6/8/PkP5/7p/8/6K1/8 w - - 0 44",
+         "lance": "c4b5",
+         "t": "rot.passedPawn.ideia.maioria.err.b4b5.2"
+        },
+        {
+         "fen": "8/pp6/8/P1P5/1Pk4p/8/6K1/8 w - - 1 43",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.maioria.err.b4b5.3"
+        }
+       ]
+      },
+      "fora": "rot.passedPawn.ideia.maioria.fora",
+      "volta": "rot.passedPawn.ideia.maioria.volta"
+     },
+     "linha": [
+      {
+       "fen": "8/pp6/P7/2P5/1Pk4p/8/6K1/8 b - - 0 43",
+       "marcas": [
+        "b7"
+       ],
+       "t": "rot.passedPawn.ideia.maioria.l0"
+      },
+      {
+       "fen": "8/p7/p7/2P5/1Pk4p/8/6K1/8 w - - 0 44",
+       "lance": "b7a6",
+       "t": "rot.passedPawn.ideia.maioria.l1"
+      },
+      {
+       "fen": "8/p7/p1P5/8/1Pk4p/8/6K1/8 b - - 0 44",
+       "lance": "c5c6",
+       "marcas": [
+        "c6"
+       ],
+       "t": "rot.passedPawn.ideia.maioria.l2"
+      },
+      {
+       "fen": "8/p7/p1P5/8/1Pk4p/8/6K1/8 b - - 0 44",
+       "marcas": [
+        "c8"
+       ],
+       "t": "rot.passedPawn.ideia.maioria.l3"
+      },
+      {
+       "fen": "8/p7/p1P5/8/1Pk4p/8/6K1/8 b - - 0 44",
+       "t": "rot.passedPawn.ideia.maioria.l4"
+      }
+     ]
+    },
+    {
+     "id": "apoio",
+     "fen": "8/8/Pp1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 w - - 2 47",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/8/Pp1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 w - - 2 47",
+       "marcas": [
+        "a6"
+       ],
+       "t": "rot.passedPawn.ideia.apoio.e1"
+      },
+      {
+       "fen": "8/8/Pp1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 w - - 2 47",
+       "marcas": [
+        "b5",
+        "c5"
+       ],
+       "t": "rot.passedPawn.ideia.apoio.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "a6",
+       "b5"
+      ],
+      "certos": [
+       "a6a7"
+      ],
+      "t": "rot.passedPawn.ideia.apoio.p",
+      "certo": {
+       "fen": "8/P7/1p1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 b - - 0 47",
+       "lance": "a6a7",
+       "t": "rot.passedPawn.ideia.apoio.certo"
+      },
+      "revela": {
+       "fen": "8/P7/1p1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 b - - 0 47",
+       "lance": "a6a7",
+       "t": "rot.passedPawn.ideia.apoio.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "b5c4": [
+        {
+         "fen": "8/8/Pp1k1p2/2rP2p1/2BKPp1p/5P1P/6P1/8 b - - 3 47",
+         "lance": "b5c4",
+         "t": "rot.passedPawn.ideia.apoio.err.b5c4.1"
+        },
+        {
+         "fen": "8/8/Pp1k1p2/r2P2p1/2BKPp1p/5P1P/6P1/8 w - - 4 48",
+         "lance": "c5a5",
+         "t": "rot.passedPawn.ideia.apoio.err.b5c4.2"
+        },
+        {
+         "fen": "8/8/Pp1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 w - - 2 47",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.apoio.err.b5c4.3"
+        }
+       ],
+       "b5c6": [
+        {
+         "fen": "8/8/PpBk1p2/2rP2p1/3KPp1p/5P1P/6P1/8 b - - 3 47",
+         "lance": "b5c6",
+         "t": "rot.passedPawn.ideia.apoio.err.b5c6.1"
+        },
+        {
+         "fen": "8/8/PpBk1p2/r2P2p1/3KPp1p/5P1P/6P1/8 w - - 4 48",
+         "lance": "c5a5",
+         "t": "rot.passedPawn.ideia.apoio.err.b5c6.2"
+        },
+        {
+         "fen": "8/8/Pp1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 w - - 2 47",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.apoio.err.b5c6.3"
+        }
+       ],
+       "b5d3": [
+        {
+         "fen": "8/8/Pp1k1p2/2rP2p1/3KPp1p/3B1P1P/6P1/8 b - - 3 47",
+         "lance": "b5d3",
+         "t": "rot.passedPawn.ideia.apoio.err.b5d3.1"
+        },
+        {
+         "fen": "8/8/Pp1k1p2/r2P2p1/3KPp1p/3B1P1P/6P1/8 w - - 4 48",
+         "lance": "c5a5",
+         "t": "rot.passedPawn.ideia.apoio.err.b5d3.2"
+        },
+        {
+         "fen": "8/8/Pp1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 w - - 2 47",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.apoio.err.b5d3.3"
+        }
+       ]
+      },
+      "fora": "rot.passedPawn.ideia.apoio.fora",
+      "volta": "rot.passedPawn.ideia.apoio.volta"
+     },
+     "linha": [
+      {
+       "fen": "8/P7/1p1k1p2/1BrP2p1/3KPp1p/5P1P/6P1/8 b - - 0 47",
+       "marcas": [
+        "b5"
+       ],
+       "t": "rot.passedPawn.ideia.apoio.l0"
+      },
+      {
+       "fen": "2r5/P7/1p1k1p2/1B1P2p1/3KPp1p/5P1P/6P1/8 w - - 1 48",
+       "lance": "c5c8",
+       "setas": [
+        [
+         "c8",
+         "a8",
+         "r"
+        ]
+       ],
+       "t": "rot.passedPawn.ideia.apoio.l1"
+      },
+      {
+       "fen": "2r5/P7/1pBk1p2/3P2p1/3KPp1p/5P1P/6P1/8 b - - 2 48",
+       "lance": "b5c6",
+       "setas": [
+        [
+         "c6",
+         "a8",
+         "g"
+        ]
+       ],
+       "t": "rot.passedPawn.ideia.apoio.l2"
+      },
+      {
+       "fen": "2r5/P7/1pBk1p2/3P2p1/3KPp1p/5P1P/6P1/8 b - - 2 48",
+       "t": "rot.passedPawn.ideia.apoio.l3"
+      }
+     ]
+    },
+    {
+     "id": "alvo",
+     "fen": "8/pp1k4/3Pb3/2pNP1K1/4r3/8/PPP5/3R4 b - - 4 45",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "8/pp1k4/3Pb3/2pNP1K1/4r3/8/PPP5/3R4 b - - 4 45",
+       "marcas": [
+        "d6",
+        "e5"
+       ],
+       "t": "rot.passedPawn.ideia.alvo.e1"
+      },
+      {
+       "fen": "8/pp1k4/3Pb3/2pNP1K1/4r3/8/PPP5/3R4 b - - 4 45",
+       "marcas": [
+        "d7",
+        "e6"
+       ],
+       "t": "rot.passedPawn.ideia.alvo.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "e4"
+      ],
+      "certos": [
+       "e4e5"
+      ],
+      "t": "rot.passedPawn.ideia.alvo.p",
+      "certo": {
+       "fen": "8/pp1k4/3Pb3/2pNr1K1/8/8/PPP5/3R4 w - - 0 46",
+       "lance": "e4e5",
+       "t": "rot.passedPawn.ideia.alvo.certo"
+      },
+      "revela": {
+       "fen": "8/pp1k4/3Pb3/2pNr1K1/8/8/PPP5/3R4 w - - 0 46",
+       "lance": "e4e5",
+       "t": "rot.passedPawn.ideia.alvo.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "e4g4": [
+        {
+         "fen": "8/pp1k4/3Pb3/2pNP1K1/6r1/8/PPP5/3R4 w - - 5 46",
+         "lance": "e4g4",
+         "t": "rot.passedPawn.ideia.alvo.err.e4g4.1"
+        },
+        {
+         "fen": "8/pp1k4/3PbK2/2pNP3/6r1/8/PPP5/3R4 b - - 6 46",
+         "lance": "g5f6",
+         "t": "rot.passedPawn.ideia.alvo.err.e4g4.2"
+        },
+        {
+         "fen": "8/pp1k4/3Pb3/2pNP1K1/4r3/8/PPP5/3R4 b - - 4 45",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.alvo.err.e4g4.3"
+        }
+       ],
+       "e6d5": [
+        {
+         "fen": "8/pp1k4/3P4/2pbP1K1/4r3/8/PPP5/3R4 w - - 0 46",
+         "lance": "e6d5",
+         "t": "rot.passedPawn.ideia.alvo.err.e6d5.1"
+        },
+        {
+         "fen": "8/pp1k4/3P4/2pRP1K1/4r3/8/PPP5/8 b - - 0 46",
+         "lance": "d1d5",
+         "t": "rot.passedPawn.ideia.alvo.err.e6d5.2"
+        },
+        {
+         "fen": "8/pp1k4/3Pb3/2pNP1K1/4r3/8/PPP5/3R4 b - - 4 45",
+         "salto": true,
+         "t": "rot.passedPawn.ideia.alvo.err.e6d5.3"
+        }
+       ]
+      },
+      "fora": "rot.passedPawn.ideia.alvo.fora",
+      "volta": "rot.passedPawn.ideia.alvo.volta"
+     },
+     "linha": [
+      {
+       "fen": "8/pp1k4/3Pb3/2pNr1K1/8/8/PPP5/3R4 w - - 0 46",
+       "marcas": [
+        "d5"
+       ],
+       "t": "rot.passedPawn.ideia.alvo.l0"
+      },
+      {
+       "fen": "8/pp1k4/3Pb3/2pNr3/5K2/8/PPP5/3R4 b - - 1 46",
+       "lance": "g5f4",
+       "t": "rot.passedPawn.ideia.alvo.l1"
+      },
+      {
+       "fen": "8/pp1k4/3Pb3/2pr4/5K2/8/PPP5/3R4 w - - 0 47",
+       "lance": "e5d5",
+       "t": "rot.passedPawn.ideia.alvo.l2"
+      },
+      {
+       "fen": "8/pp1k4/3Pb3/2pr4/5K2/8/PPP5/3R4 w - - 0 47",
+       "t": "rot.passedPawn.ideia.alvo.l3"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "regra",
+     "fen": "6k1/pB3p1p/1p1p2p1/8/2p5/1P1PP1P1/P6P/6K1 b - - 0 24",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "6k1/pB3p1p/1p1p2p1/8/2p5/1P1PP1P1/P6P/6K1 b - - 0 24",
+       "marcas": [
+        "a7",
+        "b6",
+        "c4",
+        "a2",
+        "b3"
+       ],
+       "t": "rot.passedPawn.demos.regra.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "6k1/pB3p1p/1p1p2p1/8/8/1PpPP1P1/P6P/6K1 w - - 0 25",
+       "lance": "c4c3",
+       "marcas": [
+        "c3"
+       ],
+       "t": "rot.passedPawn.demos.regra.l.2"
+      },
+      {
+       "fen": "6k1/pB3p1p/1p1p2p1/8/8/1PpPP1P1/P4K1P/8 b - - 1 25",
+       "lance": "g1f2",
+       "t": "rot.passedPawn.demos.regra.l.3"
+      },
+      {
+       "fen": "6k1/pB3p1p/1p1p2p1/8/8/1P1PP1P1/P1p2K1P/8 w - - 0 26",
+       "lance": "c3c2",
+       "marcas": [
+        "c1"
+       ],
+       "t": "rot.passedPawn.demos.regra.l.4"
+      },
+      {
+       "fen": "6k1/pB3p1p/1p1p2p1/8/8/1P1PP1P1/P1p2K1P/8 w - - 0 26",
+       "t": "rot.passedPawn.demos.regra.l.5"
+      }
+     ]
+    },
+    {
+     "id": "regra2",
+     "fen": "8/5pp1/r2k3p/1p6/1K2p3/p3P2N/2R2PPP/8 b - - 3 33",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/5pp1/r2k3p/1p6/1K2p3/p3P2N/2R2PPP/8 b - - 3 33",
+       "marcas": [
+        "a3",
+        "a6"
+       ],
+       "t": "rot.passedPawn.demos.regra2.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "8/5pp1/r2k3p/1p6/1K2p3/4P2N/p1R2PPP/8 w - - 0 34",
+       "lance": "a3a2",
+       "t": "rot.passedPawn.demos.regra2.l.2"
+      },
+      {
+       "fen": "8/5pp1/r2k3p/1p6/1K2p3/4P2N/R4PPP/8 b - - 0 34",
+       "lance": "c2a2",
+       "t": "rot.passedPawn.demos.regra2.l.3"
+      },
+      {
+       "fen": "8/5pp1/3k3p/1p6/1K2p3/4P2N/r4PPP/8 w - - 0 35",
+       "lance": "a6a2",
+       "t": "rot.passedPawn.demos.regra2.l.4"
+      },
+      {
+       "fen": "8/5pp1/3k3p/1p6/1K2p3/4P2N/r4PPP/8 w - - 0 35",
+       "t": "rot.passedPawn.demos.regra2.l.5"
+      }
+     ]
+    },
+    {
+     "id": "ligados",
+     "fen": "1R6/8/8/8/1p6/p7/1k1K4/8 b - - 3 58",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "1R6/8/8/8/1p6/p7/1k1K4/8 b - - 3 58",
+       "marcas": [
+        "a3",
+        "b4"
+       ],
+       "t": "rot.passedPawn.demos.ligados.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "1R6/8/8/8/8/pp6/1k1K4/8 w - - 0 59",
+       "lance": "b4b3",
+       "marcas": [
+        "b3"
+       ],
+       "t": "rot.passedPawn.demos.ligados.l.2"
+      },
+      {
+       "fen": "1R6/8/8/8/8/pp1K4/1k6/8 b - - 1 59",
+       "lance": "d2d3",
+       "t": "rot.passedPawn.demos.ligados.l.3"
+      },
+      {
+       "fen": "1R6/8/8/8/8/1p1K4/pk6/8 w - - 0 60",
+       "lance": "a3a2",
+       "marcas": [
+        "a1"
+       ],
+       "t": "rot.passedPawn.demos.ligados.l.4"
+      },
+      {
+       "fen": "1R6/8/8/8/8/1p1K4/pk6/8 w - - 0 60",
+       "t": "rot.passedPawn.demos.ligados.l.5"
+      }
+     ]
+    },
+    {
+     "id": "desvio",
+     "fen": "5rk1/3R1ppp/4p3/bP2P3/4P3/4BP2/2p3PP/6K1 b - - 1 29",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "5rk1/3R1ppp/4p3/bP2P3/4P3/4BP2/2p3PP/6K1 b - - 1 29",
+       "marcas": [
+        "c2",
+        "c1"
+       ],
+       "setas": [
+        [
+         "e3",
+         "c1",
+         "r"
+        ]
+       ],
+       "t": "rot.passedPawn.demos.desvio.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "5rk1/3R1ppp/1b2p3/1P2P3/4P3/4BP2/2p3PP/6K1 w - - 2 30",
+       "lance": "a5b6",
+       "setas": [
+        [
+         "b6",
+         "e3",
+         "g"
+        ]
+       ],
+       "t": "rot.passedPawn.demos.desvio.l.2"
+      },
+      {
+       "fen": "5rk1/3R1ppp/1B2p3/1P2P3/4P3/5P2/2p3PP/6K1 b - - 0 30",
+       "lance": "e3b6",
+       "t": "rot.passedPawn.demos.desvio.l.3"
+      },
+      {
+       "fen": "5rk1/3R1ppp/1B2p3/1P2P3/4P3/5P2/6PP/2q3K1 w - - 0 31",
+       "lance": "c2c1q",
+       "t": "rot.passedPawn.demos.desvio.l.4"
+      },
+      {
+       "fen": "5rk1/3R1ppp/1B2p3/1P2P3/4P3/5P2/6PP/2q3K1 w - - 0 31",
+       "t": "rot.passedPawn.demos.desvio.l.5"
+      }
+     ]
+    },
+    {
+     "id": "excecao",
+     "fen": "3r4/p5pk/7p/1Q1n4/4q3/1R2B3/2P1KPPP/4R3 b - - 0 30",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "3r4/p5pk/7p/1Q1n4/4q3/1R2B3/2P1KPPP/4R3 b - - 0 30",
+       "marcas": [
+        "a7",
+        "e2"
+       ],
+       "t": "rot.passedPawn.demos.excecao.1"
+      },
+      {
+       "fen": "3r4/p5pk/7p/1Q1n4/4q3/1R2B3/2P1KPPP/4R3 b - - 0 30",
+       "t": "rot.passedPawn.demos.excecao.2"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "3r4/p5pk/7p/1Q6/4qn2/1R2B3/2P1KPPP/4R3 w - - 1 31",
+       "lance": "d5f4",
+       "t": "rot.passedPawn.demos.excecao.l.3"
+      },
+      {
+       "fen": "3r4/p5pk/7p/1Q6/4qn2/1R2B3/2P2PPP/4RK2 b - - 2 31",
+       "lance": "e2f1",
+       "setas": [
+        [
+         "e4",
+         "e2",
+         "r"
+        ]
+       ],
+       "t": "rot.passedPawn.demos.excecao.l.4"
+      },
+      {
+       "fen": "3r4/p5pk/7p/1Q6/5n2/1R2B3/2P2PqP/4RK2 w - - 0 32",
+       "lance": "e4g2",
+       "t": "rot.passedPawn.demos.excecao.l.5"
+      },
+      {
+       "fen": "3r4/p5pk/7p/1Q6/5n2/1R2B3/2P2PqP/4RK2 w - - 0 32",
+       "t": "rot.passedPawn.demos.excecao.l.6"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "passado",
+     "fen": "4r1k1/p3P2p/1p1P2p1/8/P4r2/3p4/6P1/4R2K w - - 0 39",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d6",
+       "e1"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d6d7"
+        ],
+        "resposta": "g8f7"
+       },
+       {
+        "certos": [
+         "d7d8q"
+        ]
+       }
+      ],
+      "t": "rot.passedPawn.pratica.passado.enunciado",
+      "fim": "rot.passedPawn.pratica.passado.fim",
+      "erros": {
+       "e1d1": "rot.passedPawn.pratica.passado.err.e1d1"
+      },
+      "errosPos": {
+       "4r3/p2PPk1p/1p4p1/8/P4r2/3p4/6P1/4R2K w - - 1 40": {
+        "d7e8q": "rot.passedPawn.pratica.passado.err2"
+       }
+      }
+     }
+    },
+    {
+     "id": "alvo",
+     "fen": "2Qr3k/p2P1rbp/1p4p1/2p5/8/2P2N2/PP3PPP/6K1 b - - 2 26",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "f7",
+       "d8"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "f7d7"
+        ],
+        "resposta": "c8a6"
+       },
+       {
+        "certos": [
+         "d7d1"
+        ]
+       }
+      ],
+      "t": "rot.passedPawn.pratica.alvo.enunciado",
+      "fim": "rot.passedPawn.pratica.alvo.fim",
+      "erros": {
+       "f7f8": "rot.passedPawn.pratica.alvo.err.f7f8"
+      }
+     }
+    },
+    {
+     "id": "valeAqui",
+     "fen": "5rk1/8/8/p1pR4/P1Pb4/1P1p2P1/6P1/1R2K3 b - - 4 38",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d4",
+       "d3",
+       "f8"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d4c3"
+        ],
+        "resposta": "e1d1"
+       },
+       {
+        "certos": [
+         "f8f1"
+        ]
+       }
+      ],
+      "t": "rot.passedPawn.pratica.valeAqui.enunciado",
+      "fim": "rot.passedPawn.pratica.valeAqui.fim",
+      "erros": {
+       "d3d2": "rot.passedPawn.pratica.valeAqui.err.d3d2",
+       "f8f2": "rot.passedPawn.pratica.valeAqui.err.f8f2",
+       "d4f2": "rot.passedPawn.pratica.valeAqui.err.d4f2",
+       "f8e8": "rot.passedPawn.pratica.valeAqui.err.f8e8"
+      },
+      "errosPos": {
+       "5rk1/8/8/p1pR4/P1P5/1Pbp2P1/6P1/1R1K4 b - - 6 39": {
+        "d3d2": "rot.passedPawn.pratica.valeAqui.err2"
+       }
+      }
+     }
+    }
+   ]
+  }
+ ]
+}
