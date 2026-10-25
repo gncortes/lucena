@@ -1,0 +1,235 @@
+{
+ "id": "pilares.c1",
+ "module": "pilares",
+ "skills": [
+  "pilares.c1"
+ ],
+ "parts": [
+  {
+   "id": "knightFork",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c1/knightFork.json"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "kf.le0GY",
+   "capitulo": "knightFork",
+   "stars": 1,
+   "fen": "rn2k2r/ppq2p1p/2p1pp2/8/3PNbb1/P2B1N2/1PP2PP1/R2Q1R1K w kq - 2 13",
+   "goal": "win",
+   "origin": "lichess:le0GY",
+   "line": [
+    {
+     "teach": "e4f6",
+     "accept": [
+      "e4f6"
+     ],
+     "reply": "e8e7"
+    },
+    {
+     "teach": "f6g4",
+     "accept": [
+      "f6g4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.JMggH",
+   "capitulo": "knightFork",
+   "stars": 1,
+   "fen": "r1b3nr/pp2bkpp/1np5/8/3P4/3q1N2/PP1N1KPP/R1BQ3R w - - 0 14",
+   "goal": "win",
+   "origin": "lichess:JMggH",
+   "line": [
+    {
+     "teach": "f3e5",
+     "accept": [
+      "f3e5"
+     ],
+     "reply": "f7f8"
+    },
+    {
+     "teach": "e5d3",
+     "accept": [
+      "e5d3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.85qZg",
+   "capitulo": "knightFork",
+   "stars": 1,
+   "fen": "r2k3r/p2bbppp/1p2p3/3pPB2/3n1P2/2Q5/PPP3PP/RN3RK1 b - - 0 16",
+   "goal": "win",
+   "origin": "lichess:85qZg",
+   "line": [
+    {
+     "teach": "d4e2",
+     "accept": [
+      "d4e2"
+     ],
+     "reply": "g1h1"
+    },
+    {
+     "teach": "e2c3",
+     "accept": [
+      "e2c3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.EA7M7",
+   "capitulo": "knightFork",
+   "stars": 1,
+   "fen": "r2q3k/1p4rp/2pp4/2n2R2/p1P2Q1P/P5P1/1P4B1/4R1K1 b - - 0 28",
+   "goal": "win",
+   "origin": "lichess:EA7M7",
+   "line": [
+    {
+     "teach": "c5d3",
+     "accept": [
+      "c5d3"
+     ],
+     "reply": "f4e3"
+    },
+    {
+     "teach": "d3e1",
+     "accept": [
+      "d3e1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.TMnM9",
+   "capitulo": "knightFork",
+   "stars": 2,
+   "fen": "8/8/5kp1/4p3/2n3PK/2N4P/p4r2/R7 w - - 2 46",
+   "goal": "win",
+   "origin": "lichess:TMnM9",
+   "line": [
+    {
+     "teach": "c3e4",
+     "accept": [
+      "c3e4"
+     ],
+     "reply": "f6f7"
+    },
+    {
+     "teach": "e4f2",
+     "accept": [
+      "e4f2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.VO2bH",
+   "capitulo": "knightFork",
+   "stars": 2,
+   "fen": "2kr1b1r/pp3p1p/2p5/q3n3/5B2/2P5/PP2QPBP/R3K1R1 b Q - 1 15",
+   "goal": "win",
+   "origin": "lichess:VO2bH",
+   "line": [
+    {
+     "teach": "e5d3",
+     "accept": [
+      "e5d3"
+     ],
+     "reply": "e1f1"
+    },
+    {
+     "teach": "d3f4",
+     "accept": [
+      "d3f4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.A2Yd6",
+   "capitulo": "knightFork",
+   "stars": 2,
+   "fen": "r2q1rk1/pB3ppp/1pn1p3/5b2/3PnB2/PQ2PN2/5PPP/R4RK1 b - - 3 16",
+   "goal": "win",
+   "origin": "lichess:A2Yd6",
+   "line": [
+    {
+     "teach": "c6a5",
+     "accept": [
+      "c6a5"
+     ],
+     "reply": "b3b2"
+    },
+    {
+     "teach": "a5b7",
+     "accept": [
+      "a5b7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.6FH0w",
+   "capitulo": "knightFork",
+   "stars": 3,
+   "fen": "r2qkb1r/2nbpp1p/1p3np1/1N1p4/Qp1P1B2/4P3/P4PPP/R3KBNR w KQkq - 1 11",
+   "goal": "win",
+   "origin": "lichess:6FH0w",
+   "line": [
+    {
+     "teach": "b5c7",
+     "accept": [
+      "b5c7"
+     ],
+     "reply": "d8c7"
+    },
+    {
+     "teach": "a4a8",
+     "accept": [
+      "a4a8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kf.zDvLA",
+   "capitulo": "knightFork",
+   "stars": 3,
+   "fen": "rn3b1r/pp2p1p1/2p1kn1p/3q4/8/5Q1N/PPP2PPP/R1B2RK1 w - - 2 12",
+   "goal": "win",
+   "origin": "lichess:zDvLA",
+   "line": [
+    {
+     "teach": "h3f4",
+     "accept": [
+      "h3f4"
+     ],
+     "reply": "e6f7"
+    },
+    {
+     "teach": "f4d5",
+     "accept": [
+      "f4d5"
+     ]
+    }
+   ]
+  }
+ ],
+ "passScore": 12,
+ "maxScore": 16,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  }
+ ]
+}
