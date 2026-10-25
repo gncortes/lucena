@@ -9,6 +9,10 @@ abstract final class CoursePreviewKeys {
   static const priceCard = Key('coursePreview.sale.price');
   static Key faq(int index) => Key('coursePreview.sale.faq.$index');
   static Key part(int index) => Key('coursePreview.sale.part.$index');
+  static Key partHeader(String number) =>
+      Key('coursePreview.sale.part.$number.header');
+  static Key summaryChapter(int number) =>
+      Key('coursePreview.sale.summary.chapter.$number');
   static const map = Key('coursePreview.map');
   static const mapContinue = Key('coursePreview.map.continue');
   static const mapTest = Key('coursePreview.map.test');

@@ -136,32 +136,294 @@
         }
       ]
     },
-    "summaryNote": "Cada parte tem capítulos numerados (1, 2, 3…). Cada capítulo reúne suas lições (1.1, 1.2…) e fecha com 12 exercícios práticos. O último capítulo da parte é o das aberturas, e o que a parte ensinou entra na sua prática. Você escolhe as aberturas e pode trocar a qualquer momento. Ao terminar uma, dá para estudar outra opção também.",
+    "summaryNote": "Toque numa parte para ver os capítulos e as lições.",
     "parts": [
       {
         "number": "I",
         "title": "Tática básica e princípios da abertura",
-        "lessons": 19
+        "lessons": 19,
+        "chapters": [
+          {
+            "number": 1,
+            "title": "Ataque duplo e peças vulneráveis",
+            "lessons": [
+              "Ataque duplo",
+              "Garfo de cavalo",
+              "Peça pendurada",
+              "Peça presa"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 2,
+            "title": "Golpes em linha",
+            "lessons": [
+              "Cravada",
+              "Espeto",
+              "Ataque descoberto"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 3,
+            "title": "Mates básicos",
+            "lessons": [
+              "Mate do corredor",
+              "Mates com dama e torre",
+              "Mates com cavalo"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 4,
+            "title": "Desvio, atração e promoção",
+            "lessons": [
+              "Desvio",
+              "Atração",
+              "Peão avançado e promoção"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 5,
+            "title": "Princípios da abertura",
+            "lessons": [
+              "Centro, desenvolvimento e roque",
+              "Armadilhas e gambitos"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 6,
+            "title": "Aberturas",
+            "lessons": [
+              "Abertura escolhida de brancas",
+              "Abertura escolhida contra 1.e4",
+              "Abertura escolhida contra 1.d4",
+              "Abertura escolhida contra outros primeiros lances"
+            ]
+          }
+        ]
       },
       {
         "number": "II",
         "title": "Tática: mais motivos e a defesa",
-        "lessons": 13
+        "lessons": 13,
+        "chapters": [
+          {
+            "number": 7,
+            "title": "Contra o defensor",
+            "lessons": [
+              "Sobrecarga",
+              "Eliminação do defensor",
+              "Interferência"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 8,
+            "title": "Linhas abertas e lances forçados",
+            "lessons": [
+              "Desobstrução",
+              "Xeque duplo",
+              "Lance intermediário"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 9,
+            "title": "Recursos defensivos",
+            "lessons": [
+              "Contra-ataque",
+              "Xeque perpétuo",
+              "Afogamento"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 10,
+            "title": "Aberturas",
+            "lessons": [
+              "Abertura escolhida de brancas",
+              "Abertura escolhida contra 1.e4",
+              "Abertura escolhida contra 1.d4",
+              "Abertura escolhida contra outros primeiros lances"
+            ]
+          }
+        ]
       },
       {
         "number": "III",
         "title": "Jogo posicional",
-        "lessons": 20
+        "lessons": 20,
+        "chapters": [
+          {
+            "number": 11,
+            "title": "Fraquezas de peões",
+            "lessons": [
+              "Peões dobrados",
+              "Peão isolado e peões pendentes",
+              "Peão atrasado"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 12,
+            "title": "Cadeias e peões passados",
+            "lessons": [
+              "Cadeia de peões e quebra",
+              "Maioria e peão passado"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 13,
+            "title": "Estruturas típicas",
+            "lessons": [
+              "Estrutura Carlsbad e ataque de minoria",
+              "Estrutura Maróczy e Ouriço"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 14,
+            "title": "Casas e colunas",
+            "lessons": [
+              "Casa fraca e posto avançado",
+              "Coluna aberta e sétima fileira",
+              "Melhorar a pior peça"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 15,
+            "title": "Bispos e cavalos",
+            "lessons": [
+              "Bispo bom e bispo mau",
+              "Bispo contra cavalo"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 16,
+            "title": "Como montar um plano",
+            "lessons": [
+              "Os desequilíbrios",
+              "Vantagem de espaço",
+              "Profilaxia",
+              "Do desequilíbrio ao plano"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 17,
+            "title": "Aberturas",
+            "lessons": [
+              "Abertura escolhida de brancas",
+              "Abertura escolhida contra 1.e4",
+              "Abertura escolhida contra 1.d4",
+              "Abertura escolhida contra outros primeiros lances"
+            ]
+          }
+        ]
       },
       {
         "number": "IV",
         "title": "Técnica: converter e defender",
-        "lessons": 17
+        "lessons": 17,
+        "chapters": [
+          {
+            "number": 18,
+            "title": "Converter e defender",
+            "lessons": [
+              "Converter a vantagem",
+              "Trocar peças para aliviar a defesa",
+              "O princípio das duas fraquezas",
+              "Defesa ativa"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 19,
+            "title": "Finais de peões",
+            "lessons": [
+              "Regra do quadrado",
+              "Oposição",
+              "Casas-chave",
+              "Peão passado afastado"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 20,
+            "title": "Finais de torre e de bispo",
+            "lessons": [
+              "Posição de Lucena",
+              "Posição de Philidor",
+              "Torre atrás do peão passado",
+              "Corte do rei",
+              "Peão de torre e bispo da cor errada"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 21,
+            "title": "Aberturas",
+            "lessons": [
+              "Abertura escolhida de brancas",
+              "Abertura escolhida contra 1.e4",
+              "Abertura escolhida contra 1.d4",
+              "Abertura escolhida contra outros primeiros lances"
+            ]
+          }
+        ]
       },
       {
         "number": "V",
         "title": "Combinações e cálculo",
-        "lessons": 13
+        "lessons": 13,
+        "chapters": [
+          {
+            "number": 22,
+            "title": "Combinações",
+            "lessons": [
+              "Dois motivos encadeados",
+              "Sacrifício em h7",
+              "Sacrifício de qualidade"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 23,
+            "title": "Ataque e dinâmica",
+            "lessons": [
+              "Ataque com roques opostos",
+              "Dinâmica contra estática"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 24,
+            "title": "Cálculo de variantes",
+            "lessons": [
+              "Lances candidatos",
+              "A melhor defesa do adversário",
+              "Até onde calcular",
+              "O lance tranquilo"
+            ],
+            "exercises": "Exercícios"
+          },
+          {
+            "number": 25,
+            "title": "Aberturas",
+            "lessons": [
+              "Abertura escolhida de brancas",
+              "Abertura escolhida contra 1.e4",
+              "Abertura escolhida contra 1.d4",
+              "Abertura escolhida contra outros primeiros lances"
+            ]
+          }
+        ]
       }
     ],
     "faq": [

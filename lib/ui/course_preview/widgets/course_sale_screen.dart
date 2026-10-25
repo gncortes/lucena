@@ -820,7 +820,11 @@ class _Content extends StatelessWidget {
           spacing: AppSpacing.sm,
           children: [
             for (final (i, part) in sale.parts.indexed)
-              _PartTile(key: CoursePreviewKeys.part(i), part: part),
+              _PartTile(
+                key: CoursePreviewKeys.part(i),
+                part: part,
+                initiallyOpen: i == 0,
+              ),
           ],
         ),
       ],
@@ -868,53 +872,146 @@ class _Pill extends StatelessWidget {
   }
 }
 
-/// Uma parte do sumário, fechada (parte_fechada). Na prévia, tocar abre o
-/// mapa (a Parte I com os capítulos).
-class _PartTile extends StatelessWidget {
-  const _PartTile({required this.part, super.key});
+/// Uma parte do sumário (parte_fechada e parte_aberta, Sumário B): tocar no
+/// cabeçalho abre todos os capítulos de uma vez, sem expansível por capítulo.
+/// Na prévia, tocar num capítulo aberto leva ao mapa.
+class _PartTile extends StatefulWidget {
+  const _PartTile({required this.part, required this.initiallyOpen, super.key});
 
   final CourseSalePart part;
+  final bool initiallyOpen;
+
+  @override
+  State<_PartTile> createState() => _PartTileState();
+}
+
+class _PartTileState extends State<_PartTile> {
+  late bool _open = widget.initiallyOpen;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final part = widget.part;
     return Material(
       color: colors.surfaceContainerLow,
       borderRadius: BorderRadius.circular(AppShape.large),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => context.push(Routes.pilaresMap),
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 8, 14),
-          child: Row(
-            spacing: AppSpacing.md,
+      child: AnimatedSize(
+        duration: AppMotion.panel,
+        alignment: Alignment.topCenter,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            InkWell(
+              key: CoursePreviewKeys.partHeader(part.number),
+              onTap: () => setState(() => _open = !_open),
+              child: Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(
+                  16,
+                  14,
+                  8,
+                  _open ? 6 : 14,
+                ),
+                child: _header(context),
+              ),
+            ),
+            if (_open)
+              for (final chapter in part.chapters)
+                _SummaryChapter(chapter: chapter),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final part = widget.part;
+    return Row(
+      spacing: AppSpacing.md,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
+              Text(
+                context.l10n.coursePartLessons(part.number, part.lessons),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontSize: 13,
+                  height: 18 / 13,
+                  color: colors.primary,
+                ),
+              ),
+              Text(part.title, style: _strong(context, size: 17)),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: 48,
+          height: 48,
+          child: Icon(
+            _open ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+            size: AppIconSize.standard,
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Um capítulo da parte aberta: "N · Título" em negrito e as linhas
+/// numeradas (lições e, por último, os exercícios) com o número em cinza.
+class _SummaryChapter extends StatelessWidget {
+  const _SummaryChapter({required this.chapter});
+
+  final CourseSaleChapter chapter;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return InkWell(
+      key: CoursePreviewKeys.summaryChapter(chapter.number),
+      onTap: () => context.push(Routes.pilaresMap),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: colors.outlineVariant)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.md,
+            horizontal: AppSpacing.lg,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [
+              Text(
+                '${chapter.number} · ${chapter.title}',
+                style: _strong(context, size: 15),
+              ),
+              for (final (j, item) in chapter.items.indexed)
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
                   children: [
-                    Text(
-                      context.l10n.coursePartLessons(part.number, part.lessons),
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontSize: 13,
-                        height: 18 / 13,
-                        color: colors.primary,
+                    SizedBox(
+                      width: 28,
+                      child: Text(
+                        '${chapter.number}.${j + 1}',
+                        style: _body(context),
                       ),
                     ),
-                    Text(part.title, style: _strong(context, size: 17)),
+                    Expanded(
+                      child: Text(
+                        item,
+                        style: _body(context, color: colors.onSurface),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              SizedBox(
-                width: 48,
-                height: 48,
-                child: Icon(
-                  Icons.expand_more_rounded,
-                  size: AppIconSize.standard,
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
             ],
           ),
         ),

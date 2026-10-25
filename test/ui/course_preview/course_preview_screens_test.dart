@@ -148,21 +148,50 @@ void main() {
       expect(tabs.height, closeToDp(48));
     });
 
-    testWidgets('H4 Conteúdo ${w.toInt()}×${h.toInt()}: as partes com alvo de '
-        '48 e a parte abre o mapa; Continuar abre o capítulo', (tester) async {
+    testWidgets('H4 Conteúdo ${w.toInt()}×${h.toInt()}: a Parte I aberta com '
+        'todos os capítulos, a parte abre e fecha num toque e o capítulo '
+        'abre o mapa; Continuar abre o capítulo', (tester) async {
       setPhoneSize(tester, size);
       final router = await pump(tester);
       await openTab(tester, 1);
+      expect(
+        find.text('Toque numa parte para ver os capítulos e as lições.'),
+        findsOneWidget,
+      );
       final part = find.byKey(CoursePreviewKeys.part(0));
       await tester.scrollUntilVisible(part, 200, scrollable: saleScrollable());
       await tester.pumpAndSettle();
       final rect = tester.getRect(part);
       expect(rect.left, closeToDp(16));
       expect(rect.right, closeToDp(w - 16));
-      expect(rect.height, greaterThanOrEqualTo(48));
       expect(find.text('Parte I · 19 lições'), findsOneWidget);
+      // A Parte I aberta: os seis capítulos, o último das aberturas sem
+      // exercícios; as outras partes fechadas.
+      for (var n = 1; n <= 6; n++) {
+        expect(find.byKey(CoursePreviewKeys.summaryChapter(n)), findsOneWidget);
+      }
+      expect(find.text('1 · Ataque duplo e peças vulneráveis'), findsOneWidget);
+      expect(find.text('1.5'), findsOneWidget);
+      expect(find.text('Exercícios'), findsNWidgets(5));
+      expect(find.text('6 · Aberturas'), findsOneWidget);
+      expect(find.text('6.5'), findsNothing);
+      expect(find.byKey(CoursePreviewKeys.summaryChapter(7)), findsNothing);
 
-      await tester.tap(part);
+      final header = find.byKey(CoursePreviewKeys.partHeader('I'));
+      expect(tester.getRect(header).height, greaterThanOrEqualTo(48));
+      await tester.tap(header);
+      await tester.pumpAndSettle();
+      expect(find.byKey(CoursePreviewKeys.summaryChapter(1)), findsNothing);
+      final second = find.byKey(CoursePreviewKeys.partHeader('II'));
+      await tester.tap(second);
+      await tester.pumpAndSettle();
+      expect(find.text('7 · Contra o defensor'), findsOneWidget);
+      expect(find.text('10 · Aberturas'), findsOneWidget);
+
+      final chapter = find.byKey(CoursePreviewKeys.summaryChapter(7));
+      await tester.ensureVisible(chapter);
+      await tester.pumpAndSettle();
+      await tester.tap(chapter);
       await tester.pumpAndSettle();
       expect(find.byKey(CoursePreviewKeys.map), findsOneWidget);
       expect(router.state.uri.toString(), Routes.pilaresMap);

@@ -41,23 +41,59 @@ class CourseSaleItem {
   final String? summary;
 }
 
-/// Uma parte do sumário: o número romano, o título e quantas lições tem.
+/// Uma parte do sumário: o número romano, o título, quantas lições tem e os
+/// capítulos (o último é o das aberturas).
 class CourseSalePart {
   const CourseSalePart({
     required this.number,
     required this.title,
     required this.lessons,
+    required this.chapters,
   });
 
   factory CourseSalePart.fromJson(Map<String, dynamic> json) => CourseSalePart(
     number: json['number'] as String,
     title: json['title'] as String,
     lessons: json['lessons'] as int,
+    chapters: [
+      for (final chapter in json['chapters'] as List)
+        CourseSaleChapter.fromJson(chapter as Map<String, dynamic>),
+    ],
   );
 
   final String number;
   final String title;
   final int lessons;
+  final List<CourseSaleChapter> chapters;
+}
+
+/// Um capítulo do sumário: o número (no curso todo), o título, as lições
+/// (n.1, n.2…) e, se tiver, os exercícios práticos, o último item numerado.
+class CourseSaleChapter {
+  const CourseSaleChapter({
+    required this.number,
+    required this.title,
+    required this.lessons,
+    this.exercises,
+  });
+
+  factory CourseSaleChapter.fromJson(Map<String, dynamic> json) =>
+      CourseSaleChapter(
+        number: json['number'] as int,
+        title: json['title'] as String,
+        lessons: [
+          for (final lesson in json['lessons'] as List) lesson as String,
+        ],
+        exercises: json['exercises'] as String?,
+      );
+
+  final int number;
+  final String title;
+  final List<String> lessons;
+  final String? exercises;
+
+  /// As linhas numeradas: as lições e, por último, os exercícios.
+  List<String> get items => [...lessons, ?exercises];
 }
 
 /// Uma pergunta da aba Dúvidas.
