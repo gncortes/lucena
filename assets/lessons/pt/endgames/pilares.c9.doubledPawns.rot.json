@@ -44,6 +44,8 @@
  "rot.doubledPawns.ideia.coluna.err.g6e4.2": "De novo na posição: procure o lance que usa a coluna g contra o rei branco.",
  "rot.doubledPawns.ideia.coluna.err.g6g4.1": "Em g4 a dama fica atacada pelo peão de h3, que a captura.",
  "rot.doubledPawns.ideia.coluna.err.g6g4.2": "De novo na posição: procure um xeque pela coluna g.",
+ "rot.doubledPawns.ideia.coluna.err.g6h6.1": "Em h6 a dama sai da coluna g, e o xeque em g3 deixa de existir.",
+ "rot.doubledPawns.ideia.coluna.err.g6h6.2": "De novo na posição: deixe a dama na coluna g e procure o xeque.",
  "rot.doubledPawns.ideia.coluna.fora": "Esse lance não usa a coluna g. Procure um lance da dama ou da torre por ela.",
  "rot.doubledPawns.ideia.coluna.volta": "Tente de novo: use a coluna g.",
  "rot.doubledPawns.ideia.coluna.l0": "O xeque vem pela coluna g, que a recaptura em f6 deixou sem peão preto.",
@@ -70,5 +72,6 @@
  "rot.doubledPawns.pratica.reiNoFinal.fim": "O rei foi a h4 e capturou o peão de h5: o de h7, atrás dele, não podia defendê-lo.",
  "rot.doubledPawns.pratica.reiNoFinal.err.g3h3": "Em h3 o rei ainda não ataca o peão de h5. Procure a casa de onde ele o alcança.",
  "rot.doubledPawns.pratica.reiNoFinal.err.f2f3": "O avanço do peão f não ataca nenhum peão preto. O seu rei tem um caminho até o peão dobrado da frente.",
- "rot.doubledPawns.pratica.reiNoFinal.err.f2f4": "O avanço do peão f para f4 não ataca nenhum peão preto e fecha a posição. O seu rei tem um caminho até o peão dobrado da frente."
+ "rot.doubledPawns.pratica.reiNoFinal.err.f2f4": "O avanço do peão f para f4 não ataca nenhum peão preto e dá tempo ao rei preto de chegar a g6. O seu rei tem um caminho até o peão dobrado da frente.",
+ "rot.doubledPawns.pratica.reiNoFinal.err2": "O avanço do peão f gasta um tempo: o rei preto chega a g7 e defende o peão de h7. O peão de h5 está ao alcance do seu rei agora."
 }

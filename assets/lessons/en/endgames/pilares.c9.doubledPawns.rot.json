@@ -44,6 +44,8 @@
  "rot.doubledPawns.ideia.coluna.err.g6e4.2": "Back to the position: look for the move that uses the g-file against the white king.",
  "rot.doubledPawns.ideia.coluna.err.g6g4.1": "On g4 the queen is attacked by the pawn on h3, which captures it.",
  "rot.doubledPawns.ideia.coluna.err.g6g4.2": "Back to the position: look for a check along the g-file.",
+ "rot.doubledPawns.ideia.coluna.err.g6h6.1": "On h6 the queen leaves the g-file, and the check on g3 is gone.",
+ "rot.doubledPawns.ideia.coluna.err.g6h6.2": "Back to the position: keep the queen on the g-file and look for the check.",
  "rot.doubledPawns.ideia.coluna.fora": "That move does not use the g-file. Look for a queen or rook move along it.",
  "rot.doubledPawns.ideia.coluna.volta": "Try again: use the g-file.",
  "rot.doubledPawns.ideia.coluna.l0": "The check comes along the g-file, which the recapture on f6 left without a black pawn.",
@@ -70,5 +72,6 @@
  "rot.doubledPawns.pratica.reiNoFinal.fim": "The king went to h4 and captured the pawn on h5: the one on h7, behind it, could not defend it.",
  "rot.doubledPawns.pratica.reiNoFinal.err.g3h3": "On h3 the king does not yet attack the pawn on h5. Look for the square from which it reaches it.",
  "rot.doubledPawns.pratica.reiNoFinal.err.f2f3": "The f-pawn advance attacks no black pawn. Your king has a path to the front doubled pawn.",
- "rot.doubledPawns.pratica.reiNoFinal.err.f2f4": "The f-pawn advance to f4 attacks no black pawn and locks the position. Your king has a path to the front doubled pawn."
+ "rot.doubledPawns.pratica.reiNoFinal.err.f2f4": "The f-pawn advance to f4 attacks no black pawn and gives the black king time to reach g6. Your king has a path to the front doubled pawn.",
+ "rot.doubledPawns.pratica.reiNoFinal.err2": "The f-pawn advance wastes a tempo: the black king reaches g7 and defends the pawn on h7. The pawn on h5 is within your king's reach now."
 }

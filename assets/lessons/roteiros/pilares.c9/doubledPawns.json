@@ -270,6 +270,18 @@
          "salto": true,
          "t": "rot.doubledPawns.ideia.coluna.err.g6g4.2"
         }
+       ],
+       "g6h6": [
+        {
+         "fen": "2kr2r1/ppp2p1p/2p2p1q/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 w - - 1 16",
+         "lance": "g6h6",
+         "t": "rot.doubledPawns.ideia.coluna.err.g6h6.1"
+        },
+        {
+         "fen": "2kr2r1/ppp2p1p/2p2pq1/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 b - - 0 15",
+         "salto": true,
+         "t": "rot.doubledPawns.ideia.coluna.err.g6h6.2"
+        }
        ]
       },
       "fora": "rot.doubledPawns.ideia.coluna.fora",
@@ -574,6 +586,11 @@
        "g3h3": "rot.doubledPawns.pratica.reiNoFinal.err.g3h3",
        "f2f3": "rot.doubledPawns.pratica.reiNoFinal.err.f2f3",
        "f2f4": "rot.doubledPawns.pratica.reiNoFinal.err.f2f4"
+      },
+      "errosPos": {
+       "8/4k2p/4p3/1p1pP1Pp/p1pP1p1K/P1P5/1P3P2/8 w - - 0 40": {
+        "f2f3": "rot.doubledPawns.pratica.reiNoFinal.err2"
+       }
       }
      }
     }
