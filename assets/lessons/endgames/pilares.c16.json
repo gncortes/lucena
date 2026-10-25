@@ -9,6 +9,11 @@
    "id": "squareOfPawn",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c16/squareOfPawn.json"
+  },
+  {
+   "id": "rookPawnWrongBishop",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c16/rookPawnWrongBishop.json"
   }
  ],
  "exercises": [
@@ -172,10 +177,156 @@
      ]
     }
    ]
+  },
+  {
+   "id": "rp.ts3Hg",
+   "capitulo": "rookPawnWrongBishop",
+   "stars": 1,
+   "fen": "8/8/1K6/p3k3/8/P7/8/8 w - - 5 59",
+   "goal": "win",
+   "origin": "lichess:ts3Hg",
+   "line": [
+    {
+     "teach": "b6a5",
+     "accept": [
+      "b6a5"
+     ],
+     "reply": "e5d6"
+    },
+    {
+     "teach": "a5b6",
+     "accept": [
+      "a5b6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rp.SAerO",
+   "capitulo": "rookPawnWrongBishop",
+   "stars": 1,
+   "fen": "8/7p/8/2K5/5k1P/8/8/8 b - - 4 59",
+   "goal": "win",
+   "origin": "lichess:SAerO",
+   "line": [
+    {
+     "teach": "f4g4",
+     "accept": [
+      "f4g4"
+     ],
+     "reply": "h4h5"
+    },
+    {
+     "teach": "g4h5",
+     "accept": [
+      "g4h5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rp.wb17",
+   "capitulo": "rookPawnWrongBishop",
+   "stars": 1,
+   "fen": "8/3k4/8/3K4/P7/4B3/8/8 b - - 0 1",
+   "goal": "draw",
+   "origin": "minor.wrongBishop",
+   "line": [
+    {
+     "teach": "d7c7",
+     "accept": [
+      "d7c7",
+      "d7c8"
+     ],
+     "reply": "d5c5"
+    },
+    {
+     "teach": "c7b7",
+     "accept": [
+      "c7b7",
+      "c7b8",
+      "c7c8",
+      "c8b7",
+      "c8b8",
+      "c8c7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rp.wb18",
+   "capitulo": "rookPawnWrongBishop",
+   "stars": 3,
+   "fen": "8/4k3/8/4K3/8/P3B3/8/8 w - - 0 1",
+   "goal": "win",
+   "origin": "minor.wrongBishop",
+   "line": [
+    {
+     "teach": "e5d5",
+     "accept": [
+      "e5d5",
+      "e3f4"
+     ],
+     "reply": "e7d7"
+    },
+    {
+     "teach": "e3f4",
+     "accept": [
+      "e3f4",
+      "e5d5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rp.Ezeci",
+   "capitulo": "rookPawnWrongBishop",
+   "stars": 2,
+   "fen": "8/8/8/8/8/6kp/P7/6K1 w - - 1 58",
+   "goal": "win",
+   "origin": "lichess:Ezeci",
+   "line": [
+    {
+     "teach": "a2a4",
+     "accept": [
+      "a2a4"
+     ],
+     "reply": "g3f4"
+    },
+    {
+     "teach": "a4a5",
+     "accept": [
+      "a4a5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rp.wGKEV",
+   "capitulo": "rookPawnWrongBishop",
+   "stars": 2,
+   "fen": "8/8/8/3B4/4K1pp/8/6kP/8 b - - 0 42",
+   "goal": "win",
+   "origin": "lichess:wGKEV",
+   "line": [
+    {
+     "teach": "g2h2",
+     "accept": [
+      "g2h2"
+     ],
+     "reply": "e4f5"
+    },
+    {
+     "teach": "g4g3",
+     "accept": [
+      "g4g3"
+     ]
+    }
+   ]
   }
  ],
- "maxScore": 12,
- "passScore": 9,
+ "maxScore": 22,
+ "passScore": 16,
  "keyPositions": [],
  "references": [
   {
@@ -212,6 +363,95 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle XYN4y)",
    "url": "https://lichess.org/X1b02zst#97"
+  },
+  {
+   "id": "lichessGameBoSM3",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle BoSM3)",
+   "url": "https://lichess.org/Wr9xstpL#105"
+  },
+  {
+   "id": "lichessGamets3Hg",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ts3Hg)",
+   "url": "https://lichess.org/h46tUDJk/black#116"
+  },
+  {
+   "id": "lichessGameZwS6w",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ZwS6w)",
+   "url": "https://lichess.org/XdqyAH1y#127"
+  },
+  {
+   "id": "lichessGameLCsNe",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle LCsNe)",
+   "url": "https://lichess.org/WO7RdpsO/black#116"
+  },
+  {
+   "id": "lichessGameSAerO",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SAerO)",
+   "url": "https://lichess.org/5wLrFDKO#117"
+  },
+  {
+   "id": "lichessGameEzeci",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Ezeci)",
+   "url": "https://lichess.org/65Fq55m4/black#114"
+  },
+  {
+   "id": "lichessGamewGKEV",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle wGKEV)",
+   "url": "https://lichess.org/Mz6rEACx#83"
+  },
+  {
+   "id": "barczaFischer",
+   "kind": "game",
+   "white": "Gedeon Barcza",
+   "black": "Bobby Fischer",
+   "event": "Zurique",
+   "year": 1959,
+   "url": "https://lichess.org/analysis/pgn/Nf3_Nf6_g3_g6_b3_Bg7_Bb2_O-O_Bg2_d6_d4_e5_dxe5_Nfd7_O-O_Nc6_c4_dxe5_Ne1_Nd4_Nc3_c6_Nd3_f5_e3_Ne6_Na4_Qe7_Qc1_Re8_f3_h5_Qe1_Ng5_f4_e4_Bxg7_Qxg7_Ndc5_Nxc5_Nxc5_Nf7_Rd1_b6_Na4_Be6_Qc3_Rad8_Qc2_g5_Rf2_h4_Rxd8_Rxd8_Qb2_Qg6_Bf1_gxf4_exf4_Nh6_Rg2_Kf7_gxh4_Qf6_Qxf6+_Kxf6_Be2_Bf7_Nb2_Rd4_h3_Ng8_Kf1_Ne7_h5_Rd2_Bd1_Rd8_Ke1_c5_Rd2_Rd4_a3_Nc6_Rg2_Nd8_Kf2_Ne6_Ke3_Rd8_Rg3_Rh8_Na4_Bxh5_Bxh5_Rxh5_Nc3_Nxf4_Nxe4+_fxe4_Kxf4_Rh4+_Ke3_Kf5_b4_a5_bxc5_bxc5_a4_Rh7_Kf2_Rb7_h4_Kf4_Rh3_Kg4_Rh1_Kf4_Rh3_Ke5_h5_Kd4_h6_Rh7_Rh1_Kd3_Rh5_e3+_Ke1_Rb7_Rd5+_Kxc4_Rh5_Rh7_Ke2_Kb4_Rh4+_c4_Kxe3_Kb3_Kd2_c3+_Kc1_Rf7_Rd4_Rf6_Rd8_Rf1+_Rd1_Rxd1+_Kxd1_Kb2_h7_c2+_Ke2_c1=Q_h8=Q+_Kb3_Qe8_Qc4+_Kd2_Qd5+_Ke2_Kc2_Qc8+_Kb2_Qb8+_Kc3_Qc8+_Kd4_Qh8+_Kc4_Qc8+_Kb4_Qe8_Qc4+_Kd2_Qd4+_Ke2_Qb2+_Kd3_Qc3+_Ke2_Qc2+_Ke3_Ka3_Qb5_Qxa4_Qxa4+_Kxa4#190"
+  },
+  {
+   "id": "fischerTaimanov",
+   "kind": "game",
+   "white": "Bobby Fischer",
+   "black": "Mark Taimanov",
+   "event": "Candidatos, Vancouver (partida 2)",
+   "year": 1971,
+   "url": "https://lichess.org/analysis/pgn/e4_c5_Nf3_Nc6_d4_cxd4_Nxd4_e6_Nb5_d6_Bf4_e5_Be3_Nf6_Bg5_Qa5+_Qd2_Nxe4_Qxa5_Nxa5_Be3_Kd7_N1c3_Nxc3_Nxc3_Kd8_Nb5_Be6_O-O-O_b6_f4_exf4_Bxf4_Nb7_Be2_Bd7_Rd2_Be7_Rhd1_Bxb5_Bxb5_Kc7_Re2_Bf6_Rde1_Rac8_Bc4_Rhf8_b4_a5_Bd5_Kb8_a3_Rfd8_Bxf7_Bc3_Bd2_d5_Rd1_d4_Bxc3_Rxc3_Kb2_d3_Kxc3_dxe2_Re1_Nd6_Bh5_Nb5+_Kb2_axb4_axb4_Rd4_c3_Rh4_Bxe2_Nd6_Rd1_Kc7_h3_Rf4_Rf1_Re4_Bd3_Re5_Rf2_h5_c4_Rg5_Kc3_Kd7_Ra2_Kc8_Kd4_Kc7_Ra7+_Kd8_c5_bxc5+_bxc5_Ne8_Ra2_Nc7_Bc4_Kd7_Rb2_Kc6_Bb3_Nb5+_Ke3_Kxc5_Kf4_Rg6_Bd1_h4_Kf5_Rh6_Kg5_Nd6_Bc2_Nf7+_Kg4_Ne5+_Kf4_Kd4_Rb4+_Kc3_Rb5_Nf7_Rc5+_Kd4_Rf5_g5+_Kg4_Ne5+_Kxg5_Rg6+_Kxh4_Rxg2_Bd1_Rg8_Bg4_Ke4_Kg3_Rg7_Rf4+_Kd5_Ra4_Ng6_Ra6_Ne5_Kf4_Rf7+_Kg5_Rg7+_Kf5_Rf7+_Rf6_Rxf6+_Kxf6_Ke4_Bc8_Kf4_h4_Nf3_h5_Ng5_Bf5_Nf3_h6_Ng5_Kg6_Nf3_h7_Ne5+_Kf6#161"
+  },
+  {
+   "id": "pannoNajdorf",
+   "kind": "game",
+   "white": "Oscar Panno",
+   "black": "Miguel Najdorf",
+   "event": "Seniors-Juniors, Buenos Aires",
+   "year": 1968,
+   "url": "https://lichess.org/analysis/pgn/d4_Nf6_c4_e6_Nc3_Bb4_e3_c5_Bd3_d5_Nf3_O-O_O-O_Nbd7_a3_Ba5_Qe2_a6_Rd1_dxc4_Bxc4_b5_Ba2_Bb7_Bd2_Bb6_Be1_Qb8_Rac1_Qa7_dxc5_Nxc5_Nd4_Rad8_b4_Ncd7_a4_Qa8_Nf3_bxa4_Nxa4_Ba7_Bc4_Ng4_Bxa6_Bxa6_Qxa6_Nxe3_Rd3_Ne5_Nb6_Nxf3+_gxf3_Qb8_fxe3_Rxd3_Qxd3_Qxb6_Kf2_Rd8_Qc3_h6_Qc5_Qa6_Qa5_Qxa5_bxa5_Rd3_Rc3_Rd7_Ke2_f5_Rc6_Kf7_Bb4_g5_a6_h5_Bc5_Bxc5_Rxc5_Ra7_Ra5_g4_Kf2_h4_e4_Kg6_exf5+_exf5_Ke3_Kg5_fxg4_Kxg4_Ra2_Re7+_Kf2_Ra7_Ra3_Kf4_Ra4+_Ke5_Kf3_Kd5_Kf4_Kc5_Kxf5_Kb5_Ra2_h3_Kg4_Rxa6_Rxa6_Kxa6_Kxh3_Kb7_Kg4_Kc7_Kg5#116"
+  },
+  {
+   "id": "ibmm",
+   "kind": "study",
+   "author": "ibmm",
+   "title": "ChessNetwork #17: What is a Wrong Colored Bishop?",
+   "url": "https://lichess.org/study/gHNmrart"
+  },
+  {
+   "id": "wikiWrongBishop",
+   "kind": "web",
+   "title": "Wikipedia: Wrong bishop",
+   "url": "https://en.wikipedia.org/wiki/Wrong_bishop"
   }
  ]
 }
