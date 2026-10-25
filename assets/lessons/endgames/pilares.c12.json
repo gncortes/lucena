@@ -1,0 +1,319 @@
+{
+ "id": "pilares.c12",
+ "module": "pilares",
+ "skills": [
+  "pilares.c12"
+ ],
+ "parts": [
+  {
+   "id": "outpost",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c12/outpost.json"
+  }
+ ],
+ "passScore": 10,
+ "maxScore": 14,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "wikiSiciliana",
+   "kind": "web",
+   "author": "Wikipédia",
+   "title": "Defesa Siciliana",
+   "url": "https://pt.wikipedia.org/wiki/Defesa_Siciliana"
+  },
+  {
+   "id": "lichessGamefL7GX",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle fL7GX)",
+   "url": "https://lichess.org/rZJG8YSS/black#36"
+  },
+  {
+   "id": "lichessGamefyjib",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle fyjib)",
+   "url": "https://lichess.org/Wj4zF7iI/black#32"
+  },
+  {
+   "id": "lichessGamem373h",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle m373h)",
+   "url": "https://lichess.org/YVZANAyz/black#24"
+  },
+  {
+   "id": "lichessGameSEmyo",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SEmyo)",
+   "url": "https://lichess.org/mF4q5Ljl/black#82"
+  },
+  {
+   "id": "lichessGamegBgrM",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle gBgrM)",
+   "url": "https://lichess.org/qhWeI05y/black#40"
+  },
+  {
+   "id": "lichessGameMZAyG",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle MZAyG)",
+   "url": "https://lichess.org/nAf16qrw#51"
+  },
+  {
+   "id": "lichessGameRj4pW",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Rj4pW)",
+   "url": "https://lichess.org/DbIsjtvW/black#32"
+  },
+  {
+   "id": "lichessGameYuOaj",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle YuOaj)",
+   "url": "https://lichess.org/Yb43jwJk/black#70"
+  },
+  {
+   "id": "lichessGamefc5JB",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle fc5JB)",
+   "url": "https://lichess.org/dKKPaT9g/black#28"
+  },
+  {
+   "id": "lichessGameAYvMf",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AYvMf)",
+   "url": "https://lichess.org/8M7obWvb/black#70"
+  },
+  {
+   "id": "lichessGameYUpNF",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle YUpNF)",
+   "url": "https://lichess.org/A9MBXh9P/black#34"
+  },
+  {
+   "id": "lichessGamecdyRL",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle cdyRL)",
+   "url": "https://lichess.org/S8BkN62t/black#48"
+  },
+  {
+   "id": "lichessGame4Y6H6",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 4Y6H6)",
+   "url": "https://lichess.org/GksQckPT/black#58"
+  },
+  {
+   "id": "lichessGame7kK73",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 7kK73)",
+   "url": "https://lichess.org/RBYoQLy4/black#30"
+  },
+  {
+   "id": "lichessGameuISFb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle uISFb)",
+   "url": "https://lichess.org/W9dVHo0o/black#46"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "po.Rj4pW",
+   "capitulo": "outpost",
+   "stars": 1,
+   "fen": "r1bqk2r/1p1p1p2/5p1p/p4N2/1Q1pP3/8/PP3PPP/5RK1 w kq - 0 17",
+   "goal": "win",
+   "origin": "lichess:Rj4pW",
+   "line": [
+    {
+     "teach": "f5g7",
+     "accept": [
+      "f5g7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.YuOaj",
+   "capitulo": "outpost",
+   "stars": 1,
+   "fen": "r6r/2pb4/p1np4/1p2NP2/4Pk2/1BPP4/PP3KR1/q7 w - - 1 36",
+   "goal": "win",
+   "origin": "lichess:YuOaj",
+   "line": [
+    {
+     "teach": "e5g6",
+     "accept": [
+      "e5g6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.fc5JB",
+   "capitulo": "outpost",
+   "stars": 1,
+   "fen": "rq2k2r/1p2b1pp/p2pQn2/3N2Nb/3nPB2/7P/PP3PP1/R4RK1 w kq - 3 15",
+   "goal": "win",
+   "origin": "lichess:fc5JB",
+   "line": [
+    {
+     "teach": "e6e7",
+     "accept": [
+      "e6e7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.AYvMf",
+   "capitulo": "outpost",
+   "stars": 1,
+   "fen": "r7/1R4pp/2bkpn2/3pNp2/3P1N2/5P2/6PP/6K1 w - - 0 36",
+   "goal": "win",
+   "origin": "lichess:AYvMf",
+   "line": [
+    {
+     "teach": "e5f7",
+     "accept": [
+      "e5f7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.YUpNF",
+   "capitulo": "outpost",
+   "stars": 2,
+   "fen": "r1b2k1r/ppp1q2p/4n1p1/3pN2Q/3P4/2P1R3/PP3PPP/R5K1 w - - 0 18",
+   "goal": "win",
+   "origin": "lichess:YUpNF",
+   "line": [
+    {
+     "teach": "e5g6",
+     "accept": [
+      "e5g6"
+     ],
+     "reply": "h7g6"
+    },
+    {
+     "teach": "h5h8",
+     "accept": [
+      "h5h8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.cdyRL",
+   "capitulo": "outpost",
+   "stars": 2,
+   "fen": "r6k/1b2qrp1/pp1bpn1p/4N3/2PP4/2N4R/P4PPP/2Q2RK1 w - - 0 25",
+   "goal": "win",
+   "origin": "lichess:cdyRL",
+   "line": [
+    {
+     "teach": "e5g6",
+     "accept": [
+      "e5g6"
+     ],
+     "reply": "h8g8"
+    },
+    {
+     "teach": "g6e7",
+     "accept": [
+      "g6e7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.4Y6H6",
+   "capitulo": "outpost",
+   "stars": 3,
+   "fen": "r4bk1/p4p2/4p1pp/2p1P3/2PpbPNQ/7P/q5P1/1RR3K1 w - - 5 30",
+   "goal": "win",
+   "origin": "lichess:4Y6H6",
+   "line": [
+    {
+     "teach": "g4f6",
+     "accept": [
+      "g4f6"
+     ],
+     "reply": "g8g7"
+    },
+    {
+     "teach": "f6e4",
+     "accept": [
+      "f6e4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.7kK73",
+   "capitulo": "outpost",
+   "stars": 2,
+   "fen": "r1b1k2r/p7/2nqpbp1/1pN2np1/3p1P2/2PP1Q2/PP2B1PP/R1B1K2R w KQkq - 2 16",
+   "goal": "win",
+   "origin": "lichess:7kK73",
+   "line": [
+    {
+     "teach": "c5e4",
+     "accept": [
+      "c5e4"
+     ],
+     "reply": "d6c7"
+    },
+    {
+     "teach": "e4f6",
+     "accept": [
+      "e4f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "po.uISFb",
+   "capitulo": "outpost",
+   "stars": 3,
+   "fen": "2r3k1/pp1R1r1p/6n1/2b2N2/4pPP1/8/PP5P/5R1K w - - 3 24",
+   "goal": "win",
+   "origin": "lichess:uISFb",
+   "line": [
+    {
+     "teach": "f5h6",
+     "accept": [
+      "f5h6"
+     ],
+     "reply": "g8g7"
+    },
+    {
+     "teach": "h6f7",
+     "accept": [
+      "h6f7"
+     ]
+    }
+   ]
+  }
+ ]
+}
