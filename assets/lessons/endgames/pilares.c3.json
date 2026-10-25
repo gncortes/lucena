@@ -9,10 +9,15 @@
    "id": "backRankMate",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c3/backRankMate.json"
+  },
+  {
+   "id": "queenRookMates",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c3/queenRookMates.json"
   }
  ],
- "passScore": 10,
- "maxScore": 13,
+ "passScore": 22,
+ "maxScore": 29,
  "keyPositions": [],
  "references": [
   {
@@ -63,6 +68,48 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle y4vn3)",
    "url": "https://lichess.org/e3ZbhO0K#57"
+  },
+  {
+   "id": "lichessGamesNSTc",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle sNSTc)",
+   "url": "https://lichess.org/3PPjdb4C/black#64"
+  },
+  {
+   "id": "lichessGame5GOZp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 5GOZp)",
+   "url": "https://lichess.org/Dxjgwanc#37"
+  },
+  {
+   "id": "lichessGameMAUHb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle MAUHb)",
+   "url": "https://lichess.org/A1zO05Ga/black#48"
+  },
+  {
+   "id": "lichessGameXi4Pu",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Xi4Pu)",
+   "url": "https://lichess.org/0lqKa6ZD/black#58"
+  },
+  {
+   "id": "lichessGamexahsC",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle xahsC)",
+   "url": "https://lichess.org/z6zQMnQC/black#80"
+  },
+  {
+   "id": "lichessGamedYgqG",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle dYgqG)",
+   "url": "https://lichess.org/WkwcEOb7/black#42"
   }
  ],
  "exercises": [
@@ -218,6 +265,185 @@
      "teach": "f8f1",
      "accept": [
       "f8f1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.THeY6",
+   "capitulo": "queenRookMates",
+   "stars": 1,
+   "fen": "7k/pp2R2B/1qr4p/6p1/b7/P7/1PP3PP/1K3R2 w - - 15 37",
+   "goal": "win",
+   "origin": "lichess:THeY6",
+   "line": [
+    {
+     "teach": "f1f8",
+     "accept": [
+      "f1f8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.MS4Re",
+   "capitulo": "queenRookMates",
+   "stars": 1,
+   "fen": "6k1/ppp2ppp/6r1/b2r4/2N2P2/2P1P2K/PP5P/3R1R2 b - - 2 22",
+   "goal": "win",
+   "origin": "lichess:MS4Re",
+   "line": [
+    {
+     "teach": "d5h5",
+     "accept": [
+      "d5h5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.eTWci",
+   "capitulo": "queenRookMates",
+   "stars": 1,
+   "fen": "1k5r/1p3ppp/p7/8/3Q2n1/6q1/PP4B1/2R2RK1 b - - 0 26",
+   "goal": "win",
+   "origin": "lichess:eTWci",
+   "line": [
+    {
+     "teach": "g3h2",
+     "accept": [
+      "g3h2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.llCQP",
+   "capitulo": "queenRookMates",
+   "stars": 1,
+   "fen": "r7/7k/pBp1prRp/P1Pp4/7P/4Q1P1/6PK/q7 w - - 1 39",
+   "goal": "win",
+   "origin": "lichess:llCQP",
+   "line": [
+    {
+     "teach": "e3h6",
+     "accept": [
+      "e3h6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.nx5Gi",
+   "capitulo": "queenRookMates",
+   "stars": 2,
+   "fen": "r2q1rk1/8/p4p1P/3p2pP/1p6/3Q4/PPP2P2/2K4R w - - 0 24",
+   "goal": "win",
+   "origin": "lichess:nx5Gi",
+   "line": [
+    {
+     "teach": "d3g6",
+     "accept": [
+      "d3g6"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "g6g7",
+     "accept": [
+      "g6g7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.fd4Y9",
+   "capitulo": "queenRookMates",
+   "stars": 2,
+   "fen": "7r/p7/8/3R1R2/2P3p1/1B4k1/Pr4N1/6K1 b - - 0 44",
+   "goal": "win",
+   "origin": "lichess:fd4Y9",
+   "line": [
+    {
+     "teach": "b2g2",
+     "accept": [
+      "b2g2"
+     ],
+     "reply": "g1f1"
+    },
+    {
+     "teach": "h8h1",
+     "accept": [
+      "h8h1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.r6AsE",
+   "capitulo": "queenRookMates",
+   "stars": 2,
+   "fen": "r5k1/4R3/6p1/7p/1p3Qn1/8/1qP2PP1/6K1 w - - 5 36",
+   "goal": "win",
+   "origin": "lichess:r6AsE",
+   "line": [
+    {
+     "teach": "f4f7",
+     "accept": [
+      "f4f7"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "f7h7",
+     "accept": [
+      "f7h7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.mMJXe",
+   "capitulo": "queenRookMates",
+   "stars": 3,
+   "fen": "8/5Qbk/6p1/3B1q1p/1B1P4/2P3P1/3n1P1P/6K1 b - - 0 32",
+   "goal": "win",
+   "origin": "lichess:mMJXe",
+   "line": [
+    {
+     "teach": "f5b1",
+     "accept": [
+      "f5b1"
+     ],
+     "reply": "g1g2"
+    },
+    {
+     "teach": "b1f1",
+     "accept": [
+      "b1f1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "qr.6MGGU",
+   "capitulo": "queenRookMates",
+   "stars": 3,
+   "fen": "r1b1r1k1/pp2ppbp/2Nq2p1/8/2B5/1P2BP2/P1PQ2PP/2KR3R b - - 0 14",
+   "goal": "win",
+   "origin": "lichess:6MGGU",
+   "line": [
+    {
+     "teach": "d6a3",
+     "accept": [
+      "d6a3"
+     ],
+     "reply": "c1b1"
+    },
+    {
+     "teach": "a3b2",
+     "accept": [
+      "a3b2"
      ]
     }
    ]
