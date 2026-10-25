@@ -1,0 +1,583 @@
+{
+ "licao": "pilares.c9",
+ "parte": "doubledPawns",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "samisch",
+     "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bPP4/P1N5/1P2PPPP/R1BQKBNR b KQkq - 0 4",
+     "vira": true,
+     "objetivo": "empatar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bPP4/P1N5/1P2PPPP/R1BQKBNR b KQkq - 0 4",
+       "t": "rot.doubledPawns.ideia.samisch.e1"
+      },
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/1bPP4/P1N5/1P2PPPP/R1BQKBNR b KQkq - 0 4",
+       "marcas": [
+        "b4",
+        "c3"
+       ],
+       "t": "rot.doubledPawns.ideia.samisch.e2"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/2PP4/P1b5/1P2PPPP/R1BQKBNR w KQkq - 0 5",
+       "lance": "b4c3",
+       "t": "rot.doubledPawns.ideia.samisch.l1"
+      },
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/2PP4/P1P5/4PPPP/R1BQKBNR b KQkq - 0 5",
+       "lance": "b2c3",
+       "marcas": [
+        "c3",
+        "c4"
+       ],
+       "t": "rot.doubledPawns.ideia.samisch.l2"
+      },
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/2PP4/P1P5/4PPPP/R1BQKBNR b KQkq - 0 5",
+       "marcas": [
+        "c4"
+       ],
+       "setas": [
+        [
+         "a6",
+         "c4",
+         "g"
+        ],
+        [
+         "a5",
+         "c4",
+         "g"
+        ]
+       ],
+       "t": "rot.doubledPawns.ideia.samisch.l3"
+      },
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/2PP4/P1P5/4PPPP/R1BQKBNR b KQkq - 0 5",
+       "marcas": [
+        "b1",
+        "c3",
+        "d4"
+       ],
+       "t": "rot.doubledPawns.ideia.samisch.l4"
+      },
+      {
+       "fen": "rnbqk2r/pppp1ppp/4pn2/8/2PP4/P1P5/4PPPP/R1BQKBNR b KQkq - 0 5",
+       "t": "rot.doubledPawns.ideia.samisch.l5"
+      }
+     ]
+    },
+    {
+     "id": "finalPeoes",
+     "fen": "8/8/4kp1p/5p1P/4p3/4K1P1/5P2/8 w - - 3 46",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/8/4kp1p/5p1P/4p3/4K1P1/5P2/8 w - - 3 46",
+       "t": "rot.doubledPawns.ideia.finalPeoes.e1"
+      },
+      {
+       "fen": "8/8/4kp1p/5p1P/4p3/4K1P1/5P2/8 w - - 3 46",
+       "marcas": [
+        "f6",
+        "f5"
+       ],
+       "t": "rot.doubledPawns.ideia.finalPeoes.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "e3",
+       "g3"
+      ],
+      "certos": [
+       "e3f4"
+      ],
+      "t": "rot.doubledPawns.ideia.finalPeoes.p",
+      "certo": {
+       "fen": "8/8/4kp1p/5p1P/4pK2/6P1/5P2/8 b - - 4 46",
+       "lance": "e3f4",
+       "setas": [
+        [
+         "f4",
+         "f5",
+         "g"
+        ],
+        [
+         "f4",
+         "e4",
+         "g"
+        ]
+       ],
+       "t": "rot.doubledPawns.ideia.finalPeoes.certo"
+      },
+      "revela": {
+       "fen": "8/8/4kp1p/5p1P/4pK2/6P1/5P2/8 b - - 4 46",
+       "lance": "e3f4",
+       "setas": [
+        [
+         "f4",
+         "f5",
+         "g"
+        ],
+        [
+         "f4",
+         "e4",
+         "g"
+        ]
+       ],
+       "t": "rot.doubledPawns.ideia.finalPeoes.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "g3g4": [
+        {
+         "fen": "8/8/4kp1p/5p1P/4p1P1/4K3/5P2/8 b - - 0 46",
+         "lance": "g3g4",
+         "t": "rot.doubledPawns.ideia.finalPeoes.err.g3g4.1"
+        },
+        {
+         "fen": "8/8/4kp1p/7P/4p1p1/4K3/5P2/8 w - - 0 47",
+         "lance": "f5g4",
+         "t": "rot.doubledPawns.ideia.finalPeoes.err.g3g4.2"
+        },
+        {
+         "fen": "8/8/4kp1p/5p1P/4p3/4K1P1/5P2/8 w - - 3 46",
+         "salto": true,
+         "t": "rot.doubledPawns.ideia.finalPeoes.err.g3g4.3"
+        }
+       ],
+       "e3d4": [
+        {
+         "fen": "8/8/4kp1p/5p1P/3Kp3/6P1/5P2/8 b - - 4 46",
+         "lance": "e3d4",
+         "t": "rot.doubledPawns.ideia.finalPeoes.err.e3d4.1"
+        },
+        {
+         "fen": "8/8/4kp1p/5p1P/4p3/4K1P1/5P2/8 w - - 3 46",
+         "salto": true,
+         "t": "rot.doubledPawns.ideia.finalPeoes.err.e3d4.2"
+        }
+       ]
+      },
+      "fora": "rot.doubledPawns.ideia.finalPeoes.fora",
+      "volta": "rot.doubledPawns.ideia.finalPeoes.volta"
+     },
+     "linha": [
+      {
+       "fen": "8/8/4kp1p/5p1P/4pK2/6P1/5P2/8 b - - 4 46",
+       "marcas": [
+        "f5",
+        "e4"
+       ],
+       "t": "rot.doubledPawns.ideia.finalPeoes.l1"
+      },
+      {
+       "fen": "8/8/5p1p/3k1p1P/4pK2/6P1/5P2/8 w - - 5 47",
+       "lance": "e6d5",
+       "t": "rot.doubledPawns.ideia.finalPeoes.l3"
+      },
+      {
+       "fen": "8/8/5p1p/3k1K1P/4p3/6P1/5P2/8 b - - 0 47",
+       "lance": "f4f5",
+       "t": "rot.doubledPawns.ideia.finalPeoes.l4"
+      },
+      {
+       "fen": "8/8/5p1p/3k1K1P/4p3/6P1/5P2/8 b - - 0 47",
+       "t": "rot.doubledPawns.ideia.finalPeoes.l5"
+      }
+     ]
+    },
+    {
+     "id": "coluna",
+     "fen": "2kr2r1/ppp2p1p/2p2pq1/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 b - - 0 15",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "2kr2r1/ppp2p1p/2p2pq1/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 b - - 0 15",
+       "marcas": [
+        "c7",
+        "c6",
+        "f7",
+        "f6"
+       ],
+       "t": "rot.doubledPawns.ideia.coluna.e1"
+      },
+      {
+       "fen": "2kr2r1/ppp2p1p/2p2pq1/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 b - - 0 15",
+       "marcas": [
+        "g8",
+        "g6",
+        "g1"
+       ],
+       "t": "rot.doubledPawns.ideia.coluna.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "g6",
+       "g8"
+      ],
+      "certos": [
+       "g6g3"
+      ],
+      "t": "rot.doubledPawns.ideia.coluna.p",
+      "certo": {
+       "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P3/3P2qP/PPP2P1N/R2Q1RK1 w - - 0 16",
+       "lance": "g6g3",
+       "t": "rot.doubledPawns.ideia.coluna.certo"
+      },
+      "revela": {
+       "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P3/3P2qP/PPP2P1N/R2Q1RK1 w - - 0 16",
+       "lance": "g6g3",
+       "t": "rot.doubledPawns.ideia.coluna.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "g6e4": [
+        {
+         "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4q3/3P2PP/PPP2P1N/R2Q1RK1 w - - 0 16",
+         "lance": "g6e4",
+         "t": "rot.doubledPawns.ideia.coluna.err.g6e4.1"
+        },
+        {
+         "fen": "2kr2r1/ppp2p1p/2p2pq1/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 b - - 0 15",
+         "salto": true,
+         "t": "rot.doubledPawns.ideia.coluna.err.g6e4.2"
+        }
+       ],
+       "g6g4": [
+        {
+         "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P1q1/3P2PP/PPP2P1N/R2Q1RK1 w - - 1 16",
+         "lance": "g6g4",
+         "t": "rot.doubledPawns.ideia.coluna.err.g6g4.1"
+        },
+        {
+         "fen": "2kr2r1/ppp2p1p/2p2pq1/2b5/4P3/3P2PP/PPP2P1N/R2Q1RK1 b - - 0 15",
+         "salto": true,
+         "t": "rot.doubledPawns.ideia.coluna.err.g6g4.2"
+        }
+       ]
+      },
+      "fora": "rot.doubledPawns.ideia.coluna.fora",
+      "volta": "rot.doubledPawns.ideia.coluna.volta"
+     },
+     "linha": [
+      {
+       "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P3/3P2qP/PPP2P1N/R2Q1RK1 w - - 0 16",
+       "marcas": [
+        "g3"
+       ],
+       "t": "rot.doubledPawns.ideia.coluna.l0"
+      },
+      {
+       "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P3/3P2qP/PPP2P1N/R2Q1R1K b - - 1 16",
+       "lance": "g1h1",
+       "t": "rot.doubledPawns.ideia.coluna.l1"
+      },
+      {
+       "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P3/3P3P/PPP2PqN/R2Q1R1K w - - 2 17",
+       "lance": "g3g2",
+       "t": "rot.doubledPawns.ideia.coluna.l2"
+      },
+      {
+       "fen": "2kr2r1/ppp2p1p/2p2p2/2b5/4P3/3P3P/PPP2PqN/R2Q1R1K w - - 2 17",
+       "t": "rot.doubledPawns.ideia.coluna.l3"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "regra",
+     "fen": "8/7k/4p2p/4r1P1/6K1/6R1/6P1/8 b - - 0 55",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/7k/4p2p/4r1P1/6K1/6R1/6P1/8 b - - 0 55",
+       "marcas": [
+        "g5",
+        "g2"
+       ],
+       "t": "rot.doubledPawns.demos.regra.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "8/7k/4p2p/6r1/6K1/6R1/6P1/8 w - - 0 56",
+       "lance": "e5g5",
+       "t": "rot.doubledPawns.demos.regra.2"
+      },
+      {
+       "fen": "8/7k/4p2p/6r1/8/5KR1/6P1/8 b - - 1 56",
+       "lance": "g4f3",
+       "t": "rot.doubledPawns.demos.regra.3"
+      },
+      {
+       "fen": "8/7k/4p2p/8/8/5Kr1/6P1/8 w - - 0 57",
+       "lance": "g5g3",
+       "t": "rot.doubledPawns.demos.regra.4"
+      },
+      {
+       "fen": "8/7k/4p2p/8/8/6K1/6P1/8 b - - 0 57",
+       "lance": "f3g3",
+       "t": "rot.doubledPawns.demos.regra.5"
+      },
+      {
+       "fen": "8/7k/4p2p/8/8/6K1/6P1/8 b - - 0 57",
+       "t": "rot.doubledPawns.demos.regra.6"
+      }
+     ]
+    },
+    {
+     "id": "regra2",
+     "fen": "8/6R1/1p1rk1p1/p7/2P3p1/2K4P/1P6/8 w - - 0 36",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "8/6R1/1p1rk1p1/p7/2P3p1/2K4P/1P6/8 w - - 0 36",
+       "marcas": [
+        "g6",
+        "g4"
+       ],
+       "t": "rot.doubledPawns.demos.regra2.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "8/8/1p1rk1R1/p7/2P3p1/2K4P/1P6/8 b - - 0 36",
+       "lance": "g7g6",
+       "t": "rot.doubledPawns.demos.regra2.2"
+      },
+      {
+       "fen": "8/8/1p1r2R1/p3k3/2P3p1/2K4P/1P6/8 w - - 1 37",
+       "lance": "e6e5",
+       "t": "rot.doubledPawns.demos.regra2.3"
+      },
+      {
+       "fen": "8/8/1p1R4/p3k3/2P3p1/2K4P/1P6/8 b - - 0 37",
+       "lance": "g6d6",
+       "t": "rot.doubledPawns.demos.regra2.4"
+      },
+      {
+       "fen": "8/8/1p1k4/p7/2P3p1/2K4P/1P6/8 w - - 0 38",
+       "lance": "e5d6",
+       "t": "rot.doubledPawns.demos.regra2.5"
+      },
+      {
+       "fen": "8/8/1p1k4/p7/2P3P1/2K5/1P6/8 b - - 0 38",
+       "lance": "h3g4",
+       "t": "rot.doubledPawns.demos.regra2.6"
+      },
+      {
+       "fen": "8/8/1p1k4/p7/2P3P1/2K5/1P6/8 b - - 0 38",
+       "t": "rot.doubledPawns.demos.regra2.7"
+      }
+     ]
+    },
+    {
+     "id": "excecao",
+     "fen": "r1b2rk1/5pp1/4p2p/p2p4/1p3b2/3B1P2/PPP2PRP/1K4R1 w - - 0 27",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "r1b2rk1/5pp1/4p2p/p2p4/1p3b2/3B1P2/PPP2PRP/1K4R1 w - - 0 27",
+       "marcas": [
+        "f2",
+        "f3",
+        "g2",
+        "g1"
+       ],
+       "t": "rot.doubledPawns.demos.excecao.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r1b2rk1/5pR1/4p2p/p2p4/1p3b2/3B1P2/PPP2P1P/1K4R1 b - - 0 27",
+       "lance": "g2g7",
+       "t": "rot.doubledPawns.demos.excecao.2"
+      },
+      {
+       "fen": "r1b2r1k/5pR1/4p2p/p2p4/1p3b2/3B1P2/PPP2P1P/1K4R1 w - - 1 28",
+       "lance": "g8h8",
+       "t": "rot.doubledPawns.demos.excecao.3"
+      },
+      {
+       "fen": "r1b2r1k/5p1R/4p2p/p2p4/1p3b2/3B1P2/PPP2P1P/1K4R1 b - - 2 28",
+       "lance": "g7h7",
+       "t": "rot.doubledPawns.demos.excecao.4"
+      },
+      {
+       "fen": "r1b2r1k/5p1R/4p2p/p2p4/1p3b2/3B1P2/PPP2P1P/1K4R1 b - - 2 28",
+       "t": "rot.doubledPawns.demos.excecao.5"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "valeAqui",
+     "fen": "r5rk/1pp1qp1p/3p1p1B/p1b1p3/2B1P3/P2P1P2/1PP2PQK/6R1 w - - 5 18",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "h6",
+       "g2"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "h6g7"
+        ],
+        "resposta": "g8g7"
+       },
+       {
+        "certos": [
+         "g2g7"
+        ]
+       }
+      ],
+      "t": "rot.doubledPawns.pratica.valeAqui.enunciado",
+      "fim": "rot.doubledPawns.pratica.valeAqui.fim",
+      "erros": {
+       "g2g7": "rot.doubledPawns.pratica.valeAqui.err.g2g7",
+       "g2h3": "rot.doubledPawns.pratica.valeAqui.err.g2h3",
+       "g2f1": "rot.doubledPawns.pratica.valeAqui.err.g2f1"
+      }
+     }
+    },
+    {
+     "id": "torres",
+     "fen": "8/p4r1k/R5p1/7p/7P/R2r1PK1/P4P2/8 b - - 5 44",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "f7",
+       "d3"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "f7f3"
+        ],
+        "resposta": "g3g2"
+       },
+       {
+        "certos": [
+         "d3a3"
+        ]
+       }
+      ],
+      "t": "rot.doubledPawns.pratica.torres.enunciado",
+      "fim": "rot.doubledPawns.pratica.torres.fim",
+      "erros": {
+       "d3f3": "rot.doubledPawns.pratica.torres.err.d3f3",
+       "d3a3": "rot.doubledPawns.pratica.torres.err.d3a3",
+       "d3d7": "rot.doubledPawns.pratica.torres.err.d3d7"
+      },
+      "errosPos": {
+       "8/p6k/R5p1/7p/7P/R2r1r2/P4PK1/8 b - - 1 45": {
+        "f3f8": "rot.doubledPawns.pratica.torres.err2",
+        "f3f7": "rot.doubledPawns.pratica.torres.err2",
+        "f3f6": "rot.doubledPawns.pratica.torres.err2",
+        "f3f5": "rot.doubledPawns.pratica.torres.err2",
+        "f3f4": "rot.doubledPawns.pratica.torres.err2",
+        "f3h3": "rot.doubledPawns.pratica.torres.err2",
+        "f3g3": "rot.doubledPawns.pratica.torres.err2",
+        "f3e3": "rot.doubledPawns.pratica.torres.err2",
+        "f3f2": "rot.doubledPawns.pratica.torres.err2",
+        "d3d8": "rot.doubledPawns.pratica.torres.err2",
+        "d3d7": "rot.doubledPawns.pratica.torres.err2",
+        "d3d6": "rot.doubledPawns.pratica.torres.err2",
+        "d3d5": "rot.doubledPawns.pratica.torres.err2",
+        "d3d4": "rot.doubledPawns.pratica.torres.err2",
+        "d3e3": "rot.doubledPawns.pratica.torres.err2",
+        "d3c3": "rot.doubledPawns.pratica.torres.err2",
+        "d3b3": "rot.doubledPawns.pratica.torres.err2",
+        "d3d2": "rot.doubledPawns.pratica.torres.err2",
+        "d3d1": "rot.doubledPawns.pratica.torres.err2"
+       }
+      }
+     }
+    },
+    {
+     "id": "reiNoFinal",
+     "fen": "8/4k2p/4p3/1p1pPpPp/p1pP4/P1P3K1/1P3P2/8 w - - 0 39",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "g3",
+       "f2"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "g3h4"
+        ],
+        "resposta": "f5f4"
+       },
+       {
+        "certos": [
+         "h4h5"
+        ]
+       }
+      ],
+      "t": "rot.doubledPawns.pratica.reiNoFinal.enunciado",
+      "fim": "rot.doubledPawns.pratica.reiNoFinal.fim",
+      "erros": {
+       "g3h3": "rot.doubledPawns.pratica.reiNoFinal.err.g3h3",
+       "f2f3": "rot.doubledPawns.pratica.reiNoFinal.err.f2f3",
+       "f2f4": "rot.doubledPawns.pratica.reiNoFinal.err.f2f4"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}
