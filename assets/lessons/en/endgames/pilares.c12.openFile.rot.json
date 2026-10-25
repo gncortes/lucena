@@ -45,7 +45,9 @@
  "rot.openFile.demos.excecao.5": "The queen gives mate on f3: it covers g2, and the bishop on d4 covers g1.",
  "rot.openFile.demos.excecao.6": "White controlled the open file, but left the king without defence. Before doubling the rooks, check what the opponent is threatening.",
  "rot.openFile.pratica.valeAqui.enunciado": "The d-file is open, and your queen and rook are on it. Is it time to break in along the file? Play as White and find the best move.",
- "rot.openFile.pratica.valeAqui.fim": "The queen went up the d-file with check and attacked the undefended knight on c6: a double attack. After the block on f7, it captured the knight.",
+ "rot.openFile.pratica.valeAqui.fim": "The queen went up the d-file with check and attacked the undefended knight on c6: a double attack. The black queen covered the check on f7, and yours captured the knight.",
+ "rot.openFile.pratica.valeAqui.err.d5f7": "The queen captures the queen on f7 with check, but the king recaptures, and the knight on c6 is still standing. Capture the undefended piece.",
+ "rot.openFile.pratica.valeAqui.err.d2d6": "The queen goes to d6 and attacks the knight, but without check, and the e3-rook captures the knight on c3. Look for a check that also attacks another piece.",
  "rot.openFile.pratica.valeAqui.err.d2d8": "The queen enters d8 with check, but the knight on c6 captures it. Look for another check along the d-file.",
  "rot.openFile.pratica.valeAqui.err.c3d5": "The knight goes to d5 and closes the file to your queen, and the black queen gives check on b7. Look for a check that also attacks another piece.",
  "rot.openFile.pratica.valeAqui.err.g1e1": "The rook contests the e-file, but the black queen goes to d4 and trades queens, and Black stays two pawns up. Look for a check that also attacks another piece.",
@@ -61,6 +63,6 @@
  "rot.openFile.pratica.semiPreto.err.d7c8": "The queen leaves the d-file, and the rook on d6 loses its support. Look for a capture on the d-file.",
  "rot.openFile.pratica.semiPreto.err.d7c7": "The queen leaves the d-file, and the rook on d6 loses its support. Look for a capture on the d-file.",
  "rot.openFile.pratica.semiPreto.err.b3d1": "The bishop captures the bishop on d1, but the d2-rook recaptures, and the d5-pawn still stands. Look for another capture on the d-file.",
- "rot.openFile.pratica.semiPreto.err.b3d5": "The bishop captures the d5-pawn, but the d1-bishop goes to f3, and your bishop has two attackers and one defender. Look for another capture on the d-file.",
+ "rot.openFile.pratica.semiPreto.err.b3d5": "The bishop captures the d5-pawn, but the d1-bishop goes to f3 and attacks your bishop a second time, and White wins material. Look for another capture on the d-file.",
  "rot.openFile.pratica.semiPreto.err.g8h7": "The king goes to h7, but threatens nothing, and White gains time to defend the d5-pawn. Look for a capture on the d-file."
 }

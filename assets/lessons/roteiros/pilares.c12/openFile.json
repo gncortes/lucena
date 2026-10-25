@@ -404,11 +404,17 @@
       "t": "rot.openFile.pratica.valeAqui.enunciado",
       "fim": "rot.openFile.pratica.valeAqui.fim",
       "erros": {
+       "d2d6": "rot.openFile.pratica.valeAqui.err.d2d6",
        "d2d8": "rot.openFile.pratica.valeAqui.err.d2d8",
        "c3d5": "rot.openFile.pratica.valeAqui.err.c3d5",
        "g1e1": "rot.openFile.pratica.valeAqui.err.g1e1",
        "d1c1": "rot.openFile.pratica.valeAqui.err.d1c1",
        "c3b5": "rot.openFile.pratica.valeAqui.err.c3b5"
+      },
+      "errosPos": {
+       "6k1/5q2/2n3p1/p2Q1pP1/2p5/2N1rr2/P7/1K1R2R1 w - - 2 36": {
+        "d5f7": "rot.openFile.pratica.valeAqui.err.d5f7"
+       }
       }
      }
     },

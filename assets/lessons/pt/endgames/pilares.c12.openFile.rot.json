@@ -45,7 +45,9 @@
  "rot.openFile.demos.excecao.5": "A dama dá mate em f3: ela vigia g2, e o bispo de d4 vigia g1.",
  "rot.openFile.demos.excecao.6": "As brancas dominavam a coluna aberta, mas deixaram o rei sem defesa. Antes de dobrar as torres, confira o que o adversário ameaça.",
  "rot.openFile.pratica.valeAqui.enunciado": "A coluna d está aberta, e a sua dama e a sua torre estão nela. Vale invadir pela coluna agora? Jogue de brancas e encontre o melhor lance.",
- "rot.openFile.pratica.valeAqui.fim": "A dama subiu pela coluna d com xeque e atacou o cavalo de c6, sem defesa: um ataque duplo. Depois do bloqueio em f7, ela capturou o cavalo.",
+ "rot.openFile.pratica.valeAqui.fim": "A dama subiu pela coluna d com xeque e atacou o cavalo de c6, sem defesa: um ataque duplo. A dama preta cobriu o xeque em f7, e a sua capturou o cavalo.",
+ "rot.openFile.pratica.valeAqui.err.d5f7": "A dama captura a dama de f7 com xeque, mas o rei recaptura, e o cavalo de c6 continua de pé. Capture a peça sem defesa.",
+ "rot.openFile.pratica.valeAqui.err.d2d6": "A dama vai a d6 e ataca o cavalo, mas sem xeque, e a torre de e3 captura o cavalo de c3. Procure um xeque que ataque também outra peça.",
  "rot.openFile.pratica.valeAqui.err.d2d8": "A dama entra em d8 com xeque, mas o cavalo de c6 a captura. Procure outro xeque pela coluna d.",
  "rot.openFile.pratica.valeAqui.err.c3d5": "O cavalo vai a d5 e fecha a coluna para a sua dama, e a dama preta dá xeque em b7. Procure um xeque que ataque também outra peça.",
  "rot.openFile.pratica.valeAqui.err.g1e1": "A torre disputa a coluna e, mas a dama preta vai a d4 e troca as damas, e as pretas seguem com dois peões a mais. Procure um xeque que ataque também outra peça.",
@@ -61,6 +63,6 @@
  "rot.openFile.pratica.semiPreto.err.d7c8": "A dama sai da coluna d, e a torre de d6 perde o apoio dela. Procure uma captura na coluna d.",
  "rot.openFile.pratica.semiPreto.err.d7c7": "A dama sai da coluna d, e a torre de d6 perde o apoio dela. Procure uma captura na coluna d.",
  "rot.openFile.pratica.semiPreto.err.b3d1": "O bispo captura o bispo de d1, mas a torre de d2 recaptura, e o peão de d5 segue de pé. Procure outra captura na coluna d.",
- "rot.openFile.pratica.semiPreto.err.b3d5": "O bispo captura o peão de d5, mas o bispo de d1 vai a f3, e o seu bispo fica com dois atacantes e um defensor. Procure outra captura na coluna d.",
+ "rot.openFile.pratica.semiPreto.err.b3d5": "O bispo captura o peão de d5, mas o bispo de d1 vai a f3 e ataca o seu bispo pela segunda vez, e as brancas ganham material. Procure outra captura na coluna d.",
  "rot.openFile.pratica.semiPreto.err.g8h7": "O rei vai a h7, mas não ameaça nada, e as brancas ganham tempo para defender o peão de d5. Procure uma captura na coluna d."
 }
