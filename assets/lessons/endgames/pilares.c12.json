@@ -14,10 +14,15 @@
    "id": "openFile",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c12/openFile.json"
+  },
+  {
+   "id": "worstPiece",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c12/worstPiece.json"
   }
  ],
- "passScore": 21,
- "maxScore": 28,
+ "passScore": 29,
+ "maxScore": 39,
  "keyPositions": [],
  "references": [
   {
@@ -257,6 +262,90 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle a59np)",
    "url": "https://lichess.org/8VO8c32b/black#68"
+  },
+  {
+   "id": "lichessGame9G9D5",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 9G9D5)",
+   "url": "https://lichess.org/tn0rlXZz/black#36"
+  },
+  {
+   "id": "lichessGameOQDJk",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle OQDJk)",
+   "url": "https://lichess.org/OFepZAAg/black#40"
+  },
+  {
+   "id": "lichessGame012wC",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 012wC)",
+   "url": "https://lichess.org/0Dqefo5O/black#24"
+  },
+  {
+   "id": "lichessGameJVrTV",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle JVrTV)",
+   "url": "https://lichess.org/HzM0DPE4/black#44"
+  },
+  {
+   "id": "lichessGamewLpR7",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle wLpR7)",
+   "url": "https://lichess.org/aUsxigbD/black#34"
+  },
+  {
+   "id": "lichessGameWvVUi",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle WvVUi)",
+   "url": "https://lichess.org/eDCVaLB1/black#50"
+  },
+  {
+   "id": "lichessGamegoEF3",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle goEF3)",
+   "url": "https://lichess.org/Sr8tLHvJ/black#46"
+  },
+  {
+   "id": "lichessGameWnlvp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Wnlvp)",
+   "url": "https://lichess.org/vF1Ip35p#31"
+  },
+  {
+   "id": "lichessGameAAYMl",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AAYMl)",
+   "url": "https://lichess.org/7JJmAUIB/black#26"
+  },
+  {
+   "id": "lichessGameP0wOb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle P0wOb)",
+   "url": "https://lichess.org/CR8gFFWH#35"
+  },
+  {
+   "id": "lichessGamegjrXH",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle gjrXH)",
+   "url": "https://lichess.org/5J4WMCrx/black#46"
+  },
+  {
+   "id": "lichessGameslFyJ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle slFyJ)",
+   "url": "https://lichess.org/cJpXCN70#41"
   }
  ],
  "exercises": [
@@ -614,6 +703,146 @@
      "teach": "f1f7",
      "accept": [
       "f1f7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.own1",
+   "capitulo": "worstPiece",
+   "stars": 1,
+   "fen": "3r2k1/pp3ppp/8/3b4/8/8/PP3PPP/1N1R2K1 w - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "b1c3",
+     "accept": [
+      "b1c3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.own2",
+   "capitulo": "worstPiece",
+   "stars": 1,
+   "fen": "3r2k1/pp3ppp/8/3b4/8/2N5/PP3PPP/R5K1 w - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "a1d1",
+     "accept": [
+      "a1d1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.own3",
+   "capitulo": "worstPiece",
+   "stars": 1,
+   "fen": "5rk1/pp3p1p/3r4/8/3B3R/8/PP3PPP/3K4 b - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "f8d8",
+     "accept": [
+      "f8d8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.9G9D5",
+   "capitulo": "worstPiece",
+   "stars": 2,
+   "fen": "r1b2rk1/1p3pp1/p2p4/4p2R/2B1P3/2N2n2/PPP5/2KR4 w - - 0 19",
+   "goal": "win",
+   "origin": "lichess:9G9D5",
+   "line": [
+    {
+     "teach": "d1h1",
+     "accept": [
+      "d1h1"
+     ],
+     "reply": "g7g6"
+    },
+    {
+     "teach": "h5h8",
+     "accept": [
+      "h5h8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.OQDJk",
+   "capitulo": "worstPiece",
+   "stars": 2,
+   "fen": "b3k2r/3n1ppp/pp1Rp3/8/2P5/4K3/PP3P1P/R7 w k - 2 21",
+   "goal": "win",
+   "origin": "lichess:OQDJk",
+   "line": [
+    {
+     "teach": "a1d1",
+     "accept": [
+      "a1d1"
+     ],
+     "reply": "a8d5"
+    },
+    {
+     "teach": "c4d5",
+     "accept": [
+      "c4d5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.JVrTV",
+   "capitulo": "worstPiece",
+   "stars": 3,
+   "fen": "3rr2k/pp1q2pp/5p2/3np3/8/PQ3N2/1P1R1PPP/4R1K1 w - - 4 23",
+   "goal": "win",
+   "origin": "lichess:JVrTV",
+   "line": [
+    {
+     "teach": "e1d1",
+     "accept": [
+      "e1d1"
+     ],
+     "reply": "d7c7"
+    },
+    {
+     "teach": "d2d5",
+     "accept": [
+      "d2d5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wp.wLpR7",
+   "capitulo": "worstPiece",
+   "stars": 3,
+   "fen": "2krr3/ppp2ppp/8/3pn3/8/1N2R3/PPP2PPP/2K4R w - - 0 18",
+   "goal": "win",
+   "origin": "lichess:wLpR7",
+   "line": [
+    {
+     "teach": "h1e1",
+     "accept": [
+      "h1e1"
+     ],
+     "reply": "f7f6"
+    },
+    {
+     "teach": "f2f4",
+     "accept": [
+      "f2f4"
      ]
     }
    ]
