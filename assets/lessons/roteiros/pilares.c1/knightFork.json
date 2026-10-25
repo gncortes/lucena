@@ -188,7 +188,28 @@
        ]
       },
       "alternativos": {},
-      "erros": {},
+      "erros": {
+       "d6e5": [
+        {
+         "fen": "3r1rk1/p1pqb1p1/1p3n1p/4p3/4P3/2N1Q3/PPP2PPP/3RR1K1 w - - 0 17",
+         "lance": "d6e5",
+         "marcas": [
+          "d6"
+         ],
+         "t": "rot.knightFork.ideia.ex2.err.d6e5.1"
+        },
+        {
+         "fen": "3r1rk1/p1pRb1p1/1p3n1p/4p3/4P3/2N1Q3/PPP2PPP/4R1K1 b - - 0 17",
+         "lance": "d1d7",
+         "t": "rot.knightFork.ideia.ex2.err.d6e5.2"
+        },
+        {
+         "fen": "3r1rk1/p1pqb1p1/1p1p1n1p/4B3/4P3/2N1Q3/PPP2PPP/3RR1K1 b - - 0 16",
+         "salto": true,
+         "t": "rot.knightFork.ideia.ex2.err.d6e5.3"
+        }
+       ]
+      },
       "fora": "rot.knightFork.ideia.ex2.fora",
       "volta": "rot.knightFork.ideia.ex2.volta"
      },
@@ -324,6 +345,57 @@
      ]
     },
     {
+     "id": "semXequeDemo",
+     "fen": "r5k1/pppb3p/1b2p1q1/3p1r2/8/2P1BN2/PP1Q1PP1/R4RK1 w - - 3 23",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "r5k1/pppb3p/1b2p1q1/3p1r2/8/2P1BN2/PP1Q1PP1/R4RK1 w - - 3 23",
+       "marcas": [
+        "g6",
+        "f5"
+       ],
+       "t": "rot.knightFork.demos.semXequeDemo.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r5k1/pppb3p/1b2p1q1/3p1r2/7N/2P1B3/PP1Q1PP1/R4RK1 b - - 4 23",
+       "lance": "f3h4",
+       "setas": [
+        [
+         "h4",
+         "g6",
+         "g"
+        ],
+        [
+         "h4",
+         "f5",
+         "g"
+        ]
+       ],
+       "t": "rot.knightFork.demos.semXequeDemo.2"
+      },
+      {
+       "fen": "r5k1/pppb3p/1b2p3/3p1r2/6qN/2P1B3/PP1Q1PP1/R4RK1 w - - 5 24",
+       "lance": "g6g4",
+       "t": "rot.knightFork.demos.semXequeDemo.3"
+      },
+      {
+       "fen": "r5k1/pppb3p/1b2p3/3p1N2/6q1/2P1B3/PP1Q1PP1/R4RK1 b - - 0 24",
+       "lance": "h4f5",
+       "t": "rot.knightFork.demos.semXequeDemo.4"
+      },
+      {
+       "fen": "r5k1/pppb3p/1b2p3/3p1q2/8/2P1B3/PP1Q1PP1/R4RK1 w - - 0 25",
+       "lance": "g4f5",
+       "t": "rot.knightFork.demos.semXequeDemo.5"
+      }
+     ]
+    },
+    {
      "id": "excecao",
      "fen": "rnb1kb1r/1p3ppp/p4n2/1N2p3/2p5/4P3/PP3PPP/R1BNKB1R w KQkq - 0 9",
      "vira": false,
@@ -435,6 +507,7 @@
       "t": "rot.knightFork.pratica.valeAqui.enunciado",
       "fim": "rot.knightFork.pratica.valeAqui.fim",
       "erros": {
+       "d1d6": "rot.knightFork.pratica.valeAqui.err.d1d6",
        "b5c7": "rot.knightFork.pratica.valeAqui.err.b5c7"
       }
      }
@@ -506,7 +579,10 @@
       ],
       "t": "rot.knightFork.pratica.semXeque.enunciado",
       "fim": "rot.knightFork.pratica.semXeque.fim",
-      "erros": {}
+      "erros": {
+       "f4e2": "rot.knightFork.pratica.semXeque.err.f4e2",
+       "f4d5": "rot.knightFork.pratica.semXeque.err.f4d5"
+      }
      }
     }
    ]
