@@ -1,0 +1,226 @@
+{
+ "id": "pilares.c3",
+ "module": "pilares",
+ "skills": [
+  "pilares.c3"
+ ],
+ "parts": [
+  {
+   "id": "backRankMate",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c3/backRankMate.json"
+  }
+ ],
+ "passScore": 10,
+ "maxScore": 13,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "lichessGameQ5UDb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Q5UDb)",
+   "url": "https://lichess.org/v1sfVE1o/black#32"
+  },
+  {
+   "id": "lichessGamek7GGB",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle k7GGB)",
+   "url": "https://lichess.org/ZurtjnLs#55"
+  },
+  {
+   "id": "lichessGameemm5M",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle emm5M)",
+   "url": "https://lichess.org/cT4bZ0V4/black#40"
+  },
+  {
+   "id": "lichessGameETwtg",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ETwtg)",
+   "url": "https://lichess.org/LEkiFAuS/black#56"
+  },
+  {
+   "id": "lichessGameayxA8",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ayxA8)",
+   "url": "https://lichess.org/aqzcU4v9#59"
+  },
+  {
+   "id": "lichessGamey4vn3",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle y4vn3)",
+   "url": "https://lichess.org/e3ZbhO0K#57"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "br.tTluB",
+   "capitulo": "backRankMate",
+   "stars": 1,
+   "fen": "4r2k/p1p3pp/2Qp1p2/R7/PP2bb2/5B1P/5KP1/4r3 w - - 5 37",
+   "goal": "win",
+   "origin": "lichess:tTluB",
+   "line": [
+    {
+     "teach": "c6e8",
+     "accept": [
+      "c6e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.BaN01",
+   "capitulo": "backRankMate",
+   "stars": 1,
+   "fen": "4r1k1/ppp2ppp/2n5/3Q4/8/8/PP1n1PPP/RN4K1 b - - 0 22",
+   "goal": "win",
+   "origin": "lichess:BaN01",
+   "line": [
+    {
+     "teach": "e8e1",
+     "accept": [
+      "e8e1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.x4aZI",
+   "capitulo": "backRankMate",
+   "stars": 1,
+   "fen": "6k1/p1p2ppp/3p4/2pP4/7Q/5P2/P1q2r1P/6K1 w - - 0 31",
+   "goal": "win",
+   "origin": "lichess:x4aZI",
+   "line": [
+    {
+     "teach": "h4d8",
+     "accept": [
+      "h4d8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.sbhpt",
+   "capitulo": "backRankMate",
+   "stars": 1,
+   "fen": "6k1/1p3pbp/p5p1/4n1B1/P2p1Qq1/1B6/1PP2PPP/6K1 b - - 3 24",
+   "goal": "win",
+   "origin": "lichess:sbhpt",
+   "line": [
+    {
+     "teach": "g4d1",
+     "accept": [
+      "g4d1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.ZBohs",
+   "capitulo": "backRankMate",
+   "stars": 2,
+   "fen": "2b1r1k1/p3qp2/p4bpp/2pP4/P2r4/2NN1Q2/RP3PPP/4R1K1 b - - 1 19",
+   "goal": "win",
+   "origin": "lichess:ZBohs",
+   "line": [
+    {
+     "teach": "e7e1",
+     "accept": [
+      "e7e1"
+     ],
+     "reply": "d3e1"
+    },
+    {
+     "teach": "e8e1",
+     "accept": [
+      "e8e1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.GGN2D",
+   "capitulo": "backRankMate",
+   "stars": 2,
+   "fen": "r1bqr1k1/1np2ppp/p1N2b2/1p1P1n2/1P2Q3/P7/B4PPP/RNB1R1K1 w - - 7 20",
+   "goal": "win",
+   "origin": "lichess:GGN2D",
+   "line": [
+    {
+     "teach": "e4e8",
+     "accept": [
+      "e4e8"
+     ],
+     "reply": "d8e8"
+    },
+    {
+     "teach": "e1e8",
+     "accept": [
+      "e1e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.pw0ey",
+   "capitulo": "backRankMate",
+   "stars": 2,
+   "fen": "4R3/ppp3k1/3pBq2/2bP2pp/2P3P1/3Q4/P5PP/7K b - - 2 30",
+   "goal": "win",
+   "origin": "lichess:pw0ey",
+   "line": [
+    {
+     "teach": "f6a1",
+     "accept": [
+      "f6a1"
+     ],
+     "reply": "d3b1"
+    },
+    {
+     "teach": "a1b1",
+     "accept": [
+      "a1b1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "br.XY3hX",
+   "capitulo": "backRankMate",
+   "stars": 3,
+   "fen": "5r1k/6p1/7p/8/1PNn4/6R1/3B2PP/6K1 b - - 0 36",
+   "goal": "win",
+   "origin": "lichess:XY3hX",
+   "line": [
+    {
+     "teach": "d4e2",
+     "accept": [
+      "d4e2"
+     ],
+     "reply": "g1h1"
+    },
+    {
+     "teach": "f8f1",
+     "accept": [
+      "f8f1"
+     ]
+    }
+   ]
+  }
+ ]
+}
