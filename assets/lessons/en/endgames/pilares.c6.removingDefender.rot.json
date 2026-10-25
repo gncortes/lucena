@@ -47,7 +47,7 @@
  "rot.removingDefender.demos.rei.3": "The black king recaptures the rook, so as not to be a piece down. But the bishop that defended g8 has already left the board.",
  "rot.removingDefender.demos.rei.4": "The queen captures the rook on g8 with check, along the diagonal to the king on d5. White gave up the rook for the bishop and won the rook on g8.",
  "rot.removingDefender.demos.rei.5": "The king steps out of check and captures the pawn on c5. This time the king did the recapturing, and even so the rook on g8 was left undefended.",
- "rot.removingDefender.demos.doisDefensores.1": "Attack: now let us think from Black's side, in the Game karlknepp × gillyboy6, Lichess. The rook on d1 has two defenders, the bishop on e2 and the rook on d2, and the black queen on h5 attacks that bishop.",
+ "rot.removingDefender.demos.doisDefensores.1": "Attack: now let us think from Black's side, in the Game karlknepp × gillyboy6, Lichess 2025. The rook on d1 has two defenders, the bishop on e2 and the rook on d2, and the black queen on h5 attacks that bishop.",
  "rot.removingDefender.demos.doisDefensores.2": "The queen captures the bishop on e2, one of the defenders of the rook on d1. It is now attacked by the rook on d2: Black gives up the queen.",
  "rot.removingDefender.demos.doisDefensores.3": "The rook on d2 recaptures the queen, but it leaves the d-file. It was defending both the bishop and the rook on d1: this is the overload from the previous lesson.",
  "rot.removingDefender.demos.doisDefensores.4": "The rook on d7 captures the rook on d1 with check. Black gave up the queen and won the bishop and a rook.",

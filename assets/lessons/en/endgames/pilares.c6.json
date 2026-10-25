@@ -50,5 +50,5 @@
  "ex.rd.XhY7A.solution": "19.Bxd6! captures the knight that defended the bishop on e4. After 19...Rxd6, 20.Bxe4 captures the bishop, which was left undefended. With 19.Bxe4?, the knight on d6 recaptures, and you win nothing.",
  "ex.rd.UH275": "Play as White and find the best move.",
  "ex.rd.UH275.hint": "Count the defenders of the rook on e8 and see what other piece each of them defends.",
- "ex.rd.UH275.solution": "21.Rxd7! captures the bishop, one of the defenders of the rook on e8. The other is the rook on d8, which also defended the bishop: after 21...Rxd7, it leaves the eighth rank, and 22.Rxe8+ wins the rook. With 21.Rxe8+?, the bishop on d7 recaptures, and the game is equal. With 21.Bc4?, after 21...Rxe7 22.Rxe7 Be6, the bishop on e6 attacks your bishop on c4, and Black wins material."
+ "ex.rd.UH275.solution": "21.Rxd7! captures the bishop, one of the defenders of the rook on e8. The other is the rook on d8, which also defended the bishop: after 21...Rxd7, it leaves the eighth rank, and 22.Rxe8+ wins the rook. With 21.Rxe8+?, the bishop on d7 recaptures, and the game is equal. With 21.Bc4?, after 21...Rxe7 22.Rxe7 Be6, the bishop on e6 attacks your bishop, which cannot capture (23.Bxe6? Rd1#). After 23.Be2 Rb8 24.Bd3 Kf8, the black king attacks the rook on e7, and White gives up the rook for the bishop (25.Rxe6 fxe6)."
 }

@@ -50,5 +50,5 @@
  "ex.rd.XhY7A.solution": "19.Bxd6! captura o cavalo que defendia o bispo de e4. Depois de 19...Txd6, 20.Bxe4 captura o bispo, que ficou sem defesa. Com 19.Bxe4?, o cavalo de d6 recaptura, e você não ganha nada.",
  "ex.rd.UH275": "Jogue de brancas e encontre o melhor lance.",
  "ex.rd.UH275.hint": "Conte os defensores da torre de e8 e veja que outra peça cada um deles defende.",
- "ex.rd.UH275.solution": "21.Txd7! captura o bispo, um dos defensores da torre de e8. O outro é a torre de d8, que também defendia o bispo: depois de 21...Txd7, ela sai da oitava fileira, e 22.Txe8+ ganha a torre. Com 21.Txe8+?, o bispo de d7 recaptura, e o jogo fica igual. Com 21.Bc4?, depois de 21...Txe7 22.Txe7 Be6, o bispo de e6 ataca o seu bispo de c4, e as pretas ganham material."
+ "ex.rd.UH275.solution": "21.Txd7! captura o bispo, um dos defensores da torre de e8. O outro é a torre de d8, que também defendia o bispo: depois de 21...Txd7, ela sai da oitava fileira, e 22.Txe8+ ganha a torre. Com 21.Txe8+?, o bispo de d7 recaptura, e o jogo fica igual. Com 21.Bc4?, depois de 21...Txe7 22.Txe7 Be6, o bispo de e6 ataca o seu bispo, que não pode capturar (23.Bxe6? Td1#). Depois de 23.Be2 Tb8 24.Bd3 Rf8, o rei preto ataca a torre de e7, e as brancas entregam a torre pelo bispo (25.Txe6 fxe6)."
 }
