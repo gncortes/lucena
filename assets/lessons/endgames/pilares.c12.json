@@ -9,10 +9,15 @@
    "id": "outpost",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c12/outpost.json"
+  },
+  {
+   "id": "kingWeaknesses",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c12/kingWeaknesses.json"
   }
  ],
- "passScore": 10,
- "maxScore": 14,
+ "passScore": 19,
+ "maxScore": 27,
  "keyPositions": [],
  "references": [
   {
@@ -133,6 +138,118 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle uISFb)",
    "url": "https://lichess.org/W9dVHo0o/black#46"
+  },
+  {
+   "id": "lichessGameW2AT4",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle W2AT4)",
+   "url": "https://lichess.org/GQeEsNTq/black#32"
+  },
+  {
+   "id": "lichessGamend7Gn",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle nd7Gn)",
+   "url": "https://lichess.org/xMNoU8jB/black#52"
+  },
+  {
+   "id": "lichessGameaP4L7",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle aP4L7)",
+   "url": "https://lichess.org/Ed1sUFrT#31"
+  },
+  {
+   "id": "lichessGameW08dE",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle W08dE)",
+   "url": "https://lichess.org/hXCyrv4M/black#40"
+  },
+  {
+   "id": "lichessGameKTbn9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle KTbn9)",
+   "url": "https://lichess.org/hR2dC2Up/black#80"
+  },
+  {
+   "id": "lichessGame3FNce",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 3FNce)",
+   "url": "https://lichess.org/On9f7i88/black#40"
+  },
+  {
+   "id": "lichessGame0MWU8",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 0MWU8)",
+   "url": "https://lichess.org/mK5jdC4t/black#32"
+  },
+  {
+   "id": "lichessGame0bDWl",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 0bDWl)",
+   "url": "https://lichess.org/QiICBcWv/black#44"
+  },
+  {
+   "id": "lichessGameNW0qQ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle NW0qQ)",
+   "url": "https://lichess.org/HxGBsvIu/black#54"
+  },
+  {
+   "id": "lichessGametVmt6",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle tVmt6)",
+   "url": "https://lichess.org/udkRb7wr/black#36"
+  },
+  {
+   "id": "lichessGameqDR6f",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle qDR6f)",
+   "url": "https://lichess.org/8z3Fh6qe/black#48"
+  },
+  {
+   "id": "lichessGameL4R69",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle L4R69)",
+   "url": "https://lichess.org/YCJOIwR3/black#44"
+  },
+  {
+   "id": "lichessGamewPttm",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle wPttm)",
+   "url": "https://lichess.org/hvM1UmPn/black#64"
+  },
+  {
+   "id": "lichessGame4axZp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 4axZp)",
+   "url": "https://lichess.org/HZUnRyqi/black#42"
+  },
+  {
+   "id": "lichessGameUMBDb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle UMBDb)",
+   "url": "https://lichess.org/rsobcCHf#59"
+  },
+  {
+   "id": "wikiDragao",
+   "kind": "web",
+   "author": "Wikipédia",
+   "title": "Variante do Dragão",
+   "url": "https://pt.wikipedia.org/wiki/Variante_do_Drag%C3%A3o"
   }
  ],
  "exercises": [
@@ -311,6 +428,169 @@
      "teach": "h6f7",
      "accept": [
       "h6f7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.W2AT4",
+   "capitulo": "kingWeaknesses",
+   "stars": 1,
+   "fen": "r3q2k/pppb1Q1p/2n2bpB/8/2B5/2P2p1P/PP3PP1/RN4K1 w - - 0 17",
+   "goal": "win",
+   "origin": "lichess:W2AT4",
+   "line": [
+    {
+     "teach": "f7f6",
+     "accept": [
+      "f7f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.aP4L7",
+   "capitulo": "kingWeaknesses",
+   "stars": 1,
+   "fen": "r4rk1/1b3ppp/pb1qpB2/1p6/8/P1N3PP/1PP1BP2/R2Q1RK1 b - - 0 16",
+   "goal": "win",
+   "origin": "lichess:aP4L7",
+   "line": [
+    {
+     "teach": "d6g3",
+     "accept": [
+      "d6g3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.W08dE",
+   "capitulo": "kingWeaknesses",
+   "stars": 1,
+   "fen": "3r1r1k/pp6/1qp3pp/8/2B1P1b1/5N2/PbPQ2PP/3R1R1K w - - 6 21",
+   "goal": "win",
+   "origin": "lichess:W08dE",
+   "line": [
+    {
+     "teach": "d2h6",
+     "accept": [
+      "d2h6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.KTbn9",
+   "capitulo": "kingWeaknesses",
+   "stars": 2,
+   "fen": "3b2rk/3n1p1p/4qPpQ/4p1P1/4P1R1/2pp3P/6NK/5R2 w - - 0 41",
+   "goal": "win",
+   "origin": "lichess:KTbn9",
+   "line": [
+    {
+     "teach": "h6h7",
+     "accept": [
+      "h6h7"
+     ],
+     "reply": "h8h7"
+    },
+    {
+     "teach": "g4h4",
+     "accept": [
+      "g4h4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.3FNce",
+   "capitulo": "kingWeaknesses",
+   "stars": 2,
+   "fen": "r2q2k1/1ppn1r1p/p3p1pQ/4Bp2/b1PPPP2/3B2R1/P5PP/R5K1 w - - 3 21",
+   "goal": "win",
+   "origin": "lichess:3FNce",
+   "line": [
+    {
+     "teach": "g3g6",
+     "accept": [
+      "g3g6"
+     ],
+     "reply": "h7g6"
+    },
+    {
+     "teach": "h6h8",
+     "accept": [
+      "h6h8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.0MWU8",
+   "capitulo": "kingWeaknesses",
+   "stars": 2,
+   "fen": "r1bqr1k1/pp3p1p/4pbpQ/3pN3/5P2/7R/PPP1KPPP/R7 w - - 3 17",
+   "goal": "win",
+   "origin": "lichess:0MWU8",
+   "line": [
+    {
+     "teach": "h6h7",
+     "accept": [
+      "h6h7"
+     ],
+     "reply": "g8f8"
+    },
+    {
+     "teach": "h7f7",
+     "accept": [
+      "h7f7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.0bDWl",
+   "capitulo": "kingWeaknesses",
+   "stars": 3,
+   "fen": "r4rk1/1pp2p2/3p1Ppp/p6Q/P5P1/1B3b1P/2P2K2/2q5 w - - 0 23",
+   "goal": "win",
+   "origin": "lichess:0bDWl",
+   "line": [
+    {
+     "teach": "h5g6",
+     "accept": [
+      "h5g6"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "g6g7",
+     "accept": [
+      "g6g7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "kw.NW0qQ",
+   "capitulo": "kingWeaknesses",
+   "stars": 3,
+   "fen": "3r2k1/pbpnq2p/1p4p1/8/1PP3N1/P1QB1r1P/8/5RK1 w - - 0 28",
+   "goal": "win",
+   "origin": "lichess:NW0qQ",
+   "line": [
+    {
+     "teach": "g4h6",
+     "accept": [
+      "g4h6"
+     ],
+     "reply": "g8f8"
+    },
+    {
+     "teach": "c3h8",
+     "accept": [
+      "c3h8"
      ]
     }
    ]
