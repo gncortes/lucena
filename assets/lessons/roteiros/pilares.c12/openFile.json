@@ -24,8 +24,7 @@
        "fen": "r4rk1/pp3ppp/2p5/8/4P3/8/PP3PPP/2RR2K1 w - - 0 1",
        "marcas": [
         "c1",
-        "c6",
-        "e4"
+        "c6"
        ],
        "t": "rot.openFile.ideia.colunas.e2"
       },
@@ -363,8 +362,8 @@
    "exemplos": [
     {
      "id": "valeAqui",
-     "fen": "1r3k1r/p1b3p1/3qBB2/1p6/8/5Q2/PP3PP1/RN2R1K1 b - - 0 21",
-     "vira": true,
+     "fen": "r4k2/pq1R1p1p/1p5p/4n3/6Q1/6P1/Pb3P1P/5RK1 w - - 2 22",
+     "vira": false,
      "objetivo": "ganhar",
      "fim": "proximo",
      "entrada": [],
@@ -372,30 +371,31 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "h8",
-       "d6"
+       "g4",
+       "d7"
       ],
-      "maquina": "w",
+      "maquina": "b",
       "limite": 10,
       "linha": [
        {
         "certos": [
-         "h8h1"
+         "g4b4"
         ],
-        "resposta": "g1h1"
+        "resposta": "f8g8"
        },
        {
         "certos": [
-         "d6h2"
+         "d7b7"
         ]
        }
       ],
       "t": "rot.openFile.pratica.valeAqui.enunciado",
       "fim": "rot.openFile.pratica.valeAqui.fim",
       "erros": {
-       "d6h2": "rot.openFile.pratica.valeAqui.err.d6h2",
-       "d6f4": "rot.openFile.pratica.valeAqui.err.d6f4",
-       "h8h3": "rot.openFile.pratica.valeAqui.err.h8h3"
+       "d7b7": "rot.openFile.pratica.valeAqui.err.d7b7",
+       "g4g8": "rot.openFile.pratica.valeAqui.err.g4g8",
+       "g4g7": "rot.openFile.pratica.valeAqui.err.g4g7",
+       "f1d1": "rot.openFile.pratica.valeAqui.err.f1d1"
       }
      }
     },

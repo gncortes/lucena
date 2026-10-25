@@ -29,7 +29,7 @@
  "ex.po.uISFb.hint": "Your knight on f5 sits on an outpost. Look for a check with it that also attacks another piece.",
  "ex.po.uISFb.solution": "24.Nh6+! The knight leaves the outpost with check and attacks the rook on f7. After 24...Kg7, 25.Nxf7 wins the rook, defended by the rook on d7.",
  "part.openFile.title": "Files and the seventh rank",
- "part.openFile.summary": "The rook is usually worth more on a useful line: the open file, the half-open file against the opponent's pawn, and the seventh rank, if the file leads to an entry square.",
+ "part.openFile.summary": "The rook is usually worth more on a useful line: the open file, the half-open file against the opponent's pawn, and the seventh rank. If the file leads nowhere, occupying it does not pay off.",
  "ex.of.BnCSx": "Play as White and find the best move.",
  "ex.of.BnCSx.hint": "The e-file is open, and your rook on e1 is on it. See how far it reaches.",
  "ex.of.BnCSx.solution": "34.Re8#! The rook goes down the open e-file with check, defended by the queen on d7, which also covers e7, f7 and g7.",
@@ -54,7 +54,7 @@
  "ex.of.zqb96": "Play as White and find the best move.",
  "ex.of.zqb96.hint": "The f-file is open, and your knight on e6 occupies an outpost near the black king. See which squares it covers.",
  "ex.of.zqb96.solution": "19.Rxf8+! The rook captures the bishop on f8 along the open file. The king cannot recapture, because the outpost knight on e6 covers f8. After 19...Ke7, 20.Bg5#.",
- "ex.of.v3FHL": "Play as White and find the best move.",
- "ex.of.v3FHL.hint": "The f-file is open, and your queen backs up the rook on it. Look also at the outpost knight on c6.",
- "ex.of.v3FHL.solution": "27.Rf8+! The rook enters along the open file with check. After 27...Rxf8, the outpost knight on c6 gives 28.Ne7#: the queen on f2 covers f7, and the bishop on d4 covers g7 and h8."
+ "ex.of.QaCea": "Play as White and find the best move.",
+ "ex.of.QaCea.hint": "Your rooks are doubled on the open f-file, and your knight on d6 occupies an outpost near the black king.",
+ "ex.of.QaCea.solution": "26.Rf7+! The rook enters the seventh rank with check, defended by the other rook. After 26...Rxf7, 27.Rxf7#: the outpost knight on d6 defends f7 and covers e8, and the e5-pawn covers f6."
 }

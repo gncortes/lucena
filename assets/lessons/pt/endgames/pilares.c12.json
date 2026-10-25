@@ -29,7 +29,7 @@
  "ex.po.uISFb.hint": "O seu cavalo de f5 está em um posto. Procure um xeque dele que ataque também outra peça.",
  "ex.po.uISFb.solution": "24.Ch6+! O cavalo sai do posto com xeque e ataca a torre de f7. Depois de 24...Rg7, 25.Cxf7 ganha a torre, defendido pela torre de d7.",
  "part.openFile.title": "Colunas e sétima fileira",
- "part.openFile.summary": "A torre costuma valer mais na linha útil: na coluna aberta, na semiaberta, contra o peão do adversário, e na sétima fileira, se a coluna leva a uma casa de entrada.",
+ "part.openFile.summary": "A torre costuma valer mais na linha útil: na coluna aberta, na semiaberta, contra o peão do adversário, e na sétima fileira. Se a coluna não leva a casa nenhuma, ocupá-la não rende.",
  "ex.of.BnCSx": "Jogue de brancas e encontre o melhor lance.",
  "ex.of.BnCSx.hint": "A coluna e está aberta, e a sua torre de e1 está nela. Veja até onde ela chega.",
  "ex.of.BnCSx.solution": "34.Te8#! A torre desce pela coluna e aberta com xeque, defendida pela dama de d7, que também vigia e7, f7 e g7.",
@@ -54,7 +54,7 @@
  "ex.of.zqb96": "Jogue de brancas e encontre o melhor lance.",
  "ex.of.zqb96.hint": "A coluna f está aberta, e o seu cavalo de e6 ocupa um posto perto do rei preto. Veja que casas ele vigia.",
  "ex.of.zqb96.solution": "19.Txf8+! A torre captura o bispo de f8 pela coluna aberta. O rei não pode recapturar, porque o cavalo do posto de e6 vigia f8. Depois de 19...Re7, 20.Bg5#.",
- "ex.of.v3FHL": "Jogue de brancas e encontre o melhor lance.",
- "ex.of.v3FHL.hint": "A coluna f está aberta, e a sua dama apoia a torre nela. Veja também o cavalo do posto de c6.",
- "ex.of.v3FHL.solution": "27.Tf8+! A torre entra pela coluna aberta com xeque. Depois de 27...Txf8, o cavalo do posto de c6 dá 28.Ce7#: a dama de f2 vigia f7, e o bispo de d4 vigia g7 e h8."
+ "ex.of.QaCea": "Jogue de brancas e encontre o melhor lance.",
+ "ex.of.QaCea.hint": "As suas torres estão dobradas na coluna f aberta, e o seu cavalo de d6 ocupa um posto perto do rei preto.",
+ "ex.of.QaCea.solution": "26.Tf7+! A torre entra na sétima fileira com xeque, defendida pela outra torre. Depois de 26...Txf7, 27.Txf7#: o cavalo do posto de d6 defende f7 e vigia e8, e o peão de e5 vigia f6."
 }

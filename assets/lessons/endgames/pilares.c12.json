@@ -175,13 +175,6 @@
    "url": "https://lichess.org/TisBHpQ3#49"
   },
   {
-   "id": "lichessGame0ArJV",
-   "kind": "game",
-   "author": "lichess.org",
-   "title": "Lichess game (puzzle 0ArJV)",
-   "url": "https://lichess.org/oXPTkGFx#41"
-  },
-  {
    "id": "lichessGamePlcqI",
    "kind": "game",
    "author": "lichess.org",
@@ -208,13 +201,6 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle effQ7)",
    "url": "https://lichess.org/m5xr8odI/black#44"
-  },
-  {
-   "id": "lichessGame89lhh",
-   "kind": "game",
-   "author": "lichess.org",
-   "title": "Lichess game (puzzle 89lhh)",
-   "url": "https://lichess.org/AwFAdt7R/black#30"
   },
   {
    "id": "lichessGameCDGf1",
@@ -252,18 +238,25 @@
    "url": "https://lichess.org/kVSsxHuY/black#36"
   },
   {
-   "id": "lichessGamev3FHL",
-   "kind": "game",
-   "author": "lichess.org",
-   "title": "Lichess game (puzzle v3FHL)",
-   "url": "https://lichess.org/9tH4l4u1/black#52"
-  },
-  {
    "id": "lichessGame2qf9p",
    "kind": "game",
    "author": "lichess.org",
    "title": "Lichess game (puzzle 2qf9p)",
    "url": "https://lichess.org/YMgnNmej/black#36"
+  },
+  {
+   "id": "lichessGameWEfhj",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle WEfhj)",
+   "url": "https://lichess.org/i1byeuox/black#42"
+  },
+  {
+   "id": "lichessGameQaCea",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle QaCea)",
+   "url": "https://lichess.org/Ipro88Lm/black#50"
   }
  ],
  "exercises": [
@@ -603,24 +596,24 @@
    ]
   },
   {
-   "id": "of.v3FHL",
+   "id": "of.QaCea",
    "capitulo": "openFile",
    "stars": 3,
-   "fen": "r3r1k1/2pb3p/1pNp1R2/p2P4/2PB3P/P6q/1P3Q2/6K1 w - - 5 27",
+   "fen": "3r1r2/p3k1p1/1npNp2p/1p2P3/8/P3PR2/1P2K1PP/5R2 w - - 0 26",
    "goal": "win",
-   "origin": "lichess:v3FHL",
+   "origin": "lichess:QaCea",
    "line": [
     {
-     "teach": "f6f8",
+     "teach": "f3f7",
      "accept": [
-      "f6f8"
+      "f3f7"
      ],
-     "reply": "e8f8"
+     "reply": "f8f7"
     },
     {
-     "teach": "c6e7",
+     "teach": "f1f7",
      "accept": [
-      "c6e7"
+      "f1f7"
      ]
     }
    ]
