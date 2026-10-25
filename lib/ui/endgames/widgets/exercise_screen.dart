@@ -246,10 +246,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     ExerciseState state,
     Exercise exercise,
   ) {
+    // Resolvido, vale o que ganhou ("0 de 1 ponto"), mesmo zerado; zerado em
+    // andamento, o exercício já não vale pontos.
+    if (state.phase == ExercisePhase.done) {
+      return l10n.exerciseEarned(state.earned ?? 0, exercise.stars);
+    }
     if (state.zeroed) return l10n.exerciseNoMorePoints;
-    return state.phase == ExercisePhase.done
-        ? l10n.exerciseEarned(state.earned ?? 0, exercise.stars)
-        : l10n.exercisePoints(state.worth);
+    return l10n.exercisePoints(state.worth);
   }
 
   /// O tabuleiro fica com chave: o voo da miniatura só continua se o widget
@@ -365,6 +368,10 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
     return Column(
       children: [
+        // Marcador invisível de qual exercício está aberto (os cenários
+        // Patrol conferem por ele; a V2 o havia perdido).
+        if (state.lesson case final lesson?)
+          SizedBox.shrink(key: ExerciseKeys.open(lesson.id, exercise.id)),
         Expanded(
           child: ScriptPage(
             pageKey: ExerciseKeys.page,

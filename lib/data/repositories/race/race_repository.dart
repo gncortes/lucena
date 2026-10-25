@@ -6,10 +6,21 @@ abstract class RaceRepository {
   /// Os problemas do banco.
   Future<List<RaceProblem>> problems();
 
-  Future<RaceRecord> record();
+  /// O recorde da [duration] (cada duração tem o seu).
+  Future<RaceRecord> record({
+    RaceDuration duration = RaceDuration.threeMinutes,
+  });
 
   /// O recorde veio da conta (E1.13): fica o maior de cada campo.
-  Future<void> restoreRecord(RaceRecord record);
+  Future<void> restoreRecord(
+    RaceRecord record, {
+    RaceDuration duration = RaceDuration.threeMinutes,
+  });
+
+  /// A duração escolhida para a próxima Corrida (3 minutos, se nunca escolheu).
+  Future<RaceDuration> duration();
+
+  Future<void> setDuration(RaceDuration duration);
 
   /// As últimas Corridas, a mais recente primeiro.
   Future<List<RaceResult>> history();
@@ -26,10 +37,11 @@ abstract class RaceRepository {
   /// Esquece a Corrida em andamento sem guardar nada (o jogador saiu).
   Future<void> discardOngoing();
 
-  /// O filtro de finais escolhido na abertura. Nulo: todos os finais.
-  Future<RaceTheme?> theme();
+  /// O filtro escolhido na abertura (objetivo e tipos de final). Nunca
+  /// escolhido: ganhar, todos os finais.
+  Future<RaceFilter> filter();
 
-  Future<void> setTheme(RaceTheme? theme);
+  Future<void> setFilter(RaceFilter filter);
 
   /// Se a Nova partida oferece o aquecimento antes de jogar.
   Future<bool> offersWarmUp();

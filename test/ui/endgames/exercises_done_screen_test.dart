@@ -81,7 +81,7 @@ void main() {
     expect(find.byKey(ExercisesDoneKeys.diplomaName), findsOneWidget);
     expect(
       find.text(
-        'for completing the lesson “The Lucena position” with an '
+        'for completing the chapter “The Lucena position” with an '
         'exceptional performance.',
       ),
       findsOneWidget,

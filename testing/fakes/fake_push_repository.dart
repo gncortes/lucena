@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:lucena/data/repositories/push/push_repository.dart';
+import 'package:lucena/domain/models/push_alert.dart';
 
 /// Um push que entrega os avisos tocados que o teste mandar.
 class FakePushRepository implements PushRepository {
@@ -11,8 +12,8 @@ class FakePushRepository implements PushRepository {
     this.available = true,
   });
 
-  /// O link do aviso que abriu o app.
-  Uri? initial;
+  /// O aviso que abriu o app.
+  PushOpening? initial;
   bool granted;
 
   /// O que [permitted] responde (a permissão no Android agora).
@@ -25,10 +26,14 @@ class FakePushRepository implements PushRepository {
   int settingsOpened = 0;
   bool started = false;
   int permissionRequests = 0;
-  final _opened = StreamController<Uri>.broadcast();
+  final _opened = StreamController<PushOpening>.broadcast();
+
+  /// Os avisos que o app mostrou ([show]).
+  final shown = <PushAlert>[];
 
   /// A pessoa tocou num aviso com o app em segundo plano.
-  void open(Uri link) => _opened.add(link);
+  void open(Uri link, {String? pushId, String? country}) =>
+      _opened.add(PushOpening(link: link, pushId: pushId, country: country));
 
   @override
   Future<void> start() async => started = true;
@@ -53,8 +58,11 @@ class FakePushRepository implements PushRepository {
   }
 
   @override
-  Stream<Uri> get openedLinks => _opened.stream;
+  Stream<PushOpening> get opened => _opened.stream;
 
   @override
-  Future<Uri?> initialLink() async => initial;
+  Future<PushOpening?> initialOpening() async => initial;
+
+  @override
+  Future<void> show(PushAlert alert) async => shown.add(alert);
 }

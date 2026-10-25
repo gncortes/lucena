@@ -44,6 +44,17 @@ abstract final class AlertTopics {
   static const news = 'novidades';
   static const lessons = 'aulas';
 
+  /// O final do dia pelo push (o painel manda; antes era só local).
+  static const daily = 'dia';
+
+  /// `pais_BR`, ou `pais_BR_PR` com o estado: o público do push segmentado
+  /// (E1.19 3.8).
+  static String country(String code, [String? state]) =>
+      state == null ? 'pais_$code' : 'pais_${code}_$state';
+
+  /// `idioma_pt`: a versão da mensagem no idioma do app.
+  static String language(String code) => 'idioma_$code';
+
   /// `torneio_BR`, ou `torneio_BR_PR` com o estado.
   static String tournament(String country, [String? state]) =>
       state == null ? 'torneio_$country' : 'torneio_${country}_$state';

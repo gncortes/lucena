@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:patrol/patrol.dart';
@@ -22,6 +23,8 @@ Future<ScriptLessonRobot> _open(PatrolIntegrationTester $, String id) async {
 }
 
 void main() {
+  // Escola escondida (VisibleLessons): os cenários voltam quando ela for
+  // liberada (as aulas dela é que abrem a tela roteirizada por aqui).
   patrolTest('lance errado na pergunta: o Viktor aponta o erro, a peça volta '
       'sozinha e o lance certo segue a aula', ($) async {
     final lesson = await _open($, 'pieces.rook');
@@ -43,7 +46,7 @@ void main() {
     await lesson.waitUntil(() => lesson.state.phase != ScriptPhase.pergunta);
     expect(lesson.state.tone, isNot(ScriptTone.bad));
     expect(lesson.speech, contains('That'));
-  });
+  }, skip: !VisibleLessons.school);
 
   patrolTest('ver a resposta: o botão mostra o lance e a lista de lances '
       'aparece; tocar num lance leva o tabuleiro até ele', ($) async {
@@ -60,7 +63,7 @@ void main() {
     await $(LessonScriptKeys.move(first)).tap();
     await lesson.settle(6);
     expect(lesson.state.currentMoveId, first);
-  });
+  }, skip: !VisibleLessons.school);
 
   patrolTest('ver a resposta pelo link dentro da fala do balão faz o mesmo '
       'que o botão', ($) async {
@@ -71,7 +74,7 @@ void main() {
     await lesson.tapInSpeech('Show answer');
     await lesson.settle(10);
     lesson.expectMoveListShown();
-  });
+  }, skip: !VisibleLessons.school);
 
   patrolTest('coordenadas: a prática de tocar na casa pedida dá verde no '
       'certo e vermelho no errado, com pretas embaixo e sem as letras da '
@@ -115,7 +118,7 @@ void main() {
     lesson.expectCoordinates(visible: false);
     await lesson.tapSquare('c6');
     expect(lesson.state.touched, ['c6']);
-  });
+  }, skip: !VisibleLessons.school);
 
   patrolTest('fechar à força no meio da aula volta ao início da parte, não '
       'ao passo onde estava', ($) async {
@@ -136,7 +139,7 @@ void main() {
     expect(reopened.state.phase, ScriptPhase.entrada);
     expect(find.byKey(LessonScriptKeys.back), findsNothing);
     expect(find.byKey(LessonScriptKeys.moveList), findsNothing);
-  });
+  }, skip: !VisibleLessons.school);
 
   patrolTest('segundo plano no meio da aula mantém o passo onde estava', (
     $,
@@ -157,5 +160,5 @@ void main() {
     expect(lesson.state.phase, ScriptPhase.pergunta);
     expect(lesson.state.fen, fen);
     expect(lesson.speech, speech);
-  });
+  }, skip: !VisibleLessons.school);
 }

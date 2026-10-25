@@ -49,7 +49,7 @@ class GoalCard extends StatelessWidget {
         title: endgame.lesson.title,
         line: l10n.homeGoalEndgamesLine(endgame.number, endgame.total),
         progress: endgame.total == 0 ? 0 : endgame.passed / endgame.total,
-        progressText: l10n.homeGoalLessons(endgame.passed, endgame.total),
+        progressText: l10n.homeGoalChapters(endgame.passed, endgame.total),
         action: l10n.homeContinue,
         fen: endgame.lesson.exerciseFen,
         avatar: endgame.lesson.exerciseFen == null

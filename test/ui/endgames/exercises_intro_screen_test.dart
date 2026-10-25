@@ -49,7 +49,7 @@ void main() {
     expect(find.text('3 exercises'), findsOneWidget);
     expect(find.text('At least 4 points'), findsOneWidget);
     expect(
-      find.text('Out of 6 possible points, to pass the lesson.'),
+      find.text('Out of 6 possible points, to pass the chapter.'),
       findsOneWidget,
     );
     expect(find.text('No time limit'), findsOneWidget);

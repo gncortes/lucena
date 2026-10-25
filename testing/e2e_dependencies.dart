@@ -99,6 +99,7 @@ import 'fakes/fake_speech_input_repository.dart';
 import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
+import 'package:lucena/data/repositories/course_preview/course_preview_repository_asset.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
@@ -377,6 +378,7 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
     featuredRepository: AssetFeaturedRepository(const AssetService()),
+    coursePreviewRepository: AssetCoursePreviewRepository(const AssetService()),
     featuredProgressRepository: ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(PreferencesService()),
       activity,
@@ -608,9 +610,16 @@ class _Version3 extends QueryExecutorUser {
       'rating_history',
       'unlocked_achievements',
       'attempts',
+      'profiles',
     ]) {
       await executor.runCustom('DROP TABLE IF EXISTS $table');
     }
+    // O perfil da versão 3 (sem objetivo, contas, avatar nem foto): as
+    // migrações seguintes acrescentam as colunas, como no aparelho de verdade.
+    await executor.runCustom(
+      'CREATE TABLE profiles (id INTEGER NOT NULL, nickname TEXT NOT NULL, '
+      'rating INTEGER NOT NULL, PRIMARY KEY (id))',
+    );
     await executor.runCustom(
       'CREATE TABLE attempts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, '
       'position_id TEXT NOT NULL, played_at INTEGER NOT NULL, '

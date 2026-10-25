@@ -4,6 +4,7 @@ import 'package:lucena/data/repositories/analytics/analytics_opening.dart';
 import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/analytics_event.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
+import 'package:lucena/domain/models/push_alert.dart';
 
 import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_activity_repository.dart';
@@ -124,5 +125,32 @@ void main() {
     expect(AnalyticsOpening.alertType('/endgame-lesson/lucena'), 'aulas');
     expect(AnalyticsOpening.alertType('/featured/42'), 'torneios');
     expect(AnalyticsOpening.alertType('/'), 'novidades');
+  });
+
+  test(
+    'push do painel tocado: aviso_aberto e push_aberto com o país',
+    () async {
+      await opening().pushOpened(
+        PushOpening(
+          link: Uri.parse('/featured/tournament/7'),
+          pushId: 'p1',
+          country: 'BR',
+        ),
+      );
+
+      expect(
+        analytics.eventsNamed('aviso_aberto').single.params['canal'],
+        'push',
+      );
+      final pushed = analytics.eventsNamed('push_aberto').single;
+      expect(pushed.params, {'push_id': 'p1', 'pais': 'BR'});
+    },
+  );
+
+  test('push sem pushId (de antes do painel): só aviso_aberto', () async {
+    await opening().pushOpened(PushOpening(link: Uri.parse('/daily')));
+
+    expect(analytics.eventsNamed('aviso_aberto'), hasLength(1));
+    expect(analytics.eventsNamed('push_aberto'), isEmpty);
   });
 }

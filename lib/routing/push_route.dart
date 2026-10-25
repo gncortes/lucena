@@ -11,12 +11,13 @@ import 'routes.dart';
 /// - `/lesson/{id}`: a aula nova.
 /// - `/featured/{id}` e `/featured/tournament/{id}`: o final e o torneio.
 ///
-/// Nulo: outro endereço, que não abre nada.
-Future<String?> pushRoute(
+/// Outro endereço (de outro site, aula já terminada ou tela que esta versão
+/// do app não tem): o início ([Routes.home]).
+Future<String> pushRoute(
   Uri uri, {
   required Future<PausedLesson?> Function() pausedLesson,
 }) async {
-  if (uri.hasAuthority && !AppLinks.isOwn(uri)) return null;
+  if (uri.hasAuthority && !AppLinks.isOwn(uri)) return Routes.home;
   return switch (uri.pathSegments) {
     ['daily'] => Routes.daily,
     ['lesson'] => switch (await pausedLesson()) {
@@ -25,11 +26,11 @@ Future<String?> pushRoute(
         part: paused.partId,
         stage: paused.stage,
       ),
-      null => null,
+      null => Routes.home,
     },
     ['lesson', final id] => Routes.endgameLesson(id),
     ['featured', 'tournament', final id] => Routes.featuredTournament(id),
     ['featured', final id] => Routes.featuredEndgame(id),
-    _ => null,
+    _ => Routes.home,
   };
 }

@@ -1,3 +1,4 @@
+import '../../../domain/models/push_alert.dart';
 import '../../../domain/models/reminder.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../services/notification_service.dart';
@@ -48,11 +49,17 @@ class LocalRemindersRepository implements RemindersRepository {
   Future<void> replace(List<ScheduledNotification> notifications) =>
       _service.replace(notifications);
 
+  // As notificações de push que o app mostra são do PushRepository.
   @override
-  Future<String?> launchRoute() => _service.launchPayload();
+  Future<String?> launchRoute() async {
+    final payload = (await _service.launchTap())?.payload;
+    return PushOpening.isPush(payload) ? null : payload;
+  }
 
   @override
-  Stream<String> get taps => _service.taps;
+  Stream<String> get taps => _service.taps
+      .map((tap) => tap.payload)
+      .where((payload) => !PushOpening.isPush(payload));
 
   @override
   Future<PausedLesson?> pausedLesson(String language) async {

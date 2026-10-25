@@ -75,6 +75,15 @@ jobs:
             echo "- [Instalar]($TESTER_LINK)"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # O APK também fica na execução (3 dias) para os emuladores locais: o
+      # google-services.json só existe aqui.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: qa-apk
+          path: ${{ steps.apk.outputs.apk }}
+          retention-days: 3
+          if-no-files-found: error
+
       - uses: actions/upload-artifact@v7
         with:
           name: qa-result

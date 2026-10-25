@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
-import '../../../domain/models/race.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -30,7 +29,8 @@ class RaceWarmUpArgs {
     required this.onPlay,
     this.character,
     this.level,
-    this.theme,
+    this.subcategory,
+    this.category,
   });
 
   final String opponent;
@@ -39,8 +39,10 @@ class RaceWarmUpArgs {
   /// O nível do adversário (`1000`), quando tem.
   final int? level;
 
-  /// O tema do final do desafio. Nulo: os mais fáceis do banco.
-  final RaceTheme? theme;
+  /// O tipo de final do desafio e a categoria dele. Nulos: os mais fáceis
+  /// do banco.
+  final String? subcategory;
+  final String? category;
   final void Function(BuildContext context) onPlay;
 }
 
@@ -88,6 +90,8 @@ class RaceWarmUpScreen extends StatelessWidget {
                       builder: (context, box) => RaceFadingBoard(
                         size: box.maxWidth,
                         problem: problem,
+                        fen: state.boardFen ?? problem.fen,
+                        locked: state.replying,
                         turn: state.results.length,
                         settings: settings,
                         onMove: (move) => cubit.answer(move.uci),
