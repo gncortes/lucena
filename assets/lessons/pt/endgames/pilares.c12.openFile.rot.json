@@ -64,5 +64,6 @@
  "rot.openFile.pratica.semiPreto.err.d7c7": "A dama sai da coluna d, e a torre de d6 perde o apoio dela. Procure uma captura na coluna d.",
  "rot.openFile.pratica.semiPreto.err.b3d1": "O bispo captura o bispo de d1, mas a torre de d2 recaptura, e o peão de d5 segue de pé. Procure outra captura na coluna d.",
  "rot.openFile.pratica.semiPreto.err.b3d5": "O bispo captura o peão de d5, mas o bispo de d1 vai a f3 e ataca o seu bispo pela segunda vez, e as brancas ganham material. Procure outra captura na coluna d.",
- "rot.openFile.pratica.semiPreto.err.g8h7": "O rei vai a h7, mas não ameaça nada, e as brancas ganham tempo para defender o peão de d5. Procure uma captura na coluna d."
+ "rot.openFile.pratica.semiPreto.err.g8h7": "O rei vai a h7, mas não ameaça nada, e as brancas ganham tempo para defender o peão de d5. Procure uma captura na coluna d.",
+ "rot.openFile.pratica.semiPreto.err.d7d5": "A dama captura a dama, a torre de d2 recaptura e o seu bispo captura a torre, mas o bispo de d1 captura o peão de a4, e as brancas ficam com um peão a mais. Procure outra captura na coluna d."
 }

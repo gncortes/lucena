@@ -494,6 +494,11 @@
        "b3d1": "rot.openFile.pratica.semiPreto.err.b3d1",
        "b3d5": "rot.openFile.pratica.semiPreto.err.b3d5",
        "g8h7": "rot.openFile.pratica.semiPreto.err.g8h7"
+      },
+      "errosPos": {
+       "6k1/3q1p2/6p1/3Q3p/p7/Pb5P/3R1PP1/3B2K1 b - - 0 30": {
+        "d7d5": "rot.openFile.pratica.semiPreto.err.d7d5"
+       }
       }
      }
     }
