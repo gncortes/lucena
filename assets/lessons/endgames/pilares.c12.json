@@ -245,18 +245,18 @@
    "url": "https://lichess.org/YMgnNmej/black#36"
   },
   {
-   "id": "lichessGameWEfhj",
-   "kind": "game",
-   "author": "lichess.org",
-   "title": "Lichess game (puzzle WEfhj)",
-   "url": "https://lichess.org/i1byeuox/black#42"
-  },
-  {
    "id": "lichessGameQaCea",
    "kind": "game",
    "author": "lichess.org",
    "title": "Lichess game (puzzle QaCea)",
    "url": "https://lichess.org/Ipro88Lm/black#50"
+  },
+  {
+   "id": "lichessGamea59np",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle a59np)",
+   "url": "https://lichess.org/8VO8c32b/black#68"
   }
  ],
  "exercises": [

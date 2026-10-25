@@ -130,6 +130,18 @@
       },
       "alternativos": {},
       "erros": {
+       "d1e1": [
+        {
+         "fen": "r4rk1/pb2bppp/1p2p3/4P3/4p3/6P1/PP3PBP/R1B1R1K1 b - - 2 15",
+         "lance": "d1e1",
+         "t": "rot.openFile.ideia.eslava.err.d1e1.1"
+        },
+        {
+         "fen": "r4rk1/pb2bppp/1p2p3/4P3/4p3/6P1/PP3PBP/R1BR2K1 w - - 1 15",
+         "salto": true,
+         "t": "rot.openFile.ideia.eslava.err.d1e1.2"
+        }
+       ],
        "c1e3": [
         {
          "fen": "r4rk1/pb2bppp/1p2p3/4P3/4p3/4B1P1/PP3PBP/R2R2K1 b - - 2 15",
@@ -362,7 +374,7 @@
    "exemplos": [
     {
      "id": "valeAqui",
-     "fen": "r4k2/pq1R1p1p/1p5p/4n3/6Q1/6P1/Pb3P1P/5RK1 w - - 2 22",
+     "fen": "6k1/6q1/2n3p1/p4pP1/2p5/2N1rr2/P2Q4/1K1R2R1 w - - 0 35",
      "vira": false,
      "objetivo": "ganhar",
      "fim": "proximo",
@@ -371,31 +383,32 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "g4",
-       "d7"
+       "d1",
+       "d2"
       ],
       "maquina": "b",
       "limite": 10,
       "linha": [
        {
         "certos": [
-         "g4b4"
+         "d2d5"
         ],
-        "resposta": "f8g8"
+        "resposta": "g7f7"
        },
        {
         "certos": [
-         "d7b7"
+         "d5c6"
         ]
        }
       ],
       "t": "rot.openFile.pratica.valeAqui.enunciado",
       "fim": "rot.openFile.pratica.valeAqui.fim",
       "erros": {
-       "d7b7": "rot.openFile.pratica.valeAqui.err.d7b7",
-       "g4g8": "rot.openFile.pratica.valeAqui.err.g4g8",
-       "g4g7": "rot.openFile.pratica.valeAqui.err.g4g7",
-       "f1d1": "rot.openFile.pratica.valeAqui.err.f1d1"
+       "d2d8": "rot.openFile.pratica.valeAqui.err.d2d8",
+       "c3d5": "rot.openFile.pratica.valeAqui.err.c3d5",
+       "g1e1": "rot.openFile.pratica.valeAqui.err.g1e1",
+       "d1c1": "rot.openFile.pratica.valeAqui.err.d1c1",
+       "c3b5": "rot.openFile.pratica.valeAqui.err.c3b5"
       }
      }
     },
@@ -472,6 +485,8 @@
       "erros": {
        "d7c8": "rot.openFile.pratica.semiPreto.err.d7c8",
        "d7c7": "rot.openFile.pratica.semiPreto.err.d7c7",
+       "b3d1": "rot.openFile.pratica.semiPreto.err.b3d1",
+       "b3d5": "rot.openFile.pratica.semiPreto.err.b3d5",
        "g8h7": "rot.openFile.pratica.semiPreto.err.g8h7"
       }
      }
