@@ -1,0 +1,539 @@
+{
+ "licao": "pilares.c18",
+ "parte": "bishopSacH7",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "ex1",
+     "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+       "marcas": [
+        "h7"
+       ],
+       "t": "rot.bishopSacH7.ideia.ex1.e1"
+      },
+      {
+       "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+       "marcas": [
+        "d3",
+        "f3",
+        "d1",
+        "e5"
+       ],
+       "t": "rot.bishopSacH7.ideia.ex1.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "d3",
+       "f3",
+       "d1",
+       "c1",
+       "d4",
+       "f1"
+      ],
+      "certos": [
+       "d3h7"
+      ],
+      "t": "rot.bishopSacH7.ideia.ex1.p",
+      "certo": {
+       "fen": "1rbq1rk1/p4ppB/4p3/P1pnP3/3P4/P4N2/5PPP/2BQ1RK1 b - - 0 17",
+       "lance": "d3h7",
+       "t": "rot.bishopSacH7.ideia.ex1.certo"
+      },
+      "revela": {
+       "fen": "1rbq1rk1/p4ppB/4p3/P1pnP3/3P4/P4N2/5PPP/2BQ1RK1 b - - 0 17",
+       "lance": "d3h7",
+       "t": "rot.bishopSacH7.ideia.ex1.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "f3g5": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP1N1/3P4/P2B4/5PPP/2BQ1RK1 b - - 1 17",
+         "lance": "f3g5",
+         "t": "rot.bishopSacH7.ideia.ex1.err.f3g5.1"
+        },
+        {
+         "fen": "1rbq1rk1/p4pp1/4p2p/P1pnP1N1/3P4/P2B4/5PPP/2BQ1RK1 w - - 0 18",
+         "lance": "h7h6",
+         "t": "rot.bishopSacH7.ideia.ex1.err.f3g5.2"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.f3g5.3"
+        }
+       ],
+       "d1e2": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/4QPPP/2B2RK1 b - - 1 17",
+         "lance": "d1e2",
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque.volta"
+        }
+       ],
+       "d1c2": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/2Q2PPP/2B2RK1 b - - 1 17",
+         "lance": "d1c2",
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque.volta"
+        }
+       ],
+       "d4c5": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1PnP3/8/P2B1N2/5PPP/2BQ1RK1 b - - 0 17",
+         "lance": "d4c5",
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque.volta"
+        }
+       ],
+       "f1e1": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQR1K1 b - - 1 17",
+         "lance": "f1e1",
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque.volta"
+        }
+       ],
+       "c1g5": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP1B1/3P4/P2B1N2/5PPP/3Q1RK1 b - - 1 17",
+         "lance": "c1g5",
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque.volta"
+        }
+       ],
+       "c1b2": [
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/1B3PPP/3Q1RK1 b - - 1 17",
+         "lance": "c1b2",
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque"
+        },
+        {
+         "fen": "1rbq1rk1/p4ppp/4p3/P1pnP3/3P4/P2B1N2/5PPP/2BQ1RK1 w - - 0 17",
+         "salto": true,
+         "t": "rot.bishopSacH7.ideia.ex1.err.semXeque.volta"
+        }
+       ]
+      },
+      "fora": "rot.bishopSacH7.ideia.ex1.fora",
+      "volta": "rot.bishopSacH7.ideia.ex1.volta"
+     },
+     "linha": [
+      {
+       "fen": "1rbq1rk1/p4ppB/4p3/P1pnP3/3P4/P4N2/5PPP/2BQ1RK1 b - - 0 17",
+       "lance": "d3h7",
+       "t": "rot.bishopSacH7.ideia.ex1.l.1"
+      },
+      {
+       "fen": "1rbq1r2/p4ppk/4p3/P1pnP3/3P4/P4N2/5PPP/2BQ1RK1 w - - 0 18",
+       "lance": "g8h7",
+       "t": "rot.bishopSacH7.ideia.ex1.l.2"
+      },
+      {
+       "fen": "1rbq1r2/p4ppk/4p3/P1pnP1N1/3P4/P7/5PPP/2BQ1RK1 b - - 1 18",
+       "lance": "f3g5",
+       "marcas": [
+        "c1"
+       ],
+       "t": "rot.bishopSacH7.ideia.ex1.l.3"
+      },
+      {
+       "fen": "1rbq1rk1/p4pp1/4p3/P1pnP1N1/3P4/P7/5PPP/2BQ1RK1 w - - 2 19",
+       "lance": "h7g8",
+       "t": "rot.bishopSacH7.ideia.ex1.l.4"
+      },
+      {
+       "fen": "1rbq1rk1/p4pp1/4p3/P1pnP1NQ/3P4/P7/5PPP/2B2RK1 b - - 3 19",
+       "lance": "d1h5",
+       "setas": [
+        [
+         "h5",
+         "h7",
+         "g"
+        ]
+       ],
+       "t": "rot.bishopSacH7.ideia.ex1.l.5"
+      },
+      {
+       "fen": "1rb2rk1/p4pp1/4p3/P1pnP1qQ/3P4/P7/5PPP/2B2RK1 w - - 0 20",
+       "lance": "d8g5",
+       "t": "rot.bishopSacH7.ideia.ex1.l.6"
+      },
+      {
+       "fen": "1rb2rk1/p4pp1/4p3/P1pnP1BQ/3P4/P7/5PPP/5RK1 b - - 0 20",
+       "lance": "c1g5",
+       "t": "rot.bishopSacH7.ideia.ex1.l.7"
+      },
+      {
+       "fen": "1rb2rk1/p4pp1/4p3/P1pnP1BQ/3P4/P7/5PPP/5RK1 b - - 0 20",
+       "t": "rot.bishopSacH7.ideia.ex1.l.8"
+      }
+     ],
+     "ref": "lichessGamemIwo3"
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "laskerBauer",
+     "fen": "r4rk1/1b2bppp/ppq1p3/2ppB2n/5P2/1P1BP3/P1PPQ1PP/R4RK1 w - - 0 15",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "ref": "laskerBauer1889",
+     "entrada": [
+      {
+       "fen": "r4rk1/1b2bppp/ppq1p3/2ppB2n/5P2/1P1BP3/P1PPQ1PP/R4RK1 w - - 0 15",
+       "marcas": [
+        "d3",
+        "h5",
+        "e2"
+       ],
+       "t": "rot.bishopSacH7.demos.laskerBauer.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r4rk1/1b2bppB/ppq1p3/2ppB2n/5P2/1P2P3/P1PPQ1PP/R4RK1 b - - 0 15",
+       "lance": "d3h7",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.1"
+      },
+      {
+       "fen": "r4r2/1b2bppk/ppq1p3/2ppB2n/5P2/1P2P3/P1PPQ1PP/R4RK1 w - - 0 16",
+       "lance": "g8h7",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.2"
+      },
+      {
+       "fen": "r4r2/1b2bppk/ppq1p3/2ppB2Q/5P2/1P2P3/P1PP2PP/R4RK1 b - - 0 16",
+       "lance": "e2h5",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.3"
+      },
+      {
+       "fen": "r4rk1/1b2bpp1/ppq1p3/2ppB2Q/5P2/1P2P3/P1PP2PP/R4RK1 w - - 1 17",
+       "lance": "h7g8",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.4"
+      },
+      {
+       "fen": "r4rk1/1b2bpB1/ppq1p3/2pp3Q/5P2/1P2P3/P1PP2PP/R4RK1 b - - 0 17",
+       "lance": "e5g7",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.5"
+      },
+      {
+       "fen": "r4r2/1b2bpk1/ppq1p3/2pp3Q/5P2/1P2P3/P1PP2PP/R4RK1 w - - 0 18",
+       "lance": "g8g7",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.6"
+      },
+      {
+       "fen": "r4r2/1b2bpk1/ppq1p3/2pp4/5PQ1/1P2P3/P1PP2PP/R4RK1 b - - 1 18",
+       "lance": "h5g4",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.7"
+      },
+      {
+       "fen": "r4r2/1b2bp1k/ppq1p3/2pp4/5PQ1/1P2P3/P1PP2PP/R4RK1 w - - 2 19",
+       "lance": "g7h7",
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.8"
+      },
+      {
+       "fen": "r4r2/1b2bp1k/ppq1p3/2pp4/5PQ1/1P2PR2/P1PP2PP/R5K1 b - - 3 19",
+       "lance": "f1f3",
+       "setas": [
+        [
+         "f3",
+         "h3",
+         "g"
+        ]
+       ],
+       "t": "rot.bishopSacH7.demos.laskerBauer.l.9"
+      }
+     ]
+    },
+    {
+     "id": "london",
+     "fen": "r1bq1rk1/1p3ppp/p1nbp3/3pN2n/5B2/2PBPN2/PP3PP1/R2QK2R w KQ - 1 11",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "ref": "lichessGame1BEuN",
+     "entrada": [
+      {
+       "fen": "r1bq1rk1/1p3ppp/p1nbp3/3pN2n/5B2/2PBPN2/PP3PP1/R2QK2R w KQ - 1 11",
+       "marcas": [
+        "d3",
+        "f3",
+        "h1"
+       ],
+       "t": "rot.bishopSacH7.demos.london.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r1bq1rk1/1p3ppB/p1nbp3/3pN2n/5B2/2P1PN2/PP3PP1/R2QK2R b KQ - 0 11",
+       "lance": "d3h7",
+       "t": "rot.bishopSacH7.demos.london.l.1"
+      },
+      {
+       "fen": "r1bq1r2/1p3ppk/p1nbp3/3pN2n/5B2/2P1PN2/PP3PP1/R2QK2R w KQ - 0 12",
+       "lance": "g8h7",
+       "t": "rot.bishopSacH7.demos.london.l.2"
+      },
+      {
+       "fen": "r1bq1r2/1p3ppk/p1nbp3/3pN1Nn/5B2/2P1P3/PP3PP1/R2QK2R b KQ - 1 12",
+       "lance": "f3g5",
+       "setas": [
+        [
+         "h1",
+         "h5",
+         "g"
+        ]
+       ],
+       "t": "rot.bishopSacH7.demos.london.l.3"
+      },
+      {
+       "fen": "r1b2r2/1p3ppk/p1nbp3/3pN1qn/5B2/2P1P3/PP3PP1/R2QK2R w KQ - 0 13",
+       "lance": "d8g5",
+       "t": "rot.bishopSacH7.demos.london.l.4"
+      },
+      {
+       "fen": "r1b2r2/1p3ppk/p1nbp3/3pN1Bn/8/2P1P3/PP3PP1/R2QK2R b KQ - 0 13",
+       "lance": "f4g5",
+       "t": "rot.bishopSacH7.demos.london.l.5"
+      }
+     ]
+    },
+    {
+     "id": "excecao",
+     "fen": "r1b2rk1/1p1n1ppp/p1nPp3/q7/5B2/2PB1N2/P3QPPP/R2R2K1 w - - 3 15",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "ref": "lichessGameAyKFk",
+     "entrada": [
+      {
+       "fen": "r1b2rk1/1p1n1ppp/p1nPp3/q7/5B2/2PB1N2/P3QPPP/R2R2K1 w - - 3 15",
+       "marcas": [
+        "d3",
+        "f3",
+        "e2",
+        "d7"
+       ],
+       "t": "rot.bishopSacH7.demos.excecao.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r1b2rk1/1p1n1ppB/p1nPp3/q7/5B2/2P2N2/P3QPPP/R2R2K1 b - - 0 15",
+       "lance": "d3h7",
+       "t": "rot.bishopSacH7.demos.excecao.l.1"
+      },
+      {
+       "fen": "r1b2r2/1p1n1ppk/p1nPp3/q7/5B2/2P2N2/P3QPPP/R2R2K1 w - - 0 16",
+       "lance": "g8h7",
+       "t": "rot.bishopSacH7.demos.excecao.l.2"
+      },
+      {
+       "fen": "r1b2r2/1p1n1ppk/p1nPp3/q5N1/5B2/2P5/P3QPPP/R2R2K1 b - - 1 16",
+       "lance": "f3g5",
+       "t": "rot.bishopSacH7.demos.excecao.l.3"
+      },
+      {
+       "fen": "r1b2rk1/1p1n1pp1/p1nPp3/q5N1/5B2/2P5/P3QPPP/R2R2K1 w - - 2 17",
+       "lance": "h7g8",
+       "t": "rot.bishopSacH7.demos.excecao.l.4"
+      },
+      {
+       "fen": "r1b2rk1/1p1n1pp1/p1nPp3/q5NQ/5B2/2P5/P4PPP/R2R2K1 b - - 3 17",
+       "lance": "e2h5",
+       "t": "rot.bishopSacH7.demos.excecao.l.5"
+      },
+      {
+       "fen": "r1b2rk1/1p3pp1/p1nPpn2/q5NQ/5B2/2P5/P4PPP/R2R2K1 w - - 4 18",
+       "lance": "d7f6",
+       "marcas": [
+        "h7",
+        "h5"
+       ],
+       "t": "rot.bishopSacH7.demos.excecao.l.6"
+      },
+      {
+       "fen": "r1b2rk1/1p1n1ppp/p1nPp3/q7/5B2/2PB1N2/P3QPPP/R2R2K1 w - - 3 15",
+       "salto": true,
+       "t": "rot.bishopSacH7.demos.excecao.volta"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "valeAqui",
+     "fen": "r1b1r1k1/6pp/p2q1b2/1p1p3Q/3n4/3B3P/PP3PP1/R1B3K1 w - - 0 19",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "h5",
+       "d3",
+       "c1"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "h5e8"
+        ]
+       }
+      ],
+      "t": "rot.bishopSacH7.pratica.valeAqui.enunciado",
+      "fim": "rot.bishopSacH7.pratica.valeAqui.fim",
+      "erros": {
+       "d3h7": "rot.bishopSacH7.pratica.valeAqui.err.d3h7",
+       "h5h7": "rot.bishopSacH7.pratica.valeAqui.err.h5h7",
+       "c1f4": "rot.bishopSacH7.pratica.valeAqui.err.outro",
+       "c1e3": "rot.bishopSacH7.pratica.valeAqui.err.outro",
+       "c1g5": "rot.bishopSacH7.pratica.valeAqui.err.outro",
+       "a1b1": "rot.bishopSacH7.pratica.valeAqui.err.outro"
+      }
+     },
+     "ref": "lichessGame3ek0W"
+    },
+    {
+     "id": "classico",
+     "fen": "r1bq1rk1/ppb1nppp/4p3/nP1pP3/N4P2/2PB1N2/P5PP/R1BQK2R w KQ - 3 13",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d3",
+       "f3",
+       "d1",
+       "e1",
+       "a4"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d3h7"
+        ],
+        "resposta": "g8h7"
+       },
+       {
+        "certos": [
+         "f3g5"
+        ]
+       }
+      ],
+      "t": "rot.bishopSacH7.pratica.classico.enunciado",
+      "fim": "rot.bishopSacH7.pratica.classico.fim",
+      "erros": {
+       "d1c2": "rot.bishopSacH7.pratica.classico.err.outro",
+       "d1e2": "rot.bishopSacH7.pratica.classico.err.outro",
+       "a4c5": "rot.bishopSacH7.pratica.classico.err.outro"
+      },
+      "errosPos": {
+       "r1bq1r2/ppb1nppk/4p3/nP1pP3/N4P2/2P2N2/P5PP/R1BQK2R w KQ -": {
+        "d1e2": "rot.bishopSacH7.pratica.classico.err.semXeque",
+        "e1g1": "rot.bishopSacH7.pratica.classico.err.semXeque"
+       }
+      }
+     },
+     "ref": "lichessGameiWcRk"
+    },
+    {
+     "id": "pretas",
+     "fen": "2bqk2r/1p1p1pp1/3b1n2/2p4p/P3p3/N1B1P3/P1PP1PPP/R2Q1RK1 b k - 1 12",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d6",
+       "f6",
+       "d8",
+       "e8"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d6h2"
+        ],
+        "resposta": "g1h2"
+       },
+       {
+        "certos": [
+         "f6g4"
+        ]
+       }
+      ],
+      "t": "rot.bishopSacH7.pratica.pretas.enunciado",
+      "fim": "rot.bishopSacH7.pratica.pretas.fim",
+      "erros": {
+       "f6g4": "rot.bishopSacH7.pratica.pretas.err.f6g4",
+       "e8g8": "rot.bishopSacH7.pratica.pretas.err.outro",
+       "d8c7": "rot.bishopSacH7.pratica.pretas.err.outro",
+       "d8e7": "rot.bishopSacH7.pratica.pretas.err.outro",
+       "b7b6": "rot.bishopSacH7.pratica.pretas.err.outro"
+      },
+      "errosPos": {
+       "2bqk2r/1p1p1pp1/5n2/2p4p/P3p3/N1B1P3/P1PP1PPK/R2Q1R2 b k -": {
+        "e8g8": "rot.bishopSacH7.pratica.pretas.err.semXeque",
+        "d8e7": "rot.bishopSacH7.pratica.pretas.err.semXeque"
+       }
+      }
+     },
+     "ref": "lichessGameVy7On"
+    }
+   ]
+  }
+ ]
+}
