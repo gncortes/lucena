@@ -1,0 +1,217 @@
+{
+ "id": "pilares.c16",
+ "module": "pilares",
+ "skills": [
+  "pilares.c16"
+ ],
+ "parts": [
+  {
+   "id": "squareOfPawn",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c16/squareOfPawn.json"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "sq.BOdEl",
+   "capitulo": "squareOfPawn",
+   "stars": 1,
+   "fen": "8/7K/8/6P1/8/4pkP1/8/8 b - - 1 65",
+   "goal": "win",
+   "origin": "lichess:BOdEl",
+   "line": [
+    {
+     "teach": "e3e2",
+     "accept": [
+      "e3e2"
+     ],
+     "reply": "g5g6"
+    },
+    {
+     "teach": "e2e1q",
+     "accept": [
+      "e2e1q"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sq.fIFe6",
+   "capitulo": "squareOfPawn",
+   "stars": 1,
+   "fen": "8/4k3/8/P4p2/3p4/2pK4/8/8 w - - 1 65",
+   "goal": "win",
+   "origin": "lichess:fIFe6",
+   "line": [
+    {
+     "teach": "a5a6",
+     "accept": [
+      "a5a6"
+     ],
+     "reply": "e7d6"
+    },
+    {
+     "teach": "a6a7",
+     "accept": [
+      "a6a7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sq.a98Qa",
+   "capitulo": "squareOfPawn",
+   "stars": 1,
+   "fen": "8/8/1P1k4/3P4/5p2/3P4/1K6/8 b - - 0 51",
+   "goal": "win",
+   "origin": "lichess:a98Qa",
+   "line": [
+    {
+     "teach": "f4f3",
+     "accept": [
+      "f4f3"
+     ],
+     "reply": "b2c3"
+    },
+    {
+     "teach": "f3f2",
+     "accept": [
+      "f3f2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sq.nFVbI",
+   "capitulo": "squareOfPawn",
+   "stars": 2,
+   "fen": "8/4k3/8/P6p/1K4p1/8/6P1/8 w - - 1 57",
+   "goal": "win",
+   "origin": "lichess:nFVbI",
+   "line": [
+    {
+     "teach": "a5a6",
+     "accept": [
+      "a5a6"
+     ],
+     "reply": "h5h4"
+    },
+    {
+     "teach": "a6a7",
+     "accept": [
+      "a6a7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sq.n4N4t",
+   "capitulo": "squareOfPawn",
+   "stars": 2,
+   "fen": "8/8/7P/5kp1/8/p1K5/8/8 w - - 0 53",
+   "goal": "win",
+   "origin": "lichess:n4N4t",
+   "line": [
+    {
+     "teach": "h6h7",
+     "accept": [
+      "h6h7"
+     ],
+     "reply": "a3a2"
+    },
+    {
+     "teach": "c3b2",
+     "accept": [
+      "c3b2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sq.95tj6",
+   "capitulo": "squareOfPawn",
+   "stars": 2,
+   "fen": "8/8/8/6P1/8/2kp1P2/8/4K3 b - - 1 54",
+   "goal": "win",
+   "origin": "lichess:95tj6",
+   "line": [
+    {
+     "teach": "c3c2",
+     "accept": [
+      "c3c2"
+     ],
+     "reply": "e1f2"
+    },
+    {
+     "teach": "d3d2",
+     "accept": [
+      "d3d2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sq.MiCJM",
+   "capitulo": "squareOfPawn",
+   "stars": 3,
+   "fen": "8/3k4/5P2/1PK5/6p1/8/8/8 b - - 0 54",
+   "goal": "win",
+   "origin": "lichess:MiCJM",
+   "line": [
+    {
+     "teach": "g4g3",
+     "accept": [
+      "g4g3"
+     ],
+     "reply": "b5b6"
+    },
+    {
+     "teach": "g3g2",
+     "accept": [
+      "g3g2"
+     ]
+    }
+   ]
+  }
+ ],
+ "maxScore": 12,
+ "passScore": 9,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "lichessGameKo8rJ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Ko8rJ)",
+   "url": "https://lichess.org/inxKeOd6/black#130"
+  },
+  {
+   "id": "lichessGamedkgKe",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle dkgKe)",
+   "url": "https://lichess.org/ybHc3jRG#115"
+  },
+  {
+   "id": "lichessGame95tj6",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 95tj6)",
+   "url": "https://lichess.org/EPKRu7eD#107"
+  },
+  {
+   "id": "lichessGameXYN4y",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle XYN4y)",
+   "url": "https://lichess.org/X1b02zst#97"
+  }
+ ]
+}
