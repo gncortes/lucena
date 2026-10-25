@@ -192,7 +192,7 @@ void main() {
       final rect = tester.getRect(part);
       expect(rect.left, closeToDp(16));
       expect(rect.right, closeToDp(w - 16));
-      expect(find.text('Parte I · 19 lições'), findsOneWidget);
+      expect(find.text('Parte I · 20 lições'), findsOneWidget);
       // A Parte I aberta: os seis capítulos, o último das aberturas sem
       // exercícios; as outras partes fechadas.
       for (var n = 1; n <= 6; n++) {

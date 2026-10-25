@@ -3,7 +3,7 @@
     "overline": "Curso",
     "title": "Pilares do Xadrez",
     "line": "Tática, jogo posicional, finais, cálculo e aberturas, com exercícios em cada capítulo.",
-    "lessons": 84,
+    "lessons": 86,
     "exercises": "+800",
     "price": "R$ 59,90",
     "priceNote": "Pagamento único, sem mensalidade",
@@ -69,8 +69,8 @@
     "included": [
       {
         "icon": "school",
-        "title": "84 lições",
-        "summary": "64 de tática, jogo posicional e finais, e 20 das suas aberturas."
+        "title": "86 lições",
+        "summary": "66 de tática, jogo posicional e finais, e 20 das suas aberturas."
       },
       {
         "icon": "menu_book",
@@ -141,7 +141,7 @@
       {
         "number": "I",
         "title": "Tática básica e princípios da abertura",
-        "lessons": 19,
+        "lessons": 20,
         "chapters": [
           {
             "number": 1,
@@ -189,7 +189,8 @@
             "title": "Princípios da abertura",
             "lessons": [
               "Centro, desenvolvimento e roque",
-              "Armadilhas e gambitos de clube"
+              "Armadilhas e gambitos de clube",
+              "Rei seguro: rocar a tempo e manter o escudo"
             ],
             "exercises": "Exercícios"
           },
@@ -256,7 +257,7 @@
       {
         "number": "III",
         "title": "Jogo posicional",
-        "lessons": 20,
+        "lessons": 21,
         "chapters": [
           {
             "number": 11,
@@ -292,7 +293,8 @@
             "lessons": [
               "Casa fraca e posto avançado",
               "Coluna aberta, semiaberta e sétima fileira",
-              "Melhorar a pior peça"
+              "Melhorar a pior peça",
+              "Fraquezas em volta do rei"
             ],
             "exercises": "Exercícios"
           },
@@ -535,7 +537,7 @@
       "part": "Parte I",
       "number": 5,
       "title": "Princípios da abertura",
-      "summary": "Centro, desenvolvimento e roque; armadilhas e gambitos."
+      "summary": "Centro, desenvolvimento e roque; armadilhas e gambitos; rei seguro."
     },
     "test": "Teste de nível: veja o que você já domina.",
     "part": {
@@ -577,7 +579,7 @@
         "id": "c5",
         "state": "next",
         "title": "5 · Princípios da abertura",
-        "summary": "Centro, desenvolvimento e roque; armadilhas e gambitos.",
+        "summary": "Centro, desenvolvimento e roque; armadilhas e gambitos; rei seguro.",
         "medal": null
       },
       {
@@ -608,10 +610,17 @@
         "number": "5.2",
         "title": "Armadilhas e gambitos de clube",
         "summary": ""
+      },
+      {
+        "id": "5.3",
+        "kind": "other",
+        "number": "5.3",
+        "title": "Rei seguro: rocar a tempo e manter o escudo",
+        "summary": ""
       }
     ],
     "exercises": {
-      "number": "5.3",
+      "number": "5.4",
       "count": 12
     },
     "start": "5.1"

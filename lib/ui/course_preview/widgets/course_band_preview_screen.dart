@@ -158,7 +158,9 @@ class _Chart extends StatelessWidget {
                               height: 8,
                               decoration: BoxDecoration(
                                 color: tones[i % tones.length],
-                                borderRadius: BorderRadius.circular(AppShape.tiny),
+                                borderRadius: BorderRadius.circular(
+                                  AppShape.tiny,
+                                ),
                               ),
                             ),
                           ),
