@@ -454,7 +454,81 @@
         "question": "E se eu não gostar?",
         "answer": "Você pode pedir o reembolso em até 7 dias depois da compra."
       }
-    ]
+    ],
+    "band": {
+      "heading": "De 1000 a 2200 no Lichess",
+      "line": "A faixa é larga porque os temas do curso aparecem em todas as faixas. O que muda de uma faixa para outra é a frequência de cada tema.",
+      "chartTitle": "Frequência de cada tema",
+      "chartNote": "Porcentagem dos problemas de cada faixa de rating em que o tema aparece.",
+      "ranges": [
+        "até 1400",
+        "1400–1800",
+        "1800–2200"
+      ],
+      "themes": [
+        {
+          "name": "Garfo",
+          "values": [
+            14.6,
+            13.1,
+            10.4
+          ]
+        },
+        {
+          "name": "Cravada",
+          "values": [
+            3.9,
+            7.8,
+            8.0
+          ]
+        },
+        {
+          "name": "Ataque descoberto",
+          "values": [
+            4.6,
+            6.0,
+            5.4
+          ]
+        },
+        {
+          "name": "Desvio",
+          "values": [
+            3.5,
+            5.3,
+            5.2
+          ]
+        },
+        {
+          "name": "Peça solta",
+          "values": [
+            3.9,
+            3.6,
+            3.5
+          ]
+        },
+        {
+          "name": "O lance de defesa",
+          "values": [
+            1.6,
+            5.3,
+            11.1
+          ]
+        },
+        {
+          "name": "Lance tranquilo",
+          "values": [
+            0.9,
+            3.2,
+            7.0
+          ]
+        }
+      ],
+      "source": "Fonte: base pública de problemas do Lichess, tirados de partidas reais e separados pelo rating do problema, não do jogador. Mostra o que aparece nos problemas, não a frequência exata nas partidas.",
+      "warning": {
+        "title": "Sem promessa de rating",
+        "summary": "Cada jogador evolui de um jeito, por isso o curso não promete ganho de rating. Ele ensina os temas que aparecem em todas as faixas, com explicação, posições para jogar e exercícios."
+      }
+    }
   },
   "map": {
     "continue": {

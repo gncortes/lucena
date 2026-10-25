@@ -496,6 +496,7 @@ abstract final class Routes {
   /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
   /// mapa e um capítulo.
   static const pilaresSale = '/settings/pilares';
+  static const pilaresBand = '/settings/pilares/faixa';
   static const pilaresMap = '/settings/pilares/mapa';
   static const pilaresChapter = '/settings/pilares/mapa/capitulo';
 }

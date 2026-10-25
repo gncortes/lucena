@@ -13,6 +13,9 @@ abstract final class CoursePreviewKeys {
       Key('coursePreview.sale.part.$number.header');
   static Key summaryChapter(int number) =>
       Key('coursePreview.sale.summary.chapter.$number');
+  static const audience = Key('coursePreview.sale.audience');
+  static const band = Key('coursePreview.band');
+  static const bandChart = Key('coursePreview.band.chart');
   static const map = Key('coursePreview.map');
   static const mapContinue = Key('coursePreview.map.continue');
   static const mapTest = Key('coursePreview.map.test');

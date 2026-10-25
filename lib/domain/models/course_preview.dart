@@ -115,6 +115,52 @@ class CourseSaleFaq {
   final String answer;
 }
 
+/// A tela "Para quem é" (canvas `PropV2CursoFaixa`): por que a faixa é larga,
+/// com a frequência de cada tema em cada faixa de rating (em %).
+class CourseSaleBand {
+  const CourseSaleBand({
+    required this.heading,
+    required this.line,
+    required this.chartTitle,
+    required this.chartNote,
+    required this.ranges,
+    required this.themes,
+    required this.source,
+    required this.warning,
+  });
+
+  factory CourseSaleBand.fromJson(Map<String, dynamic> json) => CourseSaleBand(
+    heading: json['heading'] as String,
+    line: json['line'] as String,
+    chartTitle: json['chartTitle'] as String,
+    chartNote: json['chartNote'] as String,
+    ranges: [for (final range in json['ranges'] as List) range as String],
+    themes: [
+      for (final item in json['themes'] as List)
+        (
+          name: (item as Map<String, dynamic>)['name'] as String,
+          values: [
+            for (final value in item['values'] as List)
+              (value as num).toDouble(),
+          ],
+        ),
+    ],
+    source: json['source'] as String,
+    warning: CourseSaleItem.fromJson(json['warning'] as Map<String, dynamic>),
+  );
+
+  final String heading;
+  final String line;
+  final String chartTitle;
+  final String chartNote;
+
+  /// As faixas da legenda, na ordem dos valores de cada tema.
+  final List<String> ranges;
+  final List<({String name, List<double> values})> themes;
+  final String source;
+  final CourseSaleItem warning;
+}
+
 /// A página de venda (canvas `PropV2CursoApresentacao` e as abas).
 class CourseSale {
   const CourseSale({
@@ -137,6 +183,7 @@ class CourseSale {
     required this.summaryNote,
     required this.parts,
     required this.faq,
+    required this.band,
   });
 
   factory CourseSale.fromJson(Map<String, dynamic> json) {
@@ -170,6 +217,7 @@ class CourseSale {
       summaryNote: json['summaryNote'] as String,
       parts: _list(json['parts'], CourseSalePart.fromJson),
       faq: _list(json['faq'], CourseSaleFaq.fromJson),
+      band: CourseSaleBand.fromJson(json['band'] as Map<String, dynamic>),
     );
   }
 
@@ -197,6 +245,7 @@ class CourseSale {
   final String summaryNote;
   final List<CourseSalePart> parts;
   final List<CourseSaleFaq> faq;
+  final CourseSaleBand band;
 }
 
 /// Um capítulo do mapa: o estado (nome de `CourseItemState`), título, resumo

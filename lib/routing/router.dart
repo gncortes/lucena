@@ -1,4 +1,5 @@
 import '../ui/course_preview/view_models/course_preview_cubit.dart';
+import '../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
 import '../ui/course_preview/widgets/course_map_preview_screen.dart';
 import '../ui/course_preview/widgets/course_sale_screen.dart';
@@ -1519,6 +1520,11 @@ GoRouter buildRouter({
                 builder: (context, state) =>
                     _coursePreview(const CourseSaleScreen()),
                 routes: [
+                  _route(
+                    path: 'faixa',
+                    builder: (context, state) =>
+                        _coursePreview(const CourseBandPreviewScreen()),
+                  ),
                   _route(
                     path: 'mapa',
                     builder: (context, state) =>

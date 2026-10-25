@@ -687,40 +687,47 @@ class _Overview extends StatelessWidget {
           ],
         ),
         _Section(l10n.courseSaleAudience),
-        // cartao_faixa: sem destino na prévia (a tela da faixa fica fora).
-        _Card(
+        // cartao_faixa: abre a tela "Para quem é" (PropV2CursoFaixa).
+        Material(
           color: colors.primaryContainer,
-          children: [
-            Row(
-              spacing: AppSpacing.md,
-              children: [
-                Icon(
-                  Icons.groups_outlined,
-                  size: AppIconSize.standard,
-                  color: colors.primary,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 2,
-                    children: [
-                      Text(sale.audience.title, style: _strong(context)),
-                      if (sale.audience.summary != null)
-                        Text(
-                          sale.audience.summary!,
-                          style: _body(context, color: colors.onSurface),
-                        ),
-                    ],
+          borderRadius: BorderRadius.circular(AppShape.large),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            key: CoursePreviewKeys.audience,
+            onTap: () => context.push(Routes.pilaresBand),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Row(
+                spacing: AppSpacing.md,
+                children: [
+                  Icon(
+                    Icons.groups_outlined,
+                    size: AppIconSize.standard,
+                    color: colors.primary,
                   ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: AppIconSize.standard,
-                  color: colors.primary,
-                ),
-              ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 2,
+                      children: [
+                        Text(sale.audience.title, style: _strong(context)),
+                        if (sale.audience.summary != null)
+                          Text(
+                            sale.audience.summary!,
+                            style: _body(context, color: colors.onSurface),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: AppIconSize.standard,
+                    color: colors.primary,
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
         _Card(

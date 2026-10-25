@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/course_preview_keys.dart';
 import 'package:lucena/ui/course_preview/view_models/course_preview_cubit.dart';
+import 'package:lucena/ui/course_preview/widgets/course_band_preview_screen.dart';
 import 'package:lucena/ui/course_preview/widgets/course_chapter_preview_screen.dart';
 import 'package:lucena/ui/course_preview/widgets/course_map_preview_screen.dart';
 import 'package:lucena/ui/course_preview/widgets/course_sale_screen.dart';
@@ -47,6 +48,11 @@ void main() {
           path: Routes.pilaresSale,
           builder: (context, state) => provide(const CourseSaleScreen()),
           routes: [
+            GoRoute(
+              path: 'faixa',
+              builder: (context, state) =>
+                  provide(const CourseBandPreviewScreen()),
+            ),
             GoRoute(
               path: 'mapa',
               builder: (context, state) =>
@@ -98,6 +104,28 @@ void main() {
     expect(preview.sale.faq, isNotEmpty);
     expect(preview.map.chapters, hasLength(preview.map.total));
     expect(preview.chapter.lessons, isNotEmpty);
+  });
+
+  testWidgets('o cartão da faixa abre "Para quem é" com o gráfico e o '
+      'aviso', (tester) async {
+    setPhoneSize(tester, phoneSizes.first);
+    await pump(tester);
+    final card = find.byKey(CoursePreviewKeys.audience);
+    await tester.scrollUntilVisible(card, 200, scrollable: saleScrollable());
+    await tester.ensureVisible(card);
+    await tester.pumpAndSettle();
+    await tester.tap(card);
+    await tester.pumpAndSettle();
+    expect(find.byKey(CoursePreviewKeys.band), findsOneWidget);
+    expect(find.text('De 1000 a 2200 no Lichess'), findsOneWidget);
+    expect(find.text('Garfo'), findsOneWidget);
+    expect(find.text('14,6 %'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Sem promessa de rating'),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(find.text('Sem promessa de rating'), findsOneWidget);
   });
 
   for (final size in phoneSizes) {
