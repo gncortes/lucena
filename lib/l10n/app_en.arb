@@ -9316,6 +9316,7 @@
     }
   },
   "chapterExercisesCount": "{count, plural, =1{1 practice exercise} other{{count} practice exercises}}",
+  "chapterExercisesTitle": "Exercises",
   "@chapterExercisesCount": {
     "description": "Last row of the chapter lesson list: how many practice exercises it has.",
     "placeholders": {
@@ -9323,6 +9324,9 @@
         "type": "int"
       }
     }
+  },
+  "@chapterExercisesTitle": {
+    "description": "Last row of a course chapter lesson list: the chapter exercises, without the count."
   },
   "chapterContinueLesson": "Continue lesson {number}",
   "@chapterContinueLesson": {

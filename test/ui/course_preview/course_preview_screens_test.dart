@@ -170,8 +170,8 @@ void main() {
       for (var n = 1; n <= 6; n++) {
         expect(find.byKey(CoursePreviewKeys.summaryChapter(n)), findsOneWidget);
       }
-      expect(find.text('1 · Ataque duplo e peças vulneráveis'), findsOneWidget);
-      expect(find.text('1.5'), findsOneWidget);
+      expect(find.text('1 · Ataque duplo e peças soltas'), findsOneWidget);
+      expect(find.text('1.4'), findsOneWidget);
       expect(find.text('Exercícios'), findsNWidgets(5));
       expect(find.text('6 · Aberturas'), findsOneWidget);
       expect(find.text('6.5'), findsNothing);
@@ -228,6 +228,13 @@ void main() {
       }
       final exercises = rectOf(tester, CoursePreviewKeys.chapterExercises);
       expect(exercises.height, greaterThanOrEqualTo(48));
+      expect(
+        find.descendant(
+          of: find.byKey(CoursePreviewKeys.chapterExercises),
+          matching: find.text('Exercícios'),
+        ),
+        findsOneWidget,
+      );
       final start = rectOf(tester, CoursePreviewKeys.chapterStart);
       expect(start.height, closeToDp(52));
       expect(start.left, closeToDp(16));

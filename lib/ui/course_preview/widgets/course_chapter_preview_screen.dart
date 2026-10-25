@@ -50,7 +50,7 @@ class CourseChapterPreviewScreen extends StatelessWidget {
                       key: CoursePreviewKeys.chapterExercises,
                       kind: ChapterRowKind.exercises,
                       number: chapter.exercisesNumber,
-                      title: l10n.chapterExercisesCount(chapter.exercisesCount),
+                      title: l10n.chapterExercisesTitle,
                       onTap: () {},
                     ),
                   ),

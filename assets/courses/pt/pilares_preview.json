@@ -3,8 +3,8 @@
     "overline": "Curso",
     "title": "Pilares do Xadrez",
     "line": "Tática, jogo posicional, finais, cálculo e aberturas, com exercícios em cada capítulo.",
-    "lessons": 82,
-    "exercises": "+750",
+    "lessons": 84,
+    "exercises": "+800",
     "price": "R$ 59,90",
     "priceNote": "Pagamento único, sem mensalidade",
     "speech": "Em cada lição, eu explico a ideia numa posição e a mostro em partidas reais. Depois você a aplica: joga a posição e resolve os exercícios.",
@@ -69,8 +69,8 @@
     "included": [
       {
         "icon": "school",
-        "title": "82 lições",
-        "summary": "62 de tática, jogo posicional e finais, e 20 das suas aberturas."
+        "title": "84 lições",
+        "summary": "64 de tática, jogo posicional e finais, e 20 das suas aberturas."
       },
       {
         "icon": "menu_book",
@@ -145,12 +145,11 @@
         "chapters": [
           {
             "number": 1,
-            "title": "Ataque duplo e peças vulneráveis",
+            "title": "Ataque duplo e peças soltas",
             "lessons": [
-              "Ataque duplo",
               "Garfo de cavalo",
-              "Peça pendurada",
-              "Peça presa"
+              "Ataque duplo da dama e das outras peças",
+              "Peça solta: contar atacantes e defensores"
             ],
             "exercises": "Exercícios"
           },
@@ -170,6 +169,7 @@
             "lessons": [
               "Mate do corredor",
               "Mates com dama e torre",
+              "Mates com torre e bispo",
               "Mates com cavalo"
             ],
             "exercises": "Exercícios"
@@ -189,7 +189,7 @@
             "title": "Princípios da abertura",
             "lessons": [
               "Centro, desenvolvimento e roque",
-              "Armadilhas e gambitos"
+              "Armadilhas e gambitos de clube"
             ],
             "exercises": "Exercícios"
           },
@@ -208,7 +208,7 @@
       {
         "number": "II",
         "title": "Tática: mais motivos e a defesa",
-        "lessons": 13,
+        "lessons": 14,
         "chapters": [
           {
             "number": 7,
@@ -216,17 +216,17 @@
             "lessons": [
               "Sobrecarga",
               "Eliminação do defensor",
-              "Interferência"
+              "Peça presa"
             ],
             "exercises": "Exercícios"
           },
           {
             "number": 8,
-            "title": "Linhas abertas e lances forçados",
+            "title": "Lances forçados",
             "lessons": [
-              "Desobstrução",
-              "Xeque duplo",
-              "Lance intermediário"
+              "Xeque descoberto e xeque duplo",
+              "Lance intermediário",
+              "Desobstrução"
             ],
             "exercises": "Exercícios"
           },
@@ -234,9 +234,10 @@
             "number": 9,
             "title": "Recursos defensivos",
             "lessons": [
+              "O lance de defesa",
               "Contra-ataque",
               "Xeque perpétuo",
-              "Afogamento"
+              "Afogamento como defesa"
             ],
             "exercises": "Exercícios"
           },
@@ -280,8 +281,8 @@
             "number": 13,
             "title": "Estruturas típicas",
             "lessons": [
-              "Estrutura Carlsbad e ataque de minoria",
-              "Estrutura Maróczy e Ouriço"
+              "Carlsbad e ataque de minoria",
+              "Maróczy e Ouriço"
             ],
             "exercises": "Exercícios"
           },
@@ -290,7 +291,7 @@
             "title": "Casas e colunas",
             "lessons": [
               "Casa fraca e posto avançado",
-              "Coluna aberta e sétima fileira",
+              "Coluna aberta, semiaberta e sétima fileira",
               "Melhorar a pior peça"
             ],
             "exercises": "Exercícios"
@@ -300,7 +301,7 @@
             "title": "Bispos e cavalos",
             "lessons": [
               "Bispo bom e bispo mau",
-              "Bispo contra cavalo"
+              "Bispo contra cavalo e o par de bispos"
             ],
             "exercises": "Exercícios"
           },
@@ -337,7 +338,7 @@
             "title": "Converter e defender",
             "lessons": [
               "Converter a vantagem",
-              "Trocar peças para aliviar a defesa",
+              "Trocar peças: quando sim e quando não",
               "O princípio das duas fraquezas",
               "Defesa ativa"
             ],
@@ -347,22 +348,22 @@
             "number": 19,
             "title": "Finais de peões",
             "lessons": [
-              "Regra do quadrado",
-              "Oposição",
-              "Casas-chave",
-              "Peão passado afastado"
+              "A regra do quadrado",
+              "Casas-chave e oposição",
+              "Peão de torre e bispo da cor errada",
+              "Peão passado afastado",
+              "Corrida de peões"
             ],
             "exercises": "Exercícios"
           },
           {
             "number": 20,
-            "title": "Finais de torre e de bispo",
+            "title": "Finais de dama e de torre",
             "lessons": [
-              "Posição de Lucena",
-              "Posição de Philidor",
+              "Dama contra peão na sétima",
+              "Lucena",
               "Torre atrás do peão passado",
-              "Corte do rei",
-              "Peão de torre e bispo da cor errada"
+              "Philidor"
             ],
             "exercises": "Exercícios"
           },
@@ -381,7 +382,7 @@
       {
         "number": "V",
         "title": "Combinações e cálculo",
-        "lessons": 13,
+        "lessons": 14,
         "chapters": [
           {
             "number": 22,
@@ -397,7 +398,8 @@
             "number": 23,
             "title": "Ataque e dinâmica",
             "lessons": [
-              "Ataque com roques opostos",
+              "Rei no centro",
+              "Roques opostos",
               "Dinâmica contra estática"
             ],
             "exercises": "Exercícios"
@@ -472,8 +474,8 @@
       {
         "id": "c1",
         "state": "approved",
-        "title": "1 · Ataque duplo e peças vulneráveis",
-        "summary": "Ataque duplo, garfo de cavalo, peça pendurada, peça presa.",
+        "title": "1 · Ataque duplo e peças soltas",
+        "summary": "Garfo de cavalo, ataque duplo, peça solta.",
         "medal": "perfect"
       },
       {
@@ -487,7 +489,7 @@
         "id": "c3",
         "state": "approved",
         "title": "3 · Mates básicos",
-        "summary": "Mate do corredor, mates com dama e torre, mates com cavalo.",
+        "summary": "Mate do corredor e mates com dama, torre, bispo e cavalo.",
         "medal": "good"
       },
       {
@@ -530,7 +532,7 @@
         "id": "5.2",
         "kind": "other",
         "number": "5.2",
-        "title": "Armadilhas e gambitos",
+        "title": "Armadilhas e gambitos de clube",
         "summary": ""
       }
     ],

@@ -1807,6 +1807,7 @@
   "schoolLessonPlace": "Parte {part} · lição {number}",
   "coursePartProgress": "{done} de {total}",
   "chapterExercisesCount": "{count, plural, =1{1 exercício prático} other{{count} exercícios práticos}}",
+  "chapterExercisesTitle": "Exercícios",
   "chapterContinueLesson": "Continuar a lição {number}",
   "chapterStartLesson": "Começar a lição {number}",
   "courseSaleOverview": "Visão geral",

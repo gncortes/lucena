@@ -1766,6 +1766,7 @@
   "schoolLessonPlace": "[Påŕt {part} · léššöñ {number} one two three]",
   "coursePartProgress": "[{done} öf {total} one two]",
   "chapterExercisesCount": "{count, plural, =1{[1 pŕåçtîçé éxéŕçîšé one two]} other{[{count} pŕåçtîçé éxéŕçîšéš one two three]}}",
+  "chapterExercisesTitle": "[Éxéŕçîšéš one]",
   "chapterContinueLesson": "[Çöñtîñûé léššöñ {number} one two three]",
   "chapterStartLesson": "[Štåŕt léššöñ {number} one two three]",
   "courseSaleOverview": "[Övéŕvîéw one]",
