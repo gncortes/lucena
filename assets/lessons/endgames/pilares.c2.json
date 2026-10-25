@@ -14,10 +14,15 @@
    "id": "skewer",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c2/skewer.json"
+  },
+  {
+   "id": "discoveredAttack",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c2/discoveredAttack.json"
   }
  ],
- "passScore": 23,
- "maxScore": 31,
+ "passScore": 35,
+ "maxScore": 47,
  "keyPositions": [],
  "references": [
   {
@@ -138,6 +143,62 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle elkG9)",
    "url": "https://lichess.org/kQPNmr2z#59"
+  },
+  {
+   "id": "lichessGameGuUYz",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle GuUYz)",
+   "url": "https://lichess.org/GhuBcOYe/black#44"
+  },
+  {
+   "id": "lichessGameTTyzD",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle TTyzD)",
+   "url": "https://lichess.org/TA5B8C0w/black#34"
+  },
+  {
+   "id": "lichessGamea5IES",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle a5IES)",
+   "url": "https://lichess.org/W46tEKET#57"
+  },
+  {
+   "id": "lichessGameMqXuj",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle MqXuj)",
+   "url": "https://lichess.org/qJ1TWk1C/black#34"
+  },
+  {
+   "id": "lichessGamegCpBV",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle gCpBV)",
+   "url": "https://lichess.org/K8yASXMx/black#28"
+  },
+  {
+   "id": "lichessGameH0ICS",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle H0ICS)",
+   "url": "https://lichess.org/PViE3bnY/black#28"
+  },
+  {
+   "id": "lichessGameHFUzN",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle HFUzN)",
+   "url": "https://lichess.org/DALW7DJ7/black#60"
+  },
+  {
+   "id": "lichessGamesSmBg",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle sSmBg)",
+   "url": "https://lichess.org/jTKBVLlB#43"
   }
  ],
  "exercises": [
@@ -523,6 +584,213 @@
      "teach": "d6d1",
      "accept": [
       "d6d1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.pMe9U",
+   "capitulo": "discoveredAttack",
+   "stars": 1,
+   "fen": "6k1/p4pp1/3q3p/3B4/2p5/P1B1r2P/1P4P1/3R2K1 w - - 5 34",
+   "goal": "win",
+   "origin": "lichess:pMe9U",
+   "line": [
+    {
+     "teach": "d5f7",
+     "accept": [
+      "d5f7"
+     ],
+     "reply": "g8f7"
+    },
+    {
+     "teach": "d1d6",
+     "accept": [
+      "d1d6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.nitC8",
+   "capitulo": "discoveredAttack",
+   "stars": 1,
+   "fen": "1r1q1rk1/1pp2ppp/p2b1n2/8/3Q4/1PNB3P/P1PP2P1/R1B2RK1 b - - 0 17",
+   "goal": "win",
+   "origin": "lichess:nitC8",
+   "line": [
+    {
+     "teach": "d6h2",
+     "accept": [
+      "d6h2"
+     ],
+     "reply": "g1h2"
+    },
+    {
+     "teach": "d8d4",
+     "accept": [
+      "d8d4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.uCdrn",
+   "capitulo": "discoveredAttack",
+   "stars": 1,
+   "fen": "4r1k1/2p1bqpp/p7/1p3NP1/4Q2P/1P6/1PP2P2/2K1R3 b - - 3 26",
+   "goal": "win",
+   "origin": "lichess:uCdrn",
+   "line": [
+    {
+     "teach": "e7g5",
+     "accept": [
+      "e7g5"
+     ],
+     "reply": "h4g5"
+    },
+    {
+     "teach": "e8e4",
+     "accept": [
+      "e8e4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.MEcMu",
+   "capitulo": "discoveredAttack",
+   "stars": 1,
+   "fen": "6rk/4Q1p1/3R3p/ppq3p1/2p5/P4P2/1P4PP/7K w - - 4 43",
+   "goal": "win",
+   "origin": "lichess:MEcMu",
+   "line": [
+    {
+     "teach": "d6h6",
+     "accept": [
+      "d6h6"
+     ],
+     "reply": "g7h6"
+    },
+    {
+     "teach": "e7c5",
+     "accept": [
+      "e7c5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.f4MCM",
+   "capitulo": "discoveredAttack",
+   "stars": 2,
+   "fen": "R1b1r1k1/1p4pp/1p6/8/2P5/1P1Rp3/1P2K1PP/8 b - - 3 28",
+   "goal": "win",
+   "origin": "lichess:f4MCM",
+   "line": [
+    {
+     "teach": "c8g4",
+     "accept": [
+      "c8g4"
+     ],
+     "reply": "e2e1"
+    },
+    {
+     "teach": "e8a8",
+     "accept": [
+      "e8a8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.qwxrc",
+   "capitulo": "discoveredAttack",
+   "stars": 2,
+   "fen": "5rk1/p3b1p1/4p2p/1p1pP2q/2pP2N1/P3PQ1P/1P6/5RK1 w - - 1 26",
+   "goal": "win",
+   "origin": "lichess:qwxrc",
+   "line": [
+    {
+     "teach": "g4f6",
+     "accept": [
+      "g4f6"
+     ],
+     "reply": "e7f6"
+    },
+    {
+     "teach": "f3h5",
+     "accept": [
+      "f3h5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.RBGga",
+   "capitulo": "discoveredAttack",
+   "stars": 2,
+   "fen": "2r2k1r/1b2bpp1/1q1pp3/1B2n1P1/3NP2P/P7/1PP2Q2/2K2R1R w - - 1 24",
+   "goal": "win",
+   "origin": "lichess:RBGga",
+   "line": [
+    {
+     "teach": "d4e6",
+     "accept": [
+      "d4e6"
+     ],
+     "reply": "f8g8"
+    },
+    {
+     "teach": "f2b6",
+     "accept": [
+      "f2b6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.w5vB6",
+   "capitulo": "discoveredAttack",
+   "stars": 3,
+   "fen": "rnb1k2r/4nppp/p3p3/1p1pP1N1/1b1q4/2NB4/PP3PPP/R1BQK2R w KQkq - 0 11",
+   "goal": "win",
+   "origin": "lichess:w5vB6",
+   "line": [
+    {
+     "teach": "d3b5",
+     "accept": [
+      "d3b5"
+     ],
+     "reply": "a6b5"
+    },
+    {
+     "teach": "d1d4",
+     "accept": [
+      "d1d4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "discoveredAttack.Oo4l7",
+   "capitulo": "discoveredAttack",
+   "stars": 3,
+   "fen": "r3nrk1/1p1q1ppb/2pp4/p2PpN1P/n1P1P1Q1/5P2/PP6/R3KBR1 w Q - 0 20",
+   "goal": "win",
+   "origin": "lichess:Oo4l7",
+   "line": [
+    {
+     "teach": "f5h6",
+     "accept": [
+      "f5h6"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "g4d7",
+     "accept": [
+      "g4d7"
      ]
     }
    ]
