@@ -21,8 +21,8 @@
    "roteiro": "assets/lessons/roteiros/pilares.c5/kingSafety.json"
   }
  ],
- "passScore": 34,
- "maxScore": 45,
+ "passScore": 51,
+ "maxScore": 68,
  "keyPositions": [],
  "references": [
   {
@@ -388,6 +388,90 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle VYUT6)",
    "url": "https://lichess.org/7bCyt8Wj#9"
+  },
+  {
+   "id": "lichessGamecOn3d",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle cOn3d)",
+   "url": "https://lichess.org/W23xi3oU/black#14"
+  },
+  {
+   "id": "lichessGameAVpkT",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AVpkT)",
+   "url": "https://lichess.org/KHgNHYcS#21"
+  },
+  {
+   "id": "lichessGamey4OlH",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle y4OlH)",
+   "url": "https://lichess.org/Q02YZNLX/black#28"
+  },
+  {
+   "id": "lichessGameQ257P",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Q257P)",
+   "url": "https://lichess.org/fNUsvObt/black#26"
+  },
+  {
+   "id": "lichessGameArKqM",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ArKqM)",
+   "url": "https://lichess.org/WIWVp1gK/black#16"
+  },
+  {
+   "id": "lichessGameZinGn",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ZinGn)",
+   "url": "https://lichess.org/hTjysyzs#21"
+  },
+  {
+   "id": "lichessGame4bhj9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 4bhj9)",
+   "url": "https://lichess.org/WCieIQMS/black#30"
+  },
+  {
+   "id": "lichessGamezvar7",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle zvar7)",
+   "url": "https://lichess.org/7hNQGDR0#21"
+  },
+  {
+   "id": "lichessGameAxsOa",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AxsOa)",
+   "url": "https://lichess.org/F90sWZDq/black#44"
+  },
+  {
+   "id": "lichessGameB1rgk",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle B1rgk)",
+   "url": "https://lichess.org/wOi3om5D/black#38"
+  },
+  {
+   "id": "lichessGameUPBwm",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle UPBwm)",
+   "url": "https://lichess.org/pch7auFc/black#38"
+  },
+  {
+   "id": "lichessGame653or",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 653or)",
+   "url": "https://lichess.org/284MtH2H/black#10"
   }
  ],
  "exercises": [
@@ -953,6 +1037,241 @@
       "b3c4",
       "a1e1",
       "a1a2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.cOn3d",
+   "capitulo": "openingPrinciples",
+   "teste": true,
+   "stars": 1,
+   "fen": "r1b1kbnr/ppp2ppp/2nq4/6N1/2B1p3/1PP5/P2P1PPP/RNBQK2R b KQkq - 3 7",
+   "goal": "draw",
+   "origin": "lichess:cOn3d",
+   "line": [
+    {
+     "teach": "c6e5",
+     "accept": [
+      "c6e5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.653or",
+   "capitulo": "openingPrinciples",
+   "teste": true,
+   "stars": 1,
+   "fen": "rnb1kb1r/pp2pppp/2q2n2/2p5/5P2/2N2Q2/PPPP2PP/R1B1KBNR w KQkq - 4 6",
+   "goal": "win",
+   "origin": "lichess:653or",
+   "line": [
+    {
+     "teach": "f1b5",
+     "accept": [
+      "f1b5"
+     ],
+     "reply": "a7a6"
+    },
+    {
+     "teach": "b5c6",
+     "accept": [
+      "b5c6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.AVpkT",
+   "capitulo": "openingPrinciples",
+   "teste": true,
+   "stars": 2,
+   "fen": "r1b1k1nr/pp1pqp2/2pb2pp/3Q4/2B1PP2/2N5/PPP3PP/R1B2RK1 w kq - 0 11",
+   "goal": "draw",
+   "origin": "lichess:AVpkT",
+   "line": [
+    {
+     "teach": "d5d3",
+     "accept": [
+      "d5d3",
+      "d5d2",
+      "d5d1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.y4OlH",
+   "capitulo": "kingSafety",
+   "teste": true,
+   "stars": 3,
+   "fen": "r1b2rk1/1pp2ppp/p1p1nb2/2q5/6N1/5NQ1/PPP2PPP/R1B1R1K1 b - - 7 14",
+   "goal": "draw",
+   "origin": "lichess:y4OlH",
+   "line": [
+    {
+     "teach": "f6e7",
+     "accept": [
+      "f6e7",
+      "f6d8",
+      "c5e7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.Q257P",
+   "capitulo": "clubTraps",
+   "teste": true,
+   "stars": 1,
+   "fen": "r2qk1nr/pp3ppp/2n1p2b/8/2P5/3P1Q2/PP1N2PP/R1B2R1K w kq - 3 14",
+   "goal": "win",
+   "origin": "lichess:Q257P",
+   "line": [
+    {
+     "teach": "f3f7",
+     "accept": [
+      "f3f7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.ArKqM",
+   "capitulo": "clubTraps",
+   "teste": true,
+   "stars": 2,
+   "fen": "rnb1k1nr/ppp2ppp/1b1p4/3QN1q1/2B1P3/2P5/PP3PPP/RN2K2R w KQkq - 0 9",
+   "goal": "win",
+   "origin": "lichess:ArKqM",
+   "line": [
+    {
+     "teach": "d5f7",
+     "accept": [
+      "d5f7"
+     ],
+     "reply": "e8d8"
+    },
+    {
+     "teach": "f7f8",
+     "accept": [
+      "f7f8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.ZinGn",
+   "capitulo": "clubTraps",
+   "teste": true,
+   "stars": 3,
+   "fen": "N1bk2nr/pp1p1ppp/8/4P3/1b6/5N2/1qPBPPPP/2nQKB1R w K - 1 11",
+   "goal": "draw",
+   "origin": "lichess:ZinGn",
+   "line": [
+    {
+     "teach": "d2b4",
+     "accept": [
+      "d2b4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.4bhj9",
+   "capitulo": "clubTraps",
+   "teste": true,
+   "stars": 3,
+   "fen": "r1b1k2r/pppp1ppp/8/b3n2q/2B5/BQ5P/P1p2PP1/RN2R1K1 w kq - 0 16",
+   "goal": "win",
+   "origin": "lichess:4bhj9",
+   "line": [
+    {
+     "teach": "c4f7",
+     "accept": [
+      "c4f7"
+     ],
+     "reply": "h5f7"
+    },
+    {
+     "teach": "e1e5",
+     "accept": [
+      "e1e5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.zvar7",
+   "capitulo": "kingSafety",
+   "teste": true,
+   "stars": 1,
+   "fen": "r3k2r/1bqp1ppp/ppnbp3/2p5/2P1P1n1/1PN2N2/PB1P1PPP/R2QRBK1 w kq - 6 11",
+   "goal": "draw",
+   "origin": "lichess:zvar7",
+   "line": [
+    {
+     "teach": "g2g3",
+     "accept": [
+      "g2g3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.AxsOa",
+   "capitulo": "kingSafety",
+   "teste": true,
+   "stars": 2,
+   "fen": "3q2rk/p1pb1prp/2p5/3pQp2/8/2NP2PR/PPP2P1P/R5K1 b - - 0 22",
+   "goal": "draw",
+   "origin": "lichess:AxsOa",
+   "line": [
+    {
+     "teach": "f7f6",
+     "accept": [
+      "f7f6",
+      "d8g5",
+      "g8e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.B1rgk",
+   "capitulo": "kingSafety",
+   "teste": true,
+   "stars": 2,
+   "fen": "r4rk1/qp3ppp/p1npb3/3NP2Q/8/1N1B4/PPP3PP/5R1K b - - 0 19",
+   "goal": "draw",
+   "origin": "lichess:B1rgk",
+   "line": [
+    {
+     "teach": "h7h6",
+     "accept": [
+      "h7h6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t5.UPBwm",
+   "capitulo": "kingSafety",
+   "teste": true,
+   "stars": 2,
+   "fen": "r1b2rk1/pp1p1ppp/8/2pQ4/2B5/1Pq2PP1/P6P/R3R1K1 b - - 1 19",
+   "goal": "draw",
+   "origin": "lichess:UPBwm",
+   "line": [
+    {
+     "teach": "g7g6",
+     "accept": [
+      "g7g6",
+      "c3f6",
+      "h7h6",
+      "c3d4",
+      "h7h5"
      ]
     }
    ]
