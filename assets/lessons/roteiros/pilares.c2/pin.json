@@ -480,7 +480,8 @@
       "fim": "rot.pin.pratica.valeAqui.fim",
       "erros": {
        "b7g2": "rot.pin.pratica.valeAqui.err.b7g2",
-       "h8g8": "rot.pin.pratica.valeAqui.err.h8g8"
+       "h8g8": "rot.pin.pratica.valeAqui.err.h8g8",
+       "e7d5": "rot.pin.pratica.valeAqui.err.e7d5"
       }
      }
     },
@@ -525,8 +526,8 @@
     },
     {
      "id": "relativa",
-     "fen": "r3kbnr/pp3pp1/2n1p2p/qB1pPb2/1P1P4/P1N5/5PPP/R1BQK1NR b KQkq - 0 9",
-     "vira": true,
+     "fen": "r2qk2r/ppp2R2/3pn2p/4p1n1/4P2B/8/PPPN2PP/R2Q2K1 w kq - 0 14",
+     "vira": false,
      "objetivo": "ganhar",
      "fim": "etapa",
      "entrada": [],
@@ -534,37 +535,39 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "f8",
-       "a5"
+       "d1",
+       "h4"
       ],
-      "maquina": "w",
+      "maquina": "b",
       "limite": 10,
       "linha": [
        {
         "certos": [
-         "f8b4"
+         "d1h5"
         ],
-        "resposta": "a3b4"
+        "resposta": "g5f7"
        },
        {
         "certos": [
-         "a5a1"
+         "h4d8"
         ]
        }
       ],
       "t": "rot.pin.pratica.relativa.enunciado",
       "fim": "rot.pin.pratica.relativa.fim",
       "erros": {
-       "a5b6": "rot.pin.pratica.relativa.err.recuo",
-       "a5c7": "rot.pin.pratica.relativa.err.recuo",
-       "a5d8": "rot.pin.pratica.relativa.err.recuo",
-       "a5b5": "rot.pin.pratica.relativa.err.a5b5",
-       "a5b4": "rot.pin.pratica.relativa.err.a5b4",
-       "a5a3": "rot.pin.pratica.relativa.err.a5a3"
+       "h4g5": "rot.pin.pratica.relativa.err.h4g5",
+       "f7f1": "rot.pin.pratica.relativa.err.recuo",
+       "f7f2": "rot.pin.pratica.relativa.err.recuo",
+       "f7f5": "rot.pin.pratica.relativa.err.recuo",
+       "f7f3": "rot.pin.pratica.relativa.err.f7f3",
+       "d1f1": "rot.pin.pratica.relativa.err.d1f1",
+       "d1g4": "rot.pin.pratica.relativa.err.d1g4"
       },
       "errosPos": {
-       "r3k1nr/pp3pp1/2n1p2p/qB1pPb2/1P1P4/2N5/5PPP/R1BQK1NR b KQkq - 0 10": {
-        "a5b4": "rot.pin.pratica.relativa.err2.a5b4"
+       "r2qk2r/ppp2n2/3pn2p/4p2Q/4P2B/8/PPPN2PP/R5K1 w kq - 0 15": {
+        "a1f1": "rot.pin.pratica.relativa.err2.a1f1",
+        "h5g4": "rot.pin.pratica.relativa.err2.a1f1"
        }
       }
      }

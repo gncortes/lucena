@@ -11,8 +11,8 @@
    "roteiro": "assets/lessons/roteiros/pilares.c2/pin.json"
   }
  ],
- "passScore": 10,
- "maxScore": 13,
+ "passScore": 12,
+ "maxScore": 15,
  "keyPositions": [],
  "references": [
   {
@@ -72,11 +72,11 @@
    "url": "https://lichess.org/Vm6zUdLm/black#56"
   },
   {
-   "id": "lichessGameRO1QM",
+   "id": "lichessGameQnI0X",
    "kind": "game",
    "author": "lichess.org",
-   "title": "Lichess game (puzzle RO1QM)",
-   "url": "https://lichess.org/Syk6obEw#17"
+   "title": "Lichess game (puzzle QnI0X)",
+   "url": "https://lichess.org/JWfdjs09/black#26"
   }
  ],
  "exercises": [
@@ -168,24 +168,47 @@
    ]
   },
   {
-   "id": "pin.KIpz7",
+   "id": "pin.HYQzi",
    "capitulo": "pin",
    "stars": 2,
-   "fen": "r3k2r/2p1qpp1/p1n1pn1p/1p3b2/Q1BP1B2/P3P2P/1P1N1PP1/R4RK1 w kq - 0 13",
+   "fen": "r2q2k1/1pn1b1pp/8/p1pr2PP/4N3/8/PP1QBP2/R3K2R w KQ - 0 22",
    "goal": "win",
-   "origin": "lichess:KIpz7",
+   "origin": "lichess:HYQzi",
    "line": [
     {
-     "teach": "c4b5",
+     "teach": "e2c4",
      "accept": [
-      "c4b5"
+      "e2c4"
      ],
-     "reply": "a6b5"
+     "reply": "b7b5"
     },
     {
-     "teach": "a4a8",
+     "teach": "c4d5",
      "accept": [
-      "a4a8"
+      "c4d5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.5MC0G",
+   "capitulo": "pin",
+   "stars": 2,
+   "fen": "r5k1/ppp3pp/2n5/3nq3/4p3/1B3r2/PPPP3P/R1BQR2K w - - 4 17",
+   "goal": "win",
+   "origin": "lichess:5MC0G",
+   "line": [
+    {
+     "teach": "d1f3",
+     "accept": [
+      "d1f3"
+     ],
+     "reply": "e4f3"
+    },
+    {
+     "teach": "e1e5",
+     "accept": [
+      "e1e5"
      ]
     }
    ]
