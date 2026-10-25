@@ -26,8 +26,8 @@
    "roteiro": "assets/lessons/roteiros/pilares.c12/kingWeaknesses.json"
   }
  ],
- "passScore": 44,
- "maxScore": 59,
+ "passScore": 64,
+ "maxScore": 85,
  "keyPositions": [],
  "references": [
   {
@@ -463,6 +463,90 @@
    "author": "Wikipédia",
    "title": "Variante do Dragão",
    "url": "https://pt.wikipedia.org/wiki/Variante_do_Drag%C3%A3o"
+  },
+  {
+   "id": "lichessGame1OsgD",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 1OsgD)",
+   "url": "https://lichess.org/zztpjbW7#43"
+  },
+  {
+   "id": "lichessGamem1WHp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle m1WHp)",
+   "url": "https://lichess.org/gDs7OegF/black#44"
+  },
+  {
+   "id": "lichessGame4mNHl",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 4mNHl)",
+   "url": "https://lichess.org/z2QdYQoD/black#30"
+  },
+  {
+   "id": "lichessGamehsFF2",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle hsFF2)",
+   "url": "https://lichess.org/PETqRfch/black#50"
+  },
+  {
+   "id": "lichessGameNDVs7",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle NDVs7)",
+   "url": "https://lichess.org/iAMgTrps/black#68"
+  },
+  {
+   "id": "lichessGameLy1BK",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Ly1BK)",
+   "url": "https://lichess.org/K5U9OkuT/black#50"
+  },
+  {
+   "id": "lichessGameclcE8",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle clcE8)",
+   "url": "https://lichess.org/nu0QjTzP/black#42"
+  },
+  {
+   "id": "lichessGamegvanW",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle gvanW)",
+   "url": "https://lichess.org/pfPlHGEl/black#28"
+  },
+  {
+   "id": "lichessGameaDXC4",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle aDXC4)",
+   "url": "https://lichess.org/ImW3luAc#53"
+  },
+  {
+   "id": "lichessGameqG898",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle qG898)",
+   "url": "https://lichess.org/zADfwUmy#49"
+  },
+  {
+   "id": "lichessGameAzS40",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AzS40)",
+   "url": "https://lichess.org/iuh7q3sK/black#68"
+  },
+  {
+   "id": "lichessGame5cxJI",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 5cxJI)",
+   "url": "https://lichess.org/pV8RWP3P#57"
   }
  ],
  "exercises": [
@@ -1123,6 +1207,280 @@
      "teach": "c3h8",
      "accept": [
       "c3h8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.1OsgD",
+   "capitulo": "openFile",
+   "teste": true,
+   "stars": 1,
+   "fen": "3rk3/pp3pp1/2p1p2q/8/4P1n1/2P3P1/PP2Q2P/R3R1K1 b - - 0 22",
+   "goal": "win",
+   "origin": "lichess:1OsgD",
+   "line": [
+    {
+     "teach": "d8d2",
+     "accept": [
+      "d8d2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.m1WHp",
+   "capitulo": "kingWeaknesses",
+   "teste": true,
+   "stars": 2,
+   "fen": "1r4rk/p1p2p1p/2p2Pp1/2qpP3/7Q/5R2/PP4PP/nN5K w - - 0 23",
+   "goal": "win",
+   "origin": "lichess:m1WHp",
+   "line": [
+    {
+     "teach": "h4h7",
+     "accept": [
+      "h4h7"
+     ],
+     "reply": "h8h7"
+    },
+    {
+     "teach": "f3h3",
+     "accept": [
+      "f3h3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.4mNHl",
+   "capitulo": "worstPiece",
+   "teste": true,
+   "stars": 2,
+   "fen": "2rk1b1r/pp1b2pp/5p2/8/2pR4/2N2N2/PP3PPP/2K4R w - - 2 16",
+   "goal": "win",
+   "origin": "lichess:4mNHl",
+   "line": [
+    {
+     "teach": "h1d1",
+     "accept": [
+      "h1d1"
+     ],
+     "reply": "d8c7"
+    },
+    {
+     "teach": "d4d7",
+     "accept": [
+      "d4d7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.hsFF2",
+   "capitulo": "openFile",
+   "teste": true,
+   "stars": 2,
+   "fen": "r5k1/1b1R1pp1/1b5p/8/1p6/1N2p1BP/1PP2PP1/6K1 w - - 0 26",
+   "goal": "win",
+   "origin": "lichess:hsFF2",
+   "line": [
+    {
+     "teach": "d7b7",
+     "accept": [
+      "d7b7"
+     ],
+     "reply": "e3e2"
+    },
+    {
+     "teach": "b7e7",
+     "accept": [
+      "b7e7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.NDVs7",
+   "capitulo": "outpost",
+   "teste": true,
+   "stars": 2,
+   "fen": "6k1/p1q3p1/1pN4p/1P3b2/8/8/P5PP/4Q2K w - - 1 35",
+   "goal": "win",
+   "origin": "lichess:NDVs7",
+   "line": [
+    {
+     "teach": "c6e7",
+     "accept": [
+      "c6e7"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "e7f5",
+     "accept": [
+      "e7f5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.Ly1BK",
+   "capitulo": "kingWeaknesses",
+   "teste": true,
+   "stars": 1,
+   "fen": "r4rk1/1b3p2/p1q1BBpp/8/1p4Q1/8/P1P2PPP/4R1K1 w - - 1 26",
+   "goal": "win",
+   "origin": "lichess:Ly1BK",
+   "line": [
+    {
+     "teach": "g4g6",
+     "accept": [
+      "g4g6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.clcE8",
+   "capitulo": "worstPiece",
+   "teste": true,
+   "stars": 2,
+   "fen": "r4rk1/1p3p1p/p3n1p1/4Q3/1P3P2/P7/5qPP/R1B1R2K w - - 1 22",
+   "goal": "win",
+   "origin": "lichess:clcE8",
+   "line": [
+    {
+     "teach": "c1b2",
+     "accept": [
+      "c1b2"
+     ],
+     "reply": "f2b2"
+    },
+    {
+     "teach": "e5b2",
+     "accept": [
+      "e5b2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.gvanW",
+   "capitulo": "outpost",
+   "teste": true,
+   "stars": 2,
+   "fen": "r1b1r3/1p1p1pkp/p1n2bp1/q1pNp3/2P5/3P1N2/PP1QBPPP/R3K2R w KQ - 6 15",
+   "goal": "win",
+   "origin": "lichess:gvanW",
+   "line": [
+    {
+     "teach": "d2a5",
+     "accept": [
+      "d2a5"
+     ],
+     "reply": "c6a5"
+    },
+    {
+     "teach": "d5c7",
+     "accept": [
+      "d5c7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.aDXC4",
+   "capitulo": "outpost",
+   "teste": true,
+   "stars": 3,
+   "fen": "1q1rr1k1/Q4pb1/1p3npp/1N1pn3/P3p1P1/BP2P2P/2P2P2/2R1RBK1 b - - 0 27",
+   "goal": "win",
+   "origin": "lichess:aDXC4",
+   "line": [
+    {
+     "teach": "e5f3",
+     "accept": [
+      "e5f3"
+     ],
+     "reply": "g1h1"
+    },
+    {
+     "teach": "b8h2",
+     "accept": [
+      "b8h2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.qG898",
+   "capitulo": "openFile",
+   "teste": true,
+   "stars": 3,
+   "fen": "1r2r1k1/p4ppp/2N2b2/2R2P2/8/P5P1/1qQ3KP/5R2 b - - 0 25",
+   "goal": "win",
+   "origin": "lichess:qG898",
+   "line": [
+    {
+     "teach": "e8e2",
+     "accept": [
+      "e8e2"
+     ],
+     "reply": "f1f2"
+    },
+    {
+     "teach": "e2c2",
+     "accept": [
+      "e2c2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.AzS40",
+   "capitulo": "worstPiece",
+   "teste": true,
+   "stars": 3,
+   "fen": "r1r3k1/4Pp2/p2R2pb/1p5p/8/5N2/5PPP/1R4K1 w - - 1 35",
+   "goal": "win",
+   "origin": "lichess:AzS40",
+   "line": [
+    {
+     "teach": "b1d1",
+     "accept": [
+      "b1d1"
+     ],
+     "reply": "c8e8"
+    },
+    {
+     "teach": "d6d8",
+     "accept": [
+      "d6d8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t12.5cxJI",
+   "capitulo": "kingWeaknesses",
+   "teste": true,
+   "stars": 3,
+   "fen": "r3r3/1p1q2k1/2p2p2/p2p1PpQ/P2Pn3/1P2P1P1/6BP/4RR1K b - - 0 29",
+   "goal": "win",
+   "origin": "lichess:5cxJI",
+   "line": [
+    {
+     "teach": "e4g3",
+     "accept": [
+      "e4g3"
+     ],
+     "reply": "h2g3"
+    },
+    {
+     "teach": "e8h8",
+     "accept": [
+      "e8h8"
      ]
     }
    ]
