@@ -1,0 +1,294 @@
+{
+ "id": "pilares.c8",
+ "module": "pilares",
+ "skills": [
+  "pilares.c8"
+ ],
+ "parts": [
+  {
+   "id": "defensiveMove",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c8/defensiveMove.json"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "dm.XAlck",
+   "capitulo": "defensiveMove",
+   "stars": 1,
+   "fen": "r1q1r3/3R1p2/4k3/pp6/2p1p1Q1/4R3/PPP2P1P/6K1 b - - 3 34",
+   "goal": "win",
+   "origin": "lichess:XAlck",
+   "line": [
+    {
+     "teach": "f7f5",
+     "accept": [
+      "f7f5"
+     ],
+     "reply": "e3e4"
+    },
+    {
+     "teach": "e6d7",
+     "accept": [
+      "e6d7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dm.JDu0y",
+   "capitulo": "defensiveMove",
+   "stars": 1,
+   "fen": "8/pp2q1pk/7p/5Q2/3b4/1P6/PB4PP/7K b - - 3 29",
+   "goal": "win",
+   "origin": "lichess:JDu0y",
+   "line": [
+    {
+     "teach": "g7g6",
+     "accept": [
+      "g7g6"
+     ],
+     "reply": "f5a5"
+    },
+    {
+     "teach": "d4b2",
+     "accept": [
+      "d4b2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dm.AejX5",
+   "capitulo": "defensiveMove",
+   "stars": 1,
+   "fen": "2r1k2r/5p1p/Q3p1p1/2p5/Pb2B1P1/5P2/1q2K1P1/2RR4 w k - 0 25",
+   "goal": "win",
+   "origin": "lichess:AejX5",
+   "line": [
+    {
+     "teach": "c1c2",
+     "accept": [
+      "c1c2"
+     ],
+     "reply": "b2c2"
+    },
+    {
+     "teach": "e4c2",
+     "accept": [
+      "e4c2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dm.rwWzZ",
+   "capitulo": "defensiveMove",
+   "stars": 2,
+   "fen": "r2qk2r/ppp2p2/3bp1bp/6p1/2BN4/P1QP2P1/1PP2PP1/R3K2R b KQkq - 2 15",
+   "goal": "win",
+   "origin": "lichess:rwWzZ",
+   "line": [
+    {
+     "teach": "d6e5",
+     "accept": [
+      "d6e5"
+     ],
+     "reply": "c4b5"
+    },
+    {
+     "teach": "c7c6",
+     "accept": [
+      "c7c6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dm.Kw8qU",
+   "capitulo": "defensiveMove",
+   "stars": 2,
+   "fen": "4r1k1/5pp1/2Q3p1/2Pp4/4n3/4P3/1q3PPP/2R3K1 w - - 1 25",
+   "goal": "win",
+   "origin": "lichess:Kw8qU",
+   "line": [
+    {
+     "teach": "c6e8",
+     "accept": [
+      "c6e8"
+     ],
+     "reply": "g8h7"
+    },
+    {
+     "teach": "c1f1",
+     "accept": [
+      "c1f1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dm.oCw6H",
+   "capitulo": "defensiveMove",
+   "stars": 3,
+   "fen": "1r1qkb1r/1p3p1p/p3p3/n2pPp2/Q2P4/4BP2/PPR1NP1P/4R2K b k - 7 21",
+   "goal": "win",
+   "origin": "lichess:oCw6H",
+   "line": [
+    {
+     "teach": "b7b5",
+     "accept": [
+      "b7b5"
+     ],
+     "reply": "a4a5"
+    },
+    {
+     "teach": "d8a5",
+     "accept": [
+      "d8a5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dm.p4VPl",
+   "capitulo": "defensiveMove",
+   "stars": 3,
+   "fen": "Q5k1/2q2pp1/5r1p/P7/8/2n1N3/3r1PPP/R4RK1 b - - 6 36",
+   "goal": "win",
+   "origin": "lichess:p4VPl",
+   "line": [
+    {
+     "teach": "d2d8",
+     "accept": [
+      "d2d8"
+     ],
+     "reply": "a8d8"
+    },
+    {
+     "teach": "c7d8",
+     "accept": [
+      "c7d8"
+     ]
+    }
+   ]
+  }
+ ],
+ "maxScore": 13,
+ "passScore": 10,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "lichessGameibVV5",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ibVV5)",
+   "url": "https://lichess.org/9gyLikID#74"
+  },
+  {
+   "id": "lichessGameXSxji",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle XSxji)",
+   "url": "https://lichess.org/oE2wG5JC/black#77"
+  },
+  {
+   "id": "lichessGameEHORe",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle EHORe)",
+   "url": "https://lichess.org/c4ZaxBNf#66"
+  },
+  {
+   "id": "lichessGamed8sEX",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle d8sEX)",
+   "url": "https://lichess.org/M7FkzPIJ/black#67"
+  },
+  {
+   "id": "lichessGameSuBVb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SuBVb)",
+   "url": "https://lichess.org/VEcznGoI#64"
+  },
+  {
+   "id": "lichessGameSD8nT",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SD8nT)",
+   "url": "https://lichess.org/cOc1YNcW/black#39"
+  },
+  {
+   "id": "lichessGamejcCj9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle jcCj9)",
+   "url": "https://lichess.org/VL7qTDDO#18"
+  },
+  {
+   "id": "lichessGameDTYZa",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle DTYZa)",
+   "url": "https://lichess.org/IVpuscvL#48"
+  },
+  {
+   "id": "lichessGameXAlck",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle XAlck)",
+   "url": "https://lichess.org/VEc3vutR/black#67"
+  },
+  {
+   "id": "lichessGameJDu0y",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle JDu0y)",
+   "url": "https://lichess.org/ClBvK0tt/black#57"
+  },
+  {
+   "id": "lichessGameAejX5",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AejX5)",
+   "url": "https://lichess.org/tS6NKtfu#48"
+  },
+  {
+   "id": "lichessGamerwWzZ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle rwWzZ)",
+   "url": "https://lichess.org/o3hgD4UV/black#29"
+  },
+  {
+   "id": "lichessGameoCw6H",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle oCw6H)",
+   "url": "https://lichess.org/V2uWTJuq/black#41"
+  },
+  {
+   "id": "lichessGameKw8qU",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Kw8qU)",
+   "url": "https://lichess.org/LEfZzD1n#48"
+  },
+  {
+   "id": "lichessGamep4VPl",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle p4VPl)",
+   "url": "https://lichess.org/cFirDdOT/black#71"
+  }
+ ]
+}
