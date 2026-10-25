@@ -207,7 +207,8 @@
        "fen": "2b2r2/p5k1/6pR/8/8/1B1p1P2/PK1B2P1/8 b - - 0 26",
        "t": "rot.twoMotifs.ideia.ex1.l.8"
       }
-     ]
+     ],
+     "ref": "lichessGamexEaWp#44"
     }
    ]
   },
@@ -273,7 +274,8 @@
        "lance": "e2d4",
        "t": "rot.twoMotifs.demos.fischer.l.7"
       }
-     ]
+     ],
+     "ref": "byrneFischer1956"
     },
     {
      "id": "reti",
@@ -329,7 +331,8 @@
        "lance": "g5d8",
        "t": "rot.twoMotifs.demos.reti.l.5"
       }
-     ]
+     ],
+     "ref": "winterRetiTartakower"
     },
     {
      "id": "abreLinha",
@@ -398,7 +401,8 @@
        "lance": "g5f4",
        "t": "rot.twoMotifs.demos.abreLinha.l.6"
       }
-     ]
+     ],
+     "ref": "lichessGamebFwin#48"
     },
     {
      "id": "excecao",
@@ -451,7 +455,8 @@
        "lance": "h4h7",
        "t": "rot.twoMotifs.demos.excecao.c.3"
       }
-     ]
+     ],
+     "ref": "lichessGame1los5#34"
     }
    ]
   },

@@ -1,6 +1,6 @@
 {
  "rot.twoMotifs.ideia.ex1.e1": "Attack: a sacrifice is giving up material on purpose to win something bigger. A combination is a series of forcing moves, with a sacrifice, that ends in a gain.",
- "rot.twoMotifs.ideia.ex1.e2": "This position comes from a game played on Lichess. The black rook on b2 is in your camp, defended by the bishop on g7 along the long diagonal.",
+ "rot.twoMotifs.ideia.ex1.e2": "Game tempate vs NiceTigerPRO, Lichess. The black rook on b2 is in your camp, defended by the bishop on g7 along the long diagonal.",
  "rot.twoMotifs.ideia.ex1.p": "Find the sacrifice with check that prepares a second blow.",
  "rot.twoMotifs.ideia.ex1.certo": "Yes: the rook captures the pawn on h7 with check. The bishop on b3 controls g8, so the king can only escape by capturing the rook.",
  "rot.twoMotifs.ideia.ex1.revela": "The sacrifice is the rook capturing the pawn on h7 with check: the king can only take it, because the bishop on b3 controls g8.",
@@ -25,7 +25,7 @@
  "rot.twoMotifs.ideia.ex1.l.6": "The king steps out of check to g7 and attacks the rook on h6, but the rook on b2 is still undefended.",
  "rot.twoMotifs.ideia.ex1.l.7": "The white king captures the rook on b2. White gave up a rook and got back a rook, a bishop and a pawn.",
  "rot.twoMotifs.ideia.ex1.l.8": "In positions like this, the combination works because the sacrifice prepares the second blow. Without the check on h1, the rook given up would just be lost material.",
- "rot.twoMotifs.demos.fischer.1": "Attack: now let us think from Black's side. This is the Game of the Century: Game Donald Byrne vs Bobby Fischer, Rosenwald Memorial, New York 1956. The black queen on b6 is attacked by the bishop on c5.",
+ "rot.twoMotifs.demos.fischer.1": "Attack: now let us think from Black's side. Game Donald Byrne vs Bobby Fischer, Rosenwald Memorial, New York 1956, the Game of the Century. The black queen on b6 is attacked by the bishop on c5.",
  "rot.twoMotifs.demos.fischer.l.1": "The first motif is the queen sacrifice: Fischer does not save it. The bishop on g4 goes to e6 and attacks the bishop on c4, and taking on c4 will come with check to the king on f1.",
  "rot.twoMotifs.demos.fischer.l.2": "Byrne accepts the sacrifice and captures the queen on b6. Declining would also have lost material for White.",
  "rot.twoMotifs.demos.fischer.l.3": "The bishop captures on c4 with check. The second motif begins, a series of checks by the bishop and the knight.",

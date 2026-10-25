@@ -1,6 +1,6 @@
 {
  "rot.twoMotifs.ideia.ex1.e1": "Ataque: sacrifício é entregar material de propósito para ganhar algo maior. Combinação é uma série de lances forçados, com sacrifício, que termina em ganho.",
- "rot.twoMotifs.ideia.ex1.e2": "Esta posição saiu de uma partida jogada no Lichess. A torre preta em b2 está no seu campo, defendida pelo bispo de g7 pela diagonal longa.",
+ "rot.twoMotifs.ideia.ex1.e2": "Partida tempate × NiceTigerPRO, Lichess. A torre preta em b2 está no seu campo, defendida pelo bispo de g7 pela diagonal longa.",
  "rot.twoMotifs.ideia.ex1.p": "Encontre o sacrifício com xeque que prepara um segundo golpe.",
  "rot.twoMotifs.ideia.ex1.certo": "Isso: a torre captura o peão de h7 com xeque. O bispo de b3 controla g8, então o rei só sai do xeque capturando a torre.",
  "rot.twoMotifs.ideia.ex1.revela": "O sacrifício é a torre capturar o peão de h7 com xeque: o rei só pode capturá-la, porque o bispo de b3 controla g8.",
@@ -25,7 +25,7 @@
  "rot.twoMotifs.ideia.ex1.l.6": "O rei sai do xeque para g7 e ataca a torre de h6, mas a torre de b2 continua sem defesa.",
  "rot.twoMotifs.ideia.ex1.l.7": "O rei branco captura a torre de b2. As brancas entregaram uma torre e recuperaram uma torre, um bispo e um peão.",
  "rot.twoMotifs.ideia.ex1.l.8": "Em posições como esta, a combinação funciona porque o sacrifício prepara o segundo golpe. Sem o xeque em h1, a torre entregue seria só material perdido.",
- "rot.twoMotifs.demos.fischer.1": "Ataque: agora vamos pensar pelo lado das pretas. É a Partida do Século: Partida Donald Byrne × Bobby Fischer, Memorial Rosenwald, Nova York 1956. A dama preta em b6 está atacada pelo bispo de c5.",
+ "rot.twoMotifs.demos.fischer.1": "Ataque: agora vamos pensar pelo lado das pretas. Partida Donald Byrne × Bobby Fischer, Memorial Rosenwald, Nova York 1956, a Partida do Século. A dama preta em b6 está atacada pelo bispo de c5.",
  "rot.twoMotifs.demos.fischer.l.1": "O primeiro motivo é o sacrifício da dama: Fischer não a salva. O bispo de g4 vai para e6 e ataca o bispo de c4, e capturar em c4 virá com xeque ao rei em f1.",
  "rot.twoMotifs.demos.fischer.l.2": "Byrne aceita o sacrifício e captura a dama em b6. Recusar também perdia material para as brancas.",
  "rot.twoMotifs.demos.fischer.l.3": "O bispo captura em c4 com xeque. Começa o segundo motivo, uma série de xeques do bispo e do cavalo.",
