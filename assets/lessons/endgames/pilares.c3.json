@@ -14,10 +14,15 @@
    "id": "queenRookMates",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c3/queenRookMates.json"
+  },
+  {
+   "id": "rookBishopMates",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c3/rookBishopMates.json"
   }
  ],
- "passScore": 22,
- "maxScore": 29,
+ "passScore": 33,
+ "maxScore": 44,
  "keyPositions": [],
  "references": [
   {
@@ -110,6 +115,118 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle dYgqG)",
    "url": "https://lichess.org/WkwcEOb7/black#42"
+  },
+  {
+   "id": "lichessGameVWS1d",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle VWS1d)",
+   "url": "https://lichess.org/omLQJ4jt/black#70"
+  },
+  {
+   "id": "lichessGameRjim4",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Rjim4)",
+   "url": "https://lichess.org/LUm3WrpX/black#32"
+  },
+  {
+   "id": "lichessGamez87hi",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle z87hi)",
+   "url": "https://lichess.org/4P5S1XRA/black#98"
+  },
+  {
+   "id": "lichessGamesq1dH",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle sq1dH)",
+   "url": "https://lichess.org/N6YzCkCO/black#58"
+  },
+  {
+   "id": "lichessGameK58EN",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle K58EN)",
+   "url": "https://lichess.org/D6MzshDJ/black#60"
+  },
+  {
+   "id": "lichessGame02LWp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 02LWp)",
+   "url": "https://lichess.org/oh0XKotT/black#54"
+  },
+  {
+   "id": "lichessGameMzMF1",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle MzMF1)",
+   "url": "https://lichess.org/K1LNHFvK#69"
+  },
+  {
+   "id": "lichessGameFzQZy",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle FzQZy)",
+   "url": "https://lichess.org/8zYtvENb#57"
+  },
+  {
+   "id": "lichessGame4vLTZ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 4vLTZ)",
+   "url": "https://lichess.org/kNSFkoa9#77"
+  },
+  {
+   "id": "lichessGameCvBwJ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle CvBwJ)",
+   "url": "https://lichess.org/6i1g5TGK/black#66"
+  },
+  {
+   "id": "lichessGamenlMjk",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle nlMjk)",
+   "url": "https://lichess.org/ZS7OcQ38#57"
+  },
+  {
+   "id": "lichessGameAROjF",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AROjF)",
+   "url": "https://lichess.org/VRWUFNNI#69"
+  },
+  {
+   "id": "lichessGameXD8qk",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle XD8qk)",
+   "url": "https://lichess.org/Qnwm5ngR/black#46"
+  },
+  {
+   "id": "lichessGame5iU9s",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 5iU9s)",
+   "url": "https://lichess.org/ybr1Tnr4/black#58"
+  },
+  {
+   "id": "lichessGameaih2N",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle aih2N)",
+   "url": "https://lichess.org/pGXU2Mwe#57"
+  },
+  {
+   "id": "morphyOpera1858",
+   "kind": "game",
+   "author": "Paul Morphy",
+   "title": "Morphy vs Duke of Brunswick and Count Isouard, Paris 1858 (Opera Game)",
+   "url": "https://www.chessgames.com/perl/chessgame?gid=1233404"
   }
  ],
  "exercises": [
@@ -444,6 +561,169 @@
      "teach": "a3b2",
      "accept": [
       "a3b2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.FzQZy",
+   "capitulo": "rookBishopMates",
+   "stars": 1,
+   "fen": "r1r3k1/6b1/4p1pp/8/1B2p3/1P2P2P/3Q1PP1/1K1R3R b - - 0 29",
+   "goal": "win",
+   "origin": "lichess:FzQZy",
+   "line": [
+    {
+     "teach": "a8a1",
+     "accept": [
+      "a8a1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.4vLTZ",
+   "capitulo": "rookBishopMates",
+   "stars": 1,
+   "fen": "4r1k1/3Q1p1p/3b2p1/2p5/8/5B1P/2b2PP1/2B3K1 b - - 0 39",
+   "goal": "win",
+   "origin": "lichess:4vLTZ",
+   "line": [
+    {
+     "teach": "e8e1",
+     "accept": [
+      "e8e1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.CvBwJ",
+   "capitulo": "rookBishopMates",
+   "stars": 1,
+   "fen": "3R1bk1/1p5p/p1p1q1pB/4P3/2P3P1/1r5P/8/6K1 w - - 0 34",
+   "goal": "win",
+   "origin": "lichess:CvBwJ",
+   "line": [
+    {
+     "teach": "d8f8",
+     "accept": [
+      "d8f8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.nlMjk",
+   "capitulo": "rookBishopMates",
+   "stars": 2,
+   "fen": "4r3/p4pk1/6pp/5b1n/2N5/2N5/PPPR1P1P/5K2 b - - 4 29",
+   "goal": "win",
+   "origin": "lichess:nlMjk",
+   "line": [
+    {
+     "teach": "f5h3",
+     "accept": [
+      "f5h3"
+     ],
+     "reply": "f1g1"
+    },
+    {
+     "teach": "e8e1",
+     "accept": [
+      "e8e1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.AROjF",
+   "capitulo": "rookBishopMates",
+   "stars": 2,
+   "fen": "7r/pp3k2/8/2b2P2/3pBKP1/P6r/1P6/4RR2 b - - 0 35",
+   "goal": "win",
+   "origin": "lichess:AROjF",
+   "line": [
+    {
+     "teach": "c5d6",
+     "accept": [
+      "c5d6"
+     ],
+     "reply": "f4g5"
+    },
+    {
+     "teach": "h8g8",
+     "accept": [
+      "h8g8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.XD8qk",
+   "capitulo": "rookBishopMates",
+   "stars": 2,
+   "fen": "4r1k1/p2bQpp1/2p4p/q2p4/8/3B3P/P1P2PP1/4RK2 w - - 8 24",
+   "goal": "win",
+   "origin": "lichess:XD8qk",
+   "line": [
+    {
+     "teach": "e7e8",
+     "accept": [
+      "e7e8"
+     ],
+     "reply": "d7e8"
+    },
+    {
+     "teach": "e1e8",
+     "accept": [
+      "e1e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.5iU9s",
+   "capitulo": "rookBishopMates",
+   "stars": 3,
+   "fen": "6rk/5Qpp/1bpBp3/3p4/8/4q3/P5PP/5R1K w - - 1 30",
+   "goal": "win",
+   "origin": "lichess:5iU9s",
+   "line": [
+    {
+     "teach": "f7g8",
+     "accept": [
+      "f7g8"
+     ],
+     "reply": "h8g8"
+    },
+    {
+     "teach": "f1f8",
+     "accept": [
+      "f1f8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rb.aih2N",
+   "capitulo": "rookBishopMates",
+   "stars": 3,
+   "fen": "4r2k/5ppp/8/p2Q1N2/3P4/8/P2bqPPP/5RK1 b - - 0 29",
+   "goal": "win",
+   "origin": "lichess:aih2N",
+   "line": [
+    {
+     "teach": "e2f1",
+     "accept": [
+      "e2f1"
+     ],
+     "reply": "g1f1"
+    },
+    {
+     "teach": "e8e1",
+     "accept": [
+      "e8e1"
      ]
     }
    ]
