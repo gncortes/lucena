@@ -1,0 +1,268 @@
+{
+ "id": "pilares.c4",
+ "module": "pilares",
+ "skills": [
+  "pilares.c4"
+ ],
+ "parts": [
+  {
+   "id": "deflection",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c4/deflection.json"
+  }
+ ],
+ "passScore": 12,
+ "maxScore": 15,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "lichessGameEjt0X",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Ejt0X)",
+   "url": "https://lichess.org/VFFoKZyc#57"
+  },
+  {
+   "id": "lichessGamezn0cK",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle zn0cK)",
+   "url": "https://lichess.org/z8CFYHJt/black#42"
+  },
+  {
+   "id": "lichessGame1C0l6",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 1C0l6)",
+   "url": "https://lichess.org/Fxp9fbmG/black#32"
+  },
+  {
+   "id": "lichessGamewF2gp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle wF2gp)",
+   "url": "https://lichess.org/uDrYXT5E#77"
+  },
+  {
+   "id": "lichessGamexq44s",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle xq44s)",
+   "url": "https://lichess.org/l0BoTTCu/black#68"
+  },
+  {
+   "id": "lichessGameszPMF",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle szPMF)",
+   "url": "https://lichess.org/97J9I7hY#45"
+  },
+  {
+   "id": "lichessGamemQmcx",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle mQmcx)",
+   "url": "https://lichess.org/8CpTlnUW#59"
+  },
+  {
+   "id": "lichessGameOBmAN",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle OBmAN)",
+   "url": "https://lichess.org/5q7ojSxP/black#90"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "df.kylSr",
+   "capitulo": "deflection",
+   "stars": 1,
+   "fen": "b7/P1r4p/3k2p1/1K6/5p2/2R1p3/8/4R3 w - - 0 53",
+   "goal": "win",
+   "origin": "lichess:kylSr",
+   "line": [
+    {
+     "teach": "e1d1",
+     "accept": [
+      "e1d1"
+     ],
+     "reply": "d6e5"
+    },
+    {
+     "teach": "c3c7",
+     "accept": [
+      "c3c7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.V9Ggd",
+   "capitulo": "deflection",
+   "stars": 1,
+   "fen": "3Q4/5pkp/4pbp1/3p3P/2q5/5BP1/5P2/6K1 w - - 1 32",
+   "goal": "win",
+   "origin": "lichess:V9Ggd",
+   "line": [
+    {
+     "teach": "h5h6",
+     "accept": [
+      "h5h6"
+     ],
+     "reply": "g7h6"
+    },
+    {
+     "teach": "d8f6",
+     "accept": [
+      "d8f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.1yuX7",
+   "capitulo": "deflection",
+   "stars": 1,
+   "fen": "8/2p1kppp/8/1P1bP3/2P1NP2/p4K2/P2r2PP/2R5 b - - 0 35",
+   "goal": "win",
+   "origin": "lichess:1yuX7",
+   "line": [
+    {
+     "teach": "d2d3",
+     "accept": [
+      "d2d3"
+     ],
+     "reply": "f3e2"
+    },
+    {
+     "teach": "d5e4",
+     "accept": [
+      "d5e4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.AZu96",
+   "capitulo": "deflection",
+   "stars": 2,
+   "fen": "1r2r1k1/7p/2n3pB/1pP5/p2pq3/P7/1P4QP/1R3RK1 w - - 0 45",
+   "goal": "win",
+   "origin": "lichess:AZu96",
+   "line": [
+    {
+     "teach": "f1f8",
+     "accept": [
+      "f1f8"
+     ],
+     "reply": "e8f8"
+    },
+    {
+     "teach": "g2e4",
+     "accept": [
+      "g2e4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.yhrkM",
+   "capitulo": "deflection",
+   "stars": 2,
+   "fen": "r5k1/1p2bppp/2p5/3p4/3P4/1Pq1PB1P/1RQ2PP1/5K2 b - - 9 28",
+   "goal": "win",
+   "origin": "lichess:yhrkM",
+   "line": [
+    {
+     "teach": "a8a1",
+     "accept": [
+      "a8a1"
+     ],
+     "reply": "b2b1"
+    },
+    {
+     "teach": "c3c2",
+     "accept": [
+      "c3c2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.w24bQ",
+   "capitulo": "deflection",
+   "stars": 2,
+   "fen": "2r3k1/5p2/1p3p1p/3p4/b2Pp3/P4P2/1P1KB1PP/2R5 b - - 5 26",
+   "goal": "win",
+   "origin": "lichess:w24bQ",
+   "line": [
+    {
+     "teach": "e4e3",
+     "accept": [
+      "e4e3"
+     ],
+     "reply": "d2e3"
+    },
+    {
+     "teach": "c8c1",
+     "accept": [
+      "c8c1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.yVwet",
+   "capitulo": "deflection",
+   "stars": 3,
+   "fen": "2k5/pp3pp1/4p1p1/8/1P4n1/2PQ1qBK/P2R4/8 b - - 1 32",
+   "goal": "win",
+   "origin": "lichess:yVwet",
+   "line": [
+    {
+     "teach": "g4f2",
+     "accept": [
+      "g4f2"
+     ],
+     "reply": "d2f2"
+    },
+    {
+     "teach": "f3d3",
+     "accept": [
+      "f3d3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "df.A0ceO",
+   "capitulo": "deflection",
+   "stars": 3,
+   "fen": "7r/pp3ppp/2p5/1N6/8/2R2r2/P3kB1P/6K1 w - - 2 30",
+   "goal": "win",
+   "origin": "lichess:A0ceO",
+   "line": [
+    {
+     "teach": "b5d4",
+     "accept": [
+      "b5d4"
+     ],
+     "reply": "e2d2"
+    },
+    {
+     "teach": "c3f3",
+     "accept": [
+      "c3f3"
+     ]
+    }
+   ]
+  }
+ ]
+}
