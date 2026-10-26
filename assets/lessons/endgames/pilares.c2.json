@@ -9,10 +9,15 @@
    "id": "pin",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c2/pin.json"
+  },
+  {
+   "id": "skewer",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c2/skewer.json"
   }
  ],
- "passScore": 12,
- "maxScore": 15,
+ "passScore": 23,
+ "maxScore": 31,
  "keyPositions": [],
  "references": [
   {
@@ -77,6 +82,62 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle QnI0X)",
    "url": "https://lichess.org/JWfdjs09/black#26"
+  },
+  {
+   "id": "lichessGameHMT0w",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle HMT0w)",
+   "url": "https://lichess.org/PiQedyy0/black#38"
+  },
+  {
+   "id": "lichessGameka0cx",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ka0cx)",
+   "url": "https://lichess.org/OkdSDCp5/black#94"
+  },
+  {
+   "id": "lichessGameKUSWp",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle KUSWp)",
+   "url": "https://lichess.org/hatRFcym#37"
+  },
+  {
+   "id": "lichessGameJZdZ8",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle JZdZ8)",
+   "url": "https://lichess.org/7BDHL8SF/black#88"
+  },
+  {
+   "id": "lichessGameHfHDD",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle HfHDD)",
+   "url": "https://lichess.org/yHpbEZIW/black#60"
+  },
+  {
+   "id": "lichessGameGjIkh",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle GjIkh)",
+   "url": "https://lichess.org/5pc802Tm/black#32"
+  },
+  {
+   "id": "lichessGame7RnDF",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 7RnDF)",
+   "url": "https://lichess.org/aW5EO0Gt#49"
+  },
+  {
+   "id": "lichessGameelkG9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle elkG9)",
+   "url": "https://lichess.org/kQPNmr2z#59"
   }
  ],
  "exercises": [
@@ -255,6 +316,213 @@
      "teach": "a1g1",
      "accept": [
       "a1g1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.sbkwY",
+   "capitulo": "skewer",
+   "stars": 1,
+   "fen": "8/7p/B1p1k1p1/1p4P1/1P6/P6n/3K4/8 w - - 0 41",
+   "goal": "win",
+   "origin": "lichess:sbkwY",
+   "line": [
+    {
+     "teach": "a6c8",
+     "accept": [
+      "a6c8"
+     ],
+     "reply": "e6e5"
+    },
+    {
+     "teach": "c8h3",
+     "accept": [
+      "c8h3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.8XbPd",
+   "capitulo": "skewer",
+   "stars": 1,
+   "fen": "8/1p2k1p1/2pb1p2/4pB1r/4P3/5P2/2Q2K2/8 b - - 1 38",
+   "goal": "win",
+   "origin": "lichess:8XbPd",
+   "line": [
+    {
+     "teach": "h5h2",
+     "accept": [
+      "h5h2"
+     ],
+     "reply": "f2e3"
+    },
+    {
+     "teach": "h2c2",
+     "accept": [
+      "h2c2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.7TWnJ",
+   "capitulo": "skewer",
+   "stars": 1,
+   "fen": "2R5/8/6k1/8/5K1p/8/8/6r1 w - - 3 71",
+   "goal": "win",
+   "origin": "lichess:7TWnJ",
+   "line": [
+    {
+     "teach": "c8g8",
+     "accept": [
+      "c8g8"
+     ],
+     "reply": "g6f7"
+    },
+    {
+     "teach": "g8g1",
+     "accept": [
+      "g8g1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.j45Ex",
+   "capitulo": "skewer",
+   "stars": 1,
+   "fen": "6Q1/8/8/8/6K1/7P/P2k4/4q3 b - - 7 63",
+   "goal": "win",
+   "origin": "lichess:j45Ex",
+   "line": [
+    {
+     "teach": "e1g1",
+     "accept": [
+      "e1g1"
+     ],
+     "reply": "g4f5"
+    },
+    {
+     "teach": "g1g8",
+     "accept": [
+      "g1g8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.L2zwp",
+   "capitulo": "skewer",
+   "stars": 2,
+   "fen": "r3k1nr/pp3ppp/2bbp3/3pq3/8/3BBQP1/P2N1P1P/RR4K1 w kq - 1 14",
+   "goal": "win",
+   "origin": "lichess:L2zwp",
+   "line": [
+    {
+     "teach": "e3f4",
+     "accept": [
+      "e3f4"
+     ],
+     "reply": "e5f6"
+    },
+    {
+     "teach": "f4d6",
+     "accept": [
+      "f4d6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.4MJX7",
+   "capitulo": "skewer",
+   "stars": 2,
+   "fen": "8/ppp2p1k/6pp/8/1P3qP1/P4R1P/Q4K2/8 b - - 0 30",
+   "goal": "win",
+   "origin": "lichess:4MJX7",
+   "line": [
+    {
+     "teach": "f4h2",
+     "accept": [
+      "f4h2"
+     ],
+     "reply": "f2e1"
+    },
+    {
+     "teach": "h2a2",
+     "accept": [
+      "h2a2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.JOBEC",
+   "capitulo": "skewer",
+   "stars": 2,
+   "fen": "8/1p5k/4n2P/p4RP1/8/3K4/bP6/8 b - - 0 46",
+   "goal": "win",
+   "origin": "lichess:JOBEC",
+   "line": [
+    {
+     "teach": "a2b1",
+     "accept": [
+      "a2b1"
+     ],
+     "reply": "d3c4"
+    },
+    {
+     "teach": "b1f5",
+     "accept": [
+      "b1f5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.KVfyU",
+   "capitulo": "skewer",
+   "stars": 3,
+   "fen": "4r3/3b1ppk/P1N5/1K6/8/8/6P1/1R6 b - - 0 39",
+   "goal": "win",
+   "origin": "lichess:KVfyU",
+   "line": [
+    {
+     "teach": "e8b8",
+     "accept": [
+      "e8b8"
+     ],
+     "reply": "b5c5"
+    },
+    {
+     "teach": "b8b1",
+     "accept": [
+      "b8b1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "skewer.N9PM1",
+   "capitulo": "skewer",
+   "stars": 3,
+   "fen": "7k/pp1n1pp1/1q1P2rp/8/2pQ1P2/1P5P/P1P1R1P1/3R2K1 b - - 1 30",
+   "goal": "win",
+   "origin": "lichess:N9PM1",
+   "line": [
+    {
+     "teach": "g6d6",
+     "accept": [
+      "g6d6"
+     ],
+     "reply": "d4b6"
+    },
+    {
+     "teach": "d6d1",
+     "accept": [
+      "d6d1"
      ]
     }
    ]
