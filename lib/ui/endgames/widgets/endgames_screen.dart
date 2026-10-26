@@ -1,3 +1,5 @@
+import '../../core/widgets/empty_state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -38,8 +40,10 @@ class EndgamesScreen extends StatelessWidget {
         title: Text(l10n.endgamesTitle),
         actions: [
           BlocBuilder<EndgamesCubit, EndgamesState>(
-            buildWhen: (before, after) => before.ready != after.ready,
-            builder: (context, state) => state.ready
+            buildWhen: (before, after) =>
+                before.ready != after.ready || before.trail != after.trail,
+            builder: (context, state) =>
+                state.ready && state.trail.lessons.isNotEmpty
                 ? const EndgamesFilterButton()
                 : const SizedBox.shrink(),
           ),
@@ -48,6 +52,15 @@ class EndgamesScreen extends StatelessWidget {
       body: BlocBuilder<EndgamesCubit, EndgamesState>(
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
+          if (state.trail.lessons.isEmpty) {
+            return SizedBox(
+              width: double.infinity,
+              child: EmptyState(
+                icon: Icons.auto_stories_outlined,
+                message: context.l10n.lessonsUnavailableMessage,
+              ),
+            );
+          }
           final next = state.next;
           return ListView(
             // v2_cursos_padrao: corpo 8 16 0 16; o fim respira 32.

@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:lucena/data/services/lesson_content_service.dart';
+
 import 'dart:async';
 
 import 'fakes/fake_deep_link_service.dart';
@@ -258,8 +261,13 @@ AppDatabase? _database;
 Future<Dependencies> e2eDependencies({bool ads = false}) async {
   await _database?.close();
   final database = _database = AppDatabase();
+  final content = createLessonContentAssets(
+    releaseBuild: kReleaseMode,
+    firebase: false,
+    localUrl: const String.fromEnvironment('CONTENT_URL'),
+  );
   final positions = AssetPositionsRepository(const AssetService());
-  final lessons = AssetLessonRepository(const AssetService());
+  final lessons = AssetLessonRepository(content);
   final progress = LocalProgressRepository(database);
   final activity = LocalActivityRepository(
     PreferencesService(),
@@ -350,9 +358,9 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
     // Só as aulas liberadas, como no app (VisibleLessons).
     endgameLessonRepository: VisibleEndgameLessonRepository(
-      AssetEndgameLessonRepository(const AssetService(), school: lessons),
+      AssetEndgameLessonRepository(content, school: lessons),
     ),
-    lessonScriptRepository: AssetLessonScriptRepository(const AssetService()),
+    lessonScriptRepository: AssetLessonScriptRepository(content),
     kpkRepository: AssetKpkRepository(const AssetService()),
     scriptTableRepository: AssetScriptTableRepository(const AssetService()),
     engineJudge: FakePositionJudge(),
@@ -361,9 +369,7 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
       () => unawaited(activity.markToday()),
     ),
     // As explicações de erro de verdade (o painel da lição V2).
-    exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
-      const AssetService(),
-    ),
+    exerciseFeedbackRepository: AssetExerciseFeedbackRepository(content),
     drawOfferRepository: e2eDraws,
     // As preferências de verdade; o sintetizador, sem som.
     voiceRepository: LocalVoiceRepository(
@@ -376,9 +382,9 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     // Real: o rascunho e a resposta têm de sobreviver ao restart() do cenário.
     surveyRepository: LocalSurveyRepository(PreferencesService(), e2eNow),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
-    wikiLinksRepository: AssetWikiLinksRepository(const AssetService()),
+    wikiLinksRepository: AssetWikiLinksRepository(content),
     featuredRepository: AssetFeaturedRepository(const AssetService()),
-    coursePreviewRepository: AssetCoursePreviewRepository(const AssetService()),
+    coursePreviewRepository: AssetCoursePreviewRepository(content),
     featuredProgressRepository: ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(PreferencesService()),
       activity,

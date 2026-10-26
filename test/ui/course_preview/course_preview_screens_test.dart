@@ -20,7 +20,7 @@ import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
-  final preview = FakeCoursePreviewRepository.real();
+  final preview = FakeCoursePreviewRepository.example();
 
   /// As três telas da prévia nas mesmas rotas do app, em PT.
   Future<GoRouter> pump(
@@ -93,13 +93,28 @@ void main() {
   Future<void> openTab(WidgetTester tester, int i) async {
     final tab = find.byKey(CoursePreviewKeys.tab(i));
     await tester.scrollUntilVisible(tab, 200, scrollable: saleScrollable());
+    // A preview with shorter synthetic text can leave the tab behind the
+    // fixed purchase footer; bring the actual touch target above it first.
+    await Scrollable.ensureVisible(tester.element(tab), alignment: 0.2);
+    for (
+      var attempt = 0;
+      attempt < 5 && tab.hitTestable().evaluate().isEmpty;
+      attempt++
+    ) {
+      await tester.drag(
+        find.byKey(CoursePreviewKeys.saleScroll),
+        const Offset(0, -180),
+      );
+      await tester.pumpAndSettle();
+    }
+    expect(tab.hitTestable(), findsOneWidget);
     await tester.tap(tab);
     await tester.pumpAndSettle();
   }
 
-  test('o asset exportado do canvas tem as três telas', () {
-    expect(preview.sale.title, 'Pilares do Xadrez');
-    expect(preview.sale.price, 'R\$ 59,90');
+  test('a fixture sintética tem as três telas', () {
+    expect(preview.sale.title, 'Curso de exemplo');
+    expect(preview.sale.price, 'R\$ 10,00');
     expect(preview.sale.parts, isNotEmpty);
     expect(preview.sale.faq, isNotEmpty);
     expect(preview.map.chapters, hasLength(preview.map.total));
@@ -117,15 +132,15 @@ void main() {
     await tester.tap(card);
     await tester.pumpAndSettle();
     expect(find.byKey(CoursePreviewKeys.band), findsOneWidget);
-    expect(find.text('De 1000 a 2200 no Lichess'), findsOneWidget);
-    expect(find.text('Garfo'), findsOneWidget);
-    expect(find.text('14,6 %'), findsOneWidget);
+    expect(find.text('Faixa de exemplo'), findsOneWidget);
+    expect(find.text('Tema de exemplo'), findsOneWidget);
+    expect(find.text('12,5 %'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.text('Sem promessa de rating'),
+      find.text('Aviso de exemplo'),
       200,
       scrollable: find.byType(Scrollable).last,
     );
-    expect(find.text('Sem promessa de rating'), findsOneWidget);
+    expect(find.text('Aviso de exemplo'), findsOneWidget);
   });
 
   for (final size in phoneSizes) {
@@ -135,11 +150,11 @@ void main() {
         'botão de comprar fixo', (tester) async {
       setPhoneSize(tester, size);
       await pump(tester);
-      expect(find.text('Comprar · R\$ 59,90'), findsOneWidget);
+      expect(find.text('Comprar · R\$ 10,00'), findsOneWidget);
       // Expandida: o nome só no topo, a barra ainda sem título visível.
       final bar = tester.widget<AnimatedOpacity>(
         find.ancestor(
-          of: find.text('Pilares do Xadrez').first,
+          of: find.text('Curso de exemplo').first,
           matching: find.byType(AnimatedOpacity),
         ),
       );
@@ -164,7 +179,7 @@ void main() {
       final collapsed = tester.widget<AnimatedOpacity>(
         find
             .ancestor(
-              of: find.text('Pilares do Xadrez'),
+              of: find.text('Curso de exemplo'),
               matching: find.byType(AnimatedOpacity),
             )
             .first,
@@ -192,17 +207,17 @@ void main() {
       final rect = tester.getRect(part);
       expect(rect.left, closeToDp(16));
       expect(rect.right, closeToDp(w - 16));
-      expect(find.text('Parte I · 20 lições'), findsOneWidget);
-      // A Parte I aberta: os seis capítulos, o último das aberturas sem
+      expect(find.text('Parte I · 18 lições'), findsOneWidget);
+      // A Parte I aberta: os seis capítulos, o último sem
       // exercícios; as outras partes fechadas.
       for (var n = 1; n <= 6; n++) {
         expect(find.byKey(CoursePreviewKeys.summaryChapter(n)), findsOneWidget);
       }
-      expect(find.text('1 · Ataque duplo e peças soltas'), findsOneWidget);
+      expect(find.text('1 · Capítulo de exemplo 1'), findsOneWidget);
       expect(find.text('1.4'), findsOneWidget);
       expect(find.text('Exercícios'), findsNWidgets(5));
-      expect(find.text('6 · Aberturas'), findsOneWidget);
-      expect(find.text('6.5'), findsNothing);
+      expect(find.text('6 · Capítulo de exemplo 6'), findsOneWidget);
+      expect(find.text('6.4'), findsNothing);
       expect(find.byKey(CoursePreviewKeys.summaryChapter(7)), findsNothing);
 
       final header = find.byKey(CoursePreviewKeys.partHeader('I'));
@@ -213,8 +228,8 @@ void main() {
       final second = find.byKey(CoursePreviewKeys.partHeader('II'));
       await tester.tap(second);
       await tester.pumpAndSettle();
-      expect(find.text('7 · Contra o defensor'), findsOneWidget);
-      expect(find.text('10 · Aberturas'), findsOneWidget);
+      expect(find.text('7 · Capítulo de exemplo 7'), findsOneWidget);
+      expect(find.text('10 · Capítulo de exemplo 10'), findsOneWidget);
 
       final chapter = find.byKey(CoursePreviewKeys.summaryChapter(7));
       await tester.ensureVisible(chapter);
@@ -249,7 +264,7 @@ void main() {
       setPhoneSize(tester, size);
       await pump(tester, at: Routes.pilaresChapter);
       expect(find.text('Parte I · capítulo 5 de 6'), findsOneWidget);
-      expect(find.text('Princípios da abertura'), findsOneWidget);
+      expect(find.text('Capítulo de exemplo 5'), findsOneWidget);
       for (final lesson in preview.chapter.lessons) {
         final row = rectOf(tester, CoursePreviewKeys.chapterLesson(lesson.id));
         expect(row.height, greaterThanOrEqualTo(48));

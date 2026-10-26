@@ -82,7 +82,6 @@ flutter:
     - assets/race/race_problems.json
     - assets/achievements.json
     - assets/featured/featured.json
-    - assets/courses/pt/pilares_preview.json
     - assets/daily/queue.json
     - assets/characters/
     - assets/voices/
@@ -97,28 +96,8 @@ flutter:
     - assets/characters/beachgoer/
     - assets/lines/en/
     - assets/lines/pt/
-    # As aulas do Viktor (tools/build_lessons.py) e as falas dele
-    - assets/lessons/course.json
-    - assets/lessons/links.json
-    - assets/lessons/en/
-    - assets/lessons/pt/
-    # As aulas de finais (geradas) e as falas delas
-    - assets/lessons/endgames/
-    - assets/lessons/feedback/
-    - assets/lessons/roteiros/
-    - assets/lessons/roteiros/mates.bishopKnight.deletang/
-    - assets/lessons/roteiros/pawns.distantOpposition/
-    - assets/lessons/roteiros/pawns.keySquares/
-    - assets/lessons/roteiros/pawns.waitingMoves/
-    - assets/lessons/roteiros/queen.vsRook.philidor/
-    - assets/lessons/roteiros/rook.lucena/
     - assets/tablebase/
     - assets/tablebase/roteiros/
-    - assets/lessons/en/endgames/
-    - assets/lessons/pt/endgames/
-    # Curso de iniciante na receita de 3 etapas (T71): falas dos roteiros
-    - assets/lessons/en/iniciante/
-    - assets/lessons/pt/iniciante/
     # Teste de nível (T52): mapa de habilidades e banco de perguntas
     - assets/placement/
     # Pesos do Maia-3 (tools/maia/export_weights.py)

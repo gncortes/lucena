@@ -26,6 +26,9 @@ jobs:
 
       - uses: ./.github/actions/setup-flutter
 
+      - name: Conteúdo privado fora do Git e dos assets
+        run: python3 .github/scripts/check_content_boundary.py
+
       - name: Formatação
         run: dart format --output=none --set-exit-if-changed .
 
@@ -45,7 +48,7 @@ jobs:
         run: flutter analyze
 
       - name: Testes
-        run: flutter test
+        run: flutter test --exclude-tags private-content
 
   apk:
     name: Build do APK
@@ -61,3 +64,6 @@ jobs:
       # O APK para instalar vem do workflow QA (App Distribution) ou da Release.
       - name: Build
         run: flutter build apk --release
+
+      - name: Conteúdo privado fora do APK
+        run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-release.apk

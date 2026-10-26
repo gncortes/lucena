@@ -1,18 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
-import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
-import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
-import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
-import 'package:lucena/data/services/asset_service.dart';
-import 'package:lucena/domain/use_cases/exercise_review.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -54,170 +47,6 @@ void main() {
     progress = FakeEndgameProgressRepository();
     sound = FakeSoundRepository();
     now = FakeNow(DateTime.utc(2026, 10, 9, 20));
-  });
-
-  test('e14: a notação do exercício traz as decisões escritas na aula, e a '
-      'retomada guarda os lances jogados', () async {
-    const id = 'pawns.waitingMoves';
-    final parsed = AssetEndgameLessonRepository.parseLesson(
-      jsonDecode(
-        io.File('assets/lessons/endgames/$id.json').readAsStringSync(),
-      ),
-    );
-    final lessons = FakeEndgameLessonRepository(
-      trail: EndgameTrail(
-        modules: [
-          EndgameModule(id: 'pawns', lessons: [parsed]),
-        ],
-      ),
-      texts: LessonTexts.fromJson({
-        '$id.ex.e14.solution': 'Complete original solution.',
-      }),
-    );
-    final feedback = AssetExerciseFeedbackRepository(_FileFeedbackAssets());
-    final first = cubit(lessons: lessons, feedback: feedback);
-    await first.load(id, 'e14', 'pt');
-    final line = first.state.exercise!.step.line;
-    for (final turn in line.take(line.length - 1)) {
-      await first.play(move(turn.accept.first));
-    }
-    await first.leave();
-    final resumed = cubit(lessons: lessons, feedback: feedback);
-    await resumed.load(id, 'e14', 'pt');
-    expect(resumed.state.turn, line.length - 1);
-    expect(resumed.state.played, first.state.played);
-    await resumed.stream
-        .firstWhere((state) => state.explanationPayload != null)
-        .timeout(const Duration(seconds: 5));
-    await resumed.play(move(line.last.accept.first));
-    expect(resumed.state.phase, ExercisePhase.done);
-    expect(resumed.state.turn, line.length);
-    final main = resumed.state.review.where((node) => node.depth == 0);
-    expect(main.length, resumed.state.played.length);
-    // As variantes escritas entram na notação.
-    expect(resumed.state.review.any((node) => node.depth > 0), isTrue);
-    // A lista para no lance-chave: o primeiro lance do aluno.
-    expect(resumed.state.cursorId, main.first.id);
-  });
-
-  group('porquê do erro, escrito na aula', () {
-    const lessonId = 'pawns.distantOpposition';
-    late FakeEndgameLessonRepository lessons;
-    late AssetExerciseFeedbackRepository feedback;
-    late List<Map<String, dynamic>> rows;
-    setUp(() {
-      final lesson = AssetEndgameLessonRepository.parseLesson(
-        jsonDecode(
-          io.File('assets/lessons/endgames/$lessonId.json').readAsStringSync(),
-        ),
-      );
-      lessons = FakeEndgameLessonRepository(
-        trail: EndgameTrail(
-          modules: [
-            EndgameModule(id: 'pawns', lessons: [lesson]),
-          ],
-        ),
-        texts: LessonTexts.fromJson({
-          '$lessonId.ex.e09': 'Statement.',
-          '$lessonId.ex.e09.hint': 'Generic hint.',
-        }),
-      );
-      feedback = AssetExerciseFeedbackRepository(_FileFeedbackAssets());
-      rows =
-          (jsonDecode(
-                    io.File(AssetExerciseFeedbackRepository.assetPath(lessonId))
-                        .readAsStringSync(),
-                  )['rows']
-                  as List)
-              .cast<Map<String, dynamic>>();
-    });
-    String exact(String fen, String uci, String language) =>
-        rows.singleWhere(
-              (row) =>
-                  row['kind'] == 'exercise' &&
-                  row['id'] == 'e09' &&
-                  row['fen'] == fen &&
-                  row['uci'] == uci,
-            )[language]
-            as String;
-
-    for (final language in ['pt', 'en']) {
-      test('e09: o erro põe o porquê no balão, a Dica usa o mesmo e o último '
-          'erro substitui o anterior ($language)', () async {
-        final exercise = cubit(lessons: lessons, feedback: feedback);
-        await exercise.load(lessonId, 'e09', language);
-        final fen = exercise.state.fen!;
-        await exercise.play(move('d2d3'));
-        expect(exercise.state.say, ExerciseSay.wrong);
-        expect(exercise.state.fen, fen);
-        expect(exercise.state.mistakes, 1);
-        await exercise.explaining;
-        // O texto da aula é em palavras (sem lances escritos): o balão o mostra.
-        final said = exact(fen, 'd2d3', language);
-        expect(ExerciseReview.hasNotation(said), isFalse);
-        expect(exercise.state.sayTexts, [said]);
-        await exercise.askHint();
-        expect(exercise.state.say, ExerciseSay.hint);
-        expect(exercise.state.sayTexts, [said, 'Statement.']);
-        expect(exercise.state.hint, isNull);
-        expect(exercise.state.hints, 1);
-        await exercise.askHint();
-        expect(exercise.state.hints, 1);
-        await exercise.play(move('d2d4'));
-        await exercise.explaining;
-        expect(exercise.state.say, ExerciseSay.wrong);
-        for (final text in exercise.state.sayTexts) {
-          expect(ExerciseReview.hasNotation(text), isFalse);
-        }
-        expect(exercise.state.sayTexts.join(' '), isNot(contains('Statement')));
-      });
-    }
-
-    test('acerto limpa o contexto; coldresume não revive o texto', () async {
-      final exercise = cubit(lessons: lessons, feedback: feedback);
-      await exercise.load(lessonId, 'e09', 'en');
-      await exercise.play(move('d2d3'));
-      await exercise.play(move('h1g2'));
-      expect(exercise.state.turn, 1);
-      expect(exercise.state.say, ExerciseSay.correct);
-      await exercise.askHint();
-      expect(exercise.state.sayTexts, ['Generic hint.', 'Statement.']);
-      final fen = exercise.state.fen!;
-      await exercise.play(move('g2f2'));
-      await exercise.explaining;
-      final said = exact(fen, 'g2f2', 'en');
-      expect(exercise.state.sayTexts, [said]);
-      final restored = cubit(lessons: lessons, feedback: feedback);
-      await restored.load(lessonId, 'e09', 'en');
-      expect(restored.state.fen, fen);
-      expect(restored.state.turn, 1);
-      expect(restored.state.mistakes, 2);
-      expect(restored.state.say, ExerciseSay.goal);
-      await restored.askHint();
-      expect(restored.state.sayTexts, ['Generic hint.', 'Statement.']);
-    });
-
-    test('lance ilegal não cria erro nem penalidade', () async {
-      final exercise = cubit(lessons: lessons, feedback: feedback);
-      await exercise.load(lessonId, 'e09', 'en');
-      final fen = exercise.state.fen;
-      await exercise.play(move('d2d5'));
-      expect(exercise.state.fen, fen);
-      expect(exercise.state.mistakes, 0);
-      expect(exercise.state.wrongMove, isNull);
-      expect(exercise.state.say, ExerciseSay.goal);
-    });
-
-    test('erro não mapeado usa a Dica existente', () async {
-      final exercise = cubit(lessons: lessons, feedback: feedback);
-      await exercise.load(lessonId, 'e09', 'pt');
-      await exercise.play(move('h1h2'));
-      await exercise.explaining;
-      expect(exercise.state.say, ExerciseSay.wrong);
-      expect(exercise.state.sayTexts, isEmpty);
-      await exercise.askHint();
-      expect(exercise.state.sayTexts, ['Generic hint.', 'Statement.']);
-    });
   });
 
   test('a explicação atrasada não aparece depois do acerto', () async {
@@ -708,11 +537,6 @@ void main() {
     await exercise.play(move('c1c4'));
     expect(sound.played, [GameSound.move]);
   });
-}
-
-class _FileFeedbackAssets extends AssetService {
-  @override
-  Future<String> loadString(String path) => io.File(path).readAsString();
 }
 
 class _DelayedFeedback implements ExerciseFeedbackRepository {

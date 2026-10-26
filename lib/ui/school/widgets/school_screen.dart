@@ -1,3 +1,4 @@
+import '../../core/widgets/empty_state.dart';
 import '../../../domain/models/ads_state.dart';
 import '../../core/ads/lesson_gate.dart';
 
@@ -72,6 +73,15 @@ class _SchoolScreenState extends State<SchoolScreen> {
       body: BlocBuilder<SchoolCubit, SchoolState>(
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
+          if (state.course.lessons.isEmpty) {
+            return SizedBox(
+              width: double.infinity,
+              child: EmptyState(
+                icon: Icons.auto_stories_outlined,
+                message: context.l10n.lessonsUnavailableMessage,
+              ),
+            );
+          }
           final next = state.next;
           _revealCurrent(next);
           return SingleChildScrollView(

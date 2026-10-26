@@ -1,5 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
+
+import '../testing/fakes/fake_endgame_repositories.dart';
+
 import 'package:lucena/ui/core/keys/history_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
@@ -56,6 +62,11 @@ import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/fakes/fake_star_challenge_repository.dart';
 import '../testing/test_dependencies.dart';
 
+class _UnavailableEndgames extends FakeEndgameLessonRepository {
+  @override
+  Future<EndgameTrail> trail() async => throw const LessonContentUnavailable();
+}
+
 void main() {
   void useSystemLocale(WidgetTester tester, Locale locale) {
     tester.platformDispatcher.localesTestValue = [locale];
@@ -73,6 +84,8 @@ void main() {
     OnboardingRepository? onboarding,
     FakePushRepository? push,
     FakeAnalyticsRepository? analytics,
+    FakeEndgameLessonRepository? endgameLessons,
+    FakeEndgameProgressRepository? endgameProgress,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -85,6 +98,8 @@ void main() {
           onboardingRepository: onboarding,
           pushRepository: push,
           analyticsRepository: analytics,
+          endgameLessonRepository: endgameLessons,
+          endgameProgressRepository: endgameProgress,
           deepLinkRepository: links == null
               ? null
               : ServiceDeepLinkRepository(links),
@@ -96,6 +111,48 @@ void main() {
 
   String textOf(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data!;
+
+  testWidgets('sem pacote de aula, abre o início e preserva a retomada salva', (
+    tester,
+  ) async {
+    const saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 1,
+        part: 'example',
+      ),
+    );
+    final progress = FakeEndgameProgressRepository(saved);
+    await pumpApp(
+      tester,
+      endgameLessons: FakeEndgameLessonRepository(trail: EndgameTrail.empty),
+      endgameProgress: progress,
+    );
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(identical(progress.saved, saved), isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('falha no download adia retomada e mantém o início navegável', (
+    tester,
+  ) async {
+    const saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 1,
+        part: 'example',
+      ),
+    );
+    final progress = FakeEndgameProgressRepository(saved);
+    await pumpApp(
+      tester,
+      endgameLessons: _UnavailableEndgames(),
+      endgameProgress: progress,
+    );
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(identical(progress.saved, saved), isTrue);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('abre na tela inicial', (tester) async {
     await pumpApp(tester);

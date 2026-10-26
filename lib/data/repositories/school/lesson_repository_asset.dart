@@ -7,6 +7,7 @@ import '../../../domain/models/journey.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/variation_tree.dart';
 import '../../services/asset_service.dart';
+import '../../services/scoped_asset_cache.dart';
 import 'lesson_repository.dart';
 
 /// As aulas em `assets/lessons/course.json` e as falas em
@@ -22,25 +23,31 @@ class AssetLessonRepository implements LessonRepository {
   static const languages = {'en', 'pt'};
 
   final AssetService _assets;
-  Course? _course;
-  final _texts = <String, LessonTexts>{};
+  late final _cache = ScopedAssetCache(_assets);
 
   @override
-  Future<Course> course() async =>
-      _course ??= parseCourse(jsonDecode(await _assets.loadString(coursePath)));
+  Future<Course> course() => _cache.load(
+    coursePath,
+    () async => parseCourse(jsonDecode(await _assets.loadString(coursePath))),
+  );
 
   @override
-  Future<LessonTexts> texts(String language) async {
+  Future<LessonTexts> texts(String language) =>
+      _cache.load(('texts', language), () => _loadTexts(language));
+
+  Future<LessonTexts> _loadTexts(String language) async {
     final english = await _load('en');
     if (language == 'en' || !languages.contains(language)) return english;
     return (await _load(language)).over(english);
   }
 
-  Future<LessonTexts> _load(String language) async =>
-      _texts[language] ??= LessonTexts.fromJson(
-        jsonDecode(await _assets.loadString(textsPath(language)))
-            as Map<String, dynamic>,
-      );
+  Future<LessonTexts> _load(String language) => _cache.load(
+    textsPath(language),
+    () async => LessonTexts.fromJson(
+      jsonDecode(await _assets.loadString(textsPath(language)))
+          as Map<String, dynamic>,
+    ),
+  );
 
   /// Lê o curso; passo de tipo desconhecido é ignorado, para dados novos não
   /// quebrarem versões antigas do app.

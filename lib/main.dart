@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'domain/models/lesson_content.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -221,6 +223,36 @@ class _LucenaAppState extends State<LucenaApp> {
         goalAnswered: onboarding.done || profile.goal != null,
       ),
     );
+    // Missing/unpublished content must not trap an old installation in a
+    // restored lesson. Keep its progress; only postpone automatic reopening.
+    var showSchool = VisibleLessons.school;
+    var visibleEndgames = VisibleLessons.endgameLessonIds;
+    if (conclusion == null &&
+        !(game?.reopensOnLaunch ?? false) &&
+        opened == null &&
+        link == null &&
+        !onboarding.boardControlsOpen) {
+      if (showSchool && (school.ongoing?.open ?? false)) {
+        try {
+          final course = await widget.dependencies.lessonRepository.course();
+          showSchool = course.lesson(school.ongoing!.lessonId) != null;
+        } on LessonContentUnavailable {
+          showSchool = false;
+        }
+      }
+      if ((endgames.ongoing?.open ?? false) || endgames.openExercise != null) {
+        try {
+          final trail = await widget.dependencies.endgameLessonRepository
+              .trail();
+          visibleEndgames = {
+            for (final lesson in trail.lessons)
+              if (visibleEndgames.contains(lesson.id)) lesson.id,
+          };
+        } on LessonContentUnavailable {
+          visibleEndgames = {};
+        }
+      }
+    }
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
@@ -236,8 +268,8 @@ class _LucenaAppState extends State<LucenaApp> {
           uri: opened != null && Routes.appLink(opened) != Routes.invalidLink
               ? opened
               : null,
-          showSchool: VisibleLessons.school,
-          visibleEndgameLessons: VisibleLessons.endgameLessonIds,
+          showSchool: showSchool,
+          visibleEndgameLessons: visibleEndgames,
         ),
         updateRequired: () => _update.state.required,
         refresh: _updateRefresh,

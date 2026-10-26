@@ -12,6 +12,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_filter.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/endgame_lesson_filter.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
@@ -294,6 +295,14 @@ class EndgamesCubit extends Cubit<EndgamesState> {
   /// [showAll] escolhe o filtro desta visita (sem gravar); nulo, vale o
   /// gravado.
   Future<void> load(String language, {bool? showAll}) async {
+    try {
+      await _load(language, showAll: showAll);
+    } on LessonContentUnavailable {
+      if (!isClosed) emit(const EndgamesState(ready: true));
+    }
+  }
+
+  Future<void> _load(String language, {bool? showAll}) async {
     final trail = await _lessons.trail();
     final texts = await _lessons.texts(language);
     final progress = await _progress.load();

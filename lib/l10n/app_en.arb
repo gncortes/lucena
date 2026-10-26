@@ -9571,5 +9571,9 @@
   "courseLessonsLabel": "lessons",
   "@courseLessonsLabel": {
     "description": "Label under the lesson count in the course sale numbers."
+  },
+  "lessonsUnavailableMessage": "Lessons are not available yet.",
+  "@lessonsUnavailableMessage": {
+    "description": "Empty state when no published lesson content is available."
   }
 }

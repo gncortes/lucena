@@ -1,11 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
-import 'package:lucena/domain/models/endgame_lesson.dart';
-import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/domain/models/kpk_outcome.dart';
+import 'package:lucena/domain/models/lesson_script.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
 
 import '../../../testing/script_fixture.dart';
 
@@ -93,6 +90,13 @@ void main() {
     expect(FreeEnd.afogado.meets(true), isFalse);
   });
 
+  test('a referência de jogador usa o nome como título', () {
+    expect(
+      Reference(id: 'p', kind: 'player', fields: const {'name': 'X'}).title,
+      'X',
+    );
+  });
+
   test('a parte da aula guarda o caminho do roteiro', () {
     final lesson = AssetLessonRepository.parseLesson({
       'id': 'pawns.test',
@@ -104,20 +108,5 @@ void main() {
     expect(lesson.parts[0].script, 'assets/x.json');
     expect(lesson.parts[0].steps, isEmpty);
     expect(lesson.parts[1].script, isNull);
-  });
-
-  test('o roteiro real da oposição distante lê sem erro', () {
-    final file = File(
-      'assets/lessons/roteiros/pawns.distantOpposition/distant.json',
-    );
-    if (!file.existsSync()) return;
-    final real = LessonScript.fromJson(
-      jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
-    );
-    expect(real.stages, isNotEmpty);
-    expect(
-      Reference(id: 'p', kind: 'player', fields: const {'name': 'X'}).title,
-      'X',
-    );
   });
 }

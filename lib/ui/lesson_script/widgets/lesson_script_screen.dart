@@ -2,6 +2,9 @@ import '../../../domain/models/survey.dart';
 
 import 'dart:async';
 
+import '../../../domain/models/lesson_content.dart';
+import '../../core/widgets/empty_state.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,19 +52,32 @@ class LessonScriptScreen extends StatefulWidget {
 
 class _LessonScriptScreenState extends State<LessonScriptScreen>
     with WidgetsBindingObserver {
-  /// O voltar redondo (FAB padrão, 56 dp): a altura fixa do rodapé.
-  static const _fabSize = 56.0;
+  /// Reserva também os 4 dp do anel em cada lado do botão principal.
+  /// Fica igual aos controles de demonstração, mesmo quando eles saem.
+  static const _footerContentHeight = ScriptDemoButton.mainSize + AppSpacing.sm;
 
   Character? _viktor;
   bool _started = false;
   bool _leaving = false;
   bool _canPop = false;
+  bool _contentUnavailable = false;
+
+  Future<void> _startContent(LessonScriptCubit cubit) async {
+    try {
+      await cubit.start();
+    } on LessonContentUnavailable {
+      if (mounted) setState(() => _contentUnavailable = true);
+    }
+  }
 
   Future<void> _leave() async {
     if (_leaving) return;
     _leaving = true;
     try {
-      await context.read<LessonScriptCubit>().leave();
+      // A missing download must not change an existing saved checkpoint.
+      if (!_contentUnavailable) {
+        await context.read<LessonScriptCubit>().leave();
+      }
     } catch (_) {
       _leaving = false;
       if (mounted) {
@@ -133,7 +149,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     cubit.setSpeechFits((texts) => metrics.fits(context, width, texts));
     if (!_started) {
       _started = true;
-      unawaited(cubit.start());
+      unawaited(_startContent(cubit));
     }
   }
 
@@ -208,7 +224,17 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         ),
         body: SafeArea(
           top: false,
-          child: state.ready ? _body(context, cubit, state) : const SizedBox(),
+          child: _contentUnavailable
+              ? SizedBox(
+                  width: double.infinity,
+                  child: EmptyState(
+                    icon: Icons.auto_stories_outlined,
+                    message: context.l10n.lessonsUnavailableMessage,
+                  ),
+                )
+              : state.ready
+              ? _body(context, cubit, state)
+              : const SizedBox(),
         ),
       ),
     );
@@ -474,10 +500,13 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       color: Theme.of(context).scaffoldBackgroundColor,
       // O voltar redondo da lição (`lesson_screen.dart`, Gabriel 14/10/2026):
       // só aparece quando há para onde voltar.
-      // Sem o voltar e sem botão, o rodapé guarda a altura do voltar: o
-      // tabuleiro não pula quando ele aparece (1º lance, troca de lado).
+      // Com ou sem controles, guarda também a altura do anel: o tabuleiro
+      // não pula ao terminar/repetir a demonstração ou trocar de fase.
       hint: controls == null
-          ? back ?? const SizedBox(height: _fabSize)
+          ? SizedBox(
+              height: _footerContentHeight,
+              child: back == null ? null : Center(child: back),
+            )
           : Expanded(child: Row(children: [?back, const Spacer(), controls])),
       leading: demo != null && demo.ended ? repeat : null,
       hug: true,

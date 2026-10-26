@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
@@ -9,6 +8,7 @@ import 'package:lucena/domain/use_cases/judge_move.dart';
 import 'package:lucena/domain/use_cases/kpk_oracle.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
+import '../../../testing/script_fixture.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
@@ -47,11 +47,8 @@ KpkTableOracle _oracle() =>
     KpkTableOracle(io.File('assets/tablebase/kpk.bin').readAsBytesSync());
 
 Map<String, String> _texts() {
-  final generic = jsonDecode(
-    io.File('assets/lessons/pt/roteiro_generico.json').readAsStringSync(),
-  ) as Map<String, dynamic>;
   return {
-    for (final e in generic.entries) e.key: e.value as String,
+    ...scriptTexts(),
     'enunciado': 'Chegue à casa.',
     'fala.fim': 'Fim da casa.',
     'fala.erro.1': 'Aqui esse lance falha.',

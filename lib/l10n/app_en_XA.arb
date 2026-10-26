@@ -1813,5 +1813,6 @@
   "courseExercisesLabel": "[éxéŕçîšéš one]",
   "coursePartLessons": "[Påŕt {part} · {count} léššöñš one two three]",
   "pilaresPreviewTile": "[Pîlåŕéš dö Xådŕéž (pŕévîéw) one two three]",
-  "courseLessonsLabel": "[léššöñš one]"
+  "courseLessonsLabel": "[léššöñš one]",
+  "lessonsUnavailableMessage": "[Léššöñš åŕé ñöt åvåîlåblé ýét. one two three]"
 }

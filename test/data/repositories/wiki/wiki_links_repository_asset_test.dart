@@ -26,12 +26,23 @@ class _Bundle extends CachingAssetBundle {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('lê o links.json do app', () async {
-    final links = await AssetWikiLinksRepository(const AssetService()).links();
-    expect(links.keys, isNotEmpty);
-    for (final key in links.keys) {
-      expect(links.url(key, 'en'), isNotNull, reason: key);
-    }
+  test('lê o contrato de links sem depender do catálogo privado', () async {
+    final links = await AssetWikiLinksRepository(
+      AssetService(
+        _Bundle({
+          AssetWikiLinksRepository.path: '{"example":{"en":"https://example.com/reference","pt":"https://example.com/referencia"}}',
+        }),
+      ),
+    ).links();
+    expect(links.keys, ['example']);
+    expect(
+      links.url('example', 'pt').toString(),
+      'https://example.com/referencia',
+    );
+    expect(
+      links.url('example', 'xx').toString(),
+      'https://example.com/reference',
+    );
   });
 
   test('sem o arquivo ou com ele quebrado: vazio, sem erro', () async {

@@ -7,7 +7,9 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/course/chapter_lesson_list.dart';
+import 'package:lucena/ui/core/widgets/course/course_chapter_layout.dart';
 import 'package:lucena/ui/endgames/view_models/endgame_lesson_cubit.dart';
 import 'package:lucena/ui/endgames/widgets/endgame_lesson_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -113,6 +115,76 @@ void main() {
     );
     await tester.pumpAndSettle();
     return opened;
+  }
+
+  for (final size in const [
+    Size(360, 740),
+    Size(360, 800),
+    Size(384, 832),
+    Size(393, 873),
+    Size(412, 915),
+    Size(414, 896),
+  ]) {
+    testWidgets('capítulo $size: resumo cresce na lista, rodapé fixo e '
+        'entrada da lição preservada', (tester) async {
+      setPhoneSize(tester, size);
+      final rows = <double>[];
+      Rect? footer;
+      for (final summary in [
+        'Resumo curto.',
+        'Primeira linha.\nSegunda linha.',
+        'Primeira linha.\nSegunda linha.\nTerceira linha.',
+        List.filled(12, 'Texto sintético para conferir a lista.').join(' '),
+      ]) {
+        final opened = await pump(
+          tester,
+          trail: parted(),
+          locale: const Locale('pt'),
+          texts: LessonTexts.fromJson({
+            ...partedTexts.toJson(),
+            '${sample.id}.title': 'Capítulo de teste',
+            '${sample.id}.part.p1.title': 'Lição de teste',
+            '${sample.id}.part.p1.summary': summary,
+          }),
+        );
+        // Esta tela é o índice do capítulo: não é a lição com tabuleiro.
+        expect(find.byType(CourseChapterLayout), findsOneWidget);
+        expect(find.byKey(LessonScriptKeys.board), findsNothing);
+        expect(find.byKey(LessonScriptKeys.speech), findsNothing);
+        final context = tester.element(find.byKey(EndgameLessonKeys.screen));
+        expect(MediaQuery.textScalerOf(context).scale(15), 15);
+        expect(Theme.of(context).brightness, Brightness.light);
+        final current = rectOf(tester, EndgameLessonKeys.continueButton);
+        footer ??= current;
+        expect(current, footer);
+        expect(current.left, closeToDp(16));
+        expect(current.right, closeToDp(size.width - 16));
+        expect(current.bottom, closeToDp(size.height - 8));
+        expect(current.height, closeToDp(52));
+        final card = tester.getRect(find.byType(ChapterLessonList));
+        expect(card.left, closeToDp(16));
+        expect(card.right, closeToDp(size.width - 16));
+        rows.add(rectOf(tester, EndgameLessonKeys.part('p1')).height);
+        expect(tester.takeException(), isNull);
+        // O texto longo rola na lista; não empurra o botão para fora.
+        await tester.drag(
+          find.byKey(EndgameLessonKeys.list),
+          const Offset(0, -120),
+        );
+        await tester.pumpAndSettle();
+        expect(rectOf(tester, EndgameLessonKeys.continueButton), footer);
+        await tester.tap(find.byKey(EndgameLessonKeys.continueButton));
+        await tester.pumpAndSettle();
+        expect(opened.single.path, '/endgames/rook.lucena/roteiro');
+        expect(opened.single.queryParameters['part'], 'p1');
+        expect(tester.takeException(), isNull);
+        // Desmonta a rota antes do próximo harness com outro texto.
+        await tester.pumpWidget(const SizedBox.shrink());
+      }
+      expect(rows[1], greaterThan(rows[0]));
+      expect(rows[2], greaterThan(rows[1]));
+      expect(rows[3], greaterThan(rows[2]));
+    });
   }
 
   testWidgets('nada feito: a lição recomendada, os exercícios e o botão de '

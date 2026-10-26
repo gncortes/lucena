@@ -20,9 +20,10 @@ void main() {
     WidgetTester tester, {
     EndgameProgress progress = const EndgameProgress(),
     Locale locale = const Locale('en'),
+    EndgameTrail? trail,
   }) async {
     final cubit = EndgamesCubit(
-      lessons: FakeEndgameLessonRepository(),
+      lessons: FakeEndgameLessonRepository(trail: trail),
       progress: FakeEndgameProgressRepository(progress),
       characters: FakeCharacterRepository(),
     );
@@ -36,6 +37,22 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('sem conteúdo: mensagem centrada e sem filtros sem opções', (
+    tester,
+  ) async {
+    await pump(tester, locale: const Locale('pt'), trail: EndgameTrail.empty);
+    final message = find.text('As aulas ainda não estão disponíveis.');
+    expect(message, findsOneWidget);
+    expect(find.byKey(EndgamesKeys.filtersButton), findsNothing);
+    expect(
+      tester.getCenter(message).dx,
+      closeTo(
+        tester.view.physicalSize.width / tester.view.devicePixelRatio / 2,
+        .5,
+      ),
+    );
+  });
 
   const passed = EndgameProgress(
     lessons: {

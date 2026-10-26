@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../../../domain/models/exercise_error_feedback.dart';
 import '../../../domain/models/explanation.dart';
 import '../../services/asset_service.dart';
+import '../../services/scoped_asset_cache.dart';
 import 'exercise_feedback_repository.dart';
 
 class AssetExerciseFeedbackRepository
@@ -13,8 +14,7 @@ class AssetExerciseFeedbackRepository
   AssetExerciseFeedbackRepository(this._assets);
 
   final AssetService _assets;
-  final _positions = <String, List<Map<String, dynamic>>>{};
-  final _lessons = <String, Future<List<ExerciseErrorFeedback>>>{};
+  late final _cache = ScopedAssetCache(_assets);
   static String assetPath(String lessonId) =>
       'assets/lessons/feedback/$lessonId.json';
 
@@ -32,7 +32,7 @@ class AssetExerciseFeedbackRepository
     if (!RegExp(r'^[a-zA-Z0-9_.-]+$').hasMatch(lessonId)) {
       return null;
     }
-    final rows = await (_lessons[lessonId] ??= _load(lessonId));
+    final rows = (await _payload(lessonId)).rows;
     for (final row in rows) {
       if (row.matches(
         lessonId: lessonId,
@@ -63,9 +63,10 @@ class AssetExerciseFeedbackRepository
         ExerciseErrorFeedback.positionKey(fen) == null) {
       return null;
     }
-    final rows = await (_lessons[lessonId] ??= _load(lessonId));
+    final payload = await _payload(lessonId);
+    final rows = payload.rows;
     ExplanationPayload? base;
-    for (final position in _positions[lessonId] ?? <Map<String, dynamic>>[]) {
+    for (final position in payload.positions) {
       if (position['kind'] != kind ||
           position['id'] != exerciseId ||
           position['turn'] != turn ||
@@ -119,9 +120,9 @@ class AssetExerciseFeedbackRepository
     required String language,
   }) async {
     if (!RegExp(r'^[a-zA-Z0-9_.-]+$').hasMatch(lessonId)) return null;
-    await (_lessons[lessonId] ??= _load(lessonId));
+    final payload = await _payload(lessonId);
     final positions = [
-      for (final p in _positions[lessonId] ?? <Map<String, dynamic>>[])
+      for (final p in payload.positions)
         if (p['kind'] == 'exercise' && p['id'] == exerciseId) p,
     ]..sort((a, b) => (a['turn'] as int).compareTo(b['turn'] as int));
     final blocks = <ExplanationBlock>[];
@@ -185,25 +186,44 @@ class AssetExerciseFeedbackRepository
           );
   }
 
-  Future<List<ExerciseErrorFeedback>> _load(String lessonId) async {
+  Future<_FeedbackData> _payload(String lessonId) async {
     try {
-      final json = jsonDecode(
-        await _assets.loadString(assetPath(lessonId)),
-      ) as Map<String, dynamic>;
-      if (json['lesson'] != lessonId) return const [];
-      _positions[lessonId] = [
+      return await _cache.load<_FeedbackData>(
+        assetPath(lessonId),
+        () => _load(lessonId),
+      );
+    } catch (_) {
+      // Most lessons have no feedback asset; malformed data must not block play.
+      return (
+        rows: const <ExerciseErrorFeedback>[],
+        positions: const <Map<String, dynamic>>[],
+      );
+    }
+  }
+
+  Future<_FeedbackData> _load(String lessonId) async {
+    final json = jsonDecode(
+      await _assets.loadString(assetPath(lessonId)),
+    ) as Map<String, dynamic>;
+    if (json['lesson'] != lessonId) {
+      throw const FormatException('Feedback lesson mismatch');
+    }
+    return (
+      positions: [
         for (final p in json['positions'] as List? ?? [])
           Map<String, dynamic>.from(p as Map),
-      ];
-      return [
+      ],
+      rows: [
         for (final row
             in (json['rows'] as List? ?? []).cast<Map<String, dynamic>>())
           if (row['kind'] == 'exercise' || row['kind'] == 'move')
             ExerciseErrorFeedback.fromJson(lessonId, row),
-      ];
-    } catch (_) {
-      // Most lessons have no feedback asset; malformed data must not block play.
-      return const [];
-    }
+      ],
+    );
   }
 }
+
+typedef _FeedbackData = ({
+  List<ExerciseErrorFeedback> rows,
+  List<Map<String, dynamic>> positions,
+});

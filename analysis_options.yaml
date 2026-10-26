@@ -17,6 +17,8 @@ analyzer:
     - docs/**
     # Ferramentas externas são fontes do lucena-utils, não código do app.
     - tools/**
+    # Corpus privado é compilado apenas no harness próprio, fora do CI público.
+    - test/private_content/**
 
 linter:
   # The lint rules applied to this project can be customized in the

@@ -25,9 +25,10 @@ void main() {
   Future<void> pumpStarted(
     WidgetTester tester, {
     Locale locale = const Locale('en'),
+    Course? course,
   }) async {
     final cubit = SchoolCubit(
-      lessons: FakeLessonRepository(),
+      lessons: FakeLessonRepository(course: course),
       progress: FakeSchoolProgressRepository(
         const SchoolProgress(completed: {'pieces.rook'}),
       ),
@@ -44,6 +45,26 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('sem conteúdo: mensagem centrada e sem continuar inexistente', (
+    tester,
+  ) async {
+    await pumpStarted(
+      tester,
+      locale: const Locale('pt'),
+      course: const Course(modules: []),
+    );
+    final message = find.text('As aulas ainda não estão disponíveis.');
+    expect(message, findsOneWidget);
+    expect(find.byKey(SchoolKeys.continueButton), findsNothing);
+    expect(
+      tester.getCenter(message).dx,
+      closeTo(
+        tester.view.physicalSize.width / tester.view.devicePixelRatio / 2,
+        .5,
+      ),
+    );
+  });
 
   testWidgets('padrão T1: o Continuar na lição seguinte e as partes com '
       '"N de M"', (tester) async {

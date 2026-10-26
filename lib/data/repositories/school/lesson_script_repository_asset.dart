@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/models/lesson_script.dart';
 import '../../services/asset_service.dart';
+import '../../services/scoped_asset_cache.dart';
 import 'lesson_script_repository.dart';
 
 /// O roteiro em `assets/lessons/roteiros/<lição>.json` (aula da Escola) ou, nas
@@ -41,24 +43,24 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
   static const languages = {'en', 'pt'};
 
   final AssetService _assets;
-  final _scripts = <String, LessonScript>{};
-  final _texts = <String, ScriptTexts>{};
+  late final _cache = ScopedAssetCache(_assets);
 
   @override
-  Future<LessonScript> script(String path) async {
-    final cached = _scripts[path];
-    if (cached != null) return cached;
+  Future<LessonScript> script(String path) => _cache.load(path, () async {
     final json = jsonDecode(await _assets.loadString(path));
-    return _scripts[path] = LessonScript.fromJson(json as Map<String, dynamic>);
-  }
+    return LessonScript.fromJson(json as Map<String, dynamic>);
+  });
 
   @override
   Future<ScriptTexts> texts(String lessonId, String language) async {
     final code = languages.contains(language) ? language : 'en';
-    return _texts['$lessonId/$code'] ??= ScriptTexts({
-      ...await _merged(lessonId, 'en'),
-      if (code != 'en') ...await _merged(lessonId, code),
-    });
+    return _cache.load(
+      ('texts', lessonId, code),
+      () async => ScriptTexts({
+        ...await _merged(lessonId, 'en'),
+        if (code != 'en') ...await _merged(lessonId, code),
+      }),
+    );
   }
 
   /// As genéricas do idioma sob as da lição. A lição está numa das duas
@@ -84,6 +86,10 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
         await _assets.loadString('assets/lessons/endgames/$lessonId.json'),
       );
       parts = (lesson as Map)['parts'] as List? ?? const [];
+    } on LessonContentNotFound {
+      return const {};
+    } on LessonContentUnavailable {
+      rethrow;
     } on Object {
       return const {};
     }
@@ -100,6 +106,10 @@ class AssetLessonScriptRepository implements LessonScriptRepository {
     final Object? json;
     try {
       json = jsonDecode(await _assets.loadString(path));
+    } on LessonContentNotFound {
+      return const {};
+    } on LessonContentUnavailable {
+      rethrow;
     } on Object {
       return const {};
     }

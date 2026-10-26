@@ -282,6 +282,8 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsNothing);

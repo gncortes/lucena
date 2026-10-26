@@ -6,6 +6,10 @@ class AssetService {
 
   final AssetBundle? _bundle;
 
+  /// Logical source identity. Authenticated content overrides this so parsers
+  /// cannot reuse another account's in-memory data.
+  Object get cacheScope => this;
+
   /// O texto de um arquivo do app (`assets/positions/positions.json`).
   Future<String> loadString(String path) =>
       (_bundle ?? rootBundle).loadString(path, cache: false);

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -658,34 +657,6 @@ void main() {
       expect(r.s.phase, ScriptPhase.entrada);
       expect(r.s.transition.kind, TransitionKind.jump);
       expect(r.s.moves, isEmpty);
-    });
-
-    test('variante "e se f4?": os lances ficam na variante e o salto volta '
-        'à linha', () async {
-      final json = jsonDecode(
-        io.File('assets/lessons/roteiros/pawns.distantOpposition/distant.json')
-            .readAsStringSync(),
-      ) as Map<String, dynamic>;
-      final r = await _Rig.open(json: json);
-      for (var i = 0; i < 20 && r.s.phase != ScriptPhase.pergunta; i++) {
-        await r.next();
-      }
-      await r.cubit.onMove('d3e4');
-      for (
-        var i = 0;
-        i < 30 && !r.s.speech.contains('rot.distant.ideia.ex1.l9');
-        i++
-      ) {
-        await r.next();
-      }
-      expect(r.s.speech, contains('rot.distant.ideia.ex1.l9'));
-      expect(r.s.currentMoveId, 'd3e4-e8f7-e4f4-f7f6');
-      expect(r.s.lastMove, 'f7f6');
-      final f4 = r.s.moves.firstWhere((m) => m.id == 'd3e4-e8f7-e4f4');
-      expect(f4.variant, isTrue);
-      await r.next();
-      expect(r.s.speech, contains('rot.distant.ideia.ex1.l10'));
-      expect(r.s.currentMoveId, 'd3e4-e8f7-e4f5');
     });
 
     test('toque num lance da lista leva ao passo dele', () async {

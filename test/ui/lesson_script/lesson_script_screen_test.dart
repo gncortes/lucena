@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
+import 'package:lucena/data/repositories/school/lesson_script_repository.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
 import 'package:lucena/routing/launch_location.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
@@ -22,6 +24,7 @@ import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import 'package:lucena/ui/lesson_script/widgets/lesson_script_screen.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_move_list.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_page.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
@@ -35,10 +38,94 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/script_fixture.dart';
 import '../../../testing/test_app.dart';
-import 'lesson_script_fim_demo_test.dart' show demoToPractice;
 
 const _tall = Size(412, 915);
 const _short = Size(360, 640);
+const _stabilitySizes = [
+  Size(360, 740),
+  Size(360, 800),
+  Size(384, 832),
+  Size(393, 873),
+  Size(412, 915),
+  Size(414, 896),
+];
+
+// Quebras explícitas: não dependem da fonte de teste para produzir 1/2/3 linhas.
+const _neutralSpeeches = [
+  'Olá.',
+  'Primeira linha.\nSegunda linha.',
+  'Primeira linha.\nSegunda linha.\nTerceira linha.',
+  'Este é um texto sintético para conferir a interface. '
+      'A fala completa continua disponível ao tocar no balão. '
+      'O tamanho do texto não deve deslocar os elementos da lição. '
+      'Repetimos esta mensagem apenas para ocupar mais espaço na tela. '
+      'Este é um texto sintético para conferir a interface. '
+      'A fala completa continua disponível ao tocar no balão.',
+];
+
+Map<String, dynamic> _geometryScript() {
+  final json = scriptJson();
+  final example =
+      (((json['etapas'] as List).first as Map)['exemplos'] as List).first
+          as Map;
+  final first = (example['entrada'] as List).first as Map;
+  example['entrada'] = [
+    for (var i = 0; i < _neutralSpeeches.length; i++)
+      <String, dynamic>{
+        ...first.cast<String, dynamic>(),
+        't': 'layout.$i',
+        // Mantém FEN/lado/orientação; impede agrupar falas de tamanhos distintos.
+        'salto': i > 0,
+      },
+  ];
+  return json;
+}
+
+Map<Key, Rect> _geometry(WidgetTester tester) => {
+  for (final key in [
+    LessonScriptKeys.board,
+    LessonScriptKeys.characterBar,
+    LessonScriptKeys.primary,
+    LessonScriptKeys.page,
+  ])
+    key: _rect(tester, key),
+};
+
+void _expectGeometry(WidgetTester tester, Map<Key, Rect> expected) {
+  for (final entry in expected.entries) {
+    final actual = _rect(tester, entry.key);
+    expect(
+      actual.left,
+      closeTo(entry.value.left, 0.5),
+      reason: '${entry.key} x',
+    );
+    expect(actual.top, closeTo(entry.value.top, 0.5), reason: '${entry.key} y');
+    expect(
+      actual.width,
+      closeTo(entry.value.width, 0.5),
+      reason: '${entry.key} w',
+    );
+    expect(
+      actual.height,
+      closeTo(entry.value.height, 0.5),
+      reason: '${entry.key} h',
+    );
+  }
+  expect(tester.takeException(), isNull);
+}
+
+// Amostra também os quadros intermediários; não esconde deslocamentos no settle.
+Future<void> _sampleGeometry(
+  WidgetTester tester,
+  Map<Key, Rect> expected,
+) async {
+  await tester.pump();
+  _expectGeometry(tester, expected);
+  for (var frame = 0; frame < 32; frame++) {
+    await tester.pump(const Duration(milliseconds: 16));
+    _expectGeometry(tester, expected);
+  }
+}
 
 /// Um relógio que nunca dispara: o passo automático da etapa 1 não anda
 /// sozinho no meio do teste nem deixa timer pendente no fim.
@@ -58,6 +145,14 @@ class _Setup {
 
   final LessonScriptCubit cubit;
   final FakeVoiceRepository voice;
+}
+
+class _UnavailableScripts extends FakeLessonScriptRepository {
+  _UnavailableScripts() : super(scriptFixture());
+
+  @override
+  Future<LessonScript> script(String path) async =>
+      throw const LessonContentUnavailable();
 }
 
 class _ExitSource extends EndgameLessonSource {
@@ -91,6 +186,7 @@ Future<_Setup> _open(
   bool? autoPlay,
   LessonSource? source,
   bool navigable = false,
+  LessonScriptRepository? repository,
 }) async {
   tester.view
     ..physicalSize = size
@@ -111,10 +207,12 @@ Future<_Setup> _open(
     partId: 'distant',
     scriptPath: 'roteiro.json',
     language: 'pt',
-    scripts: FakeLessonScriptRepository(
-      json == null ? scriptFixture() : LessonScript.fromJson(json),
-      {...scriptTexts(json), ...?texts},
-    ),
+    scripts:
+        repository ??
+        FakeLessonScriptRepository(
+          json == null ? scriptFixture() : LessonScript.fromJson(json),
+          {...scriptTexts(json), ...?texts},
+        ),
     kpk: FakeKpkRepository(oracle ?? FakeKpkOracle()),
     source: source ?? FakeLessonSource(),
     initialStage: stage,
@@ -189,6 +287,214 @@ const _long =
     'respondem com o rei, para depois contarmos as casas.';
 
 void main() {
+  testWidgets(
+    'conteúdo indisponível mostra aviso e sair não altera o progresso',
+    (tester) async {
+      final progress = FakeEndgameProgressRepository();
+      final saved = progress.saved;
+      final source = _ExitSource(progress);
+      await _open(
+        tester,
+        _tall,
+        repository: _UnavailableScripts(),
+        source: source,
+        navigable: true,
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text('As aulas ainda não estão disponíveis.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(LessonScriptKeys.board), findsNothing);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+      expect(find.text('origem'), findsOneWidget);
+      expect(source.leaves, 0);
+      expect(identical(progress.saved, saved), isTrue);
+    },
+  );
+  for (final size in _stabilitySizes) {
+    testWidgets('LIÇÃO $size: falas neutras, volta, repetição e folha '
+        'conservam geometria inclusive durante animações', (tester) async {
+      final setup = await _open(
+        tester,
+        size,
+        json: _geometryScript(),
+        texts: {
+          for (var i = 0; i < _neutralSpeeches.length; i++)
+            'layout.$i': _neutralSpeeches[i],
+        },
+        autoPlay: false,
+      );
+      final geometry = _geometry(tester);
+      final board = geometry[LessonScriptKeys.board]!;
+      final page = geometry[LessonScriptKeys.page]!;
+      final strip = geometry[LessonScriptKeys.characterBar]!;
+      expect(board.width, closeTo(size.width, 0.5));
+      expect(board.height, closeTo(board.width, 0.5));
+      expect(board.center.dx, closeTo(size.width / 2, 0.5));
+      expect(board.top, closeTo(strip.bottom, 0.5));
+      final context = tester.element(find.byKey(LessonScriptKeys.page));
+      expect(MediaQuery.textScalerOf(context).scale(15), 15);
+      expect(Theme.of(context).brightness, Brightness.light);
+      final reserved = ScriptSpeechMetrics.of(context).areaHeight(context);
+      // Alvo vigente da LIÇÃO: sobras iguais ao redor do bloco reservado.
+      // Não aplica ao tabuleiro o centro absoluto do FreeBoard/partida.
+      expect(
+        strip.top - reserved - page.top,
+        closeTo(page.bottom - board.bottom, 0.5),
+      );
+      for (var cycle = 0; cycle < 2; cycle++) {
+        for (var i = 0; i < _neutralSpeeches.length; i++) {
+          expect(setup.cubit.state.speech, [_neutralSpeeches[i]]);
+          if (i + 1 < _neutralSpeeches.length) {
+            await tester.tap(find.byKey(LessonScriptKeys.primary));
+            await _sampleGeometry(tester, geometry);
+          }
+        }
+        final beforeSheet = setup.cubit.state;
+        await tester.tap(find.byKey(LessonScriptKeys.speech));
+        await _sampleGeometry(tester, geometry);
+        final sheet = find.byKey(LessonScriptKeys.speechSheet);
+        expect(sheet, findsOneWidget);
+        expect(
+          find.descendant(
+            of: sheet,
+            matching: find.text(_neutralSpeeches.last),
+          ),
+          findsOneWidget,
+        );
+        // A folha permanece embaixo; o X fica fora, acima do conteúdo.
+        final sheetRect = tester.getRect(sheet);
+        expect(sheetRect.bottom, closeTo(size.height, 0.5));
+        final close = _rect(tester, LessonScriptKeys.speechSheetClose);
+        expect(close.bottom, lessThanOrEqualTo(sheetRect.top));
+        expect(close.height, greaterThanOrEqualTo(48));
+        await tester.tap(find.byKey(LessonScriptKeys.speechSheetClose));
+        await _sampleGeometry(tester, geometry);
+        expect(sheet, findsNothing);
+        expect(setup.cubit.state, beforeSheet);
+        for (var i = _neutralSpeeches.length - 2; i >= 0; i--) {
+          await tester.tap(find.byKey(LessonScriptKeys.back));
+          await _sampleGeometry(tester, geometry);
+          expect(setup.cubit.state.speech, [_neutralSpeeches[i]]);
+        }
+      }
+    });
+
+    testWidgets('LIÇÃO $size: repetir demonstração neutra conserva o '
+        'tabuleiro na troca de fase', (tester) async {
+      final json = _geometryScript();
+      final stages = json['etapas'] as List;
+      final idea = ((stages.first as Map)['exemplos'] as List).first as Map;
+      final demo = ((stages[1] as Map)['exemplos'] as List).first as Map;
+      demo['entrada'] = idea['entrada'];
+      demo['linha'] = <dynamic>[];
+      final setup = await _open(
+        tester,
+        size,
+        json: json,
+        stage: 1,
+        autoPlay: false,
+        texts: {
+          for (var i = 0; i < _neutralSpeeches.length; i++)
+            'layout.$i': _neutralSpeeches[i],
+        },
+      );
+      // Os controles mudam ao terminar; a área do tabuleiro deve permanecer.
+      final geometry = _geometry(tester)..remove(LessonScriptKeys.primary);
+      final footer = tester.getRect(find.byType(ExerciseActions));
+      // Conteúdo de 64 dp (anel) + folgas de 8 dp acima e 16 dp abaixo.
+      expect(footer.height, closeTo(88, 0.5));
+      for (var cycle = 0; cycle < 2; cycle++) {
+        expect(setup.cubit.state.speech, [_neutralSpeeches.first]);
+        for (var i = 1; i < _neutralSpeeches.length; i++) {
+          await tester.tap(find.byKey(LessonScriptKeys.primary));
+          await _sampleGeometry(tester, geometry);
+          expect(tester.getRect(find.byType(ExerciseActions)), footer);
+          expect(setup.cubit.state.speech, [_neutralSpeeches[i]]);
+        }
+        expect(setup.cubit.state.phase, ScriptPhase.fimEtapa);
+        await tester.tap(find.byKey(LessonScriptKeys.demoRepeat));
+        await _sampleGeometry(tester, geometry);
+        expect(tester.getRect(find.byType(ExerciseActions)), footer);
+        expect(setup.cubit.state.phase, ScriptPhase.entrada);
+      }
+    });
+
+    testWidgets('ScriptPage $size: revelação incremental sintética e '
+        'pontinhos preservam a posição reservada', (tester) async {
+      tester.view
+        ..physicalSize = size
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final content = ValueNotifier((texts: const ['Olá.'], typing: false));
+      addTearDown(content.dispose);
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          child: Scaffold(
+            body: ValueListenableBuilder<({List<String> texts, bool typing})>(
+              valueListenable: content,
+              builder: (context, value, _) => ScriptPage(
+                pageKey: LessonScriptKeys.page,
+                speechBuilder: (metrics) => ScriptSpeech(
+                  texts: value.texts,
+                  metrics: metrics,
+                  typing: value.typing,
+                ),
+                strip: const SizedBox(
+                  key: LessonScriptKeys.characterBar,
+                  height: ScriptPage.stripHeight,
+                ),
+                // Apenas a caixa: este cenário não avalia posições/lances.
+                boardBuilder: (side) => SizedBox.square(
+                  key: LessonScriptKeys.board,
+                  dimension: side,
+                ),
+                list: const SizedBox.shrink(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await _settle(tester);
+      final geometry = {
+        for (final key in [
+          LessonScriptKeys.board,
+          LessonScriptKeys.characterBar,
+          LessonScriptKeys.page,
+        ])
+          key: _rect(tester, key),
+      };
+      // Não existe typewriter neste fluxo: simula só a variação de texto.
+      final text = _neutralSpeeches[2];
+      for (var end = 1; end <= text.length; end++) {
+        content.value = (texts: [text.substring(0, end)], typing: false);
+        await tester.pump(const Duration(milliseconds: 16));
+        _expectGeometry(tester, geometry);
+      }
+      for (final texts in [
+        [_neutralSpeeches.first, 'Outro trecho.'],
+        [_neutralSpeeches.last],
+        [_neutralSpeeches[1], 'Outro trecho.'],
+        [_neutralSpeeches.first],
+      ]) {
+        content.value = (texts: texts, typing: false);
+        await _sampleGeometry(tester, geometry);
+      }
+      for (final typing in [true, false, true, false]) {
+        content.value = (texts: [_neutralSpeeches.last], typing: typing);
+        await _sampleGeometry(tester, geometry);
+        expect(
+          find.byKey(LessonScriptKeys.typing),
+          typing ? findsOneWidget : findsNothing,
+        );
+      }
+    });
+  }
+
   testWidgets('saída pode tentar novamente depois de falha transitória', (
     tester,
   ) async {

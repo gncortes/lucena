@@ -1893,5 +1893,6 @@
   "courseExercisesLabel": "exercícios",
   "coursePartLessons": "Parte {part} · {count} lições",
   "pilaresPreviewTile": "Pilares do Xadrez (prévia)",
-  "courseLessonsLabel": "lições"
+  "courseLessonsLabel": "lições",
+  "lessonsUnavailableMessage": "As aulas ainda não estão disponíveis."
 }

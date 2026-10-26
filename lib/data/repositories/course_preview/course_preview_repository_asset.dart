@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/course_preview.dart';
 import '../../services/asset_service.dart';
+import '../../services/scoped_asset_cache.dart';
 import 'course_preview_repository.dart';
 
 /// A prévia em `assets/courses/pt/pilares_preview.json` (exportada do canvas
@@ -15,15 +16,15 @@ class AssetCoursePreviewRepository implements CoursePreviewRepository {
 
   final AssetService _assets;
 
-  Future<CoursePreview?>? _preview;
+  late final _cache = ScopedAssetCache(_assets);
 
   @override
-  Future<CoursePreview?> load() => _preview ??= _load();
-
-  Future<CoursePreview?> _load() async {
+  Future<CoursePreview?> load() async {
     try {
-      final text = await _assets.loadString(path);
-      return await compute(_parse, text);
+      return await _cache.load(path, () async {
+        final text = await _assets.loadString(path);
+        return compute(_parse, text);
+      });
     } catch (_) {
       return null;
     }

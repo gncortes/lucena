@@ -212,7 +212,6 @@ void main() {
     final main = io.File('lib/main.dart').readAsStringSync();
     final router = io.File('lib/routing/router.dart').readAsStringSync();
     expect(main, contains('initialLocation: launchLocation('));
-    expect(main, contains('visibleEndgameLessons: VisibleLessons.'));
     expect(
       RegExp(r"path: 'roteiro',[\s\S]{0,400}resolveScriptPart\(")
           .hasMatch(router),

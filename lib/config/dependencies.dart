@@ -1,3 +1,5 @@
+import '../data/services/lesson_content_service.dart';
+
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
@@ -274,6 +276,12 @@ class Dependencies {
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
+    final lessonContent = createLessonContentAssets(
+      releaseBuild: kReleaseMode,
+      firebase: firebase,
+      localUrl: const String.fromEnvironment('CONTENT_URL'),
+      publishedRelease: const String.fromEnvironment('CONTENT_RELEASE'),
+    );
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
@@ -281,7 +289,7 @@ class Dependencies {
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
-    final lessons = AssetLessonRepository(assets);
+    final lessons = AssetLessonRepository(lessonContent);
     final cloudStore = firebase
         ? FirestoreCloudStoreService()
         : const NoCloudStoreService();
@@ -320,7 +328,7 @@ class Dependencies {
     );
     // Só as aulas liberadas (VisibleLessons); as falas comuns vêm todas.
     final endgameLessons = VisibleEndgameLessonRepository(
-      AssetEndgameLessonRepository(assets, school: lessons),
+      AssetEndgameLessonRepository(lessonContent, school: lessons),
     );
     final featured = ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(preferences),
@@ -412,13 +420,15 @@ class Dependencies {
       schoolProgressRepository: school,
       starChallengeRepository: stars,
       endgameLessonRepository: endgameLessons,
-      lessonScriptRepository: AssetLessonScriptRepository(assets),
+      lessonScriptRepository: AssetLessonScriptRepository(lessonContent),
       kpkRepository: AssetKpkRepository(assets),
       scriptTableRepository: AssetScriptTableRepository(assets),
       // O juiz de reserva da lição em roteiro: o mesmo Stockfish (T76).
       engineJudge: StockfishJudgeRepository(stockfish),
       endgameProgressRepository: endgames,
-      exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
+      exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
+        lessonContent,
+      ),
       drawOfferRepository: DeviceDrawOfferRepository(
         maia: maiaRepository,
         evaluation: evaluation,
@@ -428,9 +438,9 @@ class Dependencies {
       blindLogRepository: LocalBlindLogRepository(preferences),
       blindCheckpointRepository: LocalBlindCheckpointRepository(preferences),
       surveyRepository: LocalSurveyRepository(preferences, now),
-      wikiLinksRepository: AssetWikiLinksRepository(assets),
+      wikiLinksRepository: AssetWikiLinksRepository(lessonContent),
       featuredRepository: AssetFeaturedRepository(assets),
-      coursePreviewRepository: AssetCoursePreviewRepository(assets),
+      coursePreviewRepository: AssetCoursePreviewRepository(lessonContent),
       featuredProgressRepository: featured,
       activityRepository: activity,
       crowdRepository: CloudCrowdRepository(cloudStore),
