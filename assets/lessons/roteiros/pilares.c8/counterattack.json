@@ -1,0 +1,655 @@
+{
+ "licao": "pilares.c8",
+ "parte": "counterattack",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "ex1",
+     "fen": "r4r1k/1pR4p/3QB1p1/4p3/5n2/8/5qPK/8 w - - 2 34",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "r4r1k/1pR4p/3QB1p1/4p3/5n2/8/5qPK/8 w - - 2 34",
+       "t": "rot.counterattack.ideia.ex1.e1"
+      },
+      {
+       "fen": "r4r1k/1pR4p/3QB1p1/4p3/5n2/8/5qPK/8 w - - 2 34",
+       "t": "rot.counterattack.ideia.ex1.e2",
+       "marcas": [
+        "f2",
+        "g2",
+        "f4"
+       ]
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "d6",
+       "e6",
+       "c7"
+      ],
+      "certos": [
+       "d6e5"
+      ],
+      "t": "rot.counterattack.ideia.ex1.p",
+      "certo": {
+       "fen": "r4r1k/1pR4p/4B1p1/4Q3/5n2/8/5qPK/8 b - - 0 34",
+       "t": "rot.counterattack.ideia.ex1.certo",
+       "lance": "d6e5",
+       "marcas": [
+        "h8"
+       ]
+      },
+      "revela": {
+       "fen": "r4r1k/1pR4p/4B1p1/4Q3/5n2/8/5qPK/8 b - - 0 34",
+       "t": "rot.counterattack.ideia.ex1.revela",
+       "lance": "d6e5",
+       "marcas": [
+        "h8"
+       ]
+      },
+      "alternativos": {},
+      "erros": {
+       "e6d5": [
+        {
+         "fen": "r4r1k/1pR4p/3Q2p1/3Bp3/5n2/8/5qPK/8 b - - 3 34",
+         "lance": "e6d5",
+         "t": "rot.counterattack.ideia.ex1.err.e6d5.1"
+        },
+        {
+         "fen": "r4r1k/1pR4p/3Q2p1/3Bp3/5n1q/8/6PK/8 w - - 4 35",
+         "lance": "f2h4",
+         "t": "rot.counterattack.ideia.ex1.err.e6d5.2"
+        },
+        {
+         "fen": "r4r1k/1pR4p/3QB1p1/4p3/5n2/8/5qPK/8 w - - 2 34",
+         "salto": true,
+         "t": "rot.counterattack.ideia.ex1.err.e6d5.3"
+        }
+       ],
+       "d6e7": [
+        {
+         "fen": "r4r1k/1pR1Q2p/4B1p1/4p3/5n2/8/5qPK/8 b - - 3 34",
+         "lance": "d6e7",
+         "t": "rot.counterattack.ideia.ex1.err.d6e7.1"
+        },
+        {
+         "fen": "r4r1k/1pR1Q2p/4B1p1/4p3/5n2/8/6qK/8 w - - 0 35",
+         "lance": "f2g2",
+         "t": "rot.counterattack.ideia.ex1.err.d6e7.2"
+        },
+        {
+         "fen": "r4r1k/1pR4p/3QB1p1/4p3/5n2/8/5qPK/8 w - - 2 34",
+         "salto": true,
+         "t": "rot.counterattack.ideia.ex1.err.d6e7.3"
+        }
+       ]
+      },
+      "fora": "rot.counterattack.ideia.ex1.fora",
+      "volta": "rot.counterattack.ideia.ex1.volta"
+     },
+     "linha": [
+      {
+       "fen": "r4r1k/1pR4p/4B1p1/4Q3/5n2/8/5qPK/8 b - - 0 34",
+       "t": "rot.counterattack.ideia.ex1.l1",
+       "marcas": [
+        "g8",
+        "g7"
+       ]
+      },
+      {
+       "fen": "r6k/1pR4p/4Brp1/4Q3/5n2/8/5qPK/8 w - - 1 35",
+       "t": "rot.counterattack.ideia.ex1.l2",
+       "lance": "f8f6"
+      },
+      {
+       "fen": "r6k/1pR4p/4BQp1/8/5n2/8/5qPK/8 b - - 0 35",
+       "t": "rot.counterattack.ideia.ex1.l3",
+       "lance": "e5f6"
+      },
+      {
+       "fen": "r6k/1pR4p/4BQp1/8/5n2/8/5qPK/8 b - - 0 35",
+       "t": "rot.counterattack.ideia.ex1.l4"
+      }
+     ],
+     "ref": "lichessGamehgdGE"
+    },
+    {
+     "id": "ex2",
+     "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b kq - 2 19",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b kq - 2 19",
+       "t": "rot.counterattack.ideia.ex2.e1",
+       "marcas": [
+        "d7",
+        "c7"
+       ]
+      },
+      {
+       "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b kq - 2 19",
+       "t": "rot.counterattack.ideia.ex2.e2",
+       "marcas": [
+        "d8",
+        "b5",
+        "d1"
+       ]
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "c7",
+       "b3",
+       "e8"
+      ],
+      "certos": [
+       "c7c2"
+      ],
+      "t": "rot.counterattack.ideia.ex2.p",
+      "certo": {
+       "fen": "r3k2r/3R1ppp/8/1B2p1B1/1p6/1b2b2Q/PPq3PP/3K3R w kq - 0 20",
+       "t": "rot.counterattack.ideia.ex2.certo",
+       "lance": "c7c2",
+       "marcas": [
+        "b3"
+       ]
+      },
+      "revela": {
+       "fen": "r3k2r/3R1ppp/8/1B2p1B1/1p6/1b2b2Q/PPq3PP/3K3R w kq - 0 20",
+       "t": "rot.counterattack.ideia.ex2.revela",
+       "lance": "c7c2",
+       "marcas": [
+        "b3"
+       ]
+      },
+      "alternativos": {},
+      "erros": {
+       "b3c2": [
+        {
+         "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/4b2Q/PPb3PP/3K3R w kq - 0 20",
+         "lance": "b3c2",
+         "t": "rot.counterattack.ideia.ex2.err.b3c2.1",
+         "marcas": [
+          "c7"
+         ]
+        },
+        {
+         "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/4b2Q/PPb1K1PP/7R b kq - 1 20",
+         "lance": "d1e2",
+         "t": "rot.counterattack.ideia.ex2.err.b3c2.2"
+        },
+        {
+         "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b kq - 2 19",
+         "salto": true,
+         "t": "rot.counterattack.ideia.ex2.err.b3c2.3"
+        }
+       ],
+       "c7d7": [
+        {
+         "fen": "r3k2r/3q1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R w kq - 0 20",
+         "lance": "c7d7",
+         "t": "rot.counterattack.ideia.ex2.err.c7d7.1"
+        },
+        {
+         "fen": "r3k2r/3Q1ppp/8/1B2p1B1/1p6/1b2b3/PPP3PP/3K3R b kq - 0 20",
+         "lance": "h3d7",
+         "t": "rot.counterattack.ideia.ex2.err.c7d7.2"
+        },
+        {
+         "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b kq - 2 19",
+         "salto": true,
+         "t": "rot.counterattack.ideia.ex2.err.c7d7.3"
+        }
+       ],
+       "e8g8": [
+        {
+         "fen": "r4rk1/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R w - - 3 20",
+         "lance": "e8g8",
+         "t": "rot.counterattack.ideia.ex2.err.e8g8.1"
+        },
+        {
+         "fen": "r4rk1/2R2ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b - - 0 20",
+         "lance": "d7c7",
+         "t": "rot.counterattack.ideia.ex2.err.e8g8.2"
+        },
+        {
+         "fen": "r3k2r/2qR1ppp/8/1B2p1B1/1p6/1b2b2Q/PPP3PP/3K3R b kq - 2 19",
+         "salto": true,
+         "t": "rot.counterattack.ideia.ex2.err.e8g8.3"
+        }
+       ]
+      },
+      "fora": "rot.counterattack.ideia.ex2.fora",
+      "volta": "rot.counterattack.ideia.ex2.volta"
+     },
+     "linha": [
+      {
+       "fen": "r3k2r/3R1ppp/8/1B2p1B1/1p6/1b2b2Q/PPq3PP/3K3R w kq - 0 20",
+       "t": "rot.counterattack.ideia.ex2.l1",
+       "marcas": [
+        "e1",
+        "d2",
+        "e2"
+       ]
+      },
+      {
+       "fen": "r3k2r/3R1ppp/8/1B2p1B1/1p6/1b2b2Q/PPq3PP/4K2R b kq - 1 20",
+       "t": "rot.counterattack.ideia.ex2.l2",
+       "lance": "d1e1"
+      },
+      {
+       "fen": "r3k2r/3R1ppp/8/1B2p1B1/1p6/1b2b2Q/PP3qPP/4K2R w kq - 2 21",
+       "t": "rot.counterattack.ideia.ex2.l3",
+       "lance": "c2f2",
+       "marcas": [
+        "e3"
+       ]
+      },
+      {
+       "fen": "r3k2r/3R1ppp/8/1B2p1B1/1p6/1b2b2Q/PP3qPP/4K2R w kq - 2 21",
+       "t": "rot.counterattack.ideia.ex2.l4"
+      }
+     ],
+     "ref": "lichessGameLGYCd"
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "reiExposto",
+     "fen": "r5r1/1pQ4N/p7/8/1R6/1P2kb2/P6P/3R1K2 b - - 3 35",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "r5r1/1pQ4N/p7/8/1R6/1P2kb2/P6P/3R1K2 b - - 3 35",
+       "t": "rot.counterattack.demos.reiExposto.1",
+       "marcas": [
+        "e3",
+        "c1"
+       ]
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r5r1/1pQ4N/p7/8/1R6/1P2kb2/P6P/3R1K2 b - - 3 35",
+       "t": "rot.counterattack.demos.reiExposto.2",
+       "marcas": [
+        "d1",
+        "c3",
+        "f1"
+       ]
+      },
+      {
+       "fen": "r5r1/1pQ4N/p7/8/1R6/1P2k3/P3b2P/3R1K2 w - - 4 36",
+       "t": "rot.counterattack.demos.reiExposto.3",
+       "lance": "f3e2",
+       "marcas": [
+        "e1"
+       ]
+      },
+      {
+       "fen": "r5r1/1pQ4N/p7/8/1R6/1P2k3/P3b2P/3RK3 b - - 5 36",
+       "t": "rot.counterattack.demos.reiExposto.4",
+       "lance": "f1e1"
+      },
+      {
+       "fen": "r7/1pQ4N/p7/8/1R6/1P2k3/P3b2P/3RK1r1 w - - 6 37",
+       "t": "rot.counterattack.demos.reiExposto.5",
+       "lance": "g8g1",
+       "marcas": [
+        "d2",
+        "f2"
+       ]
+      },
+      {
+       "fen": "r7/1pQ4N/p7/8/1R6/1P2k3/P3b2P/3RK1r1 w - - 6 37",
+       "t": "rot.counterattack.demos.reiExposto.6"
+      }
+     ],
+     "ref": "lichessGameQKAdw"
+    },
+    {
+     "id": "entrega",
+     "fen": "r5rk/5pNp/q3pPpQ/2b1P3/3p2P1/1PpR4/2P4P/BK6 w - - 8 32",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "r5rk/5pNp/q3pPpQ/2b1P3/3p2P1/1PpR4/2P4P/BK6 w - - 8 32",
+       "t": "rot.counterattack.demos.entrega.1",
+       "marcas": [
+        "a6",
+        "a1"
+       ]
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r5rk/5pNp/q3pPpQ/2b1P3/3p2P1/1PpR4/2P4P/BK6 w - - 8 32",
+       "t": "rot.counterattack.demos.entrega.2",
+       "marcas": [
+        "h8",
+        "g7"
+       ]
+      },
+      {
+       "fen": "r5rk/5pNQ/q3pPp1/2b1P3/3p2P1/1PpR4/2P4P/BK6 b - - 0 32",
+       "t": "rot.counterattack.demos.entrega.3",
+       "lance": "h6h7"
+      },
+      {
+       "fen": "r5r1/5pNk/q3pPp1/2b1P3/3p2P1/1PpR4/2P4P/BK6 w - - 0 33",
+       "t": "rot.counterattack.demos.entrega.4",
+       "lance": "h8h7"
+      },
+      {
+       "fen": "r5r1/5pNk/q3pPp1/2b1P3/3p2P1/1Pp4R/2P4P/BK6 b - - 1 33",
+       "t": "rot.counterattack.demos.entrega.5",
+       "lance": "d3h3",
+       "marcas": [
+        "g8",
+        "g7",
+        "f6"
+       ]
+      },
+      {
+       "fen": "r5r1/5pNk/q3pPp1/2b1P3/3p2P1/1Pp4R/2P4P/BK6 b - - 1 33",
+       "t": "rot.counterattack.demos.entrega.6"
+      }
+     ],
+     "ref": "lichessGamei8oBu"
+    },
+    {
+     "id": "excecao",
+     "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+       "t": "rot.counterattack.demos.excecao.1",
+       "marcas": [
+        "f7",
+        "f8"
+       ]
+      },
+      {
+       "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+       "t": "rot.counterattack.demos.excecao.2",
+       "marcas": [
+        "g3",
+        "f4",
+        "e2"
+       ]
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "f8",
+       "d6",
+       "h5"
+      ],
+      "certos": [
+       "f8f7"
+      ],
+      "t": "rot.counterattack.demos.excecao.p",
+      "certo": {
+       "fen": "r6k/R3pr1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 0 28",
+       "t": "rot.counterattack.demos.excecao.certo",
+       "lance": "f8f7"
+      },
+      "revela": {
+       "fen": "r6k/R3pr1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 0 28",
+       "t": "rot.counterattack.demos.excecao.revela",
+       "lance": "f8f7"
+      },
+      "alternativos": {},
+      "erros": {
+       "d6g3": [
+        {
+         "fen": "r4r1k/R3pQ1p/6p1/2p3Pn/4P2P/p2P2q1/P1P1N1K1/5R2 w - - 5 28",
+         "lance": "d6g3",
+         "t": "rot.counterattack.demos.excecao.err.d6g3.1"
+        },
+        {
+         "fen": "r4r1k/R3pQ1p/6p1/2p3Pn/4P2P/p2P2N1/P1P3K1/5R2 b - - 0 28",
+         "lance": "e2g3",
+         "t": "rot.counterattack.demos.excecao.err.d6g3.2"
+        },
+        {
+         "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+         "salto": true,
+         "t": "rot.counterattack.demos.excecao.err.d6g3.3"
+        }
+       ],
+       "h5f4": [
+        {
+         "fen": "r4r1k/R3pQ1p/3q2p1/2p3P1/4Pn1P/p2P4/P1P1N1K1/5R2 w - - 5 28",
+         "lance": "h5f4",
+         "t": "rot.counterattack.demos.excecao.err.h5f4.1"
+        },
+        {
+         "fen": "r4r1k/R3p2p/3q2p1/2p3P1/4PQ1P/p2P4/P1P1N1K1/5R2 b - - 0 28",
+         "lance": "f7f4",
+         "t": "rot.counterattack.demos.excecao.err.h5f4.2"
+        },
+        {
+         "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+         "salto": true,
+         "t": "rot.counterattack.demos.excecao.err.h5f4.3"
+        }
+       ],
+       "f8g8": [
+        {
+         "fen": "r5rk/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 5 28",
+         "lance": "f8g8",
+         "t": "rot.counterattack.demos.excecao.err.f8g8.1"
+        },
+        {
+         "fen": "r5rk/4RQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 0 28",
+         "lance": "a7e7",
+         "t": "rot.counterattack.demos.excecao.err.f8g8.2"
+        },
+        {
+         "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+         "salto": true,
+         "t": "rot.counterattack.demos.excecao.err.f8g8.3"
+        }
+       ],
+       "a8a7": [
+        {
+         "fen": "5r1k/r3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 0 28",
+         "lance": "a8a7",
+         "t": "rot.counterattack.demos.excecao.err.a8a7.1"
+        },
+        {
+         "fen": "5Q1k/r3p2p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 0 28",
+         "lance": "f7f8",
+         "t": "rot.counterattack.demos.excecao.err.a8a7.2"
+        },
+        {
+         "fen": "r4r1k/R3pQ1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 4 27",
+         "salto": true,
+         "t": "rot.counterattack.demos.excecao.err.a8a7.3"
+        }
+       ]
+      }
+     },
+     "linha": [
+      {
+       "fen": "r6k/R3pr1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 0 28",
+       "t": "rot.counterattack.demos.excecao.3"
+      },
+      {
+       "fen": "R6k/4pr1p/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 b - - 0 28",
+       "t": "rot.counterattack.demos.excecao.4",
+       "lance": "a7a8"
+      },
+      {
+       "fen": "R7/4prkp/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 1 29",
+       "t": "rot.counterattack.demos.excecao.5",
+       "lance": "h8g7"
+      },
+      {
+       "fen": "R7/4prkp/3q2p1/2p3Pn/4P2P/p2P4/P1P1N1K1/5R2 w - - 1 29",
+       "t": "rot.counterattack.demos.excecao.6"
+      }
+     ],
+     "ref": "lichessGame5Y4rq"
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "valeAqui",
+     "fen": "6rk/ppp4p/6r1/4bq2/8/1P3RPP/P3Q2K/4R3 w - - 0 31",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "f3",
+       "e2",
+       "h2"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "f3f5"
+        ],
+        "resposta": "e5g3"
+       },
+       {
+        "certos": [
+         "h2h1"
+        ]
+       }
+      ],
+      "t": "rot.counterattack.pratica.valeAqui.enunciado",
+      "fim": "rot.counterattack.pratica.valeAqui.fim",
+      "erros": {
+       "e2e5": "rot.counterattack.pratica.valeAqui.err.e2e5"
+      },
+      "errosPos": {
+       "6rk/ppp4p/6r1/5R2/8/1P4bP/P3Q2K/4R3 w - - 0 32": {
+        "h2g2": "rot.counterattack.pratica.valeAqui.err2.h2g2",
+        "h2g1": "rot.counterattack.pratica.valeAqui.err2.h2g1"
+       }
+      }
+     },
+     "ref": "lichessGamevu2cV"
+    },
+    {
+     "id": "mateG2",
+     "fen": "2k4r/ppp4B/4P3/3N1p2/3P1Qb1/3q1pP1/PP3K2/2R5 b - - 0 29",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d3",
+       "h8",
+       "c7",
+       "e2"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d3e2"
+        ],
+        "resposta": "f2g1"
+       },
+       {
+        "certos": [
+         "e2g2"
+        ]
+       }
+      ],
+      "t": "rot.counterattack.pratica.mateG2.enunciado",
+      "fim": "rot.counterattack.pratica.mateG2.fim",
+      "erros": {
+       "h8h7": "rot.counterattack.pratica.mateG2.err.h8h7",
+       "c7c6": "rot.counterattack.pratica.mateG2.err.c7c6"
+      },
+      "errosPos": {
+       "2k4r/ppp4B/4P3/3N1p2/3P1Qb1/5pP1/PP2q3/2R3K1 b - - 2 30": {
+        "f3f2": "rot.counterattack.pratica.mateG2.err2.f3f2"
+       }
+      }
+     },
+     "ref": "lichessGamelf1ZE"
+    },
+    {
+     "id": "fileiraTras",
+     "fen": "4r1rk/R4p1p/5p2/3p3Q/7R/1P1P2Pb/2P2P1P/2q3NK b - - 10 27",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "c1",
+       "g8",
+       "h3",
+       "e8"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "c1g1"
+        ],
+        "resposta": "h1g1"
+       },
+       {
+        "certos": [
+         "e8e1"
+        ]
+       }
+      ],
+      "t": "rot.counterattack.pratica.fileiraTras.enunciado",
+      "fim": "rot.counterattack.pratica.fileiraTras.fim",
+      "erros": {
+       "g8g7": "rot.counterattack.pratica.fileiraTras.err.g8g7",
+       "h7h6": "rot.counterattack.pratica.fileiraTras.err.h7h6",
+       "c1f1": "rot.counterattack.pratica.fileiraTras.err.c1f1",
+       "h3g2": "rot.counterattack.pratica.fileiraTras.err.h3g2"
+      }
+     },
+     "ref": "lichessGamejyA6H"
+    }
+   ]
+  }
+ ]
+}
