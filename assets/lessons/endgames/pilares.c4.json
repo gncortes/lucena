@@ -21,8 +21,8 @@
    "roteiro": "assets/lessons/roteiros/pilares.c4/advancedPawn.json"
   }
  ],
- "passScore": 35,
- "maxScore": 47,
+ "passScore": 53,
+ "maxScore": 71,
  "keyPositions": [],
  "references": [
   {
@@ -213,6 +213,90 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle SuGxX)",
    "url": "https://lichess.org/s7tr1Mkt#79"
+  },
+  {
+   "id": "lichessGameAIoJo",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AIoJo)",
+   "url": "https://lichess.org/0dYobOME/black#42"
+  },
+  {
+   "id": "lichessGameCND57",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle CND57)",
+   "url": "https://lichess.org/7SNXOEuX/black#68"
+  },
+  {
+   "id": "lichessGameHnHrQ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle HnHrQ)",
+   "url": "https://lichess.org/57sBLSX1/black#74"
+  },
+  {
+   "id": "lichessGameqb4Hc",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle qb4Hc)",
+   "url": "https://lichess.org/s4hB0tzE/black#46"
+  },
+  {
+   "id": "lichessGamesn5RW",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle sn5RW)",
+   "url": "https://lichess.org/6KYzro2C/black#44"
+  },
+  {
+   "id": "lichessGameuwLLb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle uwLLb)",
+   "url": "https://lichess.org/TubR7Cgf/black#66"
+  },
+  {
+   "id": "lichessGameUsL1a",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle UsL1a)",
+   "url": "https://lichess.org/FHMia6Ze/black#32"
+  },
+  {
+   "id": "lichessGamejwv5i",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle jwv5i)",
+   "url": "https://lichess.org/DRai7ZFh/black#36"
+  },
+  {
+   "id": "lichessGameG909q",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle G909q)",
+   "url": "https://lichess.org/tA8D6VeE/black#104"
+  },
+  {
+   "id": "lichessGameve3S9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ve3S9)",
+   "url": "https://lichess.org/1cS9aEgL/black#42"
+  },
+  {
+   "id": "lichessGame0BHOd",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 0BHOd)",
+   "url": "https://lichess.org/MwA14UCl#73"
+  },
+  {
+   "id": "lichessGameJwSfQ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle JwSfQ)",
+   "url": "https://lichess.org/l3M2nFpw/black#66"
   }
  ],
  "exercises": [
@@ -784,6 +868,287 @@
      "teach": "c2c1q",
      "accept": [
       "c2c1q"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.AIoJo",
+   "capitulo": "deflection",
+   "teste": true,
+   "stars": 1,
+   "fen": "3r1r1k/p4pbp/1p1N2p1/2n1p3/7P/4P1B1/PPP5/2KR3R w - - 1 22",
+   "goal": "win",
+   "origin": "lichess:AIoJo",
+   "line": [
+    {
+     "teach": "d6f7",
+     "accept": [
+      "d6f7"
+     ],
+     "reply": "f8f7"
+    },
+    {
+     "teach": "d1d8",
+     "accept": [
+      "d1d8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.CND57",
+   "capitulo": "attraction",
+   "teste": true,
+   "stars": 1,
+   "fen": "4Rrk1/6pp/p2N4/8/P7/5n2/2r2P2/4R2K w - - 2 35",
+   "goal": "win",
+   "origin": "lichess:CND57",
+   "line": [
+    {
+     "teach": "e8f8",
+     "accept": [
+      "e8f8"
+     ],
+     "reply": "g8f8"
+    },
+    {
+     "teach": "e1e8",
+     "accept": [
+      "e1e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.HnHrQ",
+   "capitulo": "advancedPawn",
+   "teste": true,
+   "stars": 1,
+   "fen": "3n4/2p2rPk/pp1p1q1p/4p3/1P1pP3/3P2RP/8/6RK w - - 0 38",
+   "goal": "win",
+   "origin": "lichess:HnHrQ",
+   "line": [
+    {
+     "teach": "g7g8q",
+     "accept": [
+      "g7g8q"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.qb4Hc",
+   "capitulo": "deflection",
+   "teste": true,
+   "stars": 1,
+   "fen": "r1bRnk2/p4ppp/2p5/8/p7/4B3/P4PPP/6K1 w - - 2 24",
+   "goal": "win",
+   "origin": "lichess:qb4Hc",
+   "line": [
+    {
+     "teach": "e3c5",
+     "accept": [
+      "e3c5"
+     ],
+     "reply": "f8g8"
+    },
+    {
+     "teach": "d8e8",
+     "accept": [
+      "d8e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.sn5RW",
+   "capitulo": "deflection",
+   "teste": true,
+   "stars": 2,
+   "fen": "r4r2/p1p1qp1k/1p2pQ1p/4Pn2/3P1P2/P1P4R/6PP/R5K1 w - - 3 23",
+   "goal": "win",
+   "origin": "lichess:sn5RW",
+   "line": [
+    {
+     "teach": "h3h6",
+     "accept": [
+      "h3h6"
+     ],
+     "reply": "f5h6"
+    },
+    {
+     "teach": "f6e7",
+     "accept": [
+      "f6e7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.uwLLb",
+   "capitulo": "advancedPawn",
+   "teste": true,
+   "stars": 2,
+   "fen": "q5k1/P2p1p1p/r5p1/4Q3/2p5/4P1PK/5P1P/8 w - - 1 34",
+   "goal": "win",
+   "origin": "lichess:uwLLb",
+   "line": [
+    {
+     "teach": "e5b8",
+     "accept": [
+      "e5b8"
+     ],
+     "reply": "a8b8"
+    },
+    {
+     "teach": "a7b8q",
+     "accept": [
+      "a7b8q"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.UsL1a",
+   "capitulo": "attraction",
+   "teste": true,
+   "stars": 2,
+   "fen": "3rk2r/1p2ppbp/p4np1/4N3/8/4BP2/PPP1K2P/3R2R1 w k - 2 17",
+   "goal": "win",
+   "origin": "lichess:UsL1a",
+   "line": [
+    {
+     "teach": "d1d8",
+     "accept": [
+      "d1d8"
+     ],
+     "reply": "e8d8"
+    },
+    {
+     "teach": "e5f7",
+     "accept": [
+      "e5f7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.jwv5i",
+   "capitulo": "attraction",
+   "teste": true,
+   "stars": 2,
+   "fen": "r1b1Qrk1/ppq3p1/2p2pP1/4n3/3P4/P1P1PN2/5PP1/R3K2R w KQ - 3 19",
+   "goal": "win",
+   "origin": "lichess:jwv5i",
+   "line": [
+    {
+     "teach": "h1h8",
+     "accept": [
+      "h1h8"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "e8f8",
+     "accept": [
+      "e8f8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.G909q",
+   "capitulo": "advancedPawn",
+   "teste": true,
+   "stars": 3,
+   "fen": "8/P1N5/1n6/8/3p4/2k5/5K2/8 w - - 2 53",
+   "goal": "win",
+   "origin": "lichess:G909q",
+   "line": [
+    {
+     "teach": "c7d5",
+     "accept": [
+      "c7d5"
+     ],
+     "reply": "b6d5"
+    },
+    {
+     "teach": "a7a8q",
+     "accept": [
+      "a7a8q"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.ve3S9",
+   "capitulo": "deflection",
+   "teste": true,
+   "stars": 3,
+   "fen": "rn3rk1/6p1/p5Q1/1p2qN2/8/4P3/PPP3PP/5RK1 w - - 1 22",
+   "goal": "win",
+   "origin": "lichess:ve3S9",
+   "line": [
+    {
+     "teach": "f5h6",
+     "accept": [
+      "f5h6"
+     ],
+     "reply": "g8h8"
+    },
+    {
+     "teach": "f1f8",
+     "accept": [
+      "f1f8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.0BHOd",
+   "capitulo": "advancedPawn",
+   "teste": true,
+   "stars": 3,
+   "fen": "5r2/1k6/p7/1pR2B2/8/PP1P1KP1/2p5/8 b - - 1 37",
+   "goal": "win",
+   "origin": "lichess:0BHOd",
+   "line": [
+    {
+     "teach": "f8f5",
+     "accept": [
+      "f8f5"
+     ],
+     "reply": "c5f5"
+    },
+    {
+     "teach": "c2c1q",
+     "accept": [
+      "c2c1q"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "t4.JwSfQ",
+   "capitulo": "deflection",
+   "teste": true,
+   "stars": 3,
+   "fen": "6k1/1b2R2r/pp1p1p2/3N1n1p/2P4P/P7/1P4PB/2b4K w - - 0 34",
+   "goal": "win",
+   "origin": "lichess:JwSfQ",
+   "line": [
+    {
+     "teach": "d5f6",
+     "accept": [
+      "d5f6"
+     ],
+     "reply": "g8f8"
+    },
+    {
+     "teach": "e7h7",
+     "accept": [
+      "e7h7"
      ]
     }
    ]
