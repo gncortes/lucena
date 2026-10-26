@@ -14,6 +14,11 @@
    "id": "counterattack",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c8/counterattack.json"
+  },
+  {
+   "id": "perpetualCheck",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c8/perpetualCheck.json"
   }
  ],
  "exercises": [
@@ -361,10 +366,195 @@
      ]
     }
    ]
+  },
+  {
+   "id": "pc.qQoGe",
+   "capitulo": "perpetualCheck",
+   "stars": 1,
+   "fen": "2r3k1/p4pp1/1pQ4p/8/8/1P1r2BP/5PPK/1q6 w - - 2 32",
+   "goal": "draw",
+   "origin": "lichess:qQoGe",
+   "line": [
+    {
+     "teach": "c6c8",
+     "accept": [
+      "c6c8"
+     ],
+     "reply": "g8h7"
+    },
+    {
+     "teach": "c8f5",
+     "accept": [
+      "c8f5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.uy3o5",
+   "capitulo": "perpetualCheck",
+   "stars": 1,
+   "fen": "6k1/3Q4/4n1pp/4q3/8/5P2/5P2/2R4K b - - 4 51",
+   "goal": "draw",
+   "origin": "lichess:uy3o5",
+   "line": [
+    {
+     "teach": "e5h5",
+     "accept": [
+      "e5h5"
+     ],
+     "reply": "h1g1"
+    },
+    {
+     "teach": "h5g5",
+     "accept": [
+      "h5g5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.3asDC",
+   "capitulo": "perpetualCheck",
+   "stars": 1,
+   "fen": "2k5/8/8/7P/4p1R1/4NnP1/5PK1/1r6 b - - 2 49",
+   "goal": "draw",
+   "origin": "lichess:3asDC",
+   "line": [
+    {
+     "teach": "b1g1",
+     "accept": [
+      "b1g1"
+     ],
+     "reply": "g2h3"
+    },
+    {
+     "teach": "g1h1",
+     "accept": [
+      "g1h1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.8DpRd",
+   "capitulo": "perpetualCheck",
+   "stars": 2,
+   "fen": "2r5/5p1k/p3pQ2/1p1pP3/6PP/6K1/3q4/8 w - - 3 36",
+   "goal": "draw",
+   "origin": "lichess:8DpRd",
+   "line": [
+    {
+     "teach": "f6f7",
+     "accept": [
+      "f6f7"
+     ],
+     "reply": "h7h8"
+    },
+    {
+     "teach": "f7f6",
+     "accept": [
+      "f7f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.3wijj",
+   "capitulo": "perpetualCheck",
+   "stars": 2,
+   "fen": "2r3k1/1b4p1/p6p/1p2Np1Q/4pq2/1P6/PB2K1PP/8 w - - 0 26",
+   "goal": "draw",
+   "origin": "lichess:3wijj",
+   "line": [
+    {
+     "teach": "h5f7",
+     "accept": [
+      "h5f7"
+     ],
+     "reply": "g8h7"
+    },
+    {
+     "teach": "f7g6",
+     "accept": [
+      "f7g6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.CMcJb",
+   "capitulo": "perpetualCheck",
+   "stars": 3,
+   "fen": "5rk1/pR6/6p1/2P5/4P3/3q1B2/P4K2/1R5Q b - - 0 43",
+   "goal": "draw",
+   "origin": "lichess:CMcJb",
+   "line": [
+    {
+     "teach": "d3d2",
+     "accept": [
+      "d3d2"
+     ],
+     "reply": "f2g1"
+    },
+    {
+     "teach": "d2e3",
+     "accept": [
+      "d2e3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.iibzo",
+   "capitulo": "perpetualCheck",
+   "stars": 2,
+   "fen": "5k2/3B1p1p/b3pQ2/p3P3/8/1q4P1/2r2P1P/4R1K1 w - - 7 36",
+   "goal": "win",
+   "origin": "lichess:iibzo",
+   "line": [
+    {
+     "teach": "f6h8",
+     "accept": [
+      "f6h8"
+     ],
+     "reply": "f8e7"
+    },
+    {
+     "teach": "h8e8",
+     "accept": [
+      "h8e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pc.williamsHarrwitz",
+   "capitulo": "perpetualCheck",
+   "stars": 3,
+   "fen": "8/8/8/1k6/8/r1n5/p1R5/K7 w - - 0 83",
+   "goal": "draw",
+   "origin": "own",
+   "ref": "wikipediaStalemate",
+   "line": [
+    {
+     "teach": "c2b2",
+     "accept": [
+      "c2b2"
+     ],
+     "reply": "b5c4"
+    },
+    {
+     "teach": "b2b3",
+     "accept": [
+      "b2b3"
+     ]
+    }
+   ]
   }
  ],
- "maxScore": 28,
- "passScore": 21,
+ "maxScore": 43,
+ "passScore": 32,
  "keyPositions": [],
  "references": [
   {
@@ -597,6 +787,96 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle vu2cV)",
    "url": "https://lichess.org/Zf0oZaJD#60"
+  },
+  {
+   "id": "lichessGameLT1Ve",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle LT1Ve)",
+   "url": "https://lichess.org/gznfdnGw#58"
+  },
+  {
+   "id": "lichessGameGL9I2",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle GL9I2)",
+   "url": "https://lichess.org/HnMdI9YP#44"
+  },
+  {
+   "id": "lichessGameWRtiU",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle WRtiU)",
+   "url": "https://lichess.org/dBdMH11u/black#99"
+  },
+  {
+   "id": "lichessGameic1dC",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ic1dC)",
+   "url": "https://lichess.org/8fivo4Ww/black#73"
+  },
+  {
+   "id": "lichessGame1ojpm",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 1ojpm)",
+   "url": "https://lichess.org/buSFsZeL#56"
+  },
+  {
+   "id": "lichessGameqQoGe",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle qQoGe)",
+   "url": "https://lichess.org/e7Hea0hs#62"
+  },
+  {
+   "id": "lichessGameuy3o5",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle uy3o5)",
+   "url": "https://lichess.org/ogVLo5e9/black#101"
+  },
+  {
+   "id": "lichessGame3asDC",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 3asDC)",
+   "url": "https://lichess.org/EUG1emWC/black#97"
+  },
+  {
+   "id": "lichessGame8DpRd",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 8DpRd)",
+   "url": "https://lichess.org/hCukhPon#70"
+  },
+  {
+   "id": "lichessGame3wijj",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 3wijj)",
+   "url": "https://lichess.org/qWOOuKAy#50"
+  },
+  {
+   "id": "lichessGameCMcJb",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle CMcJb)",
+   "url": "https://lichess.org/db76XbaF/black#85"
+  },
+  {
+   "id": "lichessGameiibzo",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle iibzo)",
+   "url": "https://lichess.org/pQVJjQgE#70"
+  },
+  {
+   "id": "wikipediaStalemate",
+   "kind": "web",
+   "title": "Wikipedia: Stalemate (Williams–Harrwitz 1846, Evans–Reshevsky 1963, Gelfand–Kramnik 1994, Troitsky–Vogt 1896)",
+   "url": "https://en.wikipedia.org/wiki/Stalemate"
   }
  ]
 }
