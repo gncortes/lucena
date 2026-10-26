@@ -14,6 +14,11 @@
    "id": "rookPawnWrongBishop",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c16/rookPawnWrongBishop.json"
+  },
+  {
+   "id": "outsidePasser",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c16/outsidePasser.json"
   }
  ],
  "exercises": [
@@ -323,10 +328,148 @@
      ]
     }
    ]
+  },
+  {
+   "id": "op.rgaoq",
+   "capitulo": "outsidePasser",
+   "stars": 1,
+   "fen": "5k2/2p5/pp6/3K4/8/6P1/P7/8 w - - 3 59",
+   "goal": "win",
+   "origin": "lichess:rgaoq",
+   "line": [
+    {
+     "teach": "d5c6",
+     "accept": [
+      "d5c6"
+     ],
+     "reply": "a6a5"
+    },
+    {
+     "teach": "c6c7",
+     "accept": [
+      "c6c7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "op.YjouV",
+   "capitulo": "outsidePasser",
+   "stars": 1,
+   "fen": "8/8/8/2p3kp/4P3/1P5K/1P6/8 b - - 1 49",
+   "goal": "win",
+   "origin": "lichess:YjouV",
+   "line": [
+    {
+     "teach": "g5f4",
+     "accept": [
+      "g5f4"
+     ],
+     "reply": "h3h4"
+    },
+    {
+     "teach": "f4e4",
+     "accept": [
+      "f4e4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "op.hHU2w",
+   "capitulo": "outsidePasser",
+   "stars": 1,
+   "fen": "8/8/8/7P/3k1p2/5Pp1/6K1/8 b - - 0 70",
+   "goal": "win",
+   "origin": "lichess:hHU2w",
+   "line": [
+    {
+     "teach": "d4e5",
+     "accept": [
+      "d4e5"
+     ],
+     "reply": "h5h6"
+    },
+    {
+     "teach": "e5f6",
+     "accept": [
+      "e5f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "op.gG9SJ",
+   "capitulo": "outsidePasser",
+   "stars": 2,
+   "fen": "8/8/5K2/4p3/k1p3P1/2P5/8/8 w - - 1 46",
+   "goal": "win",
+   "origin": "lichess:gG9SJ",
+   "line": [
+    {
+     "teach": "f6e5",
+     "accept": [
+      "f6e5"
+     ],
+     "reply": "a4b3"
+    },
+    {
+     "teach": "e5d4",
+     "accept": [
+      "e5d4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "op.6OTWc",
+   "capitulo": "outsidePasser",
+   "stars": 2,
+   "fen": "8/8/2k5/5p2/3P1Pp1/3K4/8/8 b - - 7 48",
+   "goal": "win",
+   "origin": "lichess:6OTWc",
+   "line": [
+    {
+     "teach": "c6d5",
+     "accept": [
+      "c6d5"
+     ],
+     "reply": "d3e3"
+    },
+    {
+     "teach": "d5c4",
+     "accept": [
+      "d5c4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "op.8QWOI",
+   "capitulo": "outsidePasser",
+   "stars": 3,
+   "fen": "8/8/3k4/5p1p/1PK4P/8/8/8 w - - 0 37",
+   "goal": "win",
+   "origin": "lichess:8QWOI",
+   "line": [
+    {
+     "teach": "c4d4",
+     "accept": [
+      "c4d4"
+     ],
+     "reply": "f5f4"
+    },
+    {
+     "teach": "d4e4",
+     "accept": [
+      "d4e4"
+     ]
+    }
+   ]
   }
  ],
- "maxScore": 22,
- "passScore": 16,
+ "maxScore": 32,
+ "passScore": 23,
  "keyPositions": [],
  "references": [
   {
@@ -452,6 +595,57 @@
    "kind": "web",
    "title": "Wikipedia: Wrong bishop",
    "url": "https://en.wikipedia.org/wiki/Wrong_bishop"
+  },
+  {
+   "id": "lichessGamergaoq",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle rgaoq)",
+   "url": "https://lichess.org/vnO5BluC/black#116"
+  },
+  {
+   "id": "lichessGameYjouV",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle YjouV)",
+   "url": "https://lichess.org/fQ8V1KX7#97"
+  },
+  {
+   "id": "lichessGamehHU2w",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle hHU2w)",
+   "url": "https://lichess.org/QgszeqvJ#139"
+  },
+  {
+   "id": "lichessGamegG9SJ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle gG9SJ)",
+   "url": "https://lichess.org/v29Escdy/black#90"
+  },
+  {
+   "id": "lichessGame6OTWc",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 6OTWc)",
+   "url": "https://lichess.org/4X5LAlnK#95"
+  },
+  {
+   "id": "lichessGame8QWOI",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 8QWOI)",
+   "url": "https://lichess.org/sVsNlJIX/black#72"
+  },
+  {
+   "id": "fischerLarsen",
+   "kind": "game",
+   "white": "Bobby Fischer",
+   "black": "Bent Larsen",
+   "event": "Match de Candidatos, semifinal, 5ª partida, Denver",
+   "year": 1971,
+   "url": "https://lichess.org/analysis/pgn/e4_c5_Nf3_d6_d4_cxd4_Nxd4_Nf6_Nc3_Nc6_Bc4_e6_Bb3_Be7_Be3_O-O_O-O_Bd7_f4_Qc8_f5_Nxd4_Bxd4_exf5_Qf3_fxe4_Nxe4_Nxe4_Qxe4_Be6_Rf3_Qc6_Re1_Qxe4_Rxe4_d5_Rg3_g6_Bxd5_Bd6_Rxe6_Bxg3_Re7_Bd6_Rxb7_Rac8_c4_a5_Ra7_Bc7_g3_Rfe8_Kf1_Re7_Bf6_Re3_Bc3_h5_Ra6_Be5_Bd2_Rd3_Ke2_Rd4_Bc3_Rcxc4_Bxc4_Rxc4_Kd3_Rc5_Rxa5_Rxa5_Bxa5_Bxb2_a4_Kf8_Bc3_Bxc3_Kxc3_Ke7_Kd4_Kd6_a5_f6_a6_Kc6_a7_Kb7_Kd5_h4_Ke6#80"
   }
  ]
 }
