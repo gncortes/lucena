@@ -26,8 +26,8 @@
       "roteiro": "assets/lessons/roteiros/pilares.c3/knightMates.json"
     }
   ],
-  "passScore": 45,
-  "maxScore": 60,
+  "passScore": 62,
+  "maxScore": 83,
   "keyPositions": [],
   "references": [
     {
@@ -316,6 +316,90 @@
       "author": "Wikipedia",
       "title": "Blackburne Shilling Gambit",
       "url": "https://en.wikipedia.org/wiki/Blackburne_Shilling_Gambit"
+    },
+    {
+      "id": "lichessGameJDyTZ",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle JDyTZ)",
+      "url": "https://lichess.org/xmKFwDtn/black#48"
+    },
+    {
+      "id": "lichessGamesYzKN",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle sYzKN)",
+      "url": "https://lichess.org/3lJAsvWh/black#40"
+    },
+    {
+      "id": "lichessGameZO3o9",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle ZO3o9)",
+      "url": "https://lichess.org/gcMa2wp4#89"
+    },
+    {
+      "id": "lichessGameitute",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle itute)",
+      "url": "https://lichess.org/8J58ubu3/black#80"
+    },
+    {
+      "id": "lichessGamebCoCV",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle bCoCV)",
+      "url": "https://lichess.org/mAjy8s8I/black#96"
+    },
+    {
+      "id": "lichessGamecBLrY",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle cBLrY)",
+      "url": "https://lichess.org/kyzcs6Kp/black#86"
+    },
+    {
+      "id": "lichessGameJR0Iq",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle JR0Iq)",
+      "url": "https://lichess.org/mPxCNnQp#57"
+    },
+    {
+      "id": "lichessGame20V2P",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle 20V2P)",
+      "url": "https://lichess.org/CM60siKY/black#88"
+    },
+    {
+      "id": "lichessGamepmgWA",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle pmgWA)",
+      "url": "https://lichess.org/XujdK7DD/black#52"
+    },
+    {
+      "id": "lichessGame6Elke",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle 6Elke)",
+      "url": "https://lichess.org/IM210QaS/black#56"
+    },
+    {
+      "id": "lichessGameNrErE",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle NrErE)",
+      "url": "https://lichess.org/SKV3g7Qq#69"
+    },
+    {
+      "id": "lichessGame8dr9D",
+      "kind": "game",
+      "author": "lichess.org",
+      "title": "Lichess game (puzzle 8dr9D)",
+      "url": "https://lichess.org/nbK8gZTu#37"
     }
   ],
   "exercises": [
@@ -992,6 +1076,266 @@
           "teach": "e5f7",
           "accept": [
             "e5f7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.JDyTZ",
+      "capitulo": "backRankMate",
+      "teste": true,
+      "stars": 1,
+      "fen": "3q2k1/1pp2ppp/1p6/4nb2/2P5/4B2P/1P3PP1/3R2K1 w - - 0 25",
+      "goal": "win",
+      "origin": "lichess:JDyTZ",
+      "line": [
+        {
+          "teach": "d1d8",
+          "accept": [
+            "d1d8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.sYzKN",
+      "capitulo": "knightMates",
+      "teste": true,
+      "stars": 1,
+      "fen": "6rk/ppqn2pp/2pb2pN/8/3Pr3/7P/PP3PP1/R1B3K1 w - - 0 21",
+      "goal": "win",
+      "origin": "lichess:sYzKN",
+      "line": [
+        {
+          "teach": "h6f7",
+          "accept": [
+            "h6f7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.ZO3o9",
+      "capitulo": "rookBishopMates",
+      "teste": true,
+      "stars": 1,
+      "fen": "8/2P4p/b4Rp1/3kPp2/1B3P2/4p3/r5PP/4K3 b - - 5 45",
+      "goal": "win",
+      "origin": "lichess:ZO3o9",
+      "line": [
+        {
+          "teach": "a2a1",
+          "accept": [
+            "a2a1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.itute",
+      "capitulo": "knightMates",
+      "teste": true,
+      "stars": 1,
+      "fen": "8/2R5/3rrk1p/3pN1p1/5P2/6P1/2P1K2P/8 w - - 4 41",
+      "goal": "win",
+      "origin": "lichess:itute",
+      "line": [
+        {
+          "teach": "c7f7",
+          "accept": [
+            "c7f7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.bCoCV",
+      "capitulo": "backRankMate",
+      "teste": true,
+      "stars": 2,
+      "fen": "6k1/6pp/1r6/3N4/5Rp1/8/p4K1P/8 w - - 0 49",
+      "goal": "win",
+      "origin": "lichess:bCoCV",
+      "line": [
+        {
+          "teach": "d5e7",
+          "accept": [
+            "d5e7"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "f4f8",
+          "accept": [
+            "f4f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.cBLrY",
+      "capitulo": "queenRookMates",
+      "teste": true,
+      "stars": 2,
+      "fen": "6k1/5p1p/5qp1/2Q5/3r4/5P1P/6P1/4R1K1 w - - 0 44",
+      "goal": "win",
+      "origin": "lichess:cBLrY",
+      "line": [
+        {
+          "teach": "e1e8",
+          "accept": [
+            "e1e8"
+          ],
+          "reply": "g8g7"
+        },
+        {
+          "teach": "c5f8",
+          "accept": [
+            "c5f8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.JR0Iq",
+      "capitulo": "queenRookMates",
+      "teste": true,
+      "stars": 2,
+      "fen": "6r1/pp3k1p/2pp1p2/4p3/2P1Ppq1/1P3N2/P1P2P1K/R5RQ b - - 0 29",
+      "goal": "win",
+      "origin": "lichess:JR0Iq",
+      "line": [
+        {
+          "teach": "g4h5",
+          "accept": [
+            "g4h5"
+          ],
+          "reply": "f3h4"
+        },
+        {
+          "teach": "h5h4",
+          "accept": [
+            "h5h4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.20V2P",
+      "capitulo": "rookBishopMates",
+      "teste": true,
+      "stars": 2,
+      "fen": "8/5p1k/R7/6Pp/7K/2B3P1/p1q4P/8 w - - 1 45",
+      "goal": "win",
+      "origin": "lichess:20V2P",
+      "line": [
+        {
+          "teach": "a6h6",
+          "accept": [
+            "a6h6"
+          ],
+          "reply": "h7g8"
+        },
+        {
+          "teach": "h6h8",
+          "accept": [
+            "h6h8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.pmgWA",
+      "capitulo": "knightMates",
+      "teste": true,
+      "stars": 2,
+      "fen": "5r1k/pp1bn1pp/1b1Np3/3pP3/3P3N/3qB3/PP4PP/5R1K w - - 0 27",
+      "goal": "win",
+      "origin": "lichess:pmgWA",
+      "line": [
+        {
+          "teach": "f1f8",
+          "accept": [
+            "f1f8"
+          ],
+          "reply": "e7g8"
+        },
+        {
+          "teach": "d6f7",
+          "accept": [
+            "d6f7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.6Elke",
+      "capitulo": "backRankMate",
+      "teste": true,
+      "stars": 3,
+      "fen": "4r1k1/2Q2ppp/8/1p2P3/3q4/8/6PP/r4R1K w - - 0 29",
+      "goal": "win",
+      "origin": "lichess:6Elke",
+      "line": [
+        {
+          "teach": "c7f7",
+          "accept": [
+            "c7f7"
+          ],
+          "reply": "g8h8"
+        },
+        {
+          "teach": "f7e8",
+          "accept": [
+            "f7e8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.NrErE",
+      "capitulo": "queenRookMates",
+      "teste": true,
+      "stars": 3,
+      "fen": "4Q3/4N2k/4q2p/p3p1p1/4bp2/BP5P/P4PP1/R6K b - - 3 35",
+      "goal": "win",
+      "origin": "lichess:NrErE",
+      "line": [
+        {
+          "teach": "e6h3",
+          "accept": [
+            "e6h3"
+          ],
+          "reply": "h1g1"
+        },
+        {
+          "teach": "h3g2",
+          "accept": [
+            "h3g2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t3.8dr9D",
+      "capitulo": "backRankMate",
+      "teste": true,
+      "stars": 3,
+      "fen": "2kr3r/bpp5/p3p2p/4R3/6p1/2P5/PP3QPP/R1B3K1 b - - 0 19",
+      "goal": "win",
+      "origin": "lichess:8dr9D",
+      "line": [
+        {
+          "teach": "d8d1",
+          "accept": [
+            "d8d1"
+          ],
+          "reply": "e5e1"
+        },
+        {
+          "teach": "d1e1",
+          "accept": [
+            "d1e1"
           ]
         }
       ]
