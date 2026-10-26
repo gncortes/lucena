@@ -1,0 +1,261 @@
+{
+ "id": "pilares.c14",
+ "module": "pilares",
+ "skills": [
+  "pilares.c14"
+ ],
+ "parts": [
+  {
+   "id": "prophylaxis",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c14/prophylaxis.json"
+  }
+ ],
+ "passScore": 10,
+ "maxScore": 14,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "lichessGame09IR3",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 09IR3)",
+   "url": "https://lichess.org/XnoQlz24/black#22"
+  },
+  {
+   "id": "lichessGameYz1IY",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Yz1IY)",
+   "url": "https://lichess.org/cdxp3iLC#109"
+  },
+  {
+   "id": "lichessGametK3cn",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle tK3cn)",
+   "url": "https://lichess.org/rGNoeHRF/black#120"
+  },
+  {
+   "id": "lichessGameTPF0D",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle TPF0D)",
+   "url": "https://lichess.org/CbN40pXj#39"
+  },
+  {
+   "id": "lichessGamehGQas",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle hGQas)",
+   "url": "https://lichess.org/EA3cu1ZY#69"
+  },
+  {
+   "id": "lichessGamezGkt7",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle zGkt7)",
+   "url": "https://lichess.org/uRraXIbB/black#36"
+  },
+  {
+   "id": "lichessGameRxgNx",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle RxgNx)",
+   "url": "https://lichess.org/v5wuTRvo/black#30"
+  },
+  {
+   "id": "lichessGamemxRiC",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle mxRiC)",
+   "url": "https://lichess.org/JuZqGaoy/black#44"
+  },
+  {
+   "id": "lichessGamejukuD",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle jukuD)",
+   "url": "https://lichess.org/qDfEufPK/black#54"
+  },
+  {
+   "id": "lichessGameLeK02",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle LeK02)",
+   "url": "https://lichess.org/dXebpM9y/black#26"
+  },
+  {
+   "id": "wikiLondon",
+   "kind": "web",
+   "author": "Wikipédia",
+   "title": "Sistema London",
+   "url": "https://pt.wikipedia.org/wiki/Sistema_London"
+  },
+  {
+   "id": "wikiEscocesa",
+   "kind": "web",
+   "author": "Wikipédia",
+   "title": "Abertura Escocesa",
+   "url": "https://pt.wikipedia.org/wiki/Abertura_escocesa"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "pf.own1",
+   "capitulo": "prophylaxis",
+   "stars": 1,
+   "fen": "6k1/5ppp/8/8/8/1PP5/n4PPP/4K3 w - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "e1d2",
+     "accept": [
+      "e1d2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.own2",
+   "capitulo": "prophylaxis",
+   "stars": 1,
+   "fen": "2k5/Bpp2ppp/8/8/8/8/5PPP/6K1 b - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "b7b6",
+     "accept": [
+      "b7b6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.own4",
+   "capitulo": "prophylaxis",
+   "stars": 1,
+   "fen": "4r1k1/5ppp/8/8/8/8/R4PPP/6K1 b - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "e8e1",
+     "accept": [
+      "e8e1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.RxgNx",
+   "capitulo": "prophylaxis",
+   "stars": 2,
+   "fen": "r3r1k1/ppp1qpbp/6p1/4p3/4P3/2P2NP1/bPQ1BPP1/3RK2R w K - 0 16",
+   "goal": "win",
+   "origin": "lichess:RxgNx",
+   "line": [
+    {
+     "teach": "b2b3",
+     "accept": [
+      "b2b3"
+     ],
+     "reply": "a2b3"
+    },
+    {
+     "teach": "c2b3",
+     "accept": [
+      "c2b3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.own3",
+   "capitulo": "prophylaxis",
+   "stars": 1,
+   "fen": "8/6p1/8/p1k5/3p4/P2K4/1P4P1/8 b - - 0 1",
+   "goal": "win",
+   "origin": "own",
+   "line": [
+    {
+     "teach": "a5a4",
+     "accept": [
+      "a5a4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.mxRiC",
+   "capitulo": "prophylaxis",
+   "stars": 2,
+   "fen": "4r1rk/1p4pp/p1pbb3/3qNp2/3P1B2/P1Q5/1P3PPP/3RR1K1 w - - 3 23",
+   "goal": "win",
+   "origin": "lichess:mxRiC",
+   "line": [
+    {
+     "teach": "e5g6",
+     "accept": [
+      "e5g6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.jukuD",
+   "capitulo": "prophylaxis",
+   "stars": 3,
+   "fen": "8/pp3p2/2p1k3/6p1/8/4K1P1/PPP2Pr1/3R4 w - - 0 28",
+   "goal": "win",
+   "origin": "lichess:jukuD",
+   "line": [
+    {
+     "teach": "d1h1",
+     "accept": [
+      "d1h1"
+     ],
+     "reply": "g2g3"
+    },
+    {
+     "teach": "f2g3",
+     "accept": [
+      "f2g3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pf.LeK02",
+   "capitulo": "prophylaxis",
+   "stars": 3,
+   "fen": "2kr2r1/ppp2p1p/1b1pbp2/4p3/P3P3/2PB4/1P1P1PPP/R1B2RK1 w - - 1 14",
+   "goal": "win",
+   "origin": "lichess:LeK02",
+   "line": [
+    {
+     "teach": "a4a5",
+     "accept": [
+      "a4a5"
+     ],
+     "reply": "e6h3"
+    },
+    {
+     "teach": "g2g3",
+     "accept": [
+      "g2g3"
+     ]
+    }
+   ]
+  }
+ ]
+}
