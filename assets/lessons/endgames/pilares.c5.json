@@ -1,0 +1,303 @@
+{
+ "id": "pilares.c5",
+ "module": "pilares",
+ "skills": [
+  "pilares.c5"
+ ],
+ "parts": [
+  {
+   "id": "openingPrinciples",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c5/openingPrinciples.json"
+  }
+ ],
+ "passScore": 11,
+ "maxScore": 15,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "operaGame",
+   "kind": "game",
+   "author": "Wikipedia",
+   "title": "Opera Game (Morphy, Paris, 1858)",
+   "url": "https://en.wikipedia.org/wiki/Opera_Game"
+  },
+  {
+   "id": "twoKnights",
+   "kind": "web",
+   "author": "Wikipedia",
+   "title": "Two Knights Defense (5...Na5)",
+   "url": "https://en.wikipedia.org/wiki/Two_Knights_Defense"
+  },
+  {
+   "id": "lichessGame8yoJF",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 8yoJF)",
+   "url": "https://lichess.org/mEKDNCmF#15"
+  },
+  {
+   "id": "lichessGame7I8FH",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 7I8FH)",
+   "url": "https://lichess.org/juqoKKe3#21"
+  },
+  {
+   "id": "lichessGamew7BYl",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle w7BYl)",
+   "url": "https://lichess.org/XGpivAkz#15"
+  },
+  {
+   "id": "lichessGamevaoeQ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle vaoeQ)",
+   "url": "https://lichess.org/6hPCT2cz#15"
+  },
+  {
+   "id": "lichessGameSWYgF",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SWYgF)",
+   "url": "https://lichess.org/mGoAWB8P/black#16"
+  },
+  {
+   "id": "lichessGame8Mkhd",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 8Mkhd)",
+   "url": "https://lichess.org/560b9efD/black#16"
+  },
+  {
+   "id": "lichessGameVFp8l",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle VFp8l)",
+   "url": "https://lichess.org/ALOfuRxn#15"
+  },
+  {
+   "id": "lichessGamegN8a8",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle gN8a8)",
+   "url": "https://lichess.org/cwaW0RLl#17"
+  },
+  {
+   "id": "lichessGameKiNJk",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle KiNJk)",
+   "url": "https://lichess.org/h2yHmsky/black#24"
+  },
+  {
+   "id": "lichessGameAgPXG",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle AgPXG)",
+   "url": "https://lichess.org/nvCChDYF#17"
+  },
+  {
+   "id": "lichessGameCj9Rd",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Cj9Rd)",
+   "url": "https://lichess.org/yWduWMAp#9"
+  },
+  {
+   "id": "lichessGameffy6k",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ffy6k)",
+   "url": "https://lichess.org/sy0HVyD7/black#16"
+  },
+  {
+   "id": "lichessGameWEEfA",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle WEEfA)",
+   "url": "https://lichess.org/cV7g8qMo#17"
+  },
+  {
+   "id": "lichessGamekx1IX",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle kx1IX)",
+   "url": "https://lichess.org/qmT0cLTS/black#26"
+  },
+  {
+   "id": "lichessGameSDF3k",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SDF3k)",
+   "url": "https://lichess.org/9EIJR6lK/black#8"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "openingPrinciples.8Mkhd",
+   "capitulo": "openingPrinciples",
+   "stars": 1,
+   "fen": "2kr1bnr/ppp1pppp/2n5/4q3/5P2/2NP4/PPP1BP1P/R1BQK2R b KQ - 0 8",
+   "goal": "draw",
+   "origin": "lichess:8Mkhd",
+   "line": [
+    {
+     "teach": "e5e6",
+     "accept": [
+      "e5e6",
+      "e5a5",
+      "e5d4",
+      "e5d6",
+      "e5f6",
+      "e5c5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.VFp8l",
+   "capitulo": "openingPrinciples",
+   "stars": 1,
+   "fen": "r2qkb1r/pp2pppp/2n2n2/1B1p4/5P2/5b1P/PPPP2P1/RNBQ1RK1 w kq - 0 8",
+   "goal": "draw",
+   "origin": "lichess:VFp8l",
+   "line": [
+    {
+     "teach": "b5c6",
+     "accept": [
+      "b5c6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.gN8a8",
+   "capitulo": "openingPrinciples",
+   "stars": 1,
+   "fen": "r1bqkb1r/ppp1n2p/6p1/4pp1Q/2B1P3/8/PPPP2PP/RNB2RK1 w kq - 0 9",
+   "goal": "draw",
+   "origin": "lichess:gN8a8",
+   "line": [
+    {
+     "teach": "h5e2",
+     "accept": [
+      "h5e2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.KiNJk",
+   "capitulo": "openingPrinciples",
+   "stars": 1,
+   "fen": "r1b1kb1r/pp2nppp/3p4/3qp3/Q7/2P2N2/P3BPPP/R1B2RK1 b kq - 1 12",
+   "goal": "draw",
+   "origin": "lichess:KiNJk",
+   "line": [
+    {
+     "teach": "c8d7",
+     "accept": [
+      "c8d7",
+      "e7c6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.AgPXG",
+   "capitulo": "openingPrinciples",
+   "stars": 2,
+   "fen": "r1bqk2r/pp2n1pp/2nbpp2/1B1pN1B1/3P4/2P5/PP3PPP/RN1QK2R w KQkq - 0 9",
+   "goal": "draw",
+   "origin": "lichess:AgPXG",
+   "line": [
+    {
+     "teach": "b5c6",
+     "accept": [
+      "b5c6",
+      "g5f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.Cj9Rd",
+   "capitulo": "openingPrinciples",
+   "stars": 2,
+   "fen": "r1bqkbnr/pppp2pp/5p2/4p3/3nP3/3P1Q2/PPP1NPPP/RNB1KB1R w KQkq - 1 5",
+   "goal": "draw",
+   "origin": "lichess:Cj9Rd",
+   "line": [
+    {
+     "teach": "e2d4",
+     "accept": [
+      "e2d4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.ffy6k",
+   "capitulo": "openingPrinciples",
+   "stars": 2,
+   "fen": "r2qkb1r/pp2pppp/2n5/3n1b2/8/P1N2N2/1P2PPPP/R1BQKB1R b KQkq - 2 8",
+   "goal": "draw",
+   "origin": "lichess:ffy6k",
+   "line": [
+    {
+     "teach": "d5c3",
+     "accept": [
+      "d5c3",
+      "e7e6",
+      "d5f6",
+      "f5e6",
+      "d5b6",
+      "d5c7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.WEEfA",
+   "capitulo": "openingPrinciples",
+   "stars": 3,
+   "fen": "r1b1kb1r/pp1p1ppp/2n5/q3p3/3P3B/P3P3/1P1n1PPP/R2QKBNR w KQkq - 0 9",
+   "goal": "draw",
+   "origin": "lichess:WEEfA",
+   "line": [
+    {
+     "teach": "b2b4",
+     "accept": [
+      "b2b4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "openingPrinciples.kx1IX",
+   "capitulo": "openingPrinciples",
+   "stars": 2,
+   "fen": "r2qkb1r/pb1P1pp1/1p5p/2p5/Q2p1n2/2N2P2/PPP3PP/2KR1BNR b kq - 0 13",
+   "goal": "draw",
+   "origin": "lichess:kx1IX",
+   "line": [
+    {
+     "teach": "e8e7",
+     "accept": [
+      "e8e7"
+     ]
+    }
+   ]
+  }
+ ]
+}
