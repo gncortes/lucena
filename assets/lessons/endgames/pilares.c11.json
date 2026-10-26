@@ -9,6 +9,11 @@
    "id": "carlsbad",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c11/carlsbad.json"
+  },
+  {
+   "id": "maroczy",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c11/maroczy.json"
   }
  ],
  "exercises": [
@@ -190,10 +195,174 @@
      ]
     }
    ]
+  },
+  {
+   "id": "mz.68NbY",
+   "capitulo": "maroczy",
+   "stars": 1,
+   "fen": "1rr3kb/1p2pb1p/p2p1npB/3Nn3/2P1P1P1/4NP2/PP1q4/1K1R1B1R w - - 0 20",
+   "goal": "win",
+   "origin": "lichess:68NbY",
+   "line": [
+    {
+     "teach": "d5e7",
+     "accept": [
+      "d5e7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.viALc",
+   "capitulo": "maroczy",
+   "stars": 1,
+   "fen": "rnb1r1k1/1p3pbp/p2p2p1/q1nNp1B1/P1P1P2P/5P2/1P1QN1P1/3RKB1R b K - 0 14",
+   "goal": "win",
+   "origin": "lichess:viALc",
+   "line": [
+    {
+     "teach": "c5d3",
+     "accept": [
+      "c5d3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.1Qht9",
+   "capitulo": "maroczy",
+   "stars": 1,
+   "fen": "2r5/3Q4/1R1pb2k/2n3pp/1pPnP2b/4KP2/1P1NB2B/R7 b - - 0 33",
+   "goal": "win",
+   "origin": "lichess:1Qht9",
+   "line": [
+    {
+     "teach": "d4c2",
+     "accept": [
+      "d4c2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.mGQqM",
+   "capitulo": "maroczy",
+   "stars": 2,
+   "fen": "2r3k1/4bpp1/p2p3p/qpr1p3/2P1P3/1P5P/P4PP1/1Q1RNRK1 w - - 0 21",
+   "goal": "win",
+   "origin": "lichess:mGQqM",
+   "line": [
+    {
+     "teach": "b3b4",
+     "accept": [
+      "b3b4"
+     ],
+     "reply": "a5b6"
+    },
+    {
+     "teach": "b4c5",
+     "accept": [
+      "b4c5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.95kP8",
+   "capitulo": "maroczy",
+   "stars": 2,
+   "fen": "2rqr1k1/pp1bppbp/3p1np1/3N4/2P1P3/1P1Q4/PB2BPPP/R4RK1 b - - 2 13",
+   "goal": "win",
+   "origin": "lichess:95kP8",
+   "line": [
+    {
+     "teach": "f6d5",
+     "accept": [
+      "f6d5"
+     ],
+     "reply": "b2g7"
+    },
+    {
+     "teach": "d5f4",
+     "accept": [
+      "d5f4"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.ss0SN",
+   "capitulo": "maroczy",
+   "stars": 2,
+   "fen": "1k1r2r1/p2nqp1Q/1pbp4/6P1/2P1PB2/2N2B2/PP3K2/3Rn3 w - - 0 28",
+   "goal": "win",
+   "origin": "lichess:ss0SN",
+   "line": [
+    {
+     "teach": "f4d6",
+     "accept": [
+      "f4d6"
+     ],
+     "reply": "e7d6"
+    },
+    {
+     "teach": "d1d6",
+     "accept": [
+      "d1d6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.9OqFD",
+   "capitulo": "maroczy",
+   "stars": 3,
+   "fen": "1Q5r/3knp2/pp1ppqp1/2b4p/2P2P2/3R4/PP4PP/2KR4 w - - 6 27",
+   "goal": "win",
+   "origin": "lichess:9OqFD",
+   "line": [
+    {
+     "teach": "d3d6",
+     "accept": [
+      "d3d6"
+     ],
+     "reply": "c5d6"
+    },
+    {
+     "teach": "d1d6",
+     "accept": [
+      "d1d6",
+      "b8d6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mz.fXOyl",
+   "capitulo": "maroczy",
+   "stars": 3,
+   "fen": "r3r1k1/p4pbp/1pbppqp1/8/2P1P3/1PN3P1/P2Q1PBP/3R1RK1 w - - 2 18",
+   "goal": "win",
+   "origin": "lichess:fXOyl",
+   "line": [
+    {
+     "teach": "e4e5",
+     "accept": [
+      "e4e5"
+     ],
+     "reply": "f6e5"
+    },
+    {
+     "teach": "g2c6",
+     "accept": [
+      "g2c6"
+     ]
+    }
+   ]
   }
  ],
- "passScore": 12,
- "maxScore": 15,
+ "passScore": 24,
+ "maxScore": 30,
  "keyPositions": [],
  "references": [
   {
@@ -328,6 +497,62 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle BoyFn)",
    "url": "https://lichess.org/DPRdSYRp/black#64"
+  },
+  {
+   "id": "lichessGame68NbY",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 68NbY)",
+   "url": "https://lichess.org/MWLEZbpV/black#38"
+  },
+  {
+   "id": "lichessGameviALc",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle viALc)",
+   "url": "https://lichess.org/PNYYrl1Z#27"
+  },
+  {
+   "id": "lichessGame1Qht9",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 1Qht9)",
+   "url": "https://lichess.org/V3Rg7f32#65"
+  },
+  {
+   "id": "lichessGamemGQqM",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle mGQqM)",
+   "url": "https://lichess.org/A5M5dV6T/black#40"
+  },
+  {
+   "id": "lichessGame95kP8",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 95kP8)",
+   "url": "https://lichess.org/TnD68E3q#25"
+  },
+  {
+   "id": "lichessGamess0SN",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle ss0SN)",
+   "url": "https://lichess.org/4ZhXq3cE/black#54"
+  },
+  {
+   "id": "lichessGame9OqFD",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 9OqFD)",
+   "url": "https://lichess.org/azLTmYto/black#52"
+  },
+  {
+   "id": "lichessGamefXOyl",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle fXOyl)",
+   "url": "https://lichess.org/sdnn19A3/black#34"
   }
  ]
 }
