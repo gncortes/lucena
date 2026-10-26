@@ -35,8 +35,7 @@ class CharacterBar extends StatelessWidget {
     this.showName = true,
     this.speechTop,
     this.playerRow,
-    this.playerRowBuilder,
-    this.speechHeadroom = double.infinity,
+    this.speechMaxLines = 3,
     super.key,
   });
 
@@ -61,101 +60,36 @@ class CharacterBar extends StatelessWidget {
   /// Barra única com retrato, nome e relógio, já pronta pelo chamador.
   final Widget? playerRow;
 
-  /// Variante CompJogador: a fala substitui o nome quando não cabe acima.
-  final Widget Function(Widget? speech)? playerRowBuilder;
-
-  /// Da base do balão até o fim da MoveList, no mesmo espaço do tabuleiro.
-  final double speechHeadroom;
+  /// Resumo responsivo; o toque continua abrindo a fala inteira.
+  final int speechMaxLines;
 
   @override
   Widget build(BuildContext context) {
     final character = talk.character!;
     final line = talk.enabled ? talk.line : null;
     if (speechTop case final top?) {
-      Widget row([Widget? speech]) => SizedBox(
-        height: playerRow == null && playerRowBuilder == null
-            ? heightFor(avatarSize)
-            : ClockRow.height,
-        child: playerRowBuilder != null || playerRow != null
-            ? KeyedSubtree(
-                key: FreeBoardKeys.characterBar,
-                child: playerRowBuilder?.call(speech) ?? playerRow!,
-              )
-            : CharacterBar(
-                talk: talk.copyWith(clearLine: true),
-                avatarSize: avatarSize,
-                showName: showName,
-              ),
-      );
-      return LayoutBuilder(
-        builder: (context, box) {
-          if (line != null && playerRowBuilder != null) {
-            final style = SpeechBalloon.style(context);
-            final painter =
-                TextPainter(
-                  text: TextSpan(text: line.text, style: style),
-                  maxLines: 3,
-                  ellipsis: '…',
-                  textDirection: Directionality.of(context),
-                  textScaler: MediaQuery.textScalerOf(context),
-                )..layout(
-                  maxWidth: math.max(
-                    1,
-                    box.maxWidth - 24 - SpeechBalloon.defaultPadding.horizontal,
-                  ),
-                );
-            final height =
-                painter.height +
-                SpeechBalloon.defaultPadding.vertical +
-                SpeechBalloon.tailExtent;
-            painter.dispose();
-            // Inclui respiro para a sombra; nunca usa a MoveList como headroom.
-            if (height + 4 > speechHeadroom) {
-              // A narração sobrevive à troca visual da fala pelo nome.
-              return _spoken(
-                context,
-                line.id,
-                line.text,
-                _TransientSpeech(
-                  key: ValueKey(line.id),
-                  text: line.text,
-                  replacement: row(),
-                  child: row(
-                    _balloon(
-                      context,
-                      character,
-                      line,
-                      BalloonTail.start,
-                      inline: true,
-                    ),
-                  ),
+      return _SpeechOverlay(
+        top: top,
+        speech: line == null
+            ? null
+            : _TransientSpeech(
+                text: line.text,
+                child: GameEntrance(
+                  part: GameEntrancePart.speech,
+                  // O balão fica no lugar; só o texto troca (crossfade).
+                  child: _balloon(context, character, line, BalloonTail.down),
                 ),
-              );
-            }
-          }
-          return _SpeechOverlay(
-            top: top,
-            speech: line == null
-                ? null
-                : _TransientSpeech(
-                    // A fala anterior não pode transbordar durante o crossfade
-                    // quando a nova fala exige menos espaço acima.
-                    key: ValueKey(line.id),
-                    text: line.text,
-                    child: GameEntrance(
-                      part: GameEntrancePart.speech,
-                      // A posição do balão não altera a faixa do jogador.
-                      child: _balloon(
-                        context,
-                        character,
-                        line,
-                        BalloonTail.down,
-                      ),
-                    ),
-                  ),
-            child: row(),
-          );
-        },
+              ),
+        child: SizedBox(
+          height: playerRow == null ? heightFor(avatarSize) : ClockRow.height,
+          child: playerRow != null
+              ? KeyedSubtree(key: FreeBoardKeys.characterBar, child: playerRow!)
+              : CharacterBar(
+                  talk: talk.copyWith(clearLine: true),
+                  avatarSize: avatarSize,
+                  showName: showName,
+                ),
+        ),
       );
     }
     return SizedBox(
@@ -229,9 +163,8 @@ class CharacterBar extends StatelessWidget {
     BuildContext context,
     Character character,
     CharacterLine line,
-    BalloonTail tail, {
-    bool inline = false,
-  }) => SpeechBalloon(
+    BalloonTail tail,
+  ) => SpeechBalloon(
     key: FreeBoardKeys.speechBubble,
     speech: line.id,
     tail: tail,
@@ -239,10 +172,6 @@ class CharacterBar extends StatelessWidget {
     tailX:
         SpeechBalloon.tailXFor(avatarSize) + (tail == BalloonTail.down ? 4 : 0),
     fitContent: true,
-    // Duas linhas cabem nos 68 dp da faixa sem tocar avatar ou relógios.
-    padding: inline
-        ? const EdgeInsetsDirectional.all(AppSpacing.sm)
-        : SpeechBalloon.defaultPadding,
     semanticsLabel: context.l10n.characterSays(character.name, line.text),
     tapHint: context.l10n.lessonFullSpeech,
     onTap: () => unawaited(
@@ -260,25 +189,18 @@ class CharacterBar extends StatelessWidget {
       TypewriterText(
         line.text,
         key: FreeBoardKeys.speechText(line.id),
-        maxLines: inline ? 2 : 3,
+        maxLines: speechMaxLines,
         shrink: false,
         style: SpeechBalloon.style(context),
       ),
-      narrate: !inline,
     ),
   );
 
   /// A fala sai na voz do personagem, com a voz ligada. O Stockfish não
   /// fala.
-  Widget _spoken(
-    BuildContext context,
-    String id,
-    String text,
-    Widget bubble, {
-    bool narrate = true,
-  }) {
+  Widget _spoken(BuildContext context, String id, String text, Widget bubble) {
     final speech = TeacherSpeech.speechOf(context);
-    if (!narrate || speech == null || talk.isEngine) {
+    if (speech == null || talk.isEngine) {
       return KeyedSubtree(key: ValueKey(id), child: bubble);
     }
     return AutoSpeak(
@@ -349,16 +271,10 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
 /// A fala flutua sem mudar o tamanho da faixa. A duração
 /// acompanha a leitura; o esmaecer respeita a preferência de movimento.
 class _TransientSpeech extends StatefulWidget {
-  const _TransientSpeech({
-    required this.text,
-    required this.child,
-    this.replacement,
-    super.key,
-  });
+  const _TransientSpeech({required this.text, required this.child});
 
   final String text;
   final Widget child;
-  final Widget? replacement;
 
   @override
   State<_TransientSpeech> createState() => _TransientSpeechState();
@@ -395,19 +311,17 @@ class _TransientSpeechState extends State<_TransientSpeech> {
   }
 
   @override
-  Widget build(BuildContext context) => !_visible && widget.replacement != null
-      ? widget.replacement!
-      : IgnorePointer(
-          ignoring: !_visible,
-          child: ExcludeSemantics(
-            excluding: !_visible,
-            child: AnimatedOpacity(
-              duration: AppMotion.of(context).component,
-              opacity: _visible ? 1 : 0,
-              child: widget.child,
-            ),
-          ),
-        );
+  Widget build(BuildContext context) => IgnorePointer(
+    ignoring: !_visible,
+    child: ExcludeSemantics(
+      excluding: !_visible,
+      child: AnimatedOpacity(
+        duration: AppMotion.of(context).component,
+        opacity: _visible ? 1 : 0,
+        child: widget.child,
+      ),
+    ),
+  );
 }
 
 /// Som e voz num único botão; a velocidade aparece apenas com a voz ativa.

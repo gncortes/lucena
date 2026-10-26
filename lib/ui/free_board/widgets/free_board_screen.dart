@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -24,6 +25,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/game_entrance.dart';
@@ -56,6 +58,29 @@ import '../../daily/widgets/daily_end_bar.dart';
 import '../../featured/view_models/featured_endgame_cubit.dart';
 import '../../featured/widgets/featured_game_bar.dart';
 
+// O tabuleiro trata arrastes diretamente; a rolagem externa não deve competir
+// com o gesto da peça nem gerar inércia ao soltá-la.
+class _GameScrollPhysics extends ClampingScrollPhysics {
+  const _GameScrollPhysics(this.boardTouch, {super.parent});
+
+  final bool Function() boardTouch;
+
+  @override
+  _GameScrollPhysics applyTo(ScrollPhysics? ancestor) =>
+      _GameScrollPhysics(boardTouch, parent: buildParent(ancestor));
+
+  @override
+  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) =>
+      boardTouch() ? 0 : super.applyPhysicsToUserOffset(position, offset);
+
+  @override
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) =>
+      boardTouch() ? null : super.createBallisticSimulation(position, velocity);
+}
+
 String _gameEndReason(AppLocalizations l10n, GameEndReason reason) =>
     switch (reason) {
       GameEndReason.checkmate => l10n.freeBoardCheckmate,
@@ -80,6 +105,14 @@ class FreeBoardScreen extends StatefulWidget {
 class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   late final ChessboardController _board;
+  bool _boardTouch = false;
+
+  Widget _boardTouchRegion(Widget child) => Listener(
+    onPointerDown: (_) => _boardTouch = true,
+    onPointerUp: (_) => scheduleMicrotask(() => _boardTouch = false),
+    onPointerCancel: (_) => scheduleMicrotask(() => _boardTouch = false),
+    child: child,
+  );
 
   // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
   // os tempos sejam refeitos pelo instante atual.
@@ -448,10 +481,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final nickname = context.select(
                   (ProfileCubit cubit) => cubit.state?.nickname ?? '',
                 );
-                // O centro do tabuleiro é o centro da tela visível (a altura
-                // menos as barras do sistema), como no às cegas e nas
-                // estrelas. Retrato, nome e relógio compartilham uma única
-                // linha; o balão flutua e não reserva altura.
+                // Centro da tela inteira como referência. Se a fala não cabe,
+                // Gabriel autorizou descer o tabuleiro em vez de mudar o balão
+                // para a faixa do nome. A reserva não depende da fala atual:
+                // aparecer, trocar ou sumir o texto não desloca a partida.
                 final clocksAbove =
                     clocks == ClockPosition.top || clocks == ClockPosition.sides
                     ? ClockRow.height
@@ -461,17 +494,74 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         clocks == ClockPosition.sides
                     ? ClockRow.height
                     : 0.0;
-                final reserveTop = clocksAbove;
-                final centerY = BoardViewport.centerYOf(context);
+                var reserveTop = clocksAbove;
+                var speechMaxLines = 3;
+                final view = View.of(context);
+                final insetsOffset =
+                    (view.viewPadding.top - view.viewPadding.bottom) /
+                    view.devicePixelRatio /
+                    2;
+                final screenCenter =
+                    BoardViewport.centerYOf(context)! - insetsOffset;
+                final footerHeight = machineEnded && state.mode.fromLink
+                    ? _LinkEndBar.height
+                    : GameActionsBar.height;
+                final boardSide = constraints.maxWidth;
+                final comments = context.select(
+                  (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
+                );
+                if (state.mode.opponent == OpponentKind.maia && comments) {
+                  // A largura do tabuleiro tem prioridade. Reduz o resumo
+                  // antes de usar a exceção vertical, nunca o tabuleiro.
+                  for (var lines = 3; lines >= 1; lines--) {
+                    final text = TextPainter(
+                      text: TextSpan(
+                        text: List.filled(lines, 'M').join('\n'),
+                        style: SpeechBalloon.style(context),
+                      ),
+                      textDirection: Directionality.of(context),
+                      textScaler: MediaQuery.textScalerOf(context),
+                    )..layout();
+                    final speechRoom =
+                        text.height +
+                        SpeechBalloon.defaultPadding.vertical +
+                        SpeechBalloon.tailExtent +
+                        4;
+                    text.dispose();
+                    final candidateTop =
+                        clocksAbove +
+                        (clocks == ClockPosition.bottom
+                            ? speechRoom + 4
+                            : math.max(0, speechRoom - 12));
+                    if (screenCenter - boardSide / 2 >=
+                            candidateTop + _boardGap ||
+                        lines == 1) {
+                      reserveTop = candidateTop;
+                      speechMaxLines = lines;
+                      break;
+                    }
+                  }
+                }
+                final topExtent = reserveTop > 0 ? reserveTop + _boardGap : 0.0;
+                final bottomExtent = clocksBelow > 0
+                    ? clocksBelow + _boardGap
+                    : 0.0;
+                final boardCenter = math.max(
+                  screenCenter,
+                  topExtent + boardSide / 2,
+                );
+                final layoutHeight = math.max(
+                  constraints.maxHeight,
+                  boardCenter + boardSide / 2 + bottomExtent + footerHeight,
+                );
                 final centering = BoardCentering(
-                  constraints.biggest,
-                  centerY: centerY,
+                  Size(constraints.maxWidth, layoutHeight),
+                  centerY: boardCenter,
                   gap: _boardGap,
                   reserveTop: reserveTop,
                   reserveBottom: clocksBelow,
-                  footer: machineEnded && state.mode.fromLink
-                      ? _LinkEndBar.height
-                      : GameActionsBar.height,
+                  footer: footerHeight,
+                  minFraction: 1,
                 );
                 const both = [Side.white, Side.black];
                 final end = state.end;
@@ -483,7 +573,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     CenteredBoardLayout(
                       key: FreeBoardKeys.scrollArea,
                       gap: _boardGap,
-                      centerY: centerY,
+                      centerY: centering.centerY,
+                      minFraction: centering.minFraction,
+                      minBoardSide: boardSide,
+                      scrollPhysics: _GameScrollPhysics(() => _boardTouch),
                       reserveTop: reserveTop,
                       reserveBottom: clocksBelow,
                       footer: machineEnded && featured
@@ -527,10 +620,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 clocks != ClockPosition.bottom)
                               CharacterBar(
                                 talk: barTalk,
+                                speechMaxLines: speechMaxLines,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
-                                playerRowBuilder: (speech) => ClockRow(
-                                  speech: speech,
+                                playerRow: ClockRow(
                                   sides: clocks == ClockPosition.top
                                       ? both
                                       : [state.orientation.opposite],
@@ -541,8 +634,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 // A ponta do balão a 4 dp do retrato (que começa 12 dp abaixo
                                 // do alto da linha de 68).
                                 speechTop: -72,
-                                speechHeadroom:
-                                    centering.roomAbove - ClockRow.height + 12,
                               ),
                             if (character == null &&
                                 clocks == ClockPosition.top)
@@ -575,20 +666,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                               orientation: state.orientation,
                               child: Directionality(
                                 textDirection: TextDirection.ltr,
-                                child: Chessboard(
-                                  key: FreeBoardKeys.board,
-                                  size: box.maxWidth,
-                                  controller: _board,
-                                  // No ultra bullet o pré-lance fica sempre ligado:
-                                  // sem ele, não dá tempo de jogar no celular.
-                                  settings: _ultraBullet(state)
-                                      ? boardSettings
-                                            .copyWith(premoves: true)
-                                            .chessground
-                                      : boardSettings.chessground,
-                                  orientation: state.orientation,
-                                  onMove: (move, {viaDragAndDrop}) =>
-                                      cubit.play(move),
+                                child: _boardTouchRegion(
+                                  Chessboard(
+                                    key: FreeBoardKeys.board,
+                                    size: box.maxWidth,
+                                    controller: _board,
+                                    // No ultra bullet o pré-lance fica sempre ligado:
+                                    // sem ele, não dá tempo de jogar no celular.
+                                    settings: _ultraBullet(state)
+                                        ? boardSettings
+                                              .copyWith(premoves: true)
+                                              .chessground
+                                        : boardSettings.chessground,
+                                    orientation: state.orientation,
+                                    onMove: (move, {viaDragAndDrop}) =>
+                                        cubit.play(move),
+                                  ),
                                 ),
                               ),
                             ),
@@ -666,10 +759,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 character != null)
                               CharacterBar(
                                 talk: barTalk,
+                                speechMaxLines: speechMaxLines,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
-                                playerRowBuilder: (speech) => ClockRow(
-                                  speech: speech,
+                                playerRow: ClockRow(
                                   sides: both,
                                   state: state,
                                   board: boardSettings,
@@ -679,7 +772,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 // apenas a região acima do tabuleiro.
                                 speechTop:
                                     -(centering.side + 2 * _boardGap + 80),
-                                speechHeadroom: centering.board.top - 4,
                               ),
                             if (clocks == ClockPosition.bottom &&
                                 character == null)

@@ -26,7 +26,6 @@ class PlayerEntry {
     this.portrait,
     this.detail,
     this.detailKey,
-    this.nameContent,
   });
 
   final Side side;
@@ -53,10 +52,6 @@ class PlayerEntry {
   /// na fileira [PlayersRow.detailed].
   final String? detail;
   final Key? detailKey;
-
-  /// Conteúdo temporário no lugar do nome e detalhe (CompJogador com fala).
-  /// Nulo mantém a apresentação dos demais chamadores.
-  final Widget? nameContent;
 }
 
 /// Uma fileira de jogadores com os seus relógios: a de um lado só (retrato,
@@ -118,15 +113,13 @@ class PlayersRow extends StatelessWidget {
                 _withRing(character.portrait!, character),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
-                  child:
-                      character.nameContent ??
-                      ExcludeSemantics(
-                        child: _nameAndDetail(
-                          context,
-                          character,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                  child: ExcludeSemantics(
+                    child: _nameAndDetail(
+                      context,
+                      character,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
                 for (final (index, player) in players.indexed) ...[
                   if (index > 0) const SizedBox(width: AppSpacing.sm),
@@ -258,17 +251,13 @@ class PlayersRow extends StatelessWidget {
       const SizedBox(width: AppSpacing.md),
       if (showName)
         Expanded(
-          child:
-              player.nameContent ??
-              ExcludeSemantics(
-                child: _nameAndDetail(
-                  context,
-                  player,
-                  overflow: detailed
-                      ? TextOverflow.ellipsis
-                      : TextOverflow.fade,
-                ),
-              ),
+          child: ExcludeSemantics(
+            child: _nameAndDetail(
+              context,
+              player,
+              overflow: detailed ? TextOverflow.ellipsis : TextOverflow.fade,
+            ),
+          ),
         ),
       if (showName && detailed && time != null)
         const SizedBox(width: AppSpacing.md),
