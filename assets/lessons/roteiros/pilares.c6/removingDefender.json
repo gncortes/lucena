@@ -1,0 +1,621 @@
+{
+ "licao": "pilares.c6",
+ "parte": "removingDefender",
+ "etapas": [
+  {
+   "id": "ideia",
+   "exemplos": [
+    {
+     "id": "ex1",
+     "fen": "4r1k1/1Qp3pp/2q5/r3R3/3n4/7P/P5P1/1R5K w - - 0 33",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "4r1k1/1Qp3pp/2q5/r3R3/3n4/7P/P5P1/1R5K w - - 0 33",
+       "t": "rot.removingDefender.ideia.ex1.e1"
+      },
+      {
+       "fen": "4r1k1/1Qp3pp/2q5/r3R3/3n4/7P/P5P1/1R5K w - - 0 33",
+       "marcas": [
+        "e8",
+        "c6"
+       ],
+       "t": "rot.removingDefender.ideia.ex1.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "b7",
+       "e5",
+       "b1"
+      ],
+      "certos": [
+       "b7c6"
+      ],
+      "t": "rot.removingDefender.ideia.ex1.p",
+      "certo": {
+       "fen": "4r1k1/2p3pp/2Q5/r3R3/3n4/7P/P5P1/1R5K b - - 0 33",
+       "lance": "b7c6",
+       "marcas": [
+        "e8"
+       ],
+       "t": "rot.removingDefender.ideia.ex1.certo"
+      },
+      "revela": {
+       "fen": "4r1k1/2p3pp/2Q5/r3R3/3n4/7P/P5P1/1R5K b - - 0 33",
+       "lance": "b7c6",
+       "marcas": [
+        "e8"
+       ],
+       "t": "rot.removingDefender.ideia.ex1.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "e5e8": [
+        {
+         "fen": "4R1k1/1Qp3pp/2q5/r7/3n4/7P/P5P1/1R5K b - - 0 33",
+         "lance": "e5e8",
+         "marcas": [
+          "c6"
+         ],
+         "t": "rot.removingDefender.ideia.ex1.err.e5e8.1"
+        },
+        {
+         "fen": "4q1k1/1Qp3pp/8/r7/3n4/7P/P5P1/1R5K w - - 0 34",
+         "lance": "c6e8",
+         "t": "rot.removingDefender.ideia.ex1.err.e5e8.2"
+        },
+        {
+         "fen": "4r1k1/1Qp3pp/2q5/r3R3/3n4/7P/P5P1/1R5K w - - 0 33",
+         "salto": true,
+         "t": "rot.removingDefender.ideia.ex1.err.e5e8.3"
+        }
+       ],
+       "b7c7": [
+        {
+         "fen": "4r1k1/2Q3pp/2q5/r3R3/3n4/7P/P5P1/1R5K b - - 0 33",
+         "lance": "b7c7",
+         "marcas": [
+          "e5"
+         ],
+         "t": "rot.removingDefender.ideia.ex1.err.b7c7.1"
+        },
+        {
+         "fen": "4r1k1/2Q3pp/2q5/4r3/3n4/7P/P5P1/1R5K w - - 0 34",
+         "lance": "a5e5",
+         "t": "rot.removingDefender.ideia.ex1.err.b7c7.2"
+        },
+        {
+         "fen": "4r1k1/1Qp3pp/2q5/r3R3/3n4/7P/P5P1/1R5K w - - 0 33",
+         "salto": true,
+         "t": "rot.removingDefender.ideia.ex1.err.b7c7.3"
+        }
+       ],
+       "e5a5": [
+        {
+         "fen": "4r1k1/1Qp3pp/2q5/R7/3n4/7P/P5P1/1R5K b - - 0 33",
+         "lance": "e5a5",
+         "marcas": [
+          "e8"
+         ],
+         "t": "rot.removingDefender.ideia.ex1.err.e5a5.1"
+        },
+        {
+         "fen": "6k1/1Qp3pp/2q5/R7/3n4/7P/P5P1/1R2r2K w - - 1 34",
+         "lance": "e8e1",
+         "marcas": [
+          "b7"
+         ],
+         "t": "rot.removingDefender.ideia.ex1.err.e5a5.2"
+        },
+        {
+         "fen": "4r1k1/1Qp3pp/2q5/r3R3/3n4/7P/P5P1/1R5K w - - 0 33",
+         "salto": true,
+         "t": "rot.removingDefender.ideia.ex1.err.e5a5.3"
+        }
+       ]
+      },
+      "fora": "rot.removingDefender.ideia.ex1.fora",
+      "volta": "rot.removingDefender.ideia.ex1.volta"
+     },
+     "linha": [
+      {
+       "fen": "4r1k1/2p3pp/2Q5/r3R3/3n4/7P/P5P1/1R5K b - - 0 33",
+       "marcas": [
+        "e8"
+       ],
+       "t": "rot.removingDefender.ideia.ex1.l1"
+      },
+      {
+       "fen": "4r1k1/2p3pp/2n5/r3R3/8/7P/P5P1/1R5K w - - 0 34",
+       "lance": "d4c6",
+       "t": "rot.removingDefender.ideia.ex1.l2"
+      },
+      {
+       "fen": "4R1k1/2p3pp/2n5/r7/8/7P/P5P1/1R5K b - - 0 34",
+       "lance": "e5e8",
+       "t": "rot.removingDefender.ideia.ex1.l3"
+      },
+      {
+       "fen": "4R3/2p2kpp/2n5/r7/8/7P/P5P1/1R5K w - - 1 35",
+       "lance": "g8f7",
+       "t": "rot.removingDefender.ideia.ex1.l4"
+      },
+      {
+       "fen": "4R3/2p2kpp/2n5/r7/8/7P/P5P1/1R5K w - - 1 35",
+       "t": "rot.removingDefender.ideia.ex1.l5"
+      }
+     ],
+     "ref": "lichessGameV8KDt"
+    },
+    {
+     "id": "ex2",
+     "fen": "4r1k1/4b2p/p5b1/6r1/2P1R3/1P4R1/P5BP/6K1 w - - 3 39",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "4r1k1/4b2p/p5b1/6r1/2P1R3/1P4R1/P5BP/6K1 w - - 3 39",
+       "t": "rot.removingDefender.ideia.ex2.e1"
+      },
+      {
+       "fen": "4r1k1/4b2p/p5b1/6r1/2P1R3/1P4R1/P5BP/6K1 w - - 3 39",
+       "marcas": [
+        "g5",
+        "e7"
+       ],
+       "t": "rot.removingDefender.ideia.ex2.e2"
+      }
+     ],
+     "pergunta": {
+      "juiz": "lista",
+      "pecas": [
+       "e4",
+       "g3",
+       "g2"
+      ],
+      "certos": [
+       "e4e7"
+      ],
+      "t": "rot.removingDefender.ideia.ex2.p",
+      "certo": {
+       "fen": "4r1k1/4R2p/p5b1/6r1/2P5/1P4R1/P5BP/6K1 b - - 0 39",
+       "lance": "e4e7",
+       "marcas": [
+        "g5"
+       ],
+       "t": "rot.removingDefender.ideia.ex2.certo"
+      },
+      "revela": {
+       "fen": "4r1k1/4R2p/p5b1/6r1/2P5/1P4R1/P5BP/6K1 b - - 0 39",
+       "lance": "e4e7",
+       "marcas": [
+        "g5"
+       ],
+       "t": "rot.removingDefender.ideia.ex2.revela"
+      },
+      "alternativos": {},
+      "erros": {
+       "g3g5": [
+        {
+         "fen": "4r1k1/4b2p/p5b1/6R1/2P1R3/1P6/P5BP/6K1 b - - 0 39",
+         "lance": "g3g5",
+         "marcas": [
+          "e7"
+         ],
+         "t": "rot.removingDefender.ideia.ex2.err.g3g5.1"
+        },
+        {
+         "fen": "4r1k1/7p/p5b1/6b1/2P1R3/1P6/P5BP/6K1 w - - 0 40",
+         "lance": "e7g5",
+         "marcas": [
+          "e4"
+         ],
+         "t": "rot.removingDefender.ideia.ex2.err.g3g5.2"
+        },
+        {
+         "fen": "4r1k1/4b2p/p5b1/6r1/2P1R3/1P4R1/P5BP/6K1 w - - 3 39",
+         "salto": true,
+         "t": "rot.removingDefender.ideia.ex2.err.g3g5.3"
+        }
+       ],
+       "e4e6": [
+        {
+         "fen": "4r1k1/4b2p/p3R1b1/6r1/2P5/1P4R1/P5BP/6K1 b - - 4 39",
+         "lance": "e4e6",
+         "marcas": [
+          "g6"
+         ],
+         "t": "rot.removingDefender.ideia.ex2.err.e4e6.1"
+        },
+        {
+         "fen": "4r1k1/7p/p3R1b1/2b3r1/2P5/1P4R1/P5BP/6K1 w - - 5 40",
+         "lance": "e7c5",
+         "marcas": [
+          "e6"
+         ],
+         "t": "rot.removingDefender.ideia.ex2.err.e4e6.2"
+        },
+        {
+         "fen": "4r1k1/4b2p/p5b1/6r1/2P1R3/1P4R1/P5BP/6K1 w - - 3 39",
+         "salto": true,
+         "t": "rot.removingDefender.ideia.ex2.err.e4e6.3"
+        }
+       ]
+      },
+      "fora": "rot.removingDefender.ideia.ex2.fora",
+      "volta": "rot.removingDefender.ideia.ex2.volta"
+     },
+     "linha": [
+      {
+       "fen": "4r1k1/4R2p/p5b1/6r1/2P5/1P4R1/P5BP/6K1 b - - 0 39",
+       "marcas": [
+        "g5"
+       ],
+       "t": "rot.removingDefender.ideia.ex2.l1"
+      },
+      {
+       "fen": "6k1/4r2p/p5b1/6r1/2P5/1P4R1/P5BP/6K1 w - - 0 40",
+       "lance": "e8e7",
+       "t": "rot.removingDefender.ideia.ex2.l2"
+      },
+      {
+       "fen": "6k1/4r2p/p5b1/6R1/2P5/1P6/P5BP/6K1 b - - 0 40",
+       "lance": "g3g5",
+       "t": "rot.removingDefender.ideia.ex2.l3"
+      },
+      {
+       "fen": "6k1/4r2p/p5b1/6R1/2P5/1P6/P5BP/6K1 b - - 0 40",
+       "t": "rot.removingDefender.ideia.ex2.l4"
+      }
+     ],
+     "ref": "lichessGame2p7eS"
+    }
+   ]
+  },
+  {
+   "id": "demos",
+   "exemplos": [
+    {
+     "id": "damas",
+     "fen": "4r1k1/p4p2/6p1/4r3/3P4/P1Q2qP1/1R2N2P/4R1K1 b - - 0 31",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "4r1k1/p4p2/6p1/4r3/3P4/P1Q2qP1/1R2N2P/4R1K1 b - - 0 31",
+       "marcas": [
+        "c3",
+        "e1"
+       ],
+       "t": "rot.removingDefender.demos.damas.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "4r1k1/p4p2/6p1/4r3/3P4/P1q3P1/1R2N2P/4R1K1 w - - 0 32",
+       "lance": "f3c3",
+       "marcas": [
+        "e1"
+       ],
+       "t": "rot.removingDefender.demos.damas.2"
+      },
+      {
+       "fen": "4r1k1/p4p2/6p1/4r3/3P4/P1N3P1/1R5P/4R1K1 b - - 0 32",
+       "lance": "e2c3",
+       "marcas": [
+        "e1"
+       ],
+       "t": "rot.removingDefender.demos.damas.3"
+      },
+      {
+       "fen": "4r1k1/p4p2/6p1/8/3P4/P1N3P1/1R5P/4r1K1 w - - 0 33",
+       "lance": "e5e1",
+       "t": "rot.removingDefender.demos.damas.4"
+      },
+      {
+       "fen": "4r1k1/p4p2/6p1/8/3P4/P1N3P1/1R3K1P/4r3 b - - 1 33",
+       "lance": "g1f2",
+       "t": "rot.removingDefender.demos.damas.5"
+      }
+     ],
+     "ref": "lichessGame3Hlpf"
+    },
+    {
+     "id": "rei",
+     "fen": "6r1/6bQ/2k2p2/p1Pb4/P7/4qN2/1P2P3/3R1K2 w - - 2 30",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "6r1/6bQ/2k2p2/p1Pb4/P7/4qN2/1P2P3/3R1K2 w - - 2 30",
+       "marcas": [
+        "g8",
+        "d5"
+       ],
+       "t": "rot.removingDefender.demos.rei.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "6r1/6bQ/2k2p2/p1PR4/P7/4qN2/1P2P3/5K2 b - - 0 30",
+       "lance": "d1d5",
+       "marcas": [
+        "g8"
+       ],
+       "t": "rot.removingDefender.demos.rei.2"
+      },
+      {
+       "fen": "6r1/6bQ/5p2/p1Pk4/P7/4qN2/1P2P3/5K2 w - - 0 31",
+       "lance": "c6d5",
+       "t": "rot.removingDefender.demos.rei.3"
+      },
+      {
+       "fen": "6Q1/6b1/5p2/p1Pk4/P7/4qN2/1P2P3/5K2 b - - 0 31",
+       "lance": "h7g8",
+       "setas": [
+        [
+         "g8",
+         "d5",
+         "g"
+        ]
+       ],
+       "t": "rot.removingDefender.demos.rei.4"
+      },
+      {
+       "fen": "6Q1/6b1/5p2/p1k5/P7/4qN2/1P2P3/5K2 w - - 0 32",
+       "lance": "d5c5",
+       "t": "rot.removingDefender.demos.rei.5"
+      }
+     ],
+     "ref": "lichessGameAb2ee"
+    },
+    {
+     "id": "doisDefensores",
+     "fen": "3r2k1/pp1r1pp1/2p1bb1p/7q/1Q6/P3P1B1/1P1RBPPP/3R2K1 b - - 6 21",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [
+      {
+       "fen": "3r2k1/pp1r1pp1/2p1bb1p/7q/1Q6/P3P1B1/1P1RBPPP/3R2K1 b - - 6 21",
+       "marcas": [
+        "d1",
+        "e2",
+        "d2"
+       ],
+       "t": "rot.removingDefender.demos.doisDefensores.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "3r2k1/pp1r1pp1/2p1bb1p/8/1Q6/P3P1B1/1P1RqPPP/3R2K1 w - - 0 22",
+       "lance": "h5e2",
+       "marcas": [
+        "d1"
+       ],
+       "t": "rot.removingDefender.demos.doisDefensores.2"
+      },
+      {
+       "fen": "3r2k1/pp1r1pp1/2p1bb1p/8/1Q6/P3P1B1/1P2RPPP/3R2K1 b - - 0 22",
+       "lance": "d2e2",
+       "marcas": [
+        "d1"
+       ],
+       "t": "rot.removingDefender.demos.doisDefensores.3"
+      },
+      {
+       "fen": "3r2k1/pp3pp1/2p1bb1p/8/1Q6/P3P1B1/1P2RPPP/3r2K1 w - - 0 23",
+       "lance": "d7d1",
+       "t": "rot.removingDefender.demos.doisDefensores.4"
+      },
+      {
+       "fen": "3r2k1/pp3pp1/2p1bb1p/8/8/P3P1B1/1P2RPPP/3rQ1K1 b - - 1 23",
+       "lance": "b4e1",
+       "t": "rot.removingDefender.demos.doisDefensores.5"
+      }
+     ],
+     "ref": "lichessGameR1Xob"
+    },
+    {
+     "id": "excecao",
+     "fen": "r3r1k1/ppp2ppp/2q5/1Q6/8/8/PPP2PPP/R3R1K1 w - - 0 1",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [
+      {
+       "fen": "r3r1k1/ppp2ppp/2q5/1Q6/8/8/PPP2PPP/R3R1K1 w - - 0 1",
+       "marcas": [
+        "e8",
+        "c6"
+       ],
+       "t": "rot.removingDefender.demos.excecao.1"
+      }
+     ],
+     "linha": [
+      {
+       "fen": "r3r1k1/ppp2ppp/2Q5/8/8/8/PPP2PPP/R3R1K1 b - - 0 1",
+       "lance": "b5c6",
+       "t": "rot.removingDefender.demos.excecao.2"
+      },
+      {
+       "fen": "r3r1k1/p1p2ppp/2p5/8/8/8/PPP2PPP/R3R1K1 w - - 0 2",
+       "lance": "b7c6",
+       "t": "rot.removingDefender.demos.excecao.3"
+      },
+      {
+       "fen": "r3R1k1/p1p2ppp/2p5/8/8/8/PPP2PPP/R5K1 b - - 0 2",
+       "lance": "e1e8",
+       "marcas": [
+        "a8"
+       ],
+       "t": "rot.removingDefender.demos.excecao.4"
+      },
+      {
+       "fen": "4r1k1/p1p2ppp/2p5/8/8/8/PPP2PPP/R5K1 w - - 0 3",
+       "lance": "a8e8",
+       "t": "rot.removingDefender.demos.excecao.5"
+      },
+      {
+       "fen": "4r1k1/p1p2ppp/2p5/8/8/8/PPP2PPP/R5K1 w - - 0 3",
+       "t": "rot.removingDefender.demos.excecao.6"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pratica",
+   "exemplos": [
+    {
+     "id": "valeAqui",
+     "fen": "3r2k1/p4ppp/3B2q1/1p1bP3/8/4QN2/PPrN2PP/R5K1 b - - 4 23",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d5",
+       "c2",
+       "d8",
+       "g6"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d5f3"
+        ],
+        "resposta": "e3f3"
+       },
+       {
+        "certos": [
+         "c2d2"
+        ]
+       }
+      ],
+      "t": "rot.removingDefender.pratica.valeAqui.enunciado",
+      "fim": "rot.removingDefender.pratica.valeAqui.fim",
+      "erros": {
+       "c2d2": "rot.removingDefender.pratica.valeAqui.err.c2d2",
+       "c2b2": "rot.removingDefender.pratica.valeAqui.err.c2b2",
+       "d8d6": "rot.removingDefender.pratica.valeAqui.err.d8d6",
+       "d5a2": "rot.removingDefender.pratica.valeAqui.err.d5a2",
+       "g6d6": "rot.removingDefender.pratica.valeAqui.err.g6d6",
+       "d8c8": "rot.removingDefender.pratica.valeAqui.err.d8c8"
+      },
+      "errosPos": {
+       "3r2k1/p4ppp/3B2q1/1p2P3/8/5Q2/PPrN2PP/R5K1 b - - 0 24": {
+        "c2b2": "rot.removingDefender.pratica.valeAqui.err2.c2b2",
+        "h7h6": "rot.removingDefender.pratica.valeAqui.err2.h7h6",
+        "d8d6": "rot.removingDefender.pratica.valeAqui.err2.d8d6"
+       }
+      }
+     },
+     "ref": "lichessGameOq4dy"
+    },
+    {
+     "id": "cavalo",
+     "fen": "1rb2rk1/2pn1pp1/ppBqp2p/3pN2Q/3P1P2/2P1P3/PP4PP/R3K2R b KQ - 0 19",
+     "vira": true,
+     "objetivo": "ganhar",
+     "fim": "proximo",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "d7",
+       "d6",
+       "f7"
+      ],
+      "maquina": "w",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "d7e5"
+        ],
+        "resposta": "f4e5"
+       },
+       {
+        "certos": [
+         "d6c6"
+        ]
+       }
+      ],
+      "t": "rot.removingDefender.pratica.cavalo.enunciado",
+      "fim": "rot.removingDefender.pratica.cavalo.fim",
+      "erros": {
+       "d6c6": "rot.removingDefender.pratica.cavalo.err.d6c6",
+       "d7f6": "rot.removingDefender.pratica.cavalo.err.d7f6",
+       "f7f6": "rot.removingDefender.pratica.cavalo.err.f7f6"
+      },
+      "errosPos": {
+       "1rb2rk1/2p2pp1/ppBqp2p/3pP2Q/3P4/2P1P3/PP4PP/R3K2R b KQ - 0 20": {
+        "d6e7": "rot.removingDefender.pratica.cavalo.err2.d6e7"
+       }
+      }
+     },
+     "ref": "lichessGamezYV3i"
+    },
+    {
+     "id": "colunaB",
+     "fen": "1rb2r1k/1p2Npp1/p1np3p/q1b5/4P3/PR3N2/4BPPP/3Q1RK1 w - - 1 19",
+     "vira": false,
+     "objetivo": "ganhar",
+     "fim": "etapa",
+     "entrada": [],
+     "linha": [],
+     "pratica": {
+      "tipo": "lance",
+      "pecas": [
+       "e7",
+       "b3",
+       "e2"
+      ],
+      "maquina": "b",
+      "limite": 10,
+      "linha": [
+       {
+        "certos": [
+         "e7c6"
+        ],
+        "resposta": "b7c6"
+       },
+       {
+        "certos": [
+         "b3b8"
+        ]
+       }
+      ],
+      "t": "rot.removingDefender.pratica.colunaB.enunciado",
+      "fim": "rot.removingDefender.pratica.colunaB.fim",
+      "erros": {
+       "e7c8": "rot.removingDefender.pratica.colunaB.err.e7c8",
+       "e7f5": "rot.removingDefender.pratica.colunaB.err.e7f5",
+       "e2a6": "rot.removingDefender.pratica.colunaB.err.e2a6"
+      },
+      "errosPos": {
+       "1rb2r1k/5pp1/p1pp3p/q1b5/4P3/PR3N2/4BPPP/3Q1RK1 w - - 0 20": {
+        "d1d6": "rot.removingDefender.pratica.colunaB.err2.d1d6"
+       }
+      }
+     },
+     "ref": "lichessGamefolLf"
+    }
+   ]
+  }
+ ]
+}
