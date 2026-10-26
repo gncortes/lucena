@@ -1,0 +1,263 @@
+{
+ "id": "pilares.c2",
+ "module": "pilares",
+ "skills": [
+  "pilares.c2"
+ ],
+ "parts": [
+  {
+   "id": "pin",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c2/pin.json"
+  }
+ ],
+ "passScore": 12,
+ "maxScore": 15,
+ "keyPositions": [],
+ "references": [
+  {
+   "id": "lichessPuzzles",
+   "kind": "database",
+   "author": "lichess.org",
+   "title": "Lichess puzzle database (CC0)",
+   "url": "https://database.lichess.org/#puzzles"
+  },
+  {
+   "id": "operaGame",
+   "kind": "game",
+   "author": "Wikipedia",
+   "title": "Opera Game (Morphy, Paris, 1858)",
+   "url": "https://en.wikipedia.org/wiki/Opera_Game"
+  },
+  {
+   "id": "legalTrap",
+   "kind": "game",
+   "author": "Wikipedia",
+   "title": "Légal trap (Légal–Saint Brie, Paris, 1750)",
+   "url": "https://en.wikipedia.org/wiki/L%C3%A9gal_trap"
+  },
+  {
+   "id": "lichessGameZ52Te",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Z52Te)",
+   "url": "https://lichess.org/xqaf4UeG#21"
+  },
+  {
+   "id": "lichessGameuwqjd",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle uwqjd)",
+   "url": "https://lichess.org/R8zb4M5d/black#16"
+  },
+  {
+   "id": "lichessGamelfkfJ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle lfkfJ)",
+   "url": "https://lichess.org/21QBKfFU#17"
+  },
+  {
+   "id": "lichessGamesxlto",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle sxlto)",
+   "url": "https://lichess.org/LhG3pemN#57"
+  },
+  {
+   "id": "lichessGameQQzUd",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle QQzUd)",
+   "url": "https://lichess.org/Vm6zUdLm/black#56"
+  },
+  {
+   "id": "lichessGameQnI0X",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle QnI0X)",
+   "url": "https://lichess.org/JWfdjs09/black#26"
+  }
+ ],
+ "exercises": [
+  {
+   "id": "pin.v18W3",
+   "capitulo": "pin",
+   "stars": 1,
+   "fen": "r1q2r1k/1bp1b1pp/p1np1p2/1p5Q/4P2N/1BP1p3/PP1N1PPP/R5K1 w - - 0 17",
+   "goal": "win",
+   "origin": "lichess:v18W3",
+   "line": [
+    {
+     "teach": "h4g6",
+     "accept": [
+      "h4g6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.69GPY",
+   "capitulo": "pin",
+   "stars": 1,
+   "fen": "r5k1/1Q3p1p/1bN1p1p1/1P6/8/8/5RPP/6K1 b - - 0 38",
+   "goal": "win",
+   "origin": "lichess:69GPY",
+   "line": [
+    {
+     "teach": "a8a1",
+     "accept": [
+      "a8a1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.jhCCp",
+   "capitulo": "pin",
+   "stars": 1,
+   "fen": "rnb3k1/p4rpp/1pp5/6B1/2Bq4/8/PPP2PPP/R3R1K1 w - - 0 16",
+   "goal": "win",
+   "origin": "lichess:jhCCp",
+   "line": [
+    {
+     "teach": "e1e8",
+     "accept": [
+      "e1e8"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.39Eek",
+   "capitulo": "pin",
+   "stars": 1,
+   "fen": "2k5/pp4r1/3p1p2/4n3/5B2/3P3r/PPP2PP1/4RRK1 b - - 1 28",
+   "goal": "win",
+   "origin": "lichess:39Eek",
+   "line": [
+    {
+     "teach": "e5f3",
+     "accept": [
+      "e5f3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.nUFfh",
+   "capitulo": "pin",
+   "stars": 2,
+   "fen": "r1b1k2r/pp3p1p/2p3p1/2q1n1B1/2BpQ3/8/PP3PPP/1K1R2NR b kq - 3 15",
+   "goal": "win",
+   "origin": "lichess:nUFfh",
+   "line": [
+    {
+     "teach": "c8f5",
+     "accept": [
+      "c8f5"
+     ],
+     "reply": "e4f5"
+    },
+    {
+     "teach": "g6f5",
+     "accept": [
+      "g6f5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.HYQzi",
+   "capitulo": "pin",
+   "stars": 2,
+   "fen": "r2q2k1/1pn1b1pp/8/p1pr2PP/4N3/8/PP1QBP2/R3K2R w KQ - 0 22",
+   "goal": "win",
+   "origin": "lichess:HYQzi",
+   "line": [
+    {
+     "teach": "e2c4",
+     "accept": [
+      "e2c4"
+     ],
+     "reply": "b7b5"
+    },
+    {
+     "teach": "c4d5",
+     "accept": [
+      "c4d5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.5MC0G",
+   "capitulo": "pin",
+   "stars": 2,
+   "fen": "r5k1/ppp3pp/2n5/3nq3/4p3/1B3r2/PPPP3P/R1BQR2K w - - 4 17",
+   "goal": "win",
+   "origin": "lichess:5MC0G",
+   "line": [
+    {
+     "teach": "d1f3",
+     "accept": [
+      "d1f3"
+     ],
+     "reply": "e4f3"
+    },
+    {
+     "teach": "e1e5",
+     "accept": [
+      "e1e5"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.M8uTb",
+   "capitulo": "pin",
+   "stars": 2,
+   "fen": "r2qkb1r/pp3p2/2n1pp2/1B1p1b1p/3P1Q2/2N2N2/PPP2PPP/2KRR3 b kq - 3 13",
+   "goal": "win",
+   "origin": "lichess:M8uTb",
+   "line": [
+    {
+     "teach": "f8h6",
+     "accept": [
+      "f8h6"
+     ],
+     "reply": "f4h6"
+    },
+    {
+     "teach": "h8h6",
+     "accept": [
+      "h8h6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pin.TAKy2",
+   "capitulo": "pin",
+   "stars": 3,
+   "fen": "1r5r/6k1/p2pQqn1/2p5/1pP1P3/5PRP/PP5K/R7 w - - 1 30",
+   "goal": "win",
+   "origin": "lichess:TAKy2",
+   "line": [
+    {
+     "teach": "g3g6",
+     "accept": [
+      "g3g6"
+     ],
+     "reply": "f6g6"
+    },
+    {
+     "teach": "a1g1",
+     "accept": [
+      "a1g1"
+     ]
+    }
+   ]
+  }
+ ]
+}
