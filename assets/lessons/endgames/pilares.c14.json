@@ -153,24 +153,24 @@
    ]
   },
   {
-   "id": "im.jrjV6",
+   "id": "im.xX3J9",
    "capitulo": "imbalances",
    "stars": 3,
-   "fen": "8/p2kP3/1rNp1p2/2pN3p/4P3/qP1P4/P1P3rP/1KR5 w - - 1 39",
+   "fen": "3r1k2/3PR1pp/p4r2/1p6/2p5/P1P5/3R2PP/6K1 w - - 1 31",
    "goal": "win",
-   "origin": "lichess:jrjV6",
+   "origin": "lichess:xX3J9",
    "line": [
     {
-     "teach": "d5f6",
+     "teach": "d2e2",
      "accept": [
-      "d5f6"
+      "d2e2"
      ],
-     "reply": "d7c6"
+     "reply": "f6d6"
     },
     {
-     "teach": "e7e8q",
+     "teach": "e7e8",
      "accept": [
-      "e7e8q"
+      "e7e8"
      ]
     }
    ]
@@ -178,7 +178,7 @@
   {
    "id": "im.uFoDf",
    "capitulo": "imbalances",
-   "stars": 3,
+   "stars": 2,
    "fen": "2R5/pr6/2p3k1/3p4/P2Np3/4PpPp/5P1P/2n3K1 w - - 2 44",
    "goal": "win",
    "origin": "lichess:uFoDf",
@@ -309,11 +309,11 @@
    "url": "https://lichess.org/8jI4mUJ2/black#56"
   },
   {
-   "id": "lichessGamejrjV6",
+   "id": "lichessGamexX3J9",
    "kind": "game",
    "author": "lichess.org",
-   "title": "Lichess game (puzzle jrjV6)",
-   "url": "https://lichess.org/ffhGL2fm/black#76"
+   "title": "Lichess game (puzzle xX3J9)",
+   "url": "https://lichess.org/fNvsVjH5/black#60"
   },
   {
    "id": "lichessGameuFoDf",
