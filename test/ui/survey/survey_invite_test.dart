@@ -53,7 +53,7 @@ void main() {
   ) async {
     await pumpCard(tester, SurveyKind.endgames);
     expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
-    expect(find.text('O que achou das aulas?'), findsOneWidget);
+    expect(find.text('O que achou do curso?'), findsOneWidget);
     expect(find.text('Responder'), findsOneWidget);
 
     await surveys.saveResponse(

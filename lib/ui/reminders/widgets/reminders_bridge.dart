@@ -10,7 +10,8 @@ import 'l10n_reminder_texts.dart';
 
 /// Liga o [RemindersCubit] ao resto do app: as chaves de Avisos, o idioma, o
 /// app voltando ou indo para segundo plano e o toque nas notificações
-/// ([onOpen] recebe a rota).
+/// ([onOpen] recebe a rota). Também passa o idioma do app ao [AlertsCubit]
+/// (o tópico `idioma_*` do push).
 class RemindersBridge extends StatefulWidget {
   const RemindersBridge({required this.onOpen, required this.child, super.key});
 
@@ -43,6 +44,11 @@ class _RemindersBridgeState extends State<RemindersBridge> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    unawaited(
+      context.read<AlertsCubit>().languageChanged(
+        Localizations.localeOf(context).languageCode,
+      ),
+    );
     final texts = L10nReminderTexts(context.l10n);
     if (texts == _texts) return;
     _texts = texts;

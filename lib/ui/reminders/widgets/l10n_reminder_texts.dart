@@ -14,12 +14,16 @@ class L10nReminderTexts implements ReminderTexts {
   String get language => _l10n.localeName.split('_').first;
 
   @override
-  NotificationChannelSpec get reminders =>
-      NotificationChannelSpec(id: 'lembretes', name: _l10n.reminderChannel);
+  NotificationChannelSpec get reminders => NotificationChannelSpec(
+    id: 'lembretes_quieto',
+    name: _l10n.reminderChannel,
+  );
 
   @override
-  NotificationChannelSpec get week =>
-      NotificationChannelSpec(id: 'resumo_semana', name: _l10n.weekChannel);
+  NotificationChannelSpec get week => NotificationChannelSpec(
+    id: 'resumo_semana_quieto',
+    name: _l10n.weekChannel,
+  );
 
   @override
   String title(PlannedReminder reminder) => switch (reminder.kind) {

@@ -600,7 +600,7 @@
       }
     }
   },
-  "homeSchool": "Lessons with Viktor",
+  "homeSchool": "Viktor's School",
   "@homeSchool": {
     "description": "Home button that opens the lessons of the beginner course."
   },
@@ -697,7 +697,7 @@
   "@lessonHint": {
     "description": "Button that asks the teacher for the best move."
   },
-  "lessonMissing": "This lesson does not exist.",
+  "lessonMissing": "This chapter does not exist.",
   "@lessonMissing": {
     "description": "When the lesson in the link does not exist."
   },
@@ -1021,7 +1021,7 @@
   "@ratingHistory": {
     "description": "Title above the list of games that changed the player's rating, on the rating details screen."
   },
-  "ratingHistoryEmpty": "Play against the Maia or Stockfish and every game that moves your rating will show up here.",
+  "ratingHistoryEmpty": "Every game that moves your rating shows up here.",
   "@ratingHistoryEmpty": {
     "description": "Shown on the rating details screen when no game has counted for the rating yet."
   },
@@ -1100,7 +1100,7 @@
       }
     }
   },
-  "schoolModule": "Module {number}",
+  "schoolModule": "Part {number}",
   "@schoolModule": {
     "description": "Label above the module title in the lessons trail.",
     "placeholders": {
@@ -1254,7 +1254,7 @@
   "@setupPace": {
     "description": "Section of the game setup with the named time controls (1+0, 3+2...)."
   },
-  "setupPaceHint": "The Maia keeps its strength in every time control: in bullet it plays more on instinct and faster.",
+  "setupPaceHint": "Your opponent keeps its strength in every time control; in bullet, it plays more on instinct.",
   "@setupPaceHint": {
     "description": "Hint under the time control chips."
   },
@@ -1844,7 +1844,7 @@
   "@gameDetailsNotFound": {
     "description": "Game details: shown when the game was not found."
   },
-  "homeEndgames": "Endgame lessons",
+  "homeEndgames": "Endgame course",
   "@homeEndgames": {
     "description": "Home card that opens the endgame lessons trail."
   },
@@ -1856,11 +1856,11 @@
   "@homeForYou": {
     "description": "Home path: the endgame lessons recommended by the level test."
   },
-  "homeForYouBody": "Your own endgame study, built from your level test: the lessons you still need, in order.",
+  "homeForYouBody": "Your own endgame study, built from your level test: the chapters you still need, in order.",
   "@homeForYouBody": {
     "description": "Home path body for the personalised endgame study."
   },
-  "endgamesTitle": "Endgame lessons",
+  "endgamesTitle": "Endgame course",
   "@endgamesTitle": {
     "description": "Title of the endgame lessons trail."
   },
@@ -1888,15 +1888,15 @@
       }
     }
   },
-  "endgameLessonPartLesson": "The lesson",
+  "endgameLessonPartLesson": "The lessons",
   "@endgameLessonPartLesson": {
     "description": "First part of an endgame lesson: Viktor teaches."
   },
-  "endgameLessonStart": "Start the lesson",
+  "endgameLessonStart": "Start the chapter",
   "@endgameLessonStart": {
     "description": "Button that opens the lesson steps for the first time."
   },
-  "endgameLessonReview": "Review the lesson",
+  "endgameLessonReview": "Review the chapter",
   "@endgameLessonReview": {
     "description": "Button that reopens a lesson already done."
   },
@@ -2093,7 +2093,7 @@
   "@exerciseNext": {
     "description": "Button that opens the next exercise."
   },
-  "exerciseBack": "Back to the lesson",
+  "exerciseBack": "Back to the chapter",
   "@exerciseBack": {
     "description": "Button that goes back to the endgame lesson screen."
   },
@@ -3202,7 +3202,7 @@
   "@endgameFinalTest": {
     "description": "Section title on the endgame lesson screen: the final test (the exercises with stars)."
   },
-  "endgameTestAdvice": "Tip: do the chapters first. The test is open whenever you want to practice.",
+  "endgameTestAdvice": "Tip: do the lessons first. The test is open whenever you want to practice.",
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
@@ -3228,15 +3228,15 @@
       }
     }
   },
-  "endgameResumeTest": "Continue the final test",
+  "endgameResumeTest": "Continue the exercises",
   "@endgameResumeTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue the final test already started."
   },
-  "endgameContinueTest": "Take the final test",
+  "endgameContinueTest": "Do the practice exercises",
   "@endgameContinueTest": {
     "description": "Fixed bottom button on the endgame lesson screen: continue with the final test."
   },
-  "homeEndgamePart": "Chapter {part} of {parts}",
+  "homeEndgamePart": "Lesson {part} of {parts}",
   "@homeEndgamePart": {
     "description": "Home continue card: the endgame lesson part where the student stopped.",
     "placeholders": {
@@ -3265,7 +3265,7 @@
       }
     }
   },
-  "endgameModulePlace": "Part: {module} · chapter {number} of {count}",
+  "endgameModulePlace": "{module} · chapter {number} of {count}",
   "@endgameModulePlace": {
     "description": "Part name and chapter position within that part, not the full collection.",
     "placeholders": {
@@ -3280,7 +3280,7 @@
       }
     }
   },
-  "endgameLessonInReview": "Lesson under review: the content may still change.",
+  "endgameLessonInReview": "Chapter under review: the content may still change.",
   "@endgameLessonInReview": {
     "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
   },
@@ -3308,7 +3308,7 @@
   "@endgameTestAlmost": {
     "description": "Final test card subtitle when all exercises were done but the goal was not reached."
   },
-  "endgameTestLessonLeft": "Score reached: finish the lesson",
+  "endgameTestLessonLeft": "Score reached: finish the lessons",
   "@endgameTestLessonLeft": {
     "description": "Final test summary when the exercises reached the minimum but the lesson parts are not done yet."
   },
@@ -4358,7 +4358,7 @@
       }
     }
   },
-  "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the lesson “{title}” with an exceptional performance.} excellent{for completing the lesson “{title}” with excellence.} good{for completing the lesson “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
+  "exercisesDoneDiplomaFor": "{grade, select, perfect{for completing the chapter “{title}” with an exceptional performance.} excellent{for completing the chapter “{title}” with excellence.} good{for completing the chapter “{title}” with a very good performance.} other{for meeting the requirements to complete the lesson “{title}”.}}",
   "@exercisesDoneDiplomaFor": {
     "description": "On the endgame lesson diploma, under the student's name: why it is awarded, summing up the performance by grade (no numbers).",
     "placeholders": {
@@ -4391,7 +4391,7 @@
       }
     }
   },
-  "exercisesIntroMinBody": "Out of {max} possible points, to pass the lesson.",
+  "exercisesIntroMinBody": "Out of {max} possible points, to pass the chapter.",
   "@exercisesIntroMinBody": {
     "description": "Exercises intro card body: out of how many possible points.",
     "placeholders": {
@@ -4421,15 +4421,15 @@
   "@exerciseLichess": {
     "description": "Button on a solved-series exercise: open the position in the Lichess analysis board."
   },
-  "exercisesIntroAfter": "Once you solve them all, the list stays open in the lesson: go back to any exercise to review it and analyse the position on Lichess.",
+  "exercisesIntroAfter": "Once you solve them all, the list stays open in the chapter: go back to any exercise to review it and analyse the position on Lichess.",
   "@exercisesIntroAfter": {
     "description": "On the exercises intro: once all are solved, the list stays open to review any exercise and analyse it on Lichess."
   },
-  "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the lesson.",
+  "exerciseScoreLocked": "Free practice: your grade does not change. To count again, redo the exercises from the chapter.",
   "@exerciseScoreLocked": {
     "description": "Note on a solved exercise when the lesson's grade is already set (all exercises solved): this is free practice."
   },
-  "exercisesDoneShareText": "I completed the lesson “{title}” in Lucena with {score} of {max} points! {link}",
+  "exercisesDoneShareText": "I completed the chapter “{title}” in Lucena with {score} of {max} points! {link}",
   "@exercisesDoneShareText": {
     "description": "Text shared with the endgame lesson diploma image.",
     "placeholders": {
@@ -4459,7 +4459,7 @@
   "@exercisesDoneFinish": {
     "description": "Button on the exercises-done screen: close it and go back to the lesson."
   },
-  "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lesson if you need to, take your time on each position, and try again. Next time those points will be yours.",
+  "exercisesDoneRetrySpeech": "Not this time, and that is fine: every mistake showed you something to look at again. Review the lessons if you need to, take your time on each position, and try again. Next time those points will be yours.",
   "@exercisesDoneRetrySpeech": {
     "description": "Viktor's encouragement on the exercises-done screen when the student did not reach the minimum."
   },
@@ -4611,7 +4611,7 @@
   "@endgamesFiltersClear": {
     "description": "Removes every active filter (short button)."
   },
-  "endgamesFiltersShow": "{count, plural, =0{No lessons} =1{Show 1 lesson} other{Show {count} lessons}}",
+  "endgamesFiltersShow": "{count, plural, =0{No chapters} =1{Show 1 chapter} other{Show {count} chapters}}",
   "@endgamesFiltersShow": {
     "description": "Filter sheet: closes it showing how many lessons match.",
     "placeholders": {
@@ -4620,7 +4620,7 @@
       }
     }
   },
-  "endgamesFiltersEmpty": "No lesson matches these filters.",
+  "endgamesFiltersEmpty": "No chapter matches these filters.",
   "@endgamesFiltersEmpty": {
     "description": "Endgame lessons: no lesson matches the active filters."
   },
@@ -4640,7 +4640,7 @@
       }
     }
   },
-  "endgamesLevelNone": "Other lessons",
+  "endgamesLevelNone": "Other chapters",
   "@endgamesLevelNone": {
     "description": "Section heading for lessons without a difficulty band."
   },
@@ -4653,7 +4653,7 @@
       }
     }
   },
-  "endgameLessonFailed": "Lesson failed review: it will be redone.",
+  "endgameLessonFailed": "Chapter failed review: it will be redone.",
   "@endgameLessonFailed": {
     "description": "Banner on an endgame lesson whose content failed review and will be rewritten."
   },
@@ -6841,7 +6841,7 @@
       }
     }
   },
-  "featuredNextLessonSub": "Lesson: {title}",
+  "featuredNextLessonSub": "Chapter: {title}",
   "@featuredNextLessonSub": {
     "description": "Subtitle of \"Learn this endgame\": the lesson name.",
     "placeholders": {
@@ -6882,17 +6882,22 @@
   "@raceTitle": {
     "description": "Title of the endgame problem race screens."
   },
-  "raceIntroSubtitle": "Problems on endgames only",
+  "raceIntroSubtitle": "Selected endgame puzzles",
   "@raceIntroSubtitle": {
     "description": "Intro header: what the race is."
   },
-  "raceIntroBody": "Solve one right move at a time, with no opponent thinking. It trains your eye for the positions in the lessons.",
+  "raceIntroBody": "Play the whole sequence; the opponent answers by itself.",
   "@raceIntroBody": {
     "description": "Intro: what the race is."
   },
-  "raceRuleTimeTitle": "3 minutes",
+  "raceRuleTimeTitle": "{minutes} minutes",
   "@raceRuleTimeTitle": {
-    "description": "Intro rule: the time limit."
+    "description": "Intro rule: the time limit chosen above.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "raceRuleTimeBody": "Solve as many problems as you can before time runs out.",
   "@raceRuleTimeBody": {
@@ -6902,7 +6907,7 @@
   "@raceRuleHarderTitle": {
     "description": "Intro rule: difficulty rises."
   },
-  "raceRuleHarderBody": "It starts easy and each correct answer raises the next level.",
+  "raceRuleHarderBody": "It starts easy, and each correct answer makes the next puzzle harder.",
   "@raceRuleHarderBody": {
     "description": "Intro rule: body for rising difficulty."
   },
@@ -6910,38 +6915,21 @@
   "@raceRuleErrorsTitle": {
     "description": "Intro rule: the error limit."
   },
-  "raceRuleErrorsBody": "A wrong move moves you to the next problem. You see the right moves at the end.",
+  "raceRuleErrorsBody": "Missed one? On to the next. At the end, you see the solution to each mistake.",
   "@raceRuleErrorsBody": {
     "description": "Intro rule: what happens on a mistake."
   },
   "raceWhichEndings": "Which endings",
   "@raceWhichEndings": {
-    "description": "Intro: title of the theme filter."
+    "description": "Filter screen: title of the ending types section."
   },
-  "raceThemeAll": "All endings",
-  "@raceThemeAll": {
-    "description": "Theme filter: no filter."
-  },
-  "raceThemeRook": "Rook",
-  "@raceThemeRook": {
-    "description": "Theme filter: rook endings."
-  },
-  "raceThemePawns": "Pawns",
-  "@raceThemePawns": {
-    "description": "Theme filter: pawn endings."
-  },
-  "raceThemeQueen": "Queen",
-  "@raceThemeQueen": {
-    "description": "Theme filter: queen endings."
-  },
-  "raceThemeMinor": "Bishop and knight",
-  "@raceThemeMinor": {
-    "description": "Theme filter: minor piece endings."
-  },
-  "raceRecordCorrects": "Your record: {count, plural, =0{0 correct} =1{1 correct} other{{count} correct}}",
+  "raceRecordCorrects": "Your record in {minutes} min: {count, plural, =0{0 correct} =1{1 correct} other{{count} correct}}",
   "@raceRecordCorrects": {
-    "description": "Intro record card: best number of correct answers.",
+    "description": "Intro record card: best number of correct answers for the chosen duration.",
     "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
       "count": {
         "type": "int"
       }
@@ -6960,7 +6948,7 @@
   "@raceRecordEmpty": {
     "description": "Intro record card when there is no record."
   },
-  "raceFootnote": "Endgame problems checked on the tablebase. Works offline.",
+  "raceFootnote": "Problems from the open Lichess database, checked on the tablebase. Works offline.",
   "@raceFootnote": {
     "description": "Intro footnote about where the problems come from."
   },
@@ -7092,14 +7080,14 @@
       }
     }
   },
-  "raceReviewMeta": "Problem {number} · {theme} · level {level}",
+  "raceReviewMeta": "Problem {number} · {category} · level {level}",
   "@raceReviewMeta": {
     "description": "Review: which problem it was.",
     "placeholders": {
       "number": {
         "type": "int"
       },
-      "theme": {
+      "category": {
         "type": "String"
       },
       "level": {
@@ -7358,7 +7346,7 @@
       }
     }
   },
-  "homeResumeEndgameLine": "Endgame lesson · {where}",
+  "homeResumeEndgameLine": "Endgame course · {where}",
   "@homeResumeEndgameLine": {
     "description": "Resume card line for an endgame lesson; {where} is e.g. 'Exercise 6 of 6'.",
     "placeholders": {
@@ -7625,7 +7613,7 @@
       }
     }
   },
-  "accountRestoredLessons": "Endgame lessons",
+  "accountRestoredLessons": "Endgame course",
   "@accountRestoredLessons": {
     "description": "Restored progress screen: endgame lessons row."
   },
@@ -8003,7 +7991,7 @@
   "@alertsDaily": {
     "description": "Alerts switch: local reminders."
   },
-  "alertsDailyBody": "Streak, continue the lesson and weekly summary.",
+  "alertsDailyBody": "Streak, continue the chapter and weekly summary.",
   "@alertsDailyBody": {
     "description": "Alerts switch subtitle."
   },
@@ -8052,11 +8040,11 @@
   "@reminderStreakAction": {
     "description": "Local notification button."
   },
-  "reminderLessonTitle": "Continue the lesson",
+  "reminderLessonTitle": "Continue the chapter",
   "@reminderLessonTitle": {
     "description": "Local notification title."
   },
-  "reminderLessonText": "Resume \"{lesson}\": you stopped at chapter {chapter} of {total}.",
+  "reminderLessonText": "Almost done with \"{lesson}\": you stopped at lesson {chapter} of {total}.",
   "@reminderLessonText": {
     "description": "Local notification text.",
     "placeholders": {
@@ -8795,7 +8783,7 @@
   "@payLearnQuestion": {
     "description": "Step 3 question about learning."
   },
-  "payLearnHelp": "Lesson, exercises, test and a game against Maia.",
+  "payLearnHelp": "Lesson, exercises, test and a game of the endgame.",
   "@payLearnHelp": {
     "description": "Help under the learning question."
   },
@@ -9086,5 +9074,502 @@
         "type": "String"
       }
     }
+  },
+  "pushChannelTournaments": "Chess endgames",
+  "@pushChannelTournaments": {
+    "description": "Android notification channel (and header subtext) for pushes about tournament endgames."
+  },
+  "raceDuration": "Duration",
+  "@raceDuration": {
+    "description": "Intro: title of the duration selector (3 or 5 minutes)."
+  },
+  "raceDurationMinutes": "{minutes} min",
+  "@raceDurationMinutes": {
+    "description": "Intro: one option of the duration selector.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "raceRuleShortestTitle": "The shortest path counts",
+  "@raceRuleShortestTitle": {
+    "description": "Intro rule: only the fastest win counts."
+  },
+  "raceRuleShortestBody": "Only the fastest winning move counts.",
+  "@raceRuleShortestBody": {
+    "description": "Intro rule: body for the fastest-win rule."
+  },
+  "raceFilters": "Filters",
+  "@raceFilters": {
+    "description": "Intro: title of the filter row and of the filter screen."
+  },
+  "raceFilterSummary": "{goal} · {endings}",
+  "@raceFilterSummary": {
+    "description": "Intro filter row: the chosen goal and which endings.",
+    "placeholders": {
+      "goal": {
+        "type": "String"
+      },
+      "endings": {
+        "type": "String"
+      }
+    }
+  },
+  "raceFilterAllEndings": "All endings",
+  "@raceFilterAllEndings": {
+    "description": "Filter summary: every ending type is selected."
+  },
+  "raceFilterTypeCount": "{count, plural, =1{1 ending type} other{{count} ending types}}",
+  "@raceFilterTypeCount": {
+    "description": "Filter summary: how many ending types are selected.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "raceGoal": "Goal",
+  "@raceGoal": {
+    "description": "Filter screen: title of the goal selector."
+  },
+  "raceGoalWin": "Win",
+  "@raceGoalWin": {
+    "description": "Goal option: winning problems."
+  },
+  "raceGoalDefend": "Defend",
+  "@raceGoalDefend": {
+    "description": "Goal option: hold-the-draw problems."
+  },
+  "raceGoalBoth": "Both",
+  "@raceGoalBoth": {
+    "description": "Goal option: winning and hold-the-draw problems."
+  },
+  "raceGoalDefendHint": "Defend: hold the draw; any move that does not lose counts.",
+  "@raceGoalDefendHint": {
+    "description": "Filter screen: explains the Defend goal."
+  },
+  "raceFilterClear": "Clear",
+  "@raceFilterClear": {
+    "description": "Filter screen: back to Win and all endings."
+  },
+  "raceFilterApply": "Apply",
+  "@raceFilterApply": {
+    "description": "Filter screen: apply the filter and go back."
+  },
+  "raceFilterNone": "Select at least one ending.",
+  "@raceFilterNone": {
+    "description": "Filter screen: no problem matches the selection."
+  },
+  "raceFilterCategoryCount": "{selected} of {total}",
+  "@raceFilterCategoryCount": {
+    "description": "Filter screen: selected ending types in a category.",
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceDefendDetail": "Hold the draw",
+  "@raceDefendDetail": {
+    "description": "Race board: the goal of a Defend problem, under the player."
+  },
+  "raceReviewDefend": "That move lost. {move} held the draw.",
+  "@raceReviewDefend": {
+    "description": "Review of a Defend problem: the move that held the draw.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "raceReviewSlower": "Your move also won, but it took more moves. The fastest was {move}, mate in {count}.",
+  "@raceReviewSlower": {
+    "description": "Review: the player's move still won, but slower. The fastest move and its mate distance.",
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nextStepsReadyBar": "All set",
+  "@nextStepsReadyBar": {
+    "description": "Next steps after the level: app bar title (and hero title without a level)."
+  },
+  "nextStepsLevel": "Your level: {level}",
+  "@nextStepsLevel": {
+    "description": "Next steps after the level: hero title with the rating.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "nextStepsReadyBody": "Now we know where to start. Where would you like to begin?",
+  "@nextStepsReadyBody": {
+    "description": "Next steps after the level: hero text."
+  },
+  "nextStepsLessonsBody": "Learn Opposition, Bishop and knight, Queen vs rook and Lucena.",
+  "@nextStepsLessonsBody": {
+    "description": "Next steps: what the endgame lessons cover."
+  },
+  "nextStepsRaceBody": "Solve endgame puzzles against the clock.",
+  "@nextStepsRaceBody": {
+    "description": "Next steps: what the endgame race is for."
+  },
+  "nextStepsTrainTitle": "Practice endgames",
+  "@nextStepsTrainTitle": {
+    "description": "Next steps: option to play an endgame against the engine."
+  },
+  "nextStepsTrainBody": "Pick a position in the catalog and play.",
+  "@nextStepsTrainBody": {
+    "description": "Next steps: text of the training option."
+  },
+  "nextStepsHome": "Go to home",
+  "@nextStepsHome": {
+    "description": "Next steps: footer button to the home screen."
+  },
+  "nextStepsSchoolBar": "School completed",
+  "@nextStepsSchoolBar": {
+    "description": "Next steps after the School: app bar title."
+  },
+  "nextStepsSchoolTitle": "You completed the School!",
+  "@nextStepsSchoolTitle": {
+    "description": "Next steps after the School: hero title."
+  },
+  "nextStepsSchoolBody": "The rules and the first mates are yours. What would you like to do now?",
+  "@nextStepsSchoolBody": {
+    "description": "Next steps after the School: hero text."
+  },
+  "nextStepsRecommended": "Recommended",
+  "@nextStepsRecommended": {
+    "description": "Next steps: badge on the recommended option."
+  },
+  "nextStepsLessonsFirst": "Start with the Opposition, the endgame that comes up most.",
+  "@nextStepsLessonsFirst": {
+    "description": "Next steps after the School: endgame lessons text."
+  },
+  "nextStepsJourneyBody": "Beat opponents, one step at a time.",
+  "@nextStepsJourneyBody": {
+    "description": "Next steps after the School: journey text."
+  },
+  "lessonFinishedRaceOnly": "{name} Race",
+  "@lessonFinishedRaceOnly": {
+    "description": "Lesson finished: race with only this endgame type.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonFinishedRaceBody": "Solve puzzles of the endgame you just studied.",
+  "@lessonFinishedRaceBody": {
+    "description": "Lesson finished: text of the race option."
+  },
+  "lessonFinishedTrainTitle": "Practice this endgame",
+  "@lessonFinishedTrainTitle": {
+    "description": "Lesson finished: play the lesson endgame against the engine."
+  },
+  "lessonFinishedTrainBody": "Play the chapter position as a game.",
+  "@lessonFinishedTrainBody": {
+    "description": "Lesson finished: text of the training option."
+  },
+  "lessonFinishedExercisesTitle": "Chapter exercises",
+  "@lessonFinishedExercisesTitle": {
+    "description": "Lesson finished: the lesson test."
+  },
+  "lessonFinishedExercisesBody": "Test what you learned and earn stars.",
+  "@lessonFinishedExercisesBody": {
+    "description": "Lesson finished: text of the exercises option."
+  },
+  "nextStepsTitle": "Next steps",
+  "@nextStepsTitle": {
+    "description": "Title of the next steps block at the end of each flow."
+  },
+  "nextStepsPractice": "Practice {name}",
+  "@nextStepsPractice": {
+    "description": "Next steps: option to play positions of this endgame.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "resultsInfoLine": "How Lucena uses your results",
+  "@resultsInfoLine": {
+    "description": "Line that opens the sheet about saved results."
+  },
+  "resultsInfoTitle": "Your results count",
+  "@resultsInfoTitle": {
+    "description": "Title of the sheet about saved results."
+  },
+  "resultsInfoRace": "In Races, Lucena finds out which endgames you struggle with most and what is worth studying.",
+  "@resultsInfoRace": {
+    "description": "Results sheet: what races are for."
+  },
+  "resultsInfoCourses": "Today the app has 4 free endgames. Coming soon: a complete endgame course and courses for beginners, intermediate and advanced players, including tournament preparation.",
+  "@resultsInfoCourses": {
+    "description": "Results sheet: what the app has today and what is coming."
+  },
+  "resultsInfoSaved": "Everything you do in the app (games, lessons and Races) is saved. With it, Lucena will build a study plan made for you.",
+  "@resultsInfoSaved": {
+    "description": "Results sheet: everything is saved."
+  },
+  "raceWhyEndgamesTitle": "Why only endgames?",
+  "@raceWhyEndgamesTitle": {
+    "description": "Race intro: title of the why box."
+  },
+  "raceWhyEndgamesBody": "Knowing how to play endgames decides many games. And with each Race, Lucena finds out which endgames you already master and which you need to study.",
+  "@raceWhyEndgamesBody": {
+    "description": "Race intro: text of the why box."
+  },
+  "racePerformanceLine": "Your performance by endgame",
+  "@racePerformanceLine": {
+    "description": "Race result: line that opens the performance screen."
+  },
+  "racePerformanceLineBody": "See what you already master and where you can improve.",
+  "@racePerformanceLineBody": {
+    "description": "Race result: text of the performance line."
+  },
+  "raceProgressCount": "{done} of {total}",
+  "@raceProgressCount": {
+    "description": "Race result: races done out of the races needed.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "raceProgressMissing": "{count, plural, =1{1 more Race for Lucena to show what you already master and where you can improve.} other{{count} more Races for Lucena to show what you already master and where you can improve.}}",
+  "@raceProgressMissing": {
+    "description": "Race result: races missing before the performance by endgame.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "racePerformanceTitle": "Your performance",
+  "@racePerformanceTitle": {
+    "description": "Performance screen: app bar title."
+  },
+  "racePerformanceMastered": "What you already master",
+  "@racePerformanceMastered": {
+    "description": "Performance screen: card of mastered endgames."
+  },
+  "racePerformanceToImprove": "Where you can improve",
+  "@racePerformanceToImprove": {
+    "description": "Performance screen: card of endgames to improve."
+  },
+  "racePerformanceCorrects": "{corrects} of {total} correct",
+  "@racePerformanceCorrects": {
+    "description": "Performance screen: correct answers in an endgame.",
+    "placeholders": {
+      "corrects": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "racePerformanceLessonTitle": "Study: {name}",
+  "@racePerformanceLessonTitle": {
+    "description": "Performance screen: option to open the lesson of an endgame.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "racePerformanceLessonQueen": "Learn to checkmate with the queen.",
+  "@racePerformanceLessonQueen": {
+    "description": "Performance screen: what the queen mate lesson teaches."
+  },
+  "racePerformanceLessonRook": "Learn to checkmate with the rook.",
+  "@racePerformanceLessonRook": {
+    "description": "Performance screen: what the rook mate lesson teaches."
+  },
+  "racePerformanceLessonPawnVsKing": "Learn the key squares and the opposition.",
+  "@racePerformanceLessonPawnVsKing": {
+    "description": "Performance screen: what the pawn vs king lesson teaches."
+  },
+  "racePerformanceLessonKnightBishop": "Learn to checkmate with bishop and knight.",
+  "@racePerformanceLessonKnightBishop": {
+    "description": "Performance screen: what the bishop and knight lesson teaches."
+  },
+  "racePerformanceLessonQueenVsRook": "Learn to beat the rook with the queen.",
+  "@racePerformanceLessonQueenVsRook": {
+    "description": "Performance screen: what the queen vs rook lesson teaches."
+  },
+  "racePerformanceLessonLucena": "Learn to build the bridge and promote the pawn.",
+  "@racePerformanceLessonLucena": {
+    "description": "Performance screen: what the Lucena position lesson teaches."
+  },
+  "racePerformancePracticeBody": "Pick a position of this endgame in the catalog and play.",
+  "@racePerformancePracticeBody": {
+    "description": "Performance screen: text of the practice option."
+  },
+  "racePerformanceFooter": "Based on your Race history.",
+  "@racePerformanceFooter": {
+    "description": "Performance screen: footnote."
+  },
+  "courseChapterPlace": "{part} · chapter {number}",
+  "@courseChapterPlace": {
+    "description": "Course continue card label: the part name and the chapter number inside it.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolLessonPlace": "Part {part} · lesson {number}",
+  "@schoolLessonPlace": {
+    "description": "School continue card label: the part number and the lesson number.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "coursePartProgress": "{done} of {total}",
+  "@coursePartProgress": {
+    "description": "Course part header: items done out of the total in the part.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterExercisesCount": "{count, plural, =1{1 practice exercise} other{{count} practice exercises}}",
+  "chapterExercisesTitle": "Exercises",
+  "@chapterExercisesCount": {
+    "description": "Last row of the chapter lesson list: how many practice exercises it has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@chapterExercisesTitle": {
+    "description": "Last row of a course chapter lesson list: the chapter exercises, without the count."
+  },
+  "chapterContinueLesson": "Continue lesson {number}",
+  "@chapterContinueLesson": {
+    "description": "Chapter footer button: continue the lesson with this number (\"2\" or \"5.1\").",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "chapterStartLesson": "Start lesson {number}",
+  "@chapterStartLesson": {
+    "description": "Chapter footer button: start the lesson with this number (\"2\" or \"5.1\").",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "courseSaleOverview": "Overview",
+  "@courseSaleOverview": {
+    "description": "Course sale page tab: overview."
+  },
+  "courseSaleContent": "Contents",
+  "@courseSaleContent": {
+    "description": "Course sale page tab: the course contents."
+  },
+  "courseSaleFaq": "Questions",
+  "@courseSaleFaq": {
+    "description": "Course sale page tab: frequently asked questions."
+  },
+  "courseBuy": "Buy · {price}",
+  "@courseBuy": {
+    "description": "Course sale page fixed button with the price.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "courseSaleLearn": "What you will learn",
+  "@courseSaleLearn": {
+    "description": "Course sale page section title."
+  },
+  "courseSaleAudience": "Who it is for",
+  "@courseSaleAudience": {
+    "description": "Course sale page section title: who the course is for."
+  },
+  "courseSaleIncluded": "What the course includes",
+  "@courseSaleIncluded": {
+    "description": "Course sale page section title: what comes with the course."
+  },
+  "courseSaleHow": "How you learn",
+  "@courseSaleHow": {
+    "description": "Course sale page section title: how the student learns."
+  },
+  "courseSaleSummary": "Contents",
+  "@courseSaleSummary": {
+    "description": "Course sale page section title: the table of contents."
+  },
+  "courseSalePrice": "Course price",
+  "@courseSalePrice": {
+    "description": "Course sale page price card label."
+  },
+  "courseSaleRefund": "Refund within 7 days",
+  "@courseSaleRefund": {
+    "description": "Course sale page price card note."
+  },
+  "courseLessonsCount": "{count, plural, =1{1 lesson} other{{count} lessons}}",
+  "@courseLessonsCount": {
+    "description": "How many lessons a course has.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "courseExercisesLabel": "exercises",
+  "@courseExercisesLabel": {
+    "description": "Label under the exercise count in the course sale numbers."
+  },
+  "coursePartLessons": "Part {part} · {count} lessons",
+  "@coursePartLessons": {
+    "description": "Collapsed course part on the sale page: the part (roman numeral) and its lesson count.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pilaresPreviewTile": "Pilares do Xadrez (preview)",
+  "@pilaresPreviewTile": {
+    "description": "Settings tile (development builds only) that opens the course layout preview."
+  },
+  "courseLessonsLabel": "lessons",
+  "@courseLessonsLabel": {
+    "description": "Label under the lesson count in the course sale numbers."
   }
 }

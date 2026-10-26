@@ -135,7 +135,8 @@ void main() {
     await home.expectVisible();
     board.expectNotOpen();
 
-    await board.open();
+    // A partida guardada pergunta antes do tabuleiro: o botão a continua.
+    await board.openWithSavedGame(keep: true);
     await board.expectMoves(['e4']);
     await board.expectClock(Side.black, '2:50');
     await board.expectClock(Side.white, '3:02');

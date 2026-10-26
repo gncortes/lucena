@@ -70,7 +70,7 @@ void main() {
     await pump(tester, SurveyKind.endgames);
     expect(find.text('Sua opinião'), findsOneWidget);
     expect(find.text('1 de 2'), findsOneWidget);
-    expect(find.text('O que você achou das aulas?'), findsOneWidget);
+    expect(find.text('O que você achou do Curso de finais?'), findsOneWidget);
     expect(find.text('O que poderia melhorar?'), findsOneWidget);
     expect(find.text('Marque quantos quiser.'), findsOneWidget);
     expect(find.text('Conte com suas palavras (opcional)'), findsOneWidget);
@@ -160,7 +160,7 @@ void main() {
       find.textContaining('Muito obrigado por tirar um tempo'),
       findsOneWidget,
     );
-    expect(find.text('Voltar às aulas'), findsOneWidget);
+    expect(find.text('Voltar ao curso'), findsOneWidget);
     final saved = surveys.responses[SurveyKind.endgames]!;
     expect(saved.answers.rating, 5);
     expect(saved.answers.improve, {'examples'});
@@ -173,7 +173,7 @@ void main() {
   ) async {
     await pump(tester, SurveyKind.school);
     expect(find.text('1 de 3'), findsOneWidget);
-    expect(find.text('O que você achou das aulas da Escola?'), findsOneWidget);
+    expect(find.text('O que você achou das lições da Escola?'), findsOneWidget);
     expect(find.text('Coordenadas e notação'), findsOneWidget);
     expect(find.text('Setas e marcas no tabuleiro'), findsNothing);
     await tap(tester, SurveyKeys.face(2));

@@ -136,6 +136,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(cubit.state.phase, ExercisePhase.done);
       expect(cubit.state.earned, 0);
+      // Resolvido sem pontos: o rótulo diz o que ganhou, não "já não vale".
+      expect(
+        tester.getSemantics(find.byKey(ExerciseKeys.stars)).label,
+        '0 of ${cubit.state.exercise!.stars} '
+        '${cubit.state.exercise!.stars == 1 ? 'point' : 'points'}',
+      );
       expect(find.byKey(ExerciseKeys.showSolution), findsNothing);
       final next = find.byKey(ExerciseKeys.nextButton);
       expect(next, findsOneWidget);
@@ -146,6 +152,14 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('o exercício aberto fica marcado pela key de aula e exercício', (
+    tester,
+  ) async {
+    setSize(tester, sizes.first);
+    await pump(tester, 'e02');
+    expect(find.byKey(ExerciseKeys.open('rook.lucena', 'e02')), findsOneWidget);
+  });
 
   testWidgets('lance certo no meio: "Correct." e "Your turn." no balão, e a '
       'lista traz o lance e a resposta', (tester) async {

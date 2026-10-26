@@ -388,7 +388,7 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.resign));
     await tester.pumpAndSettle();
     final close = find.byTooltip('Close');
-    expect(tester.getSize(close), const Size.square(40));
+    expect(tester.getSize(close), const Size.square(44));
     expect(
       tester.getRect(close).bottom,
       lessThan(tester.getRect(find.byKey(SheetKeys.surface)).top),
@@ -418,7 +418,7 @@ void main() {
     await tester.tap(find.byKey(BlindKeys.resign));
     await tester.pumpAndSettle();
     final close = find.byTooltip('Close');
-    expect(tester.getSize(close), const Size.square(40));
+    expect(tester.getSize(close), const Size.square(44));
     expect(
       tester.getCenter(close).dx,
       greaterThan(tester.getCenter(find.byKey(SheetKeys.surface)).dx),
@@ -846,7 +846,7 @@ void main() {
     expect(find.byKey(BlindKeys.helpSheet), findsOneWidget);
     expect(find.textContaining('K king, Q queen'), findsOneWidget);
     final close = find.byTooltip('Close');
-    expect(tester.getSize(close), const Size.square(40));
+    expect(tester.getSize(close), const Size.square(44));
     expect(
       tester.getRect(close).bottom,
       lessThan(tester.getRect(find.byKey(BlindKeys.helpSheet)).top),

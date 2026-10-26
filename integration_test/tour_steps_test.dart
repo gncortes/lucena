@@ -105,14 +105,14 @@ void main() {
       tour.expectProgress(step);
     }
 
-    // Voltar também é gravado.
+    // Voltar também é gravado: do último passo, volta ao anterior.
     await tour.back();
-    await tour.expectStep(TourStep.play);
+    await tour.expectStep(TourStep.help);
     expect(
       await PreferencesService().getString('tour.stepV2'),
-      '${TourStep.play.index}',
+      '${TourStep.help.index}',
     );
     await app.restart();
-    await tour.expectStep(TourStep.play);
+    await tour.expectStep(TourStep.help);
   });
 }

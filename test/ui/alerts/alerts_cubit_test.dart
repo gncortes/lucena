@@ -55,7 +55,7 @@ void main() {
     expect(cubit.state.ready, isTrue);
     expect(cubit.state.permitted, isTrue);
     expect(cubit.state.enabled, 3);
-    expect(push.followed, {'all', 'torneio_BR', 'aulas'});
+    expect(push.followed, {'all', 'torneio_BR', 'pais_BR', 'dia', 'aulas'});
   });
 
   test('negado: o estado diz, e nada pede permissão', () async {
@@ -85,7 +85,7 @@ void main() {
     await cubit.change(cubit.state.settings.copyWith(tournaments: false));
 
     expect(alerts.settings.tournaments, isFalse);
-    expect(push.followed, {'all', 'aulas'});
+    expect(push.followed, {'all', 'pais_BR', 'dia', 'aulas'});
     expect(cubit.state.enabled, 2);
   });
 
@@ -113,7 +113,37 @@ void main() {
     await profile.save(const UserProfile(country: 'AR'));
     await cubit.regionChanged();
 
-    expect(push.followed, {'all', 'torneio_AR', 'aulas'});
+    expect(push.followed, {'all', 'torneio_AR', 'pais_AR', 'dia', 'aulas'});
+  });
+
+  test('o idioma do app entra no idioma_*, antes ou depois de abrir', () async {
+    final cubit = build();
+    await cubit.languageChanged('pt');
+    expect(push.followed, isEmpty);
+
+    await cubit.load();
+    expect(push.followed, contains('idioma_pt'));
+
+    await cubit.languageChanged('en');
+    expect(push.followed, contains('idioma_en'));
+    expect(push.followed, isNot(contains('idioma_pt')));
+  });
+
+  test('desligar todos os avisos de push sai do país e do idioma', () async {
+    final cubit = build();
+    await cubit.load();
+    await cubit.languageChanged('pt');
+
+    await cubit.change(
+      const AlertSettings(
+        tournaments: false,
+        daily: false,
+        news: false,
+        lessons: false,
+      ),
+    );
+
+    expect(push.followed, {'all'});
   });
 
   test('sem push, só a chave local conta', () async {

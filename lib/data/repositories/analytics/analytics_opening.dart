@@ -3,6 +3,7 @@ import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/challenge_link.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/push_alert.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/streak_rules.dart';
@@ -83,6 +84,17 @@ class AnalyticsOpening {
   /// Tocou num aviso: [channel] `push` ou `local`; [path] diz o tipo.
   Future<void> alertOpened(String path, {required String channel}) => _analytics
       .log(AnalyticsEvents.avisoAberto(canal: channel, tipo: alertType(path)));
+
+  /// Tocou num push: o `aviso_aberto` pelo caminho e, se veio do painel
+  /// (tem `pushId`), o `push_aberto`.
+  Future<void> pushOpened(PushOpening opening) async {
+    await alertOpened(opening.link?.path ?? '', channel: 'push');
+    final id = opening.pushId;
+    if (id == null) return;
+    await _analytics.log(
+      AnalyticsEvents.pushAberto(pushId: id, pais: opening.country),
+    );
+  }
 
   /// `dia|aulas|torneios|novidades`, pelo caminho do aviso.
   static String alertType(String path) {

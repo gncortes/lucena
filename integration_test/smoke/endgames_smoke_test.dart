@@ -80,6 +80,6 @@ void main() {
 
     await app.sendToBackgroundAndReturn();
     await endgames.expectExercise(_lessonId, first.id);
-    endgames.expectExerciseBoard('k1N5/2K5/8/8/8/8/8/5B2 w - - 2 2');
+    endgames.expectExerciseBoard(endgames.boardAfterFirstTurn(first));
   }, skip: _hidden);
 }

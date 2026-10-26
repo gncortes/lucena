@@ -18,7 +18,6 @@ import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/goldens/golden_harness.dart';
 import '../../../testing/test_app.dart';
 
-
 void main() {
   for (final size in const [
     Size(360, 740),
@@ -40,8 +39,9 @@ void main() {
         const black = RaceProblem(
           id: 'black',
           fen: '8/8/8/8/8/k7/1q6/7K b - - 0 1',
-          solution: 'b2g2',
-          theme: RaceTheme.queen,
+          tree: RaceNode(distance: 1, moves: {'b2g2': RaceBranch()}),
+          category: 'basic',
+          subcategory: 'queen',
           level: 900,
         );
         final repository = FakeRaceRepository(
@@ -97,7 +97,7 @@ void main() {
           );
           expect(tester.takeException(), isNull);
           if (side == Side.white) {
-            cubit.answer(cubit.state.problem!.solution);
+            cubit.answer(cubit.state.problem!.tree.moves.keys.first);
             await tester.pumpAndSettle();
           }
         }

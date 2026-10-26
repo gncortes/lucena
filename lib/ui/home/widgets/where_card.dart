@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/home_layout.dart';
-import '../../../domain/models/race.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
@@ -178,12 +177,13 @@ Future<void> continueJourney(BuildContext context, HomeState state) async {
   final level = current.rung.opponent.level;
   final subcategory = challenge.position.subcategory;
   final router = GoRouter.of(context);
-  final theme = RaceTheme.ofSubcategory(subcategory);
+  final category = challenge.position.category;
   final choice = await offerRaceWarmUp(
     context,
     opponent: opponent,
     endgame: endgameName(l10n, subcategory),
-    theme: theme,
+    subcategory: subcategory,
+    category: category,
     character: character,
   );
   if (choice == RaceOfferChoice.skip) {
@@ -204,7 +204,8 @@ Future<void> continueJourney(BuildContext context, HomeState state) async {
         opponent: opponent,
         character: character,
         level: level,
-        theme: theme,
+        subcategory: subcategory,
+        category: category,
         // Vai direto à partida do desafio (o mesmo "Jogar" da tela dele:
         // escolhe o ritmo e abre); ela entra no lugar do aquecimento.
         onPlay: (context) =>

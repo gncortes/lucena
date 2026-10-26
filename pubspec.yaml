@@ -82,6 +82,7 @@ flutter:
     - assets/race/race_problems.json
     - assets/achievements.json
     - assets/featured/featured.json
+    - assets/courses/pt/pilares_preview.json
     - assets/daily/queue.json
     - assets/characters/
     - assets/voices/

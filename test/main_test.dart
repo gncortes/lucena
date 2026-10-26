@@ -35,6 +35,10 @@ import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 
+import 'package:lucena/domain/models/push_alert.dart';
+import 'package:lucena/ui/core/keys/featured_keys.dart';
+
+import '../testing/fakes/fake_analytics_repository.dart';
 import '../testing/fakes/fake_deep_link_service.dart';
 import '../testing/fakes/fake_push_repository.dart';
 
@@ -68,6 +72,7 @@ void main() {
     FakeDeepLinkService? links,
     OnboardingRepository? onboarding,
     FakePushRepository? push,
+    FakeAnalyticsRepository? analytics,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -79,6 +84,7 @@ void main() {
           starChallengeRepository: stars,
           onboardingRepository: onboarding,
           pushRepository: push,
+          analyticsRepository: analytics,
           deepLinkRepository: links == null
               ? null
               : ServiceDeepLinkRepository(links),
@@ -657,7 +663,7 @@ void main() {
           ),
         ),
         push: FakePushRepository(
-          initial: Uri.parse('https://playlucena.com/daily'),
+          initial: PushOpening(link: Uri.parse('https://playlucena.com/daily')),
         ),
         links: FakeDeepLinkService(initial: challenge(locked: true).uri),
       );
@@ -726,6 +732,60 @@ void main() {
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
     },
   );
+  group('push (E1.19 3.8)', () {
+    void phone(WidgetTester tester) {
+      tester.view.physicalSize = const Size(412, 917) * 3;
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('app fechado: o toque abre o torneio e conta o envio', (
+      tester,
+    ) async {
+      phone(tester);
+      final analytics = FakeAnalyticsRepository();
+      await pumpApp(
+        tester,
+        analytics: analytics,
+        push: FakePushRepository(
+          initial: PushOpening(
+            link: Uri.parse('/featured/tournament/live'),
+            pushId: 'p1',
+            country: 'BR',
+          ),
+        ),
+      );
+
+      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
+      final event = analytics.eventsNamed('push_aberto').single;
+      expect(event.params, {'push_id': 'p1', 'pais': 'BR'});
+    });
+
+    testWidgets('link que esta versão não tem: abre no início', (tester) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        push: FakePushRepository(
+          initial: PushOpening(link: Uri.parse('/featured/ranking/2026')),
+        ),
+      );
+
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('em segundo plano: o toque em Ver torneio abre o torneio', (
+      tester,
+    ) async {
+      phone(tester);
+      final push = FakePushRepository();
+      await pumpApp(tester, push: push);
+
+      push.open(Uri.parse('/featured/tournament/live'), pushId: 'p2');
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
+    });
+  });
 }
 
 /// O nome do botão da Jornada na tela inicial, no idioma da tela.

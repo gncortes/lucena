@@ -196,6 +196,9 @@ void main() {
     ]) {
       expect(find.byKey(key), findsOneWidget);
     }
+    // Ferramentas de desenvolvimento (o teste roda em debug): a prévia do
+    // Pilares do Xadrez (T82).
+    expect(find.byKey(SettingsKeys.pilaresPreviewTile), findsOneWidget);
     // As opções ficam dentro dos grupos, não no menu.
     expect(find.byKey(SettingsKeys.languageTile), findsNothing);
     expect(find.byKey(SettingsKeys.soundSwitch), findsNothing);

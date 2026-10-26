@@ -17,6 +17,7 @@ class AlertsState {
     this.push = true,
     this.country,
     this.state,
+    this.language,
   });
 
   final bool ready;
@@ -34,18 +35,25 @@ class AlertsState {
   /// O estado do Perfil, se houver.
   final String? state;
 
+  /// O idioma do app (`pt`, `en`), para o tópico `idioma_<xx>`.
+  final String? language;
+
   int get enabled => settings.enabled(push: push);
   int get total => AlertSettings.total(push: push);
 
-  AlertsState copyWith({AlertSettings? settings, bool? permitted}) =>
-      AlertsState(
-        ready: ready,
-        settings: settings ?? this.settings,
-        permitted: permitted ?? this.permitted,
-        push: push,
-        country: country,
-        state: state,
-      );
+  AlertsState copyWith({
+    AlertSettings? settings,
+    bool? permitted,
+    String? language,
+  }) => AlertsState(
+    ready: ready,
+    settings: settings ?? this.settings,
+    permitted: permitted ?? this.permitted,
+    push: push,
+    country: country,
+    state: state,
+    language: language ?? this.language,
+  );
 }
 
 /// Vive no app inteiro: ao abrir, acerta os tópicos com as chaves gravadas.
@@ -92,8 +100,16 @@ class AlertsCubit extends Cubit<AlertsState> {
         push: _push.available,
         country: place.country,
         state: place.state,
+        language: state.language,
       ),
     );
+    await _follow();
+  }
+
+  /// O idioma do app mudou (ou ficou conhecido): reinscreve no `idioma_*`.
+  Future<void> languageChanged(String language) async {
+    if (isClosed || language == state.language) return;
+    emit(state.copyWith(language: language));
     await _follow();
   }
 
@@ -131,16 +147,26 @@ class AlertsCubit extends Cubit<AlertsState> {
         push: state.push,
         country: place.country,
         state: place.state,
+        language: state.language,
       ),
     );
     await _follow();
   }
 
-  Future<void> _follow() => _push.follow(
-    AlertsRules.topics(
-      state.settings,
-      country: state.country,
-      state: state.state,
-    ),
-  );
+  // Uma troca de tópicos por vez: a seguinte usa o estado mais novo.
+  Future<void> _following = Future.value();
+
+  Future<void> _follow() {
+    if (!state.ready) return Future.value();
+    return _following = _following.then(
+      (_) => _push.follow(
+        AlertsRules.topics(
+          state.settings,
+          country: state.country,
+          state: state.state,
+          language: state.language,
+        ),
+      ),
+    );
+  }
 }

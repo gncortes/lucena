@@ -1,41 +1,31 @@
-import '../../../domain/models/survey.dart';
-import '../../../domain/models/ads_state.dart';
-import '../../core/ads/lesson_gate.dart';
-import '../../survey/widgets/survey_invite_card.dart';
-import '../../would_pay/widgets/would_pay_invite_card.dart';
-
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_chip.dart';
-
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../domain/models/ads_state.dart';
 import '../../../domain/models/endgame_lesson.dart';
-import '../../../domain/use_cases/placement_roadmap.dart';
-import '../../core/theme/app_button.dart';
-import '../../core/theme/app_button_text.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_icon_size.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text.dart';
-import '../../profile/widgets/rating_level_ui.dart';
+import '../../../domain/models/survey.dart';
 import '../../../routing/routes.dart';
-import '../../core/widgets/placement_test_card.dart';
+import '../../core/ads/lesson_gate.dart';
 import '../../core/keys/endgames_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/widgets/character_avatar.dart';
+import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/course/course_continue_card.dart';
+import '../../core/widgets/course/course_item_tile.dart';
+import '../../core/widgets/course/course_part_header.dart';
+import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
-import '../../core/widgets/teacher_speech.dart';
+import '../../profile/widgets/rating_level_ui.dart';
+import '../../survey/widgets/survey_invite_card.dart';
+import '../../would_pay/widgets/would_pay_invite_card.dart';
 import '../view_models/endgames_cubit.dart';
 import 'endgames_filters.dart';
-import '../../core/widgets/info_chip.dart';
-import '../../core/widgets/animated_progress.dart';
-import '../../core/widgets/empty_state.dart';
+import 'grade_widgets.dart';
 
-/// A trilha das aulas de finais: o Viktor recebe o aluno e os módulos
-/// listam as aulas, cada uma com a nota (as estrelas) já alcançada.
+/// O Curso de finais (canvas `PropV2FinaisCurso`, padrão T1 dos cursos): o
+/// cartão "Continuar" no topo e as partes com os capítulos, cada um com a
+/// medalha da nota já alcançada.
 class EndgamesScreen extends StatelessWidget {
   const EndgamesScreen({super.key});
 
@@ -47,11 +37,9 @@ class EndgamesScreen extends StatelessWidget {
       appBar: LucenaAppBar(
         title: Text(l10n.endgamesTitle),
         actions: [
-          // Os filtros valem para a trilha inteira, não para o roteiro.
           BlocBuilder<EndgamesCubit, EndgamesState>(
-            buildWhen: (before, after) =>
-                before.ready != after.ready || before.forYou != after.forYou,
-            builder: (context, state) => state.ready && !state.forYou
+            buildWhen: (before, after) => before.ready != after.ready,
+            builder: (context, state) => state.ready
                 ? const EndgamesFilterButton()
                 : const SizedBox.shrink(),
           ),
@@ -61,125 +49,23 @@ class EndgamesScreen extends StatelessWidget {
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
           final next = state.next;
-          final viktor = state.viktor;
-          final texts = state.texts;
-          final greeting = next == null && state.total > 0
-              ? texts.say('endgames.allPassed')
-              : state.passed == 0
-              ? texts.say('endgames.welcome')
-              : texts.say('endgames.welcomeBack', state.passed);
           return ListView(
+            // v2_cursos_padrao: corpo 8 16 0 16; o fim respira 32.
             padding: scrollPadding(
               context,
-              left: 16,
-              top: 8,
-              right: 16,
-              bottom: 32,
+              left: AppSpacing.lg,
+              top: AppSpacing.sm,
+              right: AppSpacing.lg,
+              bottom: AppSpacing.xxl,
             ),
             children: [
-              if (viktor != null)
-                TeacherSpeech(
-                  speechContext: SpeechContext.teaching,
-                  teacher: viktor,
-                  text: greeting,
-                  avatarSize: CharacterAvatar.speech,
-                ),
-              const SizedBox(height: AppSpacing.lg),
-              _Overview(state: state),
-              // Com o teste feito, o cartão do próximo final faz as vezes
-              // do botão.
-              if (next != null && state.roadmap?.nextEndgame == null) ...[
-                const SizedBox(height: AppSpacing.md),
-                FilledButton.icon(
-                  key: EndgamesKeys.continueButton,
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(kButtonHeight),
-                    textStyle: AppButtonText.footer(context),
-                  ),
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: Text(
-                    state.passed > 0 ||
-                            state.status(next) != EndgameLessonStatus.open
-                        ? l10n.endgamesContinueChapter(texts.lessonTitle(next))
-                        : l10n.endgamesStartFirstChapter,
-                  ),
-                  onPressed: () => LessonGate.open(
-                    context,
-                    lessonId: next,
-                    kind: LessonKind.endgame,
-                    open: () => context.push(Routes.endgameLesson(next)),
-                  ),
-                ),
-              ],
-              if (!state.tested) ...[
-                const SizedBox(height: AppSpacing.md),
-                PlacementTestCard(
-                  label: context.l10n.endgamesTestPrompt,
-                  tapKey: EndgamesKeys.placementTest,
-                  onTap: () async {
-                    final cubit = context.read<EndgamesCubit>();
-                    final language = Localizations.localeOf(context)
-                        .languageCode;
-                    final used = await context.push<bool>(
-                      Routes.placementFrom('endgames'),
-                    );
-                    if (used == true) await cubit.load(language);
-                  },
-                ),
-              ] else ...[
-                const SizedBox(height: AppSpacing.lg),
-                // Com o teste feito: o roteiro ("Para você") ou a trilha
-                // inteira para praticar ("Todos").
-                SegmentedButton<bool>(
-                  key: EndgamesKeys.filter,
-                  showSelectedIcon: false,
-                  segments: [
-                    ButtonSegment(
-                      value: false,
-                      label: Text(
-                        l10n.endgamesForYou,
-                        key: EndgamesKeys.forYou,
-                      ),
-                    ),
-                    ButtonSegment(
-                      value: true,
-                      label: Text(l10n.endgamesAll, key: EndgamesKeys.all),
-                    ),
-                  ],
-                  selected: {state.showAll},
-                  onSelectionChanged: (selected) =>
-                      context.read<EndgamesCubit>().setShowAll(selected.first),
-                ),
-                // As aulas concluídas continuam na lista; quem quiser, as
-                // esconde.
-                if (!state.showAll && state.doneLessons.isNotEmpty)
-                  Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: FilterChip(
-                      materialTapTargetSize: AppChip.tapTarget,
-                      visualDensity: AppChip.density,
-                      key: EndgamesKeys.hideDone,
-                      label: Text(l10n.endgamesHideDone),
-                      selected: state.hideDone,
-                      onSelected: (hide) =>
-                          context.read<EndgamesCubit>().setHideDone(hide),
-                    ),
-                  ),
-              ],
-              if (state.forYou)
-                ..._forYou(context, state)
-              else ...[
-                if (state.roadmap?.nextEndgame != null) ...[
-                  const SizedBox(height: AppSpacing.md),
-                  _NextEndgames(state: state),
-                ],
-                if (!state.filter.isEmpty) EndgamesActiveFilters(state: state),
-                for (final section in state.sections)
-                  _Section(section: section, state: state),
-                if (state.filteredLessons.isEmpty && state.total > 0)
-                  const EndgamesFiltersEmpty(),
-              ],
-              // O "Você pagaria?" e o "Sua opinião", depois do último tile.
+              if (next != null) _Continue(lessonId: next, state: state),
+              if (!state.filter.isEmpty) EndgamesActiveFilters(state: state),
+              for (final section in state.sections)
+                _Section(section: section, state: state),
+              if (state.filteredLessons.isEmpty && state.total > 0)
+                const EndgamesFiltersEmpty(),
+              // O "Você pagaria?" e o "Sua opinião", depois do último cartão.
               const SizedBox(height: AppSpacing.lg),
               const WouldPayInviteCard(),
               const SurveyInviteCard(
@@ -194,58 +80,42 @@ class EndgamesScreen extends StatelessWidget {
   }
 }
 
-/// "Para você": as aulas do roteiro, na ordem.
-List<Widget> _forYou(BuildContext context, EndgamesState state) {
-  final l10n = context.l10n;
-  final steps = state.roadmap!.endgameSteps;
-  final showsDone = !state.hideDone && state.doneLessons.isNotEmpty;
-  if (steps.isEmpty && !showsDone) {
-    return [
-      EmptyState(
-        style: EmptyStateStyle.text,
-        message: l10n.endgamesForYouEmpty,
-        messageKey: EndgamesKeys.forYouEmpty,
-      ),
-    ];
-  }
-  return [
-    const SizedBox(height: AppSpacing.md),
-    // As concluídas primeiro, na ordem da trilha, já marcadas como feitas.
-    if (showsDone)
-      for (final lesson in state.doneLessons)
-        _LessonTile(lesson: lesson, state: state),
-    for (final step in steps)
-      if (state.trail.lesson(step.lessonId) case final lesson?)
-        _LessonTile(lesson: lesson, state: state),
-  ];
-}
+void _openLesson(BuildContext context, String id) => LessonGate.open(
+  context,
+  lessonId: id,
+  kind: LessonKind.endgame,
+  open: () => context.push(Routes.endgameLesson(id)),
+);
 
-class _Overview extends StatelessWidget {
-  const _Overview({required this.state});
+/// O cartão "Continuar": a parte e o número do capítulo, o título e o resumo.
+class _Continue extends StatelessWidget {
+  const _Continue({required this.lessonId, required this.state});
 
+  final String lessonId;
   final EndgamesState state;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final total = state.total;
-    return Row(
-      key: EndgamesKeys.overview,
-      children: [
-        Expanded(
-          child: AnimatedProgress(value: total == 0 ? 0 : state.passed / total),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Text(
-          context.l10n.endgamesPassedCount(state.passed, total),
-          style: theme.textTheme.labelLarge,
-        ),
-      ],
+    final l10n = context.l10n;
+    final texts = state.texts;
+    final place = state.place(lessonId);
+    final module = place == null
+        ? ''
+        : texts.plain('endgames.module.${place.$1.id}') ?? place.$1.id;
+    final fresh =
+        state.passed == 0 && state.status(lessonId) == EndgameLessonStatus.open;
+    return CourseContinueCard(
+      label: l10n.courseChapterPlace(module, place?.$2 ?? 1),
+      title: texts.lessonTitle(lessonId),
+      summary: texts.lessonSummary(lessonId),
+      buttonLabel: fresh ? l10n.endgamePartStart : l10n.homeContinue,
+      buttonKey: EndgamesKeys.continueButton,
+      onPressed: () => _openLesson(context, lessonId),
     );
   }
 }
 
-/// Uma seção da lista: um módulo da trilha ou uma faixa de dificuldade.
+/// Uma parte do curso: um módulo da trilha ou uma faixa de dificuldade.
 class _Section extends StatelessWidget {
   const _Section({required this.section, required this.state});
 
@@ -254,79 +124,45 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final l10n = context.l10n;
     final module = section.module;
     final level = section.level;
     final lessons = section.lessons;
-    final (label, title) = module != null
-        ? (
-            l10n.endgamePartNumber(section.number),
-            state.texts.plain('endgames.module.${module.id}') ?? module.id,
-          )
-        : (
-            l10n.endgamesFilterLevel,
-            level == null
-                ? l10n.endgamesLevelNone
-                : l10n.endgamesLevelSection(
-                    level.name(l10n),
-                    level.range(l10n),
-                  ),
-          );
+    final title = module != null
+        ? state.texts.plain('endgames.module.${module.id}') ?? module.id
+        : level == null
+        ? l10n.endgamesLevelNone
+        : l10n.endgamesLevelSection(level.name(l10n), level.range(l10n));
     final passed = lessons
         .where(
           (lesson) => state.status(lesson.id) == EndgameLessonStatus.passed,
         )
         .length;
-    return Column(
+    return Padding(
       key: module != null
           ? EndgamesKeys.module(module.id)
           : EndgamesKeys.level(level == null ? 'none' : EnumName(level).name),
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: AppSpacing.xl),
-        Card(
-          color: colors.primaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.md,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onPrimaryContainer,
-                        ),
-                      ),
-                      Text(
-                        title,
-                        style: context.cardTitle?.copyWith(
-                          color: colors.onPrimaryContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  '$passed/${lessons.length}',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: colors.onPrimaryContainer,
-                  ),
-                ),
-              ],
-            ),
+      // v2_cursos_padrao: 12 entre os blocos.
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.md,
+        children: [
+          CoursePartHeader(
+            title: title,
+            count: l10n.coursePartProgress(passed, lessons.length),
           ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        for (final lesson in lessons) _LessonTile(lesson: lesson, state: state),
-      ],
+          // v2_cursos_padrao lista(): 8 entre os capítulos.
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.sm,
+            children: [
+              for (final lesson in lessons)
+                _LessonTile(lesson: lesson, state: state),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -340,28 +176,14 @@ class _LessonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final status = state.status(lesson.id);
-    final isNext = state.next == lesson.id;
     final texts = state.texts;
-    final (score, max) = state.score(lesson.id);
-    final (background, foreground, icon) = switch (status) {
-      EndgameLessonStatus.passed => (
-        colors.primary,
-        colors.onPrimary,
-        Icons.check_rounded,
-      ),
-      EndgameLessonStatus.started => (
-        colors.secondaryContainer,
-        colors.onSecondaryContainer,
-        Icons.star_half_rounded,
-      ),
-      EndgameLessonStatus.open => (
-        isNext ? colors.primary : colors.surfaceContainerHighest,
-        isNext ? colors.onPrimary : colors.onSurfaceVariant,
-        Icons.play_arrow_rounded,
-      ),
+    final medal = state.medal(lesson.id);
+    final tileState = switch (status) {
+      EndgameLessonStatus.passed => CourseItemState.approved,
+      _ when state.next == lesson.id => CourseItemState.next,
+      EndgameLessonStatus.started => CourseItemState.started,
+      EndgameLessonStatus.open => CourseItemState.open,
     };
     return Semantics(
       button: true,
@@ -370,77 +192,34 @@ class _LessonTile extends StatelessWidget {
         status.name,
       ),
       excludeSemantics: true,
-      child: Card(
+      child: CourseItemTile(
         key: EndgamesKeys.lesson(lesson.id),
-        margin: const EdgeInsets.only(bottom: AppSpacing.betweenCards),
-        clipBehavior: Clip.antiAlias,
-        child: ListTile(
-          onTap: () => LessonGate.open(
-            context,
-            lessonId: lesson.id,
-            kind: LessonKind.endgame,
-            open: () => context.push(Routes.endgameLesson(lesson.id)),
-          ),
-          leading: CircleAvatar(
-            backgroundColor: background,
-            child: Icon(icon, color: foreground),
-          ),
-          title: Text(
-            texts.lessonTitle(lesson.id),
-            style: isNext
-                ? theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: AppWeight.strong,
-                  )
-                : theme.textTheme.titleSmall,
-          ),
-          // O resumo inteiro: é ele que diz o que a aula ensina. Embaixo, o
-          // selo do teste de nível.
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(texts.lessonSummary(lesson.id) ?? ''),
-              // A revisão do conteúdo: reprovada (será refeita) ou ainda
-              // em revisão.
-              if (lesson.failed || lesson.inReview) ...[
-                const SizedBox(height: AppSpacing.xs),
-                _ReviewTag(
-                  key: EndgamesKeys.reviewTag(lesson.id),
-                  failed: lesson.failed,
-                ),
-              ],
-              // Só o "já domina": a recomendada já vem em primeiro.
-              if (state.badge(lesson.id) == EndgameBadge.mastered) ...[
-                const SizedBox(height: AppSpacing.xs),
-                _Badge(key: EndgamesKeys.badge(lesson.id)),
-              ],
-            ],
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.star_rounded,
-                size: AppIconSize.button,
-                color: score > 0 ? AppColors.goldColor : colors.outline,
+        state: tileState,
+        title: texts.lessonTitle(lesson.id),
+        summary: texts.lessonSummary(lesson.id),
+        // A revisão do conteúdo: reprovada (será refeita) ou em revisão.
+        tags: [
+          if (lesson.failed || lesson.inReview)
+            _ReviewTag(
+              key: EndgamesKeys.reviewTag(lesson.id),
+              failed: lesson.failed,
+            ),
+        ],
+        medal: medal == null
+            ? null
+            : GradeMedal(
+                key: EndgamesKeys.medal(lesson.id),
+                grade: medal,
+                size: CourseItemTile.medalSize,
+                sideRatio: GradeMedal.compactSideRatio,
               ),
-              const SizedBox(width: AppSpacing.xs),
-              Text(
-                '$score/$max',
-                key: EndgamesKeys.lessonScore(lesson.id),
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
-              ),
-            ],
-          ),
-        ),
+        onTap: () => _openLesson(context, lesson.id),
       ),
     );
   }
 }
 
-/// O selo da revisão do conteúdo: ✕ "Reprovada" (a aula será refeita) ou
+/// O selo da revisão do conteúdo: ✕ "Reprovada" (o capítulo será refeito) ou
 /// "Em revisão".
 class _ReviewTag extends StatelessWidget {
   const _ReviewTag({required this.failed, super.key});
@@ -449,8 +228,7 @@ class _ReviewTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
     return InfoChip(
       icon: failed ? Icons.close_rounded : Icons.rate_review_outlined,
       label: failed
@@ -460,113 +238,6 @@ class _ReviewTag extends StatelessWidget {
       foreground: failed
           ? colors.onErrorContainer
           : colors.onSecondaryContainer,
-    );
-  }
-}
-
-/// O selo "Já domina" de uma aula, pelo teste.
-class _Badge extends StatelessWidget {
-  const _Badge({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return InfoChip(
-      icon: Icons.verified_rounded,
-      label: context.l10n.placementMastered,
-      background: colors.secondaryContainer,
-      foreground: colors.onSecondaryContainer,
-    );
-  }
-}
-
-/// "Seu próximo final" e os seguintes do roteiro.
-class _NextEndgames extends StatelessWidget {
-  const _NextEndgames({required this.state});
-
-  final EndgamesState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final roadmap = state.roadmap!;
-    final next = roadmap.nextEndgame!;
-    final following = roadmap.followingEndgames();
-    String title(RoadmapStep step) => state.texts.lessonTitle(step.lessonId);
-    return Card(
-      key: EndgamesKeys.nextEndgame,
-      color: colors.primaryContainer,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => LessonGate.open(
-          context,
-          lessonId: next.lessonId,
-          kind: LessonKind.endgame,
-          open: () => context.push(Routes.endgameLesson(next.lessonId)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.endgamesNextTitle,
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.primary,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Row(
-                children: [
-                  Expanded(child: Text(title(next), style: context.cardTitle)),
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: colors.primary,
-                    foregroundColor: colors.onPrimary,
-                    child: const Icon(Icons.play_arrow_rounded),
-                  ),
-                ],
-              ),
-              if (following.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.md),
-                Text(
-                  l10n.endgamesThenTitle,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                for (final (index, step) in following.indexed)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.xs,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${index + 2}.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            title(step),
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
