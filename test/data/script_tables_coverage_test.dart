@@ -12,8 +12,25 @@ import 'package:lucena/domain/models/script_table.dart';
 /// `tools/script_tables.py`, e ela cobre a posição de cada pergunta, a
 /// posição depois de QUALQUER lance legal do aluno nela, e o começo da
 /// prática. Roteiro novo sem tabela: rodar a ferramenta.
+///
+/// Nos cursos `pilares.*` e `torneio.*` a tablebase não cobre o meio-jogo: lá
+/// só pede tabela o exemplo que o app julga (pergunta de juiz `kpk` ou prática
+/// de jogo, como nos capítulos de final do curso). A demonstração e a prática
+/// `tipo: "lance"` (solução do Lichess) são conferidas pelo G1m
+/// (`tools/lessons/check_eval.py`).
 
 const _scripts = AssetScriptTableRepository.scriptsDir;
+
+/// Os prefixos dos cursos de meio-jogo.
+const _middlegameCourses = ['pilares.', 'torneio.'];
+
+bool _isMiddlegameCourse(String scriptPath) {
+  final normalized = scriptPath.replaceAll(r'\\', '/');
+  final index = normalized.indexOf(_scripts);
+  if (index < 0) return false;
+  final relative = normalized.substring(index + _scripts.length);
+  return _middlegameCourses.any(relative.startsWith);
+}
 
 int _pieces(Position position) => position.board.occupied.squares.length;
 
@@ -44,13 +61,15 @@ List<Map<String, dynamic>> _steps(Map<String, dynamic> example) {
 }
 
 /// O mesmo critério de `judged` da ferramenta.
-bool _judged(Map<String, dynamic> example) {
+/// No curso de meio-jogo ([middlegame]), só o que o app julga.
+bool _judged(Map<String, dynamic> example, {bool middlegame = false}) {
   final goal = example['objetivo'] as String? ?? 'ganhar';
   if (goal != 'ganhar' && goal != 'empatar') return false;
   final question = example['pergunta'] as Map<String, dynamic>?;
   final practice = example['pratica'] as Map<String, dynamic>?;
   if (question != null && (question['juiz'] ?? 'kpk') != 'kpk') return false;
   if (practice != null && (practice['tipo'] ?? 'jogo') != 'jogo') return false;
+  if (middlegame && question == null && practice == null) return false;
   final fens = [example['fen'] as String, ..._steps(example).map(_fenOf)];
   return fens.any((fen) => _pieces(_pos(fen)) > 3);
 }
@@ -89,12 +108,13 @@ void main() {
 
   for (final file in files) {
     final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    final middlegame = _isMiddlegameCourse(file.path);
     final examples = [
       for (final stage in (json['etapas'] as List? ?? const []).cast<Map>())
         for (final example
             in (stage['exemplos'] as List? ?? const [])
                 .cast<Map<String, dynamic>>())
-          if (_judged(example)) example,
+          if (_judged(example, middlegame: middlegame)) example,
     ];
     if (examples.isEmpty) continue;
 
@@ -152,6 +172,41 @@ void main() {
       expect(missing, isEmpty, reason: missing.take(20).join('\n'));
     });
   }
+
+  group('cursos de meio-jogo', () {
+    test('só pilares.* e torneio.* são de meio-jogo', () {
+      expect(
+        _isMiddlegameCourse('${_scripts}pilares.c1/knightFork.json'),
+        isTrue,
+      );
+      expect(
+        _isMiddlegameCourse('${_scripts}torneio.t1/knightFork.json'),
+        isTrue,
+      );
+      expect(
+        _isMiddlegameCourse('${_scripts}pawns.opposition/direct.json'),
+        isFalse,
+      );
+      expect(_isMiddlegameCourse('outra/pilares.c1/knightFork.json'), isFalse);
+    });
+
+    test('demonstração e prática "lance" ficam fora; jogo e kpk, não', () {
+      const fen = 'r3k2r/8/8/8/8/8/8/R3K2R w - - 0 1';
+      final demo = {'id': 'demo', 'fen': fen};
+      final lance = {
+        'id': 'lance',
+        'fen': fen,
+        'pratica': {'tipo': 'lance'},
+      };
+      final game = {'id': 'jogo', 'fen': fen, 'pratica': <String, Object>{}};
+      final kpk = {'id': 'kpk', 'fen': fen, 'pergunta': <String, Object>{}};
+      expect(_judged(demo, middlegame: true), isFalse);
+      expect(_judged(lance, middlegame: true), isFalse);
+      expect(_judged(game, middlegame: true), isTrue);
+      expect(_judged(kpk, middlegame: true), isTrue);
+      expect(_judged(demo), isTrue, reason: 'final: a demonstração segue');
+    });
+  });
 
   test('o roteiro de cada capítulo de final está no caminho padrão', () {
     final index = io.Directory('assets/lessons/endgames')
