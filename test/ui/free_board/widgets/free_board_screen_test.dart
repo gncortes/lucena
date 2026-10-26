@@ -96,6 +96,7 @@ void main() {
     EdgeInsets? systemInsets,
     ThemeMode themeMode = ThemeMode.light,
     SpeechCubit? speech,
+    bool scriptedTalk = false,
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = screen;
@@ -154,7 +155,8 @@ void main() {
     addTearDown(cubit.close);
     evaluation = FakeEvaluationRepository();
     talkRepository = FakeTalkRepository();
-    talk = TalkCubit(
+    final createTalk = scriptedTalk ? _FixtureTalkCubit.new : TalkCubit.new;
+    talk = createTalk(
       characters: characters ?? FakeCharacterRepository(),
       evaluation: evaluation,
       talk: talkRepository,
@@ -1456,7 +1458,7 @@ void main() {
     // Texto do frame do P2 e fixture longa: nenhuma fala do app é alterada.
     const shortSpeech = 'Ah, não, mano! Que vacilo! Por que eu fiz isso?';
     const longSpeech = '$shortSpeech $shortSpeech $shortSpeech';
-    testWidgets('R2 P2: centro e reserva nas seis telas independem da fala', (
+    testWidgets('R2 P2: reserva só com fala visível nas seis telas', (
       tester,
     ) async {
       for (final size in sizes) {
@@ -1482,11 +1484,20 @@ void main() {
           if (size == const Size(360, 740)) {
             expect(board.center.dy, greaterThan(size.height / 2 + .5));
           }
-          if (original != null) expect(board, original);
-          original = board;
+          if (text != null) {
+            if (original != null) expect(board, original);
+            original = board;
+          }
           expect(find.text('Coco'), findsOneWidget);
           if (text == null) {
             expect(find.byKey(FreeBoardKeys.speechBubble), findsNothing);
+            final offset = switch (size) {
+              Size(width: 360, height: 740) => 38.0,
+              Size(width: 360, height: 800) => 8.0,
+              Size(width: 384, height: 832) => 4.0,
+              _ => 0.0,
+            };
+            expect(board.center.dy, closeTo(size.height / 2 + offset, .5));
           } else {
             expectSpeechAboveOpponent(tester);
             final summary = tester.widget<TypewriterText>(
@@ -1499,7 +1510,10 @@ void main() {
             originalLines = summary.maxLines;
             await tester.pump(const Duration(seconds: 30));
             await tester.pumpAndSettle();
-            expect(boardRect(tester), board);
+            final expired = boardRect(tester);
+            expectScreenBoardCenter(tester, expired);
+            expect(expired.width, board.width);
+            expect(expired.center.dy, lessThan(board.center.dy));
             expect(
               find.byKey(FreeBoardKeys.speechBubble).hitTestable(),
               findsNothing,
@@ -1533,6 +1547,122 @@ void main() {
         expect(tester.takeException(), isNull);
       }
     });
+    for (final size in [const Size(393, 873), const Size(393, 1100)]) {
+      testWidgets(
+        'R2 P2 $size: fade completo libera centro e nova fala reserva',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            locale: const Locale('pt'),
+            screen: size * 2.625,
+            systemInsets: const EdgeInsets.only(top: 52, bottom: 24),
+            mode: machine.copyWith(level: 1000),
+            characters: _BubbleCharacters(longSpeech),
+            scriptedTalk: true,
+            clock: ClockConfig.same(
+              const TimeControl(initial: Duration(minutes: 3)),
+            ),
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          final fixture = talk as _FixtureTalkCubit;
+          final line = talk.state.line!;
+          final active = boardRect(tester);
+          final fen = cubit.state.position.fen;
+          final moves = List.of(cubit.state.ucis);
+          final history = List.of(cubit.state.moves);
+          void expectUnchangedGame() {
+            expect(boardRect(tester).width, closeTo(size.width, .01));
+            expect(cubit.state.position.fen, fen);
+            expect(cubit.state.ucis, moves);
+            expect(cubit.state.moves, history);
+            expect(tester.takeException(), isNull);
+          }
+
+          expectScreenBoardCenter(tester, active);
+          expectSpeechAboveOpponent(tester);
+          if (size.height == 873) {
+            expect(active.center.dy, closeTo(487.5, .01));
+            expect(
+              tester
+                  .widget<TypewriterText>(
+                    find.descendant(
+                      of: find.byKey(FreeBoardKeys.speechBubble),
+                      matching: find.byType(TypewriterText),
+                    ),
+                  )
+                  .maxLines,
+              1,
+            );
+          } else {
+            expect(active.center.dy, closeTo(size.height / 2, .01));
+          }
+          final balloon = find.byKey(FreeBoardKeys.speechBubble);
+          final opacity = find
+              .ancestor(of: balloon, matching: find.byType(AnimatedOpacity))
+              .first;
+          final fade = find
+              .descendant(of: opacity, matching: find.byType(FadeTransition))
+              .first;
+          final duration = tester.widget<AnimatedOpacity>(opacity).duration;
+          expect(duration, greaterThan(Duration.zero));
+          await tester.pump(const Duration(seconds: 30));
+          expect(tester.widget<AnimatedOpacity>(opacity).opacity, 0);
+          expect(balloon.hitTestable(), findsNothing);
+          expect(tester.widget<FadeTransition>(fade).opacity.value, 1);
+          expect(boardRect(tester), active);
+          await tester.pump(duration ~/ 2);
+          expect(
+            tester.widget<FadeTransition>(fade).opacity.value,
+            allOf(greaterThan(0), lessThan(1)),
+          );
+          expect(boardRect(tester), active);
+          expectScreenBoardCenter(tester, boardRect(tester));
+          expectUnchangedGame();
+          await tester.pumpAndSettle();
+          expect(tester.widget<FadeTransition>(fade).opacity.value, 0);
+          expectScreenBoardCenter(
+            tester,
+            boardRect(tester),
+            requireScreenCenter: true,
+          );
+          expect(boardRect(tester).center.dy, closeTo(size.height / 2, .01));
+          expect(talk.state.line, same(line));
+          expectUnchangedGame();
+
+          fixture.showLine(
+            CharacterLine(
+              id: '${line.id}.next',
+              category: line.category,
+              intensity: line.intensity,
+              emotion: line.emotion,
+              text: shortSpeech,
+            ),
+          );
+          await tester.pumpAndSettle();
+          expectSpeechAboveOpponent(tester);
+          expectScreenBoardCenter(tester, boardRect(tester));
+          expect(boardRect(tester), active);
+          expectUnchangedGame();
+
+          fixture.showLine(null);
+          await tester.pumpAndSettle();
+          expect(balloon, findsNothing);
+          expectScreenBoardCenter(
+            tester,
+            boardRect(tester),
+            requireScreenCenter: true,
+          );
+          expectUnchangedGame();
+          fixture.showLine(line);
+          await tester.pumpAndSettle();
+          expectSpeechAboveOpponent(tester);
+          expect(boardRect(tester), active);
+          expectUnchangedGame();
+        },
+      );
+    }
+
     testWidgets('R2 P2: expirar o balão acima preserva narração em curso', (
       tester,
     ) async {
@@ -1579,11 +1709,14 @@ void main() {
         find.byKey(FreeBoardKeys.speechBubble).hitTestable(),
         findsNothing,
       );
-      expect(boardRect(tester), board);
-      expect(tester.getRect(find.text('Coco')), name);
+      final expired = boardRect(tester);
+      expectScreenBoardCenter(tester, expired);
+      expect(expired.width, board.width);
+      final shift = expired.topLeft - board.topLeft;
+      expect(tester.getRect(find.text('Coco')), name.shift(shift));
       expect(
         tester.getRect(find.byKey(FreeBoardKeys.playerDetail(Side.black))),
-        detail,
+        detail.shift(shift),
       );
       expect(speech.state.speaking, longSpeech);
       expect(voice.stops, stops);
@@ -1666,18 +1799,28 @@ void main() {
               await tester.pumpAndSettle();
               expect(find.text('Coco'), findsOneWidget);
               expect(balloon.hitTestable(), findsNothing);
-              expect(tester.getRect(find.text('Coco')), name);
-              expect(tester.getRect(find.byKey(detailKey)), detail);
-              expect(boardRect(tester), board);
-              expect(tester.getRect(find.byType(CharacterAvatar)), avatar);
+              final expired = boardRect(tester);
+              expectScreenBoardCenter(tester, expired);
+              expect(expired.width, board.width);
+              final shift = expired.topLeft - board.topLeft;
+              expect(tester.getRect(find.text('Coco')), name.shift(shift));
               expect(
-                tester.getRect(find.byKey(FreeBoardKeys.actionsBar)),
-                actions,
+                tester.getRect(find.byKey(detailKey)),
+                detail.shift(shift),
               );
+              expect(
+                tester.getRect(find.byType(CharacterAvatar)),
+                avatar.shift(shift),
+              );
+              final expiredActions = tester.getRect(
+                find.byKey(FreeBoardKeys.actionsBar),
+              );
+              expect(expiredActions.size, actions.size);
+              expect(expired.bottom, lessThanOrEqualTo(expiredActions.top));
               for (final side in Side.values) {
                 expect(
                   tester.getRect(find.byKey(FreeBoardKeys.clock(side))),
-                  clocks[side],
+                  clocks[side]!.shift(shift),
                 );
               }
               expect(tester.takeException(), isNull);
@@ -2056,7 +2199,7 @@ void main() {
       const Size(412, 915),
     ]) {
       testWidgets(
-        'B6b $size: centro real e fala flutuante não desloca a partida',
+        'B6b $size: expiração libera reserva e preserva largura da partida',
         (tester) async {
           await pumpScreen(
             tester,
@@ -2083,12 +2226,14 @@ void main() {
           expect(find.byKey(FreeBoardKeys.speechBubble), findsOneWidget);
           await tester.pump(const Duration(seconds: 20));
           await tester.pumpAndSettle();
-          expect(boardRect(tester), board);
+          expectScreenBoardCenter(tester, boardRect(tester));
+          expect(boardRect(tester).width, board.width);
           opponent.hold();
           await move(tester, 'e2', 'e4');
           await talk.settled();
           await tester.pumpAndSettle();
-          expect(boardRect(tester), board);
+          expectScreenBoardCenter(tester, boardRect(tester));
+          expect(boardRect(tester).width, board.width);
           expect(tester.takeException(), isNull);
         },
       );
@@ -2731,16 +2876,19 @@ void main() {
       );
       expect(bubble.overlaps(tester.getRect(find.byType(MoveList))), isFalse);
       expect(bubble.bottom, lessThanOrEqualTo(board.top));
-      final unchanged = boardRect(tester);
       await tester.pump(const Duration(seconds: 20));
       await tester.pumpAndSettle();
-      expect(boardRect(tester), unchanged);
+      final expired = boardRect(tester);
+      expect(expired.width, board.width);
+      final expiredClock = tester.getRect(
+        find.byKey(FreeBoardKeys.clock(Side.black)),
+      );
       // O avatar permanece legível e alinhado ao relógio.
       final avatar = tester.getRect(find.byType(CharacterAvatar));
       expect(avatar.height, 44);
-      expect(avatar.center.dy, closeTo(clock.center.dy, 1));
+      expect(avatar.center.dy, closeTo(expiredClock.center.dy, 1));
       // A largura total é preservada; o centro só desce o necessário.
-      expectScreenBoardCenter(tester, board);
+      expectScreenBoardCenter(tester, expired);
     });
 
     testWidgets('com as falas desligadas, o balão não aparece', (tester) async {
@@ -3012,8 +3160,25 @@ void expectScreenBoardCenter(
   final context = tester.element(find.byType(FreeBoardScreen));
   final game = context.read<FreeBoardCubit>().state;
   final settings = context.read<SettingsCubit>().state!;
+  final talk = context.read<TalkCubit>().state;
+  final balloon = find.byKey(FreeBoardKeys.speechBubble);
+  // Inspect the rendered fade, not merely the persisted line: IgnorePointer
+  // already ignores taps while the balloon is still fading out.
+  final fades = find.ancestor(
+    of: balloon,
+    matching: find.byType(FadeTransition),
+  );
+  final visible =
+      balloon.evaluate().isNotEmpty &&
+      fades.evaluate().every(
+        (element) => (element.widget as FadeTransition).opacity.value > 0,
+      );
   final reservesSpeech =
-      game.mode.opponent == OpponentKind.maia && settings.characterTalk;
+      game.mode.opponent == OpponentKind.maia &&
+      settings.characterTalk &&
+      talk.enabled &&
+      talk.line != null &&
+      visible;
   expect(board.width, closeTo(board.height, .01));
   expect(board.width, closeTo(width, .5));
   expect(board.center.dx, closeTo(width / 2, .5));
@@ -3031,7 +3196,7 @@ void expectScreenBoardCenter(
   var lines = 3;
   // Select the largest summary fitting above a full-width board at h/2.
   // The footer can scroll; its position never reduces the board or summary.
-  // Short, absent and expired utterances retain the same reservation.
+  // Active short/long utterances share geometry; null/expired reserve nothing.
   for (; reservesSpeech && lines >= 1; lines--) {
     final text = TextPainter(
       text: TextSpan(
@@ -3050,8 +3215,7 @@ void expectScreenBoardCenter(
     topExtent = topReserve + 8;
     if (center - width / 2 >= contentTop + topExtent || lines == 1) break;
   }
-  final balloon = find.byKey(FreeBoardKeys.speechBubble);
-  if (balloon.evaluate().isNotEmpty) {
+  if (reservesSpeech) {
     final summary = find.descendant(
       of: balloon,
       matching: find.byType(TypewriterText),
@@ -3101,6 +3265,23 @@ void expectSpeechAboveOpponent(WidgetTester tester) {
   expect(text.shrink, isFalse);
   expect(text.style?.fontSize, 15);
   expect(text.style?.height, 1.5);
+}
+
+// Real TalkCubit initialization/persistence, with deterministic speech events
+// that do not need a chess move or an engine evaluation.
+class _FixtureTalkCubit extends TalkCubit {
+  _FixtureTalkCubit({
+    required super.characters,
+    required super.evaluation,
+    required super.talk,
+    required super.settings,
+    required super.now,
+    required super.language,
+    super.random,
+  });
+
+  void showLine(CharacterLine? line) =>
+      emit(state.copyWith(line: line, clearLine: line == null));
 }
 
 class _BubbleCharacters extends FakeCharacterRepository {

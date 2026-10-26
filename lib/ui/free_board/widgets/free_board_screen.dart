@@ -106,6 +106,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   late final ChessboardController _board;
   bool _boardTouch = false;
+  bool _speechVisible = true;
+
+  void _onSpeechVisibilityChanged(bool visible) {
+    if (mounted && _speechVisible != visible) {
+      setState(() => _speechVisible = visible);
+    }
+  }
 
   Widget _boardTouchRegion(Widget child) => Listener(
     onPointerDown: (_) => _boardTouch = true,
@@ -483,8 +490,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 );
                 // Centro da tela inteira como referência. Se a fala não cabe,
                 // Gabriel autorizou descer o tabuleiro em vez de mudar o balão
-                // para a faixa do nome. A reserva não depende da fala atual:
-                // aparecer, trocar ou sumir o texto não desloca a partida.
+                // para a faixa do nome. Ao terminar o fade da fala, libera
+                // essa reserva para devolver o tabuleiro ao centro da tela.
                 final clocksAbove =
                     clocks == ClockPosition.top || clocks == ClockPosition.sides
                     ? ClockRow.height
@@ -510,7 +517,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final comments = context.select(
                   (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
                 );
-                if (state.mode.opponent == OpponentKind.maia && comments) {
+                if (state.mode.opponent == OpponentKind.maia &&
+                    comments &&
+                    barTalk.enabled &&
+                    barTalk.line != null &&
+                    _speechVisible) {
                   // A largura do tabuleiro tem prioridade. Reduz o resumo
                   // antes de usar a exceção vertical, nunca o tabuleiro.
                   for (var lines = 3; lines >= 1; lines--) {
@@ -621,6 +632,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                               CharacterBar(
                                 talk: barTalk,
                                 speechMaxLines: speechMaxLines,
+                                onSpeechVisibilityChanged:
+                                    _onSpeechVisibilityChanged,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -760,6 +773,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                               CharacterBar(
                                 talk: barTalk,
                                 speechMaxLines: speechMaxLines,
+                                onSpeechVisibilityChanged:
+                                    _onSpeechVisibilityChanged,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
