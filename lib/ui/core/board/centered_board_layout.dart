@@ -24,6 +24,9 @@ class BoardViewport extends StatelessWidget {
       MediaQuery.sizeOf(context).height -
       MediaQuery.viewPaddingOf(context).vertical;
 
+  static double? centerYOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_BoardViewportData>()?.centerY;
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) => _BoardViewportData(

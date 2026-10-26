@@ -20,7 +20,31 @@ import '../../testing/fakes/fake_endgame_repositories.dart';
 /// (capítulo sem roteiro) cai no início da primeira parte, nunca numa tela
 /// antiga.
 void main() {
+  test('familiarização aberta retoma seus controles', () {
+    expect(launchLocation(boardControlsOpen: true), Routes.boardControls);
+    expect(
+      launchLocation(boardControlsOpen: true, resumeGame: true),
+      Routes.freeBoard,
+    );
+  });
   const fen = FakeEndgameLessonRepository.lucenaFen;
+
+  test('URI fria do dia prevalece sobre partida e conclusão pendentes', () {
+    for (final path in ['/dia', '/daily', '/dia/', '/daily/']) {
+      expect(
+        launchLocation(
+          uri: Uri.https('playlucena.com', path),
+          resumeGame: true,
+          conclusion: 3,
+        ),
+        Routes.daily,
+      );
+    }
+    expect(
+      launchLocation(uri: Uri.https('example.com', '/dia'), conclusion: 3),
+      Routes.conclusion(3),
+    );
+  });
 
   EndgameLesson lesson(String id, List<LessonPart> parts) => EndgameLesson(
     id: id,

@@ -83,8 +83,10 @@ class CatalogCubit extends Cubit<CatalogState> {
 
   /// Lê o catálogo e o filtro. Com [category], lê também as posições de todos
   /// os finais dela.
-  Future<void> load({String? category}) async {
-    final filter = await _training.loadCatalogFilter();
+  Future<void> load({String? category, String? subcategory}) async {
+    final filter = subcategory == null
+        ? await _training.loadCatalogFilter()
+        : GoalFilter.all;
     final categories = await _positions.catalog();
     List<EndgamePosition>? positions;
     if (category != null) {
@@ -92,7 +94,8 @@ class CatalogCubit extends Cubit<CatalogState> {
         for (final c in categories)
           if (c.key == category)
             for (final sub in c.subcategories)
-              ...await _positions.bySubcategory(sub.key),
+              if (subcategory == null || sub.key == subcategory)
+                ...await _positions.bySubcategory(sub.key),
       ];
     }
     final fulfilled = await _progress.fulfilledPositions();

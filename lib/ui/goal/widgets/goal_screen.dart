@@ -35,7 +35,9 @@ class GoalScreen extends StatelessWidget {
         if (state.exit == GoalExit.level) return context.go(Routes.level);
         // O objetivo e a faixa de iniciante já estão no perfil.
         context.read<ProfileCubit>().load();
-        context.go(Routes.home);
+        context.go(
+          state.exit == GoalExit.controls ? Routes.boardControls : Routes.home,
+        );
       },
       builder: (context, state) {
         if (!state.ready) return const Scaffold(key: GoalKeys.screen);

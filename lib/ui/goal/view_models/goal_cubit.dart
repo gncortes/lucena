@@ -22,6 +22,7 @@ enum GoalExit {
 
   /// "Aprender a jogar" pula o nível: a tela inicial (decisão 1a da E1.11).
   home,
+  controls,
 }
 
 class GoalState {
@@ -124,7 +125,15 @@ class GoalCubit extends Cubit<GoalState> {
           inProgress: false,
         ),
       );
-      if (!isClosed) emit(state.copyWith(exit: GoalExit.home));
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            exit: onboarding.boardControlsDone
+                ? GoalExit.home
+                : GoalExit.controls,
+          ),
+        );
+      }
     } finally {
       _finishing = false;
     }

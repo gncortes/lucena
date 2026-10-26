@@ -39,7 +39,17 @@ void main() {
             exercise: exercise,
           ),
         },
-        ongoing: LessonCheckpoint(lessonId: 'rook.philidor', step: 2),
+        ongoing: LessonCheckpoint(
+          lessonId: 'rook.philidor',
+          step: 2,
+          part: 'part',
+          stepId: 'demos/ex2',
+          scriptExample: 1,
+          scriptTrack: 'main',
+          scriptHead: 2,
+          scriptEnd: 3,
+          demoPlaying: true,
+        ),
       ),
     );
     final loaded = await repository.load();
@@ -50,6 +60,11 @@ void main() {
     expect(loaded.openExercise, ('rook.cutOff', exercise));
     expect(loaded.ongoing?.lessonId, 'rook.philidor');
     expect(loaded.ongoing?.step, 2);
+    expect(loaded.ongoing?.scriptExample, 1);
+    expect(loaded.ongoing?.scriptTrack, 'main');
+    expect(loaded.ongoing?.scriptHead, 2);
+    expect(loaded.ongoing?.scriptEnd, 3);
+    expect(loaded.ongoing?.demoPlaying, isTrue);
   });
 
   test('o exercício fechado pelo voltar não reabre o app nele', () async {

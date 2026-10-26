@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/school/lesson_source.dart';
+import 'package:lucena/routing/launch_location.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -11,6 +15,7 @@ import 'package:lucena/domain/models/kpk_outcome.dart';
 import 'package:lucena/data/services/tts_service.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/core/widgets/animated_speech_switcher.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
@@ -22,6 +27,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
+import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
@@ -54,6 +60,26 @@ class _Setup {
   final FakeVoiceRepository voice;
 }
 
+class _ExitSource extends EndgameLessonSource {
+  _ExitSource(this.progress) : super(FakeEndgameLessonRepository(), progress);
+
+  final FakeEndgameProgressRepository progress;
+  final exitGate = Completer<void>();
+  int leaves = 0;
+  int failures = 0;
+
+  @override
+  Future<void> leave() async {
+    leaves++;
+    if (failures > 0) {
+      failures--;
+      throw StateError('falha temporária');
+    }
+    await exitGate.future;
+    await super.leave();
+  }
+}
+
 Future<_Setup> _open(
   WidgetTester tester,
   Size size, {
@@ -63,6 +89,8 @@ Future<_Setup> _open(
   FakeKpkOracle? oracle,
   bool voiceOn = false,
   bool? autoPlay,
+  LessonSource? source,
+  bool navigable = false,
 }) async {
   tester.view
     ..physicalSize = size
@@ -88,26 +116,43 @@ Future<_Setup> _open(
       {...scriptTexts(json), ...?texts},
     ),
     kpk: FakeKpkRepository(oracle ?? FakeKpkOracle()),
-    source: FakeLessonSource(),
+    source: source ?? FakeLessonSource(),
     initialStage: stage,
     delay: (_) async {},
     // O relógio de verdade só onde o teste mede o passo automático (por
     // padrão, a etapa 2).
     timer: autoPlay ?? stage == 1 ? Timer.new : (_, _) => _InertTimer(),
   );
-  addTearDown(cubit.close);
+  addTearDown(() {
+    if (!cubit.isClosed) return cubit.close();
+  });
+  final lesson = RepositoryProvider<CharacterRepository>.value(
+    value: FakeCharacterRepository(),
+    child: BlocProvider.value(
+      value: cubit,
+      child: LessonScriptScreen(title: Future.value('Oposição distante')),
+    ),
+  );
+  final router = navigable
+      ? GoRouter(
+          initialLocation: '/script',
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => const Scaffold(body: Text('origem')),
+              routes: [GoRoute(path: 'script', builder: (_, _) => lesson)],
+            ),
+          ],
+        )
+      : null;
+  if (router != null) addTearDown(router.dispose);
   await tester.pumpWidget(
     TestApp(
       locale: const Locale('pt'),
       settingsCubit: settings,
       speechCubit: speech,
-      child: RepositoryProvider<CharacterRepository>.value(
-        value: FakeCharacterRepository(),
-        child: BlocProvider.value(
-          value: cubit,
-          child: LessonScriptScreen(title: Future.value('Oposição distante')),
-        ),
-      ),
+      router: router,
+      child: lesson,
     ),
   );
   await tester.pump(const Duration(seconds: 1));
@@ -144,6 +189,113 @@ const _long =
     'respondem com o rei, para depois contarmos as casas.';
 
 void main() {
+  testWidgets('saída pode tentar novamente depois de falha transitória', (
+    tester,
+  ) async {
+    final source = _ExitSource(FakeEndgameProgressRepository())..failures = 1;
+    source.exitGate.complete();
+    final setup = await _open(tester, _tall, source: source, navigable: true);
+    await tester.tap(find.byType(BackButton));
+    // Não espera a barra de leitura inteira: o aviso tem duração menor.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.byKey(LessonScriptKeys.screen), findsOneWidget);
+    expect(
+      find.text(
+        tester
+            .element(find.byKey(LessonScriptKeys.screen))
+            .l10n
+            .lessonSaveRetry,
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('origem'), findsOneWidget);
+    expect(source.leaves, 2);
+    expect((await source.progress.load()).ongoing!.open, isFalse);
+    await tester.pumpWidget(const SizedBox());
+    await setup.cubit.close();
+  });
+  for (final androidBack in [false, true]) {
+    testWidgets(
+      'saída ${androidBack ? 'Android' : 'appbar'} aguarda persistência '
+      'e cancela avanço automático sem perder cursor',
+      (tester) async {
+        final source = _ExitSource(FakeEndgameProgressRepository());
+        final setup = await _open(
+          tester,
+          _tall,
+          stage: 1,
+          source: source,
+          navigable: true,
+          texts: {'d1a': _long, 'd1b': _long},
+        );
+        await setup.cubit.onAction(ScriptAction.continuar);
+        await tester.pump();
+        final before = (await source.progress.load()).ongoing!;
+        expect(before.open, isTrue);
+        expect(before.scriptTrack, 'entrada');
+        expect(before.scriptHead, 1);
+        expect(setup.cubit.state.demo!.playing, isTrue);
+        if (androidBack) {
+          await tester.binding.handlePopRoute();
+        } else {
+          await tester.tap(find.byType(BackButton));
+        }
+        await tester.pump();
+        expect(source.leaves, 1);
+        expect(find.byKey(LessonScriptKeys.screen), findsOneWidget);
+        // Enquanto leave aguarda I/O, nem o timer nem outro Voltar avançam.
+        await tester.binding.handlePopRoute();
+        await tester.pump(const Duration(seconds: 10));
+        expect(source.leaves, 1);
+        expect((await source.progress.load()).ongoing, before);
+        source.exitGate.complete();
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump();
+        expect(find.byKey(LessonScriptKeys.screen), findsNothing);
+        expect(find.text('origem'), findsOneWidget);
+        final progress = await source.progress.load();
+        expect(progress.ongoing, before.copyWith(open: false));
+        expect(launchLocation(endgames: progress), Routes.home);
+        await tester.pumpAndSettle();
+        await tester.pumpWidget(const SizedBox());
+      },
+    );
+  }
+
+  testWidgets('background e descarte da tela conservam retomada automática', (
+    tester,
+  ) async {
+    final source = _ExitSource(FakeEndgameProgressRepository());
+    final setup = await _open(
+      tester,
+      _tall,
+      stage: 1,
+      source: source,
+      texts: {'d1a': _long, 'd1b': _long},
+    );
+    await setup.cubit.onAction(ScriptAction.continuar);
+    await tester.pump();
+    final before = (await source.progress.load()).ongoing!;
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump(const Duration(seconds: 10));
+    expect((await source.progress.load()).ongoing, before);
+    await tester.pumpWidget(const SizedBox());
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    // O harness usa BlocProvider.value: o dono externo encerra o Cubit.
+    await setup.cubit.close();
+    expect(source.leaves, 0);
+    final progress = await source.progress.load();
+    expect(progress.ongoing!.open, isTrue);
+    expect(
+      launchLocation(endgames: progress),
+      Routes.endgameLessonScript('pawns.test', part: 'distant', stage: 1),
+    );
+  });
   for (final size in const [Size(360, 740), Size(412, 917)]) {
     testWidgets('área da fala fixa $size: 1 linha, 3 linhas e de volta, o '
         'tabuleiro e a faixa ficam no mesmo lugar', (tester) async {

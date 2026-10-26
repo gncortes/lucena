@@ -10,7 +10,6 @@ import '../../../domain/models/journey.dart';
 import '../../../routing/routes.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
-import '../../core/pace/pace_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
 
 /// O nome de um adversário de desafio ou degrau (`Maia 1000`, `Stockfish`).
@@ -49,16 +48,11 @@ Future<bool> playChallenge(
 }) async {
   final settings = context.read<SettingsCubit>();
   final clock = settings.state?.clock ?? const ClockSettings();
-  final choice = await showPaceSheet(
-    context,
-    current: clock.journeyTime,
-    allowNoClock: true,
-  );
-  if (choice == null || !context.mounted) return false;
-  await settings.setClock(clock.copyWith(journeyTime: choice.time));
   if (!context.mounted) return false;
   onLaunch?.call();
-  final route = Routes.challengeGame(challenge.copyWith(time: choice.time));
+  final route = Routes.challengeGame(
+    challenge.copyWith(time: challenge.time ?? clock.journeyTime),
+  );
   if (replace) {
     context.pushReplacement(route);
   } else {

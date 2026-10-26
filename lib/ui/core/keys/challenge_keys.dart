@@ -3,6 +3,11 @@ import 'package:flutter/widgets.dart';
 import '../../../domain/models/board_settings.dart';
 
 abstract final class ChallengeKeys {
+  static const invalidScreen = Key('challenge.invalid.screen');
+  static const invalidMessage = Key('challenge.invalid.message');
+  static const invalidBack = Key('challenge.invalid.back');
+  static const invalidPaste = Key('challenge.invalid.paste');
+
   /// O botão da barra da Nova partida que abre a folha de mandar o desafio.
   static const linkGameSubtitle = Key('challenge.linkGameSubtitle');
   static const sendButton = Key('challenge.send');

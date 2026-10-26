@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/pace.dart';
+import '../../settings/view_models/settings_cubit.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/journey_keys.dart';
@@ -53,7 +54,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<JourneyCubit>().state;
-    final challenge = state.challenge;
+    final savedTime = context.watch<SettingsCubit>().state?.clock.journeyTime;
+    final challenge = state.challenge?.copyWith(time: savedTime);
     return Scaffold(
       key: JourneyKeys.challengeScreen,
       appBar: LucenaAppBar(
@@ -137,6 +139,25 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                 ),
                                 null => l10n.challengeNoClock,
                               },
+                            ),
+                            TextButton(
+                              key: JourneyKeys.changePace,
+                              onPressed: () async {
+                                final settings = context.read<SettingsCubit>();
+                                final clock = settings.state?.clock;
+                                if (clock == null) return;
+                                final choice = await showPaceSheet(
+                                  context,
+                                  current: clock.journeyTime,
+                                  allowNoClock: true,
+                                );
+                                if (choice != null && context.mounted) {
+                                  await settings.setClock(
+                                    clock.copyWith(journeyTime: choice.time),
+                                  );
+                                }
+                              },
+                              child: Text(l10n.journeyChangePace),
                             ),
                           ],
                         ),

@@ -61,6 +61,10 @@ void main() {
           ),
         ),
         GoRoute(path: Routes.level, builder: (_, _) => route('rota-nivel')),
+        GoRoute(
+          path: Routes.boardControls,
+          builder: (_, _) => route('rota-controles'),
+        ),
         GoRoute(path: Routes.tour, builder: (_, _) => route('rota-tour')),
         GoRoute(
           path: Routes.accountEnter,
@@ -118,6 +122,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('rota-nivel'), findsNothing);
     expect(profile.profile.goal, GoalPreference.learn);
+    expect(find.text('rota-controles'), findsOneWidget);
   });
 
   testWidgets('a seta de voltar leva ao tour', (tester) async {

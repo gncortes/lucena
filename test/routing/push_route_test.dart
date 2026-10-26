@@ -18,6 +18,7 @@ void main() {
 
   test('as três rotas das campanhas', () async {
     expect(await route('/daily'), Routes.daily);
+    expect(await route('/dia'), Routes.daily);
     expect(
       await route('/lesson'),
       Routes.endgameLessonScript('lucena', part: 'ponte', stage: 1),
@@ -27,6 +28,7 @@ void main() {
 
   test('o endereço do app vale como o caminho', () async {
     expect(await route('https://playlucena.com/daily'), Routes.daily);
+    expect(await route('https://playlucena.com/dia'), Routes.daily);
     expect(
       await route('https://playlucena.com/featured/tournament/wch'),
       Routes.featuredTournament('wch'),
@@ -40,6 +42,7 @@ void main() {
   test('aula já terminada, outro site ou caminho: nada', () async {
     expect(await route('/lesson', lesson: null), isNull);
     expect(await route('https://example.com/daily'), isNull);
+    expect(await route('javascript:/daily'), isNull);
     expect(await route('/settings'), isNull);
   });
 }

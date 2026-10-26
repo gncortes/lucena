@@ -6,6 +6,7 @@ import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
 import '../../../testing/fakes/fake_alerts_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_push_repository.dart';
+import '../../../testing/fakes/fake_reminders_repository.dart';
 
 void main() {
   late FakeAlertsRepository alerts;
@@ -27,6 +28,24 @@ void main() {
     alerts = FakeAlertsRepository();
     push = FakePushRepository(allowed: true);
     profile = FakeProfileRepository(const UserProfile(country: 'BR'));
+  });
+
+  test('lembretes locais consultam Android sem depender do Firebase', () async {
+    push.available = false;
+    final reminders = FakeRemindersRepository(allowed: false);
+    final cubit = AlertsCubit(
+      alerts: alerts,
+      push: push,
+      profile: profile,
+      reminders: reminders,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.permitted, isFalse);
+    reminders.allowed = true;
+    await cubit.refresh();
+    expect(cubit.state.permitted, isTrue);
+    expect(push.permissionRequests, 0);
   });
 
   test('permitido: lê as chaves e segue os tópicos', () async {

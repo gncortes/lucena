@@ -32,6 +32,7 @@ abstract final class JourneyKeys {
   /// Na tela do desafio: o tabuleiro e o painel embaixo dele.
   static const challengeBoard = Key('journey.challenge.board');
   static const challengePanel = Key('journey.challenge.panel');
+  static const changePace = Key('journey.challenge.changePace');
 
   static Key rung(String id) => Key('journey.rung.$id');
   static Key rungLocked(String id) => Key('journey.rung.$id.locked');

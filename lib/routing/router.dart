@@ -17,6 +17,10 @@ import '../ui/would_pay/widgets/would_pay_screen.dart';
 import 'package:animations/animations.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../ui/board_controls/view_models/board_controls_cubit.dart';
+import '../ui/board_controls/widgets/board_controls_screen.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -75,6 +79,7 @@ import '../domain/models/challenge_link.dart';
 import '../domain/models/game_setup.dart';
 import '../ui/challenge/view_models/challenge_link_cubit.dart';
 import '../ui/challenge/widgets/challenge_link_screen.dart';
+import '../ui/challenge/widgets/invalid_link_screen.dart';
 import '../ui/catalog/view_models/catalog_cubit.dart';
 import '../ui/catalog/widgets/catalog_screen.dart';
 import '../ui/catalog/widgets/category_screen.dart';
@@ -236,6 +241,19 @@ GoRouter buildRouter({
     redirect: (context, state) =>
         updateRedirect(state.matchedLocation, required: updateRequired),
     routes: [
+      _route(
+        path: Routes.invalidLink,
+        builder: (context, state) => const InvalidLinkScreen(),
+      ),
+      GoRoute(path: '/dia', redirect: (context, state) => Routes.daily),
+      _route(
+        path: Routes.boardControls,
+        builder: (context, state) => BlocProvider(
+          create: (_) =>
+              BoardControlsCubit(context.read<OnboardingRepository>())..load(),
+          child: const BoardControlsScreen(),
+        ),
+      ),
       _route(
         path: Routes.updateRequired,
         builder: (context, state) => const UpdateRequiredScreen(),
@@ -1240,10 +1258,15 @@ GoRouter buildRouter({
                 path: ':category',
                 builder: (context, state) {
                   final category = state.pathParameters['category']!;
+                  final subcategory = state.uri.queryParameters['subcategory'];
                   return BlocProvider(
                     create: (context) =>
-                        _catalogCubit(context)..load(category: category),
-                    child: CategoryScreen(category: category),
+                        _catalogCubit(context)
+                          ..load(category: category, subcategory: subcategory),
+                    child: CategoryScreen(
+                      category: category,
+                      subcategory: subcategory,
+                    ),
                   );
                 },
               ),
@@ -1255,14 +1278,19 @@ GoRouter buildRouter({
             path: 'p/:code',
             redirect: (context, state) async {
               final link = ChallengeLink.tryParse(state.uri);
-              if (link == null) return Routes.home;
+              if (link == null) return Routes.invalidLink;
               // Primeira abertura: antes do desafio, uma tela só (cores,
               // peças e som), sem o tour.
               final onboarding = await context
                   .read<OnboardingRepository>()
                   .load();
               if (!onboarding.done && !onboarding.linkSetupDone) {
-                return Routes.challengeSetup(link);
+                return state.uri
+                    .replace(
+                      path:
+                          '${state.uri.path.replaceFirst(RegExp(r'/$'), '')}/inicio',
+                    )
+                    .toString();
               }
               return null;
             },
@@ -1301,13 +1329,22 @@ GoRouter buildRouter({
           _route(
             path: 'p/:code/inicio',
             redirect: (context, state) =>
-                ChallengeLink.tryParse(state.uri) == null ? Routes.home : null,
+                ChallengeLink.tryParse(state.uri) == null
+                ? Routes.invalidLink
+                : null,
             builder: (context, state) => BlocProvider(
               key: ValueKey(state.uri),
               create: (context) =>
                   LinkSetupCubit(context.read<OnboardingRepository>()),
               child: LinkSetupScreen(
-                next: Routes.challenge(ChallengeLink.tryParse(state.uri)!),
+                next: state.uri
+                    .replace(
+                      path: state.uri.path.replaceFirst(
+                        RegExp(r'/inicio/?$'),
+                        '',
+                      ),
+                    )
+                    .toString(),
                 fen: ChallengeLink.tryParse(state.uri)!.fen,
               ),
             ),

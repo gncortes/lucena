@@ -48,6 +48,10 @@
                 <data android:host="playlucena.com"/>
                 <data android:host="www.playlucena.com"/>
                 <data android:pathPrefix="/p/"/>
+                <data android:path="/dia"/>
+                <data android:path="/dia/"/>
+                <data android:path="/daily"/>
+                <data android:path="/daily/"/>
             </intent-filter>
             <!-- A volta do login do Lichess (OAuth com PKCE, E1.12). -->
             <intent-filter>

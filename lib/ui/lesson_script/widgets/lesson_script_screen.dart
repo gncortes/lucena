@@ -18,6 +18,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
@@ -53,6 +54,28 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
 
   Character? _viktor;
   bool _started = false;
+  bool _leaving = false;
+  bool _canPop = false;
+
+  Future<void> _leave() async {
+    if (_leaving) return;
+    _leaving = true;
+    try {
+      await context.read<LessonScriptCubit>().leave();
+    } catch (_) {
+      _leaving = false;
+      if (mounted) {
+        showLucenaSnackBar(context, context.l10n.lessonSaveRetry);
+      }
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _canPop = true);
+    // O PopScope precisa receber canPop antes da segunda tentativa.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.pop();
+    });
+  }
 
   /// A casa que o aluno tocou na fala, realçada no tabuleiro.
   final _flash = SquareFlash();
@@ -189,10 +212,16 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       ),
     );
     // Outro passo (posição ou fala nova): a casa marcada pela fala sai.
-    return BlocListener<LessonScriptCubit, LessonScriptState>(
-      listenWhen: (a, b) => a.fen != b.fen || !listEquals(a.speech, b.speech),
-      listener: (_, _) => _flash.clear(),
-      child: screen,
+    return PopScope(
+      canPop: _canPop,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) unawaited(_leave());
+      },
+      child: BlocListener<LessonScriptCubit, LessonScriptState>(
+        listenWhen: (a, b) => a.fen != b.fen || !listEquals(a.speech, b.speech),
+        listener: (_, _) => _flash.clear(),
+        child: screen,
+      ),
     );
   }
 

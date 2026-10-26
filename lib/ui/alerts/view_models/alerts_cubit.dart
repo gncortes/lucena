@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/alerts/alerts_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/push/push_repository.dart';
+import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../domain/models/alert_settings.dart';
 import '../../../domain/use_cases/alerts_rules.dart';
 
@@ -55,12 +56,16 @@ class AlertsCubit extends Cubit<AlertsState> {
     required this._alerts,
     required this._push,
     required this._profile,
+    this._reminders,
     this._region,
   }) : super(const AlertsState());
 
   final AlertsRepository _alerts;
   final PushRepository _push;
   final ProfileRepository _profile;
+  final RemindersRepository? _reminders;
+
+  Future<bool> _permitted() => _reminders?.permitted() ?? _push.permitted();
   final String? Function()? _region;
 
   Future<({String? country, String? state})> _place() async {
@@ -76,7 +81,7 @@ class AlertsCubit extends Cubit<AlertsState> {
 
   Future<void> load() async {
     final settings = await _alerts.load();
-    final permitted = await _push.permitted();
+    final permitted = await _permitted();
     final place = await _place();
     if (isClosed) return;
     emit(
@@ -94,7 +99,7 @@ class AlertsCubit extends Cubit<AlertsState> {
 
   /// Relê a permissão (a pessoa voltou dos ajustes do Android).
   Future<void> refresh() async {
-    final permitted = await _push.permitted();
+    final permitted = await _permitted();
     if (isClosed || permitted == state.permitted) return;
     emit(state.copyWith(permitted: permitted));
   }

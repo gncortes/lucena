@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
-import 'domain/models/challenge_link.dart';
 import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
@@ -131,7 +130,7 @@ class _LucenaAppState extends State<LucenaApp> {
   ScreenTracker? _screens;
 
   // Os desafios que chegam por link com o app aberto.
-  StreamSubscription<ChallengeLink>? _links;
+  StreamSubscription<Uri>? _links;
 
   // Os avisos de push tocados com o app em segundo plano.
   StreamSubscription<Uri>? _pushLinks;
@@ -191,8 +190,12 @@ class _LucenaAppState extends State<LucenaApp> {
     // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
     unawaited(widget.dependencies.reviewRepository.markFirstOpen());
     final pushed = await push.initialLink();
-    final opened = await deepLinks.initial();
-    final link = opened ?? (pushed == null ? null : deepLinks.parse(pushed));
+    final opened = await deepLinks.initialUri();
+    final link = opened != null
+        ? (Routes.appLink(opened) == Routes.invalidLink
+              ? null
+              : deepLinks.parse(opened))
+        : (pushed == null ? null : deepLinks.parse(pushed));
     unawaited(
       _analytics.launched(link: link, pushed: opened == null && pushed != null),
     );
@@ -203,7 +206,7 @@ class _LucenaAppState extends State<LucenaApp> {
     final profile = await widget.dependencies.profileRepository.load();
     unawaited(
       widget.dependencies.adsRepository.start(
-        fromLink: link != null,
+        fromLink: opened != null || link != null,
         goalAnswered: onboarding.done || profile.goal != null,
       ),
     );
@@ -216,7 +219,12 @@ class _LucenaAppState extends State<LucenaApp> {
           school: school,
           endgames: endgames,
           stars: stars,
+          boardControlsOpen: onboarding.boardControlsOpen,
           link: link,
+          // Erro frio é empilhado sobre a retomada, para Voltar recuperá-la.
+          uri: opened != null && Routes.appLink(opened) != Routes.invalidLink
+              ? opened
+              : null,
           showSchool: VisibleLessons.school,
           visibleEndgameLessons: VisibleLessons.endgameLessonIds,
         ),
@@ -228,9 +236,25 @@ class _LucenaAppState extends State<LucenaApp> {
         widget.dependencies.analyticsRepository,
       );
     });
-    _links = deepLinks.opened.listen((link) {
-      unawaited(_analytics.opened(link));
-      _router?.push(Routes.challenge(link));
+    if (opened != null && Routes.appLink(opened) == Routes.invalidLink) {
+      // Espera o roteador montar a retomada antes de empilhar o erro.
+      final router = _router!;
+      void openInvalid() {
+        if (!mounted || router.routerDelegate.currentConfiguration.isEmpty) {
+          return;
+        }
+        router.routerDelegate.removeListener(openInvalid);
+        router.push(Routes.invalidLink);
+      }
+
+      router.routerDelegate.addListener(openInvalid);
+      openInvalid();
+    }
+    _links = deepLinks.openedUris.listen((uri) {
+      final link = deepLinks.parse(uri);
+      if (link != null) unawaited(_analytics.opened(link));
+      final route = Routes.appLink(uri);
+      if (route != null) _router?.push(route);
     });
     // Um aviso pode trazer o link de um desafio ou o de uma tela (final do
     // dia, aula, final ou torneio).
@@ -247,7 +271,7 @@ class _LucenaAppState extends State<LucenaApp> {
     if (pushed != null) {
       unawaited(_analytics.alertOpened(pushed.path, channel: 'push'));
     }
-    if (pushed != null && deepLinks.parse(pushed) == null) {
+    if (opened == null && pushed != null && deepLinks.parse(pushed) == null) {
       await _openPushed(pushed);
     }
   }
@@ -529,6 +553,7 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) => AlertsCubit(
               alerts: dependencies.alertsRepository,
               push: dependencies.pushRepository,
+              reminders: dependencies.remindersRepository,
               profile: dependencies.profileRepository,
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,

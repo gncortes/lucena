@@ -22,11 +22,17 @@ class Onboarding {
     this.inProgress = false,
     this.linkSetupDone = false,
     this.stage = OnboardingStage.tour,
+    this.boardControlsDone = false,
+    this.boardControlsOpen = false,
+    this.boardControlsFen,
   });
 
   /// A tela da primeira abertura em que a pessoa está: o app fechado volta
   /// nela.
   final OnboardingStage stage;
+  final bool boardControlsDone;
+  final bool boardControlsOpen;
+  final String? boardControlsFen;
 
   /// O tour já foi visto ou pulado.
   final bool done;
@@ -58,8 +64,14 @@ class Onboarding {
     bool? inProgress,
     bool? linkSetupDone,
     OnboardingStage? stage,
+    bool? boardControlsDone,
+    bool? boardControlsOpen,
+    String? boardControlsFen,
   }) => Onboarding(
     stage: stage ?? this.stage,
+    boardControlsDone: boardControlsDone ?? this.boardControlsDone,
+    boardControlsOpen: boardControlsOpen ?? this.boardControlsOpen,
+    boardControlsFen: boardControlsFen ?? this.boardControlsFen,
     selectedRating: selectedRating == null
         ? this.selectedRating
         : selectedRating(),
@@ -81,7 +93,10 @@ class Onboarding {
       other.byHand == byHand &&
       other.inProgress == inProgress &&
       other.linkSetupDone == linkSetupDone &&
-      other.stage == stage;
+      other.stage == stage &&
+      other.boardControlsDone == boardControlsDone &&
+      other.boardControlsOpen == boardControlsOpen &&
+      other.boardControlsFen == boardControlsFen;
 
   @override
   int get hashCode => Object.hash(
@@ -93,5 +108,8 @@ class Onboarding {
     inProgress,
     linkSetupDone,
     stage,
+    boardControlsDone,
+    boardControlsOpen,
+    boardControlsFen,
   );
 }

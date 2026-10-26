@@ -22,9 +22,10 @@ import '../../core/widgets/skeleton.dart';
 /// abertas em grade: o jogador toca na posição e vai direto para a partida.
 /// Quem não quer ver tudo fecha a seção pelo cabeçalho.
 class CategoryScreen extends StatelessWidget {
-  const CategoryScreen({required this.category, super.key});
+  const CategoryScreen({required this.category, this.subcategory, super.key});
 
   final String category;
+  final String? subcategory;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +35,13 @@ class CategoryScreen extends StatelessWidget {
     );
     return Scaffold(
       key: CatalogKeys.categoryScreen,
-      appBar: LucenaAppBar(title: Text(categoryName(l10n, category))),
+      appBar: LucenaAppBar(
+        title: Text(
+          subcategory == null
+              ? categoryName(l10n, category)
+              : endgameName(l10n, subcategory!),
+        ),
+      ),
       body: Column(
         children: [
           const GoalFilterBar(),

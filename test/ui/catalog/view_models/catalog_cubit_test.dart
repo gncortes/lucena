@@ -31,6 +31,20 @@ void main() {
   });
 
   test(
+    'subcategoria do cartão abre só o conjunto prometido sem filtro antigo',
+    () async {
+      training.filter = GoalFilter.draw;
+      final cubit = build();
+      addTearDown(cubit.close);
+      await cubit.load(category: 'basic', subcategory: 'queen');
+      expect(cubit.state.positions?.map((p) => p.id), ['basic.queen.0001']);
+      expect(cubit.state.filter, GoalFilter.all);
+      expect(training.filter, GoalFilter.draw);
+      expect(cubit.state.sections?.single.subcategory, 'queen');
+    },
+  );
+
+  test(
     'com a categoria, carrega as posições de todos os finais dela',
     () async {
       final cubit = build();

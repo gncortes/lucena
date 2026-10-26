@@ -13,6 +13,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
 import 'package:chessground/chessground.dart';
@@ -35,6 +36,11 @@ import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 
 import '../testing/fakes/fake_deep_link_service.dart';
+import '../testing/fakes/fake_push_repository.dart';
+
+import 'package:lucena/ui/core/keys/goal_keys.dart';
+import 'package:lucena/ui/core/keys/board_controls_keys.dart';
+
 import '../testing/fakes/fake_onboarding_repository.dart';
 
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
@@ -61,6 +67,7 @@ void main() {
     FakeStarChallengeRepository? stars,
     FakeDeepLinkService? links,
     OnboardingRepository? onboarding,
+    FakePushRepository? push,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -71,6 +78,7 @@ void main() {
           ongoingGameRepository: games,
           starChallengeRepository: stars,
           onboardingRepository: onboarding,
+          pushRepository: push,
           deepLinkRepository: links == null
               ? null
               : ServiceDeepLinkRepository(links),
@@ -635,7 +643,55 @@ void main() {
       expect(find.byKey(TourKeys.screen), findsNothing);
     });
 
-    testWidgets('um link quebrado cai na tela inicial', (tester) async {
+    testWidgets('link frio tem prioridade sobre partida e push pendentes', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(
+            startFen:
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: ['e2e4', 'e7e5'],
+          ),
+        ),
+        push: FakePushRepository(
+          initial: Uri.parse('https://playlucena.com/daily'),
+        ),
+        links: FakeDeepLinkService(initial: challenge(locked: true).uri),
+      );
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+    });
+
+    testWidgets('link inválido frio permite voltar à partida salva', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(
+            startFen:
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: ['e2e4', 'e7e5'],
+          ),
+        ),
+        links: FakeDeepLinkService(
+          initial: Uri.parse('https://playlucena.com/p/bad?fen=bad'),
+        ),
+      );
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
+    });
+
+    testWidgets('um link quebrado mostra erro sobre a tela inicial', (
+      tester,
+    ) async {
       phone(tester);
       await pumpApp(
         tester,
@@ -643,9 +699,33 @@ void main() {
           initial: Uri.parse('https://playlucena.com/p/abcde?fen=lixo'),
         ),
       );
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
     });
   });
+
+  testWidgets(
+    'primeira abertura pergunta intenção e oferece controles sem tour',
+    (tester) async {
+      final onboarding = FakeOnboardingRepository(
+        const Onboarding(stage: OnboardingStage.goal),
+      );
+      await pumpApp(tester, onboarding: onboarding);
+      expect(find.byKey(GoalKeys.screen), findsOneWidget);
+      expect(find.byKey(TourKeys.screen), findsNothing);
+      await tester.tap(find.byKey(GoalKeys.option(GoalPreference.learn)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(GoalKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BoardControlsKeys.screen), findsOneWidget);
+      await tester.tap(find.byKey(BoardControlsKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(onboarding.saved.boardControlsDone, isTrue);
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    },
+  );
 }
 
 /// O nome do botão da Jornada na tela inicial, no idioma da tela.

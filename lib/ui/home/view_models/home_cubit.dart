@@ -43,6 +43,7 @@ class HomeState {
   const HomeState({
     this.ready = false,
     this.tourPending = false,
+    this.boardControlsDone = false,
     this.stage = OnboardingStage.tour,
     this.current,
     this.next,
@@ -69,6 +70,7 @@ class HomeState {
 
   /// A primeira abertura: o tour ainda não foi visto.
   final bool tourPending;
+  final bool boardControlsDone;
 
   /// Com [tourPending], a tela da primeira abertura em que a pessoa parou.
   final OnboardingStage stage;
@@ -200,6 +202,7 @@ class HomeState {
   }) => HomeState(
     ready: ready,
     tourPending: tourPending,
+    boardControlsDone: boardControlsDone,
     stage: stage,
     current: current,
     next: next,
@@ -441,6 +444,7 @@ class HomeCubit extends Cubit<HomeState> {
       HomeState(
         ready: true,
         tourPending: !onboarding.done,
+        boardControlsDone: onboarding.boardControlsDone,
         stage: onboarding.stage,
         current: current,
         next: next,

@@ -100,7 +100,7 @@ void main() {
     expect(today.title, 'Continue a lição');
     expect(
       today.body,
-      'Falta pouco para fechar "A posição de Lucena": você parou no capítulo '
+      'Retome "A posição de Lucena": você parou no capítulo '
       '3 de 6.',
     );
     expect(today.action, 'Continuar');

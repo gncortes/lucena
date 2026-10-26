@@ -16,9 +16,9 @@ Future<String?> pushRoute(
   Uri uri, {
   required Future<PausedLesson?> Function() pausedLesson,
 }) async {
-  if (uri.hasAuthority && !AppLinks.isOwn(uri)) return null;
+  if ((uri.hasScheme || uri.hasAuthority) && !AppLinks.isOwn(uri)) return null;
   return switch (uri.pathSegments) {
-    ['daily'] => Routes.daily,
+    ['daily'] || ['dia'] => Routes.daily,
     ['lesson'] => switch (await pausedLesson()) {
       final paused? => Routes.endgameLessonScript(
         paused.lessonId,

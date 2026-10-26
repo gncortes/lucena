@@ -602,6 +602,10 @@ class LessonCheckpoint {
     this.mistakes = 0,
     this.demoMove = 0,
     this.demoPlaying = false,
+    this.scriptExample,
+    this.scriptTrack,
+    this.scriptHead = 0,
+    this.scriptEnd = 0,
   });
 
   final String lessonId;
@@ -633,6 +637,12 @@ class LessonCheckpoint {
   final int demoMove;
 
   final bool demoPlaying;
+
+  /// Cursor do roteiro; ausente nos checkpoints anteriores ao UX09.
+  final int? scriptExample;
+  final String? scriptTrack;
+  final int scriptHead;
+  final int scriptEnd;
 
   /// O índice do passo.
   final int step;
@@ -669,6 +679,10 @@ class LessonCheckpoint {
     mistakes: mistakes,
     demoMove: demoMove,
     demoPlaying: demoPlaying,
+    scriptExample: scriptExample,
+    scriptTrack: scriptTrack,
+    scriptHead: scriptHead,
+    scriptEnd: scriptEnd,
   );
 
   Map<String, dynamic> toJson() => {
@@ -687,6 +701,10 @@ class LessonCheckpoint {
     if (mistakes > 0) 'mistakes': mistakes,
     if (demoMove > 0) 'demoMove': demoMove,
     'demoPlaying': demoPlaying,
+    'scriptExample': ?scriptExample,
+    'scriptTrack': ?scriptTrack,
+    if (scriptExample != null) 'scriptHead': scriptHead,
+    if (scriptExample != null) 'scriptEnd': scriptEnd,
   };
 
   static LessonCheckpoint? fromJson(Object? json) {
@@ -716,6 +734,10 @@ class LessonCheckpoint {
       mistakes: json['mistakes'] as int? ?? 0,
       demoMove: json['demoMove'] as int? ?? 0,
       demoPlaying: json['demoPlaying'] as bool? ?? false,
+      scriptExample: json['scriptExample'] as int?,
+      scriptTrack: json['scriptTrack'] as String?,
+      scriptHead: json['scriptHead'] as int? ?? 0,
+      scriptEnd: json['scriptEnd'] as int? ?? 0,
     );
   }
 
@@ -734,7 +756,12 @@ class LessonCheckpoint {
       other.stepStartedAt?.toUtc() == stepStartedAt?.toUtc() &&
       other.hintsShown == hintsShown &&
       other.mistakes == mistakes &&
-      other.demoMove == demoMove;
+      other.demoMove == demoMove &&
+      other.scriptExample == scriptExample &&
+      other.scriptTrack == scriptTrack &&
+      other.scriptHead == scriptHead &&
+      other.scriptEnd == scriptEnd &&
+      other.demoPlaying == demoPlaying;
 
   @override
   int get hashCode => Object.hash(
@@ -751,6 +778,11 @@ class LessonCheckpoint {
     hintsShown,
     mistakes,
     demoMove,
+    scriptExample,
+    scriptTrack,
+    scriptHead,
+    scriptEnd,
+    demoPlaying,
   );
 
   static bool _sameList(List<String> a, List<String> b) {

@@ -15,6 +15,8 @@ analyzer:
     - android/**
     # Documentação e arquivos de tarefas (symlink do lucena-utils), sem código do app.
     - docs/**
+    # Ferramentas externas são fontes do lucena-utils, não código do app.
+    - tools/**
 
 linter:
   # The lint rules applied to this project can be customized in the

@@ -1,4 +1,5 @@
 import '../domain/models/challenge_link.dart';
+import '../domain/models/app_links.dart';
 import '../domain/models/featured.dart';
 import '../domain/models/clock.dart';
 import '../domain/models/daily_final.dart';
@@ -7,7 +8,33 @@ import '../domain/models/journey.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
+  static const boardControls = '/board-controls';
   static const home = '/';
+  static const invalidLink = '/invalid-link';
+
+  /// Só links públicos próprios; preserva caminho e query do desafio.
+  static String? appLink(Uri uri) {
+    if (!AppLinks.isOwn(uri)) return null;
+    if (uri.path == '/dia' ||
+        uri.path == '/dia/' ||
+        uri.path == '/daily' ||
+        uri.path == '/daily/') {
+      return daily;
+    }
+    try {
+      if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
+          ChallengeLink.tryParse(uri) != null) {
+        return Uri(
+          path: uri.path,
+          query: uri.hasQuery ? uri.query : null,
+        ).toString();
+      }
+    } on FormatException {
+      return invalidLink;
+    }
+    return invalidLink;
+  }
+
   static const freeBoard = '/board';
 
   /// "Atualize o Lucena": por cima de tudo, sem voltar (E1.32).
@@ -432,7 +459,10 @@ abstract final class Routes {
       Uri(path: placement, queryParameters: {'from': from}).toString();
 
   static const catalog = '/catalog';
-  static String catalogCategory(String category) => '/catalog/$category';
+  static String catalogCategory(String category, {String? subcategory}) => Uri(
+    path: '/catalog/$category',
+    queryParameters: subcategory == null ? null : {'subcategory': subcategory},
+  ).toString();
 
   /// Configuração da partida numa posição, com o objetivo e, se ela vier do
   /// catálogo, o id dela (para o histórico).

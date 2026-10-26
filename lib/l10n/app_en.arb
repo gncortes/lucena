@@ -6005,7 +6005,7 @@
       }
     }
   },
-  "challengeLockedNote": "Whoever sent the link locked the challenge: everyone plays the same and the time is comparable.",
+  "challengeLockedNote": "The sender locked this challenge: everyone uses the same position and settings.",
   "@challengeLockedNote": {
     "description": "Note on the locked challenge screen, explaining why the clock and the mode cannot be changed."
   },
@@ -7235,7 +7235,7 @@
   "@goalLearnTitle": {
     "description": "Goal option: learn chess from scratch."
   },
-  "goalLearnText": "From scratch: how the pieces move, check and mate, with Viktor.",
+  "goalLearnText": "First, try moving the pieces on the board. Then practice with the opponents.",
   "@goalLearnText": {
     "description": "Text of the learn-to-play goal option. Viktor is the teacher's name."
   },
@@ -8056,7 +8056,7 @@
   "@reminderLessonTitle": {
     "description": "Local notification title."
   },
-  "reminderLessonText": "Almost done with \"{lesson}\": you stopped at chapter {chapter} of {total}.",
+  "reminderLessonText": "Resume \"{lesson}\": you stopped at chapter {chapter} of {total}.",
   "@reminderLessonText": {
     "description": "Local notification text.",
     "placeholders": {
@@ -8930,5 +8930,49 @@
   "profilePrivacyNoAdsValue": "Your data and privacy policy",
   "@profilePrivacyNoAdsValue": {
     "description": "Profile row subtitle for the privacy screen in a build without ads."
+  },
+  "alertsBlockedSummary": "Blocked in Android settings",
+  "@alertsBlockedSummary": {
+    "description": "UX audit: alertsBlockedSummary"
+  },
+  "journeyChangePace": "Change time control",
+  "@journeyChangePace": {
+    "description": "UX audit: journeyChangePace"
+  },
+  "boardControlsHint": "Tap a piece to see the available destinations. Then tap a destination or drag the piece to it.",
+  "@boardControlsHint": {
+    "description": "UX audit: boardControlsHint"
+  },
+  "boardControlsDone": "Move made. You can keep trying the controls or continue to the home screen.",
+  "@boardControlsDone": {
+    "description": "UX audit: boardControlsDone"
+  },
+  "boardControlsSkip": "I know how to move, continue",
+  "@boardControlsSkip": {
+    "description": "UX audit: boardControlsSkip"
+  },
+  "boardControlsFirstStep": "Get to know the board controls",
+  "@boardControlsFirstStep": {
+    "description": "UX audit: boardControlsFirstStep"
+  },
+  "challengeInvalidLinkTitle": "Unable to open this challenge",
+  "@challengeInvalidLinkTitle": {
+    "description": "UX audit: challengeInvalidLinkTitle"
+  },
+  "challengeInvalidLinkMessage": "This Lucena link is incomplete or invalid. Ask the sender for another link or paste a new one. Your previous activity is still available.",
+  "@challengeInvalidLinkMessage": {
+    "description": "UX audit: challengeInvalidLinkMessage"
+  },
+  "challengeInvalidLinkBack": "Back",
+  "@challengeInvalidLinkBack": {
+    "description": "UX audit: challengeInvalidLinkBack"
+  },
+  "challengeInvalidLinkPaste": "Paste another link",
+  "@challengeInvalidLinkPaste": {
+    "description": "UX audit: challengeInvalidLinkPaste"
+  },
+  "lessonSaveRetry": "Unable to save your progress. Try going back again.",
+  "@lessonSaveRetry": {
+    "description": "UX audit: lessonSaveRetry"
   }
 }

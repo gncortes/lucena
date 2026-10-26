@@ -11,6 +11,9 @@ import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/core/theme/app_motion.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
+
+import '../../../../testing/goldens/golden_harness.dart';
+
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/board_settings.dart';
@@ -1773,6 +1776,62 @@ void main() {
       expect(progress.attempts.single.endReason, GameEndReason.resign);
     });
 
+    testWidgets(
+      'desafio de link conserva o motivo de tempo depois do selo inicial',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          mode: vsMachine.copyWith(fromLink: true),
+          clock: ClockConfig.same(
+            const TimeControl(initial: Duration(seconds: 5)),
+          ),
+        );
+        now.advance(const Duration(seconds: 5));
+        cubit.tick();
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pumpAndSettle();
+        expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+        expect(find.text('Time out'), findsOneWidget);
+        expect(find.text('You lost'), findsOneWidget);
+      },
+    );
+
+    for (final size in const [
+      Size(360, 740),
+      Size(360, 800),
+      Size(384, 832),
+      Size(393, 873),
+      Size(412, 915),
+      Size(414, 896),
+    ]) {
+      testWidgets('resultado de link centrado e ações em uma linha em $size', (
+        tester,
+      ) async {
+        await Goldens.loadFonts();
+        await pumpScreen(
+          tester,
+          locale: const Locale('pt'),
+          screen: Size(size.width * 2.625, size.height * 2.625),
+          systemBars: true,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+        );
+        await resign(tester);
+        await tester.pumpAndSettle();
+        final board = tester.getRect(find.byKey(FreeBoardKeys.board));
+        expect(board.center.dy, closeTo((size.height + 24 - 32) / 2, .5));
+        expect(
+          tester.getSize(find.text('Compartilhar')).height,
+          lessThanOrEqualTo(24),
+        );
+        expect(
+          tester.getSize(find.text('Jogar de novo')).height,
+          lessThanOrEqualTo(24),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
     testWidgets('desafio de link sem rating ainda: "No rating" no lugar do '
         'número', (tester) async {
       await pumpScreen(
@@ -1805,6 +1864,9 @@ void main() {
       expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
       expect(find.byKey(ChallengeKeys.endMeetApp), findsOneWidget);
       expect(cubit.state.challengeResult?.outcome, AttemptOutcome.loss);
+      expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      expect(find.text('You lost'), findsOneWidget);
+      expect(find.text('Resignation'), findsOneWidget);
 
       await tester.tap(find.byKey(ChallengeKeys.endPlayAgain));
       await tester.pumpAndSettle();

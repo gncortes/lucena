@@ -73,7 +73,7 @@ void main() {
     cubit.select(GoalPreference.learn);
     await cubit.finish();
 
-    expect(cubit.state.exit, GoalExit.home);
+    expect(cubit.state.exit, GoalExit.controls);
     expect(profile.profile.goal, GoalPreference.learn);
     expect(profile.profile.level, RatingLevel.beginner);
     expect(onboarding.saved.done, isTrue);
