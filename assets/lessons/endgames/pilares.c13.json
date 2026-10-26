@@ -9,6 +9,11 @@
    "id": "goodBadBishop",
    "steps": [],
    "roteiro": "assets/lessons/roteiros/pilares.c13/goodBadBishop.json"
+  },
+  {
+   "id": "bishopPair",
+   "steps": [],
+   "roteiro": "assets/lessons/roteiros/pilares.c13/bishopPair.json"
   }
  ],
  "exercises": [
@@ -190,6 +195,185 @@
      ]
     }
    ]
+  },
+  {
+   "id": "bp.BJugQ",
+   "capitulo": "bishopPair",
+   "stars": 1,
+   "fen": "r2qrk2/ppp1n2p/5p2/3Bn3/2P1P3/P6P/1P1B2P1/R4RK1 w - - 0 19",
+   "goal": "win",
+   "origin": "lichess:BJugQ",
+   "line": [
+    {
+     "teach": "d2h6",
+     "accept": [
+      "d2h6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.Ovt4y",
+   "capitulo": "bishopPair",
+   "stars": 1,
+   "fen": "1q5k/4B2p/r1b1Bpp1/8/P3P3/5P2/3R2PP/6K1 w - - 0 31",
+   "goal": "win",
+   "origin": "lichess:Ovt4y",
+   "line": [
+    {
+     "teach": "e7f6",
+     "accept": [
+      "e7f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.VMK6x",
+   "capitulo": "bishopPair",
+   "stars": 1,
+   "fen": "2q3k1/pp4bp/6p1/Q7/P1PpPp2/3R1PnP/3RBKP1/1r6 b - - 4 34",
+   "goal": "win",
+   "origin": "lichess:VMK6x",
+   "line": [
+    {
+     "teach": "g3h1",
+     "accept": [
+      "g3h1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.wxf2f",
+   "capitulo": "bishopPair",
+   "stars": 1,
+   "fen": "1rkb4/7R/3p2r1/1NpPp3/P7/8/1PK3P1/4N3 w - - 3 40",
+   "goal": "win",
+   "origin": "lichess:wxf2f",
+   "line": [
+    {
+     "teach": "b5a7",
+     "accept": [
+      "b5a7"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.Tueez",
+   "capitulo": "bishopPair",
+   "stars": 2,
+   "fen": "rnb1k2r/pp3pp1/2p5/3p2Pp/3P2qP/2N1bN1B/PPP1P3/R3QK1R b kq - 8 19",
+   "goal": "win",
+   "origin": "lichess:Tueez",
+   "line": [
+    {
+     "teach": "g4h3",
+     "accept": [
+      "g4h3"
+     ],
+     "reply": "h1h3"
+    },
+    {
+     "teach": "c8h3",
+     "accept": [
+      "c8h3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.7GQjt",
+   "capitulo": "bishopPair",
+   "stars": 2,
+   "fen": "r3r1bk/pp4p1/3b1p1p/3q4/6PP/2BBQ3/1PP2P2/2K1R2R w - - 7 32",
+   "goal": "win",
+   "origin": "lichess:7GQjt",
+   "line": [
+    {
+     "teach": "e3h6",
+     "accept": [
+      "e3h6"
+     ],
+     "reply": "g7h6"
+    },
+    {
+     "teach": "c3f6",
+     "accept": [
+      "c3f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.z3FEP",
+   "capitulo": "bishopPair",
+   "stars": 2,
+   "fen": "3r4/5p1p/ppk1pnp1/8/PBP1P3/5P1P/2R1KP2/8 w - - 1 32",
+   "goal": "win",
+   "origin": "lichess:z3FEP",
+   "line": [
+    {
+     "teach": "b4e7",
+     "accept": [
+      "b4e7"
+     ],
+     "reply": "d8e8"
+    },
+    {
+     "teach": "e7f6",
+     "accept": [
+      "e7f6"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.Y34di",
+   "capitulo": "bishopPair",
+   "stars": 3,
+   "fen": "6k1/pb4pp/1p2p3/2p1p3/2P3Pb/2NP3P/PP2QqBK/R7 b - - 1 21",
+   "goal": "win",
+   "origin": "lichess:Y34di",
+   "line": [
+    {
+     "teach": "h4g3",
+     "accept": [
+      "h4g3"
+     ],
+     "reply": "h2h1"
+    },
+    {
+     "teach": "b7g2",
+     "accept": [
+      "b7g2"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bp.a43Yq",
+   "capitulo": "bishopPair",
+   "stars": 3,
+   "fen": "2rb2k1/p4pp1/4pn1p/2p5/8/1P3BB1/P4PPP/2R3K1 w - - 0 21",
+   "goal": "win",
+   "origin": "lichess:a43Yq",
+   "line": [
+    {
+     "teach": "f3b7",
+     "accept": [
+      "f3b7"
+     ],
+     "reply": "c8c7"
+    },
+    {
+     "teach": "g3c7",
+     "accept": [
+      "g3c7"
+     ]
+    }
+   ]
   }
  ],
  "passScore": 10,
@@ -314,6 +498,118 @@
    "author": "lichess.org",
    "title": "Lichess game (puzzle yc1vE)",
    "url": "https://lichess.org/AW6Z3aIE/black#78"
+  },
+  {
+   "id": "lichessGameBJugQ",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle BJugQ)",
+   "url": "https://lichess.org/0S9p7H0P/black#36"
+  },
+  {
+   "id": "lichessGameOvt4y",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Ovt4y)",
+   "url": "https://lichess.org/a2sPhnzy/black#60"
+  },
+  {
+   "id": "lichessGameVMK6x",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle VMK6x)",
+   "url": "https://lichess.org/azw0Z4gr#67"
+  },
+  {
+   "id": "lichessGamewxf2f",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle wxf2f)",
+   "url": "https://lichess.org/6XFtxBdQ/black#78"
+  },
+  {
+   "id": "lichessGameTueez",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Tueez)",
+   "url": "https://lichess.org/XO1A3XCh#37"
+  },
+  {
+   "id": "lichessGame7GQjt",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 7GQjt)",
+   "url": "https://lichess.org/wNhihBwi/black#62"
+  },
+  {
+   "id": "lichessGamez3FEP",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle z3FEP)",
+   "url": "https://lichess.org/imKGXlx8/black#62"
+  },
+  {
+   "id": "lichessGameY34di",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle Y34di)",
+   "url": "https://lichess.org/3emyL0sc#41"
+  },
+  {
+   "id": "lichessGamea43Yq",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle a43Yq)",
+   "url": "https://lichess.org/ygJYa1uK/black#40"
+  },
+  {
+   "id": "lichessGameP2eqA",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle P2eqA)",
+   "url": "https://lichess.org/YbII5Ilu/black#36"
+  },
+  {
+   "id": "lichessGameSUGCV",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle SUGCV)",
+   "url": "https://lichess.org/fGHjTUQ4#41"
+  },
+  {
+   "id": "lichessGame5S982",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 5S982)",
+   "url": "https://lichess.org/Ct34qFQi#81"
+  },
+  {
+   "id": "lichessGame5bqUf",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 5bqUf)",
+   "url": "https://lichess.org/hRdarC5Q/black#60"
+  },
+  {
+   "id": "lichessGameW2wBf",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle W2wBf)",
+   "url": "https://lichess.org/BQhuylJX/black#34"
+  },
+  {
+   "id": "lichessGamea1gxH",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle a1gxH)",
+   "url": "https://lichess.org/PGZWm7NE/black#50"
+  },
+  {
+   "id": "lichessGame5Q1Fa",
+   "kind": "game",
+   "author": "lichess.org",
+   "title": "Lichess game (puzzle 5Q1Fa)",
+   "url": "https://lichess.org/UTsCtN8h#117"
   },
   {
    "id": "wikiFrancesa",
