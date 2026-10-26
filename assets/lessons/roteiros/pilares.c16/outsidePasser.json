@@ -639,7 +639,8 @@
       "tipo": "lance",
       "pecas": [
        "b5",
-       "a5"
+       "a5",
+       "f7"
       ],
       "maquina": "w",
       "limite": 10,

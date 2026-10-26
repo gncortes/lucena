@@ -161,7 +161,8 @@
       "juiz": "lista",
       "pecas": [
        "b4",
-       "b3"
+       "b3",
+       "c5"
       ],
       "certos": [
        "b4b5"
@@ -520,7 +521,9 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "g3"
+       "g3",
+       "h3",
+       "g4"
       ],
       "maquina": "w",
       "limite": 10,
@@ -561,7 +564,10 @@
       "tipo": "lance",
       "pecas": [
        "c5",
-       "g1"
+       "g1",
+       "a5",
+       "c1",
+       "e3"
       ],
       "maquina": "b",
       "limite": 10,
@@ -603,7 +609,9 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "c2"
+       "c2",
+       "b5",
+       "d6"
       ],
       "maquina": "b",
       "limite": 10,

@@ -411,7 +411,9 @@
       "tipo": "lance",
       "pecas": [
        "e4",
-       "e5"
+       "e5",
+       "f3",
+       "e3"
       ],
       "maquina": "b",
       "limite": 10,
@@ -449,7 +451,8 @@
       "tipo": "lance",
       "pecas": [
        "e5",
-       "d6"
+       "d6",
+       "a8"
       ],
       "maquina": "w",
       "limite": 10,

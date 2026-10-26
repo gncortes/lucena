@@ -114,7 +114,10 @@
      "pergunta": {
       "juiz": "lista",
       "pecas": [
-       "f5"
+       "f5",
+       "e7",
+       "c7",
+       "h6"
       ],
       "certos": [
        "f5e4"
@@ -577,7 +580,8 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "g5"
+       "g5",
+       "g3"
       ],
       "maquina": "w",
       "limite": 10,

@@ -533,7 +533,8 @@
       "pecas": [
        "f7",
        "d8",
-       "g7"
+       "g7",
+       "e6"
       ],
       "maquina": "w",
       "limite": 10,
@@ -578,7 +579,8 @@
       "pecas": [
        "g5",
        "a4",
-       "f3"
+       "f3",
+       "d1"
       ],
       "maquina": "b",
       "limite": 10,

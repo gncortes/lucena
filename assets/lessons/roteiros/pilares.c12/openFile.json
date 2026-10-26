@@ -112,7 +112,9 @@
      "pergunta": {
       "juiz": "lista",
       "pecas": [
-       "d1"
+       "d1",
+       "c1",
+       "g2"
       ],
       "certos": [
        "d1d7"
@@ -384,7 +386,9 @@
       "tipo": "lance",
       "pecas": [
        "d1",
-       "d2"
+       "d2",
+       "c3",
+       "g1"
       ],
       "maquina": "b",
       "limite": 10,
@@ -430,7 +434,8 @@
       "tipo": "lance",
       "pecas": [
        "e1",
-       "e7"
+       "e7",
+       "c1"
       ],
       "maquina": "b",
       "limite": 10,
@@ -469,7 +474,8 @@
       "pecas": [
        "d6",
        "d7",
-       "b3"
+       "b3",
+       "g8"
       ],
       "maquina": "w",
       "limite": 10,

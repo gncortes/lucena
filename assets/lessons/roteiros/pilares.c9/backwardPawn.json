@@ -477,7 +477,8 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "d1"
+       "d1",
+       "g4"
       ],
       "maquina": "b",
       "limite": 10,
@@ -512,7 +513,8 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "g5"
+       "g5",
+       "e7"
       ],
       "maquina": "w",
       "limite": 10,
@@ -549,7 +551,8 @@
       "tipo": "lance",
       "pecas": [
        "d4",
-       "a4"
+       "a4",
+       "d3"
       ],
       "maquina": "b",
       "limite": 10,

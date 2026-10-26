@@ -330,7 +330,8 @@
       "juiz": "lista",
       "pecas": [
        "h1",
-       "d4"
+       "d4",
+       "e1"
       ],
       "certos": [
        "h1h8"
@@ -438,7 +439,8 @@
       "juiz": "lista",
       "pecas": [
        "e1",
-       "g5"
+       "g5",
+       "a5"
       ],
       "certos": [
        "g5h6"

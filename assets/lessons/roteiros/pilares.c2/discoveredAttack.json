@@ -585,7 +585,8 @@
       "tipo": "lance",
       "pecas": [
        "f4",
-       "c8"
+       "c8",
+       "g5"
       ],
       "maquina": "w",
       "limite": 10,

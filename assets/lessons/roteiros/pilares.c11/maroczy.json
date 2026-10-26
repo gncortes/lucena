@@ -194,7 +194,9 @@
       "juiz": "lista",
       "pecas": [
        "e6",
-       "d6"
+       "d6",
+       "c8",
+       "b7"
       ],
       "certos": [
        "e6e5"
@@ -599,7 +601,9 @@
      "pratica": {
       "tipo": "lance",
       "pecas": [
-       "e6"
+       "e6",
+       "b8",
+       "a7"
       ],
       "maquina": "w",
       "limite": 10,

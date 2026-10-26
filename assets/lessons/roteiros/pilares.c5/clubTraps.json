@@ -44,7 +44,9 @@
       "pecas": [
        "f6",
        "c5",
-       "d8"
+       "d8",
+       "h7",
+       "e8"
       ],
       "certos": [
        "f6e4"
@@ -580,7 +582,8 @@
       "tipo": "lance",
       "pecas": [
        "c5",
-       "g8"
+       "g8",
+       "d7"
       ],
       "maquina": "w",
       "limite": 10,
@@ -610,7 +613,9 @@
       "tipo": "lance",
       "pecas": [
        "h5",
-       "h1"
+       "h1",
+       "c1",
+       "g2"
       ],
       "maquina": "b",
       "limite": 10,

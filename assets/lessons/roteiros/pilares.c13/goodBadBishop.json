@@ -139,7 +139,9 @@
      "pergunta": {
       "juiz": "lista",
       "pecas": [
-       "g6"
+       "g6",
+       "e1",
+       "g5"
       ],
       "certos": [
        "g6h7"

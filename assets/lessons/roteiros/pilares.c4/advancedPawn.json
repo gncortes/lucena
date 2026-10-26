@@ -526,7 +526,8 @@
       "tipo": "lance",
       "pecas": [
        "g2",
-       "h7"
+       "h7",
+       "b1"
       ],
       "maquina": "b",
       "limite": 10,

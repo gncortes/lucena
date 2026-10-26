@@ -310,7 +310,8 @@
      "pergunta": {
       "juiz": "lista",
       "pecas": [
-       "e4"
+       "e4",
+       "e6"
       ],
       "certos": [
        "e4e5"
