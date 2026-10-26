@@ -1,5 +1,5 @@
 {
-  "rot.ideia.ex1.e1": "Agora você tem torre e peão contra o rei sozinho. Quem trabalha primeiro é a torre.",
+  "rot.ideia.ex1.e1": "Agora você tem torre e peão contra o rei solitário. Quem trabalha primeiro é a torre.",
   "rot.ideia.ex1.e2": "Corte o rei preto pela coluna. Com ele longe, o peão anda sem medo.",
   "rot.ideia.ex1.p": "Corte o rei pela coluna, ou clique em {verResposta}",
   "rot.ideia.ex1.certo": "Isso mesmo! A torre fecha a coluna d, entre o rei preto e o peão.",
@@ -42,7 +42,7 @@
   "rot.demos.corre.l5": "O rei preto procura uma passagem.",
   "rot.demos.corre.l6": "O peão chega à fileira 7.",
   "rot.demos.corre.l7": "Não há passagem.",
-  "rot.demos.corre.l8": "O peão coroa. Agora são dama e torre contra o rei sozinho: o mate fica fácil.",
+  "rot.demos.corre.l8": "O peão coroa. Agora são dama e torre contra o rei solitário: o mate fica fácil.",
   "rot.demos.escolta.e1": "A torre está em b1, atrás do peão. O rei preto tenta capturá-lo.",
   "rot.demos.escolta.l1": "O rei ataca o peão, mas não pode capturar: a torre protege.",
   "rot.demos.escolta.l2": "O rei branco vem ajudar.",

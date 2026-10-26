@@ -42,7 +42,7 @@
   "step.t_behind.hint1": "Se a torre não consegue afastar o rei preto, pode ao menos obrigá-lo a ficar preso ao peão?",
   "step.t_behind.hint2": "Pense nas casas por onde o peão ainda vai passar: quem as protege se o rei preto se afastar?",
   "step.behindIdea": "Nem sempre é possível cortar o rei: aqui, nada separa o rei preto do peão. Por isso, a torre vai para trás do peão, com 1.Tc8! Ela não deixa o peão avançar sem escolta: a cada avanço, o rei preto precisa estar ao lado dele para defendê-lo. E, enquanto o rei preto cuida do peão, o seu rei ganha os tempos que faltavam.",
-  "step.d_behind": "Observe a mesma ideia com o seu rei por perto, em uma posição de treino de Ezryn. Com a torre em c8, o rei preto precisa escoltar o peão por c4, c3 e c2. O seu rei não força a passagem pelo meio: ele contorna o rei preto por fora e alcança o peão quando ele chega à segunda fileira.",
+  "step.d_behind": "Observe a mesma ideia com o seu rei por perto, em um exemplo didático, adaptado de uma posição de Ezryn. Com a torre em c8, o rei preto precisa escoltar o peão por c4, c3 e c2. O seu rei não força a passagem pelo meio: ele contorna o rei preto por fora e alcança o peão quando ele chega à segunda fileira.",
   "step.d_behind.m1": "1.Tc8. A torre fica atrás do peão. Agora o peão só pode ir para c4 com o rei ao lado; caso contrário, a torre o captura.",
   "step.d_behind.m2": "1...c4. O rei preto ficou ao lado, como escolta.",
   "step.d_behind.m3": "2.Rc7. O seu rei não entra no caminho do rei preto; ele contorna por fora.",
