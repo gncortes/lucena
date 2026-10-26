@@ -12,7 +12,7 @@
   }
  ],
  "passScore": 10,
- "maxScore": 14,
+ "maxScore": 15,
  "keyPositions": [],
  "references": [
   {
@@ -128,14 +128,14 @@
    "id": "pf.own2",
    "capitulo": "prophylaxis",
    "stars": 1,
-   "fen": "2k5/Bpp2ppp/8/8/8/8/5PPP/6K1 b - - 0 1",
+   "fen": "1n6/2kp4/4p3/4Ppp1/1P1N4/K7/5P1P/8 w - - 0 1",
    "goal": "win",
    "origin": "own",
    "line": [
     {
-     "teach": "b7b6",
+     "teach": "b4b5",
      "accept": [
-      "b7b6"
+      "b4b5"
      ]
     }
    ]
@@ -182,15 +182,15 @@
   {
    "id": "pf.own3",
    "capitulo": "prophylaxis",
-   "stars": 1,
-   "fen": "8/6p1/8/p1k5/3p4/P2K4/1P4P1/8 b - - 0 1",
+   "stars": 2,
+   "fen": "8/4k3/3b1p1p/2p1p3/4N3/1P3PP1/7P/5K2 w - - 0 1",
    "goal": "win",
    "origin": "own",
    "line": [
     {
-     "teach": "a5a4",
+     "teach": "g3g4",
      "accept": [
-      "a5a4"
+      "g3g4"
      ]
     }
    ]
