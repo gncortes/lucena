@@ -32,6 +32,52 @@ void main() {
 
   setUp(() => training = FakeTrainingRepository());
 
+  group('entrada explícita às cegas', () {
+    for (final opponent in OpponentKind.values) {
+      test('preserva intenção com preferência ${opponent.name}', () async {
+        final stored = GameSetup(
+          opponent: opponent,
+          blind: false,
+          maiaLevel: 1600,
+          clock: false,
+        );
+        training.setup = stored;
+        final cubit = GameSetupCubit(
+          training,
+          progress: FakeProgressRepository(),
+          profile: FakeProfileRepository(),
+          position: GameRules.fromFen('8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1')!,
+          goal: PositionGoal.win,
+          initialBlind: true,
+        );
+        addTearDown(cubit.close);
+
+        await cubit.load();
+
+        final expectedOpponent = opponent == OpponentKind.twoPlayers
+            ? OpponentKind.maia
+            : opponent;
+        expect(
+          cubit.state.setup,
+          stored.copyWith(blind: true, opponent: expectedOpponent),
+        );
+        expect(cubit.state.blindGame, isTrue);
+        expect(cubit.state.canStart, isTrue);
+        final route = Uri.parse(cubit.state.gameRoute);
+        expect(route.path, '/blind');
+        expect(route.queryParameters['opponent'], expectedOpponent.code);
+        expect(route.queryParameters['fen'], cubit.state.position.fen);
+        expect(route.queryParameters['user'], 'white');
+        expect(
+          route.queryParameters['level'],
+          expectedOpponent == OpponentKind.maia ? '1600' : isNull,
+        );
+        expect(training.setup, same(stored));
+        expect(training.savedSetups, isEmpty);
+      });
+    }
+  });
+
   test('o jogador começa com o lado que joga na posição', () {
     expect(build().state.userSide, Side.white);
     expect(

@@ -105,6 +105,7 @@ class _InviteSheet extends StatelessWidget {
             ),
           ),
           ActionsFooter(
+            margin: AppSpacing.xl,
             stacked: true,
             children: [
               OutlinedButton.icon(

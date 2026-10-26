@@ -127,8 +127,7 @@ class _Body extends StatelessWidget {
           ),
           children: [
             Text(
-              // O módulo e a posição nele ("Mates básicos · 1 de 4"): o
-              // número na trilha inteira diz pouco.
+              // A parte do curso e a posição do capítulo dentro dela.
               l10n.endgameModulePlace(
                 texts.plain('endgames.module.${lesson.module}') ??
                     lesson.module,
@@ -142,7 +141,7 @@ class _Body extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(texts.lessonTitle(lesson.id), style: context.screenTitle),
             const SizedBox(height: AppSpacing.xs),
-            // O progresso das etapas; as estrelas e a meta ficam no teste.
+            // As lições deste capítulo; as estrelas e a meta ficam no teste.
             Text(
               l10n.endgameStagesDone(done.length, parts.length),
               key: EndgameLessonKeys.progressLine,
@@ -167,7 +166,7 @@ class _Body extends StatelessWidget {
                 speaks: true,
               ),
             ],
-            SectionTitle(l10n.endgameLessonPartLesson),
+            SectionTitle(l10n.endgameChapterLessons),
             if (state.allPartsDone)
               Row(
                 children: [
@@ -384,7 +383,9 @@ class _PartTile extends StatelessWidget {
                     key: EndgameLessonKeys.lessonButton,
                     onPressed: open,
                     child: Text(
-                      ongoing ? l10n.lessonContinue : l10n.endgamePartStart,
+                      ongoing
+                          ? l10n.endgameResumePart(number)
+                          : l10n.endgameStartPart(number),
                     ),
                   ),
                 ),
@@ -915,7 +916,9 @@ class _FinalCardState extends State<_FinalCard> {
                 TextButton.icon(
                   key: EndgameLessonKeys.nextLessonButton,
                   icon: const Icon(Icons.arrow_forward_rounded),
-                  label: Text(l10n.lessonNext(state.texts.lessonTitle(next))),
+                  label: Text(
+                    l10n.endgameNextChapter(state.texts.lessonTitle(next)),
+                  ),
                   onPressed: () => LessonGate.open(
                     context,
                     lessonId: next,

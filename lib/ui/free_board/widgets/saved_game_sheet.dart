@@ -36,17 +36,28 @@ typedef SavedGame = ({
 /// partida guardada (lances ou relógio), pergunta antes se o jogador volta a
 /// ela ou começa um tabuleiro novo (decisão 1 do Gabriel, PropV1Decisao01b,
 /// forma a). Fechar a folha sem escolher não abre nada.
-Future<void> openFreeBoard(BuildContext context) async {
+Future<void> openFreeBoard(
+  BuildContext context, {
+  bool preserveOrigin = false,
+}) async {
+  Future<void> open(String route) async {
+    if (preserveOrigin) {
+      await context.push(route);
+    } else {
+      context.go(route);
+    }
+  }
+
   final saved = await _savedGame(context);
   if (!context.mounted) return;
   if (saved == null) {
-    context.go(Routes.freeBoard);
+    await open(Routes.freeBoard);
     return;
   }
   final keep = await showSavedGameSheet(context, saved);
   if (!context.mounted || keep == null) return;
   // A partida nova grava por cima da guardada.
-  context.go(
+  await open(
     keep ? Routes.freeBoard : Routes.freeBoardAt(GameRules.initial.fen),
   );
 }
@@ -78,7 +89,7 @@ Future<SavedGame?> loadSavedGame(
   for (final uci in snapshot.moves) {
     final move = Move.parse(uci);
     final played = move == null ? null : GameRules.play(position!, move);
-    if (played == null) break;
+    if (played == null) return null;
     position = played.position;
     lastMove = move;
   }

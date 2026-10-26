@@ -202,6 +202,7 @@ import '../ui/week/widgets/week_screen.dart';
 import '../ui/update/widgets/update_recommended_screen.dart';
 import '../ui/update/widgets/update_required_screen.dart';
 import 'routes.dart';
+import '../ui/blind/widgets/blind_entry_screen.dart';
 import '../data/repositories/account/account_repository.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
@@ -717,6 +718,12 @@ GoRouter buildRouter({
             ),
           ),
           _route(
+            path: 'blind-entry',
+            builder: (context, state) => BlindEntryScreen(
+              resume: state.uri.queryParameters['resume'] == '1',
+            ),
+          ),
+          _route(
             path: 'achievements',
             builder: (context, state) => BlocProvider(
               create: (context) => AchievementsCubit(
@@ -959,6 +966,7 @@ GoRouter buildRouter({
                           0;
                       final language = _language(context);
                       final lessons = context.read<EndgameLessonRepository>();
+                      final l10n = context.l10n;
                       return BlocProvider(
                         key: ValueKey('script.$id.$part'),
                         create: (_) => LessonScriptCubit(
@@ -984,9 +992,19 @@ GoRouter buildRouter({
                         ),
                         child: LessonScriptScreen(
                           key: ValueKey('script.$id.$part'),
-                          title: lessons
-                              .texts(language)
-                              .then((texts) => texts.partTitle(id, part)),
+                          title: lessons.texts(language).then((texts) async {
+                            final title = texts.partTitle(id, part);
+                            if (title == null) return null;
+                            final chapter = (await lessons.trail()).lesson(id);
+                            final index =
+                                chapter?.lesson.sections.indexWhere(
+                                  (unit) => unit.id == part,
+                                ) ??
+                                -1;
+                            return index < 0
+                                ? title
+                                : l10n.endgameActivityTitle(index + 1, title);
+                          }),
                         ),
                       );
                     },
@@ -1251,7 +1269,9 @@ GoRouter buildRouter({
             path: 'catalog',
             builder: (context, state) => BlocProvider(
               create: (context) => _catalogCubit(context)..load(),
-              child: const CatalogScreen(),
+              child: CatalogScreen(
+                blind: state.uri.queryParameters['blind'] == '1',
+              ),
             ),
             routes: [
               _route(
@@ -1266,6 +1286,7 @@ GoRouter buildRouter({
                     child: CategoryScreen(
                       category: category,
                       subcategory: subcategory,
+                      blind: state.uri.queryParameters['blind'] == '1',
                     ),
                   );
                 },
@@ -1369,6 +1390,7 @@ GoRouter buildRouter({
                   goal:
                       PositionGoal.fromCode(query['goal']) ?? PositionGoal.win,
                   positionId: query['position'],
+                  initialBlind: query['blind'] == '1',
                 )..load(),
                 child: const GameSetupScreen(),
               );

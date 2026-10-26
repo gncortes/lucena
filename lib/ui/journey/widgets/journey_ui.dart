@@ -11,6 +11,7 @@ import '../../../routing/routes.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../settings/view_models/settings_cubit.dart';
+import 'journey_resume.dart';
 
 /// O nome de um adversário de desafio ou degrau (`Maia 1000`, `Stockfish`).
 String opponentRefLabel(AppLocalizations l10n, OpponentRef opponent) =>
@@ -35,9 +36,9 @@ String opponentName(
     opponentCharacter(characters, opponent)?.name ??
     opponentRefLabel(l10n, opponent);
 
-/// Joga o desafio: abre o painel do ritmo (com "sem relógio"), grava a
-/// escolha e abre a partida nesse ritmo. Falso se o painel foi fechado sem
-/// confirmar. [onLaunch] roda logo antes de a partida abrir (a tela de
+/// Retoma a partida compatível ou abre o desafio no ritmo escolhido.
+/// Recomeçar uma partida guardada exige confirmação. [onLaunch] roda
+/// logo antes de a partida abrir (a tela de
 /// antes prepara o voo do tabuleiro). Com [replace], a partida abre no lugar
 /// da tela atual (o fim do aquecimento).
 Future<bool> playChallenge(
@@ -45,14 +46,23 @@ Future<bool> playChallenge(
   Challenge challenge, {
   VoidCallback? onLaunch,
   bool replace = false,
+  bool restart = false,
 }) async {
+  final saved = await savedJourneyGame(context, challenge);
+  if (!context.mounted) return false;
+  if (saved != null && restart && !await confirmJourneyRestart(context)) {
+    return false;
+  }
+  if (!context.mounted) return false;
   final settings = context.read<SettingsCubit>();
   final clock = settings.state?.clock ?? const ClockSettings();
   if (!context.mounted) return false;
   onLaunch?.call();
-  final route = Routes.challengeGame(
-    challenge.copyWith(time: challenge.time ?? clock.journeyTime),
-  );
+  final route = saved != null && !restart
+      ? Routes.freeBoard
+      : Routes.challengeGame(
+          challenge.copyWith(time: challenge.time ?? clock.journeyTime),
+        );
   if (replace) {
     context.pushReplacement(route);
   } else {

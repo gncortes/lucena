@@ -172,7 +172,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       sheetKey: FreeBoardKeys.speedrunQuitSheet,
       confirmKey: FreeBoardKeys.speedrunQuitConfirm,
       cancelKey: FreeBoardKeys.speedrunQuitCancel,
-      title: l10n.speedrunQuitTitle,
+      title: cubit.state.mode.isMarathon
+          ? l10n.marathonQuitTitle
+          : l10n.classicQuitTitle,
       hint: l10n.speedrunQuitHint(won),
       action: l10n.speedrunAbandon,
       cancel: l10n.speedrunKeepGoing,
@@ -436,13 +438,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final character = talk.character;
                 // Acabou a partida contra a máquina: o selo fica no tabuleiro e
                 // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
-                if (state.end == null) {
-                  _endAtOpen = false;
-                  _endSeen = true;
-                } else if (!_endSeen) {
-                  _endAtOpen = true;
-                  _endSeen = true;
-                }
                 final machineEnded =
                     state.end != null &&
                     state.mode.opponent.isMachine &&
@@ -467,8 +462,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     ? ClockRow.height
                     : 0.0;
                 final reserveTop = clocksAbove;
-                final centering = BoardCentering.balanced(
+                final centerY = BoardViewport.centerYOf(context);
+                final centering = BoardCentering(
                   constraints.biggest,
+                  centerY: centerY,
                   gap: _boardGap,
                   reserveTop: reserveTop,
                   reserveBottom: clocksBelow,
@@ -486,10 +483,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     CenteredBoardLayout(
                       key: FreeBoardKeys.scrollArea,
                       gap: _boardGap,
-                      balanced: !state.mode.fromLink,
-                      centerY: state.mode.fromLink
-                          ? BoardViewport.centerYOf(context)
-                          : null,
+                      centerY: centerY,
                       reserveTop: reserveTop,
                       reserveBottom: clocksBelow,
                       footer: machineEnded && featured
@@ -535,7 +529,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 talk: barTalk,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
-                                playerRow: ClockRow(
+                                playerRowBuilder: (speech) => ClockRow(
+                                  speech: speech,
                                   sides: clocks == ClockPosition.top
                                       ? both
                                       : [state.orientation.opposite],
@@ -546,6 +541,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 // A ponta do balão a 4 dp do retrato (que começa 12 dp abaixo
                                 // do alto da linha de 68).
                                 speechTop: -72,
+                                speechHeadroom:
+                                    centering.roomAbove - ClockRow.height + 12,
                               ),
                             if (character == null &&
                                 clocks == ClockPosition.top)
@@ -599,18 +596,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                             // versus (na Maratona, com a contagem); só então
                             // o relógio corre.
                             // O selo do resultado sobre o tabuleiro, até o jogador seguir.
-                            if (end != null &&
-                                (!_endAtOpen || state.mode.fromLink) &&
-                                state.mode.opponent.isMachine)
+                            if (end != null && state.mode.opponent.isMachine)
                               Positioned.fill(
                                 child: IgnorePointer(
                                   child: _EndFlash(
                                     key: ValueKey(end),
                                     end: end,
                                     userSide: state.mode.userSide,
-                                    // O final em destaque pisca por 1,5 s.
+                                    // Só o autoavanço encerra o selo sozinho.
                                     short: state.mode.isUnratedFinal,
-                                    persistent: state.mode.fromLink,
+                                    persistent: !_marathonAdvance(state),
                                   ),
                                 ),
                               ),
@@ -673,7 +668,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 talk: barTalk,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
-                                playerRow: ClockRow(
+                                playerRowBuilder: (speech) => ClockRow(
+                                  speech: speech,
                                   sides: both,
                                   state: state,
                                   board: boardSettings,
@@ -683,6 +679,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 // apenas a região acima do tabuleiro.
                                 speechTop:
                                     -(centering.side + 2 * _boardGap + 80),
+                                speechHeadroom: centering.board.top - 4,
                               ),
                             if (clocks == ClockPosition.bottom &&
                                 character == null)
@@ -714,7 +711,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   String _title(BuildContext context, FreeBoardState state, TalkState talk) {
     final l10n = context.l10n;
-    if (state.mode.isSpeedrun) return l10n.speedrunTitle;
+    if (state.mode.isMarathon) return l10n.marathonSection;
+    if (state.mode.isSpeedrun) return l10n.speedrunModeClassic;
     if (state.mode.featuredId != null) return l10n.featuredEndgameTitle;
     if (state.mode.dailyDate != null) return l10n.dailyTitle;
     if (state.mode.challengeId != null && talk.character != null) {
@@ -838,11 +836,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       ),
     );
   }
-
-  /// A tela abriu com a partida já terminada (retomada): sem selo (§12).
-  /// Volta a falso quando uma partida nova começa.
-  bool _endAtOpen = false;
-  bool _endSeen = false;
 
   /// Quanto o resultado fica em destaque antes da conclusão: o selo inteiro
   /// (entra 200 ms, pico 1200 ms, sai 200 ms).

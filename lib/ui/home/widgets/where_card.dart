@@ -18,6 +18,7 @@ import '../../journey/view_models/journey_cubit.dart';
 import '../../race/widgets/race_warm_up_screen.dart';
 import '../../race/widgets/race_warm_up_sheet.dart';
 import '../../journey/widgets/journey_ui.dart';
+import '../../journey/widgets/journey_resume.dart';
 import '../view_models/home_cubit.dart';
 import '../../core/widgets/animated_progress.dart';
 
@@ -162,6 +163,11 @@ Future<void> continueJourney(BuildContext context, HomeState state) async {
   final current = state.current;
   final challenge = state.next;
   if (current == null || challenge == null) return;
+  if (await savedJourneyGame(context, challenge) != null) {
+    if (context.mounted) await context.push(Routes.freeBoard);
+    return;
+  }
+  if (!context.mounted) return;
   final l10n = context.l10n;
   final character = state.character;
   final rung = current.rung.id;

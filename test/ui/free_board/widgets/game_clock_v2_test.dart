@@ -1,6 +1,7 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
@@ -8,6 +9,79 @@ import 'package:lucena/ui/core/widgets/time_display.dart';
 import '../../../../testing/test_app.dart';
 
 void main() {
+  for (final both in [false, true]) {
+    testWidgets('CompJogador ${both ? 'duplo' : 'simples'}: conteúdo opcional '
+        'preserva relógio e acesso por toque', (tester) async {
+      var tapped = false;
+      Future<void> row({bool speaking = false}) async {
+        await tester.pumpWidget(
+          TestApp(
+            child: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 360,
+                  child: PlayersRow(
+                    board: const BoardSettings(),
+                    detailed: true,
+                    players: [
+                      PlayerEntry(
+                        side: Side.black,
+                        name: 'Coco',
+                        detail: '1000',
+                        portrait: const SizedBox(width: 44, height: 44),
+                        clockKey: FreeBoardKeys.clock(Side.black),
+                        time: const Duration(minutes: 3),
+                        nameContent: speaking
+                            ? GestureDetector(
+                                key: FreeBoardKeys.speechBubble,
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () => tapped = true,
+                                child: const Text('…'),
+                              )
+                            : null,
+                      ),
+                      if (both)
+                        PlayerEntry(
+                          side: Side.white,
+                          name: 'Jogador',
+                          time: const Duration(minutes: 3),
+                          clockKey: FreeBoardKeys.clock(Side.white),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+      }
+
+      await row();
+      expect(find.text('Coco'), findsOneWidget);
+      expect(find.text('1000'), findsOneWidget);
+      final clocks = {
+        for (final side in both ? Side.values : [Side.black])
+          side: tester.getRect(find.byKey(FreeBoardKeys.clock(side))),
+      };
+      await row(speaking: true);
+      expect(find.text('Coco'), findsNothing);
+      expect(find.text('1000'), findsNothing);
+      final speech = find.byKey(FreeBoardKeys.speechBubble);
+      for (final side in clocks.keys) {
+        final clock = tester.getRect(find.byKey(FreeBoardKeys.clock(side)));
+        expect(clock, clocks[side]);
+        expect(tester.getRect(speech).overlaps(clock), isFalse);
+      }
+      await tester.tap(speech);
+      expect(tapped, isTrue);
+      await row();
+      expect(find.text('Coco'), findsOneWidget);
+      expect(find.text('1000'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   Future<void> pump(
     WidgetTester tester,
     Side side, {

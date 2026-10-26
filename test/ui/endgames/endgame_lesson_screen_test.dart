@@ -66,7 +66,11 @@ void main() {
       await pump(tester);
       expect(find.text('The Lucena position'), findsOneWidget);
       expect(find.textContaining('1 of 2'), findsOneWidget);
-      expect(find.text('Start'), findsOneWidget);
+      expect(find.text('Start lesson 1'), findsNWidgets(2));
+      expect(
+        find.text('0 of 1 lessons completed in this chapter'),
+        findsOneWidget,
+      );
       // O teste final: sem nada resolvido, só o resumo (sem os zeros), a
       // dica e o botão de começar; a lista dos exercícios não aparece (nem
       // ao tocar).
@@ -228,7 +232,7 @@ void main() {
     expect(find.textContaining('under review'), findsOneWidget);
   });
 
-  testWidgets('abertura: só o capítulo atual mostra a descrição', (
+  testWidgets('parte com um capítulo e quatro lições: contagens e descrição', (
     tester,
   ) async {
     final sample = FakeEndgameLessonRepository.sample.lessons.first;
@@ -243,6 +247,8 @@ void main() {
         parts: const [
           LessonPart(id: 'p1', steps: steps),
           LessonPart(id: 'p2', steps: steps),
+          LessonPart(id: 'p3', steps: steps),
+          LessonPart(id: 'p4', steps: steps),
         ],
       ),
       exercises: sample.exercises,
@@ -253,6 +259,7 @@ void main() {
     );
     final texts = LessonTexts.fromJson({
       ...FakeEndgameLessonRepository.sampleTexts.toJson(),
+      'endgames.module.${sample.module}': 'Mates difíceis',
       '${sample.id}.part.p1.title': 'First',
       '${sample.id}.part.p1.summary': 'Summary of the first.',
       '${sample.id}.part.p2.title': 'Second',
@@ -281,6 +288,7 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: const Locale('pt'),
         settingsCubit: settings,
         child: BlocProvider.value(
           value: cubit,
@@ -289,6 +297,16 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(
+      find.text('Parte: Mates difíceis · capítulo 1 de 1'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('0 de 4 lições concluídas neste capítulo'),
+      findsOneWidget,
+    );
+    expect(find.text('Lições deste capítulo'), findsOneWidget);
+    expect(find.text('Começar a lição 1'), findsNWidgets(2));
     expect(find.text('First'), findsOneWidget);
     expect(find.text('Second'), findsOneWidget);
     expect(find.text('Summary of the first.'), findsOneWidget);
@@ -371,7 +389,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Resume chapter 2'), findsOneWidget);
+    expect(find.text('Resume lesson 2'), findsNWidgets(2));
     await tester.tap(find.byKey(EndgameLessonKeys.continueButton));
     await tester.pumpAndSettle();
 

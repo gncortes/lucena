@@ -4,6 +4,9 @@ import '../../blind/view_models/blind_game_cubit.dart';
 
 /// Keys do modo às cegas.
 abstract final class BlindKeys {
+  static const entry = Key('blind.entry');
+  static const voiceRequired = Key('blind.voiceRequired');
+  static const openVoices = Key('blind.openVoices');
   static const screen = Key('blind.screen');
   static const status = Key('blind.status');
   static const mic = Key('blind.mic');

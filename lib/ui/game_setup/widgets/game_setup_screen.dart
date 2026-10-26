@@ -11,6 +11,7 @@ import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/game_setup.dart';
+import '../../../routing/routes.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/maia_level.dart';
 import '../../core/theme/app_text.dart';
@@ -28,6 +29,7 @@ import '../../core/keys/blind_keys.dart';
 import '../../voice/view_models/speech_cubit.dart';
 import 'custom_pace_sheet.dart';
 import '../../core/widgets/game_board_hero.dart';
+import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/pace/pace_ui.dart';
@@ -64,11 +66,10 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
     final l10n = context.l10n;
     final state = context.watch<GameSetupCubit>().state;
     final language = Localizations.localeOf(context).toLanguageTag();
-    final blind =
-        state.setup.opponent != OpponentKind.twoPlayers &&
-        context.select(
-          (SpeechCubit cubit) => cubit.state.availableFor(language),
-        );
+    final voiceAvailable = context.select(
+      (SpeechCubit cubit) => cubit.state.availableFor(language),
+    );
+    final machine = state.setup.opponent != OpponentKind.twoPlayers;
     return Scaffold(
       key: GameSetupKeys.screen,
       appBar: LucenaAppBar(
@@ -131,7 +132,9 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                     children: [
                       FilledButton(
                         key: GameSetupKeys.startButton,
-                        onPressed: state.canStart
+                        onPressed:
+                            state.canStart &&
+                                (!state.blindGame || voiceAvailable)
                             ? () => _start(context, state)
                             : null,
                         child: Text(l10n.clockStartGame),
@@ -154,7 +157,13 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                         SectionTitle(context.l10n.setupOpponent),
                         _OpponentPicker(state: state),
                         // Às cegas: só contra a máquina e com voz no idioma.
-                        if (blind) _ModePicker(state: state),
+                        if (machine) _ModePicker(state: state),
+                        if (state.blindGame && !voiceAvailable)
+                          EmptyState(
+                            message: l10n.blindVoiceRequired,
+                            actionLabel: l10n.voiceOpenSystem,
+                            onAction: () => context.push(Routes.settingsVoice),
+                          ),
                         const SizedBox(height: AppSpacing.xl),
                         _ClockSection(state: state),
                         if (state.attempts.isNotEmpty) _History(state: state),

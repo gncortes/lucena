@@ -24,7 +24,8 @@ import '../../core/widgets/skeleton.dart';
 
 /// As categorias do catálogo, com o filtro por objetivo.
 class CatalogScreen extends StatelessWidget {
-  const CatalogScreen({super.key});
+  const CatalogScreen({this.blind = false, super.key});
+  final bool blind;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,11 @@ class CatalogScreen extends StatelessWidget {
     final categories = state.categories;
     return Scaffold(
       key: CatalogKeys.screen,
-      appBar: LucenaAppBar(title: Text(context.l10n.catalogTitle)),
+      appBar: LucenaAppBar(
+        title: Text(
+          blind ? context.l10n.blindTitle : context.l10n.catalogTitle,
+        ),
+      ),
       body: Column(
         children: [
           const GoalFilterBar(),
@@ -46,6 +51,7 @@ class CatalogScreen extends StatelessWidget {
                         if (category.count(state.filter) > 0)
                           _CategoryCard(
                             category: category,
+                            blind: blind,
                             filter: state.filter,
                             done: state.fulfilled
                                 .where(
@@ -67,11 +73,13 @@ class CatalogScreen extends StatelessWidget {
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard({
     required this.category,
+    required this.blind,
     required this.filter,
     required this.done,
   });
 
   final CatalogCategory category;
+  final bool blind;
   final GoalFilter filter;
 
   /// Quantas posições da categoria já tiveram o objetivo cumprido.
@@ -95,7 +103,8 @@ class _CategoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.go(Routes.catalogCategory(category.key)),
+        onTap: () =>
+            context.push(Routes.catalogCategory(category.key, blind: blind)),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(

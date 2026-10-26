@@ -100,8 +100,8 @@ class EndgamesScreen extends StatelessWidget {
                   label: Text(
                     state.passed > 0 ||
                             state.status(next) != EndgameLessonStatus.open
-                        ? l10n.schoolContinue(texts.lessonTitle(next))
-                        : l10n.schoolStart,
+                        ? l10n.endgamesContinueChapter(texts.lessonTitle(next))
+                        : l10n.endgamesStartFirstChapter,
                   ),
                   onPressed: () => LessonGate.open(
                     context,
@@ -262,7 +262,7 @@ class _Section extends StatelessWidget {
     final lessons = section.lessons;
     final (label, title) = module != null
         ? (
-            l10n.schoolModule(section.number),
+            l10n.endgamePartNumber(section.number),
             state.texts.plain('endgames.module.${module.id}') ?? module.id,
           )
         : (

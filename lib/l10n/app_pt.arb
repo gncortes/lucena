@@ -352,12 +352,12 @@
   "homeForYou": "Finais para você",
   "homeForYouBody": "Seu estudo de finais, montado a partir do teste de nível: as aulas que faltam, na ordem certa.",
   "endgamesTitle": "Aulas de finais",
-  "endgamesPassedCount": "{passed} de {total} concluídas",
+  "endgamesPassedCount": "{passed} de {total} capítulos concluídos",
   "endgamesLessonLabel": "{status, select, passed{{title}, aprovada} started{{title}, em andamento} other{{title}, aberta}}",
   "endgameLessonPartLesson": "A lição",
   "endgameLessonStart": "Começar a lição",
   "endgameLessonReview": "Rever a lição",
-  "endgameLessonDone": "Lição concluída",
+  "endgameLessonDone": "Todas as lições deste capítulo concluídas",
   "endgameExercisesSolved": "{solved} de {count} resolvidos",
   "endgameExercisesStart": "Começar os exercícios",
   "endgameExercisesContinue": "Continuar os exercícios",
@@ -593,7 +593,7 @@
   "voiceAutoOff": "Silenciar o {name}",
   "voiceAutoOn": "Deixar o {name} falar",
   "versusLabel": "VS",
-  "marathonStage": "Etapa {stage}",
+  "marathonStage": "Maratona · etapa {stage}",
   "settingsVibration": "Vibração",
   "settingsVibrationHint": "Um toque leve nos seus lances, vitórias e conquistas",
   "settingsAppearance": "Aparência",
@@ -621,18 +621,18 @@
   "lessonShowMarks": "Mostrar as marcações",
   "endgameFinalTest": "Teste final",
   "endgameTestAdvice": "Dica: faça os capítulos antes. O teste fica aberto quando quiser praticar.",
-  "endgameStartLesson": "Começar o capítulo 1",
-  "endgameResumePart": "Retomar o capítulo {part}",
-  "endgameNextPart": "Ir para o capítulo {part}",
+  "endgameStartLesson": "Começar a lição 1",
+  "endgameResumePart": "Retomar a lição {part}",
+  "endgameNextPart": "Ir para a lição {part}",
   "endgameResumeTest": "Continuar o teste final",
   "endgameContinueTest": "Fazer o teste final",
   "homeEndgamePart": "Capítulo {part} de {parts}",
   "endgamePartStart": "Começar",
   "endgameChallengeTitle": "Desafie-se neste final",
   "endgameTestCount": "{count, plural, =1{1 exercício} other{{count} exercícios}}",
-  "endgameModulePlace": "{module} · aula {number} de {count}",
+  "endgameModulePlace": "Parte: {module} · capítulo {number} de {count}",
   "endgameLessonInReview": "Aula em revisão: o conteúdo ainda pode mudar.",
-  "endgameStagesDone": "{done} de {total} capítulos concluídos",
+  "endgameStagesDone": "{done} de {total} lições concluídas neste capítulo",
   "endgameTestPrompt": "Mostre que você aprendeu",
   "endgameTestLearned": "Você aprendeu este final!",
   "endgameTestAlmost": "Quase lá: refaça para fixar",
@@ -845,7 +845,7 @@
   "exercisesDoneFinish": "Concluir",
   "exercisesDoneRetrySpeech": "Não foi dessa vez, e tudo bem: cada erro mostrou algo para olhar de novo. Reveja a lição se precisar, pense com calma em cada posição e tente outra vez. Na próxima, esses pontos vão ser seus.",
   "exercisesDoneShareText": "Concluí a aula “{title}” no Lucena com {score} de {max} pontos! {link}",
-  "endgamesHideDone": "Ocultar aulas já feitas",
+  "endgamesHideDone": "Ocultar capítulos concluídos",
   "exercisesIntroSpeech": "Hora de mostrar o que você aprendeu. Vale a primeira tentativa: depois é treino livre e, para contar de novo, é só refazer os exercícios.",
   "exercisesIntroChipThink": "Sem limite de tempo",
   "exercisesIntroCountBody": "Em ordem, do mais simples ao mais difícil.",
@@ -1415,7 +1415,7 @@
   "homeResumeLabel": "Continuar de onde parou",
   "homeGoalLearnLine": "Aprender a jogar · aula {number} da Escola",
   "homeGoalLessons": "{done} de {total} aulas",
-  "homeGoalEndgamesLine": "Aprender finais · aula {number} de {total}",
+  "homeGoalEndgamesLine": "Aprender finais · capítulo {number} de {total}",
   "homeGoalTrainLine": "Treinar finais · sugerido pelo seu nível",
   "homeGoalPositions": "{done} de {total} posições",
   "homeGoalTrain": "Treinar",
@@ -1750,5 +1750,63 @@
   "challengeInvalidLinkMessage": "Este link do Lucena está incompleto ou inválido. Peça outro link a quem o enviou ou cole um novo. Sua atividade anterior continua disponível.",
   "challengeInvalidLinkBack": "Voltar",
   "challengeInvalidLinkPaste": "Colar outro link",
-  "lessonSaveRetry": "Não foi possível salvar o progresso. Tente voltar novamente."
+  "lessonSaveRetry": "Não foi possível salvar o progresso. Tente voltar novamente.",
+  "raceWarmUpObjective": "Jogue o lance que mantém a vitória",
+  "journeyRestartTitle": "Começar este desafio novamente?",
+  "blindChoosePosition": "Às cegas · escolha uma posição para começar.",
+  "endgameNextChapter": "Próximo capítulo: {chapter}",
+  "blindVoiceRequired": "Para jogar às cegas, é necessária uma voz offline no idioma do app.",
+  "journeyKeepGame": "Manter partida atual",
+  "customClearConfirmHint": "Remover todas as peças, exceto os reis? A posição salva será substituída.",
+  "endgameChapterLessons": "Lições deste capítulo",
+  "marathonQuitTitle": "Sair da Maratona?",
+  "journeyRestart": "Começar novamente",
+  "classicQuitTitle": "Sair do Clássico?",
+  "journeyRestartHint": "Os lances e o relógio da partida em andamento serão substituídos.",
+  "journeyResume": "Retomar partida",
+  "homeGoalChapters": "{done} de {total} capítulos concluídos em Finais",
+  "endgameStartPart": "Começar a lição {part}",
+  "@homeGoalChapters": {
+    "description": "Progresso do objetivo da Home na coleção inteira de Finais, separado das lições de um capítulo e da Escola.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@endgameChapterLessons": {
+    "description": "Apresentação do capítulo de finais: lista das unidades LessonPart, chamadas lições na UI."
+  },
+  "@endgameStartPart": {
+    "description": "Começa a lição numerada dentro do capítulo de finais, sem mudar o vocabulário da Escola ou dos exercícios.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "@endgameNextChapter": {
+    "description": "Apresentação do capítulo de finais: navega para a próxima EndgameLesson, chamada capítulo na UI.",
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      }
+    }
+  },
+  "@marathonQuitTitle": {
+    "description": "Confirmation title when leaving an ongoing Marathon."
+  },
+  "@classicQuitTitle": {
+    "description": "Confirmation title when leaving an ongoing Classic speedrun."
+  },
+  "@raceWarmUpObjective": {
+    "description": "Operational warm-up instruction; the side is displayed separately."
+  },
+  "endgamePartNumber": "Parte {number}",
+  "endgamesStartFirstChapter": "Começar o primeiro capítulo",
+  "endgamesContinueChapter": "Continuar capítulo: {chapter}",
+  "endgameActivityTitle": "Lição {number} · {title}"
 }

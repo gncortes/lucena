@@ -1,8 +1,10 @@
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/race.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
@@ -13,6 +15,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/game_clock.dart';
 import '../../core/widgets/goal_style.dart';
+import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/opponent_card.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
@@ -51,6 +54,9 @@ class RaceWarmUpScreen extends StatelessWidget {
 
   final RaceWarmUpArgs args;
 
+  static const objectiveKey = ValueKey('raceWarmUp.objective');
+  static const sideKey = ValueKey('raceWarmUp.side');
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -60,6 +66,7 @@ class RaceWarmUpScreen extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
     final problem = state.problem;
+    final goal = GoalStyle.of(context, PositionGoal.win);
     return Scaffold(
       key: RaceKeys.warmUpScreen,
       appBar: LucenaAppBar(
@@ -84,6 +91,26 @@ class RaceWarmUpScreen extends StatelessWidget {
                     reserveTop: RaceScoreboard.height,
                     reserveBottom: RaceGameView.bottomRoom(context),
                     footer: const SizedBox(height: GameActionsBar.height),
+                    top: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: AppSpacing.sm,
+                      children: [
+                        InfoChip(
+                          key: objectiveKey,
+                          label: l10n.raceWarmUpObjective,
+                          icon: goal.icon,
+                          background: goal.container,
+                          foreground: goal.onContainer,
+                        ),
+                        Text(
+                          problem.side == Side.white
+                              ? l10n.sideWhite
+                              : l10n.sideBlack,
+                          key: sideKey,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                      ],
+                    ),
                     board: LayoutBuilder(
                       builder: (context, box) => RaceFadingBoard(
                         size: box.maxWidth,

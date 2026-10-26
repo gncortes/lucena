@@ -21,6 +21,7 @@ class ClockRow extends StatelessWidget {
     required this.state,
     required this.board,
     this.talk,
+    this.speech,
     super.key,
   });
 
@@ -37,6 +38,9 @@ class ClockRow extends StatelessWidget {
 
   /// O personagem do adversário: o nome dele no lado da máquina.
   final TalkState? talk;
+
+  /// Fala inline apenas no campo do adversário; retrato e relógios não mudam.
+  final Widget? speech;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +89,7 @@ class ClockRow extends StatelessWidget {
           : null;
       final clock = state.clock;
       return PlayerEntry(
+        nameContent: character == null ? null : speech,
         detail: detail,
         detailKey: FreeBoardKeys.playerDetail(side),
         side: side,

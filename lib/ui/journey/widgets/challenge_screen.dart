@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/journey.dart';
+import '../../free_board/widgets/saved_game_sheet.dart';
+import 'journey_resume.dart';
 import '../../../domain/models/pace.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../../catalog/widgets/catalog_ui.dart';
@@ -47,6 +49,44 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   // A partida está abrindo: o tabuleiro grande voa até o centro dela. Na
   // volta, ele retoma a marca de antes (o voo de volta para o degrau).
   bool _launching = false;
+  String? _savedChallenge;
+  Future<SavedGame?>? _saved;
+  SavedGame? _preview;
+
+  Future<SavedGame?> _savedFor(Challenge challenge) {
+    if (_savedChallenge != challenge.id || _saved == null) {
+      _savedChallenge = challenge.id;
+      _preview = null;
+      _saved = savedJourneyGame(context, challenge).then((game) {
+        if (mounted && _savedChallenge == challenge.id) {
+          setState(() => _preview = game);
+        }
+        return game;
+      });
+    }
+    return _saved!;
+  }
+
+  Future<void> _play(Challenge challenge, {bool restart = false}) async {
+    final played = await playChallenge(
+      context,
+      challenge,
+      restart: restart,
+      onLaunch: () => setState(() => _launching = true),
+    );
+    if (!mounted) return;
+    setState(() {
+      _launching = false;
+      _saved = null;
+      _preview = null;
+    });
+    if (!played) return;
+    final uri = GoRouterState.of(context).pathParameters;
+    await context.read<JourneyCubit>().load(
+      rungId: uri['rung'],
+      positionId: uri['position'],
+    );
+  }
 
   String get rungId => widget.rungId;
 
@@ -56,6 +96,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
     final state = context.watch<JourneyCubit>().state;
     final savedTime = context.watch<SettingsCubit>().state?.clock.journeyTime;
     final challenge = state.challenge?.copyWith(time: savedTime);
+    final shownTime = _preview == null
+        ? challenge?.time
+        : _preview!.snapshot.clock?.config.of(
+            _preview!.snapshot.playerSide ?? Side.white,
+          );
     return Scaffold(
       key: JourneyKeys.challengeScreen,
       appBar: LucenaAppBar(
@@ -67,31 +112,33 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       ),
       bottomNavigationBar: challenge == null
           ? null
-          : ActionsFooter(
-              children: [
-                FilledButton.icon(
-                  key: JourneyKeys.play,
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: Text(l10n.journeyPlay),
-                  onPressed: () async {
-                    final played = await playChallenge(
-                      context,
-                      challenge,
-                      onLaunch: () => setState(() => _launching = true),
-                    );
-                    if (mounted && _launching) {
-                      setState(() => _launching = false);
-                    }
-                    if (!played) return;
-                    if (!context.mounted) return;
-                    final uri = GoRouterState.of(context).pathParameters;
-                    await context.read<JourneyCubit>().load(
-                      rungId: uri['rung'],
-                      positionId: uri['position'],
-                    );
-                  },
-                ),
-              ],
+          : FutureBuilder<SavedGame?>(
+              future: _savedFor(challenge),
+              builder: (context, saved) => ActionsFooter(
+                stacked: true,
+                children: [
+                  FilledButton.icon(
+                    key: saved.data == null
+                        ? JourneyKeys.play
+                        : JourneyKeys.resume,
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: Text(
+                      saved.data == null
+                          ? l10n.journeyPlay
+                          : l10n.journeyResume,
+                    ),
+                    onPressed: saved.connectionState == ConnectionState.done
+                        ? () => _play(challenge)
+                        : null,
+                  ),
+                  if (saved.data != null)
+                    TextButton(
+                      key: JourneyKeys.restart,
+                      onPressed: () => _play(challenge, restart: true),
+                      child: Text(l10n.journeyRestart),
+                    ),
+                ],
+              ),
             ),
       body: challenge == null
           ? const SkeletonList()
@@ -116,6 +163,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                       board: _BigBoard(
                         challenge: challenge,
                         launching: _launching,
+                        saved: _preview,
                       ),
                       bottom: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -128,11 +176,11 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                           children: [
                             _GoalChip(challenge: challenge),
                             InfoChip(
-                              icon: switch (challenge.time) {
+                              icon: switch (shownTime) {
                                 final time? => paceIcon(PaceCategory.of(time)),
                                 null => Icons.timer_off_outlined,
                               },
-                              label: switch (challenge.time) {
+                              label: switch (shownTime) {
                                 final time? => l10n.speedrunTimeControl(
                                   time.initial.inMinutes,
                                   time.increment.inSeconds,
@@ -140,25 +188,27 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                                 null => l10n.challengeNoClock,
                               },
                             ),
-                            TextButton(
-                              key: JourneyKeys.changePace,
-                              onPressed: () async {
-                                final settings = context.read<SettingsCubit>();
-                                final clock = settings.state?.clock;
-                                if (clock == null) return;
-                                final choice = await showPaceSheet(
-                                  context,
-                                  current: clock.journeyTime,
-                                  allowNoClock: true,
-                                );
-                                if (choice != null && context.mounted) {
-                                  await settings.setClock(
-                                    clock.copyWith(journeyTime: choice.time),
+                            if (_preview == null)
+                              TextButton(
+                                key: JourneyKeys.changePace,
+                                onPressed: () async {
+                                  final settings = context
+                                      .read<SettingsCubit>();
+                                  final clock = settings.state?.clock;
+                                  if (clock == null) return;
+                                  final choice = await showPaceSheet(
+                                    context,
+                                    current: clock.journeyTime,
+                                    allowNoClock: true,
                                   );
-                                }
-                              },
-                              child: Text(l10n.journeyChangePace),
-                            ),
+                                  if (choice != null && context.mounted) {
+                                    await settings.setClock(
+                                      clock.copyWith(journeyTime: choice.time),
+                                    );
+                                  }
+                                },
+                                child: Text(l10n.journeyChangePace),
+                              ),
                           ],
                         ),
                       ),
@@ -199,7 +249,12 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
 /// A posição na largura da tela, vista pelo lado que joga. Ela chega voando
 /// do tabuleiro pequeno da tela de antes (a do adversário ou a inicial).
 class _BigBoard extends StatelessWidget {
-  const _BigBoard({required this.challenge, required this.launching});
+  const _BigBoard({
+    required this.challenge,
+    required this.launching,
+    this.saved,
+  });
+  final SavedGame? saved;
 
   final Challenge challenge;
 
@@ -211,7 +266,12 @@ class _BigBoard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) => PositionBoard(
         boardKey: JourneyKeys.challengeBoard,
-        fen: challenge.position.fen,
+        fen: saved?.position.fen ?? challenge.position.fen,
+        orientation:
+            saved?.snapshot.orientation ??
+            (challenge.position.fen.split(' ')[1] == 'b'
+                ? Side.black
+                : Side.white),
         size: constraints.maxWidth,
         coordinates: true,
         radius: AppShape.none,

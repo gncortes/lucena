@@ -459,18 +459,38 @@ abstract final class Routes {
       Uri(path: placement, queryParameters: {'from': from}).toString();
 
   static const catalog = '/catalog';
-  static String catalogCategory(String category, {String? subcategory}) => Uri(
+  static const blindEntry = '/blind-entry';
+  static const blindCatalog = '/catalog?blind=1';
+  static String catalogCategory(
+    String category, {
+    String? subcategory,
+    bool blind = false,
+  }) => Uri(
     path: '/catalog/$category',
-    queryParameters: subcategory == null ? null : {'subcategory': subcategory},
+    queryParameters: subcategory == null && !blind
+        ? null
+        : {
+            'subcategory': ?subcategory,
+            if (blind) 'blind': '1',
+          },
   ).toString();
 
   /// Configuração da partida numa posição, com o objetivo e, se ela vier do
   /// catálogo, o id dela (para o histórico).
-  static String setup(String fen, {required String goal, String? position}) =>
-      Uri(
-        path: '/setup',
-        queryParameters: {'fen': fen, 'goal': goal, 'position': ?position},
-      ).toString();
+  static String setup(
+    String fen, {
+    required String goal,
+    String? position,
+    bool blind = false,
+  }) => Uri(
+    path: '/setup',
+    queryParameters: {
+      'fen': fen,
+      'goal': goal,
+      'position': ?position,
+      if (blind) 'blind': '1',
+    },
+  ).toString();
 
   static const customPosition = '/custom';
 

@@ -1,6 +1,10 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class JourneyKeys {
+  static const resume = Key('journey.resume');
+  static const restart = Key('journey.restart');
+  static const restartConfirm = Key('journey.restart.confirm');
+
   /// Um desafio especial (às cegas) na tela do degrau.
   static Key special(String id) => Key('journey.special.$id');
 

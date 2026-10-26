@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/home_layout.dart';
-import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/all_modes_keys.dart';
@@ -17,20 +15,10 @@ import '../../core/widgets/staggered_entrance.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';
-import '../../profile/view_models/profile_cubit.dart';
 
 // O item do Lichess não é uma rota do app: abre o site.
 const _lichess = 'lichess';
 const _lichessSignup = 'https://lichess.org/signup';
-
-// O nível do jogador, se o perfil estiver à mão.
-RatingLevel? _level(BuildContext context) {
-  try {
-    return context.select((ProfileCubit cubit) => cubit.state?.level);
-  } on ProviderNotFoundException {
-    return null;
-  }
-}
 
 /// Todos os modos do app num lugar só, mesmo os que o jogador tirou do
 /// destaque da tela inicial: aprender, jogar, ferramentas e o progresso.
@@ -80,7 +68,7 @@ class AllModesScreen extends StatelessWidget {
             icon: Icons.record_voice_over_outlined,
             title: l10n.blindTitle,
             body: l10n.allModesBlindBody,
-            route: Routes.catalog,
+            route: Routes.blindEntry,
           ),
           // Contra pessoas: no Lichess, fora do app.
           (
@@ -145,16 +133,12 @@ class AllModesScreen extends StatelessWidget {
         ],
       ),
     ];
-    // Quem já joga começa por Jogar; o iniciante, por Aprender.
-    final level = _level(context);
-    if (level != null && level != RatingLevel.beginner) {
-      sections.insert(0, sections.removeAt(1));
-    }
     var index = 0;
     return Scaffold(
       key: AllModesKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.allModesTitle)),
       body: ListView(
+        key: const PageStorageKey('all-modes'),
         padding: scrollPadding(context, left: 16, right: 16),
         children: [
           for (final (title, items) in sections) ...[
@@ -192,14 +176,16 @@ class AllModesScreen extends StatelessWidget {
                         return;
                       }
                       if (item.id == 'freeBoard') {
-                        await openFreeBoard(context);
+                        await openFreeBoard(context, preserveOrigin: true);
                         return;
                       }
                       final resume =
                           item.id == 'blind' &&
                           (await hasBlindCheckpoint?.call() ?? false);
                       if (context.mounted) {
-                        context.go(resume ? Routes.blind : item.route);
+                        await context.push(
+                          resume ? '${Routes.blindEntry}?resume=1' : item.route,
+                        );
                       }
                     },
                   ),

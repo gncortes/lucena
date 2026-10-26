@@ -1864,7 +1864,7 @@
   "@endgamesTitle": {
     "description": "Title of the endgame lessons trail."
   },
-  "endgamesPassedCount": "{passed} of {total} completed",
+  "endgamesPassedCount": "{passed} of {total} chapters completed",
   "@endgamesPassedCount": {
     "description": "Beside the progress bar of the endgame lessons trail.",
     "placeholders": {
@@ -1900,9 +1900,9 @@
   "@endgameLessonReview": {
     "description": "Button that reopens a lesson already done."
   },
-  "endgameLessonDone": "Lesson done",
+  "endgameLessonDone": "All lessons in this chapter completed",
   "@endgameLessonDone": {
-    "description": "Mark on a lesson whose steps were all completed."
+    "description": "All lessons in this endgame chapter have been completed; final test status is separate."
   },
   "endgameExercisesSolved": "{solved} of {count} solved",
   "@endgameExercisesSolved": {
@@ -3081,7 +3081,7 @@
     }
   },
   "versusLabel": "VS",
-  "marathonStage": "Stage {stage}",
+  "marathonStage": "Marathon · stage {stage}",
   "@versusLabel": {
     "description": "Versus mark between the player and the opponent in the Marathon stage intro."
   },
@@ -3206,22 +3206,22 @@
   "@endgameTestAdvice": {
     "description": "Discreet line in the final test before the lesson parts are done: recommends doing the parts first."
   },
-  "endgameStartLesson": "Start chapter 1",
+  "endgameStartLesson": "Start lesson 1",
   "@endgameStartLesson": {
-    "description": "Fixed bottom button on the endgame lesson screen when nothing has been done yet: start the lesson."
+    "description": "Start lesson 1 inside the current endgame chapter."
   },
-  "endgameResumePart": "Resume chapter {part}",
+  "endgameResumePart": "Resume lesson {part}",
   "@endgameResumePart": {
-    "description": "Fixed bottom button on the endgame lesson screen: resume the part the student already started.",
+    "description": "Resume the numbered lesson within the endgame chapter.",
     "placeholders": {
       "part": {
         "type": "int"
       }
     }
   },
-  "endgameNextPart": "Go to chapter {part}",
+  "endgameNextPart": "Go to lesson {part}",
   "@endgameNextPart": {
-    "description": "Fixed bottom button on the endgame lesson screen: go to the next part not started yet.",
+    "description": "Open the next numbered lesson within the endgame chapter.",
     "placeholders": {
       "part": {
         "type": "int"
@@ -3265,9 +3265,9 @@
       }
     }
   },
-  "endgameModulePlace": "{module} · lesson {number} of {count}",
+  "endgameModulePlace": "Part: {module} · chapter {number} of {count}",
   "@endgameModulePlace": {
-    "description": "Endgame lesson screen header: the module name and the lesson's position in it, e.g. 'Basic mates · 1 of 4'.",
+    "description": "Part name and chapter position within that part, not the full collection.",
     "placeholders": {
       "module": {
         "type": "String"
@@ -3284,9 +3284,9 @@
   "@endgameLessonInReview": {
     "description": "Banner on an endgame lesson that is still being reviewed (below grade A)."
   },
-  "endgameStagesDone": "{done} of {total} chapters done",
+  "endgameStagesDone": "{done} of {total} lessons completed in this chapter",
   "@endgameStagesDone": {
-    "description": "Endgame lesson screen header: lesson stages done out of the total.",
+    "description": "Completed LessonPart units, called lessons, within this endgame chapter.",
     "placeholders": {
       "done": {
         "type": "int"
@@ -4447,7 +4447,7 @@
       }
     }
   },
-  "endgamesHideDone": "Hide completed lessons",
+  "endgamesHideDone": "Hide completed chapters",
   "@endgamesHideDone": {
     "description": "Endgame lessons, \"For you\" tab: chip that hides the lessons already completed."
   },
@@ -7308,9 +7308,9 @@
       }
     }
   },
-  "homeGoalEndgamesLine": "Learn endgames · lesson {number} of {total}",
+  "homeGoalEndgamesLine": "Learn endgames · chapter {number} of {total}",
   "@homeGoalEndgamesLine": {
-    "description": "Goal card subtitle: the next endgame lesson and its place in the trail.",
+    "description": "Home goal: chapter position in the entire Endgames collection.",
     "placeholders": {
       "number": {
         "type": "int"
@@ -8974,5 +8974,117 @@
   "lessonSaveRetry": "Unable to save your progress. Try going back again.",
   "@lessonSaveRetry": {
     "description": "UX audit: lessonSaveRetry"
+  },
+  "raceWarmUpObjective": "Play the move that keeps the win",
+  "journeyRestartTitle": "Start this challenge again?",
+  "blindChoosePosition": "Blindfold · choose a position to start.",
+  "endgameNextChapter": "Next chapter: {chapter}",
+  "blindVoiceRequired": "Blindfold play needs an offline voice in the app language.",
+  "journeyKeepGame": "Keep current game",
+  "customClearConfirmHint": "Remove all pieces except the kings? Your saved position will be replaced.",
+  "endgameChapterLessons": "Lessons in this chapter",
+  "marathonQuitTitle": "Leave the Marathon?",
+  "journeyRestart": "Start again",
+  "classicQuitTitle": "Leave Classic?",
+  "journeyRestartHint": "The moves and clock of the ongoing game will be replaced.",
+  "journeyResume": "Resume game",
+  "homeGoalChapters": "{done} of {total} chapters completed in Endgames",
+  "endgameStartPart": "Start lesson {part}",
+  "@homeGoalChapters": {
+    "description": "Home goal progress across the entire Endgames collection; not lessons within a chapter or School progress.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@endgameChapterLessons": {
+    "description": "Endgame chapter presentation: list of its LessonPart units, called lessons in the UI."
+  },
+  "@endgameStartPart": {
+    "description": "Start the numbered lesson inside an endgame chapter, without changing School or exercise terminology.",
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
+  "@endgameNextChapter": {
+    "description": "Endgame chapter presentation: navigate to the following EndgameLesson, called chapter in the UI.",
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      }
+    }
+  },
+  "@marathonQuitTitle": {
+    "description": "Confirmation title when leaving an ongoing Marathon."
+  },
+  "@classicQuitTitle": {
+    "description": "Confirmation title when leaving an ongoing Classic speedrun."
+  },
+  "@raceWarmUpObjective": {
+    "description": "Operational warm-up instruction; the side is displayed separately."
+  },
+  "@journeyRestartTitle": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@blindChoosePosition": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@blindVoiceRequired": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@journeyKeepGame": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@customClearConfirmHint": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@journeyRestart": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@journeyRestartHint": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "@journeyResume": {
+    "description": "UX round 2: navigation and state recovery."
+  },
+  "endgamePartNumber": "Part {number}",
+  "endgamesStartFirstChapter": "Start the first chapter",
+  "endgamesContinueChapter": "Continue chapter: {chapter}",
+  "endgameActivityTitle": "Lesson {number} · {title}",
+  "@endgamePartNumber": {
+    "description": "Part number in the Endgames collection, distinct from School modules.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "@endgamesStartFirstChapter": {
+    "description": "Start the first endgame chapter in the collection."
+  },
+  "@endgamesContinueChapter": {
+    "description": "Resume the named endgame chapter.",
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      }
+    }
+  },
+  "@endgameActivityTitle": {
+    "description": "Endgame lesson activity app bar; number within the chapter and its existing title. Does not change lesson content.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   }
 }

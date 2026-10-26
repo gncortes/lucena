@@ -9,6 +9,9 @@ abstract final class CustomPositionKeys {
   static const fenField = Key('custom.fen');
   static const pasteButton = Key('custom.paste');
   static const clearButton = Key('custom.clear');
+  static const clearSheet = Key('custom.clear.sheet');
+  static const clearConfirm = Key('custom.clear.confirm');
+  static const clearCancel = Key('custom.clear.cancel');
 
   /// Peça da paleta (`custom.palette.white.queen`).
   static Key palette(Piece piece) =>
