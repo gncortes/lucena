@@ -111,14 +111,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   late final ChessboardController _board;
   bool _boardTouch = false;
-  bool _speechVisible = true;
-
-  void _onSpeechVisibilityChanged(bool visible) {
-    if (mounted && _speechVisible != visible) {
-      setState(() => _speechVisible = visible);
-    }
-  }
-
   Widget _boardTouchRegion(Widget child) => Listener(
     onPointerDown: (_) => _boardTouch = true,
     onPointerUp: (_) => scheduleMicrotask(() => _boardTouch = false),
@@ -514,7 +506,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     ? ClockRow.height
                     : 0.0;
                 var reserveTop = clocksAbove;
-                var speechMaxLines = 3;
                 final view = View.of(context);
                 final insetsOffset =
                     (view.viewPadding.top - view.viewPadding.bottom) /
@@ -549,45 +540,34 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     unawaited(_openLead(this.context, linkLesson!, offer));
                   });
                 }
-                final boardSide = constraints.maxWidth;
+                var boardSide = constraints.maxWidth;
                 final comments = context.select(
                   (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
                 );
+                // T84: o espaço da fala é fixo (2 linhas) desde o começo,
+                // falando ou não; o tabuleiro diminui para caber com o
+                // centro no meio da tela e não se move durante a partida. A
+                // fala maior se abre por cima, sem empurrar nada.
                 if (state.mode.opponent == OpponentKind.maia &&
                     comments &&
-                    barTalk.enabled &&
-                    barTalk.line != null &&
-                    _speechVisible) {
-                  // A largura do tabuleiro tem prioridade. Reduz o resumo
-                  // antes de usar a exceção vertical, nunca o tabuleiro.
-                  for (var lines = 3; lines >= 1; lines--) {
-                    final text = TextPainter(
-                      text: TextSpan(
-                        text: List.filled(lines, 'M').join('\n'),
-                        style: SpeechBalloon.style(context),
-                      ),
-                      textDirection: Directionality.of(context),
-                      textScaler: MediaQuery.textScalerOf(context),
-                    )..layout();
-                    final speechRoom =
-                        text.height +
-                        SpeechBalloon.defaultPadding.vertical +
-                        SpeechBalloon.tailExtent +
-                        4;
-                    text.dispose();
-                    final candidateTop =
-                        clocksAbove +
-                        (clocks == ClockPosition.bottom
-                            ? speechRoom + 4
-                            : math.max(0, speechRoom - 12));
-                    if (screenCenter - boardSide / 2 >=
-                            candidateTop + _boardGap ||
-                        lines == 1) {
-                      reserveTop = candidateTop;
-                      speechMaxLines = lines;
-                      break;
-                    }
-                  }
+                    character != null) {
+                  final speechRoom =
+                      SpeechBalloon.fixedHeight(context) +
+                      SpeechBalloon.tailExtent +
+                      4;
+                  reserveTop =
+                      clocksAbove +
+                      (clocks == ClockPosition.bottom
+                          ? speechRoom + 4
+                          : math.max(0, speechRoom - 12));
+                  // Abaixo de [_minBoardFraction] da largura (tela baixa),
+                  // o tabuleiro desce e a tela rola, como antes.
+                  boardSide = (2 * (screenCenter - reserveTop - _boardGap))
+                      .clamp(
+                        constraints.maxWidth * _minBoardFraction,
+                        constraints.maxWidth,
+                      )
+                      .toDouble();
                 }
                 final topExtent = reserveTop > 0 ? reserveTop + _boardGap : 0.0;
                 final bottomExtent = clocksBelow > 0
@@ -609,6 +589,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                   reserveBottom: clocksBelow,
                   footer: footerHeight,
                   minFraction: 1,
+                  maxBoard: boardSide,
                 );
                 const both = [Side.white, Side.black];
                 final end = state.end;
@@ -623,6 +604,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       centerY: centering.centerY,
                       minFraction: centering.minFraction,
                       minBoardSide: boardSide,
+                      maxBoard: boardSide,
                       scrollPhysics: _GameScrollPhysics(() => _boardTouch),
                       reserveTop: reserveTop,
                       reserveBottom: clocksBelow,
@@ -672,9 +654,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 clocks != ClockPosition.bottom)
                               CharacterBar(
                                 talk: barTalk,
-                                speechMaxLines: speechMaxLines,
-                                onSpeechVisibilityChanged:
-                                    _onSpeechVisibilityChanged,
+                                dismissOn: _playerMoves(state),
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -820,9 +800,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 character != null)
                               CharacterBar(
                                 talk: barTalk,
-                                speechMaxLines: speechMaxLines,
-                                onSpeechVisibilityChanged:
-                                    _onSpeechVisibilityChanged,
+                                dismissOn: _playerMoves(state),
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -1056,6 +1034,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   /// Entre as faixas dos jogadores e o tabuleiro (PropV2EtapaSpeedrunP360:
   /// faixa até 184, tabuleiro de 192 a 548, faixa a partir de 556).
   static const _boardGap = 8.0;
+
+  /// Quantos lances o jogador já fez: a fala aberta por cima fecha no
+  /// lance seguinte dele (T84), não na resposta da máquina.
+  static int _playerMoves(FreeBoardState state) {
+    final side = state.playerSide;
+    final plies = state.ucis.length;
+    if (side == null) return plies;
+    return state.start.turn == side ? (plies + 1) ~/ 2 : plies ~/ 2;
+  }
+
+  /// O menor tabuleiro com o espaço fixo da fala, em fração da largura.
+  static const _minBoardFraction = 0.8;
 }
 
 /// O rodapé da partida terminada contra a máquina: só "Ver o resultado"

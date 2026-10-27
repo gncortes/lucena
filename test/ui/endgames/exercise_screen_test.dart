@@ -5,6 +5,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
@@ -122,7 +123,16 @@ void main() {
       final cubit = await pump(tester, 'e02');
       await move(tester, 'c1', 'c2');
       expect(said('No.'), findsOneWidget);
-      expect(said('Try another move.'), findsOneWidget);
+      // Na tela baixa a fala não cabe: corta em "… See more" (T84).
+      final cut = find.descendant(
+        of: find.byKey(LessonScriptKeys.speech),
+        matching: find.byKey(SpeechKeys.cut),
+      );
+      expect(
+        said('Try another move.').evaluate().isNotEmpty ||
+            cut.evaluate().isNotEmpty,
+        isTrue,
+      );
       expect(cubit.state.played, isEmpty);
       expect(cubit.state.worth, 0);
       expect(
