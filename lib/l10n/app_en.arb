@@ -7597,7 +7597,7 @@
   "@accountInviteTextSheet": {
     "description": "Account invite sheet after the first game: text."
   },
-  "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account. It is optional: without an account, everything keeps working.",
+  "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account.",
   "@accountInviteTextLichess": {
     "description": "Account invite sheet after using the Lichess rating on the level screen, without an account: text."
   },

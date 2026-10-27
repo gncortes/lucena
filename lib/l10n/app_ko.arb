@@ -1468,7 +1468,7 @@
   "profileDeleteAccount": "Delete the account",
   "profileDeleteWeb": "Without the app, you can ask at playlucena.com/apagar-conta.",
   "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones.",
-  "accountInviteTextLichess": "진행 상황과 Lichess 연결을 Lucena 계정에 보관하세요. 선택 사항이에요. 계정이 없어도 모든 기능이 그대로 작동해요.",
+  "accountInviteTextLichess": "진행 상황과 Lichess 연결을 Lucena 계정에 보관하세요.",
   "accountEmailField": "E-mail",
   "accountEmailHint": "you@email.com",
   "accountPasswordField": "Password",

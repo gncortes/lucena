@@ -128,7 +128,7 @@ void main() {
         of: sheet,
         matching: find.text(
           'Guarde o seu progresso e o vínculo com o Lichess numa conta do '
-          'Lucena. É opcional: sem conta, tudo continua funcionando.',
+          'Lucena.',
         ),
       ),
       findsOneWidget,

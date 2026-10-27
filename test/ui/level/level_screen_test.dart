@@ -329,8 +329,7 @@ void main() {
     expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
     expect(
       find.text(
-        'Keep your progress and your Lichess link in a Lucena account. It is '
-        'optional: without an account, everything keeps working.',
+        'Keep your progress and your Lichess link in a Lucena account.',
       ),
       findsOneWidget,
     );
