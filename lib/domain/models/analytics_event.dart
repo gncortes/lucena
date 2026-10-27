@@ -61,7 +61,7 @@ abstract final class AnalyticsCatalog {
   /// DebugView (§10).
   static const trafficType = 'traffic_type';
 
-  /// Os 67 eventos do app.
+  /// Os 68 eventos do app.
   static const app = <String, List<String>>{
     // Entrada, perfil e conta.
     'tutorial_begin': ['entrada'],
@@ -126,6 +126,8 @@ abstract final class AnalyticsCatalog {
       'aula_id', 'tipo_aula', 'tempo_s', 'erros', 'dicas', 'estrelas', //
       'sessoes',
     ],
+    // `origem`: `trilha_finais|escola|aula`.
+    'aula_indisponivel': ['origem'],
     'aula_saida': [
       'aula_id',
       'capitulo_id',
@@ -615,8 +617,8 @@ abstract final class AnalyticsEvents {
     required bool aprovado,
     required int acertosPrimeira,
     required int exercicios,
-    required int tentativas,
-    required Duration tempo,
+    int? tentativas,
+    Duration? tempo,
   }) => _e('aula_teste_fim', {
     'aula_id': aulaId,
     'aprovado': _yn(aprovado),
@@ -643,6 +645,11 @@ abstract final class AnalyticsEvents {
     'estrelas': estrelas,
     'sessoes': sessoes,
   });
+
+  /// "As aulas ainda não estão disponíveis" (o conteúdo não baixou).
+  /// `origem`: `trilha_finais|escola|aula`.
+  static AnalyticsEvent aulaIndisponivel({required String origem}) =>
+      _e('aula_indisponivel', {'origem': origem});
 
   static AnalyticsEvent aulaSaida({
     required String aulaId,

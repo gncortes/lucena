@@ -3,6 +3,7 @@ import 'package:lucena/domain/models/race.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
 import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_race_repository.dart';
 
@@ -499,6 +500,57 @@ void main() {
       expect(cubit.state.phase, RacePhase.finished);
       expect(cubit.state.diagnosis.runs, 1);
       expect(cubit.state.diagnosis.ready, isFalse);
+    });
+  });
+
+  group('analytics', () {
+    test(
+      'corrida_iniciada, corrida_problema e corrida_fim por erros',
+      () async {
+        final analytics = FakeAnalyticsRepository();
+        final logged = RaceCubit(
+          repository,
+          now,
+          replyDelay: Duration.zero,
+          analytics: analytics,
+        );
+        addTearDown(logged.close);
+        await logged.load();
+        await logged.start();
+        expect(analytics.eventsNamed('corrida_iniciada'), hasLength(1));
+        expect(
+          analytics.eventsNamed('corrida_iniciada').single.params['tema'],
+          'todos',
+        );
+        for (var i = 0; i < 3; i++) {
+          await logged.answer(wrong);
+        }
+        final problems = analytics.eventsNamed('corrida_problema');
+        expect(problems, hasLength(3));
+        expect(problems.first.params['acertou'], 'nao');
+        final end = analytics.eventsNamed('corrida_fim').single.params;
+        expect(end['motivo'], 'erros');
+        expect(end['erros'], 3);
+        expect(end['acertos'], 0);
+      },
+    );
+
+    test('sair no meio registra corrida_fim com motivo saiu', () async {
+      final analytics = FakeAnalyticsRepository();
+      final logged = RaceCubit(
+        repository,
+        now,
+        replyDelay: Duration.zero,
+        analytics: analytics,
+      );
+      addTearDown(logged.close);
+      await logged.load();
+      await logged.start();
+      await logged.quit();
+      expect(
+        analytics.eventsNamed('corrida_fim').single.params['motivo'],
+        'saiu',
+      );
     });
   });
 }

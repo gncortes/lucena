@@ -50,6 +50,7 @@ Future<void> showRegionSheet(BuildContext context) {
           },
           onNotNow: () {
             Navigator.of(sheet).pop();
+            profile.regionSkipped();
             prompt.done();
           },
         ),

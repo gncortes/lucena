@@ -56,7 +56,9 @@ class GoalCard extends StatelessWidget {
         avatar: school.teacher,
         onPressed: () => school.ongoingLessonId == null
             ? context.go(Routes.school)
-            : context.push(Routes.lessonScript(school.ongoingLessonId!)),
+            : context.push(
+                Routes.lessonScript(school.ongoingLessonId!, origin: 'home'),
+              ),
       ),
       HomePath.endgames when endgame != null => _GoalHero(
         title: endgame.lesson.title,

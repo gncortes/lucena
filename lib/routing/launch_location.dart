@@ -32,7 +32,7 @@ String launchLocation({
   if (resumeGame) return Routes.freeBoard;
   if (boardControlsOpen) return Routes.boardControls;
   if (lesson != null && lesson.open) {
-    return Routes.lessonScript(lesson.lessonId);
+    return Routes.lessonScript(lesson.lessonId, origin: 'continuar');
   }
   if (endgameLesson != null &&
       endgameLesson.open &&
@@ -45,6 +45,7 @@ String launchLocation({
       endgameLesson.lessonId,
       part: part,
       stage: part == null ? 0 : endgameLesson.step,
+      origin: 'continuar',
     );
   }
   if (exercise != null && visible(exercise.$1)) {

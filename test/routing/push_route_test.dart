@@ -17,18 +17,29 @@ void main() {
       pushRoute(Uri.parse(link), pausedLesson: () async => lesson);
 
   test('as três rotas das campanhas', () async {
-    expect(await route('/daily'), Routes.daily);
-    expect(await route('/dia'), Routes.daily);
+    expect(await route('/daily'), Routes.dailyFrom('aviso'));
+    expect(await route('/dia'), Routes.dailyFrom('aviso'));
     expect(
       await route('/lesson'),
-      Routes.endgameLessonScript('lucena', part: 'ponte', stage: 1),
+      Routes.endgameLessonScript(
+        'lucena',
+        part: 'ponte',
+        stage: 1,
+        origin: 'aviso',
+      ),
     );
     expect(await route('/featured/carlsen-2024'), '/featured/carlsen-2024');
   });
 
   test('o endereço do app vale como o caminho', () async {
-    expect(await route('https://playlucena.com/daily'), Routes.daily);
-    expect(await route('https://playlucena.com/dia'), Routes.daily);
+    expect(
+      await route('https://playlucena.com/daily'),
+      Routes.dailyFrom('aviso'),
+    );
+    expect(
+      await route('https://playlucena.com/dia'),
+      Routes.dailyFrom('aviso'),
+    );
     expect(
       await route('https://playlucena.com/featured/tournament/wch'),
       Routes.featuredTournament('wch'),
@@ -36,7 +47,10 @@ void main() {
   });
 
   test('a aula nova abre a aula', () async {
-    expect(await route('/lesson/oposicao'), Routes.endgameLesson('oposicao'));
+    expect(
+      await route('/lesson/oposicao'),
+      Routes.endgameLesson('oposicao', origin: 'aviso'),
+    );
   });
 
   test(

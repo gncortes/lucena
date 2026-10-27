@@ -8,6 +8,7 @@ import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
 import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/progress_summary.dart';
 
 /// A entrada com conta: Google ou e-mail. [failure] vale por um aviso: a
 /// tela mostra e o estado volta ao normal na próxima ação.
@@ -75,10 +76,13 @@ class AccountCubit extends Cubit<AccountState> {
   /// aceitaria 6).
   static const minPassword = 8;
 
-  Future<void> signInWithGoogle() => _run(_accounts.signInWithGoogle);
+  Future<void> signInWithGoogle() =>
+      _run(_accounts.signInWithGoogle, method: 'google');
 
-  Future<void> signInWithEmail(String email, String password) =>
-      _run(() => _accounts.signInWithEmail(email.trim(), password));
+  Future<void> signInWithEmail(String email, String password) => _run(
+    () => _accounts.signInWithEmail(email.trim(), password),
+    method: 'email',
+  );
 
   Future<void> createWithEmail(String email, String password) {
     if (password.length < minPassword) {
@@ -88,6 +92,7 @@ class AccountCubit extends Cubit<AccountState> {
     return _run(
       () => _accounts.createWithEmail(email.trim(), password),
       created: true,
+      method: 'email',
     );
   }
 
@@ -108,6 +113,7 @@ class AccountCubit extends Cubit<AccountState> {
   Future<void> _run(
     Future<Account?> Function() signIn, {
     bool created = false,
+    String? method,
   }) async {
     if (state.busy) return;
     emit(const AccountState(busy: true));
@@ -118,6 +124,24 @@ class AccountCubit extends Cubit<AccountState> {
         return;
       }
       final (restored, offline) = await _read(account, created: created);
+      if (method != null) {
+        unawaited(
+          _analytics.log(
+            created
+                ? AnalyticsEvents.signUp(method: method)
+                : AnalyticsEvents.login(method: method),
+          ),
+        );
+      }
+      if (restored != null) {
+        unawaited(
+          _analytics.log(
+            AnalyticsEvents.contaProgressoRecuperado(
+              itens: _items(restored.summary),
+            ),
+          ),
+        );
+      }
       if (!isClosed) {
         emit(
           AccountState(
@@ -148,6 +172,15 @@ class AccountCubit extends Cubit<AccountState> {
       return (null, true);
     }
   }
+
+  // Quanto a conta trouxe: aulas, desafios, posições e partidas guardadas.
+  static int _items(ProgressSummary s) =>
+      s.lessons.length +
+      s.school.length +
+      s.stars.length +
+      s.challenges.length +
+      s.positions.length +
+      s.featured.length;
 
   /// "Seu perfil" salvo com conta: o nome vai para a conta e o progresso
   /// sobe. Sem esperar: sem rede, sobe depois, sozinho.

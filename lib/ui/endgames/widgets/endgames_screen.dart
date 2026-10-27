@@ -102,7 +102,7 @@ void _openLesson(BuildContext context, String id) => LessonGate.open(
   context,
   lessonId: id,
   kind: LessonKind.endgame,
-  open: () => context.push(Routes.endgameLesson(id)),
+  open: () => context.push(Routes.endgameLesson(id, origin: 'trilha')),
 );
 
 /// O cartão "Continuar": a parte e o número do capítulo, o título e o resumo.

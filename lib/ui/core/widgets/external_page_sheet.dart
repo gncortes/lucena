@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import '../../../domain/models/analytics_event.dart';
+import '../analytics/analytics_context.dart';
 import '../keys/external_page_keys.dart';
 import '../l10n/l10n.dart';
 import '../theme/app_icon_size.dart';
@@ -16,6 +20,12 @@ import 'web_pages.dart';
 /// aula atrás fica como estava.
 Future<void> showExternalPage(BuildContext context, Uri url) {
   final pages = WebPages.of(context);
+  final destination = _destinationOf(url);
+  if (destination != null) {
+    unawaited(
+      context.analytics.log(AnalyticsEvents.saidaExterna(destino: destination)),
+    );
+  }
   // A página rola na vertical: arrastar não fecha a folha (o ✕ fecha).
   return showLucenaSheet<void>(
     context,
@@ -28,6 +38,20 @@ Future<void> showExternalPage(BuildContext context, Uri url) {
       child: ExternalPageSheet(url: url, pages: pages),
     ),
   );
+}
+
+/// O destino do catálogo de analytics; páginas de fora dele (Wikipedia etc.)
+/// não geram evento.
+String? _destinationOf(Uri url) {
+  final host = ExternalPageSheet.domainOf(url);
+  if (host.endsWith('fide.com')) return 'fide';
+  if (host.endsWith('chess-results.com')) return 'chess_results';
+  if (host.endsWith('lichess.org')) return 'lichess';
+  if (host.endsWith('play.google.com')) return 'play';
+  if (host.contains('privacy') || url.path.contains('privacy')) {
+    return 'privacidade';
+  }
+  return null;
 }
 
 /// A folha com a página.

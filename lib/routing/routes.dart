@@ -238,6 +238,10 @@ abstract final class Routes {
 
   /// O final do dia: abre a partida de hoje (o toque do lembrete cai aqui).
   static const daily = '/daily';
+
+  /// O final do dia aberto de [entry] (`aviso|lembrete|link`; sem ele, da
+  /// home): vai para o `final_dia_aberto` do Analytics.
+  static String dailyFrom(String entry) => '$daily?entrada=$entry';
   static const dailyResult = '/daily/result';
   static const dailyShare = '/daily/share';
 
@@ -341,9 +345,9 @@ abstract final class Routes {
 
   /// A aula da escola com roteiro (curso de iniciante, T71), na etapa
   /// [stage].
-  static String lessonScript(String id, {int stage = 0}) => Uri(
+  static String lessonScript(String id, {int stage = 0, String? origin}) => Uri(
     path: '/school/$id/roteiro',
-    queryParameters: {'etapa': '$stage'},
+    queryParameters: {'etapa': '$stage', 'origem': ?origin},
   ).toString();
   static const starChallenges = '/school/challenges';
   static String starChallenge(String piece, String level) =>
@@ -356,16 +360,28 @@ abstract final class Routes {
   /// As aulas de finais já num filtro: "Para você" ([forYou]) ou "Todos".
   static String endgamesFiltered({required bool forYou}) =>
       '/endgames?filter=${forYou ? 'forYou' : 'all'}';
-  static String endgameLesson(String id) => '/endgames/$id';
+
+  /// [origin]: de onde a pessoa veio (`home`, `aviso`, `catalogo`...); sem
+  /// ele, da trilha. Vai para o `aula_aberta` do Analytics.
+  static String endgameLesson(String id, {String? origin}) => Uri(
+    path: '/endgames/$id',
+    queryParameters: origin == null ? null : {'origem': origin},
+  ).toString();
 
   /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
   /// Sem parte, ou com uma que não abre mais, a rota cai no início da
   /// primeira parte (`resolveScriptPart`).
-  static String endgameLessonScript(String id, {String? part, int stage = 0}) =>
-      Uri(
-        path: '/endgames/$id/roteiro',
-        queryParameters: {'part': ?part, 'etapa': '$stage'},
-      ).toString();
+  /// [origin]: de onde a pessoa veio sem passar pela tela da aula (`home`,
+  /// `continuar`, `aviso`); o Analytics registra a abertura da aula aqui.
+  static String endgameLessonScript(
+    String id, {
+    String? part,
+    int stage = 0,
+    String? origin,
+  }) => Uri(
+    path: '/endgames/$id/roteiro',
+    queryParameters: {'part': ?part, 'etapa': '$stage', 'origem': ?origin},
+  ).toString();
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';

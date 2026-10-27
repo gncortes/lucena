@@ -40,11 +40,13 @@ import 'dart:math';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/tablebase/kpk_repository.dart';
 import '../../../data/repositories/tablebase/script_table_repository.dart';
 import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../domain/models/kpk_outcome.dart';
@@ -202,11 +204,110 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     this._tables,
     this._engineJudge,
     this._sounds,
+    this._analytics = const NoAnalyticsRepository(),
+    this.origin,
   }) : _delay = delay ?? ((duration) => Future<void>.delayed(duration)),
        super(const LessonScriptState());
 
   /// Os sons das peças (ligados ou não em Som e voz); nulo nos testes.
   final GameSounds? _sounds;
+
+  final AnalyticsRepository _analytics;
+
+  /// De onde a aula abriu (`aula_aberta`): `home|continuar|aviso|...`. Nulo
+  /// numa aula de final aberta pela tela da aula, que já registrou a
+  /// abertura; na escola, o padrão é `trilha`.
+  final String? origin;
+
+  // ---- Analytics (E1.05): capítulo = a parte da aula ----------------------
+  DateTime? _chapterStart;
+  int _chapter = 1;
+  int _chapters = 1;
+  int _chapterErrors = 0;
+  int _chapterHints = 0;
+  int _chapterExercises = 0;
+  bool _chapterDone = false;
+  String? _exerciseKey;
+  DateTime? _exerciseStart;
+  int _exerciseAttempts = 0;
+
+  String get _lessonKind => _source.endgame ? 'finais' : 'escola';
+
+  Duration get _chapterTime =>
+      _chapterStart == null ? Duration.zero : _now().difference(_chapterStart!);
+
+  void _log(AnalyticsEvent event) => unawaited(_analytics.log(event));
+
+  /// Abre o capítulo: a aula (quando esta tela é a porta de entrada dela) e
+  /// o capítulo.
+  Future<void> _logOpened(LessonCheckpoint? checkpoint) async {
+    final lesson = await _source.lesson(lessonId);
+    final sections = lesson?.sections ?? const <LessonPart>[];
+    final index = sections.indexWhere((part) => part.id == partId);
+    _chapter = index < 0 ? 1 : index + 1;
+    _chapters = sections.isEmpty ? 1 : sections.length;
+    _chapterStart = _now();
+    final resumed =
+        checkpoint?.lessonId == lessonId && checkpoint?.part == partId;
+    if (!_source.endgame || origin != null) {
+      _log(
+        AnalyticsEvents.aulaAberta(
+          aulaId: lessonId,
+          tipoAula: _lessonKind,
+          origem: origin ?? 'trilha',
+          retomada: resumed,
+          primeiraVez: await _source.untouched(lessonId),
+        ),
+      );
+    }
+    _log(
+      AnalyticsEvents.aulaCapituloInicio(
+        aulaId: lessonId,
+        capituloId: partId,
+        capitulo: _chapter,
+        capitulosTotal: _chapters,
+        tipoAula: _lessonKind,
+      ),
+    );
+  }
+
+  /// Conta erros, dicas e o resultado de cada prática pelo que o estado
+  /// mostra: o tom errado, o fim da prática.
+  void _track(LessonScriptState from, LessonScriptState to) {
+    if (_chapterStart == null || _chapterDone) return;
+    if (to.tone == ScriptTone.bad && from.tone != ScriptTone.bad) {
+      _chapterErrors++;
+    }
+    if (!to.ready || !_example.isPractice) return;
+    final key = '$_stage/${_example.id}';
+    if (key != _exerciseKey) {
+      _exerciseKey = key;
+      _exerciseStart = _now();
+      _exerciseAttempts = 0;
+    }
+    if (to.phase != ScriptPhase.praticaFim ||
+        from.phase != ScriptPhase.praticaVez) {
+      return;
+    }
+    final right = to.tone == ScriptTone.good;
+    if (right) _chapterExercises++;
+    _log(
+      AnalyticsEvents.exercicioResultado(
+        aulaId: lessonId,
+        capituloId: partId,
+        exercicioId: key,
+        tipoPasso: switch (_example.practice!.kind) {
+          PracticeKind.toque => 'tocar',
+          PracticeKind.estrelas => 'estrelas',
+          _ => 'mover',
+        },
+        acertou: right,
+        tentativas: ++_exerciseAttempts,
+        dicas: 0,
+        tempo: _now().difference(_exerciseStart ?? _now()),
+      ),
+    );
+  }
 
   /// Todo lance que entra no tabuleiro, de quem quer que seja (aluno,
   /// máquina, demonstração), toca o som dele. Voltar um passo não toca: o
@@ -214,6 +315,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   @override
   void onChange(Change<LessonScriptState> change) {
     super.onChange(change);
+    _track(change.currentState, change.nextState);
     final sounds = _sounds;
     if (sounds == null) return;
     final san = playedSan(change.currentState, change.nextState);
@@ -366,6 +468,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   // ---- Abertura -----------------------------------------------------------
 
+  /// O conteúdo da aula não baixou: a tela mostra o aviso de indisponível.
+  void unavailable() => unawaited(
+    _analytics.log(AnalyticsEvents.aulaIndisponivel(origem: 'aula')),
+  );
+
   Future<void> start() async {
     _script = await _scripts.script(scriptPath);
     _texts = await _scripts.texts(lessonId, language);
@@ -380,6 +487,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final last = _script.stages.length - 1;
     final checkpoint = await _source.checkpoint();
     if (isClosed || _leaving) return;
+    await _logOpened(checkpoint);
     if (checkpoint != null &&
         checkpoint.lessonId == lessonId &&
         checkpoint.part == partId &&
@@ -960,6 +1068,18 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   Future<void> leave() => _leaveFuture ??= _leave();
 
   Future<void> _leave() async {
+    if (!_chapterDone && _chapterStart != null) {
+      _log(
+        AnalyticsEvents.aulaSaida(
+          aulaId: lessonId,
+          capituloId: partId,
+          exercicioId: state.ready && _example.isPractice
+              ? '$_stage/${_example.id}'
+              : null,
+          tempo: _chapterTime,
+        ),
+      );
+    }
     _saveScriptCheckpoint();
     final wasBackground = _background;
     _leaving = true;
@@ -1343,6 +1463,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         await _continue();
       case ScriptAction.verResposta:
         if (state.phase != ScriptPhase.pergunta) return;
+        _chapterHints++;
         _push();
         _present(
           _groupState(
@@ -1470,6 +1591,20 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     await _checkpointWrites;
     final outcome = await _source.completePart(lessonId, partId);
     if (isClosed || _leaving) return;
+    if (!_chapterDone && _chapterStart != null) {
+      _chapterDone = true;
+      _log(
+        AnalyticsEvents.aulaCapituloFim(
+          aulaId: lessonId,
+          capituloId: partId,
+          capitulo: _chapter,
+          tempo: _chapterTime,
+          exercicios: _chapterExercises,
+          erros: _chapterErrors,
+          dicas: _chapterHints,
+        ),
+      );
+    }
     emit(state.copyWith(outcome: outcome));
   }
 

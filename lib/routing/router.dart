@@ -343,6 +343,7 @@ GoRouter buildRouter({
               school: context.read<LessonRepository>(),
               endgames: context.read<EndgameLessonRepository>(),
               race: context.read<RaceRepository>(),
+              analytics: context.analytics,
             )..load(_language(context)),
             child: LessonReviewPrompt(child: LessonFinishedScreen(kind: kind)),
           );
@@ -354,6 +355,7 @@ GoRouter buildRouter({
           create: (context) => StreakCubit(
             activity: context.read<ActivityRepository>(),
             now: context.read<Now>(),
+            analytics: context.analytics,
           )..load(),
           child: const StreakScreen(),
         ),
@@ -373,6 +375,9 @@ GoRouter buildRouter({
             daily: context.read<DailyFinalRepository>(),
             rating: context.read<RatingRepository>(),
             now: context.read<Now>(),
+            activity: context.read<ActivityRepository>(),
+            analytics: context.analytics,
+            entry: state.uri.queryParameters['entrada'] ?? 'home',
           )..load(),
           child: const DailyStartScreen(),
         ),
@@ -508,6 +513,7 @@ GoRouter buildRouter({
             positions: context.read<PositionsRepository>(),
             daily: context.read<DailyFinalRepository>(),
             activity: context.read<ActivityRepository>(),
+            analytics: context.analytics,
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -646,6 +652,8 @@ GoRouter buildRouter({
                         activity: context.read<ActivityRepository>(),
                         kpk: context.read<KpkRepository>(),
                         engine: context.read<PositionJudge>(),
+                        analytics: context.analytics,
+                        now: context.read<Now>(),
                       )..load(),
                     ),
                   if (mode.featuredId case final featuredId?)
@@ -775,6 +783,7 @@ GoRouter buildRouter({
                 placement: context.read<PlacementRepository>(),
                 endgames: context.read<EndgameLessonRepository>(),
                 endgameProgress: context.read<EndgameProgressRepository>(),
+                analytics: context.analytics,
               )..load(_language(context)),
               child: Builder(
                 builder: (context) => ReloadOnReturn(
@@ -857,6 +866,8 @@ GoRouter buildRouter({
                         context.read<SchoolProgressRepository>(),
                       ),
                       initialStage: stage,
+                      analytics: context.analytics,
+                      origin: state.uri.queryParameters['origem'],
                     ),
                     child: LessonScriptScreen(
                       key: ValueKey('script.$id'),
@@ -880,6 +891,7 @@ GoRouter buildRouter({
                 school: context.read<LessonRepository>(),
                 schoolProgress: context.read<SchoolProgressRepository>(),
                 settings: context.read<SettingsRepository>(),
+                analytics: context.analytics,
               )..load(_language(context), showAll: _endgamesFilter(state)),
               child: Builder(
                 builder: (context) => ReloadOnReturn(
@@ -941,12 +953,19 @@ GoRouter buildRouter({
                   final id = state.pathParameters['lesson']!;
                   return BlocProvider(
                     key: ValueKey(id),
-                    create: (_) => EndgameLessonCubit(
-                      lessons: context.read<EndgameLessonRepository>(),
-                      progress: context.read<EndgameProgressRepository>(),
-                      journey: context.read<JourneyRepository>(),
-                      characters: context.read<CharacterRepository>(),
-                    )..load(id, _language(context)),
+                    create: (_) =>
+                        EndgameLessonCubit(
+                          lessons: context.read<EndgameLessonRepository>(),
+                          progress: context.read<EndgameProgressRepository>(),
+                          journey: context.read<JourneyRepository>(),
+                          characters: context.read<CharacterRepository>(),
+                          analytics: context.analytics,
+                        )..load(
+                          id,
+                          _language(context),
+                          origin:
+                              state.uri.queryParameters['origem'] ?? 'trilha',
+                        ),
                     child: Builder(
                       builder: (context) => ReloadOnReturn(
                         onReturn: () => context.read<EndgameLessonCubit>().load(
@@ -1005,6 +1024,8 @@ GoRouter buildRouter({
                             context.read<EndgameProgressRepository>(),
                           ),
                           initialStage: stage,
+                          analytics: context.analytics,
+                          origin: state.uri.queryParameters['origem'],
                         ),
                         child: LessonScriptScreen(
                           key: ValueKey('script.$id.$part'),
@@ -1084,6 +1105,7 @@ GoRouter buildRouter({
                           now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
                           haptics: context.read<GameHaptics>(),
+                          analytics: context.analytics,
                           lessons: context.read<EndgameLessonRepository>(),
                           progress: context.read<EndgameProgressRepository>(),
                           characters: context.read<CharacterRepository>(),
@@ -1173,6 +1195,7 @@ GoRouter buildRouter({
                 context.read<Now>(),
                 onlySubcategory: state.uri.queryParameters['only'],
                 onlyCategory: state.uri.queryParameters['category'],
+                analytics: context.analytics,
               )..load(),
               child: const RaceScreen(),
             ),

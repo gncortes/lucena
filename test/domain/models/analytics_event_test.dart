@@ -127,6 +127,7 @@ final _samples = <AnalyticsEvent>[
     tempo: const Duration(minutes: 5),
   ),
   AnalyticsEvents.aulaConcluida(aulaId: 'lucena', tipoAula: 'final'),
+  AnalyticsEvents.aulaIndisponivel(origem: 'escola'),
   AnalyticsEvents.aulaSaida(
     aulaId: 'lucena',
     capituloId: 'ponte',
@@ -257,9 +258,9 @@ final _samples = <AnalyticsEvent>[
 void main() {
   group('catálogo', () {
     test(
-      'tem os 71 eventos (68 do app, com o push_aberto da E1.19, e 3 da web)',
+      'tem os 72 eventos (69 do app, com o push_aberto da E1.19, e 3 da web)',
       () {
-        expect(AnalyticsCatalog.app, hasLength(68));
+        expect(AnalyticsCatalog.app, hasLength(69));
         expect(AnalyticsCatalog.web, hasLength(3));
         expect(
           AnalyticsCatalog.app.keys.toSet().intersection(

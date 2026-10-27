@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/race/race_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/race_rules.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -49,6 +53,12 @@ Future<RaceOfferChoice> offerRaceWarmUp(
       repository: repository,
     ),
   );
+  // Fechar a folha sem escolher é pular; as outras saídas o `_choose` registra.
+  if (choice == null && context.mounted) {
+    unawaited(
+      context.analytics.log(AnalyticsEvents.corridaAquecimento(acao: 'pular')),
+    );
+  }
   return choice ?? RaceOfferChoice.skip;
 }
 
@@ -78,6 +88,18 @@ class _OfferSheetState extends State<_OfferSheet> {
 
   Future<void> _choose(RaceOfferChoice choice) async {
     if (_never) await widget.repository.setOffersWarmUp(value: false);
+    if (!mounted) return;
+    unawaited(
+      context.analytics.log(
+        AnalyticsEvents.corridaAquecimento(
+          acao: _never
+              ? 'nao_perguntar'
+              : choice == RaceOfferChoice.warm
+              ? 'aquecer'
+              : 'jogar_direto',
+        ),
+      ),
+    );
     if (mounted) Navigator.of(context).pop(choice);
   }
 

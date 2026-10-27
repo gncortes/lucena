@@ -8,6 +8,7 @@ import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -27,6 +28,7 @@ void main() {
     Duration replyDelay = Duration.zero,
     EndgameLessonRepository? lessons,
     ExerciseFeedbackRepository? feedback,
+    FakeAnalyticsRepository? analytics,
   }) {
     final cubit = ExerciseCubit(
       now: now,
@@ -36,6 +38,7 @@ void main() {
       characters: FakeCharacterRepository(),
       sounds: GameSounds(FakeSettingsRepository(), sound),
       replyDelay: replyDelay,
+      analytics: analytics ?? FakeAnalyticsRepository(),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -536,6 +539,60 @@ void main() {
 
     await exercise.play(move('c1c4'));
     expect(sound.played, [GameSound.move]);
+  });
+
+  group('analytics', () {
+    test('1ª abertura da série: aula_teste_inicio', () async {
+      final analytics = FakeAnalyticsRepository();
+      final exercise = cubit(analytics: analytics);
+      await exercise.load('rook.lucena', 'e01', 'en');
+      final start = analytics.eventsNamed('aula_teste_inicio').single.params;
+      expect(start['aula_id'], 'rook.lucena');
+      expect(start['exercicios'], 3);
+    });
+
+    test('acerto: exercicio_resultado com tentativas e dicas', () async {
+      final analytics = FakeAnalyticsRepository();
+      final exercise = cubit(analytics: analytics);
+      await exercise.load('rook.lucena', 'e02', 'en');
+      await exercise.play(move('c1c2'));
+      await exercise.play(move('c1c5'));
+      final result = analytics.eventsNamed('exercicio_resultado').single.params;
+      expect(result['aula_id'], 'rook.lucena');
+      expect(result['capitulo_id'], 'teste');
+      expect(result['exercicio_id'], 'e02');
+      expect(result['tipo_passo'], 'mover');
+      expect(result['acertou'], 'sim');
+      expect(result['tentativas'], 2);
+      expect(result['dicas'], 0);
+    });
+
+    test('último exercício da série: aula_teste_fim', () async {
+      final analytics = FakeAnalyticsRepository();
+      progress.saved = const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(stars: {'e01': 1, 'e03': 1}),
+        },
+      );
+      final exercise = cubit(analytics: analytics);
+      await exercise.load('rook.lucena', 'e02', 'en');
+      expect(analytics.eventsNamed('aula_teste_inicio'), isEmpty);
+      await exercise.play(move('c1c5'));
+      final end = analytics.eventsNamed('aula_teste_fim').single.params;
+      expect(end['aula_id'], 'rook.lucena');
+      expect(end['exercicios'], 3);
+      expect(end['aprovado'], isNotNull);
+    });
+
+    test('sair no meio: aula_saida com o exercício', () async {
+      final analytics = FakeAnalyticsRepository();
+      final exercise = cubit(analytics: analytics);
+      await exercise.load('rook.lucena', 'e02', 'en');
+      await exercise.leave();
+      final left = analytics.eventsNamed('aula_saida').single.params;
+      expect(left['aula_id'], 'rook.lucena');
+      expect(left['exercicio_id'], 'e02');
+    });
   });
 }
 

@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/lesson_content.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/daily/daily_final_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
@@ -368,7 +372,10 @@ class HomeCubit extends Cubit<HomeState> {
     this._positions,
     this._daily,
     this._activity,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const HomeState());
+
+  final AnalyticsRepository _analytics;
 
   // O final do dia e a sequência: sem eles (ou sem o relógio), a faixa some.
   final DailyFinalRepository? _daily;
@@ -529,6 +536,18 @@ class HomeCubit extends Cubit<HomeState> {
         await activity.lostPending(StreakRules.lostLastDay(at));
     return pending ? streak : streak.withoutLost;
   }
+
+  /// A folha da sequência perdida de [lost] foi respondida: [played] se foi
+  /// jogar o final de hoje, senão "Agora não".
+  void lostAnswered(Streak lost, {required bool played}) => unawaited(
+    _analytics.log(
+      AnalyticsEvents.sequenciaPerdida(
+        tamanho: lost.lost,
+        recorde: lost.record,
+        acao: played ? 'jogou_hoje' : 'agora_nao',
+      ),
+    ),
+  );
 
   /// A folha da sequência perdida saiu: não volta.
   Future<void> lostShown() async {

@@ -598,6 +598,7 @@ class _LucenaAppState extends State<LucenaApp> {
               // O país do Perfil vem da região do celular, sem permissão.
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+              analytics: dependencies.analyticsRepository,
             )..load(),
           ),
           BlocProvider(
@@ -610,6 +611,7 @@ class _LucenaAppState extends State<LucenaApp> {
               profile: dependencies.profileRepository,
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+              analytics: dependencies.analyticsRepository,
             )..load(),
           ),
           BlocProvider(

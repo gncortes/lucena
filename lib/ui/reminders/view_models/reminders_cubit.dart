@@ -133,11 +133,12 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
 
   /// Para onde o toque leva.
   static String route(PlannedReminder reminder) => switch (reminder.kind) {
-    ReminderKind.streak => Routes.daily,
+    ReminderKind.streak => Routes.dailyFrom('lembrete'),
     ReminderKind.lesson => Routes.endgameLessonScript(
       reminder.lesson!.lessonId,
       part: reminder.lesson!.partId,
       stage: reminder.lesson!.stage,
+      origin: 'aviso',
     ),
     ReminderKind.week => Routes.week,
   };

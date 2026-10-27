@@ -63,9 +63,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('mostra o título, o que se ganha e que é grátis', (
-    tester,
-  ) async {
+  testWidgets('mostra o título, o que se ganha e que é grátis', (tester) async {
     await pumpAccount(tester);
     expect(find.text('Save your progress'), findsOneWidget);
     expect(find.textContaining('free'), findsOneWidget);
