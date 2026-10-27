@@ -1,3 +1,5 @@
+import '../data/services/lesson_content_service.dart';
+
 import 'dart:async';
 
 import '../data/repositories/activity/activity_repository.dart';
@@ -14,6 +16,7 @@ import '../data/repositories/update/app_update_repository.dart';
 import '../data/services/app_update_service.dart';
 import '../data/services/firebase/remote_config_service.dart';
 import '../data/services/notification_service.dart';
+import 'push_alerts.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
 import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
@@ -85,6 +88,8 @@ import '../data/repositories/voice/voice_repository.dart';
 import '../data/repositories/voice/voice_repository_local.dart';
 import '../data/repositories/featured/featured_alerts_repository.dart';
 import '../data/repositories/featured/featured_progress_repository.dart';
+import '../data/repositories/course_preview/course_preview_repository.dart';
+import '../data/repositories/course_preview/course_preview_repository_asset.dart';
 import '../data/repositories/featured/featured_repository.dart';
 import '../data/repositories/featured/featured_repository_asset.dart';
 import '../data/repositories/wiki/wiki_links_repository.dart';
@@ -222,6 +227,7 @@ class Dependencies {
     required this.surveyRepository,
     required this.wikiLinksRepository,
     required this.featuredRepository,
+    required this.coursePreviewRepository,
     required this.featuredProgressRepository,
     required this.activityRepository,
     required this.dailyFinalRepository,
@@ -265,9 +271,17 @@ class Dependencies {
   }) {
     final preferences = PreferencesService();
     final settings = LocalSettingsRepository(preferences);
+    // Um plugin só para os lembretes e o push (o toque tem um dono só).
+    final notifications = DeviceNotificationService();
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
+    final lessonContent = createLessonContentAssets(
+      releaseBuild: kReleaseMode,
+      firebase: firebase,
+      localUrl: const String.fromEnvironment('CONTENT_URL'),
+      publishedRelease: const String.fromEnvironment('CONTENT_RELEASE'),
+    );
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
@@ -275,7 +289,7 @@ class Dependencies {
     final profile = LocalProfileRepository(database);
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
-    final lessons = AssetLessonRepository(assets);
+    final lessons = AssetLessonRepository(lessonContent);
     final cloudStore = firebase
         ? FirestoreCloudStoreService()
         : const NoCloudStoreService();
@@ -314,7 +328,7 @@ class Dependencies {
     );
     // Só as aulas liberadas (VisibleLessons); as falas comuns vêm todas.
     final endgameLessons = VisibleEndgameLessonRepository(
-      AssetEndgameLessonRepository(assets, school: lessons),
+      AssetEndgameLessonRepository(lessonContent, school: lessons),
     );
     final featured = ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(preferences),
@@ -338,6 +352,9 @@ class Dependencies {
       mode: analyticsMode,
     );
     const ads = NoAdsRepository();
+    final PushService pushService = firebase
+        ? FirebasePushService()
+        : const NoPushService();
     final avatars = CloudAvatarRepository(
       firebase ? FirebaseFileStoreService() : const NoFileStoreService(),
     );
@@ -354,6 +371,8 @@ class Dependencies {
         avatars: avatars,
         now: now,
         language: () async => (await settings.load()).languageCode,
+        push: pushService,
+        preferences: preferences,
       ),
       lichessRepository: RemoteLichessRepository(
         service: LichessService(),
@@ -363,8 +382,10 @@ class Dependencies {
       ),
       chessComRepository: RemoteChessComRepository(ChessComService(), now: now),
       pushRepository: FirebasePushRepository(
-        firebase ? FirebasePushService() : const NoPushService(),
+        pushService,
         preferences,
+        notifications: notifications,
+        texts: () => loadPushTexts(settings),
       ),
       alertsRepository: LocalAlertsRepository(preferences),
       regionPromptRepository: LocalRegionPromptRepository(preferences),
@@ -399,13 +420,15 @@ class Dependencies {
       schoolProgressRepository: school,
       starChallengeRepository: stars,
       endgameLessonRepository: endgameLessons,
-      lessonScriptRepository: AssetLessonScriptRepository(assets),
+      lessonScriptRepository: AssetLessonScriptRepository(lessonContent),
       kpkRepository: AssetKpkRepository(assets),
       scriptTableRepository: AssetScriptTableRepository(assets),
       // O juiz de reserva da lição em roteiro: o mesmo Stockfish (T76).
       engineJudge: StockfishJudgeRepository(stockfish),
       endgameProgressRepository: endgames,
-      exerciseFeedbackRepository: AssetExerciseFeedbackRepository(assets),
+      exerciseFeedbackRepository: AssetExerciseFeedbackRepository(
+        lessonContent,
+      ),
       drawOfferRepository: DeviceDrawOfferRepository(
         maia: maiaRepository,
         evaluation: evaluation,
@@ -415,8 +438,9 @@ class Dependencies {
       blindLogRepository: LocalBlindLogRepository(preferences),
       blindCheckpointRepository: LocalBlindCheckpointRepository(preferences),
       surveyRepository: LocalSurveyRepository(preferences, now),
-      wikiLinksRepository: AssetWikiLinksRepository(assets),
+      wikiLinksRepository: AssetWikiLinksRepository(lessonContent),
       featuredRepository: AssetFeaturedRepository(assets),
+      coursePreviewRepository: AssetCoursePreviewRepository(lessonContent),
       featuredProgressRepository: featured,
       activityRepository: activity,
       crowdRepository: CloudCrowdRepository(cloudStore),
@@ -468,7 +492,7 @@ class Dependencies {
       ),
       localChanges: changes.stream,
       remindersRepository: LocalRemindersRepository(
-        DeviceNotificationService(),
+        notifications,
         progress: endgames,
         lessons: endgameLessons,
       ),
@@ -549,6 +573,9 @@ class Dependencies {
   /// Os finais em destaque, o que o jogador já fez com eles e o aviso de
   /// final novo (sem canal por enquanto: E1.20 e E1.21).
   final FeaturedRepository featuredRepository;
+
+  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento).
+  final CoursePreviewRepository coursePreviewRepository;
   final FeaturedProgressRepository featuredProgressRepository;
   final FeaturedAlertsRepository featuredAlertsRepository;
 

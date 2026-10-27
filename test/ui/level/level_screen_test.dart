@@ -123,6 +123,14 @@ void main() {
         part(Routes.levelChess, const LevelChessScreen()),
         part(Routes.levelRating, const LevelRatingScreen()),
         GoRoute(
+          path: Routes.nextSteps,
+          builder: (_, state) => Scaffold(
+            body: Text(
+              'rota-proximos ${state.uri.queryParameters['level'] ?? '-'}',
+            ),
+          ),
+        ),
+        GoRoute(
           path: Routes.home,
           builder: (_, _) => const Scaffold(body: Text('rota-home')),
         ),
@@ -204,36 +212,39 @@ void main() {
     expect(onboarding.saved.selectedRating, RatingLevel.beginner.rating);
     expect(onboarding.saved.done, isTrue);
     expect(
-      find.text(VisibleLessons.school ? 'rota-aulas' : 'rota-home'),
+      find.text(VisibleLessons.school ? 'rota-aulas' : 'rota-proximos -'),
       findsOneWidget,
     );
   });
 
-  testWidgets('rating informado: FIDE 1450 vira 1650 e vai para a home', (
-    tester,
-  ) async {
-    await pumpLevel(tester);
-    await choose(tester, LevelChoice.manual);
-    expect(find.byKey(LevelKeys.ratingScreen), findsOneWidget);
-    final use = find.byKey(LevelKeys.ratingUse);
-    expect(tester.widget<FilledButton>(use).onPressed, isNull);
-    await tester.enterText(find.byKey(LevelKeys.ratingField), '1450');
-    await tester.pumpAndSettle();
-    expect(find.textContaining('1450 FIDE is close to 1650'), findsOneWidget);
-    await tester.tap(find.byKey(LevelKeys.ratingSource(RatingOrigin.lichess)));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('is close to 1450'), findsOneWidget);
-    await tester.enterText(find.byKey(LevelKeys.ratingField), '99');
-    await tester.pumpAndSettle();
-    expect(tester.widget<FilledButton>(use).onPressed, isNull);
-    await tester.enterText(find.byKey(LevelKeys.ratingField), '1450');
-    await tester.pumpAndSettle();
-    await tester.tap(use);
-    await tester.pumpAndSettle();
-    expect(profile.profile.rating, 1450);
-    expect(profile.profile.levelSource, LevelSource.manual);
-    expect(find.text('rota-home'), findsOneWidget);
-  });
+  testWidgets(
+    'rating informado: FIDE 1450 vira 1650 e vai aos próximos passos',
+    (tester) async {
+      await pumpLevel(tester);
+      await choose(tester, LevelChoice.manual);
+      expect(find.byKey(LevelKeys.ratingScreen), findsOneWidget);
+      final use = find.byKey(LevelKeys.ratingUse);
+      expect(tester.widget<FilledButton>(use).onPressed, isNull);
+      await tester.enterText(find.byKey(LevelKeys.ratingField), '1450');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('1450 FIDE is close to 1650'), findsOneWidget);
+      await tester.tap(
+        find.byKey(LevelKeys.ratingSource(RatingOrigin.lichess)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.textContaining('is close to 1450'), findsOneWidget);
+      await tester.enterText(find.byKey(LevelKeys.ratingField), '99');
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(use).onPressed, isNull);
+      await tester.enterText(find.byKey(LevelKeys.ratingField), '1450');
+      await tester.pumpAndSettle();
+      await tester.tap(use);
+      await tester.pumpAndSettle();
+      expect(profile.profile.rating, 1450);
+      expect(profile.profile.levelSource, LevelSource.manual);
+      expect(find.text('rota-proximos 1450'), findsOneWidget);
+    },
+  );
 
   testWidgets('Lichess: conecta, mostra os ratings e usa o blitz', (
     tester,
@@ -248,7 +259,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(profile.profile.rating, 1712);
     expect(profile.profile.lichessUser, 'gabriel_finais');
-    expect(find.text('rota-home'), findsOneWidget);
+    expect(find.text('rota-proximos 1712'), findsOneWidget);
   });
 
   testWidgets('Lichess provisório oferece o teste e "usar mesmo assim"', (

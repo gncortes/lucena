@@ -86,6 +86,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
   final _card = GlobalKey();
   final _analysis = GlobalKey();
   bool _inviteChecked = false;
+  bool _inviteAvailable = false;
 
   // Sem conta e com a partida pronta, fora do meio de um speedrun.
   Future<void> _invite(ConclusionState state) async {
@@ -97,7 +98,15 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     _inviteChecked = true;
     if (context.read<AccountRepository>().current != null) return;
     if (!await invite.pending()) return;
-    await invite.markShown();
+    if (!mounted) return;
+    setState(() => _inviteAvailable = true);
+  }
+
+  Future<void> _openInvite() async {
+    if (!_inviteAvailable) return;
+    setState(() => _inviteAvailable = false);
+    if (context.read<AccountRepository>().current != null) return;
+    await widget.invite!.markShown();
     if (!mounted) return;
     await showAccountInviteSheet(context);
   }
@@ -161,6 +170,7 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                     conclusion: conclusion,
                     card: _card,
                     analysis: _analysis,
+                    onAccountInvite: _inviteAvailable ? _openInvite : null,
                   ),
                 ],
               ),
@@ -195,12 +205,29 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
   }
 }
 
-// Fechar: volta para onde o jogador estava antes da partida (a partida
-// foi trocada por esta tela), ou para o início se não há para onde voltar.
+// Entre etapas do Clássico, fecha no detalhe sem iniciar a próxima partida.
+// A Maratona mantém a continuação própria; os demais resultados voltam.
 void _close(BuildContext context) {
-  final run = context.read<ConclusionCubit>().state.conclusion?.run;
+  final state = context.read<ConclusionCubit>().state;
+  final conclusion = state.conclusion;
+  final run = conclusion?.run;
   final next = run?.nextChallenge;
   if (run != null && next != null) {
+    if (state.speedrun?.kind != SpeedrunKind.marathon) {
+      final target = Routes.speedrun(run.speedrunId);
+      final matches = GoRouter.of(context)
+          .routerDelegate
+          .currentConfiguration
+          .matches;
+      final previous = matches.length > 1 ? matches[matches.length - 2] : null;
+      if (previous is ImperativeRouteMatch &&
+          previous.matches.uri.path == Uri.parse(target).path) {
+        context.pop();
+      } else {
+        context.go(target);
+      }
+      return;
+    }
     context.pushReplacement(
       Routes.challengeGame(
         next,
@@ -275,6 +302,7 @@ class _Body extends StatelessWidget {
     required this.conclusion,
     required this.card,
     required this.analysis,
+    this.onAccountInvite,
   });
 
   final ConclusionState state;
@@ -283,6 +311,7 @@ class _Body extends StatelessWidget {
 
   /// O cartão da análise rápida (entra na imagem depois de pronta).
   final GlobalKey analysis;
+  final VoidCallback? onAccountInvite;
 
   @override
   Widget build(BuildContext context) {
@@ -406,6 +435,17 @@ class _Body extends StatelessWidget {
       // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
       // curta, no toque na longa.
       ?quick,
+      if (onAccountInvite != null)
+        Card(
+          child: ListTile(
+            key: ConclusionKeys.accountInvite,
+            leading: const Icon(Icons.cloud_sync_outlined),
+            title: Text(context.l10n.accountTitle),
+            subtitle: Text(context.l10n.accountInviteTextSheet),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: onAccountInvite,
+          ),
+        ),
     ];
     return Stack(
       children: [

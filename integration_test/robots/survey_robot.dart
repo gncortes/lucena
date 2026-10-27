@@ -14,6 +14,8 @@ class SurveyRobot {
   /// Rola a trilha de finais até o convite de [kind] e toca em "Responder".
   Future<void> openInviteFromTrail(SurveyKind kind) async {
     await $(SurveyKeys.invite(kind)).scrollTo(maxScrolls: 80);
+    // O cartão pode entrar só até a metade: leva o botão para o meio.
+    await $(SurveyKeys.inviteAction(kind)).scrollTo();
     await $(SurveyKeys.inviteAction(kind)).tap();
     await $(SurveyKeys.screen).waitUntilVisible();
   }

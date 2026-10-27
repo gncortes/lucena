@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/lesson_content.dart';
+
 import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/daily/daily_final_repository.dart';
@@ -43,6 +45,7 @@ class HomeState {
   const HomeState({
     this.ready = false,
     this.tourPending = false,
+    this.boardControlsDone = false,
     this.stage = OnboardingStage.tour,
     this.current,
     this.next,
@@ -69,6 +72,7 @@ class HomeState {
 
   /// A primeira abertura: o tour ainda não foi visto.
   final bool tourPending;
+  final bool boardControlsDone;
 
   /// Com [tourPending], a tela da primeira abertura em que a pessoa parou.
   final OnboardingStage stage;
@@ -200,6 +204,7 @@ class HomeState {
   }) => HomeState(
     ready: ready,
     tourPending: tourPending,
+    boardControlsDone: boardControlsDone,
     stage: stage,
     current: current,
     next: next,
@@ -404,24 +409,26 @@ class HomeCubit extends Cubit<HomeState> {
     final characters = await _characters.characters();
     final rating = await _rating.current();
     final history = await _rating.history();
-    final school = await _schoolSummary(characters);
+    final school = await _optionalContent(() => _schoolSummary(characters));
     final profile = await _profile.load();
     final saved = await _homeLayout?.load();
     final goal = profile.goal;
     final layout = HomeSuggestion.resolve(saved, profile.level, goal: goal);
     final priority = layout.shown.firstOrNull;
     final goalPath = goal == null ? null : HomeSuggestion.goalPath(goal);
-    final endgame = await _endgameSummary(
-      language,
-      characters,
-      recommend:
-          goalPath == HomePath.endgames ||
-          (goal == null &&
-              (priority == HomePath.endgames || priority == HomePath.forYou)),
-      firstUnpassed: goalPath == HomePath.endgames,
+    final endgame = await _optionalContent(
+      () => _endgameSummary(
+        language,
+        characters,
+        recommend:
+            goalPath == HomePath.endgames ||
+            (goal == null &&
+                (priority == HomePath.endgames || priority == HomePath.forYou)),
+        firstUnpassed: goalPath == HomePath.endgames,
+      ),
     );
     final endgameGoal = goalPath == HomePath.endgames && endgame != null
-        ? await _endgameGoal(endgame)
+        ? await _optionalContent(() => _endgameGoal(endgame))
         : null;
     final trainGoal = goalPath == HomePath.train
         ? await _trainGoal(profile.level)
@@ -441,6 +448,7 @@ class HomeCubit extends Cubit<HomeState> {
       HomeState(
         ready: true,
         tourPending: !onboarding.done,
+        boardControlsDone: onboarding.boardControlsDone,
         stage: onboarding.stage,
         current: current,
         next: next,
@@ -553,6 +561,14 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> dismissLayoutNotice() async {
     emit(state.copyWith(layoutNotice: false));
     await _homeLayout?.markNoticeSeen();
+  }
+
+  Future<T?> _optionalContent<T>(Future<T> Function() read) async {
+    try {
+      return await read();
+    } on LessonContentUnavailable {
+      return null;
+    }
   }
 
   /// Para quem marcou "iniciante" e ainda não se formou, ou para quem tem

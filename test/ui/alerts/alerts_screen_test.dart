@@ -110,10 +110,11 @@ void main() {
     expect(push.followed, contains('novidades'));
   });
 
-  testWidgets('sem push só fica a chave local, sem o estado do Android', (
+  testWidgets('sem push a chave local ainda informa o bloqueio Android', (
     tester,
   ) async {
     push.available = false;
+    push.allowed = false;
     alerts.settings = const AlertSettings(reminderMinutes: 8 * 60 + 5);
     await pump(tester);
 
@@ -122,7 +123,7 @@ void main() {
     expect(find.byKey(AlertsKeys.news), findsNothing);
     expect(find.byKey(AlertsKeys.lessons), findsNothing);
     expect(find.byKey(AlertsKeys.allowed), findsNothing);
-    expect(find.byKey(AlertsKeys.offBanner), findsNothing);
+    expect(find.byKey(AlertsKeys.offBanner), findsOneWidget);
     expect(find.text('08:05'), findsOneWidget);
   });
 

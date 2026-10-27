@@ -1,5 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
+
+import '../testing/fakes/fake_endgame_repositories.dart';
+
 import 'package:lucena/ui/core/keys/history_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
@@ -13,6 +19,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
 import 'package:chessground/chessground.dart';
@@ -34,7 +41,16 @@ import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 
+import 'package:lucena/domain/models/push_alert.dart';
+import 'package:lucena/ui/core/keys/featured_keys.dart';
+
+import '../testing/fakes/fake_analytics_repository.dart';
 import '../testing/fakes/fake_deep_link_service.dart';
+import '../testing/fakes/fake_push_repository.dart';
+
+import 'package:lucena/ui/core/keys/goal_keys.dart';
+import 'package:lucena/ui/core/keys/board_controls_keys.dart';
+
 import '../testing/fakes/fake_onboarding_repository.dart';
 
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
@@ -45,6 +61,11 @@ import '../testing/fakes/fake_profile_repository.dart';
 import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/fakes/fake_star_challenge_repository.dart';
 import '../testing/test_dependencies.dart';
+
+class _UnavailableEndgames extends FakeEndgameLessonRepository {
+  @override
+  Future<EndgameTrail> trail() async => throw const LessonContentUnavailable();
+}
 
 void main() {
   void useSystemLocale(WidgetTester tester, Locale locale) {
@@ -61,6 +82,10 @@ void main() {
     FakeStarChallengeRepository? stars,
     FakeDeepLinkService? links,
     OnboardingRepository? onboarding,
+    FakePushRepository? push,
+    FakeAnalyticsRepository? analytics,
+    FakeEndgameLessonRepository? endgameLessons,
+    FakeEndgameProgressRepository? endgameProgress,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -71,6 +96,10 @@ void main() {
           ongoingGameRepository: games,
           starChallengeRepository: stars,
           onboardingRepository: onboarding,
+          pushRepository: push,
+          analyticsRepository: analytics,
+          endgameLessonRepository: endgameLessons,
+          endgameProgressRepository: endgameProgress,
           deepLinkRepository: links == null
               ? null
               : ServiceDeepLinkRepository(links),
@@ -82,6 +111,48 @@ void main() {
 
   String textOf(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data!;
+
+  testWidgets('sem pacote de aula, abre o início e preserva a retomada salva', (
+    tester,
+  ) async {
+    const saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 1,
+        part: 'example',
+      ),
+    );
+    final progress = FakeEndgameProgressRepository(saved);
+    await pumpApp(
+      tester,
+      endgameLessons: FakeEndgameLessonRepository(trail: EndgameTrail.empty),
+      endgameProgress: progress,
+    );
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(identical(progress.saved, saved), isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('falha no download adia retomada e mantém o início navegável', (
+    tester,
+  ) async {
+    const saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 1,
+        part: 'example',
+      ),
+    );
+    final progress = FakeEndgameProgressRepository(saved);
+    await pumpApp(
+      tester,
+      endgameLessons: _UnavailableEndgames(),
+      endgameProgress: progress,
+    );
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(identical(progress.saved, saved), isTrue);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('abre na tela inicial', (tester) async {
     await pumpApp(tester);
@@ -635,7 +706,55 @@ void main() {
       expect(find.byKey(TourKeys.screen), findsNothing);
     });
 
-    testWidgets('um link quebrado cai na tela inicial', (tester) async {
+    testWidgets('link frio tem prioridade sobre partida e push pendentes', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(
+            startFen:
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: ['e2e4', 'e7e5'],
+          ),
+        ),
+        push: FakePushRepository(
+          initial: PushOpening(link: Uri.parse('https://playlucena.com/daily')),
+        ),
+        links: FakeDeepLinkService(initial: challenge(locked: true).uri),
+      );
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+    });
+
+    testWidgets('link inválido frio permite voltar à partida salva', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(
+            startFen:
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: ['e2e4', 'e7e5'],
+          ),
+        ),
+        links: FakeDeepLinkService(
+          initial: Uri.parse('https://playlucena.com/p/bad?fen=bad'),
+        ),
+      );
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
+    });
+
+    testWidgets('um link quebrado mostra erro sobre a tela inicial', (
+      tester,
+    ) async {
       phone(tester);
       await pumpApp(
         tester,
@@ -643,7 +762,85 @@ void main() {
           initial: Uri.parse('https://playlucena.com/p/abcde?fen=lixo'),
         ),
       );
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+  });
+
+  testWidgets(
+    'primeira abertura pergunta intenção e oferece controles sem tour',
+    (tester) async {
+      final onboarding = FakeOnboardingRepository(
+        const Onboarding(stage: OnboardingStage.goal),
+      );
+      await pumpApp(tester, onboarding: onboarding);
+      expect(find.byKey(GoalKeys.screen), findsOneWidget);
+      expect(find.byKey(TourKeys.screen), findsNothing);
+      await tester.tap(find.byKey(GoalKeys.option(GoalPreference.learn)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(GoalKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BoardControlsKeys.screen), findsOneWidget);
+      await tester.tap(find.byKey(BoardControlsKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(onboarding.saved.boardControlsDone, isTrue);
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    },
+  );
+  group('push (E1.19 3.8)', () {
+    void phone(WidgetTester tester) {
+      tester.view.physicalSize = const Size(412, 917) * 3;
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('app fechado: o toque abre o torneio e conta o envio', (
+      tester,
+    ) async {
+      phone(tester);
+      final analytics = FakeAnalyticsRepository();
+      await pumpApp(
+        tester,
+        analytics: analytics,
+        push: FakePushRepository(
+          initial: PushOpening(
+            link: Uri.parse('/featured/tournament/live'),
+            pushId: 'p1',
+            country: 'BR',
+          ),
+        ),
+      );
+
+      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
+      final event = analytics.eventsNamed('push_aberto').single;
+      expect(event.params, {'push_id': 'p1', 'pais': 'BR'});
+    });
+
+    testWidgets('link que esta versão não tem: abre no início', (tester) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        push: FakePushRepository(
+          initial: PushOpening(link: Uri.parse('/featured/ranking/2026')),
+        ),
+      );
+
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('em segundo plano: o toque em Ver torneio abre o torneio', (
+      tester,
+    ) async {
+      phone(tester);
+      final push = FakePushRepository();
+      await pumpApp(tester, push: push);
+
+      push.open(Uri.parse('/featured/tournament/live'), pushId: 'p2');
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
     });
   });
 }

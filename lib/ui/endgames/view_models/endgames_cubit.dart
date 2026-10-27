@@ -12,6 +12,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_filter.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/endgame_lesson_filter.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
@@ -185,6 +186,28 @@ class EndgamesState {
     if (lesson == null) return (0, 0);
     return (progress.of(lessonId).scoreOf(lesson), lesson.maxScore);
   }
+
+  /// A medalha da nota de um capítulo (GradeMedal M2): só depois de aprovado
+  /// ou com todos os exercícios resolvidos; nula no que ainda não foi feito.
+  ExerciseGrade? medal(String lessonId) {
+    final lesson = trail.lesson(lessonId);
+    if (lesson == null || lesson.exercises.isEmpty) return null;
+    final each = progress.of(lessonId);
+    if (!EndgameLessonRules.allSolved(lesson, each) &&
+        !EndgameLessonRules.passed(lesson, each)) {
+      return null;
+    }
+    return EndgameLessonRules.grade(lesson, each.scoreOf(lesson));
+  }
+
+  /// A parte (módulo) de um capítulo e o número dele dentro dela (1, 2...).
+  (EndgameModule, int)? place(String lessonId) {
+    for (final module in trail.modules) {
+      final index = module.lessons.indexWhere((l) => l.id == lessonId);
+      if (index >= 0) return (module, index + 1);
+    }
+    return null;
+  }
 }
 
 /// Uma seção da lista filtrada: um módulo da trilha ou uma faixa de
@@ -272,6 +295,14 @@ class EndgamesCubit extends Cubit<EndgamesState> {
   /// [showAll] escolhe o filtro desta visita (sem gravar); nulo, vale o
   /// gravado.
   Future<void> load(String language, {bool? showAll}) async {
+    try {
+      await _load(language, showAll: showAll);
+    } on LessonContentUnavailable {
+      if (!isClosed) emit(const EndgamesState(ready: true));
+    }
+  }
+
+  Future<void> _load(String language, {bool? showAll}) async {
     final trail = await _lessons.trail();
     final texts = await _lessons.texts(language);
     final progress = await _progress.load();

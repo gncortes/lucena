@@ -189,6 +189,7 @@ final _samples = <AnalyticsEvent>[
   AnalyticsEvents.avisoPedido(resposta: 'permitiu', gatilho: 'sequencia'),
   AnalyticsEvents.avisoChave(tipo: 'dia', ligado: true),
   AnalyticsEvents.avisoAberto(canal: 'push', tipo: 'dia'),
+  AnalyticsEvents.pushAberto(pushId: 'p1', pais: 'BR'),
   AnalyticsEvents.perfilRegiaoDefinida(acao: 'confirmou', temEstado: true),
   AnalyticsEvents.questionarioAberto(tipo: 'aula', origem: 'fim_aula'),
   AnalyticsEvents.questionarioPasso(tipo: 'aula', passo: 2, passosTotal: 3),
@@ -255,16 +256,19 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 70 eventos da E1.03 (67 do app e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(67));
-      expect(AnalyticsCatalog.web, hasLength(3));
-      expect(
-        AnalyticsCatalog.app.keys.toSet().intersection(
-          AnalyticsCatalog.web.keys.toSet(),
-        ),
-        isEmpty,
-      );
-    });
+    test(
+      'tem os 71 eventos (68 do app, com o push_aberto da E1.19, e 3 da web)',
+      () {
+        expect(AnalyticsCatalog.app, hasLength(68));
+        expect(AnalyticsCatalog.web, hasLength(3));
+        expect(
+          AnalyticsCatalog.app.keys.toSet().intersection(
+            AnalyticsCatalog.web.keys.toSet(),
+          ),
+          isEmpty,
+        );
+      },
+    );
 
     test('nomes e parâmetros dentro dos limites do Firebase', () {
       for (final MapEntry(key: name, value: params) in {

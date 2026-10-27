@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/custom_position/view_models/custom_position_cubit.dart';
 import 'package:lucena/ui/custom_position/widgets/custom_position_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -16,6 +18,7 @@ import '../../../../testing/test_app.dart';
 
 void main() {
   late CustomPositionCubit cubit;
+  late FakeTrainingRepository training;
 
   Future<void> pump(
     WidgetTester tester, {
@@ -24,7 +27,8 @@ void main() {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
-    cubit = CustomPositionCubit(FakeTrainingRepository());
+    training = FakeTrainingRepository();
+    cubit = CustomPositionCubit(training);
     addTearDown(cubit.close);
     await cubit.load();
     final settings = SettingsCubit(
@@ -62,6 +66,70 @@ void main() {
           .widget<FilledButton>(find.byKey(CustomPositionKeys.continueButton))
           .onPressed !=
       null;
+
+  for (final dismiss in [CustomPositionKeys.clearCancel, SheetKeys.close]) {
+    testWidgets('Limpar: $dismiss preserva composição e rascunho', (
+      tester,
+    ) async {
+      await pump(tester);
+      const fen = '4k3/8/8/8/8/8/4P3/4K3 b - - 0 1';
+      await typeFen(tester, fen);
+      cubit.setGoal(PositionGoal.draw);
+      await tester.pumpAndSettle();
+      final before = cubit.state;
+      final controller = tester
+          .widget<TextField>(find.byKey(CustomPositionKeys.fenField))
+          .controller!;
+      const selection = TextSelection(baseOffset: 4, extentOffset: 12);
+      controller.selection = selection;
+
+      await tester.tap(find.byKey(CustomPositionKeys.clearButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(CustomPositionKeys.clearSheet), findsOneWidget);
+      expect(cubit.state, before);
+      expect(training.draft?.fen, fen);
+      await tester.tap(find.byKey(dismiss));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(CustomPositionKeys.clearSheet), findsNothing);
+      expect(cubit.state, before);
+      expect(controller.text, fen);
+      expect(controller.selection, selection);
+      final restored = CustomPositionCubit(training);
+      addTearDown(restored.close);
+      await restored.load();
+      expect(restored.state, before);
+    });
+  }
+
+  testWidgets('confirmar Limpar persiste só os reis, vez e objetivo', (
+    tester,
+  ) async {
+    await pump(tester);
+    await typeFen(tester, '4k3/8/8/8/8/8/4P3/4K3 b - - 0 1');
+    cubit.setGoal(PositionGoal.draw);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(CustomPositionKeys.clearButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(CustomPositionKeys.clearConfirm));
+    await tester.pumpAndSettle();
+
+    const cleared = '${CustomPositionCubit.startBoard} b - - 0 1';
+    expect(cubit.state.fen, cleared);
+    expect(
+      tester
+          .widget<TextField>(find.byKey(CustomPositionKeys.fenField))
+          .controller!
+          .text,
+      cleared,
+    );
+    final restored = CustomPositionCubit(training);
+    addTearDown(restored.close);
+    await restored.load();
+    expect(restored.state.fen, cleared);
+    expect(restored.state.goal, PositionGoal.draw);
+    expect(restored.state.turn, Side.black);
+  });
 
   testWidgets('FEN inválido: erro traduzido e não segue', (tester) async {
     await pump(tester, locale: const Locale('pt'));

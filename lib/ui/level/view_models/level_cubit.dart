@@ -43,6 +43,7 @@ class LevelState {
     this.errorCount = 0,
     this.finished = false,
     this.toSchool = false,
+    this.rating,
     this.viktor,
     this.characters = const [],
   });
@@ -82,6 +83,9 @@ class LevelState {
 
   /// "Não sei jogar" com a Escola visível: termina nas aulas.
   final bool toSchool;
+
+  /// O nível que foi para o perfil, quando terminou.
+  final int? rating;
   final Character? viktor;
 
   /// Os personagens, para dizer o nome do adversário do degrau.
@@ -126,6 +130,7 @@ class LevelState {
     LevelError? error,
     bool? finished,
     bool? toSchool,
+    int? rating,
   }) => LevelState(
     ready: ready,
     choice: choice ?? this.choice,
@@ -141,6 +146,7 @@ class LevelState {
     errorCount: error == null ? errorCount : errorCount + 1,
     finished: finished ?? this.finished,
     toSchool: toSchool ?? this.toSchool,
+    rating: rating ?? this.rating,
     viktor: viktor,
     characters: characters,
   );
@@ -390,6 +396,7 @@ class LevelCubit extends Cubit<LevelState> {
           state.copyWith(
             finished: true,
             toSchool: zero && VisibleLessons.school,
+            rating: rating,
           ),
         );
       }

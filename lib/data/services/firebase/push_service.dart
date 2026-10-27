@@ -3,9 +3,21 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 /// Um aviso que chegou pelo push. [data] traz o destino (por exemplo
 /// `link`, com o endereço de um desafio ou final).
 class PushMessage {
-  const PushMessage({this.data = const {}});
+  const PushMessage({
+    this.data = const {},
+    this.title,
+    this.body,
+    this.notified = false,
+  });
 
   final Map<String, String> data;
+
+  /// A parte `notification` (título e texto), se veio.
+  final String? title;
+  final String? body;
+
+  /// Veio com `notification`: fora do app, o próprio Android mostrou.
+  final bool notified;
 }
 
 /// O push pelo Firebase Cloud Messaging (E1.21).
@@ -26,11 +38,21 @@ abstract class PushService {
 
   Future<void> unsubscribe(String topic);
 
+  /// O token deste aparelho no FCM (o endereço do push só para ele). Nulo
+  /// sem o Firebase ou sem o Google Play.
+  Future<String?> token();
+
+  /// O token novo quando o FCM troca o deste aparelho.
+  Stream<String> get tokenChanges;
+
   /// O aviso tocado que abriu o app (partida fria).
   Future<PushMessage?> initialOpened();
 
   /// Os avisos tocados com o app em segundo plano.
   Stream<PushMessage> get opened;
+
+  /// Os avisos que chegam com o app aberto (o Android não mostra nada).
+  Stream<PushMessage> get received;
 }
 
 class NoPushService implements PushService {
@@ -52,10 +74,19 @@ class NoPushService implements PushService {
   Future<void> unsubscribe(String topic) async {}
 
   @override
+  Future<String?> token() async => null;
+
+  @override
+  Stream<String> get tokenChanges => const Stream.empty();
+
+  @override
   Future<PushMessage?> initialOpened() async => null;
 
   @override
   Stream<PushMessage> get opened => const Stream.empty();
+
+  @override
+  Stream<PushMessage> get received => const Stream.empty();
 }
 
 class FirebasePushService implements PushService {
@@ -91,6 +122,16 @@ class FirebasePushService implements PushService {
   Future<void> unsubscribe(String topic) =>
       _messaging.unsubscribeFromTopic(topic);
 
+  // O register()/onRegistered novo dá o FID, que o envio por token da API
+  // HTTP v1 ainda não aceita: fica o token clássico até o FCM mudar.
+  @override
+  // ignore: deprecated_member_use
+  Future<String?> token() => _messaging.getToken();
+
+  @override
+  // ignore: deprecated_member_use
+  Stream<String> get tokenChanges => _messaging.onTokenRefresh;
+
   @override
   Future<PushMessage?> initialOpened() async {
     final message = await _messaging.getInitialMessage();
@@ -101,10 +142,22 @@ class FirebasePushService implements PushService {
   Stream<PushMessage> get opened =>
       FirebaseMessaging.onMessageOpenedApp.map(_message);
 
-  static PushMessage _message(RemoteMessage message) => PushMessage(
-    data: {
-      for (final entry in message.data.entries)
-        entry.key: entry.value.toString(),
-    },
-  );
+  @override
+  Stream<PushMessage> get received => FirebaseMessaging.onMessage.map(message);
+
+  /// O [RemoteMessage] do FCM sem o Firebase (também no isolate de fundo).
+  static PushMessage message(RemoteMessage message) {
+    final notification = message.notification;
+    return PushMessage(
+      data: {
+        for (final entry in message.data.entries)
+          entry.key: entry.value.toString(),
+      },
+      title: notification?.title,
+      body: notification?.body,
+      notified: notification != null,
+    );
+  }
+
+  static PushMessage _message(RemoteMessage remote) => message(remote);
 }

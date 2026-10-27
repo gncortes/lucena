@@ -9,14 +9,18 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_button_text.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/widgets/celebration.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/next_steps.dart';
 import '../../survey/widgets/survey_invite_card.dart';
 import '../view_models/lesson_finished_cubit.dart';
 
 /// "Aula concluída" (E1.05; canvas `PropV1AulasConcluida` e
 /// `PropV1AulasEscolaConcluida`): confete, o título, o convite "Sua opinião"
-/// acima dos botões, "Próxima: {aula}" (se houver) e "Voltar".
+/// acima dos botões, "Próxima: {aula}" (se houver) e "Voltar". Numa aula de
+/// final, o bloco "Próximos passos" (canvas V2 · Ligações, L3) vem antes do convite:
+/// a Corrida só daquele final, o treino e os exercícios da aula.
 class LessonFinishedScreen extends StatelessWidget {
   const LessonFinishedScreen({required this.kind, super.key});
 
@@ -34,6 +38,49 @@ class LessonFinishedScreen extends StatelessWidget {
     context.pushReplacement(
       _school ? Routes.lessonScript(id) : Routes.endgameLessonScript(id),
     );
+  }
+
+  /// As opções dos "Próximos passos"; nulas na Escola.
+  List<NextStep>? _steps(BuildContext context, LessonFinishedState state) {
+    final practice = state.practice;
+    if (_school || practice == null) return null;
+    final l10n = context.l10n;
+    final subcategory = state.raceSubcategory;
+    final name = subcategory == null ? null : endgameName(l10n, subcategory);
+    return [
+      if (subcategory != null)
+        NextStep(
+          id: 'raceOnly',
+          icon: Icons.timer,
+          title: l10n.lessonFinishedRaceOnly(name!),
+          body: l10n.lessonFinishedRaceBody,
+          onTap: () => context.push(Routes.raceOnly(subcategory: subcategory)),
+        ),
+      NextStep(
+        id: 'train',
+        icon: Icons.sports_esports,
+        title: name == null
+            ? l10n.lessonFinishedTrainTitle
+            : l10n.nextStepsPractice(name),
+        body: l10n.lessonFinishedTrainBody,
+        onTap: () => context.push(
+          Routes.setup(
+            practice.fen,
+            goal: practice.goal.code,
+            position: practice.positionId,
+          ),
+        ),
+      ),
+      if (state.hasExercises)
+        NextStep(
+          id: 'exercises',
+          icon: Icons.quiz,
+          title: l10n.lessonFinishedExercisesTitle,
+          body: l10n.lessonFinishedExercisesBody,
+          onTap: () =>
+              context.push(Routes.endgameExercisesIntro(state.lessonId)),
+        ),
+    ];
   }
 
   @override
@@ -98,6 +145,11 @@ class LessonFinishedScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            if (_steps(context, state) case final steps?
+                                when steps.isNotEmpty) ...[
+                              NextSteps(steps: steps),
+                              const ResultsInfoLine(),
+                            ],
                             SurveyInviteCard(
                               kind: kind,
                               source: _school

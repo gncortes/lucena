@@ -210,7 +210,7 @@ void main() {
       find.descendant(
         of: card,
         matching: find.text(
-          'O passo seguinte às aulas: pratique vencendo os finais de cada '
+          'O passo seguinte às lições: pratique vencendo os finais de cada '
           'adversário, do mais fraco até o Stockfish.',
         ),
       ),

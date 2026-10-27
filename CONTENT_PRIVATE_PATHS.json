@@ -1,0 +1,20 @@
+[
+  "test/data/oposicao_duas_partes_test.dart",
+  "test/data/endgame_review_json_test.dart",
+  "test/data/repositories/school/lessons_content_test.dart",
+  "test/data/repositories/endgames/endgame_lessons_content_test.dart",
+  "test/domain/use_cases/move_tree_jump_test.dart",
+  "test/ui/lesson_script/krpkr_practice_test.dart",
+  "test/ui/lesson_script/kqkr_practice_test.dart",
+  "test/ui/lesson_script/kbnk_practice_test.dart",
+  "test/ui/lesson_script/lesson_script_pratica_erro_test.dart",
+  "test/ui/lesson_script/lesson_roteiros_smoke_test.dart",
+  "test/ui/endgames/endgames_visible_lessons_test.dart",
+  "test/ui/endgames/exercise_real_lessons_test.dart",
+  "test/ui/core/widgets/lesson_feedback_asset_test.dart",
+  "test/fixtures/kqkr/roteiro.json",
+  "test/fixtures/kqkr/tabela.json",
+  "test/fixtures/krpkr/pendurada.json",
+  "test/fixtures/krpkr/roteiro.json",
+  "test/fixtures/krpkr/tabela.json"
+]

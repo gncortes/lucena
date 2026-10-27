@@ -66,7 +66,7 @@ void main() {
     expect(streak.title, 'Sua sequência de 2 dias acaba hoje');
     expect(streak.action, 'Jogar o final do dia');
     expect(streak.payload, '/daily');
-    expect(streak.channel.id, 'lembretes');
+    expect(streak.channel.id, 'lembretes_quieto');
 
     expect(sunday.id, RemindersCubit.firstId + 3);
     expect(sunday.title, 'Seu resumo da semana');
@@ -75,7 +75,7 @@ void main() {
       'Esta semana você jogou 12 finais e subiu 40 pontos. Veja como foi.',
     );
     expect(sunday.payload, '/week');
-    expect(sunday.channel.id, 'resumo_semana');
+    expect(sunday.channel.id, 'resumo_semana_quieto');
     expect(sunday.action, isNull);
     expect(cubit.state.map((r) => r.kind), [
       ReminderKind.streak,
@@ -97,10 +97,10 @@ void main() {
     await cubit.update(settings: const AlertSettings(), texts: texts);
 
     final today = reminders.scheduled.first;
-    expect(today.title, 'Continue a lição');
+    expect(today.title, 'Continue o capítulo');
     expect(
       today.body,
-      'Falta pouco para fechar "A posição de Lucena": você parou no capítulo '
+      'Falta pouco para fechar "A posição de Lucena": você parou na lição '
       '3 de 6.',
     );
     expect(today.action, 'Continuar');

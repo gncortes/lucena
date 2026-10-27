@@ -23,6 +23,8 @@ import '../view_models/custom_position_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/sheet_header.dart';
 
 /// Montar uma posição: no editor (tocar na peça da paleta e depois nas casas)
 /// ou colando um FEN. A posição só segue quando é jogável.
@@ -95,10 +97,47 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
     context.read<CustomPositionCubit>().setFen(text);
   }
 
+  Future<void> _confirmClear() async {
+    final confirmed = await showLucenaSheet<bool>(
+      context,
+      sheetKey: CustomPositionKeys.clearSheet,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SheetHeader(
+            title: context.l10n.customClear,
+            hint: context.l10n.customClearConfirmHint,
+          ),
+          ActionsFooter(
+            margin: AppSpacing.xl,
+            stacked: true,
+            children: [
+              FilledButton(
+                key: CustomPositionKeys.clearConfirm,
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(context.l10n.customClear),
+              ),
+              TextButton(
+                key: CustomPositionKeys.clearCancel,
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(
+                  MaterialLocalizations.of(context).cancelButtonLabel,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      context.read<CustomPositionCubit>().clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final cubit = context.read<CustomPositionCubit>();
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
@@ -122,7 +161,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
                 key: CustomPositionKeys.clearButton,
                 icon: const Icon(Icons.layers_clear_outlined),
                 tooltip: l10n.customClear,
-                onPressed: cubit.clear,
+                onPressed: state.ready ? _confirmClear : null,
               ),
             ],
           ),

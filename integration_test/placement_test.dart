@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
-import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -27,6 +26,8 @@ void main() {
     expect(find.byKey(LevelKeys.option(LevelChoice.test)), findsOneWidget);
 
     await tour.takeTest();
+    // O teste marcado em "Seu nível" abre ao tocar em "Continuar".
+    await tour.start(leave: false);
     await placement.expectIntro();
     await placement.start();
     await placement.expectQuestion(1);
@@ -38,6 +39,8 @@ void main() {
     await app.restart();
     await $(LevelKeys.screen).waitUntilVisible();
     await tour.takeTest();
+    // O teste marcado em "Seu nível" abre ao tocar em "Continuar".
+    await tour.start(leave: false);
     await placement.expectIntro();
     await placement.resume();
     await placement.expectQuestion(6);
@@ -48,6 +51,7 @@ void main() {
 
     await $(LevelKeys.screen).waitUntilVisible();
     await tour.start();
+    await tour.leaveNextSteps();
   });
 
   patrolTest('perfil: refazer o teste; a escola e a trilha de finais passam '
@@ -55,11 +59,11 @@ void main() {
     final app = AppRobot($);
     final placement = PlacementRobot($);
     await app.open(systemLocale: _english);
-    // Antes do teste: o convite na escola e na trilha.
+    // Antes do teste: o curso de finais abre no cartão "Continuar" (T82:
+    // sem convite do teste nem filtro "Para você").
     final endgames = EndgamesRobot($);
     await endgames.openFromHome();
-    await $(EndgamesKeys.placementTest).scrollTo();
-    expect(find.byKey(EndgamesKeys.filter), findsNothing);
+    await $(EndgamesKeys.continueButton).waitUntilVisible();
     // O voltar pelo widget (a dica "Back" muda com o idioma).
     await $(BackButton).tap();
     await $.pumpAndSettle();
@@ -72,18 +76,14 @@ void main() {
     await placement.dontKnow(20);
     await placement.expectResult();
     await placement.useLevel();
-    await $(ProfileKeys.screen).waitUntilVisible();
+    // O resultado volta a "Seu nível", de onde o teste foi aberto.
+    await $(LevelKeys.screen).waitUntilVisible();
 
-    // A trilha agora tem o filtro, e a escolha fica gravada.
+    // O curso de finais segue com o "Continuar", agora no próximo do
+    // roteiro.
     await app.restart();
     await endgames.openFromHome();
-    await $(EndgamesKeys.filter).scrollTo();
-    expect(find.byKey(EndgamesKeys.placementTest), findsNothing);
-    await $(EndgamesKeys.all).tap();
-    await $.pumpAndSettle();
-    await app.restart();
-    await endgames.openFromHome();
-    await $(EndgamesKeys.nextEndgame).scrollTo();
+    await $(EndgamesKeys.continueButton).waitUntilVisible();
     expect(find.byKey(SchoolKeys.placementTest), findsNothing);
   });
 }

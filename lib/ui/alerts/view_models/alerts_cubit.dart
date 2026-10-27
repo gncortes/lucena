@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/alerts/alerts_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/push/push_repository.dart';
+import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../domain/models/alert_settings.dart';
 import '../../../domain/use_cases/alerts_rules.dart';
 
@@ -16,6 +17,7 @@ class AlertsState {
     this.push = true,
     this.country,
     this.state,
+    this.language,
   });
 
   final bool ready;
@@ -33,18 +35,25 @@ class AlertsState {
   /// O estado do Perfil, se houver.
   final String? state;
 
+  /// O idioma do app (`pt`, `en`), para o tópico `idioma_<xx>`.
+  final String? language;
+
   int get enabled => settings.enabled(push: push);
   int get total => AlertSettings.total(push: push);
 
-  AlertsState copyWith({AlertSettings? settings, bool? permitted}) =>
-      AlertsState(
-        ready: ready,
-        settings: settings ?? this.settings,
-        permitted: permitted ?? this.permitted,
-        push: push,
-        country: country,
-        state: state,
-      );
+  AlertsState copyWith({
+    AlertSettings? settings,
+    bool? permitted,
+    String? language,
+  }) => AlertsState(
+    ready: ready,
+    settings: settings ?? this.settings,
+    permitted: permitted ?? this.permitted,
+    push: push,
+    country: country,
+    state: state,
+    language: language ?? this.language,
+  );
 }
 
 /// Vive no app inteiro: ao abrir, acerta os tópicos com as chaves gravadas.
@@ -55,12 +64,16 @@ class AlertsCubit extends Cubit<AlertsState> {
     required this._alerts,
     required this._push,
     required this._profile,
+    this._reminders,
     this._region,
   }) : super(const AlertsState());
 
   final AlertsRepository _alerts;
   final PushRepository _push;
   final ProfileRepository _profile;
+  final RemindersRepository? _reminders;
+
+  Future<bool> _permitted() => _reminders?.permitted() ?? _push.permitted();
   final String? Function()? _region;
 
   Future<({String? country, String? state})> _place() async {
@@ -76,7 +89,7 @@ class AlertsCubit extends Cubit<AlertsState> {
 
   Future<void> load() async {
     final settings = await _alerts.load();
-    final permitted = await _push.permitted();
+    final permitted = await _permitted();
     final place = await _place();
     if (isClosed) return;
     emit(
@@ -87,14 +100,22 @@ class AlertsCubit extends Cubit<AlertsState> {
         push: _push.available,
         country: place.country,
         state: place.state,
+        language: state.language,
       ),
     );
     await _follow();
   }
 
+  /// O idioma do app mudou (ou ficou conhecido): reinscreve no `idioma_*`.
+  Future<void> languageChanged(String language) async {
+    if (isClosed || language == state.language) return;
+    emit(state.copyWith(language: language));
+    await _follow();
+  }
+
   /// Relê a permissão (a pessoa voltou dos ajustes do Android).
   Future<void> refresh() async {
-    final permitted = await _push.permitted();
+    final permitted = await _permitted();
     if (isClosed || permitted == state.permitted) return;
     emit(state.copyWith(permitted: permitted));
   }
@@ -126,16 +147,26 @@ class AlertsCubit extends Cubit<AlertsState> {
         push: state.push,
         country: place.country,
         state: place.state,
+        language: state.language,
       ),
     );
     await _follow();
   }
 
-  Future<void> _follow() => _push.follow(
-    AlertsRules.topics(
-      state.settings,
-      country: state.country,
-      state: state.state,
-    ),
-  );
+  // Uma troca de tópicos por vez: a seguinte usa o estado mais novo.
+  Future<void> _following = Future.value();
+
+  Future<void> _follow() {
+    if (!state.ready) return Future.value();
+    return _following = _following.then(
+      (_) => _push.follow(
+        AlertsRules.topics(
+          state.settings,
+          country: state.country,
+          state: state.state,
+          language: state.language,
+        ),
+      ),
+    );
+  }
 }

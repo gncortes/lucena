@@ -35,6 +35,8 @@ class CharacterBar extends StatelessWidget {
     this.showName = true,
     this.speechTop,
     this.playerRow,
+    this.speechMaxLines = 3,
+    this.onSpeechVisibilityChanged,
     super.key,
   });
 
@@ -59,6 +61,11 @@ class CharacterBar extends StatelessWidget {
   /// Barra única com retrato, nome e relógio, já pronta pelo chamador.
   final Widget? playerRow;
 
+  /// Resumo responsivo; o toque continua abrindo a fala inteira.
+  final int speechMaxLines;
+
+  final ValueChanged<bool>? onSpeechVisibilityChanged;
+
   @override
   Widget build(BuildContext context) {
     final character = talk.character!;
@@ -70,6 +77,7 @@ class CharacterBar extends StatelessWidget {
             ? null
             : _TransientSpeech(
                 text: line.text,
+                onVisibilityChanged: onSpeechVisibilityChanged,
                 child: GameEntrance(
                   part: GameEntrancePart.speech,
                   // O balão fica no lugar; só o texto troca (crossfade).
@@ -185,7 +193,7 @@ class CharacterBar extends StatelessWidget {
       TypewriterText(
         line.text,
         key: FreeBoardKeys.speechText(line.id),
-        maxLines: 3,
+        maxLines: speechMaxLines,
         shrink: false,
         style: SpeechBalloon.style(context),
       ),
@@ -267,10 +275,15 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
 /// A fala flutua sem mudar o tamanho da faixa. A duração
 /// acompanha a leitura; o esmaecer respeita a preferência de movimento.
 class _TransientSpeech extends StatefulWidget {
-  const _TransientSpeech({required this.text, required this.child});
+  const _TransientSpeech({
+    required this.text,
+    required this.child,
+    this.onVisibilityChanged,
+  });
 
   final String text;
   final Widget child;
+  final ValueChanged<bool>? onVisibilityChanged;
 
   @override
   State<_TransientSpeech> createState() => _TransientSpeechState();
@@ -295,6 +308,9 @@ class _TransientSpeechState extends State<_TransientSpeech> {
   void _restart() {
     _hide?.cancel();
     _visible = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _visible) widget.onVisibilityChanged?.call(true);
+    });
     _hide = Timer(AppMotion.floatingSpeech(widget.text.length), () {
       if (mounted) setState(() => _visible = false);
     });
@@ -314,6 +330,9 @@ class _TransientSpeechState extends State<_TransientSpeech> {
       child: AnimatedOpacity(
         duration: AppMotion.of(context).component,
         opacity: _visible ? 1 : 0,
+        onEnd: () {
+          if (!_visible) widget.onVisibilityChanged?.call(false);
+        },
         child: widget.child,
       ),
     ),

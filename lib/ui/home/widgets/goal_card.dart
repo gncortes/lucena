@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/goal_preference.dart';
+import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/models/home_layout.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
@@ -33,6 +35,17 @@ class GoalCard extends StatelessWidget {
     final train = state.trainGoal;
     final current = state.current;
     final next = state.next;
+    if (state.goal == GoalPreference.learn && !state.boardControlsDone) {
+      return _GoalHero(
+        title: l10n.boardMoveMethod,
+        line: l10n.boardControlsHint,
+        progress: 0,
+        progressText: l10n.boardControlsFirstStep,
+        action: l10n.homeContinue,
+        fen: GameRules.initial.fen,
+        onPressed: () => context.push(Routes.boardControls),
+      );
+    }
     return switch (state.goalPath) {
       HomePath.learn when school != null => _GoalHero(
         title: l10n.homeSchool,
@@ -49,7 +62,7 @@ class GoalCard extends StatelessWidget {
         title: endgame.lesson.title,
         line: l10n.homeGoalEndgamesLine(endgame.number, endgame.total),
         progress: endgame.total == 0 ? 0 : endgame.passed / endgame.total,
-        progressText: l10n.homeGoalLessons(endgame.passed, endgame.total),
+        progressText: l10n.homeGoalChapters(endgame.passed, endgame.total),
         action: l10n.homeContinue,
         fen: endgame.lesson.exerciseFen,
         avatar: endgame.lesson.exerciseFen == null
@@ -71,7 +84,10 @@ class GoalCard extends StatelessWidget {
         action: l10n.homeGoalTrain,
         fen: train.fen,
         onPressed: () => context.go(
-          Routes.catalogCategory(train.suggestion.subcategory.category),
+          Routes.catalogCategory(
+            train.suggestion.subcategory.category,
+            subcategory: train.suggestion.subcategory.key,
+          ),
         ),
       ),
       // Aprender a jogar sem a Escola: a Jornada.
@@ -93,7 +109,10 @@ class GoalCard extends StatelessWidget {
         ),
         action: l10n.homeContinue,
         avatar: state.character,
-        onPressed: next == null
+        onPressed:
+            state.goal == GoalPreference.learn && !state.boardControlsDone
+            ? () => context.push(Routes.boardControls)
+            : next == null
             ? () => context.go(Routes.journey)
             : () => continueJourney(context, state),
       ),

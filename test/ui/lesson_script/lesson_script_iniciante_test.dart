@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io' as io;
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,26 +8,6 @@ import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
-
-/// O roteiro de verdade da torre (curso de iniciante, T71).
-Map<String, dynamic> _rook() => jsonDecode(
-  io.File('assets/lessons/roteiros/pieces.rook.json').readAsStringSync(),
-) as Map<String, dynamic>;
-
-/// O roteiro da torre só com a etapa [stage] e, nela, só o exemplo [id].
-Map<String, dynamic> _rookOnly(String stage, String id) {
-  final json = _rook();
-  final stages = (json['etapas'] as List).cast<Map<String, dynamic>>();
-  final picked = stages.firstWhere((s) => s['id'] == stage);
-  picked['exemplos'] = [
-    for (final e in (picked['exemplos'] as List).cast<Map<String, dynamic>>())
-      if (e['id'] == id) e,
-  ];
-  return {
-    ...json,
-    'etapas': [picked],
-  };
-}
 
 /// Achar o lance com rei: `a1a7` (o preto só tem `h8g8`) e depois `a7a8#`.
 Map<String, dynamic> _findJson() => {
@@ -220,150 +198,6 @@ Set<String> _names(Iterable<Square> squares) => {
 };
 
 void main() {
-  test('o roteiro da torre carrega inteiro', () {
-    final script = LessonScript.fromJson(_rook());
-    expect(script.lessonId, 'pieces.rook');
-    expect(script.stages.map((s) => s.id), ['ideia', 'demos', 'pratica']);
-    final first = script.stages.first.examples.first;
-    expect(first.goal, ScriptGoal.tarefa);
-    expect(first.question!.judge, ScriptJudge.lista);
-    expect(first.question!.free, isNull);
-    final stars = script.stages.last.examples.first.practice!;
-    expect(stars.kind, PracticeKind.estrelas);
-    expect(stars.stars, ['a6', 'f6', 'f2']);
-  });
-
-  group('pergunta com juiz lista (torre, ex1)', () {
-    Future<_Rig> question() async {
-      final r = await _Rig.open(_rookOnly('ideia', 'ex1'));
-      await r.times(6);
-      expect(r.s.phase, ScriptPhase.pergunta);
-      return r;
-    }
-
-    test('só a torre mexe, pelos ataques dela', () async {
-      final r = await question();
-      expect(r.s.movable, isNotNull);
-      expect(_names(r.s.dests!.keys), {'d4'});
-      expect(r.s.dests!.values.single, hasLength(14));
-    });
-
-    test('lance fora da lista: a fala do fora e a peça volta', () async {
-      final r = await question();
-      unawaited(r.cubit.onMove('d4a4'));
-      await Future<void>.delayed(Duration.zero);
-      expect(r.s.speech, ['rot.ideia.ex1.fora']);
-      expect(r.s.tone, ScriptTone.bad);
-      expect(r.s.fen, '8/8/8/8/R7/8/8/8 w - - 0 1');
-      expect(r.s.movable, isNull);
-      await r.release();
-      expect(r.s.phase, ScriptPhase.pergunta);
-      expect(r.s.fen, '8/8/8/8/3R4/8/8/8 w - - 0 1');
-      expect(r.s.transition.kind, TransitionKind.back);
-      expect(r.s.movable, isNotNull);
-      expect(r.s.speech, ['rot.ideia.ex1.fora']);
-    });
-
-    test('lance certo: anotado sem rei e a vez fica com o aluno', () async {
-      final r = await question();
-      await r.cubit.onMove('d4d8');
-      expect(r.s.speech, ['rot.ideia.ex1.certo']);
-      expect(r.s.moves.single.san, 'Rd8');
-      expect(r.s.moves.single.symbol, '!');
-    });
-  });
-
-  group('pergunta com juiz lista (torre, ex2)', () {
-    Future<_Rig> question() async {
-      final r = await _Rig.open(_rookOnly('ideia', 'ex2'));
-      await r.times(5);
-      expect(r.s.phase, ScriptPhase.pergunta);
-      return r;
-    }
-
-    test('o peão da própria cor tapa a coluna', () async {
-      final r = await question();
-      final targets = _names(r.s.dests!.values.single);
-      expect(targets, contains('c5'));
-      expect(targets, isNot(contains('c6')));
-    });
-
-    test('alternativo: mostra o caminho e segue', () async {
-      final r = await question();
-      await r.cubit.onMove('c1a1');
-      expect(r.s.speech, ['rot.ideia.ex2.alt.c1a1.1']);
-      expect(r.s.phase, isNot(ScriptPhase.pergunta));
-    });
-
-    test('erro: mostra por que e volta à pergunta com a fala volta', () async {
-      final r = await question();
-      await r.cubit.onMove('c1c3');
-      expect(r.s.phase, ScriptPhase.refutacao);
-      for (var i = 0; i < 10 && r.s.phase != ScriptPhase.pergunta; i++) {
-        await r.times(1);
-      }
-      expect(r.s.phase, ScriptPhase.pergunta);
-      expect(r.s.fen, '8/8/2P5/8/8/8/8/2R5 w - - 0 1');
-      final spec = LessonScript.fromJson(_rook())
-          .stages
-          .first
-          .examples[1]
-          .question!;
-      expect(r.s.speech, [spec.back ?? spec.t]);
-      expect(r.s.movable, isNotNull);
-      // ◀ não volta para dentro da refutação.
-      r.cubit.back();
-      expect(r.s.phase, ScriptPhase.entrada);
-    });
-  });
-
-  group('prática do tipo estrelas (torre)', () {
-    Future<_Rig> stars() async {
-      final r = await _Rig.open(_rookOnly('pratica', 'estrelas1'));
-      for (var i = 0; i < 5 && r.s.phase != ScriptPhase.praticaVez; i++) {
-        await r.times(1);
-      }
-      expect(r.s.phase, ScriptPhase.praticaVez);
-      return r;
-    }
-
-    test('abre com as estrelas e só a torre mexe', () async {
-      final r = await stars();
-      expect(r.s.stars, ['a6', 'f6', 'f2']);
-      expect(_names(r.s.dests!.keys), {'a1'});
-      expect(r.s.speech, ['rot.pratica.estrelas1.enunciado']);
-    });
-
-    test('a torre é seguida pela partida e pega as estrelas', () async {
-      final r = await stars();
-      await r.cubit.onMove('a1a6');
-      expect(r.s.stars, ['f6', 'f2']);
-      expect(r.s.phase, ScriptPhase.praticaVez);
-      expect(_names(r.s.dests!.keys), {'a6'});
-      expect(r.s.fen.split(' ')[1], 'w');
-      await r.cubit.onMove('a6f6');
-      await r.cubit.onMove('f6f2');
-      expect(r.s.stars, isEmpty);
-      expect(r.s.phase, ScriptPhase.praticaFim);
-      expect(r.s.speech, ['ini.estrelas.sucesso', 'rot.pratica.estrelas1.fim']);
-      expect(r.s.tone, ScriptTone.good);
-      expect(r.s.primary, ScriptAction.proximaParte);
-      expect(r.s.secondary, ScriptAction.reverIdeia);
-      expect(r.s.movable, isNull);
-      expect(r.s.moves.map((m) => m.san), ['Ra6', 'Rf6', 'Rf2']);
-    });
-
-    test('Próxima parte conclui a aula', () async {
-      final r = await stars();
-      await r.cubit.onMove('a1a6');
-      await r.cubit.onMove('a6f6');
-      await r.cubit.onMove('f6f2');
-      await r.cubit.onAction(ScriptAction.proximaParte);
-      expect(r.source.completed, ['pieces.rook/licao']);
-      expect(r.s.outcome, isNotNull);
-    });
-  });
-
   group('prática do tipo lance (com rei)', () {
     test('lance errado volta com a fala dele', () async {
       final r = await _Rig.open(_findJson());
@@ -605,7 +439,7 @@ void main() {
     });
 
     test('fora da prática de toque, onSquare não faz nada', () async {
-      final r = await _Rig.open(_rookOnly('pratica', 'estrelas1'));
+      final r = await _Rig.open(_findJson());
       await r.cubit.onSquare('a6');
       expect(r.s.touching, isFalse);
       expect(r.s.coordinates, isTrue);

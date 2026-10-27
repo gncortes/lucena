@@ -8,13 +8,18 @@
   "storage": {
     "rules": "firebase/storage.rules"
   },
+  "remoteconfig": {
+    "template": "firebase/remoteconfig.template.json"
+  },
   "hosting": {
     "public": "landing/dist",
     "cleanUrls": true,
     "trailingSlash": true,
     "ignore": ["firebase.json", "**/node_modules/**"],
     "rewrites": [
-      { "source": "/p/**", "destination": "/index.html" }
+      { "source": "/p/**", "destination": "/index.html" },
+      { "source": "/dia{,/**}", "destination": "/index.html" },
+      { "source": "/daily{,/**}", "destination": "/index.html" }
     ],
     "headers": [
       {

@@ -1,19 +1,19 @@
 import 'package:chessground/chessground.dart';
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
-import 'package:lucena/ui/core/keys/game_setup_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/speedrun_keys.dart';
-import 'package:lucena/ui/endgames/widgets/stars_row.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../testing/board_gestures.dart';
-import 'variant.dart';
 import 'home_robot.dart';
 
 /// As aulas de finais do Viktor: a trilha, a aula, a lição e os exercícios.
@@ -53,45 +53,18 @@ class EndgamesRobot {
     await $.pumpAndSettle();
   }
 
-  /// Rola a tela da aula até [key]. O `scrollTo` do Patrol só desce, e a
-  /// lista descarta o que ficou acima: se o item não existe, volta ao topo
-  /// (a fala do Viktor) antes de descer.
-  Future<PatrolFinder> _show(Key key) async {
-    if (!$(key).exists) {
-      await $(EndgameLessonKeys.speech)
-          .scrollTo(scrollDirection: AxisDirection.up);
-    }
-    // Os exercícios ficam no teste final, que começa recolhido (T51). Com
-    // a fala do Viktor mais longa, o cartão pode nem estar construído: rola
-    // até ele antes de decidir se abre (tocar no aberto o fecharia).
-    if (!$(key).exists && !$(EndgameLessonKeys.exercises).exists) {
-      await $(EndgameLessonKeys.finalTestSummary).scrollTo();
-      if (!$(key).exists && !$(EndgameLessonKeys.exercises).exists) {
-        await $(EndgameLessonKeys.finalTestSummary).tap();
-        await $.pumpAndSettle();
-      }
-    }
-    return $(key).scrollTo();
-  }
-
-  Future<void> expectLessonDone() async {
-    await _show(EndgameLessonKeys.lessonDone);
-  }
+  /// Rola a tela do capítulo até [key] (T82: lista curta, sem fala nem
+  /// teste recolhido).
+  Future<PatrolFinder> _show(Key key) => $(key).scrollTo();
 
   // Os exercícios.
 
-  /// Começa (ou continua) os exercícios pelo botão da aula: passa pela
-  /// introdução e abre o próximo por resolver.
+  /// Começa (ou continua) os exercícios pela linha "N exercícios práticos"
+  /// do capítulo: passa pela introdução e abre o próximo por resolver.
   Future<void> startExercises(String lessonId, String exerciseId) async {
-    await _show(EndgameLessonKeys.startExercises).tap();
+    await _show(EndgameLessonKeys.exercises).tap();
     await $(ExercisesIntroKeys.screen).waitUntilVisible();
     await $(ExercisesIntroKeys.start).tap();
-    await expectExercise(lessonId, exerciseId);
-  }
-
-  /// Abre um exercício pela lista (só existe com todos resolvidos).
-  Future<void> openExercise(String lessonId, String exerciseId) async {
-    await _show(EndgameLessonKeys.exercise(exerciseId)).tap();
     await expectExercise(lessonId, exerciseId);
   }
 
@@ -121,8 +94,37 @@ class EndgamesRobot {
   }
 
   /// O que o Viktor está dizendo no exercício.
-  String? get exerciseSpeech =>
-      _plain($.tester.widget<Text>(find.byKey(ExerciseKeys.speech).last));
+  String? get exerciseSpeech => $.tester
+      .widget<SpeechBalloon>(find.byKey(LessonScriptKeys.speech).last)
+      .speech
+      ?.toString();
+
+  /// O tabuleiro do exercício depois do primeiro lance ensinado e da resposta
+  /// (só as peças): calculado da própria aula, que muda com as revisões.
+  String boardAfterFirstTurn(Exercise exercise) {
+    var position = GameRules.fromFen(exercise.fen)!;
+    final turn = exercise.line.first;
+    for (final uci in [turn.accept.first, ?turn.reply]) {
+      position = GameRules.play(position, Move.parse(uci)!)!.position;
+    }
+    return position.fen;
+  }
+
+  /// Um lance legal que o primeiro passo do exercício não aceita: calculado da
+  /// própria aula, que muda com as revisões.
+  String wrongFirstMove(Exercise exercise) {
+    final position = GameRules.fromFen(exercise.fen)!;
+    final accepted = exercise.line.first.accept;
+    for (final MapEntry(key: from, value: targets) in GameRules.legalMoves(
+      position,
+    ).entries) {
+      for (final to in targets) {
+        final uci = '${from.name}${to.name}';
+        if (!accepted.contains(uci)) return uci;
+      }
+    }
+    throw StateError('Sem lance errado em ${exercise.id}');
+  }
 
   /// Os pontos ganhos no exercício resolvido ("1 of 2 points").
   /// Lido da estrela da barra de cima: com a explicação do Viktor na tela,
@@ -157,11 +159,11 @@ class EndgamesRobot {
     // O último exercício leva ao resultado, que volta à aula.
     await $(ExerciseKeys.resultButton).tap();
     await $(ExercisesDoneKeys.screen).waitUntilVisible();
-    // Abaixo do mínimo, o botão de baixo é "rever a lição": volta pela barra.
+    // Abaixo do mínimo, o botão de baixo é "rever a lição": volta pelo X.
     if ($(ExercisesDoneKeys.back).exists) {
       await $(ExercisesDoneKeys.back).tap();
     } else {
-      await $(BackButton).tap();
+      await $(ExercisesDoneKeys.close).tap();
     }
     await expectLessonScreen();
   }
@@ -183,72 +185,11 @@ class EndgamesRobot {
     }
   }
 
-  /// As estrelas ganhas num exercício, na lista da aula.
-  void expectExerciseStars(String exerciseId, int? earned) => expect(
-    $.tester
-        .widget<StarsRow>(
-          find.byKey(EndgameLessonKeys.exerciseStars(exerciseId)),
-        )
-        .earned,
-    earned,
-  );
-
   /// O voltar da barra: de volta à aula (pelo widget, não pela dica
   /// "Back", que muda com o idioma).
   Future<void> back() async {
     await $(BackButton).tap();
     await expectLessonScreen();
-  }
-
-  // A nota e o passo final.
-
-  /// Sem exercício resolvido: o botão de começar os exercícios, sem nota.
-  Future<void> expectExercisesToStart() async {
-    await _show(EndgameLessonKeys.startExercises);
-    expect(find.byKey(EndgameLessonKeys.score), findsNothing);
-  }
-
-  Future<void> expectPassed() async {
-    await _show(EndgameLessonKeys.passed);
-  }
-
-  Future<void> expectFailed() async {
-    await _show(EndgameLessonKeys.failed);
-  }
-
-  /// A nota da aula ("11 of 23 points").
-  void expectScore(String text) =>
-      expectTextIn(find.byKey(EndgameLessonKeys.score), text);
-
-  /// Teste em andamento: no cartão da nota, só quantos foram resolvidos
-  /// ("3 of 8 solved").
-  void expectSolvedCount(String text) =>
-      expectTextIn(find.byKey(EndgameLessonKeys.score), text);
-
-  /// Sem nota de reprovação (exercícios por fazer).
-  void expectNotFailed() =>
-      expect(find.byKey(EndgameLessonKeys.failed), findsNothing);
-
-  Future<void> redo() async {
-    await _show(EndgameLessonKeys.redoButton).tap();
-    await $.pumpAndSettle();
-  }
-
-  Future<void> expectFinalStep() async {
-    await _show(EndgameLessonKeys.finalStep);
-  }
-
-  /// Desafia o speedrun do final no ritmo [pace] (`180+2`).
-  Future<void> challengeSpeedrun(String pace) async {
-    await $(EndgameLessonKeys.pace(pace)).scrollTo().tap();
-    await $(EndgameLessonKeys.speedrunButton).scrollTo().tap();
-    await $(SpeedrunKeys.screen).waitUntilVisible();
-    expect(find.byKey(SpeedrunKeys.paceBadge), findsOneWidget);
-  }
-
-  Future<void> train() async {
-    await $(EndgameLessonKeys.trainButton).scrollTo().tap();
-    await $(GameSetupKeys.screen).waitUntilVisible();
   }
 
   Future<void> openInfo() async {
@@ -278,7 +219,4 @@ class EndgamesRobot {
     square,
     orientation: _board(boardKey).orientation,
   );
-
-  // A fala como texto, simples ou com as casas destacadas (texto rico).
-  static String? _plain(Text text) => text.data ?? text.textSpan?.toPlainText();
 }

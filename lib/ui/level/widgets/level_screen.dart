@@ -78,8 +78,18 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
       Navigator.of(context).pop();
       return;
     }
-    // O iniciante vai direto para as aulas (a tela inicial fica embaixo).
-    context.go(state.toSchool ? Routes.school : Routes.home);
+    // O iniciante vai direto para as aulas; quem chegou pelo Perfil, para a
+    // tela inicial; no tour, os próximos passos (com o nível, se não foi
+    // "Não sei jogar").
+    context.go(
+      state.toSchool
+          ? Routes.school
+          : fromProfile
+          ? Routes.home
+          : Routes.nextStepsReady(
+              level: state.choice == LevelChoice.zero ? null : state.rating,
+            ),
+    );
   }
 
   Future<void> _continue(LevelState state) async {

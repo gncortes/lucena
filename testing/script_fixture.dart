@@ -159,6 +159,43 @@ Map<String, dynamic> scriptJson() => {
 
 LessonScript scriptFixture() => LessonScript.fromJson(scriptJson());
 
+/// Demonstração sintética de quatro lances seguida da prática da fixture.
+/// Mantém o contrato de navegação e da posição final sem ler um roteiro real.
+Map<String, dynamic> demoToPractice() {
+  const start = '8/4k3/8/8/8/8/5P2/3K4 w - - 0 1';
+  const second = '8/4k3/8/8/8/8/3K1P2/8 b - - 1 1';
+  const third = '8/8/3k4/8/8/8/3K1P2/8 w - - 2 2';
+  const fourth = '8/8/3k4/8/8/3K4/5P2/8 b - - 3 2';
+  const end = '8/8/8/3k4/8/3K4/5P2/8 w - - 4 3';
+  final json = scriptJson();
+  return {
+    ...json,
+    'etapas': [
+      {
+        'id': 'demos',
+        'exemplos': [
+          {
+            'id': 'demo',
+            'fen': start,
+            'vira': false,
+            'objetivo': 'ganhar',
+            'entrada': [_step(start, 'demo.inicio')],
+            'linha': [
+              _step(second, 'demo.1', lance: 'd1d2'),
+              _step(third, 'demo.2', lance: 'e7d6'),
+              _step(fourth, 'demo.3', lance: 'd2d3'),
+              _step(end, 'demo.4', lance: 'd6d5'),
+              _step(end, 'demo.ponte'),
+            ],
+            'fim': 'etapa',
+          },
+        ],
+      },
+      (json['etapas'] as List).last,
+    ],
+  };
+}
+
 /// Todas as falas que o roteiro de [scriptFixture] pede, com o próprio texto
 /// igual à chave (`'e1'` fala `'e1'`), mais as genéricas.
 Map<String, String> scriptTexts([Map<String, dynamic>? json]) {

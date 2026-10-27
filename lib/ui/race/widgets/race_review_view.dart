@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/race_keys.dart';
@@ -19,7 +20,6 @@ import '../../core/widgets/position_board.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/race_cubit.dart';
-import 'race_ui.dart';
 
 /// A revisão dos erros, um de cada vez: a posição, a seta no lance certo, o
 /// que o jogador jogou e o lance certo.
@@ -46,8 +46,10 @@ class RaceReviewView extends StatelessWidget {
     final cubit = context.read<RaceCubit>();
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final position = Chess.fromSetup(Setup.parseFen(problem.fen));
-    final right = Move.parse(problem.solution);
+    final fen = answer.fen ?? problem.fen;
+    final position = Chess.fromSetup(Setup.parseFen(fen));
+    final bestUci = answer.best.isEmpty ? null : answer.best.first;
+    final right = bestUci == null ? null : Move.parse(bestUci);
     final played = Move.parse(answer.move);
     final number =
         (state.outcome?.result.run.answers ?? const <RaceAnswer>[]).indexWhere(
@@ -59,7 +61,9 @@ class RaceReviewView extends StatelessWidget {
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
     final scaler = MediaQuery.textScalerOf(context);
-    final topRoom = scaler.scale(_headline + _hint).ceilToDouble();
+    final topRoom = scaler
+        .scale(_headline + _hint * (answer.slower ? 3 : 1))
+        .ceilToDouble();
     final bottomRoom = PlayersRow.detailedHeight;
     return Stack(
       key: RaceKeys.reviewView,
@@ -100,9 +104,18 @@ class RaceReviewView extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    l10n.raceReviewRight(
-                      _san(l10n, position, right, problem.solution),
-                    ),
+                    answer.slower
+                        ? l10n.raceReviewSlower(
+                            _san(l10n, position, right, bestUci ?? ''),
+                            answer.mateIn,
+                          )
+                        : problem.defend
+                        ? l10n.raceReviewDefend(
+                            _san(l10n, position, right, bestUci ?? ''),
+                          )
+                        : l10n.raceReviewRight(
+                            _san(l10n, position, right, bestUci ?? ''),
+                          ),
                     key: RaceKeys.reviewRight,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -114,12 +127,18 @@ class RaceReviewView extends StatelessWidget {
             ),
             board: LayoutBuilder(
               builder: (context, box) => PositionBoard(
-                fen: problem.fen,
+                fen: fen,
                 size: box.maxWidth,
                 orientation: problem.side,
                 coordinates: true,
                 radius: AppShape.none,
                 shapes: {
+                  if (answer.slower && played is NormalMove)
+                    Arrow(
+                      color: colors.error.withValues(alpha: 0.85),
+                      orig: played.from,
+                      dest: played.to,
+                    ),
                   if (right is NormalMove)
                     Arrow(
                       color: ChangeColors.of(
@@ -141,7 +160,7 @@ class RaceReviewView extends StatelessWidget {
                   name: l10n.reviewYou,
                   detail: l10n.raceReviewMeta(
                     number,
-                    problem.theme.label(context),
+                    categoryName(l10n, problem.category),
                     problem.level,
                   ),
                   detailKey: RaceKeys.reviewMeta,

@@ -159,6 +159,7 @@ abstract final class AnalyticsCatalog {
     'aviso_pedido': ['resposta', 'gatilho'],
     'aviso_chave': ['tipo', 'ligado'],
     'aviso_aberto': ['canal', 'tipo'],
+    'push_aberto': ['push_id', 'pais'],
     'perfil_regiao_definida': ['acao', 'tem_estado'],
     // Questionários, feedback e avaliação.
     'questionario_aberto': ['tipo', 'origem'],
@@ -840,6 +841,11 @@ abstract final class AnalyticsEvents {
     required String canal,
     required String tipo,
   }) => _e('aviso_aberto', {'canal': canal, 'tipo': tipo});
+
+  /// Tocou num push do painel (E1.19 3.8): o "% tocaram" de cada envio e
+  /// país. `push_id`: o envio; `pais`: o país da mensagem (sem: Todos).
+  static AnalyticsEvent pushAberto({required String pushId, String? pais}) =>
+      _e('push_aberto', {'push_id': pushId, 'pais': pais});
 
   /// `acao`: `confirmou|trocou|pulou`.
   static AnalyticsEvent perfilRegiaoDefinida({

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/board/centered_board_layout.dart';
@@ -12,6 +14,9 @@ void main() {
     double topHeight = 60,
     double bottomHeight = 40,
     double footerHeight = 80,
+    double reserveTop = 0,
+    double reserveBottom = 0,
+    double gutter = 8,
     double? centerY,
     double? minBoardSide,
     bool measureBlock = false,
@@ -28,7 +33,9 @@ void main() {
             minBoardSide: minBoardSide,
             balanced: measureBlock,
             measureBlock: measureBlock,
-            gutter: 8,
+            gutter: gutter,
+            reserveTop: reserveTop,
+            reserveBottom: reserveBottom,
             top: SizedBox(key: BoardLayoutKeys.top, height: topHeight),
             board: const ColoredBox(
               key: BoardLayoutKeys.board,
@@ -123,6 +130,113 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final scenario in [
+    (
+      name: 'reserva superior',
+      top: 40.0,
+      reserveTop: 260.0,
+      bottom: 40.0,
+      reserveBottom: 0.0,
+      center: 200.0,
+    ),
+    (
+      name: 'topo natural maior que a reserva',
+      top: 300.0,
+      reserveTop: 260.0,
+      bottom: 40.0,
+      reserveBottom: 0.0,
+      center: 200.0,
+    ),
+    (
+      name: 'rodapé natural maior que a reserva',
+      top: 60.0,
+      reserveTop: 40.0,
+      bottom: 260.0,
+      reserveBottom: 40.0,
+      center: 400.0,
+    ),
+    (
+      name: 'reserva inferior maior que o rodapé natural',
+      top: 60.0,
+      reserveTop: 40.0,
+      bottom: 40.0,
+      reserveBottom: 260.0,
+      center: 400.0,
+    ),
+    (
+      name: 'centro explícito abaixo do mínimo',
+      top: 60.0,
+      reserveTop: 40.0,
+      bottom: 260.0,
+      reserveBottom: 40.0,
+      center: 550.0,
+    ),
+  ]) {
+    testWidgets(
+      '${scenario.name}: largura total, blocos íntegros e ações roláveis',
+      (tester) async {
+        const screen = Size(393, 800);
+        await pump(
+          tester,
+          screen,
+          topHeight: scenario.top,
+          bottomHeight: scenario.bottom,
+          reserveTop: scenario.reserveTop,
+          reserveBottom: scenario.reserveBottom,
+          centerY: scenario.center,
+          minBoardSide: screen.width,
+          gutter: 0,
+        );
+        final board = tester.getRect(find.byKey(BoardLayoutKeys.board));
+        final top = tester.getRect(find.byKey(BoardLayoutKeys.top));
+        final bottom = tester.getRect(find.byKey(BoardLayoutKeys.bottom));
+        final footer = tester.getRect(find.byKey(BoardLayoutKeys.footer));
+        final contentTop = tester.getRect(find.byType(AppBar)).bottom;
+        final topExtent = math.max(scenario.top, scenario.reserveTop) + 8;
+        final bottomExtent = math.max(scenario.bottom, scenario.reserveBottom);
+        expect(board.width, screen.width);
+        expect(board.height, screen.width);
+        expect(board.center.dx, screen.width / 2);
+        expect(
+          board.center.dy,
+          closeTo(
+            contentTop +
+                math.max(scenario.center, topExtent + screen.width / 2),
+            .01,
+          ),
+        );
+        expect(top.height, scenario.top);
+        expect(bottom.height, scenario.bottom);
+        expect(top.top, greaterThanOrEqualTo(contentTop));
+        expect(top.bottom + 8, lessThanOrEqualTo(board.top));
+        expect(board.top - contentTop, greaterThanOrEqualTo(topExtent));
+        expect(bottom.top - board.bottom, closeTo(8, .01));
+        expect(bottom.bottom, lessThanOrEqualTo(footer.top));
+        expect(
+          footer.top - board.bottom,
+          greaterThanOrEqualTo(8 + bottomExtent),
+        );
+        expect(footer.bottom, greaterThan(screen.height));
+        await tester.ensureVisible(find.byKey(BoardLayoutKeys.footer));
+        await tester.pumpAndSettle();
+        final visibleFooter = tester.getRect(
+          find.byKey(BoardLayoutKeys.footer),
+        );
+        final scrolledBoard = tester.getRect(find.byKey(BoardLayoutKeys.board));
+        final scrolledBottom = tester.getRect(
+          find.byKey(BoardLayoutKeys.bottom),
+        );
+        expect(visibleFooter.top, greaterThanOrEqualTo(contentTop));
+        expect(visibleFooter.bottom, lessThanOrEqualTo(screen.height));
+        expect(scrolledBoard.size, board.size);
+        expect(scrolledBottom.height, scenario.bottom);
+        expect(scrolledBottom.top - scrolledBoard.bottom, closeTo(8, .01));
+        expect(scrolledBottom.bottom, lessThanOrEqualTo(visibleFooter.top));
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
 
   test('BoardCentering: reserva grande encolhe o tabuleiro até o mínimo', () {
     final centering = BoardCentering(

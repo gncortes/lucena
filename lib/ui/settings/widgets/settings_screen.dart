@@ -95,6 +95,13 @@ class SettingsScreen extends StatelessWidget {
                 ),
               if (showsDevTools)
                 ProfileRow(
+                  key: SettingsKeys.pilaresPreviewTile,
+                  icon: Icons.school_outlined,
+                  title: l10n.pilaresPreviewTile,
+                  onTap: () => context.go(Routes.pilaresSale),
+                ),
+              if (showsDevTools)
+                ProfileRow(
                   key: SettingsKeys.openLinkTile,
                   icon: Icons.link,
                   title: l10n.devOpenLinkTitle,
@@ -240,7 +247,9 @@ class _AlertsGroup extends StatelessWidget {
       tileKey: SettingsKeys.alertsTile,
       icon: Icons.notifications_outlined,
       title: l10n.alertsTitle,
-      hint: l10n.alertsCount(state.enabled, state.total),
+      hint: state.permitted
+          ? l10n.alertsCount(state.enabled, state.total)
+          : l10n.alertsBlockedSummary,
       route: Routes.alerts,
     );
   }

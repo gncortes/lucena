@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -24,6 +25,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/game_entrance.dart';
@@ -56,6 +58,43 @@ import '../../daily/widgets/daily_end_bar.dart';
 import '../../featured/view_models/featured_endgame_cubit.dart';
 import '../../featured/widgets/featured_game_bar.dart';
 
+// O tabuleiro trata arrastes diretamente; a rolagem externa não deve competir
+// com o gesto da peça nem gerar inércia ao soltá-la.
+class _GameScrollPhysics extends ClampingScrollPhysics {
+  const _GameScrollPhysics(this.boardTouch, {super.parent});
+
+  final bool Function() boardTouch;
+
+  @override
+  _GameScrollPhysics applyTo(ScrollPhysics? ancestor) =>
+      _GameScrollPhysics(boardTouch, parent: buildParent(ancestor));
+
+  @override
+  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) =>
+      boardTouch() ? 0 : super.applyPhysicsToUserOffset(position, offset);
+
+  @override
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) =>
+      boardTouch() ? null : super.createBallisticSimulation(position, velocity);
+}
+
+String _gameEndReason(AppLocalizations l10n, GameEndReason reason) =>
+    switch (reason) {
+      GameEndReason.checkmate => l10n.freeBoardCheckmate,
+      GameEndReason.stalemate => l10n.freeBoardStalemate,
+      GameEndReason.insufficientMaterial => l10n.freeBoardInsufficientMaterial,
+      GameEndReason.repetition => l10n.freeBoardRepetition,
+      GameEndReason.fiftyMoves => l10n.freeBoardFiftyMoves,
+      GameEndReason.timeout => l10n.freeBoardTimeout,
+      GameEndReason.timeoutVsInsufficientMaterial =>
+        l10n.freeBoardTimeoutVsInsufficientMaterial,
+      GameEndReason.resign => l10n.gameResigned,
+      GameEndReason.drawAgreed => l10n.freeBoardDrawAgreed,
+    };
+
 class FreeBoardScreen extends StatefulWidget {
   const FreeBoardScreen({super.key});
 
@@ -66,6 +105,21 @@ class FreeBoardScreen extends StatefulWidget {
 class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   late final ChessboardController _board;
+  bool _boardTouch = false;
+  bool _speechVisible = true;
+
+  void _onSpeechVisibilityChanged(bool visible) {
+    if (mounted && _speechVisible != visible) {
+      setState(() => _speechVisible = visible);
+    }
+  }
+
+  Widget _boardTouchRegion(Widget child) => Listener(
+    onPointerDown: (_) => _boardTouch = true,
+    onPointerUp: (_) => scheduleMicrotask(() => _boardTouch = false),
+    onPointerCancel: (_) => scheduleMicrotask(() => _boardTouch = false),
+    child: child,
+  );
 
   // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
   // os tempos sejam refeitos pelo instante atual.
@@ -158,7 +212,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       sheetKey: FreeBoardKeys.speedrunQuitSheet,
       confirmKey: FreeBoardKeys.speedrunQuitConfirm,
       cancelKey: FreeBoardKeys.speedrunQuitCancel,
-      title: l10n.speedrunQuitTitle,
+      title: cubit.state.mode.isMarathon
+          ? l10n.marathonQuitTitle
+          : l10n.classicQuitTitle,
       hint: l10n.speedrunQuitHint(won),
       action: l10n.speedrunAbandon,
       cancel: l10n.speedrunKeepGoing,
@@ -422,13 +478,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final character = talk.character;
                 // Acabou a partida contra a máquina: o selo fica no tabuleiro e
                 // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
-                if (state.end == null) {
-                  _endAtOpen = false;
-                  _endSeen = true;
-                } else if (!_endSeen) {
-                  _endAtOpen = true;
-                  _endSeen = true;
-                }
                 final machineEnded =
                     state.end != null &&
                     state.mode.opponent.isMachine &&
@@ -439,10 +488,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final nickname = context.select(
                   (ProfileCubit cubit) => cubit.state?.nickname ?? '',
                 );
-                // O centro do tabuleiro é o centro da tela visível (a altura
-                // menos as barras do sistema), como no às cegas e nas
-                // estrelas. Retrato, nome e relógio compartilham uma única
-                // linha; o balão flutua e não reserva altura.
+                // Centro da tela inteira como referência. Se a fala não cabe,
+                // Gabriel autorizou descer o tabuleiro em vez de mudar o balão
+                // para a faixa do nome. Ao terminar o fade da fala, libera
+                // essa reserva para devolver o tabuleiro ao centro da tela.
                 final clocksAbove =
                     clocks == ClockPosition.top || clocks == ClockPosition.sides
                     ? ClockRow.height
@@ -452,15 +501,78 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         clocks == ClockPosition.sides
                     ? ClockRow.height
                     : 0.0;
-                final reserveTop = clocksAbove;
-                final centering = BoardCentering.balanced(
-                  constraints.biggest,
+                var reserveTop = clocksAbove;
+                var speechMaxLines = 3;
+                final view = View.of(context);
+                final insetsOffset =
+                    (view.viewPadding.top - view.viewPadding.bottom) /
+                    view.devicePixelRatio /
+                    2;
+                final screenCenter =
+                    BoardViewport.centerYOf(context)! - insetsOffset;
+                final footerHeight = machineEnded && state.mode.fromLink
+                    ? _LinkEndBar.height
+                    : GameActionsBar.height;
+                final boardSide = constraints.maxWidth;
+                final comments = context.select(
+                  (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
+                );
+                if (state.mode.opponent == OpponentKind.maia &&
+                    comments &&
+                    barTalk.enabled &&
+                    barTalk.line != null &&
+                    _speechVisible) {
+                  // A largura do tabuleiro tem prioridade. Reduz o resumo
+                  // antes de usar a exceção vertical, nunca o tabuleiro.
+                  for (var lines = 3; lines >= 1; lines--) {
+                    final text = TextPainter(
+                      text: TextSpan(
+                        text: List.filled(lines, 'M').join('\n'),
+                        style: SpeechBalloon.style(context),
+                      ),
+                      textDirection: Directionality.of(context),
+                      textScaler: MediaQuery.textScalerOf(context),
+                    )..layout();
+                    final speechRoom =
+                        text.height +
+                        SpeechBalloon.defaultPadding.vertical +
+                        SpeechBalloon.tailExtent +
+                        4;
+                    text.dispose();
+                    final candidateTop =
+                        clocksAbove +
+                        (clocks == ClockPosition.bottom
+                            ? speechRoom + 4
+                            : math.max(0, speechRoom - 12));
+                    if (screenCenter - boardSide / 2 >=
+                            candidateTop + _boardGap ||
+                        lines == 1) {
+                      reserveTop = candidateTop;
+                      speechMaxLines = lines;
+                      break;
+                    }
+                  }
+                }
+                final topExtent = reserveTop > 0 ? reserveTop + _boardGap : 0.0;
+                final bottomExtent = clocksBelow > 0
+                    ? clocksBelow + _boardGap
+                    : 0.0;
+                final boardCenter = math.max(
+                  screenCenter,
+                  topExtent + boardSide / 2,
+                );
+                final layoutHeight = math.max(
+                  constraints.maxHeight,
+                  boardCenter + boardSide / 2 + bottomExtent + footerHeight,
+                );
+                final centering = BoardCentering(
+                  Size(constraints.maxWidth, layoutHeight),
+                  centerY: boardCenter,
                   gap: _boardGap,
                   reserveTop: reserveTop,
                   reserveBottom: clocksBelow,
-                  footer: machineEnded && state.mode.fromLink
-                      ? _LinkEndBar.height
-                      : GameActionsBar.height,
+                  footer: footerHeight,
+                  minFraction: 1,
                 );
                 const both = [Side.white, Side.black];
                 final end = state.end;
@@ -472,7 +584,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     CenteredBoardLayout(
                       key: FreeBoardKeys.scrollArea,
                       gap: _boardGap,
-                      balanced: true,
+                      centerY: centering.centerY,
+                      minFraction: centering.minFraction,
+                      minBoardSide: boardSide,
+                      scrollPhysics: _GameScrollPhysics(() => _boardTouch),
                       reserveTop: reserveTop,
                       reserveBottom: clocksBelow,
                       footer: machineEnded && featured
@@ -516,6 +631,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 clocks != ClockPosition.bottom)
                               CharacterBar(
                                 talk: barTalk,
+                                speechMaxLines: speechMaxLines,
+                                onSpeechVisibilityChanged:
+                                    _onSpeechVisibilityChanged,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -561,20 +679,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                               orientation: state.orientation,
                               child: Directionality(
                                 textDirection: TextDirection.ltr,
-                                child: Chessboard(
-                                  key: FreeBoardKeys.board,
-                                  size: box.maxWidth,
-                                  controller: _board,
-                                  // No ultra bullet o pré-lance fica sempre ligado:
-                                  // sem ele, não dá tempo de jogar no celular.
-                                  settings: _ultraBullet(state)
-                                      ? boardSettings
-                                            .copyWith(premoves: true)
-                                            .chessground
-                                      : boardSettings.chessground,
-                                  orientation: state.orientation,
-                                  onMove: (move, {viaDragAndDrop}) =>
-                                      cubit.play(move),
+                                child: _boardTouchRegion(
+                                  Chessboard(
+                                    key: FreeBoardKeys.board,
+                                    size: box.maxWidth,
+                                    controller: _board,
+                                    // No ultra bullet o pré-lance fica sempre ligado:
+                                    // sem ele, não dá tempo de jogar no celular.
+                                    settings: _ultraBullet(state)
+                                        ? boardSettings
+                                              .copyWith(premoves: true)
+                                              .chessground
+                                        : boardSettings.chessground,
+                                    orientation: state.orientation,
+                                    onMove: (move, {viaDragAndDrop}) =>
+                                        cubit.play(move),
+                                  ),
                                 ),
                               ),
                             ),
@@ -582,17 +702,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                             // versus (na Maratona, com a contagem); só então
                             // o relógio corre.
                             // O selo do resultado sobre o tabuleiro, até o jogador seguir.
-                            if (end != null &&
-                                !_endAtOpen &&
-                                state.mode.opponent.isMachine)
+                            if (end != null && state.mode.opponent.isMachine)
                               Positioned.fill(
                                 child: IgnorePointer(
                                   child: _EndFlash(
                                     key: ValueKey(end),
                                     end: end,
                                     userSide: state.mode.userSide,
-                                    // O final em destaque pisca por 1,5 s.
+                                    // Só o autoavanço encerra o selo sozinho.
                                     short: state.mode.isUnratedFinal,
+                                    persistent: !_marathonAdvance(state),
                                   ),
                                 ),
                               ),
@@ -653,6 +772,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 character != null)
                               CharacterBar(
                                 talk: barTalk,
+                                speechMaxLines: speechMaxLines,
+                                onSpeechVisibilityChanged:
+                                    _onSpeechVisibilityChanged,
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -696,7 +818,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   String _title(BuildContext context, FreeBoardState state, TalkState talk) {
     final l10n = context.l10n;
-    if (state.mode.isSpeedrun) return l10n.speedrunTitle;
+    if (state.mode.isMarathon) return l10n.marathonSection;
+    if (state.mode.isSpeedrun) return l10n.speedrunModeClassic;
     if (state.mode.featuredId != null) return l10n.featuredEndgameTitle;
     if (state.mode.dailyDate != null) return l10n.dailyTitle;
     if (state.mode.challengeId != null && talk.character != null) {
@@ -821,11 +944,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  /// A tela abriu com a partida já terminada (retomada): sem selo (§12).
-  /// Volta a falso quando uma partida nova começa.
-  bool _endAtOpen = false;
-  bool _endSeen = false;
-
   /// Quanto o resultado fica em destaque antes da conclusão: o selo inteiro
   /// (entra 200 ms, pico 1200 ms, sai 200 ms).
   static const _flashTime = _EndFlash.total;
@@ -876,32 +994,37 @@ class _LinkEndBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ActionsFooter(
+    return LayoutBuilder(
+      builder: (context, box) {
+        final compact = box.maxWidth < 384;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            OutlinedButton.icon(
-              key: ChallengeKeys.endPlayAgain,
-              onPressed: onAgain,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.challengeEndPlayAgain),
+            ActionsFooter(
+              children: [
+                OutlinedButton.icon(
+                  key: ChallengeKeys.endPlayAgain,
+                  onPressed: onAgain,
+                  icon: compact ? null : const Icon(Icons.refresh),
+                  label: Text(l10n.challengeEndPlayAgain),
+                ),
+                FilledButton.icon(
+                  key: ChallengeKeys.endShare,
+                  onPressed: onShare,
+                  icon: compact ? null : const Icon(Icons.share_outlined),
+                  label: Text(l10n.challengeShare),
+                ),
+              ],
             ),
-            FilledButton.icon(
-              key: ChallengeKeys.endShare,
-              onPressed: onShare,
-              icon: const Icon(Icons.share_outlined),
-              label: Text(l10n.challengeShare),
+            TextButton.icon(
+              key: ChallengeKeys.endMeetApp,
+              onPressed: onMeetApp,
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(l10n.challengeEndMeetApp),
             ),
           ],
-        ),
-        TextButton.icon(
-          key: ChallengeKeys.endMeetApp,
-          onPressed: onMeetApp,
-          icon: const Icon(Icons.arrow_forward),
-          label: Text(l10n.challengeEndMeetApp),
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -914,6 +1037,7 @@ class _EndFlash extends StatefulWidget {
     required this.end,
     this.userSide,
     this.short = false,
+    this.persistent = false,
   });
 
   final GameEnd end;
@@ -922,6 +1046,7 @@ class _EndFlash extends StatefulWidget {
   /// Pisca por [AppMotion.featuredFlash] (entra, fica e sai) em vez do tempo
   /// normal do selo.
   final bool short;
+  final bool persistent;
 
   /// Entrada, pico e saída (200 + 1200 + 200 ms).
   // coreografia do selo de fim: tempo de leitura, não token de animação
@@ -969,11 +1094,14 @@ class _EndFlashState extends State<_EndFlash>
         : winner == widget.userSide
         ? l10n.resultYouWon
         : l10n.resultYouLost;
+    final reason = _gameEndReason(l10n, widget.end.reason);
     final fade = _reduced ? _EndFlash._reducedFade : _EndFlash._fade;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        if (_controller.isCompleted) return const SizedBox.shrink();
+        if (_controller.isCompleted && !widget.persistent) {
+          return const SizedBox.shrink();
+        }
         final total = _controller.duration!.inMilliseconds;
         final ms = _controller.value * total;
         final f = fade.inMilliseconds;
@@ -983,7 +1111,7 @@ class _EndFlashState extends State<_EndFlash>
           final t = AppMotion.enter.transform(ms / f);
           opacity = t;
           if (!_reduced) scale = 0.92 + 0.08 * t;
-        } else if (ms > total - f) {
+        } else if (!widget.persistent && ms > total - f) {
           opacity = 1 - AppMotion.exit.transform((ms - (total - f)) / f);
         } else {
           opacity = 1;
@@ -997,7 +1125,7 @@ class _EndFlashState extends State<_EndFlash>
       },
       child: Semantics(
         liveRegion: true,
-        label: title,
+        label: widget.persistent ? '$title. $reason' : title,
         child: ExcludeSemantics(
           child: Container(
             key: FreeBoardKeys.endFlash,
@@ -1009,11 +1137,25 @@ class _EndFlashState extends State<_EndFlash>
               color: colors.inverseSurface.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(AppShape.large),
             ),
-            child: Text(
-              title,
-              style: context.bigNumber?.copyWith(
-                color: colors.onInverseSurface,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: context.bigNumber?.copyWith(
+                    color: colors.onInverseSurface,
+                  ),
+                ),
+                if (widget.persistent)
+                  Text(
+                    reason,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onInverseSurface,
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

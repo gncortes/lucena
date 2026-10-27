@@ -1,6 +1,10 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class JourneyKeys {
+  static const resume = Key('journey.resume');
+  static const restart = Key('journey.restart');
+  static const restartConfirm = Key('journey.restart.confirm');
+
   /// Um desafio especial (às cegas) na tela do degrau.
   static Key special(String id) => Key('journey.special.$id');
 
@@ -32,6 +36,7 @@ abstract final class JourneyKeys {
   /// Na tela do desafio: o tabuleiro e o painel embaixo dele.
   static const challengeBoard = Key('journey.challenge.board');
   static const challengePanel = Key('journey.challenge.panel');
+  static const changePace = Key('journey.challenge.changePace');
 
   static Key rung(String id) => Key('journey.rung.$id');
   static Key rungLocked(String id) => Key('journey.rung.$id.locked');

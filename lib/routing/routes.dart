@@ -1,4 +1,5 @@
 import '../domain/models/challenge_link.dart';
+import '../domain/models/app_links.dart';
 import '../domain/models/featured.dart';
 import '../domain/models/clock.dart';
 import '../domain/models/daily_final.dart';
@@ -7,7 +8,33 @@ import '../domain/models/journey.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
+  static const boardControls = '/board-controls';
   static const home = '/';
+  static const invalidLink = '/invalid-link';
+
+  /// Só links públicos próprios; preserva caminho e query do desafio.
+  static String? appLink(Uri uri) {
+    if (!AppLinks.isOwn(uri)) return null;
+    if (uri.path == '/dia' ||
+        uri.path == '/dia/' ||
+        uri.path == '/daily' ||
+        uri.path == '/daily/') {
+      return daily;
+    }
+    try {
+      if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
+          ChallengeLink.tryParse(uri) != null) {
+        return Uri(
+          path: uri.path,
+          query: uri.hasQuery ? uri.query : null,
+        ).toString();
+      }
+    } on FormatException {
+      return invalidLink;
+    }
+    return invalidLink;
+  }
+
   static const freeBoard = '/board';
 
   /// "Atualize o Lucena": por cima de tudo, sem voltar (E1.32).
@@ -246,6 +273,25 @@ abstract final class Routes {
   static const race = '/race';
   static const raceWarmUp = '/race/warm-up';
 
+  /// "Seu desempenho": o desempenho por final nas Corridas (E1.34).
+  static const racePerformance = '/race/performance';
+
+  /// Os próximos passos: depois do "Seu nível" (com o nível, quando há) e
+  /// com a Escola concluída.
+  static const nextSteps = '/next';
+  static String nextStepsReady({int? level}) => Uri(
+    path: nextSteps,
+    queryParameters: {'level': ?level?.toString()},
+  ).toString();
+  static const nextStepsSchool = '/next/school';
+
+  /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
+  /// ([category]).
+  static String raceOnly({String? subcategory, String? category}) => Uri(
+    path: race,
+    queryParameters: {'only': ?subcategory, 'category': ?category},
+  ).toString();
+
   /// Os speedruns, um speedrun e uma tentativa dele.
   static const speedruns = '/speedruns';
   static String speedrun(String id) => '/speedruns/$id';
@@ -432,15 +478,35 @@ abstract final class Routes {
       Uri(path: placement, queryParameters: {'from': from}).toString();
 
   static const catalog = '/catalog';
-  static String catalogCategory(String category) => '/catalog/$category';
+  static const blindEntry = '/blind-entry';
+  static const blindCatalog = '/catalog?blind=1';
+  static String catalogCategory(
+    String category, {
+    String? subcategory,
+    bool blind = false,
+  }) => Uri(
+    path: '/catalog/$category',
+    queryParameters: subcategory == null && !blind
+        ? null
+        : {'subcategory': ?subcategory, if (blind) 'blind': '1'},
+  ).toString();
 
   /// Configuração da partida numa posição, com o objetivo e, se ela vier do
   /// catálogo, o id dela (para o histórico).
-  static String setup(String fen, {required String goal, String? position}) =>
-      Uri(
-        path: '/setup',
-        queryParameters: {'fen': fen, 'goal': goal, 'position': ?position},
-      ).toString();
+  static String setup(
+    String fen, {
+    required String goal,
+    String? position,
+    bool blind = false,
+  }) => Uri(
+    path: '/setup',
+    queryParameters: {
+      'fen': fen,
+      'goal': goal,
+      'position': ?position,
+      if (blind) 'blind': '1',
+    },
+  ).toString();
 
   static const customPosition = '/custom';
 
@@ -473,4 +539,11 @@ abstract final class Routes {
 
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';
+
+  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
+  /// mapa e um capítulo.
+  static const pilaresSale = '/settings/pilares';
+  static const pilaresBand = '/settings/pilares/faixa';
+  static const pilaresMap = '/settings/pilares/mapa';
+  static const pilaresChapter = '/settings/pilares/mapa/capitulo';
 }

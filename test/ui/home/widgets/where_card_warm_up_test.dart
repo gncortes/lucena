@@ -8,7 +8,6 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/journey.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/where_card.dart';
@@ -90,8 +89,6 @@ void main() {
     expect(find.byKey(RaceKeys.warmUpScreen), findsOneWidget);
 
     await tester.tap(find.byKey(RaceKeys.warmUpSkip));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(PaceKeys.confirm));
     await tester.pumpAndSettle();
     expect(find.text('a partida'), findsOneWidget);
 

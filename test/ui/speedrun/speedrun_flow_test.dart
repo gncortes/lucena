@@ -112,6 +112,13 @@ void main() {
             await tester.tap(find.byKey(ConclusionKeys.close));
           }
           await tester.pumpAndSettle();
+          if (!marathon) {
+            expect(find.byKey(SpeedrunKeys.screen), findsOneWidget);
+            expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+            expect(games.snapshot, isNull);
+            await tester.tap(find.byKey(SpeedrunKeys.resume));
+            await tester.pumpAndSettle();
+          }
           final game = tester
               .element(find.byKey(FreeBoardKeys.screen))
               .read<FreeBoardCubit>();
@@ -275,6 +282,8 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsNothing);

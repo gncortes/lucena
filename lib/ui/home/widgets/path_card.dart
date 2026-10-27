@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/widgets/info_chip.dart';
 
 /// Um caminho da tela inicial: o que dá para fazer no app, com o nome e uma
 /// linha dizendo o que acontece ali.
@@ -12,6 +13,7 @@ class PathCard extends StatelessWidget {
     required this.title,
     required this.body,
     required this.onTap,
+    this.badge,
     super.key,
   });
 
@@ -19,6 +21,9 @@ class PathCard extends StatelessWidget {
   final String title;
   final String body;
   final VoidCallback onTap;
+
+  /// O selo ao lado do título ("Para você", "Recomendado"), opcional.
+  final String? badge;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +56,23 @@ class PathCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: context.cardTitle),
+                    if (badge case final badge?)
+                      Wrap(
+                        spacing: AppSpacing.sm,
+                        runSpacing: AppSpacing.xs,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(title, style: context.cardTitle),
+                          InfoChip(
+                            label: badge,
+                            compact: true,
+                            background: colors.secondaryContainer,
+                            foreground: colors.onSecondaryContainer,
+                          ),
+                        ],
+                      )
+                    else
+                      Text(title, style: context.cardTitle),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       body,
