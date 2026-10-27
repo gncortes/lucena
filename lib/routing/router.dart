@@ -1813,6 +1813,7 @@ ConclusionCubit _conclusionCubit(BuildContext context) => ConclusionCubit(
   analysis: context.read<AnalysisRepository>(),
   reviews: context.read<GameReviewRepository>(),
   opponent: context.read<OpponentRepository>(),
+  profile: context.read<ProfileRepository>(),
 );
 
 /// O filtro pedido na rota das aulas de finais: "Todos" (true), "Para você"

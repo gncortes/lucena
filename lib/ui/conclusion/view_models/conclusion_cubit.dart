@@ -11,6 +11,7 @@ import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../data/repositories/positions/positions_repository.dart';
+import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/review/game_review_repository.dart';
@@ -25,6 +26,7 @@ import '../../../domain/models/journey.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/player_rating.dart';
 import '../../../domain/models/speedrun.dart';
+import '../../../domain/use_cases/beginner_home.dart';
 import '../../../domain/use_cases/conclusion_rules.dart';
 import '../../../domain/use_cases/game_feedback.dart';
 import '../../../domain/use_cases/marathon.dart';
@@ -175,6 +177,7 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     this._analysis,
     this._reviews,
     this._opponent,
+    this._profile,
   }) : super(const ConclusionState());
 
   final ProgressRepository _progress;
@@ -197,6 +200,9 @@ class ConclusionCubit extends Cubit<ConclusionState> {
   // Quem joga a melhor linha: o Stockfish no lugar do jogador e o mesmo
   // adversário da partida do outro lado.
   final OpponentRepository? _opponent;
+
+  // O objetivo de quem joga: quem aprende a jogar ainda não vê o rating.
+  final ProfileRepository? _profile;
 
   /// Quanto cada lado pensa por lance na melhor linha.
   static const bestLineThink = Duration(seconds: 1);
@@ -542,11 +548,18 @@ class ConclusionCubit extends Cubit<ConclusionState> {
     );
   }
 
-  // O rating antes e depois da partida, pelo histórico gravado.
+  // O rating antes e depois da partida, pelo histórico gravado. Nenhum
+  // para quem aprende a jogar e ainda não tem as partidas que o mostram.
   Future<(PlayerRating?, PlayerRating?)> _ratingOf(int gameId) async {
     final history = await _rating.history();
     final index = history.indexWhere((entry) => entry.gameId == gameId);
     if (index < 0) return (null, null);
+    final goal = (await _profile?.load())?.goal;
+    final rated = history
+        .take(index + 1)
+        .where((entry) => !entry.isBonus)
+        .length;
+    if (!BeginnerHome.showsRating(goal, rated)) return (null, null);
     final after = history[index].rating;
     final before = index > 0
         ? history[index - 1].rating
