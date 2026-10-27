@@ -7,3 +7,8 @@ const double kButtonHeight = 52;
 
 /// Ver [kButtonHeight].
 const double kButtonHeightCompact = 48;
+
+/// A pílula branca do cartão azul da tela inicial (canvas
+/// `CompHeroContinuar`): o cartão inteiro também abre, então o alvo de toque
+/// não depende só dela.
+const double kButtonHeightPill = 36;

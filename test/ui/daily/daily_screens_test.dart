@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_links.dart';
-import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/crowd_stat.dart';
 import 'package:lucena/domain/models/daily_final.dart';
 import 'package:lucena/domain/models/maia_level.dart';
@@ -11,10 +9,8 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/daily/view_models/daily_result_cubit.dart';
 import 'package:lucena/ui/daily/view_models/daily_start_cubit.dart';
-import 'package:lucena/ui/daily/widgets/daily_home_card.dart';
 import 'package:lucena/ui/daily/widgets/daily_result_screen.dart';
 import 'package:lucena/ui/daily/widgets/daily_share_screen.dart';
-import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/streak/view_models/streak_cubit.dart';
 
 import '../../../testing/fakes/fake_activity_repository.dart';
@@ -23,7 +19,6 @@ import '../../../testing/fakes/fake_daily_final_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
-import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_share_repository.dart';
 import '../../../testing/test_app.dart';
 
@@ -42,29 +37,6 @@ void main() {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
-  }
-
-  Future<void> pumpHome(WidgetTester tester, {required int streak}) async {
-    phone(tester);
-    final settings = SettingsCubit(
-      FakeSettingsRepository(const AppSettings()),
-      languages: AppLanguage.selectable,
-    );
-    addTearDown(settings.close);
-    await settings.load();
-    await tester.pumpWidget(
-      TestApp(
-        locale: const Locale('pt'),
-        settingsCubit: settings,
-        child: Scaffold(
-          body: DailyHomeCard(
-            daily: DailyFinal(date: day, position: samplePositions.first),
-            streak: streak,
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
   }
 
   Future<void> pumpDaily(
@@ -112,24 +84,6 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
-
-  testWidgets('home: a faixa com a data, a sequência e o selo HOJE', (
-    tester,
-  ) async {
-    await pumpHome(tester, streak: 12);
-
-    expect(find.byKey(DailyKeys.homeStrip), findsOneWidget);
-    expect(find.text('Final do dia'), findsOneWidget);
-    expect(find.text('22 de outubro'), findsOneWidget);
-    expect(find.byKey(DailyKeys.streakPill), findsOneWidget);
-    expect(find.byKey(DailyKeys.homeCard), findsOneWidget);
-  });
-
-  testWidgets('home: sem sequência, sem a pílula', (tester) async {
-    await pumpHome(tester, streak: 0);
-
-    expect(find.byKey(DailyKeys.streakPill), findsNothing);
-  });
 
   testWidgets(
     'resultado: título, quadradinhos, sequência e quantos acertaram',

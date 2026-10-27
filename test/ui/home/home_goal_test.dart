@@ -4,8 +4,11 @@ import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/home_layout.dart';
+import 'package:lucena/domain/models/home_shortcut.dart';
+import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/domain/use_cases/home_shortcuts.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -42,7 +45,9 @@ void main() {
     final cubit = HomeCubit(
       journey: FakeJourneyRepository(),
       progress: progress,
-      onboarding: FakeOnboardingRepository(),
+      onboarding: FakeOnboardingRepository(
+        const Onboarding(done: true, boardControlsDone: true),
+      ),
       characters: FakeCharacterRepository(),
       rating: ratings ?? FakeRatingRepository(),
       lessons: FakeLessonRepository(),
@@ -73,29 +78,22 @@ void main() {
     ),
   );
 
-  test('sem objetivo, a tela fica como era', () async {
+  test('sem objetivo: o cartão é a Jornada, fora dos atalhos', () async {
     final state = await load(null);
 
-    expect(state.goalPath, isNull);
-    expect(state.resumePath, isNull);
-    expect(state.continuePath, isNotNull);
-    expect(state.shownPaths, state.layout!.shown);
+    expect(state.hero, HomeHero.journey);
+    expect(state.shortcuts, isNot(contains(HomeShortcut.journey)));
+    expect(state.shortcuts, hasLength(HomeShortcuts.count));
   });
 
-  test(
-    'aprender finais: a primeira aula da trilha, com o lugar dela',
-    () async {
-      final state = await load(GoalPreference.endgames);
+  test('aprender finais: a primeira aula da trilha é o cartão', () async {
+    final state = await load(GoalPreference.endgames);
 
-      expect(state.goalPath, HomePath.endgames);
-      final goal = state.endgameGoal!;
-      expect(goal.lesson.lessonId, 'rook.lucena');
-      expect((goal.number, goal.total, goal.passed), (1, 2, 0));
-      expect(state.continuePath, isNull);
-      expect(state.shownPaths, isNot(contains(HomePath.endgames)));
-      expect(state.shownPaths, contains(HomePath.forYou));
-    },
-  );
+    expect(state.hero, HomeHero.endgame);
+    expect(state.endgame!.lessonId, 'rook.lucena');
+    expect(state.endgame!.recommended, isTrue);
+    expect(state.shortcuts, isNot(contains(HomeShortcut.endgames)));
+  });
 
   test('aprender finais: a aula começada é a do cartão', () async {
     endgames = FakeEndgameProgressRepository(
@@ -107,54 +105,39 @@ void main() {
     );
     final state = await load(GoalPreference.endgames);
 
-    expect(state.endgameGoal!.lesson.lessonId, 'rook.philidor');
-    expect(state.endgameGoal!.number, 2);
-  });
-
-  test('aprender finais: a Jornada com progresso vira o "continuar"', () async {
-    expect((await load(GoalPreference.endgames)).resumePath, isNull);
-
-    await playJourney();
-    expect((await load(GoalPreference.endgames)).resumePath, HomePath.journey);
+    expect(state.hero, HomeHero.endgame);
+    expect(state.endgame!.lessonId, 'rook.philidor');
+    expect(state.endgame!.progress, greaterThan(0));
   });
 
   test('treinar finais: o final da faixa e a posição por cumprir', () async {
     final state = await load(GoalPreference.train);
 
-    expect(state.goalPath, HomePath.train);
+    expect(state.hero, HomeHero.train);
     final train = state.trainGoal!;
     expect(train.suggestion.subcategory.key, 'queen');
     expect((train.suggestion.done, train.suggestion.total), (0, 1));
     expect(train.fen, samplePositions.first.fen);
-    expect(state.shownPaths, isNot(contains(HomePath.train)));
+    expect(state.shortcuts, isNot(contains(HomeShortcut.train)));
   });
 
-  test(
-    'treinar finais: a aula de final em andamento vira o "continuar"',
-    () async {
-      expect((await load(GoalPreference.train)).resumePath, isNull);
-
-      endgames = FakeEndgameProgressRepository(
-        const EndgameProgress(
-          lessons: {
-            'rook.lucena': EndgameLessonProgress(stars: {'e01': 1}),
-          },
-        ),
-      );
-      final state = await load(GoalPreference.train);
-      expect(state.resumePath, HomePath.endgames);
-      expect(state.endgame!.lessonId, 'rook.lucena');
-    },
-  );
-
-  test('aprender a jogar sem a Escola: a Jornada, sem "continuar"', () async {
+  test('aprender a jogar sem a Escola: a Jornada no cartão', () async {
     await playJourney();
     final state = await load(GoalPreference.learn, rating: 800);
 
-    expect(state.goalPath, HomePath.journey);
-    expect(state.resumePath, isNull);
-    expect(state.shownPaths, isNot(contains(HomePath.journey)));
+    expect(state.hero, HomeHero.journey);
+    expect(state.shortcuts.first, HomeShortcut.stars);
+    expect(state.shortcuts, isNot(contains(HomeShortcut.journey)));
   });
+
+  test(
+    'aprender a jogar antes de vencer o Coco: Estrelas e Problemas',
+    () async {
+      final state = await load(GoalPreference.learn, rating: 800);
+
+      expect(state.shortcuts, [HomeShortcut.stars, HomeShortcut.race]);
+    },
+  );
 
   group('sem aula de final liberada (T83 B1)', () {
     const empty = EndgameTrail(modules: []);
@@ -165,8 +148,7 @@ void main() {
       expect(state.courseAvailable, isFalse);
       expect(state.layout!.order, isNot(contains(HomePath.endgames)));
       expect(state.layout!.order, isNot(contains(HomePath.forYou)));
-      expect(state.shownPaths, isNot(contains(HomePath.endgames)));
-      expect(state.shownPaths, isNot(contains(HomePath.forYou)));
+      expect(state.shortcuts, isNot(contains(HomeShortcut.endgames)));
     });
 
     test('com aula, tudo volta sozinho', () async {
@@ -180,8 +162,8 @@ void main() {
     test('"Aprender finais" sem curso vira o cartão de treinar', () async {
       final state = await load(GoalPreference.endgames, trail: empty);
 
-      expect(state.goalPath, HomePath.train);
-      expect(state.endgameGoal, isNull);
+      expect(state.hero, HomeHero.train);
+      expect(state.endgame, isNull);
       expect(state.trainGoal, isNotNull);
     });
   });

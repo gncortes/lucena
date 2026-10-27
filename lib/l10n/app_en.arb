@@ -9629,5 +9629,82 @@
   "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order.",
   "@homeForYouBodyUntested": {
     "description": "Home card body for the personalised study when the player has not taken the level test."
+  },
+  "homeSeeMore": "See more",
+  "@homeSeeMore": {
+    "description": "Home section header link that opens the full list."
+  },
+  "homeRatingStarting": "Getting started",
+  "@homeRatingStarting": {
+    "description": "Home top bar, in place of the rating number while the beginner has played too few games."
+  },
+  "homeHeroFirstSteps": "First steps",
+  "@homeHeroFirstSteps": {
+    "description": "Small label on the home hero card before the first game: where the player is."
+  },
+  "homeHeroSchool": "School",
+  "@homeHeroSchool": {
+    "description": "Small label on the home hero card: the beginner school."
+  },
+  "homeHeroLesson": "Lesson {number}",
+  "@homeHeroLesson": {
+    "description": "Home hero card title: the next lesson of the school.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "homeHeroCourseDone": "Course completed",
+  "@homeHeroCourseDone": {
+    "description": "Home hero card title when every endgame chapter is passed."
+  },
+  "homeHeroSpeedrun": "From Coco to Stockfish",
+  "@homeHeroSpeedrun": {
+    "description": "Home hero card title for the speedrun: the whole Journey."
+  },
+  "homeHeroStart": "Start",
+  "@homeHeroStart": {
+    "description": "Home hero card button: starts something not begun yet."
+  },
+  "homeHeroPlay": "Play",
+  "@homeHeroPlay": {
+    "description": "Home hero card button: plays the next game."
+  },
+  "homeHeroResume": "Resume",
+  "@homeHeroResume": {
+    "description": "Home hero card button: resumes the saved Journey game."
+  },
+  "homeShortcutsTitle": "Shortcuts",
+  "@homeShortcutsTitle": {
+    "description": "Home section title over the grid of modes."
+  },
+  "homeShortcutStars": "Stars",
+  "@homeShortcutStars": {
+    "description": "Short name of the star challenges on a home shortcut tile."
+  },
+  "homeShortcutJourneyBody": "Face stronger and stronger opponents",
+  "@homeShortcutJourneyBody": {
+    "description": "Two-line description on the Journey shortcut tile."
+  },
+  "homeShortcutEndgamesBody": "Learn theoretical endgames like Lucena and Philidor",
+  "@homeShortcutEndgamesBody": {
+    "description": "Two-line description on the endgame course shortcut tile."
+  },
+  "homeShortcutTrainBody": "Over 3,500 endgames of every kind",
+  "@homeShortcutTrainBody": {
+    "description": "Two-line description on the practice shortcut tile."
+  },
+  "homeShortcutRaceBody": "How many endgames can you solve in time?",
+  "@homeShortcutRaceBody": {
+    "description": "Two-line description on the problem race shortcut tile."
+  },
+  "homeShortcutSpeedrunBody": "The whole Journey against the clock",
+  "@homeShortcutSpeedrunBody": {
+    "description": "Two-line description on the speedrun shortcut tile."
+  },
+  "homeShortcutStarsBody": "Each piece against the clock",
+  "@homeShortcutStarsBody": {
+    "description": "Two-line description on the star challenges shortcut tile."
   }
 }

@@ -27,6 +27,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
+import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
@@ -370,18 +371,18 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await pumpApp(tester);
-    final small = tester.getSize(find.byKey(HomeKeys.whereBoard)).width;
+    final small = tester.getSize(find.byKey(HomeKeys.heroBoard)).width;
 
-    await tester.ensureVisible(find.byKey(HomeKeys.whereContinue));
+    await tester.ensureVisible(find.byKey(HomeKeys.goalAction));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(HomeKeys.whereContinue));
+    await tester.tap(find.byKey(HomeKeys.goalAction));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 150));
 
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    // O maior tabuleiro: a miniatura do final do dia continua na home.
+    // O maior tabuleiro: as outras miniaturas continuam na home.
     final flying = [
       for (final board in find.byType(StaticChessboard).evaluate())
         tester.getSize(find.byWidget(board.widget)).width,
@@ -411,7 +412,7 @@ void main() {
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
     expect(find.byKey(JourneyKeys.challengeScreen), findsNothing);
-    expect(find.byKey(HomeKeys.whereContinue), findsOneWidget);
+    expect(find.byKey(HomeKeys.goalAction), findsOneWidget);
   });
 
   testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
@@ -479,27 +480,19 @@ void main() {
     expect(profile.profile.nickname, 'Ana');
   });
 
-  testWidgets('o botão da tela inicial abre o tabuleiro livre', (tester) async {
-    useSystemLocale(tester, const Locale('pt', 'BR'));
-    await pumpApp(tester);
+  testWidgets(
+    'Todos os modos, pelo "Ver mais" dos atalhos, abre o tabuleiro livre',
+    (tester) async {
+      useSystemLocale(tester, const Locale('pt', 'BR'));
+      await pumpApp(tester);
 
-    expect(
-      find.descendant(
-        of: find.byKey(HomeKeys.freeBoardButton),
-        matching: find.text('Tabuleiro livre'),
-      ),
-      findsOneWidget,
-    );
+      await openFreeBoardFromHome(tester);
 
-    await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(HomeKeys.freeBoardButton));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
-    expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
-    expect(find.text('Brancas jogam'), findsNothing);
-  });
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
+      expect(find.text('Brancas jogam'), findsNothing);
+    },
+  );
 
   group('partida em andamento', () {
     const startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -559,10 +552,7 @@ void main() {
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
       expect(find.byKey(FreeBoardKeys.screen), findsNothing);
 
-      await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(HomeKeys.freeBoardButton));
-      await tester.pumpAndSettle();
+      await openFreeBoardFromHome(tester);
       // A partida guardada: o aviso pergunta antes (decisão 1 do Gabriel).
       expect(find.byKey(FreeBoardKeys.savedGameSheet), findsOneWidget);
       await tester.tap(find.byKey(FreeBoardKeys.savedGameContinue));
@@ -845,13 +835,20 @@ void main() {
   });
 }
 
-/// O nome do botão da Jornada na tela inicial, no idioma da tela.
-String? journeyLabel(WidgetTester tester) => tester
-    .widgetList<Text>(
-      find.descendant(
-        of: find.byKey(HomeKeys.journeyButton),
-        matching: find.byType(Text),
-      ),
-    )
-    .first
-    .data;
+/// O lugar do cartão azul da tela inicial (a Jornada), no idioma da tela.
+String? journeyLabel(WidgetTester tester) =>
+    tester.widget<Text>(find.byKey(HomeKeys.heroLabel)).data;
+
+/// O tabuleiro livre saiu da tela inicial (T83): abre por "Todos os modos",
+/// no "Ver mais" dos atalhos.
+Future<void> openFreeBoardFromHome(WidgetTester tester) async {
+  await tester.ensureVisible(find.byKey(HomeKeys.shortcutsSeeMore));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(HomeKeys.shortcutsSeeMore));
+  await tester.pumpAndSettle();
+  final item = find.byKey(AllModesKeys.item('freeBoard'));
+  await tester.scrollUntilVisible(item, 200);
+  await tester.pumpAndSettle();
+  await tester.tap(item);
+  await tester.pumpAndSettle();
+}

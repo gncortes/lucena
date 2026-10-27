@@ -57,6 +57,20 @@ abstract final class HomeKeys {
   static const goalTitle = Key('home.goalCard.title');
   static const goalAction = Key('home.goalCard.action');
 
+  /// O lugar do app, a barra e a miniatura do cartão azul (T83).
+  static const heroLabel = Key('home.goalCard.label');
+  static const heroProgress = Key('home.goalCard.progress');
+  static const heroBoard = Key('home.goalCard.board');
+
+  /// A seção "Atalhos" (T83): o título, o "Ver mais" e o atalho das
+  /// Estrelas.
+  static const shortcutsTitle = Key('home.shortcuts.title');
+  static const shortcutsSeeMore = Key('home.shortcuts.seeMore');
+  static const starsButton = Key('home.stars');
+
+  /// O título de "Finais em destaque".
+  static const featuredTitle = Key('home.featured.title');
+
   /// "Continuar de onde parou": o que está em andamento fora do objetivo.
   static const resumeCard = Key('home.resumeCard');
   static const resumeTitle = Key('home.resumeCard.title');

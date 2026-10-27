@@ -515,8 +515,8 @@ GoRouter buildRouter({
             featuredProgress: context.read<FeaturedProgressRepository>(),
             now: context.read<Now>(),
             positions: context.read<PositionsRepository>(),
-            daily: context.read<DailyFinalRepository>(),
             activity: context.read<ActivityRepository>(),
+            games: context.read<OngoingGameRepository>(),
             analytics: context.analytics,
           )..load(_language(context)),
           child: Builder(

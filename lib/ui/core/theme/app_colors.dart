@@ -84,6 +84,12 @@ class AppColors extends ThemeExtension<AppColors> {
   // Jogo às cegas.
   static const greenBlind = Color(0xff43a047);
 
+  // Os ícones dos atalhos da tela inicial (canvas `CompModoTile`).
+  static const tileGreen = Color(0xffd3f0da);
+  static const tileGreenOn = Color(0xff0f3d17);
+  static const tilePurple = Color(0xffe8ddfb);
+  static const tilePurpleOn = Color(0xff2e1a5e);
+
   /// A opacidade das marcas de lance sobre o tabuleiro (0xcc).
   static const boardMarkAlpha = 0.8;
 

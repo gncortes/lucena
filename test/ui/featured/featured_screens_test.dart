@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/widgets/position_board.dart';
+import 'package:lucena/ui/featured/widgets/featured_card.dart';
 import 'package:lucena/domain/models/crowd_stat.dart';
 import 'package:lucena/domain/models/app_links.dart';
 import 'package:lucena/ui/core/share/share_button.dart';
@@ -17,7 +19,6 @@ import 'package:lucena/ui/featured/view_models/featured_endgame_cubit.dart';
 import 'package:lucena/ui/featured/view_models/featured_tournament_cubit.dart';
 import 'package:lucena/ui/featured/widgets/featured_endgame_screen.dart';
 import 'package:lucena/ui/featured/widgets/featured_game_bar.dart';
-import 'package:lucena/ui/featured/widgets/featured_home_section.dart';
 import 'package:lucena/ui/featured/widgets/featured_list_screen.dart';
 import 'package:lucena/ui/featured/widgets/featured_tournament_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -424,23 +425,32 @@ void main() {
   });
 
   group('home', () {
-    testWidgets('a seção mostra o cartão e leva à lista', (tester) async {
+    testWidgets('o cartão compacto: o tabuleiro de 46 e os jogadores', (
+      tester,
+    ) async {
       final item = FeaturedRules.items(
         sampleFeaturedCatalog(),
         {},
         now: now(),
       ).first;
+      var opened = 0;
       await pump(
         tester,
-        Scaffold(body: FeaturedHomeSection(item: item)),
+        Scaffold(
+          body: FeaturedCard(
+            key: FeaturedKeys.homeCard,
+            item: item,
+            compact: true,
+            onTap: () => opened++,
+          ),
+        ),
         location: '/home',
         path: '/home',
       );
-      expect(find.byKey(FeaturedKeys.homeSection), findsOneWidget);
-      expect(find.byKey(FeaturedKeys.homeCard), findsOneWidget);
-      await tester.tap(find.byKey(FeaturedKeys.homeSeeAll));
-      await tester.pumpAndSettle();
-      expect(find.text('lista'), findsOneWidget);
+      final board = tester.getSize(find.byType(PositionBoard));
+      expect(board.width, FeaturedCard.compactThumbnail);
+      await tester.tap(find.byKey(FeaturedKeys.homeCard));
+      expect(opened, 1);
     });
   });
 
