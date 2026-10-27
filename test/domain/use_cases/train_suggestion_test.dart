@@ -60,4 +60,57 @@ void main() {
       isNull,
     );
   });
+
+  group('rating alto não recebe os finais básicos', () {
+    const full = [
+      CatalogCategory(
+        key: 'pawn',
+        subcategories: [
+          CatalogSubcategory(key: 'pawnVsKing', category: 'pawn', winCount: 4),
+        ],
+      ),
+      CatalogCategory(
+        key: 'bishop',
+        subcategories: [
+          CatalogSubcategory(
+            key: 'twoBishopsVsKing',
+            category: 'bishop',
+            winCount: 2,
+          ),
+        ],
+      ),
+      CatalogCategory(
+        key: 'rookPawn',
+        subcategories: [
+          CatalogSubcategory(
+            key: 'rookVsPawn',
+            category: 'rookPawn',
+            winCount: 3,
+          ),
+        ],
+      ),
+    ];
+
+    test('1800: pula peão contra rei e dois bispos', () {
+      final suggestion = TrainSuggestion.of(
+        RatingLevel.advanced,
+        full,
+        {},
+        rating: 1800,
+      );
+      expect(suggestion?.subcategory.key, 'rookVsPawn');
+    });
+
+    test('1400 já pula; 1399 e sem rating mantêm a sugestão da faixa', () {
+      String? key(int? rating) => TrainSuggestion.of(
+        RatingLevel.intermediate,
+        full,
+        {},
+        rating: rating,
+      )?.subcategory.key;
+      expect(key(1400), 'rookVsPawn');
+      expect(key(1399), 'pawnVsKing');
+      expect(key(null), 'pawnVsKing');
+    });
+  });
 }

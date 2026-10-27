@@ -68,6 +68,7 @@ abstract final class HomeKeys {
 
   /// O painel do jogador.
   static const playerCard = Key('home.player');
-  static const hello = Key('home.hello');
+  static const ratingLabel = Key('home.ratingLabel');
+  static const ratingPending = Key('home.ratingPending');
   static const whereBoard = Key('home.where.board');
 }

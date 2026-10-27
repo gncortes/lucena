@@ -304,7 +304,6 @@
   "speedrunStageOf": "Etappe {stage} van {total}",
   "paceTitle": "Kies het tempo",
   "paceShort": "{minutes}+{increment}",
-  "homeHello": "Hoi, {name}",
   "homeTools": "Hulpmiddelen",
   "profileRatingPeriodAll": "Alle",
   "catalogDone": "{done} van {total} gedaan",
@@ -1856,5 +1855,8 @@
   "coursePartLessons": "Part {part} · {count} lessons",
   "pilaresPreviewTile": "Pilares do Xadrez (preview)",
   "courseLessonsLabel": "lessons",
-  "lessonsUnavailableMessage": "Lessons are not available yet."
+  "lessonsUnavailableMessage": "Lessons are not available yet.",
+  "homeYourRating": "Your rating",
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order."
 }

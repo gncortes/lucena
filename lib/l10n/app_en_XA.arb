@@ -304,7 +304,6 @@
   "speedrunStageOf": "[Štåĝé {stage} öf {total} one two three]",
   "paceTitle": "[Çhööšé thé tîmé çöñtŕöl one two three]",
   "paceShort": "[{minutes}+{increment} one two three]",
-  "homeHello": "[Hî, {name} one]",
   "homeTools": "[Töölš one]",
   "profileRatingPeriodAll": "[Åll one]",
   "catalogDone": "[{done} öf {total} döñé one two three]",
@@ -1814,5 +1813,8 @@
   "coursePartLessons": "[Påŕt {part} · {count} léššöñš one two three]",
   "pilaresPreviewTile": "[Pîlåŕéš dö Xådŕéž (pŕévîéw) one two three]",
   "courseLessonsLabel": "[léššöñš one]",
-  "lessonsUnavailableMessage": "[Léššöñš åŕé ñöt åvåîlåblé ýét. one two three]"
+  "lessonsUnavailableMessage": "[Léššöñš åŕé ñöt åvåîlåblé ýét. one two three]",
+  "homeYourRating": "[Ýöûŕ ŕåtîñĝ one two]",
+  "homeRatingAfterGames": "[Ýöûŕ ŕåtîñĝ šhöwš ûp åftéŕ {count} ĝåméš. one two three four]",
+  "homeForYouBodyUntested": "[Ýöûŕ öwñ éñdĝåmé štûdý: thé çhåptéŕš ýöû štîll ñééd, îñ öŕdéŕ. one two three four five six]"
 }

@@ -304,7 +304,6 @@
   "speedrunStageOf": "{total}단계 중 {stage}단계",
   "paceTitle": "시간 제한 선택",
   "paceShort": "{minutes}+{increment}",
-  "homeHello": "안녕하세요, {name}",
   "homeTools": "도구",
   "profileRatingPeriodAll": "전체",
   "catalogDone": "{total}개 중 {done}개 완료",
@@ -1856,5 +1855,8 @@
   "coursePartLessons": "Part {part} · {count} lessons",
   "pilaresPreviewTile": "Pilares do Xadrez (preview)",
   "courseLessonsLabel": "lessons",
-  "lessonsUnavailableMessage": "Lessons are not available yet."
+  "lessonsUnavailableMessage": "Lessons are not available yet.",
+  "homeYourRating": "Your rating",
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order."
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
@@ -6,6 +7,7 @@ import '../../core/keys/next_steps_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/view_models/course_availability_cubit.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -16,16 +18,36 @@ import '../../core/widgets/scroll_padding.dart';
 /// ([level], quando há número) ou da Escola concluída ([graduated]). Mostra
 /// por onde começar e a linha que abre "Seus resultados contam".
 class NextStepsScreen extends StatelessWidget {
-  const NextStepsScreen({this.graduated = false, this.level, super.key});
+  const NextStepsScreen({
+    this.graduated = false,
+    this.level,
+    this.courseAvailable = _always,
+    super.key,
+  });
 
   final bool graduated;
   final int? level;
+
+  /// Há aula de final liberada. Sem ela, o curso não é recomendado: o
+  /// "Recomendado" passa para "Praticar finais" e o curso não aparece.
+  final Future<bool> Function() courseAvailable;
+
+  static Future<bool> _always() async => true;
 
   static const _heroSize = 72.0;
   static const _heroIcon = 42.0;
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => CourseAvailabilityCubit(courseAvailable)..load(),
+      child: BlocBuilder<CourseAvailabilityCubit, bool?>(
+        builder: (context, course) => _screen(context, course ?? false),
+      ),
+    );
+  }
+
+  Widget _screen(BuildContext context, bool course) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -51,6 +73,7 @@ class NextStepsScreen extends StatelessWidget {
       icon: Icons.sports_esports,
       title: l10n.nextStepsTrainTitle,
       body: l10n.nextStepsTrainBody,
+      recommended: !course,
       onTap: () => go(Routes.catalog),
     );
     final journey = NextStep(
@@ -129,7 +152,9 @@ class NextStepsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 NextSteps(
-                  steps: [lessons, race, if (graduated) journey, train],
+                  steps: course
+                      ? [lessons, race, if (graduated) journey, train]
+                      : [train, race, if (graduated) journey],
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 const ResultsInfoLine(),

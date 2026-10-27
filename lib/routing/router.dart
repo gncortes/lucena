@@ -61,6 +61,7 @@ import '../data/repositories/sync/sync_repository.dart';
 import '../config/dependencies.dart';
 import 'review_destinations.dart';
 import '../domain/models/clock.dart';
+import '../domain/use_cases/course_availability.dart';
 import '../domain/use_cases/game_rules.dart';
 import '../domain/models/daily_final.dart';
 import '../domain/use_cases/now.dart';
@@ -722,6 +723,7 @@ GoRouter buildRouter({
           _route(
             path: 'modes',
             builder: (context, state) => AllModesScreen(
+              courseAvailable: _courseAvailable(context),
               hasBlindCheckpoint: () async =>
                   await context.read<BlindCheckpointRepository>().load() !=
                   null,
@@ -1147,12 +1149,15 @@ GoRouter buildRouter({
             path: 'next',
             builder: (context, state) => NextStepsScreen(
               level: int.tryParse(state.uri.queryParameters['level'] ?? ''),
+              courseAvailable: _courseAvailable(context),
             ),
             routes: [
               _route(
                 path: 'school',
-                builder: (context, state) =>
-                    const NextStepsScreen(graduated: true),
+                builder: (context, state) => NextStepsScreen(
+                  graduated: true,
+                  courseAvailable: _courseAvailable(context),
+                ),
               ),
             ],
           ),
@@ -1636,6 +1641,11 @@ ClockConfig? _blindClock(Map<String, String> query) {
   if (white == null || black == null) return null;
   return ClockConfig(white: white, black: black);
 }
+
+/// Há aula de final liberada (T83 B1): as telas que recomendam o curso
+/// esperam esta resposta.
+Future<bool> Function() _courseAvailable(BuildContext context) =>
+    CourseAvailability(context.read<EndgameLessonRepository>().trail).call;
 
 String _language(BuildContext context) =>
     Localizations.localeOf(context).languageCode;

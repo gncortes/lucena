@@ -304,7 +304,6 @@
   "speedrunStageOf": "ステージ {stage}/{total}",
   "paceTitle": "持ち時間を選ぶ",
   "paceShort": "{minutes}+{increment}",
-  "homeHello": "こんにちは、{name}",
   "homeTools": "ツール",
   "profileRatingPeriodAll": "すべて",
   "catalogDone": "{done}/{total} クリア",
@@ -1856,5 +1855,8 @@
   "coursePartLessons": "Part {part} · {count} lessons",
   "pilaresPreviewTile": "Pilares do Xadrez (preview)",
   "courseLessonsLabel": "lessons",
-  "lessonsUnavailableMessage": "Lessons are not available yet."
+  "lessonsUnavailableMessage": "Lessons are not available yet.",
+  "homeYourRating": "Your rating",
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order."
 }

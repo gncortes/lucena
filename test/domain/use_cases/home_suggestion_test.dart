@@ -288,4 +288,55 @@ void main() {
     expect(old.visible, {train});
     expect(HomeLayout.fromJson('nada'), isNull);
   });
+
+  group('sem aula de final liberada (T83 B1)', () {
+    test('o curso e os finais para você saem da sugestão de todo nível', () {
+      for (final level in RatingLevel.values) {
+        final layout = HomeSuggestion.of(level, school: false, course: false);
+        expect(layout.order, isNot(contains(endgames)), reason: '$level');
+        expect(layout.order, isNot(contains(forYou)), reason: '$level');
+        expect(layout.visible, isNot(contains(endgames)), reason: '$level');
+        expect(layout.visible, isNot(contains(forYou)), reason: '$level');
+        expect(layout.visible, isNotEmpty);
+      }
+    });
+
+    test('o objetivo "Aprender finais" cai em treinar finais', () {
+      expect(
+        HomeSuggestion.goalPath(GoalPreference.endgames, course: false),
+        train,
+      );
+      final layout = HomeSuggestion.of(
+        RatingLevel.intermediate,
+        course: false,
+        goal: GoalPreference.endgames,
+      );
+      expect(layout.order.first, train);
+      expect(layout.visible, contains(train));
+    });
+
+    test('o layout ajustado pela pessoa também perde os dois', () {
+      const saved = HomeLayout(
+        order: [journey, forYou, endgames, train, speedrun, race],
+        visible: {forYou, endgames},
+        custom: true,
+      );
+      final layout = HomeSuggestion.resolve(
+        saved,
+        RatingLevel.casual,
+        school: false,
+        course: false,
+      );
+      expect(layout.order, [journey, train, speedrun, race]);
+      expect(layout.visible, {journey});
+    });
+
+    test('com o curso, nada muda (volta sozinho)', () {
+      expect(
+        HomeSuggestion.of(RatingLevel.casual, school: false),
+        HomeSuggestion.of(RatingLevel.casual, school: false, course: true),
+      );
+      expect(HomeSuggestion.goalPath(GoalPreference.endgames), endgames);
+    });
+  });
 }

@@ -31,6 +31,8 @@ import '../../../domain/models/journey.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/streak.dart';
+import '../../../domain/use_cases/beginner_home.dart';
+import '../../../domain/use_cases/course_availability.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/featured_rules.dart';
 import '../../../domain/use_cases/now.dart';
@@ -66,6 +68,9 @@ class HomeState {
     this.journeyStarted = false,
     this.daily,
     this.streak = Streak.none,
+    this.courseAvailable = true,
+    this.placementDone = true,
+    this.ratedGames = 0,
   });
 
   final bool ready;
@@ -134,12 +139,28 @@ class HomeState {
   /// sai uma vez.
   final Streak streak;
 
+  /// Há aula de final liberada. Falso: o Curso de finais e os finais para
+  /// você não aparecem (T83 B1).
+  final bool courseAvailable;
+
+  /// A pessoa fez o teste de nível (T83 B4).
+  final bool placementDone;
+
+  /// As partidas que mexeram no rating (sem os bônus de speedrun).
+  final int ratedGames;
+
+  /// O número do rating aparece (T83 B3).
+  bool get showsRating => BeginnerHome.showsRating(goal, ratedGames);
+
+  /// "Finais em destaque" (o final do dia e o destaque) aparece (T83 B3).
+  bool get showsFeatured => BeginnerHome.showsFeatured(goal, journeyStarted);
+
   /// O caminho do cartão "Seu objetivo". Nulo: sem objetivo, ou sem nada
   /// por fazer nele (o caminho fica na lista).
   HomePath? get goalPath {
     final goal = this.goal;
     if (goal == null) return null;
-    final path = HomeSuggestion.goalPath(goal);
+    final path = HomeSuggestion.goalPath(goal, course: courseAvailable);
     final ready = switch (path) {
       HomePath.learn => school != null,
       HomePath.endgames => endgameGoal != null,
@@ -225,6 +246,9 @@ class HomeState {
     journeyStarted: journeyStarted,
     daily: daily,
     streak: streak ?? this.streak,
+    courseAvailable: courseAvailable,
+    placementDone: placementDone,
+    ratedGames: ratedGames,
   );
 }
 
@@ -413,9 +437,17 @@ class HomeCubit extends Cubit<HomeState> {
     final profile = await _profile.load();
     final saved = await _homeLayout?.load();
     final goal = profile.goal;
-    final layout = HomeSuggestion.resolve(saved, profile.level, goal: goal);
+    final courseAvailable = await CourseAvailability(_endgameLessons.trail)();
+    final layout = HomeSuggestion.resolve(
+      saved,
+      profile.level,
+      goal: goal,
+      course: courseAvailable,
+    );
     final priority = layout.shown.firstOrNull;
-    final goalPath = goal == null ? null : HomeSuggestion.goalPath(goal);
+    final goalPath = goal == null
+        ? null
+        : HomeSuggestion.goalPath(goal, course: courseAvailable);
     final endgame = await _optionalContent(
       () => _endgameSummary(
         language,
@@ -431,7 +463,7 @@ class HomeCubit extends Cubit<HomeState> {
         ? await _optionalContent(() => _endgameGoal(endgame))
         : null;
     final trainGoal = goalPath == HomePath.train
-        ? await _trainGoal(profile.level)
+        ? await _trainGoal(profile.level, rating.rounded)
         : null;
     // Quem fez o tour antes de dar para escolher ganha o aviso, uma vez.
     final notice =
@@ -443,6 +475,8 @@ class HomeCubit extends Cubit<HomeState> {
     final now = _now;
     final daily = now == null ? null : await _daily?.of(now());
     final streak = await _streak();
+    final placementDone =
+        _placement == null || await _placement.result() != null;
     if (isClosed) return;
     emit(
       HomeState(
@@ -475,6 +509,9 @@ class HomeCubit extends Cubit<HomeState> {
         journeyStarted: fulfilled.isNotEmpty,
         daily: daily,
         streak: streak,
+        courseAvailable: courseAvailable,
+        placementDone: placementDone,
+        ratedGames: history.where((entry) => !entry.isBonus).length,
       ),
     );
   }
@@ -519,7 +556,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   /// O final sugerido pelo nível e a primeira posição dele por cumprir.
-  Future<TrainGoal?> _trainGoal(RatingLevel level) async {
+  Future<TrainGoal?> _trainGoal(RatingLevel level, int rating) async {
     final positions = _positions;
     if (positions == null) return null;
     final fulfilled = await _progress.fulfilledPositions();
@@ -527,6 +564,7 @@ class HomeCubit extends Cubit<HomeState> {
       level,
       await positions.catalog(),
       fulfilled,
+      rating: rating,
     );
     if (suggestion == null) return null;
     final list = await positions.bySubcategory(suggestion.subcategory.key);

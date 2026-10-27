@@ -238,14 +238,16 @@ class _HomeScreenState extends State<HomeScreen>
         key: path.homeKey,
         icon: path.icon,
         title: path.title(l10n),
-        body: path.body(l10n, state.level),
+        body: path.body(l10n, state.level, tested: state.placementDone),
         onTap: () => context.go(path.route),
       ),
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (state.featured != null)
+        if (!state.showsFeatured)
+          const SizedBox.shrink()
+        else if (state.featured != null)
           FeaturedHomeSection(item: state.featured!, daily: daily)
         else if (daily != null)
           Padding(

@@ -156,4 +156,37 @@ void main() {
       lessThan(await top(beginner, 'journey')),
     );
   });
+
+  for (final course in [true, false]) {
+    testWidgets('Curso de finais e finais para você só com aula liberada '
+        '($course)', (tester) async {
+      tester.view.physicalSize = const Size(1080, 8000);
+      tester.view.devicePixelRatio = 2.625;
+      addTearDown(tester.view.reset);
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) =>
+                AllModesScreen(courseAvailable: () async => course),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          router: router,
+          child: const SizedBox.shrink(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final matcher = course ? findsOneWidget : findsNothing;
+      expect(find.byKey(AllModesKeys.item('endgames')), matcher);
+      expect(find.byKey(AllModesKeys.item('forYou')), matcher);
+      // O resto continua.
+      expect(find.byKey(AllModesKeys.item('journey')), findsOneWidget);
+    });
+  }
 }
