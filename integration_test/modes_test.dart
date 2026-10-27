@@ -44,7 +44,7 @@ void main() {
     await HomeRobot($).expectVisible();
 
     await $(DailyKeys.homeStrip).scrollTo();
-    await $(DailyKeys.badge).scrollTo().tap();
+    await $(DailyKeys.homeCard).scrollTo().tap();
 
     await FreeBoardRobot($).expectVisible();
   });

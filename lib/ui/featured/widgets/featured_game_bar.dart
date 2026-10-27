@@ -6,6 +6,7 @@ import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/share/share_button.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../region/widgets/region_sheet.dart';
 import '../view_models/featured_crowd_cubit.dart';
 import '../view_models/featured_endgame_cubit.dart';
 import 'featured_crowd_card.dart';
@@ -94,11 +95,13 @@ class FeaturedEndBar extends StatelessWidget {
             ),
             FilledButton.icon(
               key: FeaturedKeys.continueButton,
-              onPressed: () {
+              onPressed: () async {
                 final state = context.read<FeaturedEndgameCubit>().state;
                 final endgame = state.endgame;
                 if (endgame == null) return;
-                showFeaturedNext(
+                await askRegionOnce(context);
+                if (!context.mounted) return;
+                await showFeaturedNext(
                   context,
                   endgame: endgame,
                   tournament: state.tournament,

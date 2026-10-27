@@ -19,7 +19,7 @@ import 'daily_squares.dart';
 
 /// O final do dia na home (canvas `PropV1RetencaoHome`): a faixa com a data
 /// e a sequência (a pílula abre a Sequência; sem sequência, some) e o cartão
-/// do final com o selo "HOJE", que abre a partida.
+/// do final, que abre a partida (sem selo "HOJE": a data já está na faixa).
 class DailyHomeCard extends StatelessWidget {
   const DailyHomeCard({required this.daily, required this.streak, super.key});
 
@@ -79,6 +79,7 @@ class DailyHomeCard extends StatelessWidget {
           ),
         ),
         Card(
+          key: DailyKeys.homeCard,
           margin: EdgeInsets.zero,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
@@ -101,26 +102,12 @@ class DailyHomeCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: AppSpacing.xs,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                categoryName(l10n, position.category),
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  color: colors.primary,
-                                  fontWeight: AppWeight.strong,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              l10n.dailyBadge,
-                              key: DailyKeys.badge,
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: colors.primary,
-                                fontWeight: AppWeight.strong,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          categoryName(l10n, position.category),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colors.primary,
+                            fontWeight: AppWeight.strong,
+                          ),
                         ),
                         Text(
                           endgameName(l10n, position.subcategory),

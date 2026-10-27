@@ -5,7 +5,8 @@ import 'package:flutter/widgets.dart';
 abstract final class DailyKeys {
   static const homeStrip = Key('daily.homeStrip');
   static const streakPill = Key('daily.streakPill');
-  static const badge = Key('daily.badge');
+  static const homeCard = Key('daily.homeCard');
+  static const goalSubtitle = Key('daily.goalSubtitle');
   static const playAgain = Key('daily.playAgain');
   static const openResult = Key('daily.openResult');
   static const resultScreen = Key('daily.resultScreen');

@@ -29,6 +29,7 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
+import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -2935,6 +2936,51 @@ void main() {
       expect(find.text('Maia 1400 is thinking…'), findsNothing);
       opponent.release();
       await tester.pumpAndSettle();
+    });
+  });
+  group('Final do dia na partida', () {
+    const daily = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+      positionId: 'basic.queen.0001',
+      dailyDate: '2026-10-26',
+      goal: PositionGoal.win,
+    );
+
+    testWidgets('a meta aparece antes do primeiro lance', (tester) async {
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        mode: daily,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+      );
+      expect(cubit.state.ucis, isEmpty);
+      expect(textOf(tester, DailyKeys.goalSubtitle), 'Brancas jogam e ganham');
+    });
+
+    testWidgets('empate: "e empatam"', (tester) async {
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        mode: daily.copyWith(goal: PositionGoal.draw, userSide: Side.black),
+        fen: '3k4/8/3K4/8/8/8/8/7Q b - - 0 1',
+      );
+      expect(textOf(tester, DailyKeys.goalSubtitle), 'Pretas jogam e empatam');
+    });
+
+    testWidgets('o jogador mostra o rating, não "Sem rating"', (tester) async {
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        mode: daily,
+        fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
+        withReporter: true,
+      );
+      await cubit.open();
+      await tester.pumpAndSettle();
+      final detail = textOf(tester, FreeBoardKeys.playerDetail(Side.white));
+      expect(detail, isNot('Sem rating'));
+      expect(int.tryParse(detail), isNotNull);
     });
   });
   group('Resultado persistente por modo e motivo', () {

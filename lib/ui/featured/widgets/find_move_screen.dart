@@ -22,6 +22,7 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../free_board/widgets/game_actions_bar.dart';
 import '../../settings/view_models/settings_cubit.dart';
+import '../../region/widgets/region_sheet.dart';
 import '../view_models/find_move_cubit.dart';
 import 'featured_book_sheet.dart';
 import 'featured_labels.dart';
@@ -358,12 +359,16 @@ class _Actions extends StatelessWidget {
     if (state.finished) {
       final next = FilledButton.icon(
         key: FeaturedKeys.findContinue,
-        onPressed: () => showFeaturedNext(
-          context,
-          endgame: endgame,
-          tournament: tournament,
-          tournamentFinals: tournamentFinals,
-        ),
+        onPressed: () async {
+          await askRegionOnce(context);
+          if (!context.mounted) return;
+          await showFeaturedNext(
+            context,
+            endgame: endgame,
+            tournament: tournament,
+            tournamentFinals: tournamentFinals,
+          );
+        },
         icon: const Icon(Icons.arrow_forward),
         label: Text(l10n.featuredContinue),
       );
