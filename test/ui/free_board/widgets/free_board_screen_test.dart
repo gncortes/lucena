@@ -37,6 +37,20 @@ import 'package:lucena/ui/featured/view_models/featured_endgame_cubit.dart';
 import 'package:lucena/ui/daily/view_models/daily_game_cubit.dart';
 
 import '../../../../testing/fakes/fake_daily_final_repository.dart';
+
+import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/campaign/campaign_repository.dart';
+import 'package:lucena/data/repositories/campaign/linked_lesson_catalog.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
+import 'package:lucena/domain/models/account.dart';
+import 'package:lucena/domain/models/challenge_link.dart';
+import 'package:lucena/domain/models/linked_lesson.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
+import 'package:lucena/ui/free_board/view_models/link_lesson_cubit.dart';
+
+import '../../../../testing/fakes/fake_account_repository.dart';
+import '../../../../testing/fakes/fake_analytics_repository.dart';
+import '../../../../testing/fakes/fake_sync_repository.dart';
 import '../../../../testing/fakes/fake_activity_repository.dart';
 import '../../../../testing/fakes/fake_kpk_repository.dart';
 
@@ -98,6 +112,8 @@ void main() {
     ThemeMode themeMode = ThemeMode.light,
     SpeechCubit? speech,
     bool scriptedTalk = false,
+    LinkLessonCubit? linkLesson,
+    FakeAccountRepository? accounts,
   }) async {
     // Tela de celular em retrato, como no app.
     tester.view.physicalSize = screen;
@@ -176,6 +192,7 @@ void main() {
             providers: [
               BlocProvider.value(value: cubit),
               BlocProvider.value(value: talk),
+              if (linkLesson != null) BlocProvider.value(value: linkLesson),
               if (mode.dailyDate != null)
                 BlocProvider(
                   create: (_) => DailyGameCubit(
@@ -208,6 +225,11 @@ void main() {
           },
         ),
         GoRoute(
+          path: '/aula/:id',
+          builder: (context, state) =>
+              Scaffold(body: Text('lesson ${state.pathParameters['id']}')),
+        ),
+        GoRoute(
           path: '/result/:id',
           builder: (context, state) =>
               Scaffold(body: Text('conclusion ${state.pathParameters['id']}')),
@@ -215,14 +237,23 @@ void main() {
       ],
     );
     addTearDown(router.dispose);
+    final account = accounts ?? FakeAccountRepository();
     await tester.pumpWidget(
-      TestApp(
-        locale: locale,
-        themeMode: themeMode,
-        settingsCubit: settings,
-        speechCubit: speech,
-        router: router,
-        child: const SizedBox.shrink(),
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AccountRepository>.value(value: account),
+          RepositoryProvider<SyncScheduler>.value(
+            value: SyncScheduler(account, FakeSyncRepository()),
+          ),
+        ],
+        child: TestApp(
+          locale: locale,
+          themeMode: themeMode,
+          settingsCubit: settings,
+          speechCubit: speech,
+          router: router,
+          child: const SizedBox.shrink(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -2413,6 +2444,143 @@ void main() {
       expect(find.byKey(ChallengeKeys.endPlayAgain), findsNothing);
     });
 
+    group('link de campanha com aula (T84)', () {
+      const lessonFen = 'k7/8/1K6/8/8/8/7Q/8 w - - 0 1';
+      final link = ChallengeLink(
+        fen: lessonFen,
+        userSide: Side.white,
+        opponent: OpponentKind.stockfish,
+        lesson: const LinkedLesson.endgame('rook.lucena'),
+        utm: const {'utm_source': 'instagram', 'utm_campaign': 'torre-engana'},
+      );
+      late FakeAnalyticsRepository analytics;
+      late MemoryCampaignRepository campaigns;
+
+      LinkLessonCubit linkLesson(FakeAccountRepository accounts) {
+        analytics = FakeAnalyticsRepository();
+        campaigns = MemoryCampaignRepository();
+        final cubit = LinkLessonCubit(
+          link: link,
+          accounts: accounts,
+          catalog: _AvailableCatalog(),
+          campaigns: campaigns,
+          analytics: analytics,
+        );
+        addTearDown(cubit.close);
+        return cubit;
+      }
+
+      testWidgets('não conseguiu: a aula no lugar de compartilhar; sem conta, '
+          'o convite antes e "Agora não" abre a aula', (tester) async {
+        await Goldens.loadFonts();
+        final accounts = FakeAccountRepository();
+        await pumpScreen(
+          tester,
+          locale: const Locale('pt'),
+          screen: const Size(360 * 2.625, 740 * 2.625),
+          systemBars: true,
+          fen: lessonFen,
+          mode: vsMachine.copyWith(fromLink: true, link: link),
+          linkLesson: linkLesson(accounts),
+          accounts: accounts,
+        );
+        await resign(tester);
+        await tester.pumpAndSettle();
+
+        expect(
+          textOf(tester, ChallengeKeys.lessonOffer),
+          'Não foi desta vez. A aula grátis explica a ideia desta posição.',
+        );
+        expect(find.byKey(ChallengeKeys.endShare), findsNothing);
+        expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endMeetApp), findsOneWidget);
+        expect(
+          tester.getSize(find.text('Ver a aula')).height,
+          lessThanOrEqualTo(24),
+        );
+        expect(tester.takeException(), isNull);
+        expect(
+          analytics
+              .eventsNamed('campanha_oferta_vista')
+              .single
+              .params['destaque'],
+          'principal',
+        );
+
+        await tester.tap(find.byKey(ChallengeKeys.endLesson));
+        await tester.pumpAndSettle();
+        expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
+        expect(
+          find.textContaining('sem conta, a aula abre do mesmo jeito'),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(AccountKeys.notNow));
+        await tester.pumpAndSettle();
+        expect(find.text('lesson rook.lucena'), findsOneWidget);
+        expect(
+          analytics
+              .eventsNamed('campanha_cadastro')
+              .map((event) => event.params['resposta']),
+          ['agora_nao'],
+        );
+        expect(await campaigns.active(), isNotNull);
+      });
+
+      testWidgets('conseguiu: parabéns, compartilhar fica e a aula vem no '
+          'lugar de "Conhecer o app"; com conta, abre direto', (tester) async {
+        final accounts = FakeAccountRepository(
+          account: const Account(uid: 'u1', provider: AccountProvider.google),
+        );
+        await pumpScreen(
+          tester,
+          fen: lessonFen,
+          mode: vsMachine.copyWith(fromLink: true, link: link),
+          linkLesson: linkLesson(accounts),
+          accounts: accounts,
+        );
+        await move(tester, 'h2', 'h8');
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pumpAndSettle();
+
+        expect(cubit.state.fulfilled, isTrue);
+        expect(
+          textOf(tester, ChallengeKeys.lessonOffer),
+          'Congratulations! The free lesson explains the idea of this '
+          'position.',
+        );
+        expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endMeetApp), findsNothing);
+
+        await tester.ensureVisible(find.byKey(ChallengeKeys.endLesson));
+        await tester.tap(find.byKey(ChallengeKeys.endLesson));
+        await tester.pumpAndSettle();
+        expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+        expect(find.text('lesson rook.lucena'), findsOneWidget);
+        expect(
+          analytics.eventsNamed('campanha_cadastro').single.params['resposta'],
+          'ja_tem_conta',
+        );
+      });
+
+      testWidgets('link sem aula: o fim de sempre, sem a frase da oferta', (
+        tester,
+      ) async {
+        await pumpScreen(
+          tester,
+          fen: lessonFen,
+          mode: vsMachine.copyWith(
+            fromLink: true,
+            link: link.copyWith(lesson: null),
+          ),
+        );
+        await resign(tester);
+        await tester.pumpAndSettle();
+        expect(find.byKey(ChallengeKeys.lessonOffer), findsNothing);
+        expect(find.byKey(ChallengeKeys.endLesson), findsNothing);
+        expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
+      });
+    });
+
     testWidgets(
       'posição sem histórico (personalizada): a conclusão vai pronta',
       (tester) async {
@@ -3353,4 +3521,10 @@ class _BubbleCharacters extends FakeCharacterRepository {
           text: text!,
         ),
   ];
+}
+
+/// Toda aula ligada está liberada.
+class _AvailableCatalog implements LinkedLessonCatalog {
+  @override
+  Future<bool> available(LinkedLesson lesson) async => true;
 }

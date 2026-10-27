@@ -36,6 +36,10 @@ abstract final class ChallengeKeys {
   static const compare = Key('challenge.compare');
   static const endMeetApp = Key('challenge.end.app');
 
+  /// A aula ligada ao link de campanha (T84): o botão e a frase da oferta.
+  static const endLesson = Key('challenge.end.lesson');
+  static const lessonOffer = Key('challenge.lessonOffer');
+
   /// A imagem do resultado, desenhada fora da tela para virar PNG.
   static const resultCard = Key('challenge.result.card');
 

@@ -5,6 +5,7 @@ import '../domain/models/clock.dart';
 import '../domain/models/daily_final.dart';
 import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
+import '../domain/models/linked_lesson.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
@@ -20,6 +21,14 @@ abstract final class Routes {
         uri.path == '/daily' ||
         uri.path == '/daily/') {
       return daily;
+    }
+    // O link só de aula (T84) vai como veio: a rota dele confere se a aula
+    // abre.
+    if (LessonLink.tryParse(uri) != null) {
+      return Uri(
+        path: uri.path,
+        query: uri.hasQuery ? uri.query : null,
+      ).toString();
     }
     try {
       if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
@@ -382,6 +391,24 @@ abstract final class Routes {
     path: '/endgames/$id/roteiro',
     queryParameters: {'part': ?part, 'etapa': '$stage', 'origem': ?origin},
   ).toString();
+
+  /// A entrada da aula de um link de campanha (T84): `/aula/<id>` ou
+  /// `/escola/<id>`, o mesmo caminho do link só de aula. A rota confere se a
+  /// aula abre e segue para [linkedLesson].
+  static String linkedLessonEntry(LinkedLesson lesson) =>
+      '/${lesson.kind.code}/${Uri.encodeComponent(lesson.id)}';
+
+  /// A aula ligada a um link de campanha, com `origem=link`. Com
+  /// [available] falso (não existe ou não está liberada), a regra de sempre:
+  /// a trilha de finais ou a Escola, que mostram as aulas que há (ou "As
+  /// aulas ainda não estão disponíveis").
+  static String linkedLesson(LinkedLesson lesson, {bool available = true}) =>
+      switch (lesson.kind) {
+        LinkedLessonKind.endgame =>
+          available ? endgameLesson(lesson.id, origin: 'link') : endgames,
+        LinkedLessonKind.school =>
+          available ? lessonScript(lesson.id, origin: 'link') : school,
+      };
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';
@@ -475,10 +502,13 @@ abstract final class Routes {
   /// Para onde a conta segue no fim, vinda de [from] (`game`: o convite no
   /// fim da 1ª partida; `level`: o convite depois do Lichess em "Seu nível",
   /// que segue para os próximos passos).
+  /// Um [from] que já é uma rota (`/endgames/...`, o convite antes da aula do
+  /// link de campanha, T84) é o próprio destino.
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
     'game' => home,
     'level' => nextSteps,
+    final route? when route.startsWith('/') && !route.startsWith('//') => route,
     _ => goal,
   };
 

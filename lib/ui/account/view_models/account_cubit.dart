@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/campaign/campaign_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
@@ -45,9 +46,14 @@ class AccountCubit extends Cubit<AccountState> {
     this._sync,
     this._analytics = const NoAnalyticsRepository(),
     this.moment,
+    this._campaigns,
   }) : super(const AccountState());
 
   final AnalyticsRepository _analytics;
+
+  /// A campanha do link de post (T84): quem aceitou o convite antes da aula
+  /// e entrou conta o `campanha_cadastro` `feito`.
+  final CampaignRepository? _campaigns;
 
   /// Em que momento o convite abriu (`conta_convite`): `pos_vitoria`. Nulo
   /// fora do convite.
@@ -110,6 +116,16 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
+  Future<void> _campaignSignedIn() async {
+    final campaigns = _campaigns;
+    if (campaigns == null || !await campaigns.takeInvited()) return;
+    final campaign = await campaigns.active();
+    if (campaign == null) return;
+    await _analytics.log(
+      AnalyticsEvents.campanhaCadastro(campaign, resposta: 'feito'),
+    );
+  }
+
   Future<void> _run(
     Future<Account?> Function() signIn, {
     bool created = false,
@@ -133,6 +149,7 @@ class AccountCubit extends Cubit<AccountState> {
           ),
         );
       }
+      unawaited(_campaignSignedIn());
       if (restored != null) {
         unawaited(
           _analytics.log(

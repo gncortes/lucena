@@ -6040,6 +6040,18 @@
   "@challengeEndMeetApp": {
     "description": "End of a challenge opened by link: text button that leads to the home"
   },
+  "challengeEndLesson": "See the lesson",
+  "@challengeEndLesson": {
+    "description": "End of a campaign challenge link that carries a lesson: button that opens the lesson. Keep it short (fits half a 360 dp row)."
+  },
+  "challengeLessonOfferFailed": "Not this time. The free lesson explains the idea of this position.",
+  "@challengeLessonOfferFailed": {
+    "description": "End of a campaign challenge link with a lesson, when the player did not reach the goal: line under the result offering the lesson. All lessons in the app are free."
+  },
+  "challengeLessonOfferDone": "Congratulations! The free lesson explains the idea of this position.",
+  "@challengeLessonOfferDone": {
+    "description": "End of a campaign challenge link with a lesson, when the player reached the goal: line under the result offering the lesson as a secondary option."
+  },
   "challengeImageWon": "CHALLENGE COMPLETE",
   "@challengeImageWon": {
     "description": "Header of the result image when the player won"
@@ -7531,6 +7543,10 @@
   "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account. It is optional: without an account, everything keeps working.",
   "@accountInviteTextLichess": {
     "description": "Account invite sheet after using the Lichess rating on the level screen, without an account: text."
+  },
+  "accountInviteTextLinkLesson": "With an account, your progress in the lesson and in your games stays saved, even if you change phones. It is optional: without an account, the lesson opens all the same.",
+  "@accountInviteTextLinkLesson": {
+    "description": "Account invite sheet shown before the lesson offered at the end of a campaign challenge link: text."
   },
   "accountEmailField": "E-mail",
   "@accountEmailField": {

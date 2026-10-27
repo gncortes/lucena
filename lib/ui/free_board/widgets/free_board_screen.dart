@@ -34,6 +34,9 @@ import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
+import '../view_models/link_lesson_cubit.dart';
+import '../../../domain/use_cases/link_lesson_rules.dart';
+import '../../account/widgets/account_invite_sheet.dart';
 import '../view_models/talk_cubit.dart';
 import '../../conclusion/view_models/conclusion_cubit.dart';
 import '../../../domain/models/conclusion.dart';
@@ -516,6 +519,17 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final footerHeight = machineEnded && state.mode.fromLink
                     ? _LinkEndBar.height
                     : GameActionsBar.height;
+                // A aula do link de campanha (T84), no fim do desafio.
+                final linkLesson = state.mode.fromLink
+                    ? _linkLessonOf(context)
+                    : null;
+                final offer = machineEnded && linkLesson != null
+                    ? LinkLessonRules.offer(
+                        state.challengeLink,
+                        fulfilled: state.fulfilled,
+                      )
+                    : LinkLessonOffer.none;
+                if (offer != LinkLessonOffer.none) linkLesson!.seen(offer);
                 final boardSide = constraints.maxWidth;
                 final comments = context.select(
                   (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
@@ -599,6 +613,16 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           ? DailyEndBar(onAgain: cubit.newGame)
                           : machineEnded && state.mode.fromLink
                           ? _LinkEndBar(
+                              offer: offer,
+                              onLesson: linkLesson == null
+                                  ? null
+                                  : () => unawaited(
+                                      _openLinkLesson(
+                                        context,
+                                        linkLesson,
+                                        offer,
+                                      ),
+                                    ),
                               onAgain: () => _playLinkAgain(cubit),
                               onShare: () => _shareLinkResult(context, state),
                               onMeetApp: () => _meetApp(context),
@@ -719,6 +743,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                             state.challengeComparison!.sender,
                                             state.challengeComparison!.you,
                                           ),
+                                    offer: switch (offer) {
+                                      LinkLessonOffer.none => null,
+                                      LinkLessonOffer.primary =>
+                                        context.l10n.challengeLessonOfferFailed,
+                                      LinkLessonOffer.secondary =>
+                                        context.l10n.challengeLessonOfferDone,
+                                    },
                                     // Só o autoavanço encerra o selo sozinho.
                                     short: state.mode.isUnratedFinal,
                                     persistent: !_marathonAdvance(state),
@@ -892,6 +923,43 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     context.go(Routes.goalFromLink);
   }
 
+  /// A aula do link de campanha, se a partida veio de um link com aula.
+  static LinkLessonCubit? _linkLessonOf(BuildContext context) {
+    try {
+      return context.read<LinkLessonCubit>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  /// "Ver a aula": sem conta, o convite antes (que termina na aula); com
+  /// conta, a aula direto. A rota da aula confere se ela existe e está
+  /// liberada; se não, cai na lista de aulas.
+  Future<void> _openLinkLesson(
+    BuildContext context,
+    LinkLessonCubit linkLesson,
+    LinkLessonOffer offer,
+  ) async {
+    final lesson = linkLesson.lesson;
+    if (lesson == null || linkLesson.state) return;
+    final step = await linkLesson.tapped(offer);
+    if (!context.mounted) return;
+    final entry = Routes.linkedLessonEntry(lesson);
+    if (step == LinkLessonStep.invite) {
+      final accepted = await showAccountInviteSheet(
+        context,
+        moment: accountInviteBeforeLinkLesson,
+        text: context.l10n.accountInviteTextLinkLesson,
+        from: entry,
+      );
+      await linkLesson.inviteAnswered(accepted: accepted);
+      // Aceitou: o fim da conta leva à aula (`Routes.afterAccount`).
+      if (accepted || !context.mounted) return;
+    }
+    setState(() => _quitting = true);
+    context.go(entry);
+  }
+
   Future<void> _conclude(
     BuildContext context,
     FreeBoardCubit cubit,
@@ -987,17 +1055,23 @@ class _SeeResultBar extends StatelessWidget {
 }
 
 /// O rodapé do fim de um desafio de link (PropV1LinkFim): jogar de novo e
-/// compartilhar lado a lado, e "Conhecer o app" embaixo.
+/// compartilhar lado a lado, e "Conhecer o app" embaixo. Com a aula do link
+/// de campanha (T84): quem não conseguiu tem "Ver a aula" no lugar de
+/// compartilhar; quem conseguiu, no lugar de "Conhecer o app".
 class _LinkEndBar extends StatelessWidget {
   const _LinkEndBar({
     required this.onAgain,
     required this.onShare,
     required this.onMeetApp,
+    this.offer = LinkLessonOffer.none,
+    this.onLesson,
   });
 
   final VoidCallback onAgain;
   final VoidCallback onShare;
   final VoidCallback onMeetApp;
+  final LinkLessonOffer offer;
+  final VoidCallback? onLesson;
 
   /// O rodapé inteiro: a linha de botões e o botão de texto.
   static const height = 112.0;
@@ -1019,20 +1093,36 @@ class _LinkEndBar extends StatelessWidget {
                   icon: compact ? null : const Icon(Icons.refresh),
                   label: Text(l10n.challengeEndPlayAgain),
                 ),
-                FilledButton.icon(
-                  key: ChallengeKeys.endShare,
-                  onPressed: onShare,
-                  icon: compact ? null : const Icon(Icons.share_outlined),
-                  label: Text(l10n.challengeShare),
-                ),
+                if (offer == LinkLessonOffer.primary)
+                  FilledButton.icon(
+                    key: ChallengeKeys.endLesson,
+                    onPressed: onLesson,
+                    icon: compact ? null : const Icon(Icons.school_outlined),
+                    label: Text(l10n.challengeEndLesson),
+                  )
+                else
+                  FilledButton.icon(
+                    key: ChallengeKeys.endShare,
+                    onPressed: onShare,
+                    icon: compact ? null : const Icon(Icons.share_outlined),
+                    label: Text(l10n.challengeShare),
+                  ),
               ],
             ),
-            TextButton.icon(
-              key: ChallengeKeys.endMeetApp,
-              onPressed: onMeetApp,
-              icon: const Icon(Icons.arrow_forward),
-              label: Text(l10n.challengeEndMeetApp),
-            ),
+            if (offer == LinkLessonOffer.secondary)
+              TextButton.icon(
+                key: ChallengeKeys.endLesson,
+                onPressed: onLesson,
+                icon: const Icon(Icons.school_outlined),
+                label: Text(l10n.challengeEndLesson),
+              )
+            else
+              TextButton.icon(
+                key: ChallengeKeys.endMeetApp,
+                onPressed: onMeetApp,
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(l10n.challengeEndMeetApp),
+              ),
           ],
         );
       },
@@ -1048,6 +1138,7 @@ class _EndFlash extends StatefulWidget {
     required this.end,
     this.userSide,
     this.comparison,
+    this.offer,
     this.short = false,
     this.persistent = false,
   });
@@ -1057,6 +1148,9 @@ class _EndFlash extends StatefulWidget {
 
   /// Só no desafio por link: "Quem mandou: mate em 7 lances. Você: ...".
   final String? comparison;
+
+  /// Só no link de campanha com aula (T84): a frase da oferta da aula.
+  final String? offer;
 
   /// Pisca por [AppMotion.featuredFlash] (entra, fica e sai) em vez do tempo
   /// normal do selo.
@@ -1141,11 +1235,12 @@ class _EndFlashState extends State<_EndFlash>
       child: Semantics(
         liveRegion: true,
         label: widget.persistent
-            ? [title, reason, ?widget.comparison].join('. ')
+            ? [title, reason, ?widget.comparison, ?widget.offer].join('. ')
             : title,
         child: ExcludeSemantics(
           child: Container(
             key: FreeBoardKeys.endFlash,
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.xl,
               vertical: AppSpacing.lg,
@@ -1181,6 +1276,18 @@ class _EndFlashState extends State<_EndFlash>
                       color: colors.onInverseSurface,
                     ),
                   ),
+                if (widget.persistent && widget.offer != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    widget.offer!,
+                    key: ChallengeKeys.lessonOffer,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onInverseSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

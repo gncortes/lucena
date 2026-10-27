@@ -28,6 +28,9 @@ const accountInviteAfterWin = 'pos_vitoria';
 /// O convite abre depois de usar o rating do Lichess, sem conta (T83).
 const accountInviteAfterLichess = 'pos_lichess';
 
+/// O convite antes da aula do link de campanha (T84).
+const accountInviteBeforeLinkLesson = 'pos_desafio_link';
+
 /// O convite para criar conta (canvas `PropV1PerfilConvite`): Google, e-mail
 /// ou "Agora não", que só fecha. As telas seguintes abrem a partir de
 /// [context], a tela por baixo, e terminam em `Routes.afterAccount([from])`.
@@ -51,6 +54,7 @@ Future<bool> showAccountInviteSheet(
           sync: context.read<SyncScheduler>(),
           analytics: context.analytics,
           moment: moment,
+          campaigns: context.campaigns,
         ),
         child: SafeArea(
           top: false,

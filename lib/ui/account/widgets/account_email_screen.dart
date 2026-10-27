@@ -41,6 +41,7 @@ class AccountEmailScreen extends StatelessWidget {
       context.read<AccountRepository>(),
       sync: reauth ? null : context.read<SyncScheduler>(),
       analytics: reauth ? const NoAnalyticsRepository() : context.analytics,
+      campaigns: reauth ? null : context.campaigns,
     ),
     child: _EmailView(from: from, create: !signIn && !reauth, reauth: reauth),
   );

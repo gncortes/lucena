@@ -48,6 +48,9 @@ import '../data/repositories/blind/speech_input_repository.dart';
 import '../ui/conclusion/view_models/conclusion_cubit.dart';
 import '../ui/conclusion/widgets/conclusion_screen.dart';
 import '../ui/core/analytics/analytics_context.dart';
+import '../data/repositories/campaign/linked_lesson_catalog.dart';
+import '../domain/models/linked_lesson.dart';
+import 'linked_lesson_redirect.dart';
 import '../domain/models/app_version.dart';
 import '../domain/models/conclusion.dart';
 import '../ui/blind/view_models/blind_game_cubit.dart';
@@ -97,6 +100,7 @@ import '../ui/custom_position/widgets/custom_position_screen.dart';
 import '../ui/game_setup/view_models/game_setup_cubit.dart';
 import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
+import '../ui/free_board/view_models/link_lesson_cubit.dart';
 import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../data/repositories/account/account_invite_repository.dart';
@@ -345,6 +349,7 @@ GoRouter buildRouter({
               endgames: context.read<EndgameLessonRepository>(),
               race: context.read<RaceRepository>(),
               analytics: context.analytics,
+              campaigns: context.campaigns,
             )..load(_language(context)),
             child: LessonReviewPrompt(child: LessonFinishedScreen(kind: kind)),
           );
@@ -648,6 +653,20 @@ GoRouter buildRouter({
                           : ClockConfig(white: white, black: black),
                     )..open(),
                   ),
+                  // O link de campanha com aula (T84): a oferta do fim.
+                  if (mode.link case final link? when link.lesson != null)
+                    BlocProvider(
+                      create: (context) => LinkLessonCubit(
+                        link: link,
+                        accounts: context.read<AccountRepository>(),
+                        catalog: LinkedLessonCatalog(
+                          endgames: context.read<EndgameLessonRepository>(),
+                          school: context.read<LessonRepository>(),
+                        ),
+                        campaigns: context.campaigns,
+                        analytics: context.analytics,
+                      ),
+                    ),
                   if (mode.dailyDate case final date?)
                     BlocProvider(
                       create: (context) => DailyGameCubit(
@@ -1366,6 +1385,23 @@ GoRouter buildRouter({
               ),
             ],
           ),
+          // A aula de um link de campanha (T84): `/aula/<id>` (finais) e
+          // `/escola/<id>` (Escola), do link só de aula ou da oferta no fim do
+          // desafio. Só redireciona: a aula, ou a trilha se ela não abre.
+          for (final kind in LinkedLessonKind.values)
+            _route(
+              path: '${kind.code}/:id',
+              redirect: (context, state) => linkedLessonRedirect(
+                LinkedLesson(kind, state.pathParameters['id']!),
+                catalog: LinkedLessonCatalog(
+                  endgames: context.read<EndgameLessonRepository>(),
+                  school: context.read<LessonRepository>(),
+                ),
+                campaigns: context.campaigns,
+                analytics: context.analytics,
+              ),
+              builder: (context, state) => const SizedBox.shrink(),
+            ),
           // O desafio por link (`/p/<código>?...`): fechado, a tela do desafio;
           // aberto, a Nova partida já preenchida.
           _route(
