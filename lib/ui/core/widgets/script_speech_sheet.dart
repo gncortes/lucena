@@ -24,6 +24,7 @@ Future<void> showScriptSpeechSheet(
   VoidCallback? onShowAnswer,
   ValueChanged<String>? onSquareTap,
   WidgetBuilder? headerBuilder,
+  Widget? action,
   Color? background,
   double horizontalPadding = 24,
   double headerHeight = 56,
@@ -57,6 +58,7 @@ Future<void> showScriptSpeechSheet(
                   onSquare(square);
                 },
           headerBuilder: headerBuilder,
+          action: action,
           horizontalPadding: horizontalPadding,
           headerHeight: headerHeight,
         ),
@@ -75,6 +77,7 @@ class ScriptSpeechSheet extends StatelessWidget {
     this.onShowAnswer,
     this.onSquareTap,
     this.headerBuilder,
+    this.action,
     this.horizontalPadding = 24,
     this.headerHeight = 56,
     super.key,
@@ -90,6 +93,9 @@ class ScriptSpeechSheet extends StatelessWidget {
   /// O cabeçalho no lugar do retrato e do nome (o exercício leva o mesmo da
   /// faixa, com borrar e som).
   final WidgetBuilder? headerBuilder;
+
+  /// No fim do cabeçalho padrão: o botão de som (T84).
+  final Widget? action;
 
   /// A margem dos lados do cabeçalho e do texto (canvas `PropV2ExA7`: 16).
   final double horizontalPadding;
@@ -140,6 +146,7 @@ class ScriptSpeechSheet extends StatelessWidget {
                           ),
                         ),
                       ),
+                      ?action,
                     ],
                   ),
           ),

@@ -5418,6 +5418,14 @@
   "@lessonShowAnswer": {
     "description": "Link and button that reveal the correct move of a think step."
   },
+  "speechSeeMore": "See more",
+  "@speechSeeMore": {
+    "description": "Link at the end of a speech bubble cut short (T84): opens a sheet with the whole speech. Shown after an ellipsis."
+  },
+  "speechClose": "Close speech",
+  "@speechClose": {
+    "description": "Tooltip of the round X on a speech bubble opened over the top of the screen (T84): closes the bubble."
+  },
   "lessonFullSpeech": "Show the whole speech",
   "@lessonFullSpeech": {
     "description": "Screen reader hint of the teacher's speech bubble in the scripted lesson: tapping it opens a sheet with the whole speech."

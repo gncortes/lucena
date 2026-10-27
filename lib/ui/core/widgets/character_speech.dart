@@ -12,6 +12,7 @@ class TypewriterText extends StatefulWidget {
     this.maxLines,
     this.shrink = true,
     this.prefix,
+    this.suffix,
     super.key,
   });
 
@@ -25,6 +26,10 @@ class TypewriterText extends StatefulWidget {
 
   /// Algo antes do texto, visível desde o começo (o selo "Dica").
   final InlineSpan? prefix;
+
+  /// Algo depois do texto, visível desde o começo (o "… Ver mais" da fala
+  /// cortada, T84).
+  final InlineSpan? suffix;
 
   /// Quanto cada letra leva para aparecer.
   static const perLetter = AppMotion.typewriterLetter;
@@ -117,6 +122,7 @@ class _TypewriterTextState extends State<TypewriterText>
             text: widget.text.substring(shown),
             style: const TextStyle(color: Colors.transparent),
           ),
+          ?widget.suffix,
         ],
       ),
       style: style,

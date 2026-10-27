@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/character.dart';
 import '../../core/keys/free_board_keys.dart';
+import '../../core/keys/speech_keys.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -37,6 +38,7 @@ class CharacterBar extends StatelessWidget {
     this.playerRow,
     this.speechMaxLines = 3,
     this.onSpeechVisibilityChanged,
+    this.dismissOn,
     super.key,
   });
 
@@ -71,22 +73,48 @@ class CharacterBar extends StatelessWidget {
 
   final ValueChanged<bool>? onSpeechVisibilityChanged;
 
+  /// Muda a cada lance: o balão aberto por cima fecha no lance seguinte.
+  final Object? dismissOn;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      LayoutBuilder(builder: (context, box) => _build(context, box.maxWidth));
+
+  Widget _build(BuildContext context, double width) {
     final character = talk.character!;
     final line = talk.enabled ? talk.line : null;
     if (speechTop case final top?) {
+      final fit = line == null
+          ? null
+          : SpeechFit.measure(
+              context,
+              text: line.text,
+              width: speechTextWidth(width),
+              base: SpeechBalloon.style(context),
+            );
       return _SpeechOverlay(
         top: top,
+        open: fit?.open ?? false,
         speech: line == null
             ? null
             : _TransientSpeech(
+                id: line.id,
                 text: line.text,
+                open: fit!.open,
+                dismissOn: dismissOn,
                 onVisibilityChanged: onSpeechVisibilityChanged,
-                child: GameEntrance(
+                builder: (context, close) => GameEntrance(
                   part: GameEntrancePart.speech,
                   // O balão fica no lugar; só o texto troca (crossfade).
-                  child: _balloon(context, character, line, BalloonTail.down),
+                  child: _balloon(
+                    context,
+                    character,
+                    line,
+                    BalloonTail.down,
+                    fit,
+                    speechTextWidth(width),
+                    onClose: fit.open ? close : null,
+                  ),
                 ),
               ),
         child: SizedBox(
@@ -101,6 +129,17 @@ class CharacterBar extends StatelessWidget {
         ),
       );
     }
+    // Ao lado do retrato, numa faixa de altura fixa: as linhas do espaço
+    // fixo e, além delas, "… Ver mais" (sem abrir por cima).
+    final besideWidth = math.max(
+      0.0,
+      width -
+          2 * AppSpacing.md -
+          avatarSize -
+          SpeechBalloonShape.sideSize.width -
+          SpeechBalloon.tailGap -
+          SpeechBalloon.defaultPadding.horizontal,
+    );
     return SizedBox(
       key: FreeBoardKeys.characterBar,
       height: heightFor(avatarSize),
@@ -156,6 +195,14 @@ class CharacterBar extends StatelessWidget {
                           character,
                           line,
                           BalloonTail.start,
+                          SpeechFit.measure(
+                            context,
+                            text: line.text,
+                            width: besideWidth,
+                            base: SpeechBalloon.style(context),
+                            opened: SpeechFit.fixedLines,
+                          ),
+                          besideWidth,
                         ),
                       ),
               ),
@@ -166,44 +213,87 @@ class CharacterBar extends StatelessWidget {
     );
   }
 
-  /// O balão único do app com a fala do personagem: o clique abre a folha com
-  /// a fala inteira (sem botão de fechar).
+  /// A folha com a fala inteira: retrato, nome, a fala direto na superfície
+  /// e o botão de som.
+  void _openSheet(BuildContext context, Character character, String text) {
+    final speech = context.read<SpeechCubit?>()?.state;
+    final sound = context.read<SettingsCubit?>()?.state?.sound ?? true;
+    unawaited(
+      showScriptSpeechSheet(
+        context,
+        viktor: character,
+        title: character.name,
+        texts: [text],
+        // O mesmo painel de som e voz da partida.
+        action: LessonVoiceButton(
+          audible: sound && (speech?.charactersHeard ?? false),
+          speed: speech?.settings.speed ?? 1,
+          onPressed: () => showGameSoundDialog(context),
+        ),
+      ),
+    );
+  }
+
+  /// O balão único do app com a fala do personagem (T84): cabe no espaço
+  /// fixo de 2 linhas (letra de 15 a 13); passou disso, se abre por cima com
+  /// o X ([onClose]); nem assim cabe, corta em "… Ver mais". O clique no
+  /// balão abre a folha com a fala inteira.
   Widget _balloon(
     BuildContext context,
     Character character,
     CharacterLine line,
     BalloonTail tail,
-  ) => SpeechBalloon(
-    key: FreeBoardKeys.speechBubble,
-    speech: line.id,
-    tail: tail,
-    // No overlay o balão começa 4 dp antes do retrato (12 contra 16).
-    tailX:
-        SpeechBalloon.tailXFor(avatarSize) + (tail == BalloonTail.down ? 4 : 0),
-    fitContent: true,
-    semanticsLabel: context.l10n.characterSays(character.name, line.text),
-    tapHint: context.l10n.lessonFullSpeech,
-    onTap: () => unawaited(
-      showScriptSpeechSheet(
+    SpeechFit fit,
+    double width, {
+    VoidCallback? onClose,
+  }) {
+    final style = fit.style;
+    var text = line.text;
+    InlineSpan? more;
+    if (fit.overflow) {
+      // "Ver mais" sem reconhecedor próprio: o toque cai no balão, que abre
+      // a folha com a fala inteira.
+      more = SpeechFit.more(context, style: style);
+      text = SpeechFit.cut(
         context,
-        viktor: character,
-        title: character.name,
-        texts: [line.text],
-      ),
-    ),
-    child: _spoken(
-      context,
-      line.id,
-      line.text,
-      TypewriterText(
+        text: line.text,
+        width: width,
+        lines: fit.lines,
+        style: style,
+        more: more,
+      );
+    }
+    return SpeechBalloon(
+      key: FreeBoardKeys.speechBubble,
+      speech: line.id,
+      tail: tail,
+      // No overlay o balão começa 4 dp antes do retrato (12 contra 16).
+      tailX:
+          SpeechBalloon.tailXFor(avatarSize) +
+          (tail == BalloonTail.down ? 4 : 0),
+      fitContent: true,
+      semanticsLabel: context.l10n.characterSays(character.name, line.text),
+      tapHint: context.l10n.lessonFullSpeech,
+      onTap: () => _openSheet(context, character, line.text),
+      onClose: onClose,
+      child: _spoken(
+        context,
+        line.id,
         line.text,
-        key: FreeBoardKeys.speechText(line.id),
-        maxLines: speechMaxLines,
-        shrink: false,
-        style: SpeechBalloon.style(context),
+        KeyedSubtree(
+          key: more == null ? null : SpeechKeys.cut,
+          child: TypewriterText(
+            text,
+            key: FreeBoardKeys.speechText(line.id),
+            maxLines: fit.lines,
+            shrink: false,
+            suffix: more,
+            style: style,
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   /// A fala sai na voz do personagem, com a voz ligada. O Stockfish não
   /// fala.
@@ -233,8 +323,13 @@ class _SpeechOverlay extends StatefulWidget {
     required this.top,
     required this.speech,
     required this.child,
+    this.open = false,
   });
   final double top;
+
+  /// Aberto por cima: o X sai 16 dp além da borda, e a camada alarga o
+  /// mesmo tanto para o balão manter a largura.
+  final bool open;
   final Widget? speech;
   final Widget child;
 
@@ -265,7 +360,12 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
       return Positioned(
         left: origin.dx,
         bottom: info.overlaySize.height - (origin.dy + 84),
-        width: math.max(0, info.childSize.width - 24),
+        width: math.max(
+          0,
+          info.childSize.width -
+              24 +
+              (widget.open ? SpeechBalloon.closeOverhang : 0),
+        ),
         child: Align(
           alignment: AlignmentDirectional.bottomStart,
           heightFactor: 1,
@@ -278,16 +378,24 @@ class _SpeechOverlayState extends State<_SpeechOverlay> {
 }
 
 /// A fala flutua sem mudar o tamanho da faixa. A duração
-/// acompanha a leitura; o esmaecer respeita a preferência de movimento.
+/// acompanha a leitura; o esmaecer respeita a preferência de movimento. O
+/// balão aberto por cima também fecha no X e no lance seguinte ([dismissOn]).
 class _TransientSpeech extends StatefulWidget {
   const _TransientSpeech({
+    required this.id,
     required this.text,
-    required this.child,
+    required this.builder,
+    this.open = false,
+    this.dismissOn,
     this.onVisibilityChanged,
   });
 
+  /// A fala nova (mesmo com o mesmo texto) volta a aparecer.
+  final String id;
   final String text;
-  final Widget child;
+  final Widget Function(BuildContext context, VoidCallback close) builder;
+  final bool open;
+  final Object? dismissOn;
   final ValueChanged<bool>? onVisibilityChanged;
 
   @override
@@ -307,7 +415,11 @@ class _TransientSpeechState extends State<_TransientSpeech> {
   @override
   void didUpdateWidget(_TransientSpeech oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.text != widget.text) _restart();
+    if (oldWidget.id != widget.id || oldWidget.text != widget.text) {
+      _restart();
+    } else if (widget.open && oldWidget.dismissOn != widget.dismissOn) {
+      _close();
+    }
   }
 
   void _restart() {
@@ -316,9 +428,12 @@ class _TransientSpeechState extends State<_TransientSpeech> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _visible) widget.onVisibilityChanged?.call(true);
     });
-    _hide = Timer(AppMotion.floatingSpeech(widget.text.length), () {
-      if (mounted) setState(() => _visible = false);
-    });
+    _hide = Timer(AppMotion.floatingSpeech(widget.text.length), _close);
+  }
+
+  void _close() {
+    _hide?.cancel();
+    if (mounted && _visible) setState(() => _visible = false);
   }
 
   @override
@@ -338,7 +453,7 @@ class _TransientSpeechState extends State<_TransientSpeech> {
         onEnd: () {
           if (!_visible) widget.onVisibilityChanged?.call(false);
         },
-        child: widget.child,
+        child: widget.builder(context, _close),
       ),
     ),
   );

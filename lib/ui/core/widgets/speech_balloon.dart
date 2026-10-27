@@ -4,7 +4,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../keys/speech_keys.dart';
 import '../l10n/l10n.dart';
+import '../theme/app_icon_size.dart';
 import '../theme/app_shape.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_text.dart';
@@ -231,6 +233,167 @@ class BalloonPainter extends CustomPainter {
       old.shape != shape || old.color != color || old.shadow != shadow;
 }
 
+/// Como uma fala cabe no balão (canvas `CompBalao`, T84, Gabriel 27/10/2026):
+/// um espaço fixo de [fixedLines] linhas, com a letra de 15 descendo até
+/// [minFontSize]; se nem assim cabe, o balão se abre até [openLines] linhas
+/// (de novo de 15 a 13); além disso, corta numa palavra inteira e termina em
+/// "… Ver mais" ([cut]).
+class SpeechFit {
+  const SpeechFit._({
+    required this.style,
+    required this.lines,
+    required this.open,
+    required this.overflow,
+  });
+
+  /// As linhas do espaço fixo, que a tela reserva desde o começo.
+  static const fixedLines = 2;
+
+  /// Até quantas linhas o balão aberto (por cima do topo) mostra.
+  static const openLines = 4;
+
+  /// A menor letra: abaixo de 15, de meio em meio ponto até 13.
+  static const minFontSize = 13.0;
+  static const fontStep = 0.5;
+
+  /// A letra que cabe.
+  final TextStyle style;
+
+  /// Em quantas linhas a fala fica (no máximo, as do balão aberto).
+  final int lines;
+
+  /// Passou do espaço fixo: o balão se abre por cima, com o X.
+  final bool open;
+
+  /// Nem aberto cabe: corta e mostra "… Ver mais".
+  final bool overflow;
+
+  /// Mede [text] na largura [width] com a letra [base], primeiro em
+  /// [fixed] linhas e, se não couber, em [opened] (igual a [fixed]: o balão
+  /// não se abre, só corta).
+  static SpeechFit measure(
+    BuildContext context, {
+    required String text,
+    required double width,
+    required TextStyle base,
+    int fixed = fixedLines,
+    int opened = openLines,
+  }) {
+    for (final limit in {fixed, opened}) {
+      var style = base;
+      while (true) {
+        final lines = _lines(context, text, width, style);
+        if (lines <= limit) {
+          return SpeechFit._(
+            style: style,
+            lines: lines,
+            open: lines > fixed,
+            overflow: false,
+          );
+        }
+        if (style.fontSize! - fontStep < minFontSize - .01) break;
+        style = style.copyWith(fontSize: style.fontSize! - fontStep);
+      }
+    }
+    return SpeechFit._(
+      style: base.copyWith(fontSize: math.min(base.fontSize!, minFontSize)),
+      lines: opened,
+      open: opened > fixed,
+      overflow: true,
+    );
+  }
+
+  static int _lines(
+    BuildContext context,
+    String text,
+    double width,
+    TextStyle style,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: width);
+    final lines = painter.computeLineMetrics().length;
+    painter.dispose();
+    return lines;
+  }
+
+  /// A pontuação solta que sai antes do "…".
+  static final _trailing = RegExp(r'[\s,;:.–—-]+$');
+
+  /// O maior começo de [text], numa palavra inteira, que cabe em [lines]
+  /// linhas na largura [width] junto de [more] ("… Ver mais"). [spans]
+  /// desenha o trecho (com as marcas da fala).
+  static String cut(
+    BuildContext context, {
+    required String text,
+    required double width,
+    required int lines,
+    required TextStyle style,
+    required InlineSpan more,
+    List<InlineSpan> Function(String text)? spans,
+  }) {
+    final ends = <int>[
+      for (final m in RegExp(r'\s+').allMatches(text)) m.start,
+    ];
+    String piece(int end) => text.substring(0, end).replaceFirst(_trailing, '');
+    bool fits(String piece) {
+      final painter = TextPainter(
+        text: TextSpan(
+          style: DefaultTextStyle.of(context).style.merge(style),
+          children: [
+            ...(spans?.call(piece) ?? [TextSpan(text: piece)]),
+            more,
+          ],
+        ),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+        maxLines: lines,
+      )..layout(maxWidth: width);
+      final ok = !painter.didExceedMaxLines;
+      painter.dispose();
+      return ok;
+    }
+
+    // Busca binária pela última palavra que cabe.
+    var low = 0;
+    var high = ends.length - 1;
+    var best = '';
+    while (low <= high) {
+      final mid = (low + high) ~/ 2;
+      final candidate = piece(ends[mid]);
+      if (fits(candidate)) {
+        best = candidate;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+    return best;
+  }
+
+  /// O "… Ver mais": as reticências na cor do texto e o link na cor
+  /// primária, em negrito, sem sublinhado (canvas `CompBalao`).
+  static InlineSpan more(
+    BuildContext context, {
+    required TextStyle style,
+    GestureRecognizer? recognizer,
+  }) => TextSpan(
+    children: [
+      const TextSpan(text: '… '),
+      TextSpan(
+        text: context.l10n.speechSeeMore,
+        recognizer: recognizer,
+        style: style.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: AppWeight.strong,
+        ),
+      ),
+    ],
+  );
+}
+
 /// O balão de fala do app, um só (canvas `CompBalao`, T72): o estilo da lição
 /// (fundo branco, sombra, raio 16, letra 16/24) vale em toda tela. Quem usa só
 /// escolhe a posição da ponta, o corte e se encolhe até o texto; nenhuma tela
@@ -254,6 +417,7 @@ class SpeechBalloon extends StatelessWidget {
     this.onTap,
     this.tapHint,
     this.semanticsLabel,
+    this.onClose,
     super.key,
   });
 
@@ -296,6 +460,24 @@ class SpeechBalloon extends StatelessWidget {
   /// O que o leitor de tela diz no lugar do conteúdo.
   final String? semanticsLabel;
 
+  /// O balão aberto por cima do topo (T84): ganha o X de fechar, redondo,
+  /// de superfície com sombra, com o centro na borda de cima, a
+  /// [closeInset] da borda do fim e metade para fora. O balão guarda
+  /// [closeLift] em cima e [closeOverhang] no fim para o alvo de toque
+  /// inteiro ficar dentro dele.
+  final VoidCallback? onClose;
+
+  /// O diâmetro do X e o alvo de toque dele.
+  static const closeSize = 32.0;
+  static const closeTarget = 48.0;
+
+  /// Do centro do X até a borda do fim do balão.
+  static const closeInset = AppSpacing.sm;
+
+  /// O que o alvo do X passa acima e depois do balão.
+  static const closeLift = closeTarget / 2;
+  static const closeOverhang = closeTarget / 2 - closeInset;
+
   /// Canvas `pontaX`: 13 para um retrato de 44 (a ponta cai no centro dele).
   static const defaultTailX = 13.0;
 
@@ -314,6 +496,14 @@ class SpeechBalloon extends StatelessWidget {
     horizontal: AppSpacing.lg,
     vertical: AppSpacing.lg,
   );
+
+  /// A altura do corpo do balão no espaço fixo da fala (T84): as
+  /// [SpeechFit.fixedLines] linhas na letra de sempre e o recuo.
+  static double fixedHeight(BuildContext context) =>
+      MediaQuery.textScalerOf(context).scale(style(context).fontSize!) *
+          style(context).height! *
+          SpeechFit.fixedLines +
+      defaultPadding.vertical;
 
   /// `pontaX` para a ponta cair no centro de um retrato de [avatar] dp.
   static double tailXFor(double avatar) =>
@@ -401,6 +591,48 @@ class SpeechBalloon extends StatelessWidget {
         ),
       );
     }
+    final onClose = this.onClose;
+    if (onClose != null) {
+      final colors = Theme.of(context).colorScheme;
+      balloon = Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              top: closeLift,
+              end: closeOverhang,
+            ),
+            child: balloon,
+          ),
+          PositionedDirectional(
+            top: 0,
+            end: 0,
+            child: SizedBox.square(
+              dimension: closeTarget,
+              child: Center(
+                child: IconButton.filled(
+                  key: SpeechKeys.close,
+                  style: IconButton.styleFrom(
+                    backgroundColor: colors.surfaceContainerLowest,
+                    foregroundColor: colors.onSurface,
+                    elevation: 2,
+                    padding: EdgeInsets.zero,
+                    fixedSize: const Size.square(closeSize),
+                    minimumSize: const Size.square(closeSize),
+                    maximumSize: const Size.square(closeSize),
+                    tapTargetSize: MaterialTapTargetSize.padded,
+                  ),
+                  tooltip: context.l10n.speechClose,
+                  iconSize: AppIconSize.button,
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed: onClose,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
     // O vão até o retrato fica fora do clique e da sombra.
     if (tail != BalloonTail.none) {
       balloon = Padding(padding: _gap, child: balloon);
@@ -432,12 +664,18 @@ class SpeechText extends StatefulWidget {
     this.onMainLine,
     this.onShowAnswer,
     this.onSquareTap,
+    this.onMore,
     super.key,
   });
 
   final String text;
   final TextStyle style;
   final int? maxLines;
+
+  /// Com [maxLines]: a fala que não cabe é cortada numa palavra inteira e
+  /// termina em "… Ver mais" ([SpeechFit.cut]); o clique nele chama este
+  /// callback (a folha com a fala inteira).
+  final VoidCallback? onMore;
   final VoidCallback? onMainLine;
   final VoidCallback? onShowAnswer;
 
@@ -517,6 +755,8 @@ class _SpeechTextState extends State<SpeechText> {
     ..onTap = () => widget.onMainLine?.call();
   late final _showAnswer = TapGestureRecognizer()
     ..onTap = () => widget.onShowAnswer?.call();
+  late final _more = TapGestureRecognizer()
+    ..onTap = () => widget.onMore?.call();
 
   final _squares = <String, TapGestureRecognizer>{};
 
@@ -524,6 +764,7 @@ class _SpeechTextState extends State<SpeechText> {
   void dispose() {
     _mainLine.dispose();
     _showAnswer.dispose();
+    _more.dispose();
     for (final recognizer in _squares.values) {
       recognizer.dispose();
     }
@@ -600,9 +841,15 @@ class _SpeechTextState extends State<SpeechText> {
     return spans;
   }
 
-  Widget _rich(BuildContext context, String text, int? maxLines) {
+  Widget _rich(
+    BuildContext context,
+    String text,
+    int? maxLines, {
+    InlineSpan? more,
+    Key? key,
+  }) {
     final overflow = maxLines == null ? null : TextOverflow.ellipsis;
-    if (!_hasMarkup(text)) {
+    if (more == null && !_hasMarkup(text)) {
       return Text(
         text,
         style: widget.style,
@@ -611,7 +858,11 @@ class _SpeechTextState extends State<SpeechText> {
       );
     }
     final rich = Text.rich(
-      TextSpan(style: widget.style, children: _spans(context, text)),
+      key: key,
+      TextSpan(
+        style: widget.style,
+        children: [..._spans(context, text), ?more],
+      ),
       maxLines: maxLines,
       overflow: overflow,
     );
@@ -646,6 +897,31 @@ class _SpeechTextState extends State<SpeechText> {
   Widget build(BuildContext context) {
     final maxLines = widget.maxLines;
     final text = SpeechText.noBreak(widget.text);
+    if (maxLines != null && widget.onMore != null) {
+      return LayoutBuilder(
+        builder: (context, box) {
+          final whole = _painter(context, text, box.maxWidth);
+          final lines = whole.computeLineMetrics().length;
+          whole.dispose();
+          if (lines <= maxLines) return _rich(context, text, null);
+          final more = SpeechFit.more(
+            context,
+            style: widget.style,
+            recognizer: _more,
+          );
+          final cut = SpeechFit.cut(
+            context,
+            text: text,
+            width: box.maxWidth,
+            lines: maxLines,
+            style: widget.style,
+            more: more,
+            spans: (piece) => _spans(context, piece),
+          );
+          return _rich(context, cut, null, more: more, key: SpeechKeys.cut);
+        },
+      );
+    }
     if (maxLines == null ||
         maxLines < 2 ||
         !SpeechText.markPattern.hasMatch(text)) {

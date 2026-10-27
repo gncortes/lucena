@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/keys/lesson_script_keys.dart';
@@ -77,7 +79,7 @@ class ScriptSpeechMetrics {
 
   /// Até quantas linhas a fala vai na letra de sempre (3; 2 na tela baixa);
   /// além disso a letra diminui até [minFontSize] e, se ainda não cabe, a
-  /// fala rola dentro do balão.
+  /// fala corta em "… Ver mais".
   final int maxLines;
 
   TextStyle style(BuildContext context) =>
@@ -157,8 +159,8 @@ class ScriptSpeechMetrics {
 /// da fala tem altura FIXA (3 linhas, [ScriptSpeechMetrics.areaHeight]): o
 /// balão desenhado pode ser menor, preso embaixo junto do retrato, e a sobra
 /// fica vazia em cima; o tabuleiro não se mexe de um passo para o outro. Fala
-/// além das 3 linhas: a letra diminui até 13 e, se ainda não cabe, rola dentro
-/// do balão. O clique no balão abre a fala inteira ([onOpen]; Gabriel,
+/// além das 3 linhas: a letra diminui até 13 e, se ainda não cabe, corta em
+/// "… Ver mais" (T84). O clique no balão abre a fala inteira ([onOpen]; Gabriel,
 /// 14/10/2026; canvas `T70-etapa1-estados`).
 class ScriptSpeech extends StatelessWidget {
   const ScriptSpeech({
@@ -240,14 +242,21 @@ class ScriptSpeech extends StatelessWidget {
             style,
             metrics.maxLines,
           );
+          // Nem em 13 cabe: corta numa palavra inteira e termina em
+          // "… Ver mais", que abre a folha com a fala inteira (T84). A nota
+          // de baixo fica com uma das linhas.
           final speech = SpeechText(
             text: text,
             style: style.copyWith(color: onColor),
             onMainLine: onMainLine,
             onShowAnswer: onShowAnswer,
             onSquareTap: onSquareTap,
+            maxLines: fits
+                ? null
+                : math.max(1, metrics.maxLines - (footnote == null ? 0 : 1)),
+            onMore: fits ? null : onOpen,
           );
-          Widget body = footnote == null
+          final body = footnote == null
               ? speech
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,14 +269,6 @@ class ScriptSpeech extends StatelessWidget {
                     ),
                   ],
                 );
-          // Nem em 13 cabe em 3 linhas: a fala rola dentro do balão, sem
-          // reticências que a cortem.
-          if (!fits) {
-            body = SizedBox(
-              height: metrics.textMaxHeight(context),
-              child: SingleChildScrollView(child: body),
-            );
-          }
           return SizedBox(width: double.infinity, child: body);
         },
       ),
