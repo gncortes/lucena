@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/ui/account/widgets/account_invite_sheet.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
@@ -10,6 +11,7 @@ import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/ui/core/widgets/actions_footer.dart';
 
 import '../../../testing/fakes/fake_account_repository.dart';
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/test_app.dart';
 
@@ -21,6 +23,7 @@ void main() {
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
     final account = FakeAccountRepository();
+    final analytics = FakeAnalyticsRepository();
     final sync = SyncScheduler(account, FakeSyncRepository());
     addTearDown(sync.dispose);
     await tester.pumpWidget(
@@ -30,6 +33,7 @@ void main() {
           providers: [
             RepositoryProvider<AccountRepository>.value(value: account),
             RepositoryProvider<SyncScheduler>.value(value: sync),
+            RepositoryProvider<AnalyticsRepository>.value(value: analytics),
           ],
           child: Builder(
             builder: (context) => Scaffold(
@@ -63,5 +67,12 @@ void main() {
       expect(account.current, isNull);
       expect(find.byKey(AccountKeys.later), findsOneWidget);
     }
+    // Só o "Agora não" responde ao convite; o X fecha sem evento.
+    final answers = analytics.eventsNamed('conta_convite');
+    expect(answers, hasLength(1));
+    expect(answers.single.params, {
+      'resposta': 'agora_nao',
+      'momento': 'pos_vitoria',
+    });
   });
 }

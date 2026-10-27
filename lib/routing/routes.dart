@@ -403,15 +403,13 @@ abstract final class Routes {
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 
-  /// Depois do tour: a conta, opcional (E1.11 a E1.13 ligam o login), e o
-  /// nível, que fecha a primeira abertura.
   /// A Sequência de dias (E1.22).
   static const streak = '/streak';
 
   /// Sua semana (E1.23), aberta pelo resumo de domingo.
   static const week = '/week';
 
-  static const account = '/tour/conta';
+  /// O nível fecha a primeira abertura.
   static const level = '/tour/nivel';
 
   /// "Seu nível" aberto por [from] (`profile`: volta para o Perfil).

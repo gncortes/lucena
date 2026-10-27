@@ -277,7 +277,7 @@ abstract final class AnalyticsEvents {
     'tempo_s': _s(tempo),
   });
 
-  /// `resposta`: `aceitou|agora_nao`; `momento`: `pos_partida|pos_tour`.
+  /// `resposta`: `aceitou|agora_nao`; `momento`: `pos_vitoria` (o convite só abre depois da 1ª vitória).
   static AnalyticsEvent contaConvite({
     required String resposta,
     required String momento,

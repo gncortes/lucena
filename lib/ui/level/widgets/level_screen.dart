@@ -58,7 +58,10 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
   }
 
   void _back() {
-    if (context.read<LevelCubit>().fromProfile) {
+    final cubit = context.read<LevelCubit>();
+    if (cubit.state.knowsRating) {
+      cubit.closeKnown();
+    } else if (cubit.fromProfile) {
       context.pop();
     } else {
       // Volta para a pergunta do objetivo (o voltar do sistema fecharia o
@@ -101,6 +104,8 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
         } else {
           await cubit.finish();
         }
+      case LevelChoice.known:
+        cubit.openKnown();
       case LevelChoice.lichess:
         final lichess = state.lichess;
         if (lichess == null) {
@@ -167,7 +172,7 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
             ),
           );
           return PopScope(
-            canPop: cubit.fromProfile,
+            canPop: cubit.fromProfile && !state.knowsRating,
             onPopInvokedWithResult: (didPop, _) {
               if (!didPop) _back();
             },
@@ -198,44 +203,53 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          card(
-                            LevelChoice.test,
-                            Icons.quiz,
-                            l10n.levelTestTitle,
-                            placed == null
-                                ? l10n.levelTestBody
-                                : l10n.levelStart(
-                                    levelRung(context, state, placed),
-                                  ),
-                          ),
-                          card(
-                            LevelChoice.lichess,
-                            Icons.link,
-                            l10n.levelLichessTitle,
-                            l10n.levelLichessText,
-                          ),
-                          card(
-                            LevelChoice.chess,
-                            Icons.link,
-                            l10n.levelChessTitle,
-                            l10n.levelChessText,
-                          ),
-                          card(
-                            LevelChoice.manual,
-                            Icons.trending_up,
-                            l10n.levelManualTitle,
-                            l10n.levelManualText,
-                          ),
-                          card(
-                            LevelChoice.zero,
-                            Icons.school,
-                            l10n.levelZeroTitle,
-                            // Com a Escola escondida, quem não sabe jogar cai
-                            // na tela inicial: o texto não promete a Escola.
-                            VisibleLessons.school
-                                ? l10n.levelZeroText
-                                : l10n.levelZeroTextHome,
-                          ),
+                          if (state.knowsRating) ...[
+                            card(
+                              LevelChoice.lichess,
+                              Icons.link,
+                              l10n.levelLichessTitle,
+                              l10n.levelLichessText,
+                            ),
+                            card(
+                              LevelChoice.chess,
+                              Icons.link,
+                              l10n.levelChessTitle,
+                              l10n.levelChessText,
+                            ),
+                            card(
+                              LevelChoice.manual,
+                              Icons.trending_up,
+                              l10n.levelManualTitle,
+                              l10n.levelManualText,
+                            ),
+                          ] else ...[
+                            card(
+                              LevelChoice.test,
+                              Icons.quiz,
+                              l10n.levelTestTitle,
+                              placed == null
+                                  ? l10n.levelTestBody
+                                  : l10n.levelStart(
+                                      levelRung(context, state, placed),
+                                    ),
+                            ),
+                            card(
+                              LevelChoice.known,
+                              Icons.trending_up,
+                              l10n.levelKnownTitle,
+                              l10n.levelKnownText,
+                            ),
+                            card(
+                              LevelChoice.zero,
+                              Icons.school,
+                              l10n.levelZeroTitle,
+                              // Com a Escola escondida, quem não sabe jogar cai
+                              // na tela inicial: o texto não promete a Escola.
+                              VisibleLessons.school
+                                  ? l10n.levelZeroText
+                                  : l10n.levelZeroTextHome,
+                            ),
+                          ],
                         ],
                       ),
                     ),

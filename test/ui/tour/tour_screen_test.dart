@@ -99,10 +99,6 @@ void main() {
           ),
         ),
         GoRoute(
-          path: Routes.account,
-          builder: (_, _) => const Scaffold(body: Text('rota-conta')),
-        ),
-        GoRoute(
           path: Routes.goal,
           builder: (_, _) => const Scaffold(body: Text('rota-objetivo')),
         ),
@@ -385,6 +381,15 @@ void main() {
       await tester.tap(find.byKey(TourKeys.backButton));
       await tester.pumpAndSettle();
       expect(find.byKey(TourKeys.step(TourStep.voice)), findsOneWidget);
+    });
+
+    testWidgets('Pular vai direto ao objetivo, sem a folha de conta', (
+      tester,
+    ) async {
+      await pumpTour(tester, link: true);
+      await tester.tap(find.byKey(TourKeys.skipButton));
+      await tester.pumpAndSettle();
+      expect(find.text('rota-objetivo'), findsOneWidget);
     });
   });
 

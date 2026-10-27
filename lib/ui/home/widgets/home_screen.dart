@@ -85,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen>
         if (ModalRoute.of(context)?.isCurrent ?? true) {
           context.go(switch (state.stage) {
             OnboardingStage.tour => Routes.tour,
-            OnboardingStage.account => Routes.account,
             OnboardingStage.goal => Routes.goal,
             OnboardingStage.level => Routes.level,
           });

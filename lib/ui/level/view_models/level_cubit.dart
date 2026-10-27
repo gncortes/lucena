@@ -22,7 +22,9 @@ import '../../../domain/use_cases/rating_conversion.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 
 /// Os cartões da tela "Seu nível", na ordem do canvas.
-enum LevelChoice { test, lichess, chess, manual, zero }
+/// `known` é o cartão "Já sei o meu rating": abre os três caminhos
+/// (`lichess`, `chess`, `manual`).
+enum LevelChoice { test, known, lichess, chess, manual, zero }
 
 /// O que deu errado na última tentativa (mostrado uma vez pela tela).
 enum LevelError { lichessOffline, chessOffline }
@@ -31,6 +33,7 @@ class LevelState {
   const LevelState({
     this.ready = false,
     this.choice = LevelChoice.test,
+    this.knowsRating = false,
     this.placed,
     this.lichess,
     this.lichessBusy = false,
@@ -52,6 +55,10 @@ class LevelState {
 
   /// O cartão marcado. "Fazer o teste" vem marcado (decisão 7 da QA).
   final LevelChoice choice;
+
+  /// "Já sei o meu rating" aberto: a tela mostra Lichess, Chess.com e o
+  /// número, no lugar das três opções.
+  final bool knowsRating;
 
   /// O rating que o teste de nível deu, se o jogador o fez e usou.
   final int? placed;
@@ -119,6 +126,7 @@ class LevelState {
 
   LevelState copyWith({
     LevelChoice? choice,
+    bool? knowsRating,
     int? Function()? placed,
     PlatformRating? Function()? lichess,
     bool? lichessBusy,
@@ -134,6 +142,7 @@ class LevelState {
   }) => LevelState(
     ready: ready,
     choice: choice ?? this.choice,
+    knowsRating: knowsRating ?? this.knowsRating,
     placed: placed == null ? this.placed : placed(),
     lichess: lichess == null ? this.lichess : lichess(),
     lichessBusy: lichessBusy ?? this.lichessBusy,
@@ -211,7 +220,11 @@ class LevelCubit extends Cubit<LevelState> {
       final rating = await _lichess.resume();
       if (rating != null && !isClosed) {
         emit(
-          state.copyWith(choice: LevelChoice.lichess, lichess: () => rating),
+          state.copyWith(
+            choice: LevelChoice.lichess,
+            knowsRating: true,
+            lichess: () => rating,
+          ),
         );
       }
     } on LichessException catch (e) {
@@ -224,10 +237,28 @@ class LevelCubit extends Cubit<LevelState> {
     emit(state.copyWith(choice: choice));
   }
 
+  /// "Já sei o meu rating" + Continuar: mostra os três caminhos do rating.
+  void openKnown() {
+    if (_locked) return;
+    emit(state.copyWith(choice: LevelChoice.lichess, knowsRating: true));
+  }
+
+  /// Voltar dos três caminhos para as três opções.
+  void closeKnown() {
+    if (_locked) return;
+    emit(state.copyWith(choice: LevelChoice.known, knowsRating: false));
+  }
+
   /// "Entrar com o Lichess": abre o login no navegador e espera a volta.
   Future<void> connectLichess() async {
     if (_locked || state.lichessBusy) return;
-    emit(state.copyWith(choice: LevelChoice.lichess, lichessBusy: true));
+    emit(
+      state.copyWith(
+        choice: LevelChoice.lichess,
+        knowsRating: true,
+        lichessBusy: true,
+      ),
+    );
     try {
       final rating = await _lichess.connect();
       unawaited(

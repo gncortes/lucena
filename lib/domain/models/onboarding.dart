@@ -1,13 +1,14 @@
 /// As telas da primeira abertura, na ordem da loja (decisão 1a da E1.11):
-/// o tour, "O que você quer fazer?" e "Seu nível". Quem veio de um link passa
-/// pela conta entre o tour e a pergunta.
+/// o tour, "O que você quer fazer?" e "Seu nível". A conta não é mais uma
+/// etapa: o convite vem depois da 1ª vitória (T83 A3).
 enum OnboardingStage {
   tour,
-  account,
   goal,
   level;
 
-  static OnboardingStage? fromCode(Object? code) => values.asNameMap()[code];
+  /// `account` (etapa antiga, já gravada em aparelhos) segue como [goal].
+  static OnboardingStage? fromCode(Object? code) =>
+      code == 'account' ? goal : values.asNameMap()[code];
 }
 
 /// O tour da primeira abertura: em que passo está, se terminou e o degrau

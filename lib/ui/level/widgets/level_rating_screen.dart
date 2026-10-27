@@ -43,6 +43,7 @@ class _LevelRatingScreenState extends State<LevelRatingScreen> {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<LevelCubit>();
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     return BlocBuilder<LevelCubit, LevelState>(
       builder: (context, state) {
         final typed = state.manualRating;
@@ -121,14 +122,23 @@ class _LevelRatingScreenState extends State<LevelRatingScreen> {
               TipBox(text: l10n.levelManualTip),
             ],
           ),
-          bottomNavigationBar: ActionsFooter(
-            children: [
-              FilledButton(
-                key: LevelKeys.ratingUse,
-                onPressed: lucena == null ? null : cubit.useManual,
-                child: Text(l10n.levelUseRating),
+          // O Scaffold não sobe a barra de baixo com o teclado: o botão
+          // sobe por conta própria e fica acima do teclado numérico.
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.only(bottom: keyboard),
+            child: MediaQuery.removePadding(
+              context: context,
+              removeBottom: keyboard > 0,
+              child: ActionsFooter(
+                children: [
+                  FilledButton(
+                    key: LevelKeys.ratingUse,
+                    onPressed: lucena == null ? null : cubit.useManual,
+                    child: Text(l10n.levelUseRating),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },

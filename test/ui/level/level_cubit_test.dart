@@ -85,6 +85,22 @@ void main() {
     expect(level.state.finished, isFalse);
   });
 
+  test('"Já sei o meu rating" abre os caminhos e voltar fecha', () async {
+    final level = cubit();
+    await level.load();
+    level.select(LevelChoice.known);
+    expect(level.state.knowsRating, isFalse);
+    level.openKnown();
+    expect(level.state.knowsRating, isTrue);
+    expect(level.state.choice, LevelChoice.lichess);
+    level.closeKnown();
+    expect(level.state.knowsRating, isFalse);
+    expect(level.state.choice, LevelChoice.known);
+    // Sem caminho escolhido, "Continuar" não termina nada.
+    await level.finish();
+    expect(level.state.finished, isFalse);
+  });
+
   group('teste', () {
     test('o teste usado marca o cartão e grava o degrau abaixo', () async {
       final level = cubit();

@@ -55,6 +55,8 @@ class ProfileRobot {
   Future<void> chooseLevel(RatingLevel level) async {
     await $(ProfileKeys.rowLevel).scrollTo().tap();
     await $(LevelKeys.screen).waitUntilVisible();
+    await _tap(LevelKeys.option(LevelChoice.known));
+    await _tap(LevelKeys.continueButton);
     await _tap(LevelKeys.option(LevelChoice.manual));
     await _tap(LevelKeys.continueButton);
     await $(LevelKeys.ratingScreen).waitUntilVisible();
