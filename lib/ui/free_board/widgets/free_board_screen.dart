@@ -932,8 +932,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     }
   }
 
-  /// "Ver a aula": sem conta, o convite antes (que termina na aula); com
-  /// conta, a aula direto. A rota da aula confere se ela existe e está
+  /// "Ver a aula": a aula só abre com conta. Sem conta, o convite antes (que
+  /// termina na aula); com conta, a aula direto. A rota da aula confere se ela existe e está
   /// liberada; se não, cai na lista de aulas.
   Future<void> _openLinkLesson(
     BuildContext context,
@@ -953,8 +953,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         from: entry,
       );
       await linkLesson.inviteAnswered(accepted: accepted);
-      // Aceitou: o fim da conta leva à aula (`Routes.afterAccount`).
-      if (accepted || !context.mounted) return;
+      // Aceitou: o fim da conta leva à aula (`Routes.afterAccount`). "Agora
+      // não": fica no fim da partida, com a oferta para tentar de novo.
+      return;
     }
     setState(() => _quitting = true);
     context.go(entry);

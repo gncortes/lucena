@@ -50,6 +50,8 @@ import '../ui/conclusion/widgets/conclusion_screen.dart';
 import '../ui/core/analytics/analytics_context.dart';
 import '../data/repositories/campaign/linked_lesson_catalog.dart';
 import '../domain/models/linked_lesson.dart';
+import '../domain/models/campaign.dart';
+import '../domain/models/app_links.dart';
 import 'linked_lesson_redirect.dart';
 import '../domain/models/app_version.dart';
 import '../domain/models/conclusion.dart';
@@ -101,6 +103,7 @@ import '../ui/game_setup/view_models/game_setup_cubit.dart';
 import '../ui/game_setup/widgets/game_setup_screen.dart';
 import '../ui/free_board/view_models/free_board_cubit.dart';
 import '../ui/free_board/view_models/link_lesson_cubit.dart';
+import '../ui/campaign/widgets/linked_lesson_gate.dart';
 import '../ui/free_board/view_models/talk_cubit.dart';
 import '../ui/free_board/widgets/free_board_screen.dart';
 import '../data/repositories/account/account_invite_repository.dart';
@@ -657,7 +660,7 @@ GoRouter buildRouter({
                   if (mode.link case final link? when link.lesson != null)
                     BlocProvider(
                       create: (context) => LinkLessonCubit(
-                        link: link,
+                        campaign: Campaign.fromChallenge(link),
                         accounts: context.read<AccountRepository>(),
                         catalog: LinkedLessonCatalog(
                           endgames: context.read<EndgameLessonRepository>(),
@@ -1393,6 +1396,7 @@ GoRouter buildRouter({
               path: '${kind.code}/:id',
               redirect: (context, state) => linkedLessonRedirect(
                 LinkedLesson(kind, state.pathParameters['id']!),
+                hasAccount: context.read<AccountRepository>().current != null,
                 catalog: LinkedLessonCatalog(
                   endgames: context.read<EndgameLessonRepository>(),
                   school: context.read<LessonRepository>(),
@@ -1400,7 +1404,31 @@ GoRouter buildRouter({
                 campaigns: context.campaigns,
                 analytics: context.analytics,
               ),
-              builder: (context, state) => const SizedBox.shrink(),
+              // Sem conta: o convite antes da aula.
+              builder: (context, state) => BlocProvider(
+                key: ValueKey(state.uri),
+                create: (context) => LinkLessonCubit(
+                  campaign: Campaign(
+                    lesson: LinkedLesson(kind, state.pathParameters['id']!),
+                    utm:
+                        LessonLink.tryParse(
+                          AppLinks.uri(
+                            state.uri.path,
+                            state.uri.queryParameters,
+                          ),
+                        )?.utm ??
+                        const {},
+                  ),
+                  accounts: context.read<AccountRepository>(),
+                  catalog: LinkedLessonCatalog(
+                    endgames: context.read<EndgameLessonRepository>(),
+                    school: context.read<LessonRepository>(),
+                  ),
+                  campaigns: context.campaigns,
+                  analytics: context.analytics,
+                ),
+                child: const LinkedLessonGate(),
+              ),
             ),
           // O desafio por link (`/p/<código>?...`): fechado, a tela do desafio;
           // aberto, a Nova partida já preenchida.

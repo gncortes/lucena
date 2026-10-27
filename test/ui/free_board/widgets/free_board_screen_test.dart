@@ -12,6 +12,7 @@ import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/core/theme/app_motion.dart';
 import 'package:lucena/ui/core/widgets/game_clock.dart';
 import 'package:lucena/domain/models/app_language.dart';
+import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/character.dart';
 
 import '../../../../testing/goldens/golden_harness.dart';
@@ -2460,7 +2461,7 @@ void main() {
         analytics = FakeAnalyticsRepository();
         campaigns = MemoryCampaignRepository();
         final cubit = LinkLessonCubit(
-          link: link,
+          campaign: Campaign.fromChallenge(link),
           accounts: accounts,
           catalog: _AvailableCatalog(),
           campaigns: campaigns,
@@ -2471,7 +2472,9 @@ void main() {
       }
 
       testWidgets('não conseguiu: a aula no lugar de compartilhar; sem conta, '
-          'o convite antes e "Agora não" abre a aula', (tester) async {
+          'o convite antes e "Agora não" fica no fim, com a oferta', (
+        tester,
+      ) async {
         await Goldens.loadFonts();
         final accounts = FakeAccountRepository();
         await pumpScreen(
@@ -2489,7 +2492,7 @@ void main() {
 
         expect(
           textOf(tester, ChallengeKeys.lessonOffer),
-          'Não foi desta vez. A aula grátis explica a ideia desta posição.',
+          'Não foi desta vez. A aula gratuita explica a ideia desta posição.',
         );
         expect(find.byKey(ChallengeKeys.endShare), findsNothing);
         expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
@@ -2511,12 +2514,15 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
         expect(
-          find.textContaining('sem conta, a aula abre do mesmo jeito'),
+          find.textContaining('A aula abre com uma conta'),
           findsOneWidget,
         );
         await tester.tap(find.byKey(AccountKeys.notNow));
         await tester.pumpAndSettle();
-        expect(find.text('lesson rook.lucena'), findsOneWidget);
+        // A aula só abre com conta: fica no fim, e a oferta abre o convite de
+        // novo.
+        expect(find.text('lesson rook.lucena'), findsNothing);
+        expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
         expect(
           analytics
               .eventsNamed('campanha_cadastro')
@@ -2524,6 +2530,9 @@ void main() {
           ['agora_nao'],
         );
         expect(await campaigns.active(), isNotNull);
+        await tester.tap(find.byKey(ChallengeKeys.endLesson));
+        await tester.pumpAndSettle();
+        expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
       });
 
       testWidgets('conseguiu: parabéns, compartilhar fica e a aula vem no '

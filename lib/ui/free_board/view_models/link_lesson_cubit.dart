@@ -8,24 +8,24 @@ import '../../../data/repositories/campaign/campaign_repository.dart';
 import '../../../data/repositories/campaign/linked_lesson_catalog.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/campaign.dart';
-import '../../../domain/models/challenge_link.dart';
 import '../../../domain/models/linked_lesson.dart';
 import '../../../domain/use_cases/link_lesson_rules.dart';
 
-/// A aula oferecida no fim do desafio de um link de campanha (T84): conta a
-/// oferta vista e tocada e decide se o convite de conta vem antes da aula.
-/// O estado é `true` enquanto confere a aula e a conta depois do toque.
+/// A aula de um link de campanha (T84), que só abre com conta: no fim do
+/// desafio, conta a oferta vista e tocada e decide se o convite de conta vem
+/// antes; no link só de aula, o convite antes da aula. O estado é `true`
+/// enquanto confere a aula e a conta depois do toque.
 class LinkLessonCubit extends Cubit<bool> {
   LinkLessonCubit({
-    required this.link,
+    required this.campaign,
     required this._accounts,
     required this._catalog,
     required this._campaigns,
     this._analytics = const NoAnalyticsRepository(),
   }) : super(false);
 
-  /// O desafio, com a aula ligada.
-  final ChallengeLink link;
+  /// A campanha, com a aula ligada (`Campaign.fromChallenge` no desafio).
+  final Campaign campaign;
 
   final AccountRepository _accounts;
   final LinkedLessonCatalog _catalog;
@@ -35,9 +35,12 @@ class LinkLessonCubit extends Cubit<bool> {
   LinkLessonOffer? _seen;
 
   /// A aula do link. Nula: o link não traz aula (o cubit não é criado).
-  LinkedLesson? get lesson => link.lesson;
+  LinkedLesson? get lesson => campaign.lesson;
 
-  Campaign get _campaign => Campaign.fromChallenge(link);
+  Campaign get _campaign => campaign;
+
+  /// Já entrou numa conta.
+  bool get hasAccount => _accounts.current != null;
 
   /// A oferta apareceu no fim: conta uma vez por destaque.
   void seen(LinkLessonOffer offer) {
@@ -64,10 +67,8 @@ class LinkLessonCubit extends Cubit<bool> {
     await _campaigns.remember(_campaign);
     final step = LinkLessonRules.next(
       available: await _catalog.available(lesson),
-      hasAccount: _accounts.current != null,
+      hasAccount: hasAccount,
     );
-    // O convite vem antes: o login que vier dele conta como `feito` (o
-    // AccountCubit consome a marca).
     if (step == LinkLessonStep.invite) await _campaigns.markInvited();
     if (step == LinkLessonStep.lesson) {
       unawaited(
@@ -80,8 +81,17 @@ class LinkLessonCubit extends Cubit<bool> {
     return step;
   }
 
+  /// O link só de aula, sem conta: o convite abre antes da aula. Grava a
+  /// campanha e marca o convite: o login que vier dele conta como `feito` (o
+  /// AccountCubit consome a marca).
+  Future<void> gateOpened() async {
+    await _campaigns.remember(_campaign);
+    await _campaigns.markInvited();
+  }
+
   /// A resposta ao convite antes da aula: [accepted] Google ou e-mail. "Agora
-  /// não" tira a marca do convite: um login de outro dia não conta para ele.
+  /// não" tira a marca do convite (um login de outro dia não conta para ele)
+  /// e a aula não abre.
   Future<void> inviteAnswered({required bool accepted}) async {
     if (!accepted) await _campaigns.takeInvited();
     await _analytics.log(
