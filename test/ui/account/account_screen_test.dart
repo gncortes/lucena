@@ -89,6 +89,21 @@ void main() {
   group('aberta de uma rota (a aula do link, T84)', () {
     const lesson = '/aula/rook.lucena';
 
+    testWidgets('o título fala da aula e some o "sem conta, tudo continua"', (
+      tester,
+    ) async {
+      await pumpAccount(tester, from: lesson);
+      expect(
+        find.text('Create your account to access the free lesson'),
+        findsOneWidget,
+      );
+      expect(find.text('It takes less than a minute.'), findsOneWidget);
+      expect(find.text('Save your progress'), findsNothing);
+      expect(find.byIcon(Icons.cloud_done), findsOneWidget);
+      expect(find.byIcon(Icons.devices_other), findsOneWidget);
+      expect(find.byIcon(Icons.wifi_off), findsNothing);
+    });
+
     testWidgets('o e-mail toma o lugar da conta: voltar volta à base', (
       tester,
     ) async {

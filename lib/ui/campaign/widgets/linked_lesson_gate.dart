@@ -5,16 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
-import '../../account/widgets/account_invite_sheet.dart';
+import 'link_lead_sheet.dart';
 import '../../core/keys/challenge_keys.dart';
-import '../../core/l10n/l10n.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../../domain/use_cases/link_lesson_rules.dart';
 import '../../free_board/view_models/link_lesson_cubit.dart';
 
 /// O link só de aula (`/aula/<id>`, T84) aberto sem conta: a aula só abre
-/// com conta, então o convite vem antes. Google ou e-mail terminam na aula
-/// (`Routes.afterAccount`), por cima desta tela; "Agora não", voltar do
-/// e-mail sem entrar ou voltar da aula leva ao início.
+/// com conta, então a folha da aula gratuita vem antes (a mesma do fim do
+/// desafio, com a frase neutra). O cadastro ou o entrar terminam na aula
+/// (`Routes.afterAccount`), por cima desta tela; "Agora não", voltar da
+/// conta sem entrar ou voltar da aula leva ao início.
 class LinkedLessonGate extends StatefulWidget {
   const LinkedLessonGate({super.key});
 
@@ -39,19 +40,30 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
     final lesson = cubit.lesson;
     if (lesson == null) return _leave();
     _asking = true;
-    unawaited(cubit.loadInfo(Localizations.localeOf(context).languageCode));
-    await cubit.gateOpened();
+    await Future.wait([
+      cubit.loadInfo(Localizations.localeOf(context).languageCode),
+      cubit.gateOpened(),
+    ]);
     if (!mounted) return;
-    final accepted = await showAccountInviteSheet(
+    final choice = await showLinkLeadSheet(
       context,
-      moment: accountInviteBeforeLinkLesson,
-      text: context.l10n.accountInviteTextLinkLesson,
-      from: Routes.linkedLessonEntry(lesson),
+      offer: LinkLessonOffer.none,
+      hasAccount: false,
+      info: cubit.state.info,
     );
     _asking = false;
     _answered = true;
-    await cubit.inviteAnswered(accepted: accepted);
-    if (!accepted) _leave();
+    await cubit.inviteAnswered(accepted: choice != null);
+    if (!mounted) return;
+    final entry = Routes.linkedLessonEntry(lesson);
+    switch (choice) {
+      case null:
+        _leave();
+      case LinkLeadChoice.signIn:
+        unawaited(context.push(Routes.accountEmailFrom(entry, signIn: true)));
+      case LinkLeadChoice.create || LinkLeadChoice.lesson:
+        unawaited(context.push(Routes.accountEnterFrom(entry)));
+    }
   }
 
   void _leave() {

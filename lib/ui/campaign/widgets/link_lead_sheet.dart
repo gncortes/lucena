@@ -28,12 +28,13 @@ enum LinkLeadChoice {
 /// canvas `t84-lead`, variante A): sobre o fim, com o resultado atrás. O
 /// tabuleirinho, a categoria e o nome da aula, a frase pelo resultado, os
 /// três passos e os botões. Nulo: "Agora não" ou o X, que deixam o fim à
-/// vista.
+/// vista. [offer] [LinkLessonOffer.none]: o link só de aula, sem desafio
+/// jogado (a frase neutra e só aprender e praticar).
 Future<LinkLeadChoice?> showLinkLeadSheet(
   BuildContext context, {
   required LinkLessonOffer offer,
-  required PositionGoal goal,
   required bool hasAccount,
+  PositionGoal goal = PositionGoal.win,
   LinkedLessonInfo? info,
 }) => showLucenaSheet<LinkLeadChoice>(
   context,
@@ -72,24 +73,24 @@ class _LeadSheet extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final done = offer == LinkLessonOffer.secondary;
     final draw = goal == PositionGoal.draw;
-    final text = done
-        ? l10n.challengeLeadDone
-        : draw
-        ? l10n.challengeLeadFailedDraw
-        : l10n.challengeLeadFailedWin;
+    final text = switch (offer) {
+      LinkLessonOffer.none => l10n.challengeLeadLesson,
+      LinkLessonOffer.secondary => l10n.challengeLeadDone,
+      LinkLessonOffer.primary when draw => l10n.challengeLeadFailedDraw,
+      LinkLessonOffer.primary => l10n.challengeLeadFailedWin,
+    };
+    final retry = switch (offer) {
+      LinkLessonOffer.none => null,
+      LinkLessonOffer.secondary => l10n.challengeLeadStepRetryDone,
+      LinkLessonOffer.primary when draw => l10n.challengeLeadStepRetryDraw,
+      LinkLessonOffer.primary => l10n.challengeLeadStepRetryWin,
+    };
     final steps = [
       (l10n.challengeLeadStepIdea, l10n.challengeLeadStepIdeaHint),
       (l10n.challengeLeadStepPractice, l10n.challengeLeadStepPracticeHint),
-      (
-        l10n.challengeLeadStepRetry,
-        done
-            ? l10n.challengeLeadStepRetryDone
-            : draw
-            ? l10n.challengeLeadStepRetryDraw
-            : l10n.challengeLeadStepRetryWin,
-      ),
+      // Sem desafio jogado (o link só de aula), nada a refazer.
+      if (retry != null) (l10n.challengeLeadStepRetry, retry),
     ];
     void choose(LinkLeadChoice choice) => Navigator.of(context).pop(choice);
     return Column(
