@@ -76,11 +76,8 @@ void main() {
     });
   });
 
-  test('LessonFinishedCubit loga aula_concluida com o tipo', () async {
-    for (final (kind, type) in [
-      (SurveyKind.school, 'escola'),
-      (SurveyKind.endgames, 'finais'),
-    ]) {
+  test('LessonFinishedCubit load nunca conclui aula', () async {
+    for (final kind in [SurveyKind.school, SurveyKind.endgames]) {
       analytics.events.clear();
       final cubit = LessonFinishedCubit(
         kind: kind,
@@ -93,9 +90,8 @@ void main() {
       );
       addTearDown(cubit.close);
       await cubit.load('en');
-      final params = analytics.eventsNamed('aula_concluida').single.params;
-      expect(params['aula_id'], 'x.1');
-      expect(params['tipo_aula'], type);
+      await cubit.load('en');
+      expect(analytics.eventsNamed('aula_concluida'), isEmpty);
     }
   });
 

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
+import 'data/repositories/learning/learning_repository.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
 import 'domain/models/campaign.dart';
@@ -179,6 +180,10 @@ class _LucenaAppState extends State<LucenaApp> {
   late final StreamRefresh _updateRefresh = StreamRefresh(
     _update.stream.map((state) => state.required).distinct(),
   );
+  late final StreamRefresh? _accountRefresh =
+      widget.dependencies.requireLessonAccount
+      ? StreamRefresh(widget.dependencies.accountRepository.changes)
+      : null;
 
   @override
   void initState() {
@@ -272,6 +277,7 @@ class _LucenaAppState extends State<LucenaApp> {
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
+        requireLessonAccount: widget.dependencies.requireLessonAccount,
         initialLocation: launchLocation(
           conclusion: conclusion,
           resumeGame: game != null && game.reopensOnLaunch,
@@ -288,7 +294,7 @@ class _LucenaAppState extends State<LucenaApp> {
           visibleEndgameLessons: visibleEndgames,
         ),
         updateRequired: () => _update.state.required,
-        refresh: _updateRefresh,
+        refresh: Listenable.merge([_updateRefresh, _accountRefresh]),
       );
       _screens = ScreenTracker(
         _router!,
@@ -366,6 +372,7 @@ class _LucenaAppState extends State<LucenaApp> {
     _screens?.dispose();
     _router?.dispose();
     _updateRefresh.dispose();
+    _accountRefresh?.dispose();
     unawaited(_update.close());
     super.dispose();
   }
@@ -376,6 +383,9 @@ class _LucenaAppState extends State<LucenaApp> {
     final router = _router;
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<LearningRepository?>.value(
+          value: dependencies.learningRepository,
+        ),
         RepositoryProvider<Now>.value(value: dependencies.now),
         RepositoryProvider<AnalyticsRepository>.value(
           value: dependencies.analyticsRepository,

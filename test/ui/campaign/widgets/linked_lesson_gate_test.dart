@@ -39,7 +39,7 @@ void main() {
   late MemoryCampaignRepository campaigns;
   late FakeAnalyticsRepository analytics;
 
-  Future<void> pumpGate(WidgetTester tester) async {
+  Future<void> pumpGate(WidgetTester tester, {String? returnEntry}) async {
     accounts = FakeAccountRepository();
     campaigns = MemoryCampaignRepository();
     analytics = FakeAnalyticsRepository();
@@ -60,7 +60,7 @@ void main() {
               campaigns: campaigns,
               analytics: analytics,
             ),
-            child: const LinkedLessonGate(),
+            child: LinkedLessonGate(returnEntry: returnEntry),
           ),
         ),
         GoRoute(
@@ -98,6 +98,21 @@ void main() {
       .eventsNamed('campanha_cadastro')
       .map((event) => event.params['resposta'])
       .toList();
+
+  testWidgets(
+    'normal lesson invitation carries the destination through email login',
+    (tester) async {
+      const entry =
+          '/aula/rook.lucena?retorno=%2Fendgames%2Frook.lucena%2Froteiro%3Fpart%3Dponte';
+      await pumpGate(tester, returnEntry: entry);
+      await tester.tap(find.byKey(ChallengeKeys.leadHaveAccount));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('account ${Routes.accountEmailFrom(entry, signIn: true)}'),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('link só de aula sem conta: a folha da aula gratuita, neutra '
       'e só com aprender e praticar; "Agora não" vai ao início', (

@@ -139,6 +139,10 @@ import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/school/lesson_source.dart';
+import '../data/repositories/learning/learning_repository.dart';
+import '../data/repositories/analytics/analytics_repository.dart';
+import '../data/repositories/campaign/campaign_repository.dart';
+import '../data/repositories/learning/learning_lesson_source.dart';
 import '../data/repositories/tablebase/kpk_repository.dart';
 import '../data/repositories/tablebase/script_table_repository.dart';
 import '../domain/use_cases/position_judge.dart';
@@ -252,14 +256,26 @@ Future<String?> resolveScriptPart(
 /// privacidade abre no navegador, fora das rotas: continua alcançável.
 GoRouter buildRouter({
   String initialLocation = Routes.home,
+  bool requireLessonAccount = false,
   bool Function()? updateRequired,
   Listenable? refresh,
 }) {
   return GoRouter(
     initialLocation: initialLocation,
     refreshListenable: refresh,
-    redirect: (context, state) =>
-        updateRedirect(state.matchedLocation, required: updateRequired),
+    redirect: (context, state) {
+      final update = updateRedirect(
+        state.matchedLocation,
+        required: updateRequired,
+      );
+      if (update != null) return update;
+      if (!requireLessonAccount) return null;
+      return lessonAccountRedirect(
+        state.uri,
+        required: true,
+        hasAccount: context.read<AccountRepository>().current != null,
+      );
+    },
     routes: [
       _route(
         path: Routes.invalidLink,
@@ -887,9 +903,14 @@ GoRouter buildRouter({
                       engineJudge: context.read<PositionJudge>(),
                       opponent: context.read<OpponentRepository>(),
                       sounds: context.read<GameSounds>(),
-                      source: SchoolLessonSource(
-                        lessons,
-                        context.read<SchoolProgressRepository>(),
+                      source: LearningLessonSource(
+                        SchoolLessonSource(
+                          lessons,
+                          context.read<SchoolProgressRepository>(),
+                        ),
+                        learning: context.read<LearningRepository?>(),
+                        analytics: context.analytics,
+                        campaigns: context.read<CampaignRepository>(),
                       ),
                       initialStage: stage,
                       analytics: context.analytics,
@@ -1045,9 +1066,14 @@ GoRouter buildRouter({
                           engineJudge: context.read<PositionJudge>(),
                           opponent: context.read<OpponentRepository>(),
                           sounds: context.read<GameSounds>(),
-                          source: EndgameLessonSource(
-                            lessons,
-                            context.read<EndgameProgressRepository>(),
+                          source: LearningLessonSource(
+                            EndgameLessonSource(
+                              lessons,
+                              context.read<EndgameProgressRepository>(),
+                            ),
+                            learning: context.read<LearningRepository?>(),
+                            analytics: context.analytics,
+                            campaigns: context.read<CampaignRepository>(),
                           ),
                           initialStage: stage,
                           analytics: context.analytics,
@@ -1127,6 +1153,7 @@ GoRouter buildRouter({
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
                         create: (_) => ExerciseCubit(
+                          learning: context.read<LearningRepository?>(),
                           feedback: context.read<ExerciseFeedbackRepository?>(),
                           now: context.read<Now>(),
                           sounds: context.read<GameSounds>(),
@@ -1403,6 +1430,7 @@ GoRouter buildRouter({
                 ),
                 campaigns: context.campaigns,
                 analytics: context.analytics,
+                returnTo: state.uri.queryParameters['retorno'],
               ),
               // Sem conta: o convite antes da aula.
               builder: (context, state) => BlocProvider(
@@ -1424,10 +1452,14 @@ GoRouter buildRouter({
                     endgames: context.read<EndgameLessonRepository>(),
                     school: context.read<LessonRepository>(),
                   ),
-                  campaigns: context.campaigns,
-                  analytics: context.analytics,
+                  campaigns: state.uri.queryParameters.containsKey('retorno')
+                      ? MemoryCampaignRepository()
+                      : context.campaigns,
+                  analytics: state.uri.queryParameters.containsKey('retorno')
+                      ? const NoAnalyticsRepository()
+                      : context.analytics,
                 ),
-                child: const LinkedLessonGate(),
+                child: LinkedLessonGate(returnEntry: state.uri.toString()),
               ),
             ),
           // O desafio por link (`/p/<código>?...`): fechado, a tela do desafio;

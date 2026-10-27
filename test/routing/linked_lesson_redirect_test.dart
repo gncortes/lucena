@@ -39,6 +39,87 @@ void main() {
     return (target, analytics);
   }
 
+  test('normal content requires account and preserves exact destination after login', () async {
+    for (final path in [
+      '/school/mates.queen/roteiro?etapa=2',
+      '/endgames/rook.lucena/roteiro?part=ponte&etapa=1',
+      '/endgames/rook.lucena/ex/e01',
+    ]) {
+      final target = Uri.parse(path);
+      final entry = lessonAccountRedirect(
+        target,
+        required: true,
+        hasAccount: false,
+      )!;
+      final gate = Uri.parse(entry);
+      expect(gate.queryParameters['retorno'], path);
+      expect(Routes.afterAccount(entry), entry);
+      final selected = path.startsWith('/school')
+          ? const LinkedLesson.school('mates.queen')
+          : lesson;
+      final destination = await linkedLessonRedirect(
+        selected,
+        hasAccount: true,
+        catalog: _Catalog(true),
+        campaigns: MemoryCampaignRepository(),
+        analytics: FakeAnalyticsRepository(),
+        returnTo: gate.queryParameters['retorno'],
+      );
+      expect(destination, path);
+      expect(
+        lessonAccountRedirect(target, required: true, hasAccount: true),
+        isNull,
+      );
+      expect(
+        lessonAccountRedirect(target, required: false, hasAccount: false),
+        isNull,
+      );
+    }
+    for (final path in [
+      '/endgames',
+      '/school',
+      '/endgames/challenges',
+      '/endgames/challenges/rook/1',
+      '/home',
+    ]) {
+      expect(
+        lessonAccountRedirect(
+          Uri.parse(path),
+          required: true,
+          hasAccount: false,
+        ),
+        isNull,
+      );
+    }
+  });
+
+  test(
+    'normal return cannot open external locations or another unit',
+    () async {
+      for (final path in [
+        'https://example.com/endgames/rook.lucena',
+        '//example.com/endgames/rook.lucena',
+        '/endgames/other',
+        '/school/rook.lucena/roteiro',
+        'endgames/rook.lucena',
+      ]) {
+        expect(lessonReturnDestination(lesson, path), isNull);
+      }
+      final analytics = FakeAnalyticsRepository();
+      final campaigns = MemoryCampaignRepository();
+      await linkedLessonRedirect(
+        lesson,
+        hasAccount: true,
+        catalog: _Catalog(true),
+        campaigns: campaigns,
+        analytics: analytics,
+        returnTo: '/endgames/rook.lucena/intro',
+      );
+      expect(analytics.events, isEmpty);
+      expect(await campaigns.active(), isNull);
+    },
+  );
+
   test(
     'sem conta, a aula que abre fica na rota (convite), sem aula_aberta',
     () async {

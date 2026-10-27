@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/learning/learning_repository.dart';
+import 'package:lucena/domain/models/learning_record.dart';
 import 'package:lucena/data/repositories/progress/progress_repository_restored.dart';
 import 'package:lucena/data/repositories/sync/sync_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
@@ -43,6 +45,7 @@ void main() {
   late FakeProfileRepository profile;
   late FakeRatingRepository rating;
   late CloudSyncRepository sync;
+  late LearningRepository learning;
 
   setUp(() {
     SharedPreferencesAsyncPlatform.instance =
@@ -63,7 +66,14 @@ void main() {
     );
     profile = FakeProfileRepository(const UserProfile(nickname: 'Ana'));
     rating = FakeRatingRepository();
+    learning = LearningRepository(
+      preferences,
+      now,
+      currentUid: () => 'u1',
+      versionOf: (_, _) async => 'v1',
+    );
     sync = CloudSyncRepository(
+      learning: learning,
       store: store,
       preferences: preferences,
       now: now,
@@ -140,6 +150,52 @@ void main() {
     expect(endgames.saved.lessons['lucena']!.parts, {'a'});
     expect(await sync.lastSyncedAt('u1'), isNull);
   });
+
+  test(
+    'learning survives offline and next sync merges only the requested account',
+    () async {
+      await learning.serial(
+        () => learning.observe(
+          owner: 'u1',
+          version: 'v1',
+          kind: 'school_lesson',
+          unitId: 'x',
+          started: true,
+        ),
+      );
+      await learning.restore('u2', [
+        LearningRecord(
+          kind: 'school_lesson',
+          unitId: 'private',
+          version: 'v1',
+          firstStartedAt: now(),
+        ),
+      ]);
+      store.offline = true;
+      await expectLater(sync.sync('u1'), throwsA(isA<SyncException>()));
+      expect((await learning.load('u1')).single.firstStartedAt, now());
+      store.offline = false;
+      final old = DateTime.utc(2026, 9, 1);
+      store.progress['u1'] = ProgressSummary(
+        learningV1: [
+          LearningRecord(
+            kind: 'school_lesson',
+            unitId: 'x',
+            version: 'v1',
+            firstStartedAt: old,
+            contentCompletedAt: old,
+          ),
+        ],
+      ).toJson();
+      final result = await sync.sync('u1');
+      await pumpEventQueue();
+      expect(result.summary.learningV1.single.firstStartedAt, old);
+      expect((await learning.load('u1')).single.contentCompletedAt, old);
+      final uploaded = ProgressSummary.fromJson(store.progress['u1']!);
+      expect(uploaded.learningV1.single.unitId, 'x');
+      expect((await learning.load('u2')).single.unitId, 'private');
+    },
+  );
 
   test('o id da partida não depende do aparelho', () {
     final game = _game('rook/lucena 1');

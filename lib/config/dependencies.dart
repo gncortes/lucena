@@ -139,6 +139,8 @@ import '../data/repositories/alerts/region_prompt_repository.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../data/services/app_links_deep_link_service.dart';
 import '../data/services/firebase/auth_service.dart';
+import '../data/repositories/learning/learning_repository.dart';
+import '../data/repositories/learning/learning_content_version.dart';
 import '../data/services/firebase/cloud_store_service.dart';
 import '../data/repositories/feedback/feedback_repository.dart';
 import '../data/repositories/review/review_repository.dart';
@@ -236,6 +238,8 @@ class Dependencies {
     required this.dailyFinalRepository,
     this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
     this.regionPromptRepository = const NoRegionPromptRepository(),
+    this.learningRepository,
+    this.requireLessonAccount = false,
     this.syncRepository = const NoSyncRepository(),
     this.crowdRepository = const NoCrowdRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
@@ -274,6 +278,7 @@ class Dependencies {
     AppVersion version = const AppVersion(appVersion),
     bool firebase = false,
   }) {
+    final auth = firebase ? FirebaseAuthService() : const NoAuthService();
     final preferences = PreferencesService();
     final settings = LocalSettingsRepository(preferences);
     // Um plugin só para os lembretes e o push (o toque tem um dono só).
@@ -304,6 +309,13 @@ class Dependencies {
       LocalProgressRepository(database),
       preferences,
       onAdded: () => changes.add(null),
+    );
+    final learning = LearningRepository(
+      preferences,
+      now,
+      currentUid: () => auth.current?.uid,
+      versionOf: LearningContentVersion(lessonContent).call,
+      onChanged: () => changes.add(null),
     );
     final activity = LocalActivityRepository(preferences, progress, now);
     // Capítulo terminado: também é dia com atividade (decisão 2b da E1.22).
@@ -376,7 +388,7 @@ class Dependencies {
       ),
       campaignRepository: LocalCampaignRepository(preferences),
       accountRepository: CloudAccountRepository(
-        firebase ? FirebaseAuthService() : const NoAuthService(),
+        auth,
         cloudStore,
         avatars: avatars,
         now: now,
@@ -484,7 +496,10 @@ class Dependencies {
         firebase ? PlayReviewService() : const NoReviewService(),
         now,
       ),
+      learningRepository: learning,
+      requireLessonAccount: firebase,
       syncRepository: CloudSyncRepository(
+        learning: learning,
         store: cloudStore,
         preferences: preferences,
         now: now,
@@ -526,6 +541,8 @@ class Dependencies {
   final HapticsRepository hapticsRepository;
   final ShareRepository shareRepository;
   final DeepLinkRepository deepLinkRepository;
+  final LearningRepository? learningRepository;
+  final bool requireLessonAccount;
   final AccountRepository accountRepository;
   final LichessRepository lichessRepository;
   final ChessComRepository chessComRepository;

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../models/learning_record.dart';
 import '../models/avatar_photo.dart';
 import '../models/endgame_lesson.dart';
 import '../models/progress_summary.dart';
@@ -14,6 +15,7 @@ abstract final class ProgressMerge {
     final localRating = local.rating;
     final remoteRating = remote.rating;
     return ProgressSummary(
+      learningV1: LearningRecord.merge(local.learningV1, remote.learningV1),
       profile: _profile(local.profile, remote.profile),
       rating: localRating == null
           ? remoteRating

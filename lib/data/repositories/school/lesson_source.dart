@@ -42,6 +42,9 @@ abstract class LessonSource {
   /// Conclui a aula [id]: grava e diz o que vem depois.
   Future<LessonOutcome> complete(String id);
 
+  /// Persistent completion flags, read without observing an action.
+  Future<({bool lesson, bool part})> completion(String id, {String? part});
+
   /// Conclui a parte [partId] da aula [id] (aula em partes, T51): grava e
   /// diz a próxima parte recomendada.
   Future<LessonOutcome> completePart(String id, String partId);
@@ -149,6 +152,15 @@ class SchoolLessonSource with _CheckpointWriter implements LessonSource {
   });
 
   @override
+  Future<({bool lesson, bool part})> completion(
+    String id, {
+    String? part,
+  }) async {
+    final done = (await _progress.load()).completed.contains(id);
+    return (lesson: done, part: done);
+  }
+
+  @override
   Future<LessonOutcome> complete(String id) async {
     await _checkpointWrites;
     final course = await _lessons.course();
@@ -240,6 +252,19 @@ class EndgameLessonSource with _CheckpointWriter implements LessonSource {
       progress.copyWith(ongoing: ongoing.copyWith(open: false)),
     );
   });
+
+  @override
+  Future<({bool lesson, bool part})> completion(
+    String id, {
+    String? part,
+  }) async {
+    final progress = (await _progress.load()).of(id);
+    final chapter = (await _lessons.trail()).lesson(id);
+    return (
+      lesson: progress.lessonDone,
+      part: chapter != null && progress.partsDone(chapter).contains(part),
+    );
+  }
 
   @override
   Future<LessonOutcome> complete(String id) async {

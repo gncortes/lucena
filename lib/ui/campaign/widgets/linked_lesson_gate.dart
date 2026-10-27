@@ -17,7 +17,10 @@ import '../../free_board/view_models/link_lesson_cubit.dart';
 /// (`Routes.afterAccount`), por cima desta tela; "Agora não", voltar da
 /// conta sem entrar ou voltar da aula leva ao início.
 class LinkedLessonGate extends StatefulWidget {
-  const LinkedLessonGate({super.key});
+  const LinkedLessonGate({super.key, this.returnEntry});
+
+  /// Carries a normal route's account gate back to its exact content location.
+  final String? returnEntry;
 
   @override
   State<LinkedLessonGate> createState() => _LinkedLessonGateState();
@@ -55,7 +58,7 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
     _answered = true;
     await cubit.inviteAnswered(accepted: choice != null);
     if (!mounted) return;
-    final entry = Routes.linkedLessonEntry(lesson);
+    final entry = widget.returnEntry ?? Routes.linkedLessonEntry(lesson);
     switch (choice) {
       case null:
         _leave();

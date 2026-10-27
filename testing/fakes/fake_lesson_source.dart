@@ -20,6 +20,12 @@ class FakeLessonSource implements LessonSource {
   final completed = <String>[];
 
   @override
+  Future<({bool lesson, bool part})> completion(
+    String id, {
+    String? part,
+  }) async => (lesson: false, part: false);
+
+  @override
   final bool endgame;
 
   @override

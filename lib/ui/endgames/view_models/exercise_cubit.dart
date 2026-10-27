@@ -4,6 +4,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/learning/learning_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
@@ -34,14 +35,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._lessons,
     required this._progress,
     required this._characters,
+    this.learning,
     this._feedback,
     this._sounds,
     this._haptics,
     this._analytics = const NoAnalyticsRepository(),
     this._now = const SystemNow(),
     this.replyDelay = const Duration(milliseconds: 450),
-  }) : super(const ExerciseState());
+  }) : _learningOwner = learning?.currentUid(),
+       super(const ExerciseState());
 
+  final LearningRepository? learning;
+  final String? _learningOwner;
+  String? _learningVersion;
   final Now _now;
   final AnalyticsRepository _analytics;
   DateTime? _pausedAt;
@@ -171,6 +177,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
 
   Future<void> load(String lessonId, String exerciseId, String language) async {
     final revision = ++_loadRevision;
+    final contentVersion = await learning?.versionOf(true, lessonId);
+    if (isClosed || revision != _loadRevision) return;
+    _learningVersion = contentVersion;
     _lastError = null;
     _language = language;
     final trail = await _lessons.trail();
@@ -616,7 +625,10 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         ),
       ),
     );
-    // Com a nota fechada, o treino não grava nada.
+    // The operational milestone uses only results actually observed in this
+    // revision, even when old unversioned progress already locked the UI grade.
+    await _observeTestResult(lesson, exercise.id, earned);
+    // Com a nota fechada, o treino não muda a nota visível.
     if (!state.locked) {
       final all = await _progress.load();
       final each = all.of(lesson.id);
@@ -743,6 +755,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     if (lesson == null || exercise == null) {
       return;
     }
+    await learning?.serial(
+      () => learning!.observe(
+        owner: _learningOwner,
+        version: _learningVersion,
+        kind: 'endgame_chapter',
+        unitId: lesson.id,
+        started: true,
+      ),
+    );
     if (state.phase == ExercisePhase.done || state.locked) {
       return;
     }
@@ -773,6 +794,53 @@ class ExerciseCubit extends Cubit<ExerciseState> {
             ),
       ),
     );
+  }
+
+  Future<void> _observeTestResult(
+    EndgameLesson lesson,
+    String exerciseId,
+    int stars,
+  ) async {
+    final repository = learning;
+    final owner = _learningOwner;
+    final version = _learningVersion;
+    if (repository == null ||
+        owner == null ||
+        version == null ||
+        owner != repository.currentUid()) {
+      return;
+    }
+    await repository.serial(() async {
+      await repository.observe(
+        owner: owner,
+        version: version,
+        kind: 'endgame_chapter',
+        unitId: lesson.id,
+        started: true,
+        exerciseStars: {exerciseId: stars},
+      );
+      if (owner != repository.currentUid()) return;
+      final current = (await repository.load(owner))
+          .where(
+            (r) =>
+                r.kind == 'endgame_chapter' &&
+                r.unitId == lesson.id &&
+                r.version == version,
+          )
+          .firstOrNull;
+      if (current == null || current.testPassedAt != null) return;
+      final observed = EndgameLessonProgress(stars: current.exerciseStars);
+      if (EndgameLessonRules.allSolved(lesson, observed) &&
+          observed.scoreOf(lesson) >= lesson.passScore) {
+        await repository.observe(
+          owner: owner,
+          version: version,
+          kind: 'endgame_chapter',
+          unitId: lesson.id,
+          passed: true,
+        );
+      }
+    });
   }
 
   Position? _position() {

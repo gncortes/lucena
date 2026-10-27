@@ -1,5 +1,10 @@
 import 'dart:async';
 
+import 'package:lucena/data/repositories/learning/learning_repository.dart';
+import 'package:lucena/data/services/preferences_service.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/character.dart';
@@ -29,9 +34,11 @@ void main() {
     EndgameLessonRepository? lessons,
     ExerciseFeedbackRepository? feedback,
     FakeAnalyticsRepository? analytics,
+    LearningRepository? learning,
   }) {
     final cubit = ExerciseCubit(
       now: now,
+      learning: learning,
       lessons: lessons ?? FakeEndgameLessonRepository(),
       feedback: feedback,
       progress: progress,
@@ -51,6 +58,149 @@ void main() {
     sound = FakeSoundRepository();
     now = FakeNow(DateTime.utc(2026, 10, 9, 20));
   });
+
+  test(
+    'real test approval is separate, account scoped and never repeated by load',
+    () async {
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final learning = LearningRepository(
+        PreferencesService(),
+        now,
+        currentUid: () => 'a',
+        versionOf: (_, _) async => 'v1',
+      );
+      await learning.serial(
+        () => learning.observe(
+          owner: 'a',
+          version: 'v1',
+          kind: 'endgame_chapter',
+          unitId: 'rook.lucena',
+          started: true,
+          exerciseStars: {'e02': 2, 'e03': 3},
+        ),
+      );
+      progress.saved = const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(stars: {'e02': 2, 'e03': 3}),
+        },
+      );
+      final exercise = cubit(learning: learning);
+      await exercise.load('rook.lucena', 'e01', 'en');
+      expect((await learning.load('a')).single.testPassedAt, isNull);
+      await exercise.play(move('c1c4'));
+      final passed = (await learning.load('a')).single;
+      expect(passed.testPassedAt, now());
+      expect(passed.contentCompletedAt, isNull);
+      now.value = now().add(const Duration(days: 1));
+      await cubit(learning: learning).load('rook.lucena', 'e01', 'en');
+      expect(
+        (await learning.load('a')).single.testPassedAt,
+        passed.testPassedAt,
+      );
+      expect(await learning.load('b'), isEmpty);
+    },
+  );
+
+  test(
+    'teste direto registra início e aprovação sem concluir conteúdo',
+    () async {
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final learning = LearningRepository(
+        PreferencesService(),
+        now,
+        currentUid: () => 'a',
+        versionOf: (_, _) async => 'v1',
+      );
+      final exercise = cubit(learning: learning);
+      await exercise.load('rook.philidor', 'e01', 'en');
+      expect((await learning.load('a')).single.firstStartedAt, now());
+      await exercise.play(move('c1c4'));
+      final result = (await learning.load('a')).single;
+      expect(result.testPassedAt, now());
+      expect(result.contentCompletedAt, isNull);
+    },
+  );
+
+  test('estrelas antigas não aprovam revisão nova; todos os resultados novos são necessários', () async {
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    var revision = 'v1';
+    final learning = LearningRepository(
+      PreferencesService(),
+      now,
+      currentUid: () => 'a',
+      versionOf: (_, _) async => revision,
+    );
+    await learning.serial(
+      () => learning.observe(
+        owner: 'a',
+        version: 'v1',
+        kind: 'endgame_chapter',
+        unitId: 'rook.lucena',
+        started: true,
+        exerciseStars: {'e01': 1, 'e02': 2},
+      ),
+    );
+    progress.saved = const EndgameProgress(
+      lessons: {
+        'rook.lucena': EndgameLessonProgress(stars: {'e01': 1, 'e02': 2}),
+      },
+    );
+    revision = 'v2';
+    final last = cubit(learning: learning);
+    await last.load('rook.lucena', 'e03', 'en');
+    await last.play(move('c1c4'));
+    expect(
+      (await learning.load('a'))
+          .where((r) => r.version == 'v2')
+          .single
+          .testPassedAt,
+      isNull,
+    );
+    final first = cubit(learning: learning);
+    await first.load('rook.lucena', 'e01', 'en');
+    await first.play(move('c1c4'));
+    final second = cubit(learning: learning);
+    await second.load('rook.lucena', 'e02', 'en');
+    await second.play(move('c1c4'));
+    await second.play(move('c4c5'));
+    expect(
+      (await learning.load('a'))
+          .where((r) => r.version == 'v2')
+          .single
+          .testPassedAt,
+      now(),
+    );
+  });
+
+  test(
+    'nota antiga fechada não impede observar aprovação da revisão atual',
+    () async {
+      SharedPreferencesAsyncPlatform.instance =
+          InMemorySharedPreferencesAsync.empty();
+      final learning = LearningRepository(
+        PreferencesService(),
+        now,
+        currentUid: () => 'a',
+        versionOf: (_, _) async => 'v2',
+      );
+      progress.saved = const EndgameProgress(
+        lessons: {
+          'rook.philidor': EndgameLessonProgress(
+            approved: true,
+            stars: {'e01': 1},
+          ),
+        },
+      );
+      final exercise = cubit(learning: learning);
+      await exercise.load('rook.philidor', 'e01', 'en');
+      expect((await learning.load('a')).single.testPassedAt, isNull);
+      await exercise.play(move('c1c4'));
+      expect((await learning.load('a')).single.testPassedAt, now());
+    },
+  );
 
   test('a explicação atrasada não aparece depois do acerto', () async {
     final feedback = _DelayedFeedback();

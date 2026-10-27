@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../domain/models/learning_record.dart';
+
 /// Os documentos de cada conta no Firestore. O desenho e as regras estão em
 /// `firebase/firestore.rules` (resumo em `firebase/README.md`):
 /// - `users/{uid}`: o perfil;
@@ -166,7 +168,22 @@ class FirestoreCloudStoreService implements CloudStoreService {
   @override
   Future<void> writeProgress(String uid, Map<String, Object?> data) async {
     try {
-      await _summary(uid).set(data);
+      // Reading and merging in the transaction prevents two devices from
+      // overwriting each other's first/last learning milestones. Offline data
+      // stays in the local repositories; a later sync retries this operation.
+      final document = _summary(uid);
+      await _db.runTransaction<void>((transaction) async {
+        final previous = (await transaction.get(document)).data();
+        final records = LearningRecord.merge(
+          LearningRecord.parse(previous?['learningV1']),
+          LearningRecord.parse(data['learningV1']),
+        );
+        transaction.set(document, {
+          ...data,
+          if (records.isNotEmpty)
+            'learningV1': [for (final record in records) record.toJson()],
+        });
+      });
     } on FirebaseException catch (error) {
       throw CloudStoreException(error.code);
     }

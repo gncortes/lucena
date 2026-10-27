@@ -236,7 +236,7 @@ void main() {
     expect(campaigns.invited, isFalse);
   });
 
-  test('a aula da campanha concluída fecha o funil uma vez', () async {
+  test('reabrir parabéns nunca conclui a campanha', () async {
     await campaigns.remember(Campaign.fromChallenge(_link));
     final now = FakeNow(DateTime(2026, 10, 27, 9));
     Future<void> finish(String id) async {
@@ -258,12 +258,8 @@ void main() {
     await finish('outra.aula');
     expect(analytics.eventsNamed('campanha_aula_concluida'), isEmpty);
     await finish('rook.lucena');
-    expect(
-      analytics.eventsNamed('campanha_aula_concluida').single.params['aula_id'],
-      'rook.lucena',
-    );
-    expect(await campaigns.active(), isNull);
     await finish('rook.lucena');
-    expect(analytics.eventsNamed('campanha_aula_concluida'), hasLength(1));
+    expect(analytics.eventsNamed('campanha_aula_concluida'), isEmpty);
+    expect(await campaigns.active(), isNotNull);
   });
 }

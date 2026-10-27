@@ -10,6 +10,7 @@ import '../../../domain/use_cases/progress_merge.dart';
 import '../../../domain/use_cases/speedrun_score.dart';
 import '../../services/firebase/cloud_store_service.dart';
 import '../../services/preferences_service.dart';
+import '../learning/learning_repository.dart';
 import '../endgames/endgame_progress_repository.dart';
 import '../featured/featured_progress_repository.dart';
 import '../journey/journey_repository.dart';
@@ -67,6 +68,7 @@ class NoSyncRepository implements SyncRepository {
 
 class CloudSyncRepository implements SyncRepository {
   CloudSyncRepository({
+    this.learning,
     required this._store,
     required this._preferences,
     required this._now,
@@ -83,6 +85,7 @@ class CloudSyncRepository implements SyncRepository {
     required this._featured,
   });
 
+  final LearningRepository? learning;
   final CloudStoreService _store;
   final PreferencesService _preferences;
   final Now _now;
@@ -117,12 +120,14 @@ class CloudSyncRepository implements SyncRepository {
     } on CloudStoreException {
       throw const SyncException();
     }
-    final local = await localSummary();
+    final local = await localSummary(uid: uid);
     final remote = saved == null ? null : ProgressSummary.fromJson(saved);
     final merged = remote == null ? local : ProgressMerge.merge(local, remote);
     if (remote != null) await _apply(local, merged);
-    // Sem rede, a gravação fica na fila do Firestore e termina quando ela
-    // volta: quem entrou não espera por ela.
+    await learning?.restore(uid, merged.learningV1);
+    // The local account-scoped records remain durable if the transaction
+    // cannot run offline. A new sync (login/app opening/next activity/manual)
+    // retries; no transaction is claimed to be queued by Firestore offline.
     unawaited(_push(uid, merged));
     return SyncResult(
       summary: merged,
@@ -132,7 +137,7 @@ class CloudSyncRepository implements SyncRepository {
 
   /// O que o aparelho tem agora, no formato da conta.
   @visibleForTesting
-  Future<ProgressSummary> localSummary() async {
+  Future<ProgressSummary> localSummary({String? uid}) async {
     final history = await _rating.history();
     final school = await _school.load();
     final startRung = (await _onboarding.load()).startRung;
@@ -145,6 +150,9 @@ class CloudSyncRepository implements SyncRepository {
       if (best != null) speedruns[speedrun.id] = best.inMilliseconds;
     }
     return ProgressSummary(
+      learningV1: uid == null
+          ? const []
+          : await learning?.load(uid) ?? const [],
       profile: await _profile.load(),
       rating: history.isEmpty ? null : await _rating.current(),
       lessons: (await _endgames.load()).lessons,
