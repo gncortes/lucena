@@ -6234,7 +6234,7 @@
   "@levelLichessConnectedTitle": {
     "description": "Title of the screen shown after signing in with Lichess."
   },
-  "levelLichessBack": "Back from Lichess. The access stays on this phone only, and no Lucena account is needed.",
+  "levelLichessBack": "Back from Lichess. The access stays on this phone only.",
   "@levelLichessBack": {
     "description": "Text at the top of the Lichess connected screen."
   },
@@ -7527,6 +7527,10 @@
   "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones. It is optional: without an account, everything keeps working.",
   "@accountInviteTextSheet": {
     "description": "Account invite sheet after the first game: text."
+  },
+  "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account. It is optional: without an account, everything keeps working.",
+  "@accountInviteTextLichess": {
+    "description": "Account invite sheet after using the Lichess rating on the level screen, without an account: text."
   },
   "accountEmailField": "E-mail",
   "@accountEmailField": {

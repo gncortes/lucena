@@ -22,34 +22,54 @@ import 'account_flow.dart';
 /// De onde vem a conta aberta pelo convite: no fim, segue para o início.
 const accountInviteFrom = 'game';
 
-/// O convite abre depois da 1ª vitória (único momento, T83 A3).
+/// O convite abre depois da 1ª vitória (T83 A3).
 const accountInviteAfterWin = 'pos_vitoria';
 
-/// O convite para criar conta no fim da 1ª partida (canvas
-/// `PropV1PerfilConvite`): Google, e-mail ou "Agora não", que só fecha. As
-/// telas seguintes abrem a partir de [context], a tela por baixo.
-/// [moment] vai no evento `conta_convite` (hoje só `pos_vitoria`).
-Future<void> showAccountInviteSheet(
+/// O convite abre depois de usar o rating do Lichess, sem conta (T83).
+const accountInviteAfterLichess = 'pos_lichess';
+
+/// O convite para criar conta (canvas `PropV1PerfilConvite`): Google, e-mail
+/// ou "Agora não", que só fecha. As telas seguintes abrem a partir de
+/// [context], a tela por baixo, e terminam em `Routes.afterAccount([from])`.
+/// [moment] vai no evento `conta_convite` (`pos_vitoria|pos_lichess`); [text]
+/// troca a frase do ganho (padrão: a do fim da partida).
+///
+/// Verdadeiro: a pessoa escolheu Google ou e-mail e a conta seguiu por outras
+/// telas. Falso: "Agora não" ou o X; quem abriu segue o próprio caminho.
+Future<bool> showAccountInviteSheet(
   BuildContext context, {
   String moment = accountInviteAfterWin,
-}) => showLucenaSheet<void>(
-  context,
-  sheetKey: AccountKeys.inviteSheet,
-  builder: (_) => BlocProvider(
-    create: (_) => AccountCubit(
-      context.read<AccountRepository>(),
-      sync: context.read<SyncScheduler>(),
-      analytics: context.analytics,
-      moment: moment,
-    ),
-    child: SafeArea(top: false, child: _InviteSheet(screen: context)),
-  ),
-);
+  String? text,
+  String from = accountInviteFrom,
+}) async =>
+    await showLucenaSheet<bool>(
+      context,
+      sheetKey: AccountKeys.inviteSheet,
+      builder: (_) => BlocProvider(
+        create: (_) => AccountCubit(
+          context.read<AccountRepository>(),
+          sync: context.read<SyncScheduler>(),
+          analytics: context.analytics,
+          moment: moment,
+        ),
+        child: SafeArea(
+          top: false,
+          child: _InviteSheet(screen: context, text: text, from: from),
+        ),
+      ),
+    ) ??
+    false;
 
 class _InviteSheet extends StatelessWidget {
-  const _InviteSheet({required this.screen});
+  const _InviteSheet({
+    required this.screen,
+    required this.text,
+    required this.from,
+  });
 
   final BuildContext screen;
+  final String? text;
+  final String from;
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +80,8 @@ class _InviteSheet extends StatelessWidget {
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
         if (state.done) {
-          Navigator.of(context).pop();
-          if (screen.mounted) {
-            continueAfterSignIn(screen, state, accountInviteFrom);
-          }
+          Navigator.of(context).pop(true);
+          if (screen.mounted) continueAfterSignIn(screen, state, from);
           return;
         }
         final failure = state.failure;
@@ -107,7 +125,7 @@ class _InviteSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  l10n.accountInviteTextSheet,
+                  text ?? l10n.accountInviteTextSheet,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -142,8 +160,8 @@ class _InviteSheet extends StatelessWidget {
                         context.read<AccountCubit>().inviteAnswered(
                           accepted: true,
                         );
-                        Navigator.of(context).pop();
-                        screen.push(Routes.accountEmailFrom(accountInviteFrom));
+                        Navigator.of(context).pop(true);
+                        screen.push(Routes.accountEmailFrom(from));
                       },
                 icon: const Icon(Icons.mail),
                 label: Text(l10n.accountEmail),
@@ -156,7 +174,7 @@ class _InviteSheet extends StatelessWidget {
                         context.read<AccountCubit>().inviteAnswered(
                           accepted: false,
                         );
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop(false);
                       },
                 child: Text(l10n.accountLater),
               ),

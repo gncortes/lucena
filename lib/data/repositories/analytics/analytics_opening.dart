@@ -10,6 +10,7 @@ import '../../../domain/use_cases/streak_rules.dart';
 import '../account/account_repository.dart';
 import '../activity/activity_repository.dart';
 import '../endgames/endgame_progress_repository.dart';
+import '../profile/profile_repository.dart';
 import '../push/push_repository.dart';
 import '../school/school_progress_repository.dart';
 import 'analytics_repository.dart';
@@ -27,6 +28,7 @@ class AnalyticsOpening {
     required this.activity,
     required this.now,
     required this.country,
+    this.profile,
     this.schoolLessons = const {},
   });
 
@@ -37,6 +39,9 @@ class AnalyticsOpening {
   final EndgameProgressRepository endgames;
   final ActivityRepository activity;
   final Now now;
+
+  /// O perfil, para o `lichess_vinculado` (conta e Lichess ligados).
+  final ProfileRepository? profile;
 
   /// O país da região do celular (ISO de 2 letras), sem permissão.
   final String? Function() country;
@@ -107,8 +112,8 @@ class AnalyticsOpening {
     };
   }
 
-  /// As propriedades lidas do aparelho: país, aviso, conta, Escola, aulas de
-  /// finais e sequência.
+  /// As propriedades lidas do aparelho: país, aviso, conta, Lichess
+  /// vinculado, Escola, aulas de finais e sequência.
   Future<void> syncTraits() async {
     await _analytics.setTrait(
       AnalyticsTrait.country,
@@ -124,6 +129,13 @@ class AnalyticsOpening {
       AnalyticsTrait.account,
       accountTrait(account.current),
     );
+    if (profile case final profile?) {
+      final lichess = (await profile.load()).lichessUser;
+      await _analytics.setTrait(
+        AnalyticsTrait.lichessLinked,
+        AnalyticsRules.yesNo(account.current != null && lichess != null),
+      );
+    }
     await _analytics.setTrait(
       AnalyticsTrait.school,
       schoolTrait(await school.load(), schoolLessons),

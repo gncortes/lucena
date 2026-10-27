@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
+import 'package:lucena/domain/models/analytics_event.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/progress_summary.dart';
 import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/platform_rating.dart';
@@ -12,12 +15,16 @@ import 'package:lucena/domain/use_cases/home_suggestion.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
 
+import '../../../testing/fakes/fake_account_repository.dart';
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_chesscom_repository.dart';
 import '../../../testing/fakes/fake_home_layout_repository.dart';
 import '../../../testing/fakes/fake_lichess_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
+import '../../../testing/fakes/fake_sync_repository.dart';
 
 final _readAt = DateTime(2026, 10, 22, 21, 40);
 
@@ -352,6 +359,121 @@ void main() {
     level.setManual(1500);
     await level.useManual();
     expect(profile.profile.nickname, 'Ana');
+  });
+
+  group('vínculo do Lichess com a conta (T83)', () {
+    final linkedAt = DateTime(2026, 10, 27, 14, 30);
+    late FakeAccountRepository accounts;
+    late FakeSyncRepository syncRepository;
+    late SyncScheduler sync;
+    late FakeAnalyticsRepository analytics;
+
+    LevelCubit linked({bool fromProfile = false}) {
+      final cubit = LevelCubit(
+        home: home,
+        onboarding: onboarding,
+        profile: profile,
+        characters: FakeCharacterRepository(),
+        lichess: lichess,
+        chessCom: chessCom,
+        fromProfile: fromProfile,
+        analytics: analytics,
+        accounts: accounts,
+        sync: sync,
+        now: FakeNow(linkedAt),
+      );
+      addTearDown(cubit.close);
+      return cubit;
+    }
+
+    setUp(() {
+      accounts = FakeAccountRepository();
+      syncRepository = FakeSyncRepository();
+      sync = SyncScheduler(accounts, syncRepository);
+      addTearDown(sync.dispose);
+      analytics = FakeAnalyticsRepository();
+    });
+
+    test('sem conta: usar o rating do Lichess pede o convite', () async {
+      final level = linked();
+      await level.load();
+      await level.connectLichess();
+      expect(analytics.eventsNamed('lichess_conectado').single.params, {
+        'origem': 'nivel',
+        'tem_conta': 'nao',
+      });
+      await level.useLichess();
+      expect(level.state.finished, isTrue);
+      expect(level.state.inviteAccount, isTrue);
+      expect(profile.profile.lichessUser, 'gabriel_finais');
+      expect(profile.profile.lichessLinkedAt, linkedAt);
+      await pumpEventQueue();
+      expect(analytics.traits[AnalyticsTrait.lichessLinked], 'nao');
+      expect(syncRepository.synced, isEmpty);
+    });
+
+    test('Lichess e depois a conta: o vínculo sobe com o perfil', () async {
+      final level = linked();
+      await level.load();
+      await level.connectLichess();
+      await level.useLichess();
+      expect(level.state.inviteAccount, isTrue);
+      // "Entrar com o Google" no convite.
+      sync.start();
+      await accounts.signInWithGoogle();
+      await pumpEventQueue();
+      expect(analytics.traits[AnalyticsTrait.lichessLinked], 'sim');
+      // O perfil gravado antes da conta é o que a sincronização leva.
+      expect(syncRepository.synced, [FakeAccountRepository.google.uid]);
+      final sent =
+          ProgressSummary(profile: profile.profile).toJson()['profile']!
+              as Map<String, Object?>;
+      expect(sent['lichessUser'], 'gabriel_finais');
+      expect(sent['lichessLinkedAt'], linkedAt.toUtc().toIso8601String());
+      expect(sent.keys.where((key) => key.contains('token')), isEmpty);
+    });
+
+    test('conta e depois o Lichess pelo Perfil: grava e sobe já', () async {
+      accounts.account = FakeAccountRepository.google;
+      final level = linked(fromProfile: true);
+      await level.load();
+      await level.connectLichess();
+      expect(analytics.eventsNamed('lichess_conectado').single.params, {
+        'origem': 'perfil',
+        'tem_conta': 'sim',
+      });
+      await level.useLichess();
+      await pumpEventQueue();
+      expect(level.state.inviteAccount, isFalse);
+      expect(profile.profile.lichessUser, 'gabriel_finais');
+      expect(profile.profile.lichessLinkedAt, linkedAt);
+      expect(analytics.traits[AnalyticsTrait.lichessLinked], 'sim');
+      expect(syncRepository.synced, [FakeAccountRepository.google.uid]);
+    });
+
+    test('outro caminho de nível não convida nem vincula', () async {
+      final level = linked();
+      await level.load();
+      level.setManual(1500);
+      await level.useManual();
+      await pumpEventQueue();
+      expect(level.state.inviteAccount, isFalse);
+      expect(profile.profile.lichessLinkedAt, isNull);
+      expect(analytics.eventsNamed('lichess_conectado'), isEmpty);
+    });
+
+    test('o mesmo usuário de novo mantém a data do vínculo', () async {
+      final before = DateTime(2026, 9);
+      profile.profile = profile.profile.copyWith(
+        lichessUser: 'gabriel_finais',
+        lichessLinkedAt: before,
+      );
+      final level = linked();
+      await level.load();
+      await level.connectLichess();
+      await level.useLichess();
+      expect(profile.profile.lichessLinkedAt, before);
+    });
   });
 }
 

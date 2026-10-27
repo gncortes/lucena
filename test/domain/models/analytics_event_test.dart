@@ -30,6 +30,7 @@ final _samples = <AnalyticsEvent>[
   AnalyticsEvents.signUp(method: 'google'),
   AnalyticsEvents.login(method: 'email'),
   AnalyticsEvents.contaLichess(acao: 'conectado', rating: 1720),
+  AnalyticsEvents.lichessConectado(origem: 'nivel', temConta: false),
   AnalyticsEvents.contaProgressoRecuperado(itens: 12),
   AnalyticsEvents.contaApagada(),
   AnalyticsEvents.linkOpened(
@@ -257,19 +258,16 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test(
-      'tem os 72 eventos (69 do app, com o push_aberto da E1.19, e 3 da web)',
-      () {
-        expect(AnalyticsCatalog.app, hasLength(69));
-        expect(AnalyticsCatalog.web, hasLength(3));
-        expect(
-          AnalyticsCatalog.app.keys.toSet().intersection(
-            AnalyticsCatalog.web.keys.toSet(),
-          ),
-          isEmpty,
-        );
-      },
-    );
+    test('tem os 73 eventos (70 do app, com o lichess_conectado da T83, e 3 da web)', () {
+      expect(AnalyticsCatalog.app, hasLength(70));
+      expect(AnalyticsCatalog.web, hasLength(3));
+      expect(
+        AnalyticsCatalog.app.keys.toSet().intersection(
+          AnalyticsCatalog.web.keys.toSet(),
+        ),
+        isEmpty,
+      );
+    });
 
     test('nomes e parâmetros dentro dos limites do Firebase', () {
       for (final MapEntry(key: name, value: params) in {
@@ -284,8 +282,8 @@ void main() {
       }
     });
 
-    test('as 18 propriedades cabem no nome do Firebase', () {
-      expect(AnalyticsTrait.values, hasLength(18));
+    test('as 19 propriedades cabem no nome do Firebase', () {
+      expect(AnalyticsTrait.values, hasLength(19));
       for (final trait in AnalyticsTrait.values) {
         expect(
           AnalyticsRules.validName(

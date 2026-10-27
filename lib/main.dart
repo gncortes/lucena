@@ -151,6 +151,7 @@ class _LucenaAppState extends State<LucenaApp> {
     endgames: widget.dependencies.endgameProgressRepository,
     activity: widget.dependencies.activityRepository,
     now: widget.dependencies.now,
+    profile: widget.dependencies.profileRepository,
     country: () =>
         WidgetsBinding.instance.platformDispatcher.locale.countryCode,
     schoolLessons: VisibleLessons.schoolLessonIds,

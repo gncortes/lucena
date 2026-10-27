@@ -5,12 +5,14 @@ import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/analytics_event.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/push_alert.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 
 import '../../../../testing/fakes/fake_account_repository.dart';
 import '../../../../testing/fakes/fake_activity_repository.dart';
 import '../../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_push_repository.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
 
@@ -30,11 +32,15 @@ void main() {
     push = FakePushRepository(allowed: true);
   });
 
-  AnalyticsOpening opening({String? country = 'br'}) {
+  AnalyticsOpening opening({
+    String? country = 'br',
+    UserProfile profile = const UserProfile(),
+  }) {
     final now = FakeNow(DateTime(2026, 10, 22));
     return AnalyticsOpening(
       analytics,
       account: account,
+      profile: FakeProfileRepository(profile),
       push: push,
       school: FakeSchoolProgressRepository(),
       endgames: FakeEndgameProgressRepository(),
@@ -107,7 +113,10 @@ void main() {
       email: 'ana@example.com',
       provider: AccountProvider.google,
     );
-    await opening(country: 'São Paulo').launched();
+    await opening(
+      country: 'São Paulo',
+      profile: const UserProfile(lichessUser: 'ana_xadrez'),
+    ).launched();
 
     expect(analytics.traits[AnalyticsTrait.country], 'nenhum');
     expect(analytics.traits[AnalyticsTrait.alertsAllowed], 'sim');
@@ -116,6 +125,7 @@ void main() {
     expect(analytics.traits[AnalyticsTrait.endgameLessonsDone], '0');
     expect(analytics.traits[AnalyticsTrait.lessonInProgress], 'nao');
     expect(analytics.traits[AnalyticsTrait.streakBand], '0');
+    expect(analytics.traits[AnalyticsTrait.lichessLinked], 'sim');
     // O e-mail nunca vira propriedade.
     expect(analytics.traits.values, isNot(contains('ana@example.com')));
   });

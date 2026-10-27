@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/lichess/lichess_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
@@ -10,6 +12,7 @@ import 'package:lucena/domain/models/platform_rating.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
 import 'package:lucena/ui/level/widgets/level_chess_screen.dart';
@@ -20,6 +23,8 @@ import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/voice/view_models/speech_cubit.dart';
 
+import '../../../testing/fakes/fake_account_repository.dart';
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_chesscom_repository.dart';
 import '../../../testing/fakes/fake_home_layout_repository.dart';
@@ -27,6 +32,7 @@ import '../../../testing/fakes/fake_lichess_repository.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
+import '../../../testing/fakes/fake_sync_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 import '../../../testing/test_app.dart';
 
@@ -74,6 +80,8 @@ void main() {
   Future<void> pumpLevel(
     WidgetTester tester, {
     bool fromProfile = false,
+    FakeAccountRepository? accounts,
+    FakeAnalyticsRepository? analytics,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
@@ -115,6 +123,7 @@ void main() {
               chessCom: chessCom,
               home: FakeHomeLayoutRepository(),
               fromProfile: state.uri.queryParameters['from'] == 'profile',
+              accounts: accounts,
             )..load(),
             child: const LevelScreen(),
           ),
@@ -144,14 +153,24 @@ void main() {
         ),
       ],
     );
+    final account = accounts ?? FakeAccountRepository();
+    final sync = SyncScheduler(account, FakeSyncRepository());
+    addTearDown(sync.dispose);
     await tester.pumpWidget(
-      BlocProvider.value(
-        value: profileCubit,
-        child: TestApp(
-          settingsCubit: settingsCubit,
-          speechCubit: speech,
-          router: router,
-          child: const SizedBox(),
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AccountRepository>.value(value: account),
+          RepositoryProvider<SyncScheduler>.value(value: sync),
+        ],
+        child: BlocProvider.value(
+          value: profileCubit,
+          child: TestApp(
+            settingsCubit: settingsCubit,
+            speechCubit: speech,
+            router: router,
+            analytics: analytics,
+            child: const SizedBox(),
+          ),
         ),
       ),
     );
@@ -291,6 +310,49 @@ void main() {
     await tester.pumpAndSettle();
     expect(profile.profile.rating, 1712);
     expect(profile.profile.lichessUser, 'gabriel_finais');
+    expect(find.text('rota-proximos 1712'), findsOneWidget);
+  });
+
+  testWidgets('Lichess sem conta: o convite da conta e "Agora não" segue', (
+    tester,
+  ) async {
+    final analytics = FakeAnalyticsRepository();
+    await pumpLevel(
+      tester,
+      accounts: FakeAccountRepository(),
+      analytics: analytics,
+    );
+    await choose(tester, LevelChoice.lichess);
+    await tester.tap(find.byKey(LevelKeys.lichessUse));
+    await tester.pumpAndSettle();
+    expect(profile.profile.lichessUser, 'gabriel_finais');
+    expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
+    expect(
+      find.text(
+        'Keep your progress and your Lichess link in a Lucena account. It is '
+        'optional: without an account, everything keeps working.',
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(AccountKeys.notNow));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+    expect(find.text('rota-proximos 1712'), findsOneWidget);
+    expect(
+      analytics.eventsNamed('conta_convite').single.params['momento'],
+      'pos_lichess',
+    );
+  });
+
+  testWidgets('Lichess com conta: sem convite', (tester) async {
+    await pumpLevel(
+      tester,
+      accounts: FakeAccountRepository(account: FakeAccountRepository.google),
+    );
+    await choose(tester, LevelChoice.lichess);
+    await tester.tap(find.byKey(LevelKeys.lichessUse));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
     expect(find.text('rota-proximos 1712'), findsOneWidget);
   });
 

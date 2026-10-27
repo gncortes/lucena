@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
+import '../../account/widgets/account_invite_sheet.dart';
 import '../../core/keys/level_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -70,10 +71,21 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _onFinished(LevelState state) {
+  Future<void> _onFinished(LevelState state) async {
     // O nível escolhido já está no perfil.
-    context.read<ProfileCubit>().load();
+    unawaited(context.read<ProfileCubit>().load());
     final fromProfile = context.read<LevelCubit>().fromProfile;
+    if (state.inviteAccount) {
+      // Lichess sem conta: o convite guarda o vínculo. Aceito, a conta segue
+      // pelas telas dela; "Agora não" segue o caminho de sempre.
+      final accepted = await showAccountInviteSheet(
+        context,
+        moment: accountInviteAfterLichess,
+        text: context.l10n.accountInviteTextLichess,
+        from: fromProfile ? 'profile' : 'level',
+      );
+      if (accepted || !mounted) return;
+    }
     if (fromProfile && !state.toSchool && state.choice != LevelChoice.zero) {
       // Fecha as telas ligadas e o próprio "Seu nível".
       final route = ModalRoute.of(context);
@@ -134,7 +146,7 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
         BlocListener<LevelCubit, LevelState>(
           listenWhen: (previous, current) =>
               current.finished && !previous.finished,
-          listener: (context, state) => _onFinished(state),
+          listener: (context, state) => unawaited(_onFinished(state)),
         ),
         // A volta do Lichess (também com o app reaberto por ela).
         BlocListener<LevelCubit, LevelState>(

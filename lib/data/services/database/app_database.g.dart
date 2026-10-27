@@ -155,6 +155,18 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _lichessLinkedAtMeta = const VerificationMeta(
+    'lichessLinkedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lichessLinkedAt =
+      GeneratedColumn<DateTime>(
+        'lichess_linked_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -171,6 +183,7 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     city,
     photo,
     photoUrl,
+    lichessLinkedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -284,6 +297,15 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         photoUrl.isAcceptableOrUnknown(data['photo_url']!, _photoUrlMeta),
       );
     }
+    if (data.containsKey('lichess_linked_at')) {
+      context.handle(
+        _lichessLinkedAtMeta,
+        lichessLinkedAt.isAcceptableOrUnknown(
+          data['lichess_linked_at']!,
+          _lichessLinkedAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -349,6 +371,10 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
         DriftSqlType.string,
         data['${effectivePrefix}photo_url'],
       ),
+      lichessLinkedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}lichess_linked_at'],
+      ),
     );
   }
 
@@ -387,6 +413,10 @@ class Profile extends DataClass implements Insertable<Profile> {
   /// Desde a versão 13.
   final String? photo;
   final String? photoUrl;
+
+  /// Quando o Lichess foi ligado (`UserProfile.lichessLinkedAt`). Desde a
+  /// versão 14.
+  final DateTime? lichessLinkedAt;
   const Profile({
     required this.id,
     required this.nickname,
@@ -402,6 +432,7 @@ class Profile extends DataClass implements Insertable<Profile> {
     this.city,
     this.photo,
     this.photoUrl,
+    this.lichessLinkedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -438,6 +469,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     if (!nullToAbsent || photoUrl != null) {
       map['photo_url'] = Variable<String>(photoUrl);
     }
+    if (!nullToAbsent || lichessLinkedAt != null) {
+      map['lichess_linked_at'] = Variable<DateTime>(lichessLinkedAt);
+    }
     return map;
   }
 
@@ -471,6 +505,9 @@ class Profile extends DataClass implements Insertable<Profile> {
       photoUrl: photoUrl == null && nullToAbsent
           ? const Value.absent()
           : Value(photoUrl),
+      lichessLinkedAt: lichessLinkedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lichessLinkedAt),
     );
   }
 
@@ -494,6 +531,7 @@ class Profile extends DataClass implements Insertable<Profile> {
       city: serializer.fromJson<String?>(json['city']),
       photo: serializer.fromJson<String?>(json['photo']),
       photoUrl: serializer.fromJson<String?>(json['photoUrl']),
+      lichessLinkedAt: serializer.fromJson<DateTime?>(json['lichessLinkedAt']),
     );
   }
   @override
@@ -514,6 +552,7 @@ class Profile extends DataClass implements Insertable<Profile> {
       'city': serializer.toJson<String?>(city),
       'photo': serializer.toJson<String?>(photo),
       'photoUrl': serializer.toJson<String?>(photoUrl),
+      'lichessLinkedAt': serializer.toJson<DateTime?>(lichessLinkedAt),
     };
   }
 
@@ -532,6 +571,7 @@ class Profile extends DataClass implements Insertable<Profile> {
     Value<String?> city = const Value.absent(),
     Value<String?> photo = const Value.absent(),
     Value<String?> photoUrl = const Value.absent(),
+    Value<DateTime?> lichessLinkedAt = const Value.absent(),
   }) => Profile(
     id: id ?? this.id,
     nickname: nickname ?? this.nickname,
@@ -547,6 +587,9 @@ class Profile extends DataClass implements Insertable<Profile> {
     city: city.present ? city.value : this.city,
     photo: photo.present ? photo.value : this.photo,
     photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
+    lichessLinkedAt: lichessLinkedAt.present
+        ? lichessLinkedAt.value
+        : this.lichessLinkedAt,
   );
   Profile copyWithCompanion(ProfilesCompanion data) {
     return Profile(
@@ -574,6 +617,9 @@ class Profile extends DataClass implements Insertable<Profile> {
       city: data.city.present ? data.city.value : this.city,
       photo: data.photo.present ? data.photo.value : this.photo,
       photoUrl: data.photoUrl.present ? data.photoUrl.value : this.photoUrl,
+      lichessLinkedAt: data.lichessLinkedAt.present
+          ? data.lichessLinkedAt.value
+          : this.lichessLinkedAt,
     );
   }
 
@@ -593,7 +639,8 @@ class Profile extends DataClass implements Insertable<Profile> {
           ..write('state: $state, ')
           ..write('city: $city, ')
           ..write('photo: $photo, ')
-          ..write('photoUrl: $photoUrl')
+          ..write('photoUrl: $photoUrl, ')
+          ..write('lichessLinkedAt: $lichessLinkedAt')
           ..write(')'))
         .toString();
   }
@@ -614,6 +661,7 @@ class Profile extends DataClass implements Insertable<Profile> {
     city,
     photo,
     photoUrl,
+    lichessLinkedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -632,7 +680,8 @@ class Profile extends DataClass implements Insertable<Profile> {
           other.state == this.state &&
           other.city == this.city &&
           other.photo == this.photo &&
-          other.photoUrl == this.photoUrl);
+          other.photoUrl == this.photoUrl &&
+          other.lichessLinkedAt == this.lichessLinkedAt);
 }
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
@@ -650,6 +699,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<String?> city;
   final Value<String?> photo;
   final Value<String?> photoUrl;
+  final Value<DateTime?> lichessLinkedAt;
   const ProfilesCompanion({
     this.id = const Value.absent(),
     this.nickname = const Value.absent(),
@@ -665,6 +715,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     this.city = const Value.absent(),
     this.photo = const Value.absent(),
     this.photoUrl = const Value.absent(),
+    this.lichessLinkedAt = const Value.absent(),
   });
   ProfilesCompanion.insert({
     this.id = const Value.absent(),
@@ -681,6 +732,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     this.city = const Value.absent(),
     this.photo = const Value.absent(),
     this.photoUrl = const Value.absent(),
+    this.lichessLinkedAt = const Value.absent(),
   }) : nickname = Value(nickname),
        rating = Value(rating);
   static Insertable<Profile> custom({
@@ -698,6 +750,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Expression<String>? city,
     Expression<String>? photo,
     Expression<String>? photoUrl,
+    Expression<DateTime>? lichessLinkedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -714,6 +767,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       if (city != null) 'city': city,
       if (photo != null) 'photo': photo,
       if (photoUrl != null) 'photo_url': photoUrl,
+      if (lichessLinkedAt != null) 'lichess_linked_at': lichessLinkedAt,
     });
   }
 
@@ -732,6 +786,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     Value<String?>? city,
     Value<String?>? photo,
     Value<String?>? photoUrl,
+    Value<DateTime?>? lichessLinkedAt,
   }) {
     return ProfilesCompanion(
       id: id ?? this.id,
@@ -748,6 +803,7 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       city: city ?? this.city,
       photo: photo ?? this.photo,
       photoUrl: photoUrl ?? this.photoUrl,
+      lichessLinkedAt: lichessLinkedAt ?? this.lichessLinkedAt,
     );
   }
 
@@ -796,6 +852,9 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     if (photoUrl.present) {
       map['photo_url'] = Variable<String>(photoUrl.value);
     }
+    if (lichessLinkedAt.present) {
+      map['lichess_linked_at'] = Variable<DateTime>(lichessLinkedAt.value);
+    }
     return map;
   }
 
@@ -815,7 +874,8 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
           ..write('state: $state, ')
           ..write('city: $city, ')
           ..write('photo: $photo, ')
-          ..write('photoUrl: $photoUrl')
+          ..write('photoUrl: $photoUrl, ')
+          ..write('lichessLinkedAt: $lichessLinkedAt')
           ..write(')'))
         .toString();
   }
@@ -3126,6 +3186,7 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   Value<String?> city,
   Value<String?> photo,
   Value<String?> photoUrl,
+  Value<DateTime?> lichessLinkedAt,
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<int> id,
@@ -3142,6 +3203,7 @@ typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<String?> city,
   Value<String?> photo,
   Value<String?> photoUrl,
+  Value<DateTime?> lichessLinkedAt,
 });
 
 class $$ProfilesTableFilterComposer
@@ -3220,6 +3282,11 @@ class $$ProfilesTableFilterComposer
 
   ColumnFilters<String> get photoUrl => $composableBuilder(
     column: $table.photoUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lichessLinkedAt => $composableBuilder(
+    column: $table.lichessLinkedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3302,6 +3369,11 @@ class $$ProfilesTableOrderingComposer
     column: $table.photoUrl,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get lichessLinkedAt => $composableBuilder(
+    column: $table.lichessLinkedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProfilesTableAnnotationComposer
@@ -3364,6 +3436,11 @@ class $$ProfilesTableAnnotationComposer
 
   GeneratedColumn<String> get photoUrl =>
       $composableBuilder(column: $table.photoUrl, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lichessLinkedAt => $composableBuilder(
+    column: $table.lichessLinkedAt,
+    builder: (column) => column,
+  );
 }
 
 class $$ProfilesTableTableManager
@@ -3408,6 +3485,7 @@ class $$ProfilesTableTableManager
                 Value<String?> city = const Value.absent(),
                 Value<String?> photo = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
+                Value<DateTime?> lichessLinkedAt = const Value.absent(),
               }) => ProfilesCompanion(
                 id: id,
                 nickname: nickname,
@@ -3423,6 +3501,7 @@ class $$ProfilesTableTableManager
                 city: city,
                 photo: photo,
                 photoUrl: photoUrl,
+                lichessLinkedAt: lichessLinkedAt,
               ),
           createCompanionCallback:
               ({
@@ -3440,6 +3519,7 @@ class $$ProfilesTableTableManager
                 Value<String?> city = const Value.absent(),
                 Value<String?> photo = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
+                Value<DateTime?> lichessLinkedAt = const Value.absent(),
               }) => ProfilesCompanion.insert(
                 id: id,
                 nickname: nickname,
@@ -3455,6 +3535,7 @@ class $$ProfilesTableTableManager
                 city: city,
                 photo: photo,
                 photoUrl: photoUrl,
+                lichessLinkedAt: lichessLinkedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(

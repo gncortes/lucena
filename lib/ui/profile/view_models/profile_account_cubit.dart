@@ -12,6 +12,7 @@ import '../../../domain/models/account.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/platform_rating.dart';
+import '../../../domain/use_cases/analytics_rules.dart';
 
 /// Um aviso do Perfil, mostrado uma vez.
 enum ProfileNotice {
@@ -200,7 +201,15 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   Future<void> disconnectLichess() async {
     await _lichess.disconnect();
     final profile = await _profile.load();
-    await _profile.save(profile.copyWith(lichessUser: null));
+    await _profile.save(
+      profile.copyWith(lichessUser: null, lichessLinkedAt: null),
+    );
+    unawaited(
+      _analytics.setTrait(
+        AnalyticsTrait.lichessLinked,
+        AnalyticsRules.yesNo(false),
+      ),
+    );
     if (!isClosed) emit(state.copyWith(lichess: () => null));
   }
 

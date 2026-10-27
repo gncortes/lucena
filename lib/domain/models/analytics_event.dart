@@ -28,7 +28,7 @@ class AnalyticsEvent {
   String toString() => 'AnalyticsEvent($name, $params)';
 }
 
-/// As 18 propriedades de usuário (E1.03 §1).
+/// As 19 propriedades de usuário (E1.03 §1).
 enum AnalyticsTrait {
   firstOrigin('origem_primeira'),
   originSource('origem_fonte'),
@@ -47,7 +47,10 @@ enum AnalyticsTrait {
   alertsAllowed('aviso_permitido'),
   lessonInProgress('aula_em_andamento'),
   noAds('sem_anuncios'),
-  streakBand('sequencia_faixa');
+  streakBand('sequencia_faixa'),
+
+  /// `sim|nao`: tem conta no Lucena e o Lichess ligado a ela (T83).
+  lichessLinked('lichess_vinculado');
 
   const AnalyticsTrait(this.code);
 
@@ -61,7 +64,7 @@ abstract final class AnalyticsCatalog {
   /// DebugView (§10).
   static const trafficType = 'traffic_type';
 
-  /// Os 68 eventos do app.
+  /// Os 70 eventos do app.
   static const app = <String, List<String>>{
     // Entrada, perfil e conta.
     'tutorial_begin': ['entrada'],
@@ -73,6 +76,7 @@ abstract final class AnalyticsCatalog {
     'sign_up': ['method'],
     'login': ['method'],
     'conta_lichess': ['acao', 'faixa'],
+    'lichess_conectado': ['origem', 'tem_conta'],
     'conta_progresso_recuperado': ['itens'],
     'conta_apagada': [],
     // Link, post e compartilhar.
@@ -297,6 +301,16 @@ abstract final class AnalyticsEvents {
     'conta_lichess',
     {'acao': acao, 'faixa': AnalyticsRules.ratingBand(rating)},
   );
+
+  /// O Lichess conectou: `origem` `nivel|perfil` (de onde "Seu nível" foi
+  /// aberto); `tem_conta` `sim|nao` (já havia conta no Lucena).
+  static AnalyticsEvent lichessConectado({
+    required String origem,
+    required bool temConta,
+  }) => _e('lichess_conectado', {
+    'origem': origem,
+    'tem_conta': AnalyticsRules.yesNo(temConta),
+  });
 
   static AnalyticsEvent contaProgressoRecuperado({required int itens}) =>
       _e('conta_progresso_recuperado', {'itens': itens});

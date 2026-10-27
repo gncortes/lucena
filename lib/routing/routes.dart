@@ -473,10 +473,12 @@ abstract final class Routes {
       _from(accountRestored, from);
 
   /// Para onde a conta segue no fim, vinda de [from] (`game`: o convite no
-  /// fim da 1ª partida).
+  /// fim da 1ª partida; `level`: o convite depois do Lichess em "Seu nível",
+  /// que segue para os próximos passos).
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
     'game' => home,
+    'level' => nextSteps,
     _ => goal,
   };
 

@@ -215,6 +215,7 @@ import '../ui/update/widgets/update_required_screen.dart';
 import 'routes.dart';
 import '../ui/blind/widgets/blind_entry_screen.dart';
 import '../data/repositories/account/account_repository.dart';
+import '../data/repositories/sync/sync_scheduler.dart';
 import '../data/repositories/ads/ads_repository.dart';
 import '../data/repositories/purchase/purchase_repository.dart';
 import '../ui/privacy/view_models/privacy_cubit.dart';
@@ -456,6 +457,9 @@ GoRouter buildRouter({
             home: context.read<HomeLayoutRepository>(),
             fromProfile: state.uri.queryParameters['from'] == 'profile',
             analytics: context.analytics,
+            accounts: context.read<AccountRepository>(),
+            sync: context.read<SyncScheduler>(),
+            now: context.read<Now>(),
           )..load(),
           child: const LevelScreen(),
         ),

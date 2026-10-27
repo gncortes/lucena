@@ -30,6 +30,10 @@ abstract class UserProfile with _$UserProfile {
     /// seguro do aparelho, nunca aqui).
     String? lichessUser,
 
+    /// Quando o [lichessUser] foi ligado ao Lucena (sobe com a conta, para
+    /// medir quem tem conta e Lichess vinculados). Nulo: sem Lichess.
+    DateTime? lichessLinkedAt,
+
     /// O usuário do Chess.com informado em "Seu nível".
     String? chessComUser,
 
