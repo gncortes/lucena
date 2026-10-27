@@ -10,7 +10,7 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
-import 'package:lucena/ui/home/widgets/where_card.dart';
+import 'package:lucena/ui/home/widgets/hero_card.dart';
 import 'package:lucena/ui/race/view_models/race_warm_up_cubit.dart';
 import 'package:lucena/ui/race/widgets/race_warm_up_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -51,7 +51,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (_, _) => Scaffold(body: WhereCard(state: state)),
+          builder: (_, _) => Scaffold(body: HeroCard(state: state)),
         ),
         GoRoute(
           path: Routes.journeyChallenge(rung.id, position),
@@ -82,7 +82,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(HomeKeys.whereContinue));
+    await tester.tap(find.byKey(HomeKeys.goalAction));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(RaceKeys.offerWarm));
     await tester.pumpAndSettle();
@@ -95,6 +95,6 @@ void main() {
     router.pop();
     await tester.pumpAndSettle();
     expect(find.text('tela do desafio'), findsOneWidget);
-    expect(find.byKey(HomeKeys.whereContinue), findsNothing);
+    expect(find.byKey(HomeKeys.goalAction), findsNothing);
   });
 }

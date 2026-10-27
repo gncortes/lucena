@@ -65,7 +65,7 @@ void main() {
     expect(streak.at, DateTime(2026, 10, 22, 19));
     expect(streak.title, 'Sua sequência de 2 dias acaba hoje');
     expect(streak.action, 'Jogar o final do dia');
-    expect(streak.payload, '/daily');
+    expect(streak.payload, '/daily?entrada=lembrete');
     expect(streak.channel.id, 'lembretes_quieto');
 
     expect(sunday.id, RemindersCubit.firstId + 3);

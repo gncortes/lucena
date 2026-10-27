@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
-import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/privacy_keys.dart';
@@ -15,7 +14,7 @@ import 'robots/free_board_robot.dart';
 import 'robots/home_robot.dart';
 
 /// Telas que a tela inicial alcança e nenhum outro cenário abria: todos os
-/// modos, o final do dia, a sequência, a semana e a privacidade.
+/// modos, a sequência, a semana (com o final do dia) e a privacidade.
 void main() {
   Future<void> goTo(PatrolIntegrationTester $, String route) async {
     final context = $.tester.element(find.byKey(HomeKeys.screen));
@@ -29,24 +28,11 @@ void main() {
     await AppRobot($).open();
     await HomeRobot($).expectVisible();
 
-    await $(HomeKeys.allModesButton).tap();
-    await $(AllModesKeys.screen).waitUntilVisible();
+    await openAllModes($);
     await $(AllModesKeys.item('journey')).scrollTo();
 
     await $(AllModesKeys.item('endgames')).scrollTo().tap();
     await $(EndgamesKeys.screen).waitUntilVisible();
-  });
-
-  patrolTest('final do dia: o cartão da tela inicial abre a partida do dia', (
-    $,
-  ) async {
-    await AppRobot($).open();
-    await HomeRobot($).expectVisible();
-
-    await $(DailyKeys.homeStrip).scrollTo();
-    await $(DailyKeys.badge).scrollTo().tap();
-
-    await FreeBoardRobot($).expectVisible();
   });
 
   patrolTest('sequência: a tela abre sem dias seguidos', ($) async {

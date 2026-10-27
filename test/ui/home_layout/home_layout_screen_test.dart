@@ -91,7 +91,13 @@ void main() {
 
   testWidgets('o último marcado não pode ser desmarcado', (tester) async {
     await pump(tester);
-    for (final path in [HomePath.forYou, HomePath.endgames, HomePath.race]) {
+    for (final path in [
+      HomePath.forYou,
+      HomePath.endgames,
+      HomePath.race,
+      HomePath.stars,
+    ]) {
+      await tester.ensureVisible(find.byKey(HomeLayoutKeys.check(path)));
       await tester.tap(find.byKey(HomeLayoutKeys.check(path)));
       await tester.pumpAndSettle();
     }

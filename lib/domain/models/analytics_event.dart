@@ -1,4 +1,5 @@
 import '../use_cases/analytics_rules.dart';
+import 'campaign.dart';
 import 'challenge_link.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
@@ -28,7 +29,7 @@ class AnalyticsEvent {
   String toString() => 'AnalyticsEvent($name, $params)';
 }
 
-/// As 18 propriedades de usuário (E1.03 §1).
+/// As 19 propriedades de usuário (E1.03 §1).
 enum AnalyticsTrait {
   firstOrigin('origem_primeira'),
   originSource('origem_fonte'),
@@ -47,7 +48,10 @@ enum AnalyticsTrait {
   alertsAllowed('aviso_permitido'),
   lessonInProgress('aula_em_andamento'),
   noAds('sem_anuncios'),
-  streakBand('sequencia_faixa');
+  streakBand('sequencia_faixa'),
+
+  /// `sim|nao`: tem conta no Lucena e o Lichess ligado a ela (T83).
+  lichessLinked('lichess_vinculado');
 
   const AnalyticsTrait(this.code);
 
@@ -61,7 +65,13 @@ abstract final class AnalyticsCatalog {
   /// DebugView (§10).
   static const trafficType = 'traffic_type';
 
-  /// Os 67 eventos do app.
+  /// Os parâmetros de todo evento do funil de campanha (T84).
+  static const campaignParams = [
+    'tipo', 'utm_fonte', 'utm_campanha', 'utm_post', 'codigo', 'aula_id', //
+    'tipo_aula',
+  ];
+
+  /// Os 79 eventos do app.
   static const app = <String, List<String>>{
     // Entrada, perfil e conta.
     'tutorial_begin': ['entrada'],
@@ -73,6 +83,7 @@ abstract final class AnalyticsCatalog {
     'sign_up': ['method'],
     'login': ['method'],
     'conta_lichess': ['acao', 'faixa'],
+    'lichess_conectado': ['origem', 'tem_conta'],
     'conta_progresso_recuperado': ['itens'],
     'conta_apagada': [],
     // Link, post e compartilhar.
@@ -90,6 +101,16 @@ abstract final class AnalyticsCatalog {
     ],
     'link_copiado': ['tela', 'codigo', 'geracao'],
     'link_fim_acao': ['acao', 'resultado', 'codigo', 'origem_link'],
+    // Funil do link de campanha (T84): post → desafio → aula → conta.
+    'campanha_link_aberto': [...campaignParams, 'instalacao'],
+    'campanha_instalacao': campaignParams,
+    'campanha_desafio_inicio': campaignParams,
+    'campanha_desafio_fim': [...campaignParams, 'resultado', 'conseguiu'],
+    'campanha_oferta_vista': [...campaignParams, 'destaque'],
+    'campanha_oferta_tocada': [...campaignParams, 'destaque'],
+    'campanha_cadastro': [...campaignParams, 'resposta'],
+    'campanha_aula_aberta': [...campaignParams, 'disponivel'],
+    'campanha_aula_concluida': campaignParams,
     // Partidas e modos.
     'partida_config_vista': ['origem', 'posicao_id'],
     'partida_iniciada': [
@@ -126,6 +147,8 @@ abstract final class AnalyticsCatalog {
       'aula_id', 'tipo_aula', 'tempo_s', 'erros', 'dicas', 'estrelas', //
       'sessoes',
     ],
+    // `origem`: `trilha_finais|escola|aula`.
+    'aula_indisponivel': ['origem'],
     'aula_saida': [
       'aula_id',
       'capitulo_id',
@@ -277,7 +300,9 @@ abstract final class AnalyticsEvents {
     'tempo_s': _s(tempo),
   });
 
-  /// `resposta`: `aceitou|agora_nao`; `momento`: `pos_partida|pos_tour`.
+  /// `resposta`: `aceitou|agora_nao`; `momento`: `pos_vitoria` (depois da
+  /// 1ª vitória), `pos_lichess` ou `pos_desafio_link` (antes da aula do link
+  /// de campanha, T84).
   static AnalyticsEvent contaConvite({
     required String resposta,
     required String momento,
@@ -295,6 +320,16 @@ abstract final class AnalyticsEvents {
     'conta_lichess',
     {'acao': acao, 'faixa': AnalyticsRules.ratingBand(rating)},
   );
+
+  /// O Lichess conectou: `origem` `nivel|perfil` (de onde "Seu nível" foi
+  /// aberto); `tem_conta` `sim|nao` (já havia conta no Lucena).
+  static AnalyticsEvent lichessConectado({
+    required String origem,
+    required bool temConta,
+  }) => _e('lichess_conectado', {
+    'origem': origem,
+    'tem_conta': AnalyticsRules.yesNo(temConta),
+  });
 
   static AnalyticsEvent contaProgressoRecuperado({required int itens}) =>
       _e('conta_progresso_recuperado', {'itens': itens});
@@ -456,6 +491,76 @@ abstract final class AnalyticsEvents {
     'origem_link': origemLink,
   });
 
+  // Funil do link de campanha (T84).
+
+  static AnalyticsEvent _campaign(
+    String name,
+    Campaign campaign, [
+    Map<String, Object?> extra = const {},
+  ]) => _e(name, {
+    'tipo': campaign.kind,
+    'utm_fonte': AnalyticsRules.campaignValue(campaign.utm, 'utm_source'),
+    'utm_campanha': AnalyticsRules.campaignValue(campaign.utm, 'utm_campaign'),
+    'utm_post': AnalyticsRules.campaignValue(campaign.utm, 'utm_content'),
+    'codigo': campaign.code,
+    'aula_id': campaign.lesson?.id,
+    'tipo_aula': campaign.lesson?.analyticsKind,
+    ...extra,
+  });
+
+  /// O link do post abriu o app. `instalacao`: `recem_instalado|ja_instalado`.
+  static AnalyticsEvent campanhaLinkAberto(
+    Campaign campaign, {
+    required bool installedNow,
+  }) => _campaign('campanha_link_aberto', campaign, {
+    'instalacao': installedNow ? 'recem_instalado' : 'ja_instalado',
+  });
+
+  /// O app instalado pela Play trouxe o link no Install Referrer.
+  static AnalyticsEvent campanhaInstalacao(Campaign campaign) =>
+      _campaign('campanha_instalacao', campaign);
+
+  static AnalyticsEvent campanhaDesafioInicio(Campaign campaign) =>
+      _campaign('campanha_desafio_inicio', campaign);
+
+  /// `resultado`: o do `partida_fim`; `conseguiu`: cumpriu o objetivo.
+  static AnalyticsEvent campanhaDesafioFim(
+    Campaign campaign, {
+    required String resultado,
+    required bool conseguiu,
+  }) => _campaign('campanha_desafio_fim', campaign, {
+    'resultado': resultado,
+    'conseguiu': _yn(conseguiu),
+  });
+
+  /// `destaque`: `principal|secundaria`.
+  static AnalyticsEvent campanhaOfertaVista(
+    Campaign campaign, {
+    required String destaque,
+  }) => _campaign('campanha_oferta_vista', campaign, {'destaque': destaque});
+
+  static AnalyticsEvent campanhaOfertaTocada(
+    Campaign campaign, {
+    required String destaque,
+  }) => _campaign('campanha_oferta_tocada', campaign, {'destaque': destaque});
+
+  /// `resposta`: `aceitou|agora_nao|ja_tem_conta`.
+  static AnalyticsEvent campanhaCadastro(
+    Campaign campaign, {
+    required String resposta,
+  }) => _campaign('campanha_cadastro', campaign, {'resposta': resposta});
+
+  /// `disponivel`: a aula existe e está liberada.
+  static AnalyticsEvent campanhaAulaAberta(
+    Campaign campaign, {
+    required bool disponivel,
+  }) => _campaign('campanha_aula_aberta', campaign, {
+    'disponivel': _yn(disponivel),
+  });
+
+  static AnalyticsEvent campanhaAulaConcluida(Campaign campaign) =>
+      _campaign('campanha_aula_concluida', campaign);
+
   // Partidas e modos.
 
   /// `origem`: `link|nova_partida|catalogo|final_destaque|final_dia|aula|jornada`.
@@ -615,8 +720,8 @@ abstract final class AnalyticsEvents {
     required bool aprovado,
     required int acertosPrimeira,
     required int exercicios,
-    required int tentativas,
-    required Duration tempo,
+    int? tentativas,
+    Duration? tempo,
   }) => _e('aula_teste_fim', {
     'aula_id': aulaId,
     'aprovado': _yn(aprovado),
@@ -643,6 +748,11 @@ abstract final class AnalyticsEvents {
     'estrelas': estrelas,
     'sessoes': sessoes,
   });
+
+  /// "As aulas ainda não estão disponíveis" (o conteúdo não baixou).
+  /// `origem`: `trilha_finais|escola|aula`.
+  static AnalyticsEvent aulaIndisponivel({required String origem}) =>
+      _e('aula_indisponivel', {'origem': origem});
 
   static AnalyticsEvent aulaSaida({
     required String aulaId,

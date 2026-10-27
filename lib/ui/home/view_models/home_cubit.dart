@@ -1,16 +1,21 @@
+import 'dart:async';
+
+import 'package:dartchess/dartchess.dart' show Move;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/lesson_content.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
-import '../../../data/repositories/daily/daily_final_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/featured/featured_progress_repository.dart';
 import '../../../data/repositories/featured/featured_repository.dart';
 import '../../../data/repositories/home/home_layout_repository.dart';
 import '../../../data/repositories/home/unlock_repository.dart';
+import '../../../data/repositories/ongoing_game/ongoing_game_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
@@ -22,17 +27,21 @@ import '../../../data/repositories/rating/rating_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../domain/models/character.dart';
-import '../../../domain/models/daily_final.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/home_layout.dart';
+import '../../../domain/models/home_shortcut.dart';
 import '../../../domain/models/journey.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/streak.dart';
+import '../../../domain/use_cases/beginner_home.dart';
+import '../../../domain/use_cases/course_availability.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/featured_rules.dart';
+import '../../../domain/use_cases/game_rules.dart';
+import '../../../domain/use_cases/home_shortcuts.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
 import '../../../domain/use_cases/mastery.dart';
@@ -50,6 +59,7 @@ class HomeState {
     this.current,
     this.next,
     this.character,
+    this.teacher,
     this.rating,
     this.school,
     this.endgame,
@@ -57,15 +67,17 @@ class HomeState {
     this.level,
     this.ratingChange,
     this.layout,
-    this.layoutNotice = false,
     this.unlockedBlind = false,
     this.featured,
     this.goal,
-    this.endgameGoal,
+    this.courseDone = false,
+    this.journeySaved = false,
     this.trainGoal,
     this.journeyStarted = false,
-    this.daily,
     this.streak = Streak.none,
+    this.courseAvailable = true,
+    this.placementDone = true,
+    this.ratedGames = 0,
   });
 
   final bool ready;
@@ -85,6 +97,9 @@ class HomeState {
 
   /// O personagem do degrau atual (nulo no do Stockfish).
   final Character? character;
+
+  /// O Viktor, no cartão do Curso de finais concluído.
+  final Character? teacher;
   final int? rating;
 
   /// O iniciante com aulas por fazer: a tela inicial leva primeiro a elas.
@@ -100,12 +115,8 @@ class HomeState {
   /// Quanto a última partida mudou o rating. Nulo sem duas partidas.
   final int? ratingChange;
 
-  /// Os caminhos em destaque e os de "Outros modos". Nulo enquanto lê.
+  /// A ordem dos caminhos, que ordena os atalhos. Nulo enquanto lê.
   final HomeLayout? layout;
-
-  /// O aviso único, para quem fez o tour antes de dar para escolher os
-  /// caminhos: "Agora dá para escolher o que aparece aqui".
-  final bool layoutNotice;
 
   /// O cartão "Novo modo desbloqueado: às cegas", depois do primeiro desafio
   /// às cegas vencido na Jornada. Aparece uma vez.
@@ -118,90 +129,79 @@ class HomeState {
   /// (a tela fica como era).
   final GoalPreference? goal;
 
-  /// Com o objetivo "Aprender finais": a aula da vez na trilha.
-  final EndgameGoal? endgameGoal;
+  /// Todas as aulas de final liberadas aprovadas: o cartão de "Aprender
+  /// finais" vira "Curso concluído".
+  final bool courseDone;
 
-  /// Com o objetivo "Treinar finais": o final sugerido pelo nível.
+  /// A partida do desafio da vez ([next]) está salva: o botão é "Retomar".
+  final bool journeySaved;
+
+  /// O final sugerido pelo nível, para o cartão de "Treinar finais" (e para
+  /// onde ele cai quando o caminho do objetivo acabou).
   final TrainGoal? trainGoal;
 
   /// Algum desafio da Jornada já cumprido.
   final bool journeyStarted;
 
-  /// O final de hoje, na faixa "Final do dia". Nulo: a faixa some.
-  final DailyFinal? daily;
-
   /// A sequência de dias; com [Streak.lost], a folha da sequência perdida
   /// sai uma vez.
   final Streak streak;
 
-  /// O caminho do cartão "Seu objetivo". Nulo: sem objetivo, ou sem nada
-  /// por fazer nele (o caminho fica na lista).
-  HomePath? get goalPath {
+  /// Há aula de final liberada. Falso: o Curso de finais e os finais para
+  /// você não aparecem (T83 B1).
+  final bool courseAvailable;
+
+  /// A pessoa fez o teste de nível (T83 B4).
+  final bool placementDone;
+
+  /// As partidas que mexeram no rating (sem os bônus de speedrun).
+  final int ratedGames;
+
+  /// O número do rating aparece (T83 B3).
+  bool get showsRating => BeginnerHome.showsRating(goal, ratedGames);
+
+  /// "Finais em destaque" (o final do dia e o destaque) aparece (T83 B3).
+  bool get showsFeatured => BeginnerHome.showsFeatured(goal, journeyStarted);
+
+  /// O que o cartão azul de cima mostra (T83, os 20 estados da prancha
+  /// "card-estados"). Nulo: nenhum cartão.
+  HomeHero? get hero {
+    if (!ready) return null;
     final goal = this.goal;
-    if (goal == null) return null;
-    final path = HomeSuggestion.goalPath(goal);
-    final ready = switch (path) {
-      HomePath.learn => school != null,
-      HomePath.endgames => endgameGoal != null,
-      HomePath.train => trainGoal != null,
-      _ => current != null,
-    };
-    return ready ? path : null;
-  }
-
-  /// O cartão "Continuar de onde parou", abaixo do objetivo: a Jornada para
-  /// quem aprende finais, a aula de final em andamento para quem treina.
-  /// Nulo: o cartão some.
-  HomePath? get resumePath {
-    if (goal == null) return null;
-    return switch (goalPath) {
-      HomePath.endgames when journeyStarted && current != null =>
-        HomePath.journey,
-      HomePath.train when endgame != null && !endgame!.recommended =>
-        HomePath.endgames,
-      _ => null,
+    if (goal == GoalPreference.learn && !boardControlsDone) {
+      return HomeHero.firstSteps;
+    }
+    if (goal == null) {
+      // Sem objetivo: a aula de final em andamento (ou recomendada), as
+      // aulas do iniciante ou a Jornada.
+      if (endgame != null) return HomeHero.endgame;
+      if (school != null) return HomeHero.school;
+      return _journeyOr(HomeHero.speedrun);
+    }
+    return switch (HomeSuggestion.goalPath(goal, course: courseAvailable)) {
+      HomePath.learn when school != null => HomeHero.school,
+      HomePath.endgames when endgame != null => HomeHero.endgame,
+      HomePath.endgames when courseDone => HomeHero.courseDone,
+      HomePath.endgames ||
+      HomePath.train => trainGoal != null ? HomeHero.train : HomeHero.speedrun,
+      _ => _journeyOr(trainGoal != null ? HomeHero.train : HomeHero.speedrun),
     };
   }
 
-  /// Os caminhos da lista: sem o que virou o cartão do objetivo.
-  List<HomePath> get shownPaths {
-    final shown = layout?.shown ?? const <HomePath>[];
-    final goalPath = this.goalPath;
-    return [
-      for (final path in shown)
-        if (path != goalPath) path,
-    ];
-  }
+  HomeHero _journeyOr(HomeHero done) =>
+      current != null && next != null ? HomeHero.journey : done;
 
-  /// O caminho do cartão "Continuar": o da vez (a aula de final aberta, as
-  /// aulas do iniciante ou a Jornada) se estiver em destaque; senão, o
-  /// primeiro em destaque com progresso. Nulo: o cartão some.
-  HomePath? get continuePath {
-    // Com o objetivo, os cartões dele tomam o lugar do "Continuar".
-    if (goal != null) return null;
-    final layout = this.layout;
-    final current = endgame != null
-        ? HomePath.endgames
-        : school != null
-        ? HomePath.learn
-        : HomePath.journey;
-    if (layout == null) return current;
-    return HomeSuggestion.continuePath(
-      layout,
-      current: current,
-      withProgress: {
-        if (endgame != null) HomePath.endgames,
-        if (school != null) HomePath.learn,
-        HomePath.journey,
-      },
+  /// Os atalhos da grade: todos os caminhos marcados, na ordem do nível.
+  List<HomeShortcut> get shortcuts {
+    final shown = layout ?? HomeSuggestion.of(level ?? RatingLevel.casual);
+    return HomeShortcuts.of(
+      order: shown.order,
+      visible: shown.visible,
+      learning: goal == GoalPreference.learn,
     );
   }
 
-  HomeState copyWith({
-    bool? layoutNotice,
-    bool? unlockedBlind,
-    Streak? streak,
-  }) => HomeState(
+  HomeState copyWith({bool? unlockedBlind, Streak? streak}) => HomeState(
     ready: ready,
     tourPending: tourPending,
     boardControlsDone: boardControlsDone,
@@ -209,6 +209,7 @@ class HomeState {
     current: current,
     next: next,
     character: character,
+    teacher: teacher,
     rating: rating,
     school: school,
     endgame: endgame,
@@ -216,36 +217,51 @@ class HomeState {
     level: level,
     ratingChange: ratingChange,
     layout: layout,
-    layoutNotice: layoutNotice ?? this.layoutNotice,
     unlockedBlind: unlockedBlind ?? this.unlockedBlind,
     featured: featured,
     goal: goal,
-    endgameGoal: endgameGoal,
+    courseDone: courseDone,
+    journeySaved: journeySaved,
     trainGoal: trainGoal,
     journeyStarted: journeyStarted,
-    daily: daily,
     streak: streak ?? this.streak,
+    courseAvailable: courseAvailable,
+    placementDone: placementDone,
+    ratedGames: ratedGames,
   );
 }
 
-/// O cartão "Seu objetivo" de "Aprender finais": a aula da vez, o lugar dela
-/// na trilha e quantas já passaram.
-class EndgameGoal {
-  const EndgameGoal({
-    required this.lesson,
-    required this.number,
-    required this.total,
-    required this.passed,
-  });
+/// O cartão azul de cima da tela inicial: um lugar do app por vez.
+enum HomeHero {
+  /// Como mover as peças, antes da primeira partida de quem aprende a jogar.
+  firstSteps(HomePath.journey),
 
-  final EndgameSummary lesson;
-  final int number;
-  final int total;
-  final int passed;
+  /// A lição da vez na Escola.
+  school(HomePath.learn),
+
+  /// O adversário atual da Jornada.
+  journey(HomePath.journey),
+
+  /// A aula de final em andamento ou a recomendada.
+  endgame(HomePath.endgames),
+
+  /// O Curso de finais todo aprovado: o botão leva ao treino.
+  courseDone(HomePath.train),
+
+  /// O final sugerido pelo nível.
+  train(HomePath.train),
+
+  /// Nada por fazer nos outros: o speedrun.
+  speedrun(HomePath.speedrun);
+
+  const HomeHero(this.path);
+
+  /// O caminho que o cartão já mostra (sai dos atalhos).
+  final HomePath path;
 }
 
-/// O cartão "Seu objetivo" de "Treinar finais": o final sugerido e a
-/// primeira posição dele por cumprir (a miniatura).
+/// O final sugerido pelo nível e a primeira posição dele por cumprir (a
+/// miniatura).
 class TrainGoal {
   const TrainGoal({required this.suggestion, this.fen});
 
@@ -289,9 +305,19 @@ class EndgameSummary {
     this.partNumber,
     this.partCount,
     this.recommended = false,
+    this.progress = 0,
+    this.fen,
   });
 
   final String lessonId;
+
+  /// Quanto do capítulo está feito: as partes da lição e os exercícios
+  /// resolvidos, de 0 a 1.
+  final double progress;
+
+  /// A miniatura do cartão: o exercício da vez ou, sem ele, a posição-chave
+  /// da aula.
+  final String? fen;
 
   /// Próximo final do roteiro, ainda sem aula/exercício em andamento.
   final bool recommended;
@@ -342,13 +368,18 @@ class HomeCubit extends Cubit<HomeState> {
     this._featuredProgress,
     this._now,
     this._positions,
-    this._daily,
     this._activity,
+    this._games,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const HomeState());
 
-  // O final do dia e a sequência: sem eles (ou sem o relógio), a faixa some.
-  final DailyFinalRepository? _daily;
+  final AnalyticsRepository _analytics;
+
+  // A sequência de dias: sem ela (ou sem o relógio), a folha não sai.
   final ActivityRepository? _activity;
+
+  // A partida salva, para o "Retomar" da Jornada.
+  final OngoingGameRepository? _games;
 
   // O catálogo de posições, para o cartão de "Treinar finais".
   final PositionsRepository? _positions;
@@ -413,9 +444,17 @@ class HomeCubit extends Cubit<HomeState> {
     final profile = await _profile.load();
     final saved = await _homeLayout?.load();
     final goal = profile.goal;
-    final layout = HomeSuggestion.resolve(saved, profile.level, goal: goal);
+    final courseAvailable = await CourseAvailability(_endgameLessons.trail)();
+    final layout = HomeSuggestion.resolve(
+      saved,
+      profile.level,
+      goal: goal,
+      course: courseAvailable,
+    );
     final priority = layout.shown.firstOrNull;
-    final goalPath = goal == null ? null : HomeSuggestion.goalPath(goal);
+    final goalPath = goal == null
+        ? null
+        : HomeSuggestion.goalPath(goal, course: courseAvailable);
     final endgame = await _optionalContent(
       () => _endgameSummary(
         language,
@@ -427,22 +466,23 @@ class HomeCubit extends Cubit<HomeState> {
         firstUnpassed: goalPath == HomePath.endgames,
       ),
     );
-    final endgameGoal = goalPath == HomePath.endgames && endgame != null
-        ? await _optionalContent(() => _endgameGoal(endgame))
+    final courseDone =
+        goalPath == HomePath.endgames &&
+        endgame == null &&
+        (await _optionalContent(_courseDone) ?? false);
+    // O treino é o cartão de "Treinar finais" e para onde os outros caem
+    // quando acabam (a Jornada vencida, o curso concluído).
+    final trainGoal =
+        goalPath == HomePath.train ||
+            (goalPath == HomePath.endgames && endgame == null) ||
+            (goal != null && current == null)
+        ? await _trainGoal(profile.level, rating.rounded)
         : null;
-    final trainGoal = goalPath == HomePath.train
-        ? await _trainGoal(profile.level)
-        : null;
-    // Quem fez o tour antes de dar para escolher ganha o aviso, uma vez.
-    final notice =
-        _homeLayout != null &&
-        onboarding.done &&
-        saved == null &&
-        !await _homeLayout.noticeSeen();
+    final journeySaved = next != null && await _journeySaved(next);
     final featured = await _featuredItem();
-    final now = _now;
-    final daily = now == null ? null : await _daily?.of(now());
     final streak = await _streak();
+    final placementDone =
+        _placement == null || await _placement.result() != null;
     if (isClosed) return;
     emit(
       HomeState(
@@ -456,6 +496,7 @@ class HomeCubit extends Cubit<HomeState> {
         character: current?.rung.opponent.kind == OpponentKind.stockfish
             ? Character.stockfish
             : characters.forLevel(current?.rung.opponent.level),
+        teacher: characters.where((each) => each.id == 'master').firstOrNull,
         rating: rating.rounded,
         school: school,
         endgame: endgame,
@@ -466,15 +507,17 @@ class HomeCubit extends Cubit<HomeState> {
             : history.last.rating.rounded -
                   history[history.length - 2].rating.rounded,
         layout: layout,
-        layoutNotice: notice,
         unlockedBlind: unlockedBlind,
         featured: featured,
         goal: goal,
-        endgameGoal: endgameGoal,
+        courseDone: courseDone,
+        journeySaved: journeySaved,
         trainGoal: trainGoal,
         journeyStarted: fulfilled.isNotEmpty,
-        daily: daily,
         streak: streak,
+        courseAvailable: courseAvailable,
+        placementDone: placementDone,
+        ratedGames: history.where((entry) => !entry.isBonus).length,
       ),
     );
   }
@@ -493,6 +536,18 @@ class HomeCubit extends Cubit<HomeState> {
     return pending ? streak : streak.withoutLost;
   }
 
+  /// A folha da sequência perdida de [lost] foi respondida: [played] se foi
+  /// jogar o final de hoje, senão "Agora não".
+  void lostAnswered(Streak lost, {required bool played}) => unawaited(
+    _analytics.log(
+      AnalyticsEvents.sequenciaPerdida(
+        tamanho: lost.lost,
+        recorde: lost.record,
+        acao: played ? 'jogou_hoje' : 'agora_nao',
+      ),
+    ),
+  );
+
   /// A folha da sequência perdida saiu: não volta.
   Future<void> lostShown() async {
     final now = _now;
@@ -501,25 +556,44 @@ class HomeCubit extends Cubit<HomeState> {
     await _activity?.markLostShown(StreakRules.lostLastDay(now()));
   }
 
-  /// A aula da vez na trilha: o número dela e quantas já passaram.
-  Future<EndgameGoal> _endgameGoal(EndgameSummary lesson) async {
+  /// Todas as aulas de final liberadas já foram aprovadas.
+  Future<bool> _courseDone() async {
     final lessons = (await _endgameLessons.trail()).lessons;
     final progress = await _endgameProgress.load();
-    final index = lessons.indexWhere((each) => each.id == lesson.lessonId);
-    return EndgameGoal(
-      lesson: lesson,
-      number: index + 1,
-      total: lessons.length,
-      passed: lessons
-          .where(
-            (each) => EndgameLessonRules.passed(each, progress.of(each.id)),
-          )
-          .length,
-    );
+    return lessons.isNotEmpty &&
+        lessons.every(
+          (lesson) => EndgameLessonRules.passed(lesson, progress.of(lesson.id)),
+        );
+  }
+
+  /// A partida de [challenge] ficou salva no meio (a mesma regra da tela do
+  /// desafio): o cartão oferece retomá-la.
+  Future<bool> _journeySaved(Challenge challenge) async {
+    final snapshot = await _games?.load();
+    if (snapshot == null) return false;
+    if (snapshot.moves.isEmpty && snapshot.clock == null) return false;
+    final mode = snapshot.mode;
+    if (mode.challengeId != challenge.id ||
+        mode.isSpeedrun ||
+        mode.fromLink ||
+        snapshot.startFen != challenge.position.fen ||
+        mode.positionId != challenge.position.id ||
+        mode.opponent != challenge.opponent.kind ||
+        mode.level != challenge.opponent.level ||
+        mode.goal != challenge.goal) {
+      return false;
+    }
+    var position = GameRules.fromFen(snapshot.startFen);
+    for (final uci in snapshot.moves) {
+      final move = Move.parse(uci);
+      if (position == null || move == null) return false;
+      position = GameRules.play(position, move)?.position;
+    }
+    return position != null && GameRules.endOf(position) == null;
   }
 
   /// O final sugerido pelo nível e a primeira posição dele por cumprir.
-  Future<TrainGoal?> _trainGoal(RatingLevel level) async {
+  Future<TrainGoal?> _trainGoal(RatingLevel level, int rating) async {
     final positions = _positions;
     if (positions == null) return null;
     final fulfilled = await _progress.fulfilledPositions();
@@ -527,6 +601,7 @@ class HomeCubit extends Cubit<HomeState> {
       level,
       await positions.catalog(),
       fulfilled,
+      rating: rating,
     );
     if (suggestion == null) return null;
     final list = await positions.bySubcategory(suggestion.subcategory.key);
@@ -554,13 +629,6 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> dismissUnlocked() async {
     emit(state.copyWith(unlockedBlind: false));
     await _unlocks?.markSeen(blindMode);
-  }
-
-  /// O aviso de que dá para escolher os caminhos saiu (fechado ou tocado):
-  /// não volta.
-  Future<void> dismissLayoutNotice() async {
-    emit(state.copyWith(layoutNotice: false));
-    await _homeLayout?.markNoticeSeen();
   }
 
   Future<T?> _optionalContent<T>(Future<T> Function() read) async {
@@ -678,8 +746,16 @@ class HomeCubit extends Cubit<HomeState> {
     final part = lesson.lesson.parts.isEmpty || checkpoint?.part == null
         ? null
         : lesson.lesson.part(checkpoint!.part!);
+    final steps = lesson.lesson.sections.length + lesson.exercises.length;
     return EndgameSummary(
       lessonId: lesson.id,
+      progress: steps == 0
+          ? 0
+          : (done.partsDone(lesson).length + done.solvedOf(lesson)) / steps,
+      fen:
+          exercise?.fen ??
+          lesson.keyPositions.firstOrNull?.fen ??
+          lesson.practice.fen,
       recommended: recommended,
       title: texts.lessonTitle(lesson.id),
       score: done.scoreOf(lesson),

@@ -1,15 +1,19 @@
 import '../../../domain/models/account.dart';
 import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/campaign.dart';
 import '../../../domain/models/challenge_link.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/linked_lesson.dart';
 import '../../../domain/models/push_alert.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/streak_rules.dart';
 import '../account/account_repository.dart';
 import '../activity/activity_repository.dart';
+import '../campaign/campaign_repository.dart';
 import '../endgames/endgame_progress_repository.dart';
+import '../profile/profile_repository.dart';
 import '../push/push_repository.dart';
 import '../school/school_progress_repository.dart';
 import 'analytics_repository.dart';
@@ -27,6 +31,8 @@ class AnalyticsOpening {
     required this.activity,
     required this.now,
     required this.country,
+    this.profile,
+    this.campaigns,
     this.schoolLessons = const {},
   });
 
@@ -38,6 +44,12 @@ class AnalyticsOpening {
   final ActivityRepository activity;
   final Now now;
 
+  /// O perfil, para o `lichess_vinculado` (conta e Lichess ligados).
+  final ProfileRepository? profile;
+
+  /// A campanha do link de post que abriu o app (T84), para o funil.
+  final CampaignRepository? campaigns;
+
   /// O país da região do celular (ISO de 2 letras), sem permissão.
   final String? Function() country;
 
@@ -45,39 +57,86 @@ class AnalyticsOpening {
   final Set<String> schoolLessons;
 
   /// Na partida fria: [link] é o desafio que abriu o app (por link ou por
-  /// aviso); [pushed] diz que o app abriu por um aviso.
-  Future<void> launched({ChallengeLink? link, bool pushed = false}) async {
+  /// aviso); [lessonLink], o link só de aula (T84); [pushed] diz que o app
+  /// abriu por um aviso; [fromReferrer], que o link veio da instalação pela
+  /// Play (deferred deep link).
+  Future<void> launched({
+    ChallengeLink? link,
+    LessonLink? lessonLink,
+    bool pushed = false,
+    bool fromReferrer = false,
+  }) async {
     await _analytics.start();
+    final utm = link?.utm ?? lessonLink?.utm;
     final installedNow = await _analytics.recordOrigin(
       first: pushed
           ? 'push'
-          : link != null
+          : utm != null
           ? 'link'
           : 'loja',
-      source: link == null
+      source: utm == null
           ? null
-          : AnalyticsRules.campaignValue(link.utm, 'utm_source'),
-      campaign: link == null
+          : AnalyticsRules.campaignValue(utm, 'utm_source'),
+      campaign: utm == null
           ? null
-          : AnalyticsRules.campaignValue(link.utm, 'utm_campaign'),
-      post: link == null
+          : AnalyticsRules.campaignValue(utm, 'utm_campaign'),
+      post: utm == null
           ? null
-          : AnalyticsRules.campaignValue(link.utm, 'utm_content'),
-      link: link == null
-          ? null
-          : AnalyticsRules.linkOrigin(link.utm['utm_source']),
+          : AnalyticsRules.campaignValue(utm, 'utm_content'),
+      link: utm == null ? null : AnalyticsRules.linkOrigin(utm['utm_source']),
     );
-    if (link != null) await opened(link, installedNow: installedNow);
+    if (link != null) {
+      await opened(
+        link,
+        installedNow: installedNow,
+        fromReferrer: fromReferrer,
+      );
+    } else if (lessonLink != null) {
+      await campaignOpened(
+        Campaign.fromLessonLink(lessonLink),
+        installedNow: installedNow,
+        fromReferrer: fromReferrer,
+      );
+    }
     await syncTraits();
   }
 
-  /// Um link de desafio abriu o app (ou chegou com ele aberto).
-  Future<void> opened(ChallengeLink link, {bool installedNow = false}) async {
+  /// Um link de desafio abriu o app (ou chegou com ele aberto). O de post
+  /// (ou com aula) também entra no funil de campanha.
+  Future<void> opened(
+    ChallengeLink link, {
+    bool installedNow = false,
+    bool fromReferrer = false,
+  }) async {
     await _analytics.log(
       AnalyticsEvents.linkOpened(link, installedNow: installedNow),
     );
     await _analytics.rememberLink(
       LinkTrail(code: link.code, generation: link.generation),
+    );
+    if (link.isCampaign) {
+      await campaignOpened(
+        Campaign.fromChallenge(link),
+        installedNow: installedNow,
+        fromReferrer: fromReferrer,
+      );
+    }
+  }
+
+  /// O link de campanha [campaign] abriu o app: grava a campanha (o link mais
+  /// novo vence) e conta o `campanha_link_aberto` e, se veio da Play, o
+  /// `campanha_instalacao`.
+  Future<void> campaignOpened(
+    Campaign campaign, {
+    bool installedNow = false,
+    bool fromReferrer = false,
+  }) async {
+    await campaigns?.remember(campaign);
+    if (fromReferrer) {
+      await _analytics.log(AnalyticsEvents.campanhaInstalacao(campaign));
+    }
+    await _analytics.log(
+      AnalyticsEvents.campanhaLinkAberto(campaign, installedNow: installedNow),
     );
   }
 
@@ -107,8 +166,8 @@ class AnalyticsOpening {
     };
   }
 
-  /// As propriedades lidas do aparelho: país, aviso, conta, Escola, aulas de
-  /// finais e sequência.
+  /// As propriedades lidas do aparelho: país, aviso, conta, Lichess
+  /// vinculado, Escola, aulas de finais e sequência.
   Future<void> syncTraits() async {
     await _analytics.setTrait(
       AnalyticsTrait.country,
@@ -124,6 +183,13 @@ class AnalyticsOpening {
       AnalyticsTrait.account,
       accountTrait(account.current),
     );
+    if (profile case final profile?) {
+      final lichess = (await profile.load()).lichessUser;
+      await _analytics.setTrait(
+        AnalyticsTrait.lichessLinked,
+        AnalyticsRules.yesNo(account.current != null && lichess != null),
+      );
+    }
     await _analytics.setTrait(
       AnalyticsTrait.school,
       schoolTrait(await school.load(), schoolLessons),

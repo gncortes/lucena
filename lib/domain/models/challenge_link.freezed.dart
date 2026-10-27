@@ -29,7 +29,12 @@ mixin _$ChallengeLink {
  Map<String, String> get utm;/// Quantas vezes o link foi repassado (`g`, E1.03 §9): 0 no nosso post,
 /// 1 no link de quem nunca chegou por link, e assim por diante. Fica fora
 /// do código.
- int get generation;
+ int get generation;/// Em quantos lances quem mandou venceu o desafio (`mv`): só no link
+/// criado depois de uma vitória. Fica fora do código; o resultado de quem
+/// abre se compara com ele. Nulo: link sem resultado (os antigos).
+ int? get senderMoves;/// A aula que o fim da partida oferece (`aula` ou `escola`, T84). Fica
+/// fora do código. Nula: os links de antes, sem oferta.
+ LinkedLesson? get lesson;
 /// Create a copy of ChallengeLink
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -41,20 +46,20 @@ $ChallengeLinkCopyWith<ChallengeLink> get copyWith => _$ChallengeLinkCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as ChallengeLink;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChallengeLink&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.userSide, _this.userSide) || other.userSide == _this.userSide)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.blind, _this.blind) || other.blind == _this.blind)&&(identical(other.locked, _this.locked) || other.locked == _this.locked)&&const DeepCollectionEquality().equals(other.utm, _this.utm)&&(identical(other.generation, _this.generation) || other.generation == _this.generation));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChallengeLink&&(identical(other.fen, _this.fen) || other.fen == _this.fen)&&(identical(other.goal, _this.goal) || other.goal == _this.goal)&&(identical(other.positionId, _this.positionId) || other.positionId == _this.positionId)&&(identical(other.userSide, _this.userSide) || other.userSide == _this.userSide)&&(identical(other.opponent, _this.opponent) || other.opponent == _this.opponent)&&(identical(other.level, _this.level) || other.level == _this.level)&&(identical(other.clock, _this.clock) || other.clock == _this.clock)&&(identical(other.blind, _this.blind) || other.blind == _this.blind)&&(identical(other.locked, _this.locked) || other.locked == _this.locked)&&const DeepCollectionEquality().equals(other.utm, _this.utm)&&(identical(other.generation, _this.generation) || other.generation == _this.generation)&&(identical(other.senderMoves, _this.senderMoves) || other.senderMoves == _this.senderMoves)&&(identical(other.lesson, _this.lesson) || other.lesson == _this.lesson));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ChallengeLink;
-  return Object.hash(runtimeType,_this.fen,_this.goal,_this.positionId,_this.userSide,_this.opponent,_this.level,_this.clock,_this.blind,_this.locked,const DeepCollectionEquality().hash(_this.utm),_this.generation);
+  return Object.hash(runtimeType,_this.fen,_this.goal,_this.positionId,_this.userSide,_this.opponent,_this.level,_this.clock,_this.blind,_this.locked,const DeepCollectionEquality().hash(_this.utm),_this.generation,_this.senderMoves,_this.lesson);
 }
 
 @override
 String toString() {
   final _this = this as ChallengeLink;
-  return 'ChallengeLink(fen: ${_this.fen}, goal: ${_this.goal}, positionId: ${_this.positionId}, userSide: ${_this.userSide}, opponent: ${_this.opponent}, level: ${_this.level}, clock: ${_this.clock}, blind: ${_this.blind}, locked: ${_this.locked}, utm: ${_this.utm}, generation: ${_this.generation})';
+  return 'ChallengeLink(fen: ${_this.fen}, goal: ${_this.goal}, positionId: ${_this.positionId}, userSide: ${_this.userSide}, opponent: ${_this.opponent}, level: ${_this.level}, clock: ${_this.clock}, blind: ${_this.blind}, locked: ${_this.locked}, utm: ${_this.utm}, generation: ${_this.generation}, senderMoves: ${_this.senderMoves}, lesson: ${_this.lesson})';
 }
 
 
@@ -65,7 +70,7 @@ abstract mixin class $ChallengeLinkCopyWith<$Res>  {
   factory $ChallengeLinkCopyWith(ChallengeLink value, $Res Function(ChallengeLink) _then) = _$ChallengeLinkCopyWithImpl;
 @useResult
 $Res call({
- String fen, PositionGoal goal, String? positionId, Side userSide, OpponentKind opponent, int? level, TimeControl? clock, bool blind, bool locked, Map<String, String> utm, int generation
+ String fen, PositionGoal goal, String? positionId, Side userSide, OpponentKind opponent, int? level, TimeControl? clock, bool blind, bool locked, Map<String, String> utm, int generation, int? senderMoves, LinkedLesson? lesson
 });
 
 
@@ -82,7 +87,7 @@ class _$ChallengeLinkCopyWithImpl<$Res>
 
 /// Create a copy of ChallengeLink
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fen = null,Object? goal = null,Object? positionId = freezed,Object? userSide = null,Object? opponent = null,Object? level = freezed,Object? clock = freezed,Object? blind = null,Object? locked = null,Object? utm = null,Object? generation = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? fen = null,Object? goal = null,Object? positionId = freezed,Object? userSide = null,Object? opponent = null,Object? level = freezed,Object? clock = freezed,Object? blind = null,Object? locked = null,Object? utm = null,Object? generation = null,Object? senderMoves = freezed,Object? lesson = freezed,}) {
   return _then(ChallengeLink(
 fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nullable
 as String,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
@@ -95,7 +100,9 @@ as TimeControl?,blind: null == blind ? _self.blind : blind // ignore: cast_nulla
 as bool,locked: null == locked ? _self.locked : locked // ignore: cast_nullable_to_non_nullable
 as bool,utm: null == utm ? _self.utm : utm // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,generation: null == generation ? _self.generation : generation // ignore: cast_nullable_to_non_nullable
-as int,
+as int,senderMoves: freezed == senderMoves ? _self.senderMoves : senderMoves // ignore: cast_nullable_to_non_nullable
+as int?,lesson: freezed == lesson ? _self.lesson : lesson // ignore: cast_nullable_to_non_nullable
+as LinkedLesson?,
   ));
 }
 /// Create a copy of ChallengeLink
@@ -192,10 +199,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fen,  PositionGoal goal,  String? positionId,  Side userSide,  OpponentKind opponent,  int? level,  TimeControl? clock,  bool blind,  bool locked,  Map<String, String> utm,  int generation)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String fen,  PositionGoal goal,  String? positionId,  Side userSide,  OpponentKind opponent,  int? level,  TimeControl? clock,  bool blind,  bool locked,  Map<String, String> utm,  int generation,  int? senderMoves,  LinkedLesson? lesson)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChallengeLink() when $default != null:
-return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.opponent,_that.level,_that.clock,_that.blind,_that.locked,_that.utm,_that.generation);case _:
+return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.opponent,_that.level,_that.clock,_that.blind,_that.locked,_that.utm,_that.generation,_that.senderMoves,_that.lesson);case _:
   return orElse();
 
 }
@@ -213,10 +220,10 @@ return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.oppon
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fen,  PositionGoal goal,  String? positionId,  Side userSide,  OpponentKind opponent,  int? level,  TimeControl? clock,  bool blind,  bool locked,  Map<String, String> utm,  int generation)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String fen,  PositionGoal goal,  String? positionId,  Side userSide,  OpponentKind opponent,  int? level,  TimeControl? clock,  bool blind,  bool locked,  Map<String, String> utm,  int generation,  int? senderMoves,  LinkedLesson? lesson)  $default,) {final _that = this;
 switch (_that) {
 case _ChallengeLink():
-return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.opponent,_that.level,_that.clock,_that.blind,_that.locked,_that.utm,_that.generation);case _:
+return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.opponent,_that.level,_that.clock,_that.blind,_that.locked,_that.utm,_that.generation,_that.senderMoves,_that.lesson);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -233,10 +240,10 @@ return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.oppon
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fen,  PositionGoal goal,  String? positionId,  Side userSide,  OpponentKind opponent,  int? level,  TimeControl? clock,  bool blind,  bool locked,  Map<String, String> utm,  int generation)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String fen,  PositionGoal goal,  String? positionId,  Side userSide,  OpponentKind opponent,  int? level,  TimeControl? clock,  bool blind,  bool locked,  Map<String, String> utm,  int generation,  int? senderMoves,  LinkedLesson? lesson)?  $default,) {final _that = this;
 switch (_that) {
 case _ChallengeLink() when $default != null:
-return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.opponent,_that.level,_that.clock,_that.blind,_that.locked,_that.utm,_that.generation);case _:
+return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.opponent,_that.level,_that.clock,_that.blind,_that.locked,_that.utm,_that.generation,_that.senderMoves,_that.lesson);case _:
   return null;
 
 }
@@ -248,7 +255,7 @@ return $default(_that.fen,_that.goal,_that.positionId,_that.userSide,_that.oppon
 
 
 class _ChallengeLink extends ChallengeLink {
-  const _ChallengeLink({required this.fen, this.goal = PositionGoal.win, this.positionId, required this.userSide, this.opponent = OpponentKind.maia, this.level, this.clock, this.blind = false, this.locked = false,  Map<String, String> utm = const <String, String>{}, this.generation = 0}): _utm = utm,super._();
+  const _ChallengeLink({required this.fen, this.goal = PositionGoal.win, this.positionId, required this.userSide, this.opponent = OpponentKind.maia, this.level, this.clock, this.blind = false, this.locked = false,  Map<String, String> utm = const <String, String>{}, this.generation = 0, this.senderMoves, this.lesson}): _utm = utm,super._();
   
 
 /// A posição de início.
@@ -285,6 +292,13 @@ class _ChallengeLink extends ChallengeLink {
 /// 1 no link de quem nunca chegou por link, e assim por diante. Fica fora
 /// do código.
 @override@JsonKey() final  int generation;
+/// Em quantos lances quem mandou venceu o desafio (`mv`): só no link
+/// criado depois de uma vitória. Fica fora do código; o resultado de quem
+/// abre se compara com ele. Nulo: link sem resultado (os antigos).
+@override final  int? senderMoves;
+/// A aula que o fim da partida oferece (`aula` ou `escola`, T84). Fica
+/// fora do código. Nula: os links de antes, sem oferta.
+@override final  LinkedLesson? lesson;
 
 /// Create a copy of ChallengeLink
 /// with the given fields replaced by the non-null parameter values.
@@ -296,18 +310,18 @@ _$ChallengeLinkCopyWith<_ChallengeLink> get copyWith => __$ChallengeLinkCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChallengeLink&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.userSide, userSide) || other.userSide == userSide)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.level, level) || other.level == level)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.blind, blind) || other.blind == blind)&&(identical(other.locked, locked) || other.locked == locked)&&const DeepCollectionEquality().equals(other.utm, _utm)&&(identical(other.generation, generation) || other.generation == generation));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChallengeLink&&(identical(other.fen, fen) || other.fen == fen)&&(identical(other.goal, goal) || other.goal == goal)&&(identical(other.positionId, positionId) || other.positionId == positionId)&&(identical(other.userSide, userSide) || other.userSide == userSide)&&(identical(other.opponent, opponent) || other.opponent == opponent)&&(identical(other.level, level) || other.level == level)&&(identical(other.clock, clock) || other.clock == clock)&&(identical(other.blind, blind) || other.blind == blind)&&(identical(other.locked, locked) || other.locked == locked)&&const DeepCollectionEquality().equals(other.utm, _utm)&&(identical(other.generation, generation) || other.generation == generation)&&(identical(other.senderMoves, senderMoves) || other.senderMoves == senderMoves)&&(identical(other.lesson, lesson) || other.lesson == lesson));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,fen,goal,positionId,userSide,opponent,level,clock,blind,locked,const DeepCollectionEquality().hash(_utm),generation);
+    return Object.hash(runtimeType,fen,goal,positionId,userSide,opponent,level,clock,blind,locked,const DeepCollectionEquality().hash(_utm),generation,senderMoves,lesson);
 }
 
 @override
 String toString() {
-    return 'ChallengeLink(fen: $fen, goal: $goal, positionId: $positionId, userSide: $userSide, opponent: $opponent, level: $level, clock: $clock, blind: $blind, locked: $locked, utm: $utm, generation: $generation)';
+    return 'ChallengeLink(fen: $fen, goal: $goal, positionId: $positionId, userSide: $userSide, opponent: $opponent, level: $level, clock: $clock, blind: $blind, locked: $locked, utm: $utm, generation: $generation, senderMoves: $senderMoves, lesson: $lesson)';
 }
 
 
@@ -318,7 +332,7 @@ abstract mixin class _$ChallengeLinkCopyWith<$Res> implements $ChallengeLinkCopy
   factory _$ChallengeLinkCopyWith(_ChallengeLink value, $Res Function(_ChallengeLink) _then) = __$ChallengeLinkCopyWithImpl;
 @override @useResult
 $Res call({
- String fen, PositionGoal goal, String? positionId, Side userSide, OpponentKind opponent, int? level, TimeControl? clock, bool blind, bool locked, Map<String, String> utm, int generation
+ String fen, PositionGoal goal, String? positionId, Side userSide, OpponentKind opponent, int? level, TimeControl? clock, bool blind, bool locked, Map<String, String> utm, int generation, int? senderMoves, LinkedLesson? lesson
 });
 
 
@@ -335,7 +349,7 @@ class __$ChallengeLinkCopyWithImpl<$Res>
 
 /// Create a copy of ChallengeLink
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fen = null,Object? goal = null,Object? positionId = freezed,Object? userSide = null,Object? opponent = null,Object? level = freezed,Object? clock = freezed,Object? blind = null,Object? locked = null,Object? utm = null,Object? generation = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? fen = null,Object? goal = null,Object? positionId = freezed,Object? userSide = null,Object? opponent = null,Object? level = freezed,Object? clock = freezed,Object? blind = null,Object? locked = null,Object? utm = null,Object? generation = null,Object? senderMoves = freezed,Object? lesson = freezed,}) {
   return _then(_ChallengeLink(
 fen: null == fen ? _self.fen : fen // ignore: cast_nullable_to_non_nullable
 as String,goal: null == goal ? _self.goal : goal // ignore: cast_nullable_to_non_nullable
@@ -348,7 +362,9 @@ as TimeControl?,blind: null == blind ? _self.blind : blind // ignore: cast_nulla
 as bool,locked: null == locked ? _self.locked : locked // ignore: cast_nullable_to_non_nullable
 as bool,utm: null == utm ? _self._utm : utm // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,generation: null == generation ? _self.generation : generation // ignore: cast_nullable_to_non_nullable
-as int,
+as int,senderMoves: freezed == senderMoves ? _self.senderMoves : senderMoves // ignore: cast_nullable_to_non_nullable
+as int?,lesson: freezed == lesson ? _self.lesson : lesson // ignore: cast_nullable_to_non_nullable
+as LinkedLesson?,
   ));
 }
 

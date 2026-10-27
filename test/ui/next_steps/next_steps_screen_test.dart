@@ -12,7 +12,11 @@ void main() {
 
   setUp(opened.clear);
 
-  Future<void> pump(WidgetTester tester, String location) async {
+  Future<void> pump(
+    WidgetTester tester,
+    String location, {
+    bool course = true,
+  }) async {
     tester.view
       ..physicalSize = const Size(412, 917)
       ..devicePixelRatio = 1;
@@ -31,11 +35,15 @@ void main() {
           path: Routes.nextSteps,
           builder: (context, state) => NextStepsScreen(
             level: int.tryParse(state.uri.queryParameters['level'] ?? ''),
+            courseAvailable: () async => course,
           ),
         ),
         GoRoute(
           path: Routes.nextStepsSchool,
-          builder: (context, state) => const NextStepsScreen(graduated: true),
+          builder: (context, state) => NextStepsScreen(
+            graduated: true,
+            courseAvailable: () async => course,
+          ),
         ),
         stub(Routes.home),
         stub(Routes.endgames),
@@ -120,5 +128,27 @@ void main() {
     await tester.tap(find.byKey(NextStepsKeys.option('journey')));
     await tester.pumpAndSettle();
     expect(opened.last, Routes.journey);
+  });
+
+  testWidgets('sem aula liberada: o curso não é recomendado nem aparece', (
+    tester,
+  ) async {
+    await pump(tester, Routes.nextStepsReady(level: 1800), course: false);
+    expect(find.byKey(NextStepsKeys.option('lessons')), findsNothing);
+    for (final id in ['race', 'train']) {
+      expect(find.byKey(NextStepsKeys.option(id)), findsOneWidget);
+    }
+    // O único "Recomendado" passa para "Praticar finais".
+    expect(find.text('Recommended'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(NextStepsKeys.option('train')),
+        matching: find.text('Recommended'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(NextStepsKeys.option('train')));
+    await tester.pumpAndSettle();
+    expect(opened.last, Routes.catalog);
   });
 }

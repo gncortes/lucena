@@ -8,6 +8,8 @@ import 'package:lucena/domain/models/conclusion.dart';
 import 'package:lucena/domain/models/game_end.dart';
 import 'package:lucena/domain/models/game_review.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/speedrun_pace.dart';
 import 'package:lucena/ui/conclusion/view_models/conclusion_cubit.dart';
 import 'package:lucena/ui/free_board/view_models/game_reporter.dart';
@@ -21,6 +23,7 @@ import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
+import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_speedrun_repository.dart';
@@ -55,6 +58,7 @@ void main() {
     FakeAnalysisRepository? analysis,
     FakeGameReviewRepository? reviews,
     FakeOpponentRepository? opponent,
+    FakeProfileRepository? profile,
   }) => ConclusionCubit(
     opponent: opponent,
     analysis: analysis,
@@ -68,6 +72,7 @@ void main() {
     characters: FakeCharacterRepository(),
     now: now,
     pending: pending,
+    profile: profile,
   );
 
   /// Joga e grava a partida como o tabuleiro faz no fim: a partida, o
@@ -159,6 +164,38 @@ void main() {
     expect(conclusion.next?.id, sampleLadder[0].challenges[1].id);
     expect(conclusion.actions.first, ConclusionAction.nextChallenge);
     expect(conclusion.achievements, isNotEmpty);
+    await conclusions.close();
+  });
+
+  test('quem aprende a jogar só vê o rating na 3ª partida que conta', () async {
+    final profile = FakeProfileRepository(
+      const UserProfile(goal: GoalPreference.learn),
+    );
+    final first = await play(won: true);
+    final second = await play(won: false);
+    final third = await play(won: true);
+    Future<bool> shows(int id) async {
+      final conclusions = cubit(profile: profile);
+      await conclusions.load(id, 'en');
+      final conclusion = conclusions.state.conclusion!;
+      await conclusions.close();
+      return conclusion.before != null && conclusion.after != null;
+    }
+
+    expect(await shows(first), isFalse);
+    expect(await shows(second), isFalse);
+    expect(await shows(third), isTrue);
+  });
+
+  test('quem já joga vê o rating desde a 1ª partida', () async {
+    final id = await play(won: true);
+    final conclusions = cubit(
+      profile: FakeProfileRepository(
+        const UserProfile(goal: GoalPreference.train),
+      ),
+    );
+    await conclusions.load(id, 'en');
+    expect(conclusions.state.conclusion!.after, isNotNull);
     await conclusions.close();
   });
 

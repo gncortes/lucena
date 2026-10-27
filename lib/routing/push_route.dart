@@ -21,16 +21,17 @@ Future<String> pushRoute(
     return Routes.home;
   }
   return switch (uri.pathSegments) {
-    ['daily'] || ['dia'] => Routes.daily,
+    ['daily'] || ['dia'] => Routes.dailyFrom('aviso'),
     ['lesson'] => switch (await pausedLesson()) {
       final paused? => Routes.endgameLessonScript(
         paused.lessonId,
         part: paused.partId,
         stage: paused.stage,
+        origin: 'aviso',
       ),
       null => Routes.home,
     },
-    ['lesson', final id] => Routes.endgameLesson(id),
+    ['lesson', final id] => Routes.endgameLesson(id, origin: 'aviso'),
     ['featured', 'tournament', final id] => Routes.featuredTournament(id),
     ['featured', final id] => Routes.featuredEndgame(id),
     _ => Routes.home,

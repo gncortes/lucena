@@ -9,7 +9,6 @@ abstract final class ChallengeKeys {
   static const invalidPaste = Key('challenge.invalid.paste');
 
   /// O botão da barra da Nova partida que abre a folha de mandar o desafio.
-  static const linkGameSubtitle = Key('challenge.linkGameSubtitle');
   static const sendButton = Key('challenge.send');
 
   static const sheet = Key('challenge.sheet');
@@ -34,7 +33,29 @@ abstract final class ChallengeKeys {
   /// O fim da partida de um desafio de link.
   static const endPlayAgain = Key('challenge.end.again');
   static const endShare = Key('challenge.end.share');
+  static const compare = Key('challenge.compare');
   static const endMeetApp = Key('challenge.end.app');
+
+  /// A aula ligada ao link de campanha (T84): "Ver a aula" no rodapé do fim.
+  static const endLesson = Key('challenge.end.lesson');
+
+  /// A folha da aula gratuita (T84, variante A): a frase, os passos e os
+  /// botões.
+  static const leadSheet = Key('challenge.lead.sheet');
+  static const leadClose = Key('challenge.lead.close');
+  static const leadBoard = Key('challenge.lead.board');
+  static const leadCategory = Key('challenge.lead.category');
+  static const leadTitle = Key('challenge.lead.title');
+  static const leadText = Key('challenge.lead.text');
+  static Key leadStep(int index) => Key('challenge.lead.step.$index');
+  static const leadCreate = Key('challenge.lead.create');
+  static const leadHaveAccount = Key('challenge.lead.haveAccount');
+  static const leadLesson = Key('challenge.lead.lesson');
+  static const leadNotNow = Key('challenge.lead.notNow');
+
+  /// O link só de aula sem conta: a tela por baixo do convite.
+  static const lessonGate = Key('challenge.lessonGate');
+  static const lessonGateTitle = Key('challenge.lessonGateTitle');
 
   /// A imagem do resultado, desenhada fora da tela para virar PNG.
   static const resultCard = Key('challenge.result.card');

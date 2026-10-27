@@ -3,6 +3,7 @@ import 'package:lucena/domain/models/alert_settings.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_alerts_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_push_repository.dart';
@@ -13,12 +14,13 @@ void main() {
   late FakePushRepository push;
   late FakeProfileRepository profile;
 
-  AlertsCubit build({String? region}) {
+  AlertsCubit build({String? region, FakeAnalyticsRepository? analytics}) {
     final cubit = AlertsCubit(
       alerts: alerts,
       push: push,
       profile: profile,
       region: () => region,
+      analytics: analytics ?? FakeAnalyticsRepository(),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -154,5 +156,18 @@ void main() {
 
     expect(cubit.state.enabled, 0);
     expect(cubit.state.total, 1);
+  });
+
+  test('aviso_chave: só a chave que virou, com o novo estado', () async {
+    final analytics = FakeAnalyticsRepository();
+    final cubit = build(analytics: analytics);
+    await cubit.load();
+    await cubit.change(cubit.state.settings.copyWith(news: true));
+    await cubit.change(cubit.state.settings.copyWith(daily: false));
+    await cubit.setReminder(8 * 60);
+    expect(analytics.eventsNamed('aviso_chave').map((e) => e.params), [
+      {'tipo': 'novidades', 'ligado': 'sim'},
+      {'tipo': 'dia', 'ligado': 'nao'},
+    ]);
   });
 }

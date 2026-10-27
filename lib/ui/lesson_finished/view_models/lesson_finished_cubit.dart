@@ -1,10 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/campaign/campaign_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/race/race_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/linked_lesson.dart';
 import '../../../domain/models/survey.dart';
 import '../../../domain/use_cases/race_rules.dart';
 
@@ -50,6 +56,8 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
     required this.school,
     required this.endgames,
     required this.race,
+    this.analytics = const NoAnalyticsRepository(),
+    this.campaigns,
   }) : super(const LessonFinishedState());
 
   final SurveyKind kind;
@@ -58,6 +66,11 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
   final LessonRepository school;
   final EndgameLessonRepository endgames;
   final RaceRepository race;
+  final AnalyticsRepository analytics;
+
+  /// A campanha de quem chegou por link (T84): a aula dela concluída fecha o
+  /// funil (`campanha_aula_concluida`) e a campanha sai.
+  final CampaignRepository? campaigns;
 
   Future<void> load(String language) async {
     final LessonTexts texts = kind == SurveyKind.school
@@ -75,6 +88,15 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
       }
     }
     if (isClosed) return;
+    unawaited(
+      analytics.log(
+        AnalyticsEvents.aulaConcluida(
+          aulaId: lessonId,
+          tipoAula: kind == SurveyKind.school ? 'escola' : 'finais',
+        ),
+      ),
+    );
+    unawaited(_campaignFinished());
     final next = nextId;
     emit(
       LessonFinishedState(
@@ -88,5 +110,20 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
         hasExercises: lesson?.exercises.isNotEmpty ?? false,
       ),
     );
+  }
+
+  Future<void> _campaignFinished() async {
+    final campaigns = this.campaigns;
+    if (campaigns == null) return;
+    final campaign = await campaigns.active();
+    final finished = LinkedLesson(
+      kind == SurveyKind.school
+          ? LinkedLessonKind.school
+          : LinkedLessonKind.endgame,
+      lessonId,
+    );
+    if (campaign == null || campaign.lesson != finished) return;
+    await campaigns.clear();
+    await analytics.log(AnalyticsEvents.campanhaAulaConcluida(campaign));
   }
 }

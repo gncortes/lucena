@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/ads/ads_repository.dart';
+import '../../../domain/models/goal_preference.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/goal_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -86,6 +87,9 @@ class GoalScreen extends StatelessWidget {
                         GoalOptions(
                           l10n: l10n,
                           selected: state.goal,
+                          without: cubit.fromLink
+                              ? const {GoalPreference.learn}
+                              : const {},
                           onSelected: cubit.select,
                         ),
                         const SizedBox(height: AppSpacing.md),

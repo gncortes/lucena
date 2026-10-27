@@ -24,6 +24,10 @@ abstract class LessonSource {
   /// A posição da aula no conjunto (1 é a primeira) e quantas há.
   Future<(int, int)> placeOf(String id);
 
+  /// A aula [id] nunca foi começada: nenhuma parte feita, nenhuma estrela e
+  /// nenhum ponto de retomada dela (a `primeira_vez` do Analytics).
+  Future<bool> untouched(String id);
+
   /// Onde o aluno parou, se há aula começada.
   Future<LessonCheckpoint?> checkpoint();
 
@@ -112,6 +116,12 @@ class SchoolLessonSource with _CheckpointWriter implements LessonSource {
   }
 
   @override
+  Future<bool> untouched(String id) async {
+    final progress = await _progress.load();
+    return !progress.completed.contains(id) && progress.ongoing?.lessonId != id;
+  }
+
+  @override
   Future<LessonCheckpoint?> checkpoint() async =>
       (await _progress.load()).ongoing;
 
@@ -192,6 +202,16 @@ class EndgameLessonSource with _CheckpointWriter implements LessonSource {
       lessons.indexWhere((lesson) => lesson.id == id) + 1,
       lessons.length,
     );
+  }
+
+  @override
+  Future<bool> untouched(String id) async {
+    final progress = await _progress.load();
+    final each = progress.of(id);
+    return !each.lessonDone &&
+        each.parts.isEmpty &&
+        each.stars.isEmpty &&
+        progress.ongoing?.lessonId != id;
   }
 
   @override

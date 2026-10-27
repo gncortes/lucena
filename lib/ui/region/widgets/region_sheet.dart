@@ -14,6 +14,14 @@ import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/view_models/profile_cubit.dart';
 
+/// Mostra a folha uma vez só, e só depois da primeira tentativa de um final em
+/// destaque (nunca antes de jogar).
+Future<void> askRegionOnce(BuildContext context) async {
+  if (!await context.read<RegionPromptRepository>().pending()) return;
+  if (!context.mounted) return;
+  await showRegionSheet(context);
+}
+
 /// "Quer ver torneios perto de você?" (canvas `PropV1RetencaoRegiao`): estado
 /// e cidade do país do perfil. No Brasil o estado é um dos 27 (a sigla vai no
 /// tópico de torneios); nos outros países é texto livre. Salvar ou "Agora não"
@@ -42,6 +50,7 @@ Future<void> showRegionSheet(BuildContext context) {
           },
           onNotNow: () {
             Navigator.of(sheet).pop();
+            profile.regionSkipped();
             prompt.done();
           },
         ),

@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/avatar_photo.dart';
 import '../../../domain/models/platform_rating.dart';
+import '../../../domain/use_cases/analytics_rules.dart';
 
 /// Um aviso do Perfil, mostrado uma vez.
 enum ProfileNotice {
@@ -75,12 +78,14 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     required this._sync,
     required this._lichess,
     required this._profile,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(ProfileAccountState(account: _accounts.current));
 
   final AccountRepository _accounts;
   final SyncScheduler _sync;
   final LichessRepository _lichess;
   final ProfileRepository _profile;
+  final AnalyticsRepository _analytics;
   StreamSubscription<Account?>? _accountSubscription;
   StreamSubscription<String>? _syncSubscription;
 
@@ -129,6 +134,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
     emit(state.copyWith(busy: true));
     try {
       await _accounts.deleteAccount(photo: await _uploadedPhoto());
+      unawaited(_analytics.log(AnalyticsEvents.contaApagada()));
       _done(ProfileNotice.deleted);
     } on AccountException catch (error) {
       if (error.failure == AccountFailure.recentLoginRequired &&
@@ -155,6 +161,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
       final account = await _accounts.signInWithGoogle();
       if (account == null) return _done(null);
       await _accounts.deleteAccount(photo: await _uploadedPhoto());
+      unawaited(_analytics.log(AnalyticsEvents.contaApagada()));
       _done(ProfileNotice.deleted);
     } on AccountException catch (error) {
       _done(_deleteNotice(error.failure));
@@ -194,7 +201,15 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   Future<void> disconnectLichess() async {
     await _lichess.disconnect();
     final profile = await _profile.load();
-    await _profile.save(profile.copyWith(lichessUser: null));
+    await _profile.save(
+      profile.copyWith(lichessUser: null, lichessLinkedAt: null),
+    );
+    unawaited(
+      _analytics.setTrait(
+        AnalyticsTrait.lichessLinked,
+        AnalyticsRules.yesNo(false),
+      ),
+    );
     if (!isClosed) emit(state.copyWith(lichess: () => null));
   }
 

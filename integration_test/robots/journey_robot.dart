@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -17,7 +17,7 @@ class JourneyRobot {
 
   /// A partir da tela inicial.
   Future<void> open() async {
-    await tapHomePath($, HomeKeys.journeyButton);
+    await tapHomePath($, HomePath.journey);
     await $(JourneyKeys.screen).waitUntilVisible();
     await $(JourneyKeys.current).waitUntilVisible();
   }

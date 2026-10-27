@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
+import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -18,46 +19,52 @@ extension HomePathUi on HomePath {
     HomePath.speedrun => Icons.timer_outlined,
     HomePath.train => Icons.grid_view_rounded,
     HomePath.race => Icons.extension,
+    HomePath.stars => Icons.star_rounded,
   };
 
   String title(AppLocalizations l10n) => switch (this) {
-    HomePath.learn => l10n.homeLearn,
+    HomePath.learn => l10n.homeShortcutSchool,
     HomePath.journey => l10n.homeJourney,
     HomePath.forYou => l10n.homeForYou,
     HomePath.endgames => l10n.homeEndgames,
     HomePath.speedrun => l10n.homeSpeedrun,
     HomePath.train => l10n.homeTrain,
     HomePath.race => l10n.homeRace,
+    HomePath.stars => l10n.homeShortcutStars,
   };
 
-  /// O texto para o nível [level] (sem nível, o de quem começa).
-  String body(AppLocalizations l10n, RatingLevel? level) {
+  /// O texto para o nível [level] (sem nível, o de quem começa). [tested]:
+  /// a pessoa fez o teste de nível (só muda o dos finais para você).
+  String body(AppLocalizations l10n, RatingLevel? level, {bool tested = true}) {
     final text = level == null
         ? HomePathText.standard
         : HomeSuggestion.textOf(this, level);
     return switch ((this, text)) {
-      (HomePath.learn, HomePathText.player) => l10n.homeLearnBodyPlayer,
-      (HomePath.learn, _) => l10n.homeLearnBody,
-      (HomePath.journey, HomePathText.player) => l10n.homeJourneyBodyPlayer,
+      (HomePath.learn, _) => l10n.homeShortcutSchoolBody,
       (HomePath.journey, _) => l10n.homeJourneyBody,
       (HomePath.speedrun, HomePathText.challenge) =>
         l10n.homeSpeedrunBodyChallenge,
       (HomePath.speedrun, _) => l10n.homeSpeedrunBody,
-      (HomePath.forYou, _) => l10n.homeForYouBody,
+      (HomePath.forYou, _) =>
+        tested ? l10n.homeForYouBody : l10n.homeForYouBodyUntested,
       (HomePath.endgames, _) => l10n.homeEndgamesBody,
       (HomePath.train, _) => l10n.homeTrainBody,
       (HomePath.race, _) => l10n.homeRaceBody,
+      (HomePath.stars, _) => l10n.homeShortcutStarsBody,
     };
   }
 
   String get route => switch (this) {
-    HomePath.learn => Routes.school,
+    // Sem aula da Escola liberada, como as peças se movem.
+    HomePath.learn =>
+      VisibleLessons.school ? Routes.school : Routes.boardControls,
     HomePath.journey => Routes.journey,
     HomePath.forYou => Routes.endgamesFiltered(forYou: true),
     HomePath.endgames => Routes.endgamesFiltered(forYou: false),
     HomePath.speedrun => Routes.speedruns,
     HomePath.train => Routes.catalog,
     HomePath.race => Routes.race,
+    HomePath.stars => Routes.starChallenges,
   };
 
   /// A key do cartão na tela inicial (a mesma de antes de dar para
@@ -70,5 +77,6 @@ extension HomePathUi on HomePath {
     HomePath.speedrun => HomeKeys.speedrunButton,
     HomePath.train => HomeKeys.catalogButton,
     HomePath.race => HomeKeys.raceButton,
+    HomePath.stars => HomeKeys.starsButton,
   };
 }

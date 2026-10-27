@@ -170,15 +170,18 @@ class TourRobot {
   }
 
   /// No passo do nível: "Não sei jogar" para o iniciante; as outras faixas
-  /// marcam "Informar o meu rating", e [start] digita o rating delas como do
+  /// abrem "Já sei o meu rating" e marcam "Informar o meu rating", e [start] digita o rating delas como do
   /// Lichess (que não converte).
   Future<void> chooseLevel(RatingLevel level) async {
     _level[this] = level;
-    await _tap(
-      LevelKeys.option(
-        level == RatingLevel.beginner ? LevelChoice.zero : LevelChoice.manual,
-      ),
-    );
+    if (level == RatingLevel.beginner) {
+      await _tap(LevelKeys.option(LevelChoice.zero));
+      return;
+    }
+    // O número fica atrás de "Já sei o meu rating".
+    await _tap(LevelKeys.option(LevelChoice.known));
+    await _tap(LevelKeys.continueButton);
+    await _tap(LevelKeys.option(LevelChoice.manual));
   }
 
   /// No passo do nível: abre o teste de nível.

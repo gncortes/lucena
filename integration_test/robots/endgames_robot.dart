@@ -2,13 +2,13 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
 import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:patrol/patrol.dart';
@@ -38,7 +38,7 @@ class EndgamesRobot {
 
   /// Da tela inicial, pelo cartão das aulas de finais.
   Future<void> openFromHome() async {
-    await tapHomePath($, HomeKeys.endgamesButton);
+    await tapHomePath($, HomePath.endgames);
     await $(EndgamesKeys.screen).waitUntilVisible();
   }
 

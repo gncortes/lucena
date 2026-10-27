@@ -74,6 +74,7 @@ class ProgressSummary {
       'goal': ?profile.goal?.name,
       'levelSource': ?profile.levelSource?.name,
       'lichessUser': ?profile.lichessUser,
+      'lichessLinkedAt': ?profile.lichessLinkedAt?.toUtc().toIso8601String(),
       'chessComUser': ?profile.chessComUser,
       'avatarColor': profile.avatarColor,
       'photo': profile.photo.name,
@@ -115,6 +116,10 @@ class ProgressSummary {
         goal: GoalPreference.fromCode(profile['goal'] as String?),
         levelSource: LevelSource.fromCode(profile['levelSource'] as String?),
         lichessUser: profile['lichessUser'] as String?,
+        lichessLinkedAt: switch (profile['lichessLinkedAt']) {
+          final String at => DateTime.tryParse(at),
+          _ => null,
+        },
         chessComUser: profile['chessComUser'] as String?,
         avatarColor: _int(profile['avatarColor']) ?? 0,
         // Apps mais antigos gravavam só o sim/não da foto do Google.

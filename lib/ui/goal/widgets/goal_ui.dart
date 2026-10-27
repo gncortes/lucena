@@ -34,27 +34,36 @@ class GoalOptions extends StatelessWidget {
     required this.l10n,
     required this.selected,
     required this.onSelected,
+    this.without = const {},
   });
 
   final AppLocalizations l10n;
   final GoalPreference selected;
   final ValueChanged<GoalPreference> onSelected;
 
+  /// As opções que não aparecem.
+  final Set<GoalPreference> without;
+
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      for (final goal in GoalPreference.values) ...[
-        if (goal.index > 0) const SizedBox(height: AppSpacing.sm),
-        ChoiceCard(
-          key: GoalKeys.option(goal),
-          icon: goal.icon,
-          title: goal.title(l10n),
-          body: goal.text(l10n),
-          selected: goal == selected,
-          onTap: () => onSelected(goal),
-        ),
+  Widget build(BuildContext context) {
+    final shown = GoalPreference.values
+        .where((goal) => !without.contains(goal))
+        .toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final (index, goal) in shown.indexed) ...[
+          if (index > 0) const SizedBox(height: AppSpacing.sm),
+          ChoiceCard(
+            key: GoalKeys.option(goal),
+            icon: goal.icon,
+            title: goal.title(l10n),
+            body: goal.text(l10n),
+            selected: goal == selected,
+            onTap: () => onSelected(goal),
+          ),
+        ],
       ],
-    ],
-  );
+    );
+  }
 }

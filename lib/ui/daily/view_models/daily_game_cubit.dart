@@ -4,13 +4,17 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/daily/daily_final_repository.dart';
 import '../../../data/repositories/tablebase/kpk_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/daily_final.dart';
 import '../../../domain/models/script_table.dart';
 import '../../../domain/models/wdl.dart';
 import '../../../domain/use_cases/daily_final_rules.dart';
+import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/position_judge.dart';
+import '../../../domain/use_cases/streak_rules.dart';
 import '../../free_board/view_models/free_board_state.dart';
 
 /// A partida do final do dia, ao lado da do tabuleiro: a cor de cada lance da
@@ -52,6 +56,8 @@ class DailyGameCubit extends Cubit<DailyGameState> {
     required this._activity,
     required this._kpk,
     this._engine,
+    this._analytics = const NoAnalyticsRepository(),
+    this._now = const SystemNow(),
   }) : super(const DailyGameState());
 
   /// O dia da partida (`aaaa-mm-dd`).
@@ -60,6 +66,8 @@ class DailyGameCubit extends Cubit<DailyGameState> {
   final ActivityRepository _activity;
   final KpkRepository _kpk;
   final PositionJudge? _engine;
+  final AnalyticsRepository _analytics;
+  final Now _now;
 
   PositionJudge? _judge;
   Future<void> _work = Future.value();
@@ -130,6 +138,20 @@ class DailyGameCubit extends Cubit<DailyGameState> {
       ),
     );
     final record = await _daily.record(_day);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.finalDiaConcluido(
+          finalId: daily.position.id,
+          data: date,
+          acertou: outcome.fulfills(daily.position.goal),
+          lances: squares.length,
+          verdes: squares.where((s) => s == DailySquare.right).length,
+          amarelos: squares.where((s) => s == DailySquare.slow).length,
+          vermelhos: squares.where((s) => s == DailySquare.bad).length,
+          sequencia: StreakRules.of(await _activity.days(), _now()).current,
+        ),
+      ),
+    );
     if (isClosed) return;
     emit(state.copyWith(record: record));
   }

@@ -8,6 +8,7 @@ import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'home_robot.dart';
 import 'conclusion_robot.dart';
 import 'variant.dart';
 
@@ -151,7 +152,7 @@ class ProgressRobot {
   }
 
   Future<void> openAchievements() async {
-    await $(HomeKeys.achievementsButton).tap();
+    await openFromAllModes($, 'achievements');
     await $(AchievementsKeys.screen).waitUntilVisible();
   }
 

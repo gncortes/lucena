@@ -113,4 +113,80 @@ void main() {
     expect(link.uri.queryParameters.containsKey('g'), isFalse);
     expect(ChallengeLink.tryParse(link.uri)!.generation, 0);
   });
+
+  group('o resultado de quem mandou (mv)', () {
+    test('link novo: lê os lances e leva mv de volta', () {
+      final link = ChallengeLink(
+        fen: _fen,
+        userSide: Side.white,
+        senderMoves: 7,
+      );
+      expect(link.uri.queryParameters['mv'], '7');
+      expect(ChallengeLink.tryParse(link.uri)!.senderMoves, 7);
+      // Não muda o desafio: mesmo código do link sem resultado.
+      expect(link.code, ChallengeLink(fen: _fen, userSide: Side.white).code);
+    });
+
+    test('link antigo (só fen): sem resultado e continua abrindo', () {
+      final uri = Uri.parse(
+        'https://playlucena.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}',
+      );
+      final link = ChallengeLink.tryParse(uri)!;
+      expect(link.senderMoves, isNull);
+      expect(link.fen, _fen);
+      expect(link.uri.queryParameters.containsKey('mv'), isFalse);
+    });
+
+    test('mv inválido (zero, negativo, texto) é ignorado', () {
+      for (final bad in ['0', '-3', 'x', '']) {
+        final uri = Uri.parse(
+          'https://playlucena.com/p/abcde?fen=${Uri.encodeQueryComponent(_fen)}&mv=$bad',
+        );
+        expect(ChallengeLink.tryParse(uri)!.senderMoves, isNull, reason: bad);
+      }
+    });
+  });
+
+  group('link só com a posição', () {
+    final fen = Uri.encodeQueryComponent(_fen);
+
+    test('só fen (e utm/mv) é "só a posição"', () {
+      expect(
+        ChallengeLink.isBare(Uri.parse('https://playlucena.com/p/a?fen=$fen')),
+        isTrue,
+      );
+      expect(
+        ChallengeLink.isBare(
+          Uri.parse('https://playlucena.com/p/a?fen=$fen&mv=5&utm_source=app'),
+        ),
+        isTrue,
+      );
+    });
+
+    test('com lado, adversário, nível, relógio ou trava não é', () {
+      for (final extra in [
+        'side=white',
+        'opp=maia',
+        'lvl=1400',
+        'clock=300%2B0',
+        'lock=1',
+      ]) {
+        expect(
+          ChallengeLink.isBare(
+            Uri.parse('https://playlucena.com/p/a?fen=$fen&$extra'),
+          ),
+          isFalse,
+          reason: extra,
+        );
+      }
+      expect(ChallengeLink.isBare(_link().uri), isFalse);
+    });
+
+    test('fen inválido não é link', () {
+      expect(
+        ChallengeLink.isBare(Uri.parse('https://playlucena.com/p/a?fen=x')),
+        isFalse,
+      );
+    });
+  });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/use_cases/featured_rules.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -8,28 +9,40 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
-import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/position_board.dart';
 import 'featured_labels.dart';
 
-/// Um final em destaque numa lista: miniatura, origem, título, quem jogou e o
-/// tema. Na tela inicial e na lista.
+/// O tabuleiro de um final em destaque voa da tela inicial até a tela dele.
+String featuredBoardTag(String id) => 'featured.board.$id';
+
+/// Um final em destaque numa lista: miniatura, quem jogou (o título), evento e
+/// ano, e a meta (sem selo de novo nem de origem). [compact], na tela
+/// inicial: miniatura pequena, quem jogou e o evento, com a seta.
 class FeaturedCard extends StatelessWidget {
-  const FeaturedCard({required this.item, required this.onTap, super.key});
+  const FeaturedCard({
+    required this.item,
+    required this.onTap,
+    this.compact = false,
+    super.key,
+  });
 
   static const thumbnail = 92.0;
 
+  /// A miniatura da tela inicial (canvas `PropV2UxHome*`).
+  static const compactThumbnail = 46.0;
+
   final FeaturedItem item;
   final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
+    if (compact) return _compact(context);
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final language = Localizations.localeOf(context).languageCode;
     final endgame = item.endgame;
-    final topic = endgame.theme;
     return Card(
       key: FeaturedKeys.card(item.id),
       margin: EdgeInsets.zero,
@@ -54,58 +67,105 @@ class FeaturedCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: AppSpacing.xs,
                   children: [
-                    Row(
-                      children: [
-                        InfoChip(
-                          key: FeaturedKeys.cardOrigin,
-                          compact: true,
-                          background: colors.primaryContainer,
-                          foreground: colors.primary,
-                          icon: FeaturedLabels.originIcon(endgame.origin),
-                          label: FeaturedLabels.origin(l10n, endgame.origin),
-                        ),
-                        const Spacer(),
-                        if (item.played)
-                          _Badge(
-                            key: FeaturedKeys.cardPlayed,
-                            icon: Icons.check_circle,
-                            label: l10n.featuredPlayed,
-                            color: AppColors.successColor,
-                          )
-                        else if (item.isNew)
-                          _Badge(
-                            key: FeaturedKeys.cardNew,
-                            label: l10n.featuredNew.toUpperCase(),
-                            color: colors.primary,
-                          ),
-                      ],
-                    ),
+                    if (item.played)
+                      _Badge(
+                        key: FeaturedKeys.cardPlayed,
+                        icon: Icons.check_circle,
+                        label: l10n.featuredPlayed,
+                        color: AppColors.successColor,
+                      ),
                     Text(
-                      endgame.title.of(language),
+                      FeaturedLabels.shortPlayers(l10n, endgame),
                       style: context.cardTitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${FeaturedLabels.shortPlayers(l10n, endgame)} · '
-                      '${FeaturedLabels.subtitle(l10n, language, endgame, item.tournament, inline: true)}',
+                      FeaturedLabels.eventYear(
+                        l10n,
+                        language,
+                        endgame,
+                        item.tournament,
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (topic != null)
-                      Text(
-                        FeaturedLabels.theme(l10n, topic),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    Text(
+                      goalLabel(l10n, endgame.goal),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
                       ),
+                    ),
                   ],
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+extension on FeaturedCard {
+  Widget _compact(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final language = Localizations.localeOf(context).languageCode;
+    final endgame = item.endgame;
+    return Material(
+      key: FeaturedKeys.card(item.id),
+      color: colors.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(AppShape.large),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            spacing: AppSpacing.md,
+            children: [
+              ExcludeSemantics(
+                child: PositionBoard(
+                  fen: endgame.fen,
+                  size: FeaturedCard.compactThumbnail,
+                  radius: AppShape.small,
+                  heroTag: featuredBoardTag(item.id),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.xs,
+                  children: [
+                    Text(
+                      FeaturedLabels.shortPlayers(l10n, endgame),
+                      style: context.cardTitle?.copyWith(
+                        fontWeight: AppWeight.heavy,
+                      ),
+                      maxLines: 1,
+                    ),
+                    Text(
+                      FeaturedLabels.eventYear(
+                        l10n,
+                        language,
+                        endgame,
+                        item.tournament,
+                      ),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
             ],
           ),
         ),

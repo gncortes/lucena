@@ -224,17 +224,47 @@ void main() {
       child: const FeaturedListScreen(),
     );
 
-    testWidgets('na primeira abertura, pergunta o estado e a cidade', (
+    testWidgets('abrir a lista não pergunta o estado e a cidade', (
       tester,
     ) async {
       await pump(tester, list);
+
+      expect(find.byKey(RegionKeys.sheet), findsNothing);
+    });
+
+    testWidgets('depois da primeira tentativa, pergunta uma vez', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        () => Builder(
+          builder: (context) => TextButton(
+            onPressed: () => askRegionOnce(context),
+            child: const Text('tentou'),
+          ),
+        ),
+      );
+      expect(find.byKey(RegionKeys.sheet), findsNothing);
+
+      await tester.tap(find.text('tentou'));
+      await tester.pumpAndSettle();
 
       expect(find.byKey(RegionKeys.sheet), findsOneWidget);
     });
 
     testWidgets('depois da primeira, não pergunta mais', (tester) async {
       prompt = FakeRegionPromptRepository(asked: true);
-      await pump(tester, list);
+      await pump(
+        tester,
+        () => Builder(
+          builder: (context) => TextButton(
+            onPressed: () => askRegionOnce(context),
+            child: const Text('tentou'),
+          ),
+        ),
+      );
+      await tester.tap(find.text('tentou'));
+      await tester.pumpAndSettle();
 
       expect(find.byKey(RegionKeys.sheet), findsNothing);
     });

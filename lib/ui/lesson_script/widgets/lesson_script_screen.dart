@@ -66,6 +66,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     try {
       await cubit.start();
     } on LessonContentUnavailable {
+      cubit.unavailable();
       if (mounted) setState(() => _contentUnavailable = true);
     }
   }
@@ -295,6 +296,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final onMainLine = link(ScriptAction.linhaPrincipal);
     final onShowAnswer = link(ScriptAction.verResposta);
     final viktor = _viktor;
+    final voice = TeacherSpeech.speechOf(context);
+    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
     // O clique no balão abre a fala inteira, sempre.
     final onOpen = viktor == null || state.machineThinking
         ? null
@@ -307,10 +310,20 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               onMainLine: onMainLine,
               onShowAnswer: onShowAnswer,
               onSquareTap: _flash.show,
+              // O som da aula, como na faixa do Viktor (T84).
+              action: LessonVoiceButton(
+                audible:
+                    sound &&
+                    (voice?.state.settings.enabled ?? false) &&
+                    (voice?.state.availableFor(
+                          Localizations.localeOf(context).toLanguageTag(),
+                        ) ??
+                        false),
+                speed: voice?.state.settings.speed ?? 1,
+                onPressed: () => showLessonSoundDialog(context),
+              ),
             ),
           );
-    final voice = TeacherSpeech.speechOf(context);
-    final sound = context.select((SettingsCubit c) => c.state?.sound ?? true);
     Widget speechOf(ScriptSpeechMetrics metrics) {
       Widget speech = ScriptSpeech(
         texts: state.speech,

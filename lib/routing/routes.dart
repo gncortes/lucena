@@ -5,6 +5,7 @@ import '../domain/models/clock.dart';
 import '../domain/models/daily_final.dart';
 import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
+import '../domain/models/linked_lesson.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
@@ -20,6 +21,14 @@ abstract final class Routes {
         uri.path == '/daily' ||
         uri.path == '/daily/') {
       return daily;
+    }
+    // O link só de aula (T84) vai como veio: a rota dele confere se a aula
+    // abre.
+    if (LessonLink.tryParse(uri) != null) {
+      return Uri(
+        path: uri.path,
+        query: uri.hasQuery ? uri.query : null,
+      ).toString();
     }
     try {
       if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
@@ -238,6 +247,10 @@ abstract final class Routes {
 
   /// O final do dia: abre a partida de hoje (o toque do lembrete cai aqui).
   static const daily = '/daily';
+
+  /// O final do dia aberto de [entry] (`aviso|lembrete|link`; sem ele, da
+  /// home): vai para o `final_dia_aberto` do Analytics.
+  static String dailyFrom(String entry) => '$daily?entrada=$entry';
   static const dailyResult = '/daily/result';
   static const dailyShare = '/daily/share';
 
@@ -341,9 +354,9 @@ abstract final class Routes {
 
   /// A aula da escola com roteiro (curso de iniciante, T71), na etapa
   /// [stage].
-  static String lessonScript(String id, {int stage = 0}) => Uri(
+  static String lessonScript(String id, {int stage = 0, String? origin}) => Uri(
     path: '/school/$id/roteiro',
-    queryParameters: {'etapa': '$stage'},
+    queryParameters: {'etapa': '$stage', 'origem': ?origin},
   ).toString();
   static const starChallenges = '/school/challenges';
   static String starChallenge(String piece, String level) =>
@@ -356,16 +369,46 @@ abstract final class Routes {
   /// As aulas de finais já num filtro: "Para você" ([forYou]) ou "Todos".
   static String endgamesFiltered({required bool forYou}) =>
       '/endgames?filter=${forYou ? 'forYou' : 'all'}';
-  static String endgameLesson(String id) => '/endgames/$id';
+
+  /// [origin]: de onde a pessoa veio (`home`, `aviso`, `catalogo`...); sem
+  /// ele, da trilha. Vai para o `aula_aberta` do Analytics.
+  static String endgameLesson(String id, {String? origin}) => Uri(
+    path: '/endgames/$id',
+    queryParameters: origin == null ? null : {'origem': origin},
+  ).toString();
 
   /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
   /// Sem parte, ou com uma que não abre mais, a rota cai no início da
   /// primeira parte (`resolveScriptPart`).
-  static String endgameLessonScript(String id, {String? part, int stage = 0}) =>
-      Uri(
-        path: '/endgames/$id/roteiro',
-        queryParameters: {'part': ?part, 'etapa': '$stage'},
-      ).toString();
+  /// [origin]: de onde a pessoa veio sem passar pela tela da aula (`home`,
+  /// `continuar`, `aviso`); o Analytics registra a abertura da aula aqui.
+  static String endgameLessonScript(
+    String id, {
+    String? part,
+    int stage = 0,
+    String? origin,
+  }) => Uri(
+    path: '/endgames/$id/roteiro',
+    queryParameters: {'part': ?part, 'etapa': '$stage', 'origem': ?origin},
+  ).toString();
+
+  /// A entrada da aula de um link de campanha (T84): `/aula/<id>` ou
+  /// `/escola/<id>`, o mesmo caminho do link só de aula. A rota confere se a
+  /// aula abre e segue para [linkedLesson].
+  static String linkedLessonEntry(LinkedLesson lesson) =>
+      '/${lesson.kind.code}/${Uri.encodeComponent(lesson.id)}';
+
+  /// A aula ligada a um link de campanha, com `origem=link`. Com
+  /// [available] falso (não existe ou não está liberada), a regra de sempre:
+  /// a trilha de finais ou a Escola, que mostram as aulas que há (ou "As
+  /// aulas ainda não estão disponíveis").
+  static String linkedLesson(LinkedLesson lesson, {bool available = true}) =>
+      switch (lesson.kind) {
+        LinkedLessonKind.endgame =>
+          available ? endgameLesson(lesson.id, origin: 'link') : endgames,
+        LinkedLessonKind.school =>
+          available ? lessonScript(lesson.id, origin: 'link') : school,
+      };
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';
@@ -403,15 +446,13 @@ abstract final class Routes {
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 
-  /// Depois do tour: a conta, opcional (E1.11 a E1.13 ligam o login), e o
-  /// nível, que fecha a primeira abertura.
   /// A Sequência de dias (E1.22).
   static const streak = '/streak';
 
   /// Sua semana (E1.23), aberta pelo resumo de domingo.
   static const week = '/week';
 
-  static const account = '/tour/conta';
+  /// O nível fecha a primeira abertura.
   static const level = '/tour/nivel';
 
   /// "Seu nível" aberto por [from] (`profile`: volta para o Perfil).
@@ -459,10 +500,18 @@ abstract final class Routes {
       _from(accountRestored, from);
 
   /// Para onde a conta segue no fim, vinda de [from] (`game`: o convite no
-  /// fim da 1ª partida).
+  /// fim da 1ª partida; `level`: o convite depois do Lichess em "Seu nível",
+  /// que segue para os próximos passos).
+  /// Um [from] que já é uma rota (`/endgames/...`, o convite antes da aula do
+  /// link de campanha, T84) é o próprio destino.
+  static bool isRouteFrom(String? from) =>
+      from != null && from.startsWith('/') && !from.startsWith('//');
+
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
     'game' => home,
+    'level' => nextSteps,
+    final route? when isRouteFrom(route) => route,
     _ => goal,
   };
 
@@ -471,6 +520,9 @@ abstract final class Routes {
 
   /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
   static const goal = '/tour/objetivo';
+
+  /// O objetivo de quem chegou por um link de desafio: sem "Aprender a jogar".
+  static const goalFromLink = '/tour/objetivo?link=1';
 
   /// O teste de nível (T52). [from] diz de onde veio (`level`, `settings`).
   static const placement = '/placement';

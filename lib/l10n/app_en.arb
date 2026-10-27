@@ -1570,15 +1570,6 @@
       }
     }
   },
-  "homeHello": "Hi, {name}",
-  "@homeHello": {
-    "description": "Greeting at the top of the home screen.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "homeTools": "Tools",
   "@homeTools": {
     "description": "Home: title of the tools shortcuts (custom position, free board)."
@@ -1607,23 +1598,15 @@
   "@homePathsTitle": {
     "description": "Home screen: title above the list of things to do in the app."
   },
-  "homeLearn": "Learn to play chess",
-  "@homeLearn": {
-    "description": "Home screen path for beginners: the lessons with the teacher Viktor."
-  },
-  "homeLearnBody": "Lessons with Viktor: how the pieces move, check, checkmate and the first endgames.",
-  "@homeLearnBody": {
-    "description": "Home screen: one-line explanation of the lessons path."
-  },
-  "homeJourneyBody": "The next step after the lessons: practice by beating each opponent's endgames, from the weakest up to Stockfish.",
+  "homeJourneyBody": "Beat each opponent's endgames, from the weakest to Stockfish.",
   "@homeJourneyBody": {
     "description": "Home screen: one-line explanation of the Journey path."
   },
-  "homeSpeedrunBody": "Pick an endgame and beat every opponent in a row, up to Stockfish, against the clock.",
+  "homeSpeedrunBody": "Pick an endgame and beat every opponent, up to Stockfish, against the clock.",
   "@homeSpeedrunBody": {
     "description": "Home screen: one-line explanation of the speedrun path."
   },
-  "homeTrainBody": "Pick any endgame and the opponent, and play it as many times as you want.",
+  "homeTrainBody": "Pick the endgame and the opponent and play as often as you like.",
   "@homeTrainBody": {
     "description": "Home screen: one-line explanation of the endgame training path (the catalog)."
   },
@@ -1856,7 +1839,7 @@
   "@homeForYou": {
     "description": "Home path: the endgame lessons recommended by the level test."
   },
-  "homeForYouBody": "Your own endgame study, built from your level test: the chapters you still need, in order.",
+  "homeForYouBody": "The chapters you still need, in order, based on your level test.",
   "@homeForYouBody": {
     "description": "Home path body for the personalised endgame study."
   },
@@ -2904,15 +2887,7 @@
   "@speedrunModeClassic": {
     "description": "Speedrun mode selector: each game has its own clock (as opposed to the Marathon, one clock for the whole run)."
   },
-  "homeJourneyBodyPlayer": "Practice the basic checkmates and take on every opponent, from Coco to Stockfish.",
-  "@homeJourneyBodyPlayer": {
-    "description": "Home path text for the Journey, for players who are not beginners."
-  },
-  "homeLearnBodyPlayer": "Review the fundamentals with Viktor.",
-  "@homeLearnBodyPlayer": {
-    "description": "Home path text for Viktor's lessons, for players who are not beginners."
-  },
-  "homeSpeedrunBodyChallenge": "Beat everyone up to Stockfish in the shortest time. Break your record.",
+  "homeSpeedrunBodyChallenge": "Beat everyone up to Stockfish in the shortest time and break your record.",
   "@homeSpeedrunBodyChallenge": {
     "description": "Home path text for the speedrun, for expert and master players: a challenge."
   },
@@ -2928,7 +2903,7 @@
   "@homeLayoutTitle": {
     "description": "Settings entry and screen title: the home screen paths."
   },
-  "homeLayoutBody": "Marked paths stand out on the home screen; the rest go to Other modes. Drag to change the order.",
+  "homeLayoutBody": "Check what shows on the home screen. Drag to change the order.",
   "@homeLayoutBody": {
     "description": "Explanation on the home screen settings: marked paths stand out, the rest go to Other modes; drag to reorder."
   },
@@ -5427,6 +5402,14 @@
   "@lessonShowAnswer": {
     "description": "Link and button that reveal the correct move of a think step."
   },
+  "speechSeeMore": "See more",
+  "@speechSeeMore": {
+    "description": "Link at the end of a speech bubble cut short (T84): opens a sheet with the whole speech. Shown after an ellipsis."
+  },
+  "speechClose": "Close speech",
+  "@speechClose": {
+    "description": "Tooltip of the round X on a speech bubble opened over the top of the screen (T84): closes the bubble."
+  },
   "lessonFullSpeech": "Show the whole speech",
   "@lessonFullSpeech": {
     "description": "Screen reader hint of the teacher's speech bubble in the scripted lesson: tapping it opens a sheet with the whole speech."
@@ -6033,9 +6016,94 @@
   "@challengeEndPlayAgain": {
     "description": "End of a challenge opened by link: plays the same challenge again"
   },
+  "challengeCompare": "Sender: mate in {sender, plural, one{1 move} other{{sender} moves}}.\nYou: mate in {you, plural, one{1 move} other{{you} moves}}.",
+  "@challengeCompare": {
+    "description": "End of a challenge opened by link: the sender's win compared with the player's",
+    "placeholders": {
+      "sender": {
+        "type": "int"
+      },
+      "you": {
+        "type": "int"
+      }
+    }
+  },
   "challengeEndMeetApp": "Meet the app",
   "@challengeEndMeetApp": {
     "description": "End of a challenge opened by link: text button that leads to the home"
+  },
+  "challengeEndLesson": "See the lesson",
+  "@challengeEndLesson": {
+    "description": "End of a campaign challenge link that carries a lesson: button that opens the lesson. Keep it short (fits half a 360 dp row)."
+  },
+  "challengeLeadCategory": "Lesson on {module}",
+  "@challengeLeadCategory": {
+    "description": "Free lesson sheet after a campaign challenge: label above the lesson name. {module} is the endgame module name in lower case, e.g. 'rook endgames'.",
+    "placeholders": {
+      "module": {
+        "type": "String"
+      }
+    }
+  },
+  "challengeLeadCategorySchool": "Viktor's School lesson",
+  "@challengeLeadCategorySchool": {
+    "description": "Free lesson sheet after a campaign challenge: label above the name of a beginner (Viktor's School) lesson."
+  },
+  "challengeLeadFailedWin": "Want a free lesson that explains how to win this endgame? You practise and then redo this challenge.",
+  "@challengeLeadFailedWin": {
+    "description": "Free lesson sheet, the player did not reach the goal (win). All lessons in the app are free."
+  },
+  "challengeLeadFailedDraw": "Want a free lesson that explains how to draw this endgame? You practise and then redo this challenge.",
+  "@challengeLeadFailedDraw": {
+    "description": "Free lesson sheet, the player did not reach the goal (draw)."
+  },
+  "challengeLeadDone": "Want to see a free lesson about this endgame?",
+  "@challengeLeadDone": {
+    "description": "Free lesson sheet, the player reached the goal."
+  },
+  "challengeLeadStepIdea": "Learn the idea",
+  "@challengeLeadStepIdea": {
+    "description": "Free lesson sheet: step 1 title."
+  },
+  "challengeLeadStepIdeaHint": "The position explained move by move",
+  "@challengeLeadStepIdeaHint": {
+    "description": "Free lesson sheet: step 1 line."
+  },
+  "challengeLeadStepPractice": "Practise",
+  "@challengeLeadStepPractice": {
+    "description": "Free lesson sheet: step 2 title."
+  },
+  "challengeLeadStepPracticeHint": "You play the lesson's positions",
+  "@challengeLeadStepPracticeHint": {
+    "description": "Free lesson sheet: step 2 line."
+  },
+  "challengeLeadStepRetry": "Redo this challenge",
+  "@challengeLeadStepRetry": {
+    "description": "Free lesson sheet: step 3 title."
+  },
+  "challengeLeadStepRetryWin": "Come back to this position and win the game",
+  "@challengeLeadStepRetryWin": {
+    "description": "Free lesson sheet: step 3 line when the player did not win."
+  },
+  "challengeLeadStepRetryDraw": "Come back to this position and draw the game",
+  "@challengeLeadStepRetryDraw": {
+    "description": "Free lesson sheet: step 3 line when the player did not hold the draw."
+  },
+  "challengeLeadStepRetryDone": "With the idea, in fewer moves",
+  "@challengeLeadStepRetryDone": {
+    "description": "Free lesson sheet: step 3 line when the player reached the goal."
+  },
+  "challengeLeadCreate": "Create an account and see the lesson",
+  "@challengeLeadCreate": {
+    "description": "Free lesson sheet: main button (sign up, then the lesson)."
+  },
+  "challengeLeadHaveAccount": "I already have an account",
+  "@challengeLeadHaveAccount": {
+    "description": "Free lesson sheet: button to sign in, then the lesson."
+  },
+  "challengeLeadLesson": "Want to see this free lesson?",
+  "@challengeLeadLesson": {
+    "description": "Free lesson sheet on a lesson-only campaign link (no challenge played): text."
   },
   "challengeImageWon": "CHALLENGE COMPLETE",
   "@challengeImageWon": {
@@ -6203,6 +6271,14 @@
   "@levelManualText": {
     "description": "Level card text for typing a rating."
   },
+  "levelKnownTitle": "I already know my rating",
+  "@levelKnownTitle": {
+    "description": "Level card for someone who already knows a rating, opens Lichess, Chess.com or typing it."
+  },
+  "levelKnownText": "Lichess, Chess.com or the number you already know.",
+  "@levelKnownText": {
+    "description": "Level card text for the card that opens the rating paths."
+  },
   "levelZeroTitle": "I can't play, I want to learn from scratch",
   "@levelZeroTitle": {
     "description": "Level card for someone who does not know how to play."
@@ -6223,7 +6299,7 @@
   "@levelLichessConnectedTitle": {
     "description": "Title of the screen shown after signing in with Lichess."
   },
-  "levelLichessBack": "Back from Lichess. The access stays on this phone only, and no Lucena account is needed.",
+  "levelLichessBack": "Back from Lichess. The access stays on this phone only.",
   "@levelLichessBack": {
     "description": "Text at the top of the Lichess connected screen."
   },
@@ -6434,21 +6510,13 @@
   "@accountTitle": {
     "description": "Title of the optional account screen after the tour."
   },
-  "accountHint": "It is optional. You can create one later, in Profile.",
-  "@accountHint": {
-    "description": "Account screen: it is optional."
-  },
-  "accountBenefitSaved": "Your progress stays saved, even if you change phones",
+  "accountBenefitSaved": "Your progress stays saved in your account",
   "@accountBenefitSaved": {
     "description": "Account screen, first benefit."
   },
-  "accountBenefitDevices": "Lessons, Journey and records the same on another device",
+  "accountBenefitDevices": "Sign in on another device and pick up where you left off",
   "@accountBenefitDevices": {
     "description": "Account screen, second benefit."
-  },
-  "accountBenefitOffline": "Without an account, everything still works offline, only on this phone",
-  "@accountBenefitOffline": {
-    "description": "Account screen, third benefit."
   },
   "accountGoogle": "Continue with Google",
   "@accountGoogle": {
@@ -6644,6 +6712,18 @@
   "featuredNoRating": "No rating",
   "@featuredNoRating": {
     "description": "Detail line of the player strip in a featured endgame: the game does not change the rating."
+  },
+  "featuredEventYear": "{event} {year}",
+  "@featuredEventYear": {
+    "description": "Event name and year on the featured card subtitle (for example, Norway Chess 2017).",
+    "placeholders": {
+      "event": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
   },
   "featuredCardRound": "{tournament} · round {round}",
   "@featuredCardRound": {
@@ -6874,7 +6954,7 @@
   "@homeRace": {
     "description": "Home: title of the endgame race path."
   },
-  "homeRaceBody": "Endgame race: 3 minutes, 3 mistakes",
+  "homeRaceBody": "How many endgames can you solve in time?",
   "@homeRaceBody": {
     "description": "Home: text of the endgame race path."
   },
@@ -7211,7 +7291,7 @@
   "@allModesRaceBody": {
     "description": "All modes: short description of the problem race."
   },
-  "goalViktorSay": "So I can set up your home screen: what do you want to do here?",
+  "goalViktorSay": "I will tailor the app to you: the home screen starts with what you choose below.",
   "@goalViktorSay": {
     "description": "Viktor's line on the first-launch question about the user's goal."
   },
@@ -7505,9 +7585,13 @@
   "@profileDeleteWeb": {
     "description": "Profile with account: note about deleting on the web."
   },
-  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones. It is optional: without an account, everything keeps working.",
+  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved and you can get everything back on another device.",
   "@accountInviteTextSheet": {
     "description": "Account invite sheet after the first game: text."
+  },
+  "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account.",
+  "@accountInviteTextLichess": {
+    "description": "Account invite sheet after using the Lichess rating on the level screen, without an account: text."
   },
   "accountEmailField": "E-mail",
   "@accountEmailField": {
@@ -7771,6 +7855,20 @@
   "dailyTitle": "Daily endgame",
   "@dailyTitle": {
     "description": "Daily endgame: title of the game, the home strip and the result."
+  },
+  "dailyGoal": "{side, select, white{White} other{Black}} to play and {goal, select, win{win} other{draw}}",
+  "@dailyGoal": {
+    "description": "Subtitle of the daily endgame game, before the first move: whose move it is and the goal.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      },
+      "goal": {
+        "type": "String",
+        "example": "win"
+      }
+    }
   },
   "dailyBadge": "TODAY",
   "@dailyBadge": {
@@ -8283,6 +8381,14 @@
   "accountEntryText": "It is free and takes less than a minute.",
   "@accountEntryText": {
     "description": "Account entry screen text under the title."
+  },
+  "accountEntryTitleLesson": "Create your account to access the free lesson",
+  "@accountEntryTitleLesson": {
+    "description": "Account entry screen title when opened to reach a free lesson (campaign link)."
+  },
+  "accountEntryTextLesson": "It takes less than a minute.",
+  "@accountEntryTextLesson": {
+    "description": "Account entry screen text under the title when opened to reach a free lesson."
   },
   "accountCreateWithEmail": "Create account with email",
   "@accountCreateWithEmail": {
@@ -9575,5 +9681,107 @@
   "lessonsUnavailableMessage": "Lessons are not available yet.",
   "@lessonsUnavailableMessage": {
     "description": "Empty state when no published lesson content is available."
+  },
+  "homeYourRating": "Your rating",
+  "@homeYourRating": {
+    "description": "Label of the player card at the top of the home screen, above the rating number."
+  },
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "@homeRatingAfterGames": {
+    "description": "Home player card for beginners: the rating number is hidden until this many rated games.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeForYouBodyUntested": "The chapters you still need, in order.",
+  "@homeForYouBodyUntested": {
+    "description": "Home card body for the personalised study when the player has not taken the level test."
+  },
+  "homeSeeMore": "See more",
+  "@homeSeeMore": {
+    "description": "Home section header link that opens the full list."
+  },
+  "homeRatingStarting": "Getting started",
+  "@homeRatingStarting": {
+    "description": "Home top bar, in place of the rating number while the beginner has played too few games."
+  },
+  "homeHeroFirstSteps": "First steps",
+  "@homeHeroFirstSteps": {
+    "description": "Small label on the home hero card before the first game: where the player is."
+  },
+  "homeHeroSchool": "School",
+  "@homeHeroSchool": {
+    "description": "Small label on the home hero card: the beginner school."
+  },
+  "homeHeroLesson": "Lesson {number}",
+  "@homeHeroLesson": {
+    "description": "Home hero card title: the next lesson of the school.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "homeHeroCourseDone": "Course completed",
+  "@homeHeroCourseDone": {
+    "description": "Home hero card title when every endgame chapter is passed."
+  },
+  "homeHeroSpeedrun": "From Coco to Stockfish",
+  "@homeHeroSpeedrun": {
+    "description": "Home hero card title for the speedrun: the whole Journey."
+  },
+  "homeHeroStart": "Start",
+  "@homeHeroStart": {
+    "description": "Home hero card button: starts something not begun yet."
+  },
+  "homeHeroPlay": "Play",
+  "@homeHeroPlay": {
+    "description": "Home hero card button: plays the next game."
+  },
+  "homeHeroResume": "Resume",
+  "@homeHeroResume": {
+    "description": "Home hero card button: resumes the saved Journey game."
+  },
+  "homeShortcutsTitle": "Shortcuts",
+  "@homeShortcutsTitle": {
+    "description": "Home section title over the grid of modes."
+  },
+  "homeShortcutStars": "Stars",
+  "@homeShortcutStars": {
+    "description": "Short name of the star challenges on a home shortcut tile."
+  },
+  "homeShortcutJourneyBody": "Face stronger and stronger opponents",
+  "@homeShortcutJourneyBody": {
+    "description": "Two-line description on the Journey shortcut tile."
+  },
+  "homeShortcutEndgamesBody": "Learn theoretical endgames like Lucena and Philidor",
+  "@homeShortcutEndgamesBody": {
+    "description": "Two-line description on the endgame course shortcut tile."
+  },
+  "homeShortcutTrainBody": "Over 3,500 endgames of every kind",
+  "@homeShortcutTrainBody": {
+    "description": "Two-line description on the practice shortcut tile."
+  },
+  "homeShortcutRaceBody": "How many endgames can you solve in time?",
+  "@homeShortcutRaceBody": {
+    "description": "Two-line description on the problem race shortcut tile."
+  },
+  "homeShortcutSpeedrunBody": "The whole Journey against the clock",
+  "@homeShortcutSpeedrunBody": {
+    "description": "Two-line description on the speedrun shortcut tile."
+  },
+  "homeShortcutStarsBody": "Each piece against the clock",
+  "@homeShortcutStarsBody": {
+    "description": "Two-line description on the star challenges shortcut tile."
+  },
+  "homeShortcutSchool": "School",
+  "@homeShortcutSchool": {
+    "description": "Title of the school shortcut tile on the home screen."
+  },
+  "homeShortcutSchoolBody": "From the pieces to your first mate",
+  "@homeShortcutSchoolBody": {
+    "description": "Two-line description on the school shortcut tile."
   }
 }

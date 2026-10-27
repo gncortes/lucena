@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/streak.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/streak_rules.dart';
@@ -32,9 +36,13 @@ class StreakState {
 }
 
 class StreakCubit extends Cubit<StreakState> {
-  StreakCubit({required this._activity, required this._now})
-    : super(const StreakState());
+  StreakCubit({
+    required this._activity,
+    required this._now,
+    this._analytics = const NoAnalyticsRepository(),
+  }) : super(const StreakState());
 
+  final AnalyticsRepository _analytics;
   final ActivityRepository _activity;
   final Now _now;
 
@@ -42,10 +50,19 @@ class StreakCubit extends Cubit<StreakState> {
     final days = await _activity.days();
     if (isClosed) return;
     final now = _now();
+    final streak = StreakRules.of(days, now);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.sequenciaVista(
+          sequencia: streak.current,
+          recorde: streak.record,
+        ),
+      ),
+    );
     emit(
       StreakState(
         ready: true,
-        streak: StreakRules.of(days, now),
+        streak: streak,
         today: StreakRules.day(now),
         active: {for (final at in days) StreakRules.day(at)},
         run: StreakRules.run(days, now).toSet(),
