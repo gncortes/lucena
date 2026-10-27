@@ -19,7 +19,9 @@
     "rewrites": [
       { "source": "/p/**", "destination": "/index.html" },
       { "source": "/dia{,/**}", "destination": "/index.html" },
-      { "source": "/daily{,/**}", "destination": "/index.html" }
+      { "source": "/daily{,/**}", "destination": "/index.html" },
+      { "source": "/aula/**", "destination": "/index.html" },
+      { "source": "/escola/**", "destination": "/index.html" }
     ],
     "headers": [
       {

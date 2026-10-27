@@ -12,8 +12,8 @@ import '../../free_board/view_models/link_lesson_cubit.dart';
 
 /// O link só de aula (`/aula/<id>`, T84) aberto sem conta: a aula só abre
 /// com conta, então o convite vem antes. Google ou e-mail terminam na aula
-/// (`Routes.afterAccount`); "Agora não", ou voltar do e-mail sem entrar, leva
-/// ao início.
+/// (`Routes.afterAccount`), por cima desta tela; "Agora não", voltar do
+/// e-mail sem entrar ou voltar da aula leva ao início.
 class LinkedLessonGate extends StatefulWidget {
   const LinkedLessonGate({super.key});
 
@@ -60,11 +60,12 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
 
   @override
   Widget build(BuildContext context) {
-    // Voltou do e-mail sem entrar: a tela fica por cima de novo, vai ao início.
+    // Voltou do e-mail sem entrar, ou da aula: a tela fica por cima de novo,
+    // vai ao início.
     final current = ModalRoute.of(context)?.isCurrent ?? true;
     if (_answered && !_asking && current) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && !context.read<LinkLessonCubit>().hasAccount) _leave();
+        if (mounted && (ModalRoute.of(context)?.isCurrent ?? true)) _leave();
       });
     }
     return const Scaffold(key: ChallengeKeys.lessonGate);

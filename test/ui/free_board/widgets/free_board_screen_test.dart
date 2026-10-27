@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:chessground/chessground.dart';
@@ -2457,16 +2458,20 @@ void main() {
       late FakeAnalyticsRepository analytics;
       late MemoryCampaignRepository campaigns;
 
-      LinkLessonCubit linkLesson(FakeAccountRepository accounts) {
+      LinkLessonCubit linkLesson(
+        FakeAccountRepository accounts, {
+        bool available = true,
+      }) {
         analytics = FakeAnalyticsRepository();
         campaigns = MemoryCampaignRepository();
         final cubit = LinkLessonCubit(
           campaign: Campaign.fromChallenge(link),
           accounts: accounts,
-          catalog: _AvailableCatalog(),
+          catalog: _AvailableCatalog(available),
           campaigns: campaigns,
           analytics: analytics,
         );
+        unawaited(cubit.check());
         addTearDown(cubit.close);
         return cubit;
       }
@@ -2568,6 +2573,34 @@ void main() {
         expect(
           analytics.eventsNamed('campanha_cadastro').single.params['resposta'],
           'ja_tem_conta',
+        );
+        // A aula abre por cima: voltar dela volta ao fim do desafio.
+        Navigator.of(tester.element(find.text('lesson rook.lucena'))).pop();
+        await tester.pumpAndSettle();
+        expect(find.text('lesson rook.lucena'), findsNothing);
+        expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+      });
+
+      testWidgets('aula que não abre: o fim de sempre, sem oferta, e o '
+          'aula_indisponivel do link', (tester) async {
+        final accounts = FakeAccountRepository();
+        await pumpScreen(
+          tester,
+          fen: lessonFen,
+          mode: vsMachine.copyWith(fromLink: true, link: link),
+          linkLesson: linkLesson(accounts, available: false),
+          accounts: accounts,
+        );
+        await resign(tester);
+        await tester.pumpAndSettle();
+        expect(find.byKey(ChallengeKeys.lessonOffer), findsNothing);
+        expect(find.byKey(ChallengeKeys.endLesson), findsNothing);
+        expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endMeetApp), findsOneWidget);
+        expect(analytics.eventsNamed('campanha_oferta_vista'), isEmpty);
+        expect(
+          analytics.eventsNamed('aula_indisponivel').single.params['origem'],
+          'link',
         );
       });
 
@@ -3534,6 +3567,10 @@ class _BubbleCharacters extends FakeCharacterRepository {
 
 /// Toda aula ligada está liberada.
 class _AvailableCatalog implements LinkedLessonCatalog {
+  _AvailableCatalog(this.value);
+
+  final bool value;
+
   @override
-  Future<bool> available(LinkedLesson lesson) async => true;
+  Future<bool> available(LinkedLesson lesson) async => value;
 }

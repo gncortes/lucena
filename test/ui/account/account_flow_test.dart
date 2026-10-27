@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -102,6 +104,12 @@ void main() {
           ),
         ),
         GoRoute(path: Routes.goal, builder: (_, _) => stub('rota-objetivo')),
+        GoRoute(path: '/desafio', builder: (_, _) => stub('rota-desafio')),
+        GoRoute(
+          path: '/aula/:id',
+          builder: (_, state) =>
+              stub('rota-aula ${state.pathParameters['id']}'),
+        ),
         GoRoute(
           path: Routes.settingsProfile,
           builder: (_, _) => stub('rota-perfil'),
@@ -462,5 +470,23 @@ void main() {
       expect(profiles.profile.photo, AvatarPhoto.none);
       expect(profiles.profile.photoUrl, isNull);
     });
+  });
+
+  testWidgets('conta aberta de uma rota (aula do link, T84): o destino abre '
+      'por cima de quem abriu, e voltar volta para lá', (tester) async {
+    await pump(tester, '/desafio');
+    final router = GoRouter.of(tester.element(find.text('rota-desafio')));
+    unawaited(router.push(Routes.accountEmailFrom('/aula/rook.lucena')));
+    await tester.pumpAndSettle();
+    await fill(tester, 'ana@example.com', '12345678');
+    expect(find.byKey(AccountKeys.dataScreen), findsOneWidget);
+    await tester.enterText(find.byKey(AccountKeys.nickname), 'Ana');
+    await tester.tap(find.byKey(AccountKeys.dataSave));
+    await tester.pumpAndSettle();
+
+    expect(find.text('rota-aula rook.lucena'), findsOneWidget);
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('rota-desafio'), findsOneWidget);
   });
 }

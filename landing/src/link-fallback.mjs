@@ -27,12 +27,14 @@ export function linkFallback(address) {
   const url = new URL(address);
   if (url.protocol !== 'https:' || !hosts.has(url.host)) return null;
   const daily = /^\/(dia|daily)\/?$/.test(url.pathname);
-  if (!daily && !url.pathname.startsWith('/p/')) return null;
+  const lesson = /^\/(aula|escola)\/[^/]+\/?$/.test(url.pathname);
+  if (!daily && !lesson && !url.pathname.startsWith('/p/')) return null;
   const target = `${url.origin}${url.pathname}${url.search}`;
   return {
     daily,
+    lesson,
     target,
-    fen: daily ? null : url.searchParams.get('fen'),
+    fen: daily || lesson ? null : url.searchParams.get('fen'),
     intent: `intent://${url.host}${url.pathname}${url.search}#Intent;scheme=https;package=com.gncortes.lucena;S.browser_fallback_url=${encodeURIComponent(target)};end`,
   };
 }

@@ -21,6 +21,18 @@ test('/dia e /daily, inclusive barra final, mantêm o destino', () => {
   }
 });
 
+test('/aula/<id> e /escola/<id> abrem a aula no app, com a query', () => {
+  for (const path of ['/aula/rook.lucena', '/escola/pawn.intro/']) {
+    const result = linkFallback(`https://playlucena.com${path}?utm_source=teste`);
+    assert.equal(result.lesson, true);
+    assert.equal(result.fen, null);
+    assert.ok(result.intent.includes(`${path}?utm_source=teste#Intent;`));
+  }
+  for (const address of ['https://playlucena.com/aula/', 'https://playlucena.com/aula/x/y']) {
+    assert.equal(linkFallback(address), null);
+  }
+});
+
 test('ignora destinos terceiros e páginas normais; não injeta fragmento no intent', () => {
   for (const address of ['https://example.com/p/x', 'http://playlucena.com/dia', 'https://playlucena.com/', 'https://playlucena.com/dia/extra']) {
     assert.equal(linkFallback(address), null);
@@ -35,6 +47,8 @@ test('Firebase reescreve os destinos para a página que contém o fallback', () 
     { source: '/p/**', destination: '/index.html' },
     { source: '/dia{,/**}', destination: '/index.html' },
     { source: '/daily{,/**}', destination: '/index.html' },
+    { source: '/aula/**', destination: '/index.html' },
+    { source: '/escola/**', destination: '/index.html' },
   ]);
   const page = readFileSync(new URL('../src/pages/index.astro', import.meta.url), 'utf8');
   const component = readFileSync(new URL('../src/components/LinkFallback.astro', import.meta.url), 'utf8');

@@ -27,6 +27,11 @@ import { links } from '../i18n';
       document.getElementById('link-context')!.textContent =
         'Abra o Lucena para consultar e jogar o final de hoje. A disponibilidade é informada no app.';
       document.getElementById('link-preview')!.hidden = true;
+    } else if (link.lesson) {
+      document.getElementById('link-title')!.textContent = 'Aula gratuita';
+      document.getElementById('link-context')!.textContent =
+        'Abra o Lucena para fazer a aula gratuita deste link. A aula abre com uma conta.';
+      document.getElementById('link-preview')!.hidden = true;
     } else if (link.fen) {
       const preview = boardPreview(link.fen,new URL(window.location.href).searchParams.get('side') ?? 'white');
       const board = document.getElementById('link-preview')!;
