@@ -208,19 +208,24 @@ void main() {
   const learner = UserProfile(rating: 800, goal: GoalPreference.learn);
 
   testWidgets('aprender a jogar, antes da 1ª partida: os primeiros passos e '
-      'só Estrelas e Problemas', (tester) async {
+      'Escola, Jornada, Problemas e Estrelas', (tester) async {
     await pumpHome(tester, profile: learner);
 
     expect(text(tester, HomeKeys.heroLabel), 'Primeiros passos');
     expect(text(tester, HomeKeys.goalTitle), 'Como mover as peças');
     expect(action(tester), 'Começar');
-    expect(tiles(tester), [HomeKeys.starsButton, HomeKeys.raceButton]);
+    expect(tiles(tester), [
+      HomeKeys.schoolButton,
+      HomeKeys.journeyButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
     // Sem destaque antes da primeira vitória.
     expect(find.byKey(FeaturedKeys.homeSection), findsNothing);
   });
 
-  testWidgets('aprender a jogar, depois do Coco: a Jornada no cartão e as '
-      'Estrelas primeiro', (tester) async {
+  testWidgets('aprender a jogar, depois do Coco: a Jornada no cartão e a '
+      'Escola primeiro', (tester) async {
     await pumpHome(
       tester,
       profile: learner,
@@ -233,14 +238,15 @@ void main() {
     expect(text(tester, HomeKeys.heroLabel), 'Jornada');
     expect(action(tester), 'Jogar');
     expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
-    final shown = tiles(tester);
-    expect(shown, hasLength(4));
-    expect(shown.first, HomeKeys.starsButton);
-    expect(shown.last, HomeKeys.raceButton);
-    expect(shown, isNot(contains(HomeKeys.journeyButton)));
+    expect(tiles(tester), [
+      HomeKeys.schoolButton,
+      HomeKeys.journeyButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
   });
 
-  testWidgets('aprender finais: o capítulo no cartão, sem o Curso nos '
+  testWidgets('aprender finais: o capítulo no cartão e o Curso primeiro nos '
       'atalhos', (tester) async {
     await pumpHome(
       tester,
@@ -252,10 +258,12 @@ void main() {
     expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
     expect(action(tester), 'Start');
     expect(tiles(tester), [
+      HomeKeys.endgamesButton,
       HomeKeys.journeyButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
+      HomeKeys.starsButton,
     ]);
   });
 
@@ -281,8 +289,8 @@ void main() {
     expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
   });
 
-  testWidgets('treinar finais: o final da faixa no cartão, sem Treinar nos '
-      'atalhos', (tester) async {
+  testWidgets('treinar finais: o final da faixa no cartão e Treinar primeiro '
+      'nos atalhos', (tester) async {
     await pumpHome(
       tester,
       profile: const UserProfile(rating: 1450, goal: GoalPreference.train),
@@ -291,22 +299,35 @@ void main() {
     expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
     expect(action(tester), 'Treinar');
     expect(tiles(tester), [
+      HomeKeys.catalogButton,
       HomeKeys.journeyButton,
       HomeKeys.endgamesButton,
       HomeKeys.speedrunButton,
       HomeKeys.raceButton,
+      HomeKeys.starsButton,
     ]);
   });
 
-  testWidgets('sem objetivo: a Jornada no cartão e quatro atalhos', (
-    tester,
-  ) async {
+  testWidgets('sem objetivo: a Jornada no cartão e todos os marcados, em '
+      'grade 2×N', (tester) async {
     await pumpHome(tester, profile: const UserProfile(rating: 1450));
 
     expect(text(tester, HomeKeys.heroLabel), 'Jornada');
-    expect(find.byKey(HomeKeys.journeyButton), findsNothing);
-    expect(tiles(tester), hasLength(4));
-    expect(tiles(tester).last, HomeKeys.raceButton);
+    final shown = tiles(tester);
+    expect(shown, [
+      HomeKeys.journeyButton,
+      HomeKeys.endgamesButton,
+      HomeKeys.catalogButton,
+      HomeKeys.speedrunButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
+    double left(Key key) => tester.getTopLeft(find.byKey(key)).dx;
+    double y(Key key) => tester.getTopLeft(find.byKey(key)).dy;
+    for (var i = 0; i < shown.length; i += 2) {
+      expect(y(shown[i]), y(shown[i + 1]));
+      expect(left(shown[i]), lessThan(left(shown[i + 1])));
+    }
   });
 
   testWidgets('sem aula liberada: nem o Curso de finais nos atalhos', (
@@ -321,7 +342,7 @@ void main() {
     expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
     expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
     expect(find.byKey(HomeKeys.forYouButton), findsNothing);
-    expect(tiles(tester), hasLength(4));
+    expect(tiles(tester).last, HomeKeys.starsButton);
   });
 
   testWidgets('finais em destaque: o título, "Ver mais" e o cartão compacto', (
@@ -378,7 +399,7 @@ void main() {
     );
 
     final shown = tiles(tester);
-    expect(shown.first, HomeKeys.starsButton);
+    expect(shown.first, HomeKeys.schoolButton);
     double titleTop(Key key) => tester
         .getTopLeft(
           find

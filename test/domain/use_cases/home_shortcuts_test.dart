@@ -6,8 +6,10 @@ import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/use_cases/home_shortcuts.dart';
 import 'package:lucena/domain/use_cases/home_suggestion.dart';
 
-// Um caso por célula da prancha "Atalhos por tipo de usuário" (T83).
+// Um caso por célula da prancha "Atalhos por usuário" v2 (T83): todos os
+// caminhos marcados, na ordem do nível, e os Problemas e as Estrelas no fim.
 void main() {
+  const school = HomeShortcut.school;
   const journey = HomeShortcut.journey;
   const endgames = HomeShortcut.endgames;
   const train = HomeShortcut.train;
@@ -15,163 +17,113 @@ void main() {
   const race = HomeShortcut.race;
   const stars = HomeShortcut.stars;
 
-  List<HomePath> order(
+  List<HomeShortcut> shortcuts(
     RatingLevel level, {
     GoalPreference? goal,
     bool course = true,
-  }) =>
-      HomeSuggestion.of(level, school: false, course: course, goal: goal).order;
+    bool school = false,
+    Set<HomePath> unchecked = const {},
+  }) {
+    final layout = HomeSuggestion.of(
+      level,
+      school: school,
+      course: course,
+      goal: goal,
+    );
+    return HomeShortcuts.of(
+      order: layout.order,
+      visible: layout.visible.difference(unchecked),
+      learning: goal == GoalPreference.learn,
+    );
+  }
 
-  test('aprender a jogar antes de vencer o Coco: só Estrelas e Problemas', () {
+  test('aprender a jogar: Escola, Jornada, Problemas e Estrelas', () {
+    expect(shortcuts(RatingLevel.beginner, goal: GoalPreference.learn), [
+      school,
+      journey,
+      race,
+      stars,
+    ]);
+  });
+
+  test('aprender a jogar: some o que a pessoa desmarcou, menos a Escola', () {
     expect(
-      HomeShortcuts.of(
-        order: order(RatingLevel.beginner, goal: GoalPreference.learn),
-        hero: HomePath.journey,
-        learning: true,
-        firstWin: false,
+      shortcuts(
+        RatingLevel.beginner,
+        goal: GoalPreference.learn,
+        unchecked: {HomePath.journey, HomePath.stars},
       ),
-      [stars, race],
+      [school, race],
     );
   });
 
-  test('aprender a jogar depois do Coco: Estrelas primeiro, o treino antes '
-      'do curso e os Problemas', () {
-    expect(
-      HomeShortcuts.of(
-        order: order(RatingLevel.beginner, goal: GoalPreference.learn),
-        hero: HomePath.journey,
-        learning: true,
-      ),
-      [stars, train, endgames, race],
-    );
+  test('aprender finais (1450): o Curso primeiro, mesmo sendo o cartão', () {
+    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.endgames), [
+      endgames,
+      journey,
+      train,
+      speedrun,
+      race,
+      stars,
+    ]);
   });
 
-  test('aprender finais: sem o Curso, que é o cartão', () {
-    expect(
-      HomeShortcuts.of(
-        order: order(RatingLevel.intermediate, goal: GoalPreference.endgames),
-        hero: HomePath.endgames,
-      ),
-      [journey, train, speedrun, race],
-    );
-  });
-
-  test('treinar finais: os finais para você entram no Curso', () {
-    final paths = order(RatingLevel.intermediate, goal: GoalPreference.train);
-    expect(paths, contains(HomePath.forYou));
-    expect(HomeShortcuts.of(order: paths, hero: HomePath.train), [
+  test('treinar finais (1450): o treino primeiro; os finais para você entram '
+      'no Curso', () {
+    expect(shortcuts(RatingLevel.intermediate, goal: GoalPreference.train), [
+      train,
       journey,
       endgames,
       speedrun,
       race,
+      stars,
     ]);
   });
 
-  test('sem objetivo: sem a Jornada do cartão', () {
+  test('sem objetivo (1450): a ordem do nível', () {
+    expect(shortcuts(RatingLevel.intermediate), [
+      journey,
+      endgames,
+      train,
+      speedrun,
+      race,
+      stars,
+    ]);
+  });
+
+  test('desmarcados em Configurações > Tela inicial somem', () {
     expect(
-      HomeShortcuts.of(
-        order: order(RatingLevel.casual),
-        hero: HomePath.journey,
+      shortcuts(
+        RatingLevel.intermediate,
+        goal: GoalPreference.endgames,
+        unchecked: {HomePath.speedrun, HomePath.stars},
       ),
-      [endgames, train, speedrun, race],
+      [endgames, journey, train, race],
     );
   });
 
-  test('sem aula liberada: o Curso some e as Estrelas completam', () {
+  test('sem aula liberada: o Curso some', () {
     expect(
-      HomeShortcuts.of(
-        order: order(
-          RatingLevel.intermediate,
-          goal: GoalPreference.endgames,
-          course: false,
-        ),
-        hero: HomePath.train,
+      shortcuts(
+        RatingLevel.intermediate,
+        goal: GoalPreference.endgames,
+        course: false,
       ),
-      [journey, speedrun, race, stars],
+      isNot(contains(endgames)),
     );
   });
 
-  test('curso concluído: o cartão é o treino; o curso fica para rever', () {
-    expect(
-      HomeShortcuts.of(
-        order: order(RatingLevel.intermediate, goal: GoalPreference.endgames),
-        hero: HomePath.train,
-        courseDone: true,
-      ),
-      [journey, speedrun, endgames, race],
-    );
+  test('com a Escola liberada, o iniciante a vê primeiro', () {
+    expect(shortcuts(RatingLevel.beginner, school: true).first, school);
   });
 
-  test('Jornada vencida: o Speedrun no lugar dela e as Estrelas antes dos '
-      'Problemas', () {
-    expect(
-      HomeShortcuts.of(
-        order: order(RatingLevel.beginner, goal: GoalPreference.learn),
-        hero: HomePath.train,
-        learning: true,
-        journeyDone: true,
-      ),
-      [speedrun, endgames, stars, race],
-    );
-  });
-
-  group('sem objetivo, pela faixa de rating', () {
-    test('até 999 (iniciante)', () {
-      expect(
-        HomeShortcuts.of(
-          order: order(RatingLevel.beginner),
-          hero: HomePath.journey,
-        ),
-        [endgames, train, speedrun, race],
-      );
-    });
-
-    test('1000–1599', () {
-      expect(
-        HomeShortcuts.of(
-          order: order(RatingLevel.intermediate),
-          hero: HomePath.journey,
-        ),
-        [endgames, train, speedrun, race],
-      );
-    });
-
-    test('1600–1899, com a aula aberta no cartão', () {
-      expect(
-        HomeShortcuts.of(
-          order: order(RatingLevel.advanced),
-          hero: HomePath.endgames,
-        ),
-        [journey, speedrun, train, race],
-      );
-    });
-
-    test('1900–2199', () {
-      expect(
-        HomeShortcuts.of(
-          order: order(RatingLevel.expert),
-          hero: HomePath.journey,
-        ),
-        [endgames, speedrun, train, race],
-      );
-    });
-
-    test('2200+', () {
-      expect(
-        HomeShortcuts.of(
-          order: order(RatingLevel.master),
-          hero: HomePath.journey,
-        ),
-        [speedrun, endgames, train, race],
-      );
-    });
-  });
-
-  test('a Escola nunca vira atalho e nada se repete', () {
-    final shortcuts = HomeShortcuts.of(
-      order: HomeSuggestion.of(RatingLevel.beginner, school: true).order,
-    );
-    expect(shortcuts, [journey, endgames, train, race]);
-    expect(shortcuts.toSet(), hasLength(shortcuts.length));
+  test('nada se repete, em nenhum nível e objetivo', () {
+    for (final level in RatingLevel.values) {
+      for (final goal in [null, ...GoalPreference.values]) {
+        final list = shortcuts(level, goal: goal, school: true);
+        expect(list.toSet(), hasLength(list.length), reason: '$level $goal');
+        expect(list.sublist(list.length - 2), [race, stars]);
+      }
+    }
   });
 }

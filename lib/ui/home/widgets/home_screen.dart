@@ -238,8 +238,8 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // "Atalhos": quatro modos numa grade 2×2, todos da mesma altura; "Ver
-  // mais" abre Todos os modos.
+  // "Atalhos": todos os caminhos marcados numa grade 2×N, todos da mesma
+  // altura; "Ver mais" abre Todos os modos.
   Widget _shortcuts(BuildContext context, HomeState state) {
     final shortcuts = state.shortcuts;
     return Column(

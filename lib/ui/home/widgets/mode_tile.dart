@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
+import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -17,6 +18,7 @@ import 'home_path_ui.dart';
 /// frase, a tela que abre e a key.
 extension HomeShortcutUi on HomeShortcut {
   IconData get icon => switch (this) {
+    HomeShortcut.school => HomePath.learn.icon,
     HomeShortcut.journey => HomePath.journey.icon,
     HomeShortcut.endgames => HomePath.endgames.icon,
     HomeShortcut.train => HomePath.train.icon,
@@ -40,7 +42,7 @@ extension HomeShortcutUi on HomeShortcut {
           background: AppColors.tilePurple,
           foreground: AppColors.tilePurpleOn,
         ),
-        HomeShortcut.stars => (
+        HomeShortcut.school || HomeShortcut.stars => (
           background: AppColors.tileGreen,
           foreground: AppColors.tileGreenOn,
         ),
@@ -51,6 +53,7 @@ extension HomeShortcutUi on HomeShortcut {
       };
 
   String title(AppLocalizations l10n) => switch (this) {
+    HomeShortcut.school => l10n.homeShortcutSchool,
     HomeShortcut.journey => l10n.homeJourney,
     HomeShortcut.endgames => l10n.homeEndgames,
     HomeShortcut.train => l10n.homeTrain,
@@ -60,6 +63,7 @@ extension HomeShortcutUi on HomeShortcut {
   };
 
   String body(AppLocalizations l10n) => switch (this) {
+    HomeShortcut.school => l10n.homeShortcutSchoolBody,
     HomeShortcut.journey => l10n.homeShortcutJourneyBody,
     HomeShortcut.endgames => l10n.homeShortcutEndgamesBody,
     HomeShortcut.train => l10n.homeShortcutTrainBody,
@@ -69,6 +73,8 @@ extension HomeShortcutUi on HomeShortcut {
   };
 
   String get route => switch (this) {
+    HomeShortcut.school =>
+      VisibleLessons.school ? Routes.school : Routes.boardControls,
     HomeShortcut.journey => HomePath.journey.route,
     HomeShortcut.endgames => HomePath.endgames.route,
     HomeShortcut.train => HomePath.train.route,
@@ -79,6 +85,7 @@ extension HomeShortcutUi on HomeShortcut {
 
   /// A mesma key dos cartões de caminho de antes.
   Key get key => switch (this) {
+    HomeShortcut.school => HomeKeys.schoolButton,
     HomeShortcut.journey => HomeKeys.journeyButton,
     HomeShortcut.endgames => HomeKeys.endgamesButton,
     HomeShortcut.train => HomeKeys.catalogButton,

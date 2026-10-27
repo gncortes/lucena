@@ -1606,15 +1606,15 @@
   "@homeLearnBody": {
     "description": "Home screen: one-line explanation of the lessons path."
   },
-  "homeJourneyBody": "The next step after the lessons: practice by beating each opponent's endgames, from the weakest up to Stockfish.",
+  "homeJourneyBody": "Beat each opponent's endgames, from the weakest to Stockfish.",
   "@homeJourneyBody": {
     "description": "Home screen: one-line explanation of the Journey path."
   },
-  "homeSpeedrunBody": "Pick an endgame and beat every opponent in a row, up to Stockfish, against the clock.",
+  "homeSpeedrunBody": "Pick an endgame and beat every opponent, up to Stockfish, against the clock.",
   "@homeSpeedrunBody": {
     "description": "Home screen: one-line explanation of the speedrun path."
   },
-  "homeTrainBody": "Pick any endgame and the opponent, and play it as many times as you want.",
+  "homeTrainBody": "Pick the endgame and the opponent and play as often as you like.",
   "@homeTrainBody": {
     "description": "Home screen: one-line explanation of the endgame training path (the catalog)."
   },
@@ -1847,7 +1847,7 @@
   "@homeForYou": {
     "description": "Home path: the endgame lessons recommended by the level test."
   },
-  "homeForYouBody": "Your own endgame study, built from your level test: the chapters you still need, in order.",
+  "homeForYouBody": "The chapters you still need, in order, based on your level test.",
   "@homeForYouBody": {
     "description": "Home path body for the personalised endgame study."
   },
@@ -2903,7 +2903,7 @@
   "@homeLearnBodyPlayer": {
     "description": "Home path text for Viktor's lessons, for players who are not beginners."
   },
-  "homeSpeedrunBodyChallenge": "Beat everyone up to Stockfish in the shortest time. Break your record.",
+  "homeSpeedrunBodyChallenge": "Beat everyone up to Stockfish in the shortest time and break your record.",
   "@homeSpeedrunBodyChallenge": {
     "description": "Home path text for the speedrun, for expert and master players: a challenge."
   },
@@ -2919,7 +2919,7 @@
   "@homeLayoutTitle": {
     "description": "Settings entry and screen title: the home screen paths."
   },
-  "homeLayoutBody": "Marked paths stand out on the home screen; the rest go to Other modes. Drag to change the order.",
+  "homeLayoutBody": "Check what shows on the home screen. Drag to change the order.",
   "@homeLayoutBody": {
     "description": "Explanation on the home screen settings: marked paths stand out, the rest go to Other modes; drag to reorder."
   },
@@ -6970,7 +6970,7 @@
   "@homeRace": {
     "description": "Home: title of the endgame race path."
   },
-  "homeRaceBody": "Endgame race: 3 minutes, 3 mistakes",
+  "homeRaceBody": "How many endgames can you solve in time?",
   "@homeRaceBody": {
     "description": "Home: text of the endgame race path."
   },
@@ -9711,7 +9711,7 @@
       }
     }
   },
-  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order.",
+  "homeForYouBodyUntested": "The chapters you still need, in order.",
   "@homeForYouBodyUntested": {
     "description": "Home card body for the personalised study when the player has not taken the level test."
   },
@@ -9791,5 +9791,13 @@
   "homeShortcutStarsBody": "Each piece against the clock",
   "@homeShortcutStarsBody": {
     "description": "Two-line description on the star challenges shortcut tile."
+  },
+  "homeShortcutSchool": "School",
+  "@homeShortcutSchool": {
+    "description": "Title of the school shortcut tile on the home screen."
+  },
+  "homeShortcutSchoolBody": "From the pieces to your first mate",
+  "@homeShortcutSchoolBody": {
+    "description": "Two-line description on the school shortcut tile."
   }
 }

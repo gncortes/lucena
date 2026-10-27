@@ -1901,5 +1901,7 @@
   "homeShortcutTrainBody": "Over 3,500 endgames of every kind",
   "homeShortcutRaceBody": "How many endgames can you solve in time?",
   "homeShortcutSpeedrunBody": "The whole Journey against the clock",
-  "homeShortcutStarsBody": "Each piece against the clock"
+  "homeShortcutStarsBody": "Each piece against the clock",
+  "homeShortcutSchool": "School",
+  "homeShortcutSchoolBody": "From the pieces to your first mate"
 }

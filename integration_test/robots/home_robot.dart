@@ -21,9 +21,8 @@ Future<void> openFromAllModes(PatrolIntegrationTester $, String mode) async {
   await $(AllModesKeys.item(mode)).scrollTo().tap();
 }
 
-/// Abre o caminho [path] da tela inicial pelo atalho dele. Fora dos quatro
-/// atalhos (é o cartão azul ou o nível o deixou de fora), abre por "Todos os
-/// modos".
+/// Abre o caminho [path] da tela inicial pelo atalho dele. Fora dos atalhos
+/// (desmarcado em Configurações > Tela inicial), abre por "Todos os modos".
 Future<void> tapHomePath(PatrolIntegrationTester $, HomePath path) async {
   await $(HomeKeys.shortcutsTitle).waitUntilExists();
   final key = switch (path) {
@@ -32,6 +31,7 @@ Future<void> tapHomePath(PatrolIntegrationTester $, HomePath path) async {
     HomePath.train => HomeKeys.catalogButton,
     HomePath.speedrun => HomeKeys.speedrunButton,
     HomePath.race => HomeKeys.raceButton,
+    HomePath.stars => HomeKeys.starsButton,
     HomePath.learn => null,
   };
   if (key != null && find.byKey(key).evaluate().isNotEmpty) {

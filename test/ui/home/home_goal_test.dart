@@ -8,7 +8,6 @@ import 'package:lucena/domain/models/home_shortcut.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
-import 'package:lucena/domain/use_cases/home_shortcuts.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
@@ -78,12 +77,15 @@ void main() {
     ),
   );
 
-  test('sem objetivo: o cartão é a Jornada, fora dos atalhos', () async {
+  test('sem objetivo: o cartão é a Jornada, também nos atalhos', () async {
     final state = await load(null);
 
     expect(state.hero, HomeHero.journey);
-    expect(state.shortcuts, isNot(contains(HomeShortcut.journey)));
-    expect(state.shortcuts, hasLength(HomeShortcuts.count));
+    expect(state.shortcuts.first, HomeShortcut.journey);
+    expect(state.shortcuts.sublist(state.shortcuts.length - 2), [
+      HomeShortcut.race,
+      HomeShortcut.stars,
+    ]);
   });
 
   test('aprender finais: a primeira aula da trilha é o cartão', () async {
@@ -92,7 +94,7 @@ void main() {
     expect(state.hero, HomeHero.endgame);
     expect(state.endgame!.lessonId, 'rook.lucena');
     expect(state.endgame!.recommended, isTrue);
-    expect(state.shortcuts, isNot(contains(HomeShortcut.endgames)));
+    expect(state.shortcuts.first, HomeShortcut.endgames);
   });
 
   test('aprender finais: a aula começada é a do cartão', () async {
@@ -118,7 +120,7 @@ void main() {
     expect(train.suggestion.subcategory.key, 'queen');
     expect((train.suggestion.done, train.suggestion.total), (0, 1));
     expect(train.fen, samplePositions.first.fen);
-    expect(state.shortcuts, isNot(contains(HomeShortcut.train)));
+    expect(state.shortcuts.first, HomeShortcut.train);
   });
 
   test('aprender a jogar sem a Escola: a Jornada no cartão', () async {
@@ -126,18 +128,24 @@ void main() {
     final state = await load(GoalPreference.learn, rating: 800);
 
     expect(state.hero, HomeHero.journey);
-    expect(state.shortcuts.first, HomeShortcut.stars);
-    expect(state.shortcuts, isNot(contains(HomeShortcut.journey)));
+    expect(state.shortcuts, [
+      HomeShortcut.school,
+      HomeShortcut.journey,
+      HomeShortcut.race,
+      HomeShortcut.stars,
+    ]);
   });
 
-  test(
-    'aprender a jogar antes de vencer o Coco: Estrelas e Problemas',
-    () async {
-      final state = await load(GoalPreference.learn, rating: 800);
+  test('aprender a jogar antes de vencer o Coco: os mesmos atalhos', () async {
+    final state = await load(GoalPreference.learn, rating: 800);
 
-      expect(state.shortcuts, [HomeShortcut.stars, HomeShortcut.race]);
-    },
-  );
+    expect(state.shortcuts, [
+      HomeShortcut.school,
+      HomeShortcut.journey,
+      HomeShortcut.race,
+      HomeShortcut.stars,
+    ]);
+  });
 
   group('sem aula de final liberada (T83 B1)', () {
     const empty = EndgameTrail(modules: []);

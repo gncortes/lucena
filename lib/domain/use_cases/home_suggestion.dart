@@ -86,12 +86,15 @@ abstract final class HomeSuggestion {
     if (course) {
       withForYou.insert(first == endgames ? at + 1 : at, HomePath.forYou);
     }
+    // As Estrelas vêm logo depois dos Problemas, marcadas também.
+    withForYou.insert(withForYou.indexOf(race) + 1, HomePath.stars);
     return HomeLayout(
       order: withForYou,
       visible: {
         ...visible,
         if (course && visible.contains(endgames)) HomePath.forYou,
         race,
+        HomePath.stars,
       },
     );
   }
@@ -212,7 +215,8 @@ abstract final class HomeSuggestion {
         HomePath.forYou ||
         HomePath.endgames ||
         HomePath.train ||
-        HomePath.race => HomePathText.standard,
+        HomePath.race ||
+        HomePath.stars => HomePathText.standard,
       };
 
   /// O caminho do cartão "Continuar": o da vez ([current]) se estiver

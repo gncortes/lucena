@@ -20,7 +20,10 @@ enum HomePath {
   train,
 
   /// A Corrida de problemas.
-  race;
+  race,
+
+  /// Os desafios de estrelas: cada peça contra o relógio.
+  stars;
 
   static HomePath? fromCode(Object? code) => values.asNameMap()[code];
 }
@@ -75,8 +78,8 @@ class HomeLayout {
   };
 
   /// O layout gravado. Caminho que falta (versão nova) vai para o fim,
-  /// escondido; sem nenhum visível, o primeiro aparece. Nulo se não dá para
-  /// ler.
+  /// escondido (as Estrelas, que nasceram marcadas, entram marcadas); sem
+  /// nenhum visível, o primeiro aparece. Nulo se não dá para ler.
   static HomeLayout? fromJson(Object? json) {
     if (json is! Map) return null;
     final rawOrder = json['order'];
@@ -88,10 +91,15 @@ class HomeLayout {
       final path = HomePath.fromCode(code);
       if (path != null && !order.contains(path)) order.add(path);
     }
-    for (final path in HomePath.values) {
-      if (!order.contains(path)) order.add(path);
-    }
-    final visible = {for (final code in rawVisible) ?HomePath.fromCode(code)};
+    final added = [
+      for (final path in HomePath.values)
+        if (!order.contains(path)) path,
+    ];
+    order.addAll(added);
+    final visible = {
+      for (final code in rawVisible) ?HomePath.fromCode(code),
+      if (added.contains(HomePath.stars)) HomePath.stars,
+    };
     return HomeLayout(
       order: order,
       visible: visible.isEmpty ? {order.first} : visible,

@@ -12,34 +12,35 @@ void main() {
   const speedrun = HomePath.speedrun;
   const train = HomePath.train;
   const race = HomePath.race;
+  const stars = HomePath.stars;
 
   test('a sugestão de cada nível: a ordem e os marcados', () {
     final expected = {
       // Os finais para você vêm logo antes das aulas de finais e são
       // marcados com elas.
       RatingLevel.beginner: (
-        [learn, journey, forYou, endgames, train, speedrun, race],
-        {learn, journey, race},
+        [learn, journey, forYou, endgames, train, speedrun, race, stars],
+        {learn, journey, race, stars},
       ),
       RatingLevel.casual: (
-        [journey, forYou, endgames, train, speedrun, race, learn],
-        {journey, forYou, endgames, train, race},
+        [journey, forYou, endgames, train, speedrun, race, stars, learn],
+        {journey, forYou, endgames, train, race, stars},
       ),
       RatingLevel.intermediate: (
-        [journey, forYou, endgames, train, speedrun, race, learn],
-        {journey, forYou, endgames, train, speedrun, race},
+        [journey, forYou, endgames, train, speedrun, race, stars, learn],
+        {journey, forYou, endgames, train, speedrun, race, stars},
       ),
       RatingLevel.advanced: (
-        [forYou, endgames, journey, speedrun, race, train, learn],
-        {forYou, endgames, journey, speedrun, train, race},
+        [forYou, endgames, journey, speedrun, race, stars, train, learn],
+        {forYou, endgames, journey, speedrun, train, race, stars},
       ),
       RatingLevel.expert: (
-        [forYou, endgames, speedrun, race, train, journey, learn],
-        {forYou, endgames, speedrun, train, race},
+        [forYou, endgames, speedrun, race, stars, train, journey, learn],
+        {forYou, endgames, speedrun, train, race, stars},
       ),
       RatingLevel.master: (
-        [speedrun, forYou, endgames, race, train, journey, learn],
-        {speedrun, forYou, endgames, train, race},
+        [speedrun, forYou, endgames, race, stars, train, journey, learn],
+        {speedrun, forYou, endgames, train, race, stars},
       ),
     };
     for (final MapEntry(key: level, value: (order, visible))
@@ -71,8 +72,9 @@ void main() {
         train,
         speedrun,
         race,
+        stars,
       ]);
-      expect(layout.visible, {learn, journey, race});
+      expect(layout.visible, {learn, journey, race, stars});
 
       // Aprender finais, avançado: as aulas sobem e os finais para você vêm
       // logo depois delas.
@@ -87,6 +89,7 @@ void main() {
         journey,
         speedrun,
         race,
+        stars,
         train,
         learn,
       ]);
@@ -97,6 +100,7 @@ void main() {
         speedrun,
         train,
         race,
+        stars,
       });
 
       // Treinar finais, iniciante: o treino entra marcado, além dos do nível.
@@ -113,8 +117,9 @@ void main() {
         endgames,
         speedrun,
         race,
+        stars,
       ]);
-      expect(layout.visible, {train, learn, journey, race});
+      expect(layout.visible, {train, learn, journey, race, stars});
       expect(layout.order.toSet(), HomePath.values.toSet());
     },
   );
@@ -198,6 +203,7 @@ void main() {
     var layout = HomeSuggestion.of(RatingLevel.beginner, school: true);
     layout = HomeSuggestion.toggle(layout, learn, RatingLevel.beginner);
     layout = HomeSuggestion.toggle(layout, race, RatingLevel.beginner);
+    layout = HomeSuggestion.toggle(layout, stars, RatingLevel.beginner);
     expect(HomeSuggestion.canHide(layout, journey), isFalse);
     layout = HomeSuggestion.toggle(layout, journey, RatingLevel.beginner);
     expect(layout.visible, {journey});
@@ -285,7 +291,8 @@ void main() {
     })!;
     expect(old.order.take(2), [train, journey]);
     expect(old.order.toSet(), HomePath.values.toSet());
-    expect(old.visible, {train});
+    // As Estrelas, que não existiam no gravado, entram marcadas.
+    expect(old.visible, {stars});
     expect(HomeLayout.fromJson('nada'), isNull);
   });
 

@@ -1,6 +1,9 @@
 /// Um atalho da grade "Atalhos" da tela inicial (T83, canvas
 /// `PropV2UxHome*`).
 enum HomeShortcut {
+  /// A Escola, de como as peças andam ao primeiro mate.
+  school,
+
   /// A Jornada, do Coco ao Stockfish.
   journey,
 

@@ -191,15 +191,15 @@ class HomeState {
   HomeHero _journeyOr(HomeHero done) =>
       current != null && next != null ? HomeHero.journey : done;
 
-  /// Os quatro atalhos da grade, sem o caminho do cartão de cima.
-  List<HomeShortcut> get shortcuts => HomeShortcuts.of(
-    order: (layout ?? HomeSuggestion.of(level ?? RatingLevel.casual)).order,
-    hero: hero?.path,
-    learning: goal == GoalPreference.learn,
-    firstWin: journeyStarted,
-    journeyDone: current == null,
-    courseDone: courseDone,
-  );
+  /// Os atalhos da grade: todos os caminhos marcados, na ordem do nível.
+  List<HomeShortcut> get shortcuts {
+    final shown = layout ?? HomeSuggestion.of(level ?? RatingLevel.casual);
+    return HomeShortcuts.of(
+      order: shown.order,
+      visible: shown.visible,
+      learning: goal == GoalPreference.learn,
+    );
+  }
 
   HomeState copyWith({bool? unlockedBlind, Streak? streak}) => HomeState(
     ready: ready,
