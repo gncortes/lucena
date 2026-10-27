@@ -1177,7 +1177,7 @@
   "devOpenLinkInvalid": "Este não é um link de desafio",
   "devOpenLinkOpen": "Abrir",
   "challengeEndPlayAgain": "Jogar de novo",
-  "challengeCompare": "Sender: mate in {sender, plural, one{1 move} other{{sender} moves}}. You: mate in {you, plural, one{1 move} other{{you} moves}}.",
+  "challengeCompare": "Sender: mate in {sender, plural, one{1 move} other{{sender} moves}}.\nYou: mate in {you, plural, one{1 move} other{{you} moves}}.",
   "challengeEndMeetApp": "Conhecer o app",
   "challengeImageWon": "DESAFIO CONCLUÍDO",
   "challengeImageDrawn": "DESAFIO EMPATADO",

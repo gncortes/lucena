@@ -80,7 +80,12 @@ abstract final class FeaturedLabels {
     FeaturedTournament? tournament,
   ) => tournament == null
       ? origin(l10n, endgame.origin)
-      : l10n.featuredEventYear(tournament.nameIn(language), tournament.year);
+      : _withYear(l10n, tournament.nameIn(language), tournament.year);
+
+  /// O ano só entra quando o nome do evento ainda não o traz
+  /// ("Norway Chess 2017" não vira "Norway Chess 2017 2017").
+  static String _withYear(AppLocalizations l10n, String name, int year) =>
+      name.contains('$year') ? name : l10n.featuredEventYear(name, year);
 
   /// O personagem do adversário (o Stockfish, ou o do nível do Maia). Nulo
   /// quando o nível não tem personagem.

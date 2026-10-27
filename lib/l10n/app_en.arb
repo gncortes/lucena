@@ -6024,7 +6024,7 @@
   "@challengeEndPlayAgain": {
     "description": "End of a challenge opened by link: plays the same challenge again"
   },
-  "challengeCompare": "Sender: mate in {sender, plural, one{1 move} other{{sender} moves}}. You: mate in {you, plural, one{1 move} other{{you} moves}}.",
+  "challengeCompare": "Sender: mate in {sender, plural, one{1 move} other{{sender} moves}}.\nYou: mate in {you, plural, one{1 move} other{{you} moves}}.",
   "@challengeCompare": {
     "description": "End of a challenge opened by link: the sender's win compared with the player's",
     "placeholders": {
