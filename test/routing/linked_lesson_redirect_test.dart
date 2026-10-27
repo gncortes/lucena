@@ -8,6 +8,9 @@ import 'package:lucena/routing/routes.dart';
 import '../../testing/fakes/fake_analytics_repository.dart';
 
 class _Catalog implements LinkedLessonCatalog {
+  @override
+  Future<String?> title(LinkedLesson lesson, String language) async => null;
+
   _Catalog(this.value);
 
   final bool value;

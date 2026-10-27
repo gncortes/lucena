@@ -6457,11 +6457,11 @@
   "@accountTitle": {
     "description": "Title of the optional account screen after the tour."
   },
-  "accountBenefitSaved": "Your progress stays saved, even if you change phones",
+  "accountBenefitSaved": "Your progress stays saved in your account",
   "@accountBenefitSaved": {
     "description": "Account screen, first benefit."
   },
-  "accountBenefitDevices": "Lessons, Journey and records the same on another device",
+  "accountBenefitDevices": "Access lessons, Journey and records on another device",
   "@accountBenefitDevices": {
     "description": "Account screen, second benefit."
   },
@@ -7536,7 +7536,7 @@
   "@profileDeleteWeb": {
     "description": "Profile with account: note about deleting on the web."
   },
-  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones. It is optional: without an account, everything keeps working.",
+  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved and you can get everything back on another device. It is optional: without an account, everything keeps working.",
   "@accountInviteTextSheet": {
     "description": "Account invite sheet after the first game: text."
   },
@@ -7544,7 +7544,7 @@
   "@accountInviteTextLichess": {
     "description": "Account invite sheet after using the Lichess rating on the level screen, without an account: text."
   },
-  "accountInviteTextLinkLesson": "The lesson opens with an account: your progress in it and in your games stays saved, even if you change phones.",
+  "accountInviteTextLinkLesson": "The lesson opens with an account: your progress in it and in your games stays saved and you can access everything on another device.",
   "@accountInviteTextLinkLesson": {
     "description": "Account invite sheet shown before the lesson offered at the end of a campaign challenge link: text."
   },

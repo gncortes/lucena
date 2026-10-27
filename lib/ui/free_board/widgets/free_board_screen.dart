@@ -544,7 +544,27 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     barTalk.line != null &&
                     _speechVisible) {
                   // A largura do tabuleiro tem prioridade. Reduz o resumo
-                  // antes de usar a exceção vertical, nunca o tabuleiro.
+                  // antes de usar a exceção vertical, nunca o tabuleiro; mas
+                  // a fala (até 3 linhas) aparece inteira: abaixo das linhas
+                  // dela, usa a exceção vertical.
+                  final spoken =
+                      TextPainter(
+                        text: TextSpan(
+                          text: barTalk.line!.text,
+                          style: SpeechBalloon.style(context),
+                        ),
+                        textDirection: Directionality.of(context),
+                        textScaler: MediaQuery.textScalerOf(context),
+                      )..layout(
+                        maxWidth: CharacterBar.speechTextWidth(
+                          constraints.maxWidth,
+                        ),
+                      );
+                  final needed = math.min(
+                    3,
+                    spoken.computeLineMetrics().length,
+                  );
+                  spoken.dispose();
                   for (var lines = 3; lines >= 1; lines--) {
                     final text = TextPainter(
                       text: TextSpan(
@@ -567,7 +587,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                             : math.max(0, speechRoom - 12));
                     if (screenCenter - boardSide / 2 >=
                             candidateTop + _boardGap ||
-                        lines == 1) {
+                        lines <= needed) {
                       reserveTop = candidateTop;
                       speechMaxLines = lines;
                       break;

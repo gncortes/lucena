@@ -35,6 +35,7 @@ import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
+import 'package:lucena/ui/free_board/widgets/character_bar.dart';
 import 'package:lucena/ui/featured/view_models/featured_endgame_cubit.dart';
 import 'package:lucena/ui/daily/view_models/daily_game_cubit.dart';
 
@@ -1616,7 +1617,8 @@ void main() {
           expectScreenBoardCenter(tester, active);
           expectSpeechAboveOpponent(tester);
           if (size.height == 873) {
-            expect(active.center.dy, closeTo(487.5, .01));
+            // A fala longa aparece inteira (3 linhas): o tabuleiro desce.
+            expect(active.center.dy, closeTo(533.5, .01));
             expect(
               tester
                   .widget<TypewriterText>(
@@ -1626,7 +1628,7 @@ void main() {
                     ),
                   )
                   .maxLines,
-              1,
+              3,
             );
           } else {
             expect(active.center.dy, closeTo(size.height / 2, .01));
@@ -3106,6 +3108,39 @@ void main() {
       expectScreenBoardCenter(tester, expired);
     });
 
+    testWidgets('a fala de abertura aparece inteira no celular de 360 dp '
+        '(sem reticências; o tabuleiro desce se precisar)', (tester) async {
+      await Goldens.loadFonts();
+      await pumpScreen(
+        tester,
+        locale: const Locale('pt'),
+        screen: const Size(360 * 2.625, 740 * 2.625),
+        systemBars: true,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine.copyWith(
+          opponent: OpponentKind.maia,
+          level: 1600,
+          fromLink: true,
+        ),
+        clock: ClockConfig.same(
+          const TimeControl(initial: Duration(minutes: 3)),
+        ),
+        characters: _LongLines(),
+      );
+      await talk.settled();
+      await tester.pumpAndSettle();
+
+      final text = find.byKey(FreeBoardKeys.speechText('magician.gameStart.1'));
+      expect(text, findsOneWidget);
+      final painted = tester.widget<RichText>(
+        find.descendant(of: text, matching: find.byType(RichText)).first,
+      );
+      expect(painted.maxLines, greaterThanOrEqualTo(2));
+      final bubble = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
+      expect(bubble.bottom, lessThanOrEqualTo(boardRect(tester).top));
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('com as falas desligadas, o balão não aparece', (tester) async {
       await pumpScreen(
         tester,
@@ -3454,9 +3489,24 @@ void expectScreenBoardCenter(
   final above = clocks == ClockPosition.bottom ? 0.0 : 68.0;
   var topExtent = above > 0 ? above + 8 : 0.0;
   var lines = 3;
+  // The utterance itself (up to 3 lines) is shown in full: below its lines,
+  // the board moves down (vertical exception) instead of cutting the speech.
+  var needed = 1;
+  if (reservesSpeech) {
+    final spoken = TextPainter(
+      text: TextSpan(
+        text: talk.line!.text,
+        style: SpeechBalloon.style(context),
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout(maxWidth: CharacterBar.speechTextWidth(width));
+    needed = max(1, min(3, spoken.computeLineMetrics().length));
+    spoken.dispose();
+  }
   // Select the largest summary fitting above a full-width board at h/2.
   // The footer can scroll; its position never reduces the board or summary.
-  // Active short/long utterances share geometry; null/expired reserve nothing.
+  // Null/expired utterances reserve nothing.
   for (; reservesSpeech && lines >= 1; lines--) {
     final text = TextPainter(
       text: TextSpan(
@@ -3473,7 +3523,9 @@ void expectScreenBoardCenter(
         above +
         (clocks == ClockPosition.bottom ? speechRoom + 4 : speechRoom - 12);
     topExtent = topReserve + 8;
-    if (center - width / 2 >= contentTop + topExtent || lines == 1) break;
+    if (center - width / 2 >= contentTop + topExtent || lines <= needed) {
+      break;
+    }
   }
   if (reservesSpeech) {
     final summary = find.descendant(
@@ -3486,7 +3538,7 @@ void expectScreenBoardCenter(
   expect(board.center.dy, closeTo(expectedCenter, .5));
   if (requireScreenCenter) expect(board.center.dy, closeTo(center, .5));
   if (reservesSpeech && expectedCenter > center) {
-    expect(lines, 1);
+    expect(lines, needed);
     expect(board.top, closeTo(contentTop + topExtent, .5));
   }
 }
@@ -3567,10 +3619,31 @@ class _BubbleCharacters extends FakeCharacterRepository {
 
 /// Toda aula ligada está liberada.
 class _AvailableCatalog implements LinkedLessonCatalog {
+  @override
+  Future<String?> title(LinkedLesson lesson, String language) async => null;
+
   _AvailableCatalog(this.value);
 
   final bool value;
 
   @override
   Future<bool> available(LinkedLesson lesson) async => value;
+}
+
+/// Falas longas como as de abertura de verdade (o Tito na praça).
+class _LongLines extends FakeCharacterRepository {
+  @override
+  Future<List<CharacterLine>> lines(String characterId, String language) async {
+    await super.lines(characterId, language);
+    return [
+      for (final line in FakeCharacterRepository.linesOf(characterId))
+        CharacterLine(
+          id: line.id,
+          category: line.category,
+          intensity: line.intensity,
+          emotion: line.emotion,
+          text: 'Pode começar, meu filho. Na praça me chamam de professor.',
+        ),
+    ];
+  }
 }

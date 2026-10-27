@@ -95,6 +95,14 @@ class LinkLessonCubit extends Cubit<LinkLessonState> {
     return step;
   }
 
+  /// O título da aula no fundo do convite do link só de aula.
+  Future<void> loadTitle(String language) async {
+    final lesson = this.lesson;
+    if (lesson == null || state.title != null) return;
+    final title = await _catalog.title(lesson, language);
+    if (!isClosed && title != null) emit(state.copyWith(title: title));
+  }
+
   /// O link só de aula, sem conta: o convite abre antes da aula. Grava a
   /// campanha e marca o convite: o login que vier dele conta como `feito` (o
   /// AccountCubit consome a marca).
@@ -118,24 +126,29 @@ class LinkLessonCubit extends Cubit<LinkLessonState> {
 }
 
 /// O estado da aula do link: [available] nulo enquanto confere; [busy]
-/// enquanto confere a conta depois do toque.
+/// enquanto confere a conta depois do toque; [title] o título da aula, no
+/// fundo do convite do link só de aula.
 final class LinkLessonState {
-  const LinkLessonState({this.available, this.busy = false});
+  const LinkLessonState({this.available, this.busy = false, this.title});
 
   final bool? available;
   final bool busy;
+  final String? title;
 
-  LinkLessonState copyWith({bool? available, bool? busy}) => LinkLessonState(
-    available: available ?? this.available,
-    busy: busy ?? this.busy,
-  );
+  LinkLessonState copyWith({bool? available, bool? busy, String? title}) =>
+      LinkLessonState(
+        available: available ?? this.available,
+        busy: busy ?? this.busy,
+        title: title ?? this.title,
+      );
 
   @override
   bool operator ==(Object other) =>
       other is LinkLessonState &&
       other.available == available &&
-      other.busy == busy;
+      other.busy == busy &&
+      other.title == title;
 
   @override
-  int get hashCode => Object.hash(available, busy);
+  int get hashCode => Object.hash(available, busy, title);
 }

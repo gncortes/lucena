@@ -24,4 +24,18 @@ class LinkedLessonCatalog {
       return false;
     }
   }
+
+  /// O título da aula no idioma, para o fundo do convite do link só de
+  /// aula. Nulo: a aula ou o texto não existe.
+  Future<String?> title(LinkedLesson lesson, String language) async {
+    try {
+      final texts = switch (lesson.kind) {
+        LinkedLessonKind.endgame => await _endgames.texts(language),
+        LinkedLessonKind.school => await _school.texts(language),
+      };
+      return texts.plain('${lesson.id}.title');
+    } on LessonContentUnavailable {
+      return null;
+    }
+  }
 }

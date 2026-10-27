@@ -21,6 +21,9 @@ import '../../../../testing/fakes/fake_school_repositories.dart';
 
 /// Um catálogo que responde o que o teste mandar.
 class _Catalog implements LinkedLessonCatalog {
+  @override
+  Future<String?> title(LinkedLesson lesson, String language) async => null;
+
   bool value = true;
 
   @override

@@ -20,6 +20,10 @@ import '../../../../testing/test_app.dart';
 
 class _Catalog implements LinkedLessonCatalog {
   @override
+  Future<String?> title(LinkedLesson lesson, String language) async =>
+      'A posição de Lucena';
+
+  @override
   Future<bool> available(LinkedLesson lesson) async => true;
 }
 
@@ -69,6 +73,11 @@ void main() {
 
     expect(find.byKey(ChallengeKeys.lessonGate), findsOneWidget);
     expect(find.byKey(AccountKeys.notNow), findsOneWidget);
+    // Atrás do convite, o título da aula, não um fundo vazio.
+    expect(
+      tester.widget<Text>(find.byKey(ChallengeKeys.lessonGateTitle)).data,
+      'A posição de Lucena',
+    );
     expect((await campaigns.active())?.lesson, lesson);
 
     await tester.tap(find.byKey(AccountKeys.notNow));

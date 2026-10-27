@@ -64,6 +64,11 @@ class CharacterBar extends StatelessWidget {
   /// Resumo responsivo; o toque continua abrindo a fala inteira.
   final int speechMaxLines;
 
+  /// A largura do texto do balão numa faixa de [width]: o balão tem 12 de
+  /// margem de cada lado (`_SpeechOverlay`) e o recuo do próprio balão.
+  static double speechTextWidth(double width) =>
+      math.max(0, width - 24 - SpeechBalloon.defaultPadding.horizontal);
+
   final ValueChanged<bool>? onSpeechVisibilityChanged;
 
   @override
