@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/school/lesson_source.dart';
 import 'package:lucena/data/repositories/school/lesson_script_repository.dart';
@@ -287,33 +288,42 @@ const _long =
     'respondem com o rei, para depois contarmos as casas.';
 
 void main() {
-  testWidgets(
-    'conteúdo indisponível mostra aviso e sair não altera o progresso',
-    (tester) async {
-      final progress = FakeEndgameProgressRepository();
-      final saved = progress.saved;
-      final source = _ExitSource(progress);
-      await _open(
-        tester,
-        _tall,
-        repository: _UnavailableScripts(),
-        source: source,
-        navigable: true,
-      );
-      await tester.pumpAndSettle();
-      expect(
-        find.text('As aulas ainda não estão disponíveis.'),
-        findsOneWidget,
-      );
-      expect(find.byKey(LessonScriptKeys.board), findsNothing);
-      expect(tester.takeException(), isNull);
-      await tester.tap(find.byType(BackButton));
-      await tester.pumpAndSettle();
-      expect(find.text('origem'), findsOneWidget);
-      expect(source.leaves, 0);
-      expect(identical(progress.saved, saved), isTrue);
-    },
-  );
+  for (final size in _stabilitySizes) {
+    testWidgets(
+      'conteúdo indisponível $size: centro útil e sair sem alterar progresso',
+      (tester) async {
+        tester.view.padding = const FakeViewPadding(top: 56, bottom: 24);
+        final progress = FakeEndgameProgressRepository();
+        final saved = progress.saved;
+        final source = _ExitSource(progress);
+        await _open(
+          tester,
+          size,
+          repository: _UnavailableScripts(),
+          source: source,
+          navigable: true,
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text('As aulas ainda não estão disponíveis.'),
+          findsOneWidget,
+        );
+        expect(find.byKey(LessonScriptKeys.board), findsNothing);
+        final group = tester.getRect(find.byKey(CoreKeys.emptyState));
+        expect(group.center.dx, closeTo(size.width / 2, .5));
+        expect(
+          group.center.dy,
+          closeTo((56 + kToolbarHeight + size.height - 24) / 2, .5),
+        );
+        expect(tester.takeException(), isNull);
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
+        expect(find.text('origem'), findsOneWidget);
+        expect(source.leaves, 0);
+        expect(identical(progress.saved, saved), isTrue);
+      },
+    );
+  }
   for (final size in _stabilitySizes) {
     testWidgets('LIÇÃO $size: falas neutras, volta, repetição e folha '
         'conservam geometria inclusive durante animações', (tester) async {

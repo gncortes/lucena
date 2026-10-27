@@ -74,11 +74,16 @@ class _SchoolScreenState extends State<SchoolScreen> {
         builder: (context, state) {
           if (!state.ready) return const SizedBox.shrink();
           if (state.course.lessons.isEmpty) {
-            return SizedBox(
-              width: double.infinity,
-              child: EmptyState(
-                icon: Icons.auto_stories_outlined,
-                message: context.l10n.lessonsUnavailableMessage,
+            return SafeArea(
+              top: false,
+              child: Center(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: EmptyState(
+                    icon: Icons.auto_stories_outlined,
+                    message: context.l10n.lessonsUnavailableMessage,
+                  ),
+                ),
               ),
             );
           }

@@ -225,11 +225,13 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         body: SafeArea(
           top: false,
           child: _contentUnavailable
-              ? SizedBox(
-                  width: double.infinity,
-                  child: EmptyState(
-                    icon: Icons.auto_stories_outlined,
-                    message: context.l10n.lessonsUnavailableMessage,
+              ? Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: EmptyState(
+                      icon: Icons.auto_stories_outlined,
+                      message: context.l10n.lessonsUnavailableMessage,
+                    ),
                   ),
                 )
               : state.ready
