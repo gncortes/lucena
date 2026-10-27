@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
@@ -362,6 +363,84 @@ void main() {
     }
     expect(find.text('Mais de 3.500 finais de todos os tipos'), findsWidgets);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a 360: frase de uma linha não desce o título; os títulos da '
+      'mesma linha ficam na mesma altura', (tester) async {
+    await Goldens.loadFonts();
+    await pumpHome(
+      tester,
+      profile: learner,
+      onboarding: firstSteps(
+        const Onboarding(done: true, boardControlsDone: true),
+      ),
+      progress: await wonCoco(),
+    );
+
+    final shown = tiles(tester);
+    expect(shown.first, HomeKeys.starsButton);
+    double titleTop(Key key) => tester
+        .getTopLeft(
+          find
+              .descendant(of: find.byKey(key), matching: find.byType(Text))
+              .first,
+        )
+        .dy;
+    expect(titleTop(shown[0]), titleTop(shown[1]));
+    expect(titleTop(shown[2]), titleTop(shown[3]));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('o final em destaque abre por cima da tela inicial: voltar cai '
+      'nela, não na lista', (tester) async {
+    tester.view
+      ..physicalSize = const Size(360, 1600)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const _Home(
+            HomeScreen(),
+            profile: UserProfile(rating: 1450),
+            featured: true,
+          ),
+          routes: [
+            GoRoute(
+              path: 'featured',
+              builder: (_, _) => const Scaffold(body: Text('lista')),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (_, _) => const Scaffold(body: Text('final')),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        router: router,
+        child: const SizedBox.shrink(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(FeaturedKeys.homeCard));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(FeaturedKeys.homeCard));
+    await tester.pumpAndSettle();
+    expect(find.text('final'), findsOneWidget);
+
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(find.text('lista'), findsNothing);
   });
 
   testWidgets('o topo: o rating com a seta, sem "Seu rating" nem "Olá"', (

@@ -168,6 +168,15 @@ class _HeroLayout extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final on = colors.onPrimary;
+    final label = Text(
+      data.label,
+      key: HomeKeys.heroLabel,
+      maxLines: 1,
+      style: theme.textTheme.labelMedium?.copyWith(
+        color: on.withValues(alpha: 0.85),
+        fontWeight: AppWeight.strong,
+      ),
+    );
     final avatar = data.avatar;
     final avatarTag = data.avatarTag;
     final fen = data.fen;
@@ -219,34 +228,41 @@ class _HeroLayout extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Flexible(
-                    child: Text(
-                      data.label,
-                      key: HomeKeys.heroLabel,
-                      maxLines: 1,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: on.withValues(alpha: 0.85),
-                        fontWeight: AppWeight.strong,
-                      ),
-                    ),
+                  // Com a barra, ela ocupa o meio (o rótulo vai até a metade
+                  // do espaço antes do botão); sem, o rótulo vai até o botão.
+                  // O botão fica sempre encostado à direita.
+                  Expanded(
+                    child: data.progress > 0
+                        ? LayoutBuilder(
+                            builder: (context, constraints) => Row(
+                              children: [
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: constraints.maxWidth / 2,
+                                  ),
+                                  child: label,
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                Expanded(
+                                  // A barra branca sobre o azul.
+                                  child: Theme(
+                                    data: theme.copyWith(
+                                      colorScheme: colors.copyWith(primary: on),
+                                    ),
+                                    child: AnimatedProgress(
+                                      key: HomeKeys.heroProgress,
+                                      value: data.progress,
+                                      backgroundColor: on.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : label,
                   ),
-                  if (data.progress > 0) ...[
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      // A barra branca sobre o azul.
-                      child: Theme(
-                        data: theme.copyWith(
-                          colorScheme: colors.copyWith(primary: on),
-                        ),
-                        child: AnimatedProgress(
-                          key: HomeKeys.heroProgress,
-                          value: data.progress,
-                          backgroundColor: on.withValues(alpha: 0.3),
-                        ),
-                      ),
-                    ),
-                  ] else
-                    const Spacer(),
                   const SizedBox(width: AppSpacing.md),
                   FilledButton.icon(
                     key: HomeKeys.goalAction,

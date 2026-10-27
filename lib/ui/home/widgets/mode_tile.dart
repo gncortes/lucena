@@ -108,6 +108,9 @@ class ModeTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final tone = shortcut.tone(colors);
+    final body = theme.textTheme.bodySmall?.copyWith(
+      color: colors.onSurfaceVariant,
+    );
     return SizedBox(
       height: height,
       child: Material(
@@ -146,11 +149,17 @@ class ModeTile extends StatelessWidget {
                         fontWeight: AppWeight.heavy,
                       ),
                     ),
-                    Text(
-                      shortcut.body(l10n),
-                      maxLines: 2,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                    // Sempre a altura de duas linhas: o título fica na
+                    // mesma altura em todos os atalhos.
+                    SizedBox(
+                      height: _twoLines(context, body),
+                      child: Align(
+                        alignment: AlignmentDirectional.topStart,
+                        child: Text(
+                          shortcut.body(l10n),
+                          maxLines: 2,
+                          style: body,
+                        ),
                       ),
                     ),
                   ],
@@ -162,6 +171,19 @@ class ModeTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A altura de duas linhas de [style], com a escala de texto da tela.
+double _twoLines(BuildContext context, TextStyle? style) {
+  final painter = TextPainter(
+    text: TextSpan(text: '\n', style: style),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+    maxLines: 2,
+  )..layout();
+  final height = painter.height;
+  painter.dispose();
+  return height;
 }
 
 /// O título de uma seção da tela inicial com o "Ver mais" sublinhado ao

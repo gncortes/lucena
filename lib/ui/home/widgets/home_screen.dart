@@ -231,7 +231,8 @@ class _HomeScreenState extends State<HomeScreen>
           key: FeaturedKeys.homeCard,
           item: item,
           compact: true,
-          onTap: () => context.go(Routes.featuredEndgame(item.id)),
+          // Por cima da tela inicial: voltar cai nela, não na lista.
+          onTap: () => context.push(Routes.featuredEndgame(item.id)),
         ),
       ],
     );

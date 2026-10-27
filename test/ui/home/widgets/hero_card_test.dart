@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/theme/app_button.dart';
+import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/hero_card.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -221,5 +222,14 @@ void main() {
     final pill = find.descendant(of: button, matching: find.byType(Material));
     expect(tester.getSize(pill.first).height, kButtonHeightPill);
     expect(tester.getSize(button).height, kMinInteractiveDimension);
+  });
+
+  testWidgets('sem barra, o botão fica encostado à direita', (tester) async {
+    await pump(tester, const HomeState(ready: true));
+
+    final card = tester.getRect(find.byKey(HomeKeys.goalCard));
+    final button = tester.getRect(find.byKey(HomeKeys.goalAction));
+    // Só o padding do cartão (16) e a folga do toque de 48 à direita.
+    expect(card.right - button.right, lessThanOrEqualTo(AppSpacing.lg));
   });
 }
