@@ -65,11 +65,10 @@ class _AccountView extends StatelessWidget {
         ? context.pushReplacement(route)
         : unawaited(context.push(route));
     // Aberta para a aula gratuita do link (T84), que só abre com conta: o
-    // título fala da aula e some o "sem conta, tudo continua funcionando".
+    // título fala da aula.
     final benefits = [
       (Icons.cloud_done, l10n.accountBenefitSaved),
       (Icons.devices_other, l10n.accountBenefitDevices),
-      if (!fromRoute) (Icons.wifi_off, l10n.accountBenefitOffline),
     ];
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
