@@ -471,8 +471,10 @@ class SpeechBalloon extends StatelessWidget {
   static const closeSize = 32.0;
   static const closeTarget = 48.0;
 
-  /// Do centro do X até a borda do fim do balão.
-  static const closeInset = AppSpacing.sm;
+  /// Do centro do X até a borda do fim do balão: metade do alvo menos a
+  /// margem de 12 do balão até a borda da tela, para o alvo de 48 dp caber
+  /// inteiro na tela (o balão do adversário fica a 12 dp da borda).
+  static const closeInset = AppSpacing.md;
 
   /// O que o alvo do X passa acima e depois do balão.
   static const closeLift = closeTarget / 2;

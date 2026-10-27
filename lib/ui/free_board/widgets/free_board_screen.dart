@@ -560,11 +560,21 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                       (clocks == ClockPosition.bottom
                           ? speechRoom + 4
                           : math.max(0, speechRoom - 12));
-                  // Abaixo de [_minBoardFraction] da largura (tela baixa),
-                  // o tabuleiro desce e a tela rola, como antes.
+                  // Tela baixa: abaixo de [_minBoardFraction] da largura, o
+                  // tabuleiro desce do meio, mas nunca passa da altura livre
+                  // (a partida não rola; o tamanho segue fixo na partida).
+                  final fitHeight =
+                      constraints.maxHeight -
+                      reserveTop -
+                      _boardGap -
+                      (clocksBelow > 0 ? clocksBelow + _boardGap : 0) -
+                      footerHeight;
                   boardSide = (2 * (screenCenter - reserveTop - _boardGap))
                       .clamp(
-                        constraints.maxWidth * _minBoardFraction,
+                        math.min(
+                          constraints.maxWidth * _minBoardFraction,
+                          math.max(0, fitHeight),
+                        ),
                         constraints.maxWidth,
                       )
                       .toDouble();

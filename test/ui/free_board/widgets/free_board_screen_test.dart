@@ -5,6 +5,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
+import 'package:lucena/ui/free_board/widgets/game_actions_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -1571,6 +1572,49 @@ void main() {
         expect(tester.takeException(), isNull);
       }
     });
+    for (final insets in const [
+      EdgeInsets.only(top: 52, bottom: 24),
+      EdgeInsets.only(top: 24, bottom: 48),
+    ]) {
+      testWidgets(
+        'R2 P2 360×740 $insets: a partida não rola e o tabuleiro fica (T84)',
+        (tester) async {
+          await pumpScreen(
+            tester,
+            locale: const Locale('pt'),
+            screen: const Size(360, 740) * 2.625,
+            systemInsets: insets,
+            mode: machine.copyWith(level: 1000),
+            characters: _BubbleCharacters(longSpeech),
+            scriptedTalk: true,
+            clock: ClockConfig.same(
+              const TimeControl(initial: Duration(minutes: 3)),
+            ),
+          );
+          await talk.settled();
+          await tester.pumpAndSettle();
+          double extent() => tester
+              .state<ScrollableState>(
+                find
+                    .descendant(
+                      of: find.byKey(FreeBoardKeys.scrollArea),
+                      matching: find.byType(Scrollable),
+                    )
+                    .first,
+              )
+              .position
+              .maxScrollExtent;
+          final active = boardRect(tester);
+          expect(extent(), 0);
+          expect(active.width, lessThan(360));
+          (talk as _FixtureTalkCubit).showLine(null);
+          await tester.pumpAndSettle();
+          expect(boardRect(tester), active);
+          expect(extent(), 0);
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
     for (final size in [const Size(393, 873), const Size(393, 1100)]) {
       testWidgets(
         'R2 P2 $size: espaço fixo da fala; o tabuleiro não se move (T84)',
@@ -3518,8 +3562,12 @@ void main() {
         above +
         (clocks == ClockPosition.bottom ? speechRoom + 4 : speechRoom - 12);
     topExtent = topReserve + 8;
+    // Tela baixa: o piso de 0,8 nunca passa da altura livre (sem rolar).
+    final area = tester.getRect(find.byKey(FreeBoardKeys.scrollArea)).height;
+    final below = clocks == ClockPosition.top ? 0.0 : 68.0 + 8;
+    final fit = area - topExtent - below - GameActionsBar.height;
     side = (2 * (center - contentTop - topExtent))
-        .clamp(width * .8, width)
+        .clamp(min(width * .8, max(0, fit)), width)
         .toDouble();
   }
   return (side: side, center: max(center, contentTop + topExtent + side / 2));

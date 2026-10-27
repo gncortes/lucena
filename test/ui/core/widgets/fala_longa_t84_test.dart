@@ -10,6 +10,7 @@ import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
 import 'package:lucena/ui/core/widgets/script_speech_sheet.dart';
+import 'package:lucena/ui/core/widgets/speech_balloon.dart';
 import 'package:lucena/ui/free_board/view_models/talk_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/character_bar.dart';
 import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
@@ -29,8 +30,8 @@ void main() {
     'Esta fala comprida não cabe nem em quatro linhas do balão.',
   ).join(' ');
 
-  void screen(WidgetTester tester) {
-    tester.view.physicalSize = size;
+  void screen(WidgetTester tester, [Size screenSize = size]) {
+    tester.view.physicalSize = screenSize;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
   }
@@ -125,6 +126,45 @@ void main() {
       expect(opacity.opacity, 0);
       await dispose(tester);
     });
+
+    for (final width in const [360.0, 448.0]) {
+      testWidgets('largura $width: o alvo de 48 dp do X cabe na tela', (
+        tester,
+      ) async {
+        screen(tester, Size(width, 740));
+        // A fala média nesta largura: abre por cima, com o X.
+        await opponent(tester, '$medium $medium'.substring(0, 70));
+        final close = find.byKey(SpeechKeys.close);
+        expect(close, findsOneWidget);
+        final target = tester.getRect(
+          find.ancestor(of: close, matching: find.byType(SizedBox)).first,
+        );
+        expect(target.width, SpeechBalloon.closeTarget);
+        expect(target.height, SpeechBalloon.closeTarget);
+        expect(target.left, greaterThanOrEqualTo(0));
+        expect(target.top, greaterThanOrEqualTo(0));
+        expect(target.right, lessThanOrEqualTo(width));
+        // O botão redondo de 32 dp, com o centro na borda de cima do balão
+        // e a [SpeechBalloon.closeInset] da borda do fim.
+        final circle = tester.getSize(
+          find.descendant(of: close, matching: find.byType(Material)).first,
+        );
+        expect(circle, const Size.square(SpeechBalloon.closeSize));
+        final outer = tester.getRect(find.byKey(FreeBoardKeys.speechBubble));
+        final body = Rect.fromLTRB(
+          outer.left,
+          outer.top + SpeechBalloon.closeLift,
+          outer.right - SpeechBalloon.closeOverhang,
+          outer.bottom,
+        );
+        expect(target.center.dy, closeTo(body.top, .5));
+        expect(
+          target.center.dx,
+          closeTo(body.right - SpeechBalloon.closeInset, .5),
+        );
+        await dispose(tester);
+      });
+    }
 
     testWidgets('fala longa: corta em "… Ver mais", que abre a folha', (
       tester,
