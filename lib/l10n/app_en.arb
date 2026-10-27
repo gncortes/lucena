@@ -7230,7 +7230,7 @@
   "@allModesRaceBody": {
     "description": "All modes: short description of the problem race."
   },
-  "goalViktorSay": "So I can set up your home screen: what do you want to do here?",
+  "goalViktorSay": "I will tailor the app to you: the home screen starts with what you choose here. What do you want to do?",
   "@goalViktorSay": {
     "description": "Viktor's line on the first-launch question about the user's goal."
   },
