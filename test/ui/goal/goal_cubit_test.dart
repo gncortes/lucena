@@ -22,8 +22,9 @@ void main() {
     home = FakeHomeLayoutRepository();
   });
 
-  Future<GoalCubit> loaded() async {
+  Future<GoalCubit> loaded({bool fromLink = false}) async {
     final cubit = GoalCubit(
+      fromLink: fromLink,
       onboarding: onboarding,
       profile: profile,
       characters: FakeCharacterRepository(),
@@ -90,5 +91,20 @@ void main() {
     cubit.select(GoalPreference.learn);
 
     expect(cubit.state.goal, GoalPreference.endgames);
+  });
+
+  test('vindo de um link: "Aprender a jogar" não vale', () async {
+    profile = FakeProfileRepository(
+      const UserProfile(nickname: 'Ana', goal: GoalPreference.learn),
+    );
+    final cubit = await loaded(fromLink: true);
+
+    expect(cubit.state.goal, GoalPreference.endgames);
+    cubit.select(GoalPreference.learn);
+    expect(cubit.state.goal, GoalPreference.endgames);
+    cubit.select(GoalPreference.train);
+    await cubit.finish();
+    expect(cubit.state.exit, GoalExit.level);
+    expect((await profile.load()).goal, GoalPreference.train);
   });
 }

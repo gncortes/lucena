@@ -58,6 +58,7 @@ class GoalCubit extends Cubit<GoalState> {
     required this._profile,
     required this._characters,
     this._home,
+    this.fromLink = false,
     this._analytics = const NoAnalyticsRepository(),
   }) : super(const GoalState());
 
@@ -66,6 +67,10 @@ class GoalCubit extends Cubit<GoalState> {
   final ProfileRepository _profile;
   final CharacterRepository _characters;
   final HomeLayoutRepository? _home;
+
+  /// Veio do fim de um desafio por link: já joga, então "Aprender a jogar"
+  /// não aparece.
+  final bool fromLink;
   bool _finishing = false;
 
   Future<void> load() async {
@@ -80,7 +85,11 @@ class GoalCubit extends Cubit<GoalState> {
     emit(
       GoalState(
         ready: true,
-        goal: profile.goal ?? GoalPreference.endgames,
+        goal:
+            fromLink &&
+                (profile.goal ?? GoalPreference.learn) == GoalPreference.learn
+            ? GoalPreference.endgames
+            : profile.goal ?? GoalPreference.endgames,
         viktor: viktor,
       ),
     );
@@ -93,6 +102,7 @@ class GoalCubit extends Cubit<GoalState> {
   /// Marca a opção (só grava no "Continuar").
   void select(GoalPreference goal) {
     if (!state.ready || state.exit != null || _finishing) return;
+    if (fromLink && goal == GoalPreference.learn) return;
     emit(state.copyWith(goal: goal));
   }
 

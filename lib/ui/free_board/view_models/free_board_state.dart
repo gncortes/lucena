@@ -154,6 +154,15 @@ abstract class FreeBoardState with _$FreeBoardState {
     );
   }
 
+  /// A vitória de quem mandou o link, comparada com a de quem jogou: nulo se
+  /// o link não trouxe o resultado ou se a pessoa não venceu.
+  ({int sender, int you})? get challengeComparison {
+    final sender = challengeLink?.senderMoves;
+    final result = challengeResult;
+    if (sender == null || result == null || !result.won) return null;
+    return (sender: sender, you: result.moves);
+  }
+
   /// Como o desafio de link terminou, pronto para compartilhar. Nulo
   /// enquanto a partida continua ou fora de partida de link.
   ChallengeResult? get challengeResult {
@@ -165,13 +174,17 @@ abstract class FreeBoardState with _$FreeBoardState {
     final mated =
         end.reason == GameEndReason.checkmate && outcome == AttemptOutcome.win;
     final target = lastMove is NormalMove ? (lastMove! as NormalMove).to : null;
+    final moves = ChallengeResult.movesOf(
+      plies: ucis.length,
+      userFirst: start.turn == user,
+    );
     return ChallengeResult(
-      link: link,
-      outcome: outcome,
-      moves: ChallengeResult.movesOf(
-        plies: ucis.length,
-        userFirst: start.turn == user,
+      // O link que sai daqui leva a vitória de quem joga agora.
+      link: link.copyWith(
+        senderMoves: outcome == AttemptOutcome.win ? moves : null,
       ),
+      outcome: outcome,
+      moves: moves,
       remaining: clock == null
           ? null
           : (user == Side.white ? whiteTime : blackTime),

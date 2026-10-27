@@ -1136,6 +1136,7 @@
   "devOpenLinkInvalid": "[Thîš îš ñöt å çhålléñĝé lîñk one two three]",
   "devOpenLinkOpen": "[Öpéñ one]",
   "challengeEndPlayAgain": "[Plåý åĝåîñ one]",
+  "challengeCompare": "[Šéñdéŕ: måté îñ {sender, plural, one{1 mövé} other{{sender} mövéš}}. Ýöû: måté îñ {you, plural, one{1 mövé} other{{you} mövéš}}. one two three four five six seven eight nine ten one]",
   "challengeEndMeetApp": "[Méét thé åpp one two]",
   "challengeImageWon": "[ÇHÅLLÉÑĜÉ ÇÖMPLÉTÉ one two]",
   "challengeImageDrawn": "[ÇHÅLLÉÑĜÉ DŔÅWÑ one two]",

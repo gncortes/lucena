@@ -9,7 +9,6 @@ abstract final class ChallengeKeys {
   static const invalidPaste = Key('challenge.invalid.paste');
 
   /// O botão da barra da Nova partida que abre a folha de mandar o desafio.
-  static const linkGameSubtitle = Key('challenge.linkGameSubtitle');
   static const sendButton = Key('challenge.send');
 
   static const sheet = Key('challenge.sheet');
@@ -34,6 +33,7 @@ abstract final class ChallengeKeys {
   /// O fim da partida de um desafio de link.
   static const endPlayAgain = Key('challenge.end.again');
   static const endShare = Key('challenge.end.share');
+  static const compare = Key('challenge.compare');
   static const endMeetApp = Key('challenge.end.app');
 
   /// A imagem do resultado, desenhada fora da tela para virar PNG.

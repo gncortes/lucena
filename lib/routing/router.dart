@@ -83,6 +83,7 @@ import '../domain/models/endgame_position.dart';
 import '../domain/models/game_mode.dart';
 import '../domain/models/challenge_link.dart';
 import '../domain/models/game_setup.dart';
+import '../domain/models/maia_level.dart';
 import '../ui/challenge/view_models/challenge_link_cubit.dart';
 import '../ui/challenge/widgets/challenge_link_screen.dart';
 import '../ui/challenge/widgets/invalid_link_screen.dart';
@@ -423,8 +424,17 @@ GoRouter buildRouter({
       ),
       _route(
         path: Routes.goal,
+        // Vindo do fim de um desafio por link, quem já fez a primeira
+        // abertura não responde de novo: vai à tela inicial.
+        redirect: (context, state) async =>
+            state.uri.queryParameters['link'] == '1' &&
+                (await context.read<OnboardingRepository>().load()).done
+            ? Routes.home
+            : null,
         builder: (context, state) => BlocProvider(
+          key: ValueKey(state.uri),
           create: (_) => GoalCubit(
+            fromLink: state.uri.queryParameters['link'] == '1',
             onboarding: context.read<OnboardingRepository>(),
             profile: context.read<ProfileRepository>(),
             characters: context.read<CharacterRepository>(),
@@ -1339,6 +1349,8 @@ GoRouter buildRouter({
               if (link == null) return Routes.invalidLink;
               // Primeira abertura: antes do desafio, uma tela só (cores,
               // peças e som), sem o tour.
+              final profiles = context.read<ProfileRepository>();
+              final ratings = context.read<RatingRepository>();
               final onboarding = await context
                   .read<OnboardingRepository>()
                   .load();
@@ -1349,6 +1361,16 @@ GoRouter buildRouter({
                           '${state.uri.path.replaceFirst(RegExp(r'/$'), '')}/inicio',
                     )
                     .toString();
+              }
+              // Só a posição (sem lado, adversário nem nível): joga o lado da
+              // vez contra o Maia do nível de quem abre, sem configurar.
+              if (ChallengeLink.isBare(state.uri)) {
+                final profile = await profiles.load();
+                final history = await ratings.history();
+                final rating = history.isEmpty
+                    ? profile.rating
+                    : history.last.rating.rounded;
+                return Routes.linkGame(link, level: MaiaLevels.nearest(rating));
               }
               return null;
             },

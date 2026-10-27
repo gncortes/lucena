@@ -50,6 +50,11 @@ abstract class ChallengeLink with _$ChallengeLink {
     /// 1 no link de quem nunca chegou por link, e assim por diante. Fica fora
     /// do código.
     @Default(0) int generation,
+
+    /// Em quantos lances quem mandou venceu o desafio (`mv`): só no link
+    /// criado depois de uma vitória. Fica fora do código; o resultado de quem
+    /// abre se compara com ele. Nulo: link sem resultado (os antigos).
+    int? senderMoves,
   }) = _ChallengeLink;
 
   const ChallengeLink._();
@@ -79,6 +84,23 @@ abstract class ChallengeLink with _$ChallengeLink {
 
   /// O parâmetro da geração no link.
   static const generationKey = 'g';
+
+  /// O parâmetro dos lances de quem mandou no link.
+  static const senderMovesKey = 'mv';
+
+  /// O link traz só a posição: sem lado, adversário, nível, relógio nem
+  /// trava. Quem abre joga o lado da vez contra o Maia do próprio nível.
+  static bool isBare(Uri uri) {
+    final query = uri.queryParameters;
+    return tryParse(uri) != null &&
+        [
+          'side',
+          'opp',
+          'lvl',
+          'clock',
+          'lock',
+        ].every((key) => query[key] == null);
+  }
 
   /// Os parâmetros do link, sem os `utm_*`.
   Map<String, String> get params => {
@@ -115,6 +137,7 @@ abstract class ChallengeLink with _$ChallengeLink {
   Uri get uri => AppLinks.uri('/${AppLinks.challengeSegment}/$code', {
     ...params,
     if (generation > 0) generationKey: '$generation',
+    if (senderMoves != null) senderMovesKey: '$senderMoves',
     for (final entry in utm.entries)
       if (_utmKeys.contains(entry.key)) entry.key: entry.value,
   });
@@ -174,6 +197,10 @@ abstract class ChallengeLink with _$ChallengeLink {
           if (query[key] != null) key: query[key]!,
       },
       generation: int.tryParse(query[generationKey] ?? '') ?? 0,
+      senderMoves: switch (int.tryParse(query[senderMovesKey] ?? '')) {
+        final moves? when moves > 0 => moves,
+        _ => null,
+      },
     );
   }
 }

@@ -444,22 +444,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
           ),
         ),
         title: state.mode.fromLink
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    context.l10n.journeyChallengeTitle,
-                    key: FreeBoardKeys.title,
-                  ),
-                  Text(
-                    _title(context, state, talk),
-                    key: ChallengeKeys.linkGameSubtitle,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              )
+            ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
             : Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),
       body: RepaintBoundary(
@@ -709,6 +694,13 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                     key: ValueKey(end),
                                     end: end,
                                     userSide: state.mode.userSide,
+                                    comparison:
+                                        state.challengeComparison == null
+                                        ? null
+                                        : context.l10n.challengeCompare(
+                                            state.challengeComparison!.sender,
+                                            state.challengeComparison!.you,
+                                          ),
                                     // Só o autoavanço encerra o selo sozinho.
                                     short: state.mode.isUnratedFinal,
                                     persistent: !_marathonAdvance(state),
@@ -875,10 +867,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  /// "Conhecer o app": sai do desafio para a tela inicial.
+  /// "Conhecer o app": sai do desafio para o objetivo (a rota manda para a tela
+  /// inicial quem já passou pela primeira abertura).
   void _meetApp(BuildContext context) {
     setState(() => _quitting = true);
-    context.go(Routes.home);
+    context.go(Routes.goalFromLink);
   }
 
   Future<void> _conclude(
@@ -1036,12 +1029,16 @@ class _EndFlash extends StatefulWidget {
     super.key,
     required this.end,
     this.userSide,
+    this.comparison,
     this.short = false,
     this.persistent = false,
   });
 
   final GameEnd end;
   final Side? userSide;
+
+  /// Só no desafio por link: "Quem mandou: mate em 7 lances. Você: ...".
+  final String? comparison;
 
   /// Pisca por [AppMotion.featuredFlash] (entra, fica e sai) em vez do tempo
   /// normal do selo.
@@ -1125,7 +1122,9 @@ class _EndFlashState extends State<_EndFlash>
       },
       child: Semantics(
         liveRegion: true,
-        label: widget.persistent ? '$title. $reason' : title,
+        label: widget.persistent
+            ? [title, reason, ?widget.comparison].join('. ')
+            : title,
         child: ExcludeSemantics(
           child: Container(
             key: FreeBoardKeys.endFlash,
@@ -1150,6 +1149,15 @@ class _EndFlashState extends State<_EndFlash>
                 if (widget.persistent)
                   Text(
                     reason,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onInverseSurface,
+                    ),
+                  ),
+                if (widget.persistent && widget.comparison != null)
+                  Text(
+                    widget.comparison!,
+                    key: ChallengeKeys.compare,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colors.onInverseSurface,

@@ -2387,6 +2387,10 @@ void main() {
         withReporter: true,
       );
       expect(find.byKey(ChallengeKeys.endShare), findsNothing);
+      // O título é só "Desafio", sem o subtítulo de modo.
+      expect(find.byKey(FreeBoardKeys.title), findsOneWidget);
+      expect(find.text('Challenge'), findsOneWidget);
+      expect(find.text('Free board'), findsNothing);
 
       await resign(tester);
       await tester.pump(const Duration(seconds: 5));

@@ -472,6 +472,9 @@ abstract final class Routes {
   /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
   static const goal = '/tour/objetivo';
 
+  /// O objetivo de quem chegou por um link de desafio: sem "Aprender a jogar".
+  static const goalFromLink = '/tour/objetivo?link=1';
+
   /// O teste de nível (T52). [from] diz de onde veio (`level`, `settings`).
   static const placement = '/placement';
   static String placementFrom(String from) =>
