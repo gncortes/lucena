@@ -9,7 +9,8 @@ import '../../testing/fakes/fake_analytics_repository.dart';
 
 class _Catalog implements LinkedLessonCatalog {
   @override
-  Future<String?> title(LinkedLesson lesson, String language) async => null;
+  Future<LinkedLessonInfo?> info(LinkedLesson lesson, String language) async =>
+      null;
 
   _Catalog(this.value);
 

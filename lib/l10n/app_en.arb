@@ -6044,13 +6044,70 @@
   "@challengeEndLesson": {
     "description": "End of a campaign challenge link that carries a lesson: button that opens the lesson. Keep it short (fits half a 360 dp row)."
   },
-  "challengeLessonOfferFailed": "Not this time. The free lesson explains the idea of this position.",
-  "@challengeLessonOfferFailed": {
-    "description": "End of a campaign challenge link with a lesson, when the player did not reach the goal: line under the result offering the lesson. All lessons in the app are free."
+  "challengeLeadCategory": "Lesson on {module}",
+  "@challengeLeadCategory": {
+    "description": "Free lesson sheet after a campaign challenge: label above the lesson name. {module} is the endgame module name in lower case, e.g. 'rook endgames'.",
+    "placeholders": {
+      "module": {
+        "type": "String"
+      }
+    }
   },
-  "challengeLessonOfferDone": "Congratulations! The free lesson explains the idea of this position.",
-  "@challengeLessonOfferDone": {
-    "description": "End of a campaign challenge link with a lesson, when the player reached the goal: line under the result offering the lesson as a secondary option."
+  "challengeLeadCategorySchool": "Viktor's School lesson",
+  "@challengeLeadCategorySchool": {
+    "description": "Free lesson sheet after a campaign challenge: label above the name of a beginner (Viktor's School) lesson."
+  },
+  "challengeLeadFailedWin": "Want a free lesson that explains how to win this endgame? You practise and then redo this challenge.",
+  "@challengeLeadFailedWin": {
+    "description": "Free lesson sheet, the player did not reach the goal (win). All lessons in the app are free."
+  },
+  "challengeLeadFailedDraw": "Want a free lesson that explains how to draw this endgame? You practise and then redo this challenge.",
+  "@challengeLeadFailedDraw": {
+    "description": "Free lesson sheet, the player did not reach the goal (draw)."
+  },
+  "challengeLeadDone": "Want to see a free lesson about this endgame?",
+  "@challengeLeadDone": {
+    "description": "Free lesson sheet, the player reached the goal."
+  },
+  "challengeLeadStepIdea": "Learn the idea",
+  "@challengeLeadStepIdea": {
+    "description": "Free lesson sheet: step 1 title."
+  },
+  "challengeLeadStepIdeaHint": "The position explained move by move",
+  "@challengeLeadStepIdeaHint": {
+    "description": "Free lesson sheet: step 1 line."
+  },
+  "challengeLeadStepPractice": "Practise",
+  "@challengeLeadStepPractice": {
+    "description": "Free lesson sheet: step 2 title."
+  },
+  "challengeLeadStepPracticeHint": "You play the lesson's positions",
+  "@challengeLeadStepPracticeHint": {
+    "description": "Free lesson sheet: step 2 line."
+  },
+  "challengeLeadStepRetry": "Redo this challenge",
+  "@challengeLeadStepRetry": {
+    "description": "Free lesson sheet: step 3 title."
+  },
+  "challengeLeadStepRetryWin": "Come back to this position and win the game",
+  "@challengeLeadStepRetryWin": {
+    "description": "Free lesson sheet: step 3 line when the player did not win."
+  },
+  "challengeLeadStepRetryDraw": "Come back to this position and draw the game",
+  "@challengeLeadStepRetryDraw": {
+    "description": "Free lesson sheet: step 3 line when the player did not hold the draw."
+  },
+  "challengeLeadStepRetryDone": "With the idea, in fewer moves",
+  "@challengeLeadStepRetryDone": {
+    "description": "Free lesson sheet: step 3 line when the player reached the goal."
+  },
+  "challengeLeadCreate": "Create an account and see the lesson",
+  "@challengeLeadCreate": {
+    "description": "Free lesson sheet: main button (sign up, then the lesson)."
+  },
+  "challengeLeadHaveAccount": "I already have an account",
+  "@challengeLeadHaveAccount": {
+    "description": "Free lesson sheet: button to sign in, then the lesson."
   },
   "challengeImageWon": "CHALLENGE COMPLETE",
   "@challengeImageWon": {

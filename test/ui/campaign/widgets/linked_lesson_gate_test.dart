@@ -20,8 +20,11 @@ import '../../../../testing/test_app.dart';
 
 class _Catalog implements LinkedLessonCatalog {
   @override
-  Future<String?> title(LinkedLesson lesson, String language) async =>
-      'A posição de Lucena';
+  Future<LinkedLessonInfo?> info(LinkedLesson lesson, String language) async =>
+      const LinkedLessonInfo(
+        kind: LinkedLessonKind.endgame,
+        title: 'A posição de Lucena',
+      );
 
   @override
   Future<bool> available(LinkedLesson lesson) async => true;

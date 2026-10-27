@@ -39,7 +39,7 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
     final lesson = cubit.lesson;
     if (lesson == null) return _leave();
     _asking = true;
-    unawaited(cubit.loadTitle(Localizations.localeOf(context).languageCode));
+    unawaited(cubit.loadInfo(Localizations.localeOf(context).languageCode));
     await cubit.gateOpened();
     if (!mounted) return;
     final accepted = await showAccountInviteSheet(
@@ -71,7 +71,7 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
       });
     }
     // Atrás do convite, o cabeçalho da aula (o título), não um fundo vazio.
-    final title = context.select((LinkLessonCubit c) => c.state.title);
+    final title = context.select((LinkLessonCubit c) => c.state.info?.title);
     return Scaffold(
       key: ChallengeKeys.lessonGate,
       appBar: LucenaAppBar(

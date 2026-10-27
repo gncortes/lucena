@@ -94,3 +94,35 @@ class LessonLink {
     );
   }
 }
+
+/// O que a folha da aula gratuita mostra da aula de um link (T84): o título,
+/// o módulo (o rótulo da categoria) e a posição do tabuleirinho.
+class LinkedLessonInfo {
+  const LinkedLessonInfo({
+    required this.kind,
+    required this.title,
+    this.module,
+    this.fen,
+  });
+
+  final LinkedLessonKind kind;
+  final String title;
+
+  /// O título do módulo da trilha de finais ("Finais de torre"). Nulo na
+  /// Escola.
+  final String? module;
+
+  /// A posição-base da aula. Nula: sem tabuleirinho.
+  final String? fen;
+
+  @override
+  bool operator ==(Object other) =>
+      other is LinkedLessonInfo &&
+      other.kind == kind &&
+      other.title == title &&
+      other.module == module &&
+      other.fen == fen;
+
+  @override
+  int get hashCode => Object.hash(kind, title, module, fen);
+}

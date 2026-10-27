@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../core/analytics/analytics_context.dart';
 
 import 'package:flutter/material.dart';
@@ -35,6 +37,7 @@ class AccountScreen extends StatelessWidget {
       context.read<AccountRepository>(),
       sync: context.read<SyncScheduler>(),
       analytics: context.analytics,
+      campaigns: context.campaigns,
     ),
     child: _AccountView(from: from),
   );
@@ -55,6 +58,12 @@ class _AccountView extends StatelessWidget {
         ? context.pop()
         : context.go(Routes.afterAccount(from));
     final busy = context.select((AccountCubit cubit) => cubit.state.busy);
+    // Aberta de uma rota (a aula do link, T84): a tela seguinte toma o lugar
+    // desta, e voltar do fim volta para quem abriu a conta.
+    final fromRoute = Routes.isRouteFrom(from);
+    void open(String route) => fromRoute
+        ? context.pushReplacement(route)
+        : unawaited(context.push(route));
     final benefits = [
       (Icons.cloud_done, l10n.accountBenefitSaved),
       (Icons.devices_other, l10n.accountBenefitDevices),
@@ -62,7 +71,9 @@ class _AccountView extends StatelessWidget {
     ];
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
-        if (state.done) return continueAfterSignIn(context, state, from);
+        if (state.done) {
+          return continueAfterSignIn(context, state, from, replace: fromRoute);
+        }
         final failure = state.failure;
         if (failure == null) return;
         showLucenaSnackBar(context, accountFailureText(l10n, failure));
@@ -154,7 +165,7 @@ class _AccountView extends StatelessWidget {
               key: AccountKeys.email,
               onPressed: busy
                   ? null
-                  : () => context.push(Routes.accountEmailFrom(from)),
+                  : () => open(Routes.accountEmailFrom(from)),
               icon: const Icon(Icons.mail),
               label: Text(l10n.accountCreateWithEmail),
             ),
@@ -164,9 +175,7 @@ class _AccountView extends StatelessWidget {
               action: l10n.accountSignIn,
               onPressed: busy
                   ? null
-                  : () => context.push(
-                      Routes.accountEmailFrom(from, signIn: true),
-                    ),
+                  : () => open(Routes.accountEmailFrom(from, signIn: true)),
             ),
           ],
         ),

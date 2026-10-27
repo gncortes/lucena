@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +26,9 @@ void main() {
     onboarding = FakeOnboardingRepository();
   });
 
-  Future<void> pumpAccount(WidgetTester tester) async {
+  /// [from] uma rota (a aula do link, T84): a conta abre por cima de uma
+  /// tela de base, pelo `push`.
+  Future<void> pumpAccount(WidgetTester tester, {String? from}) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
@@ -40,7 +44,19 @@ void main() {
               RepositoryProvider<OnboardingRepository>.value(value: onboarding),
               RepositoryProvider<SyncScheduler>.value(value: scheduler),
             ],
-            child: const AccountScreen(),
+            child: from == null
+                ? const AccountScreen()
+                : const Scaffold(body: Text('base')),
+          ),
+        ),
+        GoRoute(
+          path: Routes.accountEnter,
+          builder: (_, state) => MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AccountRepository>.value(value: accounts),
+              RepositoryProvider<SyncScheduler>.value(value: scheduler),
+            ],
+            child: AccountScreen(from: state.uri.queryParameters['from']!),
           ),
         ),
         GoRoute(
@@ -61,7 +77,48 @@ void main() {
     );
     await tester.pumpWidget(TestApp(router: router, child: const SizedBox()));
     await tester.pumpAndSettle();
+    if (from != null) {
+      unawaited(router.push(Routes.accountEnterFrom(from)));
+      await tester.pumpAndSettle();
+    }
   }
+
+  BuildContext top(WidgetTester tester) =>
+      tester.element(find.byType(Scaffold).last);
+
+  group('aberta de uma rota (a aula do link, T84)', () {
+    const lesson = '/aula/rook.lucena';
+
+    testWidgets('o e-mail toma o lugar da conta: voltar volta à base', (
+      tester,
+    ) async {
+      await pumpAccount(tester, from: lesson);
+      await tester.tap(find.byKey(AccountKeys.toSignIn));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'rota-email /conta/email?from=%2Faula%2Frook.lucena&entrar=1',
+        ),
+        findsOneWidget,
+      );
+      GoRouter.of(top(tester)).pop();
+      await tester.pumpAndSettle();
+      expect(find.text('base'), findsOneWidget);
+    });
+
+    testWidgets('Google: "Seu perfil" toma o lugar da conta', (tester) async {
+      await pumpAccount(tester, from: lesson);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('rota-dados /conta/dados?from=%2Faula%2Frook.lucena&novo=1'),
+        findsOneWidget,
+      );
+      GoRouter.of(top(tester)).pop();
+      await tester.pumpAndSettle();
+      expect(find.text('base'), findsOneWidget);
+    });
+  });
 
   testWidgets('mostra o título, o que se ganha e que é grátis', (tester) async {
     await pumpAccount(tester);
