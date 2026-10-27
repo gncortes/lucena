@@ -40,6 +40,9 @@ abstract final class ChallengeKeys {
   static const endLesson = Key('challenge.end.lesson');
   static const lessonOffer = Key('challenge.lessonOffer');
 
+  /// O link só de aula sem conta: a tela por baixo do convite.
+  static const lessonGate = Key('challenge.lessonGate');
+
   /// A imagem do resultado, desenhada fora da tela para virar PNG.
   static const resultCard = Key('challenge.result.card');
 

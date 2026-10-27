@@ -1456,7 +1456,7 @@
   "profileDeleteWeb": "Without the app, you can ask at playlucena.com/apagar-conta.",
   "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones. It is optional: without an account, everything keeps working.",
   "accountInviteTextLichess": "Lưu tiến độ và liên kết Lichess của bạn trong tài khoản Lucena. Không bắt buộc: không có tài khoản, mọi thứ vẫn hoạt động.",
-  "accountInviteTextLinkLesson": "Có tài khoản, tiến độ bài học và các ván cờ của bạn được lưu lại, kể cả khi đổi điện thoại. Không bắt buộc: không có tài khoản, bài học vẫn mở.",
+  "accountInviteTextLinkLesson": "Bài học mở bằng tài khoản: tiến độ bài học và các ván cờ của bạn được lưu lại, kể cả khi đổi điện thoại.",
   "accountEmailField": "E-mail",
   "accountEmailHint": "you@email.com",
   "accountPasswordField": "Password",

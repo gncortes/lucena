@@ -51,7 +51,7 @@ void main() {
 
   LinkLessonCubit cubit() {
     final cubit = LinkLessonCubit(
-      link: _link,
+      campaign: Campaign.fromChallenge(_link),
       accounts: accounts,
       catalog: catalog,
       campaigns: campaigns,

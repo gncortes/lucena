@@ -1456,7 +1456,7 @@
   "profileDeleteWeb": "Without the app, you can ask at playlucena.com/apagar-conta.",
   "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved, even if you change phones. It is optional: without an account, everything keeps working.",
   "accountInviteTextLichess": "Збережіть прогрес і прив'язку до Lichess в акаунті Lucena. Це необов'язково: без акаунта все працює далі.",
-  "accountInviteTextLinkLesson": "З акаунтом прогрес в уроці та в партіях зберігається, навіть якщо ви зміните телефон. Це необов'язково: без акаунта урок теж відкриється.",
+  "accountInviteTextLinkLesson": "Урок відкривається з акаунтом: прогрес у ньому та в партіях зберігається, навіть якщо ви зміните телефон.",
   "accountEmailField": "E-mail",
   "accountEmailHint": "you@email.com",
   "accountPasswordField": "Password",
