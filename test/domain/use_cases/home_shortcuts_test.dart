@@ -46,7 +46,7 @@ void main() {
     ]);
   });
 
-  test('aprender a jogar: some o que a pessoa desmarcou, menos a Escola', () {
+  test('aprender a jogar: some o que a pessoa desmarcou, a Escola também', () {
     expect(
       shortcuts(
         RatingLevel.beginner,
@@ -54,6 +54,14 @@ void main() {
         unchecked: {HomePath.journey, HomePath.stars},
       ),
       [school, race],
+    );
+    expect(
+      shortcuts(
+        RatingLevel.beginner,
+        goal: GoalPreference.learn,
+        unchecked: {HomePath.learn},
+      ),
+      [journey, race, stars],
     );
   });
 

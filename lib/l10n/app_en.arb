@@ -1598,14 +1598,6 @@
   "@homePathsTitle": {
     "description": "Home screen: title above the list of things to do in the app."
   },
-  "homeLearn": "Learn to play chess",
-  "@homeLearn": {
-    "description": "Home screen path for beginners: the lessons with the teacher Viktor."
-  },
-  "homeLearnBody": "Lessons with Viktor: how the pieces move, check, checkmate and the first endgames.",
-  "@homeLearnBody": {
-    "description": "Home screen: one-line explanation of the lessons path."
-  },
   "homeJourneyBody": "Beat each opponent's endgames, from the weakest to Stockfish.",
   "@homeJourneyBody": {
     "description": "Home screen: one-line explanation of the Journey path."
@@ -2894,14 +2886,6 @@
   "speedrunModeClassic": "Classic",
   "@speedrunModeClassic": {
     "description": "Speedrun mode selector: each game has its own clock (as opposed to the Marathon, one clock for the whole run)."
-  },
-  "homeJourneyBodyPlayer": "Practice the basic checkmates and take on every opponent, from Coco to Stockfish.",
-  "@homeJourneyBodyPlayer": {
-    "description": "Home path text for the Journey, for players who are not beginners."
-  },
-  "homeLearnBodyPlayer": "Review the fundamentals with Viktor.",
-  "@homeLearnBodyPlayer": {
-    "description": "Home path text for Viktor's lessons, for players who are not beginners."
   },
   "homeSpeedrunBodyChallenge": "Beat everyone up to Stockfish in the shortest time and break your record.",
   "@homeSpeedrunBodyChallenge": {

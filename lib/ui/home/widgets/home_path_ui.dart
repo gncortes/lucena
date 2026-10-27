@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
+import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -22,7 +23,7 @@ extension HomePathUi on HomePath {
   };
 
   String title(AppLocalizations l10n) => switch (this) {
-    HomePath.learn => l10n.homeLearn,
+    HomePath.learn => l10n.homeShortcutSchool,
     HomePath.journey => l10n.homeJourney,
     HomePath.forYou => l10n.homeForYou,
     HomePath.endgames => l10n.homeEndgames,
@@ -39,9 +40,7 @@ extension HomePathUi on HomePath {
         ? HomePathText.standard
         : HomeSuggestion.textOf(this, level);
     return switch ((this, text)) {
-      (HomePath.learn, HomePathText.player) => l10n.homeLearnBodyPlayer,
-      (HomePath.learn, _) => l10n.homeLearnBody,
-      (HomePath.journey, HomePathText.player) => l10n.homeJourneyBodyPlayer,
+      (HomePath.learn, _) => l10n.homeShortcutSchoolBody,
       (HomePath.journey, _) => l10n.homeJourneyBody,
       (HomePath.speedrun, HomePathText.challenge) =>
         l10n.homeSpeedrunBodyChallenge,
@@ -56,7 +55,9 @@ extension HomePathUi on HomePath {
   }
 
   String get route => switch (this) {
-    HomePath.learn => Routes.school,
+    // Sem aula da Escola liberada, como as peças se movem.
+    HomePath.learn =>
+      VisibleLessons.school ? Routes.school : Routes.boardControls,
     HomePath.journey => Routes.journey,
     HomePath.forYou => Routes.endgamesFiltered(forYou: true),
     HomePath.endgames => Routes.endgamesFiltered(forYou: false),

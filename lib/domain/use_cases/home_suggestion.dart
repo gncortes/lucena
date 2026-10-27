@@ -8,9 +8,6 @@ enum HomePathText {
   /// O de quem está começando.
   standard,
 
-  /// O de quem já joga.
-  player,
-
   /// O de desafio, para os fortes.
   challenge,
 }
@@ -69,17 +66,24 @@ abstract final class HomeSuggestion {
         3,
       ),
     };
-    if (!(school ?? VisibleLessons.school)) order.remove(learn);
+    // Quem quer aprender a jogar fica com a Escola, primeira e marcada, mesmo
+    // sem aula liberada (ela abre como as peças se movem).
+    final learning = goal == GoalPreference.learn;
+    if (!learning && !(school ?? VisibleLessons.school)) order.remove(learn);
     if (!course) order.remove(endgames);
     // Os marcados são os do nível; o do objetivo entra junto.
     final first = goal == null
         ? null
         : goalPath(goal, school: school, course: course);
-    final visible = {...order.where((p) => p != race).take(marked), ?first};
-    if (first != null) {
+    final visible = {
+      ...order.where((p) => p != race).take(marked),
+      ?first,
+      if (learning) learn,
+    };
+    for (final path in [?first, if (learning) learn]) {
       order
-        ..remove(first)
-        ..insert(0, first);
+        ..remove(path)
+        ..insert(0, path);
     }
     final at = order.indexOf(endgames);
     final withForYou = [...order];
@@ -112,7 +116,8 @@ abstract final class HomeSuggestion {
       return of(level, school: school, course: course, goal: goal);
     }
     final hidden = {
-      if (!(school ?? VisibleLessons.school)) HomePath.learn,
+      if (goal != GoalPreference.learn && !(school ?? VisibleLessons.school))
+        HomePath.learn,
       if (!course) ...[HomePath.endgames, HomePath.forYou],
     };
     if (hidden.isEmpty) return saved;
@@ -200,18 +205,16 @@ abstract final class HomeSuggestion {
     return layout.copyWith(custom: !same);
   }
 
-  /// O texto de [path] para o nível [level]: a Jornada e as aulas falam com
-  /// quem já joga; o speedrun desafia os fortes.
+  /// O texto de [path] para o nível [level]: o speedrun desafia os fortes;
+  /// os outros têm um texto só.
   static HomePathText textOf(HomePath path, RatingLevel level) =>
       switch (path) {
-        HomePath.journey || HomePath.learn =>
-          level == RatingLevel.beginner
-              ? HomePathText.standard
-              : HomePathText.player,
         HomePath.speedrun =>
           level == RatingLevel.expert || level == RatingLevel.master
               ? HomePathText.challenge
               : HomePathText.standard,
+        HomePath.journey ||
+        HomePath.learn ||
         HomePath.forYou ||
         HomePath.endgames ||
         HomePath.train ||

@@ -8,7 +8,7 @@ import '../models/home_shortcut.dart';
 abstract final class HomeShortcuts {
   /// [order] e [visible] vêm do [HomeLayout] (a ordem e os marcados).
   /// [learning]: o objetivo "Aprender a jogar", que vê só a Escola, a
-  /// Jornada, os Problemas e as Estrelas, nessa ordem.
+  /// Jornada, os Problemas e as Estrelas, nessa ordem (os marcados).
   static List<HomeShortcut> of({
     required List<HomePath> order,
     required Set<HomePath> visible,
@@ -16,8 +16,8 @@ abstract final class HomeShortcuts {
   }) {
     if (learning) {
       return [
-        HomeShortcut.school,
         for (final path in const [
+          HomePath.learn,
           HomePath.journey,
           HomePath.race,
           HomePath.stars,

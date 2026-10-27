@@ -135,9 +135,35 @@ void main() {
       school: false,
       goal: GoalPreference.learn,
     );
-    expect(layout.order.first, journey);
-    expect(layout.order, isNot(contains(learn)));
-    expect(layout.visible, contains(journey));
+    // A Escola fica primeira e marcada (abre como as peças se movem), para
+    // poder ser desmarcada em Configurações > Tela inicial.
+    expect(layout.order.take(2), [learn, journey]);
+    expect(layout.visible, containsAll([learn, journey]));
+    // Sem esse objetivo, a Escola sai.
+    expect(
+      HomeSuggestion.of(RatingLevel.expert, school: false).order,
+      isNot(contains(learn)),
+    );
+  });
+
+  test('aprender a jogar: desmarcar a Escola a tira dos atalhos', () {
+    final layout = HomeSuggestion.of(
+      RatingLevel.beginner,
+      school: false,
+      goal: GoalPreference.learn,
+    );
+    expect(HomeSuggestion.canHide(layout, learn), isTrue);
+    final hidden = HomeSuggestion.toggle(layout, learn, RatingLevel.beginner);
+    expect(hidden.shown, isNot(contains(learn)));
+    expect(
+      HomeSuggestion.resolve(
+        hidden,
+        RatingLevel.beginner,
+        school: false,
+        goal: GoalPreference.learn,
+      ).order.first,
+      learn,
+    );
   });
 
   test('o Personalizar ganha do objetivo', () {
@@ -228,14 +254,11 @@ void main() {
       HomeSuggestion.textOf(journey, RatingLevel.beginner),
       HomePathText.standard,
     );
-    expect(
-      HomeSuggestion.textOf(journey, RatingLevel.casual),
-      HomePathText.player,
-    );
-    expect(
-      HomeSuggestion.textOf(learn, RatingLevel.master),
-      HomePathText.player,
-    );
+    // A Jornada e a Escola têm um texto só, em todo nível.
+    for (final level in RatingLevel.values) {
+      expect(HomeSuggestion.textOf(journey, level), HomePathText.standard);
+      expect(HomeSuggestion.textOf(learn, level), HomePathText.standard);
+    }
     for (final level in RatingLevel.values) {
       expect(
         HomeSuggestion.textOf(speedrun, level),

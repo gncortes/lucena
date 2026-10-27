@@ -3,8 +3,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
-import '../../../domain/use_cases/visible_lessons.dart';
-import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -23,8 +21,8 @@ extension HomeShortcutUi on HomeShortcut {
     HomeShortcut.endgames => HomePath.endgames.icon,
     HomeShortcut.train => HomePath.train.icon,
     HomeShortcut.speedrun => HomePath.speedrun.icon,
-    HomeShortcut.race => Icons.bolt_rounded,
-    HomeShortcut.stars => Icons.star_rounded,
+    HomeShortcut.race => HomePath.race.icon,
+    HomeShortcut.stars => HomePath.stars.icon,
   };
 
   /// O fundo e a cor do ícone (canvas `CompModoTile`).
@@ -53,7 +51,7 @@ extension HomeShortcutUi on HomeShortcut {
       };
 
   String title(AppLocalizations l10n) => switch (this) {
-    HomeShortcut.school => l10n.homeShortcutSchool,
+    HomeShortcut.school => HomePath.learn.title(l10n),
     HomeShortcut.journey => l10n.homeJourney,
     HomeShortcut.endgames => l10n.homeEndgames,
     HomeShortcut.train => l10n.homeTrain,
@@ -63,7 +61,7 @@ extension HomeShortcutUi on HomeShortcut {
   };
 
   String body(AppLocalizations l10n) => switch (this) {
-    HomeShortcut.school => l10n.homeShortcutSchoolBody,
+    HomeShortcut.school => HomePath.learn.body(l10n, null),
     HomeShortcut.journey => l10n.homeShortcutJourneyBody,
     HomeShortcut.endgames => l10n.homeShortcutEndgamesBody,
     HomeShortcut.train => l10n.homeShortcutTrainBody,
@@ -73,14 +71,13 @@ extension HomeShortcutUi on HomeShortcut {
   };
 
   String get route => switch (this) {
-    HomeShortcut.school =>
-      VisibleLessons.school ? Routes.school : Routes.boardControls,
+    HomeShortcut.school => HomePath.learn.route,
     HomeShortcut.journey => HomePath.journey.route,
     HomeShortcut.endgames => HomePath.endgames.route,
     HomeShortcut.train => HomePath.train.route,
     HomeShortcut.speedrun => HomePath.speedrun.route,
     HomeShortcut.race => HomePath.race.route,
-    HomeShortcut.stars => Routes.starChallenges,
+    HomeShortcut.stars => HomePath.stars.route,
   };
 
   /// A mesma key dos cartões de caminho de antes.
