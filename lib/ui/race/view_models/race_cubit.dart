@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/race/race_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/race_diagnosis.dart';
@@ -126,7 +130,13 @@ class RaceCubit extends Cubit<RaceState> {
     this.replyDelay = const Duration(milliseconds: 450),
     this.onlySubcategory,
     this.onlyCategory,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const RaceState());
+
+  final AnalyticsRepository _analytics;
+
+  // Quando o problema do tabuleiro apareceu (o tempo do `corrida_problema`).
+  DateTime? _problemShownAt;
 
   /// A Corrida só de um tipo de final ou de uma família (vinda da aula ou do
   /// diagnóstico): o filtro vale nesta tela, sem trocar o guardado.
@@ -236,6 +246,15 @@ class RaceCubit extends Cubit<RaceState> {
     final turn = _first(run);
     if (turn == null) return;
     _finishing = false;
+    _problemShownAt = run.startedAt;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.corridaIniciada(
+          tema: _theme(),
+          recorde: state.record.corrects,
+        ),
+      ),
+    );
     emit(
       state.copyWith(
         phase: RacePhase.playing,
@@ -283,6 +302,19 @@ class RaceCubit extends Cubit<RaceState> {
     final correct = turn.judge(move) == RaceMoveKind.optimal;
     final answer = correct ? turn.solved(move) : turn.mistake(move);
     final updated = run.withAnswer(answer);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.corridaProblema(
+          problemaId: answer.problemId,
+          tema: _categoryOf(answer.problemId) ?? 'todos',
+          nivel: answer.level,
+          acertou: correct,
+          tempo: now.difference(_problemShownAt ?? run.startedAt),
+          indice: updated.answers.length,
+        ),
+      ),
+    );
+    _problemShownAt = now;
     final end = RaceRules.endOf(updated, now);
     final feedback = correct ? RaceFeedback.correct : RaceFeedback.wrong;
     if (end != null) {
@@ -326,6 +358,7 @@ class RaceCubit extends Cubit<RaceState> {
   }) async {
     _finishing = true;
     final outcome = await _repository.finish(run, end);
+    _logEnd(run, end, record: outcome.isRecord);
     final history = await _repository.history();
     // "Jogar de novo" sorteia sem passar pelo load: a Corrida que acabou já
     // entra nos recentes.
@@ -346,12 +379,47 @@ class RaceCubit extends Cubit<RaceState> {
     );
   }
 
+  // O tipo de final da Corrida: a família escolhida, ou a do tipo, ou todos.
+  String _theme() =>
+      onlyCategory ??
+      state.problems
+          .where((problem) => problem.subcategory == onlySubcategory)
+          .map((problem) => problem.category)
+          .firstOrNull ??
+      'todos';
+
+  String? _categoryOf(String problemId) => state.problems
+      .where((problem) => problem.id == problemId)
+      .map((problem) => problem.category)
+      .firstOrNull;
+
+  void _logEnd(RaceRun run, RaceEnd end, {required bool record}) {
+    final elapsed = _now().difference(run.startedAt);
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.corridaFim(
+          motivo: switch (end) {
+            RaceEnd.time => 'tempo',
+            RaceEnd.errors => 'erros',
+            RaceEnd.quit => 'saiu',
+          },
+          acertos: run.corrects,
+          erros: run.errors,
+          tempo: elapsed > run.duration.limit ? run.duration.limit : elapsed,
+          nivelMax: run.hardestSolved,
+          novoRecorde: record,
+        ),
+      ),
+    );
+  }
+
   /// O jogador saiu no meio: a Corrida é descartada, sem resultado e sem
   /// contar (nem recorde, nem histórico), e a tela volta à abertura.
   Future<void> quit() async {
     final run = state.run;
     if (state.phase != RacePhase.playing || _finishing || run == null) return;
     _finishing = true;
+    _logEnd(run, RaceEnd.quit, record: false);
     await _repository.discardOngoing();
     emit(
       state.copyWith(

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
@@ -7,6 +10,7 @@ import '../../../data/repositories/placement/placement_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/app_settings.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_filter.dart';
@@ -241,7 +245,10 @@ class EndgamesCubit extends Cubit<EndgamesState> {
     this._school,
     this._schoolProgress,
     this._settings,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const EndgamesState());
+
+  final AnalyticsRepository _analytics;
 
   final SettingsRepository? _settings;
 
@@ -298,6 +305,11 @@ class EndgamesCubit extends Cubit<EndgamesState> {
     try {
       await _load(language, showAll: showAll);
     } on LessonContentUnavailable {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.aulaIndisponivel(origem: 'trilha_finais'),
+        ),
+      );
       if (!isClosed) emit(const EndgamesState(ready: true));
     }
   }

@@ -115,7 +115,9 @@ class _Next extends StatelessWidget {
                           subtitle: lessonTitle == null
                               ? null
                               : Text(l10n.featuredNextLessonSub(lessonTitle!)),
-                          onTap: () => go(Routes.endgameLesson(lesson)),
+                          onTap: () => go(
+                            Routes.endgameLesson(lesson, origin: 'catalogo'),
+                          ),
                         ),
                       if (similar != null)
                         ListTile(

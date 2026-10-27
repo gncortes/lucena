@@ -14,6 +14,7 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/sound/game_sounds.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
@@ -106,8 +107,13 @@ class _Rig {
     GameSounds? sounds,
     LessonCheckpoint? checkpoint,
     bool Function(List<String>)? fits,
+    FakeAnalyticsRepository? analytics,
+    String? origin,
+    bool endgame = true,
+    bool fresh = true,
   }) async {
-    final source = FakeLessonSource(refs: refs);
+    final source = FakeLessonSource(refs: refs, endgame: endgame)
+      ..fresh = fresh;
     if (checkpoint != null) source.checkpoints.add(checkpoint);
     final kpk = oracle ?? FakeKpkOracle();
     final now = FakeNow(DateTime(2026, 10, 14, 9));
@@ -133,6 +139,8 @@ class _Rig {
       },
       opponent: opponent,
       sounds: sounds,
+      analytics: analytics ?? FakeAnalyticsRepository(),
+      origin: origin,
     );
     addTearDown(cubit.close);
     if (fits != null) cubit.setSpeechFits(fits);
@@ -1812,5 +1820,107 @@ void main() {
         expect(none.s.lastMove, 'a8b8');
       },
     );
+  });
+
+  group('analytics', () {
+    test(
+      'aula de final aberta por um caminho: aula_aberta + capítulo',
+      () async {
+        final analytics = FakeAnalyticsRepository();
+        await _Rig.open(analytics: analytics, origin: 'home');
+        final opened = analytics.eventsNamed('aula_aberta').single.params;
+        expect(opened['aula_id'], _lessonId);
+        expect(opened['tipo_aula'], 'finais');
+        expect(opened['origem'], 'home');
+        expect(opened['primeira_vez'], 'sim');
+        expect(opened['retomada'], 'nao');
+        final chapter = analytics.eventsNamed('aula_capitulo_inicio').single;
+        expect(chapter.params['aula_id'], _lessonId);
+        expect(chapter.params['capitulo_id'], _partId);
+      },
+    );
+
+    test('final sem origem não repete o aula_aberta do hub', () async {
+      final analytics = FakeAnalyticsRepository();
+      await _Rig.open(analytics: analytics);
+      expect(analytics.eventsNamed('aula_aberta'), isEmpty);
+      expect(analytics.eventsNamed('aula_capitulo_inicio'), hasLength(1));
+    });
+
+    test('aula da Escola abre com origem trilha e marca escola', () async {
+      final analytics = FakeAnalyticsRepository();
+      await _Rig.open(analytics: analytics, endgame: false);
+      final opened = analytics.eventsNamed('aula_aberta').single.params;
+      expect(opened['tipo_aula'], 'escola');
+      expect(opened['origem'], 'trilha');
+    });
+
+    test('aula já começada é retomada, não primeira vez', () async {
+      final analytics = FakeAnalyticsRepository();
+      await _Rig.open(
+        analytics: analytics,
+        origin: 'continuar',
+        fresh: false,
+        checkpoint: const LessonCheckpoint(
+          lessonId: _lessonId,
+          part: _partId,
+          step: 0,
+        ),
+      );
+      final opened = analytics.eventsNamed('aula_aberta').single.params;
+      expect(opened['retomada'], 'sim');
+      expect(opened['primeira_vez'], 'nao');
+    });
+
+    test('prática: exercicio_resultado e aula_capitulo_fim', () async {
+      final analytics = FakeAnalyticsRepository();
+      final r = await _Rig.open(json: _practiceJson(), analytics: analytics);
+      await r.cubit.onMove('g7g8');
+      final result = analytics.eventsNamed('exercicio_resultado').single.params;
+      expect(result['aula_id'], _lessonId);
+      expect(result['capitulo_id'], _partId);
+      expect(result['tipo_passo'], 'mover');
+      expect(result['acertou'], 'sim');
+      expect(result['tentativas'], 1);
+      await r.next();
+      await r.cubit.onMove('g7g8');
+      await r.cubit.onAction(ScriptAction.proximaParte);
+      expect(analytics.eventsNamed('exercicio_resultado'), hasLength(2));
+      final end = analytics.eventsNamed('aula_capitulo_fim').single.params;
+      expect(end['aula_id'], _lessonId);
+      expect(end['capitulo_id'], _partId);
+      expect(end['exercicios'], 2);
+      expect(end['erros'], 0);
+      expect(end['dicas'], 0);
+    });
+
+    test('sair antes do fim loga aula_saida; depois do fim, não', () async {
+      final analytics = FakeAnalyticsRepository();
+      final r = await _Rig.open(analytics: analytics);
+      await r.next();
+      await r.cubit.leave();
+      final left = analytics.eventsNamed('aula_saida').single.params;
+      expect(left['aula_id'], _lessonId);
+      expect(left['capitulo_id'], _partId);
+
+      final done = FakeAnalyticsRepository();
+      final d = await _Rig.open(json: _practiceJson(), analytics: done);
+      await d.cubit.onMove('g7g8');
+      await d.next();
+      await d.cubit.onMove('g7g8');
+      await d.cubit.onAction(ScriptAction.proximaParte);
+      await d.cubit.leave();
+      expect(done.eventsNamed('aula_saida'), isEmpty);
+    });
+
+    test('aula_indisponivel sai com origem aula', () async {
+      final analytics = FakeAnalyticsRepository();
+      final r = await _Rig.open(analytics: analytics);
+      r.cubit.unavailable();
+      expect(
+        analytics.eventsNamed('aula_indisponivel').single.params['origem'],
+        'aula',
+      );
+    });
   });
 }

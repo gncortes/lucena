@@ -272,7 +272,12 @@ class _SchoolCard extends StatelessWidget {
               key: HomeKeys.schoolContinue,
               onPressed: () => school.ongoingLessonId == null
                   ? context.go(Routes.school)
-                  : context.push(Routes.lessonScript(school.ongoingLessonId!)),
+                  : context.push(
+                      Routes.lessonScript(
+                        school.ongoingLessonId!,
+                        origin: 'home',
+                      ),
+                    ),
               child: Text(l10n.homeContinue),
             ),
           ],
@@ -304,9 +309,10 @@ extension EndgameSummaryUi on EndgameSummary {
         lessonId,
         part: partId,
         stage: partStage,
+        origin: 'home',
       );
     }
-    return Routes.endgameLesson(lessonId);
+    return Routes.endgameLesson(lessonId, origin: 'home');
   }
 }
 

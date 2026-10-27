@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/alerts/alerts_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/push/push_repository.dart';
 import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../domain/models/alert_settings.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/alerts_rules.dart';
 
 /// Perfil > Avisos (E1.21): as chaves, a hora dos lembretes e o estado da
@@ -66,7 +70,10 @@ class AlertsCubit extends Cubit<AlertsState> {
     required this._profile,
     this._reminders,
     this._region,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const AlertsState());
+
+  final AnalyticsRepository _analytics;
 
   final AlertsRepository _alerts;
   final PushRepository _push;
@@ -123,9 +130,25 @@ class AlertsCubit extends Cubit<AlertsState> {
   /// Grava na hora e acerta os tópicos.
   Future<void> change(AlertSettings settings) async {
     if (settings == state.settings) return;
+    _logSwitches(state.settings, settings);
     emit(state.copyWith(settings: settings));
     await _alerts.save(settings);
     await _follow();
+  }
+
+  // Cada chave que virou: `aviso_chave` (a hora do lembrete não é chave).
+  void _logSwitches(AlertSettings before, AlertSettings after) {
+    for (final (type, was, now) in [
+      ('torneios', before.tournaments, after.tournaments),
+      ('dia', before.daily, after.daily),
+      ('novidades', before.news, after.news),
+      ('aulas', before.lessons, after.lessons),
+    ]) {
+      if (was == now) continue;
+      unawaited(
+        _analytics.log(AnalyticsEvents.avisoChave(tipo: type, ligado: now)),
+      );
+    }
   }
 
   /// A hora dos lembretes, em minutos desde a meia-noite.

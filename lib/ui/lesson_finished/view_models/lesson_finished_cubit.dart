@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/race/race_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
 import '../../../domain/models/survey.dart';
@@ -50,6 +54,7 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
     required this.school,
     required this.endgames,
     required this.race,
+    this.analytics = const NoAnalyticsRepository(),
   }) : super(const LessonFinishedState());
 
   final SurveyKind kind;
@@ -58,6 +63,7 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
   final LessonRepository school;
   final EndgameLessonRepository endgames;
   final RaceRepository race;
+  final AnalyticsRepository analytics;
 
   Future<void> load(String language) async {
     final LessonTexts texts = kind == SurveyKind.school
@@ -75,6 +81,14 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
       }
     }
     if (isClosed) return;
+    unawaited(
+      analytics.log(
+        AnalyticsEvents.aulaConcluida(
+          aulaId: lessonId,
+          tipoAula: kind == SurveyKind.school ? 'escola' : 'finais',
+        ),
+      ),
+    );
     final next = nextId;
     emit(
       LessonFinishedState(

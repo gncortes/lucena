@@ -189,7 +189,7 @@ void main() {
     expect(launchLocation(resumeGame: true, school: school), Routes.freeBoard);
     expect(
       launchLocation(school: school, endgames: ongoing('distant')),
-      Routes.lessonScript('pieces.rook'),
+      Routes.lessonScript('pieces.rook', origin: 'continuar'),
     );
   });
 

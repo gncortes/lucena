@@ -96,12 +96,16 @@ class _HomeScreenState extends State<HomeScreen>
             current.streak.lost > 0 && previous.streak.lost == 0,
         listener: (context, state) {
           final cubit = context.read<HomeCubit>();
+          var played = false;
           unawaited(
             showStreakLostSheet(
               context,
               streak: state.streak,
-              onPlay: () => unawaited(context.push(Routes.daily)),
-            ),
+              onPlay: () {
+                played = true;
+                unawaited(context.push(Routes.daily));
+              },
+            ).then((_) => cubit.lostAnswered(state.streak, played: played)),
           );
           unawaited(cubit.lostShown());
         },

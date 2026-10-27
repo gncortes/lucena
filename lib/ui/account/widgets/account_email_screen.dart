@@ -1,3 +1,6 @@
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../core/analytics/analytics_context.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -37,6 +40,7 @@ class AccountEmailScreen extends StatelessWidget {
     create: (context) => AccountCubit(
       context.read<AccountRepository>(),
       sync: reauth ? null : context.read<SyncScheduler>(),
+      analytics: reauth ? const NoAnalyticsRepository() : context.analytics,
     ),
     child: _EmailView(from: from, create: !signIn && !reauth, reauth: reauth),
   );

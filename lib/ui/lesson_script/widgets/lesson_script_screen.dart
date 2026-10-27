@@ -66,6 +66,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     try {
       await cubit.start();
     } on LessonContentUnavailable {
+      cubit.unavailable();
       if (mounted) setState(() => _contentUnavailable = true);
     }
   }

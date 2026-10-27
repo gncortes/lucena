@@ -52,6 +52,7 @@ class ProfileScreen extends StatelessWidget {
       sync: context.read<SyncScheduler>(),
       lichess: context.read<LichessRepository>(),
       profile: context.read<ProfileRepository>(),
+      analytics: context.analytics,
     )..load(),
     child: const _ProfileView(),
   );

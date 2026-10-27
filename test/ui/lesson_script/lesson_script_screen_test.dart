@@ -609,7 +609,12 @@ void main() {
     expect(progress.ongoing!.open, isTrue);
     expect(
       launchLocation(endgames: progress),
-      Routes.endgameLessonScript('pawns.test', part: 'distant', stage: 1),
+      Routes.endgameLessonScript(
+        'pawns.test',
+        part: 'distant',
+        stage: 1,
+        origin: 'continuar',
+      ),
     );
   });
   for (final size in const [Size(360, 740), Size(412, 917)]) {
