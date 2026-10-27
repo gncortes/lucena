@@ -64,10 +64,12 @@ class _AccountView extends StatelessWidget {
     void open(String route) => fromRoute
         ? context.pushReplacement(route)
         : unawaited(context.push(route));
+    // Aberta para a aula gratuita do link (T84), que só abre com conta: o
+    // título fala da aula e some o "sem conta, tudo continua funcionando".
     final benefits = [
       (Icons.cloud_done, l10n.accountBenefitSaved),
       (Icons.devices_other, l10n.accountBenefitDevices),
-      (Icons.wifi_off, l10n.accountBenefitOffline),
+      if (!fromRoute) (Icons.wifi_off, l10n.accountBenefitOffline),
     ];
     return BlocListener<AccountCubit, AccountState>(
       listener: (context, state) {
@@ -116,14 +118,18 @@ class _AccountView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xl),
               Text(
-                l10n.accountEntryTitle,
+                fromRoute
+                    ? l10n.accountEntryTitleLesson
+                    : l10n.accountEntryTitle,
+                key: AccountKeys.enterTitle,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                l10n.accountEntryText,
+                fromRoute ? l10n.accountEntryTextLesson : l10n.accountEntryText,
+                key: AccountKeys.enterText,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),

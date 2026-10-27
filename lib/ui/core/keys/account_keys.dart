@@ -7,6 +7,8 @@ abstract final class AccountKeys {
   /// O convite em tela cheia (vindo de um link) e o "Criar conta ou entrar".
   static const screen = Key('account.screen');
   static const enterScreen = Key('account.enter');
+  static const enterTitle = Key('account.enter.title');
+  static const enterText = Key('account.enter.text');
   static const close = Key('account.close');
   static const google = Key('account.google');
   static const email = Key('account.email');

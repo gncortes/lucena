@@ -8,6 +8,8 @@ import 'package:lucena/data/repositories/campaign/linked_lesson_catalog.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/linked_lesson.dart';
+import 'package:lucena/routing/routes.dart';
+import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/campaign/widgets/linked_lesson_gate.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
@@ -33,11 +35,14 @@ class _Catalog implements LinkedLessonCatalog {
 void main() {
   const lesson = LinkedLesson(LinkedLessonKind.endgame, 'rook.lucena');
 
-  testWidgets('link só de aula sem conta: convite antes; "Agora não" vai ao '
-      'início, sem abrir a aula', (tester) async {
-    final accounts = FakeAccountRepository();
-    final campaigns = MemoryCampaignRepository();
-    final analytics = FakeAnalyticsRepository();
+  late FakeAccountRepository accounts;
+  late MemoryCampaignRepository campaigns;
+  late FakeAnalyticsRepository analytics;
+
+  Future<void> pumpGate(WidgetTester tester) async {
+    accounts = FakeAccountRepository();
+    campaigns = MemoryCampaignRepository();
+    analytics = FakeAnalyticsRepository();
     final router = GoRouter(
       initialLocation: '/aula/rook.lucena',
       routes: [
@@ -58,6 +63,16 @@ void main() {
             child: const LinkedLessonGate(),
           ),
         ),
+        GoRoute(
+          path: Routes.accountEnter,
+          builder: (context, state) =>
+              AccountScreen(from: state.uri.queryParameters['from']!),
+        ),
+        GoRoute(
+          path: Routes.accountEmail,
+          builder: (context, state) =>
+              Scaffold(body: Text('account ${state.uri}')),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -69,31 +84,87 @@ void main() {
             value: SyncScheduler(accounts, FakeSyncRepository()),
           ),
         ],
-        child: TestApp(router: router, child: const SizedBox.shrink()),
+        child: TestApp(
+          router: router,
+          locale: const Locale('pt'),
+          child: const SizedBox.shrink(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  List<Object?> answers() => analytics
+      .eventsNamed('campanha_cadastro')
+      .map((event) => event.params['resposta'])
+      .toList();
+
+  testWidgets('link só de aula sem conta: a folha da aula gratuita, neutra '
+      'e só com aprender e praticar; "Agora não" vai ao início', (
+    tester,
+  ) async {
+    await pumpGate(tester);
 
     expect(find.byKey(ChallengeKeys.lessonGate), findsOneWidget);
-    expect(find.byKey(AccountKeys.notNow), findsOneWidget);
-    // Atrás do convite, o título da aula, não um fundo vazio.
+    expect(find.byKey(ChallengeKeys.leadSheet), findsOneWidget);
+    expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+    expect(
+      tester.widget<Text>(find.byKey(ChallengeKeys.leadText)).data,
+      'Quer ver esta aula gratuita?',
+    );
+    expect(find.byKey(ChallengeKeys.leadStep(0)), findsOneWidget);
+    expect(find.byKey(ChallengeKeys.leadStep(1)), findsOneWidget);
+    expect(find.byKey(ChallengeKeys.leadStep(2)), findsNothing);
+    expect(find.text('Refazer este desafio'), findsNothing);
+    expect(find.byKey(ChallengeKeys.leadCreate), findsOneWidget);
+    expect(find.byKey(ChallengeKeys.leadHaveAccount), findsOneWidget);
+    // Atrás da folha, o título da aula, não um fundo vazio.
     expect(
       tester.widget<Text>(find.byKey(ChallengeKeys.lessonGateTitle)).data,
       'A posição de Lucena',
     );
     expect((await campaigns.active())?.lesson, lesson);
 
-    await tester.tap(find.byKey(AccountKeys.notNow));
+    await tester.tap(find.byKey(ChallengeKeys.leadNotNow));
     await tester.pumpAndSettle();
 
     expect(find.text('home'), findsOneWidget);
     expect(find.byKey(ChallengeKeys.lessonGate), findsNothing);
     expect(analytics.eventsNamed('campanha_aula_aberta'), isEmpty);
+    expect(answers(), ['agora_nao']);
+  });
+
+  testWidgets('"Criar conta e ver a aula": o cadastro com o título da aula, '
+      'sem o "sem conta, tudo continua"', (tester) async {
+    await pumpGate(tester);
+    await tester.tap(find.byKey(ChallengeKeys.leadCreate));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     expect(
-      analytics
-          .eventsNamed('campanha_cadastro')
-          .map((event) => event.params['resposta']),
-      ['agora_nao'],
+      tester.widget<Text>(find.byKey(AccountKeys.enterTitle)).data,
+      'Crie sua conta para ter acesso à aula gratuita',
     );
+    expect(
+      tester.widget<Text>(find.byKey(AccountKeys.enterText)).data,
+      'Leva menos de um minuto.',
+    );
+    expect(find.byIcon(Icons.cloud_done), findsOneWidget);
+    expect(find.byIcon(Icons.devices_other), findsOneWidget);
+    expect(find.byIcon(Icons.wifi_off), findsNothing);
+    expect(answers(), ['aceitou']);
+  });
+
+  testWidgets('"Já tenho conta": o entrar por e-mail, que termina na aula', (
+    tester,
+  ) async {
+    await pumpGate(tester);
+    await tester.tap(find.byKey(ChallengeKeys.leadHaveAccount));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('account /conta/email?from=%2Faula%2Frook.lucena&entrar=1'),
+      findsOneWidget,
+    );
+    expect(answers(), ['aceitou']);
   });
 }
