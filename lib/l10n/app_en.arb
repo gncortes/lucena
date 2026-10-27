@@ -6530,7 +6530,7 @@
   "@accountBenefitSaved": {
     "description": "Account screen, first benefit."
   },
-  "accountBenefitDevices": "Access lessons, Journey and records on another device",
+  "accountBenefitDevices": "Sign in on another device and pick up where you left off",
   "@accountBenefitDevices": {
     "description": "Account screen, second benefit."
   },
