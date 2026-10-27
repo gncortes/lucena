@@ -12,6 +12,7 @@ import '../../../data/repositories/progress/progress_repository.dart';
 import '../../../data/repositories/settings/settings_repository.dart';
 import '../../../data/repositories/speedrun/speedrun_repository.dart';
 import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/campaign.dart';
 import '../../../domain/models/attempt.dart';
 import '../../../domain/models/clock.dart';
 import '../../../domain/models/endgame_position.dart';
@@ -617,7 +618,19 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         ),
       ),
     );
+    if (_campaign case final campaign?) {
+      unawaited(
+        _analytics.log(AnalyticsEvents.campanhaDesafioInicio(campaign)),
+      );
+    }
   }
+
+  /// O funil de campanha (T84): só o desafio de link de post ou com aula.
+  Campaign? get _campaign => switch (state.mode.link) {
+    final link? when state.mode.fromLink && link.isCampaign =>
+      Campaign.fromChallenge(link),
+    _ => null,
+  };
 
   void _countFirstMove(DateTime now) {
     if (_firstMoveCounted) return;
@@ -668,6 +681,17 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
         ),
       ),
     );
+    if (_campaign case final campaign?) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.campanhaDesafioFim(
+            campaign,
+            resultado: resultado,
+            conseguiu: !quit && (state.fulfilled ?? false),
+          ),
+        ),
+      );
+    }
   }
 
   static String _reasonCode(GameEndReason reason) => switch (reason) {

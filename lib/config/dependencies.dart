@@ -30,6 +30,9 @@ import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../data/repositories/deep_link/deep_link_repository.dart';
+import '../data/repositories/deep_link/install_referrer_repository.dart';
+import '../data/repositories/campaign/campaign_repository.dart';
+import '../data/services/install_referrer_service.dart';
 import '../data/repositories/draw/draw_offer_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/endgames/endgame_lesson_repository_asset.dart';
@@ -246,6 +249,8 @@ class Dependencies {
     this.feedbackRepository = const NoFeedbackRepository(),
     this.wouldPayRepository = const NoWouldPayRepository(),
     this.reviewRepository = const NoReviewRepository(),
+    this.installReferrerRepository = const NoInstallReferrerRepository(),
+    this._campaignRepository,
     this.localChanges = const Stream.empty(),
     this._remindersRepository,
     this._weekRepository,
@@ -365,6 +370,11 @@ class Dependencies {
       hapticsRepository: const DeviceHapticsRepository(VibrationService()),
       shareRepository: const DeviceShareRepository(ShareService()),
       deepLinkRepository: ServiceDeepLinkRepository(AppLinksDeepLinkService()),
+      installReferrerRepository: ServiceInstallReferrerRepository(
+        const PlayInstallReferrerService(),
+        preferences,
+      ),
+      campaignRepository: LocalCampaignRepository(preferences),
       accountRepository: CloudAccountRepository(
         firebase ? FirebaseAuthService() : const NoAuthService(),
         cloudStore,
@@ -617,6 +627,14 @@ class Dependencies {
 
   /// O pedido de avaliação da Play (E1.26).
   final ReviewRepository reviewRepository;
+
+  /// O link de campanha da instalação pela Play (deferred deep link, T84).
+  final InstallReferrerRepository installReferrerRepository;
+
+  /// A campanha do último link de post (T84). Sem nenhuma, só na memória.
+  CampaignRepository get campaignRepository =>
+      _campaignRepository ??= MemoryCampaignRepository();
+  CampaignRepository? _campaignRepository;
 
   /// Avisa que o aparelho gravou progresso (partida ou aula terminada).
   final Stream<void> localChanges;

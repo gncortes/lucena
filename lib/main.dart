@@ -9,6 +9,9 @@ import 'package:go_router/go_router.dart';
 import 'config/dependencies.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
+import 'domain/models/campaign.dart';
+import 'domain/models/linked_lesson.dart';
+import 'data/repositories/campaign/campaign_repository.dart';
 import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
@@ -152,6 +155,7 @@ class _LucenaAppState extends State<LucenaApp> {
     activity: widget.dependencies.activityRepository,
     now: widget.dependencies.now,
     profile: widget.dependencies.profileRepository,
+    campaigns: widget.dependencies.campaignRepository,
     country: () =>
         WidgetsBinding.instance.platformDispatcher.locale.countryCode,
     schoolLessons: VisibleLessons.schoolLessonIds,
@@ -201,7 +205,17 @@ class _LucenaAppState extends State<LucenaApp> {
     unawaited(widget.dependencies.reviewRepository.markFirstOpen());
     final pushOpening = await push.initialOpening();
     final pushed = pushOpening?.link;
-    final opened = await deepLinks.initialUri();
+    final onboarding = await widget.dependencies.onboardingRepository.load();
+    var opened = await deepLinks.initialUri();
+    // Deferred deep link (T84): na 1ª abertura sem link nem aviso, o link do
+    // post que levou à Play abre como se tivesse sido tocado com o app já
+    // instalado.
+    var fromReferrer = false;
+    if (opened == null && pushOpening == null && !onboarding.done) {
+      opened = await widget.dependencies.installReferrerRepository
+          .pendingLink();
+      fromReferrer = opened != null;
+    }
     final link = opened != null
         ? (Routes.appLink(opened) == Routes.invalidLink
               ? null
@@ -210,13 +224,14 @@ class _LucenaAppState extends State<LucenaApp> {
     unawaited(
       _analytics.launched(
         link: link,
+        lessonLink: opened == null ? null : LessonLink.tryParse(opened),
         pushed: opened == null && pushOpening != null,
+        fromReferrer: fromReferrer,
       ),
     );
     // O anúncio (E1.25): sessão nova e, para quem já respondeu "O que você
     // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
     // formulário agora.
-    final onboarding = await widget.dependencies.onboardingRepository.load();
     final profile = await widget.dependencies.profileRepository.load();
     unawaited(
       widget.dependencies.adsRepository.start(
@@ -297,6 +312,12 @@ class _LucenaAppState extends State<LucenaApp> {
     _links = deepLinks.openedUris.listen((uri) {
       final link = deepLinks.parse(uri);
       if (link != null) unawaited(_analytics.opened(link));
+      final lessonLink = LessonLink.tryParse(uri);
+      if (lessonLink != null) {
+        unawaited(
+          _analytics.campaignOpened(Campaign.fromLessonLink(lessonLink)),
+        );
+      }
       final route = Routes.appLink(uri);
       if (route != null) _router?.push(route);
     });
@@ -370,6 +391,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<DeepLinkRepository>.value(
           value: dependencies.deepLinkRepository,
+        ),
+        RepositoryProvider<CampaignRepository>.value(
+          value: dependencies.campaignRepository,
         ),
         RepositoryProvider<AccountRepository>.value(
           value: dependencies.accountRepository,
