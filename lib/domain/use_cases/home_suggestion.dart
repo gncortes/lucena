@@ -28,9 +28,13 @@ abstract final class HomeSuggestion {
   /// Com o objetivo [goal] (decisão 2a da E1.11), o caminho dele vem
   /// primeiro, marcado, e o resto segue a ordem e os marcados do nível. Com as aulas de
   /// finais primeiro, os finais para você vêm logo depois delas.
+  ///
+  /// Sem o curso ([course] falso, sem aula de final liberada), as aulas de
+  /// finais e os finais para você saem também.
   static HomeLayout of(
     RatingLevel level, {
     bool? school,
+    bool course = true,
     GoalPreference? goal,
   }) {
     const learn = HomePath.learn;
@@ -66,8 +70,11 @@ abstract final class HomeSuggestion {
       ),
     };
     if (!(school ?? VisibleLessons.school)) order.remove(learn);
+    if (!course) order.remove(endgames);
     // Os marcados são os do nível; o do objetivo entra junto.
-    final first = goal == null ? null : goalPath(goal, school: school);
+    final first = goal == null
+        ? null
+        : goalPath(goal, school: school, course: course);
     final visible = {...order.where((p) => p != race).take(marked), ?first};
     if (first != null) {
       order
@@ -75,13 +82,15 @@ abstract final class HomeSuggestion {
         ..insert(0, first);
     }
     final at = order.indexOf(endgames);
-    final withForYou = [...order]
-      ..insert(first == endgames ? at + 1 : at, HomePath.forYou);
+    final withForYou = [...order];
+    if (course) {
+      withForYou.insert(first == endgames ? at + 1 : at, HomePath.forYou);
+    }
     return HomeLayout(
       order: withForYou,
       visible: {
         ...visible,
-        if (visible.contains(endgames)) HomePath.forYou,
+        if (course && visible.contains(endgames)) HomePath.forYou,
         race,
       },
     );
@@ -93,14 +102,22 @@ abstract final class HomeSuggestion {
     HomeLayout? saved,
     RatingLevel level, {
     bool? school,
+    bool course = true,
     GoalPreference? goal,
   }) {
     if (saved == null || !saved.custom) {
-      return of(level, school: school, goal: goal);
+      return of(level, school: school, course: course, goal: goal);
     }
-    if (school ?? VisibleLessons.school) return saved;
-    final order = [...saved.order]..remove(HomePath.learn);
-    final visible = {...saved.visible}..remove(HomePath.learn);
+    final hidden = {
+      if (!(school ?? VisibleLessons.school)) HomePath.learn,
+      if (!course) ...[HomePath.endgames, HomePath.forYou],
+    };
+    if (hidden.isEmpty) return saved;
+    final order = [
+      for (final path in saved.order)
+        if (!hidden.contains(path)) path,
+    ];
+    final visible = {...saved.visible}..removeAll(hidden);
     return saved.copyWith(
       order: order,
       visible: visible.isEmpty ? {order.first} : visible,
@@ -109,10 +126,18 @@ abstract final class HomeSuggestion {
 
   /// O caminho do cartão do objetivo [goal]. Sem a Escola, aprender a jogar
   /// cai na Jornada (a tela inicial nunca fica sem o cartão do objetivo).
-  static HomePath goalPath(GoalPreference goal, {bool? school}) =>
-      goal == GoalPreference.learn && !(school ?? VisibleLessons.school)
-      ? HomePath.journey
-      : goal.path;
+  /// Sem o curso, aprender finais cai em treinar finais.
+  static HomePath goalPath(
+    GoalPreference goal, {
+    bool? school,
+    bool course = true,
+  }) {
+    if (goal == GoalPreference.learn && !(school ?? VisibleLessons.school)) {
+      return HomePath.journey;
+    }
+    if (goal == GoalPreference.endgames && !course) return HomePath.train;
+    return goal.path;
+  }
 
   /// O layout com os caminhos [visible] marcados (no tour ou na
   /// configuração). Diferente da sugestão do nível, ele fica como ajustado.

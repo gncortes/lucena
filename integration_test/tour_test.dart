@@ -58,11 +58,11 @@ void main() {
 
     await tour.skip();
     await home.expectVisible();
-    await home.expectHello('Hi, Gabriel');
+    await home.expectRatingCard('Your rating');
 
     await app.restart();
     await home.expectVisible();
-    await home.expectHello('Hi, Gabriel');
+    await home.expectRatingCard('Your rating');
   });
 
   patrolTest('pular o tour: ao reabrir ele não aparece de novo', ($) async {

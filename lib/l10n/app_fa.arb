@@ -304,7 +304,6 @@
   "speedrunStageOf": "مرحله {stage} از {total}",
   "paceTitle": "زمان را انتخاب کن",
   "paceShort": "{minutes}+{increment}",
-  "homeHello": "سلام، {name}",
   "homeTools": "ابزارها",
   "profileRatingPeriodAll": "همه",
   "catalogDone": "{done} از {total} انجام شده",
@@ -1857,5 +1856,8 @@
   "coursePartLessons": "Part {part} · {count} lessons",
   "pilaresPreviewTile": "Pilares do Xadrez (preview)",
   "courseLessonsLabel": "lessons",
-  "lessonsUnavailableMessage": "Lessons are not available yet."
+  "lessonsUnavailableMessage": "Lessons are not available yet.",
+  "homeYourRating": "Your rating",
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order."
 }

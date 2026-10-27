@@ -19,6 +19,7 @@ import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
+import '../../../../testing/fakes/fake_placement_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
 import '../../../../testing/test_app.dart';
@@ -33,6 +34,8 @@ class _Home extends StatelessWidget {
     this.endgames = const EndgameProgress(),
     this.layouts,
     this.onboarding,
+    this.trail,
+    this.placement,
   });
 
   final Widget child;
@@ -40,6 +43,8 @@ class _Home extends StatelessWidget {
   final EndgameProgress endgames;
   final FakeHomeLayoutRepository? layouts;
   final FakeOnboardingRepository? onboarding;
+  final EndgameTrail? trail;
+  final FakePlacementRepository? placement;
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
@@ -61,9 +66,10 @@ class _Home extends StatelessWidget {
           lessons: FakeLessonRepository(),
           school: FakeSchoolProgressRepository(),
           profile: FakeProfileRepository(profile),
-          endgameLessons: FakeEndgameLessonRepository(),
+          endgameLessons: FakeEndgameLessonRepository(trail: trail),
           endgameProgress: FakeEndgameProgressRepository(endgames),
           homeLayout: layouts,
+          placement: placement,
         )..load(),
       ),
     ],
@@ -389,5 +395,87 @@ void main() {
     await tester.pump();
 
     expect(opacityOf(tester, HomeKeys.title), 1);
+  });
+
+  group('T83 · home sem enfeite e por público', () {
+    testWidgets('o cartão do jogador é só o rating, sem "Olá"', (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          locale: Locale('pt'),
+          child: _Home(HomeScreen(), profile: UserProfile(nickname: 'Ana')),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<Text>(find.byKey(HomeKeys.ratingLabel)).data,
+        'Seu rating',
+      );
+      expect(find.byKey(HomeKeys.ratingValue), findsOneWidget);
+      expect(find.textContaining('Olá'), findsNothing);
+      expect(find.textContaining('Ana'), findsNothing);
+    });
+
+    testWidgets(
+      'quem aprende a jogar: sem número, com o aviso das 3 partidas',
+      (tester) async {
+        await tester.pumpWidget(
+          TestApp(
+            locale: Locale('pt'),
+            child: _Home(
+              HomeScreen(),
+              profile: UserProfile(goal: GoalPreference.learn),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(HomeKeys.ratingValue), findsNothing);
+        expect(
+          tester.widget<Text>(find.byKey(HomeKeys.ratingPending)).data,
+          'Seu rating aparece depois de 3 partidas.',
+        );
+      },
+    );
+
+    testWidgets('sem aula de final: nem o curso nem os finais para você', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        TestApp(
+          locale: Locale('pt'),
+          child: _Home(HomeScreen(), trail: EndgameTrail(modules: [])),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
+      expect(find.byKey(HomeKeys.forYouButton), findsNothing);
+    });
+
+    testWidgets('finais para você sem teste: o texto não cita o teste', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        TestApp(
+          locale: Locale('pt'),
+          child: _Home(
+            HomeScreen(),
+            profile: UserProfile(rating: 1450),
+            placement: FakePlacementRepository(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(HomeKeys.forYouButton), findsOneWidget);
+      expect(find.textContaining('teste de nível'), findsNothing);
+      expect(
+        find.text(
+          'Seu estudo de finais: os capítulos que faltam, na ordem certa.',
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }

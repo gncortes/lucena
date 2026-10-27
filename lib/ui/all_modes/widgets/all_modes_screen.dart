@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,6 +11,7 @@ import '../../core/keys/all_modes_keys.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/view_models/course_availability_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
@@ -23,12 +25,31 @@ const _lichessSignup = 'https://lichess.org/signup';
 /// Todos os modos do app num lugar só, mesmo os que o jogador tirou do
 /// destaque da tela inicial: aprender, jogar, ferramentas e o progresso.
 class AllModesScreen extends StatelessWidget {
-  const AllModesScreen({super.key, this.hasBlindCheckpoint});
+  const AllModesScreen({
+    super.key,
+    this.hasBlindCheckpoint,
+    this.courseAvailable = _always,
+  });
 
   final Future<bool> Function()? hasBlindCheckpoint;
 
+  /// Há aula de final liberada. Sem ela, o Curso de finais e os finais para
+  /// você não aparecem.
+  final Future<bool> Function() courseAvailable;
+
+  static Future<bool> _always() async => true;
+
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => CourseAvailabilityCubit(courseAvailable)..load(),
+      child: BlocBuilder<CourseAvailabilityCubit, bool?>(
+        builder: (context, course) => _body(context, course ?? false),
+      ),
+    );
+  }
+
+  Widget _body(BuildContext context, bool course) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     ({String id, IconData icon, String title, String body, String route}) path(
@@ -52,8 +73,7 @@ class AllModesScreen extends StatelessWidget {
             body: l10n.starChallengesBody,
             route: Routes.starChallenges,
           ),
-          path(HomePath.forYou),
-          path(HomePath.endgames),
+          if (course) ...[path(HomePath.forYou), path(HomePath.endgames)],
         ],
       ),
       (

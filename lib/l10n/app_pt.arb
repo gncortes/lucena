@@ -304,7 +304,6 @@
   "speedrunStageOf": "Etapa {stage} de {total}",
   "paceTitle": "Escolha o ritmo",
   "paceShort": "{minutes}+{increment}",
-  "homeHello": "Olá, {name}",
   "homeTools": "Ferramentas",
   "profileRatingPeriodAll": "Todas",
   "catalogDone": "{done} de {total} feitas",
@@ -1895,5 +1894,8 @@
   "coursePartLessons": "Parte {part} · {count} lições",
   "pilaresPreviewTile": "Pilares do Xadrez (prévia)",
   "courseLessonsLabel": "lições",
-  "lessonsUnavailableMessage": "As aulas ainda não estão disponíveis."
+  "lessonsUnavailableMessage": "As aulas ainda não estão disponíveis.",
+  "homeYourRating": "Seu rating",
+  "homeRatingAfterGames": "Seu rating aparece depois de {count} partidas.",
+  "homeForYouBodyUntested": "Seu estudo de finais: os capítulos que faltam, na ordem certa."
 }

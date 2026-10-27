@@ -30,8 +30,9 @@ extension HomePathUi on HomePath {
     HomePath.race => l10n.homeRace,
   };
 
-  /// O texto para o nível [level] (sem nível, o de quem começa).
-  String body(AppLocalizations l10n, RatingLevel? level) {
+  /// O texto para o nível [level] (sem nível, o de quem começa). [tested]:
+  /// a pessoa fez o teste de nível (só muda o dos finais para você).
+  String body(AppLocalizations l10n, RatingLevel? level, {bool tested = true}) {
     final text = level == null
         ? HomePathText.standard
         : HomeSuggestion.textOf(this, level);
@@ -43,7 +44,8 @@ extension HomePathUi on HomePath {
       (HomePath.speedrun, HomePathText.challenge) =>
         l10n.homeSpeedrunBodyChallenge,
       (HomePath.speedrun, _) => l10n.homeSpeedrunBody,
-      (HomePath.forYou, _) => l10n.homeForYouBody,
+      (HomePath.forYou, _) =>
+        tested ? l10n.homeForYouBody : l10n.homeForYouBodyUntested,
       (HomePath.endgames, _) => l10n.homeEndgamesBody,
       (HomePath.train, _) => l10n.homeTrainBody,
       (HomePath.race, _) => l10n.homeRaceBody,

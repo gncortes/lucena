@@ -4,6 +4,7 @@ import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/home_layout.dart';
+import 'package:lucena/domain/models/player_rating.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 
@@ -13,6 +14,7 @@ import '../../../testing/fakes/fake_home_layout_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_onboarding_repository.dart';
+import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_positions_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
@@ -30,22 +32,29 @@ void main() {
     endgames = FakeEndgameProgressRepository();
   });
 
-  Future<HomeState> load(GoalPreference? goal, {int rating = 1150}) async {
+  Future<HomeState> load(
+    GoalPreference? goal, {
+    int rating = 1150,
+    EndgameTrail? trail,
+    FakeRatingRepository? ratings,
+    FakePlacementRepository? placement,
+  }) async {
     final cubit = HomeCubit(
       journey: FakeJourneyRepository(),
       progress: progress,
       onboarding: FakeOnboardingRepository(),
       characters: FakeCharacterRepository(),
-      rating: FakeRatingRepository(),
+      rating: ratings ?? FakeRatingRepository(),
       lessons: FakeLessonRepository(),
       school: FakeSchoolProgressRepository(),
       profile: FakeProfileRepository(
         UserProfile(nickname: 'Ana', rating: rating, goal: goal),
       ),
-      endgameLessons: FakeEndgameLessonRepository(),
+      endgameLessons: FakeEndgameLessonRepository(trail: trail),
       endgameProgress: endgames,
       homeLayout: FakeHomeLayoutRepository(),
       positions: FakePositionsRepository(),
+      placement: placement,
     );
     addTearDown(cubit.close);
     await cubit.load();
@@ -145,5 +154,85 @@ void main() {
     expect(state.goalPath, HomePath.journey);
     expect(state.resumePath, isNull);
     expect(state.shownPaths, isNot(contains(HomePath.journey)));
+  });
+
+  group('sem aula de final liberada (T83 B1)', () {
+    const empty = EndgameTrail(modules: []);
+
+    test('a home perde o Curso de finais e os finais para você', () async {
+      final state = await load(null, trail: empty);
+
+      expect(state.courseAvailable, isFalse);
+      expect(state.layout!.order, isNot(contains(HomePath.endgames)));
+      expect(state.layout!.order, isNot(contains(HomePath.forYou)));
+      expect(state.shownPaths, isNot(contains(HomePath.endgames)));
+      expect(state.shownPaths, isNot(contains(HomePath.forYou)));
+    });
+
+    test('com aula, tudo volta sozinho', () async {
+      final state = await load(null);
+
+      expect(state.courseAvailable, isTrue);
+      expect(state.layout!.order, contains(HomePath.endgames));
+      expect(state.layout!.order, contains(HomePath.forYou));
+    });
+
+    test('"Aprender finais" sem curso vira o cartão de treinar', () async {
+      final state = await load(GoalPreference.endgames, trail: empty);
+
+      expect(state.goalPath, HomePath.train);
+      expect(state.endgameGoal, isNull);
+      expect(state.trainGoal, isNotNull);
+    });
+  });
+
+  group('home do iniciante e dos finais (T83 B3, B4)', () {
+    test('o rating de quem aprende a jogar espera 3 partidas', () async {
+      final ratings = FakeRatingRepository();
+      expect(
+        (await load(GoalPreference.learn, ratings: ratings)).showsRating,
+        isFalse,
+      );
+
+      for (var i = 0; i < 3; i++) {
+        ratings.entries.add(
+          RatingEntry(rating: PlayerRating.start(800 + i), at: now()),
+        );
+      }
+      final state = await load(GoalPreference.learn, ratings: ratings);
+      expect(state.ratedGames, 3);
+      expect(state.showsRating, isTrue);
+    });
+
+    test('bônus de speedrun não conta como partida', () async {
+      final ratings = FakeRatingRepository()
+        ..entries.add(
+          RatingEntry(
+            rating: PlayerRating.start(900),
+            at: now(),
+            speedrunAttemptId: 1,
+          ),
+        );
+      expect(
+        (await load(GoalPreference.learn, ratings: ratings)).ratedGames,
+        0,
+      );
+    });
+
+    test(
+      'os finais em destaque esperam a primeira vitória do iniciante',
+      () async {
+        expect((await load(GoalPreference.learn)).showsFeatured, isFalse);
+        await playJourney();
+        expect((await load(GoalPreference.learn)).showsFeatured, isTrue);
+        expect((await load(GoalPreference.train)).showsFeatured, isTrue);
+      },
+    );
+
+    test('placementDone: só com o teste de nível feito', () async {
+      final placement = FakePlacementRepository();
+      expect((await load(null, placement: placement)).placementDone, isFalse);
+      expect((await load(null)).placementDone, isTrue);
+    });
   });
 }

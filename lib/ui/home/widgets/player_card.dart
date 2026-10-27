@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
 import '../../../routing/review_destinations.dart';
+import '../../../domain/use_cases/beginner_home.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/container_navigation.dart';
 import '../../core/theme/app_shape.dart';
@@ -26,10 +27,8 @@ class PlayerCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = context.l10n;
-    final nickname = state.nickname.isEmpty
-        ? l10n.profileNicknameDefault
-        : state.nickname;
     final rating = state.rating;
+    final showsRating = state.showsRating;
     return ContainerNavigation(
       color: colors.surfaceContainerLow,
       shape: RoundedRectangleBorder(
@@ -60,14 +59,27 @@ class PlayerCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        l10n.homeHello(nickname),
-                        key: HomeKeys.hello,
+                        l10n.homeYourRating,
+                        key: HomeKeys.ratingLabel,
                         style: context.cardTitle,
                       ),
+                      // Quem começa só vê o número depois de algumas partidas.
+                      if (!showsRating) ...[
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          l10n.homeRatingAfterGames(
+                            BeginnerHome.gamesForRating,
+                          ),
+                          key: HomeKeys.ratingPending,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                if (rating != null)
+                if (rating != null && showsRating)
                   Semantics(
                     container: true,
                     label: ratingSemantics(

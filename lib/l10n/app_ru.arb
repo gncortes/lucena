@@ -304,7 +304,6 @@
   "speedrunStageOf": "Этап {stage} из {total}",
   "paceTitle": "Выберите контроль",
   "paceShort": "{minutes}+{increment}",
-  "homeHello": "Привет, {name}",
   "homeTools": "Инструменты",
   "profileRatingPeriodAll": "Все",
   "catalogDone": "{done} из {total} пройдено",
@@ -1857,5 +1856,8 @@
   "coursePartLessons": "Part {part} · {count} lessons",
   "pilaresPreviewTile": "Pilares do Xadrez (preview)",
   "courseLessonsLabel": "lessons",
-  "lessonsUnavailableMessage": "Lessons are not available yet."
+  "lessonsUnavailableMessage": "Lessons are not available yet.",
+  "homeYourRating": "Your rating",
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order."
 }

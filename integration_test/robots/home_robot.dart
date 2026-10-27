@@ -30,10 +30,13 @@ class HomeRobot {
     await $(HomeKeys.pathsTitle).waitUntilExists();
   }
 
-  /// O cumprimento do painel do jogador, com o apelido.
-  Future<void> expectHello(String text) async {
-    await $(HomeKeys.hello).waitUntilVisible();
-    expectText($.tester.widget<Text>(find.byKey(HomeKeys.hello)).data, text);
+  /// O painel do jogador, com o rótulo "Seu rating" (a home não tem saudação).
+  Future<void> expectRatingCard(String text) async {
+    await $(HomeKeys.ratingLabel).waitUntilVisible();
+    expectText(
+      $.tester.widget<Text>(find.byKey(HomeKeys.ratingLabel)).data,
+      text,
+    );
   }
 
   /// A tela no tema escuro (ou claro).

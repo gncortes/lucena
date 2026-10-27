@@ -1570,15 +1570,6 @@
       }
     }
   },
-  "homeHello": "Hi, {name}",
-  "@homeHello": {
-    "description": "Greeting at the top of the home screen.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "homeTools": "Tools",
   "@homeTools": {
     "description": "Home: title of the tools shortcuts (custom position, free board)."
@@ -9587,5 +9578,22 @@
   "lessonsUnavailableMessage": "Lessons are not available yet.",
   "@lessonsUnavailableMessage": {
     "description": "Empty state when no published lesson content is available."
+  },
+  "homeYourRating": "Your rating",
+  "@homeYourRating": {
+    "description": "Label of the player card at the top of the home screen, above the rating number."
+  },
+  "homeRatingAfterGames": "Your rating shows up after {count} games.",
+  "@homeRatingAfterGames": {
+    "description": "Home player card for beginners: the rating number is hidden until this many rated games.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeForYouBodyUntested": "Your own endgame study: the chapters you still need, in order.",
+  "@homeForYouBodyUntested": {
+    "description": "Home card body for the personalised study when the player has not taken the level test."
   }
 }
