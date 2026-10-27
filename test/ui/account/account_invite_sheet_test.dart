@@ -58,6 +58,14 @@ void main() {
         matching: find.byType(ActionsFooter),
       );
       expect(tester.widget<ActionsFooter>(footer).margin, AppSpacing.xl);
+      // Só o benefício: nada de vender o "sem conta".
+      expect(
+        find.text(
+          'Com uma conta, a partida, o rating e os cursos ficam salvos e você '
+          'recupera tudo em outro aparelho.',
+        ),
+        findsOneWidget,
+      );
       final surface = tester.getRect(sheet);
       final button = tester.getRect(find.byKey(AccountKeys.google));
       expect(button.left - surface.left, AppSpacing.xl);
@@ -120,7 +128,7 @@ void main() {
         of: sheet,
         matching: find.text(
           'Guarde o seu progresso e o vínculo com o Lichess numa conta do '
-          'Lucena. É opcional: sem conta, tudo continua funcionando.',
+          'Lucena.',
         ),
       ),
       findsOneWidget,

@@ -135,13 +135,15 @@ void main() {
     });
   });
 
-  testWidgets('mostra o título, o que se ganha e que é grátis', (tester) async {
+  testWidgets('mostra o título, o que se ganha e que é grátis, sem vender '
+      'o "sem conta"', (tester) async {
     await pumpAccount(tester);
     expect(find.text('Save your progress'), findsOneWidget);
     expect(find.textContaining('free'), findsOneWidget);
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
     expect(find.byIcon(Icons.devices_other), findsOneWidget);
-    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    expect(find.byIcon(Icons.wifi_off), findsNothing);
+    expect(find.textContaining('without an account'), findsNothing);
   });
 
   testWidgets('entrar com o Google (conta vazia) segue para "Seu perfil"', (

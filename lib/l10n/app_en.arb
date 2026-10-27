@@ -6534,10 +6534,6 @@
   "@accountBenefitDevices": {
     "description": "Account screen, second benefit."
   },
-  "accountBenefitOffline": "Without an account, everything still works offline, only on this phone",
-  "@accountBenefitOffline": {
-    "description": "Account screen, third benefit."
-  },
   "accountGoogle": "Continue with Google",
   "@accountGoogle": {
     "description": "Account screen button."
@@ -7605,11 +7601,11 @@
   "@profileDeleteWeb": {
     "description": "Profile with account: note about deleting on the web."
   },
-  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved and you can get everything back on another device. It is optional: without an account, everything keeps working.",
+  "accountInviteTextSheet": "With an account, your games, rating and lessons stay saved and you can get everything back on another device.",
   "@accountInviteTextSheet": {
     "description": "Account invite sheet after the first game: text."
   },
-  "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account. It is optional: without an account, everything keeps working.",
+  "accountInviteTextLichess": "Keep your progress and your Lichess link in a Lucena account.",
   "@accountInviteTextLichess": {
     "description": "Account invite sheet after using the Lichess rating on the level screen, without an account: text."
   },
