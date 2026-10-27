@@ -47,7 +47,6 @@ import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/linked_lesson.dart';
-import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/free_board/view_models/link_lesson_cubit.dart';
 
 import '../../../../testing/fakes/fake_account_repository.dart';
@@ -230,6 +229,16 @@ void main() {
           path: '/aula/:id',
           builder: (context, state) =>
               Scaffold(body: Text('lesson ${state.pathParameters['id']}')),
+        ),
+        GoRoute(
+          path: '/conta',
+          builder: (context, state) =>
+              Scaffold(body: Text('account ${state.uri}')),
+        ),
+        GoRoute(
+          path: '/conta/email',
+          builder: (context, state) =>
+              Scaffold(body: Text('account ${state.uri}')),
         ),
         GoRoute(
           path: '/result/:id',
@@ -2476,8 +2485,13 @@ void main() {
         return cubit;
       }
 
-      testWidgets('não conseguiu: a aula no lugar de compartilhar; sem conta, '
-          'o convite antes e "Agora não" fica no fim, com a oferta', (
+      List<Object?> answers() => analytics
+          .eventsNamed('campanha_cadastro')
+          .map((event) => event.params['resposta'])
+          .toList();
+
+      testWidgets('não conseguiu: o fim de sempre e a folha da aula sozinha; '
+          '"Agora não" e o X deixam o fim, e "Ver a aula" reabre', (
         tester,
       ) async {
         await Goldens.loadFonts();
@@ -2495,17 +2509,39 @@ void main() {
         await resign(tester);
         await tester.pumpAndSettle();
 
+        // A folha abre sozinha, sobre o fim.
+        expect(find.byKey(ChallengeKeys.leadSheet), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.leadBoard), findsOneWidget);
         expect(
-          textOf(tester, ChallengeKeys.lessonOffer),
-          'Não foi desta vez. A aula gratuita explica a ideia desta posição.',
+          textOf(tester, ChallengeKeys.leadCategory),
+          'Aula de finais de torre',
         );
-        expect(find.byKey(ChallengeKeys.endShare), findsNothing);
-        expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
-        expect(find.byKey(ChallengeKeys.endMeetApp), findsOneWidget);
+        expect(textOf(tester, ChallengeKeys.leadTitle), 'Posição de Lucena');
         expect(
-          tester.getSize(find.text('Ver a aula')).height,
-          lessThanOrEqualTo(24),
+          textOf(tester, ChallengeKeys.leadText),
+          'Quer uma aula gratuita que explica como ganhar este final? Você '
+          'pratica e depois refaz este desafio.',
         );
+        for (final (index, title) in [
+          'Aprender a ideia',
+          'Praticar',
+          'Refazer este desafio',
+        ].indexed) {
+          expect(
+            find.descendant(
+              of: find.byKey(ChallengeKeys.leadStep(index)),
+              matching: find.text(title),
+            ),
+            findsOneWidget,
+          );
+        }
+        expect(
+          find.text('Volte a esta posição e ganhe a partida'),
+          findsOneWidget,
+        );
+        expect(find.byKey(ChallengeKeys.leadCreate), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.leadHaveAccount), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.leadLesson), findsNothing);
         expect(tester.takeException(), isNull);
         expect(
           analytics
@@ -2515,38 +2551,89 @@ void main() {
           'principal',
         );
 
+        await tester.tap(find.byKey(ChallengeKeys.leadNotNow));
+        await tester.pumpAndSettle();
+        // O fim de sempre: o selo sem texto de aula, jogar de novo,
+        // compartilhar e "Ver a aula" no rodapé.
+        expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
+        expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endPlayAgain), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endMeetApp), findsNothing);
+        expect(
+          tester.getSize(find.text('Ver a aula')).height,
+          lessThanOrEqualTo(24),
+        );
+        expect(answers(), ['agora_nao']);
+
+        await tester.ensureVisible(find.byKey(ChallengeKeys.endLesson));
         await tester.tap(find.byKey(ChallengeKeys.endLesson));
         await tester.pumpAndSettle();
-        expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.leadSheet), findsOneWidget);
+        await tester.tap(find.byKey(ChallengeKeys.leadClose));
+        await tester.pumpAndSettle();
+        expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
+        expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+        expect(answers(), ['agora_nao', 'agora_nao']);
+        expect(analytics.eventsNamed('campanha_oferta_vista'), hasLength(1));
+
+        // "Criar conta e ver a aula": o cadastro, que termina na aula.
+        await tester.tap(find.byKey(ChallengeKeys.endLesson));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(ChallengeKeys.leadCreate));
+        await tester.pumpAndSettle();
         expect(
-          find.textContaining('A aula abre com uma conta'),
+          find.text('account /conta?from=%2Faula%2Frook.lucena'),
           findsOneWidget,
         );
-        await tester.tap(find.byKey(AccountKeys.notNow));
-        await tester.pumpAndSettle();
-        // A aula só abre com conta: fica no fim, e a oferta abre o convite de
-        // novo.
-        expect(find.text('lesson rook.lucena'), findsNothing);
-        expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
-        expect(
-          analytics
-              .eventsNamed('campanha_cadastro')
-              .map((event) => event.params['resposta']),
-          ['agora_nao'],
-        );
+        expect(answers(), ['agora_nao', 'agora_nao', 'aceitou']);
+        expect(analytics.eventsNamed('campanha_oferta_tocada'), hasLength(1));
         expect(await campaigns.active(), isNotNull);
-        await tester.tap(find.byKey(ChallengeKeys.endLesson));
-        await tester.pumpAndSettle();
-        expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
       });
 
-      testWidgets('conseguiu: parabéns, compartilhar fica e a aula vem no '
-          'lugar de "Conhecer o app"; com conta, abre direto', (tester) async {
+      testWidgets('empate como meta: a folha fala em empatar; "Já tenho '
+          'conta" abre o entrar, que termina na aula', (tester) async {
+        final accounts = FakeAccountRepository();
+        await pumpScreen(
+          tester,
+          locale: const Locale('pt'),
+          fen: lessonFen,
+          mode: vsMachine.copyWith(
+            fromLink: true,
+            link: link.copyWith(goal: PositionGoal.draw),
+          ),
+          linkLesson: linkLesson(accounts),
+          accounts: accounts,
+        );
+        await resign(tester);
+        await tester.pumpAndSettle();
+
+        expect(
+          textOf(tester, ChallengeKeys.leadText),
+          'Quer uma aula gratuita que explica como empatar este final? Você '
+          'pratica e depois refaz este desafio.',
+        );
+        expect(
+          find.text('Volte a esta posição e empate a partida'),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(ChallengeKeys.leadHaveAccount));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('account /conta/email?from=%2Faula%2Frook.lucena&entrar=1'),
+          findsOneWidget,
+        );
+        expect(answers(), ['aceitou']);
+      });
+
+      testWidgets('conseguiu: a folha convida para a aula; com conta, "Ver a '
+          'aula" abre direto e voltar dela volta ao fim', (tester) async {
         final accounts = FakeAccountRepository(
           account: const Account(uid: 'u1', provider: AccountProvider.google),
         );
         await pumpScreen(
           tester,
+          locale: const Locale('pt'),
           fen: lessonFen,
           mode: vsMachine.copyWith(fromLink: true, link: link),
           linkLesson: linkLesson(accounts),
@@ -2558,27 +2645,56 @@ void main() {
 
         expect(cubit.state.fulfilled, isTrue);
         expect(
-          textOf(tester, ChallengeKeys.lessonOffer),
-          'Congratulations! The free lesson explains the idea of this '
-          'position.',
+          textOf(tester, ChallengeKeys.leadText),
+          'Quer ver uma aula gratuita sobre este final?',
         );
-        expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
-        expect(find.byKey(ChallengeKeys.endMeetApp), findsNothing);
-
-        await tester.ensureVisible(find.byKey(ChallengeKeys.endLesson));
-        await tester.tap(find.byKey(ChallengeKeys.endLesson));
-        await tester.pumpAndSettle();
-        expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
-        expect(find.text('lesson rook.lucena'), findsOneWidget);
+        expect(find.text('Com a ideia, em menos lances'), findsOneWidget);
         expect(
-          analytics.eventsNamed('campanha_cadastro').single.params['resposta'],
-          'ja_tem_conta',
+          analytics
+              .eventsNamed('campanha_oferta_vista')
+              .single
+              .params['destaque'],
+          'secundaria',
         );
+        expect(find.byKey(ChallengeKeys.leadCreate), findsNothing);
+        expect(find.byKey(ChallengeKeys.leadHaveAccount), findsNothing);
+
+        await tester.tap(find.byKey(ChallengeKeys.leadLesson));
+        await tester.pumpAndSettle();
+        expect(find.text('lesson rook.lucena'), findsOneWidget);
+        expect(answers(), ['ja_tem_conta']);
         // A aula abre por cima: voltar dela volta ao fim do desafio.
         Navigator.of(tester.element(find.text('lesson rook.lucena'))).pop();
         await tester.pumpAndSettle();
         expect(find.text('lesson rook.lucena'), findsNothing);
+        expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
         expect(find.byKey(FreeBoardKeys.endFlash), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
+        expect(find.byKey(ChallengeKeys.endLesson), findsOneWidget);
+      });
+
+      testWidgets('jogar de novo e perder de novo: a folha abre outra vez', (
+        tester,
+      ) async {
+        final accounts = FakeAccountRepository();
+        await pumpScreen(
+          tester,
+          fen: lessonFen,
+          mode: vsMachine.copyWith(fromLink: true, link: link),
+          linkLesson: linkLesson(accounts),
+          accounts: accounts,
+        );
+        await resign(tester);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(ChallengeKeys.leadNotNow));
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byKey(ChallengeKeys.endPlayAgain));
+        await tester.tap(find.byKey(ChallengeKeys.endPlayAgain));
+        await tester.pumpAndSettle();
+        expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
+        await resign(tester);
+        await tester.pumpAndSettle();
+        expect(find.byKey(ChallengeKeys.leadSheet), findsOneWidget);
       });
 
       testWidgets('aula que não abre: o fim de sempre, sem oferta, e o '
@@ -2593,7 +2709,7 @@ void main() {
         );
         await resign(tester);
         await tester.pumpAndSettle();
-        expect(find.byKey(ChallengeKeys.lessonOffer), findsNothing);
+        expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
         expect(find.byKey(ChallengeKeys.endLesson), findsNothing);
         expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
         expect(find.byKey(ChallengeKeys.endMeetApp), findsOneWidget);
@@ -2617,7 +2733,7 @@ void main() {
         );
         await resign(tester);
         await tester.pumpAndSettle();
-        expect(find.byKey(ChallengeKeys.lessonOffer), findsNothing);
+        expect(find.byKey(ChallengeKeys.leadSheet), findsNothing);
         expect(find.byKey(ChallengeKeys.endLesson), findsNothing);
         expect(find.byKey(ChallengeKeys.endShare), findsOneWidget);
       });
@@ -3567,6 +3683,15 @@ class _BubbleCharacters extends FakeCharacterRepository {
 
 /// Toda aula ligada está liberada.
 class _AvailableCatalog implements LinkedLessonCatalog {
+  @override
+  Future<LinkedLessonInfo?> info(LinkedLesson lesson, String language) async =>
+      const LinkedLessonInfo(
+        kind: LinkedLessonKind.endgame,
+        title: 'Posição de Lucena',
+        module: 'Finais de torre',
+        fen: '1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1',
+      );
+
   _AvailableCatalog(this.value);
 
   final bool value;

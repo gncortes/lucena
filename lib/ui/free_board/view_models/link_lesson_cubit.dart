@@ -95,6 +95,24 @@ class LinkLessonCubit extends Cubit<LinkLessonState> {
     return step;
   }
 
+  /// O título, o módulo e a posição da aula: a folha da aula gratuita e o
+  /// fundo do convite do link só de aula.
+  Future<void> loadInfo(String language) async {
+    final lesson = this.lesson;
+    if (lesson == null || state.info != null) return;
+    final info = await _catalog.info(lesson, language);
+    if (!isClosed && info != null) emit(state.copyWith(info: info));
+  }
+
+  /// A folha da aula gratuita (T84): "Criar conta e ver a aula", "Já tenho
+  /// conta" ou, com conta, "Ver a aula". Conta o toque e, sem conta, o
+  /// `aceitou` (o `feito` vem do login, que consome a marca do convite).
+  Future<LinkLessonStep> accept(LinkLessonOffer offer) async {
+    final step = await tapped(offer);
+    if (step == LinkLessonStep.invite) await inviteAnswered(accepted: true);
+    return step;
+  }
+
   /// O link só de aula, sem conta: o convite abre antes da aula. Grava a
   /// campanha e marca o convite: o login que vier dele conta como `feito` (o
   /// AccountCubit consome a marca).
@@ -118,24 +136,32 @@ class LinkLessonCubit extends Cubit<LinkLessonState> {
 }
 
 /// O estado da aula do link: [available] nulo enquanto confere; [busy]
-/// enquanto confere a conta depois do toque.
+/// enquanto confere a conta depois do toque; [info] o que a folha da aula
+/// gratuita mostra (e o título no fundo do convite do link só de aula).
 final class LinkLessonState {
-  const LinkLessonState({this.available, this.busy = false});
+  const LinkLessonState({this.available, this.busy = false, this.info});
 
   final bool? available;
   final bool busy;
+  final LinkedLessonInfo? info;
 
-  LinkLessonState copyWith({bool? available, bool? busy}) => LinkLessonState(
+  LinkLessonState copyWith({
+    bool? available,
+    bool? busy,
+    LinkedLessonInfo? info,
+  }) => LinkLessonState(
     available: available ?? this.available,
     busy: busy ?? this.busy,
+    info: info ?? this.info,
   );
 
   @override
   bool operator ==(Object other) =>
       other is LinkLessonState &&
       other.available == available &&
-      other.busy == busy;
+      other.busy == busy &&
+      other.info == info;
 
   @override
-  int get hashCode => Object.hash(available, busy);
+  int get hashCode => Object.hash(available, busy, info);
 }

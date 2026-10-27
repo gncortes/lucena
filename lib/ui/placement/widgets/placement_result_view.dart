@@ -15,6 +15,7 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/widgets/roadmap_step_card.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../profile/widgets/rating_level_ui.dart';
 import '../view_models/placement_cubit.dart';
@@ -517,8 +518,6 @@ class _Roadmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final steps = state.roadmap!.steps.take(3).toList();
     String titleOf(RoadmapStep step) =>
         state.titles[step.lessonId] ?? step.lessonId;
@@ -531,59 +530,17 @@ class _Roadmap extends StatelessWidget {
           Padding(
             key: PlacementKeys.step(index),
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: index == 0
-                          ? colors.primary
-                          : colors.surfaceContainerHighest,
-                      foregroundColor: index == 0
-                          ? colors.onPrimary
-                          : colors.onSurfaceVariant,
-                      child: Text(
-                        '${index + 1}',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: index == 0
-                              ? colors.onPrimary
-                              : colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            titleOf(step),
-                            style: theme.textTheme.titleSmall,
-                          ),
-                          // O nó só quando o título da aula não diz o mesmo.
-                          if (skillName(l10n, step.node) case final skill
-                              when skill != titleOf(step))
-                            Text(
-                              skill,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      step.school
-                          ? Icons.school_outlined
-                          : Icons.auto_stories_outlined,
-                      size: AppIconSize.button,
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ],
-                ),
-              ),
+            child: RoadmapStepCard(
+              index: index,
+              title: titleOf(step),
+              // O nó só quando o título da aula não diz o mesmo.
+              subtitle: switch (skillName(l10n, step.node)) {
+                final skill when skill != titleOf(step) => skill,
+                _ => null,
+              },
+              icon: step.school
+                  ? Icons.school_outlined
+                  : Icons.auto_stories_outlined,
             ),
           ),
       ],

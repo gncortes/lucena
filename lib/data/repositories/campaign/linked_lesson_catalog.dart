@@ -24,4 +24,37 @@ class LinkedLessonCatalog {
       return false;
     }
   }
+
+  /// O título, o módulo e a posição da aula no idioma, para a folha da aula
+  /// gratuita e o fundo do convite do link só de aula. Nulo: a aula ou o
+  /// texto não existe.
+  Future<LinkedLessonInfo?> info(LinkedLesson lesson, String language) async {
+    try {
+      switch (lesson.kind) {
+        case LinkedLessonKind.endgame:
+          final found = (await _endgames.trail()).lesson(lesson.id);
+          final texts = await _endgames.texts(language);
+          final title = texts.plain('${lesson.id}.title');
+          if (found == null || title == null) return null;
+          return LinkedLessonInfo(
+            kind: lesson.kind,
+            title: title,
+            module: texts.plain('endgames.module.${found.module}'),
+            fen: found.keyPositions.firstOrNull?.fen ?? found.practice.fen,
+          );
+        case LinkedLessonKind.school:
+          final found = (await _school.course()).lesson(lesson.id);
+          final texts = await _school.texts(language);
+          final title = texts.plain('${lesson.id}.title');
+          if (found == null || title == null) return null;
+          return LinkedLessonInfo(
+            kind: lesson.kind,
+            title: title,
+            fen: found.steps.map((step) => step.fen).nonNulls.firstOrNull,
+          );
+      }
+    } on LessonContentUnavailable {
+      return null;
+    }
+  }
 }

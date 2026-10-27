@@ -8,6 +8,7 @@ import '../../../routing/routes.dart';
 import '../../account/widgets/account_invite_sheet.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/lucena_app_bar.dart';
 import '../../free_board/view_models/link_lesson_cubit.dart';
 
 /// O link só de aula (`/aula/<id>`, T84) aberto sem conta: a aula só abre
@@ -38,6 +39,7 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
     final lesson = cubit.lesson;
     if (lesson == null) return _leave();
     _asking = true;
+    unawaited(cubit.loadInfo(Localizations.localeOf(context).languageCode));
     await cubit.gateOpened();
     if (!mounted) return;
     final accepted = await showAccountInviteSheet(
@@ -68,6 +70,13 @@ class _LinkedLessonGateState extends State<LinkedLessonGate> {
         if (mounted && (ModalRoute.of(context)?.isCurrent ?? true)) _leave();
       });
     }
-    return const Scaffold(key: ChallengeKeys.lessonGate);
+    // Atrás do convite, o cabeçalho da aula (o título), não um fundo vazio.
+    final title = context.select((LinkLessonCubit c) => c.state.info?.title);
+    return Scaffold(
+      key: ChallengeKeys.lessonGate,
+      appBar: LucenaAppBar(
+        title: Text(title ?? '', key: ChallengeKeys.lessonGateTitle),
+      ),
+    );
   }
 }

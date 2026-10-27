@@ -21,6 +21,15 @@ import '../../../../testing/fakes/fake_school_repositories.dart';
 
 /// Um catálogo que responde o que o teste mandar.
 class _Catalog implements LinkedLessonCatalog {
+  LinkedLessonInfo? lessonInfo;
+  final languages = <String>[];
+
+  @override
+  Future<LinkedLessonInfo?> info(LinkedLesson lesson, String language) async {
+    languages.add(language);
+    return lessonInfo;
+  }
+
   bool value = true;
 
   @override
@@ -109,6 +118,68 @@ void main() {
       expect(await campaigns.takeInvited(), isFalse);
     },
   );
+
+  for (final (offer, code) in [
+    (LinkLessonOffer.primary, 'principal'),
+    (LinkLessonOffer.secondary, 'secundaria'),
+  ]) {
+    test('folha da aula ($code), sem conta: "Criar conta" grava a campanha, '
+        'marca o convite e conta tocada e aceitou', () async {
+      final c = cubit();
+      final step = await c.accept(offer);
+      expect(step, LinkLessonStep.invite);
+      expect(c.state.busy, isFalse);
+      expect(campaigns.invited, isTrue);
+      expect(await campaigns.active(), Campaign.fromChallenge(_link));
+      expect(
+        analytics
+            .eventsNamed('campanha_oferta_tocada')
+            .single
+            .params['destaque'],
+        code,
+      );
+      expect(
+        analytics.eventsNamed('campanha_cadastro').single.params['resposta'],
+        'aceitou',
+      );
+    });
+
+    test('folha da aula ($code), com conta: "Ver a aula" conta só '
+        'ja_tem_conta', () async {
+      accounts.account = const Account(
+        uid: 'u1',
+        provider: AccountProvider.google,
+      );
+      final c = cubit();
+      expect(await c.accept(offer), LinkLessonStep.lesson);
+      expect(campaigns.invited, isFalse);
+      expect(
+        analytics.eventsNamed('campanha_cadastro').single.params['resposta'],
+        'ja_tem_conta',
+      );
+    });
+  }
+
+  test('loadInfo: o título, o módulo e a posição da aula, uma vez', () async {
+    const info = LinkedLessonInfo(
+      kind: LinkedLessonKind.endgame,
+      title: 'Posição de Lucena',
+      module: 'Finais de torre',
+      fen: '1K1k4/1P6/8/8/8/8/r7/2R5 w - - 0 1',
+    );
+    catalog.lessonInfo = info;
+    final c = cubit();
+    await c.loadInfo('pt');
+    await c.loadInfo('pt');
+    expect(c.state.info, info);
+    expect(catalog.languages, ['pt']);
+  });
+
+  test('loadInfo: a aula sem texto deixa a folha sem o cartão', () async {
+    final c = cubit();
+    await c.loadInfo('pt');
+    expect(c.state.info, isNull);
+  });
 
   test('"Agora não" tira a marca do convite', () async {
     final c = cubit();
