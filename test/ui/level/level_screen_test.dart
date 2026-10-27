@@ -163,6 +163,14 @@ void main() {
   }
 
   Future<void> choose(WidgetTester tester, LevelChoice choice) async {
+    // Lichess, Chess.com e o número ficam atrás de "Já sei o meu rating".
+    if ([
+      LevelChoice.lichess,
+      LevelChoice.chess,
+      LevelChoice.manual,
+    ].contains(choice)) {
+      await choose(tester, LevelChoice.known);
+    }
     final card = find.byKey(LevelKeys.option(choice));
     await tester.ensureVisible(card);
     await tester.tap(card);
@@ -171,7 +179,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('abre com os 5 cartões, "Fazer o teste" marcado, cartões de 48 '
+  testWidgets('abre com os 3 cartões, "Fazer o teste" marcado, cartões de 48 '
       'ou mais', (tester) async {
     await pumpLevel(tester);
     expect(find.text('Your level'), findsOneWidget);
@@ -183,8 +191,13 @@ void main() {
           .choice,
       LevelChoice.test,
     );
+    const top = [LevelChoice.test, LevelChoice.known, LevelChoice.zero];
     for (final choice in LevelChoice.values) {
       final card = find.byKey(LevelKeys.option(choice));
+      if (!top.contains(choice)) {
+        expect(card, findsNothing);
+        continue;
+      }
       await tester.ensureVisible(card);
       expect(tester.getSize(card).height, greaterThanOrEqualTo(48));
     }
@@ -202,6 +215,25 @@ void main() {
     await tester.tap(find.byKey(LevelKeys.back));
     await tester.pumpAndSettle();
     expect(find.text('rota-objetivo'), findsOneWidget);
+  });
+
+  testWidgets('"Já sei o meu rating" abre Lichess, Chess.com e o número; a '
+      'seta volta às três opções', (tester) async {
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.known);
+    for (final choice in [
+      LevelChoice.lichess,
+      LevelChoice.chess,
+      LevelChoice.manual,
+    ]) {
+      expect(find.byKey(LevelKeys.option(choice)), findsOneWidget);
+    }
+    expect(find.byKey(LevelKeys.option(LevelChoice.test)), findsNothing);
+    expect(find.byKey(LevelKeys.option(LevelChoice.zero)), findsNothing);
+    await tester.tap(find.byKey(LevelKeys.back));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LevelKeys.option(LevelChoice.known)), findsOneWidget);
+    expect(find.text('rota-objetivo'), findsNothing);
   });
 
   testWidgets('"Não sei jogar" grava o iniciante e sai da tela', (
@@ -314,6 +346,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(profile.profile.rating, 1650);
     expect(profile.profile.chessComUser, 'gabriel_finais');
+  });
+
+  testWidgets('com o teclado aberto, "Usar esse rating" fica acima dele', (
+    tester,
+  ) async {
+    await pumpLevel(tester);
+    await choose(tester, LevelChoice.manual);
+    const keyboard = 300.0;
+    tester.view.viewInsets = const FakeViewPadding(bottom: keyboard);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.enterText(find.byKey(LevelKeys.ratingField), '1450');
+    await tester.pumpAndSettle();
+    final screen =
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
+    final use = tester.getRect(find.byKey(LevelKeys.ratingUse));
+    expect(use.bottom, lessThanOrEqualTo(screen - keyboard));
+    expect(
+      tester.widget<FilledButton>(find.byKey(LevelKeys.ratingUse)).onPressed,
+      isNotNull,
+    );
   });
 
   testWidgets('pelo Perfil, o rating informado volta para o Perfil', (

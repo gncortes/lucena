@@ -6206,6 +6206,14 @@
   "@levelManualText": {
     "description": "Level card text for typing a rating."
   },
+  "levelKnownTitle": "I already know my rating",
+  "@levelKnownTitle": {
+    "description": "Level card for someone who already knows a rating, opens Lichess, Chess.com or typing it."
+  },
+  "levelKnownText": "Lichess, Chess.com or the number you already know.",
+  "@levelKnownText": {
+    "description": "Level card text for the card that opens the rating paths."
+  },
   "levelZeroTitle": "I can't play, I want to learn from scratch",
   "@levelZeroTitle": {
     "description": "Level card for someone who does not know how to play."
@@ -6436,10 +6444,6 @@
   "accountTitle": "Want to keep your progress?",
   "@accountTitle": {
     "description": "Title of the optional account screen after the tour."
-  },
-  "accountHint": "It is optional. You can create one later, in Profile.",
-  "@accountHint": {
-    "description": "Account screen: it is optional."
   },
   "accountBenefitSaved": "Your progress stays saved, even if you change phones",
   "@accountBenefitSaved": {

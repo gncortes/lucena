@@ -6,7 +6,6 @@ import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
-import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
@@ -64,12 +63,12 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('mostra o convite, o que se ganha e que é opcional', (
+  testWidgets('mostra o título, o que se ganha e que é grátis', (
     tester,
   ) async {
     await pumpAccount(tester);
-    expect(find.text('Want to keep your progress?'), findsOneWidget);
-    expect(find.textContaining('optional'), findsOneWidget);
+    expect(find.text('Save your progress'), findsOneWidget);
+    expect(find.textContaining('free'), findsOneWidget);
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
     expect(find.byIcon(Icons.devices_other), findsOneWidget);
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
@@ -95,7 +94,7 @@ void main() {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.google));
     await tester.pumpAndSettle();
-    expect(find.byKey(AccountKeys.screen), findsOneWidget);
+    expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     expect(find.byType(SnackBar), findsNothing);
   });
 
@@ -115,7 +114,7 @@ void main() {
       await tester.tap(find.byKey(AccountKeys.google));
       await tester.pump();
       expect(find.text(message), findsOneWidget);
-      expect(find.byKey(AccountKeys.screen), findsOneWidget);
+      expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     });
   }
 
@@ -140,25 +139,13 @@ void main() {
     );
   });
 
-  for (final key in [AccountKeys.later, AccountKeys.close]) {
-    testWidgets('${key.toString()} segue para o objetivo', (tester) async {
-      await pumpAccount(tester);
-      await tester.tap(find.byKey(key));
-      await tester.pumpAndSettle();
-      expect(find.text('rota-objetivo'), findsOneWidget);
-    });
-  }
-
-  testWidgets('na primeira abertura, o app fechado aqui volta aqui', (
+  testWidgets('fechar segue para o objetivo e não há "Agora não"', (
     tester,
   ) async {
-    onboarding = FakeOnboardingRepository(const Onboarding());
     await pumpAccount(tester);
-    expect(onboarding.saved.stage, OnboardingStage.account);
-  });
-
-  testWidgets('com a primeira abertura feita, não mexe nela', (tester) async {
-    await pumpAccount(tester);
-    expect(onboarding.saved.stage, OnboardingStage.tour);
+    expect(find.byKey(AccountKeys.later), findsNothing);
+    await tester.tap(find.byKey(AccountKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.text('rota-objetivo'), findsOneWidget);
   });
 }

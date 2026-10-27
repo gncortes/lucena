@@ -349,10 +349,6 @@ GoRouter buildRouter({
         },
       ),
       _route(
-        path: Routes.account,
-        builder: (context, state) => const AccountScreen(),
-      ),
-      _route(
         path: Routes.streak,
         builder: (context, state) => BlocProvider(
           create: (context) => StreakCubit(
@@ -393,10 +389,8 @@ GoRouter buildRouter({
       ),
       _route(
         path: Routes.accountEnter,
-        builder: (context, state) => AccountScreen(
-          from: state.uri.queryParameters['from'] ?? 'tour',
-          enter: true,
-        ),
+        builder: (context, state) =>
+            AccountScreen(from: state.uri.queryParameters['from'] ?? 'tour'),
       ),
       _route(
         path: Routes.accountEmail,

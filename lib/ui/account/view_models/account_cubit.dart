@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/onboarding/onboarding_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
-import '../../../domain/models/onboarding.dart';
+import '../../../domain/models/analytics_event.dart';
 
 /// A entrada com conta: Google ou e-mail. [failure] vale por um aviso: a
 /// tela mostra e o estado volta ao normal na próxima ação.
@@ -39,11 +39,34 @@ class AccountState {
 }
 
 class AccountCubit extends Cubit<AccountState> {
-  AccountCubit(this._accounts, {this._onboarding, this._sync})
-    : super(const AccountState());
+  AccountCubit(
+    this._accounts, {
+    this._sync,
+    this._analytics = const NoAnalyticsRepository(),
+    this.moment,
+  }) : super(const AccountState());
+
+  final AnalyticsRepository _analytics;
+
+  /// Em que momento o convite abriu (`conta_convite`): `pos_vitoria`. Nulo
+  /// fora do convite.
+  final String? moment;
+
+  /// O convite foi aceito (Google ou e-mail) ou dispensado ("Agora não").
+  void inviteAnswered({required bool accepted}) {
+    final moment = this.moment;
+    if (moment == null) return;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.contaConvite(
+          resposta: accepted ? 'aceitou' : 'agora_nao',
+          momento: moment,
+        ),
+      ),
+    );
+  }
 
   final AccountRepository _accounts;
-  final OnboardingRepository? _onboarding;
 
   /// Sem ele (testes antigos), entrar não lê a conta.
   final SyncScheduler? _sync;
@@ -51,15 +74,6 @@ class AccountCubit extends Cubit<AccountState> {
   /// A senha mínima (a tela diz "pelo menos 8 caracteres"; o Firebase
   /// aceitaria 6).
   static const minPassword = 8;
-
-  /// A tela abriu. Na primeira abertura, o app fechado aqui volta aqui.
-  Future<void> enter() async {
-    final repository = _onboarding;
-    if (repository == null) return;
-    final onboarding = await repository.load();
-    if (onboarding.done) return;
-    await repository.save(onboarding.copyWith(stage: OnboardingStage.account));
-  }
 
   Future<void> signInWithGoogle() => _run(_accounts.signInWithGoogle);
 
