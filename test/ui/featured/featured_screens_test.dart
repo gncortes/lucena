@@ -147,6 +147,38 @@ void main() {
       expect(find.byKey(FeaturedKeys.card('b')), findsOneWidget);
     });
 
+    testWidgets('o cartão tem jogadores, evento e ano e a meta, sem selos', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const FeaturedListScreen(),
+        location: '/list',
+        path: '/list',
+      );
+      final card = find.byKey(FeaturedKeys.card('a'));
+      expect(
+        find.descendant(of: card, matching: find.text('A × A')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: card, matching: find.text('Torneio Antigo 1959')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: card, matching: find.text('Defender')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: card, matching: find.text('NOVO')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: card, matching: find.text('Final A')),
+        findsNothing,
+      );
+    });
+
     testWidgets('filtrar por origem esconde os outros e limpa', (tester) async {
       await pump(
         tester,

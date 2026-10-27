@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../domain/use_cases/featured_rules.dart';
+import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -8,12 +9,11 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
-import '../../core/widgets/info_chip.dart';
 import '../../core/widgets/position_board.dart';
 import 'featured_labels.dart';
 
-/// Um final em destaque numa lista: miniatura, origem, título, quem jogou e o
-/// tema. Na tela inicial e na lista.
+/// Um final em destaque numa lista: miniatura, quem jogou (o título), evento e
+/// ano, e a meta (sem selo de novo nem de origem). Na tela inicial e na lista.
 class FeaturedCard extends StatelessWidget {
   const FeaturedCard({required this.item, required this.onTap, super.key});
 
@@ -29,7 +29,6 @@ class FeaturedCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final language = Localizations.localeOf(context).languageCode;
     final endgame = item.endgame;
-    final topic = endgame.theme;
     return Card(
       key: FeaturedKeys.card(item.id),
       margin: EdgeInsets.zero,
@@ -54,55 +53,39 @@ class FeaturedCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: AppSpacing.xs,
                   children: [
-                    Row(
-                      children: [
-                        InfoChip(
-                          key: FeaturedKeys.cardOrigin,
-                          compact: true,
-                          background: colors.primaryContainer,
-                          foreground: colors.primary,
-                          icon: FeaturedLabels.originIcon(endgame.origin),
-                          label: FeaturedLabels.origin(l10n, endgame.origin),
-                        ),
-                        const Spacer(),
-                        if (item.played)
-                          _Badge(
-                            key: FeaturedKeys.cardPlayed,
-                            icon: Icons.check_circle,
-                            label: l10n.featuredPlayed,
-                            color: AppColors.successColor,
-                          )
-                        else if (item.isNew)
-                          _Badge(
-                            key: FeaturedKeys.cardNew,
-                            label: l10n.featuredNew.toUpperCase(),
-                            color: colors.primary,
-                          ),
-                      ],
-                    ),
+                    if (item.played)
+                      _Badge(
+                        key: FeaturedKeys.cardPlayed,
+                        icon: Icons.check_circle,
+                        label: l10n.featuredPlayed,
+                        color: AppColors.successColor,
+                      ),
                     Text(
-                      endgame.title.of(language),
+                      FeaturedLabels.shortPlayers(l10n, endgame),
                       style: context.cardTitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${FeaturedLabels.shortPlayers(l10n, endgame)} · '
-                      '${FeaturedLabels.subtitle(l10n, language, endgame, item.tournament, inline: true)}',
+                      FeaturedLabels.eventYear(
+                        l10n,
+                        language,
+                        endgame,
+                        item.tournament,
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (topic != null)
-                      Text(
-                        FeaturedLabels.theme(l10n, topic),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    Text(
+                      goalLabel(l10n, endgame.goal),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
                       ),
+                    ),
                   ],
                 ),
               ),

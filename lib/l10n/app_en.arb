@@ -6648,6 +6648,18 @@
   "@featuredNoRating": {
     "description": "Detail line of the player strip in a featured endgame: the game does not change the rating."
   },
+  "featuredEventYear": "{event} {year}",
+  "@featuredEventYear": {
+    "description": "Event name and year on the featured card subtitle (for example, Norway Chess 2017).",
+    "placeholders": {
+      "event": {
+        "type": "String"
+      },
+      "year": {
+        "type": "int"
+      }
+    }
+  },
   "featuredCardRound": "{tournament} · round {round}",
   "@featuredCardRound": {
     "description": "Tournament name and round inside the list card (lowercase, runs on after the players).",
@@ -7774,6 +7786,20 @@
   "dailyTitle": "Daily endgame",
   "@dailyTitle": {
     "description": "Daily endgame: title of the game, the home strip and the result."
+  },
+  "dailyGoal": "{side, select, white{White} other{Black}} to play and {goal, select, win{win} other{draw}}",
+  "@dailyGoal": {
+    "description": "Subtitle of the daily endgame game, before the first move: whose move it is and the goal.",
+    "placeholders": {
+      "side": {
+        "type": "String",
+        "example": "white"
+      },
+      "goal": {
+        "type": "String",
+        "example": "win"
+      }
+    }
   },
   "dailyBadge": "TODAY",
   "@dailyBadge": {

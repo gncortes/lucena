@@ -72,6 +72,16 @@ abstract final class FeaturedLabels {
         : l10n.featuredTournamentRound(name, round);
   }
 
+  /// "Norway Chess 2017": evento e ano do cartão. Sem torneio, a origem.
+  static String eventYear(
+    AppLocalizations l10n,
+    String language,
+    FeaturedEndgame endgame,
+    FeaturedTournament? tournament,
+  ) => tournament == null
+      ? origin(l10n, endgame.origin)
+      : l10n.featuredEventYear(tournament.nameIn(language), tournament.year);
+
   /// O personagem do adversário (o Stockfish, ou o do nível do Maia). Nulo
   /// quando o nível não tem personagem.
   static Character? character(

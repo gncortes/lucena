@@ -19,6 +19,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../../routing/routes.dart';
+import '../../core/keys/daily_keys.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -445,6 +446,23 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
         ),
         title: state.mode.fromLink
             ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
+            : state.mode.dailyDate != null
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(_title(context, state, talk), key: FreeBoardKeys.title),
+                  Text(
+                    context.l10n.dailyGoal(
+                      (state.mode.userSide ?? state.start.turn).name,
+                      state.mode.goal?.code ?? 'win',
+                    ),
+                    key: DailyKeys.goalSubtitle,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              )
             : Text(_title(context, state, talk), key: FreeBoardKeys.title),
       ),
       body: RepaintBoundary(

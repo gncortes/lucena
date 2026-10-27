@@ -8,9 +8,7 @@ abstract final class FeaturedKeys {
 
   // O cartão de um final (a chave leva o id).
   static Key card(String id) => Key('featured.card.$id');
-  static const cardNew = Key('featured.card.new');
   static const cardPlayed = Key('featured.card.played');
-  static const cardOrigin = Key('featured.card.origin');
 
   // A lista.
   static const listScreen = Key('featured.list.screen');

@@ -122,7 +122,7 @@ void main() {
     expect(find.text('Final do dia'), findsOneWidget);
     expect(find.text('22 de outubro'), findsOneWidget);
     expect(find.byKey(DailyKeys.streakPill), findsOneWidget);
-    expect(find.byKey(DailyKeys.badge), findsOneWidget);
+    expect(find.byKey(DailyKeys.homeCard), findsOneWidget);
   });
 
   testWidgets('home: sem sequência, sem a pílula', (tester) async {
