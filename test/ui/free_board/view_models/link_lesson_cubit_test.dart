@@ -80,7 +80,7 @@ void main() {
       final c = cubit();
       final step = await c.tapped(LinkLessonOffer.primary);
       expect(step, LinkLessonStep.invite);
-      expect(c.state, isFalse);
+      expect(c.state.busy, isFalse);
       expect(await campaigns.active(), Campaign.fromChallenge(_link));
       expect(analytics.eventsNamed('campanha_oferta_tocada'), hasLength(1));
 
@@ -133,6 +133,28 @@ void main() {
       'ja_tem_conta',
     );
     expect(campaigns.invited, isFalse);
+  });
+
+  test(
+    'check: a aula que não abre registra aula_indisponivel uma vez',
+    () async {
+      catalog.value = false;
+      final c = cubit();
+      await c.check();
+      await c.check();
+      expect(c.state.available, isFalse);
+      expect(
+        analytics.eventsNamed('aula_indisponivel').single.params['origem'],
+        'link',
+      );
+    },
+  );
+
+  test('check: a aula que abre fica disponível, sem evento', () async {
+    final c = cubit();
+    await c.check();
+    expect(c.state.available, isTrue);
+    expect(analytics.eventsNamed('aula_indisponivel'), isEmpty);
   });
 
   test('aula indisponível: sem convite', () async {

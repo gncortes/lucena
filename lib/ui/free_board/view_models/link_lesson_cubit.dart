@@ -13,16 +13,15 @@ import '../../../domain/use_cases/link_lesson_rules.dart';
 
 /// A aula de um link de campanha (T84), que só abre com conta: no fim do
 /// desafio, conta a oferta vista e tocada e decide se o convite de conta vem
-/// antes; no link só de aula, o convite antes da aula. O estado é `true`
-/// enquanto confere a aula e a conta depois do toque.
-class LinkLessonCubit extends Cubit<bool> {
+/// antes; no link só de aula, o convite antes da aula.
+class LinkLessonCubit extends Cubit<LinkLessonState> {
   LinkLessonCubit({
     required this.campaign,
     required this._accounts,
     required this._catalog,
     required this._campaigns,
     this._analytics = const NoAnalyticsRepository(),
-  }) : super(false);
+  }) : super(const LinkLessonState());
 
   /// A campanha, com a aula ligada (`Campaign.fromChallenge` no desafio).
   final Campaign campaign;
@@ -42,6 +41,21 @@ class LinkLessonCubit extends Cubit<bool> {
   /// Já entrou numa conta.
   bool get hasAccount => _accounts.current != null;
 
+  /// Confere uma vez se a aula abre (no começo do desafio). A que não abre
+  /// não é oferecida no fim e registra `aula_indisponivel(origem: link)`.
+  Future<void> check() async {
+    final lesson = this.lesson;
+    if (lesson == null || state.available != null) return;
+    final available = await _catalog.available(lesson);
+    if (isClosed) return;
+    emit(state.copyWith(available: available));
+    if (!available) {
+      unawaited(
+        _analytics.log(AnalyticsEvents.aulaIndisponivel(origem: 'link')),
+      );
+    }
+  }
+
   /// A oferta apareceu no fim: conta uma vez por destaque.
   void seen(LinkLessonOffer offer) {
     if (offer == LinkLessonOffer.none || _seen == offer) return;
@@ -58,7 +72,7 @@ class LinkLessonCubit extends Cubit<bool> {
   Future<LinkLessonStep> tapped(LinkLessonOffer offer) async {
     final lesson = this.lesson;
     if (lesson == null) return LinkLessonStep.unavailable;
-    emit(true);
+    emit(state.copyWith(busy: true));
     unawaited(
       _analytics.log(
         AnalyticsEvents.campanhaOfertaTocada(_campaign, destaque: offer.code),
@@ -66,7 +80,7 @@ class LinkLessonCubit extends Cubit<bool> {
     );
     await _campaigns.remember(_campaign);
     final step = LinkLessonRules.next(
-      available: await _catalog.available(lesson),
+      available: state.available ?? await _catalog.available(lesson),
       hasAccount: hasAccount,
     );
     if (step == LinkLessonStep.invite) await _campaigns.markInvited();
@@ -77,7 +91,7 @@ class LinkLessonCubit extends Cubit<bool> {
         ),
       );
     }
-    if (!isClosed) emit(false);
+    if (!isClosed) emit(state.copyWith(busy: false));
     return step;
   }
 
@@ -101,4 +115,27 @@ class LinkLessonCubit extends Cubit<bool> {
       ),
     );
   }
+}
+
+/// O estado da aula do link: [available] nulo enquanto confere; [busy]
+/// enquanto confere a conta depois do toque.
+final class LinkLessonState {
+  const LinkLessonState({this.available, this.busy = false});
+
+  final bool? available;
+  final bool busy;
+
+  LinkLessonState copyWith({bool? available, bool? busy}) => LinkLessonState(
+    available: available ?? this.available,
+    busy: busy ?? this.busy,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is LinkLessonState &&
+      other.available == available &&
+      other.busy == busy;
+
+  @override
+  int get hashCode => Object.hash(available, busy);
 }

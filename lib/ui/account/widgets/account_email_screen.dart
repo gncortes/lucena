@@ -86,7 +86,7 @@ class _EmailViewState extends State<_EmailView> {
 
   void _done(AccountState state) {
     if (widget.reauth) return context.pop(true);
-    continueAfterSignIn(context, state, widget.from);
+    continueAfterSignIn(context, state, widget.from, replace: true);
   }
 
   // Criar conta e Entrar trocam de lugar: voltar sai das duas.

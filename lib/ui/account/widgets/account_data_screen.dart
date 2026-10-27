@@ -26,6 +26,7 @@ import '../../profile/widgets/profile_rows.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/account_cubit.dart';
 import '../view_models/account_photo_cubit.dart';
+import 'account_flow.dart';
 import 'account_photo_sheet.dart';
 
 /// "Seu perfil" (canvas `V1ContaPerfil`, §2.12): a foto, o nome, o país e o
@@ -119,7 +120,7 @@ class _DataViewState extends State<_DataView> {
       photoUrl: photo.photoUrl,
     );
     account.publishProfile(_nickname.text);
-    router.go(Routes.afterAccount(widget.from));
+    finishAccount(router, widget.from);
   }
 
   @override

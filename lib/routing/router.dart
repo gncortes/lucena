@@ -668,7 +668,7 @@ GoRouter buildRouter({
                         ),
                         campaigns: context.campaigns,
                         analytics: context.analytics,
-                      ),
+                      )..check(),
                     ),
                   if (mode.dailyDate case final date?)
                     BlocProvider(

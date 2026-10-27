@@ -523,7 +523,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final linkLesson = state.mode.fromLink
                     ? _linkLessonOf(context)
                     : null;
-                final offer = machineEnded && linkLesson != null
+                // A aula que não abre não é oferecida: o fim de sempre.
+                final offer =
+                    machineEnded &&
+                        linkLesson != null &&
+                        linkLesson.state.available == true
                     ? LinkLessonRules.offer(
                         state.challengeLink,
                         fulfilled: state.fulfilled,
@@ -926,22 +930,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   /// A aula do link de campanha, se a partida veio de um link com aula.
   static LinkLessonCubit? _linkLessonOf(BuildContext context) {
     try {
-      return context.read<LinkLessonCubit>();
+      return context.watch<LinkLessonCubit>();
     } on ProviderNotFoundException {
       return null;
     }
   }
 
   /// "Ver a aula": a aula só abre com conta. Sem conta, o convite antes (que
-  /// termina na aula); com conta, a aula direto. A rota da aula confere se ela existe e está
-  /// liberada; se não, cai na lista de aulas.
+  /// termina na aula); com conta, a aula direto. A aula abre por cima do fim
+  /// do desafio: voltar dela (ou do convite) volta ao fim.
   Future<void> _openLinkLesson(
     BuildContext context,
     LinkLessonCubit linkLesson,
     LinkLessonOffer offer,
   ) async {
     final lesson = linkLesson.lesson;
-    if (lesson == null || linkLesson.state) return;
+    if (lesson == null || linkLesson.state.busy) return;
     final step = await linkLesson.tapped(offer);
     if (!context.mounted) return;
     final entry = Routes.linkedLessonEntry(lesson);
@@ -957,8 +961,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       // não": fica no fim da partida, com a oferta para tentar de novo.
       return;
     }
-    setState(() => _quitting = true);
-    context.go(entry);
+    unawaited(context.push(entry));
   }
 
   Future<void> _conclude(

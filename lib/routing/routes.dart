@@ -504,11 +504,14 @@ abstract final class Routes {
   /// que segue para os próximos passos).
   /// Um [from] que já é uma rota (`/endgames/...`, o convite antes da aula do
   /// link de campanha, T84) é o próprio destino.
+  static bool isRouteFrom(String? from) =>
+      from != null && from.startsWith('/') && !from.startsWith('//');
+
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
     'game' => home,
     'level' => nextSteps,
-    final route? when route.startsWith('/') && !route.startsWith('//') => route,
+    final route? when isRouteFrom(route) => route,
     _ => goal,
   };
 
