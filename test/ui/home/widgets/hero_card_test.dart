@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/ui/core/theme/app_button.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/home/widgets/hero_card.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -211,5 +212,14 @@ void main() {
     );
     expect(texts, findsNWidgets(3));
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('o botão desenha 36 e toca em 48 (D6)', (tester) async {
+    await pump(tester, const HomeState(ready: true));
+
+    final button = find.byKey(HomeKeys.goalAction);
+    final pill = find.descendant(of: button, matching: find.byType(Material));
+    expect(tester.getSize(pill.first).height, kButtonHeightPill);
+    expect(tester.getSize(button).height, kMinInteractiveDimension);
   });
 }

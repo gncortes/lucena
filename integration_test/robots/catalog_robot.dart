@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/catalog/view_models/catalog_cubit.dart';
 import 'package:lucena/ui/core/keys/catalog_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
@@ -46,7 +46,7 @@ class CatalogRobot {
 
   /// A partir da tela inicial.
   Future<void> open() async {
-    await tapHomePath($, HomeKeys.catalogButton);
+    await tapHomePath($, HomePath.train);
     await $(CatalogKeys.screen).waitUntilVisible();
     await $(CatalogKeys.category('basic')).waitUntilVisible();
   }

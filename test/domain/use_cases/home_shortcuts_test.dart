@@ -34,15 +34,15 @@ void main() {
     );
   });
 
-  test('aprender a jogar depois do Coco: Estrelas primeiro, depois os '
-      'finais e os Problemas', () {
+  test('aprender a jogar depois do Coco: Estrelas primeiro, o treino antes '
+      'do curso e os Problemas', () {
     expect(
       HomeShortcuts.of(
         order: order(RatingLevel.beginner, goal: GoalPreference.learn),
         hero: HomePath.journey,
         learning: true,
       ),
-      [stars, endgames, train, race],
+      [stars, train, endgames, race],
     );
   });
 
@@ -96,12 +96,14 @@ void main() {
       HomeShortcuts.of(
         order: order(RatingLevel.intermediate, goal: GoalPreference.endgames),
         hero: HomePath.train,
+        courseDone: true,
       ),
-      [endgames, journey, speedrun, race],
+      [journey, speedrun, endgames, race],
     );
   });
 
-  test('Jornada vencida: ela sai e o Speedrun entra', () {
+  test('Jornada vencida: o Speedrun no lugar dela e as Estrelas antes dos '
+      'Problemas', () {
     expect(
       HomeShortcuts.of(
         order: order(RatingLevel.beginner, goal: GoalPreference.learn),
@@ -109,7 +111,7 @@ void main() {
         learning: true,
         journeyDone: true,
       ),
-      [stars, endgames, speedrun, race],
+      [speedrun, endgames, stars, race],
     );
   });
 

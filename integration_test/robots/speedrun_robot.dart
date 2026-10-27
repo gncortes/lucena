@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/conclusion.dart';
 import 'package:lucena/domain/models/pace.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -25,7 +25,7 @@ class SpeedrunRobot {
   /// A partir da tela inicial. Os cenários jogam no 5+3 ([pace]); nulo
   /// deixa a lista no ritmo em que ela abre (o escolhido ou o do nível).
   Future<void> open({String? pace = '300+3'}) async {
-    await tapHomePath($, HomeKeys.speedrunButton);
+    await tapHomePath($, HomePath.speedrun);
     await $(SpeedrunKeys.listScreen).waitUntilVisible();
     if (pace != null) await choosePace(pace);
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:patrol/patrol.dart';
@@ -15,7 +15,7 @@ class SchoolRobot {
 
   /// Da tela inicial, pelo botão das aulas.
   Future<void> openFromHome() async {
-    await tapHomePath($, HomeKeys.schoolButton);
+    await tapHomePath($, HomePath.learn);
     await expectTrail();
   }
 

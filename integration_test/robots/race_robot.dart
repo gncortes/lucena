@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/all_modes_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/domain/use_cases/race_turn.dart';
 import 'package:lucena/ui/core/keys/race_keys.dart';
 import 'package:lucena/ui/race/view_models/race_cubit.dart';
 import 'package:patrol/patrol.dart';
 
+import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
 
 /// A Corrida de problemas: abertura, corrida e resultado.
@@ -20,7 +20,7 @@ class RaceRobot {
 
   /// Pela tela de todos os modos, no item "Problemas".
   Future<void> openFromAllModes() async {
-    await $(HomeKeys.allModesButton).tap();
+    await openAllModes($);
     await $(AllModesKeys.item(RaceKeys.allModesItem)).scrollTo().tap();
     await $(RaceKeys.introView).waitUntilVisible();
   }

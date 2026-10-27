@@ -260,8 +260,9 @@ class _HeroLayout extends StatelessWidget {
                         AppSpacing.lg,
                         0,
                       ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
+                      // O desenho tem 36; o toque, os 48 do Material (D6).
+                      tapTargetSize: MaterialTapTargetSize.padded,
+                      visualDensity: VisualDensity.standard,
                       shape: const StadiumBorder(),
                     ),
                     onPressed: data.onPressed,

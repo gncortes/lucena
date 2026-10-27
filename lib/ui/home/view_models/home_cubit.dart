@@ -198,6 +198,7 @@ class HomeState {
     learning: goal == GoalPreference.learn,
     firstWin: journeyStarted,
     journeyDone: current == null,
+    courseDone: courseDone,
   );
 
   HomeState copyWith({bool? unlockedBlind, Streak? streak}) => HomeState(
