@@ -324,11 +324,10 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     if (selected == null) return null;
     final bases = await _journey.speedruns();
     final (baseId, _) = SpeedrunPaces.parse(selected.speedrun.id);
-    final speedrun = SpeedrunPaces.resolve(
-      bases,
-      SpeedrunPaces.idFor(baseId, pace),
-    );
-    if (speedrun == null || speedrun.stages.isEmpty) return null;
+    final base = bases.where((s) => s.id == baseId).firstOrNull;
+    if (base == null) return null;
+    final speedrun = SpeedrunPaces.withTime(base, pace);
+    if (speedrun.stages.isEmpty) return null;
     await _savePace(pace, marathon: speedrun.kind == SpeedrunKind.marathon);
     final attempt = await _speedruns.start(speedrun.id, _now());
     return (speedrun, attempt.id);

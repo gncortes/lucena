@@ -185,6 +185,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             SurveyKind.school,
             cubit.lessonId,
             next: lesson,
+            origin: cubit.origin,
           ),
         );
       }
@@ -198,11 +199,16 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           SurveyKind.endgames,
           cubit.lessonId,
           next: outcome.next,
+          origin: cubit.origin,
         ),
       );
     } else {
       context.pushReplacement(
-        Routes.endgameLessonScript(cubit.lessonId, part: next),
+        Routes.endgameLessonScript(
+          cubit.lessonId,
+          part: next,
+          origin: cubit.origin,
+        ),
       );
     }
   }

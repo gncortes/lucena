@@ -91,15 +91,12 @@ void main() {
             language: 'pt',
           )(
             const TrainingLesson(
-              id: 'pilares.c1.knightFork',
-              kind: TrainingLessonKind.theme,
-              title: 'Garfo',
-              groupId: 'pilares.c1',
+              id: 'rook',
+              kind: TrainingLessonKind.school,
+              title: 'Torre',
             ),
           );
-      expect(repository.paths, [
-        'assets/lessons/roteiros/pilares.c1/knightFork.json',
-      ]);
+      expect(repository.paths, ['assets/lessons/roteiros/rook.json']);
       expect(preview, isNull);
     },
   );

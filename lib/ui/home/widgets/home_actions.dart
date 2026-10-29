@@ -11,6 +11,7 @@ import '../../../domain/models/character.dart';
 import '../../../domain/use_cases/training/home_course_card.dart';
 import '../../../routing/routes.dart';
 import '../../../routing/training_launch.dart';
+import '../../../routing/training_goal_destination.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
 import '../../journey/view_models/journey_cubit.dart';
@@ -41,6 +42,8 @@ Future<void> openTrainingCourse(
           title: lesson?.title ?? context.l10n.trainingOpeningsTitle,
           teacher: teacher,
           lessonPreview: training.lessonPreview,
+          challenge: training.challenge,
+          speedrun: training.speedrun,
           exercisePreview: exercise == null
               ? null
               : TrainingExerciseState(
@@ -81,22 +84,28 @@ Future<void> openTrainingCourse(
       unawaited(router.push('${Routes.training(course.name)}/openings'));
     }
     final destination = switch (card.destination) {
-      HomeCourseDestination.lesson =>
-        lesson!.kind == TrainingLessonKind.test
-            ? Routes.endgameExercisesIntro(lesson.id)
-            : Routes.trainingLesson(lesson.id, origin: 'treino_home'),
+      HomeCourseDestination.lesson => trainingLessonDestination(
+        lesson!,
+        origin: 'treino_home',
+      ),
       HomeCourseDestination.exercise =>
         Uri.parse(Routes.trainingExercise(course.name, card.ref))
             .replace(queryParameters: {'goal': card.goal!.key, 'home': '1'})
             .toString(),
       HomeCourseDestination.trecho =>
         '${Routes.trainingOpening(course.name, card.ref)}?home=1',
-      HomeCourseDestination.challenge => throw StateError(
-        'Challenge training is not configured',
-      ),
+      HomeCourseDestination.challenge => trainingChallengeDestination(
+        card.goal!,
+        course: course.name,
+      )!,
       HomeCourseDestination.lessonTab => Routes.training(course.name),
     };
-    unawaited(router.push(destination, extra: launch));
+    unawaited(
+      router.push(
+        destination,
+        extra: card.goal?.kind == GoalKind.stars ? null : launch,
+      ),
+    );
   } catch (_) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

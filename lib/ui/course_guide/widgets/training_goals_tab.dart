@@ -59,7 +59,13 @@ class TrainingGoalsTab extends StatelessWidget {
                 t.trainingDoubleOfferTitle,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              Text(courseGuideCopy(context, cubit.config.doubleOfferBodyKey)),
+              Text(
+                courseGuideCopy(
+                  context,
+                  cubit.config.doubleOfferBodyKey,
+                  count: cubit.config.option(day.plan.minutes).lessonsPerDay,
+                ),
+              ),
               FilledButton(
                 key: TrainingKeys.doubleButton,
                 style: FilledButton.styleFrom(
@@ -218,7 +224,8 @@ class TrainingGoalsTab extends StatelessWidget {
                   ? t.trainingSectionExercisesN(goals.length)
                   : t.trainingSectionExercises,
             GoalSection.openings => t.trainingSectionOpenings,
-            GoalSection.bots || GoalSection.stars => '',
+            GoalSection.bots => t.trainingSectionBots,
+            GoalSection.stars => t.trainingSectionStars,
           };
           contents.add(
             Column(
@@ -235,7 +242,10 @@ class TrainingGoalsTab extends StatelessWidget {
             ),
           );
         }
-        if (state.training!.cycles.isEmpty &&
+        if ((cubit.config.progressKind !=
+                    TrainingProgressKind.modulesAndPieces ||
+                state.training!.completedLessons.isEmpty) &&
+            state.training!.cycles.isEmpty &&
             state.training!.openings.isEmpty) {
           contents.add(
             _infoPanel(
@@ -293,9 +303,15 @@ class TrainingGoalsTab extends StatelessWidget {
         .firstOrNull;
     final training = state.training!;
     final cycle = training.cycles[goal.ref];
+    final level = switch (goal.itemId) {
+      'medium' => t.challengeLevelMedium,
+      'hard' => t.challengeLevelHard,
+      _ => t.challengeLevelEasy,
+    };
     final title = switch (goal.kind) {
       GoalKind.openings => t.trainingOpeningsTitle,
-      GoalKind.stars || GoalKind.bot || GoalKind.speedrun => '',
+      GoalKind.stars => t.starChallengeTitle(goal.ref.split('.').last),
+      GoalKind.speedrun => t.trainingSpeedrunGoalTitle,
       GoalKind.lesson || GoalKind.extraLesson =>
         lesson == null ? '' : _lessonTitle(context, state, lesson),
       _ => lesson?.title ?? '',
@@ -324,7 +340,24 @@ class TrainingGoalsTab extends StatelessWidget {
             .length,
         goal.items.length,
       ),
-      GoalKind.stars || GoalKind.bot || GoalKind.speedrun => '',
+      GoalKind.stars =>
+        goal.done
+            ? t.trainingStarGoalDone(level, goal.stars)
+            : t.trainingStarGoal(level, goal.stars),
+      GoalKind.bot =>
+        goal.done
+            ? t.trainingBotGoalDone(
+                t.trainingBotNameCoco,
+                int.tryParse(goal.items['rung'] ?? '') ?? 1000,
+              )
+            : t.trainingBotGoal(
+                t.trainingBotNameCoco,
+                int.tryParse(goal.items['rung'] ?? '') ?? 1000,
+              ),
+      GoalKind.speedrun => t.trainingSpeedrunGoal(
+        (int.tryParse(goal.items['initialSeconds'] ?? '') ?? 900) ~/ 60,
+        t.trainingBotNameCoco,
+      ),
     };
     return AnimatedSwitcher(
       duration: AppMotion.of(context).component,
@@ -356,12 +389,17 @@ class TrainingGoalsTab extends StatelessWidget {
     TrainingLesson lesson,
   ) {
     if (lesson.kind == TrainingLessonKind.test) return lesson.title;
+    final modules =
+        context.read<CourseGuideCubit>().config.progressKind ==
+        TrainingProgressKind.modulesAndPieces;
     final lessons = state.resources!.lessons
         .where(
           (l) =>
               l.visible &&
               l.kind != TrainingLessonKind.test &&
-              l.partId == lesson.partId,
+              (modules
+                  ? l.groupId == lesson.groupId
+                  : l.partId == lesson.partId),
         )
         .toList();
     return context.l10n.trainingLessonLabel(

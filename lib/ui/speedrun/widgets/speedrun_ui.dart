@@ -20,6 +20,7 @@ import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/figurine.dart';
 import '../../core/widgets/goal_style.dart';
 import '../../core/widgets/info_chip.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../journey/widgets/trail_widgets.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
@@ -368,11 +369,13 @@ class SpeedrunHeader extends StatelessWidget {
   const SpeedrunHeader({
     required this.speedrun,
     required this.characters,
+    this.homeHero = false,
     super.key,
   });
 
   final Speedrun speedrun;
   final List<Character> characters;
+  final bool homeHero;
 
   @override
   Widget build(BuildContext context) {
@@ -395,7 +398,20 @@ class SpeedrunHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SpeedrunPicture(speedrun, characters: characters, size: 72),
+          if (homeHero && speedrun.stages.isNotEmpty)
+            GameBoardHero(
+              orientation:
+                  speedrun.stages.first.position.fen.split(' ')[1] == 'b'
+                  ? Side.black
+                  : Side.white,
+              child: SpeedrunPicture(
+                speedrun,
+                characters: characters,
+                size: 72,
+              ),
+            )
+          else
+            SpeedrunPicture(speedrun, characters: characters, size: 72),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(

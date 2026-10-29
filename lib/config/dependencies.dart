@@ -1,5 +1,7 @@
 import '../data/repositories/training/training_endgame_content.dart';
+import '../data/services/lesson_content_service.dart';
 
+import 'dart:async';
 import 'dart:math';
 
 import '../data/repositories/training/course_training_repository.dart'
@@ -7,10 +9,13 @@ import '../data/repositories/training/course_training_repository.dart'
 import '../data/repositories/training/course_training_repository_local.dart'
     as course_training;
 import '../data/repositories/training/training_learning_bridge.dart';
+import '../data/repositories/training/observed_training_repository.dart';
+import '../data/repositories/training/school_training_observation_source.dart';
+import '../data/repositories/training/school_training_observer.dart';
+import '../data/repositories/training/training_school_content.dart';
 import '../domain/models/training/training_course_config.dart';
-import '../data/services/lesson_content_service.dart';
-
-import 'dart:async';
+import '../domain/models/training/school_training_resources.dart';
+import '../domain/use_cases/visible_lessons.dart';
 
 import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/analytics/analytics_repository.dart';
@@ -186,6 +191,8 @@ bool get showsDevTools => kDebugMode || isE2E || appVersion.contains('-rc');
 
 List<TrainingCourseConfig> get activeTrainingCourses => [
   if (showsDevTools) TrainingCourseConfig.pilares,
+  if (kDebugMode || isE2E || VisibleLessons.schoolLessonIds.isNotEmpty)
+    TrainingCourseConfig.escola,
 ];
 
 /// As implementações que entram no app.
@@ -231,6 +238,7 @@ class Dependencies {
     required this.unlockRepository,
     required this.paceRepository,
     required this.lessonRepository,
+    this.trainingSchoolContent,
     required this.schoolProgressRepository,
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
@@ -336,6 +344,39 @@ class Dependencies {
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
     final lessons = AssetLessonRepository(lessonContent);
+    final trainingSchoolContent = TrainingSchoolContent(
+      lessons,
+      includeAll: kDebugMode || isE2E,
+    );
+    final analytics = ServiceAnalyticsRepository(
+      firebase && analyticsMode != AnalyticsMode.off
+          ? FirebaseAnalyticsService()
+          : const NoAnalyticsService(),
+      preferences,
+      mode: analyticsMode,
+    );
+    late final course_training.TrainingRepository courseTrainingStorage;
+    courseTrainingStorage = trainingInstallSeed == null
+        ? const course_training.NoTrainingRepository()
+        : course_training.TrainingRepositoryLocal(
+            preferences,
+            lessonContent,
+            installSeed: trainingInstallSeed,
+            configs: {
+              for (final config in TrainingCourseConfig.all)
+                config.course: config,
+            },
+            contentSources: {
+              TrainingCourseConfig.escola.indexSource: () async {
+                return schoolTrainingResources(
+                  await trainingSchoolContent.course(),
+                  await trainingSchoolContent.texts('pt'),
+                );
+              },
+            },
+          );
+    late final course_training.TrainingRepository courseTraining;
+    late final TrainingLearningBridge trainingLearning;
     final cloudStore = firebase
         ? FirestoreCloudStoreService()
         : const NoCloudStoreService();
@@ -346,21 +387,13 @@ class Dependencies {
       preferences,
       onAdded: () => changes.add(null),
     );
-    final courseTraining = trainingInstallSeed == null
-        ? const course_training.NoTrainingRepository()
-        : course_training.TrainingRepositoryLocal(
-            preferences,
-            lessonContent,
-            installSeed: trainingInstallSeed,
-          );
-    final trainingLearning = TrainingLearningBridge(courseTraining);
     final learning = LearningRepository(
       preferences,
       now,
       currentUid: () => auth.current?.uid,
       versionOf: LearningContentVersion(lessonContent).call,
       onChanged: () => changes.add(null),
-      onUnitCompleted: trainingLearning.call,
+      onUnitCompleted: (completion) => trainingLearning.call(completion),
     );
     final activity = LocalActivityRepository(preferences, progress, now);
     // Capítulo terminado: também é dia com atividade (decisão 2b da E1.22).
@@ -384,6 +417,26 @@ class Dependencies {
       activity,
     );
     final stars = LocalStarChallengeRepository(preferences);
+    final schoolObservations = SchoolTrainingObservationSource(
+      now: now,
+      stars: stars,
+      progress: progress,
+      speedruns: speedruns,
+      journey: journey,
+    );
+    courseTraining = ObservedTrainingRepository(
+      courseTrainingStorage,
+      observers: {
+        TrainingCourseConfig.escola.course: SchoolTrainingObserver(
+          now: now,
+          source: schoolObservations,
+        ).call,
+      },
+    );
+    trainingLearning = TrainingLearningBridge(
+      courseTraining,
+      courses: TrainingCourseConfig.all,
+    );
     final endgames = NotifyingEndgameProgressRepository(
       LocalEndgameProgressRepository(preferences),
       changed,
@@ -406,13 +459,6 @@ class Dependencies {
     // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
     // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
     const purchases = NoPurchaseRepository();
-    final analytics = ServiceAnalyticsRepository(
-      firebase && analyticsMode != AnalyticsMode.off
-          ? FirebaseAnalyticsService()
-          : const NoAnalyticsService(),
-      preferences,
-      mode: analyticsMode,
-    );
     const ads = NoAdsRepository();
     final PushService pushService = firebase
         ? FirebasePushService()
@@ -485,6 +531,7 @@ class Dependencies {
       unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: VisibleLessonRepository(lessons),
+      trainingSchoolContent: trainingSchoolContent,
       schoolProgressRepository: school,
       starChallengeRepository: stars,
       endgameLessonRepository: endgameLessons,
@@ -626,6 +673,7 @@ class Dependencies {
   final UnlockRepository unlockRepository;
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
+  final TrainingSchoolContent? trainingSchoolContent;
   final SchoolProgressRepository schoolProgressRepository;
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;

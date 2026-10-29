@@ -4,9 +4,47 @@ import '../../core/l10n/l10n.dart';
 
 /// Maps the localization identifiers carried by TrainingCourseConfig. Course
 /// views consume the same slots without branching on a course enum.
-String courseGuideCopy(BuildContext context, String key) {
+String courseGuideCopy(BuildContext context, String key, {int count = 0}) {
   final t = context.l10n;
+  if (key == 'trainingEscolaDoubleBody') {
+    return t.trainingEscolaDoubleBody(count);
+  }
   return <String, String>{
+        'trainingPilaresTitle': t.trainingPilaresTitle,
+        'schoolTitle': t.schoolTitle,
+        'trainingFirstInfo': t.trainingFirstInfo,
+        'trainingAllDoneViktor': t.trainingAllDoneViktor,
+        'trainingEscolaAllDoneViktor': t.trainingEscolaAllDoneViktor,
+        'trainingDoubleOfferBody': t.trainingDoubleOfferBody,
+        'trainingDayOffInfo': t.trainingDayOffInfo,
+        'trainingEscolaDayOffInfo': t.trainingEscolaDayOffInfo,
+        'trainingEscolaTips1Title': t.trainingEscolaTips1Title,
+        'trainingEscolaTips1Body': t.trainingEscolaTips1Body,
+        'trainingEscolaTips2Title': t.trainingEscolaTips2Title,
+        'trainingEscolaTips2Body': t.trainingEscolaTips2Body,
+        'trainingEscolaTips3Title': t.trainingEscolaTips3Title,
+        'trainingEscolaTips3Body': t.trainingEscolaTips3Body,
+        'trainingEscolaTips4Title': t.trainingEscolaTips4Title,
+        'trainingEscolaTips4Body': t.trainingEscolaTips4Body,
+        'trainingEscolaPlanReco15': t.trainingEscolaPlanReco15,
+        'trainingEscolaPlanReco30': t.trainingEscolaPlanReco30,
+        'trainingEscolaPlanReco60': t.trainingEscolaPlanReco60,
+        'trainingEscolaPlanReco120': t.trainingEscolaPlanReco120,
+        'trainingEscolaWelcomeTitle': t.trainingEscolaWelcomeTitle,
+        'trainingEscolaWelcomeBody': t.trainingEscolaWelcomeBody,
+        'trainingEscolaTabsLesson': t.trainingEscolaTabsLesson,
+        'trainingEscolaTabsGoals': t.trainingEscolaTabsGoals,
+        'trainingEscolaTabsProgress': t.trainingEscolaTabsProgress,
+        'trainingEscolaTabsCatalog': t.trainingEscolaTabsCatalog,
+        'trainingPlanTime120More': t.trainingPlanTime120More,
+        'trainingSectionBots': t.trainingSectionBots,
+        'trainingSectionStars': t.trainingSectionStars,
+        'trainingSpeedrunGoalTitle': t.trainingSpeedrunGoalTitle,
+        'trainingEscolaFirstInfo': t.trainingEscolaFirstInfo,
+        'trainingProgressLessons': t.trainingProgressLessons,
+        'trainingProgressPieceStars': t.trainingProgressPieceStars,
+        'trainingBotNameCoco': t.trainingBotNameCoco,
+        'trainingPlanTimeQuestion': t.trainingPlanTimeQuestion,
         'trainingPlanTime15': t.trainingPlanTime15,
         'trainingPlanTime30': t.trainingPlanTime30,
         'trainingPlanTime60': t.trainingPlanTime60,
@@ -18,12 +56,6 @@ String courseGuideCopy(BuildContext context, String key) {
         'trainingPlanReco120': t.trainingPlanReco120,
         'trainingPlanReco240': t.trainingPlanReco240,
         'trainingPlanRecoMore': t.trainingPlanRecoMore,
-        'trainingFirstInfo': t.trainingFirstInfo,
-        'trainingDoubleOfferBody': t.trainingDoubleOfferBody,
-        'trainingDayOffInfo': t.trainingDayOffInfo,
-        'trainingAllDoneViktor': t.trainingAllDoneViktor,
-        'trainingPilaresTitle': t.trainingPilaresTitle,
-        'schoolTitle': t.schoolTitle,
         'courseGuideWelcomeTitle': t.courseGuideWelcomeTitle,
         'courseGuideWelcomeBody': t.courseGuideWelcomeBody,
         'courseGuideTips1Title': t.courseGuideTips1Title,

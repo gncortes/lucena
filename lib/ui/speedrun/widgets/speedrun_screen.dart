@@ -11,6 +11,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../../core/keys/speedrun_keys.dart';
+import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/l10n/run_time.dart';
 import '../../core/theme/app_shape.dart';
@@ -28,14 +29,23 @@ import '../../core/widgets/skeleton.dart';
 /// trilha das etapas. O histórico das tentativas fica na tela dele. "Começar"
 /// (ou "Continuar") fica fixo embaixo.
 class SpeedrunScreen extends StatelessWidget {
-  const SpeedrunScreen({super.key});
+  const SpeedrunScreen({
+    this.trainingGoalDone,
+    this.onNextGoal,
+    this.preview,
+    super.key,
+  });
+  final Future<bool> Function()? trainingGoalDone;
+  final VoidCallback? onNextGoal;
+  final Speedrun? preview;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<SpeedrunCubit>().state;
     final summary = state.selected;
-    if (summary == null) {
+    final speedrun = summary?.speedrun ?? preview;
+    if (speedrun == null) {
       return Scaffold(
         key: SpeedrunKeys.screen,
         appBar: LucenaAppBar(title: Text(l10n.speedrunTitle)),
@@ -43,8 +53,7 @@ class SpeedrunScreen extends StatelessWidget {
       );
     }
     final characters = state.characters;
-    final speedrun = summary.speedrun;
-    final ongoing = summary.ongoing;
+    final ongoing = summary?.ongoing;
     final total = speedrun.stages.length;
     return Scaffold(
       key: SpeedrunKeys.screen,
@@ -55,84 +64,103 @@ class SpeedrunScreen extends StatelessWidget {
               : l10n.speedrunTitle,
         ),
       ),
-      bottomNavigationBar: ongoing == null
-          ? SpeedrunActionBar(
-              buttonKey: SpeedrunKeys.start,
-              icon: Icons.play_arrow_rounded,
-              label: l10n.speedrunStartStages(total),
-              onPressed: () => startSpeedrun(context, speedrun),
-            )
-          // O app fechou no meio de uma etapa: ela continua de onde parou.
-          : SpeedrunActionBar(
-              buttonKey: SpeedrunKeys.resume,
-              icon: Icons.play_arrow_rounded,
-              label: l10n.speedrunContinueStage(
-                ongoing.currentStage + 1,
-                total,
-              ),
-              onPressed: () async {
-                final cubit = context.read<SpeedrunCubit>();
-                final route = await cubit.resume();
-                if (route == null || !context.mounted) return;
-                await context.push(route);
-                if (context.mounted) {
-                  await cubit.load(speedrunId: speedrun.id);
-                }
-              },
+      bottomNavigationBar: summary == null
+          ? null
+          : FutureBuilder<bool>(
+              future: trainingGoalDone?.call(),
+              builder: (context, training) => training.data == true
+                  ? SpeedrunActionBar(
+                      buttonKey: TrainingKeys.nextGoal,
+                      icon: Icons.arrow_forward_rounded,
+                      label: l10n.trainingNextGoal,
+                      onPressed: onNextGoal!,
+                    )
+                  : ongoing == null
+                  ? SpeedrunActionBar(
+                      buttonKey: SpeedrunKeys.start,
+                      icon: Icons.play_arrow_rounded,
+                      label: l10n.speedrunStartStages(total),
+                      onPressed: () => startSpeedrun(context, speedrun),
+                    )
+                  // O app fechou no meio de uma etapa: ela continua de onde parou.
+                  : SpeedrunActionBar(
+                      buttonKey: SpeedrunKeys.resume,
+                      icon: Icons.play_arrow_rounded,
+                      label: l10n.speedrunContinueStage(
+                        ongoing.currentStage + 1,
+                        total,
+                      ),
+                      onPressed: () async {
+                        final cubit = context.read<SpeedrunCubit>();
+                        final route = await cubit.resume();
+                        if (route == null || !context.mounted) return;
+                        await context.push(route);
+                        if (context.mounted) {
+                          await cubit.load(speedrunId: speedrun.id);
+                        }
+                      },
+                    ),
             ),
       body: ListView(
         padding: scrollPadding(context),
         children: [
-          SpeedrunHeader(speedrun: speedrun, characters: characters),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              0,
-            ),
-            child: _Block(state: state, summary: summary),
+          SpeedrunHeader(
+            speedrun: speedrun,
+            characters: characters,
+            homeHero: preview?.stages.isNotEmpty == true,
           ),
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.sm,
+          if (summary != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                0,
+              ),
+              child: _Block(state: state, summary: summary),
             ),
-            child: Text(l10n.speedrunStages, style: context.cardTitle),
-          ),
+          if (summary != null)
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.sm,
+              ),
+              child: Text(l10n.speedrunStages, style: context.cardTitle),
+            ),
           // A ordem das etapas, uma embaixo da outra: quem o jogador
           // enfrenta e, com uma tentativa em andamento, até onde ela chegou
           // e o tempo das etapas feitas.
-          for (final (index, stage) in speedrun.stages.indexed)
-            SpeedrunStageRow(
-              key: SpeedrunKeys.stageCard(index),
-              index: index,
-              stage: stage,
-              speedrun: speedrun,
-              last: index == total - 1,
-              status: ongoing == null
-                  ? SpeedrunStageStatus.idle
-                  : index < ongoing.currentStage
-                  ? SpeedrunStageStatus.done
-                  : index == ongoing.currentStage
-                  ? SpeedrunStageStatus.current
-                  : SpeedrunStageStatus.ahead,
-              trailing: ongoing != null && index < ongoing.currentStage
-                  ? TimeDisplay(
-                      value: runTime(context, ongoing.stages[index].time),
-                      semanticsLabel: l10n.speedrunStageTimeValue(
-                        index + 1,
-                        total,
-                        runTime(context, ongoing.stages[index].time),
-                      ),
-                      type: TimeDisplayType.duration,
-                      size: TimeDisplaySize.inline,
-                      textKey: SpeedrunKeys.stageTime(index),
-                    )
-                  : null,
-            ),
+          if (summary != null)
+            for (final (index, stage) in speedrun.stages.indexed)
+              SpeedrunStageRow(
+                key: SpeedrunKeys.stageCard(index),
+                index: index,
+                stage: stage,
+                speedrun: speedrun,
+                last: index == total - 1,
+                status: ongoing == null
+                    ? SpeedrunStageStatus.idle
+                    : index < ongoing.currentStage
+                    ? SpeedrunStageStatus.done
+                    : index == ongoing.currentStage
+                    ? SpeedrunStageStatus.current
+                    : SpeedrunStageStatus.ahead,
+                trailing: ongoing != null && index < ongoing.currentStage
+                    ? TimeDisplay(
+                        value: runTime(context, ongoing.stages[index].time),
+                        semanticsLabel: l10n.speedrunStageTimeValue(
+                          index + 1,
+                          total,
+                          runTime(context, ongoing.stages[index].time),
+                        ),
+                        type: TimeDisplayType.duration,
+                        size: TimeDisplaySize.inline,
+                        textKey: SpeedrunKeys.stageTime(index),
+                      )
+                    : null,
+              ),
         ],
       ),
     );

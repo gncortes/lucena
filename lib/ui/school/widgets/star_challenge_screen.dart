@@ -17,6 +17,7 @@ import '../../core/widgets/animated_progress.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/school_keys.dart';
+import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/widgets/time_display.dart';
@@ -34,7 +35,13 @@ import '../../core/widgets/actions_footer.dart';
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
 class StarChallengeScreen extends StatefulWidget {
-  const StarChallengeScreen({super.key});
+  const StarChallengeScreen({
+    this.trainingGoalDone,
+    this.onNextGoal,
+    super.key,
+  });
+  final Future<bool> Function()? trainingGoalDone;
+  final VoidCallback? onNextGoal;
 
   @override
   State<StarChallengeScreen> createState() => _StarChallengeScreenState();
@@ -189,6 +196,26 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   }
 
   Widget? _action(BuildContext context, StarChallengeState state) {
+    final original = _normalAction(context, state);
+    if (state.phase != ChallengePhase.finished ||
+        state.saving ||
+        state.saveError ||
+        widget.trainingGoalDone == null) {
+      return original;
+    }
+    return FutureBuilder<bool>(
+      future: widget.trainingGoalDone!(),
+      builder: (context, snapshot) => snapshot.data == true
+          ? FilledButton(
+              key: TrainingKeys.nextGoal,
+              onPressed: widget.onNextGoal,
+              child: Text(context.l10n.trainingNextGoal),
+            )
+          : original ?? const SizedBox.shrink(),
+    );
+  }
+
+  Widget? _normalAction(BuildContext context, StarChallengeState state) {
     if (!state.ready) return null;
     final l10n = context.l10n;
     final cubit = context.read<StarChallengeCubit>();

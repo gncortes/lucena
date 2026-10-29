@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../domain/models/star_challenge.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/keys/course_guide_keys.dart';
@@ -8,6 +9,7 @@ import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/widgets/animated_progress.dart';
+import '../../core/widgets/course/piece_stars_row.dart';
 import '../view_models/course_guide_cubit.dart';
 
 class TrainingProgressTab extends StatelessWidget {
@@ -34,6 +36,112 @@ class TrainingProgressTab extends StatelessWidget {
       final training = state.training, data = state.resources;
       if (training == null || data == null) return const SizedBox.shrink();
       final t = context.l10n;
+      if (context.read<CourseGuideCubit>().config.progressKind ==
+          TrainingProgressKind.modulesAndPieces) {
+        final lessons = data.lessons.where((l) => l.visible).toList();
+        final groups = {
+          for (final lesson in lessons) lesson.groupId: lesson.group,
+        };
+        int completed(Iterable<String> ids) =>
+            ids.where(training.completedLessons.containsKey).length;
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          children: [
+            _card(
+              context,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.trainingProgressLessons,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    Text(
+                      t.trainingCount(
+                        lessons.length,
+                        completed(lessons.map((l) => l.id)),
+                      ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                for (final group in groups.entries)
+                  Builder(
+                    builder: (context) {
+                      final items = lessons
+                          .where((l) => l.groupId == group.key)
+                          .toList();
+                      final done = completed(items.map((l) => l.id));
+                      return Column(
+                        key: TrainingKeys.moduleRow(group.key),
+                        spacing: 6,
+                        children: [
+                          Row(
+                            spacing: 12,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  group.value,
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              Text(
+                                t.trainingCount(items.length, done),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 6,
+                            child: AnimatedProgress(
+                              value: items.isEmpty ? 0 : done / items.length,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .outlineVariant,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _card(
+              context,
+              children: [
+                Text(
+                  t.trainingProgressPieceStars,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                for (final piece in [
+                  ChallengePiece.rook,
+                  ChallengePiece.bishop,
+                  ChallengePiece.queen,
+                  ChallengePiece.king,
+                  ChallengePiece.knight,
+                  ChallengePiece.pawn,
+                ])
+                  PieceStarsRow(
+                    piece: piece,
+                    completed: training.school.pieceLevels[piece.name] ?? 0,
+                  ),
+              ],
+            ),
+          ],
+        );
+      }
       final cycles = training.cycles;
       final tracks = training.openings;
       final firmMoves = tracks.values.fold(

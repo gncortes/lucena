@@ -12,6 +12,7 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../core/keys/journey_keys.dart';
+import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/pace/pace_ui.dart';
 import '../../core/widgets/attempt_history.dart';
@@ -32,7 +33,16 @@ import '../../core/widgets/section_title.dart';
 /// Um desafio: o tabuleiro grande, o objetivo e o ritmo em selos, o
 /// adversário, as partidas já jogadas e o botão de jogar fixo embaixo.
 class ChallengeScreen extends StatefulWidget {
-  const ChallengeScreen({required this.rungId, super.key});
+  const ChallengeScreen({
+    required this.rungId,
+    this.trainingGoalDone,
+    this.onNextGoal,
+    this.homeHero = false,
+    super.key,
+  });
+  final Future<bool> Function()? trainingGoalDone;
+  final VoidCallback? onNextGoal;
+  final bool homeHero;
 
   /// O adversário (degrau) do desafio: o retrato dele chega voando da tela
   /// de antes.
@@ -112,33 +122,47 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
       ),
       bottomNavigationBar: challenge == null
           ? null
-          : FutureBuilder<SavedGame?>(
-              future: _savedFor(challenge),
-              builder: (context, saved) => ActionsFooter(
-                stacked: true,
-                children: [
-                  FilledButton.icon(
-                    key: saved.data == null
-                        ? JourneyKeys.play
-                        : JourneyKeys.resume,
-                    icon: const Icon(Icons.play_arrow_rounded),
-                    label: Text(
-                      saved.data == null
-                          ? l10n.journeyPlay
-                          : l10n.journeyResume,
+          : FutureBuilder<bool>(
+              future: widget.trainingGoalDone?.call(),
+              builder: (context, training) => training.data == true
+                  ? ActionsFooter(
+                      children: [
+                        FilledButton(
+                          key: TrainingKeys.nextGoal,
+                          onPressed: widget.onNextGoal,
+                          child: Text(l10n.trainingNextGoal),
+                        ),
+                      ],
+                    )
+                  : FutureBuilder<SavedGame?>(
+                      future: _savedFor(challenge),
+                      builder: (context, saved) => ActionsFooter(
+                        stacked: true,
+                        children: [
+                          FilledButton.icon(
+                            key: saved.data == null
+                                ? JourneyKeys.play
+                                : JourneyKeys.resume,
+                            icon: const Icon(Icons.play_arrow_rounded),
+                            label: Text(
+                              saved.data == null
+                                  ? l10n.journeyPlay
+                                  : l10n.journeyResume,
+                            ),
+                            onPressed:
+                                saved.connectionState == ConnectionState.done
+                                ? () => _play(challenge)
+                                : null,
+                          ),
+                          if (saved.data != null)
+                            TextButton(
+                              key: JourneyKeys.restart,
+                              onPressed: () => _play(challenge, restart: true),
+                              child: Text(l10n.journeyRestart),
+                            ),
+                        ],
+                      ),
                     ),
-                    onPressed: saved.connectionState == ConnectionState.done
-                        ? () => _play(challenge)
-                        : null,
-                  ),
-                  if (saved.data != null)
-                    TextButton(
-                      key: JourneyKeys.restart,
-                      onPressed: () => _play(challenge, restart: true),
-                      child: Text(l10n.journeyRestart),
-                    ),
-                ],
-              ),
             ),
       body: challenge == null
           ? const SkeletonList()
@@ -161,6 +185,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
                       gap: AppSpacing.md,
                       reserveBottom: _chipsHeight,
                       board: _BigBoard(
+                        homeHero: widget.homeHero,
                         challenge: challenge,
                         launching: _launching,
                         saved: _preview,
@@ -253,8 +278,10 @@ class _BigBoard extends StatelessWidget {
     required this.challenge,
     required this.launching,
     this.saved,
+    this.homeHero = false,
   });
   final SavedGame? saved;
+  final bool homeHero;
 
   final Challenge challenge;
 
@@ -264,26 +291,39 @@ class _BigBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => PositionBoard(
-        boardKey: JourneyKeys.challengeBoard,
-        fen: saved?.position.fen ?? challenge.position.fen,
-        orientation:
+      builder: (context, constraints) {
+        final orientation =
             saved?.snapshot.orientation ??
             (challenge.position.fen.split(' ')[1] == 'b'
                 ? Side.black
-                : Side.white),
-        size: constraints.maxWidth,
-        coordinates: true,
-        radius: AppShape.none,
-        // A partida é vista pelo lado que joga, como este tabuleiro.
-        heroTag: launching
-            ? gameBoardTag(
-                challenge.position.fen.split(' ')[1] == 'b'
-                    ? Side.black
-                    : Side.white,
-              )
-            : challengeBoardTag(challenge.id),
-      ),
+                : Side.white);
+        final arriving = homeHero && !launching;
+        final board = PositionBoard(
+          boardKey: JourneyKeys.challengeBoard,
+          fen: saved?.position.fen ?? challenge.position.fen,
+          orientation:
+              saved?.snapshot.orientation ??
+              (challenge.position.fen.split(' ')[1] == 'b'
+                  ? Side.black
+                  : Side.white),
+          size: constraints.maxWidth,
+          coordinates: true,
+          radius: AppShape.none,
+          // A partida é vista pelo lado que joga, como este tabuleiro.
+          heroTag: arriving
+              ? null
+              : launching
+              ? gameBoardTag(
+                  challenge.position.fen.split(' ')[1] == 'b'
+                      ? Side.black
+                      : Side.white,
+                )
+              : challengeBoardTag(challenge.id),
+        );
+        return arriving
+            ? GameBoardHero(orientation: orientation, child: board)
+            : board;
+      },
     );
   }
 }

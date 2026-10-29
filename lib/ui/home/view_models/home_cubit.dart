@@ -43,9 +43,11 @@ import '../../../domain/models/goal_preference.dart';
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
 import '../../../domain/models/journey.dart';
+import '../../../domain/models/speedrun.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/models/streak.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/beginner_home.dart';
 import '../../../domain/use_cases/course_availability.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
@@ -283,12 +285,19 @@ final class HomeTraining {
     required this.resources,
     required this.card,
     this.lessonPreview,
+    this.challenge,
+    this.speedrun,
   });
   final TrainingCourseConfig config;
   final TrainingState state;
   final TrainingResources resources;
   final HomeCourseCard card;
   final LessonScriptState? lessonPreview;
+  final Challenge? challenge;
+  final Speedrun? speedrun;
+  String? get challengeFen =>
+      challenge?.position.fen ?? speedrun?.stages.firstOrNull?.position.fen;
+
   TrainingExercise? get exercise => resources.banks[card.ref]
       ?.where((e) => e.id == card.goal?.itemId)
       .firstOrNull;
@@ -301,7 +310,8 @@ final class HomeTraining {
   String? get fen {
     if (card.destination == HomeCourseDestination.lessonTab) return null;
     final line = openingLine;
-    return exercise?.fen ??
+    return challengeFen ??
+        exercise?.fen ??
         (line == null ? lessonPreview?.fen : line.fens[line.initialCursor]);
   }
 
@@ -620,6 +630,21 @@ class HomeCubit extends Cubit<HomeState> {
             () async => trainingLessonPreview?.call(lesson),
           )
         : null;
+    Challenge? challenge;
+    Speedrun? speedrun;
+    final challengeGoal = card?.goal;
+    if (challengeGoal?.kind == GoalKind.bot) {
+      for (final rung in await _journey.ladder()) {
+        if (rung.id != challengeGoal!.items['rung']) continue;
+        challenge = rung.challenges
+            .where((c) => c.position.id == challengeGoal.itemId)
+            .firstOrNull;
+      }
+    } else if (challengeGoal?.kind == GoalKind.speedrun) {
+      speedrun = (await _journey.speedruns())
+          .where((s) => s.id == challengeGoal!.itemId)
+          .firstOrNull;
+    }
     return card == null
         ? null
         : HomeTraining(
@@ -628,6 +653,8 @@ class HomeCubit extends Cubit<HomeState> {
             resources: selected.resources,
             card: card,
             lessonPreview: preview,
+            challenge: challenge,
+            speedrun: speedrun,
           );
   }
 

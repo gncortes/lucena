@@ -10774,5 +10774,195 @@
   "trainingLevelTestOptional": "Optional: skip what you already know",
   "@trainingLevelTestOptional": {
     "description": "Description of the optional level test in course progress."
+  },
+  "trainingProgressPieceStars": "Stars by piece",
+  "@trainingProgressPieceStars": {
+    "description": "T85 Viktor School daily training: trainingProgressPieceStars."
+  },
+  "trainingEscolaWelcomeTitle": "Welcome to Viktor’s School",
+  "@trainingEscolaWelcomeTitle": {
+    "description": "T85 Viktor School daily training: trainingEscolaWelcomeTitle."
+  },
+  "trainingSpeedrunGoal": "Queen and two rooks in {min} minutes · {bot}",
+  "@trainingSpeedrunGoal": {
+    "description": "T85 Viktor School daily training: trainingSpeedrunGoal.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "bot": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEscolaAllDoneViktor": "All done for today. Your goals return on the next study day.",
+  "@trainingEscolaAllDoneViktor": {
+    "description": "T85 Viktor School daily training: trainingEscolaAllDoneViktor."
+  },
+  "trainingEscolaTabsGoals": "what to do today.",
+  "@trainingEscolaTabsGoals": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsGoals."
+  },
+  "trainingEscolaPlanReco120": "Twelve lessons per study day, plus challenges. You finish the course in 4 days. This is the most we recommend: too many new rules at once can get mixed up.",
+  "@trainingEscolaPlanReco120": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco120."
+  },
+  "trainingEscolaTips1Title": "Look before you move",
+  "@trainingEscolaTips1Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips1Title."
+  },
+  "trainingEscolaTips1Body": "Before each move, check what your opponent’s pieces attack. This is how you stop losing pieces for free.",
+  "@trainingEscolaTips1Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips1Body."
+  },
+  "trainingEscolaPlanReco60": "Eight lessons per study day, plus challenges. The course takes about 1 week.",
+  "@trainingEscolaPlanReco60": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco60."
+  },
+  "trainingProgressLessons": "Lessons",
+  "@trainingProgressLessons": {
+    "description": "T85 Viktor School daily training: trainingProgressLessons."
+  },
+  "trainingSectionStars": "STAR CHALLENGES",
+  "@trainingSectionStars": {
+    "description": "T85 Viktor School daily training: trainingSectionStars."
+  },
+  "trainingEscolaWelcomeBody": "From moving the pieces to your first checkmates, in short lessons. After each lesson, a challenge to practise what you have just learned.",
+  "@trainingEscolaWelcomeBody": {
+    "description": "T85 Viktor School daily training: trainingEscolaWelcomeBody."
+  },
+  "trainingEscolaPlanReco30": "Four lessons per study day, plus challenges. The course takes about 2 weeks.",
+  "@trainingEscolaPlanReco30": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco30."
+  },
+  "trainingEscolaTips2Title": "Repeat the challenges",
+  "@trainingEscolaTips2Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips2Title."
+  },
+  "trainingPlanTime120More": "2 hours or more",
+  "@trainingPlanTime120More": {
+    "description": "T85 Viktor School daily training: trainingPlanTime120More."
+  },
+  "trainingEscolaTabsLesson": "your next lesson, always here.",
+  "@trainingEscolaTabsLesson": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsLesson."
+  },
+  "trainingStarGoalDone": "{level} · {n, plural, one{1 star} other{{n} stars}}",
+  "@trainingStarGoalDone": {
+    "description": "T85 Viktor School daily training: trainingStarGoalDone.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaDayOffInfo": "Lessons completed ahead count as completed goals on the next study day. Their challenges are added that day.",
+  "@trainingEscolaDayOffInfo": {
+    "description": "T85 Viktor School daily training: trainingEscolaDayOffInfo."
+  },
+  "trainingEscolaTabsProgress": "completed lessons and stars.",
+  "@trainingEscolaTabsProgress": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsProgress."
+  },
+  "trainingEscolaTips4Body": "After the lessons, play against Coco and use what you have learned.",
+  "@trainingEscolaTips4Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips4Body."
+  },
+  "trainingEscolaTips2Body": "Collect stars until you can move each piece without thinking. Moving becomes a reflex.",
+  "@trainingEscolaTips2Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips2Body."
+  },
+  "trainingStarGoal": "{level} · collect {n, plural, one{1 star} other{{n} stars}}",
+  "@trainingStarGoal": {
+    "description": "T85 Viktor School daily training: trainingStarGoal.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSpeedrunGoalTitle": "Speedrun: both checkmates",
+  "@trainingSpeedrunGoalTitle": {
+    "description": "T85 Viktor School daily training: trainingSpeedrunGoalTitle."
+  },
+  "trainingBotGoal": "Against {bot} · {rating}",
+  "@trainingBotGoal": {
+    "description": "T85 Viktor School daily training: trainingBotGoal.",
+    "placeholders": {
+      "bot": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaTabsCatalog": "all the lessons in the course.",
+  "@trainingEscolaTabsCatalog": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsCatalog."
+  },
+  "trainingEscolaDoubleBody": "Another {n} lessons and their challenges are added today.",
+  "@trainingEscolaDoubleBody": {
+    "description": "T85 Viktor School daily training: trainingEscolaDoubleBody.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaTips3Title": "Say the square names",
+  "@trainingEscolaTips3Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips3Title."
+  },
+  "trainingSectionBots": "AGAINST THE BOTS",
+  "@trainingSectionBots": {
+    "description": "T85 Viktor School daily training: trainingSectionBots."
+  },
+  "trainingEscolaTips3Body": "When you move, say the square: e4, d5. Soon you will be able to read any game.",
+  "@trainingEscolaTips3Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips3Body."
+  },
+  "trainingEscolaTips4Title": "Play games",
+  "@trainingEscolaTips4Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips4Title."
+  },
+  "trainingBotNameCoco": "Coco",
+  "@trainingBotNameCoco": {
+    "description": "T85 Viktor School daily training: trainingBotNameCoco."
+  },
+  "trainingModuleLabel": "Module {n}",
+  "@trainingModuleLabel": {
+    "description": "T85 Viktor School daily training: trainingModuleLabel.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaPlanReco15": "Two lessons per study day, plus challenges for the pieces you have already learned. The course takes about 4 weeks.",
+  "@trainingEscolaPlanReco15": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco15."
+  },
+  "trainingBotGoalDone": "Win against {bot} · {rating}",
+  "@trainingBotGoalDone": {
+    "description": "T85 Viktor School daily training: trainingBotGoalDone.",
+    "placeholders": {
+      "bot": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaFirstInfo": "After you finish a piece lesson, its star challenge is added to your goals immediately.",
+  "@trainingEscolaFirstInfo": {
+    "description": "T85 Viktor School daily training: trainingEscolaFirstInfo."
   }
 }

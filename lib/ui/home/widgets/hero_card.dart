@@ -3,6 +3,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/training/home_course_card.dart';
 import '../../../routing/routes.dart';
@@ -163,7 +164,11 @@ class HeroCard extends StatelessWidget {
         HomeCourseStatus.dayOff => l.homeCourseDayOff,
         _ => l.homeCourseNextGoal,
       },
-      title: lesson?.title ?? l.trainingOpeningsTitle,
+      title: switch (card.goal?.kind) {
+        GoalKind.stars => l.starChallengeTitle(card.ref.split('.').last),
+        GoalKind.speedrun => l.trainingSpeedrunGoalTitle,
+        _ => lesson?.title ?? l.trainingOpeningsTitle,
+      },
       action: switch (card.status) {
         HomeCourseStatus.exercise => l.homeCourseSolve,
         HomeCourseStatus.opening => l.homeCourseTrain,

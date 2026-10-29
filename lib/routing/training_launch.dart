@@ -1,4 +1,6 @@
 import '../domain/models/character.dart';
+import '../domain/models/journey.dart';
+import '../domain/models/speedrun.dart';
 import '../ui/lesson_script/view_models/lesson_script_state.dart';
 import '../ui/training_exercise/view_models/training_exercise_cubit.dart';
 import '../ui/training_opening/view_models/training_opening_cubit.dart';
@@ -12,6 +14,8 @@ final class TrainingLaunch {
     this.lessonPreview,
     this.exercisePreview,
     this.openingPreview,
+    this.challenge,
+    this.speedrun,
   });
 
   final String title;
@@ -19,4 +23,6 @@ final class TrainingLaunch {
   final LessonScriptState? lessonPreview;
   final TrainingExerciseState? exercisePreview;
   final TrainingOpeningState? openingPreview;
+  final Challenge? challenge;
+  final Speedrun? speedrun;
 }

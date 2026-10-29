@@ -437,11 +437,17 @@ abstract final class Routes {
   /// A tela "Aula concluída" da aula [id]: de [kind] `school` (Escola) ou
   /// `endgames` (aula de finais, com os capítulos todos feitos).
   /// [next] é a aula seguinte, se houver.
-  static String lessonFinished(SurveyKind kind, String id, {String? next}) =>
-      Uri(
-        path: '/lesson-finished/${kind.code}/$id',
-        queryParameters: next == null ? null : {'next': next},
-      ).toString();
+  static String lessonFinished(
+    SurveyKind kind,
+    String id, {
+    String? next,
+    String? origin,
+  }) => Uri(
+    path: '/lesson-finished/${kind.code}/$id',
+    queryParameters: next == null && origin == null
+        ? null
+        : {'next': ?next, 'origem': ?origin},
+  ).toString();
 
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
@@ -598,17 +604,18 @@ abstract final class Routes {
   static const pilaresBand = '/settings/pilares/faixa';
   static const pilaresMap = '/settings/pilares/mapa';
   static const pilaresChapter = '/settings/pilares/mapa/capitulo';
+
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';
   static String trainingPlan(String course) => '${training(course)}/plan';
-  static String trainingExercise(String course, String theme) =>
-      '${training(course)}/exercise/${Uri.encodeComponent(theme)}';
-  static String trainingOpening(String course, String theme) =>
-      '${training(course)}/opening/${Uri.encodeComponent(theme)}';
-  static String trainingTheme(String course, String theme) =>
-      '${training(course)}/theme/${Uri.encodeComponent(theme)}';
   static String trainingChapter(String course, String chapter) =>
       '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';
+  static String trainingExercise(String course, String theme) =>
+      '${training(course)}/exercise/${Uri.encodeComponent(theme)}';
+  static String trainingOpening(String course, String opening) =>
+      '${training(course)}/opening/${Uri.encodeComponent(opening)}';
+  static String trainingTheme(String course, String theme) =>
+      '${training(course)}/theme/${Uri.encodeComponent(theme)}';
 
   /// Private indexes refer either to a full chapter or a scripted part.
   static String trainingLesson(String id, {String origin = 'treino_guia'}) {

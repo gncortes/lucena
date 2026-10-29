@@ -333,12 +333,16 @@ class _LessonTab extends StatelessWidget {
       return const SizedBox.shrink(); // Course completion is outside T85.
     }
     final t = context.l10n;
+    final modules =
+        cubit.config.progressKind == TrainingProgressKind.modulesAndPieces;
     final index =
         state.resources!.lessons
             .where(
               (l) =>
                   l.visible &&
-                  l.partId == lesson.partId &&
+                  (modules
+                      ? l.groupId == lesson.groupId
+                      : l.partId == lesson.partId) &&
                   l.kind != TrainingLessonKind.test,
             )
             .toList()
@@ -355,13 +359,24 @@ class _LessonTab extends StatelessWidget {
             1,
       ),
     );
+    final sectionLabel = modules
+        ? t.trainingModuleLabel(
+            state.resources!.lessons
+                    .where((l) => l.visible)
+                    .map((l) => l.groupId)
+                    .toSet()
+                    .toList()
+                    .indexOf(lesson.groupId) +
+                1,
+          )
+        : partLabel;
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
         CourseContinueCard(
           label: lesson.kind == TrainingLessonKind.test
-              ? partLabel
-              : t.trainingPartLesson(index, partLabel),
+              ? sectionLabel
+              : t.trainingPartLesson(index, sectionLabel),
           title: lesson.title,
           summary: lesson.summary,
           buttonLabel: state.training!.completedLessons.isEmpty
@@ -466,7 +481,12 @@ class _CatalogTabState extends State<_CatalogTab> {
   void initState() {
     super.initState();
     final lesson = widget.state.resources!.lessons.firstWhere((l) => l.visible);
-    expanded.add(lesson.partId);
+    expanded.add(
+      context.read<CourseGuideCubit>().config.progressKind ==
+              TrainingProgressKind.modulesAndPieces
+          ? lesson.groupId
+          : lesson.partId,
+    );
   }
 
   @override
@@ -474,10 +494,13 @@ class _CatalogTabState extends State<_CatalogTab> {
     final data = widget.state.resources!.lessons
         .where((l) => l.visible)
         .toList();
+    final completed = widget.state.training!.completedLessons;
     final config = context.read<CourseGuideCubit>().config;
-    final sections = {
-      for (final lesson in data) lesson.partId: lesson.partTitle,
-    };
+    final modules =
+        config.progressKind == TrainingProgressKind.modulesAndPieces;
+    final sections = modules
+        ? {for (final lesson in data) lesson.groupId: lesson.group}
+        : {for (final lesson in data) lesson.partId: lesson.partTitle};
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
@@ -491,40 +514,84 @@ class _CatalogTabState extends State<_CatalogTab> {
         ],
         for (final (index, part) in sections.entries.indexed) ...[
           if (expanded.contains(part.key)) ...[
-            CoursePartHeader(
-              label: context.l10n.trainingPartLabel(
-                courseGuideRoman(index + 1),
-              ),
-              title: part.value,
-              count: context.l10n.trainingCount(
-                _chapters(data, part.key).length,
-                _chapters(
-                  data,
-                  part.key,
-                ).where((id) => _status(id) == CourseItemState.approved).length,
-              ),
-            ),
-            const SizedBox(height: 12),
-            for (final entry in {
-              for (final l in data.where((l) => l.partId == part.key))
-                l.groupId: l.group,
-            }.entries) ...[
-              CourseItemTile(
-                key: CourseGuideKeys.chapter(entry.key),
-                state: _status(entry.key),
-                title: context.l10n.trainingChapterTitle(
-                  _chapters(data, part.key).indexOf(entry.key) + 1,
-                  entry.value,
+            if (modules)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+                child: Text(
+                  '${context.l10n.trainingModuleLabel(index + 1)} · ${part.value}'
+                      .toUpperCase(),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    height: 20 / 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                summary: data
-                    .where(
-                      (l) =>
-                          l.groupId == entry.key &&
-                          l.kind != TrainingLessonKind.test,
-                    )
-                    .map((l) => l.title)
-                    .join(', '),
-                onTap: () => widget.onChapter(entry.key),
+              )
+            else
+              CoursePartHeader(
+                label: context.l10n.trainingPartLabel(
+                  courseGuideRoman(index + 1),
+                ),
+                title: part.value,
+                count: context.l10n.trainingCount(
+                  _chapters(data, part.key).length,
+                  _chapters(data, part.key)
+                      .where((id) => _status(id) == CourseItemState.approved)
+                      .length,
+                ),
+              ),
+            SizedBox(height: modules ? 8 : 12),
+            for (final entry
+                in (modules
+                        ? {
+                            for (final l in data.where(
+                              (l) => l.groupId == part.key,
+                            ))
+                              l.id: l.title,
+                          }
+                        : {
+                            for (final l in data.where(
+                              (l) => l.partId == part.key,
+                            ))
+                              l.groupId: l.group,
+                          })
+                    .entries) ...[
+              CourseItemTile(
+                key: modules
+                    ? CourseGuideKeys.chapterLesson(entry.key)
+                    : CourseGuideKeys.chapter(entry.key),
+                state: modules
+                    ? completed.containsKey(entry.key)
+                          ? CourseItemState.approved
+                          : widget.state.nextLesson?.id == entry.key
+                          ? CourseItemState.next
+                          : CourseItemState.open
+                    : _status(entry.key),
+                title: modules
+                    ? context.l10n.trainingLessonLabel(
+                        data
+                                .where((l) => l.groupId == part.key)
+                                .toList()
+                                .indexWhere((l) => l.id == entry.key) +
+                            1,
+                        entry.value,
+                      )
+                    : context.l10n.trainingChapterTitle(
+                        _chapters(data, part.key).indexOf(entry.key) + 1,
+                        entry.value,
+                      ),
+                summary: modules
+                    ? data.firstWhere((l) => l.id == entry.key).summary
+                    : data
+                          .where(
+                            (l) =>
+                                l.groupId == entry.key &&
+                                l.kind != TrainingLessonKind.test,
+                          )
+                          .map((l) => l.title)
+                          .join(', '),
+                onTap: () => modules
+                    ? widget.onLesson(data.firstWhere((l) => l.id == entry.key))
+                    : widget.onChapter(entry.key),
               ),
               const SizedBox(height: 8),
             ],
@@ -536,21 +603,27 @@ class _CatalogTabState extends State<_CatalogTab> {
                 borderRadius: BorderRadius.circular(AppShape.large),
                 child: ListTile(
                   key: CourseGuideKeys.catalogPart(part.key),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.l10n.trainingPartLabel(
-                          courseGuideRoman(index + 1),
-                        ),
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
+                  title: modules
+                      ? Text(
+                          '${context.l10n.trainingModuleLabel(index + 1)} · ${part.value}',
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              context.l10n.trainingPartLabel(
+                                courseGuideRoman(index + 1),
+                              ),
+                              style: Theme.of(context).textTheme.labelMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary,
+                                  ),
                             ),
-                      ),
-                      Text(part.value),
-                    ],
-                  ),
+                            Text(part.value),
+                          ],
+                        ),
                   trailing: const Icon(
                     Icons.expand_more,
                     size: AppIconSize.standard,

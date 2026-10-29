@@ -35,8 +35,11 @@ class LessonFinishedScreen extends StatelessWidget {
   bool get _school => kind == SurveyKind.school;
 
   void _next(BuildContext context, String id) {
+    final origin = GoRouterState.of(context).uri.queryParameters['origem'];
     context.pushReplacement(
-      _school ? Routes.lessonScript(id) : Routes.endgameLessonScript(id),
+      _school
+          ? Routes.lessonScript(id, origin: origin)
+          : Routes.endgameLessonScript(id, origin: origin),
     );
   }
 

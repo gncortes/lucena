@@ -1,7 +1,4 @@
 import 'data/repositories/training/training_endgame_content.dart';
-import 'data/repositories/training/training_history_source.dart';
-import 'data/repositories/training/course_training_repository.dart'
-    as course_training;
 
 import 'dart:async';
 
@@ -13,6 +10,8 @@ import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
 import 'data/repositories/learning/learning_repository.dart';
+import 'data/repositories/training/training_school_content.dart';
+import 'data/repositories/training/training_history_source.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
 import 'domain/models/campaign.dart';
@@ -93,6 +92,8 @@ import 'data/repositories/sync/sync_scheduler.dart';
 import 'data/repositories/training/training_repository.dart';
 import 'data/repositories/voice/voice_repository.dart';
 import 'data/repositories/blind/blind_log_repository.dart';
+import 'data/repositories/training/course_training_repository.dart'
+    as course_training;
 import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
@@ -485,8 +486,16 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<PositionsRepository>.value(
           value: dependencies.positionsRepository,
         ),
+        RepositoryProvider<TrainingRepository>.value(
+          value: dependencies.trainingRepository,
+        ),
         RepositoryProvider<course_training.TrainingRepository>.value(
           value: dependencies.courseTrainingRepository,
+        ),
+        RepositoryProvider<TrainingSchoolContent>.value(
+          value:
+              dependencies.trainingSchoolContent ??
+              TrainingSchoolContent(dependencies.lessonRepository),
         ),
         RepositoryProvider<TrainingHistorySource>.value(
           value: TrainingHistorySource(
@@ -494,9 +503,6 @@ class _LucenaAppState extends State<LucenaApp> {
             learning: dependencies.learningRepository,
             now: dependencies.now,
           ),
-        ),
-        RepositoryProvider<TrainingRepository>.value(
-          value: dependencies.trainingRepository,
         ),
         RepositoryProvider<OpponentRepository>.value(
           value: dependencies.opponentRepository,

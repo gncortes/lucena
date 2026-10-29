@@ -1,3 +1,14 @@
+import 'package:lucena/data/repositories/learning/learning_repository.dart';
+import 'package:lucena/data/repositories/learning/learning_content_version.dart';
+import 'package:lucena/data/repositories/training/course_training_repository_local.dart'
+    as course_training;
+import 'package:lucena/data/repositories/training/training_learning_bridge.dart';
+import 'package:lucena/data/repositories/training/training_school_content.dart';
+import 'package:lucena/data/repositories/training/observed_training_repository.dart';
+import 'package:lucena/data/repositories/training/school_training_observer.dart';
+import 'package:lucena/data/repositories/training/school_training_observation_source.dart';
+import 'package:lucena/domain/models/training/training_course_config.dart';
+import 'package:lucena/domain/models/training/school_training_resources.dart';
 import 'package:lucena/data/repositories/training/training_endgame_content.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lucena/data/services/lesson_content_service.dart';
@@ -275,6 +286,54 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     progress,
     e2eNow,
   );
+  final preferences = PreferencesService();
+  final trainingSchool = TrainingSchoolContent(lessons, includeAll: true);
+  final stars = LocalStarChallengeRepository(preferences);
+  final journey = E2EJourneyRepository(
+    AssetJourneyRepository(const AssetService(), positions),
+  );
+  final speedruns = LocalSpeedrunRepository(database);
+  final courseStorage = course_training.TrainingRepositoryLocal(
+    preferences,
+    content,
+    installSeed: 'e2e-training',
+    configs: {
+      for (final config in TrainingCourseConfig.all) config.course: config,
+    },
+    contentSources: {
+      TrainingCourseConfig.escola.indexSource: () async =>
+          schoolTrainingResources(
+            await trainingSchool.course(),
+            await trainingSchool.texts('pt'),
+          ),
+    },
+  );
+  final courseTraining = ObservedTrainingRepository(
+    courseStorage,
+    observers: {
+      TrainingCourseConfig.escola.course: SchoolTrainingObserver(
+        now: e2eNow,
+        source: SchoolTrainingObservationSource(
+          now: e2eNow,
+          stars: stars,
+          progress: progress,
+          speedruns: speedruns,
+          journey: journey,
+        ),
+      ).call,
+    },
+  );
+  final bridge = TrainingLearningBridge(
+    courseTraining,
+    courses: TrainingCourseConfig.all,
+  );
+  final learning = LearningRepository(
+    preferences,
+    e2eNow,
+    currentUid: () => null,
+    versionOf: LearningContentVersion(content).call,
+    onUnitCompleted: bridge.call,
+  );
   final flags = FakeRemoteFlagsRepository();
   return Dependencies(
     now: e2eNow,
@@ -316,15 +375,16 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
     positionsRepository: positions,
     trainingRepository: LocalTrainingRepository(PreferencesService()),
+    courseTrainingRepository: courseTraining,
+    learningRepository: learning,
+    trainingSchoolContent: trainingSchool,
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
     maiaRepository: e2eMaia,
     progressRepository: progress,
     // A Jornada e os speedruns de verdade.
-    journeyRepository: E2EJourneyRepository(
-      AssetJourneyRepository(const AssetService(), positions),
-    ),
-    speedrunRepository: LocalSpeedrunRepository(database),
+    journeyRepository: journey,
+    speedrunRepository: speedruns,
     // Sem a oferta de aquecimento: os cenários seguem direto para a partida.
     raceRepository: LocalRaceRepository(
       const AssetService(),
@@ -356,7 +416,7 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
       LocalSchoolProgressRepository(PreferencesService()),
       activity,
     ),
-    starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
+    starChallengeRepository: stars,
     // Só as aulas liberadas, como no app (VisibleLessons).
     trainingEndgameContent: showsDevTools
         ? TrainingEndgameContent.fromConfigs(

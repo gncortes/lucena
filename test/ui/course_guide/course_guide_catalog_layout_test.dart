@@ -98,6 +98,38 @@ Future<CourseGuideCubit> pumpGuide(
 
 void main() {
   setUpAll(Goldens.loadFonts);
+  testWidgets(
+    'Escola preserves module and per-lesson catalog without level test',
+    (tester) async {
+      setPhoneSize(tester, const Size(412, 917));
+      final cubit = await pumpGuide(
+        tester,
+        config: TrainingCourseConfig.escola,
+      );
+      expect(find.byType(PlacementTestCard), findsNothing);
+      expect(find.text('MÓDULO 1 · CAPÍTULO OMEGA'), findsOneWidget);
+      expect(find.byType(CoursePartHeader), findsNothing);
+      expect(find.text('3 de 3'), findsNothing);
+      expect(find.byKey(CourseGuideKeys.chapterLesson('a1')), findsOneWidget);
+      expect(
+        tester
+            .widget<CourseItemTile>(
+              find.byKey(CourseGuideKeys.chapterLesson('a1')),
+            )
+            .title,
+        'Aula 1 · Aula a1',
+      );
+      await cubit.selectTab(CourseGuideTab.lesson);
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<CourseContinueCard>(find.byType(CourseContinueCard))
+            .label,
+        'Módulo 2 · aula 1',
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
   for (final size in phoneSizes) {
     testWidgets('catalog counts chapters and numbers real order at $size', (
       tester,

@@ -13,7 +13,7 @@ trainingLessonPreviewLoader({
 }) => (lesson) async {
   final String path;
   if (lesson.kind == TrainingLessonKind.school) {
-    return null;
+    path = AssetLessonScriptRepository.scriptPath(lesson.id);
   } else {
     final root = lesson.groupId;
     if (root.isEmpty || !lesson.id.startsWith('$root.')) return null;
