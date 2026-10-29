@@ -20,6 +20,10 @@ class AppColors extends ThemeExtension<AppColors> {
   /// O verde do recorde novo (texto e ícone do troféu).
   static const record = Color(0xff2e6b3a);
 
+  /// Completed/missed cycle days (Canvas T85, the four cycle endings).
+  static const trainingDayCorrect = Color(0xff2e6b45);
+  static const trainingDayWrong = Color(0xffb3261e);
+
   static const goldColor = Color(0xfff2b705);
 
   /// Texto sobre o dourado (D26): selos, medalha e relatório.

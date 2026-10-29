@@ -80,10 +80,18 @@ class TeacherSpeech extends StatelessWidget {
     this.onSpoken,
     this.headerAction,
     this.onSoundSettings,
+    this.bubbleAboveHeader = false,
+    this.trainingLayout = false,
     super.key,
   });
 
   final Character teacher;
+
+  /// Training Canvas: the speech points down towards the teacher's header.
+  final bool bubbleAboveHeader;
+
+  /// Keep the training header next to the board; reduce bubble padding on compact screens.
+  final bool trainingLayout;
   final ExplanationPayload? explanation;
   final bool lessonV2;
 
@@ -401,11 +409,17 @@ class TeacherSpeech extends StatelessWidget {
     }
     if (_stackedIn(context)) {
       return Column(
+        mainAxisSize: trainingLayout ? MainAxisSize.min : MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // O vão de 6 da ponta ao retrato vem do balão.
-          _headerRow(context, avatar),
-          _closable(context),
+          if (bubbleAboveHeader) ...[
+            _closable(context),
+            _headerRow(context, avatar),
+          ] else ...[
+            // O vão de 6 da ponta ao retrato vem do balão.
+            _headerRow(context, avatar),
+            _closable(context),
+          ],
         ],
       );
     }
@@ -484,7 +498,9 @@ class TeacherSpeech extends StatelessWidget {
                   : theme.textTheme.labelLarge)
               ?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w500,
+                fontWeight: bubbleAboveHeader
+                    ? FontWeight.w700
+                    : FontWeight.w500,
               ),
     );
   }
@@ -925,11 +941,14 @@ class TeacherSpeech extends StatelessWidget {
     // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
     final stacked = _stackedIn(context);
     return SpeechBalloon(
+      padding: trainingLayout && MediaQuery.sizeOf(context).height < 780
+          ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 6)
+          : SpeechBalloon.defaultPadding,
       pop: false,
       tail: _compact(context) || part == TeacherSpeechPart.bubble
           ? BalloonTail.none
           : stacked
-          ? BalloonTail.up
+          ? (bubbleAboveHeader ? BalloonTail.down : BalloonTail.up)
           : BalloonTail.start,
       tailX: SpeechBalloon.tailXFor(avatarSize),
       tailY: avatarSize / 2,

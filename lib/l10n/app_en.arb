@@ -10318,5 +10318,159 @@
         "type": "String"
       }
     }
+  },
+  "trainingEndBackToGoals": "Back to goals",
+  "@trainingEndBackToGoals": {
+    "description": "T85 training exercise and cycle result: trainingEndBackToGoals."
+  },
+  "trainingEndCycleScore": "Cycle score: {score}%",
+  "@trainingEndCycleScore": {
+    "description": "T85 training exercise and cycle result: trainingEndCycleScore.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEndFirmBody": "From now on, this theme returns from time to time to help you remember.",
+  "@trainingEndFirmBody": {
+    "description": "T85 training exercise and cycle result: trainingEndFirmBody."
+  },
+  "trainingEndFirmCleanViktor": "You completed this cycle. That is what matters.",
+  "@trainingEndFirmCleanViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndFirmTitle": "Theme mastered: {theme}",
+  "@trainingEndFirmTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndFirmTitle.",
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEndFirmViktor": "A stumble on the hard exercise, and you were back on track the next day. That is what matters.",
+  "@trainingEndFirmViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndNotNow": "Not now",
+  "@trainingEndNotNow": {
+    "description": "T85 training exercise and cycle result: trainingEndNotNow."
+  },
+  "trainingEndRedo": "Redo the lesson",
+  "@trainingEndRedo": {
+    "description": "T85 training exercise and cycle result: trainingEndRedo."
+  },
+  "trainingEndRedoAfterBody": "Even with extra practice, the theme stayed below 70 %. Repeat the lesson: afterwards, its exercises restart from easy.",
+  "@trainingEndRedoAfterBody": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoAfterBody."
+  },
+  "trainingEndRedoAfterTitle": "Time to redo the lesson",
+  "@trainingEndRedoAfterTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoAfterTitle."
+  },
+  "trainingEndRedoAfterViktor": "Sometimes an idea needs another careful look before practice. Return to the lesson, and the exercises will be easier afterwards.",
+  "@trainingEndRedoAfterViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndRedoBody": "The theme is not familiar yet. Repeating the lesson now is the shortest path; exercises restart from easy.",
+  "@trainingEndRedoBody": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoBody."
+  },
+  "trainingEndRedoTitle": "Redo the lesson",
+  "@trainingEndRedoTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoTitle."
+  },
+  "trainingEndRedoViktor": "It did not work this time, and that is fine. Let us revisit the idea together before moving on.",
+  "@trainingEndRedoViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndReinforceBody": "You do not need to repeat the lesson. {n, plural, =1{The remaining exercise from {theme} is now in your goals: practise until the theme becomes familiar.} other{The {n} remaining exercises from {theme} are now in your goals: practise until the theme becomes familiar.}}",
+  "@trainingEndReinforceBody": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceBody.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "theme": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEndReinforceFirst": "Do reinforcement first",
+  "@trainingEndReinforceFirst": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceFirst."
+  },
+  "trainingEndReinforceScore": "Reinforcement: {correct} of {total} correct ({score}%)",
+  "@trainingEndReinforceScore": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceScore.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEndReinforceTitle": "More practice on this theme",
+  "@trainingEndReinforceTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceTitle."
+  },
+  "trainingEndReinforceViktor": "You understood the idea; now practise spotting the tactic faster. A few more exercises will make it feel natural.",
+  "@trainingEndReinforceViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndReviewLesson": "Review the lesson anyway",
+  "@trainingEndReviewLesson": {
+    "description": "T85 training exercise and cycle result: trainingEndReviewLesson."
+  },
+  "trainingEndSeeGoals": "See goals",
+  "@trainingEndSeeGoals": {
+    "description": "T85 training exercise and cycle result: trainingEndSeeGoals."
+  },
+  "trainingExerciseExpired": "Return to your goals to continue training.",
+  "@trainingExerciseExpired": {
+    "description": "T85 training exercise and cycle result: trainingExerciseExpired."
+  },
+  "trainingExerciseSaveError": "Could not save your progress. Try again.",
+  "@trainingExerciseSaveError": {
+    "description": "T85 training exercise and cycle result: trainingExerciseSaveError."
+  },
+  "trainingFindMove": "{side, select, white{White} other{Black}} to play: find the tactic.",
+  "@trainingFindMove": {
+    "description": "T85 training exercise and cycle result: trainingFindMove.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingNextGoal": "Next goal",
+  "@trainingNextGoal": {
+    "description": "T85 training exercise and cycle result: trainingNextGoal."
+  },
+  "trainingSeeExplanation": "See explanation",
+  "@trainingSeeExplanation": {
+    "description": "T85 training exercise and cycle result: trainingSeeExplanation."
+  },
+  "trainingSeeSolution": "See the solution",
+  "@trainingSeeSolution": {
+    "description": "T85 training exercise and cycle result: trainingSeeSolution."
+  },
+  "trainingTomorrowEasier": "Tomorrow, an easier exercise",
+  "@trainingTomorrowEasier": {
+    "description": "T85 training exercise and cycle result: trainingTomorrowEasier."
+  },
+  "trainingTomorrowHarder": "Tomorrow, a harder exercise",
+  "@trainingTomorrowHarder": {
+    "description": "T85 training exercise and cycle result: trainingTomorrowHarder."
+  },
+  "trainingWrongResult": "Not quite",
+  "@trainingWrongResult": {
+    "description": "T85 training exercise and cycle result: trainingWrongResult."
   }
 }

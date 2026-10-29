@@ -9,13 +9,14 @@ final class TrainingGoal {
     this.stars = 0,
     this.done = false,
     this.mock = false,
+    this.hintUsed = false,
     Map<String, String> items = const {},
   }) : items = Map.unmodifiable(items);
   final GoalKind kind;
   final String ref;
   final String? itemId;
   final int stars;
-  final bool done, mock;
+  final bool done, mock, hintUsed;
 
   /// Opening lesson -> today's segment, frozen along with the other goals.
   final Map<String, String> items;
@@ -27,6 +28,17 @@ final class TrainingGoal {
     stars: stars,
     done: true,
     mock: mock,
+    hintUsed: hintUsed,
+    items: items,
+  );
+  TrainingGoal withHint() => TrainingGoal(
+    kind: kind,
+    ref: ref,
+    itemId: itemId,
+    stars: stars,
+    done: done,
+    mock: mock,
+    hintUsed: true,
     items: items,
   );
   Map<String, Object?> toJson() => {
@@ -36,6 +48,7 @@ final class TrainingGoal {
     'stars': stars,
     'done': done,
     'mock': mock,
+    'hintUsed': hintUsed,
     'items': items,
   };
   factory TrainingGoal.fromJson(Map<String, dynamic> j) => TrainingGoal(
@@ -45,6 +58,7 @@ final class TrainingGoal {
     stars: j['stars'] as int,
     done: j['done'] as bool,
     mock: j['mock'] as bool,
+    hintUsed: j['hintUsed'] as bool? ?? false,
     items: (j['items'] as Map).cast<String, String>(),
   );
 }

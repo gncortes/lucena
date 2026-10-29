@@ -1,3 +1,7 @@
+import '../domain/models/character.dart';
+import '../domain/models/training/day_goals.dart';
+import '../ui/training_exercise/widgets/training_exercise_screen.dart';
+import '../ui/core/l10n/l10n.dart';
 import '../ui/course_guide/widgets/training_goals_tab.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../ui/course_guide/view_models/training_plan_cubit.dart';
@@ -40,6 +44,14 @@ GoRoute trainingRoute() => GoRoute(
       : Routes.settings,
   builder: (context, state) => _guide(context, state, const _Guide()),
   routes: [
+    GoRoute(
+      path: 'exercise/:theme',
+      builder: (context, state) => _ExerciseDestination(
+        config: _config(state),
+        theme: state.pathParameters['theme']!,
+        goalKey: state.uri.queryParameters['goal'],
+      ),
+    ),
     GoRoute(
       path: 'plan',
       builder: (context, state) => BlocProvider(
@@ -155,10 +167,125 @@ class _Guide extends StatelessWidget {
                 .where((l) => l.id == goal.ref)
                 .firstOrNull;
             if (lesson != null) _lesson(context, lesson);
+          } else if (goal.kind == GoalKind.exercise ||
+              goal.kind == GoalKind.reinforce) {
+            context.push(
+              Uri.parse(
+                Routes.trainingExercise(
+                  context.read<CourseGuideCubit>().config.course.name,
+                  goal.ref,
+                ),
+              ).replace(queryParameters: {'goal': goal.key}).toString(),
+            );
           }
         },
       ),
       progressBuilder: (_) => const SizedBox.shrink(),
     ),
+  );
+}
+
+class _ExerciseDestination extends StatefulWidget {
+  const _ExerciseDestination({
+    required this.config,
+    required this.theme,
+    this.goalKey,
+  });
+  final TrainingCourseConfig config;
+  final String theme;
+  final String? goalKey;
+  @override
+  State<_ExerciseDestination> createState() => _ExerciseDestinationState();
+}
+
+class _ExerciseDestinationState extends State<_ExerciseDestination> {
+  bool _finishing = false;
+  late Future<({TrainingGoal goal, String title, Character teacher})?> _data;
+  @override
+  void initState() {
+    super.initState();
+    _data = _load();
+  }
+
+  Future<({TrainingGoal goal, String title, Character teacher})?>
+  _load() async {
+    final repository = context.read<TrainingRepository>();
+    final characters = context.read<CharacterRepository>();
+    final saved = await repository.load(widget.config.course);
+    final resources = await repository.resources(widget.config.course);
+    final teachers = await characters.characters();
+    final goal = saved.day?.goals
+        .where(
+          (g) =>
+              (g.kind == GoalKind.exercise || g.kind == GoalKind.reinforce) &&
+              g.ref == widget.theme &&
+              (widget.goalKey == null ? !g.done : g.key == widget.goalKey),
+        )
+        .firstOrNull;
+    final lesson = resources.lessons
+        .where((l) => l.id == widget.theme)
+        .firstOrNull;
+    final teacher = teachers
+        .where((c) => c.id == Character.masterId)
+        .firstOrNull;
+    if (goal == null || lesson == null || teacher == null) return null;
+    return (goal: goal, title: lesson.title, teacher: teacher);
+  }
+
+  Future<void> _finish() async {
+    if (_finishing) return;
+    _finishing = true;
+    final router = GoRouter.of(context);
+    try {
+      await context.read<TrainingRepository>().update(
+        widget.config.course,
+        (s) => s.copyWith(tab: CourseGuideTab.goals),
+      );
+      if (!mounted) return;
+      if (router.canPop()) {
+        router.pop();
+      } else {
+        router.go(Routes.training(widget.config.course.name));
+      }
+    } catch (_) {
+      if (mounted) {
+        _finishing = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder(
+    future: _data,
+    builder: (context, snapshot) {
+      final data = snapshot.data;
+      if (snapshot.connectionState != ConnectionState.done && data == null) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+      if (snapshot.hasError || data == null) {
+        return Scaffold(
+          appBar: AppBar(),
+          body: Center(
+            child: TextButton(
+              onPressed: () => setState(() => _data = _load()),
+              child: Text(context.l10n.lessonRetry),
+            ),
+          ),
+        );
+      }
+      return TrainingExerciseScreen(
+        repository: context.read<TrainingRepository>(),
+        config: widget.config,
+        now: context.read<Now>(),
+        goalKey: data.goal.key,
+        title: data.title,
+        teacher: data.teacher,
+        onNextGoal: _finish,
+        onRedoLesson: (id) => context.push(Routes.trainingLesson(id)),
+      );
+    },
   );
 }

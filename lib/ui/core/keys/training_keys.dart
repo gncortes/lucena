@@ -1,6 +1,12 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class TrainingKeys {
+  static const exerciseScreen = Key('training.exerciseScreen');
+  static const exerciseHint = Key('training.exerciseHint');
+  static const exerciseRetry = Key('training.exerciseRetry');
+  static const exerciseSaveError = Key('training.exerciseSaveError');
+  static const exerciseEnd = Key('training.exerciseEnd');
+
   static const planScreen = Key('training.planScreen');
   static const planScroll = Key('training.planScroll');
   static const planError = Key('training.planError');

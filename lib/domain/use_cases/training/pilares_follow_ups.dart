@@ -66,14 +66,25 @@ final class PilaresFollowUps implements TrainingFollowUps {
           );
         }
         if (item != null) {
+          final kind = cycle.phase == ThemePhase.reinforce
+              ? GoalKind.reinforce
+              : GoalKind.exercise;
+          final pending = [...?state.day?.goals, ...state.deferredGoals]
+              .where(
+                (g) =>
+                    !g.done &&
+                    g.kind == kind &&
+                    g.ref == lesson.id &&
+                    g.itemId == item!.id,
+              )
+              .firstOrNull;
           final goal = TrainingGoal(
-            kind: cycle.phase == ThemePhase.reinforce
-                ? GoalKind.reinforce
-                : GoalKind.exercise,
+            kind: kind,
             ref: lesson.id,
             itemId: item.id,
             stars: item.stars,
             mock: item.mock,
+            hintUsed: pending?.hintUsed ?? false,
           );
           (cycle.phase == ThemePhase.reinforce ? reinforce : exercises).add(
             goal,
