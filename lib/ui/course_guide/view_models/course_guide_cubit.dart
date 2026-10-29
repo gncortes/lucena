@@ -17,6 +17,7 @@ import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_lesson.dart';
+import '../../../domain/use_cases/training/double_training_goals.dart';
 
 final class CourseGuideState {
   const CourseGuideState({
@@ -165,6 +166,9 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   );
   Future<bool> selectTab(CourseGuideTab tab) =>
       _change((s) => s.copyWith(tab: tab));
+
+  Future<bool> doubleGoals() =>
+      _change((s) => DoubleTrainingGoals(now, config)(s, state.resources!));
 
   Future<bool> observeLesson(TrainingLesson lesson, {bool redo = false}) =>
       _change(

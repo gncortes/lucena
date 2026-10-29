@@ -34,6 +34,12 @@ final class TrainingCourseConfig {
     this.titleKey = 'trainingPilaresTitle',
     this.lessonMinutes = 30,
     this.hasHelp = true,
+    this.hasLevelTest = false,
+    this.doubleRequiresExtraLesson = true,
+    this.firstInfoKey = 'trainingFirstInfo',
+    this.doubleOfferBodyKey = 'trainingDoubleOfferBody',
+    this.dayOffInfoKey = 'trainingDayOffInfo',
+    this.allDoneSpeechKey = 'trainingAllDoneViktor',
     this.progressKind = TrainingProgressKind.mastery,
     this.tipsKeys = const [],
     this.welcomeKeys = const [],
@@ -61,6 +67,12 @@ final class TrainingCourseConfig {
   final List<GoalSection> sections;
   final int defaultMinutes, lessonMinutes;
   final bool hasHelp;
+  final bool hasLevelTest;
+  final bool doubleRequiresExtraLesson;
+  final String firstInfoKey,
+      doubleOfferBodyKey,
+      dayOffInfoKey,
+      allDoneSpeechKey;
   final TrainingProgressKind progressKind;
   final List<String> tipsKeys, welcomeKeys;
   final Map<int, String> planLabelKeys, planRecommendationKeys;
@@ -69,6 +81,7 @@ final class TrainingCourseConfig {
       planOptions.firstWhere((o) => o.minutes == minutes);
   static const pilares = TrainingCourseConfig(
     course: TrainingCourse.pilares,
+    hasLevelTest: true,
     indexSource: 'assets/courses/pilares/index.json',
     followUps: PilaresFollowUps(),
     planOptions: [

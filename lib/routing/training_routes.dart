@@ -1,3 +1,4 @@
+import '../ui/course_guide/widgets/training_goals_tab.dart';
 import '../data/repositories/push/push_repository.dart';
 import '../ui/course_guide/view_models/training_plan_cubit.dart';
 import '../ui/course_guide/widgets/training_plan_screen.dart';
@@ -136,7 +137,27 @@ class _Guide extends StatelessWidget {
           chapter,
         ),
       ),
-      goalsBuilder: (_) => const SizedBox.shrink(),
+      goalsBuilder: (_) => TrainingGoalsTab(
+        onPlan: () => context.push(
+          Routes.trainingPlan(
+            context.read<CourseGuideCubit>().config.course.name,
+          ),
+        ),
+        onGoal: (goal) {
+          if (goal.kind == GoalKind.lesson ||
+              goal.kind == GoalKind.extraLesson ||
+              goal.kind == GoalKind.redo) {
+            final lesson = context
+                .read<CourseGuideCubit>()
+                .state
+                .resources
+                ?.lessons
+                .where((l) => l.id == goal.ref)
+                .firstOrNull;
+            if (lesson != null) _lesson(context, lesson);
+          }
+        },
+      ),
       progressBuilder: (_) => const SizedBox.shrink(),
     ),
   );

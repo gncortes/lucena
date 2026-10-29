@@ -5,6 +5,7 @@ import '../../models/training/training_resources.dart';
 import '../../models/training/training_state.dart';
 import '../now.dart';
 import 'build_day_goals.dart';
+import 'training_goal_order.dart';
 
 final class DoubleTrainingGoals {
   const DoubleTrainingGoals(this.now, this.config);
@@ -16,10 +17,12 @@ final class DoubleTrainingGoals {
     final day = current.day!;
     if (!day.allDone ||
         day.doubled ||
-        !day.goals.any((g) => g.kind == GoalKind.extraLesson)) {
+        (config.doubleRequiresExtraLesson &&
+            !day.goals.any((g) => g.kind == GoalKind.extraLesson))) {
       return current;
     }
     final count = config.option(day.plan.minutes).lessonsPerDay;
+    final keys = day.goals.map((g) => g.key).toSet();
     final lessons = resources.lessons
         .where((l) => l.visible && !state.completedLessons.containsKey(l.id))
         .take(count == 0 ? 1 : count);
@@ -30,14 +33,18 @@ final class DoubleTrainingGoals {
               g.kind != GoalKind.openings &&
               g.kind != GoalKind.reinforce &&
               g.kind != GoalKind.redo,
-        );
+        )
+        .where((g) => !keys.contains(g.key));
     final added = [
       for (final lesson in lessons)
         TrainingGoal(kind: GoalKind.lesson, ref: lesson.id),
       ...followUps,
     ];
     return current.copyWith(
-      day: day.copyWith(doubled: true, goals: [...day.goals, ...added]),
+      day: day.copyWith(
+        doubled: true,
+        goals: orderTrainingGoals([...day.goals, ...added], config.sections),
+      ),
     );
   }
 }

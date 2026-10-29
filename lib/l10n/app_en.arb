@@ -10154,5 +10154,169 @@
         "type": "int"
       }
     }
+  },
+  "trainingLessonExtraDone": "Extra lesson · completed today",
+  "@trainingLessonExtraDone": {
+    "description": "T85 daily goals and progress: trainingLessonExtraDone."
+  },
+  "trainingOpeningsSummary": "{n} openings · {done} of {total} segments today",
+  "@trainingOpeningsSummary": {
+    "description": "T85 daily goals and progress: trainingOpeningsSummary.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingLessonNew": "New lesson · about {min} minutes",
+  "@trainingLessonNew": {
+    "description": "T85 daily goals and progress: trainingLessonNew.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSectionIfStudy": "IF YOU WANT TO STUDY TODAY",
+  "@trainingSectionIfStudy": {
+    "description": "T85 daily goals and progress: trainingSectionIfStudy."
+  },
+  "trainingSectionDoneToday": "DONE TODAY",
+  "@trainingSectionDoneToday": {
+    "description": "T85 daily goals and progress: trainingSectionDoneToday."
+  },
+  "trainingDayOffBody": "Your goals return on the next study day. Unfinished goals will wait for you.",
+  "@trainingDayOffBody": {
+    "description": "T85 daily goals and progress: trainingDayOffBody."
+  },
+  "trainingSectionLesson": "LESSON",
+  "@trainingSectionLesson": {
+    "description": "T85 daily goals and progress: trainingSectionLesson."
+  },
+  "trainingDayOffTitle": "Today is a rest day",
+  "@trainingDayOffTitle": {
+    "description": "T85 daily goals and progress: trainingDayOffTitle."
+  },
+  "trainingLessonDoneToday": "Completed today",
+  "@trainingLessonDoneToday": {
+    "description": "T85 daily goals and progress: trainingLessonDoneToday."
+  },
+  "trainingOpeningsTitle": "Openings",
+  "@trainingOpeningsTitle": {
+    "description": "T85 daily goals and progress: trainingOpeningsTitle."
+  },
+  "trainingSectionLessons": "LESSONS",
+  "@trainingSectionLessons": {
+    "description": "T85 daily goals and progress: trainingSectionLessons."
+  },
+  "trainingSectionOpenings": "OPENINGS",
+  "@trainingSectionOpenings": {
+    "description": "T85 daily goals and progress: trainingSectionOpenings."
+  },
+  "trainingAllDoneViktor": "All done for today. On the next study day, exercises you solved correctly will be a little harder.",
+  "@trainingAllDoneViktor": {
+    "description": "T85 daily goals and progress: trainingAllDoneViktor."
+  },
+  "trainingSectionExercisesN": "EXERCISES · {n} THEMES",
+  "@trainingSectionExercisesN": {
+    "description": "T85 daily goals and progress: trainingSectionExercisesN.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSectionExercises": "EXERCISES",
+  "@trainingSectionExercises": {
+    "description": "T85 daily goals and progress: trainingSectionExercises."
+  },
+  "trainingOneExercise": "1 exercise",
+  "@trainingOneExercise": {
+    "description": "T85 daily goals and progress: trainingOneExercise."
+  },
+  "trainingSectionReinforce": "REINFORCEMENT",
+  "@trainingSectionReinforce": {
+    "description": "T85 daily goals and progress: trainingSectionReinforce."
+  },
+  "trainingWeekdaysCustom": "{n, plural, =0{0 study days} one{1 study day} other{{n} study days}}",
+  "@trainingWeekdaysCustom": {
+    "description": "T85 daily goals and progress: trainingWeekdaysCustom.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingRedoLesson": "Redo the lesson",
+  "@trainingRedoLesson": {
+    "description": "T85 daily goals and progress: trainingRedoLesson."
+  },
+  "trainingWeekdaysDefault": "Monday to Friday",
+  "@trainingWeekdaysDefault": {
+    "description": "T85 daily goals and progress: trainingWeekdaysDefault."
+  },
+  "trainingDoubleAction": "Double the goals",
+  "@trainingDoubleAction": {
+    "description": "T85 daily goals and progress: trainingDoubleAction."
+  },
+  "trainingFirstInfo": "After you complete a lesson, its theme enters the goals for 7 study days, one exercise per day.",
+  "@trainingFirstInfo": {
+    "description": "T85 daily goals and progress: trainingFirstInfo."
+  },
+  "trainingDoubleOfferBody": "Today gains another lesson and another exercise for each theme. Openings wait for the next study day.",
+  "@trainingDoubleOfferBody": {
+    "description": "T85 daily goals and progress: trainingDoubleOfferBody."
+  },
+  "trainingPlanLine": "Plan: {days}",
+  "@trainingPlanLine": {
+    "description": "T85 daily goals and progress: trainingPlanLine.",
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingSectionDoubled": "DOUBLED GOALS",
+  "@trainingSectionDoubled": {
+    "description": "T85 daily goals and progress: trainingSectionDoubled."
+  },
+  "trainingDayOffInfo": "A lesson completed early counts as a completed goal. Its exercises start on the next study day.",
+  "@trainingDayOffInfo": {
+    "description": "T85 daily goals and progress: trainingDayOffInfo."
+  },
+  "trainingGoalsToday": "Today",
+  "@trainingGoalsToday": {
+    "description": "T85 daily goals and progress: trainingGoalsToday."
+  },
+  "trainingDoubleOfferTitle": "All done for today. Want to double your goals?",
+  "@trainingDoubleOfferTitle": {
+    "description": "T85 daily goals and progress: trainingDoubleOfferTitle."
+  },
+  "trainingReinforceLeft": "Reinforcement · {n} exercises left in this theme",
+  "@trainingReinforceLeft": {
+    "description": "T85 daily goals and progress: trainingReinforceLeft.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingLessonLabel": "Lesson {n} · {title}",
+  "@trainingLessonLabel": {
+    "description": "T85 Viktor School daily training: trainingLessonLabel.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   }
 }

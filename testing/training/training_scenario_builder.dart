@@ -19,51 +19,145 @@ import 'mock_exercise_bank.dart';
 /// Large deterministic fixture, shared by widget, Patrol and screenshot tests.
 /// School support is added with T85.14, using the existing challenge fakes.
 final class TrainingScenarioBuilder {
-  TrainingScenarioBuilder(this.course, {DateTime? date})
+  TrainingScenarioBuilder(this.course, {DateTime? date, this.resources})
     : now = FakeNow(date ?? DateTime(2026, 10, 26, 12));
+  final TrainingResources? resources;
   final TrainingCourse course;
   final FakeNow now;
   TrainingCourseConfig get config => TrainingCourseConfig.pilares;
-  TrainingResources get content => TrainingResources(
-    lessons: [
-      for (var i = 1; i <= 12; i++)
-        TrainingLesson(
-          id: 'theme$i',
-          kind: TrainingLessonKind.theme,
-          title: 'Tema $i',
-          summary: 'Resumo $i',
-          group: 'Capítulo $i',
-        ),
-      for (var i = 1; i <= 4; i++)
-        TrainingLesson(
-          id: 'opening$i',
-          kind: TrainingLessonKind.opening,
-          title: 'Abertura $i',
-          group: 'Aberturas',
-        ),
-    ],
-    banks: {
-      for (var i = 1; i <= 12; i++)
-        'theme$i': MockExerciseBank.forLesson('theme$i'),
-    },
-    openings: {
-      for (var i = 1; i <= 4; i++)
-        'opening$i': [
-          OpeningTrecho(
-            id: 't1',
-            title: 'Linha 1',
-            moves: ['d2d4', 'd7d5', 'c1f4'],
-            mock: true,
-          ),
-          OpeningTrecho(
-            id: 't2',
-            title: 'Linha 2',
-            moves: ['d2d4', 'g8f6'],
-            mock: true,
-          ),
+  List<String> get _themes => content.lessons
+      .where((l) => l.visible && l.kind == TrainingLessonKind.theme)
+      .map((l) => l.id)
+      .toList();
+  List<String> get _openings => content.lessons
+      .where((l) => l.visible && l.kind == TrainingLessonKind.opening)
+      .map((l) => l.id)
+      .take(4)
+      .toList();
+  TrainingResources get content =>
+      resources ??
+      TrainingResources(
+        lessons: [
+          for (var i = 1; i <= 12; i++)
+            TrainingLesson(
+              id: 'theme$i',
+              kind: TrainingLessonKind.theme,
+              title: 'Tema $i',
+              summary: 'Resumo $i',
+              group: 'Capítulo $i',
+            ),
+          for (var i = 1; i <= 4; i++)
+            TrainingLesson(
+              id: 'opening$i',
+              kind: TrainingLessonKind.opening,
+              title: 'Abertura $i',
+              group: 'Aberturas',
+            ),
         ],
-    },
-  );
+        banks: {
+          for (var i = 1; i <= 12; i++)
+            'theme$i': MockExerciseBank.forLesson('theme$i'),
+        },
+        openings: {
+          for (var i = 1; i <= 4; i++)
+            'opening$i': [
+              OpeningTrecho(
+                id: 't1',
+                title: 'Linha 1',
+                moves: ['d2d4', 'd7d5', 'c1f4'],
+                mock: true,
+              ),
+              OpeningTrecho(
+                id: 't2',
+                title: 'Linha 2',
+                moves: ['d2d4', 'g8f6'],
+                mock: true,
+              ),
+            ],
+        },
+      );
+
+  /// Shared Pilares artboard states. Use a fresh builder per sample: second and
+  /// nextDay advance [now], so the host must use this same clock.
+  TrainingState goalsScenario(String sample) {
+    TrainingState first() => BuildDayGoals(now, config)(
+      TrainingState(course: course, installSeed: 'first', onboardingDone: true),
+      content,
+    );
+    TrainingState completeNext(TrainingState state) =>
+        CompleteTrainingLesson(now, config)(
+          state,
+          content,
+          content.lessons.firstWhere(
+            (l) => l.visible && !state.completedLessons.containsKey(l.id),
+          ),
+        );
+    TrainingState middle() {
+      var state = large();
+      final goals = state.day!.goals;
+      final lesson = goals.firstWhere((g) => g.kind == GoalKind.lesson);
+      final exercises = goals
+          .where((g) => g.kind == GoalKind.exercise)
+          .take(3)
+          .toList();
+      state = state.copyWith(
+        day: state.day!.copyWith(
+          goals: [
+            lesson,
+            ...exercises,
+            ...goals.where((g) => g.kind == GoalKind.openings),
+          ],
+        ),
+      );
+      state = CompleteTrainingLesson(now, config)(
+        state,
+        content,
+        content.lessons.firstWhere((l) => l.id == lesson.ref),
+      );
+      return CompleteTrainingGoal(now)
+          .exercise(state, content, exercises.first.key, correct: true);
+    }
+
+    switch (sample) {
+      case 'first':
+        return first();
+      case 'second':
+        final state = completeNext(first());
+        now.advance(const Duration(days: 1));
+        return BuildDayGoals(now, config)(state, content);
+      case 'middle':
+        return middle();
+      case 'goalDone':
+        final state = middle();
+        final exercise = state.day!.goals.firstWhere(
+          (g) => g.kind == GoalKind.exercise && !g.done,
+        );
+        return CompleteTrainingGoal(now)
+            .exercise(state, content, exercise.key, correct: true);
+      case 'extraLesson':
+        return completeNext(middle());
+      case 'nextDay':
+        final state = completeNext(middle());
+        now.advance(const Duration(days: 1));
+        return BuildDayGoals(now, config)(state, content);
+      case 'doneExtra':
+        return completeNext(allDone());
+      case 'dayOff':
+        return large(dayOff: true);
+      case 'doubled':
+        return DoubleTrainingGoals(now, config)(
+          completeNext(allDone()),
+          content,
+        );
+      case 'large':
+      case 'scrolled':
+        return large();
+      case 'done':
+        return allDone();
+      default:
+        throw ArgumentError.value(sample, 'sample', 'Unknown goals artboard');
+    }
+  }
 
   TrainingState large({int cycleDay = 1, bool dayOff = false}) {
     if (course != TrainingCourse.pilares) {
@@ -71,6 +165,11 @@ final class TrainingScenarioBuilder {
     }
     if (cycleDay < 1 || cycleDay > 7) throw RangeError.range(cycleDay, 1, 7);
     final data = content;
+    final themes = _themes;
+    final openings = _openings;
+    if (themes.length < 10 || openings.length < 4) {
+      throw StateError('Large fixture requires ten themes and four openings');
+    }
     const started = '2026-10-01';
     final cycles = <String, ThemeCycle>{};
     for (var i = 1; i <= 7; i++) {
@@ -78,7 +177,7 @@ final class TrainingScenarioBuilder {
       final used = <int, int>{1: 0, 2: 0, 3: 0};
       for (var d = 1; d < cycleDay; d++) {
         final stars = [1, 1, 2, 2, 3, 3, 3][d - 1];
-        final exercise = data.banks['theme$i']!
+        final exercise = data.banks[themes[i - 1]]!
             .where((e) => e.stars == stars)
             .elementAt(used[stars]!);
         used[stars] = used[stars]! + 1;
@@ -92,19 +191,19 @@ final class TrainingScenarioBuilder {
           ),
         );
       }
-      cycles['theme$i'] = ThemeCycle(
-        lessonId: 'theme$i',
+      cycles[themes[i - 1]] = ThemeCycle(
+        lessonId: themes[i - 1],
         startedOn: started,
         level: [1, 1, 2, 2, 3, 3, 3][cycleDay - 1],
         streak: (cycleDay - 1) % 2,
         days: days,
       );
     }
-    cycles['theme8'] = ThemeCycle(
-      lessonId: 'theme8',
+    cycles[themes[7]] = ThemeCycle(
+      lessonId: themes[7],
       startedOn: started,
       phase: ThemePhase.reinforce,
-      reinforcement: data.banks['theme8']!.map((e) => e.id),
+      reinforcement: data.banks[themes[7]]!.map((e) => e.id),
     );
     final state = TrainingState(
       course: course,
@@ -112,13 +211,16 @@ final class TrainingScenarioBuilder {
       onboardingDone: true,
       plan: TrainingPlan(weekdays: dayOff ? 0 : 127),
       completedLessons: {
-        for (var i = 1; i <= 8; i++) 'theme$i': started,
-        for (var i = 1; i <= 4; i++) 'opening$i': started,
+        for (final id in themes.take(8)) id: started,
+        for (final id in openings) id: started,
+        if (resources != null)
+          for (final lesson in data.lessons.takeWhile((l) => l.id != themes[8]))
+            lesson.id: started,
       },
       cycles: cycles,
       openings: {
-        for (var i = 1; i <= 4; i++)
-          'opening$i': OpeningTrack(lessonId: 'opening$i', startedOn: started),
+        for (final id in openings)
+          id: OpeningTrack(lessonId: id, startedOn: started),
       },
     );
     return BuildDayGoals(now, config)(state, data);
@@ -154,7 +256,9 @@ final class TrainingScenarioBuilder {
 
   TrainingState doubled() {
     final done = allDone();
-    final extra = content.lessons.firstWhere((l) => l.id == 'theme10');
+    final extra = content.lessons.firstWhere(
+      (l) => l.visible && !done.completedLessons.containsKey(l.id),
+    );
     final state = CompleteTrainingLesson(now, config)(done, content, extra);
     return DoubleTrainingGoals(now, config)(state, content);
   }

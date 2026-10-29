@@ -7,6 +7,7 @@ import '../../models/training/training_state.dart';
 import '../now.dart';
 import 'build_day_goals.dart';
 import 'training_date.dart';
+import 'training_goal_order.dart';
 
 /// Called for observed completions from LearningRepository, never for a visit.
 final class CompleteTrainingLesson {
@@ -65,6 +66,7 @@ final class CompleteTrainingLesson {
           .build(next, resources, now)
           .where((g) => g.ref == lesson.id && !keys.contains(g.key)),
     ];
+    goals = orderTrainingGoals(goals, config.sections);
     return next.copyWith(day: day.copyWith(goals: goals));
   }
 }

@@ -15,9 +15,14 @@ final class BuildDayGoals {
     final at = now();
     final date = trainingDate(at);
     if (state.day?.date == date) return state;
+    final pendingGoals = <String, TrainingGoal>{
+      for (final goal in [...state.deferredGoals, ...?state.day?.goals])
+        if (!goal.done) goal.key: goal,
+    }.values;
     if (!state.plan.studiesOn(at)) {
       return state.copyWith(
         day: DayGoals(date: date, studyDay: false, plan: state.plan),
+        deferredGoals: pendingGoals,
       );
     }
     final quota = lessonsDue(state, at);
@@ -26,12 +31,10 @@ final class BuildDayGoals {
       for (final id in credits)
         TrainingGoal(kind: GoalKind.lesson, ref: id, done: true),
     ];
-    final pending =
-        state.day?.goals
-            .where((g) => !g.done && g.kind == GoalKind.lesson)
-            .where((g) => !state.completedLessons.containsKey(g.ref))
-            .toList() ??
-        [];
+    final pending = pendingGoals
+        .where((g) => !g.done && g.kind == GoalKind.lesson)
+        .where((g) => !state.completedLessons.containsKey(g.ref))
+        .toList();
     // Pending lessons retain their place without accumulating a missed day's quota.
     lessons.addAll(pending);
     final reserved = lessons.map((g) => g.ref).toSet();
@@ -54,6 +57,7 @@ final class BuildDayGoals {
       ),
       lastLessonDate: hasLesson ? date : null,
       offDayCredits: [],
+      deferredGoals: [],
     );
   }
 
