@@ -47,6 +47,10 @@ final class TrainingExerciseState {
     this.correct = false,
     this.reinforcement = false,
     this.error = false,
+    this.errorFeedback,
+    this.errorSnapshot,
+    this.practicing = false,
+    this.practiceCorrect = false,
   });
   final TrainingExercisePhase phase;
   final TrainingExercise? exercise;
@@ -55,6 +59,14 @@ final class TrainingExerciseState {
   final String? fen, lastMove;
   final int cursor;
   final bool hint, correct, reinforcement, error;
+  final String? errorFeedback;
+  final TrainingExerciseError? errorSnapshot;
+  final bool practicing, practiceCorrect;
+  bool get displayedCorrect => practicing ? practiceCorrect : correct;
+  bool get canRetryPractice =>
+      phase == TrainingExercisePhase.result &&
+      !displayedCorrect &&
+      errorSnapshot != null;
 
   TrainingExerciseState copyWith({
     TrainingExercisePhase? phase,
@@ -65,6 +77,11 @@ final class TrainingExerciseState {
     bool? hint,
     bool? correct,
     bool error = false,
+    String? errorFeedback,
+    bool clearFeedback = false,
+    TrainingExerciseError? errorSnapshot,
+    bool? practicing,
+    bool? practiceCorrect,
   }) => TrainingExerciseState(
     phase: phase ?? this.phase,
     exercise: exercise,
@@ -77,6 +94,10 @@ final class TrainingExerciseState {
     correct: correct ?? this.correct,
     reinforcement: reinforcement,
     error: error,
+    errorFeedback: clearFeedback ? null : errorFeedback ?? this.errorFeedback,
+    errorSnapshot: errorSnapshot ?? this.errorSnapshot,
+    practicing: practicing ?? this.practicing,
+    practiceCorrect: practiceCorrect ?? this.practiceCorrect,
   );
 }
 
@@ -106,6 +127,13 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
   final String origin;
   DateTime? _started;
   Duration? _finished;
+  Map<String, String> _feedback = const {};
+  String? _feedbackFor(
+    TrainingExerciseError snapshot,
+    TrainingExercise exercise,
+  ) => exercise.mock
+      ? null
+      : _feedback['${exercise.id}.${snapshot.cursor ~/ 2 + 1}.${snapshot.wrongMove}'];
   Duration get elapsed =>
       _finished ??
       (_started == null ? Duration.zero : now().difference(_started!));
@@ -130,6 +158,11 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
         throw StateError('Exercise unavailable');
       }
       PlayTrainingExercise(exercise); // Validate before accepting any attempt.
+      _feedback = resources.errorFeedback[goal.ref] ?? const {};
+      final snapshot = goal.exerciseError;
+      final feedback = snapshot == null
+          ? null
+          : _feedbackFor(snapshot, exercise);
       final result = goal.done
           ? cycle.days
                 .where(
@@ -153,11 +186,14 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
           exercise: exercise,
           goal: goal,
           cycle: cycle,
-          fen: exercise.fen,
-          lastMove: exercise.lastMove,
+          fen: feedback != null ? snapshot!.fen : exercise.fen,
+          lastMove: feedback != null ? snapshot!.lastMove : exercise.lastMove,
+          cursor: snapshot?.cursor ?? 0,
           hint: result?.hint ?? goal.hintUsed,
           correct: result?.correct ?? false,
           reinforcement: goal.kind == GoalKind.reinforce,
+          errorFeedback: feedback,
+          errorSnapshot: snapshot,
         ),
       );
     } catch (_) {
@@ -170,6 +206,10 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
 
   Future<void> hint() async {
     if (state.phase != TrainingExercisePhase.playing || state.hint) return;
+    if (state.practicing) {
+      emit(state.copyWith(hint: true));
+      return;
+    }
     emit(state.copyWith(phase: TrainingExercisePhase.hintSaving));
     try {
       final saved = await repository.transact(config.course, (current) async {
@@ -211,23 +251,68 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
 
   Future<void> play(String uci) async {
     if (state.phase != TrainingExercisePhase.playing) return;
+    final before = state;
     final step = PlayTrainingExercise(state.exercise!)
         .play(state.fen!, state.cursor, uci);
+    TrainingExerciseError? snapshot;
+    String? feedback;
+    if (step.done && !step.correct) {
+      snapshot = TrainingExerciseError(
+        fen: before.fen!,
+        cursor: before.cursor,
+        wrongMove: uci,
+        lastMove: before.lastMove,
+        feedbackShown:
+            !before.exercise!.mock &&
+            _feedback.containsKey(
+              '${before.exercise!.id}.${before.cursor ~/ 2 + 1}.$uci',
+            ),
+      );
+      feedback = _feedbackFor(snapshot, before.exercise!);
+    }
     emit(
       state.copyWith(
-        fen: step.fen,
+        fen: feedback == null ? step.fen : before.fen,
         cursor: step.cursor,
-        lastMove: step.lastMove,
-        correct: step.correct,
+        lastMove: feedback == null ? step.lastMove : before.lastMove,
+        correct: before.practicing ? before.correct : step.correct,
+        practiceCorrect: before.practicing ? step.correct : false,
+        errorSnapshot: snapshot,
+        errorFeedback: feedback,
+        clearFeedback: feedback == null,
         phase: step.done
-            ? TrainingExercisePhase.saving
+            ? (before.practicing
+                  ? TrainingExercisePhase.result
+                  : TrainingExercisePhase.saving)
             : TrainingExercisePhase.playing,
       ),
     );
-    if (step.done) {
+    if (step.done && !before.practicing) {
       _finished = elapsed;
       await save();
     }
+  }
+
+  /// Practice follows a persisted failure; it cannot change the scored attempt.
+  void retryPractice() {
+    if (!state.canRetryPractice) return;
+    final snapshot = state.errorSnapshot!;
+    emit(
+      TrainingExerciseState(
+        phase: TrainingExercisePhase.playing,
+        exercise: state.exercise,
+        goal: state.goal,
+        cycle: state.cycle,
+        fen: snapshot.fen,
+        lastMove: snapshot.lastMove,
+        cursor: snapshot.cursor,
+        hint: false,
+        correct: state.correct,
+        reinforcement: state.reinforcement,
+        practicing: true,
+        errorSnapshot: snapshot,
+      ),
+    );
   }
 
   Future<void> save() async {
@@ -258,6 +343,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
           resources,
           goalKey,
           correct: state.correct,
+          exerciseError: state.errorSnapshot,
           hint:
               state.hint ||
               (refreshed.day?.goals

@@ -2088,5 +2088,6 @@
   "trainingModuleLabel": "[Mödûlé {n} one]",
   "trainingEscolaPlanReco15": "[Twö léššöñš péŕ štûdý dåý, plûš çhålléñĝéš föŕ thé pîéçéš ýöû håvé ålŕéådý léåŕñéd. Thé çöûŕšé tåkéš åböût 4 wéékš. one two three four five six seven eight nine ten]",
   "trainingBotGoalDone": "[Wîñ åĝåîñšt {bot} · {rating} one two three]",
-  "trainingEscolaFirstInfo": "[Åftéŕ ýöû fîñîšh å pîéçé léššöñ, îtš štåŕ çhålléñĝé îš åddéd tö ýöûŕ ĝöålš îmmédîåtélý. one two three four five six seven eight]"
+  "trainingEscolaFirstInfo": "[Åftéŕ ýöû fîñîšh å pîéçé léššöñ, îtš štåŕ çhålléñĝé îš åddéd tö ýöûŕ ĝöålš îmmédîåtélý. one two three four five six seven eight]",
+  "trainingGoalsAllDone": "[Åll döñé föŕ tödåý one two]"
 }

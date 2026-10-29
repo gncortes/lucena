@@ -1,6 +1,3 @@
-import '../../../domain/models/analytics_event.dart';
-import '../../core/analytics/analytics_context.dart';
-
 import 'dart:async';
 
 import 'package:chessground/chessground.dart';
@@ -11,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/training/course_training_repository.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -18,6 +16,7 @@ import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
@@ -29,6 +28,7 @@ import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/time_display.dart';
 import '../../endgames/widgets/grade_widgets.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -45,6 +45,7 @@ class TrainingExerciseScreen extends StatelessWidget {
     required this.teacher,
     required this.onNextGoal,
     required this.onRedoLesson,
+    this.heroTag,
     this.preview,
     this.homeHero = false,
     super.key,
@@ -54,10 +55,11 @@ class TrainingExerciseScreen extends StatelessWidget {
   final Now now;
   final String goalKey, title;
   final Character teacher;
-  final TrainingExerciseState? preview;
-  final bool homeHero;
   final VoidCallback onNextGoal;
   final ValueChanged<String> onRedoLesson;
+  final Object? heroTag;
+  final TrainingExerciseState? preview;
+  final bool homeHero;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -140,6 +142,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
           state.fen != null &&
           state.phase != TrainingExercisePhase.expired;
       final result = state.phase == TrainingExercisePhase.result;
+      final feedback = result ? state.errorFeedback : null;
       final boardCenter = BoardViewport.usefulHeightOf(context) / 2 - 64;
       final screen = MediaQuery.sizeOf(context);
       // Preserve the natural speech/header when a full-width board cannot fit.
@@ -175,29 +178,96 @@ class _ExerciseViewState extends State<_ExerciseView> {
                     shrinkSides: false,
                     top: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          textTheme: Theme.of(context).textTheme.copyWith(
-                            bodyLarge: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                        child: TeacherSpeech(
-                          teacher: widget.screen.teacher,
-                          avatarSize: 40,
-                          bubbleAboveHeader: true,
-                          trainingLayout: true,
-                          text: result
-                              ? (state.correct
-                                    ? l.exerciseSayCorrect
-                                    : l.exerciseSayWrong)
-                              : l.trainingFindMove(
-                                  exercise.fen.split(' ')[1] == 'b'
-                                      ? 'black'
-                                      : 'white',
+                      child: feedback == null
+                          ? SingleChildScrollView(
+                              reverse: true,
+                              child: Padding(
+                                padding: EdgeInsets.zero,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    textTheme: Theme.of(context).textTheme
+                                        .copyWith(
+                                          bodyLarge: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                        ),
+                                  ),
+                                  child: TeacherSpeech(
+                                    teacher: widget.screen.teacher,
+                                    avatarSize: 40,
+                                    bubbleAboveHeader: true,
+                                    trainingLayout: true,
+                                    headerAction: feedback == null
+                                        ? null
+                                        : IconButton(
+                                            key: TrainingKeys
+                                                .exerciseFeedbackExpand,
+                                            tooltip: l.trainingSeeExplanation,
+                                            icon: const Icon(
+                                              Icons.open_in_full,
+                                            ),
+                                            onPressed: () =>
+                                                _feedback(context, feedback),
+                                          ),
+                                    text: result
+                                        ? (feedback ??
+                                              (state.displayedCorrect
+                                                  ? l.exerciseSayCorrect
+                                                  : l.exerciseSayWrong))
+                                        : l.trainingFindMove(
+                                            exercise.fen.split(' ')[1] == 'b'
+                                                ? 'black'
+                                                : 'white',
+                                          ),
+                                    speechContext: SpeechContext.teaching,
+                                  ),
                                 ),
-                          speechContext: SpeechContext.teaching,
-                        ),
-                      ),
+                              ),
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: SpeechBalloon(
+                                    tail: BalloonTail.down,
+                                    tailX: SpeechBalloon.tailXFor(40),
+                                    pop: false,
+                                    padding: screen.height < 780
+                                        ? const EdgeInsetsDirectional.symmetric(
+                                            horizontal: 16,
+                                            vertical: 0,
+                                          )
+                                        : SpeechBalloon.defaultPadding,
+                                    child: SingleChildScrollView(
+                                      key: TrainingKeys.exerciseFeedbackScroll,
+                                      child: Text(
+                                        feedback,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                TeacherSpeech(
+                                  part: TeacherSpeechPart.header,
+                                  teacher: widget.screen.teacher,
+                                  avatarSize: 40,
+                                  text: feedback,
+                                  speechContext: SpeechContext.teaching,
+                                  bubbleAboveHeader: true,
+                                  trainingLayout: true,
+                                  headerAction: IconButton(
+                                    key: TrainingKeys.exerciseFeedbackExpand,
+                                    tooltip: l.trainingSeeExplanation,
+                                    icon: const Icon(Icons.open_in_full),
+                                    onPressed: () =>
+                                        _feedback(context, feedback),
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                     board: LayoutBuilder(
                       builder: (context, box) =>
@@ -222,7 +292,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                                 children: [
                                   if (result)
                                     Material(
-                                      color: state.correct
+                                      color: state.displayedCorrect
                                           ? Theme.of(context)
                                                 .colorScheme
                                                 .primaryContainer
@@ -242,10 +312,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
                                           spacing: 8,
                                           children: [
                                             Icon(
-                                              state.correct
+                                              state.displayedCorrect
                                                   ? Icons.check_circle
                                                   : Icons.highlight_off,
-                                              color: state.correct
+                                              color: state.displayedCorrect
                                                   ? Theme.of(context)
                                                         .colorScheme
                                                         .primary
@@ -254,7 +324,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                                                         .onErrorContainer,
                                             ),
                                             Text(
-                                              state.correct
+                                              state.displayedCorrect
                                                   ? l.exerciseSolvedCorrect
                                                   : l.trainingWrongResult,
                                               style: Theme.of(context)
@@ -262,7 +332,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
                                                   .titleMedium
                                                   ?.copyWith(
                                                     fontWeight: FontWeight.w700,
-                                                    color: state.correct
+                                                    color:
+                                                        state.displayedCorrect
                                                         ? Theme.of(context)
                                                               .colorScheme
                                                               .onPrimaryContainer
@@ -320,7 +391,14 @@ class _ExerciseViewState extends State<_ExerciseView> {
                             onPressed: cubit.hint,
                           )
                         : null,
-                    leading: !result
+                    leading: state.canRetryPractice
+                        ? IconButton(
+                            key: TrainingKeys.exercisePracticeRetry,
+                            tooltip: l.lessonRetry,
+                            icon: const Icon(Icons.replay),
+                            onPressed: cubit.retryPractice,
+                          )
+                        : !result
                         ? TimeDisplay(
                             value: _time(cubit.elapsed),
                             semanticsLabel: _time(cubit.elapsed),
@@ -399,7 +477,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
     final hint = state.hint && playing
         ? Move.parse(state.exercise!.solution[state.cursor])
         : null;
-    final board = Directionality(
+    Widget board = Directionality(
       textDirection: TextDirection.ltr,
       child: Chessboard(
         key: TrainingKeys.exerciseBoard,
@@ -418,9 +496,12 @@ class _ExerciseViewState extends State<_ExerciseView> {
         onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
       ),
     );
-    return widget.screen.homeHero
-        ? GameBoardHero(orientation: side, child: board)
-        : board;
+    if (widget.screen.homeHero) {
+      board = GameBoardHero(orientation: side, child: board);
+    } else if (widget.screen.heroTag case final tag?) {
+      board = Hero(tag: tag, child: board);
+    }
+    return board;
   }
 
   void _solution(BuildContext context, TrainingExerciseState state) {
@@ -434,6 +515,22 @@ class _ExerciseViewState extends State<_ExerciseView> {
       builder: (_) => Padding(
         padding: const EdgeInsets.all(24),
         child: Text(san.join(' '), textDirection: TextDirection.ltr),
+      ),
+    );
+  }
+
+  void _feedback(BuildContext context, String text) {
+    showLucenaSheet<void>(
+      context,
+      sheetKey: TrainingKeys.exerciseFeedbackSheet,
+      builder: (_) => SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: TeacherSpeech(
+          teacher: widget.screen.teacher,
+          text: text,
+          speechContext: SpeechContext.teaching,
+          trainingLayout: true,
+        ),
       ),
     );
   }

@@ -1,8 +1,8 @@
-import 'package:lucena/domain/use_cases/training/training_analytics.dart';
+import 'package:lucena/data/repositories/training/training_endgame_content.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:lucena/data/services/lesson_content_service.dart';
 import 'package:lucena/data/repositories/learning/learning_repository.dart';
 import 'package:lucena/data/repositories/learning/learning_content_version.dart';
-import 'package:lucena/data/repositories/training/course_training_repository_local.dart'
-    as course_training;
 import 'package:lucena/data/repositories/training/training_learning_bridge.dart';
 import 'package:lucena/data/repositories/training/training_school_content.dart';
 import 'package:lucena/data/repositories/training/observed_training_repository.dart';
@@ -10,9 +10,9 @@ import 'package:lucena/data/repositories/training/school_training_observer.dart'
 import 'package:lucena/data/repositories/training/school_training_observation_source.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/school_training_resources.dart';
-import 'package:lucena/data/repositories/training/training_endgame_content.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode;
-import 'package:lucena/data/services/lesson_content_service.dart';
+import 'package:lucena/domain/use_cases/training/training_analytics.dart';
+
+import 'training/e2e_training.dart';
 
 import 'dart:async';
 
@@ -26,6 +26,10 @@ import 'fakes/fake_photo_repository.dart';
 import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
+import 'fakes/fake_notification_service.dart';
+
+import 'package:lucena/data/repositories/reminders/reminders_repository.dart';
+
 import 'fakes/fake_ads_service.dart';
 import 'fakes/fake_remote_flags_repository.dart';
 
@@ -184,6 +188,10 @@ final e2eChessCom = FakeChessComRepository();
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
 
+/// Real reminder composition, with an inspectable device boundary in Patrol.
+final e2eNotifications = FakeNotificationService();
+final e2ePush = FakePushRepository(allowed: true);
+
 final _e2eStart = DateTime.utc(2026, 1, 1, 12);
 
 /// O Maia de verdade, um só para todos os cenários (o modelo fica carregado).
@@ -271,7 +279,10 @@ AppDatabase? _database;
 ///
 /// Com [ads], o anúncio falso da E1.25 (desenhado pelo app, sem SDK) entra
 /// antes das aulas; sem ele, os outros cenários não veem anúncio.
-Future<Dependencies> e2eDependencies({bool ads = false}) async {
+Future<Dependencies> e2eDependencies({
+  bool ads = false,
+  E2ETrainingScenario? trainingScenario,
+}) async {
   await _database?.close();
   final database = _database = AppDatabase();
   final content = createLessonContentAssets(
@@ -287,38 +298,31 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     progress,
     e2eNow,
   );
-  final preferences = PreferencesService();
+  final flags = FakeRemoteFlagsRepository();
   final trainingSchool = TrainingSchoolContent(lessons, includeAll: true);
-  final stars = LocalStarChallengeRepository(preferences);
+  late final TrainingAnalytics trainingAnalytics;
+  final courseTrainingRaw = E2ETrainingRepository(
+    PreferencesService(),
+    content,
+    onSaved: (before, after) => trainingAnalytics.onSaved(before, after),
+    schoolContent: () async => schoolTrainingResources(
+      await trainingSchool.course(),
+      await trainingSchool.texts('pt'),
+    ),
+  );
+  trainingAnalytics = TrainingAnalytics(
+    now: e2eNow,
+    log: e2eAnalytics.log,
+    read: courseTrainingRaw.load,
+    write: courseTrainingRaw.update,
+  );
+  final stars = LocalStarChallengeRepository(PreferencesService());
+  final speedruns = LocalSpeedrunRepository(database);
   final journey = E2EJourneyRepository(
     AssetJourneyRepository(const AssetService(), positions),
   );
-  final speedruns = LocalSpeedrunRepository(database);
-  late final course_training.TrainingRepositoryLocal courseStorage;
-  final trainingAnalytics = TrainingAnalytics(
-    now: e2eNow,
-    log: e2eAnalytics.log,
-    read: (course) => courseStorage.load(course),
-    write: (course, change) => courseStorage.update(course, change),
-  );
-  courseStorage = course_training.TrainingRepositoryLocal(
-    preferences,
-    content,
-    installSeed: 'e2e-training',
-    onSaved: trainingAnalytics.onSaved,
-    configs: {
-      for (final config in TrainingCourseConfig.all) config.course: config,
-    },
-    contentSources: {
-      TrainingCourseConfig.escola.indexSource: () async =>
-          schoolTrainingResources(
-            await trainingSchool.course(),
-            await trainingSchool.texts('pt'),
-          ),
-    },
-  );
   final courseTraining = ObservedTrainingRepository(
-    courseStorage,
+    courseTrainingRaw,
     observers: {
       TrainingCourseConfig.escola.course: SchoolTrainingObserver(
         now: e2eNow,
@@ -333,18 +337,9 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
       ).call,
     },
   );
-  final bridge = TrainingLearningBridge(
-    courseTraining,
-    courses: TrainingCourseConfig.all,
-  );
-  final learning = LearningRepository(
-    preferences,
-    e2eNow,
-    currentUid: () => null,
-    versionOf: LearningContentVersion(content).call,
-    onUnitCompleted: bridge.call,
-  );
-  final flags = FakeRemoteFlagsRepository();
+  if (trainingScenario != null) {
+    await courseTrainingRaw.seed(trainingScenario, e2eNow);
+  }
   return Dependencies(
     now: e2eNow,
     remoteFlagsRepository: flags,
@@ -371,7 +366,14 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     analyticsRepository: e2eAnalytics,
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
-    pushRepository: FakePushRepository(allowed: true),
+    pushRepository: e2ePush,
+    remindersRepository: LocalRemindersRepository(
+      e2eNotifications,
+      progress: LocalEndgameProgressRepository(PreferencesService()),
+      lessons: VisibleEndgameLessonRepository(
+        AssetEndgameLessonRepository(content, school: lessons),
+      ),
+    ),
     alertsRepository: LocalAlertsRepository(PreferencesService()),
     placementRepository: LocalPlacementRepository(
       const AssetService(),
@@ -387,8 +389,16 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     trainingRepository: LocalTrainingRepository(PreferencesService()),
     courseTrainingRepository: courseTraining,
     trainingAnalytics: trainingAnalytics,
-    learningRepository: learning,
-    trainingSchoolContent: trainingSchool,
+    learningRepository: LearningRepository(
+      PreferencesService(),
+      e2eNow,
+      currentUid: () => null,
+      versionOf: LearningContentVersion(content).call,
+      onUnitCompleted: TrainingLearningBridge(
+        courseTraining,
+        courses: TrainingCourseConfig.all,
+      ).call,
+    ),
     opponentRepository: e2eOpponent,
     // O modelo de verdade: a tela de depuração mostra o que ele responde.
     maiaRepository: e2eMaia,
@@ -423,6 +433,7 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: VisibleLessonRepository(lessons),
+    trainingSchoolContent: trainingSchool,
     schoolProgressRepository: ActiveSchoolProgressRepository(
       LocalSchoolProgressRepository(PreferencesService()),
       activity,
@@ -525,6 +536,21 @@ class E2EMaia implements MaiaRepository {
 /// Apaga o que os cenários anteriores gravaram: cada cenário começa do zero.
 Future<void> resetE2EData() async {
   e2eNow.value = _e2eStart;
+  e2eNotifications
+    ..allowed = true
+    ..permissionResult = null
+    ..permissionRequests = 0
+    ..shown.clear()
+    ..scheduled.clear();
+  e2ePush
+    ..initial = null
+    ..allowed = true
+    ..granted = false
+    ..available = true
+    ..followed.clear()
+    ..settingsOpened = 0
+    ..permissionRequests = 0
+    ..shown.clear();
   e2eOpponent.reset();
   e2eMaia.reset();
   e2eSound.played.clear();

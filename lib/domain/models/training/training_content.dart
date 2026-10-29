@@ -46,16 +46,30 @@ final class TrainingExercise {
     required this.fen,
     required Iterable<String> solution,
     Iterable<String> alternatives = const [],
+    Map<int, List<String>> alternativesByPosition = const {},
     this.lastMove,
     this.mock = false,
   }) : assert(stars >= 1 && stars <= 3),
        solution = List.unmodifiable(solution),
-       alternatives = List.unmodifiable(alternatives);
+       alternatives = List.unmodifiable(alternatives),
+       alternativesByPosition = Map.unmodifiable(
+         alternativesByPosition.map(
+           (position, moves) =>
+               MapEntry(position, List<String>.unmodifiable(moves)),
+         ),
+       );
   final String id, fen;
   final String? lastMove;
   final int stars;
   final bool mock;
   final List<String> solution, alternatives;
+
+  /// Student turn, starting at one. Accepted branches have no exported reply.
+  final Map<int, List<String>> alternativesByPosition;
+  List<String> alternativesAt(int cursor) => [
+    if (cursor == 0) ...alternatives,
+    ...?alternativesByPosition[cursor ~/ 2 + 1],
+  ];
   Map<String, Object?> toJson() => {
     'id': id,
     'estrelas': stars,
@@ -63,6 +77,10 @@ final class TrainingExercise {
     'ultimo': lastMove,
     'solucao': solution,
     'alternativas': alternatives,
+    if (alternativesByPosition.isNotEmpty)
+      'alternativas_por_posicao': alternativesByPosition.map(
+        (position, moves) => MapEntry('$position', moves),
+      ),
     'mock': mock,
   };
   factory TrainingExercise.fromJson(Map<String, dynamic> j) => TrainingExercise(
@@ -72,6 +90,12 @@ final class TrainingExercise {
     lastMove: j['ultimo'] as String?,
     solution: (j['solucao'] as List).cast<String>(),
     alternatives: (j['alternativas'] as List? ?? []).cast<String>(),
+    alternativesByPosition: (j['alternativas_por_posicao'] as Map? ?? {}).map(
+      (position, moves) => MapEntry(
+        int.parse(position as String),
+        (moves as List).cast<String>(),
+      ),
+    ),
     mock: j['mock'] as bool? ?? false,
   );
 }

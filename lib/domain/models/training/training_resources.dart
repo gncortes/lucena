@@ -6,10 +6,17 @@ final class TrainingResources {
     Iterable<TrainingLesson> lessons = const [],
     Map<String, List<TrainingExercise>> banks = const {},
     Map<String, List<OpeningTrecho>> openings = const {},
+    Map<String, Map<String, String>> errorFeedback = const {},
   }) : lessons = List.unmodifiable(lessons),
        banks = Map.unmodifiable(
          banks.map(
            (k, v) => MapEntry(k, List<TrainingExercise>.unmodifiable(v)),
+         ),
+       ),
+       errorFeedback = Map.unmodifiable(
+         errorFeedback.map(
+           (lesson, texts) =>
+               MapEntry(lesson, Map<String, String>.unmodifiable(texts)),
          ),
        ),
        openings = Map.unmodifiable(
@@ -20,4 +27,7 @@ final class TrainingResources {
   final List<TrainingLesson> lessons;
   final Map<String, List<TrainingExercise>> banks;
   final Map<String, List<OpeningTrecho>> openings;
+
+  /// Localized private text keyed by exercise.studentTurn.wrongUci.
+  final Map<String, Map<String, String>> errorFeedback;
 }

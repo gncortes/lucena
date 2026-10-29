@@ -2130,5 +2130,6 @@
   "trainingModuleLabel": "Module {n}",
   "trainingEscolaPlanReco15": "Two lessons per study day, plus challenges for the pieces you have already learned. The course takes about 4 weeks.",
   "trainingBotGoalDone": "Win against {bot} · {rating}",
-  "trainingEscolaFirstInfo": "After you finish a piece lesson, its star challenge is added to your goals immediately."
+  "trainingEscolaFirstInfo": "After you finish a piece lesson, its star challenge is added to your goals immediately.",
+  "trainingGoalsAllDone": "All done for today"
 }

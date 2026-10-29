@@ -2067,9 +2067,6 @@
   "trainingDoubleOfferTitle": "Tudo feito por hoje. Quer dobrar a meta?",
   "trainingReinforceLeft": "Reforço · {n} exercícios que faltam do tema",
   "trainingLessonLabel": "Aula {n} · {title}",
-  "@trainingLessonLabel": {
-    "description": "T85 course training lesson ordinal and title."
-  },
   "trainingEndBackToGoals": "Voltar às metas",
   "trainingEndCycleScore": "Nota do ciclo: {score} %",
   "trainingEndFirmBody": "Daqui para a frente o tema volta de tempos em tempos, para não esquecer.",
@@ -2193,5 +2190,6 @@
   "trainingModuleLabel": "Módulo {n}",
   "trainingEscolaPlanReco15": "Duas aulas por dia de estudo, mais os desafios das peças que você já aprendeu. O curso leva cerca de 4 semanas.",
   "trainingBotGoalDone": "Vitória contra o {bot} · {rating}",
-  "trainingEscolaFirstInfo": "Ao concluir a aula de uma peça, o desafio das estrelas dela entra nas metas na hora."
+  "trainingEscolaFirstInfo": "Ao concluir a aula de uma peça, o desafio das estrelas dela entra nas metas na hora.",
+  "trainingGoalsAllDone": "Tudo feito por hoje"
 }

@@ -100,6 +100,25 @@ void main() {
     },
   );
 
+  test('plano editado não troca retrato de hoje; nova leitura amanhã usa novo plano', () async {
+    final scenario = TrainingScenarioBuilder(TrainingCourse.pilares);
+    final repository = scenario.repository(scenario.large());
+    final cubit = CourseGuideCubit(
+      repository: repository,
+      config: TrainingCourseConfig.pilares,
+      now: scenario.now,
+    );
+    addTearDown(cubit.close);
+    addTearDown(repository.dispose);
+    await cubit.load();
+    final day = cubit.state.training!.day!.toJson();
+    await cubit.savePlan(const TrainingPlan(minutes: 240, weekdays: 127));
+    expect(cubit.state.training!.day!.toJson(), day);
+    scenario.now.advance(const Duration(days: 1));
+    await cubit.load();
+    expect(cubit.state.training!.day!.plan.minutes, 240);
+  });
+
   test(
     'erro de persistência conserva estado visível e permite tentar novamente',
     () async {

@@ -94,6 +94,126 @@ final class TrainingScenarioBuilder {
               },
             ));
 
+  /// Filled history for the progress UI, with every mastery rendering branch.
+  TrainingState progress() {
+    final state = large();
+    const weights = [1, 1, 2, 2, 3, 3, 3];
+    const earned = [
+      {0, 1, 2, 4},
+      {0, 1, 4, 5, 6},
+      {0, 1, 2, 3, 4, 5, 6},
+      {0, 1, 2, 3, 4, 5},
+    ];
+    final started = trainingDate(now().subtract(const Duration(days: 9)));
+    final cycles = {
+      for (final entry in state.cycles.entries)
+        entry.key: ThemeCycle.fromJson({
+          ...entry.value.toJson(),
+          'startedOn': started,
+        }),
+    };
+    for (var theme = 0; theme < 4; theme++) {
+      final id = _themes[theme];
+      final used = <String>{};
+      final days = <ThemeDay>[];
+      for (var day = 0; day < (theme == 3 ? 6 : 7); day++) {
+        final exercise = content.banks[id]!.firstWhere(
+          (e) => e.stars == weights[day] && !used.contains(e.id),
+        );
+        used.add(exercise.id);
+        final hint = theme == 0 && day == 3;
+        days.add(
+          ThemeDay(
+            date: trainingDate(now().subtract(Duration(days: 8 - day))),
+            exerciseId: exercise.id,
+            stars: exercise.stars,
+            correct: earned[theme].contains(day) || hint,
+            hint: hint,
+            mock: exercise.mock,
+          ),
+        );
+      }
+      cycles[id] = ThemeCycle(
+        lessonId: id,
+        startedOn: trainingDate(now().subtract(const Duration(days: 8))),
+        phase: theme == 0
+            ? ThemePhase.reinforce
+            : theme == 3
+            ? ThemePhase.cycle
+            : ThemePhase.firm,
+        level: theme == 3 ? 3 : 1,
+        hadError: theme == 0,
+        days: days,
+        reinforcement: theme == 0
+            ? content.banks[id]!
+                  .where((e) => !used.contains(e.id))
+                  .map((e) => e.id)
+            : const [],
+      );
+    }
+    final filled = state.copyWith(
+      cycles: cycles,
+      completedLessons: {
+        for (final id in state.completedLessons.keys) id: started,
+      },
+      openings: {
+        for (final id in _openings)
+          id: OpeningTrack(
+            lessonId: id,
+            startedOn: started,
+            lastNewDate: trainingDate(now().subtract(const Duration(days: 1))),
+            doneTrechos: {
+              for (final segment in content.openings[id]!.take(2))
+                segment.id: trainingDate(
+                  now().subtract(const Duration(days: 1)),
+                ),
+            },
+            firstTry: {
+              for (final segment in content.openings[id]!.take(2))
+                segment.id: [
+                  for (
+                    var move = 0;
+                    move <
+                        (segment.moves.length + (segment.black ? 0 : 1)) ~/ 2;
+                    move++
+                  )
+                    move == 0,
+                ],
+            },
+          ),
+      },
+    );
+    return BuildDayGoals(now, config)(
+      TrainingState.fromJson({...filled.toJson(), 'day': null}),
+      content,
+    );
+  }
+
+  TrainingState singleCycle() {
+    final lesson = content.lessons.firstWhere(
+      (l) => l.visible && l.kind == TrainingLessonKind.theme,
+    );
+    final yesterday = trainingDate(now().subtract(const Duration(days: 1)));
+    return BuildDayGoals(now, config)(
+      TrainingState(
+        course: course,
+        installSeed: 'single-cycle',
+        onboardingDone: true,
+        plan: const TrainingPlan(weekdays: 127, reminderOn: false),
+        completedLessons: {
+          for (final l in content.lessons.where((l) => l.visible))
+            l.id: yesterday,
+        },
+        cycles: {
+          lesson.id: ThemeCycle(lessonId: lesson.id, startedOn: yesterday),
+        },
+      ),
+      content,
+    );
+  }
+
+  /// Shared Pilares artboard states. Use a fresh builder per sample: second and
+  /// nextDay advance [now], so the host must use this same clock.
   TrainingState goalsScenario(String sample) {
     TrainingState first() => BuildDayGoals(now, config)(
       TrainingState(course: course, installSeed: 'first', onboardingDone: true),
@@ -247,14 +367,19 @@ final class TrainingScenarioBuilder {
     return BuildDayGoals(now, config)(state, content);
   }
 
-  TrainingState allDone() {
+  TrainingState allDone({
+    bool leaveOpenings = false,
+    bool leaveExercises = false,
+  }) {
     if (course == TrainingCourse.escola) return schoolAllDone();
     var state = large();
     for (final goal in state.day!.goals) {
       if (goal.kind == GoalKind.exercise || goal.kind == GoalKind.reinforce) {
+        if (leaveExercises) continue;
         state = CompleteTrainingGoal(now)
             .exercise(state, content, goal.key, correct: true);
       } else if (goal.kind == GoalKind.openings) {
+        if (leaveOpenings) continue;
         for (final id in goal.items.keys) {
           state = CompleteTrainingGoal(now)
               .opening(state, content, id, [true, true]);

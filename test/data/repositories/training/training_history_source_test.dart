@@ -10,7 +10,8 @@ import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
-import 'package:lucena/domain/models/training/opening_track.dart';
+import 'package:lucena/domain/models/training/school_training_progress.dart';
+import 'package:lucena/domain/models/training/training_analytics_state.dart';
 import 'package:lucena/domain/models/training/theme_cycle.dart';
 import 'package:lucena/domain/models/training/day_goals.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -231,7 +232,7 @@ void main() {
       expect(training.writes, writes);
     },
   );
-  test('preexisting track survives provisional cleanup', () async {
+  test('preexisting track and unrelated school/analytics survive provisional cleanup', () async {
     final existing = ThemeCycle(
       lessonId: theme.id,
       startedOn: '2026-10-20',
@@ -239,7 +240,20 @@ void main() {
     );
     await training.update(
       config.course,
-      (s) => s.copyWith(cycles: {theme.id: existing}),
+      (s) => s.copyWith(
+        cycles: {theme.id: existing},
+        school: SchoolTrainingProgress(pieceLevels: {'rook': 2}),
+        analytics: TrainingAnalyticsState(
+          date: '2026-10-26',
+          attempts: {
+            'unrelated': TrainingAnalyticsAttempt(
+              started: now(),
+              origin: 'home',
+              points: 22,
+            ),
+          },
+        ),
+      ),
     );
     await learning.restore(uid!, [record()]);
     await bootstrap();
@@ -250,6 +264,9 @@ void main() {
     final state = await training.load(config.course);
     expect(state.completedLessons, isEmpty);
     expect(state.cycles[theme.id]!.toJson(), existing.toJson());
+    expect(state.school.pieceLevels['rook'], 2);
+    expect(state.analytics.attempts['unrelated']!.points, 22);
+    expect(state.analytics.attempts['unrelated']!.origin, 'home');
   });
   test(
     'an untouched imported opening is removed but a played opening remains',
@@ -265,13 +282,7 @@ void main() {
         config.course,
         (s) => s.copyWith(
           openings: {
-            opening.id: OpeningTrack(
-              lessonId: opening.id,
-              startedOn: s.openings[opening.id]!.startedOn,
-              firstTry: {
-                'segment': [false],
-              },
-            ),
+            opening.id: s.openings[opening.id]!.withMistake('segment', 0),
           },
         ),
       );
@@ -279,7 +290,7 @@ void main() {
       await bootstrap();
       final state = await training.load(config.course);
       expect(state.completedLessons[opening.id], '2026-10-24');
-      expect(state.openings[opening.id]!.firstTry['segment'], [false]);
+      expect(state.openings[opening.id]!.pendingMistakes['segment'], [0]);
     },
   );
   test(

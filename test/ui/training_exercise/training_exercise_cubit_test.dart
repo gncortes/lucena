@@ -11,6 +11,7 @@ import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/training/play_training_exercise.dart';
 import 'package:lucena/domain/use_cases/training/build_day_goals.dart';
+import 'package:lucena/domain/use_cases/training/training_analytics.dart';
 import 'package:lucena/ui/training_exercise/view_models/training_exercise_cubit.dart';
 
 import '../../../testing/fakes/fake_course_training_repository.dart';
@@ -97,7 +98,130 @@ void main() {
     expect(cubit.state.phase, TrainingExercisePhase.result);
     expect(cubit.state.cycle!.hadError, true);
     expect(cubit.state.cycle!.days.single.correct, false);
+    expect(cubit.state.errorFeedback, isNull);
   });
+
+  test(
+    'real feedback undoes error and practice never rewrites the score',
+    () async {
+      const feedback = 'Uma explicação aprovada. Que recurso existe?';
+      repository.content[TrainingCourse.pilares] = TrainingResources(
+        banks: {
+          'lesson': [exercise],
+        },
+        errorFeedback: {
+          'lesson': {'e.1.d2d4': feedback},
+        },
+      );
+      await cubit.load();
+      final initial = await repository.load(TrainingCourse.pilares);
+      await cubit.play('d2d4');
+      expect(cubit.state.errorFeedback, feedback);
+      expect(cubit.state.fen, exercise.fen);
+      expect(cubit.state.lastMove, exercise.lastMove);
+      final stored = await repository.load(TrainingCourse.pilares);
+      expect(
+        trainingAnalyticsDiff(
+          initial,
+          stored,
+          now: now(),
+        ).where((event) => event.name == 'treino_meta_fim'),
+        hasLength(1),
+      );
+      expect(stored.day!.goals.single.exerciseError!.wrongMove, 'd2d4');
+      expect(stored.day!.goals.single.exerciseError!.feedbackShown, true);
+      final writes = repository.writes;
+      cubit.retryPractice();
+      expect(cubit.state.phase, TrainingExercisePhase.playing);
+      await cubit.hint();
+      expect(cubit.state.hint, true);
+      expect(cubit.state.phase, TrainingExercisePhase.playing);
+      expect(repository.writes, writes);
+      await cubit.play('e2e4');
+      await cubit.play('g1f3');
+      expect(cubit.state.phase, TrainingExercisePhase.result);
+      expect(cubit.state.practiceCorrect, true);
+      expect(cubit.state.correct, false);
+      expect(cubit.next(), true);
+      expect(repository.writes, writes);
+      expect(
+        (await repository.load(TrainingCourse.pilares)).toJson(),
+        stored.toJson(),
+      );
+      expect(
+        trainingAnalyticsDiff(
+          stored,
+          await repository.load(TrainingCourse.pilares),
+          now: now(),
+        ),
+        isEmpty,
+      );
+    },
+  );
+
+  test(
+    'second student turn feedback survives serialization and restart',
+    () async {
+      const feedback = 'Segunda posição. Que recurso existe?';
+      repository.content[TrainingCourse.pilares] = TrainingResources(
+        banks: {
+          'lesson': [exercise],
+        },
+        errorFeedback: {
+          'lesson': {
+            'e.1.f1c4': 'Texto da posição errada',
+            'e.2.f1c4': feedback,
+          },
+        },
+      );
+      await cubit.load();
+      await cubit.play('e2e4');
+      final before = cubit.state.fen;
+      await cubit.play('f1c4');
+      expect(cubit.state.errorFeedback, feedback);
+      expect(cubit.state.fen, before);
+      final reopened = create();
+      addTearDown(reopened.close);
+      await reopened.load();
+      expect(reopened.state.errorFeedback, feedback);
+      expect(reopened.state.fen, before);
+      reopened.retryPractice();
+      expect(reopened.state.cursor, 2);
+      expect(reopened.state.lastMove, 'e7e5');
+      final writes = repository.writes;
+      await reopened.play('g1f3');
+      expect(repository.writes, writes);
+      expect(reopened.state.correct, false);
+    },
+  );
+
+  test(
+    'feedback save failure blocks practice until result is durable',
+    () async {
+      repository.content[TrainingCourse.pilares] = TrainingResources(
+        banks: {
+          'lesson': [exercise],
+        },
+        errorFeedback: {
+          'lesson': {'e.1.d2d4': 'Texto?'},
+        },
+      );
+      await cubit.load();
+      repository.writeError = StateError('disk');
+      await cubit.play('d2d4');
+      cubit.retryPractice();
+      expect(cubit.state.phase, TrainingExercisePhase.saving);
+      expect(repository.writes, 0);
+      repository.writeError = null;
+      await cubit.save();
+      expect(repository.writes, 1);
+      expect(cubit.state.errorFeedback, 'Texto?');
+      cubit.retryPractice();
+      await cubit.play('d2d4');
+      expect(repository.writes, 1);
+      expect(cubit.state.errorFeedback, 'Texto?');
+    },
+  );
 
   test(
     'hint resolves as correct UI but scores error and lowers level',

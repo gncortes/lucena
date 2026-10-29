@@ -23,6 +23,7 @@ class AppColors extends ThemeExtension<AppColors> {
   /// Completed/missed cycle days (Canvas T85, the four cycle endings).
   static const trainingDayCorrect = Color(0xff2e6b45);
   static const trainingDayWrong = Color(0xffb3261e);
+  static const trainingMasteryDeveloping = Color(0xff9a6b00);
 
   static const goldColor = Color(0xfff2b705);
 

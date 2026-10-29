@@ -3,8 +3,8 @@ import 'package:dartchess/dartchess.dart';
 import '../../models/training/training_content.dart';
 import '../game_rules.dart';
 
-/// Executes only the exported line. Alternatives certify the first move only;
-/// they finish the exercise because no continuation is supplied by the bank.
+/// Executes the exported line and accepts alternatives at their student turn.
+/// Alternatives finish the exercise because the bank supplies no continuation.
 final class PlayTrainingExercise {
   PlayTrainingExercise(this.exercise) {
     final initial = GameRules.fromFen(exercise.fen);
@@ -12,7 +12,13 @@ final class PlayTrainingExercise {
       throw const FormatException('Missing playable exercise');
     }
     var position = initial;
-    for (final uci in exercise.solution) {
+    for (var cursor = 0; cursor < exercise.solution.length; cursor++) {
+      if (cursor.isEven) {
+        for (final alternative in exercise.alternativesAt(cursor)) {
+          _play(position, alternative);
+        }
+      }
+      final uci = exercise.solution[cursor];
       position = _play(position, uci);
     }
     for (final uci in exercise.alternatives) {
@@ -31,7 +37,7 @@ final class PlayTrainingExercise {
     }
     final position = GameRules.fromFen(fen);
     if (position == null) throw const FormatException('Invalid exercise FEN');
-    if (cursor == 0 && exercise.alternatives.contains(uci)) {
+    if (exercise.alternativesAt(cursor).contains(uci)) {
       return (
         fen: _play(position, uci).fen,
         cursor: exercise.solution.length,

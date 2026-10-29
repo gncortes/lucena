@@ -235,6 +235,132 @@ void main() {
     },
   );
 
+  for (final size in [const Size(360, 740), const Size(412, 915)]) {
+    testWidgets('long real feedback and practice preserve board at $size', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = size;
+      tester.view.padding = const FakeViewPadding(top: 52, bottom: 24);
+      tester.view.viewPadding = const FakeViewPadding(top: 52, bottom: 24);
+      addTearDown(tester.view.resetPadding);
+      addTearDown(tester.view.resetViewPadding);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      final settings = SettingsCubit(
+        FakeSettingsRepository(),
+        languages: AppLanguage.selectable,
+      );
+      await settings.load();
+      addTearDown(settings.close);
+      final real = TrainingExercise(
+        id: 'real',
+        stars: 1,
+        fen: exercise.fen,
+        solution: exercise.solution,
+      );
+      final selected = TrainingGoal(
+        kind: GoalKind.exercise,
+        ref: 'theme',
+        itemId: 'real',
+      );
+      final feedback =
+          '${List.filled(15, 'Uma explicação aprovada para leitura.').join(' ')} Que recurso existe?';
+      final repo = FakeTrainingRepository(
+        states: {
+          TrainingCourse.pilares: TrainingState(
+            course: TrainingCourse.pilares,
+            installSeed: 'test',
+            day: DayGoals(
+              date: '2026-10-29',
+              studyDay: true,
+              goals: [selected],
+            ),
+            cycles: {
+              'theme': ThemeCycle(lessonId: 'theme', startedOn: '2026-10-28'),
+            },
+          ),
+        },
+        content: {
+          TrainingCourse.pilares: TrainingResources(
+            banks: {
+              'theme': [real],
+            },
+            errorFeedback: {
+              'theme': {'real.1.a1a2': feedback},
+            },
+          ),
+        },
+      );
+      addTearDown(repo.dispose);
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          settingsCubit: settings,
+          child: TrainingExerciseScreen(
+            repository: repo,
+            config: TrainingCourseConfig.pilares,
+            now: FakeNow(DateTime(2026, 10, 29, 12)),
+            goalKey: selected.key,
+            title: 'Tema',
+            teacher: teacher,
+            onNextGoal: () {},
+            onRedoLesson: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final boardBefore = tester.getRect(
+        find.byKey(TrainingKeys.exerciseBoard),
+      );
+      final cubit = tester
+          .element(find.byKey(TrainingKeys.exerciseBoard))
+          .read<TrainingExerciseCubit>();
+      await cubit.play('a1a2');
+      await tester.pumpAndSettle();
+      expect(cubit.state.fen, real.fen);
+      expect(find.text(feedback), findsOneWidget);
+      final speechScroll = tester.state<ScrollableState>(
+        find
+            .descendant(
+              of: find.byKey(TrainingKeys.exerciseFeedbackScroll),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(speechScroll.position.axisDirection, AxisDirection.down);
+      expect(speechScroll.position.pixels, 0);
+      expect(speechScroll.position.viewportDimension, greaterThanOrEqualTo(20));
+      expect(
+        tester.getRect(find.byKey(TrainingKeys.exerciseBoard)),
+        boardBefore,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byKey(TrainingKeys.exerciseFeedbackExpand));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.exerciseFeedbackSheet), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byKey(SheetKeys.close));
+      await tester.pumpAndSettle();
+      final writes = repo.writes;
+      await tester.tap(find.byKey(TrainingKeys.exercisePracticeRetry));
+      await tester.pumpAndSettle();
+      expect(cubit.state.phase, TrainingExercisePhase.playing);
+      expect(cubit.state.fen, real.fen);
+      await cubit.play('a1a8');
+      await tester.pumpAndSettle();
+      expect(find.text('Correto.'), findsOneWidget);
+      expect(find.text('Amanhã, um mais fácil'), findsOneWidget);
+      expect(repo.writes, writes);
+      expect(
+        tester.getRect(find.byKey(TrainingKeys.exerciseBoard)),
+        boardBefore,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   for (final size in [const Size(360, 740), const Size(412, 917)]) {
     for (final ending in ['firm', 'reinforce', 'redo', 'redoAfter']) {
       testWidgets(

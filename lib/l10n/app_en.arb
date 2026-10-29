@@ -10964,5 +10964,9 @@
   "trainingEscolaFirstInfo": "After you finish a piece lesson, its star challenge is added to your goals immediately.",
   "@trainingEscolaFirstInfo": {
     "description": "T85 Viktor School daily training: trainingEscolaFirstInfo."
+  },
+  "trainingGoalsAllDone": "All done for today",
+  "@trainingGoalsAllDone": {
+    "description": "T85 daily goals and progress: trainingGoalsAllDone."
   }
 }

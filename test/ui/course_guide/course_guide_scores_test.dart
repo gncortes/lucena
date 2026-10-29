@@ -67,6 +67,12 @@ void main() {
         expect(cubit.state.testProgress.containsKey('missing'), isFalse);
         await cubit.selectTab(CourseGuideTab.progress);
         expect(cubit.state.testScores['rook.lucena'], fixture.score);
+        expect(cubit.state.testProgress['rook.lucena'], raw);
+        await cubit.markTourSeen();
+        expect(cubit.state.testProgress['rook.lucena'], raw);
+        final saved = await repository.load(TrainingCourse.pilares);
+        expect(saved.tourSeen, true);
+        expect(saved.tab, CourseGuideTab.lesson);
       },
     );
   }

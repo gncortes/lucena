@@ -5,6 +5,7 @@ import '../../core/keys/training_keys.dart';
 import '../../core/keys/sheet_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/theme/app_chip.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/sheet_close_button.dart';
@@ -76,7 +77,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
               key: TrainingKeys.permissionDialog,
               color: Theme.of(dialogContext).colorScheme.surfaceContainerLowest,
               elevation: 6,
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(AppShape.extraLarge),
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -111,7 +112,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                         TextButton(
                           key: TrainingKeys.permissionLater,
                           style: TextButton.styleFrom(
-                            minimumSize: const Size(110, 48),
+                            minimumSize: const Size(110, kButtonHeightCompact),
                           ),
                           onPressed: () => Navigator.pop(dialogContext, false),
                           child: Text(t.trainingPermissionLater),
@@ -119,7 +120,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                         FilledButton(
                           key: TrainingKeys.permissionAllow,
                           style: FilledButton.styleFrom(
-                            minimumSize: const Size(110, 48),
+                            minimumSize: const Size(110, kButtonHeightCompact),
                           ),
                           onPressed: () => Navigator.pop(dialogContext, true),
                           child: Text(t.trainingPermissionAllow),
@@ -525,7 +526,9 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                                 OutlinedButton.icon(
                                   key: TrainingKeys.openNotificationSettings,
                                   style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(52),
+                                    minimumSize: const Size.fromHeight(
+                                      kButtonHeight,
+                                    ),
                                   ),
                                   onPressed: state.busy
                                       ? null
@@ -596,7 +599,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                         FilledButton(
                           key: TrainingKeys.planSave,
                           style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(52),
+                            minimumSize: const Size.fromHeight(kButtonHeight),
                             textStyle: Theme.of(context).textTheme.labelLarge
                                 ?.copyWith(
                                   fontSize: 16,

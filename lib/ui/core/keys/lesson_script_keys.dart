@@ -2,9 +2,8 @@ import 'package:flutter/widgets.dart';
 
 /// A tela da lição roteirizada (T70).
 abstract final class LessonScriptKeys {
-  static const close = Key('lessonScript.close');
-
   static const screen = Key('lessonScript.screen');
+  static const close = Key('lessonScript.close');
   static const board = Key('lessonScript.board');
 
   /// O tabuleiro de antes, enquanto se dissolve no novo (crossfade).

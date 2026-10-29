@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 
 abstract final class HomeKeys {
   static const courseCard = Key('home.courseCard');
-
   static const screen = Key('home.screen');
   static const title = Key('home.title');
   static const settingsButton = Key('home.settings');

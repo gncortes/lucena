@@ -7,6 +7,7 @@ import '../../core/keys/course_guide_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_button.dart';
 import '../../core/widgets/course/course_continue_card.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/course/course_part_header.dart';
@@ -306,7 +307,7 @@ class _WelcomeTab extends StatelessWidget {
         FilledButton(
           key: CourseGuideKeys.continueButton,
           style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
+            minimumSize: const Size.fromHeight(kButtonHeight),
             textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
               fontSize: 16,
               height: 24 / 16,
@@ -449,7 +450,7 @@ class _LessonTab extends StatelessWidget {
         OutlinedButton.icon(
           key: CourseGuideKeys.seeCatalog,
           style: OutlinedButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
+            minimumSize: const Size.fromHeight(kButtonHeight),
           ),
           onPressed: () => cubit.selectTab(CourseGuideTab.catalog),
           icon: const Icon(Icons.menu_book_outlined),

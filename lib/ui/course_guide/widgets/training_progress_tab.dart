@@ -8,6 +8,8 @@ import '../../core/keys/course_guide_keys.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icon_size.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/course/piece_stars_row.dart';
 import '../view_models/course_guide_cubit.dart';
@@ -219,9 +221,9 @@ class TrainingProgressTab extends StatelessWidget {
                                           .colorScheme
                                           .outlineVariant
                                     : cycle.score >= 70
-                                    ? const Color(0xff2e6b45)
+                                    ? AppColors.trainingDayCorrect
                                     : cycle.score >= 30
-                                    ? const Color(0xff9a6b00)
+                                    ? AppColors.trainingMasteryDeveloping
                                     : Theme.of(context).colorScheme.error;
                                 return Stack(
                                   alignment: Alignment.center,
@@ -366,7 +368,10 @@ class TrainingProgressTab extends StatelessWidget {
                                     ?.copyWith(fontWeight: FontWeight.w500),
                               )
                             : testScores[test.id] == null
-                            ? const Icon(Icons.chevron_right, size: 20)
+                            ? const Icon(
+                                Icons.chevron_right,
+                                size: AppIconSize.button,
+                              )
                             : Text(
                                 t.trainingPercent(
                                   testScores[test.id]!.clamp(0, 100),

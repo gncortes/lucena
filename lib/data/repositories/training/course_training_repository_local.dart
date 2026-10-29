@@ -146,6 +146,7 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     }
     final banks = <String, List<TrainingExercise>>{};
     final openings = <String, List<OpeningTrecho>>{};
+    final errorFeedback = <String, Map<String, String>>{};
     await Future.wait(
       lessons.map((lesson) async {
         if (lesson.kind == TrainingLessonKind.theme) {
@@ -158,6 +159,14 @@ final class TrainingRepositoryLocal implements TrainingRepository {
                   ),
                 )
                 .toList();
+          }
+          // PT-BR is the current training scope. An absent optional file never
+          // makes an otherwise playable bank unavailable.
+          final feedback = await _json(
+            'assets/lessons/treino/pt/${lesson.id}.json',
+          );
+          if (feedback != null) {
+            errorFeedback[lesson.id] = feedback.cast<String, String>();
           }
         } else if (lesson.kind == TrainingLessonKind.opening) {
           final json = await _json(
@@ -180,6 +189,7 @@ final class TrainingRepositoryLocal implements TrainingRepository {
       lessons: lessons,
       banks: banks,
       openings: openings,
+      errorFeedback: errorFeedback,
     );
   }
 
