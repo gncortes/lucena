@@ -64,7 +64,12 @@ final class CompleteTrainingLesson {
       ...goals,
       ...config.followUps
           .build(next, resources, now)
-          .where((g) => g.ref == lesson.id && !keys.contains(g.key)),
+          .where(
+            (g) =>
+                !keys.contains(g.key) &&
+                (g.ref == lesson.id ||
+                    config.sameDayGoalKinds.contains(g.kind)),
+          ),
     ];
     goals = orderTrainingGoals(goals, config.sections);
     return next.copyWith(day: day.copyWith(goals: goals));

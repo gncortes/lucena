@@ -16,11 +16,13 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     this.content, {
     required this.installSeed,
     this.configs = const {TrainingCourse.pilares: TrainingCourseConfig.pilares},
+    this.contentSources = const {},
   });
   final PreferencesService preferences;
   final LessonContentAssets content;
   final String installSeed;
   final Map<TrainingCourse, TrainingCourseConfig> configs;
+  final Map<String, Future<TrainingResources> Function()> contentSources;
   final _changes = StreamController<TrainingState>.broadcast();
   final _pending = <TrainingCourse, Future<void>>{};
   @override
@@ -96,6 +98,8 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     if (config == null) {
       throw ArgumentError.value(course, 'course', 'Course is not configured');
     }
+    final source = contentSources[config.indexSource];
+    if (source != null) return source();
     final index = await _json(config.indexSource);
     if (index == null) return TrainingResources();
     final lessons = <TrainingLesson>[];

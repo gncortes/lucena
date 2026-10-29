@@ -1,4 +1,5 @@
 import 'day_goals.dart';
+import 'school_training_progress.dart';
 import 'opening_track.dart';
 import 'theme_cycle.dart';
 import 'training_course.dart';
@@ -46,12 +47,14 @@ final class TrainingState {
     Map<String, OpeningTrack> openings = const {},
     Iterable<String> offDayCredits = const [],
     Iterable<TrainingGoal> deferredGoals = const [],
+    SchoolTrainingProgress? school,
     Map<String, TrainingBootstrapImport> bootstrapImports = const {},
   }) : completedLessons = Map.unmodifiable(completedLessons),
        cycles = Map.unmodifiable(cycles),
        openings = Map.unmodifiable(openings),
        offDayCredits = List.unmodifiable(offDayCredits),
        deferredGoals = List.unmodifiable(deferredGoals),
+       school = school ?? SchoolTrainingProgress(),
        bootstrapImports = Map.unmodifiable(bootstrapImports);
   final TrainingCourse course;
   final String installSeed;
@@ -66,6 +69,7 @@ final class TrainingState {
   final Map<String, OpeningTrack> openings;
   final List<String> offDayCredits;
   final List<TrainingGoal> deferredGoals;
+  final SchoolTrainingProgress school;
   final Map<String, TrainingBootstrapImport> bootstrapImports;
   bool get mock => day?.goals.any((g) => g.mock) ?? false;
   TrainingState copyWith({
@@ -81,6 +85,7 @@ final class TrainingState {
     Map<String, OpeningTrack>? openings,
     Iterable<String>? offDayCredits,
     Iterable<TrainingGoal>? deferredGoals,
+    SchoolTrainingProgress? school,
     Map<String, TrainingBootstrapImport>? bootstrapImports,
   }) => TrainingState(
     course: course,
@@ -97,6 +102,7 @@ final class TrainingState {
     openings: openings ?? this.openings,
     offDayCredits: offDayCredits ?? this.offDayCredits,
     deferredGoals: deferredGoals ?? this.deferredGoals,
+    school: school ?? this.school,
     bootstrapImports: bootstrapImports ?? this.bootstrapImports,
   );
   Map<String, Object?> toJson() => {
@@ -115,6 +121,7 @@ final class TrainingState {
     'openings': openings.map((k, v) => MapEntry(k, v.toJson())),
     'offDayCredits': offDayCredits,
     'deferredGoals': deferredGoals.map((g) => g.toJson()).toList(),
+    'school': school.toJson(),
     'bootstrapImports': bootstrapImports.map((k, v) => MapEntry(k, v.toJson())),
   };
   factory TrainingState.fromJson(Map<String, dynamic> j) {
@@ -151,6 +158,9 @@ final class TrainingState {
       offDayCredits: (j['offDayCredits'] as List).cast<String>(),
       deferredGoals: (j['deferredGoals'] as List? ?? const []).map(
         (g) => TrainingGoal.fromJson(Map<String, dynamic>.from(g as Map)),
+      ),
+      school: SchoolTrainingProgress.fromJson(
+        Map<String, dynamic>.from(j['school'] as Map? ?? const {}),
       ),
       bootstrapImports: (j['bootstrapImports'] as Map? ?? const {}).map(
         (k, v) => MapEntry(

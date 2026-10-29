@@ -195,6 +195,19 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     // Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
     Widget label(String text) =>
         FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
+    if (state.saving) {
+      return const Center(
+        child: CircularProgressIndicator(key: StarChallengeKeys.saveProgress),
+      );
+    }
+    if (state.saveError) {
+      return FilledButton.icon(
+        key: StarChallengeKeys.retrySave,
+        icon: const Icon(Icons.refresh),
+        label: label(l10n.lessonRetry),
+        onPressed: cubit.retryFinish,
+      );
+    }
     return switch (state.phase) {
       ChallengePhase.ready => FilledButton.icon(
         key: StarChallengeKeys.goButton,
@@ -242,17 +255,20 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
       builder: (context, box) {
         final wanted =
             timerHeight +
-            switch (state.phase) {
-              // O convite na altura do conteúdo dele (fonte, idioma, nota dos
-              // obstáculos), medida na largura de verdade.
-              ChallengePhase.ready => _IntroCard.heightFor(
-                context,
-                state.level!,
-                width: box.maxWidth - 2 * AppSpacing.screen,
-              ),
-              ChallengePhase.finished => scaler.scale(140),
-              _ => state.level!.announcesSquare ? scaler.scale(44) + 8 : 0,
-            };
+            (state.saveError
+                ? scaler.scale(88)
+                : switch (state.phase) {
+                    // O convite na altura do conteúdo dele (fonte, idioma, nota dos
+                    // obstáculos), medida na largura de verdade.
+                    ChallengePhase.ready => _IntroCard.heightFor(
+                      context,
+                      state.level!,
+                      width: box.maxWidth - 2 * AppSpacing.screen,
+                    ),
+                    ChallengePhase.finished => scaler.scale(140),
+                    _ =>
+                      state.level!.announcesSquare ? scaler.scale(44) + 8 : 0,
+                  });
         // Fonte grande em tela baixa: o tabuleiro não passa de metade da
         // largura para baixo; o que vem em cima ganha só a altura que sobra e
         // rola.
@@ -276,6 +292,8 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
   }
 
   static bool _hasAction(StarChallengeState state) =>
+      state.saving ||
+      state.saveError ||
       state.phase == ChallengePhase.ready ||
       state.phase == ChallengePhase.finished;
 
@@ -424,6 +442,17 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final level = state.level!;
+    if (state.saveError) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screen),
+        child: Text(
+          l10n.trainingExerciseSaveError,
+          key: StarChallengeKeys.saveError,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: colors.error),
+        ),
+      );
+    }
     switch (state.phase) {
       case ChallengePhase.ready:
         return Padding(

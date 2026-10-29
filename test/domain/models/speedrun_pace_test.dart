@@ -72,4 +72,49 @@ void main() {
       isNot(SpeedrunPaces.withTime(base, SpeedrunPaces.standard).id),
     );
   });
+  test(
+    'fixed Journey metadata preserves its declared pace and canonical id',
+    () async {
+      const declared = TimeControl(
+        initial: Duration(minutes: 15),
+        increment: Duration(seconds: 10),
+      );
+      final base = (await FakeJourneyRepository().speedruns()).first.copyWith(
+        id: 'fixed.special',
+        journeyOnly: true,
+        time: declared,
+      );
+      final resolved = SpeedrunPaces.resolve([base], base.id)!;
+      expect(resolved.time, declared);
+      expect(resolved.id, base.id);
+      expect(SpeedrunPaces.withTime(base, declared).id, base.id);
+    },
+  );
+  test('explicit fixed challenge variants preserve their selected pace without colliding with base', () async {
+    const declared = TimeControl(
+      initial: Duration(minutes: 15),
+      increment: Duration(seconds: 10),
+    );
+    final base = (await FakeJourneyRepository().speedruns()).first.copyWith(
+      id: 'fixed.special',
+      journeyOnly: true,
+      time: declared,
+    );
+    for (final time in [threeTwo, SpeedrunPaces.standard]) {
+      final variant = SpeedrunPaces.resolve([base], '${base.id}@${time.code}')!;
+      expect(variant.id, '${base.id}@${time.code}');
+      expect(variant.time, time);
+      expect(variant.stages.every((s) => s.time == time), isTrue);
+    }
+    final canonical = SpeedrunPaces.resolve([
+      base,
+    ], '${base.id}@${declared.code}')!;
+    expect(canonical.id, base.id);
+    expect(canonical.time, declared);
+    final regular = (await FakeJourneyRepository().speedruns()).first;
+    expect(
+      SpeedrunPaces.resolve([regular], regular.id)!.time,
+      SpeedrunPaces.standard,
+    );
+  });
 }

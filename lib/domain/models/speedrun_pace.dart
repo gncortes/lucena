@@ -6,6 +6,7 @@ import 'speedrun.dart';
 /// bullet, blitz e rápido. Cada ritmo é um speedrun próprio, com recordes separados: o id do
 /// speedrun leva o ritmo (`rung.1000@180+2`). O ritmo padrão (5+3) fica com o
 /// id de antes, e os recordes antigos continuam valendo.
+/// Desafios exclusivos da Jornada preservam o ritmo declarado e seu id de base.
 abstract final class SpeedrunPaces {
   static const standard = TimeControl(
     initial: Duration(minutes: 5),
@@ -59,7 +60,11 @@ abstract final class SpeedrunPaces {
   /// O speedrun [base] jogado no ritmo [time]: as mesmas etapas, com o
   /// relógio do ritmo.
   static Speedrun withTime(Speedrun base, TimeControl time) => base.copyWith(
-    id: idFor(base.id, time),
+    id: base.journeyOnly
+        ? time == base.time
+              ? base.id
+              : '${base.id}$_separator${time.code}'
+        : idFor(base.id, time),
     time: time,
     stages: [for (final stage in base.stages) stage.copyWith(time: time)],
   );
@@ -70,7 +75,10 @@ abstract final class SpeedrunPaces {
     if (id == null) return null;
     final (baseId, time) = parse(id);
     for (final base in bases) {
-      if (base.id == baseId) return withTime(base, time);
+      if (base.id == baseId) {
+        if (base.journeyOnly && !id.contains(_separator)) return base;
+        return withTime(base, time);
+      }
     }
     return null;
   }

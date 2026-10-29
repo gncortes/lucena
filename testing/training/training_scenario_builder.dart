@@ -1,4 +1,8 @@
 import 'package:lucena/domain/models/training/opening_track.dart';
+import 'package:lucena/domain/models/star_challenge.dart';
+import 'package:lucena/domain/models/training/school_training_progress.dart';
+import 'package:lucena/domain/models/training/school_training_observations.dart';
+import 'package:lucena/domain/use_cases/training/reconcile_school_training.dart';
 import 'package:lucena/domain/models/training/theme_cycle.dart';
 import 'package:lucena/domain/models/training/training_content.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
@@ -14,6 +18,9 @@ import 'package:lucena/domain/use_cases/training/training_date.dart';
 
 import '../fakes/fake_now.dart';
 import '../fakes/fake_course_training_repository.dart';
+import '../fakes/fake_star_challenge_repository.dart';
+import '../fakes/fake_progress_repository.dart';
+import '../fakes/fake_speedrun_repository.dart';
 import 'mock_exercise_bank.dart';
 
 /// Large deterministic fixture, shared by widget, Patrol and screenshot tests.
@@ -24,7 +31,13 @@ final class TrainingScenarioBuilder {
   final TrainingResources? resources;
   final TrainingCourse course;
   final FakeNow now;
-  TrainingCourseConfig get config => TrainingCourseConfig.pilares;
+  TrainingCourseConfig get config => switch (course) {
+    TrainingCourse.pilares => TrainingCourseConfig.pilares,
+    TrainingCourse.escola => TrainingCourseConfig.escola,
+  };
+  final schoolStars = FakeStarChallengeRepository();
+  final schoolProgress = FakeProgressRepository();
+  late final schoolSpeedruns = FakeSpeedrunRepository(schoolProgress);
   List<String> get _themes => content.lessons
       .where((l) => l.visible && l.kind == TrainingLessonKind.theme)
       .map((l) => l.id)
@@ -36,49 +49,51 @@ final class TrainingScenarioBuilder {
       .toList();
   TrainingResources get content =>
       resources ??
-      TrainingResources(
-        lessons: [
-          for (var i = 1; i <= 12; i++)
-            TrainingLesson(
-              id: 'theme$i',
-              kind: TrainingLessonKind.theme,
-              title: 'Tema $i',
-              summary: 'Resumo $i',
-              group: 'Capítulo $i',
-            ),
-          for (var i = 1; i <= 4; i++)
-            TrainingLesson(
-              id: 'opening$i',
-              kind: TrainingLessonKind.opening,
-              title: 'Abertura $i',
-              group: 'Aberturas',
-            ),
-        ],
-        banks: {
-          for (var i = 1; i <= 12; i++)
-            'theme$i': MockExerciseBank.forLesson('theme$i'),
-        },
-        openings: {
-          for (var i = 1; i <= 4; i++)
-            'opening$i': [
-              OpeningTrecho(
-                id: 't1',
-                title: 'Linha 1',
-                moves: ['d2d4', 'd7d5', 'c1f4'],
-                mock: true,
-              ),
-              OpeningTrecho(
-                id: 't2',
-                title: 'Linha 2',
-                moves: ['d2d4', 'g8f6'],
-                mock: true,
-              ),
-            ],
-        },
-      );
+      (course == TrainingCourse.escola
+          ? throw StateError(
+              'Inject visible School resources from LessonRepository',
+            )
+          : TrainingResources(
+              lessons: [
+                for (var i = 1; i <= 12; i++)
+                  TrainingLesson(
+                    id: 'theme$i',
+                    kind: TrainingLessonKind.theme,
+                    title: 'Tema $i',
+                    summary: 'Resumo $i',
+                    group: 'Capítulo $i',
+                  ),
+                for (var i = 1; i <= 4; i++)
+                  TrainingLesson(
+                    id: 'opening$i',
+                    kind: TrainingLessonKind.opening,
+                    title: 'Abertura $i',
+                    group: 'Aberturas',
+                  ),
+              ],
+              banks: {
+                for (var i = 1; i <= 12; i++)
+                  'theme$i': MockExerciseBank.forLesson('theme$i'),
+              },
+              openings: {
+                for (var i = 1; i <= 4; i++)
+                  'opening$i': [
+                    OpeningTrecho(
+                      id: 't1',
+                      title: 'Linha 1',
+                      moves: ['d2d4', 'd7d5', 'c1f4'],
+                      mock: true,
+                    ),
+                    OpeningTrecho(
+                      id: 't2',
+                      title: 'Linha 2',
+                      moves: ['d2d4', 'g8f6'],
+                      mock: true,
+                    ),
+                  ],
+              },
+            ));
 
-  /// Shared Pilares artboard states. Use a fresh builder per sample: second and
-  /// nextDay advance [now], so the host must use this same clock.
   TrainingState goalsScenario(String sample) {
     TrainingState first() => BuildDayGoals(now, config)(
       TrainingState(course: course, installSeed: 'first', onboardingDone: true),
@@ -161,7 +176,7 @@ final class TrainingScenarioBuilder {
 
   TrainingState large({int cycleDay = 1, bool dayOff = false}) {
     if (course != TrainingCourse.pilares) {
-      throw StateError('School fixture is not configured yet');
+      return schoolPieces(dayOff: dayOff);
     }
     if (cycleDay < 1 || cycleDay > 7) throw RangeError.range(cycleDay, 1, 7);
     final data = content;
@@ -233,6 +248,7 @@ final class TrainingScenarioBuilder {
   }
 
   TrainingState allDone() {
+    if (course == TrainingCourse.escola) return schoolAllDone();
     var state = large();
     for (final goal in state.day!.goals) {
       if (goal.kind == GoalKind.exercise || goal.kind == GoalKind.reinforce) {
@@ -256,12 +272,118 @@ final class TrainingScenarioBuilder {
 
   TrainingState doubled() {
     final done = allDone();
-    final extra = content.lessons.firstWhere(
-      (l) => l.visible && !done.completedLessons.containsKey(l.id),
-    );
-    final state = CompleteTrainingLesson(now, config)(done, content, extra);
+    final extra = course == TrainingCourse.escola
+        ? content.lessons.firstWhere(
+            (l) => l.visible && !done.completedLessons.containsKey(l.id),
+          )
+        : content.lessons.firstWhere((l) => l.id == _themes[9]);
+    var state = CompleteTrainingLesson(now, config)(done, content, extra);
+    if (course == TrainingCourse.escola) state = _completeSchoolGoals(state);
     return DoubleTrainingGoals(now, config)(state, content);
   }
+
+  TrainingState schoolDayOne({int minutes = 30, bool dayOff = false}) =>
+      BuildDayGoals(now, config)(
+        TrainingState(
+          course: course,
+          installSeed: 'school-fixture',
+          onboardingDone: true,
+          plan: TrainingPlan(minutes: minutes, weekdays: dayOff ? 0 : 127),
+        ),
+        content,
+      );
+
+  TrainingState schoolOffDay() => schoolDayOne(dayOff: true);
+  TrainingState schoolTwoHours() => schoolDayOne(minutes: 120);
+
+  TrainingState schoolPieces({
+    bool dayOff = false,
+    bool completedStars = false,
+  }) {
+    final pieces = content.lessons
+        .where((l) => l.visible && l.id.startsWith('pieces.'))
+        .take(5)
+        .toList();
+    final date = trainingDate(now());
+    final yesterday = trainingDate(now().subtract(const Duration(days: 1)));
+    final state = TrainingState(
+      course: course,
+      installSeed: 'school-pieces',
+      onboardingDone: true,
+      plan: TrainingPlan(weekdays: dayOff ? 0 : 127),
+      completedLessons: {for (final l in pieces) l.id: yesterday},
+      school: SchoolTrainingProgress(
+        pieceLevels: {
+          for (var i = 0; i < pieces.length; i++)
+            pieces[i].id.split('.').last: completedStars ? 3 : i % 3,
+        },
+        pieceAdvancedOn: {
+          for (final l in pieces)
+            l.id.split('.').last: completedStars ? date : yesterday,
+        },
+      ),
+    );
+    return BuildDayGoals(now, config)(state, content);
+  }
+
+  TrainingState schoolMates({bool completedBots = false}) {
+    final date = trainingDate(now());
+    final state = TrainingState(
+      course: course,
+      installSeed: 'school-mates',
+      onboardingDone: true,
+      plan: const TrainingPlan(weekdays: 127),
+      completedLessons: {
+        for (final l in content.lessons.where(
+          (l) => l.visible && l.groupId == 'firstMates',
+        ))
+          l.id: date,
+      },
+      school: SchoolTrainingProgress(
+        botsCompletedOn: {
+          if (completedBots) 'mates.twoRooks': date,
+          if (completedBots) 'mates.queen': date,
+        },
+        speedrunCompletedOn: completedBots ? date : null,
+      ),
+    );
+    return BuildDayGoals(now, config)(state, content);
+  }
+
+  TrainingState schoolAllDone() {
+    var state = schoolDayOne();
+    for (final goal in state.day!.goals.toList()) {
+      state = CompleteTrainingLesson(now, config)(
+        state,
+        content,
+        content.lessons.firstWhere((l) => l.id == goal.ref),
+      );
+    }
+    return _completeSchoolGoals(state);
+  }
+
+  TrainingState _completeSchoolGoals(
+    TrainingState state,
+  ) => ReconcileSchoolTraining(now)(
+    state,
+    content,
+    SchoolTrainingObservations(
+      starRuns: [
+        for (final g in state.day!.goals.where((g) => g.kind == GoalKind.stars))
+          StarChallengeRun(
+            piece: ChallengePiece.values.byName(g.ref.split('.').last),
+            level: ChallengeLevel.values.byName(g.itemId!),
+            points: 99,
+            at: now(),
+          ),
+      ],
+      botWins: [
+        for (final g in state.day!.goals.where((g) => g.kind == GoalKind.bot))
+          SchoolBotWin(positionId: g.itemId!, rung: '1000', at: now()),
+      ],
+      speedruns: [SchoolSpeedrunFinish(id: 'journey.mates', at: now())],
+    ),
+  );
 
   FakeTrainingRepository repository(TrainingState state) =>
       FakeTrainingRepository(
