@@ -1,3 +1,5 @@
+import 'analytics_event_training_test.dart' show trainingAnalyticsSamples;
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/analytics_event.dart';
@@ -25,6 +27,7 @@ const _campaign = Campaign(
 /// Um de cada fábrica, com valores de verdade: é a varredura de dado pessoal
 /// e a prova de que todo evento está na tabela.
 final _samples = <AnalyticsEvent>[
+  ...trainingAnalyticsSamples('pilares'),
   AnalyticsEvents.tutorialBegin(entrada: 'primeira_abertura'),
   AnalyticsEvents.tutorialComplete(pulado: false, passosVistos: 4),
   AnalyticsEvents.objetivoDefinido(objetivo: 'finais', trocado: false),
@@ -279,9 +282,9 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 82 eventos (79 do app, com os 9 do funil de campanha da '
+    test('tem os 96 eventos (93 do app, com o treino e o funil de campanha da '
         'T84, e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(79));
+      expect(AnalyticsCatalog.app, hasLength(93));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(

@@ -12,6 +12,7 @@ import 'config/dependencies.dart';
 import 'data/repositories/learning/learning_repository.dart';
 import 'data/repositories/training/training_school_content.dart';
 import 'data/repositories/training/training_history_source.dart';
+import 'domain/use_cases/training/training_analytics.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
 import 'domain/models/campaign.dart';
@@ -401,6 +402,14 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<AnalyticsRepository>.value(
           value: dependencies.analyticsRepository,
         ),
+        RepositoryProvider<TrainingAnalytics>(
+          create: (_) =>
+              dependencies.trainingAnalytics ??
+              TrainingAnalytics(
+                now: dependencies.now,
+                log: dependencies.analyticsRepository.log,
+              ),
+        ),
         RepositoryProvider<SettingsRepository>.value(
           value: dependencies.settingsRepository,
         ),
@@ -690,6 +699,7 @@ class _LucenaAppState extends State<LucenaApp> {
               changes: dependencies.localChanges,
               training: dependencies.courseTrainingRepository,
               courses: activeTrainingCourses,
+              analytics: dependencies.analyticsRepository,
             ),
           ),
           BlocProvider(

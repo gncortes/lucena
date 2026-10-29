@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/use_cases/training/training_analytics.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -69,6 +73,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     required this.repository,
     required this.config,
     required this.now,
+    this.analytics = const NoAnalyticsRepository(),
+    this.trainingAnalytics,
     this.beforeLoad,
     this.characters,
     this.testLessons,
@@ -78,6 +84,15 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   final TrainingRepository repository;
   final TrainingCourseConfig config;
   final Now now;
+  final AnalyticsRepository analytics;
+  final TrainingAnalytics? trainingAnalytics;
+  Future<void> _log(AnalyticsEvent event) {
+    unawaited(
+      Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
+    );
+    return Future<void>.value();
+  }
+
   final CharacterRepository? characters;
   final EndgameLessonRepository? testLessons;
   final EndgameProgressRepository? testProgress;
@@ -190,15 +205,48 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       state.resources!,
     ),
   );
-  Future<bool> selectTab(CourseGuideTab tab) =>
-      _change((s) => s.copyWith(tab: tab));
+  Future<bool> selectTab(CourseGuideTab tab, {String origin = 'toque'}) async {
+    final saved = await _change((s) => s.copyWith(tab: tab));
+    if (saved) {
+      await _log(
+        AnalyticsEvents.cursoGuiaAba(
+          curso: config.course.name,
+          aba: switch (tab) {
+            CourseGuideTab.lesson => 'aula',
+            CourseGuideTab.goals => 'metas',
+            CourseGuideTab.progress => 'progresso',
+            CourseGuideTab.catalog => 'catalogo',
+          },
+          origem: origin,
+        ),
+      );
+    }
+    return saved;
+  }
 
+  Future<void> announceTab({required String origin}) async {
+    final tab = state.training?.tab;
+    if (state.failed || state.loading || tab == null) return;
+    await _log(
+      AnalyticsEvents.cursoGuiaAba(
+        curso: config.course.name,
+        aba: switch (tab) {
+          CourseGuideTab.lesson => 'aula',
+          CourseGuideTab.goals => 'metas',
+          CourseGuideTab.progress => 'progresso',
+          CourseGuideTab.catalog => 'catalogo',
+        },
+        origem: origin,
+      ),
+    );
+  }
+
+  Future<bool> savePlan(TrainingPlan plan) =>
+      _change((s) => s.copyWith(plan: plan));
   Future<bool> markTourSeen() =>
       _change((s) => s.copyWith(tourSeen: true, tab: CourseGuideTab.lesson));
-
   Future<bool> doubleGoals() =>
       _change((s) => DoubleTrainingGoals(now, config)(s, state.resources!));
-
   Future<bool> observeLesson(TrainingLesson lesson, {bool redo = false}) =>
       _change(
         (s) => CompleteTrainingLesson(now, config)(

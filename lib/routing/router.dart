@@ -959,6 +959,7 @@ GoRouter buildRouter({
                         learning: context.read<LearningRepository?>(),
                         analytics: context.analytics,
                         campaigns: context.read<CampaignRepository>(),
+                        analyticsOrigin: state.uri.queryParameters['origem'],
                       ),
                       initialStage: stage,
                       now: context.read<Now>(),
@@ -1130,11 +1131,20 @@ GoRouter buildRouter({
                             learning: context.read<LearningRepository?>(),
                             analytics: context.analytics,
                             campaigns: context.read<CampaignRepository>(),
+                            analyticsLessonType: id.startsWith('pilares.')
+                                ? 'pilares'
+                                : null,
+                            analyticsOrigin:
+                                state.uri.queryParameters['origem'] ??
+                                'catalogo',
                           ),
                           initialStage: stage,
                           now: context.read<Now>(),
                           analytics: context.analytics,
                           origin: state.uri.queryParameters['origem'],
+                          analyticsLessonType: id.startsWith('pilares.')
+                              ? 'pilares'
+                              : null,
                         ),
                         child: LessonScriptScreen(
                           key: ValueKey('script.$id.$part'),

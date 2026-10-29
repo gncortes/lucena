@@ -20,6 +20,7 @@ import '../domain/models/training/training_course.dart';
 import '../domain/models/training/training_course_config.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/core/widgets/reload_on_return.dart';
+import '../ui/core/analytics/analytics_context.dart';
 import '../ui/core/l10n/l10n.dart';
 import '../ui/core/theme/app_motion.dart';
 import '../ui/course_guide/view_models/course_guide_cubit.dart';
@@ -52,7 +53,11 @@ GoRoute trainingRoute() => GoRoute(
       )
       ? null
       : Routes.settings,
-  builder: (context, state) => _guide(const _Guide(), config: _config(state)),
+  builder: (context, state) => _guide(
+    const _Guide(),
+    config: _config(state),
+    origin: state.uri.queryParameters['origem'] == 'home' ? 'home' : 'toque',
+  ),
   routes: [
     GoRoute(
       path: 'help',
@@ -126,6 +131,8 @@ GoRoute trainingRoute() => GoRoute(
           config: _config(state),
           now: context.read<Now>(),
           push: context.read<PushRepository>(),
+          analytics: context.analytics,
+          trainingAnalytics: context.trainingAnalytics,
           afterSave: (_) => context.read<RemindersCubit>().refresh(),
           beforeLoad: () =>
               context.read<TrainingHistorySource>().bootstrap(_config(state)),
@@ -158,6 +165,7 @@ GoRoute trainingRoute() => GoRoute(
 Widget _guide(
   Widget child, {
   required TrainingCourseConfig config,
+  String origin = 'toque',
   CourseGuideTab? initialTab,
 }) => BlocProvider(
   create: (context) {
@@ -179,8 +187,10 @@ Widget _guide(
       },
       config: config,
       now: context.read<Now>(),
+      analytics: context.analytics,
+      trainingAnalytics: context.trainingAnalytics,
     );
-    unawaited(cubit.load());
+    unawaited(cubit.load().then((_) => cubit.announceTab(origin: origin)));
     return cubit;
   },
   child: child,
@@ -199,6 +209,7 @@ void _back(BuildContext context) {
 Future<void> _closeOpenings(BuildContext context) async {
   final saved = await context.read<CourseGuideCubit>().selectTab(
     CourseGuideTab.goals,
+    origin: 'voltar',
   );
   if (saved && context.mounted) _back(context);
 }
@@ -226,6 +237,11 @@ class _Guide extends StatelessWidget {
     final course = context.read<CourseGuideCubit>().config.course.name;
     void plan() => context.push(Routes.trainingPlan(course));
     Future<void> goal(TrainingGoal goal) async {
+      final guide = context.read<CourseGuideCubit>();
+      final saved = guide.state.training;
+      if (saved == null) return;
+      await context.trainingAnalytics?.startGoal(saved, goal);
+      if (!context.mounted) return;
       final challenge = trainingChallengeDestination(goal, course: course);
       if (challenge != null) {
         await context.push(challenge);
@@ -261,6 +277,7 @@ class _Guide extends StatelessWidget {
       onReturn: () async {
         final cubit = context.read<CourseGuideCubit>();
         await cubit.load();
+        await cubit.announceTab(origin: 'voltar');
       },
       child: CourseGuideScreen(
         centerTitle: theme != null,

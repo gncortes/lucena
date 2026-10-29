@@ -1,3 +1,6 @@
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -8,6 +11,7 @@ import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../data/repositories/week/week_repository.dart';
 import '../../../data/repositories/training/course_training_repository.dart';
 import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/training_reminder.dart';
@@ -32,11 +36,20 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     required this._now,
     Stream<void>? changes,
     TrainingRepository? training,
+    this.analytics = const NoAnalyticsRepository(),
     this.courses = const [TrainingCourseConfig.pilares],
   }) : _training = training,
        super(const []) {
     _changes = changes?.listen((_) => unawaited(refresh()));
     _trainingChanges = training?.changes.listen((_) => unawaited(refresh()));
+  }
+
+  final AnalyticsRepository analytics;
+  Future<void> _log(AnalyticsEvent event) {
+    unawaited(
+      Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
+    );
+    return Future<void>.value();
   }
 
   final RemindersRepository _reminders;
@@ -124,6 +137,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
       for (final reminder in plan) _notification(reminder, now, texts),
       ...trainingNotifications,
     ]);
+    await _recordTrainingSchedules(trainingNotifications);
     if (!isClosed && !listEquals(plan, state)) emit(plan);
   }
 
@@ -161,6 +175,57 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
       );
     }
     return notifications;
+  }
+
+  /// Called only after replace succeeds. Persist inference before logging, so
+  /// a restart or overlapping refresh cannot count the same delivery twice.
+  Future<void> _recordTrainingSchedules(
+    List<ScheduledNotification> notifications,
+  ) async {
+    final repository = _training;
+    if (repository == null) return;
+    for (final config in courses) {
+      final notification = notifications
+          .where((n) => n.id == trainingFirstId + config.course.index)
+          .firstOrNull;
+      AnalyticsEvent? scheduled, shown;
+      await repository.transact(config.course, (current) {
+        final old = current.analyticsReminderAt;
+        final at = notification?.at;
+        var next = current;
+        if (old != null &&
+            !old.isAfter(_now()) &&
+            current.analyticsReminderShownAt != old) {
+          next = next.copyWith(analyticsReminderShownAt: old);
+          shown = AnalyticsEvents.treinoLembreteMostrado(
+            curso: config.course.name,
+            atrasoMin: _now().difference(old).inMinutes.clamp(0, 2147483647),
+          );
+        }
+        if (old != at) {
+          next = next.copyWith(analyticsReminderAt: at);
+          if (at != null) {
+            scheduled = AnalyticsEvents.treinoLembreteAgendado(
+              curso: config.course.name,
+              hora: at.hour,
+              metas: current.day?.remaining ?? 0,
+              aulaPendente:
+                  current.day?.goals.any(
+                    (g) =>
+                        !g.done &&
+                        (g.kind == GoalKind.lesson ||
+                            g.kind == GoalKind.redo ||
+                            g.kind == GoalKind.extraLesson),
+                  ) ??
+                  false,
+            );
+          }
+        }
+        return next;
+      });
+      if (shown != null) unawaited(_log(shown!));
+      if (scheduled != null) unawaited(_log(scheduled!));
+    }
   }
 
   static const trainingFirstId = 600;

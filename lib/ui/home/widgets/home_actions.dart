@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/training/course_training_repository.dart'
     as course_training;
 import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/use_cases/training/home_course_card.dart';
 import '../../../routing/routes.dart';
@@ -14,6 +15,7 @@ import '../../../routing/training_launch.dart';
 import '../../../routing/training_goal_destination.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../journey/view_models/journey_cubit.dart';
 import '../../journey/widgets/journey_resume.dart';
 import '../../journey/widgets/journey_ui.dart';
@@ -65,6 +67,35 @@ Future<void> openTrainingCourse(
                 ),
         );
   try {
+    final telemetry = context.trainingAnalytics;
+    unawaited(
+      context.analytics
+          .log(
+            AnalyticsEvents.cursoCartaoHome(
+              curso: course.name,
+              estado: switch (card.status) {
+                HomeCourseStatus.lesson => 'aula',
+                HomeCourseStatus.exercise => 'exercicio',
+                HomeCourseStatus.opening => 'abertura',
+                HomeCourseStatus.challenge => 'exercicio',
+                HomeCourseStatus.done => 'feito',
+                HomeCourseStatus.dayOff => 'folga',
+              },
+              destino: switch (card.destination) {
+                HomeCourseDestination.lesson => 'licao',
+                HomeCourseDestination.exercise => 'exercicio',
+                HomeCourseDestination.trecho => 'trecho',
+                HomeCourseDestination.challenge => 'exercicio',
+                HomeCourseDestination.lessonTab => 'aba_aula',
+              },
+            ),
+          )
+          .catchError((Object _) {}),
+    );
+    if (card.goal != null) {
+      await telemetry?.startGoal(training.state, card.goal!, origin: 'home');
+    }
+    if (!context.mounted) return;
     await context.read<course_training.TrainingRepository>().update(
       course,
       (s) => s.copyWith(

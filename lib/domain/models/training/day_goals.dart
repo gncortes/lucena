@@ -1,6 +1,36 @@
 import 'training_course.dart';
 import 'training_plan.dart';
 
+/// The first graded mistake, without localized text or a new scoring attempt.
+final class TrainingExerciseError {
+  const TrainingExerciseError({
+    required this.fen,
+    required this.cursor,
+    required this.wrongMove,
+    this.lastMove,
+    this.feedbackShown = false,
+  });
+  final String fen, wrongMove;
+  final int cursor;
+  final String? lastMove;
+  final bool feedbackShown;
+  Map<String, Object?> toJson() => {
+    'fen': fen,
+    'cursor': cursor,
+    'wrongMove': wrongMove,
+    'lastMove': lastMove,
+    'feedbackShown': feedbackShown,
+  };
+  factory TrainingExerciseError.fromJson(Map<String, dynamic> json) =>
+      TrainingExerciseError(
+        fen: json['fen'] as String,
+        cursor: json['cursor'] as int,
+        wrongMove: json['wrongMove'] as String,
+        lastMove: json['lastMove'] as String?,
+        feedbackShown: json['feedbackShown'] as bool? ?? false,
+      );
+}
+
 final class TrainingGoal {
   TrainingGoal({
     required this.kind,
@@ -10,6 +40,7 @@ final class TrainingGoal {
     this.done = false,
     this.mock = false,
     this.hintUsed = false,
+    this.exerciseError,
     Map<String, String> items = const {},
   }) : items = Map.unmodifiable(items);
   final GoalKind kind;
@@ -17,6 +48,7 @@ final class TrainingGoal {
   final String? itemId;
   final int stars;
   final bool done, mock, hintUsed;
+  final TrainingExerciseError? exerciseError;
 
   /// Opening lesson -> today's segment, frozen along with the other goals.
   final Map<String, String> items;
@@ -29,6 +61,7 @@ final class TrainingGoal {
     done: true,
     mock: mock,
     hintUsed: hintUsed,
+    exerciseError: exerciseError,
     items: items,
   );
   TrainingGoal withHint() => TrainingGoal(
@@ -39,6 +72,18 @@ final class TrainingGoal {
     done: done,
     mock: mock,
     hintUsed: true,
+    exerciseError: exerciseError,
+    items: items,
+  );
+  TrainingGoal withExerciseError(TrainingExerciseError value) => TrainingGoal(
+    kind: kind,
+    ref: ref,
+    itemId: itemId,
+    stars: stars,
+    done: done,
+    mock: mock,
+    hintUsed: hintUsed,
+    exerciseError: exerciseError ?? value,
     items: items,
   );
   Map<String, Object?> toJson() => {
@@ -49,6 +94,7 @@ final class TrainingGoal {
     'done': done,
     'mock': mock,
     'hintUsed': hintUsed,
+    if (exerciseError != null) 'exerciseError': exerciseError!.toJson(),
     'items': items,
   };
   factory TrainingGoal.fromJson(Map<String, dynamic> j) => TrainingGoal(
@@ -59,6 +105,11 @@ final class TrainingGoal {
     done: j['done'] as bool,
     mock: j['mock'] as bool,
     hintUsed: j['hintUsed'] as bool? ?? false,
+    exerciseError: j['exerciseError'] == null
+        ? null
+        : TrainingExerciseError.fromJson(
+            Map<String, dynamic>.from(j['exerciseError'] as Map),
+          ),
     items: (j['items'] as Map).cast<String, String>(),
   );
 }

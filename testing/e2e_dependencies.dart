@@ -1,3 +1,4 @@
+import 'package:lucena/domain/use_cases/training/training_analytics.dart';
 import 'package:lucena/data/repositories/learning/learning_repository.dart';
 import 'package:lucena/data/repositories/learning/learning_content_version.dart';
 import 'package:lucena/data/repositories/training/course_training_repository_local.dart'
@@ -293,10 +294,18 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     AssetJourneyRepository(const AssetService(), positions),
   );
   final speedruns = LocalSpeedrunRepository(database);
-  final courseStorage = course_training.TrainingRepositoryLocal(
+  late final course_training.TrainingRepositoryLocal courseStorage;
+  final trainingAnalytics = TrainingAnalytics(
+    now: e2eNow,
+    log: e2eAnalytics.log,
+    read: (course) => courseStorage.load(course),
+    write: (course, change) => courseStorage.update(course, change),
+  );
+  courseStorage = course_training.TrainingRepositoryLocal(
     preferences,
     content,
     installSeed: 'e2e-training',
+    onSaved: trainingAnalytics.onSaved,
     configs: {
       for (final config in TrainingCourseConfig.all) config.course: config,
     },
@@ -320,6 +329,7 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
           speedruns: speedruns,
           journey: journey,
         ),
+        analytics: trainingAnalytics,
       ).call,
     },
   );
@@ -376,6 +386,7 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     positionsRepository: positions,
     trainingRepository: LocalTrainingRepository(PreferencesService()),
     courseTrainingRepository: courseTraining,
+    trainingAnalytics: trainingAnalytics,
     learningRepository: learning,
     trainingSchoolContent: trainingSchool,
     opponentRepository: e2eOpponent,

@@ -15,6 +15,7 @@ import '../data/repositories/training/school_training_observer.dart';
 import '../data/repositories/training/training_school_content.dart';
 import '../domain/models/training/training_course_config.dart';
 import '../domain/models/training/school_training_resources.dart';
+import '../domain/use_cases/training/training_analytics.dart';
 import '../domain/use_cases/visible_lessons.dart';
 
 import '../data/repositories/activity/activity_repository.dart';
@@ -222,6 +223,7 @@ class Dependencies {
     required this.trainingRepository,
     this.courseTrainingRepository =
         const course_training.NoTrainingRepository(),
+    this.trainingAnalytics,
     required this.opponentRepository,
     required this.maiaRepository,
     required this.progressRepository,
@@ -356,12 +358,19 @@ class Dependencies {
       mode: analyticsMode,
     );
     late final course_training.TrainingRepository courseTrainingStorage;
+    final trainingAnalytics = TrainingAnalytics(
+      now: now,
+      log: analytics.log,
+      read: (course) => courseTrainingStorage.load(course),
+      write: (course, change) => courseTrainingStorage.update(course, change),
+    );
     courseTrainingStorage = trainingInstallSeed == null
         ? const course_training.NoTrainingRepository()
         : course_training.TrainingRepositoryLocal(
             preferences,
             lessonContent,
             installSeed: trainingInstallSeed,
+            onSaved: trainingAnalytics.onSaved,
             configs: {
               for (final config in TrainingCourseConfig.all)
                 config.course: config,
@@ -430,6 +439,7 @@ class Dependencies {
         TrainingCourseConfig.escola.course: SchoolTrainingObserver(
           now: now,
           source: schoolObservations,
+          analytics: trainingAnalytics,
         ).call,
       },
     );
@@ -511,6 +521,7 @@ class Dependencies {
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
       courseTrainingRepository: courseTraining,
+      trainingAnalytics: trainingAnalytics,
       opponentRepository: DeviceOpponentRepository(
         maia: MaiaOpponentRepository(maia, now: now, pace: pace),
         stockfish: StockfishOpponentRepository(stockfish),
@@ -657,6 +668,7 @@ class Dependencies {
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
   final course_training.TrainingRepository courseTrainingRepository;
+  final TrainingAnalytics? trainingAnalytics;
   final OpponentRepository opponentRepository;
   final MaiaRepository maiaRepository;
   final ProgressRepository progressRepository;

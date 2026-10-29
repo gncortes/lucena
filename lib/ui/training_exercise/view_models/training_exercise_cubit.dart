@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/use_cases/training/training_analytics.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/training/course_training_repository.dart';
@@ -79,12 +85,25 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     required this.repository,
     required this.config,
     required this.now,
+    this.analytics = const NoAnalyticsRepository(),
+    this.trainingAnalytics,
     required this.goalKey,
+    this.origin = 'metas',
   }) : super(const TrainingExerciseState());
   final TrainingRepository repository;
   final TrainingCourseConfig config;
   final Now now;
+  final AnalyticsRepository analytics;
+  final TrainingAnalytics? trainingAnalytics;
+  Future<void> _log(AnalyticsEvent event) {
+    unawaited(
+      Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
+    );
+    return Future<void>.value();
+  }
+
   final String goalKey;
+  final String origin;
   DateTime? _started;
   Duration? _finished;
   Duration get elapsed =>
@@ -119,7 +138,12 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
                 )
                 .lastOrNull
           : null;
-      _started = now();
+      await trainingAnalytics?.restore(config.course, state: saved);
+      if (!goal.done) {
+        await trainingAnalytics?.startGoal(saved, goal, origin: origin);
+      }
+      _started =
+          trainingAnalytics?.attempt(config.course, goal.key)?.started ?? now();
       _finished = goal.done ? Duration.zero : null;
       emit(
         TrainingExerciseState(
@@ -166,7 +190,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
             ],
           ),
         );
-        return changed;
+        return trainingAnalytics?.attach(changed) ?? changed;
       });
       if (isClosed) return;
       emit(
@@ -215,6 +239,20 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
         if (!(refreshed.day?.goals.any((g) => g.key == goalKey) ?? false)) {
           throw const _ExpiredExercise();
         }
+        trainingAnalytics?.result(
+          config.course,
+          goalKey,
+          correct: state.correct,
+          hints:
+              state.hint ||
+                  (refreshed.day?.goals
+                          .where((g) => g.key == goalKey)
+                          .firstOrNull
+                          ?.hintUsed ??
+                      false)
+              ? 1
+              : 0,
+        );
         final completed = CompleteTrainingGoal(now).exercise(
           refreshed,
           resources,
@@ -228,7 +266,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
                       ?.hintUsed ??
                   false),
         );
-        return completed;
+        return trainingAnalytics?.attach(completed) ?? completed;
       });
       if (!(saved.day?.goals.any((g) => g.key == goalKey && g.done) ?? false)) {
         throw const _ExpiredExercise();
@@ -268,10 +306,29 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
         ? cycle.phase != ThemePhase.reinforce
         : cycle.cycleDays.length == 7;
     if (finished) {
+      final reinforcement = state.reinforcement;
+      awaitCycleEnd(cycle, reinforcement);
       emit(state.copyWith(phase: TrainingExercisePhase.end));
       return false;
     }
     return true;
+  }
+
+  void awaitCycleEnd(ThemeCycle cycle, bool reinforcement) {
+    _log(
+      AnalyticsEvents.treinoCicloFim(
+        curso: config.course.name,
+        aulaId: cycle.lessonId,
+        fase: reinforcement ? 'reforco' : 'ciclo',
+        nota: reinforcement ? cycle.reinforceScore : cycle.score,
+        resultado: switch (cycle.phase) {
+          ThemePhase.firm => 'segue',
+          ThemePhase.reinforce => 'reforco',
+          _ => 'refazer',
+        },
+        exerciciosMock: cycle.days.any((d) => d.mock),
+      ),
+    );
   }
 
   Future<bool> reinforceFirst() async {

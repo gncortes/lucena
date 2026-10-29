@@ -17,6 +17,7 @@ final class CompleteTrainingGoal {
     String goalKey, {
     required bool correct,
     bool hint = false,
+    TrainingExerciseError? exerciseError,
   }) {
     final goal = _pending(state, goalKey);
     if (goal == null) return state;
@@ -38,7 +39,7 @@ final class CompleteTrainingGoal {
     );
     return _done(
       state.copyWith(cycles: {...state.cycles, goal.ref: updated}),
-      goal,
+      exerciseError == null ? goal : goal.withExerciseError(exerciseError),
     );
   }
 
@@ -83,7 +84,7 @@ final class CompleteTrainingGoal {
     day: state.day!.copyWith(
       goals: [
         for (final g in state.day!.goals)
-          if (g.key == goal.key) g.complete() else g,
+          if (g.key == goal.key) goal.complete() else g,
       ],
     ),
   );

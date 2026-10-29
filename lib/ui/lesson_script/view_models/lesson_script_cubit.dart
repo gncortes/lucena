@@ -206,6 +206,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     this._sounds,
     this._analytics = const NoAnalyticsRepository(),
     this.origin,
+    this.analyticsLessonType,
   }) : _delay = delay ?? ((duration) => Future<void>.delayed(duration)),
        super(const LessonScriptState());
 
@@ -218,6 +219,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// numa aula de final aberta pela tela da aula, que já registrou a
   /// abertura; na escola, o padrão é `trilha`.
   final String? origin;
+  final String? analyticsLessonType;
 
   // ---- Analytics (E1.05): capítulo = a parte da aula ----------------------
   DateTime? _chapterStart;
@@ -231,7 +233,8 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   DateTime? _exerciseStart;
   int _exerciseAttempts = 0;
 
-  String get _lessonKind => _source.endgame ? 'finais' : 'escola';
+  String get _lessonKind =>
+      analyticsLessonType ?? (_source.endgame ? 'finais' : 'escola');
 
   Duration get _chapterTime =>
       _chapterStart == null ? Duration.zero : _now().difference(_chapterStart!);

@@ -1,3 +1,6 @@
+import '../../../domain/models/analytics_event.dart';
+import '../../core/analytics/analytics_context.dart';
+
 import 'dart:async';
 
 import 'package:chessground/chessground.dart';
@@ -63,6 +66,8 @@ class TrainingExerciseScreen extends StatelessWidget {
       config: config,
       now: now,
       goalKey: goalKey,
+      analytics: context.analytics,
+      trainingAnalytics: context.trainingAnalytics,
     )..load(),
     child: _ExerciseView(screen: this),
   );
@@ -78,6 +83,25 @@ class _ExerciseView extends StatefulWidget {
 class _ExerciseViewState extends State<_ExerciseView> {
   ChessboardController? _controller;
   Timer? _timer;
+
+  void _cycleAction(
+    TrainingExerciseState state,
+    String action,
+    VoidCallback next,
+  ) {
+    unawaited(
+      context.analytics
+          .log(
+            AnalyticsEvents.treinoCicloAcao(
+              curso: widget.screen.config.course.name,
+              aulaId: state.goal!.ref,
+              acao: action,
+            ),
+          )
+          .catchError((Object _) {}),
+    );
+    next();
+  }
 
   @override
   void initState() {
@@ -468,7 +492,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
       key: TrainingKeys.exerciseEnd,
       appBar: LucenaAppBar(
         toolbarHeight: 64,
-        leading: CloseButton(onPressed: widget.screen.onNextGoal),
+        leading: CloseButton(
+          onPressed: () =>
+              _cycleAction(state, 'voltar_metas', widget.screen.onNextGoal),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -574,9 +601,17 @@ class _ExerciseViewState extends State<_ExerciseView> {
                   ? l.trainingEndSeeGoals
                   : l.trainingEndRedo,
             ),
-            onPressed: firm || reinforce
-                ? widget.screen.onNextGoal
-                : () => widget.screen.onRedoLesson(state.goal!.ref),
+            onPressed: () => _cycleAction(
+              state,
+              firm
+                  ? 'voltar_metas'
+                  : reinforce
+                  ? 'ver_metas'
+                  : 'refazer_aula',
+              firm || reinforce
+                  ? widget.screen.onNextGoal
+                  : () => widget.screen.onRedoLesson(state.goal!.ref),
+            ),
           ),
           if (!firm)
             OutlinedButton.icon(
@@ -592,12 +627,24 @@ class _ExerciseViewState extends State<_ExerciseView> {
                     : l.trainingEndReinforceFirst,
               ),
               onPressed: reinforce
-                  ? () => widget.screen.onRedoLesson(state.goal!.ref)
+                  ? () => _cycleAction(
+                      state,
+                      'rever_aula',
+                      () => widget.screen.onRedoLesson(state.goal!.ref),
+                    )
                   : redoAfter
-                  ? widget.screen.onNextGoal
+                  ? () => _cycleAction(
+                      state,
+                      'agora_nao',
+                      widget.screen.onNextGoal,
+                    )
                   : () async {
                       if (await cubit.reinforceFirst() && mounted) {
-                        widget.screen.onNextGoal();
+                        _cycleAction(
+                          state,
+                          'reforco_antes',
+                          widget.screen.onNextGoal,
+                        );
                       }
                     },
             ),

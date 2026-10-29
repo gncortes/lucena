@@ -1,3 +1,7 @@
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/use_cases/training/training_analytics.dart';
+
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,6 +99,9 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     required this.repository,
     required this.config,
     required this.now,
+    this.analytics = const NoAnalyticsRepository(),
+    this.trainingAnalytics,
+    this.origin = 'metas',
   }) : super(const TrainingOpeningState()) {
     _changes = repository.changes.listen((saved) {
       if (!isClosed &&
@@ -107,7 +114,19 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
   }
   final TrainingRepository repository;
   final TrainingCourseConfig config;
+  final String origin;
+  DateTime? _started;
+  int _errors = 0, _back = 0, _forward = 0, _notation = 0, _hints = 0;
+  bool _segmentSent = false;
   final Now now;
+  final AnalyticsRepository analytics;
+  final TrainingAnalytics? trainingAnalytics;
+  Future<void> _log(AnalyticsEvent event) {
+    unawaited(
+      Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
+    );
+    return Future<void>.value();
+  }
 
   late final StreamSubscription<TrainingState> _changes;
   bool _saving = false;
@@ -149,6 +168,43 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
         throw StateError('Opening unavailable');
       }
       final line = PlayTrainingOpening(trecho);
+      await trainingAnalytics?.restore(config.course, state: saved);
+      if (goal != null) {
+        await trainingAnalytics?.startGoal(saved, goal, origin: origin);
+      }
+      final metadata = await trainingAnalytics?.startSegment(
+        saved,
+        lessonId: lessonId,
+        segmentId: trecho.id,
+        total: resources.openings[lessonId]!.length,
+        review:
+            saved.openings[lessonId]?.doneTrechos.containsKey(trecho.id) ??
+            false,
+        mock: trecho.mock,
+        origin: origin,
+      );
+      _started = metadata?.started ?? now();
+      _errors = metadata?.errors ?? 0;
+      _back = metadata?.back ?? 0;
+      _forward = metadata?.forward ?? 0;
+      _notation = metadata?.notation ?? 0;
+      _hints = metadata?.hints ?? 0;
+      _segmentSent = false;
+      if (trainingAnalytics == null) {
+        await _log(
+          AnalyticsEvents.treinoTrechoInicio(
+            curso: config.course.name,
+            aulaId: lessonId,
+            trecho: trecho.id,
+            trechosTotal: resources.openings[lessonId]!.length,
+            revisao:
+                saved.openings[lessonId]?.doneTrechos.containsKey(trecho.id) ??
+                false,
+            origem: origin,
+            mock: trecho.mock,
+          ),
+        );
+      }
       emit(
         TrainingOpeningState(
           phase: TrainingOpeningPhase.playing,
@@ -169,18 +225,56 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     }
   }
 
-  void notationTap([int? index]) {
-    if (index != null) review(index);
+  /// The notation view reports its own taps; arrows use [review].
+  void _counter({
+    int errors = 0,
+    int back = 0,
+    int forward = 0,
+    int notation = 0,
+    int hints = 0,
+    bool flush = true,
+  }) {
+    final id = state.lessonId, trecho = state.trecho;
+    if (id == null || trecho == null) return;
+    trainingAnalytics?.updateSegment(
+      config.course,
+      id,
+      trecho.id,
+      errors: errors,
+      back: back,
+      forward: forward,
+      notation: notation,
+      hints: hints,
+    );
+    if (flush && trainingAnalytics != null) {
+      unawaited(trainingAnalytics!.flush(config.course));
+    }
   }
 
-  void review(int index) {
+  void notationTap([int? index]) {
+    _notation++;
+    _counter(notation: 1);
+    if (index != null) review(index, countArrow: false);
+  }
+
+  void review(int index, {bool countArrow = true}) {
     if (state.line == null || index < 0 || index > state.cursor) return;
+    if (countArrow && index < state.shown) {
+      _back++;
+      _counter(back: 1);
+    }
+    if (countArrow && index > state.shown) {
+      _forward++;
+      _counter(forward: 1);
+    }
     emit(state.copyWith(shown: index));
   }
 
   Future<void> hint() async {
     if (state.phase != TrainingOpeningPhase.playing || state.reviewing) return;
     _pendingHint = true;
+    _hints++;
+    _counter(hints: 1, flush: false);
     emit(
       state.copyWith(
         phase: TrainingOpeningPhase.mistakeSaving,
@@ -232,7 +326,7 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
             ),
           );
         }
-        return next;
+        return trainingAnalytics?.attach(next) ?? next;
       });
       if (!isClosed) {
         emit(
@@ -258,6 +352,8 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     if (state.phase != TrainingOpeningPhase.playing || state.reviewing) return;
     final step = state.line!.play(state.cursor, uci);
     if (!step.correct) {
+      _errors++;
+      _counter(errors: 1, flush: false);
       // Keep the same position: the board immediately restores an incorrect move.
       _pendingHint = false;
       emit(
@@ -303,6 +399,7 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     if (state.phase != TrainingOpeningPhase.saving || _saving) return;
     _saving = true;
     final original = state;
+    var completedHere = false;
     emit(state.copyWith(error: false));
     try {
       final saved = await repository.transact(config.course, (current) async {
@@ -316,14 +413,53 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
             goal?.items[original.lessonId] != original.trecho!.id) {
           throw const _ExpiredOpening();
         }
+        completedHere =
+            refreshed.openings[original.lessonId]?.doneTrechos[original
+                .trecho!
+                .id] !=
+            refreshed.day?.date;
+        if (goal != null && completedHere) {
+          trainingAnalytics?.result(
+            config.course,
+            goal.key,
+            correct: _errors == 0,
+            hints: _hints,
+            hintKey: '${original.lessonId}:${original.trecho!.id}',
+          );
+        }
         final completed = CompleteTrainingGoal(
           now,
         ).opening(refreshed, resources, original.lessonId!, original.firstTry);
-        return completed;
+        return completedHere
+            ? trainingAnalytics?.finishSegment(
+                    completed,
+                    original.lessonId!,
+                    original.trecho!.id,
+                  ) ??
+                  completed
+            : completed;
       });
       if (saved.openings[original.lessonId]?.doneTrechos[original.trecho!.id] !=
           saved.day?.date) {
         throw const _ExpiredOpening();
+      }
+      if (!_segmentSent && completedHere && trainingAnalytics == null) {
+        _segmentSent = true;
+        await _log(
+          AnalyticsEvents.treinoTrechoFim(
+            curso: config.course.name,
+            aulaId: original.lessonId!,
+            trecho: original.trecho!.id,
+            erros: _errors,
+            toquesVoltar: _back,
+            toquesAvancar: _forward,
+            toquesNotacao: _notation,
+            tempoS: _started == null
+                ? 0
+                : now().difference(_started!).inSeconds.clamp(0, 2147483647),
+            mock: original.trecho!.mock,
+          ),
+        );
       }
       if (!isClosed) {
         emit(

@@ -17,7 +17,12 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     required this.installSeed,
     this.configs = const {TrainingCourse.pilares: TrainingCourseConfig.pilares},
     this.contentSources = const {},
+    this.onSaved,
   });
+
+  /// Best effort observer: called only after durable persistence.
+  final FutureOr<void> Function(TrainingState before, TrainingState after)?
+  onSaved;
   final PreferencesService preferences;
   final LessonContentAssets content;
   final String installSeed;
@@ -64,6 +69,7 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     TrainingCourse course,
     TrainingState Function(TrainingState) change,
   ) => transact(course, change);
+
   @override
   Future<TrainingState> transact(
     TrainingCourse course,
@@ -78,6 +84,17 @@ final class TrainingRepositoryLocal implements TrainingRepository {
       );
     }
     await preferences.setString(key(course), jsonEncode(after.toJson()));
+    try {
+      final observer = onSaved;
+      if (observer != null) {
+        unawaited(
+          Future<void>.sync(() => observer(before, after))
+              .catchError((Object _) {}),
+        );
+      }
+    } catch (_) {
+      // Telemetry must never roll back a durable command or block navigation.
+    }
     _changes.add(
       after,
     ); // Subscribers/navigation only observe a durable change.

@@ -1,9 +1,12 @@
 import 'day_goals.dart';
+import 'training_analytics_state.dart';
 import 'school_training_progress.dart';
 import 'opening_track.dart';
 import 'theme_cycle.dart';
 import 'training_course.dart';
 import 'training_plan.dart';
+
+const _keepAnalyticsReminder = Object();
 
 /// Provenance for reversible, pre-onboarding history only. No account identity.
 /// Snapshot strings are immutable and cover only tracks created by bootstrap.
@@ -42,12 +45,15 @@ final class TrainingState {
     this.day,
     this.lastLessonDate,
     this.lastActivityAt,
+    this.analyticsReminderAt,
+    this.analyticsReminderShownAt,
     Map<String, String> completedLessons = const {},
     Map<String, ThemeCycle> cycles = const {},
     Map<String, OpeningTrack> openings = const {},
     Iterable<String> offDayCredits = const [],
     Iterable<TrainingGoal> deferredGoals = const [],
     SchoolTrainingProgress? school,
+    TrainingAnalyticsState? analytics,
     Map<String, TrainingBootstrapImport> bootstrapImports = const {},
   }) : completedLessons = Map.unmodifiable(completedLessons),
        cycles = Map.unmodifiable(cycles),
@@ -55,6 +61,7 @@ final class TrainingState {
        offDayCredits = List.unmodifiable(offDayCredits),
        deferredGoals = List.unmodifiable(deferredGoals),
        school = school ?? SchoolTrainingProgress(),
+       analytics = analytics ?? TrainingAnalyticsState(),
        bootstrapImports = Map.unmodifiable(bootstrapImports);
   final TrainingCourse course;
   final String installSeed;
@@ -64,12 +71,16 @@ final class TrainingState {
   final DayGoals? day;
   final String? lastLessonDate;
   final DateTime? lastActivityAt;
+  final DateTime? analyticsReminderAt, analyticsReminderShownAt;
   final Map<String, String> completedLessons;
   final Map<String, ThemeCycle> cycles;
   final Map<String, OpeningTrack> openings;
   final List<String> offDayCredits;
+
+  /// Pending work retained through days off; never shown as today's goals.
   final List<TrainingGoal> deferredGoals;
   final SchoolTrainingProgress school;
+  final TrainingAnalyticsState analytics;
   final Map<String, TrainingBootstrapImport> bootstrapImports;
   bool get mock => day?.goals.any((g) => g.mock) ?? false;
   TrainingState copyWith({
@@ -80,12 +91,15 @@ final class TrainingState {
     DayGoals? day,
     String? lastLessonDate,
     DateTime? lastActivityAt,
+    Object? analyticsReminderAt = _keepAnalyticsReminder,
+    Object? analyticsReminderShownAt = _keepAnalyticsReminder,
     Map<String, String>? completedLessons,
     Map<String, ThemeCycle>? cycles,
     Map<String, OpeningTrack>? openings,
     Iterable<String>? offDayCredits,
     Iterable<TrainingGoal>? deferredGoals,
     SchoolTrainingProgress? school,
+    TrainingAnalyticsState? analytics,
     Map<String, TrainingBootstrapImport>? bootstrapImports,
   }) => TrainingState(
     course: course,
@@ -97,12 +111,20 @@ final class TrainingState {
     day: day ?? this.day,
     lastLessonDate: lastLessonDate ?? this.lastLessonDate,
     lastActivityAt: lastActivityAt ?? this.lastActivityAt,
+    analyticsReminderAt: identical(analyticsReminderAt, _keepAnalyticsReminder)
+        ? this.analyticsReminderAt
+        : analyticsReminderAt as DateTime?,
+    analyticsReminderShownAt:
+        identical(analyticsReminderShownAt, _keepAnalyticsReminder)
+        ? this.analyticsReminderShownAt
+        : analyticsReminderShownAt as DateTime?,
     completedLessons: completedLessons ?? this.completedLessons,
     cycles: cycles ?? this.cycles,
     openings: openings ?? this.openings,
     offDayCredits: offDayCredits ?? this.offDayCredits,
     deferredGoals: deferredGoals ?? this.deferredGoals,
     school: school ?? this.school,
+    analytics: analytics ?? this.analytics,
     bootstrapImports: bootstrapImports ?? this.bootstrapImports,
   );
   Map<String, Object?> toJson() => {
@@ -116,12 +138,15 @@ final class TrainingState {
     'day': day?.toJson(),
     'lastLessonDate': lastLessonDate,
     'lastActivityAt': lastActivityAt?.toIso8601String(),
+    'analyticsReminderAt': analyticsReminderAt?.toIso8601String(),
+    'analyticsReminderShownAt': analyticsReminderShownAt?.toIso8601String(),
     'completedLessons': completedLessons,
     'cycles': cycles.map((k, v) => MapEntry(k, v.toJson())),
     'openings': openings.map((k, v) => MapEntry(k, v.toJson())),
     'offDayCredits': offDayCredits,
     'deferredGoals': deferredGoals.map((g) => g.toJson()).toList(),
     'school': school.toJson(),
+    'analytics': analytics.toJson(),
     'bootstrapImports': bootstrapImports.map((k, v) => MapEntry(k, v.toJson())),
   };
   factory TrainingState.fromJson(Map<String, dynamic> j) {
@@ -139,6 +164,12 @@ final class TrainingState {
           ? null
           : DayGoals.fromJson(Map<String, dynamic>.from(j['day'] as Map)),
       lastLessonDate: j['lastLessonDate'] as String?,
+      analyticsReminderAt: DateTime.tryParse(
+        j['analyticsReminderAt'] as String? ?? '',
+      ),
+      analyticsReminderShownAt: DateTime.tryParse(
+        j['analyticsReminderShownAt'] as String? ?? '',
+      ),
       lastActivityAt: j['lastActivityAt'] == null
           ? null
           : DateTime.parse(j['lastActivityAt'] as String),
@@ -158,6 +189,9 @@ final class TrainingState {
       offDayCredits: (j['offDayCredits'] as List).cast<String>(),
       deferredGoals: (j['deferredGoals'] as List? ?? const []).map(
         (g) => TrainingGoal.fromJson(Map<String, dynamic>.from(g as Map)),
+      ),
+      analytics: TrainingAnalyticsState.fromJson(
+        Map<String, dynamic>.from(j['analytics'] as Map? ?? const {}),
       ),
       school: SchoolTrainingProgress.fromJson(
         Map<String, dynamic>.from(j['school'] as Map? ?? const {}),

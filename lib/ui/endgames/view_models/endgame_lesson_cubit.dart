@@ -205,7 +205,7 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
         _analytics.log(
           AnalyticsEvents.aulaAberta(
             aulaId: lessonId,
-            tipoAula: 'finais',
+            tipoAula: lessonId.startsWith('pilares.') ? 'pilares' : 'finais',
             origem: origin,
             retomada: progress.ongoing?.lessonId == lessonId,
             primeiraVez:

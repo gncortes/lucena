@@ -11,6 +11,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
@@ -31,6 +32,7 @@ class TrainingOpeningScreen extends StatelessWidget {
     required this.lessonId,
     required this.teacher,
     required this.onNextGoal,
+    this.heroTag,
     this.preview,
     this.homeHero = false,
     super.key,
@@ -40,15 +42,20 @@ class TrainingOpeningScreen extends StatelessWidget {
   final Now now;
   final String lessonId;
   final Character teacher;
+  final VoidCallback onNextGoal;
+  final Object? heroTag;
   final TrainingOpeningState? preview;
   final bool homeHero;
-  final VoidCallback onNextGoal;
 
   @override
   Widget build(BuildContext context) => BlocProvider(
-    create: (_) =>
-        TrainingOpeningCubit(repository: repository, config: config, now: now)
-          ..load(lessonId: lessonId),
+    create: (_) => TrainingOpeningCubit(
+      repository: repository,
+      config: config,
+      now: now,
+      analytics: context.analytics,
+      trainingAnalytics: context.trainingAnalytics,
+    )..load(lessonId: lessonId),
     child: _OpeningView(screen: this),
   );
 }
@@ -297,7 +304,7 @@ class _OpeningViewState extends State<_OpeningView> {
     final hint = playing && state.hint
         ? Move.parse(state.trecho!.moves[state.cursor])
         : null;
-    final board = Directionality(
+    Widget board = Directionality(
       textDirection: TextDirection.ltr,
       child: Chessboard(
         key: TrainingKeys.openingBoard,
@@ -316,11 +323,14 @@ class _OpeningViewState extends State<_OpeningView> {
         onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
       ),
     );
-    return widget.screen.homeHero
-        ? GameBoardHero(
-            orientation: state.trecho!.black ? Side.black : Side.white,
-            child: board,
-          )
-        : board;
+    if (widget.screen.homeHero) {
+      board = GameBoardHero(
+        orientation: state.trecho!.black ? Side.black : Side.white,
+        child: board,
+      );
+    } else if (widget.screen.heroTag case final tag?) {
+      board = Hero(tag: tag, child: board);
+    }
+    return board;
   }
 }

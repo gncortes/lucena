@@ -141,6 +141,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
     if (allow) {
       await cubit.allowPermission();
     } else {
+      cubit.declinePermission();
       cubit.disableReminder();
     }
     return true;

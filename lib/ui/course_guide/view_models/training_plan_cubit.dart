@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/use_cases/training/training_analytics.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/push/push_repository.dart';
@@ -54,6 +60,8 @@ final class TrainingPlanCubit extends Cubit<TrainingPlanState> {
     required this.repository,
     required this.config,
     required this.now,
+    this.analytics = const NoAnalyticsRepository(),
+    this.trainingAnalytics,
     this.beforeLoad,
     required this.push,
     this.afterSave,
@@ -62,6 +70,15 @@ final class TrainingPlanCubit extends Cubit<TrainingPlanState> {
   final TrainingRepository repository;
   final TrainingCourseConfig config;
   final Now now;
+  final AnalyticsRepository analytics;
+  final TrainingAnalytics? trainingAnalytics;
+  Future<void> _log(AnalyticsEvent event) {
+    unawaited(
+      Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
+    );
+    return Future<void>.value();
+  }
+
   final PushRepository push;
   final Future<void> Function(TrainingState)? afterSave;
 
@@ -158,11 +175,22 @@ final class TrainingPlanCubit extends Cubit<TrainingPlanState> {
     }
   }
 
+  /// Called when the app's permission explanation is declined.
+  Future<void> declinePermission() => _log(
+    AnalyticsEvents.avisoPedido(resposta: 'agora_nao', gatilho: 'treino'),
+  );
+
   Future<void> allowPermission() async {
     if (state.busy) return;
     emit(state.copyWith(permissionBusy: true, failed: false));
     try {
       final granted = await push.requestPermission();
+      await _log(
+        AnalyticsEvents.avisoPedido(
+          resposta: granted ? 'permitiu' : 'negou_sistema',
+          gatilho: 'treino',
+        ),
+      );
       if (!isClosed) {
         emit(
           state.copyWith(
@@ -226,6 +254,20 @@ final class TrainingPlanCubit extends Cubit<TrainingPlanState> {
             ? changed
             : BuildDayGoals(now, config)(changed, resources);
       });
+      await _log(
+        AnalyticsEvents.treinoPlanoAlterado(
+          curso: config.course.name,
+          minutos: draft.minutes,
+          dias: draft.weekdayMask.split('').where((d) => d == '1').length,
+          diasMascara: draft.weekdayMask,
+          lembrete: draft.reminderOn,
+          hora: draft.reminderHour,
+          primeiraVez: !state.editing,
+        ),
+      );
+      await _log(
+        AnalyticsEvents.avisoChave(tipo: 'treino', ligado: draft.reminderOn),
+      );
       await afterSave?.call(saved);
       if (!isClosed) emit(state.copyWith(saving: false, editing: true));
       return true;
