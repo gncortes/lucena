@@ -4,6 +4,8 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_shape.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_text.dart';
+import '../../keys/course_guide_keys.dart';
+import 'training_badge.dart';
 
 /// O estado de um item do mapa do curso (capítulo de finais ou lição da
 /// Escola), como no canvas `CompAulaTile` v2.
@@ -32,11 +34,12 @@ class CourseItemTile extends StatelessWidget {
     required this.state,
     required this.title,
     this.summary,
+    this.difficulty,
     this.tags = const [],
     this.medal,
     this.onTap,
     super.key,
-  });
+  }) : assert(difficulty == null || (difficulty >= 1 && difficulty <= 3));
 
   /// O verde da concluída (canvas #2E6B3A).
   static const doneColor = AppColors.record;
@@ -50,6 +53,7 @@ class CourseItemTile extends StatelessWidget {
   final CourseItemState state;
   final String title;
   final String? summary;
+  final int? difficulty;
   final List<Widget> tags;
   final Widget? medal;
   final VoidCallback? onTap;
@@ -59,6 +63,7 @@ class CourseItemTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final summary = this.summary;
+    final difficulty = this.difficulty;
     final medal = this.medal;
     final (background, foreground, icon) = switch (state) {
       CourseItemState.approved => (doneColor, AppColors.white, Icons.check),
@@ -126,12 +131,35 @@ class CourseItemTile extends StatelessWidget {
                             : null,
                       ),
                     ),
-                    if (summary != null && summary.isNotEmpty)
+                    if (summary != null &&
+                        summary.isNotEmpty &&
+                        difficulty == null)
                       Text(
                         summary,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
+                      ),
+                    if (summary != null &&
+                        summary.isNotEmpty &&
+                        difficulty != null)
+                      Row(
+                        spacing: AppSpacing.xs,
+                        children: [
+                          TrainingBadge.difficultyIcon(
+                            context,
+                            difficulty,
+                            key: CourseGuideKeys.difficultyStar(title),
+                          ),
+                          Flexible(
+                            child: Text(
+                              summary,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     for (final tag in tags)
                       Padding(

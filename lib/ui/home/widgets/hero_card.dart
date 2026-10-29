@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dartchess/dartchess.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
@@ -24,18 +25,23 @@ import 'home_actions.dart';
 /// o retrato, o ponto em que a pessoa está e a miniatura numa linha; embaixo,
 /// o lugar do app, a barra (só com progresso) e o botão. Nada além disso.
 class HeroCard extends StatelessWidget {
-  const HeroCard({required this.state, super.key});
+  const HeroCard({
+    required this.state,
+    this.orientation = Side.white,
+    super.key,
+  });
 
   /// A miniatura da posição.
   static const board = 60.0;
 
   final HomeState state;
+  final Side orientation;
 
   @override
   Widget build(BuildContext context) {
     final data = _data(context);
     if (data == null) return const SizedBox.shrink();
-    return _HeroLayout(data: data);
+    return _HeroLayout(data: data, orientation: orientation);
   }
 
   _HeroData? _data(BuildContext context) {
@@ -159,9 +165,10 @@ class _HeroData {
 }
 
 class _HeroLayout extends StatelessWidget {
-  const _HeroLayout({required this.data});
+  const _HeroLayout({required this.data, required this.orientation});
 
   final _HeroData data;
+  final Side orientation;
 
   @override
   Widget build(BuildContext context) {
@@ -221,6 +228,7 @@ class _HeroLayout extends StatelessWidget {
                     PositionBoard(
                       key: HomeKeys.heroBoard,
                       fen: fen,
+                      orientation: orientation,
                       size: HeroCard.board,
                       heroTag: data.boardTag,
                     ),

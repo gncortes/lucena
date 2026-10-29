@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../lesson_script/widgets/script_demo_controls.dart';
+import '../keys/training_keys.dart';
+import '../l10n/l10n.dart';
 import '../theme/app_button.dart';
 import '../theme/app_button_text.dart';
 import '../theme/app_spacing.dart';
 import 'round_footer_button.dart';
+
+enum ExerciseNavigation { start, middle, end }
 
 /// Um botão do rodapé do exercício.
 class ExerciseAction {
@@ -60,10 +65,16 @@ class ExerciseActions extends StatelessWidget {
     this.color,
     this.leading,
     this.hug = false,
+    this.navigation,
+    this.onPreviousMove,
+    this.onNextMove,
     super.key,
   }) : assert(actions.length <= 2);
 
   final Widget? hint;
+  final ExerciseNavigation? navigation;
+  final VoidCallback? onPreviousMove;
+  final VoidCallback? onNextMove;
 
   /// Colado à esquerda dos botões (o ↻ do fim da demonstração da lição
   /// roteirizada, T70).
@@ -165,6 +176,26 @@ class ExerciseActions extends StatelessWidget {
         child: Row(
           children: [
             ?hint,
+            if (navigation != null) ...[
+              if (buttons.isEmpty) const Spacer(),
+              ScriptDemoButton(
+                buttonKey: TrainingKeys.prevMove,
+                icon: Icons.chevron_left,
+                tooltip: context.l10n.trainingPrevMove,
+                onPressed: navigation == ExerciseNavigation.start
+                    ? null
+                    : onPreviousMove,
+              ),
+              const SizedBox(width: ScriptDemoControls.gap),
+              ScriptDemoButton(
+                buttonKey: TrainingKeys.nextMove,
+                icon: Icons.chevron_right,
+                tooltip: context.l10n.trainingNextMove,
+                onPressed: navigation == ExerciseNavigation.end
+                    ? null
+                    : onNextMove,
+              ),
+            ],
             if (fill)
               ...buttons.isEmpty
                   ? const <Widget>[]
@@ -173,6 +204,7 @@ class ExerciseActions extends StatelessWidget {
               Expanded(
                 child: Align(
                   alignment: AlignmentDirectional.centerEnd,
+                  heightFactor: 1,
                   child: Padding(
                     padding: EdgeInsetsDirectional.only(
                       start: hint == null ? 0 : gap,
@@ -200,6 +232,14 @@ class ExerciseActions extends StatelessWidget {
                             ],
                           ),
                   ),
+                ),
+              ),
+            if (buttons.isEmpty && leading != null)
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  heightFactor: 1,
+                  child: leading,
                 ),
               ),
           ],

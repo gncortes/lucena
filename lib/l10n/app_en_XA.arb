@@ -1857,5 +1857,8 @@
   "homeShortcutSpeedrunBody": "[Thé whölé Jöûŕñéý åĝåîñšt thé çlöçk one two three]",
   "homeShortcutStarsBody": "[Éåçh pîéçé åĝåîñšt thé çlöçk one two three]",
   "homeShortcutSchool": "[Šçhööl one]",
-  "homeShortcutSchoolBody": "[Fŕöm thé pîéçéš tö ýöûŕ fîŕšt måté one two three]"
+  "homeShortcutSchoolBody": "[Fŕöm thé pîéçéš tö ýöûŕ fîŕšt måté one two three]",
+  "trainingWithHint": "[Wîth hîñt one]",
+  "trainingPrevMove": "[Pŕévîöûš mövé one two]",
+  "trainingNextMove": "[Ñéxt mövé one]"
 }

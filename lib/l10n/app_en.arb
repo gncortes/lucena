@@ -9783,5 +9783,17 @@
   "homeShortcutSchoolBody": "From the pieces to your first mate",
   "@homeShortcutSchoolBody": {
     "description": "Two-line description on the school shortcut tile."
+  },
+  "trainingWithHint": "With hint",
+  "trainingPrevMove": "Previous move",
+  "trainingNextMove": "Next move",
+  "@trainingWithHint": {
+    "description": "Training badge: an exercise solved with a hint."
+  },
+  "@trainingPrevMove": {
+    "description": "Training opening footer: show the previous move."
+  },
+  "@trainingNextMove": {
+    "description": "Training opening footer: show the next move."
   }
 }

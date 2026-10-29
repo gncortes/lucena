@@ -1899,5 +1899,8 @@
   "homeShortcutSpeedrunBody": "The whole Journey against the clock",
   "homeShortcutStarsBody": "Each piece against the clock",
   "homeShortcutSchool": "School",
-  "homeShortcutSchoolBody": "From the pieces to your first mate"
+  "homeShortcutSchoolBody": "From the pieces to your first mate",
+  "trainingWithHint": "З підказкою",
+  "trainingPrevMove": "Попередній хід",
+  "trainingNextMove": "Наступний хід"
 }
