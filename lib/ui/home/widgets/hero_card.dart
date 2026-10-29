@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
 import '../../../domain/use_cases/game_rules.dart';
+import '../../../domain/use_cases/training/home_course_card.dart';
 import '../../../routing/routes.dart';
 import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/keys/home_keys.dart';
@@ -15,6 +16,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/position_board.dart';
 import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/widgets/journey_ui.dart';
@@ -41,7 +43,13 @@ class HeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = _data(context);
     if (data == null) return const SizedBox.shrink();
-    return _HeroLayout(data: data, orientation: orientation);
+    final card = _HeroLayout(
+      data: data,
+      orientation: data.orientation ?? orientation,
+    );
+    return state.training == null
+        ? card
+        : KeyedSubtree(key: HomeKeys.courseCard, child: card);
   }
 
   _HeroData? _data(BuildContext context) {
@@ -53,6 +61,10 @@ class HeroCard extends StatelessWidget {
     final next = state.next;
     return switch (state.hero) {
       null => null,
+      HomeHero.course when state.training != null => _courseData(
+        context,
+        state.training!,
+      ),
       HomeHero.firstSteps => _HeroData(
         label: l10n.homeHeroFirstSteps,
         title: l10n.boardMoveMethod,
@@ -136,6 +148,40 @@ class HeroCard extends StatelessWidget {
       _ => null,
     };
   }
+
+  _HeroData _courseData(BuildContext context, HomeTraining training) {
+    final l = context.l10n;
+    final card = training.card;
+    final lesson = training.resources.lessons
+        .where((e) => e.id == card.ref)
+        .firstOrNull;
+    final fen = training.fen;
+    return _HeroData(
+      label: switch (card.status) {
+        HomeCourseStatus.lesson => l.homeCourseToday,
+        HomeCourseStatus.done => l.homeCourseAllDone,
+        HomeCourseStatus.dayOff => l.homeCourseDayOff,
+        _ => l.homeCourseNextGoal,
+      },
+      title: lesson?.title ?? l.trainingOpeningsTitle,
+      action: switch (card.status) {
+        HomeCourseStatus.exercise => l.homeCourseSolve,
+        HomeCourseStatus.opening => l.homeCourseTrain,
+        HomeCourseStatus.challenge => l.homeHeroPlay,
+        HomeCourseStatus.lesson => l.homeContinue,
+        _ => l.homeHeroStart,
+      },
+      wrapLabel:
+          card.status == HomeCourseStatus.done ||
+          card.status == HomeCourseStatus.dayOff,
+      avatar: state.teacher,
+      fen: fen,
+      orientation: training.orientation,
+      boardTag: fen == null ? null : gameBoardTag(training.orientation),
+      onPressed: () =>
+          openTrainingCourse(context, training, teacher: state.teacher),
+    );
+  }
 }
 
 class _HeroData {
@@ -145,10 +191,12 @@ class _HeroData {
     required this.action,
     required this.onPressed,
     this.progress = 0,
+    this.wrapLabel = false,
     this.avatar,
     this.avatarTag,
     this.fen,
     this.boardTag,
+    this.orientation,
   });
 
   final String label;
@@ -158,10 +206,12 @@ class _HeroData {
 
   /// De 0 a 1. Zero: sem barra.
   final double progress;
+  final bool wrapLabel;
   final Character? avatar;
   final Object? avatarTag;
   final String? fen;
   final Object? boardTag;
+  final Side? orientation;
 }
 
 class _HeroLayout extends StatelessWidget {
@@ -178,7 +228,7 @@ class _HeroLayout extends StatelessWidget {
     final label = Text(
       data.label,
       key: HomeKeys.heroLabel,
-      maxLines: 1,
+      maxLines: data.wrapLabel ? 2 : 1,
       style: theme.textTheme.labelMedium?.copyWith(
         color: on.withValues(alpha: 0.85),
         fontWeight: AppWeight.strong,

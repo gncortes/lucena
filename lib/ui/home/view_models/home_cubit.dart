@@ -1,10 +1,20 @@
 import 'dart:async';
 
-import 'package:dartchess/dartchess.dart' show Move;
+import 'package:dartchess/dartchess.dart' show Move, Side;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/lesson_content.dart';
+import '../../../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/training_resources.dart';
+import '../../../domain/models/training/training_state.dart';
+import '../../../domain/models/training/training_content.dart';
+import '../../../domain/use_cases/training/play_training_opening.dart';
+import '../../lesson_script/view_models/lesson_script_state.dart';
+import '../../../domain/use_cases/training/build_day_goals.dart';
+import '../../../domain/use_cases/training/home_course_card.dart';
 
 import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -78,6 +88,7 @@ class HomeState {
     this.courseAvailable = true,
     this.placementDone = true,
     this.ratedGames = 0,
+    this.training,
   });
 
   final bool ready;
@@ -156,6 +167,7 @@ class HomeState {
 
   /// As partidas que mexeram no rating (sem os bônus de speedrun).
   final int ratedGames;
+  final HomeTraining? training;
 
   /// O número do rating aparece (T83 B3).
   bool get showsRating => BeginnerHome.showsRating(goal, ratedGames);
@@ -167,6 +179,7 @@ class HomeState {
   /// "card-estados"). Nulo: nenhum cartão.
   HomeHero? get hero {
     if (!ready) return null;
+    if (training != null) return HomeHero.course;
     final goal = this.goal;
     if (goal == GoalPreference.learn && !boardControlsDone) {
       return HomeHero.firstSteps;
@@ -228,11 +241,14 @@ class HomeState {
     courseAvailable: courseAvailable,
     placementDone: placementDone,
     ratedGames: ratedGames,
+    training: training,
   );
 }
 
 /// O cartão azul de cima da tela inicial: um lugar do app por vez.
 enum HomeHero {
+  course(HomePath.learn),
+
   /// Como mover as peças, antes da primeira partida de quem aprende a jogar.
   firstSteps(HomePath.journey),
 
@@ -258,6 +274,41 @@ enum HomeHero {
 
   /// O caminho que o cartão já mostra (sai dos atalhos).
   final HomePath path;
+}
+
+final class HomeTraining {
+  const HomeTraining({
+    required this.config,
+    required this.state,
+    required this.resources,
+    required this.card,
+    this.lessonPreview,
+  });
+  final TrainingCourseConfig config;
+  final TrainingState state;
+  final TrainingResources resources;
+  final HomeCourseCard card;
+  final LessonScriptState? lessonPreview;
+  TrainingExercise? get exercise => resources.banks[card.ref]
+      ?.where((e) => e.id == card.goal?.itemId)
+      .firstOrNull;
+  OpeningTrecho? get opening => resources.openings[card.ref]
+      ?.where((e) => e.id == card.goal?.items[card.ref])
+      .firstOrNull;
+  PlayTrainingOpening? get openingLine =>
+      opening == null ? null : PlayTrainingOpening(opening!);
+
+  String? get fen {
+    if (card.destination == HomeCourseDestination.lessonTab) return null;
+    final line = openingLine;
+    return exercise?.fen ??
+        (line == null ? lessonPreview?.fen : line.fens[line.initialCursor]);
+  }
+
+  Side get orientation => opening != null
+      ? (opening!.black ? Side.black : Side.white)
+      : lessonPreview?.orientation ??
+            (fen?.split(' ')[1] == 'b' ? Side.black : Side.white);
 }
 
 /// O final sugerido pelo nível e a primeira posição dele por cumprir (a
@@ -371,9 +422,19 @@ class HomeCubit extends Cubit<HomeState> {
     this._activity,
     this._games,
     this._analytics = const NoAnalyticsRepository(),
+    this._courseTraining,
+    this._trainingCourses = const [],
+    this.trainingLessonPreview,
   }) : super(const HomeState());
 
   final AnalyticsRepository _analytics;
+  final course_training.TrainingRepository? _courseTraining;
+  final List<TrainingCourseConfig> _trainingCourses;
+
+  /// Reads the same resolved script/checkpoint as the lesson destination.
+  /// Absent content leaves the preview empty rather than inventing a FEN.
+  final Future<LessonScriptState?> Function(TrainingLesson)?
+  trainingLessonPreview;
 
   // A sequência de dias: sem ela (ou sem o relógio), a folha não sai.
   final ActivityRepository? _activity;
@@ -483,6 +544,7 @@ class HomeCubit extends Cubit<HomeState> {
     final streak = await _streak();
     final placementDone =
         _placement == null || await _placement.result() != null;
+    final training = await _optionalContent(_trainingSummary);
     if (isClosed) return;
     emit(
       HomeState(
@@ -518,8 +580,55 @@ class HomeCubit extends Cubit<HomeState> {
         courseAvailable: courseAvailable,
         placementDone: placementDone,
         ratedGames: history.where((entry) => !entry.isBonus).length,
+        training: training,
       ),
     );
+  }
+
+  Future<HomeTraining?> _trainingSummary() async {
+    final repository = _courseTraining;
+    final now = _now;
+    if (repository == null || now == null) return null;
+    final active =
+        <
+          ({
+            TrainingCourseConfig config,
+            TrainingState state,
+            TrainingResources resources,
+          })
+        >[];
+    for (final config in _trainingCourses) {
+      final before = await repository.load(config.course);
+      if (!before.onboardingDone) continue;
+      final resources = await repository.resources(config.course);
+      final state = await repository.update(
+        config.course,
+        (s) => BuildDayGoals(now, config)(s, resources),
+      );
+      active.add((config: config, state: state, resources: resources));
+    }
+    final latest = latestTrainingCourse(active.map((e) => e.state));
+    if (latest == null) return null;
+    final selected = active.firstWhere((e) => e.state.course == latest.course);
+    final card = homeCourseCard(selected.state, selected.resources);
+    final lesson = selected.resources.lessons
+        .where((l) => l.id == card?.ref)
+        .firstOrNull;
+    final preview =
+        card?.destination == HomeCourseDestination.lesson && lesson != null
+        ? await _optionalContent(
+            () async => trainingLessonPreview?.call(lesson),
+          )
+        : null;
+    return card == null
+        ? null
+        : HomeTraining(
+            config: selected.config,
+            state: selected.state,
+            resources: selected.resources,
+            card: card,
+            lessonPreview: preview,
+          );
   }
 
   /// A sequência de hoje. [Streak.lost] só fica quando a folha da sequência

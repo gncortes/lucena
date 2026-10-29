@@ -2108,5 +2108,11 @@
   "trainingOpeningTitle": "{opening} · trecho {n} de {total}",
   "trainingOpeningTrain": "Treinar o trecho {n} · {reply}",
   "trainingOpeningWrong": "Tente novamente: jogue o lance deste trecho.",
-  "trainingOpeningsInfo": "Cada abertura é dividida em trechos curtos. Jogue seus lances e reveja a linha pelas setas."
+  "trainingOpeningsInfo": "Cada abertura é dividida em trechos curtos. Jogue seus lances e reveja a linha pelas setas.",
+  "homeCourseAllDone": "Metas feitas · mais uma aula?",
+  "homeCourseDayOff": "Dia de folga · mais uma aula?",
+  "homeCourseNextGoal": "Próxima meta",
+  "homeCourseSolve": "Resolver",
+  "homeCourseToday": "Aula de hoje",
+  "homeCourseTrain": "Treinar"
 }

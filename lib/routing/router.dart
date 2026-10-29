@@ -1,3 +1,8 @@
+import 'training_launch.dart';
+import '../domain/models/training/training_content.dart';
+import '../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../ui/home/view_models/training_lesson_preview.dart';
 import 'training_routes.dart';
 import '../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../ui/course_preview/widgets/course_band_preview_screen.dart';
@@ -544,6 +549,12 @@ GoRouter buildRouter({
             activity: context.read<ActivityRepository>(),
             games: context.read<OngoingGameRepository>(),
             analytics: context.analytics,
+            courseTraining: context.read<course_training.TrainingRepository>(),
+            trainingCourses: activeTrainingCourses,
+            trainingLessonPreview: trainingLessonPreviewLoader(
+              scripts: context.read<LessonScriptRepository>(),
+              language: _language(context),
+            ),
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -1083,6 +1094,11 @@ GoRouter buildRouter({
                         ),
                         child: LessonScriptScreen(
                           key: ValueKey('script.$id.$part'),
+                          preview: _trainingLaunch(state)?.lessonPreview,
+                          previewTeacher: _trainingLaunch(state)?.teacher,
+                          previewTitle: _trainingTitle(state),
+                          homeHero:
+                              _trainingLaunch(state)?.lessonPreview != null,
                           title: lessons.texts(language).then((texts) async {
                             final title = texts.partTitle(id, part);
                             if (title == null) return null;
@@ -1895,7 +1911,7 @@ GoRoute _route({
         child: builder(context, state),
       );
     }
-    if (!fade) {
+    if (!fade && state.extra is! TrainingLaunch) {
       return MaterialPage<void>(
         key: state.pageKey,
         child: builder(context, state),
@@ -1949,3 +1965,11 @@ bool? _endgamesFilter(GoRouterState state) =>
       'forYou' => false,
       _ => null,
     };
+
+TrainingLaunch? _trainingLaunch(GoRouterState state) =>
+    state.extra is TrainingLaunch ? state.extra as TrainingLaunch : null;
+String? _trainingTitle(GoRouterState state) =>
+    _trainingLaunch(state)?.title ??
+    (state.extra is TrainingLesson
+        ? (state.extra as TrainingLesson).title
+        : null);

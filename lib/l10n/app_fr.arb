@@ -2045,5 +2045,11 @@
   "trainingOpeningTitle": "{opening} · segment {n} of {total}",
   "trainingOpeningTrain": "Train segment {n} · {reply}",
   "trainingOpeningWrong": "Try again: play the move from this segment.",
-  "trainingOpeningsInfo": "Each opening is divided into short segments. Play your moves and review the line with the arrows."
+  "trainingOpeningsInfo": "Each opening is divided into short segments. Play your moves and review the line with the arrows.",
+  "homeCourseAllDone": "Goals completed · another lesson?",
+  "homeCourseDayOff": "Rest day · another lesson?",
+  "homeCourseNextGoal": "Next goal",
+  "homeCourseSolve": "Solve",
+  "homeCourseToday": "Today’s lesson",
+  "homeCourseTrain": "Train"
 }

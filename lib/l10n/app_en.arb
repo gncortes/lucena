@@ -10535,5 +10535,29 @@
   "trainingOpeningsInfo": "Each opening is divided into short segments. Play your moves and review the line with the arrows.",
   "@trainingOpeningsInfo": {
     "description": "T85 opening training: trainingOpeningsInfo."
+  },
+  "homeCourseAllDone": "Goals completed · another lesson?",
+  "@homeCourseAllDone": {
+    "description": "T85 course training Home card: homeCourseAllDone."
+  },
+  "homeCourseDayOff": "Rest day · another lesson?",
+  "@homeCourseDayOff": {
+    "description": "T85 course training Home card: homeCourseDayOff."
+  },
+  "homeCourseNextGoal": "Next goal",
+  "@homeCourseNextGoal": {
+    "description": "T85 course training Home card: homeCourseNextGoal."
+  },
+  "homeCourseSolve": "Solve",
+  "@homeCourseSolve": {
+    "description": "T85 course training Home card: homeCourseSolve."
+  },
+  "homeCourseToday": "Today’s lesson",
+  "@homeCourseToday": {
+    "description": "T85 course training Home card: homeCourseToday."
+  },
+  "homeCourseTrain": "Train",
+  "@homeCourseTrain": {
+    "description": "T85 course training Home card: homeCourseTrain."
   }
 }

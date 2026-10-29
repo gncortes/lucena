@@ -22,6 +22,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/course/training_badge.dart';
 import '../../core/widgets/exercise_actions.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/teacher_speech.dart';
@@ -41,6 +42,8 @@ class TrainingExerciseScreen extends StatelessWidget {
     required this.teacher,
     required this.onNextGoal,
     required this.onRedoLesson,
+    this.preview,
+    this.homeHero = false,
     super.key,
   });
   final TrainingRepository repository;
@@ -48,6 +51,8 @@ class TrainingExerciseScreen extends StatelessWidget {
   final Now now;
   final String goalKey, title;
   final Character teacher;
+  final TrainingExerciseState? preview;
+  final bool homeHero;
   final VoidCallback onNextGoal;
   final ValueChanged<String> onRedoLesson;
 
@@ -99,6 +104,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
   ) => BlocBuilder<TrainingExerciseCubit, TrainingExerciseState>(
     builder: (context, state) {
       final loading = state.phase == TrainingExercisePhase.loading;
+      if (loading && widget.screen.preview != null) {
+        state = widget.screen.preview!;
+      }
       final l = context.l10n;
       if (state.phase == TrainingExercisePhase.end) return _end(context, state);
       final cubit = context.read<TrainingExerciseCubit>();
@@ -367,7 +375,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
     final hint = state.hint && playing
         ? Move.parse(state.exercise!.solution[state.cursor])
         : null;
-    return Directionality(
+    final board = Directionality(
       textDirection: TextDirection.ltr,
       child: Chessboard(
         key: TrainingKeys.exerciseBoard,
@@ -386,6 +394,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
         onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
       ),
     );
+    return widget.screen.homeHero
+        ? GameBoardHero(orientation: side, child: board)
+        : board;
   }
 
   void _solution(BuildContext context, TrainingExerciseState state) {

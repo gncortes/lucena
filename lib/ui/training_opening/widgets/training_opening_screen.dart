@@ -15,6 +15,7 @@ import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/exercise_actions.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
@@ -30,6 +31,8 @@ class TrainingOpeningScreen extends StatelessWidget {
     required this.lessonId,
     required this.teacher,
     required this.onNextGoal,
+    this.preview,
+    this.homeHero = false,
     super.key,
   });
   final TrainingRepository repository;
@@ -37,6 +40,8 @@ class TrainingOpeningScreen extends StatelessWidget {
   final Now now;
   final String lessonId;
   final Character teacher;
+  final TrainingOpeningState? preview;
+  final bool homeHero;
   final VoidCallback onNextGoal;
 
   @override
@@ -87,6 +92,9 @@ class _OpeningViewState extends State<_OpeningView> {
     listener: (_, state) => _advance(state),
     builder: (context, state) {
       final loading = state.phase == TrainingOpeningPhase.loading;
+      if (loading && widget.screen.preview != null) {
+        state = widget.screen.preview!;
+      }
       final l = context.l10n;
       final cubit = context.read<TrainingOpeningCubit>();
       final ready =
@@ -289,7 +297,7 @@ class _OpeningViewState extends State<_OpeningView> {
     final hint = playing && state.hint
         ? Move.parse(state.trecho!.moves[state.cursor])
         : null;
-    return Directionality(
+    final board = Directionality(
       textDirection: TextDirection.ltr,
       child: Chessboard(
         key: TrainingKeys.openingBoard,
@@ -308,5 +316,11 @@ class _OpeningViewState extends State<_OpeningView> {
         onMove: (move, {viaDragAndDrop}) => cubit.play(move.uci),
       ),
     );
+    return widget.screen.homeHero
+        ? GameBoardHero(
+            orientation: state.trecho!.black ? Side.black : Side.white,
+            child: board,
+          )
+        : board;
   }
 }

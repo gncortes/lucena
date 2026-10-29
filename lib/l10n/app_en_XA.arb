@@ -2003,5 +2003,11 @@
   "trainingOpeningTitle": "[{opening} · šéĝméñt {n} öf {total} one two three]",
   "trainingOpeningTrain": "[Tŕåîñ šéĝméñt {n} · {reply} one two three]",
   "trainingOpeningWrong": "[Tŕý åĝåîñ: plåý thé mövé fŕöm thîš šéĝméñt. one two three four]",
-  "trainingOpeningsInfo": "[Éåçh öpéñîñĝ îš dîvîdéd îñtö šhöŕt šéĝméñtš. Plåý ýöûŕ mövéš åñd ŕévîéw thé lîñé wîth thé åŕŕöwš. one two three four five six seven eight]"
+  "trainingOpeningsInfo": "[Éåçh öpéñîñĝ îš dîvîdéd îñtö šhöŕt šéĝméñtš. Plåý ýöûŕ mövéš åñd ŕévîéw thé lîñé wîth thé åŕŕöwš. one two three four five six seven eight]",
+  "homeCourseAllDone": "[Ĝöålš çömplétéd · åñöthéŕ léššöñ? one two three]",
+  "homeCourseDayOff": "[Ŕéšt dåý · åñöthéŕ léššöñ? one two three]",
+  "homeCourseNextGoal": "[Ñéxt ĝöål one]",
+  "homeCourseSolve": "[Šölvé one]",
+  "homeCourseToday": "[Tödåý’š léššöñ one two]",
+  "homeCourseTrain": "[Tŕåîñ one]"
 }

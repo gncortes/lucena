@@ -1,3 +1,5 @@
+import 'training_launch.dart';
+import '../ui/core/theme/app_motion.dart';
 import '../ui/training_opening/widgets/training_opening_screen.dart';
 import '../ui/training_opening/widgets/training_openings_screen.dart';
 import '../domain/models/character.dart';
@@ -57,19 +59,35 @@ GoRoute trainingRoute() => GoRoute(
     ),
     GoRoute(
       path: 'opening/:theme',
-      builder: (context, state) => _ExerciseDestination(
-        config: _config(state),
-        theme: state.pathParameters['theme']!,
-        opening: true,
-        fromList: state.uri.queryParameters['list'] == '1',
+      pageBuilder: (context, state) => _destinationPage(
+        context,
+        state,
+        _ExerciseDestination(
+          config: _config(state),
+          theme: state.pathParameters['theme']!,
+          opening: true,
+          fromList:
+              state.uri.queryParameters['list'] == '1' ||
+              state.uri.queryParameters['home'] == '1',
+          launch: state.extra is TrainingLaunch
+              ? state.extra as TrainingLaunch
+              : null,
+        ),
       ),
     ),
     GoRoute(
       path: 'exercise/:theme',
-      builder: (context, state) => _ExerciseDestination(
-        config: _config(state),
-        theme: state.pathParameters['theme']!,
-        goalKey: state.uri.queryParameters['goal'],
+      pageBuilder: (context, state) => _destinationPage(
+        context,
+        state,
+        _ExerciseDestination(
+          config: _config(state),
+          theme: state.pathParameters['theme']!,
+          goalKey: state.uri.queryParameters['goal'],
+          launch: state.extra is TrainingLaunch
+              ? state.extra as TrainingLaunch
+              : null,
+        ),
       ),
     ),
     GoRoute(
@@ -253,12 +271,14 @@ class _ExerciseDestination extends StatefulWidget {
     required this.config,
     required this.theme,
     this.goalKey,
+    this.launch,
     this.opening = false,
     this.fromList = false,
   });
   final TrainingCourseConfig config;
   final String theme;
   final String? goalKey;
+  final TrainingLaunch? launch;
   final bool opening, fromList;
   @override
   State<_ExerciseDestination> createState() => _ExerciseDestinationState();
@@ -330,6 +350,7 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
   @override
   Widget build(BuildContext context) => FutureBuilder(
     future: _data,
+    initialData: _previewData,
     builder: (context, snapshot) {
       final data = snapshot.data;
       if (snapshot.connectionState != ConnectionState.done && data == null) {
@@ -351,6 +372,8 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
           repository: context.read<TrainingRepository>(),
           config: widget.config,
           now: context.read<Now>(),
+          preview: widget.launch?.openingPreview,
+          homeHero: widget.launch?.openingPreview != null,
           lessonId: widget.theme,
           teacher: data.teacher,
           onNextGoal: _finish,
@@ -360,6 +383,8 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
         repository: context.read<TrainingRepository>(),
         config: widget.config,
         now: context.read<Now>(),
+        preview: widget.launch?.exercisePreview,
+        homeHero: widget.launch?.exercisePreview != null,
         goalKey: data.goal.key,
         title: data.title,
         teacher: data.teacher,
@@ -367,5 +392,35 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
         onRedoLesson: (id) => context.push(Routes.trainingLesson(id)),
       );
     },
+  );
+
+  ({TrainingGoal goal, String title, Character teacher})? get _previewData {
+    final launch = widget.launch;
+    final goal = launch?.exercisePreview?.goal ?? launch?.openingPreview?.goal;
+    return launch == null || goal == null
+        ? null
+        : (goal: goal, title: launch.title, teacher: launch.teacher);
+  }
+}
+
+Page<void> _destinationPage(
+  BuildContext context,
+  GoRouterState state,
+  Widget child,
+) {
+  if (state.extra is! TrainingLaunch) {
+    return MaterialPage<void>(key: state.pageKey, child: child);
+  }
+  final duration = AppMotion.of(context).screen;
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: duration,
+    reverseTransitionDuration: duration,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        FadeTransition(
+          opacity: animation.drive(CurveTween(curve: AppMotion.enter)),
+          child: child,
+        ),
+    child: child,
   );
 }

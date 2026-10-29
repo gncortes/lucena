@@ -10,6 +10,12 @@ import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
+import 'package:lucena/domain/models/training/training_course.dart';
+import 'package:lucena/domain/models/training/training_course_config.dart';
+import 'package:lucena/domain/use_cases/training/home_course_card.dart';
+import 'package:lucena/ui/lesson_script/view_models/lesson_script_state.dart';
+import 'package:lucena/domain/models/training/training_content.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
 
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_home_layout_repository.dart';
@@ -24,6 +30,8 @@ import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_rating_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
+import '../../../testing/fakes/fake_course_training_repository.dart';
+import '../../../testing/training/training_scenario_builder.dart';
 
 void main() {
   late FakeProgressRepository progress;
@@ -43,6 +51,8 @@ void main() {
     FakePlacementRepository? placement,
     FakeFeaturedRepository? featured,
     FakeFeaturedProgressRepository? featuredProgress,
+    FakeTrainingRepository? courseTraining,
+    Future<LessonScriptState?> Function(TrainingLesson)? preview,
   }) {
     final cubit = HomeCubit(
       journey: FakeJourneyRepository(),
@@ -61,11 +71,108 @@ void main() {
       placement: placement,
       featured: featured,
       featuredProgress: featuredProgress,
-      now: featured == null ? null : now,
+      now: featured == null && courseTraining == null ? null : now,
+      courseTraining: courseTraining,
+      trainingLessonPreview: preview,
+      trainingCourses: courseTraining == null
+          ? const []
+          : const [TrainingCourseConfig.pilares],
     );
     addTearDown(cubit.close);
     return cubit;
   }
+
+  test(
+    'started daily course has priority and follows durable goal completion',
+    () async {
+      final scenario = TrainingScenarioBuilder(
+        TrainingCourse.pilares,
+        date: now(),
+      );
+      final training = FakeTrainingRepository(
+        states: {TrainingCourse.pilares: scenario.large()},
+        content: {TrainingCourse.pilares: scenario.content},
+      );
+      addTearDown(training.dispose);
+      final home = cubit(courseTraining: training);
+      await home.load();
+      expect(home.state.hero, HomeHero.course);
+      expect(home.state.training!.card.status, HomeCourseStatus.lesson);
+      final first = home.state.training!.state.day!.next!;
+      await training.update(
+        TrainingCourse.pilares,
+        (s) => s.copyWith(
+          day: s.day!.copyWith(
+            goals: [
+              for (final g in s.day!.goals)
+                if (g.key == first.key) g.complete() else g,
+            ],
+          ),
+        ),
+      );
+      await home.load();
+      expect(home.state.training!.card.status, HomeCourseStatus.exercise);
+      expect(home.state.training!.card.ref, isNot(first.ref));
+    },
+  );
+
+  test(
+    'course not started leaves existing Home recommendation available',
+    () async {
+      final scenario = TrainingScenarioBuilder(
+        TrainingCourse.pilares,
+        date: now(),
+      );
+      final training = FakeTrainingRepository(
+        content: {TrainingCourse.pilares: scenario.content},
+      );
+      addTearDown(training.dispose);
+      final home = cubit(courseTraining: training);
+      await home.load();
+      expect(home.state.training, isNull);
+      expect(home.state.hero, isNot(HomeHero.course));
+    },
+  );
+
+  test(
+    'training preview is read from the selected lesson and failure keeps card',
+    () async {
+      final scenario = TrainingScenarioBuilder(
+        TrainingCourse.pilares,
+        date: now(),
+      );
+      final training = FakeTrainingRepository(
+        states: {TrainingCourse.pilares: scenario.large()},
+        content: {TrainingCourse.pilares: scenario.content},
+      );
+      addTearDown(training.dispose);
+      String? requested;
+      const preview = LessonScriptState(
+        ready: true,
+        fen: '4k3/8/8/8/8/8/8/4K3 b - - 0 1',
+        orientation: Side.black,
+      );
+      final home = cubit(
+        courseTraining: training,
+        preview: (lesson) async {
+          requested = lesson.id;
+          return preview;
+        },
+      );
+      await home.load();
+      expect(requested, home.state.training!.card.ref);
+      expect(home.state.training!.fen, preview.fen);
+      expect(home.state.training!.orientation, Side.black);
+      final unavailable = cubit(
+        courseTraining: training,
+        preview: (_) async => throw const LessonContentUnavailable(),
+      );
+      await unavailable.load();
+      expect(unavailable.state.hero, HomeHero.course);
+      expect(unavailable.state.training!.lessonPreview, isNull);
+      expect(unavailable.state.training!.fen, isNull);
+    },
+  );
 
   FakeHomeLayoutRepository priority(HomePath first) => FakeHomeLayoutRepository(
     layout: HomeLayout(

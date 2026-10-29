@@ -19,6 +19,7 @@ import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/exercise_actions.dart';
+import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
@@ -41,10 +42,21 @@ import 'script_speech.dart';
 /// desta mesma tela. De cima para baixo: a barra, o balão do Viktor, a faixa
 /// dele, o tabuleiro, a lista de lances e o rodapé.
 class LessonScriptScreen extends StatefulWidget {
-  const LessonScriptScreen({this.title, super.key});
+  const LessonScriptScreen({
+    this.title,
+    this.preview,
+    this.previewTeacher,
+    this.previewTitle,
+    this.homeHero = false,
+    super.key,
+  });
 
   /// O nome da parte, que vai na barra.
   final Future<String?>? title;
+  final LessonScriptState? preview;
+  final Character? previewTeacher;
+  final String? previewTitle;
+  final bool homeHero;
 
   @override
   State<LessonScriptScreen> createState() => _LessonScriptScreenState();
@@ -100,6 +112,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
   @override
   void initState() {
     super.initState();
+    _viktor = widget.previewTeacher;
     WidgetsBinding.instance.addObserver(this);
     unawaited(_loadViktor());
   }
@@ -203,6 +216,9 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       builder: (context, state) => Scaffold(
         key: LessonScriptKeys.screen,
         appBar: LucenaAppBar(
+          leading: ModalRoute.of(context)?.canPop == true
+              ? const BackButton(key: LessonScriptKeys.close)
+              : null,
           // Exceção de D2 só na lição: o livro de Curiosidades só aparece
           // na posição que tem curiosidade, e o título fica à esquerda em
           // todas as etapas, com ou sem ele, para não pular (Gabriel,
@@ -210,7 +226,12 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           centerTitle: false,
           title: FutureBuilder<String?>(
             future: widget.title,
-            builder: (context, snapshot) => Text(snapshot.data ?? ''),
+            initialData: widget.previewTitle,
+            builder: (context, snapshot) => Text(
+              snapshot.data?.isNotEmpty == true
+                  ? snapshot.data!
+                  : widget.previewTitle ?? '',
+            ),
           ),
           actions: [
             if (state.curiosities != null)
@@ -235,8 +256,15 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
                     ),
                   ),
                 )
-              : state.ready
-              ? _body(context, cubit, state)
+              : state.ready || widget.preview != null
+              ? IgnorePointer(
+                  ignoring: !state.ready,
+                  child: _body(
+                    context,
+                    cubit,
+                    state.ready ? state : widget.preview!,
+                  ),
+                )
               : const SizedBox(),
         ),
       ),
@@ -334,7 +362,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         onSquareTap: _flash.show,
         onOpen: onOpen,
       );
-      if (voice != null) {
+      if (voice != null && cubit.state.ready) {
         speech = AutoSpeak(
           speech: voice,
           text: text,
@@ -390,15 +418,21 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               ),
       ),
     );
-    Widget board(double size) => ScriptBoard(
-      state: state,
-      size: size,
-      settings: settings,
-      showMarks: marks,
-      flash: _flash,
-      onMove: (uci) => unawaited(cubit.onMove(uci)),
-      onSquare: (square) => unawaited(cubit.onSquare(square)),
-    );
+    Widget board(double size) {
+      final board = ScriptBoard(
+        state: state,
+        size: size,
+        settings: settings,
+        showMarks: marks,
+        flash: _flash,
+        onMove: (uci) => unawaited(cubit.onMove(uci)),
+        onSquare: (square) => unawaited(cubit.onSquare(square)),
+      );
+      return widget.homeHero
+          ? GameBoardHero(orientation: state.orientation, child: board)
+          : board;
+    }
+
     return Column(
       children: [
         Expanded(
