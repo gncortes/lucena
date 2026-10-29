@@ -147,10 +147,8 @@ void main() {
         );
         await tester.pumpAndSettle();
         if (player) {
-          final ink = find.descendant(
-            of: find.byKey(HomeKeys.playerCard),
-            matching: find.byType(InkWell),
-          );
+          // O próprio InkWell do rating no alto leva a key (T83).
+          final ink = find.byKey(HomeKeys.playerCard);
           expect(ink.hitTestable(), findsOneWidget);
           final open = tester.widget<InkWell>(ink).onTap!;
           open();

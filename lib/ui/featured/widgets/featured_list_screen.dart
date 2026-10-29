@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../data/repositories/alerts/region_prompt_repository.dart';
 import '../../../domain/models/featured.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/featured_keys.dart';
@@ -16,7 +15,6 @@ import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
-import '../../region/widgets/region_sheet.dart';
 import '../view_models/featured_catalog_cubit.dart';
 import 'featured_card.dart';
 import 'featured_labels.dart';
@@ -24,26 +22,8 @@ import 'featured_tournament_card.dart';
 
 /// Todos os finais em destaque, com filtro de país e de origem. O torneio em
 /// andamento fica no topo.
-class FeaturedListScreen extends StatefulWidget {
+class FeaturedListScreen extends StatelessWidget {
   const FeaturedListScreen({super.key});
-
-  @override
-  State<FeaturedListScreen> createState() => _FeaturedListScreenState();
-}
-
-class _FeaturedListScreenState extends State<FeaturedListScreen> {
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_askRegion());
-  }
-
-  /// Na primeira abertura, a folha de estado e cidade (E1.21), uma vez só.
-  Future<void> _askRegion() async {
-    if (!await context.read<RegionPromptRepository>().pending()) return;
-    if (!mounted) return;
-    await showRegionSheet(context);
-  }
 
   @override
   Widget build(BuildContext context) {

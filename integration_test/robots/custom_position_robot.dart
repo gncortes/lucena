@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
-import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
 
 import 'variant.dart';
@@ -16,9 +16,9 @@ class CustomPositionRobot {
 
   final PatrolIntegrationTester $;
 
-  /// A partir da tela inicial.
+  /// A partir da tela inicial, por "Todos os modos".
   Future<void> open() async {
-    await $(HomeKeys.customPositionButton).scrollTo().tap();
+    await openFromAllModes($, 'custom');
     await expectVisible();
   }
 

@@ -9,6 +9,7 @@ import 'package:lucena/main.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/domain/models/conclusion.dart';
 import 'package:lucena/ui/core/keys/conclusion_keys.dart';
+import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/speedrun_keys.dart';
@@ -37,18 +38,24 @@ void main() {
     return text.data ?? text.textSpan!.toPlainText();
   }
 
-  // O speedrun fica em "Outros modos" para o jogador casual.
+  // O atalho do Speedrun, quando ele está entre os quatro; senão, por
+  // "Todos os modos".
   Future<void> openList(WidgetTester tester) async {
-    if (find.byKey(HomeKeys.speedrunButton).evaluate().isEmpty) {
-      await tester.ensureVisible(find.byKey(HomeKeys.otherModes));
+    Future<void> tap(Finder finder) async {
+      await tester.ensureVisible(finder);
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(HomeKeys.otherModes));
+      await tester.tap(finder);
       await tester.pumpAndSettle();
     }
-    await tester.ensureVisible(find.byKey(HomeKeys.speedrunButton));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(HomeKeys.speedrunButton));
-    await tester.pumpAndSettle();
+
+    if (find.byKey(HomeKeys.speedrunButton).evaluate().isNotEmpty) {
+      await tap(find.byKey(HomeKeys.speedrunButton));
+      return;
+    }
+    await tap(find.byKey(HomeKeys.shortcutsSeeMore));
+    final item = find.byKey(AllModesKeys.item('speedrun'));
+    await tester.scrollUntilVisible(item, 200);
+    await tap(item);
   }
 
   Future<void> openSpeedrun(WidgetTester tester) async {
@@ -112,6 +119,13 @@ void main() {
             await tester.tap(find.byKey(ConclusionKeys.close));
           }
           await tester.pumpAndSettle();
+          if (!marathon) {
+            expect(find.byKey(SpeedrunKeys.screen), findsOneWidget);
+            expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+            expect(games.snapshot, isNull);
+            await tester.tap(find.byKey(SpeedrunKeys.resume));
+            await tester.pumpAndSettle();
+          }
           final game = tester
               .element(find.byKey(FreeBoardKeys.screen))
               .read<FreeBoardCubit>();
@@ -275,6 +289,8 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+    await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
     await tester.pumpAndSettle();
     expect(find.byKey(FreeBoardKeys.screen), findsNothing);

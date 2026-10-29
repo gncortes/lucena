@@ -11,6 +11,47 @@ import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
+  testWidgets('voltar de ferramenta mantém hub e rolagem de origem', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(393, 873);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final router = GoRouter(
+      routes: [
+        GoRoute(path: '/', builder: (_, _) => const AllModesScreen()),
+        GoRoute(
+          path: '/custom',
+          builder: (context, _) => Scaffold(
+            body: TextButton(
+              onPressed: () => context.pop(),
+              child: const Text('voltar'),
+            ),
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        router: router,
+        child: const SizedBox.shrink(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final item = find.byKey(AllModesKeys.item('custom'));
+    await tester.scrollUntilVisible(item, 300);
+    await tester.pumpAndSettle();
+    final before = tester.getTopLeft(item).dy;
+    await tester.tap(item);
+    await tester.pumpAndSettle();
+    expect(find.text('voltar'), findsOneWidget);
+    await tester.tap(find.text('voltar'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(AllModesKeys.screen), findsOneWidget);
+    expect(tester.getTopLeft(item).dy, closeTo(before, 1));
+  });
   for (final checkpoint in [false, true]) {
     testWidgets(
       'blind entry resumes only when checkpoint exists ($checkpoint)',
@@ -31,9 +72,14 @@ void main() {
                   const Scaffold(body: Text('resume blind')),
             ),
             GoRoute(
-              path: '/catalog',
-              builder: (context, state) =>
-                  const Scaffold(body: Text('new blind')),
+              path: '/blind-entry',
+              builder: (context, state) => Scaffold(
+                body: Text(
+                  state.uri.queryParameters['resume'] == '1'
+                      ? 'resume blind'
+                      : 'new blind',
+                ),
+              ),
             ),
           ],
         );
@@ -81,9 +127,7 @@ void main() {
     expect(find.byKey(AllModesKeys.item('learn')), findsNothing);
   });
 
-  testWidgets('quem já joga vê Jogar primeiro; o iniciante, Aprender', (
-    tester,
-  ) async {
+  testWidgets('ordem das seções permanece igual entre níveis', (tester) async {
     tester.view.physicalSize = const Size(1080, 8000);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
@@ -105,11 +149,44 @@ void main() {
     }
 
     const master = UserProfile(rating: 2400);
-    expect(await top(master, 'journey'), lessThan(await top(master, 'stars')));
+    expect(await top(master, 'stars'), lessThan(await top(master, 'journey')));
     const beginner = UserProfile(rating: 800);
     expect(
       await top(beginner, 'stars'),
       lessThan(await top(beginner, 'journey')),
     );
   });
+
+  for (final course in [true, false]) {
+    testWidgets('Curso de finais e finais para você só com aula liberada '
+        '($course)', (tester) async {
+      tester.view.physicalSize = const Size(1080, 8000);
+      tester.view.devicePixelRatio = 2.625;
+      addTearDown(tester.view.reset);
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) =>
+                AllModesScreen(courseAvailable: () async => course),
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        TestApp(
+          locale: const Locale('pt'),
+          router: router,
+          child: const SizedBox.shrink(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final matcher = course ? findsOneWidget : findsNothing;
+      expect(find.byKey(AllModesKeys.item('endgames')), matcher);
+      expect(find.byKey(AllModesKeys.item('forYou')), matcher);
+      // O resto continua.
+      expect(find.byKey(AllModesKeys.item('journey')), findsOneWidget);
+    });
+  }
 }

@@ -40,6 +40,10 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Conteúdo privado fora do Git e dos assets
+      shell: bash
+      run: python3 .github/scripts/check_content_boundary.py
+
     - name: Keystore
       shell: bash
       env:
@@ -97,6 +101,10 @@ runs:
         flutter build apk --release --build-name="$version_name" --build-number="$version_code" --dart-define=APP_VERSION="$version_name"
         echo "version-name=$version_name" >> "$GITHUB_OUTPUT"
         echo "version-code=$version_code" >> "$GITHUB_OUTPUT"
+
+    - name: Conteúdo privado fora do APK
+      shell: bash
+      run: python3 .github/scripts/check_content_boundary.py --apk build/app/outputs/flutter-apk/app-release.apk
 
     - name: Apagar keystore
       if: always()

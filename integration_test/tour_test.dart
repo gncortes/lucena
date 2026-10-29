@@ -31,7 +31,6 @@ void main() {
     await HomeRobot($).expectVisible();
     // "Aprender finais" (o marcado na pergunta) é o cartão do alto.
     await $(HomeKeys.goalCard).waitUntilVisible();
-    expect(find.byKey(HomeKeys.whereCard), findsNothing);
     final journey = JourneyRobot($);
     await journey.open();
     await journey.expectCurrent('Percival');
@@ -58,11 +57,11 @@ void main() {
 
     await tour.skip();
     await home.expectVisible();
-    await home.expectHello('Hi, Gabriel');
+    await home.expectRating();
 
     await app.restart();
     await home.expectVisible();
-    await home.expectHello('Hi, Gabriel');
+    await home.expectRating();
   });
 
   patrolTest('pular o tour: ao reabrir ele não aparece de novo', ($) async {

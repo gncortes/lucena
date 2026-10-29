@@ -168,6 +168,7 @@ void main() {
         HomePath.forYou,
         HomePath.endgames,
         HomePath.race,
+        HomePath.stars,
       ]);
     });
 
@@ -178,7 +179,7 @@ void main() {
       ).copyWith(custom: true);
       final layout = HomeSuggestion.resolve(saved, RatingLevel.beginner);
       expect(layout.order, isNot(contains(HomePath.learn)));
-      expect(layout.shown, [HomePath.journey, HomePath.race]);
+      expect(layout.shown, [HomePath.journey, HomePath.race, HomePath.stars]);
     });
 
     test('só a Escola marcada: o primeiro caminho aparece', () {

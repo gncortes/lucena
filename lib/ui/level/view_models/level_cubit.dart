@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/chesscom/chesscom_repository.dart';
@@ -9,6 +10,9 @@ import '../../../data/repositories/home/home_layout_repository.dart';
 import '../../../data/repositories/lichess/lichess_repository.dart';
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
+import '../../../data/repositories/sync/sync_repository.dart';
+import '../../../data/repositories/sync/sync_scheduler.dart';
+import '../../../domain/models/account.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/goal_preference.dart';
@@ -16,13 +20,17 @@ import '../../../domain/models/level_source.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/platform_rating.dart';
 import '../../../domain/models/rating_level.dart';
+import '../../../domain/models/user_profile.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
+import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/rating_conversion.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 
 /// Os cartões da tela "Seu nível", na ordem do canvas.
-enum LevelChoice { test, lichess, chess, manual, zero }
+/// `known` é o cartão "Já sei o meu rating": abre os três caminhos
+/// (`lichess`, `chess`, `manual`).
+enum LevelChoice { test, known, lichess, chess, manual, zero }
 
 /// O que deu errado na última tentativa (mostrado uma vez pela tela).
 enum LevelError { lichessOffline, chessOffline }
@@ -31,6 +39,7 @@ class LevelState {
   const LevelState({
     this.ready = false,
     this.choice = LevelChoice.test,
+    this.knowsRating = false,
     this.placed,
     this.lichess,
     this.lichessBusy = false,
@@ -43,6 +52,8 @@ class LevelState {
     this.errorCount = 0,
     this.finished = false,
     this.toSchool = false,
+    this.inviteAccount = false,
+    this.rating,
     this.viktor,
     this.characters = const [],
   });
@@ -51,6 +62,10 @@ class LevelState {
 
   /// O cartão marcado. "Fazer o teste" vem marcado (decisão 7 da QA).
   final LevelChoice choice;
+
+  /// "Já sei o meu rating" aberto: a tela mostra Lichess, Chess.com e o
+  /// número, no lugar das três opções.
+  final bool knowsRating;
 
   /// O rating que o teste de nível deu, se o jogador o fez e usou.
   final int? placed;
@@ -82,6 +97,13 @@ class LevelState {
 
   /// "Não sei jogar" com a Escola visível: termina nas aulas.
   final bool toSchool;
+
+  /// Terminou com o Lichess e sem conta no Lucena: antes de sair, a tela
+  /// convida a criar a conta (`pos_lichess`), que guarda o vínculo.
+  final bool inviteAccount;
+
+  /// O nível que foi para o perfil, quando terminou.
+  final int? rating;
   final Character? viktor;
 
   /// Os personagens, para dizer o nome do adversário do degrau.
@@ -115,6 +137,7 @@ class LevelState {
 
   LevelState copyWith({
     LevelChoice? choice,
+    bool? knowsRating,
     int? Function()? placed,
     PlatformRating? Function()? lichess,
     bool? lichessBusy,
@@ -126,9 +149,12 @@ class LevelState {
     LevelError? error,
     bool? finished,
     bool? toSchool,
+    bool? inviteAccount,
+    int? rating,
   }) => LevelState(
     ready: ready,
     choice: choice ?? this.choice,
+    knowsRating: knowsRating ?? this.knowsRating,
     placed: placed == null ? this.placed : placed(),
     lichess: lichess == null ? this.lichess : lichess(),
     lichessBusy: lichessBusy ?? this.lichessBusy,
@@ -141,6 +167,8 @@ class LevelState {
     errorCount: error == null ? errorCount : errorCount + 1,
     finished: finished ?? this.finished,
     toSchool: toSchool ?? this.toSchool,
+    inviteAccount: inviteAccount ?? this.inviteAccount,
+    rating: rating ?? this.rating,
     viktor: viktor,
     characters: characters,
   );
@@ -151,6 +179,10 @@ class LevelState {
 /// decide o degrau de início da Jornada e a sugestão da tela inicial. Na
 /// primeira abertura, só aqui o tour conta como visto; pelo Perfil
 /// ([fromProfile]), a tela só troca o nível.
+///
+/// Com conta no Lucena ([_accounts]), o usuário do Lichess vai no perfil que
+/// sobe para ela (o vínculo, T83), em qualquer ordem: Lichess e depois a
+/// conta, ou a conta e depois o Lichess.
 class LevelCubit extends Cubit<LevelState> {
   LevelCubit({
     required this._onboarding,
@@ -161,9 +193,16 @@ class LevelCubit extends Cubit<LevelState> {
     this._home,
     this.fromProfile = false,
     this._analytics = const NoAnalyticsRepository(),
+    this._accounts,
+    this._sync,
+    this._now = const SystemNow(),
   }) : super(const LevelState());
 
   final AnalyticsRepository _analytics;
+  final AccountRepository? _accounts;
+  final SyncScheduler? _sync;
+  final Now _now;
+  StreamSubscription<Account?>? _accountSubscription;
   final OnboardingRepository _onboarding;
   final ProfileRepository _profile;
   final CharacterRepository _characters;
@@ -178,7 +217,16 @@ class LevelCubit extends Cubit<LevelState> {
 
   bool get _locked => !state.ready || state.finished || _finishing;
 
+  bool get _hasAccount => _accounts?.current != null;
+
+  /// `nivel` na primeira abertura; `perfil` quando veio do Perfil.
+  String get _origin => fromProfile ? 'perfil' : 'nivel';
+
   Future<void> load() async {
+    // A conta criada depois do Lichess (pelo convite) liga os dois.
+    _accountSubscription ??= _accounts?.changes.listen((account) {
+      if (account != null) unawaited(_markLinked());
+    });
     _saved = await _onboarding.load();
     final characters = await _characters.characters();
     if (isClosed) return;
@@ -203,9 +251,14 @@ class LevelCubit extends Cubit<LevelState> {
     // aquela conexão aqui.
     try {
       final rating = await _lichess.resume();
+      if (rating != null) _connected();
       if (rating != null && !isClosed) {
         emit(
-          state.copyWith(choice: LevelChoice.lichess, lichess: () => rating),
+          state.copyWith(
+            choice: LevelChoice.lichess,
+            knowsRating: true,
+            lichess: () => rating,
+          ),
         );
       }
     } on LichessException catch (e) {
@@ -218,12 +271,31 @@ class LevelCubit extends Cubit<LevelState> {
     emit(state.copyWith(choice: choice));
   }
 
+  /// "Já sei o meu rating" + Continuar: mostra os três caminhos do rating.
+  void openKnown() {
+    if (_locked) return;
+    emit(state.copyWith(choice: LevelChoice.lichess, knowsRating: true));
+  }
+
+  /// Voltar dos três caminhos para as três opções.
+  void closeKnown() {
+    if (_locked) return;
+    emit(state.copyWith(choice: LevelChoice.known, knowsRating: false));
+  }
+
   /// "Entrar com o Lichess": abre o login no navegador e espera a volta.
   Future<void> connectLichess() async {
     if (_locked || state.lichessBusy) return;
-    emit(state.copyWith(choice: LevelChoice.lichess, lichessBusy: true));
+    emit(
+      state.copyWith(
+        choice: LevelChoice.lichess,
+        knowsRating: true,
+        lichessBusy: true,
+      ),
+    );
     try {
       final rating = await _lichess.connect();
+      _connected();
       unawaited(
         _analytics.log(
           AnalyticsEvents.contaLichess(
@@ -238,6 +310,33 @@ class LevelCubit extends Cubit<LevelState> {
       if (isClosed) return;
       emit(state.copyWith(lichessBusy: false));
       _lichessFailed(e.failure);
+    }
+  }
+
+  void _connected() => unawaited(
+    _analytics.log(
+      AnalyticsEvents.lichessConectado(origem: _origin, temConta: _hasAccount),
+    ),
+  );
+
+  /// `lichess_vinculado`: há conta e o perfil tem o usuário do Lichess.
+  Future<void> _markLinked() async {
+    final profile = await _profile.load();
+    await _analytics.setTrait(
+      AnalyticsTrait.lichessLinked,
+      AnalyticsRules.yesNo(_hasAccount && profile.lichessUser != null),
+    );
+  }
+
+  /// Com conta, o vínculo novo sobe agora (sem esperar a próxima partida).
+  Future<void> _pushLink() async {
+    final uid = _accounts?.current?.uid;
+    final sync = _sync;
+    if (uid == null || sync == null) return;
+    try {
+      await sync.syncNow(uid);
+    } on SyncException {
+      // Sem rede: sobe na próxima sincronização.
     }
   }
 
@@ -363,11 +462,17 @@ class LevelCubit extends Cubit<LevelState> {
         rating: rating,
         levelSource: source,
         lichessUser: lichessUser ?? saved.lichessUser,
+        lichessLinkedAt: _linkedAt(saved, lichessUser),
         chessComUser: chessComUser ?? saved.chessComUser,
         goal: zero ? GoalPreference.learn : saved.goal,
       );
       await _profile.save(profile);
       unawaited(_counted(source, rating));
+      final lichess = source == LevelSource.lichess;
+      if (lichess) {
+        unawaited(_markLinked());
+        unawaited(_pushLink());
+      }
       final home = _home;
       if (home != null && (await home.load())?.custom != true) {
         await home.save(
@@ -390,12 +495,30 @@ class LevelCubit extends Cubit<LevelState> {
           state.copyWith(
             finished: true,
             toSchool: zero && VisibleLessons.school,
+            inviteAccount: lichess && _accounts != null && !_hasAccount,
+            rating: rating,
           ),
         );
       }
     } finally {
       _finishing = false;
     }
+  }
+
+  // Usuário novo (ou o primeiro vínculo): a data é a de agora; o mesmo
+  // usuário de novo mantém a data.
+  DateTime? _linkedAt(UserProfile saved, String? lichessUser) {
+    if (lichessUser == null) return saved.lichessLinkedAt;
+    if (lichessUser == saved.lichessUser && saved.lichessLinkedAt != null) {
+      return saved.lichessLinkedAt;
+    }
+    return _now();
+  }
+
+  @override
+  Future<void> close() async {
+    await _accountSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _counted(LevelSource source, int rating) async {

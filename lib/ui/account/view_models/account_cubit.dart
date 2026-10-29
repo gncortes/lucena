@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
-import '../../../data/repositories/onboarding/onboarding_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/campaign/campaign_repository.dart';
 import '../../../data/repositories/sync/sync_repository.dart';
 import '../../../data/repositories/sync/sync_scheduler.dart';
 import '../../../domain/models/account.dart';
-import '../../../domain/models/onboarding.dart';
+import '../../../domain/models/analytics_event.dart';
+import '../../../domain/models/progress_summary.dart';
 
 /// A entrada com conta: Google ou e-mail. [failure] vale por um aviso: a
 /// tela mostra e o estado volta ao normal na próxima ação.
@@ -39,11 +41,39 @@ class AccountState {
 }
 
 class AccountCubit extends Cubit<AccountState> {
-  AccountCubit(this._accounts, {this._onboarding, this._sync})
-    : super(const AccountState());
+  AccountCubit(
+    this._accounts, {
+    this._sync,
+    this._analytics = const NoAnalyticsRepository(),
+    this.moment,
+    this._campaigns,
+  }) : super(const AccountState());
+
+  final AnalyticsRepository _analytics;
+
+  /// A campanha do link de post (T84): quem aceitou o convite antes da aula
+  /// e entrou conta o `campanha_cadastro` `feito`.
+  final CampaignRepository? _campaigns;
+
+  /// Em que momento o convite abriu (`conta_convite`): `pos_vitoria`. Nulo
+  /// fora do convite.
+  final String? moment;
+
+  /// O convite foi aceito (Google ou e-mail) ou dispensado ("Agora não").
+  void inviteAnswered({required bool accepted}) {
+    final moment = this.moment;
+    if (moment == null) return;
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.contaConvite(
+          resposta: accepted ? 'aceitou' : 'agora_nao',
+          momento: moment,
+        ),
+      ),
+    );
+  }
 
   final AccountRepository _accounts;
-  final OnboardingRepository? _onboarding;
 
   /// Sem ele (testes antigos), entrar não lê a conta.
   final SyncScheduler? _sync;
@@ -52,19 +82,13 @@ class AccountCubit extends Cubit<AccountState> {
   /// aceitaria 6).
   static const minPassword = 8;
 
-  /// A tela abriu. Na primeira abertura, o app fechado aqui volta aqui.
-  Future<void> enter() async {
-    final repository = _onboarding;
-    if (repository == null) return;
-    final onboarding = await repository.load();
-    if (onboarding.done) return;
-    await repository.save(onboarding.copyWith(stage: OnboardingStage.account));
-  }
+  Future<void> signInWithGoogle() =>
+      _run(_accounts.signInWithGoogle, method: 'google');
 
-  Future<void> signInWithGoogle() => _run(_accounts.signInWithGoogle);
-
-  Future<void> signInWithEmail(String email, String password) =>
-      _run(() => _accounts.signInWithEmail(email.trim(), password));
+  Future<void> signInWithEmail(String email, String password) => _run(
+    () => _accounts.signInWithEmail(email.trim(), password),
+    method: 'email',
+  );
 
   Future<void> createWithEmail(String email, String password) {
     if (password.length < minPassword) {
@@ -74,6 +98,7 @@ class AccountCubit extends Cubit<AccountState> {
     return _run(
       () => _accounts.createWithEmail(email.trim(), password),
       created: true,
+      method: 'email',
     );
   }
 
@@ -91,9 +116,20 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
+  Future<void> _campaignSignedIn() async {
+    final campaigns = _campaigns;
+    if (campaigns == null || !await campaigns.takeInvited()) return;
+    final campaign = await campaigns.active();
+    if (campaign == null) return;
+    await _analytics.log(
+      AnalyticsEvents.campanhaCadastro(campaign, resposta: 'feito'),
+    );
+  }
+
   Future<void> _run(
     Future<Account?> Function() signIn, {
     bool created = false,
+    String? method,
   }) async {
     if (state.busy) return;
     emit(const AccountState(busy: true));
@@ -104,6 +140,25 @@ class AccountCubit extends Cubit<AccountState> {
         return;
       }
       final (restored, offline) = await _read(account, created: created);
+      if (method != null) {
+        unawaited(
+          _analytics.log(
+            created
+                ? AnalyticsEvents.signUp(method: method)
+                : AnalyticsEvents.login(method: method),
+          ),
+        );
+      }
+      unawaited(_campaignSignedIn());
+      if (restored != null) {
+        unawaited(
+          _analytics.log(
+            AnalyticsEvents.contaProgressoRecuperado(
+              itens: _items(restored.summary),
+            ),
+          ),
+        );
+      }
       if (!isClosed) {
         emit(
           AccountState(
@@ -134,6 +189,15 @@ class AccountCubit extends Cubit<AccountState> {
       return (null, true);
     }
   }
+
+  // Quanto a conta trouxe: aulas, desafios, posições e partidas guardadas.
+  static int _items(ProgressSummary s) =>
+      s.lessons.length +
+      s.school.length +
+      s.stars.length +
+      s.challenges.length +
+      s.positions.length +
+      s.featured.length;
 
   /// "Seu perfil" salvo com conta: o nome vai para a conta e o progresso
   /// sobe. Sem esperar: sem rede, sobe depois, sozinho.

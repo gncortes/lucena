@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/race/race_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/race.dart';
 import '../../../domain/use_cases/race_rules.dart';
+import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
@@ -18,19 +22,25 @@ import '../../core/theme/app_button.dart';
 enum RaceOfferChoice { warm, skip }
 
 /// Antes de uma partida, oferece o aquecimento com problemas do final do
-/// desafio ([endgame], o nome dele; [theme], o tema na Corrida). Devolve
+/// desafio ([endgame], o nome dele; [subcategory] e [category], o tipo e a
+/// categoria). Devolve
 /// [RaceOfferChoice.skip] quando não deve oferecer (o jogador pediu para não
 /// perguntar mais, ou o banco está vazio) ou quando ele fecha a folha.
 Future<RaceOfferChoice> offerRaceWarmUp(
   BuildContext context, {
   required String opponent,
   required String endgame,
-  RaceTheme? theme,
+  String? subcategory,
+  String? category,
   Character? character,
 }) async {
   final repository = context.read<RaceRepository>();
   if (!await repository.offersWarmUp()) return RaceOfferChoice.skip;
-  final problems = RaceRules.warmUp(await repository.problems(), theme: theme);
+  final problems = RaceRules.warmUp(
+    await repository.problems(),
+    subcategory: subcategory,
+    category: category,
+  );
   if (problems.isEmpty || !context.mounted) return RaceOfferChoice.skip;
   final choice = await showLucenaSheet<RaceOfferChoice>(
     context,
@@ -43,6 +53,12 @@ Future<RaceOfferChoice> offerRaceWarmUp(
       repository: repository,
     ),
   );
+  // Fechar a folha sem escolher é pular; as outras saídas o `_choose` registra.
+  if (choice == null && context.mounted) {
+    unawaited(
+      context.analytics.log(AnalyticsEvents.corridaAquecimento(acao: 'pular')),
+    );
+  }
   return choice ?? RaceOfferChoice.skip;
 }
 
@@ -72,6 +88,18 @@ class _OfferSheetState extends State<_OfferSheet> {
 
   Future<void> _choose(RaceOfferChoice choice) async {
     if (_never) await widget.repository.setOffersWarmUp(value: false);
+    if (!mounted) return;
+    unawaited(
+      context.analytics.log(
+        AnalyticsEvents.corridaAquecimento(
+          acao: _never
+              ? 'nao_perguntar'
+              : choice == RaceOfferChoice.warm
+              ? 'aquecer'
+              : 'jogar_direto',
+        ),
+      ),
+    );
     if (mounted) Navigator.of(context).pop(choice);
   }
 

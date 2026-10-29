@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucena/ui/home/view_models/home_cubit.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/home/widgets/home_screen.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
-import 'package:lucena/domain/models/home_layout.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
+import 'package:lucena/domain/models/attempt.dart';
+import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/home_shortcut.dart';
+import 'package:lucena/ui/core/keys/featured_keys.dart';
+import 'package:lucena/ui/home/widgets/mode_tile.dart';
 
 import '../../../../testing/fakes/fake_character_repository.dart';
 import '../../../../testing/fakes/fake_home_layout_repository.dart';
@@ -19,11 +24,15 @@ import '../../../../testing/fakes/fake_journey_repository.dart';
 import '../../../../testing/fakes/fake_onboarding_repository.dart';
 import '../../../../testing/fakes/fake_progress_repository.dart';
 import '../../../../testing/fakes/fake_rating_repository.dart';
+import '../../../../testing/fakes/fake_positions_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 import '../../../../testing/fakes/fake_school_repositories.dart';
 import '../../../../testing/test_app.dart';
 import '../../../../testing/fakes/fake_settings_repository.dart';
 import '../../../../testing/fakes/fake_endgame_repositories.dart';
+import '../../../../testing/fakes/fake_featured_repositories.dart';
+import '../../../../testing/fakes/fake_now.dart';
+import '../../../../testing/goldens/golden_harness.dart';
 
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
 class _Home extends StatelessWidget {
@@ -31,15 +40,21 @@ class _Home extends StatelessWidget {
     this.child, {
     this.profile = const UserProfile(),
     this.endgames = const EndgameProgress(),
-    this.layouts,
     this.onboarding,
+    this.trail,
+    this.progress,
+    this.featured = false,
   });
 
   final Widget child;
   final UserProfile profile;
   final EndgameProgress endgames;
-  final FakeHomeLayoutRepository? layouts;
   final FakeOnboardingRepository? onboarding;
+  final EndgameTrail? trail;
+  final FakeProgressRepository? progress;
+
+  /// Com o catálogo de finais em destaque de exemplo.
+  final bool featured;
 
   @override
   Widget build(BuildContext context) => MultiBlocProvider(
@@ -54,16 +69,22 @@ class _Home extends StatelessWidget {
       BlocProvider(
         create: (_) => HomeCubit(
           journey: FakeJourneyRepository(),
-          progress: FakeProgressRepository(),
+          progress: progress ?? FakeProgressRepository(),
           onboarding: onboarding ?? FakeOnboardingRepository(),
           characters: FakeCharacterRepository(),
           rating: FakeRatingRepository(),
           lessons: FakeLessonRepository(),
           school: FakeSchoolProgressRepository(),
           profile: FakeProfileRepository(profile),
-          endgameLessons: FakeEndgameLessonRepository(),
+          endgameLessons: FakeEndgameLessonRepository(trail: trail),
           endgameProgress: FakeEndgameProgressRepository(endgames),
-          homeLayout: layouts,
+          homeLayout: FakeHomeLayoutRepository(),
+          featured: featured
+              ? FakeFeaturedRepository(sampleFeaturedCatalog())
+              : null,
+          featuredProgress: featured ? FakeFeaturedProgressRepository() : null,
+          now: FakeNow(DateTime(2026, 1, 1, 12)),
+          positions: FakePositionsRepository(),
         )..load(),
       ),
     ],
@@ -103,259 +124,379 @@ void main() {
     expect(find.text('Treino de finais de xadrez'), findsNothing);
   });
 
-  testWidgets('a aula de final aberta: o cartão diz onde parou e continua '
-      'direto no exercício', (tester) async {
-    await tester.pumpWidget(
-      TestApp(
-        locale: Locale('en'),
-        child: _Home(
-          HomeScreen(),
-          endgames: EndgameProgress(
-            lessons: {
-              'rook.lucena': EndgameLessonProgress(
-                lessonDone: true,
-                stars: {'e01': 1},
-                exercise: ExerciseCheckpoint(exerciseId: 'e02'),
-              ),
-            },
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
+  double top(WidgetTester tester, Key key) =>
+      tester.getTopLeft(find.byKey(key)).dy;
 
-    expect(find.byKey(HomeKeys.endgameCard), findsOneWidget);
-    expect(find.byKey(HomeKeys.schoolCard), findsNothing);
-    expect(
-      tester.widget<Text>(find.byKey(HomeKeys.endgameTitle)).data,
-      'The Lucena position',
-    );
-    expect(
-      tester.widget<Text>(find.byKey(HomeKeys.endgameWhere)).data,
-      'Exercise 2 of 3',
-    );
-    expect(find.byKey(HomeKeys.endgameContinue), findsOneWidget);
-    // A miniatura do exercício toma o lugar do retrato e voa até ele.
-    expect(find.byKey(HomeKeys.endgameBoard), findsOneWidget);
-  });
-
-  testWidgets('teste começado e nada aberto: o cartão mostra o exercício da '
-      'vez em miniatura', (tester) async {
-    await tester.pumpWidget(
-      TestApp(
-        locale: Locale('en'),
-        child: _Home(
-          HomeScreen(),
-          endgames: EndgameProgress(
-            lessons: {
-              'rook.lucena': EndgameLessonProgress(
-                lessonDone: true,
-                stars: {'e01': 1, 'e02': 1},
-              ),
-            },
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(
-      tester.widget<Text>(find.byKey(HomeKeys.endgameWhere)).data,
-      'Exercise 3 of 3',
-    );
-    expect(find.byKey(HomeKeys.endgameBoard), findsOneWidget);
-  });
-
-  // Uma tela alta, para a lista montar todos os caminhos de uma vez.
-  Future<void> pumpTall(
+  Future<void> pumpHome(
     WidgetTester tester, {
     UserProfile profile = const UserProfile(),
-    FakeHomeLayoutRepository? layouts,
+    EndgameProgress endgames = const EndgameProgress(),
+    EndgameTrail? trail,
     FakeOnboardingRepository? onboarding,
+    FakeProgressRepository? progress,
+    bool featured = false,
+    Locale locale = const Locale('pt'),
+    Size size = const Size(360, 1600),
   }) async {
-    tester.view.physicalSize = const Size(1080, 4800);
-    tester.view.devicePixelRatio = 2.625;
+    tester.view
+      ..physicalSize = size
+      ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       TestApp(
-        locale: const Locale('pt'),
+        locale: locale,
         child: _Home(
           const HomeScreen(),
           profile: profile,
-          layouts: layouts,
+          endgames: endgames,
+          trail: trail,
           onboarding: onboarding,
+          progress: progress,
+          featured: featured,
         ),
       ),
     );
     await tester.pumpAndSettle();
   }
 
-  double top(WidgetTester tester, Key key) =>
-      tester.getTopLeft(find.byKey(key)).dy;
+  String text(WidgetTester tester, Key key) =>
+      tester.widget<Text>(find.byKey(key)).data!;
 
-  const beginner = UserProfile(rating: 800);
-  const master = UserProfile(rating: 2400);
-
-  testWidgets('iniciante: a Jornada e as aulas de finais em destaque, sem a '
-      'Escola escondida; os outros recolhidos em Outros modos', (tester) async {
-    await pumpTall(tester, profile: beginner);
-
-    expect(find.text('O que você quer fazer?'), findsOneWidget);
-    final card = find.byKey(HomeKeys.journeyButton);
-    expect(
-      find.descendant(of: card, matching: find.text('Jornada')),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: card,
-        matching: find.text(
-          'O passo seguinte às aulas: pratique vencendo os finais de cada '
-          'adversário, do mais fraco até o Stockfish.',
+  String action(WidgetTester tester) => tester
+      .widget<Text>(
+        find.descendant(
+          of: find.byKey(HomeKeys.goalAction),
+          matching: find.byType(Text),
         ),
+      )
+      .data!;
+
+  /// As keys dos atalhos na tela, na ordem.
+  List<Key> tiles(WidgetTester tester) {
+    final shown =
+        [
+          for (final shortcut in HomeShortcut.values)
+            if (find.byKey(shortcut.key).evaluate().isNotEmpty) shortcut,
+        ]..sort((a, b) {
+          final pa = tester.getTopLeft(find.byKey(a.key));
+          final pb = tester.getTopLeft(find.byKey(b.key));
+          return pa.dy == pb.dy
+              ? pa.dx.compareTo(pb.dx)
+              : pa.dy.compareTo(pb.dy);
+        });
+    return [for (final shortcut in shown) shortcut.key];
+  }
+
+  Future<FakeProgressRepository> wonCoco() async {
+    final progress = FakeProgressRepository();
+    final challenge = sampleLadder.first.challenges.first;
+    await progress.addAttempt(
+      Attempt(
+        positionId: challenge.position.id,
+        challengeId: challenge.id,
+        playedAt: DateTime(2026, 1, 1, 10),
+        outcome: AttemptOutcome.win,
+        fulfilled: true,
+        opponent: OpponentKind.maia,
+        opponentLevel: 1000,
       ),
-      findsOneWidget,
     );
-    // A Escola (VisibleLessons) não aparece nem em Outros modos.
-    expect(find.byKey(HomeKeys.schoolButton), findsNothing);
-    expect(
-      top(tester, HomeKeys.journeyButton),
-      lessThan(top(tester, HomeKeys.endgamesButton)),
+    return progress;
+  }
+
+  const firstSteps = FakeOnboardingRepository.new;
+  const learner = UserProfile(rating: 800, goal: GoalPreference.learn);
+
+  testWidgets('aprender a jogar, antes da 1ª partida: os primeiros passos e '
+      'Escola, Jornada, Problemas e Estrelas', (tester) async {
+    await pumpHome(tester, profile: learner);
+
+    expect(text(tester, HomeKeys.heroLabel), 'Primeiros passos');
+    expect(text(tester, HomeKeys.goalTitle), 'Como mover as peças');
+    expect(action(tester), 'Começar');
+    expect(tiles(tester), [
+      HomeKeys.schoolButton,
+      HomeKeys.journeyButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
+    // Sem destaque antes da primeira vitória.
+    expect(find.byKey(FeaturedKeys.homeSection), findsNothing);
+  });
+
+  testWidgets('aprender a jogar, depois do Coco: a Jornada no cartão e a '
+      'Escola primeiro', (tester) async {
+    await pumpHome(
+      tester,
+      profile: learner,
+      onboarding: firstSteps(
+        const Onboarding(done: true, boardControlsDone: true),
+      ),
+      progress: await wonCoco(),
     );
-    // Recolhidos, mas à mão.
-    expect(find.byKey(HomeKeys.speedrunButton), findsNothing);
-    await tester.tap(find.byKey(HomeKeys.otherModes));
-    await tester.pumpAndSettle();
-    final order = [
+
+    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
+    expect(action(tester), 'Jogar');
+    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
+    expect(tiles(tester), [
+      HomeKeys.schoolButton,
+      HomeKeys.journeyButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
+  });
+
+  testWidgets('aprender finais: o capítulo no cartão e o Curso primeiro nos '
+      'atalhos', (tester) async {
+    await pumpHome(
+      tester,
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.endgames),
+      locale: const Locale('en'),
+    );
+
+    expect(text(tester, HomeKeys.heroLabel), 'Endgame course');
+    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
+    expect(action(tester), 'Start');
+    expect(tiles(tester), [
+      HomeKeys.endgamesButton,
+      HomeKeys.journeyButton,
       HomeKeys.catalogButton,
       HomeKeys.speedrunButton,
-      HomeKeys.freeBoardButton,
-    ].map((key) => top(tester, key)).toList();
-    expect(order, [...order]..sort());
-    expect(find.byKey(HomeKeys.schoolButton), findsNothing);
-    // Os números do jogador saíram daqui: ficam nos detalhes do rating.
-    expect(find.text('Partidas'), findsNothing);
-    expect(find.text('Dias seguidos'), findsNothing);
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
   });
 
-  testWidgets('mestre: o Speedrun primeiro, com o texto de desafio; a Jornada '
-      'fala com quem já joga', (tester) async {
-    await pumpTall(tester, profile: master);
+  testWidgets('aula de final aberta: Continuar, a barra e o exercício em '
+      'miniatura', (tester) async {
+    await pumpHome(
+      tester,
+      locale: const Locale('en'),
+      endgames: const EndgameProgress(
+        lessons: {
+          'rook.lucena': EndgameLessonProgress(
+            lessonDone: true,
+            stars: {'e01': 1},
+            exercise: ExerciseCheckpoint(exerciseId: 'e02'),
+          ),
+        },
+      ),
+    );
 
-    final speedrun = top(tester, HomeKeys.speedrunButton);
-    expect(speedrun, lessThan(top(tester, HomeKeys.endgamesButton)));
-    expect(
-      find.descendant(
-        of: find.byKey(HomeKeys.speedrunButton),
-        matching: find.text(
-          'Vença todo mundo até o Stockfish no menor tempo. Bata o seu '
-          'recorde.',
-        ),
-      ),
-      findsOneWidget,
-    );
-    expect(find.byKey(HomeKeys.schoolButton), findsNothing);
-    await tester.tap(find.byKey(HomeKeys.otherModes));
-    await tester.pumpAndSettle();
-    expect(
-      find.descendant(
-        of: find.byKey(HomeKeys.journeyButton),
-        matching: find.text(
-          'Pratique os mates básicos e desafie cada adversário, do Coco ao '
-          'Stockfish.',
-        ),
-      ),
-      findsOneWidget,
-    );
+    expect(text(tester, HomeKeys.goalTitle), 'The Lucena position');
+    expect(action(tester), 'Continue');
+    expect(find.byKey(HomeKeys.heroProgress), findsOneWidget);
+    expect(find.byKey(HomeKeys.heroBoard), findsOneWidget);
   });
 
-  testWidgets('com objetivo: o cartão dele no alto e o caminho fora da lista', (
+  testWidgets('treinar finais: o final da faixa no cartão e Treinar primeiro '
+      'nos atalhos', (tester) async {
+    await pumpHome(
+      tester,
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.train),
+    );
+
+    expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
+    expect(action(tester), 'Treinar');
+    expect(tiles(tester), [
+      HomeKeys.catalogButton,
+      HomeKeys.journeyButton,
+      HomeKeys.endgamesButton,
+      HomeKeys.speedrunButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
+  });
+
+  testWidgets('sem objetivo: a Jornada no cartão e todos os marcados, em '
+      'grade 2×N', (tester) async {
+    await pumpHome(tester, profile: const UserProfile(rating: 1450));
+
+    expect(text(tester, HomeKeys.heroLabel), 'Jornada');
+    final shown = tiles(tester);
+    expect(shown, [
+      HomeKeys.journeyButton,
+      HomeKeys.endgamesButton,
+      HomeKeys.catalogButton,
+      HomeKeys.speedrunButton,
+      HomeKeys.raceButton,
+      HomeKeys.starsButton,
+    ]);
+    double left(Key key) => tester.getTopLeft(find.byKey(key)).dx;
+    double y(Key key) => tester.getTopLeft(find.byKey(key)).dy;
+    for (var i = 0; i < shown.length; i += 2) {
+      expect(y(shown[i]), y(shown[i + 1]));
+      expect(left(shown[i]), lessThan(left(shown[i + 1])));
+    }
+  });
+
+  testWidgets('sem aula liberada: nem o Curso de finais nos atalhos', (
     tester,
   ) async {
-    await pumpTall(
+    await pumpHome(
       tester,
-      profile: const UserProfile(rating: 800, goal: GoalPreference.endgames),
+      profile: const UserProfile(rating: 1450, goal: GoalPreference.endgames),
+      trail: const EndgameTrail(modules: []),
     );
 
-    expect(find.byKey(HomeKeys.goalCard), findsOneWidget);
-    expect(
-      tester.widget<Text>(find.byKey(HomeKeys.goalTitle)).data,
-      'The Lucena position',
-    );
-    expect(find.byKey(HomeKeys.goalAction), findsOneWidget);
+    expect(text(tester, HomeKeys.heroLabel), 'Treinar finais');
     expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
-    expect(find.byKey(HomeKeys.journeyButton), findsOneWidget);
-    // O objetivo toma o lugar do "Continuar"; nada mais em andamento.
-    expect(find.byKey(HomeKeys.whereCard), findsNothing);
-    expect(find.byKey(HomeKeys.resumeCard), findsNothing);
+    expect(find.byKey(HomeKeys.forYouButton), findsNothing);
+    expect(tiles(tester).last, HomeKeys.starsButton);
+  });
+
+  testWidgets('finais em destaque: o título, "Ver mais" e o cartão compacto', (
+    tester,
+  ) async {
+    await pumpHome(
+      tester,
+      profile: const UserProfile(rating: 1450),
+      featured: true,
+    );
+
+    expect(text(tester, HomeKeys.featuredTitle), 'Finais em destaque');
+    expect(find.byKey(FeaturedKeys.homeSeeAll), findsOneWidget);
+    expect(find.byKey(FeaturedKeys.homeCard), findsOneWidget);
     expect(
       top(tester, HomeKeys.goalCard),
-      lessThan(top(tester, HomeKeys.journeyButton)),
+      lessThan(top(tester, FeaturedKeys.homeCard)),
+    );
+    expect(
+      top(tester, FeaturedKeys.homeCard),
+      lessThan(top(tester, HomeKeys.shortcutsTitle)),
     );
   });
 
-  testWidgets('o layout escolhido vale, e o Continuar não aponta para caminho '
-      'escondido', (tester) async {
-    await pumpTall(
+  testWidgets('a 360: os atalhos com a mesma altura, a frase em duas linhas '
+      'e nada estourando', (tester) async {
+    await Goldens.loadFonts();
+    await pumpHome(tester, profile: const UserProfile(rating: 1450));
+
+    final heights = {
+      for (final key in tiles(tester)) tester.getSize(find.byKey(key)).height,
+    };
+    expect(heights, {ModeTile.height});
+    for (final key in tiles(tester)) {
+      final body = find
+          .descendant(of: find.byKey(key), matching: find.byType(Text))
+          .last;
+      expect(tester.widget<Text>(body).maxLines, 2);
+    }
+    expect(find.text('Mais de 3.500 finais de todos os tipos'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a 360: frase de uma linha não desce o título; os títulos da '
+      'mesma linha ficam na mesma altura', (tester) async {
+    await Goldens.loadFonts();
+    await pumpHome(
       tester,
-      layouts: FakeHomeLayoutRepository(
-        layout: const HomeLayout(
-          order: [
-            HomePath.train,
-            HomePath.speedrun,
-            HomePath.journey,
-            HomePath.endgames,
-            HomePath.learn,
+      profile: learner,
+      onboarding: firstSteps(
+        const Onboarding(done: true, boardControlsDone: true),
+      ),
+      progress: await wonCoco(),
+    );
+
+    final shown = tiles(tester);
+    expect(shown.first, HomeKeys.schoolButton);
+    double titleTop(Key key) => tester
+        .getTopLeft(
+          find
+              .descendant(of: find.byKey(key), matching: find.byType(Text))
+              .first,
+        )
+        .dy;
+    expect(titleTop(shown[0]), titleTop(shown[1]));
+    expect(titleTop(shown[2]), titleTop(shown[3]));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('o final em destaque abre por cima da tela inicial: voltar cai '
+      'nela, não na lista', (tester) async {
+    tester.view
+      ..physicalSize = const Size(360, 1600)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const _Home(
+            HomeScreen(),
+            profile: UserProfile(rating: 1450),
+            featured: true,
+          ),
+          routes: [
+            GoRoute(
+              path: 'featured',
+              builder: (_, _) => const Scaffold(body: Text('lista')),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (_, _) => const Scaffold(body: Text('final')),
+                ),
+              ],
+            ),
           ],
-          visible: {HomePath.train, HomePath.speedrun},
-          custom: true,
         ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        router: router,
+        child: const SizedBox.shrink(),
       ),
     );
-    expect(
-      top(tester, HomeKeys.catalogButton),
-      lessThan(top(tester, HomeKeys.speedrunButton)),
-    );
-    expect(find.byKey(HomeKeys.journeyButton), findsNothing);
-    // A Jornada está escondida e nenhum caminho visível tem progresso: sem
-    // o cartão.
-    expect(find.byKey(HomeKeys.whereCard), findsNothing);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(FeaturedKeys.homeCard));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(FeaturedKeys.homeCard));
+    await tester.pumpAndSettle();
+    expect(find.text('final'), findsOneWidget);
+
+    router.pop();
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(find.text('lista'), findsNothing);
   });
 
-  testWidgets('quem já usava o app vê o aviso uma vez; fechar não volta', (
+  testWidgets('o topo: o rating com a seta, sem "Seu rating" nem "Olá"', (
     tester,
   ) async {
-    final layouts = FakeHomeLayoutRepository();
-    await pumpTall(
+    await pumpHome(
       tester,
-      layouts: layouts,
-      onboarding: FakeOnboardingRepository(const Onboarding(done: true)),
+      profile: const UserProfile(nickname: 'Ana', rating: 1450),
     );
-    expect(find.byKey(HomeKeys.layoutNotice), findsOneWidget);
-    expect(
-      find.text('Agora dá para escolher o que aparece aqui.'),
-      findsOneWidget,
-    );
-    await tester.tap(find.byKey(HomeKeys.layoutNoticeClose));
-    await tester.pumpAndSettle();
-    expect(find.byKey(HomeKeys.layoutNotice), findsNothing);
-    expect(layouts.seen, isTrue);
+
+    expect(find.byKey(HomeKeys.ratingValue), findsOneWidget);
+    expect(find.byKey(HomeKeys.ratingPending), findsNothing);
+    expect(find.text('Seu rating'), findsNothing);
+    expect(find.textContaining('Olá'), findsNothing);
+    expect(find.textContaining('Ana'), findsNothing);
+    expect(find.byKey(HomeKeys.settingsButton), findsOneWidget);
   });
 
-  testWidgets('o nome do app e os botões ficam fixos ao rolar a tela', (
+  testWidgets('quem aprende a jogar: "Começando" no lugar do número', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(1080, 1500);
-    tester.view.devicePixelRatio = 2.625;
-    addTearDown(tester.view.reset);
-    await tester.pumpWidget(
-      TestApp(locale: const Locale('pt'), child: _Home(const HomeScreen())),
-    );
-    await tester.pumpAndSettle();
+    await pumpHome(tester, profile: learner);
+
+    expect(find.byKey(HomeKeys.ratingValue), findsNothing);
+    expect(text(tester, HomeKeys.ratingPending), 'Começando');
+  });
+
+  testWidgets('o nome do app e o rating ficam fixos ao rolar a tela', (
+    tester,
+  ) async {
+    await pumpHome(tester, size: const Size(360, 640));
     final before = tester.getTopLeft(find.byKey(HomeKeys.title));
 
     await tester.scrollUntilVisible(
-      find.byKey(HomeKeys.freeBoardButton),
+      find.byKey(HomeKeys.raceButton),
       200,
       scrollable: find.byType(Scrollable).first,
     );
@@ -375,7 +516,7 @@ void main() {
 
     await tester.pumpAndSettle();
     expect(opacityOf(tester, HomeKeys.title), 1);
-    expect(opacityOf(tester, HomeKeys.journeyButton), 1);
+    expect(opacityOf(tester, HomeKeys.goalCard), 1);
   });
 
   testWidgets('com animações reduzidas no sistema a tela já abre pronta', (

@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/learning/learning_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/endgames/exercise_feedback_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/haptic_event.dart';
@@ -32,14 +35,21 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     required this._lessons,
     required this._progress,
     required this._characters,
+    this.learning,
     this._feedback,
     this._sounds,
     this._haptics,
+    this._analytics = const NoAnalyticsRepository(),
     this._now = const SystemNow(),
     this.replyDelay = const Duration(milliseconds: 450),
-  }) : super(const ExerciseState());
+  }) : _learningOwner = learning?.currentUid(),
+       super(const ExerciseState());
 
+  final LearningRepository? learning;
+  final String? _learningOwner;
+  String? _learningVersion;
   final Now _now;
+  final AnalyticsRepository _analytics;
   DateTime? _pausedAt;
   Completer<void>? _foreground;
   bool _closing = false;
@@ -167,6 +177,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
 
   Future<void> load(String lessonId, String exerciseId, String language) async {
     final revision = ++_loadRevision;
+    final contentVersion = await learning?.versionOf(true, lessonId);
+    if (isClosed || revision != _loadRevision) return;
+    _learningVersion = contentVersion;
     _lastError = null;
     _language = language;
     final trail = await _lessons.trail();
@@ -249,6 +262,18 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       );
     }
     emit(opened);
+    // O teste da aula (a série de exercícios) começa no 1º exercício, sem
+    // nenhuma estrela ainda.
+    if (!resumed && !opened.locked && each.stars.isEmpty) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.aulaTesteInicio(
+            aulaId: lessonId,
+            exercicios: lesson.exercises.length,
+          ),
+        ),
+      );
+    }
     await _save();
     unawaited(_loadPayload(revision));
     if (state.phase == ExercisePhase.waiting) {
@@ -541,6 +566,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     if (state.phase == ExercisePhase.done) {
       return;
     }
+    final lesson = state.lesson;
+    final exercise = state.exercise;
+    if (lesson != null && exercise != null) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.aulaSaida(
+            aulaId: lesson.id,
+            exercicioId: exercise.id,
+            tempo: elapsed,
+          ),
+        ),
+      );
+    }
     await _save(open: false);
   }
 
@@ -573,19 +611,49 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   }) async {
     final lesson = state.lesson!;
     final exercise = state.exercise!;
-    // Com a nota fechada, o treino não grava nada.
+    unawaited(
+      _analytics.log(
+        AnalyticsEvents.exercicioResultado(
+          aulaId: lesson.id,
+          capituloId: 'teste',
+          exercicioId: exercise.id,
+          tipoPasso: 'mover',
+          acertou: !solutionShown,
+          tentativas: state.mistakes + 1,
+          dicas: state.hints,
+          tempo: elapsed,
+        ),
+      ),
+    );
+    // The operational milestone uses only results actually observed in this
+    // revision, even when old unversioned progress already locked the UI grade.
+    await _observeTestResult(lesson, exercise.id, earned);
+    // Com a nota fechada, o treino não muda a nota visível.
     if (!state.locked) {
       final all = await _progress.load();
       final each = all.of(lesson.id);
-      await _progress.save(
-        all.withLesson(
-          lesson.id,
-          each.copyWith(
-            stars: {...each.stars, exercise.id: earned},
-            clearExercise: true,
-          ),
-        ),
+      final saved = each.copyWith(
+        stars: {...each.stars, exercise.id: earned},
+        clearExercise: true,
       );
+      await _progress.save(all.withLesson(lesson.id, saved));
+      // O último exercício da série fecha o teste.
+      if (lesson.exercises.every(
+        (other) => saved.stars.containsKey(other.id),
+      )) {
+        unawaited(
+          _analytics.log(
+            AnalyticsEvents.aulaTesteFim(
+              aulaId: lesson.id,
+              aprovado: EndgameLessonRules.passed(lesson, saved),
+              acertosPrimeira: lesson.exercises
+                  .where((other) => saved.stars[other.id] == other.stars)
+                  .length,
+              exercicios: lesson.exercises.length,
+            ),
+          ),
+        );
+      }
     }
     if (isClosed) {
       return;
@@ -687,6 +755,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     if (lesson == null || exercise == null) {
       return;
     }
+    await learning?.serial(
+      () => learning!.observe(
+        owner: _learningOwner,
+        version: _learningVersion,
+        kind: 'endgame_chapter',
+        unitId: lesson.id,
+        started: true,
+      ),
+    );
     if (state.phase == ExercisePhase.done || state.locked) {
       return;
     }
@@ -717,6 +794,53 @@ class ExerciseCubit extends Cubit<ExerciseState> {
             ),
       ),
     );
+  }
+
+  Future<void> _observeTestResult(
+    EndgameLesson lesson,
+    String exerciseId,
+    int stars,
+  ) async {
+    final repository = learning;
+    final owner = _learningOwner;
+    final version = _learningVersion;
+    if (repository == null ||
+        owner == null ||
+        version == null ||
+        owner != repository.currentUid()) {
+      return;
+    }
+    await repository.serial(() async {
+      await repository.observe(
+        owner: owner,
+        version: version,
+        kind: 'endgame_chapter',
+        unitId: lesson.id,
+        started: true,
+        exerciseStars: {exerciseId: stars},
+      );
+      if (owner != repository.currentUid()) return;
+      final current = (await repository.load(owner))
+          .where(
+            (r) =>
+                r.kind == 'endgame_chapter' &&
+                r.unitId == lesson.id &&
+                r.version == version,
+          )
+          .firstOrNull;
+      if (current == null || current.testPassedAt != null) return;
+      final observed = EndgameLessonProgress(stars: current.exerciseStars);
+      if (EndgameLessonRules.allSolved(lesson, observed) &&
+          observed.scoreOf(lesson) >= lesson.passScore) {
+        await repository.observe(
+          owner: owner,
+          version: version,
+          kind: 'endgame_chapter',
+          unitId: lesson.id,
+          passed: true,
+        );
+      }
+    });
   }
 
   Position? _position() {

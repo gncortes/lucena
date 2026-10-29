@@ -24,13 +24,11 @@ class AppLinksDeepLinkService implements DeepLinkService {
   // tratou: ele passa uma vez só.
   @override
   Stream<Uri> get uris {
-    var skipped = false;
+    var first = true;
     return _links.uriLinkStream.where((uri) {
-      if (!skipped && uri == _initial) {
-        skipped = true;
-        return false;
-      }
-      return true;
+      final duplicate = first && uri == _initial;
+      first = false;
+      return !duplicate;
     });
   }
 }

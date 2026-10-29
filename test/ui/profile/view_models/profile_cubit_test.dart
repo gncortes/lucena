@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/avatar_photo.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/profile/view_models/profile_cubit.dart';
 
+import '../../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../../testing/fakes/fake_profile_repository.dart';
 
 void main() {
@@ -140,5 +141,22 @@ void main() {
     expect(ProfileCubit(repository, region: () => 'br').phoneCountry, 'BR');
     expect(ProfileCubit(repository, region: () => '').phoneCountry, isNull);
     expect(ProfileCubit(repository).phoneCountry, isNull);
+  });
+
+  test('perfil_regiao_definida: confirmou, trocou e pulou', () async {
+    final analytics = FakeAnalyticsRepository();
+    final cubit = ProfileCubit(repository, analytics: analytics);
+    addTearDown(cubit.close);
+    await cubit.setRegion(state: 'PR', city: 'Curitiba');
+    await cubit.setRegion(state: 'SP');
+    cubit.regionSkipped();
+    expect(
+      analytics.eventsNamed('perfil_regiao_definida').map((e) => e.params),
+      [
+        {'acao': 'confirmou', 'tem_estado': 'sim'},
+        {'acao': 'trocou', 'tem_estado': 'sim'},
+        {'acao': 'pulou', 'tem_estado': 'nao'},
+      ],
+    );
   });
 }

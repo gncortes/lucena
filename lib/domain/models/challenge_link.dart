@@ -6,6 +6,7 @@ import 'app_links.dart';
 import 'clock.dart';
 import 'endgame_position.dart';
 import 'game_setup.dart';
+import 'linked_lesson.dart';
 import 'maia_level.dart';
 
 part 'challenge_link.freezed.dart';
@@ -13,6 +14,12 @@ part 'challenge_link.freezed.dart';
 /// O desafio que viaja num link (`playlucena.com/p/<código>?fen=...`): a
 /// posição, o objetivo, o lado, o adversário, o relógio e se a configuração
 /// fica travada. Quem abre joga a mesma partida contra a máquina.
+///
+/// Link de campanha (T84), tudo opcional e fora do código:
+/// `?aula=<id da aula de finais>` ou `?escola=<id da aula da Escola>` liga a
+/// aula que o fim da partida oferece; `utm_source` (`instagram`...) e
+/// `utm_campaign` (o slug do post) dizem de onde veio. Ex.:
+/// `playlucena.com/p/x?fen=...&goal=win&aula=rook.lucena&utm_source=instagram&utm_campaign=torre-engana`.
 @freezed
 abstract class ChallengeLink with _$ChallengeLink {
   const factory ChallengeLink({
@@ -50,6 +57,15 @@ abstract class ChallengeLink with _$ChallengeLink {
     /// 1 no link de quem nunca chegou por link, e assim por diante. Fica fora
     /// do código.
     @Default(0) int generation,
+
+    /// Em quantos lances quem mandou venceu o desafio (`mv`): só no link
+    /// criado depois de uma vitória. Fica fora do código; o resultado de quem
+    /// abre se compara com ele. Nulo: link sem resultado (os antigos).
+    int? senderMoves,
+
+    /// A aula que o fim da partida oferece (`aula` ou `escola`, T84). Fica
+    /// fora do código. Nula: os links de antes, sem oferta.
+    LinkedLesson? lesson,
   }) = _ChallengeLink;
 
   const ChallengeLink._();
@@ -79,6 +95,30 @@ abstract class ChallengeLink with _$ChallengeLink {
 
   /// O parâmetro da geração no link.
   static const generationKey = 'g';
+
+  /// O parâmetro dos lances de quem mandou no link.
+  static const senderMovesKey = 'mv';
+
+  /// Veio de um post nosso ou traz uma aula: entra no funil de campanha do
+  /// Analytics (T84). O link que a pessoa repassa pelo app só entra pela aula.
+  bool get isCampaign {
+    final source = utm['utm_source'];
+    return lesson != null || (source != null && source != 'app');
+  }
+
+  /// O link traz só a posição: sem lado, adversário, nível, relógio nem
+  /// trava. Quem abre joga o lado da vez contra o Maia do próprio nível.
+  static bool isBare(Uri uri) {
+    final query = uri.queryParameters;
+    return tryParse(uri) != null &&
+        [
+          'side',
+          'opp',
+          'lvl',
+          'clock',
+          'lock',
+        ].every((key) => query[key] == null);
+  }
 
   /// Os parâmetros do link, sem os `utm_*`.
   Map<String, String> get params => {
@@ -115,6 +155,8 @@ abstract class ChallengeLink with _$ChallengeLink {
   Uri get uri => AppLinks.uri('/${AppLinks.challengeSegment}/$code', {
     ...params,
     if (generation > 0) generationKey: '$generation',
+    if (senderMoves != null) senderMovesKey: '$senderMoves',
+    if (lesson != null) lesson!.kind.code: lesson!.id,
     for (final entry in utm.entries)
       if (_utmKeys.contains(entry.key)) entry.key: entry.value,
   });
@@ -174,6 +216,11 @@ abstract class ChallengeLink with _$ChallengeLink {
           if (query[key] != null) key: query[key]!,
       },
       generation: int.tryParse(query[generationKey] ?? '') ?? 0,
+      senderMoves: switch (int.tryParse(query[senderMovesKey] ?? '')) {
+        final moves? when moves > 0 => moves,
+        _ => null,
+      },
+      lesson: LinkedLesson.fromQuery(query),
     );
   }
 }

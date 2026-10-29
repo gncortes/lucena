@@ -9,9 +9,11 @@ import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
+import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/ui/core/keys/next_steps_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -168,15 +170,18 @@ class TourRobot {
   }
 
   /// No passo do nível: "Não sei jogar" para o iniciante; as outras faixas
-  /// marcam "Informar o meu rating", e [start] digita o rating delas como do
+  /// abrem "Já sei o meu rating" e marcam "Informar o meu rating", e [start] digita o rating delas como do
   /// Lichess (que não converte).
   Future<void> chooseLevel(RatingLevel level) async {
     _level[this] = level;
-    await _tap(
-      LevelKeys.option(
-        level == RatingLevel.beginner ? LevelChoice.zero : LevelChoice.manual,
-      ),
-    );
+    if (level == RatingLevel.beginner) {
+      await _tap(LevelKeys.option(LevelChoice.zero));
+      return;
+    }
+    // O número fica atrás de "Já sei o meu rating".
+    await _tap(LevelKeys.option(LevelChoice.known));
+    await _tap(LevelKeys.continueButton);
+    await _tap(LevelKeys.option(LevelChoice.manual));
   }
 
   /// No passo do nível: abre o teste de nível.
@@ -184,14 +189,28 @@ class TourRobot {
 
   /// Em "Seu nível": "Continuar" (com o teste marcado e sem teste feito, abre
   /// o teste). Com "Informar o meu rating", digita a faixa de [chooseLevel].
-  Future<void> start() async {
+  /// Com a faixa escolhida e [leave], sai dos próximos passos para a tela
+  /// inicial.
+  Future<void> start({bool leave = true}) async {
     await _tap(LevelKeys.continueButton);
     final level = _level[this];
-    if (level == null || level == RatingLevel.beginner) return;
+    if (level == null) return;
+    if (level == RatingLevel.beginner) {
+      if (leave && !VisibleLessons.school) await leaveNextSteps();
+      return;
+    }
     await $(LevelKeys.ratingScreen).waitUntilVisible();
     await $(LevelKeys.ratingField).enterText(level.rating.toString());
     await $(LevelKeys.ratingSource(RatingOrigin.lichess)).scrollTo().tap();
     await $(LevelKeys.ratingUse).tap();
+    await $.pumpAndSettle();
+    if (leave) await leaveNextSteps();
+  }
+
+  /// Nos próximos passos do fim do tour (E1.34): "Ir para o início".
+  Future<void> leaveNextSteps() async {
+    await $(NextStepsKeys.screen).waitUntilVisible();
+    await $(NextStepsKeys.home).tap();
     await $.pumpAndSettle();
   }
 

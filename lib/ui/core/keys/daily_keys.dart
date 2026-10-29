@@ -1,11 +1,10 @@
 import 'package:flutter/widgets.dart';
 
-/// O final do dia (E1.22): a faixa da home, o fim da partida, o resultado e
+/// O final do dia (E1.22): o fim da partida, o resultado e
 /// a imagem para compartilhar.
 abstract final class DailyKeys {
-  static const homeStrip = Key('daily.homeStrip');
   static const streakPill = Key('daily.streakPill');
-  static const badge = Key('daily.badge');
+  static const goalSubtitle = Key('daily.goalSubtitle');
   static const playAgain = Key('daily.playAgain');
   static const openResult = Key('daily.openResult');
   static const resultScreen = Key('daily.resultScreen');

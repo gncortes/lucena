@@ -108,6 +108,12 @@ class FakeAccountRepository implements AccountRepository {
   @override
   Future<void> signOut() async => _set(null);
 
+  /// Quantas vezes o app ligou o push da conta na abertura.
+  int pushLinks = 0;
+
+  @override
+  Future<void> linkPushDevice() async => pushLinks++;
+
   @override
   Future<void> deleteAccount({bool photo = false}) async {
     _throwIfFailing();

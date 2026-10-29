@@ -16,14 +16,30 @@ abstract class DeepLinkRepository {
 }
 
 /// Lê os endereços do [DeepLinkService] e deixa passar só os do app.
-class ServiceDeepLinkRepository implements DeepLinkRepository {
+class ServiceDeepLinkRepository
+    implements DeepLinkRepository, RawDeepLinkRepository {
   const ServiceDeepLinkRepository(this._service);
 
   final DeepLinkService _service;
 
   @override
-  ChallengeLink? parse(Uri uri) =>
-      AppLinks.isOwn(uri) ? ChallengeLink.tryParse(uri) : null;
+  Future<Uri?> initialUri() async {
+    final uri = await _service.initialUri();
+    return uri != null && AppLinks.isOwn(uri) ? uri : null;
+  }
+
+  @override
+  Stream<Uri> get openedUris => _service.uris.where(AppLinks.isOwn);
+
+  @override
+  ChallengeLink? parse(Uri uri) {
+    if (!AppLinks.isOwn(uri)) return null;
+    try {
+      return ChallengeLink.tryParse(uri);
+    } on FormatException {
+      return null;
+    }
+  }
 
   @override
   Future<ChallengeLink?> initial() async {
@@ -34,4 +50,29 @@ class ServiceDeepLinkRepository implements DeepLinkRepository {
   @override
   Stream<ChallengeLink> get opened =>
       _service.uris.map(parse).where((link) => link != null).cast();
+}
+
+/// URI original, inclusive quando não representa um desafio válido.
+/// Separada da API de desafios para preservar implementações e fakes existentes.
+abstract interface class RawDeepLinkRepository {
+  Future<Uri?> initialUri();
+  Stream<Uri> get openedUris;
+}
+
+extension DeepLinkUris on DeepLinkRepository {
+  Future<Uri?> initialUri() async {
+    final repository = this;
+    if (repository is RawDeepLinkRepository) {
+      return (repository as RawDeepLinkRepository).initialUri();
+    }
+    return (await initial())?.uri;
+  }
+
+  Stream<Uri> get openedUris {
+    final repository = this;
+    if (repository is RawDeepLinkRepository) {
+      return (repository as RawDeepLinkRepository).openedUris;
+    }
+    return opened.map((link) => link.uri);
+  }
 }

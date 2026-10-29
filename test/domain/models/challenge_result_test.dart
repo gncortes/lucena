@@ -71,11 +71,30 @@ void main() {
         blind: true,
       );
       final result = state(link: origin).challengeResult!;
-      expect(result.link, origin);
+      // Só ganha os lances da vitória, que não mudam o código.
+      expect(result.link, origin.copyWith(senderMoves: 9));
       expect(result.link.code, origin.code);
       expect(result.link.locked, isTrue);
       expect(result.link.blind, isTrue);
-      expect(result.link.uri, origin.uri);
+      expect(result.link.uri.queryParameters['mv'], '9');
+      expect(
+        {...result.link.uri.queryParameters}..remove('mv'),
+        origin.uri.queryParameters,
+      );
+    });
+
+    test('compara a vitória de quem mandou com a de quem jogou', () {
+      final origin = ChallengeLink(
+        fen: '7k/8/6K1/8/8/8/8/5Q2 w - - 0 1',
+        userSide: Side.white,
+        senderMoves: 7,
+      );
+      expect(state(link: origin).challengeComparison, (sender: 7, you: 9));
+      // Link antigo (sem o resultado de quem mandou): nada a comparar.
+      expect(
+        state(link: origin.copyWith(senderMoves: null)).challengeComparison,
+        isNull,
+      );
     });
 
     test('o lance final vai para a imagem', () {

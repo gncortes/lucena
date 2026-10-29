@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/ads/ads_repository.dart';
+import '../../../domain/models/goal_preference.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/goal_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -35,7 +36,9 @@ class GoalScreen extends StatelessWidget {
         if (state.exit == GoalExit.level) return context.go(Routes.level);
         // O objetivo e a faixa de iniciante já estão no perfil.
         context.read<ProfileCubit>().load();
-        context.go(Routes.home);
+        context.go(
+          state.exit == GoalExit.controls ? Routes.boardControls : Routes.home,
+        );
       },
       builder: (context, state) {
         if (!state.ready) return const Scaffold(key: GoalKeys.screen);
@@ -84,6 +87,9 @@ class GoalScreen extends StatelessWidget {
                         GoalOptions(
                           l10n: l10n,
                           selected: state.goal,
+                          without: cubit.fromLink
+                              ? const {GoalPreference.learn}
+                              : const {},
                           onSelected: cubit.select,
                         ),
                         const SizedBox(height: AppSpacing.md),

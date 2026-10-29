@@ -72,6 +72,21 @@ abstract final class FeaturedLabels {
         : l10n.featuredTournamentRound(name, round);
   }
 
+  /// "Norway Chess 2017": evento e ano do cartão. Sem torneio, a origem.
+  static String eventYear(
+    AppLocalizations l10n,
+    String language,
+    FeaturedEndgame endgame,
+    FeaturedTournament? tournament,
+  ) => tournament == null
+      ? origin(l10n, endgame.origin)
+      : _withYear(l10n, tournament.nameIn(language), tournament.year);
+
+  /// O ano só entra quando o nome do evento ainda não o traz
+  /// ("Norway Chess 2017" não vira "Norway Chess 2017 2017").
+  static String _withYear(AppLocalizations l10n, String name, int year) =>
+      name.contains('$year') ? name : l10n.featuredEventYear(name, year);
+
   /// O personagem do adversário (o Stockfish, ou o do nível do Maia). Nulo
   /// quando o nível não tem personagem.
   static Character? character(

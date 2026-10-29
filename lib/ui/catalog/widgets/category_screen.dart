@@ -22,9 +22,16 @@ import '../../core/widgets/skeleton.dart';
 /// abertas em grade: o jogador toca na posição e vai direto para a partida.
 /// Quem não quer ver tudo fecha a seção pelo cabeçalho.
 class CategoryScreen extends StatelessWidget {
-  const CategoryScreen({required this.category, super.key});
+  const CategoryScreen({
+    required this.category,
+    this.subcategory,
+    this.blind = false,
+    super.key,
+  });
 
   final String category;
+  final String? subcategory;
+  final bool blind;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +41,20 @@ class CategoryScreen extends StatelessWidget {
     );
     return Scaffold(
       key: CatalogKeys.categoryScreen,
-      appBar: LucenaAppBar(title: Text(categoryName(l10n, category))),
+      appBar: LucenaAppBar(
+        title: Text(
+          subcategory == null
+              ? categoryName(l10n, category)
+              : endgameName(l10n, subcategory!),
+        ),
+      ),
       body: Column(
         children: [
+          if (blind)
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: Text(l10n.blindChoosePosition),
+            ),
           const GoalFilterBar(),
           Expanded(
             child: sections == null
@@ -48,7 +66,7 @@ class CategoryScreen extends StatelessWidget {
                     padding: scrollPadding(context),
                     itemCount: sections.length,
                     itemBuilder: (context, index) =>
-                        _Section(section: sections[index]),
+                        _Section(section: sections[index], blind: blind),
                   ),
           ),
         ],
@@ -60,7 +78,8 @@ class CategoryScreen extends StatelessWidget {
 /// Um final: o cabeçalho que abre e fecha a seção e, aberta, a grade das
 /// posições dele.
 class _Section extends StatelessWidget {
-  const _Section({required this.section});
+  const _Section({required this.section, required this.blind});
+  final bool blind;
 
   final CatalogSection section;
 
@@ -79,7 +98,7 @@ class _Section extends StatelessWidget {
               AppSpacing.lg,
               AppSpacing.lg,
             ),
-            child: _PositionGrid(positions: section.positions),
+            child: _PositionGrid(positions: section.positions, blind: blind),
           ),
         ),
       ],
@@ -193,7 +212,8 @@ class _Collapsible extends StatelessWidget {
 /// As posições em grade: duas colunas no celular, três em tela larga; cada
 /// cartão com a altura do próprio conteúdo.
 class _PositionGrid extends StatelessWidget {
-  const _PositionGrid({required this.positions});
+  const _PositionGrid({required this.positions, required this.blind});
+  final bool blind;
 
   final List<EndgamePosition> positions;
 
@@ -219,6 +239,7 @@ class _PositionGrid extends StatelessWidget {
                 width: width,
                 child: _PositionCell(
                   position: position,
+                  blind: blind,
                   fulfilled: fulfilled.contains(position.id),
                 ),
               ),
@@ -232,7 +253,12 @@ class _PositionGrid extends StatelessWidget {
 /// Uma posição na grade: o tabuleiro visto pelo lado que joga, o número, o
 /// objetivo e quem joga. O tabuleiro voa até a configuração da partida.
 class _PositionCell extends StatelessWidget {
-  const _PositionCell({required this.position, required this.fulfilled});
+  const _PositionCell({
+    required this.position,
+    required this.fulfilled,
+    required this.blind,
+  });
+  final bool blind;
 
   final EndgamePosition position;
 
@@ -255,6 +281,7 @@ class _PositionCell extends StatelessWidget {
           position.fen,
           goal: position.goal.code,
           position: position.id,
+          blind: blind,
         ),
       ),
       children: [

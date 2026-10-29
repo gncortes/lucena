@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -9,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/clock_settings.dart';
+import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../challenge/widgets/challenge_result_share.dart';
@@ -18,12 +20,14 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/board/centered_board_layout.dart';
 import '../../../routing/routes.dart';
+import '../../core/keys/daily_keys.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/game_entrance.dart';
@@ -31,6 +35,9 @@ import '../../core/widgets/lucena_sheet.dart';
 import '../../profile/view_models/profile_cubit.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/free_board_cubit.dart';
+import '../view_models/link_lesson_cubit.dart';
+import '../../../domain/use_cases/link_lesson_rules.dart';
+import '../../campaign/widgets/link_lead_sheet.dart';
 import '../view_models/talk_cubit.dart';
 import '../../conclusion/view_models/conclusion_cubit.dart';
 import '../../../domain/models/conclusion.dart';
@@ -56,6 +63,43 @@ import '../../daily/widgets/daily_end_bar.dart';
 import '../../featured/view_models/featured_endgame_cubit.dart';
 import '../../featured/widgets/featured_game_bar.dart';
 
+// O tabuleiro trata arrastes diretamente; a rolagem externa não deve competir
+// com o gesto da peça nem gerar inércia ao soltá-la.
+class _GameScrollPhysics extends ClampingScrollPhysics {
+  const _GameScrollPhysics(this.boardTouch, {super.parent});
+
+  final bool Function() boardTouch;
+
+  @override
+  _GameScrollPhysics applyTo(ScrollPhysics? ancestor) =>
+      _GameScrollPhysics(boardTouch, parent: buildParent(ancestor));
+
+  @override
+  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) =>
+      boardTouch() ? 0 : super.applyPhysicsToUserOffset(position, offset);
+
+  @override
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) =>
+      boardTouch() ? null : super.createBallisticSimulation(position, velocity);
+}
+
+String _gameEndReason(AppLocalizations l10n, GameEndReason reason) =>
+    switch (reason) {
+      GameEndReason.checkmate => l10n.freeBoardCheckmate,
+      GameEndReason.stalemate => l10n.freeBoardStalemate,
+      GameEndReason.insufficientMaterial => l10n.freeBoardInsufficientMaterial,
+      GameEndReason.repetition => l10n.freeBoardRepetition,
+      GameEndReason.fiftyMoves => l10n.freeBoardFiftyMoves,
+      GameEndReason.timeout => l10n.freeBoardTimeout,
+      GameEndReason.timeoutVsInsufficientMaterial =>
+        l10n.freeBoardTimeoutVsInsufficientMaterial,
+      GameEndReason.resign => l10n.gameResigned,
+      GameEndReason.drawAgreed => l10n.freeBoardDrawAgreed,
+    };
+
 class FreeBoardScreen extends StatefulWidget {
   const FreeBoardScreen({super.key});
 
@@ -66,6 +110,13 @@ class FreeBoardScreen extends StatefulWidget {
 class _FreeBoardScreenState extends State<FreeBoardScreen>
     with WidgetsBindingObserver {
   late final ChessboardController _board;
+  bool _boardTouch = false;
+  Widget _boardTouchRegion(Widget child) => Listener(
+    onPointerDown: (_) => _boardTouch = true,
+    onPointerUp: (_) => scheduleMicrotask(() => _boardTouch = false),
+    onPointerCancel: (_) => scheduleMicrotask(() => _boardTouch = false),
+    child: child,
+  );
 
   // O relógio não conta tiques: a tela só pede, várias vezes por segundo, que
   // os tempos sejam refeitos pelo instante atual.
@@ -73,6 +124,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   // O jogador confirmou que sai do speedrun: a tela pode fechar.
   bool _quitting = false;
+
+  /// A folha da aula gratuita do link de campanha (T84) já abriu sozinha
+  /// neste fim; e está aberta agora.
+  bool _leadShown = false;
+  bool _leadOpen = false;
 
   // O que o "compartilhar" de um final em destaque captura.
   final _shareBoundary = GlobalKey();
@@ -158,7 +214,9 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
       sheetKey: FreeBoardKeys.speedrunQuitSheet,
       confirmKey: FreeBoardKeys.speedrunQuitConfirm,
       cancelKey: FreeBoardKeys.speedrunQuitCancel,
-      title: l10n.speedrunQuitTitle,
+      title: cubit.state.mode.isMarathon
+          ? l10n.marathonQuitTitle
+          : l10n.classicQuitTitle,
       hint: l10n.speedrunQuitHint(won),
       action: l10n.speedrunAbandon,
       cancel: l10n.speedrunKeepGoing,
@@ -388,16 +446,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
           ),
         ),
         title: state.mode.fromLink
+            ? Text(context.l10n.journeyChallengeTitle, key: FreeBoardKeys.title)
+            : state.mode.dailyDate != null
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Text(_title(context, state, talk), key: FreeBoardKeys.title),
                   Text(
-                    context.l10n.journeyChallengeTitle,
-                    key: FreeBoardKeys.title,
-                  ),
-                  Text(
-                    _title(context, state, talk),
-                    key: ChallengeKeys.linkGameSubtitle,
+                    context.l10n.dailyGoal(
+                      (state.mode.userSide ?? state.start.turn).name,
+                      state.mode.goal?.code ?? 'win',
+                    ),
+                    key: DailyKeys.goalSubtitle,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -422,13 +482,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final character = talk.character;
                 // Acabou a partida contra a máquina: o selo fica no tabuleiro e
                 // o botão leva ao resultado; sem balão aberto (PropV2PartidaFim).
-                if (state.end == null) {
-                  _endAtOpen = false;
-                  _endSeen = true;
-                } else if (!_endSeen) {
-                  _endAtOpen = true;
-                  _endSeen = true;
-                }
                 final machineEnded =
                     state.end != null &&
                     state.mode.opponent.isMachine &&
@@ -439,10 +492,10 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                 final nickname = context.select(
                   (ProfileCubit cubit) => cubit.state?.nickname ?? '',
                 );
-                // O centro do tabuleiro é o centro da tela visível (a altura
-                // menos as barras do sistema), como no às cegas e nas
-                // estrelas. Retrato, nome e relógio compartilham uma única
-                // linha; o balão flutua e não reserva altura.
+                // Centro da tela inteira como referência. Se a fala não cabe,
+                // Gabriel autorizou descer o tabuleiro em vez de mudar o balão
+                // para a faixa do nome. Ao terminar o fade da fala, libera
+                // essa reserva para devolver o tabuleiro ao centro da tela.
                 final clocksAbove =
                     clocks == ClockPosition.top || clocks == ClockPosition.sides
                     ? ClockRow.height
@@ -452,15 +505,101 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                         clocks == ClockPosition.sides
                     ? ClockRow.height
                     : 0.0;
-                final reserveTop = clocksAbove;
-                final centering = BoardCentering.balanced(
-                  constraints.biggest,
+                var reserveTop = clocksAbove;
+                final view = View.of(context);
+                final insetsOffset =
+                    (view.viewPadding.top - view.viewPadding.bottom) /
+                    view.devicePixelRatio /
+                    2;
+                final screenCenter =
+                    BoardViewport.centerYOf(context)! - insetsOffset;
+                final footerHeight = machineEnded && state.mode.fromLink
+                    ? _LinkEndBar.height
+                    : GameActionsBar.height;
+                // A aula do link de campanha (T84), no fim do desafio.
+                final linkLesson = state.mode.fromLink
+                    ? _linkLessonOf(context)
+                    : null;
+                // A aula que não abre não é oferecida: o fim de sempre.
+                final offer =
+                    machineEnded &&
+                        linkLesson != null &&
+                        linkLesson.state.available == true
+                    ? LinkLessonRules.offer(
+                        state.challengeLink,
+                        fulfilled: state.fulfilled,
+                      )
+                    : LinkLessonOffer.none;
+                // A folha da aula gratuita abre sozinha uma vez por fim; o
+                // "Ver a aula" do rodapé a reabre.
+                if (state.end == null) _leadShown = false;
+                if (offer != LinkLessonOffer.none && !_leadShown) {
+                  _leadShown = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) return;
+                    unawaited(_openLead(this.context, linkLesson!, offer));
+                  });
+                }
+                var boardSide = constraints.maxWidth;
+                final comments = context.select(
+                  (SettingsCubit cubit) => cubit.state?.characterTalk ?? true,
+                );
+                // T84: o espaço da fala é fixo (2 linhas) desde o começo,
+                // falando ou não; o tabuleiro diminui para caber com o
+                // centro no meio da tela e não se move durante a partida. A
+                // fala maior se abre por cima, sem empurrar nada.
+                if (state.mode.opponent == OpponentKind.maia &&
+                    comments &&
+                    character != null) {
+                  final speechRoom =
+                      SpeechBalloon.fixedHeight(context) +
+                      SpeechBalloon.tailExtent +
+                      4;
+                  reserveTop =
+                      clocksAbove +
+                      (clocks == ClockPosition.bottom
+                          ? speechRoom + 4
+                          : math.max(0, speechRoom - 12));
+                  // Tela baixa: abaixo de [_minBoardFraction] da largura, o
+                  // tabuleiro desce do meio, mas nunca passa da altura livre
+                  // (a partida não rola; o tamanho segue fixo na partida).
+                  final fitHeight =
+                      constraints.maxHeight -
+                      reserveTop -
+                      _boardGap -
+                      (clocksBelow > 0 ? clocksBelow + _boardGap : 0) -
+                      footerHeight;
+                  boardSide = (2 * (screenCenter - reserveTop - _boardGap))
+                      .clamp(
+                        math.min(
+                          constraints.maxWidth * _minBoardFraction,
+                          math.max(0, fitHeight),
+                        ),
+                        constraints.maxWidth,
+                      )
+                      .toDouble();
+                }
+                final topExtent = reserveTop > 0 ? reserveTop + _boardGap : 0.0;
+                final bottomExtent = clocksBelow > 0
+                    ? clocksBelow + _boardGap
+                    : 0.0;
+                final boardCenter = math.max(
+                  screenCenter,
+                  topExtent + boardSide / 2,
+                );
+                final layoutHeight = math.max(
+                  constraints.maxHeight,
+                  boardCenter + boardSide / 2 + bottomExtent + footerHeight,
+                );
+                final centering = BoardCentering(
+                  Size(constraints.maxWidth, layoutHeight),
+                  centerY: boardCenter,
                   gap: _boardGap,
                   reserveTop: reserveTop,
                   reserveBottom: clocksBelow,
-                  footer: machineEnded && state.mode.fromLink
-                      ? _LinkEndBar.height
-                      : GameActionsBar.height,
+                  footer: footerHeight,
+                  minFraction: 1,
+                  maxBoard: boardSide,
                 );
                 const both = [Side.white, Side.black];
                 final end = state.end;
@@ -472,7 +611,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                     CenteredBoardLayout(
                       key: FreeBoardKeys.scrollArea,
                       gap: _boardGap,
-                      balanced: true,
+                      centerY: centering.centerY,
+                      minFraction: centering.minFraction,
+                      minBoardSide: boardSide,
+                      maxBoard: boardSide,
+                      scrollPhysics: _GameScrollPhysics(() => _boardTouch),
                       reserveTop: reserveTop,
                       reserveBottom: clocksBelow,
                       footer: machineEnded && featured
@@ -481,6 +624,11 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                           ? DailyEndBar(onAgain: cubit.newGame)
                           : machineEnded && state.mode.fromLink
                           ? _LinkEndBar(
+                              onLesson: offer == LinkLessonOffer.none
+                                  ? null
+                                  : () => unawaited(
+                                      _openLead(context, linkLesson!, offer),
+                                    ),
                               onAgain: () => _playLinkAgain(cubit),
                               onShare: () => _shareLinkResult(context, state),
                               onMeetApp: () => _meetApp(context),
@@ -516,6 +664,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 clocks != ClockPosition.bottom)
                               CharacterBar(
                                 talk: barTalk,
+                                dismissOn: _playerMoves(state),
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -561,20 +710,22 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                               orientation: state.orientation,
                               child: Directionality(
                                 textDirection: TextDirection.ltr,
-                                child: Chessboard(
-                                  key: FreeBoardKeys.board,
-                                  size: box.maxWidth,
-                                  controller: _board,
-                                  // No ultra bullet o pré-lance fica sempre ligado:
-                                  // sem ele, não dá tempo de jogar no celular.
-                                  settings: _ultraBullet(state)
-                                      ? boardSettings
-                                            .copyWith(premoves: true)
-                                            .chessground
-                                      : boardSettings.chessground,
-                                  orientation: state.orientation,
-                                  onMove: (move, {viaDragAndDrop}) =>
-                                      cubit.play(move),
+                                child: _boardTouchRegion(
+                                  Chessboard(
+                                    key: FreeBoardKeys.board,
+                                    size: box.maxWidth,
+                                    controller: _board,
+                                    // No ultra bullet o pré-lance fica sempre ligado:
+                                    // sem ele, não dá tempo de jogar no celular.
+                                    settings: _ultraBullet(state)
+                                        ? boardSettings
+                                              .copyWith(premoves: true)
+                                              .chessground
+                                        : boardSettings.chessground,
+                                    orientation: state.orientation,
+                                    onMove: (move, {viaDragAndDrop}) =>
+                                        cubit.play(move),
+                                  ),
                                 ),
                               ),
                             ),
@@ -582,17 +733,23 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                             // versus (na Maratona, com a contagem); só então
                             // o relógio corre.
                             // O selo do resultado sobre o tabuleiro, até o jogador seguir.
-                            if (end != null &&
-                                !_endAtOpen &&
-                                state.mode.opponent.isMachine)
+                            if (end != null && state.mode.opponent.isMachine)
                               Positioned.fill(
                                 child: IgnorePointer(
                                   child: _EndFlash(
                                     key: ValueKey(end),
                                     end: end,
                                     userSide: state.mode.userSide,
-                                    // O final em destaque pisca por 1,5 s.
+                                    comparison:
+                                        state.challengeComparison == null
+                                        ? null
+                                        : context.l10n.challengeCompare(
+                                            state.challengeComparison!.sender,
+                                            state.challengeComparison!.you,
+                                          ),
+                                    // Só o autoavanço encerra o selo sozinho.
                                     short: state.mode.isUnratedFinal,
+                                    persistent: !_marathonAdvance(state),
                                   ),
                                 ),
                               ),
@@ -653,6 +810,7 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
                                 character != null)
                               CharacterBar(
                                 talk: barTalk,
+                                dismissOn: _playerMoves(state),
                                 avatarSize: CharacterAvatar.player,
                                 showName: false,
                                 playerRow: ClockRow(
@@ -696,7 +854,8 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
 
   String _title(BuildContext context, FreeBoardState state, TalkState talk) {
     final l10n = context.l10n;
-    if (state.mode.isSpeedrun) return l10n.speedrunTitle;
+    if (state.mode.isMarathon) return l10n.marathonSection;
+    if (state.mode.isSpeedrun) return l10n.speedrunModeClassic;
     if (state.mode.featuredId != null) return l10n.featuredEndgameTitle;
     if (state.mode.dailyDate != null) return l10n.dailyTitle;
     if (state.mode.challengeId != null && talk.character != null) {
@@ -752,10 +911,67 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  /// "Conhecer o app": sai do desafio para a tela inicial.
+  /// "Conhecer o app": sai do desafio para o objetivo (a rota manda para a tela
+  /// inicial quem já passou pela primeira abertura).
   void _meetApp(BuildContext context) {
     setState(() => _quitting = true);
-    context.go(Routes.home);
+    context.go(Routes.goalFromLink);
+  }
+
+  /// A aula do link de campanha, se a partida veio de um link com aula.
+  static LinkLessonCubit? _linkLessonOf(BuildContext context) {
+    try {
+      return context.watch<LinkLessonCubit>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  /// A folha da aula gratuita (T84, variante A): sobre o fim do desafio,
+  /// que fica à vista ao fechar. Sem conta, o cadastro (ou entrar) e a aula
+  /// no fim; com conta, a aula direto. A aula abre por cima do fim: voltar
+  /// dela volta ao fim.
+  Future<void> _openLead(
+    BuildContext context,
+    LinkLessonCubit linkLesson,
+    LinkLessonOffer offer,
+  ) async {
+    final lesson = linkLesson.lesson;
+    if (lesson == null || linkLesson.state.busy || _leadOpen) return;
+    _leadOpen = true;
+    await linkLesson.loadInfo(Localizations.localeOf(context).languageCode);
+    if (!context.mounted) {
+      _leadOpen = false;
+      return;
+    }
+    linkLesson.seen(offer);
+    final hasAccount = linkLesson.hasAccount;
+    final choice = await showLinkLeadSheet(
+      context,
+      offer: offer,
+      goal:
+          context.read<FreeBoardCubit>().state.challengeLink?.goal ??
+          PositionGoal.win,
+      hasAccount: hasAccount,
+      info: linkLesson.state.info,
+    );
+    _leadOpen = false;
+    if (choice == null) {
+      // "Agora não" ou o X: fica no fim, com "Ver a aula" para reabrir.
+      if (!hasAccount) await linkLesson.inviteAnswered(accepted: false);
+      return;
+    }
+    final step = await linkLesson.accept(offer);
+    if (!context.mounted) return;
+    final entry = Routes.linkedLessonEntry(lesson);
+    final route = switch (step) {
+      LinkLessonStep.unavailable => null,
+      LinkLessonStep.lesson => entry,
+      LinkLessonStep.invite when choice == LinkLeadChoice.signIn =>
+        Routes.accountEmailFrom(entry, signIn: true),
+      LinkLessonStep.invite => Routes.accountEnterFrom(entry),
+    };
+    if (route != null) unawaited(context.push(route));
   }
 
   Future<void> _conclude(
@@ -821,11 +1037,6 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     );
   }
 
-  /// A tela abriu com a partida já terminada (retomada): sem selo (§12).
-  /// Volta a falso quando uma partida nova começa.
-  bool _endAtOpen = false;
-  bool _endSeen = false;
-
   /// Quanto o resultado fica em destaque antes da conclusão: o selo inteiro
   /// (entra 200 ms, pico 1200 ms, sai 200 ms).
   static const _flashTime = _EndFlash.total;
@@ -833,6 +1044,18 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
   /// Entre as faixas dos jogadores e o tabuleiro (PropV2EtapaSpeedrunP360:
   /// faixa até 184, tabuleiro de 192 a 548, faixa a partir de 556).
   static const _boardGap = 8.0;
+
+  /// Quantos lances o jogador já fez: a fala aberta por cima fecha no
+  /// lance seguinte dele (T84), não na resposta da máquina.
+  static int _playerMoves(FreeBoardState state) {
+    final side = state.playerSide;
+    final plies = state.ucis.length;
+    if (side == null) return plies;
+    return state.start.turn == side ? (plies + 1) ~/ 2 : plies ~/ 2;
+  }
+
+  /// O menor tabuleiro com o espaço fixo da fala, em fração da largura.
+  static const _minBoardFraction = 0.8;
 }
 
 /// O rodapé da partida terminada contra a máquina: só "Ver o resultado"
@@ -858,17 +1081,23 @@ class _SeeResultBar extends StatelessWidget {
 }
 
 /// O rodapé do fim de um desafio de link (PropV1LinkFim): jogar de novo e
-/// compartilhar lado a lado, e "Conhecer o app" embaixo.
+/// compartilhar lado a lado, e "Conhecer o app" embaixo. Com a aula do link
+/// de campanha (T84), "Ver a aula" no lugar de "Conhecer o app".
 class _LinkEndBar extends StatelessWidget {
   const _LinkEndBar({
     required this.onAgain,
     required this.onShare,
     required this.onMeetApp,
+    this.onLesson,
   });
 
   final VoidCallback onAgain;
   final VoidCallback onShare;
   final VoidCallback onMeetApp;
+
+  /// A aula do link de campanha disponível (T84): reabre a folha da aula
+  /// gratuita, no lugar de "Conhecer o app".
+  final VoidCallback? onLesson;
 
   /// O rodapé inteiro: a linha de botões e o botão de texto.
   static const height = 112.0;
@@ -876,32 +1105,45 @@ class _LinkEndBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ActionsFooter(
+    return LayoutBuilder(
+      builder: (context, box) {
+        final compact = box.maxWidth < 384;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            OutlinedButton.icon(
-              key: ChallengeKeys.endPlayAgain,
-              onPressed: onAgain,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.challengeEndPlayAgain),
+            ActionsFooter(
+              children: [
+                OutlinedButton.icon(
+                  key: ChallengeKeys.endPlayAgain,
+                  onPressed: onAgain,
+                  icon: compact ? null : const Icon(Icons.refresh),
+                  label: Text(l10n.challengeEndPlayAgain),
+                ),
+                FilledButton.icon(
+                  key: ChallengeKeys.endShare,
+                  onPressed: onShare,
+                  icon: compact ? null : const Icon(Icons.share_outlined),
+                  label: Text(l10n.challengeShare),
+                ),
+              ],
             ),
-            FilledButton.icon(
-              key: ChallengeKeys.endShare,
-              onPressed: onShare,
-              icon: const Icon(Icons.share_outlined),
-              label: Text(l10n.challengeShare),
-            ),
+            if (onLesson case final onLesson?)
+              TextButton.icon(
+                key: ChallengeKeys.endLesson,
+                onPressed: onLesson,
+                icon: const Icon(Icons.school_outlined),
+                label: Text(l10n.challengeEndLesson),
+              )
+            else
+              TextButton.icon(
+                key: ChallengeKeys.endMeetApp,
+                onPressed: onMeetApp,
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(l10n.challengeEndMeetApp),
+              ),
           ],
-        ),
-        TextButton.icon(
-          key: ChallengeKeys.endMeetApp,
-          onPressed: onMeetApp,
-          icon: const Icon(Icons.arrow_forward),
-          label: Text(l10n.challengeEndMeetApp),
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -913,15 +1155,21 @@ class _EndFlash extends StatefulWidget {
     super.key,
     required this.end,
     this.userSide,
+    this.comparison,
     this.short = false,
+    this.persistent = false,
   });
 
   final GameEnd end;
   final Side? userSide;
 
+  /// Só no desafio por link: "Quem mandou: mate em 7 lances. Você: ...".
+  final String? comparison;
+
   /// Pisca por [AppMotion.featuredFlash] (entra, fica e sai) em vez do tempo
   /// normal do selo.
   final bool short;
+  final bool persistent;
 
   /// Entrada, pico e saída (200 + 1200 + 200 ms).
   // coreografia do selo de fim: tempo de leitura, não token de animação
@@ -969,11 +1217,14 @@ class _EndFlashState extends State<_EndFlash>
         : winner == widget.userSide
         ? l10n.resultYouWon
         : l10n.resultYouLost;
+    final reason = _gameEndReason(l10n, widget.end.reason);
     final fade = _reduced ? _EndFlash._reducedFade : _EndFlash._fade;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        if (_controller.isCompleted) return const SizedBox.shrink();
+        if (_controller.isCompleted && !widget.persistent) {
+          return const SizedBox.shrink();
+        }
         final total = _controller.duration!.inMilliseconds;
         final ms = _controller.value * total;
         final f = fade.inMilliseconds;
@@ -983,7 +1234,7 @@ class _EndFlashState extends State<_EndFlash>
           final t = AppMotion.enter.transform(ms / f);
           opacity = t;
           if (!_reduced) scale = 0.92 + 0.08 * t;
-        } else if (ms > total - f) {
+        } else if (!widget.persistent && ms > total - f) {
           opacity = 1 - AppMotion.exit.transform((ms - (total - f)) / f);
         } else {
           opacity = 1;
@@ -997,10 +1248,13 @@ class _EndFlashState extends State<_EndFlash>
       },
       child: Semantics(
         liveRegion: true,
-        label: title,
+        label: widget.persistent
+            ? [title, reason, ?widget.comparison].join('. ')
+            : title,
         child: ExcludeSemantics(
           child: Container(
             key: FreeBoardKeys.endFlash,
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.xl,
               vertical: AppSpacing.lg,
@@ -1009,11 +1263,34 @@ class _EndFlashState extends State<_EndFlash>
               color: colors.inverseSurface.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(AppShape.large),
             ),
-            child: Text(
-              title,
-              style: context.bigNumber?.copyWith(
-                color: colors.onInverseSurface,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: context.bigNumber?.copyWith(
+                    color: colors.onInverseSurface,
+                  ),
+                ),
+                if (widget.persistent)
+                  Text(
+                    reason,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onInverseSurface,
+                    ),
+                  ),
+                if (widget.persistent && widget.comparison != null)
+                  Text(
+                    widget.comparison!,
+                    key: ChallengeKeys.compare,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onInverseSurface,
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

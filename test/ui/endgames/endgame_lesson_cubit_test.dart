@@ -4,6 +4,7 @@ import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/endgame_lesson_rules.dart';
 import 'package:lucena/ui/endgames/view_models/endgame_lesson_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
@@ -160,5 +161,35 @@ void main() {
 
   test('aula que não existe', () async {
     expect((await load('nothing')).state.missing, isTrue);
+  });
+
+  group('analytics', () {
+    Future<FakeAnalyticsRepository> open({String? origin}) async {
+      final analytics = FakeAnalyticsRepository();
+      final cubit = EndgameLessonCubit(
+        lessons: FakeEndgameLessonRepository(),
+        progress: progress,
+        journey: FakeJourneyRepository(),
+        characters: FakeCharacterRepository(),
+        analytics: analytics,
+      );
+      addTearDown(cubit.close);
+      await cubit.load('rook.lucena', 'en', origin: origin);
+      return analytics;
+    }
+
+    test('com origem: aula_aberta de final, primeira vez', () async {
+      final analytics = await open(origin: 'trilha');
+      final opened = analytics.eventsNamed('aula_aberta').single.params;
+      expect(opened['aula_id'], 'rook.lucena');
+      expect(opened['tipo_aula'], 'finais');
+      expect(opened['origem'], 'trilha');
+      expect(opened['primeira_vez'], 'sim');
+    });
+
+    test('sem origem (volta do roteiro), nada é logado', () async {
+      final analytics = await open();
+      expect(analytics.events, isEmpty);
+    });
   });
 }

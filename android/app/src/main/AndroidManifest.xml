@@ -36,7 +36,8 @@
             </intent-filter>
             <!-- Os links do app chegam pelo app_links, não pelo roteador. -->
             <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
-            <!-- App Links dos desafios (E1.14): /p/<código>. Sem o app, o
+            <!-- App Links dos desafios (E1.14): /p/<código>; e das aulas de
+                 campanha (T84): /aula/<id> e /escola/<id>. Sem o app, o
                  endereço abre a landing (firebase.json). O domínio definitivo
                  entra junto do provisório até a troca. -->
             <intent-filter android:autoVerify="true">
@@ -48,6 +49,12 @@
                 <data android:host="playlucena.com"/>
                 <data android:host="www.playlucena.com"/>
                 <data android:pathPrefix="/p/"/>
+                <data android:pathPrefix="/aula/"/>
+                <data android:pathPrefix="/escola/"/>
+                <data android:path="/dia"/>
+                <data android:path="/dia/"/>
+                <data android:path="/daily"/>
+                <data android:path="/daily/"/>
             </intent-filter>
             <!-- A volta do login do Lichess (OAuth com PKCE, E1.12). -->
             <intent-filter>

@@ -14,11 +14,10 @@ class VisibleEndgameLessonRepository implements EndgameLessonRepository {
 
   final EndgameLessonRepository _all;
   final Set<String> ids;
-  Future<EndgameTrail>? _trail;
 
   @override
   Future<EndgameTrail> trail() =>
-      _trail ??= _all.trail().then((all) => VisibleLessons.trail(all, ids));
+      _all.trail().then((all) => VisibleLessons.trail(all, ids));
 
   @override
   Future<LessonTexts> texts(String language) => _all.texts(language);

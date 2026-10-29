@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../models/learning_record.dart';
 import '../models/avatar_photo.dart';
 import '../models/endgame_lesson.dart';
 import '../models/progress_summary.dart';
@@ -14,6 +15,7 @@ abstract final class ProgressMerge {
     final localRating = local.rating;
     final remoteRating = remote.rating;
     return ProgressSummary(
+      learningV1: LearningRecord.merge(local.learningV1, remote.learningV1),
       profile: _profile(local.profile, remote.profile),
       rating: localRating == null
           ? remoteRating
@@ -54,12 +56,15 @@ abstract final class ProgressMerge {
     final country = local.country ?? remote.country;
     final sameCountry = country == remote.country;
     final photo = local.photo == AvatarPhoto.none ? remote : local;
+    // O usuário do Lichess e a data do vínculo vêm juntos, do mesmo lado.
+    final lichess = local.lichessUser == null ? remote : local;
     return local.copyWith(
       nickname: local.nickname.isEmpty ? remote.nickname : local.nickname,
       rating: fromRemote ? remote.rating : local.rating,
       levelSource: fromRemote ? remote.levelSource : local.levelSource,
       goal: local.goal ?? remote.goal,
-      lichessUser: local.lichessUser ?? remote.lichessUser,
+      lichessUser: lichess.lichessUser,
+      lichessLinkedAt: lichess.lichessLinkedAt,
       chessComUser: local.chessComUser ?? remote.chessComUser,
       country: country,
       // Estado e cidade da conta só valem para o mesmo país.

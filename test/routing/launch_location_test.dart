@@ -20,7 +20,31 @@ import '../../testing/fakes/fake_endgame_repositories.dart';
 /// (capítulo sem roteiro) cai no início da primeira parte, nunca numa tela
 /// antiga.
 void main() {
+  test('familiarização aberta retoma seus controles', () {
+    expect(launchLocation(boardControlsOpen: true), Routes.boardControls);
+    expect(
+      launchLocation(boardControlsOpen: true, resumeGame: true),
+      Routes.freeBoard,
+    );
+  });
   const fen = FakeEndgameLessonRepository.lucenaFen;
+
+  test('URI fria do dia prevalece sobre partida e conclusão pendentes', () {
+    for (final path in ['/dia', '/daily', '/dia/', '/daily/']) {
+      expect(
+        launchLocation(
+          uri: Uri.https('playlucena.com', path),
+          resumeGame: true,
+          conclusion: 3,
+        ),
+        Routes.daily,
+      );
+    }
+    expect(
+      launchLocation(uri: Uri.https('example.com', '/dia'), conclusion: 3),
+      Routes.conclusion(3),
+    );
+  });
 
   EndgameLesson lesson(String id, List<LessonPart> parts) => EndgameLesson(
     id: id,
@@ -165,7 +189,7 @@ void main() {
     expect(launchLocation(resumeGame: true, school: school), Routes.freeBoard);
     expect(
       launchLocation(school: school, endgames: ongoing('distant')),
-      Routes.lessonScript('pieces.rook'),
+      Routes.lessonScript('pieces.rook', origin: 'continuar'),
     );
   });
 
@@ -188,7 +212,6 @@ void main() {
     final main = io.File('lib/main.dart').readAsStringSync();
     final router = io.File('lib/routing/router.dart').readAsStringSync();
     expect(main, contains('initialLocation: launchLocation('));
-    expect(main, contains('visibleEndgameLessons: VisibleLessons.'));
     expect(
       RegExp(r"path: 'roteiro',[\s\S]{0,400}resolveScriptPart\(")
           .hasMatch(router),

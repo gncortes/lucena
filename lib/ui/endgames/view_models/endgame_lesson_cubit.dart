@@ -1,9 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'dart:async';
+
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
 import '../../../data/repositories/journey/journey_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/lesson.dart';
@@ -155,14 +159,19 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
     required this._progress,
     required this._journey,
     required this._characters,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const EndgameLessonState());
 
   final EndgameLessonRepository _lessons;
   final EndgameProgressRepository _progress;
   final JourneyRepository _journey;
   final CharacterRepository _characters;
+  final AnalyticsRepository _analytics;
 
-  Future<void> load(String lessonId, String language) async {
+  /// [origin]: de onde a pessoa abriu a aula (`trilha|home|aviso|catalogo`).
+  /// Com ele, a abertura vai para o Analytics (`aula_aberta`); recarregar ao
+  /// voltar de outra tela não passa.
+  Future<void> load(String lessonId, String language, {String? origin}) async {
     final trail = await _lessons.trail();
     final lesson = trail.lesson(lessonId);
     if (lesson == null) {
@@ -191,6 +200,23 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
     final module = trail.modules.firstWhere(
       (each) => each.lessons.contains(lesson),
     );
+    if (origin != null) {
+      unawaited(
+        _analytics.log(
+          AnalyticsEvents.aulaAberta(
+            aulaId: lessonId,
+            tipoAula: 'finais',
+            origem: origin,
+            retomada: progress.ongoing?.lessonId == lessonId,
+            primeiraVez:
+                progress.ongoing?.lessonId != lessonId &&
+                progress.of(lessonId).stars.isEmpty &&
+                progress.of(lessonId).parts.isEmpty &&
+                !progress.of(lessonId).lessonDone,
+          ),
+        ),
+      );
+    }
     emit(
       EndgameLessonState(
         ready: true,

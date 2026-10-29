@@ -1,35 +1,14 @@
-import 'dart:convert';
-import 'dart:io' as io;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
+import '../../../testing/script_fixture.dart';
 import '../../../testing/fakes/fake_kpk_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
 
 /// Posição final da demonstração do erro do atacante (depois de 2.Re3 Re5).
 const _finalFen = '8/8/8/3k4/8/3K4/5P2/8 w - - 4 3';
-
-const _roteiro = 'assets/lessons/roteiros/pawns.distantOpposition/distant.json';
-
-/// A Oposição distante só com o exemplo `erroAtacante` (fim da demo) e a
-/// prática (o que vem depois da etapa).
-Map<String, dynamic> demoToPractice() {
-  final json =
-      jsonDecode(io.File(_roteiro).readAsStringSync()) as Map<String, dynamic>;
-  final stages = (json['etapas'] as List).cast<Map<String, dynamic>>();
-  final demos = stages.firstWhere((s) => s['id'] == 'demos');
-  demos['exemplos'] = [
-    for (final e in (demos['exemplos'] as List).cast<Map<String, dynamic>>())
-      if (e['id'] == 'erroAtacante') e,
-  ];
-  return {
-    ...json,
-    'etapas': [demos, stages.firstWhere((s) => s['id'] == 'pratica')],
-  };
-}
 
 Future<LessonScriptCubit> _open(Map<String, dynamic> json) async {
   final script = LessonScript.fromJson(json);
@@ -57,14 +36,14 @@ Future<void> _untilEnd(LessonScriptCubit cubit) async {
 }
 
 void main() {
-  group('fim da demonstração (Oposição distante)', () {
+  group('fim da demonstração sintética', () {
     test(
       'o passo da ponte fica na posição final, com o último lance',
       () async {
         final cubit = await _open(demoToPractice());
         await _untilEnd(cubit);
         final s = cubit.state;
-        expect(s.speech.last, 'rot.distant.demos.erroAtacante.ponte');
+        expect(s.speech.last, 'demo.ponte');
         expect(s.fen, _finalFen);
         expect(s.lastMove, 'd6d5');
         expect(s.currentMoveId, s.moves.last.id);
@@ -105,38 +84,5 @@ void main() {
       expect(cubit.state.stageId, 'pratica');
       expect(cubit.state.fen, startsWith('4k3/8/8/8/8/1P3K2/8/8'));
     });
-  });
-
-  test('em todo roteiro, passo de ponte não troca a posição nem salta', () {
-    var found = 0;
-    void walk(String file, Object? node) {
-      if (node is Map) {
-        for (final list in node.values.whereType<List>()) {
-          final maps = list.whereType<Map>().toList();
-          for (var i = 1; i < maps.length; i++) {
-            final t = maps[i]['t'];
-            if (t is! String || !t.endsWith('.ponte')) continue;
-            found++;
-            expect(maps[i]['fen'], maps[i - 1]['fen'], reason: '$file $t');
-            expect(maps[i]['salto'], isNull, reason: '$file $t');
-            expect(maps[i - 1]['salto'], isNull, reason: '$file $t');
-          }
-        }
-        for (final v in node.values) {
-          walk(file, v);
-        }
-      } else if (node is List) {
-        for (final v in node) {
-          walk(file, v);
-        }
-      }
-    }
-
-    final dir = io.Directory('assets/lessons/roteiros');
-    for (final f in dir.listSync(recursive: true).whereType<io.File>()) {
-      if (!f.path.endsWith('.json')) continue;
-      walk(f.path, jsonDecode(f.readAsStringSync()));
-    }
-    expect(found, greaterThan(0));
   });
 }

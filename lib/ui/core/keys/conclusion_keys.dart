@@ -31,6 +31,7 @@ abstract final class ConclusionKeys {
   static const newRecord = Key('conclusion.run.newRecord');
   static const blindMoves = Key('conclusion.blindMoves');
   static const close = Key('conclusion.close');
+  static const accountInvite = Key('conclusion.accountInvite');
   static const share = Key('conclusion.share');
   static const review = Key('conclusion.review');
 

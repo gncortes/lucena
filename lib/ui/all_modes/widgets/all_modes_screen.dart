@@ -1,46 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/home_layout.dart';
-import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/visible_lessons.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/all_modes_keys.dart';
 import '../../core/keys/race_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/view_models/course_availability_cubit.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../../free_board/widgets/saved_game_sheet.dart';
 import '../../home/widgets/home_path_ui.dart';
 import '../../home/widgets/path_card.dart';
-import '../../profile/view_models/profile_cubit.dart';
 
 // O item do Lichess não é uma rota do app: abre o site.
 const _lichess = 'lichess';
 const _lichessSignup = 'https://lichess.org/signup';
 
-// O nível do jogador, se o perfil estiver à mão.
-RatingLevel? _level(BuildContext context) {
-  try {
-    return context.select((ProfileCubit cubit) => cubit.state?.level);
-  } on ProviderNotFoundException {
-    return null;
-  }
-}
-
 /// Todos os modos do app num lugar só, mesmo os que o jogador tirou do
 /// destaque da tela inicial: aprender, jogar, ferramentas e o progresso.
 class AllModesScreen extends StatelessWidget {
-  const AllModesScreen({super.key, this.hasBlindCheckpoint});
+  const AllModesScreen({
+    super.key,
+    this.hasBlindCheckpoint,
+    this.courseAvailable = _always,
+  });
 
   final Future<bool> Function()? hasBlindCheckpoint;
 
+  /// Há aula de final liberada. Sem ela, o Curso de finais e os finais para
+  /// você não aparecem.
+  final Future<bool> Function() courseAvailable;
+
+  static Future<bool> _always() async => true;
+
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => CourseAvailabilityCubit(courseAvailable)..load(),
+      child: BlocBuilder<CourseAvailabilityCubit, bool?>(
+        builder: (context, course) => _body(context, course ?? false),
+      ),
+    );
+  }
+
+  Widget _body(BuildContext context, bool course) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     ({String id, IconData icon, String title, String body, String route}) path(
@@ -64,8 +73,7 @@ class AllModesScreen extends StatelessWidget {
             body: l10n.starChallengesBody,
             route: Routes.starChallenges,
           ),
-          path(HomePath.forYou),
-          path(HomePath.endgames),
+          if (course) ...[path(HomePath.forYou), path(HomePath.endgames)],
         ],
       ),
       (
@@ -80,7 +88,7 @@ class AllModesScreen extends StatelessWidget {
             icon: Icons.record_voice_over_outlined,
             title: l10n.blindTitle,
             body: l10n.allModesBlindBody,
-            route: Routes.catalog,
+            route: Routes.blindEntry,
           ),
           // Contra pessoas: no Lichess, fora do app.
           (
@@ -145,16 +153,12 @@ class AllModesScreen extends StatelessWidget {
         ],
       ),
     ];
-    // Quem já joga começa por Jogar; o iniciante, por Aprender.
-    final level = _level(context);
-    if (level != null && level != RatingLevel.beginner) {
-      sections.insert(0, sections.removeAt(1));
-    }
     var index = 0;
     return Scaffold(
       key: AllModesKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.allModesTitle)),
       body: ListView(
+        key: const PageStorageKey('all-modes'),
         padding: scrollPadding(context, left: 16, right: 16),
         children: [
           for (final (title, items) in sections) ...[
@@ -192,14 +196,16 @@ class AllModesScreen extends StatelessWidget {
                         return;
                       }
                       if (item.id == 'freeBoard') {
-                        await openFreeBoard(context);
+                        await openFreeBoard(context, preserveOrigin: true);
                         return;
                       }
                       final resume =
                           item.id == 'blind' &&
                           (await hasBlindCheckpoint?.call() ?? false);
                       if (context.mounted) {
-                        context.go(resume ? Routes.blind : item.route);
+                        await context.push(
+                          resume ? '${Routes.blindEntry}?resume=1' : item.route,
+                        );
                       }
                     },
                   ),

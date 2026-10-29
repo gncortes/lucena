@@ -11,14 +11,16 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/one_line.dart';
 import '../../core/widgets/position_board.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/section_title.dart';
 import '../view_models/race_cubit.dart';
-import 'race_ui.dart';
+import 'race_filter_screen.dart';
 
-/// A abertura da Corrida: o que é, as três regras, o filtro de finais, o
-/// recorde e o "Começar".
+/// A abertura da Corrida: o que é, a duração (3 ou 5 min), as regras, a
+/// linha dos filtros (objetivo e finais, em tela cheia), o recorde da duração
+/// escolhida e o "Começar".
 class RaceIntroView extends StatelessWidget {
   const RaceIntroView({required this.state, super.key});
 
@@ -40,7 +42,6 @@ class RaceIntroView extends StatelessWidget {
     }
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final themes = state.themes;
     return Column(
       key: RaceKeys.introView,
       children: [
@@ -86,9 +87,72 @@ class RaceIntroView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
+              // O porquê de ser só de finais e para que serve (canvas V2 ·
+              // Ligações, L4).
+              Container(
+                key: RaceKeys.whyEndgames,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.secondaryContainer,
+                  borderRadius: BorderRadius.circular(AppShape.medium),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.sm,
+                  children: [
+                    Icon(
+                      Icons.lightbulb,
+                      size: AppIconSize.button,
+                      color: colors.onSecondaryContainer,
+                    ),
+                    Expanded(
+                      child: Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: l10n.raceWhyEndgamesTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            TextSpan(text: ' ${l10n.raceWhyEndgamesBody}'),
+                          ],
+                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSecondaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              // Duração em seção própria, acima das regras (E1.33, opção B).
+              SectionTitle(l10n.raceDuration, inset: 0),
+              SegmentedButton<RaceDuration>(
+                key: RaceKeys.duration,
+                showSelectedIcon: false,
+                segments: [
+                  for (final option in RaceDuration.values)
+                    ButtonSegment(
+                      value: option,
+                      label: OneLine(
+                        l10n.raceDurationMinutes(option.minutes),
+                        key: RaceKeys.durationOption(option),
+                      ),
+                    ),
+                ],
+                selected: {state.duration},
+                onSelectionChanged: (selection) =>
+                    unawaited(cubit.selectDuration(selection.single)),
+              ),
+              const SizedBox(height: AppSpacing.sm),
               _Rule(
                 icon: Icons.timer,
-                title: l10n.raceRuleTimeTitle,
+                title: l10n.raceRuleTimeTitle(state.duration.minutes),
                 body: l10n.raceRuleTimeBody,
               ),
               _Rule(
@@ -101,26 +165,15 @@ class RaceIntroView extends StatelessWidget {
                 title: l10n.raceRuleErrorsTitle,
                 body: l10n.raceRuleErrorsBody,
               ),
-              if (themes.length > 1) ...[
-                SectionTitle(l10n.raceWhichEndings, inset: 0),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    for (final option in <RaceTheme?>[null, ...themes])
-                      ChoiceChip(
-                        key: RaceKeys.themeChip(option),
-                        label: Text(
-                          option?.label(context) ?? l10n.raceThemeAll,
-                        ),
-                        selected: state.theme == option,
-                        onSelected: (_) => unawaited(cubit.selectTheme(option)),
-                      ),
-                  ],
-                ),
-              ],
+              _Rule(
+                icon: Icons.bolt,
+                title: l10n.raceRuleShortestTitle,
+                body: l10n.raceRuleShortestBody,
+              ),
+              SectionTitle(l10n.raceFilters, inset: 0),
+              _FilterRow(state: state),
               const SizedBox(height: AppSpacing.lg),
-              _RecordCard(record: state.record),
+              _RecordCard(record: state.record, duration: state.duration),
             ],
           ),
         ),
@@ -151,6 +204,75 @@ class RaceIntroView extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// A linha "Filtros": o resumo do objetivo e dos finais; abre a tela de
+/// filtros e aplica o que voltar dela.
+class _FilterRow extends StatelessWidget {
+  const _FilterRow({required this.state});
+
+  final RaceState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final cubit = context.read<RaceCubit>();
+    Future<void> open() async {
+      final filter = await Navigator.of(context).push<RaceFilter>(
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (_) =>
+              RaceFilterScreen(problems: state.problems, filter: state.filter),
+        ),
+      );
+      if (filter != null) await cubit.applyFilter(filter);
+    }
+
+    return Card(
+      key: RaceKeys.filterRow,
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => unawaited(open()),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Row(
+            spacing: AppSpacing.md,
+            children: [
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.tune,
+                  size: AppIconSize.standard,
+                  color: colors.primary,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  raceFilterSummary(l10n, state.problems, state.filter),
+                  key: RaceKeys.filterSummary,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.chevron_right,
+                  size: AppIconSize.standard,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -210,9 +332,10 @@ class _Rule extends StatelessWidget {
 
 /// O recorde: acertos e o problema mais difícil, ou o convite do primeiro.
 class _RecordCard extends StatelessWidget {
-  const _RecordCard({required this.record});
+  const _RecordCard({required this.record, required this.duration});
 
   final RaceRecord record;
+  final RaceDuration duration;
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +363,10 @@ class _RecordCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          l10n.raceRecordCorrects(record.corrects),
+                          l10n.raceRecordCorrects(
+                            duration.minutes,
+                            record.corrects,
+                          ),
                           style: theme.textTheme.titleSmall,
                         ),
                         Text(

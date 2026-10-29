@@ -20,5 +20,8 @@ abstract final class AppLinks {
 
   /// O link é do app (o provisório, ou o definitivo com ou sem `www`)?
   static bool isOwn(Uri uri) =>
-      uri.host == host || uri.host == finalHost || uri.host == 'www.$finalHost';
+      uri.scheme == 'https' &&
+      (uri.host == host ||
+          uri.host == finalHost ||
+          uri.host == 'www.$finalHost');
 }

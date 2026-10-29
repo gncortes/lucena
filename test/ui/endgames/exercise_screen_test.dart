@@ -5,6 +5,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
@@ -122,7 +123,16 @@ void main() {
       final cubit = await pump(tester, 'e02');
       await move(tester, 'c1', 'c2');
       expect(said('No.'), findsOneWidget);
-      expect(said('Try another move.'), findsOneWidget);
+      // Na tela baixa a fala não cabe: corta em "… See more" (T84).
+      final cut = find.descendant(
+        of: find.byKey(LessonScriptKeys.speech),
+        matching: find.byKey(SpeechKeys.cut),
+      );
+      expect(
+        said('Try another move.').evaluate().isNotEmpty ||
+            cut.evaluate().isNotEmpty,
+        isTrue,
+      );
       expect(cubit.state.played, isEmpty);
       expect(cubit.state.worth, 0);
       expect(
@@ -136,6 +146,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(cubit.state.phase, ExercisePhase.done);
       expect(cubit.state.earned, 0);
+      // Resolvido sem pontos: o rótulo diz o que ganhou, não "já não vale".
+      expect(
+        tester.getSemantics(find.byKey(ExerciseKeys.stars)).label,
+        '0 of ${cubit.state.exercise!.stars} '
+        '${cubit.state.exercise!.stars == 1 ? 'point' : 'points'}',
+      );
       expect(find.byKey(ExerciseKeys.showSolution), findsNothing);
       final next = find.byKey(ExerciseKeys.nextButton);
       expect(next, findsOneWidget);
@@ -146,6 +162,14 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('o exercício aberto fica marcado pela key de aula e exercício', (
+    tester,
+  ) async {
+    setSize(tester, sizes.first);
+    await pump(tester, 'e02');
+    expect(find.byKey(ExerciseKeys.open('rook.lucena', 'e02')), findsOneWidget);
+  });
 
   testWidgets('lance certo no meio: "Correct." e "Your turn." no balão, e a '
       'lista traz o lance e a resposta', (tester) async {

@@ -7,6 +7,9 @@ import 'package:lucena/routing/routes.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/widgets/course/course_continue_card.dart';
+import 'package:lucena/ui/core/widgets/course/course_part_header.dart';
+import 'package:lucena/ui/endgames/widgets/grade_widgets.dart';
 import 'package:lucena/ui/school/view_models/school_cubit.dart';
 import 'package:lucena/ui/school/widgets/school_screen.dart';
 
@@ -15,13 +18,17 @@ import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_placement_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
+import '../../../testing/phone_size.dart';
 import '../../../testing/test_app.dart';
 
 void main() {
-  testWidgets('o iniciante não vê quantas aulas faltam: sem a barra "1 de 3" '
-      'e sem o "1/2" do módulo', (tester) async {
+  Future<void> pumpStarted(
+    WidgetTester tester, {
+    Locale locale = const Locale('en'),
+    Course? course,
+  }) async {
     final cubit = SchoolCubit(
-      lessons: FakeLessonRepository(),
+      lessons: FakeLessonRepository(course: course),
       progress: FakeSchoolProgressRepository(
         const SchoolProgress(completed: {'pieces.rook'}),
       ),
@@ -29,19 +36,79 @@ void main() {
       profile: FakeProfileRepository(const UserProfile(rating: 800)),
     );
     addTearDown(cubit.close);
-    await cubit.load('en');
+    await cubit.load(locale.languageCode);
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
         child: BlocProvider.value(value: cubit, child: const SchoolScreen()),
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byKey(SchoolKeys.module('pieces')), findsOneWidget);
-    expect(find.byType(LinearProgressIndicator), findsNothing);
-    expect(find.text('1 of 3'), findsNothing);
-    expect(find.text('1/2'), findsNothing);
-    expect(find.textContaining(RegExp(r'\d+ ?(/|of) ?\d+')), findsNothing);
+  }
+
+  testWidgets('sem conteúdo: mensagem centrada e sem continuar inexistente', (
+    tester,
+  ) async {
+    await pumpStarted(
+      tester,
+      locale: const Locale('pt'),
+      course: const Course(modules: []),
+    );
+    final message = find.text('As aulas ainda não estão disponíveis.');
+    expect(message, findsOneWidget);
+    expect(find.byKey(SchoolKeys.continueButton), findsNothing);
+    expect(
+      tester.getCenter(message).dx,
+      closeTo(
+        tester.view.physicalSize.width / tester.view.devicePixelRatio / 2,
+        .5,
+      ),
+    );
   });
+
+  testWidgets('padrão T1: o Continuar na lição seguinte e as partes com '
+      '"N de M"', (tester) async {
+    await pumpStarted(tester);
+    expect(find.text('Part 1 · lesson 2'), findsOneWidget);
+    expect(find.byKey(SchoolKeys.continueButton), findsOneWidget);
+    expect(find.byKey(SchoolKeys.module('pieces')), findsOneWidget);
+    expect(find.text('1 of 2'), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsNothing);
+    // A Escola não guarda pontuação: nenhuma medalha.
+    expect(find.byType(GradeMedal), findsNothing);
+  });
+
+  for (final size in phoneSizes) {
+    testWidgets('geometria do canvas (PropV2EscolaCurso) em '
+        '${size.width.toInt()}×${size.height.toInt()}', (tester) async {
+      setPhoneSize(tester, size);
+      await pumpStarted(tester, locale: const Locale('pt'));
+      expect(tester.takeException(), isNull);
+      // Mede a partir do topo (a tela pode ter rolado até a lição atual).
+      await tester.drag(find.byKey(SchoolKeys.scroll), const Offset(0, 2000));
+      await tester.pumpAndSettle();
+      final width = size.width;
+      final bar = tester.getRect(find.byType(AppBar));
+      final card = tester.getRect(find.byType(CourseContinueCard));
+      expect(card.top, closeToDp(bar.bottom + 8));
+      expect(card.left, closeToDp(16));
+      expect(card.right, closeToDp(width - 16));
+      expect(rectOf(tester, SchoolKeys.continueButton).height, closeToDp(48));
+      final header = tester.getRect(find.byType(CoursePartHeader).first);
+      final rook = rectOf(tester, SchoolKeys.lesson('pieces.rook'));
+      final mate = rectOf(tester, SchoolKeys.lesson('pieces.mate'));
+      expect(rook.top, closeToDp(header.bottom + 12));
+      expect(mate.top, closeToDp(rook.bottom + 8));
+      for (final tile in [rook, mate]) {
+        expect(tile.left, closeToDp(16));
+        expect(tile.right, closeToDp(width - 16));
+        expect(tile.height, greaterThanOrEqualTo(48));
+      }
+      expect(find.text('Parte 1 · lição 2'), findsOneWidget);
+      expect(find.text('1 de 2'), findsOneWidget);
+    });
+  }
+
   testWidgets(
     'C12c: módulo dispensado inteiro continua na trilha; grupo expandido retorna sem chaves duplicadas',
     (tester) async {

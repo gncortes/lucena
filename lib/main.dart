@@ -1,11 +1,18 @@
 import 'dart:async';
 
+import 'domain/models/lesson_content.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
-import 'domain/models/challenge_link.dart';
+import 'data/repositories/learning/learning_repository.dart';
+import 'config/push_alerts.dart';
+import 'domain/models/push_alert.dart';
+import 'domain/models/campaign.dart';
+import 'domain/models/linked_lesson.dart';
+import 'data/repositories/campaign/campaign_repository.dart';
 import 'routing/routes.dart';
 import 'routing/launch_location.dart';
 import 'domain/use_cases/visible_lessons.dart';
@@ -28,6 +35,7 @@ import 'data/repositories/characters/talk_repository.dart';
 import 'data/repositories/home/home_layout_repository.dart';
 import 'data/repositories/featured/featured_alerts_repository.dart';
 import 'data/repositories/featured/featured_progress_repository.dart';
+import 'data/repositories/course_preview/course_preview_repository.dart';
 import 'data/repositories/featured/featured_repository.dart';
 import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
@@ -107,6 +115,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final version = await Dependencies.installedVersion();
   final firebase = await startFirebase();
+  // O push que chega com o app fechado: o app monta a notificação.
+  if (firebase) listenPushInBackground();
   runApp(
     LucenaApp(
       dependencies: Dependencies.normal(version: version, firebase: firebase),
@@ -131,10 +141,10 @@ class _LucenaAppState extends State<LucenaApp> {
   ScreenTracker? _screens;
 
   // Os desafios que chegam por link com o app aberto.
-  StreamSubscription<ChallengeLink>? _links;
+  StreamSubscription<Uri>? _links;
 
   // Os avisos de push tocados com o app em segundo plano.
-  StreamSubscription<Uri>? _pushLinks;
+  StreamSubscription<PushOpening>? _pushLinks;
 
   // As estatísticas da abertura e dos links (E1.03).
   late final AnalyticsOpening _analytics = AnalyticsOpening(
@@ -145,6 +155,8 @@ class _LucenaAppState extends State<LucenaApp> {
     endgames: widget.dependencies.endgameProgressRepository,
     activity: widget.dependencies.activityRepository,
     now: widget.dependencies.now,
+    profile: widget.dependencies.profileRepository,
+    campaigns: widget.dependencies.campaignRepository,
     country: () =>
         WidgetsBinding.instance.platformDispatcher.locale.countryCode,
     schoolLessons: VisibleLessons.schoolLessonIds,
@@ -168,6 +180,10 @@ class _LucenaAppState extends State<LucenaApp> {
   late final StreamRefresh _updateRefresh = StreamRefresh(
     _update.stream.map((state) => state.required).distinct(),
   );
+  late final StreamRefresh? _accountRefresh =
+      widget.dependencies.requireLessonAccount
+      ? StreamRefresh(widget.dependencies.accountRepository.changes)
+      : null;
 
   @override
   void initState() {
@@ -188,54 +204,136 @@ class _LucenaAppState extends State<LucenaApp> {
     final deepLinks = widget.dependencies.deepLinkRepository;
     final push = widget.dependencies.pushRepository;
     unawaited(push.start());
+    // Só o último aparelho em que a conta entrou recebe o push dela.
+    unawaited(widget.dependencies.accountRepository.linkPushDevice());
     // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
     unawaited(widget.dependencies.reviewRepository.markFirstOpen());
-    final pushed = await push.initialLink();
-    final opened = await deepLinks.initial();
-    final link = opened ?? (pushed == null ? null : deepLinks.parse(pushed));
+    final pushOpening = await push.initialOpening();
+    final pushed = pushOpening?.link;
+    final onboarding = await widget.dependencies.onboardingRepository.load();
+    var opened = await deepLinks.initialUri();
+    // Deferred deep link (T84): na 1ª abertura sem link nem aviso, o link do
+    // post que levou à Play abre como se tivesse sido tocado com o app já
+    // instalado.
+    var fromReferrer = false;
+    if (opened == null && pushOpening == null && !onboarding.done) {
+      opened = await widget.dependencies.installReferrerRepository
+          .pendingLink();
+      fromReferrer = opened != null;
+    }
+    final link = opened != null
+        ? (Routes.appLink(opened) == Routes.invalidLink
+              ? null
+              : deepLinks.parse(opened))
+        : (pushed == null ? null : deepLinks.parse(pushed));
     unawaited(
-      _analytics.launched(link: link, pushed: opened == null && pushed != null),
+      _analytics.launched(
+        link: link,
+        lessonLink: opened == null ? null : LessonLink.tryParse(opened),
+        pushed: opened == null && pushOpening != null,
+        fromReferrer: fromReferrer,
+      ),
     );
     // O anúncio (E1.25): sessão nova e, para quem já respondeu "O que você
     // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
     // formulário agora.
-    final onboarding = await widget.dependencies.onboardingRepository.load();
     final profile = await widget.dependencies.profileRepository.load();
     unawaited(
       widget.dependencies.adsRepository.start(
-        fromLink: link != null,
+        fromLink: opened != null || link != null,
         goalAnswered: onboarding.done || profile.goal != null,
       ),
     );
+    // Missing/unpublished content must not trap an old installation in a
+    // restored lesson. Keep its progress; only postpone automatic reopening.
+    var showSchool = VisibleLessons.school;
+    var visibleEndgames = VisibleLessons.endgameLessonIds;
+    if (conclusion == null &&
+        !(game?.reopensOnLaunch ?? false) &&
+        opened == null &&
+        link == null &&
+        !onboarding.boardControlsOpen) {
+      if (showSchool && (school.ongoing?.open ?? false)) {
+        try {
+          final course = await widget.dependencies.lessonRepository.course();
+          showSchool = course.lesson(school.ongoing!.lessonId) != null;
+        } on LessonContentUnavailable {
+          showSchool = false;
+        }
+      }
+      if ((endgames.ongoing?.open ?? false) || endgames.openExercise != null) {
+        try {
+          final trail = await widget.dependencies.endgameLessonRepository
+              .trail();
+          visibleEndgames = {
+            for (final lesson in trail.lessons)
+              if (visibleEndgames.contains(lesson.id)) lesson.id,
+          };
+        } on LessonContentUnavailable {
+          visibleEndgames = {};
+        }
+      }
+    }
     if (!mounted) return;
     setState(() {
       _router = buildRouter(
+        requireLessonAccount: widget.dependencies.requireLessonAccount,
         initialLocation: launchLocation(
           conclusion: conclusion,
           resumeGame: game != null && game.reopensOnLaunch,
           school: school,
           endgames: endgames,
           stars: stars,
+          boardControlsOpen: onboarding.boardControlsOpen,
           link: link,
-          showSchool: VisibleLessons.school,
-          visibleEndgameLessons: VisibleLessons.endgameLessonIds,
+          // Erro frio é empilhado sobre a retomada, para Voltar recuperá-la.
+          uri: opened != null && Routes.appLink(opened) != Routes.invalidLink
+              ? opened
+              : null,
+          showSchool: showSchool,
+          visibleEndgameLessons: visibleEndgames,
         ),
         updateRequired: () => _update.state.required,
-        refresh: _updateRefresh,
+        refresh: Listenable.merge([_updateRefresh, _accountRefresh]),
       );
       _screens = ScreenTracker(
         _router!,
         widget.dependencies.analyticsRepository,
       );
     });
-    _links = deepLinks.opened.listen((link) {
-      unawaited(_analytics.opened(link));
-      _router?.push(Routes.challenge(link));
+    if (opened != null && Routes.appLink(opened) == Routes.invalidLink) {
+      // Espera o roteador montar a retomada antes de empilhar o erro.
+      final router = _router!;
+      void openInvalid() {
+        if (!mounted || router.routerDelegate.currentConfiguration.isEmpty) {
+          return;
+        }
+        router.routerDelegate.removeListener(openInvalid);
+        router.push(Routes.invalidLink);
+      }
+
+      router.routerDelegate.addListener(openInvalid);
+      openInvalid();
+    }
+    _links = deepLinks.openedUris.listen((uri) {
+      final link = deepLinks.parse(uri);
+      if (link != null) unawaited(_analytics.opened(link));
+      final lessonLink = LessonLink.tryParse(uri);
+      if (lessonLink != null) {
+        unawaited(
+          _analytics.campaignOpened(Campaign.fromLessonLink(lessonLink)),
+        );
+      }
+      final route = Routes.appLink(uri);
+      if (route != null) _router?.push(route);
     });
     // Um aviso pode trazer o link de um desafio ou o de uma tela (final do
     // dia, aula, final ou torneio).
-    _pushLinks = push.openedLinks.listen((uri) {
-      unawaited(_analytics.alertOpened(uri.path, channel: 'push'));
+    _pushLinks = push.opened.listen((opening) {
+      unawaited(_analytics.pushOpened(opening));
+      final uri = opening.link;
+      // Sem link: o toque só traz o app para a frente.
+      if (uri == null) return;
       final link = deepLinks.parse(uri);
       if (link != null) {
         unawaited(_analytics.opened(link));
@@ -244,14 +342,13 @@ class _LucenaAppState extends State<LucenaApp> {
         unawaited(_openPushed(uri));
       }
     });
-    if (pushed != null) {
-      unawaited(_analytics.alertOpened(pushed.path, channel: 'push'));
-    }
-    if (pushed != null && deepLinks.parse(pushed) == null) {
+    if (pushOpening != null) unawaited(_analytics.pushOpened(pushOpening));
+    if (opened == null && pushed != null && deepLinks.parse(pushed) == null) {
       await _openPushed(pushed);
     }
   }
 
+  // A tela do link do aviso; link que esta versão não conhece: o início.
   Future<void> _openPushed(Uri uri) async {
     final route = await pushRoute(
       uri,
@@ -259,7 +356,12 @@ class _LucenaAppState extends State<LucenaApp> {
       pausedLesson: () =>
           widget.dependencies.remindersRepository.pausedLesson('pt'),
     );
-    if (route != null && mounted) _router?.push(route);
+    if (!mounted) return;
+    if (route == Routes.home) {
+      _router?.go(route);
+    } else {
+      _router?.push(route);
+    }
   }
 
   @override
@@ -270,6 +372,7 @@ class _LucenaAppState extends State<LucenaApp> {
     _screens?.dispose();
     _router?.dispose();
     _updateRefresh.dispose();
+    _accountRefresh?.dispose();
     unawaited(_update.close());
     super.dispose();
   }
@@ -280,6 +383,9 @@ class _LucenaAppState extends State<LucenaApp> {
     final router = _router;
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<LearningRepository?>.value(
+          value: dependencies.learningRepository,
+        ),
         RepositoryProvider<Now>.value(value: dependencies.now),
         RepositoryProvider<AnalyticsRepository>.value(
           value: dependencies.analyticsRepository,
@@ -295,6 +401,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<DeepLinkRepository>.value(
           value: dependencies.deepLinkRepository,
+        ),
+        RepositoryProvider<CampaignRepository>.value(
+          value: dependencies.campaignRepository,
         ),
         RepositoryProvider<AccountRepository>.value(
           value: dependencies.accountRepository,
@@ -414,6 +523,9 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<FeaturedRepository>.value(
           value: dependencies.featuredRepository,
         ),
+        RepositoryProvider<CoursePreviewRepository>.value(
+          value: dependencies.coursePreviewRepository,
+        ),
         RepositoryProvider<FeaturedProgressRepository>.value(
           value: dependencies.featuredProgressRepository,
         ),
@@ -521,6 +633,7 @@ class _LucenaAppState extends State<LucenaApp> {
               // O país do Perfil vem da região do celular, sem permissão.
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+              analytics: dependencies.analyticsRepository,
             )..load(),
           ),
           BlocProvider(
@@ -529,9 +642,11 @@ class _LucenaAppState extends State<LucenaApp> {
             create: (context) => AlertsCubit(
               alerts: dependencies.alertsRepository,
               push: dependencies.pushRepository,
+              reminders: dependencies.remindersRepository,
               profile: dependencies.profileRepository,
               region: () =>
                   WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+              analytics: dependencies.analyticsRepository,
             )..load(),
           ),
           BlocProvider(

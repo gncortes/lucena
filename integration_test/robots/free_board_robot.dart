@@ -14,6 +14,7 @@ import 'package:lucena/ui/free_board/view_models/free_board_cubit.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:patrol/patrol.dart';
 
+import 'home_robot.dart';
 import '../../testing/board_gestures.dart';
 
 import 'variant.dart';
@@ -24,9 +25,9 @@ class FreeBoardRobot {
 
   final PatrolIntegrationTester $;
 
-  /// A partir da tela inicial, pelo botão.
+  /// A partir da tela inicial, por "Todos os modos".
   Future<void> open() async {
-    await $(HomeKeys.freeBoardButton).scrollTo().tap();
+    await openFromAllModes($, 'freeBoard');
     await expectVisible();
   }
 
@@ -34,7 +35,7 @@ class FreeBoardRobot {
   /// antes do tabuleiro. Com [keep], volta a ela; sem, começa um tabuleiro
   /// novo.
   Future<void> openWithSavedGame({required bool keep}) async {
-    await $(HomeKeys.freeBoardButton).scrollTo().tap();
+    await openFromAllModes($, 'freeBoard');
     await $(FreeBoardKeys.savedGameSheet).waitUntilVisible();
     expect(find.byKey(FreeBoardKeys.savedGameCard), findsOneWidget);
     await $(keep ? FreeBoardKeys.savedGameContinue : FreeBoardKeys.savedGameNew)

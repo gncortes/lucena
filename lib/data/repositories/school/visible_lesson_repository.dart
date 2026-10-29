@@ -13,11 +13,10 @@ class VisibleLessonRepository implements LessonRepository {
 
   final LessonRepository _all;
   final Set<String> ids;
-  Future<Course>? _course;
 
   @override
   Future<Course> course() =>
-      _course ??= _all.course().then((all) => VisibleLessons.course(all, ids));
+      _all.course().then((all) => VisibleLessons.course(all, ids));
 
   @override
   Future<LessonTexts> texts(String language) => _all.texts(language);

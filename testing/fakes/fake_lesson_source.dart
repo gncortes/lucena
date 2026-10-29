@@ -7,6 +7,7 @@ class FakeLessonSource implements LessonSource {
   FakeLessonSource({
     this.refs = const [],
     this.outcome = const LessonOutcome(nextPart: 'next'),
+    this.endgame = true,
   });
 
   final List<Reference> refs;
@@ -19,10 +20,16 @@ class FakeLessonSource implements LessonSource {
   final completed = <String>[];
 
   @override
-  bool get endgame => true;
+  Future<({bool lesson, bool part})> completion(
+    String id, {
+    String? part,
+  }) async => (lesson: false, part: false);
 
   @override
-  Future<Lesson?> lesson(String id) async => null;
+  final bool endgame;
+
+  @override
+  Future<Lesson?> lesson(String id) async => lessonData;
 
   @override
   Future<LessonTexts> texts(String language) =>
@@ -33,6 +40,15 @@ class FakeLessonSource implements LessonSource {
 
   @override
   Future<(int, int)> placeOf(String id) async => (1, 1);
+
+  /// O que [untouched] responde.
+  bool fresh = true;
+
+  /// A aula que [lesson] devolve (nula: o roteiro conta 1 capítulo de 1).
+  Lesson? lessonData;
+
+  @override
+  Future<bool> untouched(String id) async => fresh;
 
   @override
   Future<LessonCheckpoint?> checkpoint() async =>

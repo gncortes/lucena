@@ -20,7 +20,10 @@ void main() {
       LocalOnboardingRepository reopen() =>
           LocalOnboardingRepository(PreferencesService());
 
-      expect(await reopen().load(), const Onboarding());
+      expect(
+        await reopen().load(),
+        const Onboarding(stage: OnboardingStage.goal),
+      );
       await reopen().save(const Onboarding(step: 3));
       expect((await reopen().load()).step, 3);
       await reopen().save(const Onboarding(done: true, startRung: '1400'));
@@ -68,7 +71,7 @@ void main() {
 
   test('a tela da primeira abertura volta ao reabrir', () async {
     final repository = LocalOnboardingRepository(PreferencesService());
-    expect((await repository.load()).stage, OnboardingStage.tour);
+    expect((await repository.load()).stage, OnboardingStage.goal);
     await repository.save(const Onboarding(stage: OnboardingStage.goal));
     final loaded = await LocalOnboardingRepository(PreferencesService()).load();
     expect(loaded.stage, OnboardingStage.goal);
@@ -83,6 +86,30 @@ void main() {
     expect(loaded.selectedRating, isNull);
     expect(loaded.inProgress, isFalse);
   });
+
+  test(
+    'familiarização concluída e tour iniciado sobrevivem a reabrir',
+    () async {
+      final repository = LocalOnboardingRepository(PreferencesService());
+      await repository.save(
+        const Onboarding(
+          stage: OnboardingStage.tour,
+          inProgress: true,
+          step: 2,
+          boardControlsDone: true,
+          boardControlsOpen: true,
+          boardControlsFen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        ),
+      );
+      final loaded = await LocalOnboardingRepository(PreferencesService())
+          .load();
+      expect(loaded.stage, OnboardingStage.tour);
+      expect(loaded.step, 2);
+      expect(loaded.boardControlsDone, isTrue);
+      expect(loaded.boardControlsOpen, isTrue);
+      expect(loaded.boardControlsFen, '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1');
+    },
+  );
 
   test(
     'o passo do tour antigo migra para a chave nova e a velha some',

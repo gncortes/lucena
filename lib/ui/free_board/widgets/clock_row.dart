@@ -73,13 +73,17 @@ class ClockRow extends StatelessWidget {
           ? (character != null && !(talk?.isEngine ?? false) && level != null
                 ? l10n.journeyOpponentLevel('$level')
                 : null)
-          : side == mode.userSide && mode.opponent.isMachine && featured
+          // O final em destaque não tem rating; o do dia mostra o do jogador.
+          : side == mode.userSide &&
+                mode.opponent.isMachine &&
+                featured &&
+                mode.dailyDate == null
           ? l10n.featuredNoRating
           : side == mode.userSide && mode.opponent.isMachine
           // Partida de link antes do "Seu nível": ainda não há rating.
           ? (rating != null
                 ? '$rating'
-                : mode.fromLink
+                : mode.fromLink || featured
                 ? l10n.freeBoardNoRating
                 : null)
           : null;

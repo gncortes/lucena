@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../domain/models/learning_record.dart';
+
 /// Os documentos de cada conta no Firestore. O desenho e as regras estão em
 /// `firebase/firestore.rules` (resumo em `firebase/README.md`):
 /// - `users/{uid}`: o perfil;
 /// - `users/{uid}/progress/summary` e `users/{uid}/games/{id}`: o progresso
 ///   (E1.13);
+/// - `users/{uid}/push/device`: o token do push do último aparelho em que a
+///   conta entrou (um só por conta);
 /// - `daily/{aaaa-mm-dd}` e `featured/{id}`: abertos a todos, só leitura
 ///   (o "x% acertaram" da E1.24 vem neles);
 /// - `feedback/{id}`: só criação, sem conta (E1.26).
@@ -27,6 +31,16 @@ abstract class CloudStoreService {
   /// Grava uma partida em `games/{id}`. A partida não muda depois de
   /// gravada: se o [id] já existe, nada acontece.
   Future<void> writeGame(String uid, String id, Map<String, Object?> data);
+
+  /// O token do push gravado na conta (`push/device`). Nulo: não tem.
+  /// Lança [CloudStoreException] sem rede e sem cópia no aparelho.
+  Future<String?> readPushToken(String uid);
+
+  /// Troca o token do push da conta por [token]: só o último aparelho fica.
+  Future<void> writePushToken(String uid, String token, DateTime at);
+
+  /// Apaga o token do push da conta.
+  Future<void> deletePushToken(String uid);
 
   /// Apaga o perfil e tudo abaixo dele que o app grava. Precisa de rede:
   /// sem ela lança [CloudStoreException] em vez de apagar só a cópia local.
@@ -74,6 +88,15 @@ class NoCloudStoreService implements CloudStoreService {
   Future<void> deleteUser(String uid) async {}
 
   @override
+  Future<String?> readPushToken(String uid) async => null;
+
+  @override
+  Future<void> writePushToken(String uid, String token, DateTime at) async {}
+
+  @override
+  Future<void> deletePushToken(String uid) async {}
+
+  @override
   Future<Map<String, Object?>?> readPublic(
     String collection,
     String id,
@@ -101,7 +124,7 @@ class FirestoreCloudStoreService implements CloudStoreService {
   static const _deleteTimeout = Duration(seconds: 30);
 
   // As subcoleções que o app grava: apagar a conta passa por todas.
-  static const _subcollections = ['progress', 'games'];
+  static const _subcollections = ['progress', 'games', 'push'];
 
   DocumentReference<Map<String, dynamic>> _user(String uid) =>
       _db.collection('users').doc(uid);
@@ -109,6 +132,26 @@ class FirestoreCloudStoreService implements CloudStoreService {
   @override
   Future<void> mergeUser(String uid, Map<String, Object?> data) =>
       _user(uid).set(data, SetOptions(merge: true));
+
+  DocumentReference<Map<String, dynamic>> _device(String uid) =>
+      _user(uid).collection('push').doc('device');
+
+  @override
+  Future<String?> readPushToken(String uid) async {
+    try {
+      final token = (await _device(uid).get()).data()?['token'];
+      return token is String ? token : null;
+    } on FirebaseException catch (error) {
+      throw CloudStoreException(error.code);
+    }
+  }
+
+  @override
+  Future<void> writePushToken(String uid, String token, DateTime at) =>
+      _device(uid).set({'token': token, 'updatedAt': at});
+
+  @override
+  Future<void> deletePushToken(String uid) => _device(uid).delete();
 
   DocumentReference<Map<String, dynamic>> _summary(String uid) =>
       _user(uid).collection('progress').doc('summary');
@@ -125,7 +168,22 @@ class FirestoreCloudStoreService implements CloudStoreService {
   @override
   Future<void> writeProgress(String uid, Map<String, Object?> data) async {
     try {
-      await _summary(uid).set(data);
+      // Reading and merging in the transaction prevents two devices from
+      // overwriting each other's first/last learning milestones. Offline data
+      // stays in the local repositories; a later sync retries this operation.
+      final document = _summary(uid);
+      await _db.runTransaction<void>((transaction) async {
+        final previous = (await transaction.get(document)).data();
+        final records = LearningRecord.merge(
+          LearningRecord.parse(previous?['learningV1']),
+          LearningRecord.parse(data['learningV1']),
+        );
+        transaction.set(document, {
+          ...data,
+          if (records.isNotEmpty)
+            'learningV1': [for (final record in records) record.toJson()],
+        });
+      });
     } on FirebaseException catch (error) {
       throw CloudStoreException(error.code);
     }

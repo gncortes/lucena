@@ -8,6 +8,27 @@ const _own =
     'https://playlucena.com/p/abcde?fen=8%2F8%2F8%2F4k3%2F8%2F8%2F4K3%2F4Q3+w+-+-+0+1';
 
 void main() {
+  test(
+    'URI original mantém final do dia e erro próprio para a interface',
+    () async {
+      final daily = Uri.parse('https://playlucena.com/dia');
+      final invalid = Uri.parse(
+        'https://playlucena.com/p/invalido?fen=invalida',
+      );
+      final service = FakeDeepLinkService(initial: daily);
+      final DeepLinkRepository repository = ServiceDeepLinkRepository(service);
+      expect(await repository.initialUri(), daily);
+      final received = <Uri>[];
+      final sub = repository.openedUris.listen(received.add);
+      service.open(invalid);
+      service.open(Uri.parse('https://example.com/dia'));
+      service.open(Uri.parse('https://playlucena.com/daily'));
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+      expect(received, [invalid, Uri.parse('https://playlucena.com/daily')]);
+    },
+  );
+
   test('sem App Links nada chega', () async {
     const repository = ServiceDeepLinkRepository(NoDeepLinkService());
     expect(await repository.initial(), isNull);

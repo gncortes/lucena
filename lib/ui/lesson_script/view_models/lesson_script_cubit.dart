@@ -40,11 +40,13 @@ import 'dart:math';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/school/lesson_script_repository.dart';
 import '../../../data/repositories/school/lesson_source.dart';
 import '../../../data/repositories/tablebase/kpk_repository.dart';
 import '../../../data/repositories/tablebase/script_table_repository.dart';
 import '../../core/sound/game_sounds.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../data/repositories/opponent/opponent_repository.dart';
 import '../../../domain/models/kpk_outcome.dart';
@@ -202,11 +204,110 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     this._tables,
     this._engineJudge,
     this._sounds,
+    this._analytics = const NoAnalyticsRepository(),
+    this.origin,
   }) : _delay = delay ?? ((duration) => Future<void>.delayed(duration)),
        super(const LessonScriptState());
 
   /// Os sons das peças (ligados ou não em Som e voz); nulo nos testes.
   final GameSounds? _sounds;
+
+  final AnalyticsRepository _analytics;
+
+  /// De onde a aula abriu (`aula_aberta`): `home|continuar|aviso|...`. Nulo
+  /// numa aula de final aberta pela tela da aula, que já registrou a
+  /// abertura; na escola, o padrão é `trilha`.
+  final String? origin;
+
+  // ---- Analytics (E1.05): capítulo = a parte da aula ----------------------
+  DateTime? _chapterStart;
+  int _chapter = 1;
+  int _chapters = 1;
+  int _chapterErrors = 0;
+  int _chapterHints = 0;
+  int _chapterExercises = 0;
+  bool _chapterDone = false;
+  String? _exerciseKey;
+  DateTime? _exerciseStart;
+  int _exerciseAttempts = 0;
+
+  String get _lessonKind => _source.endgame ? 'finais' : 'escola';
+
+  Duration get _chapterTime =>
+      _chapterStart == null ? Duration.zero : _now().difference(_chapterStart!);
+
+  void _log(AnalyticsEvent event) => unawaited(_analytics.log(event));
+
+  /// Abre o capítulo: a aula (quando esta tela é a porta de entrada dela) e
+  /// o capítulo.
+  Future<void> _logOpened(LessonCheckpoint? checkpoint) async {
+    final lesson = await _source.lesson(lessonId);
+    final sections = lesson?.sections ?? const <LessonPart>[];
+    final index = sections.indexWhere((part) => part.id == partId);
+    _chapter = index < 0 ? 1 : index + 1;
+    _chapters = sections.isEmpty ? 1 : sections.length;
+    _chapterStart = _now();
+    final resumed =
+        checkpoint?.lessonId == lessonId && checkpoint?.part == partId;
+    if (!_source.endgame || origin != null) {
+      _log(
+        AnalyticsEvents.aulaAberta(
+          aulaId: lessonId,
+          tipoAula: _lessonKind,
+          origem: origin ?? 'trilha',
+          retomada: resumed,
+          primeiraVez: await _source.untouched(lessonId),
+        ),
+      );
+    }
+    _log(
+      AnalyticsEvents.aulaCapituloInicio(
+        aulaId: lessonId,
+        capituloId: partId,
+        capitulo: _chapter,
+        capitulosTotal: _chapters,
+        tipoAula: _lessonKind,
+      ),
+    );
+  }
+
+  /// Conta erros, dicas e o resultado de cada prática pelo que o estado
+  /// mostra: o tom errado, o fim da prática.
+  void _track(LessonScriptState from, LessonScriptState to) {
+    if (_chapterStart == null || _chapterDone) return;
+    if (to.tone == ScriptTone.bad && from.tone != ScriptTone.bad) {
+      _chapterErrors++;
+    }
+    if (!to.ready || !_example.isPractice) return;
+    final key = '$_stage/${_example.id}';
+    if (key != _exerciseKey) {
+      _exerciseKey = key;
+      _exerciseStart = _now();
+      _exerciseAttempts = 0;
+    }
+    if (to.phase != ScriptPhase.praticaFim ||
+        from.phase != ScriptPhase.praticaVez) {
+      return;
+    }
+    final right = to.tone == ScriptTone.good;
+    if (right) _chapterExercises++;
+    _log(
+      AnalyticsEvents.exercicioResultado(
+        aulaId: lessonId,
+        capituloId: partId,
+        exercicioId: key,
+        tipoPasso: switch (_example.practice!.kind) {
+          PracticeKind.toque => 'tocar',
+          PracticeKind.estrelas => 'estrelas',
+          _ => 'mover',
+        },
+        acertou: right,
+        tentativas: ++_exerciseAttempts,
+        dicas: 0,
+        tempo: _now().difference(_exerciseStart ?? _now()),
+      ),
+    );
+  }
 
   /// Todo lance que entra no tabuleiro, de quem quer que seja (aluno,
   /// máquina, demonstração), toca o som dele. Voltar um passo não toca: o
@@ -214,6 +315,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   @override
   void onChange(Change<LessonScriptState> change) {
     super.onChange(change);
+    _track(change.currentState, change.nextState);
     final sounds = _sounds;
     if (sounds == null) return;
     final san = playedSan(change.currentState, change.nextState);
@@ -321,6 +423,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   SpeechFits? _fits;
   int _tick = 0;
   int _epoch = 0;
+  Future<void> _checkpointWrites = Future<void>.value();
+  int _checkpointRevision = 0;
+  bool _checkpointPending = false;
+  bool _leaving = false;
+  Future<void>? _leaveFuture;
 
   /// A partida contra a máquina (ids `g:N`): os lances, os de saída da
   /// posição [_gameRootFen] e o que está no tabuleiro.
@@ -361,6 +468,11 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   // ---- Abertura -----------------------------------------------------------
 
+  /// O conteúdo da aula não baixou: a tela mostra o aviso de indisponível.
+  void unavailable() => unawaited(
+    _analytics.log(AnalyticsEvents.aulaIndisponivel(origem: 'aula')),
+  );
+
   Future<void> start() async {
     _script = await _scripts.script(scriptPath);
     _texts = await _scripts.texts(lessonId, language);
@@ -373,7 +485,160 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _lessonRefs = const [];
     }
     final last = _script.stages.length - 1;
-    await _enterStage(initialStage.clamp(0, last));
+    final checkpoint = await _source.checkpoint();
+    if (isClosed || _leaving) return;
+    await _logOpened(checkpoint);
+    if (checkpoint != null &&
+        checkpoint.lessonId == lessonId &&
+        checkpoint.part == partId &&
+        checkpoint.scriptExample != null &&
+        checkpoint.step >= 0 &&
+        checkpoint.step <= last &&
+        await _resumeCheckpoint(checkpoint)) {
+      await _checkpointWrites;
+      return;
+    }
+    final savedStage =
+        checkpoint?.lessonId == lessonId && checkpoint?.part == partId
+        ? checkpoint!.step
+        : initialStage;
+    await _enterStage(savedStage.clamp(0, last));
+    await _checkpointWrites;
+  }
+
+  String get _scriptIdentity => '${_stageData.id}/${_example.id}';
+
+  /// Só cenas reproduzíveis do roteiro: erros e animações conservam o
+  /// último ponto estável, sem guardar FENs ou lances transitórios.
+  void _saveScriptCheckpoint() {
+    if (!state.ready || _leaving) return;
+    final track = _scene.track;
+    final scripted = _isScriptTrack(track);
+    if (!scripted && track != 'question' && track != 'pratica') return;
+    if (state.machineThinking || _refutation != null) return;
+    if (track == 'pratica' &&
+        (state.fen != _gameFen ||
+            (state.phase != ScriptPhase.praticaVez &&
+                state.phase != ScriptPhase.praticaFim))) {
+      return;
+    }
+    if (scripted &&
+        (_scene.end <= _scene.head ||
+            _scene.end > _scene.steps.length ||
+            state.fen != _scene.steps[_scene.end - 1].fen)) {
+      return;
+    }
+    final checkpoint = LessonCheckpoint(
+      lessonId: lessonId,
+      part: partId,
+      step: _stage,
+      stepId: _scriptIdentity,
+      scriptExample: _exampleIndex,
+      scriptTrack: track,
+      scriptHead: scripted ? _scene.head : 0,
+      scriptEnd: scripted ? _scene.end : 0,
+      fen: state.fen,
+      demoPlaying: _demoPlaying,
+      moves: track == 'pratica' ? _pathUcis() : const [],
+      collected: track == 'pratica' ? state.touched : const [],
+    );
+    final revision = ++_checkpointRevision;
+    _checkpointPending = true;
+    _checkpointWrites = _source.saveCheckpoint(checkpoint).whenComplete(() {
+      if (revision == _checkpointRevision) _checkpointPending = false;
+    });
+  }
+
+  Future<bool> _resumeCheckpoint(LessonCheckpoint checkpoint) async {
+    final example = checkpoint.scriptExample!;
+    final stage = _script.stages[checkpoint.step];
+    if (example < 0 || example >= stage.examples.length) return false;
+    _stage = checkpoint.step;
+    _loadExample(example);
+    if (checkpoint.stepId != _scriptIdentity) return false;
+    final track = checkpoint.scriptTrack;
+    if (track == 'pratica' && _example.isPractice) {
+      var fen = _example.fen;
+      for (final uci in checkpoint.moves) {
+        final played = ScriptMoves.play(fen, uci, keepTurn: _task);
+        if (played == null) return false;
+        fen = played.fen;
+      }
+      if (checkpoint.fen != fen) return false;
+      final targets = _example.practice!.targets;
+      if (checkpoint.collected.length > targets.length) return false;
+      for (var i = 0; i < checkpoint.collected.length; i++) {
+        if (checkpoint.collected[i] != targets[i]) return false;
+      }
+      await _startPractice(fen, checkpoint: checkpoint);
+      return true;
+    }
+    final question = track == 'question' && _example.question != null;
+    if (!question && (track == null || !_isScriptTrack(track))) return false;
+    if (track != null && track.startsWith(ScriptTracks.altPrefix)) {
+      final uci = track.substring(ScriptTracks.altPrefix.length);
+      if (_example.question?.alternatives.containsKey(uci) != true) {
+        return false;
+      }
+    }
+    final steps = question
+        ? const <ScriptStep>[]
+        : ScriptTracks.steps(_example, track!);
+    final head = checkpoint.scriptHead;
+    final end = checkpoint.scriptEnd;
+    if (!question && (head < 0 || end <= head || end > steps.length)) {
+      return false;
+    }
+    final fen = question ? _example.questionFen : steps[end - 1].fen;
+    if (fen != checkpoint.fen) return false;
+    _history.clear();
+    _seenBy.clear();
+    void collect(String key, List<ScriptStep> list, int stop) {
+      for (var i = 0; i < stop;) {
+        final end = min(GroupSpeech.end(list, i, _say, _fits), stop);
+        final built = _groupState(
+          key,
+          list,
+          i,
+          fromFen: _example.fen,
+          jump: true,
+          stop: end,
+        );
+        _history.add(
+          _Frame(
+            built.$1.copyWith(stageIndex: _stage, exampleIndex: _exampleIndex),
+            built.$2,
+          ),
+        );
+        i = end;
+      }
+    }
+
+    if (track != ScriptTracks.entry) {
+      collect(ScriptTracks.entry, _example.entry, _example.entry.length);
+      if (!question && _example.question != null) {
+        final built = _questionState(null, fen, true);
+        _history.add(
+          _Frame(
+            built.$1.copyWith(stageIndex: _stage, exampleIndex: _exampleIndex),
+            built.$2,
+          ),
+        );
+      }
+    }
+    if (!question) collect(track!, steps, head);
+    _demoPlaying = checkpoint.demoPlaying;
+    _demoKey = null;
+    final built = question
+        ? _questionState(null, fen, true)
+        : _groupState(track!, steps, head, fromFen: fen, jump: true, stop: end);
+    _present((
+      built.$1.copyWith(
+        transition: _transition(const [], fromFen: fen, jump: true),
+      ),
+      built.$2,
+    ));
+    return true;
   }
 
   /// Abre a etapa [index]. [keep]: veio da etapa anterior pelo botão, e o ◀
@@ -385,9 +650,6 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _seenBy.clear();
     }
     _epoch++;
-    await _source.saveCheckpoint(
-      LessonCheckpoint(lessonId: lessonId, part: partId, step: index),
-    );
     await _enterExample(0, jump: true);
   }
 
@@ -413,6 +675,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   Future<void> _enterExample(int index, {bool jump = false}) async {
     final side = state.orientation;
     _loadExample(index);
+    _refutation = null;
     _epoch++;
     // Troca de lado sem entrada que a anuncie (as posições da prática): o
     // Viktor avisa no balão e o tabuleiro gira à vista antes da posição nova.
@@ -458,6 +721,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     final epoch = _epoch;
     final from = state.fen;
     _resetGame(_example.fen);
+    _scene = const _Scene(track: 'switch');
     _publish(
       state.copyWith(
         fen: _example.fen,
@@ -485,6 +749,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   /// Põe no estado o que vale para a tela toda e emite.
   void _publish(LessonScriptState s) {
+    if (isClosed || _leaving) return;
     final seen = _seen;
     final demo = _inDemo;
     final game = _inGame;
@@ -530,6 +795,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         coordinates: !touch || _example.practice!.coordinates,
       ),
     );
+    if (_scene.track == 'pratica') _saveScriptCheckpoint();
   }
 
   // ---- Tarefa sem adversário (curso de iniciante) -------------------------
@@ -722,6 +988,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       _demoRun();
     }
     _demoEmit();
+    _saveScriptCheckpoint();
   }
 
   void _demoPause() {
@@ -739,7 +1006,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   /// Voltou do segundo plano: a demonstração andando segue de onde estava.
   void resumeFromBackground() {
-    if (!_background) return;
+    if (!_background || _leaving) return;
     _background = false;
     if (isClosed || state.demo?.ended != false) return;
     if (_demoPlaying) _demoRun();
@@ -789,10 +1056,45 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _demoTimer?.cancel();
     _demoTimer = null;
-    return super.close();
+    await super.close();
+    if (_checkpointPending) await _checkpointWrites;
+  }
+
+  /// Saída deliberada: cancela avanços e fecha só a retomada automática.
+  /// Background e encerramento do processo conservam o checkpoint aberto.
+  Future<void> leave() => _leaveFuture ??= _leave();
+
+  Future<void> _leave() async {
+    if (!_chapterDone && _chapterStart != null) {
+      _log(
+        AnalyticsEvents.aulaSaida(
+          aulaId: lessonId,
+          capituloId: partId,
+          exercicioId: state.ready && _example.isPractice
+              ? '$_stage/${_example.id}'
+              : null,
+          tempo: _chapterTime,
+        ),
+      );
+    }
+    _saveScriptCheckpoint();
+    final wasBackground = _background;
+    _leaving = true;
+    _epoch++;
+    _background = true;
+    _demoHold();
+    try {
+      await _checkpointWrites;
+      await _source.leave();
+    } catch (_) {
+      _leaving = false;
+      _leaveFuture = null;
+      _background = wasBackground;
+      rethrow;
+    }
   }
 
   /// A lista mostra a partida (e não o roteiro): refutação, jogo livre e
@@ -959,6 +1261,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   void _present((LessonScriptState, _Scene) built) {
     _scene = built.$2;
     _publish(built.$1);
+    _saveScriptCheckpoint();
   }
 
   void _push() => _history.add(_Frame(state, _scene.at(_cursor)));
@@ -1067,8 +1370,9 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     int head, {
     required String fromFen,
     bool jump = false,
+    int? stop,
   }) {
-    final stop = GroupSpeech.end(steps, head, _say, _fits);
+    stop ??= GroupSpeech.end(steps, head, _say, _fits);
     final first = steps[head];
     final last = steps[stop - 1];
     _markSeen(track, steps, head, stop);
@@ -1153,11 +1457,13 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   // ---- Botões -------------------------------------------------------------
 
   Future<void> onAction(ScriptAction action) async {
+    if (_leaving) return;
     switch (action) {
       case ScriptAction.continuar:
         await _continue();
       case ScriptAction.verResposta:
         if (state.phase != ScriptPhase.pergunta) return;
+        _chapterHints++;
         _push();
         _present(
           _groupState(
@@ -1181,6 +1487,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
       case ScriptAction.proximaParte:
         await finishPart();
     }
+    await _checkpointWrites;
   }
 
   Future<void> _continue() async {
@@ -1281,8 +1588,23 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   /// Conclui a parte (`completePart`); a tela navega pelo `outcome`.
   Future<void> finishPart() async {
+    await _checkpointWrites;
     final outcome = await _source.completePart(lessonId, partId);
-    if (isClosed) return;
+    if (isClosed || _leaving) return;
+    if (!_chapterDone && _chapterStart != null) {
+      _chapterDone = true;
+      _log(
+        AnalyticsEvents.aulaCapituloFim(
+          aulaId: lessonId,
+          capituloId: partId,
+          capitulo: _chapter,
+          tempo: _chapterTime,
+          exercicios: _chapterExercises,
+          erros: _chapterErrors,
+          dicas: _chapterHints,
+        ),
+      );
+    }
     emit(state.copyWith(outcome: outcome));
   }
 
@@ -1370,6 +1692,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// (senão, corte).
   void _restore(_Frame frame, {List<String>? undo}) {
     _epoch++;
+    _refutation = null;
     final from = state.fen;
     if (frame.state.stageIndex != _stage) {
       _stage = frame.state.stageIndex;
@@ -1390,6 +1713,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         ),
       ),
     );
+    _saveScriptCheckpoint();
   }
 
   /// Toque num lance já visto: mostra o passo dele (e a fala).
@@ -1469,6 +1793,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   // ---- Lance do aluno -----------------------------------------------------
 
   Future<void> onMove(String uci) async {
+    if (_leaving) return;
     final movable = state.movable;
     if (!state.ready || movable == null || movable != _sideOf(state.fen)) {
       return;
@@ -1576,7 +1901,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         await _judge.evaluate(after),
         wantsWin: _wantsWin,
       );
-      if (isClosed) return;
+      if (isClosed || _leaving) return;
       if (verdict == MoveVerdict.loses) {
         _present(
           _groupState(
@@ -1652,7 +1977,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     );
     // A refutação pode ter acabado a partida (o rei capturou o peão).
     final end = await _markResult(freeLimit);
-    if (isClosed) return;
+    if (isClosed || _leaving) return;
     if (end != null) {
       _publish(_finishFree(base, end, kept));
       return;
@@ -1673,7 +1998,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
         move,
         wantsWin: _wantsWin,
       );
-      if (isClosed) return;
+      if (isClosed || _leaving) return;
       kept = verdict == MoveVerdict.keeps;
       speech = _say(
         kept ? 'gen.segueBem.$_goalName' : 'gen.estragou.$_goalName',
@@ -1699,7 +2024,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     required bool offScript,
   }) async {
     final end = await _markResult(freeLimit);
-    if (isClosed) return;
+    if (isClosed || _leaving) return;
     _scene = _Scene(
       track: offScript ? 'freeFora' : 'free',
       kept: kept,
@@ -1771,6 +2096,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
   /// A máquina responde depois de [machineDelay], com os pontinhos no balão;
   /// a resposta traz a fala [speech] (e o [tone]), se houver.
   Future<void> _machineReply({List<String>? speech, ScriptTone? tone}) async {
+    if (_leaving) return;
     final epoch = _epoch;
     emit(state.copyWith(machineThinking: true, movable: null));
     await _delay(machineDelay);
@@ -1908,37 +2234,67 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
 
   // ---- Prática ------------------------------------------------------------
 
-  Future<void> _startPractice(String fromFen) async {
+  Future<void> _startPractice(
+    String fromFen, {
+    LessonCheckpoint? checkpoint,
+  }) async {
     final practice = _example.practice!;
     final fen = _example.fen;
     _resetGame(fen);
+    for (final uci in checkpoint?.moves ?? const <String>[]) {
+      _playGame(uci);
+    }
     _scene = const _Scene(track: 'pratica');
+    _scene = _scene.at(_cursor);
     final touch = practice.kind == PracticeKind.toque;
-    _publish(
-      state.copyWith(
-        phase: ScriptPhase.praticaVez,
-        fen: fen,
-        lastMove: null,
-        speech: [
-          _say(practice.t),
-          if (touch && practice.targets.isNotEmpty)
-            _touchAsk(practice.targets.first),
-        ],
-        tone: ScriptTone.neutral,
-        marks: const [],
-        arrows: const [],
-        primary: null,
-        secondary: null,
-        movable: touch ? null : _studentTurn(fen),
-        machineThinking: false,
-        currentMoveId: null,
-        transition: _transition(const [], fromFen: fromFen, jump: true),
-        touched: const [],
-        touchMiss: null,
-      ),
+    final touched = checkpoint?.collected ?? const <String>[];
+    final restoredFen = _gameFen;
+    var base = state.copyWith(
+      phase: ScriptPhase.praticaVez,
+      fen: restoredFen,
+      lastMove: _cursorNode?.uci,
+      speech: [
+        if (!touch || touched.isEmpty) _say(practice.t),
+        if (touch && touched.length < practice.targets.length)
+          _touchAsk(practice.targets[touched.length]),
+      ],
+      tone: ScriptTone.neutral,
+      marks: const [],
+      arrows: const [],
+      primary: null,
+      secondary: null,
+      movable: touch ? null : _studentTurn(restoredFen),
+      machineThinking: false,
+      currentMoveId: null,
+      transition: _transition(const [], fromFen: fromFen, jump: true),
+      touched: touched,
+      touchMiss: null,
     );
+    if (checkpoint != null) {
+      final done = switch (practice.kind) {
+        PracticeKind.toque => touched.length == practice.targets.length,
+        PracticeKind.estrelas => _starsLeft().isEmpty,
+        PracticeKind.lance => _studentMoves() >= practice.line.length,
+        PracticeKind.jogo => false,
+      };
+      if (done) {
+        base = _finishTask(base, switch (practice.kind) {
+          PracticeKind.toque => 'ini.toque.sucesso',
+          PracticeKind.estrelas => 'ini.estrelas.sucesso',
+          _ => 'ini.lance.certo',
+        });
+      } else if (practice.kind == PracticeKind.jogo) {
+        final end = await _markResult(practice.limit);
+        final arrived = _example.kingOnSquare(GameRules.fromFen(restoredFen)!);
+        if (arrived || end != null) {
+          base = _finishPractice(base, arrived ? null : end);
+        }
+      }
+    }
+    _publish(base);
     if (practice.kind == PracticeKind.jogo &&
-        _sideOf(fen) == practice.machine) {
+        base.phase == ScriptPhase.praticaVez &&
+        _sideOf(restoredFen) == practice.machine) {
       await _machineReply();
     }
   }
@@ -2125,7 +2481,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
             move,
             wantsWin: _wantsWin,
           );
-    if (isClosed) return;
+    if (isClosed || _leaving) return;
     if (verdict == MoveVerdict.loses) {
       return _refute(position, move, from);
     }
@@ -2133,7 +2489,7 @@ class LessonScriptCubit extends Cubit<LessonScriptState> {
     _playGame(uci);
     _scene = _scene.at(_cursor);
     final end = await _markResult(_example.practice!.limit);
-    if (isClosed) return;
+    if (isClosed || _leaving) return;
     final arrived = _example.kingOnSquare(GameRules.fromFen(_gameFen)!);
     final base = state.copyWith(
       fen: _gameFen,

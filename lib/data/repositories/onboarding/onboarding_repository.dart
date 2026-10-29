@@ -26,8 +26,23 @@ class LocalOnboardingRepository implements OnboardingRepository {
   static const _inProgressKey = 'tour.inProgress';
   static const _linkSetupKey = 'tour.linkSetupDone';
   static const _stageKey = 'tour.stage';
+  static const _controlsKey = 'tour.boardControlsDone';
+  static const _controlsOpenKey = 'tour.boardControlsOpen';
+  static const _controlsFenKey = 'tour.boardControlsFen';
 
   final PreferencesService _preferences;
+
+  Future<OnboardingStage> _stage() async {
+    final saved = OnboardingStage.fromCode(
+      await _preferences.getString(_stageKey),
+    );
+    if (saved != null) return saved;
+    final hasTour =
+        await _preferences.getBool(_inProgressKey) == true ||
+        await _preferences.getString(_stepKey) != null ||
+        await _preferences.getString(_legacyStepKey) != null;
+    return hasTour ? OnboardingStage.tour : OnboardingStage.goal;
+  }
 
   /// O passo salvo. Sem a chave nova, vem do tour antigo: nível/caminhos
   /// (índice 12 em diante) levam ao último passo; os outros, ao primeiro. A
@@ -55,9 +70,10 @@ class LocalOnboardingRepository implements OnboardingRepository {
     inProgress: await _preferences.getBool(_inProgressKey) ?? false,
     linkSetupDone: await _preferences.getBool(_linkSetupKey) ?? false,
     // Sem a chave (antes da E1.11): o tour, que leva às telas seguintes.
-    stage:
-        OnboardingStage.fromCode(await _preferences.getString(_stageKey)) ??
-        OnboardingStage.tour,
+    stage: await _stage(),
+    boardControlsDone: await _preferences.getBool(_controlsKey) ?? false,
+    boardControlsOpen: await _preferences.getBool(_controlsOpenKey) ?? false,
+    boardControlsFen: await _preferences.getString(_controlsFenKey),
     done: await _preferences.getBool(_doneKey) ?? false,
     startRung: await _preferences.getString(_startRungKey),
   );
@@ -75,6 +91,20 @@ class LocalOnboardingRepository implements OnboardingRepository {
     await _preferences.setBool(_inProgressKey, value: onboarding.inProgress);
     await _preferences.setBool(_linkSetupKey, value: onboarding.linkSetupDone);
     await _preferences.setString(_stageKey, onboarding.stage.name);
+    await _preferences.setBool(
+      _controlsKey,
+      value: onboarding.boardControlsDone,
+    );
+    await _preferences.setBool(
+      _controlsOpenKey,
+      value: onboarding.boardControlsOpen,
+    );
+    if (onboarding.boardControlsFen != null) {
+      await _preferences.setString(
+        _controlsFenKey,
+        onboarding.boardControlsFen!,
+      );
+    }
     await _preferences.setBool(_doneKey, value: onboarding.done);
     await _preferences.setString(_stepKey, onboarding.step.toString());
     final startRung = onboarding.startRung;

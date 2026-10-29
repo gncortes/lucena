@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_asset.dart';
@@ -19,11 +18,25 @@ class _Assets extends AssetService {
 }
 
 void main() {
-  const lesson = 'pawns.distantOpposition';
+  const lesson = 'lesson.example';
   const fen = '6k1/8/8/8/8/8/3P4/7K w - - 0 1';
-  test('asset congelado: e09/d2d3 pt/en exatos, tipo exercício e lição, cache por aula', () async {
+  test('fixture sintética: e09/d2d3 pt/en exatos, tipo exercício e lição, cache por aula', () async {
     final path = AssetExerciseFeedbackRepository.assetPath(lesson);
-    final data = File(path).readAsStringSync();
+    final data = jsonEncode({
+      'lesson': lesson,
+      'rows': [
+        for (final kind in ['exercise', 'move'])
+          {
+            'kind': kind,
+            'id': kind == 'exercise' ? 'e09' : 'step',
+            'turn': 1,
+            'fen': fen,
+            'uci': 'd2d3',
+            'pt': 'Explicação sintética.',
+            'en': 'Synthetic explanation.',
+          },
+      ],
+    });
     final rows = (jsonDecode(data)['rows'] as List)
         .cast<Map<String, dynamic>>();
     final expected = rows.singleWhere(

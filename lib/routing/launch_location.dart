@@ -16,16 +16,23 @@ String launchLocation({
   bool showSchool = true,
   Set<String>? visibleEndgameLessons,
   ChallengeLink? link,
+  Uri? uri,
+  bool boardControlsOpen = false,
 }) {
   final lesson = showSchool ? school.ongoing : null;
   final endgameLesson = endgames.ongoing;
   final exercise = endgames.openExercise;
   bool visible(String id) => visibleEndgameLessons?.contains(id) ?? true;
+  if (uri != null) {
+    final route = Routes.appLink(uri);
+    if (route != null) return route;
+  }
   if (link != null) return Routes.challenge(link);
   if (conclusion != null) return Routes.conclusion(conclusion);
   if (resumeGame) return Routes.freeBoard;
+  if (boardControlsOpen) return Routes.boardControls;
   if (lesson != null && lesson.open) {
-    return Routes.lessonScript(lesson.lessonId);
+    return Routes.lessonScript(lesson.lessonId, origin: 'continuar');
   }
   if (endgameLesson != null &&
       endgameLesson.open &&
@@ -38,6 +45,7 @@ String launchLocation({
       endgameLesson.lessonId,
       part: part,
       stage: part == null ? 0 : endgameLesson.step,
+      origin: 'continuar',
     );
   }
   if (exercise != null && visible(exercise.$1)) {

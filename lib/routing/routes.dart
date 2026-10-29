@@ -1,13 +1,49 @@
 import '../domain/models/challenge_link.dart';
+import '../domain/models/app_links.dart';
 import '../domain/models/featured.dart';
 import '../domain/models/clock.dart';
 import '../domain/models/daily_final.dart';
 import '../domain/models/game_setup.dart';
 import '../domain/models/journey.dart';
+import '../domain/models/linked_lesson.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
+  static const boardControls = '/board-controls';
   static const home = '/';
+  static const invalidLink = '/invalid-link';
+
+  /// Só links públicos próprios; preserva caminho e query do desafio.
+  static String? appLink(Uri uri) {
+    if (!AppLinks.isOwn(uri)) return null;
+    if (uri.path == '/dia' ||
+        uri.path == '/dia/' ||
+        uri.path == '/daily' ||
+        uri.path == '/daily/') {
+      return daily;
+    }
+    // O link só de aula (T84) vai como veio: a rota dele confere se a aula
+    // abre.
+    if (LessonLink.tryParse(uri) != null) {
+      return Uri(
+        path: uri.path,
+        query: uri.hasQuery ? uri.query : null,
+      ).toString();
+    }
+    try {
+      if (RegExp(r'^/p/[^/]+/?$').hasMatch(uri.path) &&
+          ChallengeLink.tryParse(uri) != null) {
+        return Uri(
+          path: uri.path,
+          query: uri.hasQuery ? uri.query : null,
+        ).toString();
+      }
+    } on FormatException {
+      return invalidLink;
+    }
+    return invalidLink;
+  }
+
   static const freeBoard = '/board';
 
   /// "Atualize o Lucena": por cima de tudo, sem voltar (E1.32).
@@ -211,6 +247,10 @@ abstract final class Routes {
 
   /// O final do dia: abre a partida de hoje (o toque do lembrete cai aqui).
   static const daily = '/daily';
+
+  /// O final do dia aberto de [entry] (`aviso|lembrete|link`; sem ele, da
+  /// home): vai para o `final_dia_aberto` do Analytics.
+  static String dailyFrom(String entry) => '$daily?entrada=$entry';
   static const dailyResult = '/daily/result';
   static const dailyShare = '/daily/share';
 
@@ -245,6 +285,25 @@ abstract final class Routes {
   /// A Corrida de problemas (E1.31) e o aquecimento que a antecede.
   static const race = '/race';
   static const raceWarmUp = '/race/warm-up';
+
+  /// "Seu desempenho": o desempenho por final nas Corridas (E1.34).
+  static const racePerformance = '/race/performance';
+
+  /// Os próximos passos: depois do "Seu nível" (com o nível, quando há) e
+  /// com a Escola concluída.
+  static const nextSteps = '/next';
+  static String nextStepsReady({int? level}) => Uri(
+    path: nextSteps,
+    queryParameters: {'level': ?level?.toString()},
+  ).toString();
+  static const nextStepsSchool = '/next/school';
+
+  /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
+  /// ([category]).
+  static String raceOnly({String? subcategory, String? category}) => Uri(
+    path: race,
+    queryParameters: {'only': ?subcategory, 'category': ?category},
+  ).toString();
 
   /// Os speedruns, um speedrun e uma tentativa dele.
   static const speedruns = '/speedruns';
@@ -295,9 +354,9 @@ abstract final class Routes {
 
   /// A aula da escola com roteiro (curso de iniciante, T71), na etapa
   /// [stage].
-  static String lessonScript(String id, {int stage = 0}) => Uri(
+  static String lessonScript(String id, {int stage = 0, String? origin}) => Uri(
     path: '/school/$id/roteiro',
-    queryParameters: {'etapa': '$stage'},
+    queryParameters: {'etapa': '$stage', 'origem': ?origin},
   ).toString();
   static const starChallenges = '/school/challenges';
   static String starChallenge(String piece, String level) =>
@@ -310,16 +369,46 @@ abstract final class Routes {
   /// As aulas de finais já num filtro: "Para você" ([forYou]) ou "Todos".
   static String endgamesFiltered({required bool forYou}) =>
       '/endgames?filter=${forYou ? 'forYou' : 'all'}';
-  static String endgameLesson(String id) => '/endgames/$id';
+
+  /// [origin]: de onde a pessoa veio (`home`, `aviso`, `catalogo`...); sem
+  /// ele, da trilha. Vai para o `aula_aberta` do Analytics.
+  static String endgameLesson(String id, {String? origin}) => Uri(
+    path: '/endgames/$id',
+    queryParameters: origin == null ? null : {'origem': origin},
+  ).toString();
 
   /// A lição roteirizada (T70) da parte [part] de uma aula, na etapa [stage].
   /// Sem parte, ou com uma que não abre mais, a rota cai no início da
   /// primeira parte (`resolveScriptPart`).
-  static String endgameLessonScript(String id, {String? part, int stage = 0}) =>
-      Uri(
-        path: '/endgames/$id/roteiro',
-        queryParameters: {'part': ?part, 'etapa': '$stage'},
-      ).toString();
+  /// [origin]: de onde a pessoa veio sem passar pela tela da aula (`home`,
+  /// `continuar`, `aviso`); o Analytics registra a abertura da aula aqui.
+  static String endgameLessonScript(
+    String id, {
+    String? part,
+    int stage = 0,
+    String? origin,
+  }) => Uri(
+    path: '/endgames/$id/roteiro',
+    queryParameters: {'part': ?part, 'etapa': '$stage', 'origem': ?origin},
+  ).toString();
+
+  /// A entrada da aula de um link de campanha (T84): `/aula/<id>` ou
+  /// `/escola/<id>`, o mesmo caminho do link só de aula. A rota confere se a
+  /// aula abre e segue para [linkedLesson].
+  static String linkedLessonEntry(LinkedLesson lesson) =>
+      '/${lesson.kind.code}/${Uri.encodeComponent(lesson.id)}';
+
+  /// A aula ligada a um link de campanha, com `origem=link`. Com
+  /// [available] falso (não existe ou não está liberada), a regra de sempre:
+  /// a trilha de finais ou a Escola, que mostram as aulas que há (ou "As
+  /// aulas ainda não estão disponíveis").
+  static String linkedLesson(LinkedLesson lesson, {bool available = true}) =>
+      switch (lesson.kind) {
+        LinkedLessonKind.endgame =>
+          available ? endgameLesson(lesson.id, origin: 'link') : endgames,
+        LinkedLessonKind.school =>
+          available ? lessonScript(lesson.id, origin: 'link') : school,
+      };
   static String endgameInfo(String id) => '/endgames/$id/info';
   static String endgameExercise(String id, String exercise) =>
       '/endgames/$id/ex/$exercise';
@@ -357,15 +446,13 @@ abstract final class Routes {
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
 
-  /// Depois do tour: a conta, opcional (E1.11 a E1.13 ligam o login), e o
-  /// nível, que fecha a primeira abertura.
   /// A Sequência de dias (E1.22).
   static const streak = '/streak';
 
   /// Sua semana (E1.23), aberta pelo resumo de domingo.
   static const week = '/week';
 
-  static const account = '/tour/conta';
+  /// O nível fecha a primeira abertura.
   static const level = '/tour/nivel';
 
   /// "Seu nível" aberto por [from] (`profile`: volta para o Perfil).
@@ -413,10 +500,18 @@ abstract final class Routes {
       _from(accountRestored, from);
 
   /// Para onde a conta segue no fim, vinda de [from] (`game`: o convite no
-  /// fim da 1ª partida).
+  /// fim da 1ª partida; `level`: o convite depois do Lichess em "Seu nível",
+  /// que segue para os próximos passos).
+  /// Um [from] que já é uma rota (`/endgames/...`, o convite antes da aula do
+  /// link de campanha, T84) é o próprio destino.
+  static bool isRouteFrom(String? from) =>
+      from != null && from.startsWith('/') && !from.startsWith('//');
+
   static String afterAccount(String? from) => switch (from) {
     'profile' => settingsProfile,
     'game' => home,
+    'level' => nextSteps,
+    final route? when isRouteFrom(route) => route,
     _ => goal,
   };
 
@@ -426,21 +521,44 @@ abstract final class Routes {
   /// "O que você quer fazer?", entre o tour e "Seu nível" (E1.11).
   static const goal = '/tour/objetivo';
 
+  /// O objetivo de quem chegou por um link de desafio: sem "Aprender a jogar".
+  static const goalFromLink = '/tour/objetivo?link=1';
+
   /// O teste de nível (T52). [from] diz de onde veio (`level`, `settings`).
   static const placement = '/placement';
   static String placementFrom(String from) =>
       Uri(path: placement, queryParameters: {'from': from}).toString();
 
   static const catalog = '/catalog';
-  static String catalogCategory(String category) => '/catalog/$category';
+  static const blindEntry = '/blind-entry';
+  static const blindCatalog = '/catalog?blind=1';
+  static String catalogCategory(
+    String category, {
+    String? subcategory,
+    bool blind = false,
+  }) => Uri(
+    path: '/catalog/$category',
+    queryParameters: subcategory == null && !blind
+        ? null
+        : {'subcategory': ?subcategory, if (blind) 'blind': '1'},
+  ).toString();
 
   /// Configuração da partida numa posição, com o objetivo e, se ela vier do
   /// catálogo, o id dela (para o histórico).
-  static String setup(String fen, {required String goal, String? position}) =>
-      Uri(
-        path: '/setup',
-        queryParameters: {'fen': fen, 'goal': goal, 'position': ?position},
-      ).toString();
+  static String setup(
+    String fen, {
+    required String goal,
+    String? position,
+    bool blind = false,
+  }) => Uri(
+    path: '/setup',
+    queryParameters: {
+      'fen': fen,
+      'goal': goal,
+      'position': ?position,
+      if (blind) 'blind': '1',
+    },
+  ).toString();
 
   static const customPosition = '/custom';
 
@@ -473,4 +591,11 @@ abstract final class Routes {
 
   /// Tela de depuração do Maia (só em build de desenvolvimento e de teste).
   static const settingsMaia = '/settings/maia';
+
+  /// A prévia do Pilares do Xadrez (T82, só em desenvolvimento): a venda, o
+  /// mapa e um capítulo.
+  static const pilaresSale = '/settings/pilares';
+  static const pilaresBand = '/settings/pilares/faixa';
+  static const pilaresMap = '/settings/pilares/mapa';
+  static const pilaresChapter = '/settings/pilares/mapa/capitulo';
 }

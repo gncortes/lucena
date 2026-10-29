@@ -25,11 +25,31 @@ Color? gradeColor(ExerciseGrade grade) => switch (grade) {
 /// A "medalha" da faixa: três estrelas douradas (a do meio maior) no
 /// perfeito, uma dourada no excelente, prata no bom, bronze no aprovado e
 /// uma vazia abaixo do mínimo. [size] é a estrela principal.
+///
+/// [sideRatio] é o tamanho das laterais do perfeito em relação à do meio.
+/// O padrão (0,6) é a medalha grande das telas de exercício. A M2 dos cursos
+/// (CompEstrelas proporcao=0.5) usa 0,5: as laterais ficam coladas na do meio
+/// (avançam 0,21 × [size] sobre ela: os -3 px em 20 do canvas mais a folga
+/// lateral, maior no glifo `star_rounded` que no do canvas) e sobem
+/// 0,1 × [size], para a base do desenho ficar na linha da base das pernas da
+/// do meio (o glifo tem uma folga embaixo que encolhe com o tamanho).
 class GradeMedal extends StatelessWidget {
-  const GradeMedal({required this.grade, this.size = 80, super.key});
+  const GradeMedal({
+    required this.grade,
+    this.size = 80,
+    this.sideRatio = defaultSideRatio,
+    super.key,
+  });
+
+  /// A proporção das laterais da medalha grande.
+  static const defaultSideRatio = 0.6;
+
+  /// A proporção da M2 dos cursos.
+  static const compactSideRatio = 0.5;
 
   final ExerciseGrade grade;
   final double size;
+  final double sideRatio;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +61,9 @@ class GradeMedal extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Icon(Icons.star_rounded, size: size * 0.6, color: color),
+          _side(color, Alignment.centerLeft),
           Icon(Icons.star_rounded, size: size, color: color),
-          Icon(Icons.star_rounded, size: size * 0.6, color: color),
+          _side(color, Alignment.centerRight),
         ],
       ),
       ExerciseGrade.below => Icon(
@@ -53,5 +73,27 @@ class GradeMedal extends StatelessWidget {
       ),
       _ => Icon(Icons.star_rounded, size: size, color: color),
     };
+  }
+
+  /// Uma lateral; [outer] é o lado de fora, que fica dentro da caixa: só o
+  /// lado de dentro avança sobre a do meio.
+  Widget _side(Color color, Alignment outer) {
+    final side = size * sideRatio;
+    final star = Icon(Icons.star_rounded, size: side, color: color);
+    if (sideRatio == defaultSideRatio) return star;
+    final overlap = size * 0.21;
+    return Transform.translate(
+      offset: Offset(0, -0.1 * size),
+      child: SizedBox(
+        width: side - overlap,
+        height: side,
+        child: OverflowBox(
+          minWidth: side,
+          maxWidth: side,
+          alignment: outer,
+          child: star,
+        ),
+      ),
+    );
   }
 }

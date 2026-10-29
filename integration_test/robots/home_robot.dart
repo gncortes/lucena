@@ -2,20 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
+import 'package:lucena/domain/models/home_layout.dart';
+import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:patrol/patrol.dart';
 
 import 'variant.dart';
 
-/// Toca no caminho [key] da tela inicial. Fora do destaque (o nível ou a
-/// escolha do jogador o escondeu), ele está em "Outros modos": abre a seção
-/// antes.
-Future<void> tapHomePath(PatrolIntegrationTester $, Key key) async {
-  await $(HomeKeys.pathsTitle).waitUntilExists();
-  if (find.byKey(key).evaluate().isEmpty) {
-    await $(HomeKeys.otherModes).scrollTo().tap();
-    await $.pumpAndSettle();
+/// Abre "Todos os modos" pelo "Ver mais" dos atalhos da tela inicial.
+Future<void> openAllModes(PatrolIntegrationTester $) async {
+  await $(HomeKeys.shortcutsSeeMore).scrollTo().tap();
+  await $(AllModesKeys.screen).waitUntilVisible();
+}
+
+/// Abre o modo [mode] (`freeBoard`, `custom`, `achievements`...) pela tela
+/// "Todos os modos".
+Future<void> openFromAllModes(PatrolIntegrationTester $, String mode) async {
+  await openAllModes($);
+  await $(AllModesKeys.item(mode)).scrollTo().tap();
+}
+
+/// Abre o caminho [path] da tela inicial pelo atalho dele. Fora dos atalhos
+/// (desmarcado em Configurações > Tela inicial), abre por "Todos os modos".
+Future<void> tapHomePath(PatrolIntegrationTester $, HomePath path) async {
+  await $(HomeKeys.shortcutsTitle).waitUntilExists();
+  final key = switch (path) {
+    HomePath.journey => HomeKeys.journeyButton,
+    HomePath.endgames || HomePath.forYou => HomeKeys.endgamesButton,
+    HomePath.train => HomeKeys.catalogButton,
+    HomePath.speedrun => HomeKeys.speedrunButton,
+    HomePath.race => HomeKeys.raceButton,
+    HomePath.stars => HomeKeys.starsButton,
+    HomePath.learn => null,
+  };
+  if (key != null && find.byKey(key).evaluate().isNotEmpty) {
+    await $(key).scrollTo().tap();
+    return;
   }
-  await $(key).scrollTo().tap();
+  await openFromAllModes($, path.name);
 }
 
 class HomeRobot {
@@ -23,17 +46,16 @@ class HomeRobot {
 
   final PatrolIntegrationTester $;
 
-  /// Espera a tela pronta: o nome do app e os caminhos.
+  /// Espera a tela pronta: o nome do app e os atalhos.
   Future<void> expectVisible() async {
     await $(HomeKeys.screen).waitUntilVisible();
     await $(HomeKeys.title).waitUntilVisible();
-    await $(HomeKeys.pathsTitle).waitUntilExists();
+    await $(HomeKeys.shortcutsTitle).waitUntilExists();
   }
 
-  /// O cumprimento do painel do jogador, com o apelido.
-  Future<void> expectHello(String text) async {
-    await $(HomeKeys.hello).waitUntilVisible();
-    expectText($.tester.widget<Text>(find.byKey(HomeKeys.hello)).data, text);
+  /// O rating no alto, ao lado do nome do app (ou "Começando").
+  Future<void> expectRating() async {
+    await $(HomeKeys.playerCard).waitUntilVisible();
   }
 
   /// A tela no tema escuro (ou claro).
@@ -45,18 +67,12 @@ class HomeRobot {
     );
   }
 
-  /// O nome do botão da Jornada, no idioma da tela.
+  /// O lugar do cartão azul (a Jornada), no idioma da tela.
   void expectJourneyLabel(String text) {
-    final label = $.tester
-        .widgetList<Text>(
-          find.descendant(
-            of: find.byKey(HomeKeys.journeyButton),
-            matching: find.byType(Text),
-          ),
-        )
-        .first
-        .data;
-    expectText(label, text);
+    expectText(
+      $.tester.widget<Text>(find.byKey(HomeKeys.heroLabel)).data,
+      text,
+    );
   }
 
   /// Com a tela espelhada (direita para a esquerda), o botão fica à esquerda.
@@ -66,9 +82,9 @@ class HomeRobot {
     expect(button.dx, lessThan(width / 2));
   }
 
-  /// "Continuar" no cartão do adversário atual: abre o próximo desafio.
+  /// O botão do cartão azul da Jornada: abre o próximo desafio.
   Future<void> continueJourney() async {
-    await $(HomeKeys.whereContinue).scrollTo().tap();
+    await $(HomeKeys.goalAction).scrollTo().tap();
     await $(JourneyKeys.challengeScreen).waitUntilVisible();
     await $.pumpAndSettle();
   }

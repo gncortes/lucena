@@ -3,21 +3,24 @@ import 'package:lucena/domain/models/alert_settings.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/ui/alerts/view_models/alerts_cubit.dart';
 
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_alerts_repository.dart';
 import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_push_repository.dart';
+import '../../../testing/fakes/fake_reminders_repository.dart';
 
 void main() {
   late FakeAlertsRepository alerts;
   late FakePushRepository push;
   late FakeProfileRepository profile;
 
-  AlertsCubit build({String? region}) {
+  AlertsCubit build({String? region, FakeAnalyticsRepository? analytics}) {
     final cubit = AlertsCubit(
       alerts: alerts,
       push: push,
       profile: profile,
       region: () => region,
+      analytics: analytics ?? FakeAnalyticsRepository(),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -29,6 +32,24 @@ void main() {
     profile = FakeProfileRepository(const UserProfile(country: 'BR'));
   });
 
+  test('lembretes locais consultam Android sem depender do Firebase', () async {
+    push.available = false;
+    final reminders = FakeRemindersRepository(allowed: false);
+    final cubit = AlertsCubit(
+      alerts: alerts,
+      push: push,
+      profile: profile,
+      reminders: reminders,
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+    expect(cubit.state.permitted, isFalse);
+    reminders.allowed = true;
+    await cubit.refresh();
+    expect(cubit.state.permitted, isTrue);
+    expect(push.permissionRequests, 0);
+  });
+
   test('permitido: lê as chaves e segue os tópicos', () async {
     final cubit = build();
     await cubit.load();
@@ -36,7 +57,7 @@ void main() {
     expect(cubit.state.ready, isTrue);
     expect(cubit.state.permitted, isTrue);
     expect(cubit.state.enabled, 3);
-    expect(push.followed, {'all', 'torneio_BR', 'aulas'});
+    expect(push.followed, {'all', 'torneio_BR', 'pais_BR', 'dia', 'aulas'});
   });
 
   test('negado: o estado diz, e nada pede permissão', () async {
@@ -66,7 +87,7 @@ void main() {
     await cubit.change(cubit.state.settings.copyWith(tournaments: false));
 
     expect(alerts.settings.tournaments, isFalse);
-    expect(push.followed, {'all', 'aulas'});
+    expect(push.followed, {'all', 'pais_BR', 'dia', 'aulas'});
     expect(cubit.state.enabled, 2);
   });
 
@@ -94,7 +115,37 @@ void main() {
     await profile.save(const UserProfile(country: 'AR'));
     await cubit.regionChanged();
 
-    expect(push.followed, {'all', 'torneio_AR', 'aulas'});
+    expect(push.followed, {'all', 'torneio_AR', 'pais_AR', 'dia', 'aulas'});
+  });
+
+  test('o idioma do app entra no idioma_*, antes ou depois de abrir', () async {
+    final cubit = build();
+    await cubit.languageChanged('pt');
+    expect(push.followed, isEmpty);
+
+    await cubit.load();
+    expect(push.followed, contains('idioma_pt'));
+
+    await cubit.languageChanged('en');
+    expect(push.followed, contains('idioma_en'));
+    expect(push.followed, isNot(contains('idioma_pt')));
+  });
+
+  test('desligar todos os avisos de push sai do país e do idioma', () async {
+    final cubit = build();
+    await cubit.load();
+    await cubit.languageChanged('pt');
+
+    await cubit.change(
+      const AlertSettings(
+        tournaments: false,
+        daily: false,
+        news: false,
+        lessons: false,
+      ),
+    );
+
+    expect(push.followed, {'all'});
   });
 
   test('sem push, só a chave local conta', () async {
@@ -105,5 +156,18 @@ void main() {
 
     expect(cubit.state.enabled, 0);
     expect(cubit.state.total, 1);
+  });
+
+  test('aviso_chave: só a chave que virou, com o novo estado', () async {
+    final analytics = FakeAnalyticsRepository();
+    final cubit = build(analytics: analytics);
+    await cubit.load();
+    await cubit.change(cubit.state.settings.copyWith(news: true));
+    await cubit.change(cubit.state.settings.copyWith(daily: false));
+    await cubit.setReminder(8 * 60);
+    expect(analytics.eventsNamed('aviso_chave').map((e) => e.params), [
+      {'tipo': 'novidades', 'ligado': 'sim'},
+      {'tipo': 'dia', 'ligado': 'nao'},
+    ]);
   });
 }

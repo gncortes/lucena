@@ -107,11 +107,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
           AppSpacing.xl,
         ),
         children: [
-          // Sem push (F-Droid) o app não sabe o estado: não mostra nada.
-          if (state.push)
-            state.permitted
-                ? _Allowed(onSettings: cubit.openSystemSettings)
-                : _Denied(onSettings: cubit.openSystemSettings),
+          // A permissão Android também vale para os lembretes sem Firebase.
+          state.permitted
+              ? _Allowed(onSettings: cubit.openSystemSettings)
+              : _Denied(onSettings: cubit.openSystemSettings),
           const SizedBox(height: AppSpacing.lg),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
@@ -125,7 +124,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
           const SizedBox(height: AppSpacing.lg),
           // Sem a permissão, as chaves ficam esmaecidas, mas mudam.
           Opacity(
-            opacity: state.push && !state.permitted ? _muted : 1,
+            opacity: !state.permitted ? _muted : 1,
             child: ProfileRowGroup(children: switches),
           ),
           if (state.push && state.country != null)

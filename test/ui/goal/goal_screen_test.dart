@@ -26,6 +26,7 @@ void main() {
   Future<void> pumpGoal(
     WidgetTester tester, {
     Size size = const Size(412, 915),
+    bool fromLink = false,
   }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = size;
@@ -50,6 +51,7 @@ void main() {
           path: Routes.home,
           builder: (_, _) => BlocProvider(
             create: (_) => GoalCubit(
+              fromLink: fromLink,
               onboarding: FakeOnboardingRepository(
                 const Onboarding(inProgress: true),
               ),
@@ -61,6 +63,10 @@ void main() {
           ),
         ),
         GoRoute(path: Routes.level, builder: (_, _) => route('rota-nivel')),
+        GoRoute(
+          path: Routes.boardControls,
+          builder: (_, _) => route('rota-controles'),
+        ),
         GoRoute(path: Routes.tour, builder: (_, _) => route('rota-tour')),
         GoRoute(
           path: Routes.accountEnter,
@@ -118,6 +124,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('rota-nivel'), findsNothing);
     expect(profile.profile.goal, GoalPreference.learn);
+    expect(find.text('rota-controles'), findsOneWidget);
   });
 
   testWidgets('a seta de voltar leva ao tour', (tester) async {
@@ -132,5 +139,17 @@ void main() {
     await tester.tap(find.byKey(GoalKeys.haveAccount));
     await tester.pumpAndSettle();
     expect(find.text('rota-conta'), findsOneWidget);
+  });
+
+  testWidgets('vindo de um link, só Aprender finais e Treinar finais', (
+    tester,
+  ) async {
+    await pumpGoal(tester, fromLink: true);
+    expect(find.byKey(GoalKeys.option(GoalPreference.learn)), findsNothing);
+    expect(
+      find.byKey(GoalKeys.option(GoalPreference.endgames)),
+      findsOneWidget,
+    );
+    expect(find.byKey(GoalKeys.option(GoalPreference.train)), findsOneWidget);
   });
 }

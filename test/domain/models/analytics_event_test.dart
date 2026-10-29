@@ -1,8 +1,10 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/analytics_event.dart';
+import 'package:lucena/domain/models/campaign.dart';
 import 'package:lucena/domain/models/challenge_link.dart';
 import 'package:lucena/domain/models/clock.dart';
+import 'package:lucena/domain/models/linked_lesson.dart';
 import 'package:lucena/domain/use_cases/analytics_rules.dart';
 
 const _fen = '8/8/8/8/8/2k5/8/K1Q5 w - - 0 1';
@@ -12,6 +14,12 @@ final _link = ChallengeLink(
   userSide: Side.white,
   level: 1400,
   clock: TimeControl.tryParse('300+0'),
+);
+
+const _campaign = Campaign(
+  utm: {'utm_source': 'instagram', 'utm_campaign': 'torre-engana'},
+  code: 'k7Qe2',
+  lesson: LinkedLesson.endgame('rook.lucena'),
 );
 
 /// Um de cada fábrica, com valores de verdade: é a varredura de dado pessoal
@@ -30,6 +38,7 @@ final _samples = <AnalyticsEvent>[
   AnalyticsEvents.signUp(method: 'google'),
   AnalyticsEvents.login(method: 'email'),
   AnalyticsEvents.contaLichess(acao: 'conectado', rating: 1720),
+  AnalyticsEvents.lichessConectado(origem: 'nivel', temConta: false),
   AnalyticsEvents.contaProgressoRecuperado(itens: 12),
   AnalyticsEvents.contaApagada(),
   AnalyticsEvents.linkOpened(
@@ -55,6 +64,19 @@ final _samples = <AnalyticsEvent>[
     codigo: _link.code,
     origemLink: 'organico',
   ),
+  AnalyticsEvents.campanhaLinkAberto(_campaign, installedNow: true),
+  AnalyticsEvents.campanhaInstalacao(_campaign),
+  AnalyticsEvents.campanhaDesafioInicio(_campaign),
+  AnalyticsEvents.campanhaDesafioFim(
+    _campaign,
+    resultado: 'derrota',
+    conseguiu: false,
+  ),
+  AnalyticsEvents.campanhaOfertaVista(_campaign, destaque: 'principal'),
+  AnalyticsEvents.campanhaOfertaTocada(_campaign, destaque: 'principal'),
+  AnalyticsEvents.campanhaCadastro(_campaign, resposta: 'aceitou'),
+  AnalyticsEvents.campanhaAulaAberta(_campaign, disponivel: true),
+  AnalyticsEvents.campanhaAulaConcluida(_campaign),
   AnalyticsEvents.partidaConfigVista(origem: 'catalogo', posicaoId: 'kq_k'),
   AnalyticsEvents.partidaIniciada(
     modo: 'catalogo',
@@ -127,6 +149,7 @@ final _samples = <AnalyticsEvent>[
     tempo: const Duration(minutes: 5),
   ),
   AnalyticsEvents.aulaConcluida(aulaId: 'lucena', tipoAula: 'final'),
+  AnalyticsEvents.aulaIndisponivel(origem: 'escola'),
   AnalyticsEvents.aulaSaida(
     aulaId: 'lucena',
     capituloId: 'ponte',
@@ -189,6 +212,7 @@ final _samples = <AnalyticsEvent>[
   AnalyticsEvents.avisoPedido(resposta: 'permitiu', gatilho: 'sequencia'),
   AnalyticsEvents.avisoChave(tipo: 'dia', ligado: true),
   AnalyticsEvents.avisoAberto(canal: 'push', tipo: 'dia'),
+  AnalyticsEvents.pushAberto(pushId: 'p1', pais: 'BR'),
   AnalyticsEvents.perfilRegiaoDefinida(acao: 'confirmou', temEstado: true),
   AnalyticsEvents.questionarioAberto(tipo: 'aula', origem: 'fim_aula'),
   AnalyticsEvents.questionarioPasso(tipo: 'aula', passo: 2, passosTotal: 3),
@@ -255,8 +279,9 @@ final _samples = <AnalyticsEvent>[
 
 void main() {
   group('catálogo', () {
-    test('tem os 70 eventos da E1.03 (67 do app e 3 da web)', () {
-      expect(AnalyticsCatalog.app, hasLength(67));
+    test('tem os 82 eventos (79 do app, com os 9 do funil de campanha da '
+        'T84, e 3 da web)', () {
+      expect(AnalyticsCatalog.app, hasLength(79));
       expect(AnalyticsCatalog.web, hasLength(3));
       expect(
         AnalyticsCatalog.app.keys.toSet().intersection(
@@ -279,8 +304,8 @@ void main() {
       }
     });
 
-    test('as 18 propriedades cabem no nome do Firebase', () {
-      expect(AnalyticsTrait.values, hasLength(18));
+    test('as 19 propriedades cabem no nome do Firebase', () {
+      expect(AnalyticsTrait.values, hasLength(19));
       for (final trait in AnalyticsTrait.values) {
         expect(
           AnalyticsRules.validName(
@@ -326,6 +351,30 @@ void main() {
   });
 
   group('link', () {
+    test('funil de campanha: utm, código e aula em todo evento', () {
+      final event = AnalyticsEvents.campanhaOfertaTocada(
+        _campaign,
+        destaque: 'secundaria',
+      );
+      expect(event.params, {
+        'tipo': 'desafio',
+        'utm_fonte': 'instagram',
+        'utm_campanha': 'torre-engana',
+        'utm_post': null,
+        'codigo': 'k7Qe2',
+        'aula_id': 'rook.lucena',
+        'tipo_aula': 'finais',
+        'destaque': 'secundaria',
+      });
+      final lessonOnly = AnalyticsEvents.campanhaAulaAberta(
+        const Campaign(lesson: LinkedLesson.school('peao.marcha')),
+        disponivel: false,
+      );
+      expect(lessonOnly.params['tipo'], 'aula');
+      expect(lessonOnly.params['tipo_aula'], 'escola');
+      expect(lessonOnly.params['disponivel'], 'nao');
+    });
+
     test('link_aberto: o link criado no app é orgânico e sem campanha', () {
       final event = AnalyticsEvents.linkOpened(
         _link.sharedFrom('fim_partida', generation: 2),

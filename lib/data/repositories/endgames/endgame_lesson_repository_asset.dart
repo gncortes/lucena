@@ -3,7 +3,9 @@ import 'dart:convert';
 import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../services/asset_service.dart';
+import '../../services/scoped_asset_cache.dart';
 import '../school/lesson_repository.dart';
 import '../school/lesson_repository_asset.dart';
 import 'endgame_lesson_repository.dart';
@@ -26,14 +28,16 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
 
   final AssetService _assets;
   final LessonRepository school;
-  Future<EndgameTrail>? _trail;
-  final _texts = <String, Future<LessonTexts>>{};
+  late final _cache = ScopedAssetCache(_assets);
 
   @override
-  Future<EndgameTrail> trail() => _trail ??= _loadTrail();
+  Future<EndgameTrail> trail() => _cache.load(indexPath, _loadTrail);
 
   @override
-  Future<LessonTexts> texts(String language) async {
+  Future<LessonTexts> texts(String language) =>
+      _cache.load(('texts', language), () => _mergedTexts(language));
+
+  Future<LessonTexts> _mergedTexts(String language) async {
     final common = await school.texts(language);
     final english = await _load('en');
     if (language == 'en' ||
@@ -82,6 +86,10 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
       if (path is! String) continue;
       try {
         await _assets.loadString(path);
+      } on LessonContentNotFound {
+        part.remove('roteiro');
+      } on LessonContentUnavailable {
+        rethrow;
       } on Object {
         part.remove('roteiro');
       }
@@ -95,17 +103,21 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
         await _assets.loadString(reviewPath),
       ) as Map<String, dynamic>;
       return {...(json[list] as List? ?? const []).cast<String>()};
+    } on LessonContentNotFound {
+      return const {};
+    } on LessonContentUnavailable {
+      rethrow;
     } catch (_) {
       return const {};
     }
   }
 
   Future<LessonTexts> _load(String language) =>
-      _texts[language] ??= _loadTexts(language);
+      _cache.load(('lessonTexts', language), () => _loadTexts(language));
 
   Future<LessonTexts> _loadTexts(String language) async {
     final all = <String, dynamic>{};
-    for (final lesson in (await trail()).lessons) {
+    for (final lesson in (await _cache.load(indexPath, _loadTrail)).lessons) {
       final json = jsonDecode(
         await _assets.loadString(textsPath(language, lesson.id)),
       ) as Map<String, dynamic>;

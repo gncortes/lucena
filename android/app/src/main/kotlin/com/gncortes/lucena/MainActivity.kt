@@ -40,7 +40,7 @@ class MainActivity : FlutterActivity() {
     private fun open(action: String): Boolean = open(Intent(action))
 
     private fun open(intent: Intent): Boolean = try {
-        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        startActivity(intent)
         true
     } catch (e: Exception) {
         false

@@ -1,3 +1,4 @@
+import 'learning_record.dart';
 import 'avatar_photo.dart';
 import 'endgame_lesson.dart';
 import 'goal_preference.dart';
@@ -13,6 +14,7 @@ import 'user_profile.dart';
 /// aparelho (aula aberta, exercício pela metade, preferências) fica nele.
 class ProgressSummary {
   const ProgressSummary({
+    this.learningV1 = const [],
     this.profile = const UserProfile(),
     this.rating,
     this.lessons = const {},
@@ -28,6 +30,8 @@ class ProgressSummary {
 
   /// O perfil. Sobe sem o token do Lichess, que nunca sai do aparelho.
   final UserProfile profile;
+
+  final List<LearningRecord> learningV1;
 
   /// O rating de finais. Nulo: nenhuma partida contou ainda.
   final PlayerRating? rating;
@@ -65,15 +69,19 @@ class ProgressSummary {
       positions.isEmpty &&
       speedruns.isEmpty &&
       race.isEmpty &&
-      featured.isEmpty;
+      featured.isEmpty &&
+      learningV1.isEmpty;
 
   Map<String, Object?> toJson() => {
+    if (learningV1.isNotEmpty)
+      'learningV1': [for (final record in learningV1) record.toJson()],
     'profile': {
       'nickname': profile.nickname,
       'rating': profile.rating,
       'goal': ?profile.goal?.name,
       'levelSource': ?profile.levelSource?.name,
       'lichessUser': ?profile.lichessUser,
+      'lichessLinkedAt': ?profile.lichessLinkedAt?.toUtc().toIso8601String(),
       'chessComUser': ?profile.chessComUser,
       'avatarColor': profile.avatarColor,
       'photo': profile.photo.name,
@@ -109,12 +117,17 @@ class ProgressSummary {
     final rating = _map(json['rating']);
     final race = _map(json['race']);
     return ProgressSummary(
+      learningV1: LearningRecord.parse(json['learningV1']),
       profile: UserProfile(
         nickname: profile['nickname'] as String? ?? '',
         rating: _int(profile['rating']) ?? UserProfile.defaultRating,
         goal: GoalPreference.fromCode(profile['goal'] as String?),
         levelSource: LevelSource.fromCode(profile['levelSource'] as String?),
         lichessUser: profile['lichessUser'] as String?,
+        lichessLinkedAt: switch (profile['lichessLinkedAt']) {
+          final String at => DateTime.tryParse(at),
+          _ => null,
+        },
         chessComUser: profile['chessComUser'] as String?,
         avatarColor: _int(profile['avatarColor']) ?? 0,
         // Apps mais antigos gravavam só o sim/não da foto do Google.

@@ -6,6 +6,7 @@ import 'package:lucena/ui/core/widgets/external_page_sheet.dart';
 import 'package:lucena/ui/core/widgets/reference_link.dart';
 import 'package:lucena/ui/core/widgets/sheet_close_button.dart';
 
+import '../../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../../testing/fakes/fake_wiki.dart';
 import '../../../../testing/test_app.dart';
 
@@ -46,6 +47,46 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('abrir uma página do Lichess registra saida_externa; a Wikipedia '
+      'não', (tester) async {
+    final analytics = FakeAnalyticsRepository();
+    await tester.pumpWidget(
+      TestApp(
+        webPages: FakeWebPages(title: 't'),
+        analytics: analytics,
+        child: Scaffold(body: ReferenceLink(reference: game)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ReferenceLink),
+        matching: find.byType(InkWell),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      analytics.eventsNamed('saida_externa').single.params['destino'],
+      'lichess',
+    );
+    await tester.pumpWidget(
+      TestApp(
+        webPages: FakeWebPages(title: 't'),
+        analytics: analytics,
+        child: Scaffold(body: ReferenceLink(reference: wikipedia)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(ReferenceLink),
+        matching: find.byType(InkWell),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(analytics.eventsNamed('saida_externa'), hasLength(1));
+  });
 
   testWidgets('"Ver a partida no Lichess" abre dentro do app, com o título '
       'e o domínio no topo, e o X fecha', (tester) async {

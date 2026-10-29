@@ -24,6 +24,10 @@ abstract class LessonSource {
   /// A posição da aula no conjunto (1 é a primeira) e quantas há.
   Future<(int, int)> placeOf(String id);
 
+  /// A aula [id] nunca foi começada: nenhuma parte feita, nenhuma estrela e
+  /// nenhum ponto de retomada dela (a `primeira_vez` do Analytics).
+  Future<bool> untouched(String id);
+
   /// Onde o aluno parou, se há aula começada.
   Future<LessonCheckpoint?> checkpoint();
 
@@ -37,6 +41,9 @@ abstract class LessonSource {
 
   /// Conclui a aula [id]: grava e diz o que vem depois.
   Future<LessonOutcome> complete(String id);
+
+  /// Persistent completion flags, read without observing an action.
+  Future<({bool lesson, bool part})> completion(String id, {String? part});
 
   /// Conclui a parte [partId] da aula [id] (aula em partes, T51): grava e
   /// diz a próxima parte recomendada.
@@ -67,8 +74,23 @@ class LessonOutcome {
   final String? next;
 }
 
+/// Serializa snapshots e saída para uma gravação pendente não reabrir a aula.
+mixin _CheckpointWriter {
+  Future<void> _checkpointWrites = Future<void>.value();
+
+  Future<void> _writeCheckpoint(Future<void> Function() write) {
+    final next = _checkpointWrites.then((_) => write());
+    // Uma falha é devolvida ao chamador, sem bloquear gravações futuras.
+    _checkpointWrites = next.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {},
+    );
+    return next;
+  }
+}
+
 /// As aulas da escola, com o progresso dela.
-class SchoolLessonSource implements LessonSource {
+class SchoolLessonSource with _CheckpointWriter implements LessonSource {
   SchoolLessonSource(this._lessons, this._progress);
 
   final LessonRepository _lessons;
@@ -97,33 +119,50 @@ class SchoolLessonSource implements LessonSource {
   }
 
   @override
+  Future<bool> untouched(String id) async {
+    final progress = await _progress.load();
+    return !progress.completed.contains(id) && progress.ongoing?.lessonId != id;
+  }
+
+  @override
   Future<LessonCheckpoint?> checkpoint() async =>
       (await _progress.load()).ongoing;
 
   @override
-  Future<void> saveCheckpoint(LessonCheckpoint checkpoint) async {
-    final progress = await _progress.load();
-    await _progress.save(progress.copyWith(ongoing: checkpoint));
-  }
+  Future<void> saveCheckpoint(LessonCheckpoint checkpoint) =>
+      _writeCheckpoint(() async {
+        final progress = await _progress.load();
+        await _progress.save(progress.copyWith(ongoing: checkpoint));
+      });
 
   @override
-  Future<void> clearCheckpoint() async {
+  Future<void> clearCheckpoint() => _writeCheckpoint(() async {
     final progress = await _progress.load();
     await _progress.save(progress.copyWith(clearOngoing: true));
-  }
+  });
 
   @override
-  Future<void> leave() async {
+  Future<void> leave() => _writeCheckpoint(() async {
     final progress = await _progress.load();
     final ongoing = progress.ongoing;
     if (ongoing == null) return;
     await _progress.save(
       progress.copyWith(ongoing: ongoing.copyWith(open: false)),
     );
+  });
+
+  @override
+  Future<({bool lesson, bool part})> completion(
+    String id, {
+    String? part,
+  }) async {
+    final done = (await _progress.load()).completed.contains(id);
+    return (lesson: done, part: done);
   }
 
   @override
   Future<LessonOutcome> complete(String id) async {
+    await _checkpointWrites;
     final course = await _lessons.course();
     final lessons = course.lessons;
     final progress = await _progress.load();
@@ -148,7 +187,7 @@ class SchoolLessonSource implements LessonSource {
 }
 
 /// A lição de uma aula de final, com o progresso das aulas de finais.
-class EndgameLessonSource implements LessonSource {
+class EndgameLessonSource with _CheckpointWriter implements LessonSource {
   EndgameLessonSource(this._lessons, this._progress);
 
   final EndgameLessonRepository _lessons;
@@ -178,33 +217,58 @@ class EndgameLessonSource implements LessonSource {
   }
 
   @override
+  Future<bool> untouched(String id) async {
+    final progress = await _progress.load();
+    final each = progress.of(id);
+    return !each.lessonDone &&
+        each.parts.isEmpty &&
+        each.stars.isEmpty &&
+        progress.ongoing?.lessonId != id;
+  }
+
+  @override
   Future<LessonCheckpoint?> checkpoint() async =>
       (await _progress.load()).ongoing;
 
   @override
-  Future<void> saveCheckpoint(LessonCheckpoint checkpoint) async {
-    final progress = await _progress.load();
-    await _progress.save(progress.copyWith(ongoing: checkpoint));
-  }
+  Future<void> saveCheckpoint(LessonCheckpoint checkpoint) =>
+      _writeCheckpoint(() async {
+        final progress = await _progress.load();
+        await _progress.save(progress.copyWith(ongoing: checkpoint));
+      });
 
   @override
-  Future<void> clearCheckpoint() async {
+  Future<void> clearCheckpoint() => _writeCheckpoint(() async {
     final progress = await _progress.load();
     await _progress.save(progress.copyWith(clearOngoing: true));
-  }
+  });
 
   @override
-  Future<void> leave() async {
+  Future<void> leave() => _writeCheckpoint(() async {
     final progress = await _progress.load();
     final ongoing = progress.ongoing;
     if (ongoing == null) return;
     await _progress.save(
       progress.copyWith(ongoing: ongoing.copyWith(open: false)),
     );
+  });
+
+  @override
+  Future<({bool lesson, bool part})> completion(
+    String id, {
+    String? part,
+  }) async {
+    final progress = (await _progress.load()).of(id);
+    final chapter = (await _lessons.trail()).lesson(id);
+    return (
+      lesson: progress.lessonDone,
+      part: chapter != null && progress.partsDone(chapter).contains(part),
+    );
   }
 
   @override
   Future<LessonOutcome> complete(String id) async {
+    await _checkpointWrites;
     final progress = await _progress.load();
     await _progress.save(
       progress
@@ -220,6 +284,7 @@ class EndgameLessonSource implements LessonSource {
 
   @override
   Future<LessonOutcome> completePart(String id, String partId) async {
+    await _checkpointWrites;
     final trail = await _lessons.trail();
     final lesson = trail.lesson(id);
     final progress = await _progress.load();

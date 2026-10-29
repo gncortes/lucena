@@ -529,12 +529,20 @@ void main() {
   });
 
   group('convite da conta', () {
-    testWidgets('no fim de uma partida que acabou agora, sai uma vez', (
+    testWidgets('resultado livre; convite abre apenas ao tocar no cartão', (
       tester,
     ) async {
       final invite = FakeAccountInviteRepository();
       await open(tester, fresh: true, invite: invite);
 
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(invite.shown, isFalse);
+      expect(find.byKey(ConclusionKeys.close).hitTestable(), findsOneWidget);
+      await tester.ensureVisible(find.byKey(ConclusionKeys.accountInvite));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ConclusionKeys.accountInvite));
+      await tester.pumpAndSettle();
       expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
       expect(invite.shown, isTrue);
 
@@ -543,6 +551,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
       expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
     });
 
     testWidgets('já mostrado, não volta', (tester) async {
@@ -552,12 +561,49 @@ void main() {
         invite: FakeAccountInviteRepository(shown: true),
       );
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
+    });
+
+    testWidgets('não abrir o cartão mantém o convite pendente', (tester) async {
+      final invite = FakeAccountInviteRepository();
+      await open(tester, fresh: true, invite: invite);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(await invite.pending(), isTrue);
+      // Outra conclusão ainda pode oferecer a proteção do progresso.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await open(tester, fresh: true, invite: invite);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(await invite.pending(), isTrue);
+    });
+
+    testWidgets('entre etapas não oferece convite nem consome pending', (
+      tester,
+    ) async {
+      final invite = FakeAccountInviteRepository();
+      final template = sampleSpeedruns[1];
+      final base = SpeedrunPaces.withTime(template, sampleSpeedrunTime);
+      await open(
+        tester,
+        fresh: true,
+        invite: invite,
+        journey: FakeJourneyRepository(speedruns: [template]),
+        marathon: (speedruns) async {
+          final attempt = await speedruns.start(base.id, now());
+          return (attempt.id, 0);
+        },
+      );
+      expect(cubit.state.conclusion!.run!.nextChallenge, isNotNull);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
+      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(await invite.pending(), isTrue);
     });
 
     testWidgets('reaberta (não acabou agora), não convida', (tester) async {
       final invite = FakeAccountInviteRepository();
       await open(tester, invite: invite);
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
       expect(invite.shown, isFalse);
     });
 
@@ -570,6 +616,7 @@ void main() {
         accounts: FakeAccountRepository(account: FakeAccountRepository.google),
       );
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
       expect(invite.shown, isFalse);
     });
   });

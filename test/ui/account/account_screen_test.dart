@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,7 +8,6 @@ import 'package:lucena/data/repositories/account/account_repository.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/repositories/sync/sync_scheduler.dart';
 import 'package:lucena/domain/models/account.dart';
-import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/account/widgets/account_screen.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
@@ -25,7 +26,9 @@ void main() {
     onboarding = FakeOnboardingRepository();
   });
 
-  Future<void> pumpAccount(WidgetTester tester) async {
+  /// [from] uma rota (a aula do link, T84): a conta abre por cima de uma
+  /// tela de base, pelo `push`.
+  Future<void> pumpAccount(WidgetTester tester, {String? from}) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(412, 915);
     addTearDown(tester.view.reset);
@@ -41,7 +44,19 @@ void main() {
               RepositoryProvider<OnboardingRepository>.value(value: onboarding),
               RepositoryProvider<SyncScheduler>.value(value: scheduler),
             ],
-            child: const AccountScreen(),
+            child: from == null
+                ? const AccountScreen()
+                : const Scaffold(body: Text('base')),
+          ),
+        ),
+        GoRoute(
+          path: Routes.accountEnter,
+          builder: (_, state) => MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AccountRepository>.value(value: accounts),
+              RepositoryProvider<SyncScheduler>.value(value: scheduler),
+            ],
+            child: AccountScreen(from: state.uri.queryParameters['from']!),
           ),
         ),
         GoRoute(
@@ -62,17 +77,73 @@ void main() {
     );
     await tester.pumpWidget(TestApp(router: router, child: const SizedBox()));
     await tester.pumpAndSettle();
+    if (from != null) {
+      unawaited(router.push(Routes.accountEnterFrom(from)));
+      await tester.pumpAndSettle();
+    }
   }
 
-  testWidgets('mostra o convite, o que se ganha e que é opcional', (
-    tester,
-  ) async {
+  BuildContext top(WidgetTester tester) =>
+      tester.element(find.byType(Scaffold).last);
+
+  group('aberta de uma rota (a aula do link, T84)', () {
+    const lesson = '/aula/rook.lucena';
+
+    testWidgets('o título fala da aula e some o "sem conta, tudo continua"', (
+      tester,
+    ) async {
+      await pumpAccount(tester, from: lesson);
+      expect(
+        find.text('Create your account to access the free lesson'),
+        findsOneWidget,
+      );
+      expect(find.text('It takes less than a minute.'), findsOneWidget);
+      expect(find.text('Save your progress'), findsNothing);
+      expect(find.byIcon(Icons.cloud_done), findsOneWidget);
+      expect(find.byIcon(Icons.devices_other), findsOneWidget);
+      expect(find.byIcon(Icons.wifi_off), findsNothing);
+    });
+
+    testWidgets('o e-mail toma o lugar da conta: voltar volta à base', (
+      tester,
+    ) async {
+      await pumpAccount(tester, from: lesson);
+      await tester.tap(find.byKey(AccountKeys.toSignIn));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'rota-email /conta/email?from=%2Faula%2Frook.lucena&entrar=1',
+        ),
+        findsOneWidget,
+      );
+      GoRouter.of(top(tester)).pop();
+      await tester.pumpAndSettle();
+      expect(find.text('base'), findsOneWidget);
+    });
+
+    testWidgets('Google: "Seu perfil" toma o lugar da conta', (tester) async {
+      await pumpAccount(tester, from: lesson);
+      await tester.tap(find.byKey(AccountKeys.google));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('rota-dados /conta/dados?from=%2Faula%2Frook.lucena&novo=1'),
+        findsOneWidget,
+      );
+      GoRouter.of(top(tester)).pop();
+      await tester.pumpAndSettle();
+      expect(find.text('base'), findsOneWidget);
+    });
+  });
+
+  testWidgets('mostra o título, o que se ganha e que é grátis, sem vender '
+      'o "sem conta"', (tester) async {
     await pumpAccount(tester);
-    expect(find.text('Want to keep your progress?'), findsOneWidget);
-    expect(find.textContaining('optional'), findsOneWidget);
+    expect(find.text('Save your progress'), findsOneWidget);
+    expect(find.textContaining('free'), findsOneWidget);
     expect(find.byIcon(Icons.cloud_done), findsOneWidget);
     expect(find.byIcon(Icons.devices_other), findsOneWidget);
-    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    expect(find.byIcon(Icons.wifi_off), findsNothing);
+    expect(find.textContaining('without an account'), findsNothing);
   });
 
   testWidgets('entrar com o Google (conta vazia) segue para "Seu perfil"', (
@@ -95,7 +166,7 @@ void main() {
     await pumpAccount(tester);
     await tester.tap(find.byKey(AccountKeys.google));
     await tester.pumpAndSettle();
-    expect(find.byKey(AccountKeys.screen), findsOneWidget);
+    expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     expect(find.byType(SnackBar), findsNothing);
   });
 
@@ -115,7 +186,7 @@ void main() {
       await tester.tap(find.byKey(AccountKeys.google));
       await tester.pump();
       expect(find.text(message), findsOneWidget);
-      expect(find.byKey(AccountKeys.screen), findsOneWidget);
+      expect(find.byKey(AccountKeys.enterScreen), findsOneWidget);
     });
   }
 
@@ -140,25 +211,13 @@ void main() {
     );
   });
 
-  for (final key in [AccountKeys.later, AccountKeys.close]) {
-    testWidgets('${key.toString()} segue para o objetivo', (tester) async {
-      await pumpAccount(tester);
-      await tester.tap(find.byKey(key));
-      await tester.pumpAndSettle();
-      expect(find.text('rota-objetivo'), findsOneWidget);
-    });
-  }
-
-  testWidgets('na primeira abertura, o app fechado aqui volta aqui', (
+  testWidgets('fechar segue para o objetivo e não há "Agora não"', (
     tester,
   ) async {
-    onboarding = FakeOnboardingRepository(const Onboarding());
     await pumpAccount(tester);
-    expect(onboarding.saved.stage, OnboardingStage.account);
-  });
-
-  testWidgets('com a primeira abertura feita, não mexe nela', (tester) async {
-    await pumpAccount(tester);
-    expect(onboarding.saved.stage, OnboardingStage.tour);
+    expect(find.byKey(AccountKeys.later), findsNothing);
+    await tester.tap(find.byKey(AccountKeys.close));
+    await tester.pumpAndSettle();
+    expect(find.text('rota-objetivo'), findsOneWidget);
   });
 }

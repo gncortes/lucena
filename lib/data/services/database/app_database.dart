@@ -34,6 +34,10 @@ class Profiles extends Table {
   TextColumn get photo => text().nullable()();
   TextColumn get photoUrl => text().nullable()();
 
+  /// Quando o Lichess foi ligado (`UserProfile.lichessLinkedAt`). Desde a
+  /// versão 14.
+  DateTimeColumn get lichessLinkedAt => dateTime().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -150,7 +154,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? LazyDatabase(() => driftDatabase(name: 'lucena')));
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -226,6 +230,10 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           "UPDATE profiles SET photo = 'google' WHERE google_photo = 1",
         );
+      }
+      // 13 -> 14: a data do vínculo com o Lichess.
+      if (from < 14) {
+        await migrator.addColumn(profiles, profiles.lichessLinkedAt);
       }
     },
   );

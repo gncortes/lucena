@@ -24,6 +24,9 @@ class BoardViewport extends StatelessWidget {
       MediaQuery.sizeOf(context).height -
       MediaQuery.viewPaddingOf(context).vertical;
 
+  static double? centerYOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_BoardViewportData>()?.centerY;
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) => _BoardViewportData(
@@ -202,6 +205,7 @@ class CenteredBoardLayout extends StatelessWidget {
     this.aboveInset = 0,
     this.centerY,
     this.minBoardSide,
+    this.scrollPhysics,
     this.balanced = false,
     this.measureBlock = false,
     super.key,
@@ -239,6 +243,8 @@ class CenteredBoardLayout extends StatelessWidget {
   /// Se definido, permite rolar quando o centro pedido não comporta um
   /// tabuleiro deste lado e o conteúdo superior na altura natural.
   final double? minBoardSide;
+
+  final ScrollPhysics? scrollPhysics;
 
   /// O bloco (reserva de cima, tabuleiro, reserva de baixo) fica centrado
   /// entre o topo da área e o rodapé, com a sobra meio a meio; ignora
@@ -279,8 +285,10 @@ class CenteredBoardLayout extends StatelessWidget {
     );
     if (minBoardSide == null) return layout();
     return LayoutBuilder(
-      builder: (context, box) =>
-          SingleChildScrollView(child: layout(viewportHeight: box.maxHeight)),
+      builder: (context, box) => SingleChildScrollView(
+        physics: scrollPhysics,
+        child: layout(viewportHeight: box.maxHeight),
+      ),
     );
   }
 }
@@ -454,13 +462,25 @@ class _RenderCenteredBoard extends RenderBox
         centerY: config.centerY,
       );
       final side = min(minimum, max(0.0, width - 2 * config.gutter));
-      if (geometry.side < side || geometry.roomAbove + .01 < topHeight) {
+      bottom?.layout(
+        BoxConstraints.tightFor(width: width),
+        parentUsesSize: true,
+      );
+      final bottomHeight = max(config.reserveBottom, bottom?.size.height ?? 0);
+      if (geometry.side < side ||
+          geometry.roomAbove + .01 < max(topHeight, config.reserveTop) ||
+          geometry.roomBelow + .01 < bottomHeight) {
         // O centro da tela é fisicamente inviável. Preserva tamanho e texto,
         // e a rolagem externa torna o rodapé alcançável.
-        final boardTop = topHeight + config.gap;
+        final topExtent = max(topHeight, config.reserveTop) + config.gap;
+        final center = max(config.centerY ?? 0, topExtent + side / 2);
+        final boardTop = center - side / 2;
         size = Size(
           width,
-          max(size.height, boardTop + side + config.gap + footerHeight),
+          max(
+            size.height,
+            boardTop + side + config.gap + bottomHeight + footerHeight,
+          ),
         );
         if (footer != null) {
           _place(footer, Offset(0, size.height - footerHeight));
@@ -471,6 +491,8 @@ class _RenderCenteredBoard extends RenderBox
           centerY: boardTop + side / 2,
           gap: config.gap,
           gutter: config.gutter,
+          reserveTop: config.reserveTop,
+          reserveBottom: bottomHeight,
           maxBoard: side,
           minFraction: 1,
         );

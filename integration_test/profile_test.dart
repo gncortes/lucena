@@ -36,8 +36,10 @@ void main() {
     await home.expectVisible();
     await $(HomeKeys.goalTitle).waitUntilVisible();
     final before = $.tester.widget<Text>(find.byKey(HomeKeys.goalTitle)).data;
-    // "Aprender finais": as Aulas de finais saem da lista.
-    expect(find.byKey(HomeKeys.endgamesButton), findsNothing);
+    // "Aprender finais": o Curso de finais é o primeiro atalho.
+    await $(HomeKeys.endgamesButton).scrollTo();
+    double top(Key key) => $.tester.getTopLeft(find.byKey(key)).dy;
+    expect(top(HomeKeys.endgamesButton), lessThan(top(HomeKeys.catalogButton)));
 
     await home.openSettings();
     final profile = ProfileRobot($);
@@ -50,8 +52,9 @@ void main() {
       $.tester.widget<Text>(find.byKey(HomeKeys.goalTitle)).data,
       isNot(before),
     );
-    await $(HomeKeys.endgamesButton).scrollTo();
-    expect(find.byKey(HomeKeys.catalogButton), findsNothing);
+    // "Treinar finais": agora o treino vem antes do curso.
+    await $(HomeKeys.catalogButton).scrollTo();
+    expect(top(HomeKeys.catalogButton), lessThan(top(HomeKeys.endgamesButton)));
   });
 
   patrolTest('editar apelido e rating e reiniciar: mantidos', ($) async {
@@ -67,12 +70,12 @@ void main() {
     await profile.chooseLevel(RatingLevel.advanced);
     profile.expectFields(name: 'Ana', rating: RatingLevel.advanced.rating);
     await profile.close();
-    await profile.expectSummary('Ana · Avançado');
+    await profile.expectSummary('Sem conta · ${RatingLevel.advanced.rating}');
 
     await app.restart();
 
     await home.openSettings();
-    await profile.expectSummary('Ana · Avançado');
+    await profile.expectSummary('Sem conta · ${RatingLevel.advanced.rating}');
     await profile.open();
     profile.expectFields(name: 'Ana', rating: RatingLevel.advanced.rating);
   });
@@ -88,14 +91,16 @@ void main() {
     await profile.enterNickname('Ana');
     await profile.saveData();
     await profile.close();
-    await profile.expectSummary('Ana · Casual');
+    await profile.expectSummary('Sem conta · ${RatingLevel.casual.rating}');
 
     await profile.open();
     await profile.enterNickname('');
     await profile.saveData();
     await profile.close();
 
-    await profile.expectSummary('Jogador · Casual');
+    await profile.expectSummary('Sem conta · ${RatingLevel.casual.rating}');
+    await profile.open();
+    profile.expectFields(name: 'Jogador', rating: RatingLevel.casual.rating);
   });
 
   patrolTest('"Seus dados" fechado sem salvar: nada muda', ($) async {

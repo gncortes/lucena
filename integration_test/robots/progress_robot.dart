@@ -8,6 +8,7 @@ import 'package:lucena/ui/core/keys/profile_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:patrol/patrol.dart';
 
+import 'home_robot.dart';
 import 'conclusion_robot.dart';
 import 'variant.dart';
 
@@ -23,7 +24,11 @@ class ProgressRobot {
   /// terminar de contar.
   Future<int> rating() async {
     await _backHome();
-    await $(HomeKeys.ratingValue).scrollTo();
+    // A lista guarda a rolagem: ao voltar de "Outros modos" o cartão do jogador
+    // pode estar acima da tela.
+    if (find.byKey(HomeKeys.ratingValue).hitTestable().evaluate().isEmpty) {
+      await $(HomeKeys.ratingValue).scrollTo(scrollDirection: AxisDirection.up);
+    }
     await $.pumpAndSettle();
     final value = $.tester.widget<Text>(find.byKey(HomeKeys.ratingValue)).data!;
     return int.parse(value);
@@ -147,7 +152,7 @@ class ProgressRobot {
   }
 
   Future<void> openAchievements() async {
-    await $(HomeKeys.achievementsButton).tap();
+    await openFromAllModes($, 'achievements');
     await $(AchievementsKeys.screen).waitUntilVisible();
   }
 

@@ -1,13 +1,14 @@
 /// As telas da primeira abertura, na ordem da loja (decisão 1a da E1.11):
-/// o tour, "O que você quer fazer?" e "Seu nível". Quem veio de um link passa
-/// pela conta entre o tour e a pergunta.
+/// o tour, "O que você quer fazer?" e "Seu nível". A conta não é mais uma
+/// etapa: o convite vem depois da 1ª vitória (T83 A3).
 enum OnboardingStage {
   tour,
-  account,
   goal,
   level;
 
-  static OnboardingStage? fromCode(Object? code) => values.asNameMap()[code];
+  /// `account` (etapa antiga, já gravada em aparelhos) segue como [goal].
+  static OnboardingStage? fromCode(Object? code) =>
+      code == 'account' ? goal : values.asNameMap()[code];
 }
 
 /// O tour da primeira abertura: em que passo está, se terminou e o degrau
@@ -22,11 +23,17 @@ class Onboarding {
     this.inProgress = false,
     this.linkSetupDone = false,
     this.stage = OnboardingStage.tour,
+    this.boardControlsDone = false,
+    this.boardControlsOpen = false,
+    this.boardControlsFen,
   });
 
   /// A tela da primeira abertura em que a pessoa está: o app fechado volta
   /// nela.
   final OnboardingStage stage;
+  final bool boardControlsDone;
+  final bool boardControlsOpen;
+  final String? boardControlsFen;
 
   /// O tour já foi visto ou pulado.
   final bool done;
@@ -58,8 +65,14 @@ class Onboarding {
     bool? inProgress,
     bool? linkSetupDone,
     OnboardingStage? stage,
+    bool? boardControlsDone,
+    bool? boardControlsOpen,
+    String? boardControlsFen,
   }) => Onboarding(
     stage: stage ?? this.stage,
+    boardControlsDone: boardControlsDone ?? this.boardControlsDone,
+    boardControlsOpen: boardControlsOpen ?? this.boardControlsOpen,
+    boardControlsFen: boardControlsFen ?? this.boardControlsFen,
     selectedRating: selectedRating == null
         ? this.selectedRating
         : selectedRating(),
@@ -81,7 +94,10 @@ class Onboarding {
       other.byHand == byHand &&
       other.inProgress == inProgress &&
       other.linkSetupDone == linkSetupDone &&
-      other.stage == stage;
+      other.stage == stage &&
+      other.boardControlsDone == boardControlsDone &&
+      other.boardControlsOpen == boardControlsOpen &&
+      other.boardControlsFen == boardControlsFen;
 
   @override
   int get hashCode => Object.hash(
@@ -93,5 +109,8 @@ class Onboarding {
     inProgress,
     linkSetupDone,
     stage,
+    boardControlsDone,
+    boardControlsOpen,
+    boardControlsFen,
   );
 }

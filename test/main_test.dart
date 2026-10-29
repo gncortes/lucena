@@ -1,5 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
+
+import '../testing/fakes/fake_endgame_repositories.dart';
+
 import 'package:lucena/ui/core/keys/history_keys.dart';
 import 'package:lucena/ui/core/keys/rating_keys.dart';
 import 'package:lucena/ui/core/widgets/character_avatar.dart';
@@ -13,6 +19,7 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/app_theme_mode.dart';
 import 'package:lucena/domain/models/game_snapshot.dart';
 import 'package:lucena/domain/models/user_profile.dart';
+import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/main.dart';
 import 'package:chessground/chessground.dart';
@@ -20,6 +27,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:lucena/ui/core/keys/catalog_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
 import 'package:lucena/ui/core/keys/game_setup_keys.dart';
+import 'package:lucena/ui/core/keys/all_modes_keys.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
 import 'package:lucena/ui/core/keys/account_keys.dart';
 import 'package:lucena/ui/core/keys/profile_keys.dart';
@@ -34,7 +42,16 @@ import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 
+import 'package:lucena/domain/models/push_alert.dart';
+import 'package:lucena/ui/core/keys/featured_keys.dart';
+
+import '../testing/fakes/fake_analytics_repository.dart';
 import '../testing/fakes/fake_deep_link_service.dart';
+import '../testing/fakes/fake_push_repository.dart';
+
+import 'package:lucena/ui/core/keys/goal_keys.dart';
+import 'package:lucena/ui/core/keys/board_controls_keys.dart';
+
 import '../testing/fakes/fake_onboarding_repository.dart';
 
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
@@ -45,6 +62,11 @@ import '../testing/fakes/fake_profile_repository.dart';
 import '../testing/fakes/fake_settings_repository.dart';
 import '../testing/fakes/fake_star_challenge_repository.dart';
 import '../testing/test_dependencies.dart';
+
+class _UnavailableEndgames extends FakeEndgameLessonRepository {
+  @override
+  Future<EndgameTrail> trail() async => throw const LessonContentUnavailable();
+}
 
 void main() {
   void useSystemLocale(WidgetTester tester, Locale locale) {
@@ -61,6 +83,10 @@ void main() {
     FakeStarChallengeRepository? stars,
     FakeDeepLinkService? links,
     OnboardingRepository? onboarding,
+    FakePushRepository? push,
+    FakeAnalyticsRepository? analytics,
+    FakeEndgameLessonRepository? endgameLessons,
+    FakeEndgameProgressRepository? endgameProgress,
   }) async {
     await tester.pumpWidget(
       LucenaApp(
@@ -71,6 +97,10 @@ void main() {
           ongoingGameRepository: games,
           starChallengeRepository: stars,
           onboardingRepository: onboarding,
+          pushRepository: push,
+          analyticsRepository: analytics,
+          endgameLessonRepository: endgameLessons,
+          endgameProgressRepository: endgameProgress,
           deepLinkRepository: links == null
               ? null
               : ServiceDeepLinkRepository(links),
@@ -82,6 +112,48 @@ void main() {
 
   String textOf(WidgetTester tester, Key key) =>
       tester.widget<Text>(find.byKey(key)).data!;
+
+  testWidgets('sem pacote de aula, abre o início e preserva a retomada salva', (
+    tester,
+  ) async {
+    const saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 1,
+        part: 'example',
+      ),
+    );
+    final progress = FakeEndgameProgressRepository(saved);
+    await pumpApp(
+      tester,
+      endgameLessons: FakeEndgameLessonRepository(trail: EndgameTrail.empty),
+      endgameProgress: progress,
+    );
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(identical(progress.saved, saved), isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('falha no download adia retomada e mantém o início navegável', (
+    tester,
+  ) async {
+    const saved = EndgameProgress(
+      ongoing: LessonCheckpoint(
+        lessonId: 'rook.lucena',
+        step: 1,
+        part: 'example',
+      ),
+    );
+    final progress = FakeEndgameProgressRepository(saved);
+    await pumpApp(
+      tester,
+      endgameLessons: _UnavailableEndgames(),
+      endgameProgress: progress,
+    );
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    expect(identical(progress.saved, saved), isTrue);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('abre na tela inicial', (tester) async {
     await pumpApp(tester);
@@ -299,18 +371,18 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await pumpApp(tester);
-    final small = tester.getSize(find.byKey(HomeKeys.whereBoard)).width;
+    final small = tester.getSize(find.byKey(HomeKeys.heroBoard)).width;
 
-    await tester.ensureVisible(find.byKey(HomeKeys.whereContinue));
+    await tester.ensureVisible(find.byKey(HomeKeys.goalAction));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(HomeKeys.whereContinue));
+    await tester.tap(find.byKey(HomeKeys.goalAction));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 150));
 
     // No meio do caminho: um tabuleiro só, entre o pequeno e o grande, e o
     // retrato fora dos dois cartões.
     final screen = tester.getSize(find.byType(MaterialApp)).width;
-    // O maior tabuleiro: a miniatura do final do dia continua na home.
+    // O maior tabuleiro: as outras miniaturas continuam na home.
     final flying = [
       for (final board in find.byType(StaticChessboard).evaluate())
         tester.getSize(find.byWidget(board.widget)).width,
@@ -340,7 +412,7 @@ void main() {
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
     expect(find.byKey(JourneyKeys.challengeScreen), findsNothing);
-    expect(find.byKey(HomeKeys.whereContinue), findsOneWidget);
+    expect(find.byKey(HomeKeys.goalAction), findsOneWidget);
   });
 
   testWidgets('tocar no cartão do jogador abre os detalhes do rating, e '
@@ -408,27 +480,19 @@ void main() {
     expect(profile.profile.nickname, 'Ana');
   });
 
-  testWidgets('o botão da tela inicial abre o tabuleiro livre', (tester) async {
-    useSystemLocale(tester, const Locale('pt', 'BR'));
-    await pumpApp(tester);
+  testWidgets(
+    'Todos os modos, pelo "Ver mais" dos atalhos, abre o tabuleiro livre',
+    (tester) async {
+      useSystemLocale(tester, const Locale('pt', 'BR'));
+      await pumpApp(tester);
 
-    expect(
-      find.descendant(
-        of: find.byKey(HomeKeys.freeBoardButton),
-        matching: find.text('Tabuleiro livre'),
-      ),
-      findsOneWidget,
-    );
+      await openFreeBoardFromHome(tester);
 
-    await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(HomeKeys.freeBoardButton));
-    await tester.pumpAndSettle();
-
-    expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
-    expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
-    expect(find.text('Brancas jogam'), findsNothing);
-  });
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.turn), findsOneWidget);
+      expect(find.text('Brancas jogam'), findsNothing);
+    },
+  );
 
   group('partida em andamento', () {
     const startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -488,10 +552,7 @@ void main() {
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
       expect(find.byKey(FreeBoardKeys.screen), findsNothing);
 
-      await tester.ensureVisible(find.byKey(HomeKeys.freeBoardButton));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(HomeKeys.freeBoardButton));
-      await tester.pumpAndSettle();
+      await openFreeBoardFromHome(tester);
       // A partida guardada: o aviso pergunta antes (decisão 1 do Gabriel).
       expect(find.byKey(FreeBoardKeys.savedGameSheet), findsOneWidget);
       await tester.tap(find.byKey(FreeBoardKeys.savedGameContinue));
@@ -635,7 +696,55 @@ void main() {
       expect(find.byKey(TourKeys.screen), findsNothing);
     });
 
-    testWidgets('um link quebrado cai na tela inicial', (tester) async {
+    testWidgets('link frio tem prioridade sobre partida e push pendentes', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(
+            startFen:
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: ['e2e4', 'e7e5'],
+          ),
+        ),
+        push: FakePushRepository(
+          initial: PushOpening(link: Uri.parse('https://playlucena.com/daily')),
+        ),
+        links: FakeDeepLinkService(initial: challenge(locked: true).uri),
+      );
+      expect(find.byKey(ChallengeKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.screen), findsNothing);
+    });
+
+    testWidgets('link inválido frio permite voltar à partida salva', (
+      tester,
+    ) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        games: FakeOngoingGameRepository(
+          const GameSnapshot(
+            startFen:
+                'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+            moves: ['e2e4', 'e7e5'],
+          ),
+        ),
+        links: FakeDeepLinkService(
+          initial: Uri.parse('https://playlucena.com/p/bad?fen=bad'),
+        ),
+      );
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
+      expect(find.byKey(FreeBoardKeys.move(1)), findsOneWidget);
+    });
+
+    testWidgets('um link quebrado mostra erro sobre a tela inicial', (
+      tester,
+    ) async {
       phone(tester);
       await pumpApp(
         tester,
@@ -643,18 +752,103 @@ void main() {
           initial: Uri.parse('https://playlucena.com/p/abcde?fen=lixo'),
         ),
       );
+      expect(find.byKey(ChallengeKeys.invalidScreen), findsOneWidget);
+      await tester.tap(find.byKey(ChallengeKeys.invalidBack));
+      await tester.pumpAndSettle();
       expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+  });
+
+  testWidgets(
+    'primeira abertura pergunta intenção e oferece controles sem tour',
+    (tester) async {
+      final onboarding = FakeOnboardingRepository(
+        const Onboarding(stage: OnboardingStage.goal),
+      );
+      await pumpApp(tester, onboarding: onboarding);
+      expect(find.byKey(GoalKeys.screen), findsOneWidget);
+      expect(find.byKey(TourKeys.screen), findsNothing);
+      await tester.tap(find.byKey(GoalKeys.option(GoalPreference.learn)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(GoalKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BoardControlsKeys.screen), findsOneWidget);
+      await tester.tap(find.byKey(BoardControlsKeys.continueButton));
+      await tester.pumpAndSettle();
+      expect(onboarding.saved.boardControlsDone, isTrue);
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    },
+  );
+  group('push (E1.19 3.8)', () {
+    void phone(WidgetTester tester) {
+      tester.view.physicalSize = const Size(412, 917) * 3;
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('app fechado: o toque abre o torneio e conta o envio', (
+      tester,
+    ) async {
+      phone(tester);
+      final analytics = FakeAnalyticsRepository();
+      await pumpApp(
+        tester,
+        analytics: analytics,
+        push: FakePushRepository(
+          initial: PushOpening(
+            link: Uri.parse('/featured/tournament/live'),
+            pushId: 'p1',
+            country: 'BR',
+          ),
+        ),
+      );
+
+      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
+      final event = analytics.eventsNamed('push_aberto').single;
+      expect(event.params, {'push_id': 'p1', 'pais': 'BR'});
+    });
+
+    testWidgets('link que esta versão não tem: abre no início', (tester) async {
+      phone(tester);
+      await pumpApp(
+        tester,
+        push: FakePushRepository(
+          initial: PushOpening(link: Uri.parse('/featured/ranking/2026')),
+        ),
+      );
+
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('em segundo plano: o toque em Ver torneio abre o torneio', (
+      tester,
+    ) async {
+      phone(tester);
+      final push = FakePushRepository();
+      await pumpApp(tester, push: push);
+
+      push.open(Uri.parse('/featured/tournament/live'), pushId: 'p2');
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(FeaturedKeys.tournamentScreen), findsOneWidget);
     });
   });
 }
 
-/// O nome do botão da Jornada na tela inicial, no idioma da tela.
-String? journeyLabel(WidgetTester tester) => tester
-    .widgetList<Text>(
-      find.descendant(
-        of: find.byKey(HomeKeys.journeyButton),
-        matching: find.byType(Text),
-      ),
-    )
-    .first
-    .data;
+/// O lugar do cartão azul da tela inicial (a Jornada), no idioma da tela.
+String? journeyLabel(WidgetTester tester) =>
+    tester.widget<Text>(find.byKey(HomeKeys.heroLabel)).data;
+
+/// O tabuleiro livre saiu da tela inicial (T83): abre por "Todos os modos",
+/// no "Ver mais" dos atalhos.
+Future<void> openFreeBoardFromHome(WidgetTester tester) async {
+  await tester.ensureVisible(find.byKey(HomeKeys.shortcutsSeeMore));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(HomeKeys.shortcutsSeeMore));
+  await tester.pumpAndSettle();
+  final item = find.byKey(AllModesKeys.item('freeBoard'));
+  await tester.scrollUntilVisible(item, 200);
+  await tester.pumpAndSettle();
+  await tester.tap(item);
+  await tester.pumpAndSettle();
+}

@@ -1,14 +1,11 @@
-import 'dart:io' as io;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucena/data/repositories/endgames/endgame_lesson_repository_asset.dart';
 import 'package:lucena/data/repositories/endgames/visible_endgame_lesson_repository.dart';
-import 'package:lucena/data/repositories/school/lesson_repository_asset.dart';
-import 'package:lucena/data/services/asset_service.dart';
 import 'package:lucena/domain/models/survey.dart';
+import 'package:lucena/domain/models/endgame_lesson.dart';
+import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/survey_keys.dart';
@@ -20,11 +17,6 @@ import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_endgame_repositories.dart';
 import '../../../testing/fakes/fake_survey_repository.dart';
 import '../../../testing/test_app.dart';
-
-class _Assets extends AssetService {
-  @override
-  Future<String> loadString(String path) => io.File(path).readAsString();
-}
 
 void main() {
   late FakeSurveyRepository surveys;
@@ -53,7 +45,7 @@ void main() {
   ) async {
     await pumpCard(tester, SurveyKind.endgames);
     expect(find.byKey(SurveyKeys.invite(SurveyKind.endgames)), findsOneWidget);
-    expect(find.text('O que achou das aulas?'), findsOneWidget);
+    expect(find.text('O que achou do curso?'), findsOneWidget);
     expect(find.text('Responder'), findsOneWidget);
 
     await surveys.saveResponse(
@@ -125,7 +117,7 @@ void main() {
     expect(Routes.survey(SurveyKind.endgames), '/survey/endgames');
   });
 
-  testWidgets('a trilha real: só as aulas visíveis, sem "em breve" nem '
+  testWidgets('a trilha sintética: só as aulas visíveis, sem "em breve" nem '
       '"avise", e o convite depois do último tile', (tester) async {
     tester.view
       ..devicePixelRatio = 1
@@ -133,9 +125,40 @@ void main() {
     addTearDown(tester.view.reset);
     final cubit = EndgamesCubit(
       lessons: VisibleEndgameLessonRepository(
-        AssetEndgameLessonRepository(
-          _Assets(),
-          school: AssetLessonRepository(_Assets()),
+        FakeEndgameLessonRepository(
+          trail: EndgameTrail(
+            modules: [
+              EndgameModule(
+                id: 'rook',
+                lessons: [
+                  EndgameLesson(
+                    id: 'rook.lucena',
+                    module: 'rook',
+                    lesson: Lesson.parted(
+                      id: 'rook.lucena',
+                      parts: const [
+                        LessonPart(
+                          id: 'example',
+                          steps: [],
+                          script: 'synthetic.json',
+                        ),
+                      ],
+                    ),
+                    exercises: const [],
+                    passScore: 0,
+                    keyPositions: const [],
+                    practice: FakeEndgameLessonRepository
+                        .sample
+                        .modules
+                        .first
+                        .lessons
+                        .first
+                        .practice,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       progress: FakeEndgameProgressRepository(),

@@ -161,6 +161,7 @@ class GameSetupCubit extends Cubit<GameSetupState> {
     required PositionGoal goal,
     String? positionId,
     this._link,
+    this.initialBlind = false,
   }) : super(
          GameSetupState(
            position: position,
@@ -180,6 +181,7 @@ class GameSetupCubit extends Cubit<GameSetupState> {
 
   /// O desafio que preenche a configuração (aberto por link).
   final ChallengeLink? _link;
+  final bool initialBlind;
 
   Future<void> load() async {
     var setup = await _training.loadSetup();
@@ -187,6 +189,14 @@ class GameSetupCubit extends Cubit<GameSetupState> {
     // gravar, para não trocar a configuração de quem abriu).
     final link = _link;
     if (link != null) setup = _withLink(setup, link);
+    if (link == null && initialBlind) {
+      setup = setup.copyWith(
+        blind: true,
+        opponent: setup.opponent == OpponentKind.twoPlayers
+            ? OpponentKind.maia
+            : setup.opponent,
+      );
+    }
     final profile = await _profile.load();
     // Com partidas contadas, a sugestão vem do rating; antes, da faixa.
     final history = await _rating?.history() ?? const [];

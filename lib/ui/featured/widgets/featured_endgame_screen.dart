@@ -29,6 +29,7 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../view_models/featured_endgame_cubit.dart';
 import '../view_models/find_move_cubit.dart';
+import 'featured_card.dart';
 import 'featured_game_bar.dart';
 import 'featured_labels.dart';
 import 'find_move_screen.dart';
@@ -269,6 +270,7 @@ class _Heading extends StatelessWidget {
             orientation: endgame.userSide,
             coordinates: true,
             radius: 0,
+            heroTag: featuredBoardTag(endgame.id),
           ),
         ),
       ],

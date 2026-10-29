@@ -1,0 +1,70 @@
+---
+import { links } from '../i18n';
+---
+
+<section id="link-fallback" class="link-fallback" hidden aria-labelledby="link-title">
+  <h1 id="link-title">Desafio compartilhado</h1>
+  <p id="link-context">Abra no Lucena para conferir a posição e a configuração antes de jogar.</p>
+  <div id="link-preview" class="link-board" role="img" aria-label="Posição do desafio"></div>
+  <p id="link-turn"></p>
+  <p class="link-actions">
+    <a id="link-open" class="btn">Abrir no Lucena</a>
+    <a class="btn btn--ghost" href={links.tester} rel="noopener">Instalar o Lucena · teste Android</a>
+  </p>
+  <p>Depois de instalar, volte a esta página e toque em “Abrir no Lucena”. O endereço mantém a atividade compartilhada.</p>
+  <p><a href="#main">Conhecer o Lucena</a></p>
+</section>
+
+<script>
+  import { linkFallback, boardPreview } from '../link-fallback.mjs';
+  const link = linkFallback(window.location.href);
+  const section = document.getElementById('link-fallback');
+  if (link && section) {
+    section.hidden = false;
+    document.getElementById('link-open')?.setAttribute('href', link.intent);
+    if (link.daily) {
+      document.getElementById('link-title')!.textContent = 'Final do dia';
+      document.getElementById('link-context')!.textContent =
+        'Abra o Lucena para consultar e jogar o final de hoje. A disponibilidade é informada no app.';
+      document.getElementById('link-preview')!.hidden = true;
+    } else if (link.lesson) {
+      document.getElementById('link-title')!.textContent = 'Aula gratuita';
+      document.getElementById('link-context')!.textContent =
+        'Abra o Lucena para fazer a aula gratuita deste link. A aula abre com uma conta.';
+      document.getElementById('link-preview')!.hidden = true;
+    } else if (link.fen) {
+      const preview = boardPreview(link.fen,new URL(window.location.href).searchParams.get('side') ?? 'white');
+      const board = document.getElementById('link-preview')!;
+      if (preview) {
+        for (const [index,piece] of preview.squares.entries()) {
+          const square = document.createElement('span');
+          square.className = `board-square${(Math.floor(index/8)+index%8)%2 ? ' dark' : ''}`;
+          square.textContent = piece;
+          square.setAttribute('aria-hidden','true');
+          board.appendChild(square);
+        }
+        const turn = preview.turn === 'white' ? 'Brancas jogam' : 'Pretas jogam';
+        document.getElementById('link-turn')!.textContent = turn;
+        board.setAttribute('aria-label',`Posição compartilhada. ${turn}. Confira os detalhes no Lucena.`);
+      } else {
+        board.hidden = true;
+        document.getElementById('link-context')!.textContent = 'Não foi possível mostrar a posição deste link. Abra no Lucena para conferir o desafio ou peça outro link a quem o enviou.';
+      }
+    } else {
+      document.getElementById('link-title')!.textContent = 'Desafio incompleto';
+      document.getElementById('link-context')!.textContent =
+        'Este endereço não contém a posição. Peça outro link a quem compartilhou o desafio.';
+      document.getElementById('link-preview')!.hidden = true;
+    }
+  }
+</script>
+
+<style>
+  .link-fallback { max-width: 48rem; margin: 2rem auto; padding: 1.5rem; }
+  .link-fallback[hidden] { display: none; }
+  .link-actions { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .link-board { display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);width:min(100%,20rem);aspect-ratio:1;margin:1rem 0;border-radius:.5rem;overflow:hidden; }
+  .link-board[hidden] {display:none;}
+  .link-board :global(.board-square) {display:flex;align-items:center;justify-content:center;background:#DEE3E6;color:#151D29;font-size:clamp(1.3rem,7vw,2rem);line-height:1;}
+  .link-board :global(.board-square.dark) {background:#8CA2AD;}
+</style>

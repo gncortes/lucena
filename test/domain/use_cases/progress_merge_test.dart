@@ -172,4 +172,27 @@ void main() {
     expect(ProgressSummary.fromJson(remote.toJson()).toJson(), remote.toJson());
     expect(ProgressSummary.fromJson(const {}).isEmpty, isTrue);
   });
+
+  test('o vínculo do Lichess vai e volta da conta com a data', () {
+    final at = DateTime.utc(2026, 10, 27, 14, 30);
+    final linked = ProgressSummary(
+      profile: UserProfile(lichessUser: 'ana_xadrez', lichessLinkedAt: at),
+    );
+    final back = ProgressSummary.fromJson(linked.toJson());
+    expect(back.profile.lichessUser, 'ana_xadrez');
+    expect(back.profile.lichessLinkedAt, at);
+
+    // Celular novo: a conta traz o usuário e a data juntos.
+    final merged = ProgressMerge.merge(const ProgressSummary(), linked);
+    expect(merged.profile.lichessUser, 'ana_xadrez');
+    expect(merged.profile.lichessLinkedAt, at);
+    // O aparelho já tem outro Lichess: vale o dele, com a data dele.
+    final mine = ProgressSummary(
+      profile: UserProfile(lichessUser: 'outra', lichessLinkedAt: DateTime(1)),
+    );
+    expect(
+      ProgressMerge.merge(mine, linked).profile.lichessLinkedAt,
+      DateTime(1),
+    );
+  });
 }

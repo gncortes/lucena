@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
@@ -7,8 +10,10 @@ import '../../../data/repositories/placement/placement_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/school/lesson_repository.dart';
 import '../../../data/repositories/school/school_progress_repository.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/placement_roadmap.dart';
 import '../../placement/view_models/roadmap_loader.dart';
@@ -63,9 +68,13 @@ class SchoolState {
   /// A próxima aula a fazer: a começada ou a primeira não concluída. Nula
   /// com o curso inteiro concluído.
   String? get next {
-    if (ongoing != null) return ongoing;
+    if (ongoing != null && course.lesson(ongoing!) != null) return ongoing;
     final placed = placedNext;
-    if (placed != null && !completed.contains(placed)) return placed;
+    if (placed != null &&
+        course.lesson(placed) != null &&
+        !completed.contains(placed)) {
+      return placed;
+    }
     for (final lesson in course.lessons) {
       if (!_passed(lesson.id)) return lesson.id;
     }
@@ -126,7 +135,10 @@ class SchoolCubit extends Cubit<SchoolState> {
     this._placement,
     this._endgames,
     this._endgameProgress,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const SchoolState());
+
+  final AnalyticsRepository _analytics;
 
   final PlacementRepository? _placement;
   final EndgameLessonRepository? _endgames;
@@ -141,6 +153,17 @@ class SchoolCubit extends Cubit<SchoolState> {
   final ProfileRepository _profile;
 
   Future<void> load(String language) async {
+    try {
+      await _load(language);
+    } on LessonContentUnavailable {
+      unawaited(
+        _analytics.log(AnalyticsEvents.aulaIndisponivel(origem: 'escola')),
+      );
+      if (!isClosed) emit(const SchoolState(ready: true));
+    }
+  }
+
+  Future<void> _load(String language) async {
     final course = await _lessons.course();
     final texts = await _lessons.texts(language);
     final progress = await _progress.load();

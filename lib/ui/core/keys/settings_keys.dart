@@ -50,6 +50,9 @@ abstract final class SettingsKeys {
 
   /// Entrada da tela de depuração do Maia (só em build de desenvolvimento).
   static const maiaDebugTile = Key('settings.maiaDebug');
+
+  /// A prévia do Pilares do Xadrez (T82), só nas versões de desenvolvimento.
+  static const pilaresPreviewTile = Key('settings.pilaresPreview');
   static const boardBehaviorTile = Key('settings.boardBehavior');
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
 

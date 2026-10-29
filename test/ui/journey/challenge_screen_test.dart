@@ -10,7 +10,6 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/routing/router.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
-import 'package:lucena/ui/core/keys/pace_keys.dart';
 import 'package:lucena/ui/core/widgets/game_board_hero.dart';
 import 'package:lucena/ui/journey/widgets/journey_ui.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
@@ -159,8 +158,6 @@ void main() {
     final start = tester.getRect(find.byKey(JourneyKeys.challengeBoard));
 
     await tester.tap(find.byKey(JourneyKeys.play));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(PaceKeys.confirm));
     await tester.pump();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 16));

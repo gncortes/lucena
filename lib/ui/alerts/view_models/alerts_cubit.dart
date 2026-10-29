@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/alerts/alerts_repository.dart';
+import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
 import '../../../data/repositories/push/push_repository.dart';
+import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../domain/models/alert_settings.dart';
+import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/alerts_rules.dart';
 
 /// Perfil > Avisos (E1.21): as chaves, a hora dos lembretes e o estado da
@@ -16,6 +21,7 @@ class AlertsState {
     this.push = true,
     this.country,
     this.state,
+    this.language,
   });
 
   final bool ready;
@@ -33,18 +39,25 @@ class AlertsState {
   /// O estado do Perfil, se houver.
   final String? state;
 
+  /// O idioma do app (`pt`, `en`), para o tópico `idioma_<xx>`.
+  final String? language;
+
   int get enabled => settings.enabled(push: push);
   int get total => AlertSettings.total(push: push);
 
-  AlertsState copyWith({AlertSettings? settings, bool? permitted}) =>
-      AlertsState(
-        ready: ready,
-        settings: settings ?? this.settings,
-        permitted: permitted ?? this.permitted,
-        push: push,
-        country: country,
-        state: state,
-      );
+  AlertsState copyWith({
+    AlertSettings? settings,
+    bool? permitted,
+    String? language,
+  }) => AlertsState(
+    ready: ready,
+    settings: settings ?? this.settings,
+    permitted: permitted ?? this.permitted,
+    push: push,
+    country: country,
+    state: state,
+    language: language ?? this.language,
+  );
 }
 
 /// Vive no app inteiro: ao abrir, acerta os tópicos com as chaves gravadas.
@@ -55,12 +68,19 @@ class AlertsCubit extends Cubit<AlertsState> {
     required this._alerts,
     required this._push,
     required this._profile,
+    this._reminders,
     this._region,
+    this._analytics = const NoAnalyticsRepository(),
   }) : super(const AlertsState());
+
+  final AnalyticsRepository _analytics;
 
   final AlertsRepository _alerts;
   final PushRepository _push;
   final ProfileRepository _profile;
+  final RemindersRepository? _reminders;
+
+  Future<bool> _permitted() => _reminders?.permitted() ?? _push.permitted();
   final String? Function()? _region;
 
   Future<({String? country, String? state})> _place() async {
@@ -76,7 +96,7 @@ class AlertsCubit extends Cubit<AlertsState> {
 
   Future<void> load() async {
     final settings = await _alerts.load();
-    final permitted = await _push.permitted();
+    final permitted = await _permitted();
     final place = await _place();
     if (isClosed) return;
     emit(
@@ -87,14 +107,22 @@ class AlertsCubit extends Cubit<AlertsState> {
         push: _push.available,
         country: place.country,
         state: place.state,
+        language: state.language,
       ),
     );
     await _follow();
   }
 
+  /// O idioma do app mudou (ou ficou conhecido): reinscreve no `idioma_*`.
+  Future<void> languageChanged(String language) async {
+    if (isClosed || language == state.language) return;
+    emit(state.copyWith(language: language));
+    await _follow();
+  }
+
   /// Relê a permissão (a pessoa voltou dos ajustes do Android).
   Future<void> refresh() async {
-    final permitted = await _push.permitted();
+    final permitted = await _permitted();
     if (isClosed || permitted == state.permitted) return;
     emit(state.copyWith(permitted: permitted));
   }
@@ -102,9 +130,25 @@ class AlertsCubit extends Cubit<AlertsState> {
   /// Grava na hora e acerta os tópicos.
   Future<void> change(AlertSettings settings) async {
     if (settings == state.settings) return;
+    _logSwitches(state.settings, settings);
     emit(state.copyWith(settings: settings));
     await _alerts.save(settings);
     await _follow();
+  }
+
+  // Cada chave que virou: `aviso_chave` (a hora do lembrete não é chave).
+  void _logSwitches(AlertSettings before, AlertSettings after) {
+    for (final (type, was, now) in [
+      ('torneios', before.tournaments, after.tournaments),
+      ('dia', before.daily, after.daily),
+      ('novidades', before.news, after.news),
+      ('aulas', before.lessons, after.lessons),
+    ]) {
+      if (was == now) continue;
+      unawaited(
+        _analytics.log(AnalyticsEvents.avisoChave(tipo: type, ligado: now)),
+      );
+    }
   }
 
   /// A hora dos lembretes, em minutos desde a meia-noite.
@@ -126,16 +170,26 @@ class AlertsCubit extends Cubit<AlertsState> {
         push: state.push,
         country: place.country,
         state: place.state,
+        language: state.language,
       ),
     );
     await _follow();
   }
 
-  Future<void> _follow() => _push.follow(
-    AlertsRules.topics(
-      state.settings,
-      country: state.country,
-      state: state.state,
-    ),
-  );
+  // Uma troca de tópicos por vez: a seguinte usa o estado mais novo.
+  Future<void> _following = Future.value();
+
+  Future<void> _follow() {
+    if (!state.ready) return Future.value();
+    return _following = _following.then(
+      (_) => _push.follow(
+        AlertsRules.topics(
+          state.settings,
+          country: state.country,
+          state: state.state,
+          language: state.language,
+        ),
+      ),
+    );
+  }
 }
