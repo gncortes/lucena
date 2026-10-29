@@ -271,7 +271,9 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
   }
 
   Future<void> hint() async {
-    if (state.phase != TrainingOpeningPhase.playing || state.reviewing) return;
+    if (state.phase != TrainingOpeningPhase.playing || state.reviewing) {
+      return;
+    }
     _pendingHint = true;
     _hints++;
     _counter(hints: 1, flush: false);
@@ -293,7 +295,7 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     if (state.phase != TrainingOpeningPhase.mistakeSaving || _saving) return;
     _saving = true;
     final original = state;
-    final index = (original.cursor - original.line!.initialCursor) ~/ 2;
+    final index = original.line!.questionIndex(original.cursor);
     emit(state.copyWith(error: false));
     try {
       final saved = await repository.transact(config.course, (current) async {
@@ -349,7 +351,9 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
   }
 
   Future<void> play(String uci) async {
-    if (state.phase != TrainingOpeningPhase.playing || state.reviewing) return;
+    if (state.phase != TrainingOpeningPhase.playing || state.reviewing) {
+      return;
+    }
     final step = state.line!.play(state.cursor, uci);
     if (!step.correct) {
       _errors++;
@@ -367,7 +371,7 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
       await _saveMistake();
       return;
     }
-    final done = step.cursor == state.trecho!.moves.length;
+    final done = state.line!.isComplete(step.cursor);
     emit(
       state.copyWith(
         cursor: step.cursor,
@@ -379,9 +383,7 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
                       .saved!
                       .openings[state.lessonId]
                       ?.pendingMistakes[state.trecho!.id]
-                      ?.contains(
-                        (state.cursor - state.line!.initialCursor) ~/ 2,
-                      ) ??
+                      ?.contains(state.line!.questionIndex(state.cursor)) ??
                   false),
         ]),
         failed: false,

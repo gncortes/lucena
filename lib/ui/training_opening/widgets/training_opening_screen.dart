@@ -192,13 +192,14 @@ class _OpeningViewState extends State<_OpeningView> {
                             child: ScriptMoveList(
                               moves: [
                                 for (var i = 0; i < state.cursor; i++)
-                                  ScriptMoveEntry(
-                                    id: '${i + 1}',
-                                    san: state.line!.san[i],
-                                    number: i ~/ 2 + 1,
-                                    side: i.isEven ? Side.white : Side.black,
-                                    variant: false,
-                                  ),
+                                  if (state.line!.moveAt(i) != null)
+                                    ScriptMoveEntry(
+                                      id: '${i + 1}',
+                                      san: state.line!.san[i],
+                                      number: state.line!.moveNumberAt(i),
+                                      side: state.line!.sideAt(i),
+                                      variant: false,
+                                    ),
                               ],
                               currentId: state.shown == 0
                                   ? null
@@ -277,13 +278,15 @@ class _OpeningViewState extends State<_OpeningView> {
     final data = GameData(
       fen: state.fen!,
       playerSide: playing
-          ? (state.trecho!.black ? PlayerSide.black : PlayerSide.white)
+          ? (position.turn == Side.black ? PlayerSide.black : PlayerSide.white)
           : PlayerSide.none,
       sideToMove: position.turn,
       validMoves: playing ? GameRules.legalMoves(position) : const {},
       lastMove: state.shown == 0
           ? null
-          : Move.parse(state.trecho!.moves[state.shown - 1]),
+          : state.line!.moveAt(state.shown - 1) == null
+          ? null
+          : Move.parse(state.line!.moveAt(state.shown - 1)!),
       kingSquareInCheck: GameRules.checkedKing(position),
     );
     final lineId = '${state.lessonId}:${state.trecho!.id}';
@@ -302,7 +305,7 @@ class _OpeningViewState extends State<_OpeningView> {
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
     final hint = playing && state.hint
-        ? Move.parse(state.trecho!.moves[state.cursor])
+        ? Move.parse(state.line!.acceptedAt(state.cursor).first)
         : null;
     Widget board = Directionality(
       textDirection: TextDirection.ltr,

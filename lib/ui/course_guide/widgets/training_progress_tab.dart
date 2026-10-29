@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/models/training/training_course.dart';
+import '../../../domain/use_cases/training/opening_trecho_rules.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/widgets/course/course_item_tile.dart';
@@ -146,13 +147,20 @@ class TrainingProgressTab extends StatelessWidget {
       }
       final cycles = training.cycles;
       final tracks = training.openings;
-      final firmMoves = tracks.values.fold(
+      final openingProgress = [
+        for (final entry in tracks.entries)
+          OpeningTrechoRules.currentProgress(
+            entry.value,
+            data.openings[entry.key] ?? const [],
+          ),
+      ];
+      final firmMoves = openingProgress.fold(
         0,
-        (n, track) => n + track.firmMoves,
+        (n, value) => n + value.firmMoves,
       );
-      final seenMoves = tracks.values.fold(
+      final seenMoves = openingProgress.fold(
         0,
-        (n, track) => n + track.seenMoves,
+        (n, value) => n + value.seenMoves,
       );
       final tests = data.lessons
           .where((l) => l.kind == TrainingLessonKind.test)

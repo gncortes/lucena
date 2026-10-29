@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/training/course_training_repository.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/now.dart';
+import '../../../domain/use_cases/training/opening_trecho_rules.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -75,9 +76,12 @@ class TrainingOpeningsScreen extends StatelessWidget {
                               entry.value.doneTrechos[id] ==
                                   state.saved!.day?.date;
                           final available = index >= 0 && !done;
+                          final progress = OpeningTrechoRules.currentProgress(
+                            entry.value,
+                            bank,
+                          );
                           final allFirm =
-                              bank.isNotEmpty &&
-                              entry.value.doneTrechos.length == bank.length;
+                              bank.isNotEmpty && progress.done == bank.length;
                           final title =
                               state.resources!.lessons
                                   .where((l) => l.id == entry.key)
@@ -123,7 +127,7 @@ class TrainingOpeningsScreen extends StatelessWidget {
                                         ),
                                         Text(
                                           l.trainingOpeningCount(
-                                            entry.value.doneTrechos.length,
+                                            progress.done,
                                             bank.length,
                                           ),
                                         ),

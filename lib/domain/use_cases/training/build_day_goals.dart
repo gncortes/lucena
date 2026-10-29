@@ -5,6 +5,7 @@ import '../../models/training/training_resources.dart';
 import '../../models/training/training_state.dart';
 import '../now.dart';
 import 'training_date.dart';
+import 'opening_trecho_rules.dart';
 
 final class BuildDayGoals {
   const BuildDayGoals(this.now, this.config);
@@ -14,7 +15,9 @@ final class BuildDayGoals {
   TrainingState call(TrainingState state, TrainingResources resources) {
     final at = now();
     final date = trainingDate(at);
-    if (state.day?.date == date) return state;
+    if (state.day?.date == date) {
+      return _reconcileScriptedOpenings(state, resources);
+    }
     final pendingGoals = <String, TrainingGoal>{
       for (final goal in [...state.deferredGoals, ...?state.day?.goals])
         if (!goal.done) goal.key: goal,
@@ -59,6 +62,74 @@ final class BuildDayGoals {
       offDayCredits: [],
       deferredGoals: [],
     );
+  }
+
+  /// A private content refresh can replace legacy IDs during a frozen day.
+  /// Only missing pending segments migrate; the calendar and stored history stay.
+  TrainingState _reconcileScriptedOpenings(
+    TrainingState state,
+    TrainingResources resources,
+  ) {
+    final day = state.day!;
+    var changed = false;
+    final goals = <TrainingGoal>[];
+    for (final goal in day.goals) {
+      if (goal.kind != GoalKind.openings || goal.done) {
+        goals.add(goal);
+        continue;
+      }
+      final items = Map<String, String>.of(goal.items);
+      var replaced = false;
+      for (final entry in goal.items.entries) {
+        final bank = resources.openings[entry.key];
+        final track = state.openings[entry.key];
+        if (bank == null ||
+            track == null ||
+            !bank.any((item) => item.script != null && !item.mock) ||
+            bank.any((item) => item.id == entry.value)) {
+          continue;
+        }
+        // Completing any old segment today already consumed this opening's slot.
+        final completedToday = track.doneTrechos.entries
+            .where((done) => done.value == day.date)
+            .firstOrNull;
+        final id =
+            completedToday?.key ??
+            OpeningTrechoRules(now).next(track, bank)?.id;
+        if (id != null && id != entry.value) {
+          items[entry.key] = id;
+          replaced = true;
+        }
+      }
+      if (!replaced) {
+        goals.add(goal);
+        continue;
+      }
+      changed = true;
+      goals.add(
+        TrainingGoal(
+          kind: goal.kind,
+          ref: goal.ref,
+          itemId: goal.itemId,
+          stars: goal.stars,
+          hintUsed: goal.hintUsed,
+          exerciseError: goal.exerciseError,
+          items: items,
+          done: items.entries.every(
+            (entry) =>
+                state.openings[entry.key]?.doneTrechos[entry.value] == day.date,
+          ),
+          mock: items.entries.any(
+            (entry) =>
+                resources.openings[entry.key]?.any(
+                  (item) => item.id == entry.value && item.mock,
+                ) ??
+                false,
+          ),
+        ),
+      );
+    }
+    return changed ? state.copyWith(day: day.copyWith(goals: goals)) : state;
   }
 
   int lessonsDue(TrainingState state, DateTime at) {

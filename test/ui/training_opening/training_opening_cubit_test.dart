@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/training/day_goals.dart';
 import 'package:lucena/domain/models/training/opening_track.dart';
@@ -80,6 +81,157 @@ void main() {
     await cubit.close();
     await repository.dispose();
   });
+
+  test(
+    'empty authored example is unavailable and never records completion',
+    () async {
+      final empty = OpeningTrecho.fromJson({
+        'id': 't1',
+        'titulo': '',
+        'cor': 'brancas',
+        'exemplo': {'id': 'only', 'fen': GameRules.initial.fen, 'linha': []},
+      });
+      repository.content[TrainingCourse.pilares] = TrainingResources(
+        openings: {
+          'white': [empty],
+          'black': [black],
+        },
+      );
+      await cubit.load(lessonId: 'white');
+      expect(cubit.state.phase, TrainingOpeningPhase.unavailable);
+      final before = repository.writes;
+      await cubit.play('e2e4');
+      await cubit.hint();
+      expect(repository.writes, before);
+      final track = (await repository.load(TrainingCourse.pilares))
+          .openings['white']!;
+      expect(track.firstTry['t1'], isNull);
+      expect(track.firmMoves, 0);
+      expect(track.seenMoves, 0);
+      expect(track.doneTrechos['t1'], isNull);
+    },
+  );
+
+  for (final first in ['e2e4', 'd2d4']) {
+    test(
+      'practice $first requires and persists both authored answers',
+      () async {
+        final trecho = OpeningTrecho.fromJson({
+          'id': 't1',
+          'titulo': 'Practice',
+          'cor': 'brancas',
+          'exemplo': {
+            'id': 'practice',
+            'fen': GameRules.initial.fen,
+            'pratica': {
+              'tipo': 'lance',
+              'maquina': 'b',
+              't': 'practice',
+              'linha': [
+                {
+                  'certos': ['e2e4', 'd2d4'],
+                  'resposta': 'e7e5',
+                },
+                {
+                  'certos': ['g1f3'],
+                },
+              ],
+              'erros': <String, String>{},
+            },
+          },
+        });
+        repository.content[TrainingCourse.pilares] = TrainingResources(
+          openings: {
+            'white': [trecho],
+            'black': [black],
+          },
+        );
+        await cubit.load(lessonId: 'white');
+        await cubit.play(first);
+        expect(cubit.state.phase, TrainingOpeningPhase.playing);
+        expect(cubit.state.cursor, 2);
+        expect(cubit.state.firstTry, [true]);
+        expect(
+          (await repository.load(TrainingCourse.pilares))
+              .openings['white']!
+              .doneTrechos['t1'],
+          isNull,
+        );
+        await cubit.play('g1f3');
+        expect(cubit.state.phase, TrainingOpeningPhase.complete);
+        expect(cubit.state.error, false);
+        expect(cubit.state.firstTry, [true, true]);
+        final saved = await repository.load(TrainingCourse.pilares);
+        expect(saved.openings['white']!.firstTry['t1'], [true, true]);
+        expect(saved.openings['white']!.doneTrechos['t1'], '2026-10-29');
+      },
+    );
+  }
+
+  for (final longerAlternative in [false, true]) {
+    for (final alternate in [false, true]) {
+      test(
+        'authored question saves branch results: longer=$longerAlternative alternate=$alternate',
+        () async {
+          final trecho = branchingTrecho(longerAlternative: longerAlternative);
+          repository.content[TrainingCourse.pilares] = TrainingResources(
+            openings: {
+              'white': [trecho],
+              'black': [black],
+            },
+          );
+          await cubit.load(lessonId: 'white');
+          expect(cubit.state.phase, TrainingOpeningPhase.playing);
+          expect(cubit.state.cursor, 0);
+          final accepted = cubit.state.line!.acceptedAt(0);
+          expect(accepted.length, 2);
+          await cubit.hint();
+          await cubit.play(alternate ? accepted.last : accepted.first);
+          while (cubit.state.phase == TrainingOpeningPhase.playing) {
+            await cubit.play(
+              cubit.state.line!.acceptedAt(cubit.state.cursor).first,
+            );
+          }
+          final count = alternate
+              ? (longerAlternative ? 3 : 1)
+              : (longerAlternative ? 1 : 2);
+          final expected = [false, ...List<bool>.filled(count - 1, true)];
+          expect(cubit.state.phase, TrainingOpeningPhase.complete);
+          expect(cubit.state.error, false);
+          expect(cubit.state.firstTry, expected);
+          final saved = await repository.load(TrainingCourse.pilares);
+          expect(saved.openings['white']!.firstTry['t1'], expected);
+          expect(saved.openings['white']!.doneTrechos['t1'], '2026-10-29');
+        },
+      );
+    }
+  }
+
+  test(
+    'script snapshots use actual question indexes and preserve review',
+    () async {
+      repository.content[TrainingCourse.pilares] = TrainingResources(
+        openings: {
+          'white': [scriptedTrecho()],
+          'black': [black],
+        },
+      );
+      await cubit.load(lessonId: 'white');
+      expect(cubit.state.cursor, 1);
+      await cubit.play('e2e4');
+      expect(cubit.state.cursor, 3);
+      await cubit.hint();
+      final saved = await repository.load(TrainingCourse.pilares);
+      expect(saved.openings['white']!.pendingMistakes['t1'], [1]);
+      cubit.review(0);
+      expect(cubit.state.reviewing, true);
+      cubit.review(3);
+      expect(cubit.state.reviewing, false);
+      await cubit.play('g1f3');
+      expect(cubit.state.phase, TrainingOpeningPhase.complete);
+      expect(cubit.state.firstTry, [true, false]);
+    },
+  );
 
   test('validates full exported line and begins at initial position', () {
     expect(cubit.state.fen, GameRules.initial.fen);
@@ -369,4 +521,82 @@ void main() {
       await player.close();
     },
   );
+}
+
+OpeningTrecho scriptedTrecho() => OpeningTrecho.fromJson({
+  'id': 't1',
+  'titulo': 'Script',
+  'cor': 'brancas',
+  'exemplo': {
+    'id': 'example',
+    'fen': GameRules.initial.fen,
+    'vira': false,
+    'objetivo': 'ganhar',
+    'fim': 'proximo',
+    'linha': [
+      {
+        'fen': 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 12',
+        't': 'snapshot',
+      },
+      {
+        'fen': 'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 13',
+        't': 'after',
+        'seq': ['e2e4', 'e7e5'],
+      },
+      {
+        'fen':
+            'rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 13',
+        't': 'end',
+        'lance': 'g1f3',
+      },
+    ],
+  },
+});
+
+OpeningTrecho branchingTrecho({required bool longerAlternative}) {
+  final start = GameRules.initial.fen;
+  String after(String fen, String uci) =>
+      GameRules.play(GameRules.fromFen(fen)!, Move.parse(uci)!)!.position.fen;
+  Map<String, dynamic> step(String fen, String uci) => {
+    'fen': after(fen, uci),
+    'lance': uci,
+    't': 'move',
+  };
+  final e4 = after(start, 'e2e4');
+  final e5 = after(e4, 'e7e5');
+  final nf3 = after(e5, 'g1f3');
+  final nc6 = after(nf3, 'b8c6');
+  final primary = longerAlternative ? 'd2d4' : 'e2e4';
+  final alternative = longerAlternative ? 'e2e4' : 'd2d4';
+  return OpeningTrecho.fromJson({
+    'id': 't1',
+    'titulo': 'Question',
+    'cor': 'brancas',
+    'exemplo': {
+      'id': 'question',
+      'fen': start,
+      'pergunta': {
+        't': 'question',
+        'certos': [primary],
+        'certo': step(start, primary),
+        'revela': step(start, primary),
+        'alternativos': {
+          alternative: [
+            step(start, alternative),
+            if (longerAlternative) ...[
+              step(e4, 'e7e5'),
+              step(e5, 'g1f3'),
+              step(nf3, 'b8c6'),
+              step(nc6, 'f1b5'),
+            ],
+          ],
+        },
+        'erros': <String, Object>{},
+      },
+      'linha': [
+        {'fen': after(start, primary), 't': 'after question'},
+        if (!longerAlternative) ...[step(e4, 'e7e5'), step(e5, 'g1f3')],
+      ],
+    },
+  });
 }

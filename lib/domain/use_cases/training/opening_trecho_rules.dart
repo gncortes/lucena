@@ -2,6 +2,7 @@ import '../../models/training/opening_track.dart';
 import '../../models/training/training_content.dart';
 import '../now.dart';
 import 'training_date.dart';
+import 'play_training_opening.dart';
 
 final class OpeningTrechoRules {
   const OpeningTrechoRules(this.now);
@@ -23,13 +24,29 @@ final class OpeningTrechoRules {
     return segments.firstOrNull;
   }
 
+  /// Historic IDs remain stored; only the current bank contributes mastery.
+  static ({int done, int firmMoves, int seenMoves}) currentProgress(
+    OpeningTrack track,
+    Iterable<OpeningTrecho> bank,
+  ) {
+    final ids = bank.map((item) => item.id).toSet();
+    final results = track.firstTry.entries
+        .where((entry) => ids.contains(entry.key))
+        .expand((entry) => entry.value);
+    return (
+      done: track.doneTrechos.keys.where(ids.contains).length,
+      firmMoves: results.where((value) => value).length,
+      seenMoves: results.length,
+    );
+  }
+
   OpeningTrack complete(
     OpeningTrack track,
     OpeningTrecho trecho,
     List<bool> firstTry,
   ) {
-    final expected = (trecho.moves.length + (trecho.black ? 0 : 1)) ~/ 2;
-    if (firstTry.length != expected) {
+    final expected = PlayTrainingOpening(trecho).validStudentMoveCounts;
+    if (!expected.contains(firstTry.length)) {
       throw ArgumentError('Missing first-try results');
     }
     final date = trainingDate(now());

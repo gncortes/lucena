@@ -1,3 +1,4 @@
+import '../lesson_script.dart';
 import 'training_course.dart';
 
 final class TrainingLesson {
@@ -104,25 +105,52 @@ final class OpeningTrecho {
   OpeningTrecho({
     required this.id,
     required this.title,
-    required Iterable<String> moves,
+    Iterable<String> moves = const [],
+    this.fen,
+    this.source,
+    this.stage,
+    Map<String, dynamic>? example,
     this.black = false,
     this.mock = false,
-  }) : moves = List.unmodifiable(moves);
+  }) : moves = List.unmodifiable(moves),
+       example = example == null ? null : _freezeJsonMap(example),
+       script = example == null ? null : ScriptExample.fromJson(example);
   final String id, title;
+  final String? fen, source, stage;
+  final Map<String, dynamic>? example;
+  final ScriptExample? script;
   final List<String> moves;
   final bool black, mock;
   Map<String, Object?> toJson() => {
     'id': id,
     'titulo': title,
-    'lances': moves,
+    if (example == null) 'lances': moves,
+    if (fen != null) 'fen': fen,
+    if (source != null) 'fonte': source,
+    if (stage != null) 'etapa': stage,
+    if (example != null) 'exemplo': example,
     'cor': black ? 'pretas' : 'brancas',
     'mock': mock,
   };
   factory OpeningTrecho.fromJson(Map<String, dynamic> j) => OpeningTrecho(
     id: j['id'] as String,
     title: j['titulo'] as String,
-    moves: (j['lances'] as List).cast<String>(),
+    moves: (j['lances'] as List? ?? []).cast<String>(),
+    fen: j['fen'] as String?,
+    source: j['fonte'] as String?,
+    stage: j['etapa'] as String?,
+    example: j['exemplo'] as Map<String, dynamic>?,
     black: j['cor'] == 'pretas',
     mock: j['mock'] as bool? ?? false,
   );
 }
+
+Map<String, dynamic> _freezeJsonMap(Map<String, dynamic> value) =>
+    Map<String, dynamic>.unmodifiable(
+      value.map((key, item) => MapEntry(key, _freezeJson(item))),
+    );
+Object? _freezeJson(Object? value) => switch (value) {
+  Map<String, dynamic> map => _freezeJsonMap(map),
+  List list => List<Object?>.unmodifiable(list.map(_freezeJson)),
+  _ => value,
+};

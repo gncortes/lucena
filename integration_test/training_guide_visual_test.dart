@@ -9,6 +9,17 @@ import 'robots/app_robot.dart';
 import 'robots/training_capture_robot.dart';
 
 void main() {
+  patrolTest('T85 aba Aula depois da aula do dia concluída', ($) async {
+    await AppRobot($).open(
+      systemLocale: const Locale('pt', 'BR'),
+      lightDevice: true,
+      trainingScenario: E2ETrainingScenario.done,
+    );
+    final capture = TrainingCaptureRobot($);
+    await capture.openGuide();
+    await capture.shot('lesson-done-today');
+  }, tags: const ['training-guide-done']);
+
   patrolTest('T85 catálogo abre o teste de nível existente', ($) async {
     await AppRobot($).open(
       systemLocale: const Locale('pt', 'BR'),

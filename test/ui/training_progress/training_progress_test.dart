@@ -48,6 +48,11 @@ void main() {
     reinforcement: ['r2'],
   );
   final resources = TrainingResources(
+    openings: {
+      'opening': [
+        OpeningTrecho(id: 'a', title: '', moves: ['e2e4']),
+      ],
+    },
     lessons: const [
       TrainingLesson(
         id: 'theme',
@@ -86,6 +91,7 @@ void main() {
               startedOn: '2026-10-20',
               firstTry: {
                 'a': [true, false, true],
+                'retired-mock': [true, true, true],
               },
             ),
           },
