@@ -1,3 +1,8 @@
+import '../data/repositories/push/push_repository.dart';
+import '../ui/course_guide/view_models/training_plan_cubit.dart';
+import '../ui/course_guide/widgets/training_plan_screen.dart';
+import '../ui/reminders/view_models/reminders_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +23,12 @@ import '../ui/course_guide/widgets/course_chapter_screen.dart';
 import '../ui/course_guide/widgets/course_guide_screen.dart';
 import 'routes.dart';
 
+TrainingCourseConfig _config(GoRouterState state) =>
+    activeTrainingCourses.firstWhere(
+      (config) => config.course.name == state.pathParameters['course'],
+      orElse: () => TrainingCourseConfig.pilares,
+    );
+
 GoRoute trainingRoute() => GoRoute(
   path: '/training/:course',
   redirect: (context, state) =>
@@ -28,6 +39,24 @@ GoRoute trainingRoute() => GoRoute(
       : Routes.settings,
   builder: (context, state) => _guide(context, state, const _Guide()),
   routes: [
+    GoRoute(
+      path: 'plan',
+      builder: (context, state) => BlocProvider(
+        create: (_) => TrainingPlanCubit(
+          repository: context.read<TrainingRepository>(),
+          config: _config(state),
+          now: context.read<Now>(),
+          push: context.read<PushRepository>(),
+          afterSave: (_) => context.read<RemindersCubit>().refresh(),
+          beforeLoad: () =>
+              context.read<TrainingHistorySource>().bootstrap(_config(state)),
+        )..load(),
+        child: TrainingPlanScreen(
+          onBack: () => _back(context),
+          onSaved: () => _back(context),
+        ),
+      ),
+    ),
     GoRoute(
       path: 'chapter/:chapter',
       builder: (context, state) => _guide(
@@ -89,9 +118,17 @@ class _Guide extends StatelessWidget {
       onLevelTest: () => context.push(Routes.placement),
       onBack: () =>
           context.canPop() ? context.pop() : context.go(Routes.settings),
-      onPlan: () {},
+      onPlan: () => context.push(
+        Routes.trainingPlan(
+          context.read<CourseGuideCubit>().config.course.name,
+        ),
+      ),
       onHelp: () {},
-      onWelcomeContinue: () {},
+      onWelcomeContinue: () => context.push(
+        Routes.trainingPlan(
+          context.read<CourseGuideCubit>().config.course.name,
+        ),
+      ),
       onLesson: (lesson) => _lesson(context, lesson),
       onChapter: (chapter) => context.push(
         Routes.trainingChapter(

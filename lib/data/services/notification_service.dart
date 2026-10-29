@@ -83,6 +83,9 @@ abstract class NotificationService {
   /// Se o Android deixa o Lucena mostrar avisos agora. Não pergunta nada.
   Future<bool> permitted();
 
+  /// Local notification consent, including builds without Firebase.
+  Future<bool> requestPermission();
+
   /// Troca tudo o que estava agendado por [notifications].
   Future<void> replace(List<ScheduledNotification> notifications);
 
@@ -105,6 +108,8 @@ class NoNotificationService implements NotificationService {
 
   @override
   Future<bool> permitted() async => false;
+  @override
+  Future<bool> requestPermission() async => false;
 
   @override
   Future<void> replace(List<ScheduledNotification> notifications) async {}
@@ -202,6 +207,11 @@ class DeviceNotificationService implements NotificationService {
   @override
   Future<bool> permitted() async =>
       await _android?.areNotificationsEnabled() ?? false;
+  @override
+  Future<bool> requestPermission() async {
+    if (!await _ready()) return false;
+    return await _android?.requestNotificationsPermission() ?? false;
+  }
 
   @override
   Future<void> replace(List<ScheduledNotification> notifications) async {

@@ -9968,5 +9968,191 @@
   "trainingCourseLevelTest": "Level test: see what you already know.",
   "@trainingCourseLevelTest": {
     "description": "T85 course guide: trainingCourseLevelTest."
+  },
+  "trainingPlanTitle": "Your plan",
+  "@trainingPlanTitle": {
+    "description": "T85 study plan: trainingPlanTitle"
+  },
+  "trainingPlanIntro": "Set your goal. You can change it later using the plan at the top of your goals.",
+  "@trainingPlanIntro": {
+    "description": "T85 study plan: trainingPlanIntro"
+  },
+  "trainingPlanTimeQuestion": "How much time do you have to study chess each day?",
+  "@trainingPlanTimeQuestion": {
+    "description": "T85 study plan: trainingPlanTimeQuestion"
+  },
+  "trainingPlanTime15": "15 min",
+  "@trainingPlanTime15": {
+    "description": "T85 study plan: trainingPlanTime15"
+  },
+  "trainingPlanTime30": "30 min",
+  "@trainingPlanTime30": {
+    "description": "T85 study plan: trainingPlanTime30"
+  },
+  "trainingPlanTime60": "1 hour",
+  "@trainingPlanTime60": {
+    "description": "T85 study plan: trainingPlanTime60"
+  },
+  "trainingPlanTime120": "2 hours",
+  "@trainingPlanTime120": {
+    "description": "T85 study plan: trainingPlanTime120"
+  },
+  "trainingPlanTime240": "4 hours or more",
+  "@trainingPlanTime240": {
+    "description": "T85 study plan: trainingPlanTime240"
+  },
+  "trainingPlanReco15": "One new lesson every two study days; on the other day, just exercises for the themes.",
+  "@trainingPlanReco15": {
+    "description": "T85 study plan: trainingPlanReco15"
+  },
+  "trainingPlanReco30": "One new lesson per study day, plus theme exercises and openings.",
+  "@trainingPlanReco30": {
+    "description": "T85 study plan: trainingPlanReco30"
+  },
+  "trainingPlanReco60": "One new lesson per study day, plus exercises. There is time to think carefully about each position.",
+  "@trainingPlanReco60": {
+    "description": "T85 study plan: trainingPlanReco60"
+  },
+  "trainingPlanReco120": "One new lesson per study day, plus exercises, with time to set up positions on a board and write down variations.",
+  "@trainingPlanReco120": {
+    "description": "T85 study plan: trainingPlanReco120"
+  },
+  "trainingPlanReco240": "Two new lessons per study day, plus exercises. This is the most we recommend: too many new lessons on the same day do not stick.",
+  "@trainingPlanReco240": {
+    "description": "T85 study plan: trainingPlanReco240"
+  },
+  "trainingPlanRecoMore": "Want more? Once you meet your goal, the app offers to double it.",
+  "@trainingPlanRecoMore": {
+    "description": "T85 study plan: trainingPlanRecoMore"
+  },
+  "trainingPlanRecommended": "Recommended for you",
+  "@trainingPlanRecommended": {
+    "description": "T85 study plan: trainingPlanRecommended"
+  },
+  "trainingPlanDays": "Study days",
+  "@trainingPlanDays": {
+    "description": "T85 study plan: trainingPlanDays"
+  },
+  "trainingPlanDaysOff": "Your goals rest on the other days.",
+  "@trainingPlanDaysOff": {
+    "description": "T85 study plan: trainingPlanDaysOff"
+  },
+  "trainingPlanWeekdaySunday": "S",
+  "@trainingPlanWeekdaySunday": {
+    "description": "T85 study plan: trainingPlanWeekdaySunday"
+  },
+  "trainingPlanWeekdayMonday": "M",
+  "@trainingPlanWeekdayMonday": {
+    "description": "T85 study plan: trainingPlanWeekdayMonday"
+  },
+  "trainingPlanWeekdayTuesday": "T",
+  "@trainingPlanWeekdayTuesday": {
+    "description": "T85 study plan: trainingPlanWeekdayTuesday"
+  },
+  "trainingPlanWeekdayWednesday": "W",
+  "@trainingPlanWeekdayWednesday": {
+    "description": "T85 study plan: trainingPlanWeekdayWednesday"
+  },
+  "trainingPlanWeekdayThursday": "T",
+  "@trainingPlanWeekdayThursday": {
+    "description": "T85 study plan: trainingPlanWeekdayThursday"
+  },
+  "trainingPlanWeekdayFriday": "F",
+  "@trainingPlanWeekdayFriday": {
+    "description": "T85 study plan: trainingPlanWeekdayFriday"
+  },
+  "trainingPlanWeekdaySaturday": "S",
+  "@trainingPlanWeekdaySaturday": {
+    "description": "T85 study plan: trainingPlanWeekdaySaturday"
+  },
+  "trainingPlanWeekdaySemantic": "{day, select, 0{Sunday} 1{Monday} 2{Tuesday} 3{Wednesday} 4{Thursday} 5{Friday} other{Saturday}}",
+  "@trainingPlanWeekdaySemantic": {
+    "description": "T85 study plan: trainingPlanWeekdaySemantic",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingReminderTitle": "Study reminder",
+  "@trainingReminderTitle": {
+    "description": "T85 study plan: trainingReminderTitle"
+  },
+  "trainingReminderSub": "Only if goals remain for the day",
+  "@trainingReminderSub": {
+    "description": "T85 study plan: trainingReminderSub"
+  },
+  "trainingReminderTime": "Time",
+  "@trainingReminderTime": {
+    "description": "T85 study plan: trainingReminderTime"
+  },
+  "trainingReminderSilent": "Delivered without sound or vibration: just a reminder.",
+  "@trainingReminderSilent": {
+    "description": "T85 study plan: trainingReminderSilent"
+  },
+  "trainingReminderDenied": "Lucena notifications are disabled on your phone. To receive reminders, allow them in settings.",
+  "@trainingReminderDenied": {
+    "description": "T85 study plan: trainingReminderDenied"
+  },
+  "trainingOpenSettings": "Open settings",
+  "@trainingOpenSettings": {
+    "description": "T85 study plan: trainingOpenSettings"
+  },
+  "trainingPermissionTitle": "Receive the reminder?",
+  "@trainingPermissionTitle": {
+    "description": "T85 study plan: trainingPermissionTitle"
+  },
+  "trainingPermissionBody": "To remind you at study time, Lucena needs your permission to send notifications. The reminder arrives without sound or vibration.",
+  "@trainingPermissionBody": {
+    "description": "T85 study plan: trainingPermissionBody"
+  },
+  "trainingPermissionLater": "Not now",
+  "@trainingPermissionLater": {
+    "description": "T85 study plan: trainingPermissionLater"
+  },
+  "trainingPermissionAllow": "Allow",
+  "@trainingPermissionAllow": {
+    "description": "T85 study plan: trainingPermissionAllow"
+  },
+  "trainingPlanSave": "Save",
+  "@trainingPlanSave": {
+    "description": "T85 study plan: trainingPlanSave"
+  },
+  "trainingPlanStart": "Start the course",
+  "@trainingPlanStart": {
+    "description": "T85 study plan: trainingPlanStart"
+  },
+  "trainingTimePickerTitle": "Reminder time",
+  "@trainingTimePickerTitle": {
+    "description": "T85 study plan: trainingTimePickerTitle"
+  },
+  "trainingPlanSaveError": "Could not save. Your choices were kept. Try again.",
+  "@trainingPlanSaveError": {
+    "description": "T85 study plan: trainingPlanSaveError"
+  },
+  "trainingNotifTitle": "Time for chess",
+  "@trainingNotifTitle": {
+    "description": "T85 study plan: trainingNotifTitle"
+  },
+  "trainingNotifLesson": "Lesson {aula} and {n, plural, one{1 goal} other{{n} goals}} remain to finish.",
+  "@trainingNotifLesson": {
+    "description": "T85 study plan: trainingNotifLesson",
+    "placeholders": {
+      "aula": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingNotifGoals": "{n, plural, one{1 goal} other{{n} goals}} to finish.",
+  "@trainingNotifGoals": {
+    "description": "T85 study plan: trainingNotifGoals",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
   }
 }

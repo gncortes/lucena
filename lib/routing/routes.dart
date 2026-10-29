@@ -600,6 +600,7 @@ abstract final class Routes {
   static const pilaresChapter = '/settings/pilares/mapa/capitulo';
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';
+  static String trainingPlan(String course) => '${training(course)}/plan';
   static String trainingChapter(String course, String chapter) =>
       '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';
 

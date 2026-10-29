@@ -7,6 +7,17 @@ import '../../core/l10n/l10n.dart';
 String courseGuideCopy(BuildContext context, String key) {
   final t = context.l10n;
   return <String, String>{
+        'trainingPlanTime15': t.trainingPlanTime15,
+        'trainingPlanTime30': t.trainingPlanTime30,
+        'trainingPlanTime60': t.trainingPlanTime60,
+        'trainingPlanTime120': t.trainingPlanTime120,
+        'trainingPlanTime240': t.trainingPlanTime240,
+        'trainingPlanReco15': t.trainingPlanReco15,
+        'trainingPlanReco30': t.trainingPlanReco30,
+        'trainingPlanReco60': t.trainingPlanReco60,
+        'trainingPlanReco120': t.trainingPlanReco120,
+        'trainingPlanReco240': t.trainingPlanReco240,
+        'trainingPlanRecoMore': t.trainingPlanRecoMore,
         'trainingPilaresTitle': t.trainingPilaresTitle,
         'schoolTitle': t.schoolTitle,
         'courseGuideWelcomeTitle': t.courseGuideWelcomeTitle,

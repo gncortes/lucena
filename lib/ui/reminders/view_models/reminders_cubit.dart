@@ -6,6 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../data/repositories/week/week_repository.dart';
+import '../../../data/repositories/training/course_training_repository.dart';
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/training_state.dart';
+import '../../../domain/use_cases/training/build_day_goals.dart';
+import '../../../domain/use_cases/training/training_reminder.dart';
 import '../../../data/services/notification_service.dart';
 import '../../../domain/models/alert_settings.dart';
 import '../../../domain/models/reminder.dart';
@@ -26,8 +31,12 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     required this._week,
     required this._now,
     Stream<void>? changes,
-  }) : super(const []) {
+    TrainingRepository? training,
+    this.courses = const [TrainingCourseConfig.pilares],
+  }) : _training = training,
+       super(const []) {
     _changes = changes?.listen((_) => unawaited(refresh()));
+    _trainingChanges = training?.changes.listen((_) => unawaited(refresh()));
   }
 
   final RemindersRepository _reminders;
@@ -35,6 +44,9 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   final WeekRepository _week;
   final Now _now;
   StreamSubscription<void>? _changes;
+  final TrainingRepository? _training;
+  final List<TrainingCourseConfig> courses;
+  StreamSubscription<TrainingState>? _trainingChanges;
 
   AlertSettings? _settings;
   ReminderTexts? _texts;
@@ -82,9 +94,18 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   Future<void> _replan() async {
     final settings = _settings!;
     final texts = _texts!;
+    final courseTexts = switch (texts) {
+      CourseReminderTexts value => value,
+      _ => null,
+    };
     // O nome dos canais vai junto: outro idioma renomeia.
-    await _reminders.start([texts.reminders, texts.week]);
-    final enabled = settings.daily && await _reminders.permitted();
+    await _reminders.start([
+      texts.reminders,
+      texts.week,
+      if (_training != null && courseTexts != null) courseTexts.trainingChannel,
+    ]);
+    final permitted = await _reminders.permitted();
+    final enabled = settings.daily && permitted;
     final now = _now();
     final plan = enabled
         ? ReminderPlanner.plan(
@@ -96,11 +117,53 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
             week: await _week.summary(),
           )
         : const <PlannedReminder>[];
+    final trainingNotifications = permitted && courseTexts != null
+        ? await _courseNotifications(courseTexts)
+        : <ScheduledNotification>[];
     await _reminders.replace([
       for (final reminder in plan) _notification(reminder, now, texts),
+      ...trainingNotifications,
     ]);
     if (!isClosed && !listEquals(plan, state)) emit(plan);
   }
+
+  /// Course and existing reminders share the same replace operation, so neither
+  /// flow erases notifications belonging to the other.
+  Future<List<ScheduledNotification>> _courseNotifications(
+    CourseReminderTexts texts,
+  ) async {
+    final repository = _training;
+    if (repository == null) return [];
+    final notifications = <ScheduledNotification>[];
+    for (final config in courses) {
+      final before = await repository.load(config.course);
+      if (!before.onboardingDone) continue;
+      final resources = await repository.resources(config.course);
+      final training = await repository.update(
+        config.course,
+        (s) => BuildDayGoals(_now, config)(s, resources),
+      );
+      final request = trainingReminder(training, _now);
+      if (request == null) continue;
+      final lessonId = request.text.arguments['aula'];
+      final lesson = resources.lessons
+          .where((l) => l.id == lessonId)
+          .firstOrNull;
+      notifications.add(
+        ScheduledNotification(
+          id: trainingFirstId + config.course.index,
+          channel: texts.trainingChannel,
+          title: texts.trainingTitle,
+          body: texts.trainingBody(request.text, lesson?.title),
+          at: request.at,
+          payload: Routes.home,
+        ),
+      );
+    }
+    return notifications;
+  }
+
+  static const trainingFirstId = 600;
 
   ScheduledNotification _notification(
     PlannedReminder reminder,
@@ -146,6 +209,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   @override
   Future<void> close() async {
     await _changes?.cancel();
+    await _trainingChanges?.cancel();
     return super.close();
   }
 }

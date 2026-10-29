@@ -1,6 +1,16 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class TrainingKeys {
+  static const planScreen = Key('training.planScreen');
+  static const planScroll = Key('training.planScroll');
+  static const planError = Key('training.planError');
+  static const permissionDialog = Key('training.permissionDialog');
+  static const permissionLater = Key('training.permissionLater');
+  static const permissionAllow = Key('training.permissionAllow');
+  static const openNotificationSettings = Key(
+    'training.openNotificationSettings',
+  );
+
   static const goalsSummary = Key('training.goalsSummary');
   static Key goalTile(String kind, String ref) =>
       Key('training.goal.$kind.$ref');

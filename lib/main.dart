@@ -678,6 +678,8 @@ class _LucenaAppState extends State<LucenaApp> {
               week: dependencies.weekRepository,
               now: dependencies.now,
               changes: dependencies.localChanges,
+              training: dependencies.courseTrainingRepository,
+              courses: activeTrainingCourses,
             ),
           ),
           BlocProvider(
