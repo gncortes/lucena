@@ -1,3 +1,4 @@
+import 'training_routes.dart';
 import '../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
@@ -277,6 +278,7 @@ GoRouter buildRouter({
       );
     },
     routes: [
+      trainingRoute(),
       _route(
         path: Routes.invalidLink,
         builder: (context, state) => const InvalidLinkScreen(),

@@ -61,9 +61,14 @@ final class TrainingRepositoryLocal implements TrainingRepository {
   Future<TrainingState> update(
     TrainingCourse course,
     TrainingState Function(TrainingState) change,
+  ) => transact(course, change);
+  @override
+  Future<TrainingState> transact(
+    TrainingCourse course,
+    FutureOr<TrainingState> Function(TrainingState) change,
   ) => _serial(course, () async {
     final before = await _read(course);
-    final after = change(before);
+    final after = await change(before);
     if (identical(before, after)) return before;
     if (after.course != course || after.installSeed != before.installSeed) {
       throw ArgumentError(

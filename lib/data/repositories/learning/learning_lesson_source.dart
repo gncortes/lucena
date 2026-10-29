@@ -195,6 +195,20 @@ class LearningLessonSource implements LessonSource {
         await analytics.log(AnalyticsEvents.campanhaAulaConcluida(campaign));
       }
     }
+    if (endgame && part != null && after.part) {
+      await learning?.notifyUnitCompleted(
+        owner: _owner,
+        kind: 'endgame_lesson',
+        unitId: '$id/$part',
+      );
+    }
+    if (after.lesson) {
+      await learning?.notifyUnitCompleted(
+        owner: _owner,
+        kind: _kind,
+        unitId: id,
+      );
+    }
     return result;
   });
   @override

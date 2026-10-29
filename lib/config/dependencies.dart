@@ -1,3 +1,11 @@
+import 'dart:math';
+
+import '../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../data/repositories/training/course_training_repository_local.dart'
+    as course_training;
+import '../data/repositories/training/training_learning_bridge.dart';
+import '../domain/models/training/training_course_config.dart';
 import '../data/services/lesson_content_service.dart';
 
 import 'dart:async';
@@ -174,6 +182,10 @@ const appVersion = String.fromEnvironment('APP_VERSION');
 /// Patrol e nas candidatas de QA (`-rc`); nunca na versão final.
 bool get showsDevTools => kDebugMode || isE2E || appVersion.contains('-rc');
 
+List<TrainingCourseConfig> get activeTrainingCourses => [
+  if (showsDevTools) TrainingCourseConfig.pilares,
+];
+
 /// As implementações que entram no app.
 ///
 /// As composições de teste ficam em `testing/`: código de `lib/` não importa
@@ -199,6 +211,8 @@ class Dependencies {
     required this.conclusionRepository,
     required this.positionsRepository,
     required this.trainingRepository,
+    this.courseTrainingRepository =
+        const course_training.NoTrainingRepository(),
     required this.opponentRepository,
     required this.maiaRepository,
     required this.progressRepository,
@@ -272,11 +286,30 @@ class Dependencies {
     return AppVersion(info.version);
   }
 
+  static Future<String>? _trainingInstallSeed;
+
+  /// Created once per installation, independently of account and Analytics.
+  static Future<String> trainingInstallSeed() =>
+      _trainingInstallSeed ??= (() async {
+        final preferences = PreferencesService();
+        const key = 'training.installSeed';
+        final saved = await preferences.getString(key);
+        if (saved != null && saved.isNotEmpty) return saved;
+        final random = Random.secure();
+        final seed = List.generate(
+          32,
+          (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+        ).join();
+        await preferences.setString(key, seed);
+        return seed;
+      })();
+
   /// [firebase] diz se o Firebase subiu (`startFirebase`). Sem ele, a conta e
   /// o push ficam desligados e o resto do app funciona igual.
   factory Dependencies.normal({
     AppVersion version = const AppVersion(appVersion),
     bool firebase = false,
+    String? trainingInstallSeed,
   }) {
     final auth = firebase ? FirebaseAuthService() : const NoAuthService();
     final preferences = PreferencesService();
@@ -310,12 +343,21 @@ class Dependencies {
       preferences,
       onAdded: () => changes.add(null),
     );
+    final courseTraining = trainingInstallSeed == null
+        ? const course_training.NoTrainingRepository()
+        : course_training.TrainingRepositoryLocal(
+            preferences,
+            lessonContent,
+            installSeed: trainingInstallSeed,
+          );
+    final trainingLearning = TrainingLearningBridge(courseTraining);
     final learning = LearningRepository(
       preferences,
       now,
       currentUid: () => auth.current?.uid,
       versionOf: LearningContentVersion(lessonContent).call,
       onChanged: () => changes.add(null),
+      onUnitCompleted: trainingLearning.call,
     );
     final activity = LocalActivityRepository(preferences, progress, now);
     // Capítulo terminado: também é dia com atividade (decisão 2b da E1.22).
@@ -419,6 +461,7 @@ class Dependencies {
       conclusionRepository: LocalConclusionRepository(preferences),
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
+      courseTrainingRepository: courseTraining,
       opponentRepository: DeviceOpponentRepository(
         maia: MaiaOpponentRepository(maia, now: now, pace: pace),
         stockfish: StockfishOpponentRepository(stockfish),
@@ -556,6 +599,7 @@ class Dependencies {
   final ConclusionRepository conclusionRepository;
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
+  final course_training.TrainingRepository courseTrainingRepository;
   final OpponentRepository opponentRepository;
   final MaiaRepository maiaRepository;
   final ProgressRepository progressRepository;

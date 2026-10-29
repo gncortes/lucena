@@ -20,6 +20,7 @@ final class FakeTrainingRepository implements TrainingRepository {
   final _changes = StreamController<TrainingState>.broadcast();
   Future<void> _pending = Future.value();
   Future<void>? beforeSave;
+  Future<void>? beforeResources;
   Object? writeError;
   int writes = 0;
   @override
@@ -38,17 +39,30 @@ final class FakeTrainingRepository implements TrainingRepository {
   }
 
   @override
-  Future<TrainingResources> resources(TrainingCourse course) async =>
-      content[course] ?? TrainingResources();
+  Future<TrainingResources> resources(TrainingCourse course) async {
+    await beforeResources;
+    return content[course] ?? TrainingResources();
+  }
+
   @override
   Future<TrainingState> update(
     TrainingCourse course,
     TrainingState Function(TrainingState) change,
+  ) => transact(course, change);
+  @override
+  Future<TrainingState> transact(
+    TrainingCourse course,
+    FutureOr<TrainingState> Function(TrainingState) change,
   ) {
     final next = _pending.then((_) async {
       final before = _read(course);
-      final state = change(before);
+      final state = await change(before);
       if (identical(before, state)) return before;
+      if (state.course != course || state.installSeed != before.installSeed) {
+        throw ArgumentError(
+          'A transaction cannot change course or installation seed',
+        );
+      }
       if (writeError case final error?) throw error;
       await beforeSave;
       saved[course] = jsonEncode(state.toJson());

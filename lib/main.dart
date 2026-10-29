@@ -1,3 +1,7 @@
+import 'data/repositories/training/training_history_source.dart';
+import 'data/repositories/training/course_training_repository.dart'
+    as course_training;
+
 import 'dart:async';
 
 import 'domain/models/lesson_content.dart';
@@ -115,11 +119,16 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final version = await Dependencies.installedVersion();
   final firebase = await startFirebase();
+  final trainingSeed = await Dependencies.trainingInstallSeed();
   // O push que chega com o app fechado: o app monta a notificação.
   if (firebase) listenPushInBackground();
   runApp(
     LucenaApp(
-      dependencies: Dependencies.normal(version: version, firebase: firebase),
+      dependencies: Dependencies.normal(
+        version: version,
+        firebase: firebase,
+        trainingInstallSeed: trainingSeed,
+      ),
     ),
   );
 }
@@ -474,6 +483,16 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<PositionsRepository>.value(
           value: dependencies.positionsRepository,
+        ),
+        RepositoryProvider<course_training.TrainingRepository>.value(
+          value: dependencies.courseTrainingRepository,
+        ),
+        RepositoryProvider<TrainingHistorySource>.value(
+          value: TrainingHistorySource(
+            dependencies.courseTrainingRepository,
+            learning: dependencies.learningRepository,
+            now: dependencies.now,
+          ),
         ),
         RepositoryProvider<TrainingRepository>.value(
           value: dependencies.trainingRepository,

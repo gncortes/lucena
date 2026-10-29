@@ -627,7 +627,11 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     );
     // The operational milestone uses only results actually observed in this
     // revision, even when old unversioned progress already locked the UI grade.
-    await _observeTestResult(lesson, exercise.id, earned);
+    final approvalObserved = await _observeTestResult(
+      lesson,
+      exercise.id,
+      earned,
+    );
     // Com a nota fechada, o treino não muda a nota visível.
     if (!state.locked) {
       final all = await _progress.load();
@@ -641,6 +645,14 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       if (lesson.exercises.every(
         (other) => saved.stars.containsKey(other.id),
       )) {
+        if (!approvalObserved && saved.scoreOf(lesson) >= lesson.passScore) {
+          await learning?.notifyUnitCompleted(
+            owner: _learningOwner,
+            kind: 'endgame_chapter',
+            unitId: lesson.id,
+            testPassed: true,
+          );
+        }
         unawaited(
           _analytics.log(
             AnalyticsEvents.aulaTesteFim(
@@ -652,6 +664,19 @@ class ExerciseCubit extends Cubit<ExerciseState> {
               exercicios: lesson.exercises.length,
             ),
           ),
+        );
+      }
+    } else if (!approvalObserved) {
+      // A closed test keeps its grade during practice. Explicit practice can
+      // still finish a local training goal; it never mints an account grade.
+      final closed = (await _progress.load()).of(lesson.id);
+      if (EndgameLessonRules.allSolved(lesson, closed) &&
+          closed.scoreOf(lesson) >= lesson.passScore) {
+        await learning?.notifyUnitCompleted(
+          owner: _learningOwner,
+          kind: 'endgame_chapter',
+          unitId: lesson.id,
+          testPassed: true,
         );
       }
     }
@@ -796,7 +821,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     );
   }
 
-  Future<void> _observeTestResult(
+  Future<bool> _observeTestResult(
     EndgameLesson lesson,
     String exerciseId,
     int stars,
@@ -808,9 +833,9 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         owner == null ||
         version == null ||
         owner != repository.currentUid()) {
-      return;
+      return false;
     }
-    await repository.serial(() async {
+    return repository.serial<bool>(() async {
       await repository.observe(
         owner: owner,
         version: version,
@@ -819,7 +844,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         started: true,
         exerciseStars: {exerciseId: stars},
       );
-      if (owner != repository.currentUid()) return;
+      if (owner != repository.currentUid()) return false;
       final current = (await repository.load(owner))
           .where(
             (r) =>
@@ -828,7 +853,16 @@ class ExerciseCubit extends Cubit<ExerciseState> {
                 r.version == version,
           )
           .firstOrNull;
-      if (current == null || current.testPassedAt != null) return;
+      if (current == null) return false;
+      if (current.testPassedAt != null) {
+        await repository.notifyUnitCompleted(
+          owner: owner,
+          kind: 'endgame_chapter',
+          unitId: lesson.id,
+          testPassed: true,
+        );
+        return true;
+      }
       final observed = EndgameLessonProgress(stars: current.exerciseStars);
       if (EndgameLessonRules.allSolved(lesson, observed) &&
           observed.scoreOf(lesson) >= lesson.passScore) {
@@ -839,7 +873,15 @@ class ExerciseCubit extends Cubit<ExerciseState> {
           unitId: lesson.id,
           passed: true,
         );
+        await repository.notifyUnitCompleted(
+          owner: owner,
+          kind: 'endgame_chapter',
+          unitId: lesson.id,
+          testPassed: true,
+        );
+        return true;
       }
+      return false;
     });
   }
 

@@ -20,6 +20,9 @@ abstract final class AppShape {
   /// Cartões, painéis, balões.
   static const large = 16.0;
 
+  /// Cards with the 20 dp panel radius from the T85 Canvas.
+  static const card = 20.0;
+
   /// Diálogos e folhas da proposta V2.
   static const extraLarge = 28.0;
 

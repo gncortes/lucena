@@ -598,4 +598,21 @@ abstract final class Routes {
   static const pilaresBand = '/settings/pilares/faixa';
   static const pilaresMap = '/settings/pilares/mapa';
   static const pilaresChapter = '/settings/pilares/mapa/capitulo';
+  static String training(String course) =>
+      '/training/${Uri.encodeComponent(course)}';
+  static String trainingChapter(String course, String chapter) =>
+      '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';
+
+  /// Private indexes refer either to a full chapter or a scripted part.
+  static String trainingLesson(String id, {String origin = 'treino_guia'}) {
+    final parts = id.split('.');
+    if (parts.length > 2 && parts.first == 'pilares') {
+      return endgameLessonScript(
+        parts.take(2).join('.'),
+        part: parts.skip(2).join('.'),
+        origin: origin,
+      );
+    }
+    return endgameLesson(id, origin: origin);
+  }
 }

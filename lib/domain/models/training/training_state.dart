@@ -4,6 +4,32 @@ import 'theme_cycle.dart';
 import 'training_course.dart';
 import 'training_plan.dart';
 
+/// Provenance for reversible, pre-onboarding history only. No account identity.
+/// Snapshot strings are immutable and cover only tracks created by bootstrap.
+final class TrainingBootstrapImport {
+  const TrainingBootstrapImport({
+    required this.version,
+    required this.completedOn,
+    this.cycleJson,
+    this.openingJson,
+  });
+  final String version, completedOn;
+  final String? cycleJson, openingJson;
+  Map<String, Object?> toJson() => {
+    'version': version,
+    'completedOn': completedOn,
+    'cycleJson': cycleJson,
+    'openingJson': openingJson,
+  };
+  factory TrainingBootstrapImport.fromJson(Map<String, dynamic> json) =>
+      TrainingBootstrapImport(
+        version: json['version'] as String,
+        completedOn: json['completedOn'] as String,
+        cycleJson: json['cycleJson'] as String?,
+        openingJson: json['openingJson'] as String?,
+      );
+}
+
 final class TrainingState {
   TrainingState({
     required this.course,
@@ -19,10 +45,12 @@ final class TrainingState {
     Map<String, ThemeCycle> cycles = const {},
     Map<String, OpeningTrack> openings = const {},
     Iterable<String> offDayCredits = const [],
+    Map<String, TrainingBootstrapImport> bootstrapImports = const {},
   }) : completedLessons = Map.unmodifiable(completedLessons),
        cycles = Map.unmodifiable(cycles),
        openings = Map.unmodifiable(openings),
-       offDayCredits = List.unmodifiable(offDayCredits);
+       offDayCredits = List.unmodifiable(offDayCredits),
+       bootstrapImports = Map.unmodifiable(bootstrapImports);
   final TrainingCourse course;
   final String installSeed;
   final TrainingPlan plan;
@@ -35,6 +63,7 @@ final class TrainingState {
   final Map<String, ThemeCycle> cycles;
   final Map<String, OpeningTrack> openings;
   final List<String> offDayCredits;
+  final Map<String, TrainingBootstrapImport> bootstrapImports;
   bool get mock => day?.goals.any((g) => g.mock) ?? false;
   TrainingState copyWith({
     TrainingPlan? plan,
@@ -48,6 +77,7 @@ final class TrainingState {
     Map<String, ThemeCycle>? cycles,
     Map<String, OpeningTrack>? openings,
     Iterable<String>? offDayCredits,
+    Map<String, TrainingBootstrapImport>? bootstrapImports,
   }) => TrainingState(
     course: course,
     installSeed: installSeed,
@@ -62,6 +92,7 @@ final class TrainingState {
     cycles: cycles ?? this.cycles,
     openings: openings ?? this.openings,
     offDayCredits: offDayCredits ?? this.offDayCredits,
+    bootstrapImports: bootstrapImports ?? this.bootstrapImports,
   );
   Map<String, Object?> toJson() => {
     'version': 1,
@@ -78,6 +109,7 @@ final class TrainingState {
     'cycles': cycles.map((k, v) => MapEntry(k, v.toJson())),
     'openings': openings.map((k, v) => MapEntry(k, v.toJson())),
     'offDayCredits': offDayCredits,
+    'bootstrapImports': bootstrapImports.map((k, v) => MapEntry(k, v.toJson())),
   };
   factory TrainingState.fromJson(Map<String, dynamic> j) {
     if (j['version'] != 1) {
@@ -111,6 +143,12 @@ final class TrainingState {
         ),
       ),
       offDayCredits: (j['offDayCredits'] as List).cast<String>(),
+      bootstrapImports: (j['bootstrapImports'] as Map? ?? const {}).map(
+        (k, v) => MapEntry(
+          k as String,
+          TrainingBootstrapImport.fromJson(Map<String, dynamic>.from(v as Map)),
+        ),
+      ),
     );
   }
 }

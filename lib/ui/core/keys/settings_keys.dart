@@ -4,6 +4,8 @@ import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
 
 abstract final class SettingsKeys {
+  static const pilaresTrainingTile = Key('settings.pilaresTraining');
+
   /// "Tela inicial": os caminhos da tela inicial.
   static const homeLayoutTile = Key('settings.homeLayout');
 

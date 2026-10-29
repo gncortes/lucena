@@ -9795,5 +9795,178 @@
   },
   "@trainingNextMove": {
     "description": "Training opening footer: show the next move."
+  },
+  "trainingPilaresTitle": "Pilares do Xadrez",
+  "@trainingPilaresTitle": {
+    "description": "T85 course guide: trainingPilaresTitle."
+  },
+  "courseGuideTabLesson": "Lesson",
+  "@courseGuideTabLesson": {
+    "description": "T85 course guide: courseGuideTabLesson."
+  },
+  "courseGuideTabGoals": "Goals",
+  "@courseGuideTabGoals": {
+    "description": "T85 course guide: courseGuideTabGoals."
+  },
+  "courseGuideTabProgress": "Progress",
+  "@courseGuideTabProgress": {
+    "description": "T85 course guide: courseGuideTabProgress."
+  },
+  "courseGuideTabCatalog": "Catalog",
+  "@courseGuideTabCatalog": {
+    "description": "T85 course guide: courseGuideTabCatalog."
+  },
+  "courseGuidePlanAction": "Your plan",
+  "@courseGuidePlanAction": {
+    "description": "T85 course guide: courseGuidePlanAction."
+  },
+  "courseGuideHelpAction": "How it works",
+  "@courseGuideHelpAction": {
+    "description": "T85 course guide: courseGuideHelpAction."
+  },
+  "courseGuideWelcomeTitle": "Welcome to Pilares do Xadrez",
+  "@courseGuideWelcomeTitle": {
+    "description": "T85 course guide: courseGuideWelcomeTitle."
+  },
+  "courseGuideWelcomeBody": "One lesson at a time, from basic tactics to opening principles. After each lesson, the theme returns in short daily exercises to help you remember it.",
+  "@courseGuideWelcomeBody": {
+    "description": "T85 course guide: courseGuideWelcomeBody."
+  },
+  "courseGuideTabsTitle": "The tabs below",
+  "@courseGuideTabsTitle": {
+    "description": "T85 course guide: courseGuideTabsTitle."
+  },
+  "courseGuideTabsLesson": "Your next lesson is always here.",
+  "@courseGuideTabsLesson": {
+    "description": "T85 course guide: courseGuideTabsLesson."
+  },
+  "courseGuideTabsGoals": "What to do today.",
+  "@courseGuideTabsGoals": {
+    "description": "T85 course guide: courseGuideTabsGoals."
+  },
+  "courseGuideTabsProgress": "How well you know each theme.",
+  "@courseGuideTabsProgress": {
+    "description": "T85 course guide: courseGuideTabsProgress."
+  },
+  "courseGuideTabsCatalog": "All lessons in the course.",
+  "@courseGuideTabsCatalog": {
+    "description": "T85 course guide: courseGuideTabsCatalog."
+  },
+  "courseGuideTabIntro": "{tab}: {body}",
+  "@courseGuideTabIntro": {
+    "description": "T85 course guide: courseGuideTabIntro.",
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      },
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+  "courseGuideSeeCatalog": "View the catalog",
+  "@courseGuideSeeCatalog": {
+    "description": "T85 course guide: courseGuideSeeCatalog."
+  },
+  "courseGuideStudyTips": "Study tips",
+  "@courseGuideStudyTips": {
+    "description": "T85 course guide: courseGuideStudyTips."
+  },
+  "courseGuideTips1Title": "Think before moving",
+  "@courseGuideTips1Title": {
+    "description": "T85 course guide: courseGuideTips1Title."
+  },
+  "courseGuideTips1Body": "In difficult positions, think for at least 5 minutes before playing. The effort helps you remember the idea.",
+  "@courseGuideTips1Body": {
+    "description": "T85 course guide: courseGuideTips1Body."
+  },
+  "courseGuideTips2Title": "Set up the board",
+  "@courseGuideTips2Title": {
+    "description": "T85 course guide: courseGuideTips2Title."
+  },
+  "courseGuideTips2Body": "If you have a board, set up the position and calculate without moving the pieces until you choose your move.",
+  "@courseGuideTips2Body": {
+    "description": "T85 course guide: courseGuideTips2Body."
+  },
+  "courseGuideTips3Title": "Write down your variations",
+  "@courseGuideTips3Title": {
+    "description": "T85 course guide: courseGuideTips3Title."
+  },
+  "courseGuideTips3Body": "Write down candidate moves and the lines you calculated. Then compare them with the solution.",
+  "@courseGuideTips3Body": {
+    "description": "T85 course guide: courseGuideTips3Body."
+  },
+  "courseGuideTips4Title": "Return to your mistakes",
+  "@courseGuideTips4Title": {
+    "description": "T85 course guide: courseGuideTips4Title."
+  },
+  "courseGuideTips4Body": "Made a mistake? Before continuing, find out what you missed in the position.",
+  "@courseGuideTips4Body": {
+    "description": "T85 course guide: courseGuideTips4Body."
+  },
+  "trainingGoalsTitle": "Today’s goals",
+  "@trainingGoalsTitle": {
+    "description": "T85 course guide: trainingGoalsTitle."
+  },
+  "trainingGoalsLeft": "{n} of {total} left",
+  "@trainingGoalsLeft": {
+    "description": "T85 course guide: trainingGoalsLeft.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingPartLesson": "{part} · lesson {n}",
+  "@trainingPartLesson": {
+    "description": "T85 course guide: trainingPartLesson.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "part": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingCount": "{done} of {total}",
+  "@trainingCount": {
+    "description": "T85 course guide: trainingCount.",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingPartLabel": "Part {roman}",
+  "@trainingPartLabel": {
+    "description": "T85 course guide: trainingPartLabel.",
+    "placeholders": {
+      "roman": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingChapterTitle": "{n} · {title}",
+  "@trainingChapterTitle": {
+    "description": "T85 course guide: trainingChapterTitle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingCourseLevelTest": "Level test: see what you already know.",
+  "@trainingCourseLevelTest": {
+    "description": "T85 course guide: trainingCourseLevelTest."
   }
 }

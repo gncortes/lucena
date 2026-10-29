@@ -1940,5 +1940,59 @@
   "homeShortcutSchoolBody": "Das peças ao primeiro mate",
   "trainingWithHint": "Com dica",
   "trainingPrevMove": "Lance anterior",
-  "trainingNextMove": "Próximo lance"
+  "trainingNextMove": "Próximo lance",
+  "trainingPilaresTitle": "Pilares do Xadrez",
+  "courseGuideTabLesson": "Aula",
+  "courseGuideTabGoals": "Metas",
+  "courseGuideTabProgress": "Progresso",
+  "courseGuideTabCatalog": "Catálogo",
+  "courseGuidePlanAction": "Seu plano",
+  "courseGuideHelpAction": "Como funciona",
+  "courseGuideWelcomeTitle": "Boas-vindas ao Pilares do Xadrez",
+  "courseGuideWelcomeBody": "Uma aula de cada vez, da tática básica aos princípios da abertura. Depois de cada aula, o tema volta nas metas em exercícios curtos, um por dia, para você não esquecer.",
+  "courseGuideTabsTitle": "As abas aqui embaixo",
+  "courseGuideTabsLesson": "A próxima aula, sempre aqui.",
+  "courseGuideTabsGoals": "O que fazer hoje.",
+  "courseGuideTabsProgress": "O quanto você domina cada tema.",
+  "courseGuideTabsCatalog": "Todas as aulas do curso.",
+  "courseGuideTabIntro": "{tab}: {body}",
+  "courseGuideSeeCatalog": "Ver o catálogo",
+  "courseGuideStudyTips": "Dicas de estudo",
+  "courseGuideTips1Title": "Pense antes de mover",
+  "courseGuideTips1Body": "Nas posições difíceis, pense pelo menos 5 minutos antes de jogar. É o esforço que fixa a ideia.",
+  "courseGuideTips2Title": "Monte no tabuleiro",
+  "courseGuideTips2Body": "Se tiver um tabuleiro, monte a posição e calcule sem mexer as peças até decidir o lance.",
+  "courseGuideTips3Title": "Anote as variantes",
+  "courseGuideTips3Body": "Escreva os lances candidatos e as linhas que calculou. Depois compare com a solução.",
+  "courseGuideTips4Title": "Volte aos erros",
+  "courseGuideTips4Body": "Errou? Antes de seguir, descubra o que você não viu na posição.",
+  "trainingGoalsTitle": "Metas de hoje",
+  "trainingGoalsLeft": "Faltam {n} de {total}",
+  "trainingPartLesson": "{part} · aula {n}",
+  "trainingCount": "{done} de {total}",
+  "trainingPartLabel": "Parte {roman}",
+  "@trainingPartLabel": {
+    "description": "T85 course guide: trainingPartLabel.",
+    "placeholders": {
+      "roman": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingChapterTitle": "{n} · {title}",
+  "@trainingChapterTitle": {
+    "description": "T85 course guide: trainingChapterTitle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingCourseLevelTest": "Teste de nível: veja o que você já domina.",
+  "@trainingCourseLevelTest": {
+    "description": "T85 course guide: trainingCourseLevelTest."
+  }
 }
