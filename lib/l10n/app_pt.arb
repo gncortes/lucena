@@ -2099,5 +2099,14 @@
   "trainingSeeSolution": "Ver a solução",
   "trainingTomorrowEasier": "Amanhã, um mais fácil",
   "trainingTomorrowHarder": "Amanhã, um mais difícil",
-  "trainingWrongResult": "Não foi"
+  "trainingWrongResult": "Não foi",
+  "trainingOpeningAllFirm": "Todos os trechos firmes · só revisão",
+  "trainingOpeningComplete": "Trecho concluído.",
+  "trainingOpeningCount": "{done} de {total}",
+  "trainingOpeningDoneToday": "Trecho de hoje feito",
+  "trainingOpeningPrompt": "Jogue o próximo lance deste trecho.",
+  "trainingOpeningTitle": "{opening} · trecho {n} de {total}",
+  "trainingOpeningTrain": "Treinar o trecho {n} · {reply}",
+  "trainingOpeningWrong": "Tente novamente: jogue o lance deste trecho.",
+  "trainingOpeningsInfo": "Cada abertura é dividida em trechos curtos. Jogue seus lances e reveja a linha pelas setas."
 }

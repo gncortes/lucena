@@ -10472,5 +10472,68 @@
   "trainingWrongResult": "Not quite",
   "@trainingWrongResult": {
     "description": "T85 training exercise and cycle result: trainingWrongResult."
+  },
+  "trainingOpeningAllFirm": "All segments firm · review only",
+  "@trainingOpeningAllFirm": {
+    "description": "T85 opening training: trainingOpeningAllFirm."
+  },
+  "trainingOpeningComplete": "Segment completed.",
+  "@trainingOpeningComplete": {
+    "description": "T85 opening training: trainingOpeningComplete."
+  },
+  "trainingOpeningCount": "{done} of {total}",
+  "@trainingOpeningCount": {
+    "description": "T85 opening training: trainingOpeningCount.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingOpeningDoneToday": "Today's segment completed",
+  "@trainingOpeningDoneToday": {
+    "description": "T85 opening training: trainingOpeningDoneToday."
+  },
+  "trainingOpeningPrompt": "Play the next move in this segment.",
+  "@trainingOpeningPrompt": {
+    "description": "T85 opening training: trainingOpeningPrompt."
+  },
+  "trainingOpeningTitle": "{opening} · segment {n} of {total}",
+  "@trainingOpeningTitle": {
+    "description": "T85 opening training: trainingOpeningTitle.",
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingOpeningTrain": "Train segment {n} · {reply}",
+  "@trainingOpeningTrain": {
+    "description": "T85 opening training: trainingOpeningTrain.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reply": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingOpeningWrong": "Try again: play the move from this segment.",
+  "@trainingOpeningWrong": {
+    "description": "T85 opening training: trainingOpeningWrong."
+  },
+  "trainingOpeningsInfo": "Each opening is divided into short segments. Play your moves and review the line with the arrows.",
+  "@trainingOpeningsInfo": {
+    "description": "T85 opening training: trainingOpeningsInfo."
   }
 }

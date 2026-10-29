@@ -40,7 +40,18 @@ final class OpeningTrechoRules {
           ? track.lastNewDate
           : date,
       doneTrechos: {...track.doneTrechos, trecho.id: date},
-      firstTry: {...track.firstTry, trecho.id: firstTry},
+      firstTry: {
+        ...track.firstTry,
+        trecho.id: [
+          for (var i = 0; i < firstTry.length; i++)
+            firstTry[i] &&
+                !(track.pendingMistakes[trecho.id]?.contains(i) ?? false),
+        ],
+      },
+      pendingMistakes: {
+        for (final entry in track.pendingMistakes.entries)
+          if (entry.key != trecho.id) entry.key: entry.value,
+      },
     );
   }
 }

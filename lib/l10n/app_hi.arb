@@ -2036,5 +2036,14 @@
   "trainingSeeSolution": "See the solution",
   "trainingTomorrowEasier": "Tomorrow, an easier exercise",
   "trainingTomorrowHarder": "Tomorrow, a harder exercise",
-  "trainingWrongResult": "Not quite"
+  "trainingWrongResult": "Not quite",
+  "trainingOpeningAllFirm": "All segments firm · review only",
+  "trainingOpeningComplete": "Segment completed.",
+  "trainingOpeningCount": "{done} of {total}",
+  "trainingOpeningDoneToday": "Today's segment completed",
+  "trainingOpeningPrompt": "Play the next move in this segment.",
+  "trainingOpeningTitle": "{opening} · segment {n} of {total}",
+  "trainingOpeningTrain": "Train segment {n} · {reply}",
+  "trainingOpeningWrong": "Try again: play the move from this segment.",
+  "trainingOpeningsInfo": "Each opening is divided into short segments. Play your moves and review the line with the arrows."
 }

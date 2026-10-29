@@ -1994,5 +1994,14 @@
   "trainingSeeSolution": "[Šéé thé šölûtîöñ one two]",
   "trainingTomorrowEasier": "[Tömöŕŕöw, åñ éåšîéŕ éxéŕçîšé one two three]",
   "trainingTomorrowHarder": "[Tömöŕŕöw, å håŕdéŕ éxéŕçîšé one two three]",
-  "trainingWrongResult": "[Ñöt qûîté one]"
+  "trainingWrongResult": "[Ñöt qûîté one]",
+  "trainingOpeningAllFirm": "[Åll šéĝméñtš fîŕm · ŕévîéw öñlý one two three]",
+  "trainingOpeningComplete": "[Šéĝméñt çömplétéd. one two]",
+  "trainingOpeningCount": "[{done} öf {total} one two]",
+  "trainingOpeningDoneToday": "[Tödåý'š šéĝméñt çömplétéd one two three]",
+  "trainingOpeningPrompt": "[Plåý thé ñéxt mövé îñ thîš šéĝméñt. one two three]",
+  "trainingOpeningTitle": "[{opening} · šéĝméñt {n} öf {total} one two three]",
+  "trainingOpeningTrain": "[Tŕåîñ šéĝméñt {n} · {reply} one two three]",
+  "trainingOpeningWrong": "[Tŕý åĝåîñ: plåý thé mövé fŕöm thîš šéĝméñt. one two three four]",
+  "trainingOpeningsInfo": "[Éåçh öpéñîñĝ îš dîvîdéd îñtö šhöŕt šéĝméñtš. Plåý ýöûŕ mövéš åñd ŕévîéw thé lîñé wîth thé åŕŕöwš. one two three four five six seven eight]"
 }
