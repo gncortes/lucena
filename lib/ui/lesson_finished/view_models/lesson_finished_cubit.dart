@@ -75,10 +75,11 @@ class LessonFinishedCubit extends Cubit<LessonFinishedState> {
     String? subcategory;
     if (kind == SurveyKind.endgames) {
       lesson = (await endgames.trail()).lesson(lessonId);
-      if (lesson != null) {
+      final practice = lesson?.practice;
+      if (practice != null) {
         subcategory = RaceRules.subcategoryOf(
           await race.problems(),
-          lesson.practice.fen,
+          practice.fen,
         );
       }
     }

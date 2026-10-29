@@ -143,8 +143,9 @@ void main() {
       expect(lesson.maxScore, 2);
       expect(lesson.passScore, 1);
       expect(lesson.keyPositions.single.ref, 'b1');
-      expect(lesson.practice.positionId, 'rookPawn.rookPawnVsRook.0001');
-      expect(lesson.practice.goal, PositionGoal.win);
+      expect(lesson.practice, isNotNull);
+      expect(lesson.practice!.positionId, 'rookPawn.rookPawnVsRook.0001');
+      expect(lesson.practice!.goal, PositionGoal.win);
       final book = lesson.references.single;
       expect(book.kind, 'book');
       expect(book['year'], '2008');

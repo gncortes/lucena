@@ -1,3 +1,4 @@
+import 'data/repositories/training/training_endgame_content.dart';
 import 'data/repositories/training/training_history_source.dart';
 import 'data/repositories/training/course_training_repository.dart'
     as course_training;
@@ -568,6 +569,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<StarChallengeRepository>.value(
           value: dependencies.starChallengeRepository,
+        ),
+        RepositoryProvider<TrainingEndgameContent?>.value(
+          value: dependencies.trainingEndgameContent,
         ),
         RepositoryProvider<EndgameLessonRepository>.value(
           value: dependencies.endgameLessonRepository,

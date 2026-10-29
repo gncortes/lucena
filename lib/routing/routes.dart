@@ -605,6 +605,8 @@ abstract final class Routes {
       '${training(course)}/exercise/${Uri.encodeComponent(theme)}';
   static String trainingOpening(String course, String theme) =>
       '${training(course)}/opening/${Uri.encodeComponent(theme)}';
+  static String trainingTheme(String course, String theme) =>
+      '${training(course)}/theme/${Uri.encodeComponent(theme)}';
   static String trainingChapter(String course, String chapter) =>
       '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';
 

@@ -1,6 +1,16 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class TrainingKeys {
+  static const themeScreen = Key('training.themeScreen');
+  static const themeChart = Key('training.themeChart');
+  static const themeBack = Key('training.themeBack');
+  static const helpScreen = Key('training.helpScreen');
+  static const helpBack = Key('training.helpBack');
+  static const helpTour = Key('training.helpTour');
+  static Key faq(int index) => Key('training.faq.$index');
+  static const tourOverlay = Key('training.tourOverlay');
+  static const tourClose = Key('training.tourClose');
+
   static const openingsScreen = Key('training.openingsScreen');
   static const openingScreen = Key('training.openingScreen');
   static const openingBack = Key('training.openingBack');

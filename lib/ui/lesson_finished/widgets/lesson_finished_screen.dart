@@ -43,12 +43,12 @@ class LessonFinishedScreen extends StatelessWidget {
   /// As opções dos "Próximos passos"; nulas na Escola.
   List<NextStep>? _steps(BuildContext context, LessonFinishedState state) {
     final practice = state.practice;
-    if (_school || practice == null) return null;
+    if (_school) return null;
     final l10n = context.l10n;
     final subcategory = state.raceSubcategory;
     final name = subcategory == null ? null : endgameName(l10n, subcategory);
     return [
-      if (subcategory != null)
+      if (practice != null && subcategory != null)
         NextStep(
           id: 'raceOnly',
           icon: Icons.timer,
@@ -56,21 +56,22 @@ class LessonFinishedScreen extends StatelessWidget {
           body: l10n.lessonFinishedRaceBody,
           onTap: () => context.push(Routes.raceOnly(subcategory: subcategory)),
         ),
-      NextStep(
-        id: 'train',
-        icon: Icons.sports_esports,
-        title: name == null
-            ? l10n.lessonFinishedTrainTitle
-            : l10n.nextStepsPractice(name),
-        body: l10n.lessonFinishedTrainBody,
-        onTap: () => context.push(
-          Routes.setup(
-            practice.fen,
-            goal: practice.goal.code,
-            position: practice.positionId,
+      if (practice != null)
+        NextStep(
+          id: 'train',
+          icon: Icons.sports_esports,
+          title: name == null
+              ? l10n.lessonFinishedTrainTitle
+              : l10n.nextStepsPractice(name),
+          body: l10n.lessonFinishedTrainBody,
+          onTap: () => context.push(
+            Routes.setup(
+              practice.fen,
+              goal: practice.goal.code,
+              position: practice.positionId,
+            ),
           ),
         ),
-      ),
       if (state.hasExercises)
         NextStep(
           id: 'exercises',

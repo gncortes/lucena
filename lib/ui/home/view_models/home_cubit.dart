@@ -864,7 +864,7 @@ class HomeCubit extends Cubit<HomeState> {
       fen:
           exercise?.fen ??
           lesson.keyPositions.firstOrNull?.fen ??
-          lesson.practice.fen,
+          lesson.practice?.fen,
       recommended: recommended,
       title: texts.lessonTitle(lesson.id),
       score: done.scoreOf(lesson),

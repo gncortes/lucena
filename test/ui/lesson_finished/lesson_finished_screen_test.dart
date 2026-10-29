@@ -1,3 +1,4 @@
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,6 +34,7 @@ void main() {
     String id, {
     String? next,
     List<RaceProblem> problems = raceTestProblems,
+    EndgameTrail? trail,
   }) async {
     tester.view
       ..physicalSize = const Size(412, 917)
@@ -43,7 +45,7 @@ void main() {
       lessonId: id,
       nextId: next,
       school: FakeLessonRepository(),
-      endgames: FakeEndgameLessonRepository(),
+      endgames: FakeEndgameLessonRepository(trail: trail),
       race: FakeRaceRepository(
         now: FakeNow(DateTime.utc(2026, 1, 1)),
         problems: problems,
@@ -185,8 +187,57 @@ void main() {
     expect(find.text('Practice this endgame'), findsOneWidget);
   });
 
+  for (final hasPractice in [false, true]) {
+    for (final hasExercises in [false, true]) {
+      testWidgets('next steps practice=$hasPractice exercises=$hasExercises', (
+        tester,
+      ) async {
+        final original = FakeEndgameLessonRepository.sample.lessons.first;
+        expect(original.practice, isNotNull);
+        final lesson = EndgameLesson(
+          id: original.id,
+          module: original.module,
+          lesson: original.lesson,
+          exercises: hasExercises ? original.exercises : const [],
+          passScore: hasExercises ? original.passScore : 0,
+          keyPositions: original.keyPositions,
+          practice: hasPractice ? original.practice : null,
+        );
+        await pump(
+          tester,
+          SurveyKind.endgames,
+          lesson.id,
+          trail: EndgameTrail(
+            modules: [
+              EndgameModule(id: lesson.module, lessons: [lesson]),
+            ],
+          ),
+        );
+        expect(
+          find.byKey(NextStepsKeys.option('train')),
+          hasPractice ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(NextStepsKeys.option('exercises')),
+          hasExercises ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(NextStepsKeys.block),
+          hasPractice || hasExercises ? findsOneWidget : findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('Escola: sem os "Próximos passos"', (tester) async {
     await pump(tester, SurveyKind.school, 'pieces.rook');
     expect(find.byKey(NextStepsKeys.block), findsNothing);
+    final finished = tester
+        .element(find.byType(LessonFinishedScreen))
+        .read<LessonFinishedCubit>()
+        .state;
+    expect(finished.hasExercises, isFalse);
+    expect(finished.practice, isNull);
   });
 }

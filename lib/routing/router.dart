@@ -1,3 +1,4 @@
+import 'training_lesson_scope.dart';
 import 'training_launch.dart';
 import '../domain/models/training/training_content.dart';
 import '../data/repositories/training/course_training_repository.dart'
@@ -360,6 +361,10 @@ GoRouter buildRouter({
       ),
       _route(
         path: '/lesson-finished/:kind/:id',
+        lessonScopeId: (state) =>
+            state.pathParameters['kind'] == SurveyKind.endgames.code
+            ? state.pathParameters['id']
+            : null,
         redirect: (context, state) =>
             SurveyKind.byCode(state.pathParameters['kind'] ?? '') == null
             ? Routes.home
@@ -1047,7 +1052,10 @@ GoRouter buildRouter({
                     // Parte que não abre mais (retomada salva de um capítulo
                     // sem roteiro): cai no início da primeira parte.
                     redirect: (context, state) => resolveScriptPart(
-                      context.read<EndgameLessonRepository>(),
+                      trainingLessonRepository(
+                        context,
+                        state.pathParameters['lesson'],
+                      ),
                       state.pathParameters['lesson']!,
                       state.uri.queryParameters['part'],
                     ),
@@ -1888,6 +1896,7 @@ GoRoute _route({
   required String path,
   required GoRouterWidgetBuilder builder,
   GoRouterRedirect? redirect,
+  String? Function(GoRouterState)? lessonScopeId,
   List<RouteBase> routes = const [],
   bool fade = false,
   bool sharedAxis = false,
@@ -1895,6 +1904,13 @@ GoRoute _route({
   path: path,
   redirect: redirect,
   pageBuilder: (context, state) {
+    Widget buildChild() => scopeTrainingLesson(
+      context,
+      lessonScopeId == null
+          ? state.pathParameters['lesson']
+          : lessonScopeId(state),
+      (scoped) => builder(scoped, state),
+    );
     if (sharedAxis) {
       final duration = AppMotion.of(context).screen;
       return CustomTransitionPage<void>(
@@ -1908,16 +1924,13 @@ GoRoute _route({
               transitionType: SharedAxisTransitionType.scaled,
               child: child,
             ),
-        child: builder(context, state),
+        child: buildChild(),
       );
     }
     if (!fade && state.extra is! TrainingLaunch) {
-      return MaterialPage<void>(
-        key: state.pageKey,
-        child: builder(context, state),
-      );
+      return MaterialPage<void>(key: state.pageKey, child: buildChild());
     }
-    return gamePage(context, state, builder(context, state));
+    return gamePage(context, state, buildChild());
   },
   routes: routes,
 );

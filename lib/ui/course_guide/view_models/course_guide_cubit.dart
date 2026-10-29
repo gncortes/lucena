@@ -19,6 +19,8 @@ import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_lesson.dart';
 import '../../../domain/use_cases/training/double_training_goals.dart';
 
+typedef CourseTestProgress = ({int score, int maxScore, int solved, int total});
+
 final class CourseGuideState {
   const CourseGuideState({
     this.training,
@@ -28,11 +30,13 @@ final class CourseGuideState {
     this.failed = false,
     this.teacher,
     this.testScores = const {},
+    this.testProgress = const {},
   });
   final TrainingState? training;
   final TrainingResources? resources;
   final Character? teacher;
   final Map<String, int?> testScores;
+  final Map<String, CourseTestProgress> testProgress;
   final bool loading, saving, failed;
   TrainingLesson? get nextLesson => resources?.lessons
       .where(
@@ -55,6 +59,7 @@ final class CourseGuideState {
     failed: failed ?? this.failed,
     teacher: teacher,
     testScores: testScores,
+    testProgress: testProgress,
   );
 }
 
@@ -111,7 +116,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
             teacher: teachers
                 ?.where((c) => c.id == Character.masterId)
                 .firstOrNull,
-            testScores: scores,
+            testScores: scores.scores,
+            testProgress: scores.details,
           ),
         );
       }
@@ -120,27 +126,47 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     }
   });
 
-  Future<Map<String, int?>> _testScores(TrainingResources resources) async {
+  Future<({Map<String, int?> scores, Map<String, CourseTestProgress> details})>
+  _testScores(TrainingResources resources) async {
     final lessons = testLessons, progress = testProgress;
-    if (lessons == null || progress == null) return const {};
+    if (lessons == null || progress == null) {
+      return (
+        scores: const <String, int?>{},
+        details: const <String, CourseTestProgress>{},
+      );
+    }
     try {
       final trail = await lessons.trail();
       final records = await progress.load();
-      return Map.unmodifiable({
-        for (final entry in resources.lessons.where(
-          (l) => l.kind == TrainingLessonKind.test,
-        ))
-          entry.id: switch (trail.lesson(entry.id)) {
-            final lesson?
-                when lesson.maxScore > 0 &&
-                    records.of(lesson.id).solvedOf(lesson) > 0 =>
-              (100 * records.of(lesson.id).scoreOf(lesson) / lesson.maxScore)
-                  .round(),
-            _ => null,
-          },
-      });
+      final scores = <String, int?>{};
+      final details = <String, CourseTestProgress>{};
+      for (final entry in resources.lessons.where(
+        (l) => l.kind == TrainingLessonKind.test,
+      )) {
+        final lesson = trail.lesson(entry.id);
+        scores[entry.id] = null;
+        if (lesson == null) continue;
+        final record = records.of(lesson.id);
+        final score = record.scoreOf(lesson), solved = record.solvedOf(lesson);
+        details[entry.id] = (
+          score: score,
+          maxScore: lesson.maxScore,
+          solved: solved,
+          total: lesson.exercises.length,
+        );
+        if (lesson.maxScore > 0 && solved > 0) {
+          scores[entry.id] = (100 * score / lesson.maxScore).round();
+        }
+      }
+      return (
+        scores: Map<String, int?>.unmodifiable(scores),
+        details: Map<String, CourseTestProgress>.unmodifiable(details),
+      );
     } on LessonContentUnavailable {
-      return const {};
+      return (
+        scores: const <String, int?>{},
+        details: const <String, CourseTestProgress>{},
+      );
     }
   }
 
@@ -166,6 +192,9 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   );
   Future<bool> selectTab(CourseGuideTab tab) =>
       _change((s) => s.copyWith(tab: tab));
+
+  Future<bool> markTourSeen() =>
+      _change((s) => s.copyWith(tourSeen: true, tab: CourseGuideTab.lesson));
 
   Future<bool> doubleGoals() =>
       _change((s) => DoubleTrainingGoals(now, config)(s, state.resources!));

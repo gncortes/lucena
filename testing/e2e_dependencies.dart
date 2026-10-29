@@ -1,3 +1,4 @@
+import 'package:lucena/data/repositories/training/training_endgame_content.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lucena/data/services/lesson_content_service.dart';
 
@@ -357,6 +358,13 @@ Future<Dependencies> e2eDependencies({bool ads = false}) async {
     ),
     starChallengeRepository: LocalStarChallengeRepository(PreferencesService()),
     // Só as aulas liberadas, como no app (VisibleLessons).
+    trainingEndgameContent: showsDevTools
+        ? TrainingEndgameContent.fromConfigs(
+            content,
+            school: lessons,
+            configs: activeTrainingCourses,
+          )
+        : null,
     endgameLessonRepository: VisibleEndgameLessonRepository(
       AssetEndgameLessonRepository(content, school: lessons),
     ),

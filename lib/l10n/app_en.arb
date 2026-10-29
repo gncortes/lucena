@@ -10559,5 +10559,220 @@
   "homeCourseTrain": "Train",
   "@homeCourseTrain": {
     "description": "T85 course training Home card: homeCourseTrain."
+  },
+  "courseGuideFaq1Answer": "The next lesson, reinforcement, one exercise for each theme in training and opening segments. The number on the Goals tab shows how many remain.",
+  "@courseGuideFaq1Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq1Answer."
+  },
+  "courseGuideFaq1Question": "What are today's goals?",
+  "@courseGuideFaq1Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq1Question."
+  },
+  "courseGuideFaq2Answer": "A cycle of seven exercises starts on the study day after the lesson, with one exercise per study day. If you miss a day, the cycle waits and the goal stays where you left it.",
+  "@courseGuideFaq2Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq2Answer."
+  },
+  "courseGuideFaq2Question": "How do the seven days of exercises work?",
+  "@courseGuideFaq2Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq2Question."
+  },
+  "courseGuideFaq3Answer": "The app shows the correct move, and the next exercise drops one level, down to a minimum of one star. Solving with a hint also lowers the level and earns no score points.",
+  "@courseGuideFaq3Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq3Answer."
+  },
+  "courseGuideFaq3Question": "What happens if I get an exercise wrong?",
+  "@courseGuideFaq3Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq3Question."
+  },
+  "courseGuideFaq4Answer": "It is the total stars earned for correct answers without hints, divided by 15. At 70% or above, the theme is firm; below that, you receive reinforcement or the option to repeat the lesson.",
+  "@courseGuideFaq4Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq4Answer."
+  },
+  "courseGuideFaq4Question": "What is the cycle score?",
+  "@courseGuideFaq4Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq4Question."
+  },
+  "courseGuideFaq5Answer": "You can start any lesson from the Catalog. It counts as an extra lesson, and its theme enters your goals on the next study day.",
+  "@courseGuideFaq5Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq5Answer."
+  },
+  "courseGuideFaq5Question": "Can I skip a lesson?",
+  "@courseGuideFaq5Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq5Question."
+  },
+  "courseGuideFaq6Answer": "Tests check the lesson content. You can see your scores in Progress.",
+  "@courseGuideFaq6Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq6Answer."
+  },
+  "courseGuideFaq6Question": "What are tests for?",
+  "@courseGuideFaq6Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq6Question."
+  },
+  "courseGuideFaqTitle": "Frequently asked questions",
+  "@courseGuideFaqTitle": {
+    "description": "T85 progress, help and guided tour: courseGuideFaqTitle."
+  },
+  "courseGuideHelpTourAction": "Take the tour",
+  "@courseGuideHelpTourAction": {
+    "description": "T85 progress, help and guided tour: courseGuideHelpTourAction."
+  },
+  "courseGuideHelpTourBody": "A quick tour of Lesson, Goals, Progress and Catalog. It only appears when you ask.",
+  "@courseGuideHelpTourBody": {
+    "description": "T85 progress, help and guided tour: courseGuideHelpTourBody."
+  },
+  "courseGuideHelpTourTitle": "Explore the tabs",
+  "@courseGuideHelpTourTitle": {
+    "description": "T85 progress, help and guided tour: courseGuideHelpTourTitle."
+  },
+  "courseGuideTour1Body": "Your current lesson is always here. Tap Continue to pick up where you left off.",
+  "@courseGuideTour1Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour1Body."
+  },
+  "courseGuideTour1Title": "Lesson",
+  "@courseGuideTour1Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour1Title."
+  },
+  "courseGuideTour2Body": "What to do today: the lesson, reinforcement, one exercise for each theme in training and opening segments. The number shows how many remain.",
+  "@courseGuideTour2Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour2Body."
+  },
+  "courseGuideTour2Title": "Goals",
+  "@courseGuideTour2Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour2Title."
+  },
+  "courseGuideTour3Body": "Mastery of each theme, the tests you have taken and those still to do.",
+  "@courseGuideTour3Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour3Body."
+  },
+  "courseGuideTour3Title": "Progress",
+  "@courseGuideTour3Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour3Title."
+  },
+  "courseGuideTour4Body": "Every lesson in the course. You can start any lesson and revisit those you have completed.",
+  "@courseGuideTour4Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour4Body."
+  },
+  "courseGuideTour4Title": "Catalog",
+  "@courseGuideTour4Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour4Title."
+  },
+  "courseGuideTourDone": "Got it",
+  "@courseGuideTourDone": {
+    "description": "T85 progress, help and guided tour: courseGuideTourDone."
+  },
+  "courseGuideTourNext": "Next",
+  "@courseGuideTourNext": {
+    "description": "T85 progress, help and guided tour: courseGuideTourNext."
+  },
+  "courseGuideTourOf": "{n} of {total}",
+  "@courseGuideTourOf": {
+    "description": "T85 progress, help and guided tour: courseGuideTourOf.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "courseGuideTourSkip": "Skip",
+  "@courseGuideTourSkip": {
+    "description": "T85 progress, help and guided tour: courseGuideTourSkip."
+  },
+  "trainingByExercise": "Exercise by exercise",
+  "@trainingByExercise": {
+    "description": "T85 progress, help and guided tour: trainingByExercise."
+  },
+  "trainingChartLegend": "Cumulative score after each exercise. Green: correct · red: incorrect · light bulb: hint used, no points.",
+  "@trainingChartLegend": {
+    "description": "T85 progress, help and guided tour: trainingChartLegend."
+  },
+  "trainingCycleDays": "{n} of 7",
+  "@trainingCycleDays": {
+    "description": "T85 daily goals and progress: trainingCycleDays.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingCycleScore": "Cycle score",
+  "@trainingCycleScore": {
+    "description": "T85 progress, help and guided tour: trainingCycleScore."
+  },
+  "trainingMasteryNote": "Score from the last 7 exercises. The marker is the 70% threshold.",
+  "@trainingMasteryNote": {
+    "description": "T85 daily goals and progress: trainingMasteryNote."
+  },
+  "trainingMasteryTitle": "Mastery by theme",
+  "@trainingMasteryTitle": {
+    "description": "T85 daily goals and progress: trainingMasteryTitle."
+  },
+  "trainingOpeningsFirm": "{done} of {total} moves firm",
+  "@trainingOpeningsFirm": {
+    "description": "T85 daily goals and progress: trainingOpeningsFirm.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingPercent": "{value} %",
+  "@trainingPercent": {
+    "description": "T85 daily goals and progress: trainingPercent.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingTestsMissing": "No recorded score",
+  "@trainingTestsMissing": {
+    "description": "T85 progress, help and guided tour: trainingTestsMissing."
+  },
+  "trainingTestsTitle": "Tests",
+  "@trainingTestsTitle": {
+    "description": "T85 daily goals and progress: trainingTestsTitle."
+  },
+  "trainingThemeReinforceInfo": "Below 70%: the remaining exercises for this theme become reinforcement goals.",
+  "@trainingThemeReinforceInfo": {
+    "description": "T85 progress, help and guided tour: trainingThemeReinforceInfo."
+  },
+  "trainingThemeTitle": "Theme mastery",
+  "@trainingThemeTitle": {
+    "description": "T85 progress, help and guided tour: trainingThemeTitle."
+  },
+  "trainingProgressChapterTitle": "Chapter {n} · {title}",
+  "@trainingProgressChapterTitle": {
+    "description": "Chapter heading for a test in course progress.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingTestDoneBody": "Practice exercises · completed",
+  "@trainingTestDoneBody": {
+    "description": "Subtitle of a completed chapter test in course progress."
+  },
+  "trainingTestLocked": "Unlocks after completing {lesson}",
+  "@trainingTestLocked": {
+    "description": "Lesson required before a chapter test becomes available.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingLevelTestOptional": "Optional: skip what you already know",
+  "@trainingLevelTestOptional": {
+    "description": "Description of the optional level test in course progress."
   }
 }

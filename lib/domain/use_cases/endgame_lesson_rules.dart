@@ -12,6 +12,9 @@ enum ExerciseGrade { below, passed, good, excellent, perfect }
 
 /// As regras das aulas de finais: pontos, nota e o que o passo final abre.
 abstract final class EndgameLessonRules {
+  /// A chapter may teach and test without a free-play practice position.
+  static bool canPractice(EndgameLesson lesson) => lesson.practice != null;
+
   /// As estrelas que cada faixa pede: o mínimo da aula, depois 75% e 85% do
   /// total (sempre acima da faixa anterior) e, por fim, todas.
   static Map<ExerciseGrade, int> gradeStars(EndgameLesson lesson) {
@@ -88,7 +91,7 @@ abstract final class EndgameLessonRules {
   /// O speedrun do final da aula: o de modalidade "final" na mesma posição
   /// do treino. Nulo se o final não tem speedrun.
   static Speedrun? speedrunOf(EndgameLesson lesson, List<Speedrun> speedruns) {
-    final positionId = lesson.practice.positionId;
+    final positionId = lesson.practice?.positionId;
     if (positionId == null) return null;
     for (final speedrun in speedruns) {
       if (speedrun.kind == SpeedrunKind.ending &&

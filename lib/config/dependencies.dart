@@ -1,3 +1,5 @@
+import '../data/repositories/training/training_endgame_content.dart';
+
 import 'dart:math';
 
 import '../data/repositories/training/course_training_repository.dart'
@@ -232,6 +234,7 @@ class Dependencies {
     required this.schoolProgressRepository,
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
+    this.trainingEndgameContent,
     required this.lessonScriptRepository,
     required this.kpkRepository,
     required this.scriptTableRepository,
@@ -485,6 +488,13 @@ class Dependencies {
       schoolProgressRepository: school,
       starChallengeRepository: stars,
       endgameLessonRepository: endgameLessons,
+      trainingEndgameContent: showsDevTools
+          ? TrainingEndgameContent.fromConfigs(
+              lessonContent,
+              school: lessons,
+              configs: activeTrainingCourses,
+            )
+          : null,
       lessonScriptRepository: AssetLessonScriptRepository(lessonContent),
       kpkRepository: AssetKpkRepository(assets),
       scriptTableRepository: AssetScriptTableRepository(assets),
@@ -619,6 +629,7 @@ class Dependencies {
   final SchoolProgressRepository schoolProgressRepository;
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
+  final TrainingEndgameContent? trainingEndgameContent;
   final LessonScriptRepository lessonScriptRepository;
   final KpkRepository kpkRepository;
 

@@ -49,6 +49,7 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
     }
     final grade = state.grade;
     final below = grade == ExerciseGrade.below;
+    final practice = state.lesson!.practice;
     return Scaffold(
       key: ExercisesDoneKeys.screen,
       // Compartilhar o diploma: só o ícone, no canto da barra.
@@ -196,12 +197,11 @@ class _ExercisesDoneScreenState extends State<ExercisesDoneScreen> {
                     },
                     label: Text(l10n.endgameRedoExercises),
                   )
-                else
+                else if (practice != null)
                   FilledButton.icon(
                     key: ExercisesDoneKeys.practice,
                     icon: const Icon(Icons.sports_esports_outlined),
                     onPressed: () {
-                      final practice = state.lesson!.practice;
                       context.pushReplacement(
                         Routes.setup(
                           practice.fen,

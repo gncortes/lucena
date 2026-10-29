@@ -27,6 +27,8 @@ class CourseGuideScreen extends StatelessWidget {
     required this.goalsBuilder,
     required this.progressBuilder,
     this.onLevelTest,
+    this.centerTitle = false,
+    this.showHeaderActions = true,
     this.bodyOverride,
     this.titleOverride,
     this.onTabChanged,
@@ -37,6 +39,7 @@ class CourseGuideScreen extends StatelessWidget {
   final ValueChanged<TrainingLesson> onLesson;
   final ValueChanged<String> onChapter;
   final WidgetBuilder goalsBuilder, progressBuilder;
+  final bool centerTitle, showHeaderActions;
   final Widget? bodyOverride;
   final String? titleOverride;
   final ValueChanged<CourseGuideTab>? onTabChanged;
@@ -68,26 +71,28 @@ class CourseGuideScreen extends StatelessWidget {
       return Scaffold(
         key: CourseGuideKeys.screen,
         appBar: LucenaAppBar(
-          centerTitle: false,
+          centerTitle: centerTitle,
           toolbarHeight: 64,
           titleSpacing: 0,
           title: Text(title),
           leading: BackButton(onPressed: onBack),
-          actions: [
-            IconButton(
-              key: CourseGuideKeys.planAction,
-              onPressed: state.saving ? null : onPlan,
-              tooltip: t.courseGuidePlanAction,
-              icon: const Icon(Icons.edit_calendar_outlined),
-            ),
-            if (config.hasHelp)
-              IconButton(
-                key: CourseGuideKeys.helpAction,
-                onPressed: onHelp,
-                tooltip: t.courseGuideHelpAction,
-                icon: const Icon(Icons.info_outline),
-              ),
-          ],
+          actions: showHeaderActions
+              ? [
+                  IconButton(
+                    key: CourseGuideKeys.planAction,
+                    onPressed: state.saving ? null : onPlan,
+                    tooltip: t.courseGuidePlanAction,
+                    icon: const Icon(Icons.edit_calendar_outlined),
+                  ),
+                  if (config.hasHelp)
+                    IconButton(
+                      key: CourseGuideKeys.helpAction,
+                      onPressed: onHelp,
+                      tooltip: t.courseGuideHelpAction,
+                      icon: const Icon(Icons.info_outline),
+                    ),
+                ]
+              : null,
         ),
         body: SafeArea(
           top: false,
