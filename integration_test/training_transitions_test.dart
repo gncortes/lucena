@@ -82,7 +82,7 @@ void registerTrainingTransitionTests() {
     expect(completed.single.params['mock'], 'sim');
   }, tags: ['training-transition-meta']);
 
-  patrolTest('T85 Hero Home trecho, revisão e fade para outra abertura', (
+  patrolTest('T85 Hero Home parte, revisão e próxima meta explícita', (
     $,
   ) async {
     await AppRobot($).open(
@@ -109,11 +109,26 @@ void registerTrainingTransitionTests() {
     final next = cubit.state.pending.firstWhere(
       (id) => id != cubit.state.lessonId,
     );
-    await capture.record('opening-auto-fade', () async {
+    await capture.record('opening-part-complete', () async {
       await capture.openingMove('c1f4');
+    }, ready: TrainingKeys.nextGoal);
+    expect(cubit.state.phase, TrainingOpeningPhase.complete);
+    await capture.shot('opening-part-end', ready: TrainingKeys.nextGoal);
+    await capture.record('opening-next-goal', () async {
+      await $(TrainingKeys.nextGoal).tap();
+    }, ready: CourseGuideKeys.screen);
+    await capture.record('opening-open-next', () async {
+      final target = find.byKey(TrainingKeys.trainTrecho(next));
+      await $.tester.scrollUntilVisible(target, 150);
+      await $.tester.ensureVisible(target);
+      await $.pumpAndSettle();
+      await $(TrainingKeys.trainTrecho(next)).tap();
     }, ready: TrainingKeys.openingTitle(next));
-    await capture.shot('opening-after-fade', ready: TrainingKeys.openingBoard);
+    await capture.shot(
+      'opening-after-next-goal',
+      ready: TrainingKeys.openingBoard,
+    );
     await $(TrainingKeys.openingBack).tap();
-    await capture.shot('opening-back-list', ready: TrainingKeys.openingsScreen);
+    await capture.shot('opening-back-list', ready: CourseGuideKeys.screen);
   }, tags: ['training-transition-opening']);
 }

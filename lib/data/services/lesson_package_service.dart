@@ -273,7 +273,8 @@ class LessonPackageService extends LessonContentReader {
     final pointer = File('${activation.folder.path}/active');
     if ((await _active(activation.folder)).path
             .endsWith('/${activation.version}') &&
-        activation.source == null) {
+        (activation.source == null ||
+            activation.source!.cacheScope == _source.cacheScope)) {
       return;
     }
     final counter = File('${activation.folder.parent.path}/sequence');

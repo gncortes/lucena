@@ -385,6 +385,16 @@ Future<Dependencies> e2eDependencies({
     },
   );
   if (trainingScenario != null) {
+    if (packages != null) {
+      // A seeded native scenario starts with installed course metadata. Fresh
+      // emulators must download it through the same verified package service
+      // before the repository can construct the requested fixture state.
+      await CourseDownloadRepository(packages).prepare(
+        trainingScenario.name.startsWith('school')
+            ? TrainingCourseConfig.escola
+            : TrainingCourseConfig.pilares,
+      );
+    }
     await courseTrainingRaw.seed(trainingScenario, e2eNow);
   }
   return Dependencies(

@@ -261,6 +261,45 @@ void main() {
     },
   );
 
+  test(
+    'unchanged refresh with the selected source preserves parsing scope',
+    () async {
+      final packages = service();
+      await packages.install('entry', () async => {lessonPath: 'same'});
+      final scope = packages.cacheScope;
+      await packages.refresh(
+        'entry',
+        () async => {lessonPath: 'same'},
+        candidateSource: packages.source,
+      );
+      expect(packages.cacheScope, scope);
+      expect(await packages.read(lessonPath), 'same');
+    },
+  );
+
+  test(
+    'prefetched fresh chapter activates only after the current lesson closes',
+    () async {
+      final packages = service();
+      await packages.install('entry', () async => {lessonPath: 'current'});
+      final scope = packages.cacheScope;
+      final lease = packages.beginSession();
+      const next = 'assets/lessons/endgames/pilares.c2.json';
+      await packages.refresh(
+        'chapter-2',
+        () async => {next: 'next'},
+        candidateSource: packages.source,
+      );
+      expect(await packages.installed('chapter-2'), false);
+      expect(packages.cacheScope, scope);
+      source.online = false;
+      expect(await packages.read(lessonPath), 'current');
+      await lease.close();
+      expect(await packages.installed('chapter-2'), true);
+      expect(await service().read(next), 'next');
+    },
+  );
+
   test('repository refresh reads updated source in background and respects lesson lease', () async {
     const school = 'assets/lessons/course.json';
     source.files.addAll({

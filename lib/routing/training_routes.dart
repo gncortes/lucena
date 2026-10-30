@@ -316,7 +316,7 @@ void _lesson(
       unawaited(
         context
             .read<CourseDownloadRepository>()
-            .prepare(guide.config, chapterId: chapters[index + 1])
+            .refresh(guide.config, chapterId: chapters[index + 1])
             .catchError((Object _) {}),
       );
     }

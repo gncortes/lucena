@@ -78,7 +78,6 @@ class _OpeningView extends StatefulWidget {
 class _OpeningViewState extends State<_OpeningView> {
   ChessboardController? _controller;
   String? _boardLine;
-  bool _fading = false;
   Timer? _replay;
   String? _replayFen;
   int? _lastCursor;
@@ -89,28 +88,11 @@ class _OpeningViewState extends State<_OpeningView> {
     super.dispose();
   }
 
-  void _advance(TrainingOpeningState state) {
-    if (state.phase != TrainingOpeningPhase.complete ||
-        state.pending.isEmpty ||
-        _fading ||
-        state.trecho?.lines.isNotEmpty == true) {
-      return;
-    }
-    setState(() => _fading = true);
-  }
-
-  Future<void> _onFadeEnd() async {
-    if (!_fading) return;
-    await context.read<TrainingOpeningCubit>().nextOpening();
-    if (mounted) setState(() => _fading = false);
-  }
-
   @override
   Widget build(
     BuildContext context,
   ) => BlocConsumer<TrainingOpeningCubit, TrainingOpeningState>(
     listener: (context, state) {
-      _advance(state);
       if (state.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
@@ -190,13 +172,8 @@ class _OpeningViewState extends State<_OpeningView> {
                     teacher: widget.screen.teacher,
                     text: speechText,
                     onOpen: () => _fullSpeech(context, speechText),
-                    boardBuilder: (size) => AnimatedOpacity(
-                      opacity: _fading ? 0 : 1,
-                      duration: AppMotion.of(context).component,
-                      onEnd: _onFadeEnd,
-                      child: Builder(
-                        builder: (context) => _board(context, state, size),
-                      ),
+                    boardBuilder: (size) => Builder(
+                      builder: (context) => _board(context, state, size),
                     ),
                     notation: ScriptMoveList(
                       moves: [
@@ -345,7 +322,6 @@ class _OpeningViewState extends State<_OpeningView> {
     final playing =
         state.phase == TrainingOpeningPhase.playing &&
         !state.reviewing &&
-        !_fading &&
         _replayFen == null;
     final data = GameData(
       fen: fen,

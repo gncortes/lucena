@@ -27,7 +27,7 @@ import '../../testing/training/training_scenario_builder.dart';
 
 void main() {
   testWidgets(
-    'opening list completes four segments through fade and returns to the same goals tab',
+    'opening list completes four parts through explicit next goal and returns to goals',
     (tester) async {
       setPhoneSize(tester, const Size(412, 915));
       final scenario = TrainingScenarioBuilder(TrainingCourse.pilares);
@@ -100,6 +100,23 @@ void main() {
         await cubit.play('d2d4');
         await cubit.play('c1f4');
         await tester.pumpAndSettle();
+        expect(cubit.state.phase, TrainingOpeningPhase.complete);
+        await tester.tap(find.byKey(TrainingKeys.nextGoal));
+        await tester.pumpAndSettle();
+        expect(
+          router.routeInformationProvider.value.uri.path,
+          Routes.training('pilares'),
+        );
+        if (index < 4) {
+          final next = find.byKey(
+            TrainingKeys.trainTrecho('opening${index + 1}'),
+          );
+          await tester.scrollUntilVisible(next, 150);
+          await tester.ensureVisible(next);
+          await tester.pumpAndSettle();
+          await tester.tap(next);
+          await tester.pumpAndSettle();
+        }
       }
       expect(
         (await repo.load(TrainingCourse.pilares)).day!.goals
@@ -108,8 +125,6 @@ void main() {
             .done,
         isTrue,
       );
-      await tester.tap(find.byKey(TrainingKeys.nextGoal));
-      await tester.pumpAndSettle();
       expect(
         router.routeInformationProvider.value.uri.path,
         Routes.training('pilares'),

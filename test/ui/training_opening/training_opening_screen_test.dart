@@ -1,9 +1,5 @@
-import 'dart:ui' as ui;
-
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
-import 'package:flutter/foundation.dart' show listEquals;
-import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -324,13 +320,14 @@ void main() {
     });
   }
   testWidgets(
-    'completion fades before loading another opening from its initial position',
+    'completion remains visible until the student chooses the next goal',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(412, 915);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
       await prepare();
+      var nextGoal = false;
       await tester.pumpWidget(
         TestApp(
           locale: const Locale('pt'),
@@ -341,7 +338,7 @@ void main() {
             now: now,
             lessonId: 'one',
             teacher: teacher,
-            onNextGoal: () {},
+            onNextGoal: () => nextGoal = true,
           ),
         ),
       );
@@ -360,69 +357,15 @@ void main() {
       await cubit.play('e2e4');
       await cubit.play('g1f3');
       await tester.pump();
-      expect(cubit.state.lessonId, 'one');
-      expect(
-        tester
-            .widget<AnimatedOpacity>(
-              find
-                  .ancestor(
-                    of: find.byKey(TrainingKeys.openingBoard),
-                    matching: find.byType(AnimatedOpacity),
-                  )
-                  .first,
-            )
-            .duration,
-        const Duration(milliseconds: 300),
-      );
-      await tester.pump(const Duration(milliseconds: 299));
-      expect(cubit.state.lessonId, 'one');
-      await tester.pump(const Duration(milliseconds: 1));
-      for (var i = 0; i < 20 && cubit.state.lessonId != 'two'; i++) {
-        await tester.pump(const Duration(milliseconds: 16));
-      }
-      expect(cubit.state.lessonId, 'two');
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 1));
-      final boundary = tester.renderObject<RenderRepaintBoundary>(
-        find
-            .descendant(
-              of: find.byKey(TrainingKeys.openingBoard),
-              matching: find.byType(RepaintBoundary),
-            )
-            .first,
-      );
-      final firstPixels = await tester.runAsync(() async {
-        final image = await boundary.toImage();
-        final bytes = (await image.toByteData(
-          format: ui.ImageByteFormat.rawRgba,
-        ))!.buffer.asUint8List();
-        image.dispose();
-        return bytes;
-      });
       await tester.pumpAndSettle();
-      final finalPixels = await tester.runAsync(() async {
-        final image = await boundary.toImage();
-        final bytes = (await image.toByteData(
-          format: ui.ImageByteFormat.rawRgba,
-        ))!.buffer.asUint8List();
-        image.dispose();
-        return bytes;
-      });
-      expect(firstPixels, isNotNull);
-      expect(finalPixels, isNotNull);
-      expect(
-        listEquals(firstPixels, finalPixels),
-        isTrue,
-        reason:
-            'Incoming opening must already paint its initial position; '
-            'only the board opacity may animate during the transition',
-      );
-      expect(cubit.state.lessonId, 'two');
-      expect(cubit.state.cursor, 0);
-      await cubit.play('e2e4');
-      await cubit.play('g1f3');
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 1));
+      expect(cubit.state.lessonId, 'one');
+      expect(cubit.state.phase, TrainingOpeningPhase.complete);
       expect(find.byKey(TrainingKeys.nextGoal), findsOneWidget);
+      expect(nextGoal, false);
+      await tester.tap(find.byKey(TrainingKeys.nextGoal));
+      await tester.pumpAndSettle();
+      expect(nextGoal, true);
       expect(tester.takeException(), isNull);
     },
   );
