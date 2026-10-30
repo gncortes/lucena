@@ -143,6 +143,7 @@ Future<({GoRouter router, FakeTrainingRepository repository})> showShell(
         ),
       ],
       child: TestApp(
+        trainingAccess: true,
         settingsCubit: settings,
         locale: const Locale('pt'),
         router: router,
@@ -189,7 +190,7 @@ void main() {
           find.descendant(of: cta, matching: find.byIcon(Icons.chevron_right)),
           findsOneWidget,
         );
-        final label = find.text('Treinar o trecho 1 · Trecho 1');
+        final label = find.text('Treinar a parte 1');
         expect(
           tester.getTopLeft(label).dx,
           closeTo(tester.getTopLeft(find.text('Abertura active')).dx, .01),
@@ -204,8 +205,8 @@ void main() {
           (segments.last.decoration! as BoxDecoration).color,
           const Color(0xfff5f7f4),
         );
-        await tester.scrollUntilVisible(find.text('Trecho de hoje feito'), 100);
-        final done = find.text('Trecho de hoje feito');
+        await tester.scrollUntilVisible(find.text('Parte de hoje feita'), 100);
+        final done = find.text('Parte de hoje feita');
         expect(tester.widget<Text>(done).style!.color, AppColors.record);
         final row = find.ancestor(of: done, matching: find.byType(Row)).first;
         expect(
@@ -244,7 +245,7 @@ void main() {
       expect(
         find.descendant(
           of: card,
-          matching: find.text('Todos os trechos firmes · só revisão'),
+          matching: find.text('Todas as partes feitas · só revisão'),
         ),
         findsOneWidget,
       );
@@ -376,7 +377,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byKey(TrainingKeys.openingCard('active')),
-          matching: find.text('Trecho de hoje feito'),
+          matching: find.text('Parte de hoje feita'),
         ),
         findsOneWidget,
       );

@@ -76,7 +76,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byKey(StarChallengeKeys.saveError), findsOneWidget);
         expect(
-          find.text('Não foi possível salvar seu progresso. Tente novamente.'),
+          find.text('Não foi possível salvar. Tente de novo.'),
           findsOneWidget,
         );
         expect(find.byKey(StarChallengeKeys.retrySave), findsOneWidget);

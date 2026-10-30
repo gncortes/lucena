@@ -1224,19 +1224,28 @@ GoRouter buildRouter({
                       return BlocProvider(
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
-                        create: (_) => ExerciseCubit(
-                          learning: context.read<LearningRepository?>(),
-                          feedback: context.read<ExerciseFeedbackRepository?>(),
-                          now: context.read<Now>(),
-                          sounds: context.read<GameSounds>(),
-                          haptics: context.read<GameHaptics>(),
-                          analytics: context.analytics,
-                          lessons: context.read<EndgameLessonRepository>(),
-                          progress: context.read<EndgameProgressRepository>(),
-                          characters: context.read<CharacterRepository>(),
-                        )..load(id, exercise, _language(context)),
+                        create: (_) =>
+                            ExerciseCubit(
+                              learning: context.read<LearningRepository?>(),
+                              feedback: context
+                                  .read<ExerciseFeedbackRepository?>(),
+                              now: context.read<Now>(),
+                              sounds: context.read<GameSounds>(),
+                              haptics: context.read<GameHaptics>(),
+                              analytics: context.analytics,
+                              lessons: context.read<EndgameLessonRepository>(),
+                              progress: context
+                                  .read<EndgameProgressRepository>(),
+                              characters: context.read<CharacterRepository>(),
+                            )..load(
+                              id,
+                              exercise,
+                              _language(context),
+                              restartPosition: id.startsWith('pilares.'),
+                            ),
                         child: ExerciseScreen(
                           key: ValueKey('exercise.$id.$exercise'),
+                          trainingTest: id.startsWith('pilares.'),
                           lessonId: id,
                           exerciseId: exercise,
                           // A lista manda a posição, para a miniatura voar.

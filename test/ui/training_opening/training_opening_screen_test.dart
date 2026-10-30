@@ -23,7 +23,7 @@ import 'package:lucena/ui/core/widgets/exercise_actions.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/training_opening/view_models/training_opening_cubit.dart';
 import 'package:lucena/ui/training_opening/widgets/training_opening_screen.dart';
-import 'package:lucena/ui/training_opening/widgets/training_openings_screen.dart';
+import 'package:lucena/ui/training_opening/widgets/opening_goal_cards.dart';
 
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/board_gestures.dart';
@@ -292,7 +292,10 @@ void main() {
               .fontSize,
           14,
         );
-        expect(speech.bottom, closeTo(board.top, .01));
+        expect(
+          speech.bottom,
+          closeTo(board.top - (size.height < 780 ? 0 : 8), .01),
+        );
         expect(speech.top, greaterThanOrEqualTo(52 + 64));
       }
 
@@ -467,7 +470,7 @@ void main() {
       TestApp(
         locale: const Locale('pt'),
         settingsCubit: settings,
-        child: TrainingOpeningsScreen(
+        child: _cards(
           repository: repository,
           config: TrainingCourseConfig.pilares,
           now: now,
@@ -477,7 +480,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('0 de 1'), findsNWidgets(2));
-    expect(find.text('Todos os trechos firmes · só revisão'), findsNothing);
+    expect(find.text('Todas as partes feitas · só revisão'), findsNothing);
     expect(find.byKey(TrainingKeys.trainTrecho('one')), findsOneWidget);
     final saved = await repository.load(TrainingCourse.pilares);
     expect(saved.day!.goals.last.items['one'], 'ideia.ex1');
@@ -494,7 +497,7 @@ void main() {
       TestApp(
         locale: const Locale('pt'),
         settingsCubit: settings,
-        child: TrainingOpeningsScreen(
+        child: _cards(
           repository: repository,
           config: TrainingCourseConfig.pilares,
           now: now,
@@ -539,3 +542,27 @@ OpeningTrecho scriptedTrecho() => OpeningTrecho.fromJson({
     ],
   },
 });
+
+Widget _cards({
+  required FakeTrainingRepository repository,
+  required TrainingCourseConfig config,
+  required FakeNow now,
+  required ValueChanged<String> onTrain,
+}) => BlocProvider(
+  create: (_) =>
+      TrainingOpeningCubit(repository: repository, config: config, now: now)
+        ..load(),
+  child: BlocBuilder<TrainingOpeningCubit, TrainingOpeningState>(
+    builder: (context, state) => Scaffold(
+      body: state.saved == null
+          ? const SizedBox()
+          : SingleChildScrollView(
+              child: OpeningGoalCards(
+                saved: state.saved!,
+                resources: state.resources!,
+                onTrain: onTrain,
+              ),
+            ),
+    ),
+  ),
+);

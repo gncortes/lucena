@@ -29,7 +29,6 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../core/widgets/speech_balloon.dart';
-import '../../core/widgets/time_display.dart';
 import '../../endgames/widgets/grade_widgets.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_exercise_cubit.dart';
@@ -84,7 +83,6 @@ class _ExerciseView extends StatefulWidget {
 
 class _ExerciseViewState extends State<_ExerciseView> {
   ChessboardController? _controller;
-  Timer? _timer;
 
   void _cycleAction(
     TrainingExerciseState state,
@@ -106,20 +104,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted &&
-          context.read<TrainingExerciseCubit>().state.phase ==
-              TrainingExercisePhase.playing) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
   void dispose() {
-    _timer?.cancel();
     _controller?.dispose();
     super.dispose();
   }
@@ -127,7 +112,11 @@ class _ExerciseViewState extends State<_ExerciseView> {
   @override
   Widget build(
     BuildContext context,
-  ) => BlocBuilder<TrainingExerciseCubit, TrainingExerciseState>(
+  ) => BlocConsumer<TrainingExerciseCubit, TrainingExerciseState>(
+    listenWhen: (before, after) => !before.error && after.error,
+    listener: (context, state) => ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+    ),
     builder: (context, state) {
       final loading = state.phase == TrainingExercisePhase.loading;
       if (loading && widget.screen.preview != null) {
@@ -143,8 +132,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
           state.phase != TrainingExercisePhase.expired;
       final result = state.phase == TrainingExercisePhase.result;
       final feedback = result ? state.errorFeedback : null;
-      final boardCenter = BoardViewport.usefulHeightOf(context) / 2 - 64;
       final screen = MediaQuery.sizeOf(context);
+      final boardCenter = BoardViewport.usefulHeightOf(context) / 2 - 64;
       // Preserve the natural speech/header when a full-width board cannot fit.
       final fullWidthFits =
           boardCenter - screen.width / 2 >= (screen.height < 780 ? 80 : 112);
@@ -152,7 +141,24 @@ class _ExerciseViewState extends State<_ExerciseView> {
         key: TrainingKeys.exerciseScreen,
         appBar: LucenaAppBar(
           toolbarHeight: 64,
-          title: Text(widget.screen.title),
+          centerTitle: true,
+          title: Text(
+            widget.screen.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          actions: [
+            if (exercise != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: TrainingBadge.difficultyIcon(
+                  context,
+                  exercise.stars,
+                  key: TrainingKeys.exerciseTitleDifficulty,
+                  size: 24,
+                ),
+              ),
+          ],
         ),
         body: SafeArea(
           child: !ready
@@ -177,7 +183,12 @@ class _ExerciseViewState extends State<_ExerciseView> {
                     gap: 0,
                     shrinkSides: false,
                     top: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.fromLTRB(
+                        12,
+                        0,
+                        12,
+                        screen.height < 780 ? 0 : 8,
+                      ),
                       child: feedback == null
                           ? SingleChildScrollView(
                               reverse: true,
@@ -212,13 +223,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
                                     text: result
                                         ? (feedback ??
                                               (state.displayedCorrect
-                                                  ? l.exerciseSayCorrect
-                                                  : l.exerciseSayWrong))
-                                        : l.trainingFindMove(
-                                            exercise.fen.split(' ')[1] == 'b'
-                                                ? 'black'
-                                                : 'white',
-                                          ),
+                                                  ? l.trainingFixedCorrect
+                                                  : l.trainingFixedWrong))
+                                        : l.trainingFixedPrompt,
                                     speechContext: SpeechContext.teaching,
                                   ),
                                 ),
@@ -346,11 +353,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
                                         ),
                                       ),
                                     ),
-                                  if (!result || state.hint)
-                                    TrainingBadge.difficulty(
-                                      context,
-                                      exercise.stars,
-                                    ),
                                   if (state.hint)
                                     TrainingBadge.withHint(context),
                                 ],
@@ -384,8 +386,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
                 child: IgnorePointer(
                   ignoring: loading,
                   child: ExerciseActions(
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     hint: state.phase == TrainingExercisePhase.playing
                         ? ExerciseHintButton(
+                            backgroundColor: AppColors.trainingHintSurface,
                             key: TrainingKeys.exerciseHint,
                             label: l.exerciseHintFree,
                             onPressed: cubit.hint,
@@ -397,11 +401,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
                             tooltip: l.lessonRetry,
                             icon: const Icon(Icons.replay),
                             onPressed: cubit.retryPractice,
-                          )
-                        : !result
-                        ? TimeDisplay(
-                            value: _time(cubit.elapsed),
-                            semanticsLabel: _time(cubit.elapsed),
                           )
                         : null,
                     actions: [
@@ -439,9 +438,6 @@ class _ExerciseViewState extends State<_ExerciseView> {
       );
     },
   );
-
-  static String _time(Duration time) =>
-      '${time.inMinutes}:${(time.inSeconds % 60).toString().padLeft(2, '0')}';
 
   Widget _board(
     BuildContext context,

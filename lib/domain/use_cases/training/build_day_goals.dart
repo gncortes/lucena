@@ -41,7 +41,11 @@ final class BuildDayGoals {
     // Pending lessons retain their place without accumulating a missed day's quota.
     lessons.addAll(pending);
     final reserved = lessons.map((g) => g.ref).toSet();
-    for (final lesson in resources.lessons.where((l) => l.visible)) {
+    for (final lesson in resources.lessons.where(
+      (l) => l.visible || !l.published,
+    )) {
+      if (!lesson.inCourseOrder) continue;
+      if (!lesson.published) break;
       if (quota == 0 || lessons.length >= quota) break;
       if (state.completedLessons.containsKey(lesson.id) ||
           reserved.contains(lesson.id)) {
@@ -85,7 +89,10 @@ final class BuildDayGoals {
         final track = state.openings[entry.key];
         if (bank == null ||
             track == null ||
-            !bank.any((item) => item.script != null && !item.mock) ||
+            !bank.any(
+              (item) =>
+                  (item.script != null || item.lines.isNotEmpty) && !item.mock,
+            ) ||
             bank.any((item) => item.id == entry.value)) {
           continue;
         }

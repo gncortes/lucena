@@ -18,6 +18,7 @@ import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_goal.dart';
 import '../../../domain/use_cases/training/play_training_opening.dart';
 import '../../../domain/use_cases/training/training_date.dart';
+import '../../../domain/use_cases/training/opening_trecho_rules.dart';
 
 enum TrainingOpeningPhase {
   loading,
@@ -43,6 +44,7 @@ final class TrainingOpeningState {
     this.wrong = false,
     this.hint = false,
     this.error = false,
+    this.transitionFens = const [],
   });
   final TrainingOpeningPhase phase;
   final TrainingState? saved;
@@ -52,7 +54,17 @@ final class TrainingOpeningState {
   final int cursor, shown;
   final List<bool> firstTry;
   final bool failed, wrong, hint, error;
+  final List<String> transitionFens;
   bool get reviewing => shown < cursor;
+  bool get allPartsDone {
+    final bank = resources?.openings[lessonId] ?? const <OpeningTrecho>[];
+    return bank.isNotEmpty &&
+        bank.every(
+          (p) =>
+              saved?.openings[lessonId]?.doneTrechos.containsKey(p.id) ?? false,
+        );
+  }
+
   String? get fen => line?.fens[shown];
   OpeningTrecho? get trecho => line?.trecho;
   TrainingGoal? get goal =>
@@ -73,6 +85,7 @@ final class TrainingOpeningState {
     bool? wrong,
     bool? hint,
     bool? error,
+    List<String>? transitionFens,
   }) => TrainingOpeningState(
     phase: phase ?? this.phase,
     saved: saved ?? this.saved,
@@ -86,6 +99,7 @@ final class TrainingOpeningState {
     wrong: wrong ?? this.wrong,
     hint: hint ?? this.hint,
     error: error ?? this.error,
+    transitionFens: transitionFens ?? this.transitionFens,
   );
 }
 
@@ -131,14 +145,16 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
   late final StreamSubscription<TrainingState> _changes;
   bool _saving = false;
   bool _pendingHint = false;
+  Timer? _saveRetry;
 
   @override
   Future<void> close() async {
+    _saveRetry?.cancel();
     await _changes.cancel();
     await super.close();
   }
 
-  Future<void> load({String? lessonId}) async {
+  Future<void> load({String? lessonId, String? partId}) async {
     try {
       final resources = await repository.resources(config.course);
       final saved = await repository.transact(
@@ -159,12 +175,13 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
       final goal = saved.day?.goals
           .where((g) => g.kind == GoalKind.openings)
           .firstOrNull;
-      final id = goal?.items[lessonId];
+      final id = partId ?? goal?.items[lessonId];
       final trecho = resources.openings[lessonId]
           ?.where((t) => t.id == id)
           .firstOrNull;
       if (trecho == null ||
-          saved.openings[lessonId]?.doneTrechos[id] == saved.day?.date) {
+          (partId == null &&
+              saved.openings[lessonId]?.doneTrechos[id] == saved.day?.date)) {
         throw StateError('Opening unavailable');
       }
       final line = PlayTrainingOpening(trecho);
@@ -274,6 +291,10 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     if (state.phase != TrainingOpeningPhase.playing || state.reviewing) {
       return;
     }
+    if (state.trecho?.lines.isNotEmpty == true) {
+      emit(state.copyWith(failed: true, hint: true));
+      return;
+    }
     _pendingHint = true;
     _hints++;
     _counter(hints: 1, flush: false);
@@ -347,6 +368,12 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
       if (!isClosed) emit(state.copyWith(error: true));
     } finally {
       _saving = false;
+      if (!isClosed && state.error) {
+        _saveRetry?.cancel();
+        _saveRetry = Timer(const Duration(seconds: 1), () {
+          if (!isClosed) unawaited(retry());
+        });
+      }
     }
   }
 
@@ -358,6 +385,10 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     if (!step.correct) {
       _errors++;
       _counter(errors: 1, flush: false);
+      if (state.trecho!.lines.isNotEmpty) {
+        emit(state.copyWith(failed: true, wrong: true, hint: false));
+        return;
+      }
       // Keep the same position: the board immediately restores an incorrect move.
       _pendingHint = false;
       emit(
@@ -376,6 +407,9 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
       state.copyWith(
         cursor: step.cursor,
         shown: step.cursor,
+        transitionFens: state.trecho!.lines.isNotEmpty
+            ? state.line!.transitionFens(state.cursor, step.cursor)
+            : const [],
         firstTry: List.unmodifiable([
           ...state.firstTry,
           !state.failed &&
@@ -406,6 +440,41 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     try {
       final saved = await repository.transact(config.course, (current) async {
         final resources = await repository.resources(config.course);
+        if (original.trecho!.lines.isNotEmpty) {
+          final track = current.openings[original.lessonId];
+          if (track == null) throw StateError('Missing opening track');
+          final updated = OpeningTrechoRules(now)
+              .complete(track, original.trecho!, original.firstTry);
+          var next = current.copyWith(
+            openings: {...current.openings, original.lessonId!: updated},
+            lastActivityAt: now(),
+          );
+          final goal = current.day?.goals
+              .where((g) => g.kind == GoalKind.openings)
+              .firstOrNull;
+          if (goal != null &&
+              goal.items.entries.every(
+                (e) =>
+                    next.openings[e.key]?.doneTrechos[e.value] ==
+                    current.day!.date,
+              )) {
+            next = next.copyWith(
+              day: next.day!.copyWith(
+                goals: [
+                  for (final g in next.day!.goals)
+                    if (g.key == goal.key) g.complete() else g,
+                ],
+              ),
+            );
+          }
+          completedHere = true;
+          return trainingAnalytics?.finishSegment(
+                next,
+                original.lessonId!,
+                original.trecho!.id,
+              ) ??
+              next;
+        }
         final refreshed = BuildDayGoals(now, config)(current, resources);
         final goal = refreshed.day?.goals
             .where((g) => g.kind == GoalKind.openings)
@@ -441,8 +510,9 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
                   completed
             : completed;
       });
-      if (saved.openings[original.lessonId]?.doneTrechos[original.trecho!.id] !=
-          saved.day?.date) {
+      if (original.trecho!.lines.isEmpty &&
+          saved.openings[original.lessonId]?.doneTrechos[original.trecho!.id] !=
+              saved.day?.date) {
         throw const _ExpiredOpening();
       }
       if (!_segmentSent && completedHere && trainingAnalytics == null) {
@@ -480,6 +550,12 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
       if (!isClosed) emit(state.copyWith(error: true));
     } finally {
       _saving = false;
+      if (!isClosed && state.error) {
+        _saveRetry?.cancel();
+        _saveRetry = Timer(const Duration(seconds: 1), () {
+          if (!isClosed) unawaited(retry());
+        });
+      }
     }
   }
 
@@ -490,5 +566,17 @@ final class TrainingOpeningCubit extends Cubit<TrainingOpeningState> {
     }
     await load(lessonId: state.pending.first);
     return state.phase == TrainingOpeningPhase.playing;
+  }
+
+  Future<void> nextPart() async {
+    final bank =
+        state.resources?.openings[state.lessonId] ?? const <OpeningTrecho>[];
+    final index = bank.indexWhere((p) => p.id == state.trecho?.id);
+    if (state.phase != TrainingOpeningPhase.complete ||
+        index < 0 ||
+        index + 1 >= bank.length) {
+      return;
+    }
+    await load(lessonId: state.lessonId, partId: bank[index + 1].id);
   }
 }

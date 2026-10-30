@@ -70,6 +70,7 @@ void main() {
             ),
           ],
           child: TestApp(
+            trainingAccess: true,
             settingsCubit: settings,
             locale: const Locale('pt'),
             router: router,
@@ -80,15 +81,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(CourseGuideKeys.tab('goals')));
       await tester.pumpAndSettle();
-      final target = find.byKey(TrainingKeys.goalTile('openings', 'openings'));
-      await tester.scrollUntilVisible(target, 200);
-      await tester.tap(target);
-      await tester.pumpAndSettle();
-      expect(find.byKey(TrainingKeys.openingsScreen), findsOneWidget);
       await tester.scrollUntilVisible(
         find.byKey(TrainingKeys.trainTrecho('opening1')),
         150,
       );
+      await tester.ensureVisible(
+        find.byKey(TrainingKeys.trainTrecho('opening1')),
+      );
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(TrainingKeys.trainTrecho('opening1')));
       await tester.pumpAndSettle();
       for (var index = 1; index <= 4; index++) {

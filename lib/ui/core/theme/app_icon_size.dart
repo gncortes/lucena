@@ -7,6 +7,9 @@ abstract final class AppIconSize {
   /// Dentro de botão e de aviso.
   static const button = 20.0;
 
+  /// Canvas notices between the compact action and standard icon sizes.
+  static const notice = 22.0;
+
   /// O padrão do Material.
   static const standard = 24.0;
 

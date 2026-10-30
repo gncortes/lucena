@@ -42,13 +42,17 @@ final class CourseGuideState {
   final Map<String, int?> testScores;
   final Map<String, CourseTestProgress> testProgress;
   final bool loading, saving, failed;
-  TrainingLesson? get nextLesson => resources?.lessons
+  TrainingLesson? get _nextInOrder => resources?.lessons
       .where(
         (lesson) =>
-            lesson.visible &&
+            lesson.inCourseOrder &&
+            (lesson.visible || !lesson.published) &&
             !(training?.completedLessons.containsKey(lesson.id) ?? false),
       )
       .firstOrNull;
+  TrainingLesson? get nextLesson =>
+      _nextInOrder?.published == true ? _nextInOrder : null;
+  bool get awaitingPublication => _nextInOrder?.published == false;
   CourseGuideState copyWith({
     TrainingState? training,
     TrainingResources? resources,
@@ -79,8 +83,10 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     this.characters,
     this.testLessons,
     this.testProgress,
+    this.beforeOpeningProfileLoad,
   }) : super(const CourseGuideState());
   final Future<void> Function()? beforeLoad;
+  final Future<void> Function()? beforeOpeningProfileLoad;
   final TrainingRepository repository;
   final TrainingCourseConfig config;
   final Now now;
@@ -97,6 +103,13 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   final EndgameLessonRepository? testLessons;
   final EndgameProgressRepository? testProgress;
   Future<void> _pending = Future.value();
+  Timer? _saveRetry;
+
+  @override
+  Future<void> close() async {
+    _saveRetry?.cancel();
+    await super.close();
+  }
 
   Future<T> _serial<T>(Future<T> Function() action) {
     final next = _pending.then((_) => action());
@@ -191,13 +204,50 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         if (!isClosed) emit(state.copyWith(saving: true, failed: false));
         try {
           final saved = await repository.update(config.course, change);
+          _saveRetry?.cancel();
           if (!isClosed) emit(state.copyWith(training: saved, saving: false));
           return true;
         } on Object {
           if (!isClosed) emit(state.copyWith(saving: false, failed: true));
+          _saveRetry?.cancel();
+          _saveRetry = Timer(const Duration(seconds: 1), () {
+            if (!isClosed) unawaited(_change(change));
+          });
           return false;
         }
       });
+
+  Future<bool> selectOpeningProfile(String profile) async {
+    final saved = await _change((s) {
+      if (profile != 'solido' && profile != 'agressivo') {
+        throw ArgumentError.value(profile);
+      }
+      final next = s.copyWith(
+        openingProfile: profile,
+        openingProfileStartPart:
+            state.nextLesson?.partId ?? s.openingProfileStartPart,
+      );
+      final day = next.day;
+      if (day == null) return next;
+      return next.copyWith(
+        day: day.copyWith(
+          goals: [
+            ...day.goals.where((g) => g.kind != GoalKind.openings),
+            ...config.followUps
+                .build(next, state.resources!, now)
+                .where((g) => g.kind == GoalKind.openings),
+          ],
+        ),
+      );
+    });
+    if (saved) {
+      try {
+        await beforeOpeningProfileLoad?.call();
+      } catch (_) {}
+      await load();
+    }
+    return saved;
+  }
 
   Future<bool> start(TrainingPlan plan) => _change(
     (s) => BuildDayGoals(now, config)(

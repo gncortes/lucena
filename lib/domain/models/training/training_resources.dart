@@ -7,7 +7,10 @@ final class TrainingResources {
     Map<String, List<TrainingExercise>> banks = const {},
     Map<String, List<OpeningTrecho>> openings = const {},
     Map<String, Map<String, String>> errorFeedback = const {},
+    Iterable<String> offlineChapters = const [],
+    this.hasUnpublishedContent = false,
   }) : lessons = List.unmodifiable(lessons),
+       offlineChapters = Set.unmodifiable(offlineChapters),
        banks = Map.unmodifiable(
          banks.map(
            (k, v) => MapEntry(k, List<TrainingExercise>.unmodifiable(v)),
@@ -25,6 +28,8 @@ final class TrainingResources {
          ),
        );
   final List<TrainingLesson> lessons;
+  final Set<String> offlineChapters;
+  final bool hasUnpublishedContent;
   final Map<String, List<TrainingExercise>> banks;
   final Map<String, List<OpeningTrecho>> openings;
 

@@ -1,9 +1,13 @@
+import '../../core/widgets/course/course_navigation_bar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/training/training_content.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../core/keys/course_guide_keys.dart';
+import '../../core/keys/training_keys.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
@@ -16,6 +20,7 @@ import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/placement_test_card.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
+import '../../course_entry/widgets/course_content_states.dart';
 
 class CourseGuideScreen extends StatelessWidget {
   const CourseGuideScreen({
@@ -33,10 +38,12 @@ class CourseGuideScreen extends StatelessWidget {
     this.bodyOverride,
     this.titleOverride,
     this.onTabChanged,
+    this.onStartPilares,
     super.key,
   });
   final VoidCallback onBack, onPlan, onHelp, onWelcomeContinue;
   final VoidCallback? onLevelTest;
+  final VoidCallback? onStartPilares;
   final ValueChanged<TrainingLesson> onLesson;
   final ValueChanged<String> onChapter;
   final WidgetBuilder goalsBuilder, progressBuilder;
@@ -48,19 +55,18 @@ class CourseGuideScreen extends StatelessWidget {
   @override
   Widget build(
     BuildContext context,
-  ) => BlocBuilder<CourseGuideCubit, CourseGuideState>(
+  ) => BlocConsumer<CourseGuideCubit, CourseGuideState>(
+    listenWhen: (before, after) =>
+        !before.failed && after.failed && after.training != null,
+    listener: (context, state) => ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+    ),
     builder: (context, state) {
       final cubit = context.read<CourseGuideCubit>();
       final config = cubit.config;
       final t = context.l10n;
       final training = state.training;
       final tab = training?.tab ?? CourseGuideTab.lesson;
-      final labels = [
-        t.courseGuideTabLesson,
-        t.courseGuideTabGoals,
-        t.courseGuideTabProgress,
-        t.courseGuideTabCatalog,
-      ];
       final title =
           titleOverride ??
           switch (tab) {
@@ -75,7 +81,7 @@ class CourseGuideScreen extends StatelessWidget {
           centerTitle: centerTitle,
           toolbarHeight: 64,
           titleSpacing: 0,
-          title: Text(title),
+          title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
           leading: BackButton(onPressed: onBack),
           actions: showHeaderActions
               ? [
@@ -118,7 +124,11 @@ class CourseGuideScreen extends StatelessWidget {
                     switch (tab) {
                       CourseGuideTab.lesson =>
                         training?.onboardingDone == true
-                            ? _LessonTab(state: state, onLesson: onLesson)
+                            ? _LessonTab(
+                                state: state,
+                                onLesson: onLesson,
+                                onStartPilares: onStartPilares,
+                              )
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
                       CourseGuideTab.progress => progressBuilder(context),
@@ -130,73 +140,15 @@ class CourseGuideScreen extends StatelessWidget {
                       ),
                     },
         ),
-        bottomNavigationBar: DecoratedBox(
-          position: DecorationPosition.foreground,
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-            ),
-          ),
-          child: NavigationBar(
-            height: 78,
-            selectedIndex: tab.index,
-            onDestinationSelected: state.saving
-                ? null
-                : (index) async {
-                    final tab = CourseGuideTab.values[index];
-                    if (await cubit.selectTab(tab)) onTabChanged?.call(tab);
-                  },
-            backgroundColor: Theme.of(context)
-                .colorScheme
-                .surfaceContainerLowest,
-            indicatorColor: Colors.transparent,
-            labelTextStyle: WidgetStateProperty.resolveWith(
-              (states) => Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: states.contains(WidgetState.selected)
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: states.contains(WidgetState.selected)
-                    ? FontWeight.w600
-                    : FontWeight.w500,
-              ),
-            ),
-            destinations: [
-              for (final (i, icon) in [
-                Icons.school_outlined,
-                Icons.task_alt,
-                Icons.insights,
-                Icons.menu_book_outlined,
-              ].indexed)
-                NavigationDestination(
-                  key: CourseGuideKeys.tab(CourseGuideTab.values[i].name),
-                  label: labels[i],
-                  icon: i == 1
-                      ? Badge(
-                          key: CourseGuideKeys.goalsBadge,
-                          isLabelVisible: (training?.day?.remaining ?? 0) > 0,
-                          label: Text(
-                            (training?.day?.remaining ?? 0).toString(),
-                          ),
-                          child: Icon(
-                            icon,
-                            color: i == tab.index
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                          ),
-                        )
-                      : Icon(
-                          icon,
-                          color: i == tab.index
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                ),
-            ],
-          ),
+        bottomNavigationBar: CourseNavigationBar(
+          selectedIndex: tab.index,
+          remaining: training?.day?.remaining ?? 0,
+          onDestinationSelected: state.saving
+              ? null
+              : (index) async {
+                  final tab = CourseGuideTab.values[index];
+                  if (await cubit.selectTab(tab)) onTabChanged?.call(tab);
+                },
         ),
       );
     },
@@ -323,15 +275,106 @@ class _WelcomeTab extends StatelessWidget {
 }
 
 class _LessonTab extends StatelessWidget {
-  const _LessonTab({required this.state, required this.onLesson});
+  const _LessonTab({
+    required this.state,
+    required this.onLesson,
+    this.onStartPilares,
+  });
   final CourseGuideState state;
   final ValueChanged<TrainingLesson> onLesson;
+  final VoidCallback? onStartPilares;
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CourseGuideCubit>();
     final lesson = state.nextLesson;
     if (lesson == null) {
-      return const SizedBox.shrink(); // Course completion is outside T85.
+      final t = context.l10n;
+      if (state.awaitingPublication) {
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          children: [
+            const TrainingUnpublishedNotice(),
+            const SizedBox(height: 12),
+            FilledButton(
+              key: TrainingKeys.completedPrimary,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(kButtonHeight),
+              ),
+              onPressed: () => cubit.selectTab(CourseGuideTab.goals),
+              child: Text(t.trainingViewGoals),
+            ),
+            const SizedBox(height: 12),
+            _studyTips(context, cubit),
+          ],
+        );
+      }
+      final school =
+          cubit.config.progressKind == TrainingProgressKind.modulesAndPieces;
+      return ListView(
+        key: TrainingKeys.completedCourse,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: [
+          Card(
+            margin: EdgeInsets.zero,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 8,
+                children: [
+                  Row(
+                    spacing: 16,
+                    children: [
+                      const Icon(
+                        Icons.emoji_events_outlined,
+                        color: AppColors.trainingDayCorrect,
+                      ),
+                      Expanded(
+                        child: Text(
+                          school
+                              ? t.trainingEscolaCompletedTitle
+                              : t.trainingPilaresCompletedTitle,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    school
+                        ? t.trainingEscolaCompletedBody
+                        : t.trainingPilaresCompletedBody,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          FilledButton(
+            key: TrainingKeys.completedPrimary,
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
+            ),
+            onPressed: school
+                ? onStartPilares
+                : () => cubit.selectTab(CourseGuideTab.goals),
+            child: Text(school ? t.trainingStartPilares : t.trainingViewGoals),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            key: TrainingKeys.completedCatalog,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(kButtonHeight),
+            ),
+            icon: const Icon(Icons.menu_book),
+            onPressed: () => cubit.selectTab(CourseGuideTab.catalog),
+            label: Text(t.trainingViewCatalog),
+          ),
+        ],
+      );
     }
     final t = context.l10n;
     final modules =
@@ -387,65 +430,7 @@ class _LessonTab extends StatelessWidget {
           onPressed: () => onLesson(lesson),
         ),
         const SizedBox(height: 12),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 14,
-              children: [
-                Text(
-                  t.courseGuideStudyTips,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                for (final (i, prefix) in cubit.config.tipsKeys.indexed)
-                  Row(
-                    spacing: 12,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 28,
-                        height: 28,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${i + 1}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 2,
-                          children: [
-                            Text(
-                              courseGuideCopy(context, '${prefix}Title'),
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            Text(
-                              courseGuideCopy(context, '${prefix}Body'),
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        ),
+        _studyTips(context, cubit),
         const SizedBox(height: 12),
         OutlinedButton.icon(
           key: CourseGuideKeys.seeCatalog,
@@ -657,4 +642,64 @@ class _CatalogTabState extends State<_CatalogTab> {
         ? CourseItemState.started
         : CourseItemState.open;
   }
+}
+
+Widget _studyTips(BuildContext context, CourseGuideCubit cubit) {
+  final t = context.l10n;
+  return Card(
+    margin: EdgeInsets.zero,
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 14,
+        children: [
+          Text(
+            t.courseGuideStudyTips,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          for (final (i, prefix) in cubit.config.tipsKeys.indexed)
+            Row(
+              spacing: 12,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '${i + 1}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 2,
+                    children: [
+                      Text(
+                        courseGuideCopy(context, '${prefix}Title'),
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      Text(
+                        courseGuideCopy(context, '${prefix}Body'),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    ),
+  );
 }

@@ -38,11 +38,12 @@ class TrainingBadge extends StatelessWidget {
     BuildContext context,
     int difficulty, {
     Key? key,
+    double size = 18,
   }) => Semantics(
     key: key,
     label: difficultyLabel(context, difficulty),
     excludeSemantics: true,
-    child: ValueStar(points: difficulty, size: 18),
+    child: ValueStar(points: difficulty, size: size),
   );
 
   @override

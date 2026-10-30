@@ -89,6 +89,7 @@ void main() {
         child: BlocProvider.value(
           value: reminders,
           child: TestApp(
+            trainingAccess: true,
             locale: const Locale('pt'),
             router: router,
             child: const SizedBox(),
@@ -131,7 +132,9 @@ void main() {
       ],
     );
     addTearDown(router.dispose);
-    await tester.pumpWidget(TestApp(router: router, child: const SizedBox()));
+    await tester.pumpWidget(
+      TestApp(trainingAccess: true, router: router, child: const SizedBox()),
+    );
     await tester.pumpAndSettle();
     expect(router.routeInformationProvider.value.uri.path, Routes.settings);
     expect(find.byKey(CourseGuideKeys.screen), findsNothing);

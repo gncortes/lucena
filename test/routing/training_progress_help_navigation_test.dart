@@ -69,6 +69,7 @@ void main() {
             ),
           ],
           child: TestApp(
+            trainingAccess: true,
             settingsCubit: settings,
             locale: const Locale('pt'),
             router: router,

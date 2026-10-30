@@ -15,11 +15,18 @@ final class OpeningTrechoRules {
         .where((t) => !track.doneTrechos.containsKey(t.id))
         .firstOrNull;
     if (unseen != null) return track.lastNewDate == date ? null : unseen;
+    double accuracy(OpeningTrecho part) {
+      final results = track.firstTry[part.id] ?? const <bool>[];
+      return results.isEmpty
+          ? 0
+          : results.where((v) => v).length / results.length;
+    }
+
     segments.sort((a, b) {
-      final age = (track.doneTrechos[a.id] ?? '').compareTo(
-        track.doneTrechos[b.id] ?? '',
-      );
-      return age != 0 ? age : a.id.compareTo(b.id);
+      final score = accuracy(a).compareTo(accuracy(b));
+      return score != 0
+          ? score
+          : bank.toList().indexOf(a).compareTo(bank.toList().indexOf(b));
     });
     return segments.firstOrNull;
   }

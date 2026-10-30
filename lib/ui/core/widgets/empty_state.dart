@@ -34,6 +34,7 @@ class EmptyState extends StatelessWidget {
     this.actionKey,
     this.messageKey,
     this.actionIcon,
+    this.usePrimaryErrorColor = false,
     super.key,
   });
 
@@ -48,6 +49,7 @@ class EmptyState extends StatelessWidget {
   final Key? actionKey;
   final Key? messageKey;
   final IconData? actionIcon;
+  final bool usePrimaryErrorColor;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +106,7 @@ class EmptyState extends StatelessWidget {
 
   // O ícone de 48 num círculo suave de 72.
   Widget _circle(ColorScheme colors) {
-    final error = style == EmptyStateStyle.error;
+    final error = style == EmptyStateStyle.error && !usePrimaryErrorColor;
     return Container(
       width: circle,
       height: circle,

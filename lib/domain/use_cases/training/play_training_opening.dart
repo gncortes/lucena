@@ -11,7 +11,9 @@ final class PlayTrainingOpening {
     _fens.add(
       _position(example?.fen ?? trecho.fen ?? GameRules.initial.fen).fen,
     );
-    if (example == null) {
+    if (trecho.lines.isNotEmpty) {
+      _appendLines(trecho.lines);
+    } else if (example == null) {
       for (final move in trecho.moves) {
         _appendMove(move, student: _position(_fens.last).turn == studentSide);
       }
@@ -53,6 +55,39 @@ final class PlayTrainingOpening {
   int get initialCursor => _questions.keys.firstOrNull ?? _moves.length;
   int get studentMoves => _questions.length;
 
+  void _appendLines(List<List<String>> lines) {
+    var previous = <String>[];
+    final seen = <String>{};
+    for (final line in lines) {
+      var common = 0;
+      while (common < previous.length &&
+          common < line.length &&
+          previous[common] == line[common]) {
+        common++;
+      }
+      var position = GameRules.initial;
+      for (final move in line.take(common)) {
+        position = _played(position, move).position;
+      }
+      if (_fens.last != position.fen) {
+        // A reset is an authored transition, never a move for the student.
+        _moves.add(null);
+        _san.add('');
+        _fens.add(position.fen);
+      }
+      for (var ply = common; ply < line.length; ply++) {
+        final path = line.take(ply + 1).join(' ');
+        _appendMove(
+          line[ply],
+          student:
+              _position(_fens.last).turn == studentSide && !seen.contains(path),
+        );
+        seen.add(path);
+      }
+      previous = line;
+    }
+  }
+
   /// Exact result lengths for the main line and accepted authored branches.
   Set<int> get validStudentMoveCounts =>
       Set.unmodifiable(_validStudentMoveCounts);
@@ -62,6 +97,40 @@ final class PlayTrainingOpening {
   String? moveAt(int index) => _moves[index];
   int moveNumberAt(int index) => int.parse(_fens[index].split(' ')[5]);
   Side sideAt(int index) => _position(_fens[index]).turn;
+
+  /// Student move, animated rewind to the shared position, then new replies.
+  List<String> transitionFens(int from, int to) {
+    final frames = <String>[];
+    for (var i = from; i < to; i++) {
+      if (_moves[i] == null) {
+        final common = _fens.lastIndexOf(_fens[i + 1], i);
+        if (common >= 0) {
+          for (var j = i - 1; j >= common; j--) {
+            frames.add(_fens[j]);
+          }
+          continue;
+        }
+      }
+      frames.add(_fens[i + 1]);
+    }
+    return List.unmodifiable(frames);
+  }
+
+  /// Notation is the current line, while attempt results span the whole part.
+  List<int> notationIndices(int cursor) {
+    final indices = <int>[];
+    for (var i = 0; i < cursor; i++) {
+      if (_moves[i] != null) {
+        indices.add(i);
+        continue;
+      }
+      final common = indices.lastIndexWhere(
+        (index) => _fens[index + 1] == _fens[i + 1],
+      );
+      indices.removeRange(common + 1, indices.length);
+    }
+    return List.unmodifiable(indices);
+  }
 
   void _recordValidStudentMoveCounts() {
     _validStudentMoveCounts.add(_questions.length);

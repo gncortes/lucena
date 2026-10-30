@@ -10159,9 +10159,8 @@
   "@trainingLessonExtraDone": {
     "description": "T85 daily goals and progress: trainingLessonExtraDone."
   },
-  "trainingOpeningsSummary": "{n} openings · {done} of {total} segments today",
+  "trainingOpeningsSummary": "{n} openings · {done} of {total} parts today",
   "@trainingOpeningsSummary": {
-    "description": "T85 daily goals and progress: trainingOpeningsSummary.",
     "placeholders": {
       "n": {
         "type": "int"
@@ -10172,7 +10171,8 @@
       "total": {
         "type": "int"
       }
-    }
+    },
+    "description": "Training course state."
   },
   "trainingLessonNew": "New lesson · about {min} minutes",
   "@trainingLessonNew": {
@@ -10436,7 +10436,7 @@
   "@trainingExerciseExpired": {
     "description": "T85 training exercise and cycle result: trainingExerciseExpired."
   },
-  "trainingExerciseSaveError": "Could not save your progress. Try again.",
+  "trainingExerciseSaveError": "Could not save. Try again.",
   "@trainingExerciseSaveError": {
     "description": "T85 training exercise and cycle result: trainingExerciseSaveError."
   },
@@ -10473,11 +10473,11 @@
   "@trainingWrongResult": {
     "description": "T85 training exercise and cycle result: trainingWrongResult."
   },
-  "trainingOpeningAllFirm": "All segments firm · review only",
+  "trainingOpeningAllFirm": "All parts completed · review only",
   "@trainingOpeningAllFirm": {
     "description": "T85 opening training: trainingOpeningAllFirm."
   },
-  "trainingOpeningComplete": "Segment completed.",
+  "trainingOpeningComplete": "Part completed.",
   "@trainingOpeningComplete": {
     "description": "T85 opening training: trainingOpeningComplete."
   },
@@ -10493,17 +10493,16 @@
       }
     }
   },
-  "trainingOpeningDoneToday": "Today's segment completed",
+  "trainingOpeningDoneToday": "Today's part completed",
   "@trainingOpeningDoneToday": {
     "description": "T85 opening training: trainingOpeningDoneToday."
   },
-  "trainingOpeningPrompt": "Play the next move in this segment.",
+  "trainingOpeningPrompt": "Play the moves in your repertoire.",
   "@trainingOpeningPrompt": {
     "description": "T85 opening training: trainingOpeningPrompt."
   },
-  "trainingOpeningTitle": "{opening} · segment {n} of {total}",
+  "trainingOpeningTitle": "{opening} · Part {n} of {total}",
   "@trainingOpeningTitle": {
-    "description": "T85 opening training: trainingOpeningTitle.",
     "placeholders": {
       "opening": {
         "type": "String"
@@ -10514,11 +10513,11 @@
       "total": {
         "type": "int"
       }
-    }
+    },
+    "description": "Training course state."
   },
-  "trainingOpeningTrain": "Train segment {n} · {reply}",
+  "trainingOpeningTrain": "Train part {n} · {reply}",
   "@trainingOpeningTrain": {
-    "description": "T85 opening training: trainingOpeningTrain.",
     "placeholders": {
       "n": {
         "type": "int"
@@ -10526,13 +10525,14 @@
       "reply": {
         "type": "String"
       }
-    }
+    },
+    "description": "Training course state."
   },
-  "trainingOpeningWrong": "Try again: play the move from this segment.",
+  "trainingOpeningWrong": "Find another move.",
   "@trainingOpeningWrong": {
     "description": "T85 opening training: trainingOpeningWrong."
   },
-  "trainingOpeningsInfo": "Each opening is divided into short segments. Play your moves and review the line with the arrows.",
+  "trainingOpeningsInfo": "Each opening is divided into parts. Play your moves and review them using the arrows.",
   "@trainingOpeningsInfo": {
     "description": "T85 opening training: trainingOpeningsInfo."
   },
@@ -10968,5 +10968,301 @@
   "trainingGoalsAllDone": "All done for today",
   "@trainingGoalsAllDone": {
     "description": "T85 daily goals and progress: trainingGoalsAllDone."
+  },
+  "trainingOpeningPartComplete": "Part {n} completed.",
+  "@trainingOpeningPartComplete": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingFixedPrompt": "Find the best move.",
+  "trainingFixedCorrect": "That is right.",
+  "trainingFixedWrong": "Find another move.",
+  "trainingOpeningFinished": "{opening} completed: all {total} parts done. From now on, it returns to your goals for review only.",
+  "@trainingOpeningFinished": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingNextPart": "Next part",
+  "trainingViewProgress": "View progress",
+  "trainingViewGoals": "View goals",
+  "trainingViewCatalog": "View catalog",
+  "trainingStartPilares": "Start Pilares",
+  "trainingPilaresCompletedTitle": "You completed Pilares do Xadrez",
+  "trainingPilaresCompletedBody": "All lessons and tests completed. Goals continue with theme exercises and openings; use the Catalog to review a lesson.",
+  "trainingEscolaCompletedTitle": "You completed Viktor’s School",
+  "trainingEscolaCompletedBody": "You finished all the School lessons. Your next step is Pilares do Xadrez.",
+  "trainingPartName": "Part {n}",
+  "@trainingPartName": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingPartRedo": "Redo",
+  "trainingPartPractice": "Practice",
+  "trainingPartPending": "To do",
+  "trainingOpeningProgressNote": "{profile} repertoire · first-try accuracy the last time you trained each part",
+  "@trainingOpeningProgressNote": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingProfileSolid": "Solid",
+  "trainingProfileAggressive": "Aggressive",
+  "trainingEntrySpeech": "To start the course, sign in to your account. This lets me save your progress, lesson by lesson.",
+  "trainingEntrySaved": "Your progress saved, on any phone",
+  "trainingEntryOffline": "Downloaded lessons work offline",
+  "trainingEntryEmail": "Use email",
+  "trainingDownloadCourseOffline": "You are offline. To download the course for the first time, connect and tap Try again.",
+  "trainingDownloadChapterOffline": "This lesson has not been downloaded. Connect to the internet: the entire chapter downloads at once, then works offline.",
+  "trainingDownloadChapterError": "Could not download the chapter. Try again in a few moments.",
+  "trainingDownloadStorage": "Your phone needs more space to download this chapter (about {size} MB). Once downloaded, its lessons and exercises work offline.",
+  "trainingDownloadOpenStorage": "Open storage",
+  "trainingGoalsOffline": "You are offline. Today’s lesson has not been downloaded; your other goals work normally.",
+  "trainingUnpublishedTitle": "The next lesson is coming soon",
+  "trainingUnpublishedBody": "You finished all published lessons. While you wait for the next one, today’s goals continue: theme exercises and openings.",
+  "@trainingDownloadStorage": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "@trainingFixedPrompt": {
+    "description": "Training course state."
+  },
+  "@trainingFixedCorrect": {
+    "description": "Training course state."
+  },
+  "@trainingFixedWrong": {
+    "description": "Training course state."
+  },
+  "@trainingNextPart": {
+    "description": "Training course state."
+  },
+  "@trainingViewProgress": {
+    "description": "Training course state."
+  },
+  "@trainingViewGoals": {
+    "description": "Training course state."
+  },
+  "@trainingViewCatalog": {
+    "description": "Training course state."
+  },
+  "@trainingStartPilares": {
+    "description": "Training course state."
+  },
+  "@trainingPilaresCompletedTitle": {
+    "description": "Training course state."
+  },
+  "@trainingPilaresCompletedBody": {
+    "description": "Training course state."
+  },
+  "@trainingEscolaCompletedTitle": {
+    "description": "Training course state."
+  },
+  "@trainingEscolaCompletedBody": {
+    "description": "Training course state."
+  },
+  "@trainingPartRedo": {
+    "description": "Training course state."
+  },
+  "@trainingPartPractice": {
+    "description": "Training course state."
+  },
+  "@trainingPartPending": {
+    "description": "Training course state."
+  },
+  "@trainingProfileSolid": {
+    "description": "Training course state."
+  },
+  "@trainingProfileAggressive": {
+    "description": "Training course state."
+  },
+  "@trainingEntrySpeech": {
+    "description": "Training course state."
+  },
+  "@trainingEntrySaved": {
+    "description": "Training course state."
+  },
+  "@trainingEntryOffline": {
+    "description": "Training course state."
+  },
+  "@trainingEntryEmail": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadCourseOffline": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadChapterOffline": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadChapterError": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadOpenStorage": {
+    "description": "Training course state."
+  },
+  "@trainingGoalsOffline": {
+    "description": "Training course state."
+  },
+  "@trainingUnpublishedTitle": {
+    "description": "Training course state."
+  },
+  "@trainingUnpublishedBody": {
+    "description": "Training course state."
+  },
+  "trainingRepertoire": "{profile} repertoire",
+  "@trainingRepertoire": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingRepertoireNote": "First-try accuracy the last time you trained each part",
+  "trainingProfileChange": "Change",
+  "trainingProfileChangeTitle": "Change to {profile}?",
+  "@trainingProfileChangeTitle": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingProfileChangeBody": "The next opening lessons will use {profile}, starting with Part {part}. Its lessons from parts you have already completed remain in the Catalog.",
+  "@trainingProfileChangeBody": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      },
+      "part": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingProfileChangeSaved": "Everything you did in {profile} stays saved. If you return to it, you continue where you left off.",
+  "@trainingProfileChangeSaved": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingOpeningChipLondon": "London",
+  "trainingOpeningChipSlav": "Slav",
+  "trainingOpeningChipOthers": "Others",
+  "@trainingRepertoireNote": {
+    "description": "Training course state."
+  },
+  "@trainingProfileChange": {
+    "description": "Training course state."
+  },
+  "@trainingOpeningChipLondon": {
+    "description": "Training course state."
+  },
+  "@trainingOpeningChipSlav": {
+    "description": "Training course state."
+  },
+  "@trainingOpeningChipOthers": {
+    "description": "Training course state."
+  },
+  "trainingProfileCancel": "Cancel",
+  "@trainingProfileCancel": {
+    "description": "Training course state."
+  },
+  "trainingProfileNoPractice": "No practice in this repertoire yet",
+  "trainingProfileSwitched": "Your progress in {previous} was saved. Opening goals now use {profile}.",
+  "@trainingProfileSwitched": {
+    "placeholders": {
+      "previous": {
+        "type": "String"
+      },
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingOpeningSideTitle": "{opening} · {side, select, black{as Black} other{as White}}",
+  "@trainingOpeningSideTitle": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "side": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingCourseNext": "Next",
+  "@trainingProfileNoPractice": {
+    "description": "Training course state."
+  },
+  "@trainingCourseNext": {
+    "description": "Training course state."
+  },
+  "trainingLessonNeedsInternet": "Needs internet to download",
+  "trainingTestLeaveTitle": "Leave the test?",
+  "trainingTestLeaveBody": "Your {done} completed exercises are saved. When you return, you continue with exercise {next}.",
+  "@trainingTestLeaveBody": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingTestContinue": "Continue the test",
+  "trainingTestLeave": "Leave",
+  "@trainingLessonNeedsInternet": {
+    "description": "Training course state."
+  },
+  "@trainingTestLeaveTitle": {
+    "description": "Training course state."
+  },
+  "@trainingTestContinue": {
+    "description": "Training course state."
+  },
+  "@trainingTestLeave": {
+    "description": "Training course state."
+  },
+  "trainingDownloadCourseError": "Could not download the course. Try again in a few moments.",
+  "@trainingDownloadCourseError": {
+    "description": "Course entry download failure without a dedicated Canvas artboard."
+  },
+  "trainingDownloadCourseStorage": "There is not enough space to download the course (about {size} MB). Free up space and try again. Once downloaded, the course works offline.",
+  "@trainingDownloadCourseStorage": {
+    "description": "Course entry download failure without a dedicated Canvas artboard.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   }
 }

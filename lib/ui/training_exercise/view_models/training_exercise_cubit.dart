@@ -34,6 +34,13 @@ final class _ExpiredExercise implements Exception {
   const _ExpiredExercise();
 }
 
+final class _AttemptNow implements Now {
+  const _AttemptNow(this.value);
+  final DateTime value;
+  @override
+  DateTime call() => value;
+}
+
 final class TrainingExerciseState {
   const TrainingExerciseState({
     this.phase = TrainingExercisePhase.loading,
@@ -116,6 +123,16 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
   final Now now;
   final AnalyticsRepository analytics;
   final TrainingAnalytics? trainingAnalytics;
+  DateTime? _openedAt;
+  Now get _attemptNow => _AttemptNow(_openedAt ?? now());
+  Timer? _saveRetry;
+
+  @override
+  Future<void> close() async {
+    _saveRetry?.cancel();
+    await super.close();
+  }
+
   Future<void> _log(AnalyticsEvent event) {
     unawaited(
       Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
@@ -158,6 +175,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
         throw StateError('Exercise unavailable');
       }
       PlayTrainingExercise(exercise); // Validate before accepting any attempt.
+      _openedAt = now();
       _feedback = resources.errorFeedback[goal.ref] ?? const {};
       final snapshot = goal.exerciseError;
       final feedback = snapshot == null
@@ -213,12 +231,12 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     emit(state.copyWith(phase: TrainingExercisePhase.hintSaving));
     try {
       final saved = await repository.transact(config.course, (current) async {
-        final resources = await repository.resources(config.course);
-        final refreshed = BuildDayGoals(now, config)(current, resources);
+        final refreshed = current;
         final goal = refreshed.day?.goals
             .where((g) => g.key == goalKey && !g.done)
             .firstOrNull;
-        if (goal == null || refreshed.day?.date != trainingDate(now())) {
+        if (goal == null ||
+            refreshed.day?.date != trainingDate(_attemptNow())) {
           throw const _ExpiredExercise();
         }
         if (goal.hintUsed) return refreshed;
@@ -246,6 +264,10 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     } catch (_) {
       if (isClosed) return;
       emit(state.copyWith(phase: TrainingExercisePhase.playing, error: true));
+      _saveRetry?.cancel();
+      _saveRetry = Timer(const Duration(seconds: 1), () {
+        if (!isClosed) unawaited(hint());
+      });
     }
   }
 
@@ -320,7 +342,10 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     try {
       final saved = await repository.transact(config.course, (current) async {
         final resources = await repository.resources(config.course);
-        final refreshed = BuildDayGoals(now, config)(current, resources);
+        final refreshed = current;
+        if (refreshed.day?.date != trainingDate(_attemptNow())) {
+          throw const _ExpiredExercise();
+        }
         if (!(refreshed.day?.goals.any((g) => g.key == goalKey) ?? false)) {
           throw const _ExpiredExercise();
         }
@@ -338,7 +363,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
               ? 1
               : 0,
         );
-        final completed = CompleteTrainingGoal(now).exercise(
+        final completed = CompleteTrainingGoal(_attemptNow).exercise(
           refreshed,
           resources,
           goalKey,
@@ -381,6 +406,10 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     } catch (_) {
       if (isClosed) return;
       emit(state.copyWith(error: true));
+      _saveRetry?.cancel();
+      _saveRetry = Timer(const Duration(seconds: 1), () {
+        if (!isClosed) unawaited(save());
+      });
     }
   }
 

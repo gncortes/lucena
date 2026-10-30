@@ -402,51 +402,44 @@ void main() {
     expect(cubit.next(), true);
   });
 
-  test(
-    'midnight rebuilds goals and completes the same pending exercise',
-    () async {
-      repository.content[TrainingCourse.pilares] = TrainingResources(
-        lessons: [
-          const TrainingLesson(
-            id: 'lesson',
-            kind: TrainingLessonKind.theme,
-            title: 'Theme',
-          ),
-        ],
-        banks: {
-          'lesson': [exercise],
-        },
-      );
-      await repository.update(
-        TrainingCourse.pilares,
-        (current) =>
-            current.copyWith(completedLessons: {'lesson': '2026-10-20'}),
-      );
-      now.advance(const Duration(days: 1));
-      await cubit.play('d2d4');
-      expect(cubit.state.phase, TrainingExercisePhase.result);
-      expect(cubit.state.error, false);
-      final stored = await repository.load(TrainingCourse.pilares);
-      expect(stored.day!.date, '2026-10-30');
-      expect(stored.cycles['lesson']!.days.single.date, '2026-10-30');
-      expect(cubit.next(), true);
-    },
-  );
+  test('midnight preserves the open attempt until it finishes', () async {
+    repository.content[TrainingCourse.pilares] = TrainingResources(
+      lessons: [
+        const TrainingLesson(
+          id: 'lesson',
+          kind: TrainingLessonKind.theme,
+          title: 'Theme',
+        ),
+      ],
+      banks: {
+        'lesson': [exercise],
+      },
+    );
+    await repository.update(
+      TrainingCourse.pilares,
+      (current) => current.copyWith(completedLessons: {'lesson': '2026-10-20'}),
+    );
+    now.advance(const Duration(days: 1));
+    await cubit.play('d2d4');
+    expect(cubit.state.phase, TrainingExercisePhase.result);
+    expect(cubit.state.error, false);
+    final stored = await repository.load(TrainingCourse.pilares);
+    expect(stored.day!.date, '2026-10-29');
+    expect(stored.cycles['lesson']!.days.single.date, '2026-10-29');
+    expect(cubit.next(), true);
+  });
 
-  test(
-    'day off expires interrupted exercise without marking an attempt',
-    () async {
-      now.advance(const Duration(days: 2));
-      await cubit.play('d2d4');
-      expect(cubit.state.phase, TrainingExercisePhase.expired);
-      expect(repository.writes, 0);
-      expect(
-        (await repository.load(TrainingCourse.pilares)).cycles['lesson']!.days,
-        isEmpty,
-      );
-      expect(cubit.next(), false);
-    },
-  );
+  test('day off does not interrupt an exercise already open', () async {
+    now.advance(const Duration(days: 2));
+    await cubit.play('d2d4');
+    expect(cubit.state.phase, TrainingExercisePhase.result);
+    expect(repository.writes, 1);
+    expect(
+      (await repository.load(TrainingCourse.pilares)).cycles['lesson']!.days,
+      hasLength(1),
+    );
+    expect(cubit.next(), true);
+  });
 
   test('Friday hint survives weekend JSON with empty goals and resumes Monday once', () {
     final nextLesson = TrainingGoal(kind: GoalKind.lesson, ref: 'nextLesson');

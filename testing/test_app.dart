@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucena/data/repositories/training/course_download_repository.dart';
+import 'package:lucena/data/repositories/account/account_repository.dart';
+
+import 'fakes/fake_course_download_repository.dart';
+import 'fakes/fake_account_repository.dart';
+
 import 'package:lucena/data/repositories/ads/ads_repository.dart';
 import 'package:lucena/data/repositories/alerts/region_prompt_repository.dart';
 import 'package:lucena/data/repositories/analytics/analytics_repository.dart';
@@ -56,6 +62,8 @@ class TestApp extends StatelessWidget {
     this.wikiLinksCubit,
     this.webPages,
     this.router,
+    this.trainingAccess = false,
+    this.mediaBuilder,
     this.surveyRepository,
     this.regionPromptRepository,
     this.crowdRepository,
@@ -136,6 +144,8 @@ class TestApp extends StatelessWidget {
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
+  final bool trainingAccess;
+  final TransitionBuilder? mediaBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +153,7 @@ class TestApp extends StatelessWidget {
     final router = this.router;
     Widget build(AppAccent? accent) => router != null
         ? MaterialApp.router(
+            debugShowCheckedModeBanner: false,
             theme: AppTheme.of(Brightness.light, accent: accent),
             darkTheme: AppTheme.of(Brightness.dark, accent: accent),
             themeMode: themeMode,
@@ -150,8 +161,10 @@ class TestApp extends StatelessWidget {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: appSupportedLocales,
             routerConfig: router,
+            builder: mediaBuilder,
           )
         : MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: AppTheme.of(Brightness.light, accent: accent),
             darkTheme: AppTheme.of(Brightness.dark, accent: accent),
             themeMode: themeMode,
@@ -159,6 +172,7 @@ class TestApp extends StatelessWidget {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: appSupportedLocales,
             home: child,
+            builder: mediaBuilder,
           );
     // Com as preferências, a cor do app escolhida vale na hora, como no app.
     final app = settingsCubit == null
@@ -201,6 +215,15 @@ class TestApp extends StatelessWidget {
     ];
     return MultiRepositoryProvider(
       providers: [
+        if (trainingAccess) ...[
+          RepositoryProvider<AccountRepository>(
+            create: (_) =>
+                FakeAccountRepository(account: FakeAccountRepository.google),
+          ),
+          RepositoryProvider<CourseDownloadRepository>.value(
+            value: const FakeCourseDownloadRepository(),
+          ),
+        ],
         RepositoryProvider<ShareRepository>.value(
           value: shareRepository ?? FakeShareRepository(),
         ),

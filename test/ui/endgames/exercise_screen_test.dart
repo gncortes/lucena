@@ -7,6 +7,7 @@ import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/endgames_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/keys/external_page_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/endgames/view_models/exercise_cubit.dart';
@@ -29,6 +30,8 @@ void main() {
     FakeNow? now,
     FakeEndgameLessonRepository? lessons,
     EndgameProgress progress = const EndgameProgress(),
+    bool trainingTest = false,
+    Locale locale = const Locale('en'),
   }) async {
     final cubit = ExerciseCubit(
       now: now ?? FakeNow(DateTime.utc(2026, 10, 11)),
@@ -47,9 +50,13 @@ void main() {
     await settings.load();
     await tester.pumpWidget(
       TestApp(
+        locale: locale,
         settingsCubit: settings,
         webPages: webPages,
-        child: BlocProvider.value(value: cubit, child: const ExerciseScreen()),
+        child: BlocProvider.value(
+          value: cubit,
+          child: ExerciseScreen(trainingTest: trainingTest),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -63,6 +70,25 @@ void main() {
     await tester.tapAt(squareCenter(board, to));
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'T85 test arrow and Android back open the same cancelable dialog',
+    (tester) async {
+      await pump(tester, 'e02', trainingTest: true, locale: const Locale('pt'));
+      await tester.tap(find.byKey(TrainingKeys.testBack));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.testLeaveDialog), findsOneWidget);
+      await tester.tap(find.byKey(TrainingKeys.testContinue));
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.testLeaveDialog), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byKey(TrainingKeys.testLeaveDialog), findsOneWidget);
+      await tester.tap(find.byKey(TrainingKeys.testContinue));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ExerciseKeys.board), findsOneWidget);
+    },
+  );
 
   testWidgets('T65: lifecycle congela o cronômetro do exercício', (
     tester,

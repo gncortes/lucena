@@ -19,6 +19,7 @@ class _Assets extends AssetService {
   final reads = <String>[];
   Object scope = Object();
   String? unavailable;
+  final offline = <String>{};
   Completer<void>? gate;
   @override
   Object get cacheScope => scope;
@@ -27,6 +28,7 @@ class _Assets extends AssetService {
     reads.add(path);
     await gate?.future;
     if (path == unavailable) throw const LessonContentUnavailable();
+    if (offline.contains(path)) throw const LessonContentNetworkUnavailable();
     return files[path] ?? (throw const LessonContentNotFound());
   }
 }
@@ -128,6 +130,30 @@ void main() {
     expect(texts.lessonTitle('private.c1'), 'Título privado');
     expect(texts.step('private.c1', 'intro'), 'Private explanation');
     expect(texts.say('coach.good'), 'Common');
+  });
+
+  test('offline unprepared chapter does not hide installed chapter or discard its text', () async {
+    final json = jsonDecode(assets.files[index]!) as Map;
+    ((json['partes'] as List).first['capitulos'] as List).add({
+      'id': 'private.c2',
+      'titulo': 'Next chapter',
+      'aulas': [
+        {'id': 'private.c2', 'tipo': 'teste'},
+      ],
+    });
+    assets.files[index] = jsonEncode(json);
+    assets.offline.add('assets/lessons/endgames/private.c2.json');
+    final source = content.forId('private.c1')!;
+    expect((await source.trail()).lessons.map((l) => l.id), ['private.c1']);
+    expect(
+      (await source.texts('pt')).lessonTitle('private.c1'),
+      'Título privado',
+    );
+    expect(
+      (jsonDecode(assets.files[index]!)['partes'][0]['capitulos'] as List)
+          .length,
+      2,
+    );
   });
 
   test('successful trail/text reads share the cache and invalidate on source scope change', () async {

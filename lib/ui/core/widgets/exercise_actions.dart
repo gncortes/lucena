@@ -34,17 +34,20 @@ class ExerciseHintButton extends StatelessWidget {
   const ExerciseHintButton({
     required this.label,
     required this.onPressed,
+    this.backgroundColor,
     super.key,
   });
 
   final String label;
   final VoidCallback? onPressed;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) => RoundFooterButton(
     icon: Icons.lightbulb_outline,
     tooltip: label,
     onPressed: onPressed,
+    backgroundColor: backgroundColor,
   );
 }
 

@@ -1,5 +1,10 @@
 import '../data/repositories/training/training_endgame_content.dart';
 import '../data/services/lesson_content_service.dart';
+import '../data/services/lesson_package_service.dart';
+import '../data/services/lesson_package_index.dart';
+import '../data/repositories/training/course_download_repository.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 import 'dart:async';
 import 'dart:math';
@@ -223,6 +228,7 @@ class Dependencies {
     required this.trainingRepository,
     this.courseTrainingRepository =
         const course_training.NoTrainingRepository(),
+    this.courseDownloads = const CourseDownloadRepository.unconfigured(),
     this.trainingAnalytics,
     required this.opponentRepository,
     required this.maiaRepository,
@@ -332,12 +338,23 @@ class Dependencies {
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
-    final lessonContent = createLessonContentAssets(
+    final contentSource = createLessonContentAssets(
       releaseBuild: kReleaseMode,
       firebase: firebase,
       localUrl: const String.fromEnvironment('CONTENT_URL'),
       publishedRelease: const String.fromEnvironment('CONTENT_RELEASE'),
     );
+    const packageIndexPath = String.fromEnvironment('CONTENT_PACKAGE_INDEX');
+    final packages = contentSource.reader == null
+        ? null
+        : LessonPackageService(
+            source: contentSource.reader!,
+            directory: getApplicationSupportDirectory,
+            identity: () => auth.current?.uid,
+          );
+    final lessonContent = packages == null
+        ? contentSource
+        : LessonContentAssets(reader: packages);
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
@@ -521,6 +538,18 @@ class Dependencies {
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
       courseTrainingRepository: courseTraining,
+      courseDownloads: CourseDownloadRepository(
+        packages,
+        openingProfile: () async =>
+            (await courseTraining.load(TrainingCourseConfig.pilares.course))
+                .openingProfile,
+        indexSource:
+            firebase &&
+                contentSource.reader is PublishedLessonContentReader &&
+                packageIndexPath.isNotEmpty
+            ? LessonPackageIndexSource.firestore(packageIndexPath)
+            : null,
+      ),
       trainingAnalytics: trainingAnalytics,
       opponentRepository: DeviceOpponentRepository(
         maia: MaiaOpponentRepository(maia, now: now, pace: pace),
@@ -668,6 +697,7 @@ class Dependencies {
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
   final course_training.TrainingRepository courseTrainingRepository;
+  final CourseDownloadRepository courseDownloads;
   final TrainingAnalytics? trainingAnalytics;
   final OpponentRepository opponentRepository;
   final MaiaRepository maiaRepository;

@@ -15,15 +15,19 @@ import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
+import '../../training_opening/widgets/opening_goal_cards.dart';
+import '../../course_entry/widgets/course_content_states.dart';
 
 class TrainingGoalsTab extends StatelessWidget {
   const TrainingGoalsTab({
     required this.onGoal,
     required this.onPlan,
+    this.onOpening,
     super.key,
   });
   final ValueChanged<TrainingGoal> onGoal;
   final VoidCallback onPlan;
+  final ValueChanged<String>? onOpening;
   @override
   Widget build(
     BuildContext context,
@@ -48,6 +52,19 @@ class TrainingGoalsTab extends StatelessWidget {
           state.training!.openings.isEmpty;
       final sections = cubit.config.sections;
       final contents = <Widget>[];
+      if (day.goals.any(
+        (goal) =>
+            !goal.done &&
+            (goal.kind == GoalKind.lesson ||
+                goal.kind == GoalKind.extraLesson) &&
+            state.resources!.lessons.any(
+              (lesson) =>
+                  lesson.id == goal.ref &&
+                  state.resources!.offlineChapters.contains(lesson.groupId),
+            ),
+      )) {
+        contents.add(const TrainingGoalsOfflineNotice());
+      }
       if (offer) {
         contents.add(
           _panel(
@@ -297,6 +314,13 @@ class TrainingGoalsTab extends StatelessWidget {
     TrainingGoal goal, {
     bool completedCopy = false,
   }) {
+    if (goal.kind == GoalKind.openings && onOpening != null) {
+      return OpeningGoalCards(
+        saved: state.training!,
+        resources: state.resources!,
+        onTrain: onOpening!,
+      );
+    }
     final t = context.l10n;
     final lesson = state.resources!.lessons
         .where((l) => l.id == goal.ref)
@@ -320,6 +344,9 @@ class TrainingGoalsTab extends StatelessWidget {
       GoalKind.lesson =>
         goal.done
             ? t.trainingLessonDoneToday
+            : lesson != null &&
+                  state.resources!.offlineChapters.contains(lesson.groupId)
+            ? t.trainingLessonNeedsInternet
             : t.trainingLessonNew(
                 context.read<CourseGuideCubit>().config.lessonMinutes,
               ),

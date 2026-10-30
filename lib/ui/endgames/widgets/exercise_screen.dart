@@ -16,6 +16,7 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/endgames_keys.dart';
+import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -55,6 +56,7 @@ class ExerciseScreen extends StatefulWidget {
     this.lessonId,
     this.exerciseId,
     this.previewFen,
+    this.trainingTest = false,
     super.key,
   });
 
@@ -64,6 +66,7 @@ class ExerciseScreen extends StatefulWidget {
   final String? lessonId;
   final String? exerciseId;
   final String? previewFen;
+  final bool trainingTest;
 
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -72,6 +75,47 @@ class ExerciseScreen extends StatefulWidget {
 class _ExerciseScreenState extends State<ExerciseScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   ChessboardController? _board;
+  bool _allowExit = false, _askingExit = false;
+
+  Future<void> _requestExit() async {
+    if (_askingExit) return;
+    final cubit = context.read<ExerciseCubit>();
+    if (!widget.trainingTest || cubit.state.locked) {
+      context.pop();
+      return;
+    }
+    _askingExit = true;
+    final done = await cubit.savedExerciseCount();
+    if (!mounted) return;
+    final t = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        key: TrainingKeys.testLeaveDialog,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+        title: Text(t.trainingTestLeaveTitle),
+        content: Text(t.trainingTestLeaveBody(done, cubit.state.number)),
+        actions: [
+          TextButton(
+            key: TrainingKeys.testContinue,
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(t.trainingTestContinue),
+          ),
+          TextButton(
+            key: TrainingKeys.testLeave,
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(t.trainingTestLeave),
+          ),
+        ],
+      ),
+    );
+    _askingExit = false;
+    if (confirmed != true || !mounted) return;
+    setState(() => _allowExit = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.pop();
+    });
+  }
 
   late final _shake = AnimationController(
     vsync: this,
@@ -187,8 +231,13 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final l10n = context.l10n;
     final cubit = context.read<ExerciseCubit>();
     return PopScope(
+      canPop: !widget.trainingTest || _allowExit || cubit.state.locked,
       onPopInvokedWithResult: (didPop, _) {
-        if (didPop) cubit.leave();
+        if (didPop) {
+          cubit.leave();
+        } else if (widget.trainingTest) {
+          unawaited(_requestExit());
+        }
       },
       child: BlocConsumer<ExerciseCubit, ExerciseState>(
         listener: _onState,
@@ -202,6 +251,12 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
+              leading: widget.trainingTest
+                  ? BackButton(
+                      key: TrainingKeys.testBack,
+                      onPressed: _requestExit,
+                    )
+                  : null,
               title: lesson == null
                   ? null
                   : Text(

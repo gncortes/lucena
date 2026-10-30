@@ -36,6 +36,7 @@ import '../theme/app_spacing.dart';
 import '../theme/app_text.dart';
 import '../theme/lesson_text_colors.dart';
 import 'sound_off_icon.dart';
+import 'lesson_sound_dialog.dart';
 import 'speech_sheet_fade.dart';
 
 /// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
@@ -82,6 +83,7 @@ class TeacherSpeech extends StatelessWidget {
     this.onSoundSettings,
     this.bubbleAboveHeader = false,
     this.trainingLayout = false,
+    this.unifiedSound = false,
     super.key,
   });
 
@@ -92,6 +94,7 @@ class TeacherSpeech extends StatelessWidget {
 
   /// Keep the training header next to the board; reduce bubble padding on compact screens.
   final bool trainingLayout;
+  final bool unifiedSound;
   final ExplanationPayload? explanation;
   final bool lessonV2;
 
@@ -279,7 +282,7 @@ class TeacherSpeech extends StatelessWidget {
               a.settings.enabled != b.settings.enabled ||
               a.availableFor(language) != b.availableFor(language),
           builder: (context, state) {
-            if (lessonV2) {
+            if (lessonV2 || trainingLayout || unifiedSound) {
               final audible =
                   soundEnabled &&
                   state.settings.enabled &&
@@ -287,7 +290,8 @@ class TeacherSpeech extends StatelessWidget {
               return LessonVoiceButton(
                 audible: audible,
                 speed: state.settings.speed,
-                onPressed: onSoundSettings,
+                onPressed:
+                    onSoundSettings ?? () => showLessonSoundDialog(context),
               );
             }
             // Sem voz no idioma, o botão de som continua à vista: o toque
@@ -413,11 +417,15 @@ class TeacherSpeech extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (bubbleAboveHeader) ...[
-            _closable(context),
+            if (trainingLayout)
+              Flexible(child: _closable(context))
+            else
+              _closable(context),
             _headerRow(context, avatar),
           ] else ...[
             // O vão de 6 da ponta ao retrato vem do balão.
             _headerRow(context, avatar),
+            if (unifiedSound) const SizedBox(height: 2),
             _closable(context),
           ],
         ],
@@ -451,10 +459,17 @@ class TeacherSpeech extends StatelessWidget {
     final row = Row(
       children: [
         avatar,
-        SizedBox(width: lessonV2 ? 8 : 10),
+        SizedBox(
+          width: lessonV2
+              ? 8
+              : trainingLayout || unifiedSound
+              ? 12
+              : 10,
+        ),
         Expanded(child: _header(context)),
       ],
     );
+    if (trainingLayout) return SizedBox(height: this.avatarSize, child: row);
     if (!lessonV2) return row;
     final avatarSize = headerAvatar ?? 0;
     return SizedBox(
@@ -941,7 +956,9 @@ class TeacherSpeech extends StatelessWidget {
     // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
     final stacked = _stackedIn(context);
     return SpeechBalloon(
-      padding: trainingLayout && MediaQuery.sizeOf(context).height < 780
+      padding: unifiedSound
+          ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 12)
+          : trainingLayout && MediaQuery.sizeOf(context).height < 780
           ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 6)
           : SpeechBalloon.defaultPadding,
       pop: false,
@@ -952,7 +969,7 @@ class TeacherSpeech extends StatelessWidget {
           : BalloonTail.start,
       tailX: SpeechBalloon.tailXFor(avatarSize),
       tailY: avatarSize / 2,
-      child: content,
+      child: trainingLayout ? SingleChildScrollView(child: content) : content,
     );
   }
 }

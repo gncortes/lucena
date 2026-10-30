@@ -1,6 +1,21 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class TrainingKeys {
+  static const testLeaveDialog = Key('training.testLeaveDialog');
+  static const testContinue = Key('training.testContinue');
+  static const testLeave = Key('training.testLeave');
+  static const testBack = Key('training.testBack');
+  static const exerciseTitleDifficulty = Key(
+    'training.exerciseTitleDifficulty',
+  );
+  static const openingNextPart = Key('training.openingNextPart');
+  static const openingProgress = Key('training.openingProgress');
+  static const openingProgressScreen = Key('training.openingProgressScreen');
+  static Key openingPart(String id) => Key('training.openingPart.$id');
+  static Key openingProfile(String id) => Key('training.openingProfile.$id');
+  static const completedCourse = Key('training.completedCourse');
+  static const completedPrimary = Key('training.completedPrimary');
+  static const completedCatalog = Key('training.completedCatalog');
   static const goalsSummary = Key('training.goalsSummary');
   static Key goalTile(String kind, String ref) =>
       Key('training.goal.$kind.$ref');

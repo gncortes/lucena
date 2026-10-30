@@ -81,8 +81,8 @@ class TrainingCaptureRobot {
         find.byKey(TrainingKeys.exerciseHint).evaluate().isNotEmpty) {
       expect(
         find.byType(TimeDisplay),
-        findsOneWidget,
-        reason: 'T85 active exercise keeps its timer visible',
+        findsNothing,
+        reason: 'T85 Canvas exercise has no timer',
       );
     }
     for (final key in [TrainingKeys.exerciseBoard, TrainingKeys.openingBoard]) {

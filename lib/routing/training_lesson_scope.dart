@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../data/repositories/training/training_endgame_content.dart';
+import '../ui/course_entry/widgets/course_content_session.dart';
 
 TrainingEndgameContent? _privateContent(BuildContext context) {
   try {
@@ -36,9 +37,14 @@ Widget scopeTrainingLesson(
   WidgetBuilder builder,
 ) {
   final private = _privateContent(context)?.forId(lessonId);
-  if (private == null) return builder(context);
-  return RepositoryProvider<EndgameLessonRepository>.value(
-    value: private,
-    child: Builder(builder: builder),
+  if (private == null) {
+    final child = builder(context);
+    return lessonId == null ? child : CourseContentSession(child: child);
+  }
+  return CourseContentSession(
+    child: RepositoryProvider<EndgameLessonRepository>.value(
+      value: private,
+      child: Builder(builder: builder),
+    ),
   );
 }

@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/models/star_challenge.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/use_cases/training/opening_trecho_rules.dart';
+import '../../../domain/use_cases/training/opening_parts.dart';
+import '../../training_opening/widgets/training_opening_progress_screen.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/keys/course_guide_keys.dart';
 import '../../core/widgets/course/course_item_tile.dart';
@@ -22,6 +24,7 @@ class TrainingProgressTab extends StatelessWidget {
     this.testProgress = const {},
     this.onTest,
     this.onLevelTest,
+    this.onOpenings,
     super.key,
   });
   final ValueChanged<String> onTheme;
@@ -31,6 +34,7 @@ class TrainingProgressTab extends StatelessWidget {
   final Map<String, CourseTestProgress> testProgress;
   final ValueChanged<String>? onTest;
   final VoidCallback? onLevelTest;
+  final VoidCallback? onOpenings;
   @override
   Widget build(
     BuildContext context,
@@ -146,7 +150,7 @@ class TrainingProgressTab extends StatelessWidget {
         );
       }
       final cycles = training.cycles;
-      final tracks = training.openings;
+      final tracks = Map.fromEntries(activeOpeningTracks(training, data));
       final openingProgress = [
         for (final entry in tracks.entries)
           OpeningTrechoRules.currentProgress(
@@ -302,6 +306,62 @@ class TrainingProgressTab extends StatelessWidget {
                   t.trainingOpeningsFirm(firmMoves, seenMoves),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
+                for (final entry in tracks.entries)
+                  InkWell(
+                    key: TrainingKeys.openingCard(entry.key),
+                    onTap: onOpenings,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 6,
+                        children: [
+                          Text(
+                            data.openings[entry.key]!.first.title,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          Row(
+                            spacing: 4,
+                            children: [
+                              for (final part in data.openings[entry.key]!)
+                                Expanded(
+                                  child: Builder(
+                                    builder: (context) {
+                                      final values =
+                                          entry.value.firstTry[part.id] ??
+                                          const <bool>[];
+                                      final percent = values.isEmpty
+                                          ? 0
+                                          : (100 *
+                                                    values
+                                                        .where((v) => v)
+                                                        .length /
+                                                    values.length)
+                                                .round();
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          AppShape.tiny,
+                                        ),
+                                        child: LinearProgressIndicator(
+                                          value: values.isEmpty
+                                              ? 0
+                                              : percent / 100,
+                                          minHeight: 6,
+                                          color: openingAccuracyColor(percent),
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .outlineVariant,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           ],

@@ -6,6 +6,7 @@ import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/models/training/training_resources.dart';
 import '../../../domain/models/training/training_state.dart';
+import '../../../domain/use_cases/training/opening_parts.dart';
 import '../../services/lesson_content_service.dart';
 import '../../services/preferences_service.dart';
 import 'course_training_repository.dart';
@@ -101,9 +102,15 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     return after;
   });
 
-  Future<Map<String, dynamic>?> _json(String path) async {
+  Future<Map<String, dynamic>?> _json(
+    String path, {
+    void Function()? onOffline,
+  }) async {
     try {
       return jsonDecode(await content.loadString(path)) as Map<String, dynamic>;
+    } on LessonContentNetworkUnavailable {
+      onOffline?.call();
+      return null;
     } on LessonContentUnavailable {
       return null;
     }
@@ -119,9 +126,31 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     if (source != null) return source();
     final index = await _json(config.indexSource);
     if (index == null) return TrainingResources();
+    final saved = await _read(course);
     final lessons = <TrainingLesson>[];
+    var hasUnpublishedContent = false;
+    final unpublished = <String>{};
     for (final part in (index['partes'] as List)) {
       for (final chapter in ((part as Map)['capitulos'] as List)) {
+        final published =
+            chapter['publicado'] != false && chapter['status'] != 'draft';
+        if (!published) {
+          hasUnpublishedContent = true;
+          unpublished.add(chapter['id'] as String);
+          if ((chapter['aulas'] as List).isEmpty) {
+            lessons.add(
+              TrainingLesson(
+                id: chapter['id'] as String,
+                kind: TrainingLessonKind.test,
+                title: chapter['titulo'] as String,
+                groupId: chapter['id'] as String,
+                partId: part['id'] as String,
+                visible: false,
+                published: false,
+              ),
+            );
+          }
+        }
         for (final data in ((chapter as Map)['aulas'] as List)) {
           final lesson = data as Map;
           lessons.add(
@@ -139,6 +168,12 @@ final class TrainingRepositoryLocal implements TrainingRepository {
               groupId: chapter['id'] as String,
               partId: part['id'] as String,
               partTitle: part['titulo'] as String,
+              visible: published,
+              published: published,
+              openingProfile: lesson['tipo'] == 'abertura'
+                  ? lesson['perfil'] as String? ??
+                        openingProfileForLesson(lesson['id'] as String)
+                  : null,
             ),
           );
         }
@@ -147,10 +182,19 @@ final class TrainingRepositoryLocal implements TrainingRepository {
     final banks = <String, List<TrainingExercise>>{};
     final openings = <String, List<OpeningTrecho>>{};
     final errorFeedback = <String, Map<String, String>>{};
+    final offlineChapters = <String>{};
     await Future.wait(
       lessons.map((lesson) async {
+        if (unpublished.contains(lesson.groupId)) return;
+        if (lesson.openingProfile != null &&
+            lesson.openingProfile != saved.openingProfile) {
+          return;
+        }
         if (lesson.kind == TrainingLessonKind.theme) {
-          final json = await _json('assets/lessons/treino/${lesson.id}.json');
+          final json = await _json(
+            'assets/lessons/treino/${lesson.id}.json',
+            onOffline: () => offlineChapters.add(lesson.groupId),
+          );
           if (json != null) {
             banks[lesson.id] = (json['exercicios'] as List)
                 .map(
@@ -171,6 +215,7 @@ final class TrainingRepositoryLocal implements TrainingRepository {
         } else if (lesson.kind == TrainingLessonKind.opening) {
           final json = await _json(
             'assets/lessons/treino/aberturas/${lesson.id}.json',
+            onOffline: () => offlineChapters.add(lesson.groupId),
           );
           if (json != null) {
             openings[lesson.id] = (json['trechos'] as List)
@@ -182,14 +227,37 @@ final class TrainingRepositoryLocal implements TrainingRepository {
                 )
                 .toList();
           }
+        } else if (lesson.kind == TrainingLessonKind.test &&
+            lesson.groupId.isNotEmpty) {
+          await _json(
+            'assets/lessons/endgames/${lesson.groupId}.json',
+            onOffline: () => offlineChapters.add(lesson.groupId),
+          );
         }
       }),
     );
+    final parts = lessons.map((l) => l.partId).toSet().toList();
+    final profileStart = parts.indexOf(saved.openingProfileStartPart);
     return TrainingResources(
-      lessons: lessons,
+      lessons: [
+        for (final lesson in lessons)
+          if (lesson.openingProfile ?? openings[lesson.id]?.firstOrNull?.profile
+              case final profile?)
+            TrainingLesson.fromJson({
+              ...lesson.toJson(),
+              'visible': lesson.visible && profile == saved.openingProfile,
+              'inCourseOrder':
+                  profileStart < 0 ||
+                  parts.indexOf(lesson.partId) >= profileStart,
+            })
+          else
+            lesson,
+      ],
       banks: banks,
       openings: openings,
       errorFeedback: errorFeedback,
+      offlineChapters: offlineChapters,
+      hasUnpublishedContent: hasUnpublishedContent,
     );
   }
 

@@ -42,6 +42,8 @@ final class TrainingState {
     this.onboardingDone = false,
     this.tourSeen = false,
     this.tab = CourseGuideTab.lesson,
+    this.openingProfile = 'solido',
+    this.openingProfileStartPart = '',
     this.day,
     this.lastLessonDate,
     this.lastActivityAt,
@@ -68,6 +70,8 @@ final class TrainingState {
   final TrainingPlan plan;
   final bool onboardingDone, tourSeen;
   final CourseGuideTab tab;
+  final String openingProfile;
+  final String openingProfileStartPart;
   final DayGoals? day;
   final String? lastLessonDate;
   final DateTime? lastActivityAt;
@@ -84,6 +88,8 @@ final class TrainingState {
   final Map<String, TrainingBootstrapImport> bootstrapImports;
   bool get mock => day?.goals.any((g) => g.mock) ?? false;
   TrainingState copyWith({
+    String? openingProfile,
+    String? openingProfileStartPart,
     TrainingPlan? plan,
     bool? onboardingDone,
     bool? tourSeen,
@@ -108,6 +114,9 @@ final class TrainingState {
     onboardingDone: onboardingDone ?? this.onboardingDone,
     tourSeen: tourSeen ?? this.tourSeen,
     tab: tab ?? this.tab,
+    openingProfile: openingProfile ?? this.openingProfile,
+    openingProfileStartPart:
+        openingProfileStartPart ?? this.openingProfileStartPart,
     day: day ?? this.day,
     lastLessonDate: lastLessonDate ?? this.lastLessonDate,
     lastActivityAt: lastActivityAt ?? this.lastActivityAt,
@@ -128,6 +137,8 @@ final class TrainingState {
     bootstrapImports: bootstrapImports ?? this.bootstrapImports,
   );
   Map<String, Object?> toJson() => {
+    'openingProfile': openingProfile,
+    'openingProfileStartPart': openingProfileStartPart,
     'version': 1,
     'course': course.name,
     'installSeed': installSeed,
@@ -160,6 +171,8 @@ final class TrainingState {
       onboardingDone: j['onboardingDone'] as bool,
       tourSeen: j['tourSeen'] as bool,
       tab: CourseGuideTab.values.byName(j['tab'] as String),
+      openingProfile: j['openingProfile'] as String? ?? 'solido',
+      openingProfileStartPart: j['openingProfileStartPart'] as String? ?? '',
       day: j['day'] == null
           ? null
           : DayGoals.fromJson(Map<String, dynamic>.from(j['day'] as Map)),

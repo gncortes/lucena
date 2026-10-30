@@ -12,10 +12,15 @@ final class TrainingLesson {
     this.partId = '',
     this.partTitle = '',
     this.visible = true,
+    this.published = true,
+    this.openingProfile,
+    this.inCourseOrder = true,
   });
   final String id, title, summary, group, groupId, partId, partTitle;
   final TrainingLessonKind kind;
-  final bool visible;
+  final bool visible, published;
+  final String? openingProfile;
+  final bool inCourseOrder;
   Map<String, Object?> toJson() => {
     'id': id,
     'kind': kind.name,
@@ -26,6 +31,9 @@ final class TrainingLesson {
     'partId': partId,
     'partTitle': partTitle,
     'visible': visible,
+    'published': published,
+    if (openingProfile != null) 'profile': openingProfile,
+    'inCourseOrder': inCourseOrder,
   };
   factory TrainingLesson.fromJson(Map<String, dynamic> j) => TrainingLesson(
     id: j['id'] as String,
@@ -37,6 +45,9 @@ final class TrainingLesson {
     partId: j['partId'] as String? ?? '',
     partTitle: j['partTitle'] as String? ?? '',
     visible: j['visible'] as bool? ?? true,
+    published: j['published'] as bool? ?? true,
+    openingProfile: j['profile'] as String?,
+    inCourseOrder: j['inCourseOrder'] as bool? ?? true,
   );
 }
 
@@ -112,7 +123,13 @@ final class OpeningTrecho {
     Map<String, dynamic>? example,
     this.black = false,
     this.mock = false,
+    Iterable<List<String>> lines = const [],
+    this.openingId,
+    this.profile,
   }) : moves = List.unmodifiable(moves),
+       lines = List.unmodifiable(
+         lines.map((line) => List<String>.unmodifiable(line)),
+       ),
        example = example == null ? null : _freezeJsonMap(example),
        script = example == null ? null : ScriptExample.fromJson(example);
   final String id, title;
@@ -120,11 +137,18 @@ final class OpeningTrecho {
   final Map<String, dynamic>? example;
   final ScriptExample? script;
   final List<String> moves;
+
+  /// Full lines from move one; common prefixes are played only once per part.
+  final List<List<String>> lines;
+  final String? openingId, profile;
   final bool black, mock;
   Map<String, Object?> toJson() => {
     'id': id,
     'titulo': title,
     if (example == null) 'lances': moves,
+    if (lines.isNotEmpty) 'linhas': lines,
+    if (openingId != null) 'abertura': openingId,
+    if (profile != null) 'perfil': profile,
     if (fen != null) 'fen': fen,
     if (source != null) 'fonte': source,
     if (stage != null) 'etapa': stage,
@@ -142,6 +166,11 @@ final class OpeningTrecho {
     example: j['exemplo'] as Map<String, dynamic>?,
     black: j['cor'] == 'pretas',
     mock: j['mock'] as bool? ?? false,
+    lines: (j['linhas'] as List? ?? []).map(
+      (line) => (line as List).cast<String>(),
+    ),
+    openingId: j['abertura'] as String?,
+    profile: j['perfil'] as String?,
   );
 }
 

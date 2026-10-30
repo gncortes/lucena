@@ -82,6 +82,7 @@ void main() {
             ),
           ],
           child: TestApp(
+            trainingAccess: true,
             locale: const Locale('pt'),
             router: router,
             child: const SizedBox(),

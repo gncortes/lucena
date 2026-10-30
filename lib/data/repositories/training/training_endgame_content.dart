@@ -84,6 +84,7 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
     final modules = <EndgameModule>[];
     for (final part in json['partes'] as List) {
       final lessons = <EndgameLesson>[];
+      chapters:
       for (final chapter in (part as Map)['capitulos'] as List) {
         final id = (chapter as Map)['id'] as String;
         if (!id.startsWith('$namespace.') ||
@@ -99,6 +100,10 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
           ) as Map<String, dynamic>;
         } on LessonContentNotFound {
           continue;
+        } on LessonContentNetworkUnavailable {
+          // The catalog remains index-backed; only playable local chapters
+          // belong to this trail while another chapter cannot be downloaded.
+          continue;
         }
         if (data['id'] != id) {
           throw const FormatException('Private chapter identifier mismatch');
@@ -111,6 +116,8 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
             await assets.loadString(script);
           } on LessonContentNotFound {
             map.remove('roteiro');
+          } on LessonContentNetworkUnavailable {
+            continue chapters;
           }
         }
         // Private access is not approval for publication or an automatic A.
@@ -126,7 +133,16 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
   @override
   Future<LessonTexts> texts(String language) =>
       _cache.load(('texts', language), () async {
-        final common = await school.texts(language);
+        late LessonTexts common;
+        try {
+          common = await school.texts(language);
+        } on LessonContentNotFound {
+          if (language == 'en') rethrow;
+          common = await school.texts('en');
+        } on LessonContentNetworkUnavailable {
+          if (language == 'en') rethrow;
+          common = await school.texts('en');
+        }
         final english = await _texts('en');
         if (language == 'en' ||
             !AssetLessonRepository.languages.contains(language)) {
@@ -154,6 +170,8 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
             ) as Map<String, dynamic>;
             all.addAll(AssetEndgameLessonRepository.prefixed(lesson.id, json));
           } on LessonContentNotFound {
+            if (language == 'en') rethrow;
+          } on LessonContentNetworkUnavailable {
             if (language == 'en') rethrow;
           }
           final title = titles[lesson.id];

@@ -10,6 +10,7 @@ import '../now.dart';
 import 'exercise_picker.dart';
 import 'opening_trecho_rules.dart';
 import 'training_date.dart';
+import 'opening_parts.dart';
 
 final class PilaresFollowUps implements TrainingFollowUps {
   const PilaresFollowUps();
@@ -26,12 +27,24 @@ final class PilaresFollowUps implements TrainingFollowUps {
           lesson.id: ThemeCycle(lessonId: lesson.id, startedOn: date),
         },
       ),
-      TrainingLessonKind.opening => state.copyWith(
-        openings: {
-          ...state.openings,
-          lesson.id: OpeningTrack(lessonId: lesson.id, startedOn: date),
-        },
-      ),
+      TrainingLessonKind.opening =>
+        state.openings.keys.any(
+              (id) =>
+                  id == lesson.id ||
+                  openingProfileForLesson(lesson.id) != null &&
+                      id.split('.').last.replaceAll(RegExp(r'\d+$'), '') ==
+                          lesson.id
+                              .split('.')
+                              .last
+                              .replaceAll(RegExp(r'\d+$'), ''),
+            )
+            ? state
+            : state.copyWith(
+                openings: {
+                  ...state.openings,
+                  lesson.id: OpeningTrack(lessonId: lesson.id, startedOn: date),
+                },
+              ),
       _ => state,
     };
   }
@@ -95,12 +108,13 @@ final class PilaresFollowUps implements TrainingFollowUps {
     final segments = <String, String>{};
     var mock = false;
     final rules = OpeningTrechoRules(now);
-    for (final lesson in resources.lessons.where((l) => l.visible)) {
-      final track = state.openings[lesson.id];
-      if (track == null || track.startedOn.compareTo(date) >= 0) continue;
-      final next = rules.next(track, resources.openings[lesson.id] ?? []);
+    for (final entry in activeOpeningTracks(state, resources)) {
+      final lessonId = entry.key;
+      final track = entry.value;
+      if (track.startedOn.compareTo(date) >= 0) continue;
+      final next = rules.next(track, resources.openings[lessonId] ?? []);
       if (next != null) {
-        segments[lesson.id] = next.id;
+        segments[lessonId] = next.id;
         mock |= next.mock;
       }
     }

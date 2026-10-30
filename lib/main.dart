@@ -1,4 +1,5 @@
 import 'data/repositories/training/training_endgame_content.dart';
+import 'data/repositories/training/course_download_repository.dart';
 
 import 'dart:async';
 
@@ -500,6 +501,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<course_training.TrainingRepository>.value(
           value: dependencies.courseTrainingRepository,
+        ),
+        RepositoryProvider<CourseDownloadRepository>.value(
+          value: dependencies.courseDownloads,
         ),
         RepositoryProvider<TrainingSchoolContent>.value(
           value:

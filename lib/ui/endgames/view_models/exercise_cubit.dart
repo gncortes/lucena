@@ -175,7 +175,12 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     }
   }
 
-  Future<void> load(String lessonId, String exerciseId, String language) async {
+  Future<void> load(
+    String lessonId,
+    String exerciseId,
+    String language, {
+    bool restartPosition = false,
+  }) async {
     final revision = ++_loadRevision;
     final contentVersion = await learning?.versionOf(true, lessonId);
     if (isClosed || revision != _loadRevision) return;
@@ -246,17 +251,18 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     );
     if (resumed) {
       opened = opened.copyWith(
-        fen: saved.fen,
-        turn: saved.turn,
+        fen: restartPosition ? exercise.fen : saved.fen,
+        turn: restartPosition ? 0 : saved.turn,
         mistakes: saved.mistakes,
         hints: saved.hints,
-        hintShown: saved.hintTurn == saved.turn,
-        played: saved.played,
+        hintShown: !restartPosition && saved.hintTurn == saved.turn,
+        played: restartPosition ? const [] : saved.played,
         wrongs: [for (final wrong in saved.wrongs) ?_parseWrong(wrong)],
         firstMoveMistake: saved.firstMoveMistake,
         phase:
-            GameRules.fromFen(saved.fen ?? exercise.fen)?.turn !=
-                exercise.step.side
+            !restartPosition &&
+                GameRules.fromFen(saved.fen ?? exercise.fen)?.turn !=
+                    exercise.step.side
             ? ExercisePhase.waiting
             : ExercisePhase.active,
       );
@@ -562,6 +568,12 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   }
 
   /// Sair pelo voltar: o exercício fica guardado onde parou.
+  Future<int> savedExerciseCount() async {
+    final lesson = state.lesson;
+    if (lesson == null) return 0;
+    return (await _progress.load()).of(lesson.id).solvedOf(lesson);
+  }
+
   Future<void> leave() async {
     if (state.phase == ExercisePhase.done) {
       return;

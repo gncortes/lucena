@@ -129,12 +129,15 @@ void main() {
         expect(board.width, greaterThan(0));
         expect(board.center.dy, closeTo((52 + size.height - 24) / 2, .01));
         final speech = tester.getRect(find.byType(TeacherSpeech));
-        expect(speech.bottom, closeTo(board.top, .01));
+        expect(
+          speech.bottom,
+          closeTo(board.top - (size.height < 780 ? 0 : 8), .01),
+        );
         expect(speech.top, greaterThanOrEqualTo(52 + 64));
       }
 
       expectCenteredBoard();
-      expect(find.text('As brancas jogam: ache o golpe.'), findsOneWidget);
+      expect(find.text('Encontre o melhor lance.'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.tap(find.byTooltip('Dica'));
       await tester.pumpAndSettle();
@@ -144,7 +147,7 @@ void main() {
           .read<TrainingExerciseCubit>();
       await cubit.play('a1a8');
       await tester.pumpAndSettle();
-      expect(find.text('Correto.'), findsOneWidget);
+      expect(find.text('Isso mesmo.'), findsOneWidget);
       expectCenteredBoard();
       expect(find.text('Amanhã, um mais fácil'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -219,7 +222,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Não.'), findsOneWidget);
+      expect(find.text('Procure outro lance.'), findsOneWidget);
       expect(find.byKey(TrainingKeys.secondary), findsOneWidget);
       expect(find.byType(Chessboard), findsOneWidget);
       expect(repo.writes, 0);
@@ -349,7 +352,7 @@ void main() {
       expect(cubit.state.fen, real.fen);
       await cubit.play('a1a8');
       await tester.pumpAndSettle();
-      expect(find.text('Correto.'), findsOneWidget);
+      expect(find.text('Isso mesmo.'), findsOneWidget);
       expect(find.text('Amanhã, um mais fácil'), findsOneWidget);
       expect(repo.writes, writes);
       expect(

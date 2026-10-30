@@ -8,3 +8,12 @@ class LessonContentUnavailable implements Exception {
 class LessonContentNotFound extends LessonContentUnavailable {
   const LessonContentNotFound();
 }
+
+class LessonContentNetworkUnavailable extends LessonContentUnavailable {
+  const LessonContentNetworkUnavailable();
+}
+
+class LessonContentStorageUnavailable extends LessonContentUnavailable {
+  const LessonContentStorageUnavailable(this.bytes);
+  final int bytes;
+}
