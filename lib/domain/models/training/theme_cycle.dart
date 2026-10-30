@@ -9,9 +9,13 @@ final class ThemeDay {
     this.hint = false,
     this.mock = false,
     this.phase = ThemePhase.cycle,
+    this.elapsedMs,
   });
   final String date, exerciseId;
   final int stars;
+
+  /// Recorded attempt duration. Legacy history has no measured time.
+  final int? elapsedMs;
   final bool correct, hint, mock;
   final ThemePhase phase;
   bool get earned => correct && !hint;
@@ -23,8 +27,10 @@ final class ThemeDay {
     'hint': hint,
     'mock': mock,
     'phase': phase.name,
+    if (elapsedMs != null) 'elapsedMs': elapsedMs,
   };
   factory ThemeDay.fromJson(Map<String, dynamic> j) => ThemeDay(
+    elapsedMs: j['elapsedMs'] as int?,
     date: j['date'] as String,
     exerciseId: j['exerciseId'] as String,
     stars: j['stars'] as int,

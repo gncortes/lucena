@@ -15,6 +15,7 @@ import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/training_reminder.dart';
+import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../data/services/notification_service.dart';
 import '../../../domain/models/alert_settings.dart';
 import '../../../domain/models/reminder.dart';
@@ -208,7 +209,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
             scheduled = AnalyticsEvents.treinoLembreteAgendado(
               curso: config.course.name,
               hora: at.hour,
-              metas: current.day?.remaining ?? 0,
+              metas: trainingGoalCounts(current).remaining,
               aulaPendente:
                   current.day?.goals.any(
                     (g) =>

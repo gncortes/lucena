@@ -82,7 +82,7 @@ void main() {
             );
             expect(goalsOpened, 1);
           }
-          await tester.drag(find.byType(ListView), const Offset(0, -600));
+          await tester.drag(find.byType(Scrollable), const Offset(0, -600));
           await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
           expect(

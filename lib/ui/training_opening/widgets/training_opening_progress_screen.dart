@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/canvas_symbols.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,8 +30,11 @@ class TrainingOpeningProgressScreen extends StatefulWidget {
 
 class _ProgressState extends State<TrainingOpeningProgressScreen> {
   String? _selected;
+  bool _changing = false;
   Future<void> _changeProfile() async {
     final cubit = context.read<CourseGuideCubit>();
+    if (_changing || cubit.state.saving) return;
+    setState(() => _changing = true);
     final saved = cubit.state.training!;
     final t = context.l10n;
     final current = saved.openingProfile == 'solido'
@@ -86,11 +90,12 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
       ),
     );
     if (confirmed == true) {
-      await cubit.selectOpeningProfile(
+      final success = await cubit.selectOpeningProfile(
         saved.openingProfile == 'solido' ? 'agressivo' : 'solido',
       );
-      if (mounted) setState(() => _selected = null);
+      if (mounted && success) setState(() => _selected = null);
     }
+    if (mounted) setState(() => _changing = false);
   }
 
   @override
@@ -140,34 +145,38 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
         final from = parts.indexOf(saved.openingProfileStartPart);
         return ListView(
           key: TrainingKeys.openingProgressScreen,
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        t.trainingRepertoire(profile),
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      Text(
-                        t.trainingProfileNoPractice,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          t.trainingRepertoire(profile),
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        Text(
+                          t.trainingProfileNoPractice,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 CompactCourseAction(
                   key: TrainingKeys.openingProfile('change'),
-                  onPressed: _changeProfile,
+                  onPressed: state.saving ? null : _changeProfile,
                   label: t.trainingProfileChange,
                 ),
               ],
             ),
             if (saved.openingProfileStartPart.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -178,7 +187,7 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                   spacing: 12,
                   children: [
                     Icon(
-                      Icons.info_outline,
+                      CanvasSymbols.info,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     Expanded(
@@ -219,7 +228,7 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             if (selectedLessons.isNotEmpty)
               Card(
                 margin: EdgeInsets.zero,
@@ -241,7 +250,6 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                         ),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
-                      const SizedBox(height: 12),
                       for (final lesson in selectedLessons)
                         InkWell(
                           key: TrainingKeys.openingPart(lesson.id),
@@ -251,22 +259,40 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             child: Row(
-                              spacing: 16,
+                              spacing: 8,
                               children: [
-                                Text(
-                                  courseGuideRoman(
-                                    parts.indexOf(lesson.partId) + 1,
+                                SizedBox(
+                                  width: 28,
+                                  child: Text(
+                                    courseGuideRoman(
+                                      parts.indexOf(lesson.partId) + 1,
+                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                          color:
+                                              parts.indexOf(lesson.partId) <
+                                                  from
+                                              ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant
+                                              : Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                        ),
                                   ),
-                                  style: Theme.of(context).textTheme.titleSmall
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     lesson.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          height: 20 / 14,
+                                          letterSpacing: 0,
+                                        ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -281,7 +307,22 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                                             parts.indexOf(lesson.partId) + 1,
                                           ),
                                         ),
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        letterSpacing: 0,
+                                        color:
+                                            parts.indexOf(lesson.partId) == from
+                                            ? Theme.of(context)
+                                                  .colorScheme
+                                                  .primary
+                                            : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                        fontWeight:
+                                            parts.indexOf(lesson.partId) == from
+                                            ? FontWeight.w500
+                                            : FontWeight.w400,
+                                      ),
                                 ),
                               ],
                             ),
@@ -322,7 +363,7 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
               ),
               CompactCourseAction(
                 key: TrainingKeys.openingProfile('change'),
-                onPressed: _changeProfile,
+                onPressed: state.saving ? null : _changeProfile,
                 label: t.trainingProfileChange,
               ),
             ],
@@ -334,26 +375,30 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
               spacing: 8,
               children: [
                 for (final entry in tracks)
-                  ChoiceChip(
-                    key: TrainingKeys.openingPart(entry.key),
-                    selected: entry.key == selected?.key,
-                    showCheckmark: false,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                    padding: EdgeInsets.zero,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppShape.small),
-                    ),
-                    label: Text(
-                      switch (resources.openings[entry.key]!.first.openingId) {
+                  SizedBox(
+                    height: 28,
+                    child: ChoiceChip(
+                      key: TrainingKeys.openingPart(entry.key),
+                      selected: entry.key == selected?.key,
+                      showCheckmark: false,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppShape.small),
+                      ),
+                      label: Text(switch (resources
+                          .openings[entry.key]!
+                          .first
+                          .openingId) {
                         'london' => t.trainingOpeningChipLondon,
                         'slav' => t.trainingOpeningChipSlav,
                         'others' || 'othersAggr' => t.trainingOpeningChipOthers,
                         _ => resources.openings[entry.key]!.first.title,
-                      },
+                      }),
+                      onSelected: (_) => setState(() => _selected = entry.key),
                     ),
-                    onSelected: (_) => setState(() => _selected = entry.key),
                   ),
               ],
             ),
@@ -406,7 +451,7 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 4),
                         for (final (i, part) in bank.indexed)
                           Builder(
                             builder: (context) {
@@ -421,9 +466,11 @@ class _ProgressState extends State<TrainingOpeningProgressScreen> {
                                             results.length)
                                         .round();
                               final color = !completed
-                                  ? Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant
+                                  ? part == next
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant
                                   : openingAccuracyColor(score);
                               return SizedBox(
                                 height: 48,

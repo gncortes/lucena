@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_shape.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_text.dart';
+import '../../theme/canvas_symbols.dart';
 import '../../keys/course_guide_keys.dart';
 import 'training_badge.dart';
 
@@ -13,7 +14,7 @@ enum CourseItemState {
   /// Feito: círculo verde-escuro com o visto.
   approved,
 
-  /// Começado e ainda não feito: meia estrela.
+  /// Começado e ainda não feito: retomar pelo botão de reprodução.
   started,
 
   /// O recomendado agora: círculo primário e contorno de 2 dp.
@@ -66,21 +67,25 @@ class CourseItemTile extends StatelessWidget {
     final difficulty = this.difficulty;
     final medal = this.medal;
     final (background, foreground, icon) = switch (state) {
-      CourseItemState.approved => (doneColor, AppColors.white, Icons.check),
+      CourseItemState.approved => (
+        doneColor,
+        AppColors.white,
+        CanvasSymbols.check,
+      ),
       CourseItemState.started => (
         colors.secondaryContainer,
         colors.onSecondaryContainer,
-        Icons.star_half_rounded,
+        CanvasSymbols.playArrow,
       ),
       CourseItemState.next => (
         colors.primary,
         colors.onPrimary,
-        Icons.play_arrow_rounded,
+        CanvasSymbols.playArrow,
       ),
       CourseItemState.open => (
         colors.surfaceContainerHighest,
         colors.onSurfaceVariant,
-        Icons.play_arrow_rounded,
+        CanvasSymbols.playArrow,
       ),
       CourseItemState.locked => (
         colors.surfaceContainerHighest,
@@ -91,7 +96,7 @@ class CourseItemTile extends StatelessWidget {
     return Material(
       color: colors.surfaceContainerLow,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppShape.large),
+        borderRadius: BorderRadius.circular(AppShape.card),
         side: state == CourseItemState.next
             ? BorderSide(color: colors.primary, width: 2)
             : BorderSide.none,
@@ -112,7 +117,11 @@ class CourseItemTile extends StatelessWidget {
                   color: background,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: foreground),
+                child: Icon(
+                  icon,
+                  color: foreground,
+                  fill: icon == CanvasSymbols.playArrow ? 1 : null,
+                ),
               ),
               Expanded(
                 child: Column(

@@ -74,6 +74,121 @@ void main() {
     await repository.dispose();
   });
 
+  test('attempt time is measured with Now, persisted and restored', () async {
+    now.advance(const Duration(seconds: 21));
+    await cubit.play('e2e4');
+    now.advance(const Duration(milliseconds: 1500));
+    await cubit.play('g1f3');
+    final stored = await repository.load(TrainingCourse.pilares);
+    expect(stored.cycles['lesson']!.days.single.elapsedMs, 22500);
+    final reopened = create();
+    addTearDown(reopened.close);
+    await reopened.load();
+    expect(reopened.elapsed, const Duration(milliseconds: 22500));
+  });
+
+  test(
+    'legacy history has no invented duration; measured time round trips',
+    () {
+      final day = ThemeDay(
+        date: '2026-10-20',
+        exerciseId: 'e',
+        stars: 1,
+        correct: false,
+        elapsedMs: 21000,
+      );
+      expect(ThemeDay.fromJson(day.toJson()).elapsedMs, 21000);
+      expect(
+        ThemeDay.fromJson(day.toJson()..remove('elapsedMs')).elapsedMs,
+        isNull,
+      );
+    },
+  );
+
+  for (final hinted in [false, true]) {
+    test(
+      'historical practice is read only across hints/retry/reopen: $hinted',
+      () async {
+        await repository.update(
+          TrainingCourse.pilares,
+          (s) => s.copyWith(
+            cycles: {
+              'lesson': ThemeCycle(
+                lessonId: 'lesson',
+                startedOn: '2026-10-20',
+                phase: ThemePhase.firm,
+                days: [
+                  ThemeDay(
+                    date: '2026-10-20',
+                    exerciseId: 'e',
+                    stars: 1,
+                    correct: false,
+                    elapsedMs: 42000,
+                  ),
+                ],
+              ),
+            },
+          ),
+        );
+        final before = (await repository.load(TrainingCourse.pilares)).toJson();
+        final writes = repository.writes;
+        final practice = TrainingExerciseCubit(
+          repository: repository,
+          config: TrainingCourseConfig.pilares,
+          now: now,
+          goalKey: 'no-current-goal',
+          practiceTheme: 'lesson',
+          practiceExerciseId: 'e',
+        );
+        addTearDown(practice.close);
+        now.advance(const Duration(days: 3));
+        await practice.load();
+        expect(practice.state.exercise!.id, 'e');
+        expect(practice.state.practicing, true);
+        expect(practice.state.fen, exercise.fen);
+        if (hinted) await practice.hint();
+        await practice.play('d2d4');
+        expect(practice.state.displayedCorrect, false);
+        practice.retryPractice();
+        await practice.play('e2e4');
+        await practice.play('g1f3');
+        expect(practice.state.displayedCorrect, true);
+        expect(practice.next(), true); // Never opens scored cycle end.
+        await practice.save();
+        expect(await practice.reinforceFirst(), false);
+        practice.showSolution();
+        await practice.play('e2e4');
+        await practice.play('g1f3');
+        await practice.load(); // Process recreation contract: initial FEN.
+        expect(practice.state.fen, exercise.fen);
+        expect(practice.state.cursor, 0);
+        expect(repository.writes, writes);
+        expect(
+          (await repository.load(TrainingCourse.pilares)).toJson(),
+          before,
+        );
+      },
+    );
+  }
+
+  test(
+    'history cannot launch an exercise absent from the recorded bank',
+    () async {
+      final practice = TrainingExerciseCubit(
+        repository: repository,
+        config: TrainingCourseConfig.pilares,
+        now: now,
+        goalKey: '',
+        practiceTheme: 'lesson',
+        practiceExerciseId: 'e',
+      );
+      addTearDown(practice.close);
+      await practice.load();
+      expect(practice.state.phase, TrainingExercisePhase.unavailable);
+      expect(repository.writes, 0);
+    },
+  );
+
   test('plays opponent reply then waits for remaining student move', () async {
     await cubit.play('e2e4');
     expect(cubit.state.cursor, 2);
@@ -90,6 +205,48 @@ void main() {
     expect(repository.writes, 1);
     expect(cubit.next(), true);
   });
+
+  test('guided authored solution rejects deviations without rewriting first attempt', () async {
+    await cubit.play('d2d4');
+    final writes = repository.writes;
+    final persisted = (await repository.load(TrainingCourse.pilares)).toJson();
+    cubit.showSolution();
+    expect(cubit.state.solving, isTrue);
+    expect(cubit.state.fen, exercise.fen);
+    await cubit.play('d2d4');
+    expect(cubit.state.cursor, 0);
+    await cubit.play('e2e4');
+    expect(cubit.state.cursor, 2);
+    await cubit.play('g1f3');
+    expect(cubit.state.displayedCorrect, isTrue);
+    expect(cubit.state.correct, isFalse);
+    expect(repository.writes, writes);
+    expect((await repository.load(TrainingCourse.pilares)).toJson(), persisted);
+  });
+
+  test(
+    'analysis history keeps an accepted alternative without main-line replies',
+    () {
+      final branched = TrainingExercise(
+        id: 'branch',
+        stars: 1,
+        fen: exercise.fen,
+        solution: exercise.solution,
+        alternatives: const ['d2d4'],
+      );
+      final result = PlayTrainingExercise(branched)
+          .play(branched.fen, 0, 'd2d4');
+      final state = TrainingExerciseState(
+        phase: TrainingExercisePhase.result,
+        exercise: branched,
+        fen: result.fen,
+        cursor: result.cursor,
+        lastMove: result.lastMove,
+        correct: true,
+      );
+      expect(state.playedMoves, ['d2d4']);
+    },
+  );
 
   test('wrong move ends one attempt and shows correct move', () async {
     await cubit.play('d2d4');

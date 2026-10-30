@@ -1,6 +1,12 @@
 import 'package:lucena/data/repositories/training/training_endgame_content.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lucena/data/services/lesson_content_service.dart';
+import 'package:lucena/data/services/lesson_package_service.dart';
+import 'package:lucena/data/repositories/training/course_download_repository.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:lucena/data/services/secure_storage_service.dart';
+import 'package:lucena/domain/use_cases/now.dart';
 import 'package:lucena/data/repositories/learning/learning_repository.dart';
 import 'package:lucena/data/repositories/learning/learning_content_version.dart';
 import 'package:lucena/data/repositories/training/training_learning_bridge.dart';
@@ -27,6 +33,9 @@ import 'fakes/fake_chesscom_repository.dart';
 import 'fakes/fake_lichess_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_notification_service.dart';
+
+import 'package:lucena/data/services/notification_service.dart';
+import 'package:lucena/data/repositories/push/push_repository.dart';
 
 import 'package:lucena/data/repositories/reminders/reminders_repository.dart';
 
@@ -282,21 +291,59 @@ AppDatabase? _database;
 Future<Dependencies> e2eDependencies({
   bool ads = false,
   E2ETrainingScenario? trainingScenario,
+  NotificationService? notifications,
+  PushRepository? push,
+  bool localContentPackages = false,
+  Now? now,
 }) async {
+  final clock = now ?? e2eNow;
   await _database?.close();
   final database = _database = AppDatabase();
-  final content = createLessonContentAssets(
+  var source = createLessonContentAssets(
     releaseBuild: kReleaseMode,
     firebase: false,
     localUrl: const String.fromEnvironment('CONTENT_URL'),
   );
+  final account = FakeAccountRepository(
+    account: localContentPackages ? FakeAccountRepository.google : null,
+  );
+  final localReader = source.reader;
+  if (localContentPackages && localReader is LocalHttpLessonContentReader) {
+    // Native local evidence exercises the production manifest/cache contract.
+    // This synthetic release exists only on the loopback fixture server.
+    source = LessonContentAssets(
+      reader: PublishedLessonContentReader(
+        release: 't85-local-fixture',
+        currentUser: () => account.current?.uid,
+        cache: DeviceSecureStorageService(),
+        download: (object) async {
+          final response = await http.get(localReader.base.resolve('/$object'));
+          if (response.statusCode == 404) return null;
+          if (response.statusCode != 200) {
+            throw const LessonContentUnavailable();
+          }
+          return response.bodyBytes;
+        },
+      ),
+    );
+  }
+  final packages = localContentPackages && source.reader != null
+      ? LessonPackageService(
+          source: source.reader!,
+          directory: getApplicationSupportDirectory,
+          identity: () => account.current?.uid,
+        )
+      : null;
+  final content = packages == null
+      ? source
+      : LessonContentAssets(reader: packages);
   final positions = AssetPositionsRepository(const AssetService());
   final lessons = AssetLessonRepository(content);
   final progress = LocalProgressRepository(database);
   final activity = LocalActivityRepository(
     PreferencesService(),
     progress,
-    e2eNow,
+    clock,
   );
   final flags = FakeRemoteFlagsRepository();
   final trainingSchool = TrainingSchoolContent(lessons, includeAll: true);
@@ -311,7 +358,7 @@ Future<Dependencies> e2eDependencies({
     ),
   );
   trainingAnalytics = TrainingAnalytics(
-    now: e2eNow,
+    now: clock,
     log: e2eAnalytics.log,
     read: courseTrainingRaw.load,
     write: courseTrainingRaw.update,
@@ -325,9 +372,9 @@ Future<Dependencies> e2eDependencies({
     courseTrainingRaw,
     observers: {
       TrainingCourseConfig.escola.course: SchoolTrainingObserver(
-        now: e2eNow,
+        now: clock,
         source: SchoolTrainingObservationSource(
-          now: e2eNow,
+          now: clock,
           stars: stars,
           progress: progress,
           speedruns: speedruns,
@@ -341,7 +388,7 @@ Future<Dependencies> e2eDependencies({
     await courseTrainingRaw.seed(trainingScenario, e2eNow);
   }
   return Dependencies(
-    now: e2eNow,
+    now: clock,
     remoteFlagsRepository: flags,
     adsRepository: ads
         ? ServiceAdsRepository(
@@ -349,7 +396,7 @@ Future<Dependencies> e2eDependencies({
             preferences: PreferencesService(),
             flags: flags,
             purchases: const NoPurchaseRepository(),
-            now: e2eNow,
+            now: clock,
           )
         : const NoAdsRepository(),
     settingsRepository: LocalSettingsRepository(PreferencesService()),
@@ -357,7 +404,7 @@ Future<Dependencies> e2eDependencies({
     hapticsRepository: e2eHaptics,
     shareRepository: e2eShare,
     deepLinkRepository: ServiceDeepLinkRepository(e2eDeepLinks),
-    accountRepository: FakeAccountRepository(),
+    accountRepository: account,
     syncRepository: FakeSyncRepository(),
     avatarRepository: FakeAvatarRepository(),
     photoRepository: FakePhotoRepository(),
@@ -366,9 +413,9 @@ Future<Dependencies> e2eDependencies({
     analyticsRepository: e2eAnalytics,
     lichessRepository: e2eLichess,
     chessComRepository: e2eChessCom,
-    pushRepository: e2ePush,
+    pushRepository: push ?? e2ePush,
     remindersRepository: LocalRemindersRepository(
-      e2eNotifications,
+      notifications ?? e2eNotifications,
       progress: LocalEndgameProgressRepository(PreferencesService()),
       lessons: VisibleEndgameLessonRepository(
         AssetEndgameLessonRepository(content, school: lessons),
@@ -388,10 +435,16 @@ Future<Dependencies> e2eDependencies({
     positionsRepository: positions,
     trainingRepository: LocalTrainingRepository(PreferencesService()),
     courseTrainingRepository: courseTraining,
+    courseDownloads: CourseDownloadRepository(
+      packages,
+      openingProfile: () async =>
+          (await courseTraining.load(TrainingCourseConfig.pilares.course))
+              .openingProfile,
+    ),
     trainingAnalytics: trainingAnalytics,
     learningRepository: LearningRepository(
       PreferencesService(),
-      e2eNow,
+      clock,
       currentUid: () => null,
       versionOf: LearningContentVersion(content).call,
       onUnitCompleted: TrainingLearningBridge(
@@ -410,14 +463,14 @@ Future<Dependencies> e2eDependencies({
     raceRepository: LocalRaceRepository(
       const AssetService(),
       PreferencesService(),
-      e2eNow,
+      clock,
       offersWarmUpByDefault: false,
     ),
     ratingRepository: LocalRatingRepository(
       database,
       maia: e2eMaia,
       profile: LocalProfileRepository(database),
-      now: e2eNow,
+      now: clock,
     ),
     achievementsRepository: LocalAchievementsRepository(
       const AssetService(),
@@ -470,7 +523,7 @@ Future<Dependencies> e2eDependencies({
     speechInputRepository: e2eSpeechInput,
     blindCheckpointRepository: FakeBlindCheckpointRepository(),
     // Real: o rascunho e a resposta têm de sobreviver ao restart() do cenário.
-    surveyRepository: LocalSurveyRepository(PreferencesService(), e2eNow),
+    surveyRepository: LocalSurveyRepository(PreferencesService(), clock),
     blindLogRepository: LocalBlindLogRepository(PreferencesService()),
     wikiLinksRepository: AssetWikiLinksRepository(content),
     featuredRepository: AssetFeaturedRepository(const AssetService()),

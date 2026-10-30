@@ -41,6 +41,7 @@ Future<CourseGuideCubit> pumpGuide(
   Set<String> done = const {'a1', 'a2', 't1'},
   TrainingCourseConfig config = TrainingCourseConfig.pilares,
   VoidCallback? onLevelTest,
+  ValueChanged<TrainingLesson>? onLesson,
 }) async {
   final resources = TrainingResources(
     lessons: [
@@ -84,7 +85,7 @@ Future<CourseGuideCubit> pumpGuide(
           onPlan: () {},
           onHelp: () {},
           onWelcomeContinue: () {},
-          onLesson: (_) {},
+          onLesson: onLesson ?? (_) {},
           onChapter: (_) {},
           goalsBuilder: (_) => const SizedBox(),
           progressBuilder: (_) => const SizedBox(),
@@ -131,54 +132,57 @@ void main() {
     },
   );
   for (final size in phoneSizes) {
-    testWidgets('catalog counts chapters and numbers real order at $size', (
-      tester,
-    ) async {
-      setPhoneSize(tester, size);
-      var opened = 0;
-      final cubit = await pumpGuide(tester, onLevelTest: () => opened++);
-      expect(find.byType(PlacementTestCard), findsOneWidget);
-      await tester.tap(find.byKey(CourseGuideKeys.levelTest));
-      expect(opened, 1);
-      expect(cubit.state.training!.completedLessons.length, 3);
-      final header = tester.widget<CoursePartHeader>(
-        find.byType(CoursePartHeader).first,
-      );
-      expect(header.label, 'Parte I');
-      expect(header.title, 'Primeira parte');
-      expect(header.count, '1 de 2');
-      expect(
-        tester
-            .widget<CourseItemTile>(
-              find.byKey(CourseGuideKeys.chapter('omega')),
-            )
-            .title,
-        '1 · Capítulo omega',
-      );
-      expect(
-        tester
-            .widget<CourseItemTile>(
-              find.byKey(CourseGuideKeys.chapter('alpha')),
-            )
-            .title,
-        '2 · Capítulo alpha',
-      );
-      await tester.scrollUntilVisible(
-        find.byKey(CourseGuideKeys.catalogPart('a')),
-        100,
-      );
-      expect(find.text('Parte II'), findsOneWidget);
-      await tester.tap(find.byKey(CourseGuideKeys.catalogPart('a')));
-      await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<CoursePartHeader>(find.byType(CoursePartHeader).last)
-            .label,
-        'Parte II',
-      );
-      expect(cubit.state.training!.completedLessons.length, 3);
-      expect(tester.takeException(), isNull);
-    });
+    testWidgets(
+      'catalog orders chapters and opens lessons and tests at $size',
+      (tester) async {
+        setPhoneSize(tester, size);
+        String? opened;
+        final cubit = await pumpGuide(
+          tester,
+          onLesson: (lesson) => opened = lesson.id,
+        );
+        expect(find.byType(PlacementTestCard), findsNothing);
+        expect(cubit.state.training!.completedLessons.length, 3);
+        final header = tester.widget<CoursePartHeader>(
+          find.byType(CoursePartHeader).first,
+        );
+        expect(header.label, 'Capítulo 1');
+        expect(header.title, 'Capítulo omega');
+        expect(header.count, isNull);
+        expect(
+          tester
+              .widget<CourseItemTile>(
+                find.byKey(CourseGuideKeys.chapterLesson('a1')),
+              )
+              .title,
+          'Aula a1',
+        );
+        expect(
+          tester
+              .widget<CourseItemTile>(
+                find.byKey(CourseGuideKeys.chapterLesson('t1')),
+              )
+              .title,
+          'Teste do capítulo',
+        );
+        await tester.tap(find.byKey(CourseGuideKeys.chapterLesson('a1')));
+        expect(opened, 'a1');
+        await tester.tap(find.byKey(CourseGuideKeys.chapterLesson('t1')));
+        expect(opened, 't1');
+        await tester.scrollUntilVisible(
+          find.byKey(CourseGuideKeys.chapter('gamma')),
+          100,
+        );
+        expect(
+          tester
+              .widget<CoursePartHeader>(find.byType(CoursePartHeader).last)
+              .label,
+          'Capítulo 3',
+        );
+        expect(cubit.state.training!.completedLessons.length, 3);
+        expect(tester.takeException(), isNull);
+      },
+    );
     testWidgets('lesson uses Roman part and catalog button is 52 at $size', (
       tester,
     ) async {
@@ -212,16 +216,18 @@ void main() {
       );
       expect(tester.takeException(), isNull);
     });
-    testWidgets('chapter counts as approved only after its test at $size', (
+    testWidgets('test remains recommended after chapter lessons at $size', (
       tester,
     ) async {
       setPhoneSize(tester, size);
       await pumpGuide(tester, done: {'a1', 'a2'});
       expect(
         tester
-            .widget<CoursePartHeader>(find.byType(CoursePartHeader).first)
-            .count,
-        '0 de 2',
+            .widget<CourseItemTile>(
+              find.byKey(CourseGuideKeys.chapterLesson('t1')),
+            )
+            .state,
+        CourseItemState.started,
       );
       expect(tester.takeException(), isNull);
     });

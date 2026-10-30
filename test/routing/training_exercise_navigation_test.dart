@@ -81,9 +81,16 @@ void main() {
     await tester.pumpAndSettle();
     final target = find.byKey(TrainingKeys.goalTile('exercise', 'theme1'));
     await tester.scrollUntilVisible(target, 200);
+    await Scrollable.ensureVisible(tester.element(target), alignment: .5);
+    await tester.pumpAndSettle();
     await tester.tap(target);
     await tester.pumpAndSettle();
-    expect(find.byKey(TrainingKeys.exerciseBoard), findsOneWidget);
+    expect(
+      find.byKey(TrainingKeys.exerciseBoard),
+      findsOneWidget,
+      reason:
+          '${router.routeInformationProvider.value.uri} | ${tester.widgetList<Text>(find.byType(Text)).map((t) => t.data).whereType<String>().take(12).join(" / ")}',
+    );
     final cubit = tester
         .element(find.byKey(TrainingKeys.exerciseBoard))
         .read<TrainingExerciseCubit>();

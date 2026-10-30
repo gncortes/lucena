@@ -9,6 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/endgames/endgame_lesson_repository.dart';
 import '../../../data/repositories/endgames/endgame_progress_repository.dart';
+import '../../../data/repositories/placement/placement_repository.dart';
+import '../../../data/repositories/school/school_progress_repository.dart';
+import '../../../domain/models/lesson.dart' show LessonCheckpoint;
 import '../../../data/repositories/training/course_training_repository.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson_content.dart';
@@ -35,12 +38,16 @@ final class CourseGuideState {
     this.teacher,
     this.testScores = const {},
     this.testProgress = const {},
+    this.levelTestProgress,
+    this.lessonCheckpoint,
   });
   final TrainingState? training;
   final TrainingResources? resources;
   final Character? teacher;
   final Map<String, int?> testScores;
   final Map<String, CourseTestProgress> testProgress;
+  final CourseTestProgress? levelTestProgress;
+  final LessonCheckpoint? lessonCheckpoint;
   final bool loading, saving, failed;
   TrainingLesson? get _nextInOrder => resources?.lessons
       .where(
@@ -50,8 +57,25 @@ final class CourseGuideState {
             !(training?.completedLessons.containsKey(lesson.id) ?? false),
       )
       .firstOrNull;
+  TrainingLesson? get resumedLesson {
+    final checkpoint = lessonCheckpoint;
+    if (checkpoint?.scriptExample == null) return null;
+    return resources?.lessons
+        .where(
+          (lesson) =>
+              lesson.visible &&
+              lesson.published &&
+              (checkpoint!.open ||
+                  !(training?.completedLessons.containsKey(lesson.id) ??
+                      false)) &&
+              (lesson.id == checkpoint.lessonId ||
+                  lesson.id == '${checkpoint.lessonId}.${checkpoint.part}'),
+        )
+        .firstOrNull;
+  }
+
   TrainingLesson? get nextLesson =>
-      _nextInOrder?.published == true ? _nextInOrder : null;
+      resumedLesson ?? (_nextInOrder?.published == true ? _nextInOrder : null);
   bool get awaitingPublication => _nextInOrder?.published == false;
   CourseGuideState copyWith({
     TrainingState? training,
@@ -68,6 +92,8 @@ final class CourseGuideState {
     teacher: teacher,
     testScores: testScores,
     testProgress: testProgress,
+    levelTestProgress: levelTestProgress,
+    lessonCheckpoint: lessonCheckpoint,
   );
 }
 
@@ -83,6 +109,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     this.characters,
     this.testLessons,
     this.testProgress,
+    this.placement,
+    this.schoolProgress,
     this.beforeOpeningProfileLoad,
   }) : super(const CourseGuideState());
   final Future<void> Function()? beforeLoad;
@@ -102,6 +130,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   final CharacterRepository? characters;
   final EndgameLessonRepository? testLessons;
   final EndgameProgressRepository? testProgress;
+  final PlacementRepository? placement;
+  final SchoolProgressRepository? schoolProgress;
   Future<void> _pending = Future.value();
   Timer? _saveRetry;
 
@@ -128,6 +158,13 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
       final resources = await repository.resources(config.course);
       final teachers = await characters?.characters();
       final scores = await _testScores(resources);
+      final checkpoint = config.course == TrainingCourse.escola
+          ? (await schoolProgress?.load())?.ongoing
+          : (await testProgress?.load())?.ongoing;
+      final levelResult = config.course == TrainingCourse.pilares
+          ? await placement?.result()
+          : null;
+      final levelAnswers = levelResult?.answers;
       final before = await repository.load(config.course);
       final training = before.onboardingDone
           ? await repository.update(
@@ -146,6 +183,15 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
                 .firstOrNull,
             testScores: scores.scores,
             testProgress: scores.details,
+            lessonCheckpoint: checkpoint,
+            levelTestProgress: levelAnswers == null || levelAnswers.isEmpty
+                ? null
+                : (
+                    score: levelAnswers.where((a) => a.correct).length,
+                    maxScore: levelAnswers.length,
+                    solved: levelAnswers.length,
+                    total: levelAnswers.length,
+                  ),
           ),
         );
       }
@@ -175,6 +221,20 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         scores[entry.id] = null;
         if (lesson == null) continue;
         final record = records.of(lesson.id);
+        if (lesson.id.startsWith('pilares.')) {
+          final answers = record.completedTestOf(lesson);
+          if (answers == null || answers.isEmpty) continue;
+          final correct = answers.values.where((correct) => correct).length;
+          final total = answers.length;
+          details[entry.id] = (
+            score: correct,
+            maxScore: total,
+            solved: total,
+            total: total,
+          );
+          scores[entry.id] = (100 * correct / total).round();
+          continue;
+        }
         final score = record.scoreOf(lesson), solved = record.solvedOf(lesson);
         details[entry.id] = (
           score: score,
@@ -217,15 +277,19 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         }
       });
 
-  Future<bool> selectOpeningProfile(String profile) async {
+  Future<bool> selectOpeningProfile(String profile, {String? startPart}) async {
     final saved = await _change((s) {
       if (profile != 'solido' && profile != 'agressivo') {
         throw ArgumentError.value(profile);
       }
+      final requestedPart = startPart ?? state.nextLesson?.partId ?? '';
       final next = s.copyWith(
         openingProfile: profile,
-        openingProfileStartPart:
-            state.nextLesson?.partId ?? s.openingProfileStartPart,
+        openingProfileStartPart: requestedPart.isNotEmpty
+            ? requestedPart
+            : s.openingProfileStartPart.isEmpty
+            ? 'chosen'
+            : s.openingProfileStartPart,
       );
       final day = next.day;
       if (day == null) return next;
@@ -243,10 +307,29 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
     if (saved) {
       try {
         await beforeOpeningProfileLoad?.call();
-      } catch (_) {}
+      } on Object {
+        if (!isClosed) emit(state.copyWith(failed: true));
+        return false;
+      }
       await load();
+      if (!state.failed && state.training?.day != null) {
+        // The newly downloaded profile may contain tracks that were absent
+        // from the previous resources. Build today's opening goals from it.
+        return _change(
+          (s) => s.copyWith(
+            day: s.day!.copyWith(
+              goals: [
+                ...s.day!.goals.where((goal) => goal.kind != GoalKind.openings),
+                ...config.followUps
+                    .build(s, state.resources!, now)
+                    .where((goal) => goal.kind == GoalKind.openings),
+              ],
+            ),
+          ),
+        );
+      }
     }
-    return saved;
+    return saved && !state.failed;
   }
 
   Future<bool> start(TrainingPlan plan) => _change(

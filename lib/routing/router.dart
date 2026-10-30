@@ -1,4 +1,8 @@
 import 'training_lesson_scope.dart';
+import '../domain/models/learning_analysis.dart';
+import '../data/repositories/analysis/learning_analysis_repository.dart';
+import '../ui/learning_analysis/view_models/learning_analysis_cubit.dart';
+import '../ui/learning_analysis/widgets/learning_analysis_screen.dart';
 import '../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
@@ -287,6 +291,31 @@ GoRouter buildRouter({
       );
     },
     routes: [
+      _route(
+        path: Routes.learningAnalysis,
+        builder: (context, state) {
+          final fen = state.uri.queryParameters['fen'] ?? '';
+          if (GameRules.fromFen(fen) == null) return const InvalidLinkScreen();
+          final launch = LearningAnalysisLaunch(
+            fen: fen,
+            moves: (state.uri.queryParameters['moves'] ?? '')
+                .split(',')
+                .where((move) => move.isNotEmpty)
+                .toList(),
+            orientation: state.uri.queryParameters['view'] == 'black'
+                ? Side.black
+                : Side.white,
+          );
+          return BlocProvider(
+            create: (_) => LearningAnalysisCubit(
+              launch: launch,
+              repository: context.read<LearningAnalysisRepository>(),
+              engine: context.read<AnalysisRepository>(),
+            )..load(),
+            child: const LearningAnalysisScreen(),
+          );
+        },
+      ),
       trainingRoute(),
       _route(
         path: Routes.invalidLink,
@@ -966,15 +995,18 @@ GoRouter buildRouter({
                       analytics: context.analytics,
                       origin: state.uri.queryParameters['origem'],
                     ),
-                    child: LessonScriptScreen(
-                      key: ValueKey('script.$id'),
-                      preview: _trainingLaunch(state)?.lessonPreview,
-                      previewTeacher: _trainingLaunch(state)?.teacher,
-                      previewTitle: _trainingTitle(state),
-                      homeHero: _trainingLaunch(state)?.lessonPreview != null,
-                      title: lessons
-                          .texts(language)
-                          .then((texts) => texts.lessonTitle(id)),
+                    child: Builder(
+                      builder: (context) => LessonScriptScreen(
+                        onAnalyze: (_) => _openLearningAnalysis(context),
+                        key: ValueKey('script.$id'),
+                        preview: _trainingLaunch(state)?.lessonPreview,
+                        previewTeacher: _trainingLaunch(state)?.teacher,
+                        previewTitle: _trainingTitle(state),
+                        homeHero: _trainingLaunch(state)?.lessonPreview != null,
+                        title: lessons
+                            .texts(language)
+                            .then((texts) => texts.lessonTitle(id)),
+                      ),
                     ),
                   );
                 },
@@ -1146,26 +1178,31 @@ GoRouter buildRouter({
                               ? 'pilares'
                               : null,
                         ),
-                        child: LessonScriptScreen(
-                          key: ValueKey('script.$id.$part'),
-                          preview: _trainingLaunch(state)?.lessonPreview,
-                          previewTeacher: _trainingLaunch(state)?.teacher,
-                          previewTitle: _trainingTitle(state),
-                          homeHero:
-                              _trainingLaunch(state)?.lessonPreview != null,
-                          title: lessons.texts(language).then((texts) async {
-                            final title = texts.partTitle(id, part);
-                            if (title == null) return null;
-                            final chapter = (await lessons.trail()).lesson(id);
-                            final index =
-                                chapter?.lesson.sections.indexWhere(
-                                  (unit) => unit.id == part,
-                                ) ??
-                                -1;
-                            return index < 0
-                                ? title
-                                : l10n.endgameActivityTitle(index + 1, title);
-                          }),
+                        child: Builder(
+                          builder: (context) => LessonScriptScreen(
+                            onAnalyze: (_) => _openLearningAnalysis(context),
+                            key: ValueKey('script.$id.$part'),
+                            preview: _trainingLaunch(state)?.lessonPreview,
+                            previewTeacher: _trainingLaunch(state)?.teacher,
+                            previewTitle: _trainingTitle(state),
+                            homeHero:
+                                _trainingLaunch(state)?.lessonPreview != null,
+                            title: lessons.texts(language).then((texts) async {
+                              final title = texts.partTitle(id, part);
+                              if (title == null) return null;
+                              final chapter = (await lessons.trail()).lesson(
+                                id,
+                              );
+                              final index =
+                                  chapter?.lesson.sections.indexWhere(
+                                    (unit) => unit.id == part,
+                                  ) ??
+                                  -1;
+                              return index < 0
+                                  ? title
+                                  : l10n.endgameActivityTitle(index + 1, title);
+                            }),
+                          ),
                         ),
                       );
                     },
@@ -2078,3 +2115,15 @@ bool? _endgamesFilter(GoRouterState state) =>
       'forYou' => false,
       _ => null,
     };
+
+void _openLearningAnalysis(BuildContext context) {
+  final launch = context.read<LessonScriptCubit>().analysisLaunch;
+  if (GameRules.fromFen(launch.fen) == null) return;
+  context.push(
+    Routes.learningAnalysisAt(
+      launch.fen,
+      moves: launch.moves,
+      orientation: launch.orientation.name,
+    ),
+  );
+}

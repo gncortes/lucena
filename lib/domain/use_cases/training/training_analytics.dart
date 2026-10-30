@@ -7,6 +7,7 @@ import '../../models/training/training_course.dart';
 import '../../models/training/training_state.dart';
 import '../now.dart';
 import 'training_date.dart';
+import 'training_goal_counts.dart';
 
 export '../../models/training/training_analytics_state.dart';
 
@@ -408,7 +409,7 @@ List<AnalyticsEvent> trainingAnalyticsDiff(
           tempoS: attempt == null
               ? 0
               : now.difference(attempt.started).inSeconds.clamp(0, 2147483647),
-          metasRestantes: day.remaining,
+          metasRestantes: trainingGoalCounts(after).remaining,
           pontos: goal.kind == GoalKind.stars ? attempt?.points : null,
           falaErro: goal.exerciseError?.feedbackShown ?? false,
         ),
@@ -418,7 +419,9 @@ List<AnalyticsEvent> trainingAnalyticsDiff(
       out.add(
         AnalyticsEvents.treinoMetaDobrada(
           curso: course,
-          metasNovas: day.goals.length - before.day!.goals.length,
+          metasNovas:
+              trainingGoalCounts(after).total -
+              trainingGoalCounts(before).total,
         ),
       );
     }
@@ -426,7 +429,7 @@ List<AnalyticsEvent> trainingAnalyticsDiff(
       out.add(
         AnalyticsEvents.treinoDiaCompleto(
           curso: course,
-          metas: day.goals.length,
+          metas: trainingGoalCounts(after).total,
           aulasExtra: day.goals
               .where((g) => g.kind == GoalKind.extraLesson && g.done)
               .length,

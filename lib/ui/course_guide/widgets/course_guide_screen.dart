@@ -1,6 +1,12 @@
 import '../../core/widgets/course/course_navigation_bar.dart';
+import '../../../domain/use_cases/training/training_goal_counts.dart';
+import '../../../domain/use_cases/training/needs_opening_profile.dart';
+import '../../core/keys/training_profile_keys.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../core/theme/canvas_symbols.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/training/training_content.dart';
@@ -17,7 +23,6 @@ import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/course/course_part_header.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/placement_test_card.dart';
 import '../view_models/course_guide_cubit.dart';
 import 'course_guide_copy.dart';
 import '../../course_entry/widgets/course_content_states.dart';
@@ -82,21 +87,26 @@ class CourseGuideScreen extends StatelessWidget {
           toolbarHeight: 64,
           titleSpacing: 0,
           title: Text(title, maxLines: 2, overflow: TextOverflow.ellipsis),
-          leading: BackButton(onPressed: onBack),
+          leading: IconButton(
+            key: CourseGuideKeys.back,
+            onPressed: onBack,
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: const Icon(CanvasSymbols.arrowBack),
+          ),
           actions: showHeaderActions
               ? [
                   IconButton(
                     key: CourseGuideKeys.planAction,
                     onPressed: state.saving ? null : onPlan,
                     tooltip: t.courseGuidePlanAction,
-                    icon: const Icon(Icons.edit_calendar_outlined),
+                    icon: const Icon(CanvasSymbols.editCalendar),
                   ),
                   if (config.hasHelp)
                     IconButton(
                       key: CourseGuideKeys.helpAction,
                       onPressed: onHelp,
                       tooltip: t.courseGuideHelpAction,
-                      icon: const Icon(Icons.info_outline),
+                      icon: const Icon(CanvasSymbols.info),
                     ),
                 ]
               : null,
@@ -142,7 +152,9 @@ class CourseGuideScreen extends StatelessWidget {
         ),
         bottomNavigationBar: CourseNavigationBar(
           selectedIndex: tab.index,
-          remaining: training?.day?.remaining ?? 0,
+          remaining: training == null
+              ? 0
+              : trainingGoalCounts(training).remaining,
           onDestinationSelected: state.saving
               ? null
               : (index) async {
@@ -414,16 +426,47 @@ class _LessonTab extends StatelessWidget {
                 1,
           )
         : partLabel;
+    final needsProfile = needsOpeningProfile(
+      state.training!,
+      state.resources!,
+      lesson,
+    );
+    final resumed = state.resumedLesson?.id == lesson.id;
+    final resumeStage = state.lessonCheckpoint?.step ?? 0;
+    final resumeStageLabel = switch (resumeStage) {
+      0 => t.trainingResumeTheory,
+      1 => t.trainingResumeDemo,
+      _ => t.trainingResumePractice,
+    };
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
         CourseContinueCard(
-          label: lesson.kind == TrainingLessonKind.test
+          key: needsProfile ? TrainingProfileKeys.moment : null,
+          label: needsProfile
+              ? t.trainingProfileMomentLabel(partLabel)
+              : resumed
+              ? t.trainingResumeLabel(sectionLabel, index, resumeStageLabel)
+              : lesson.kind == TrainingLessonKind.test
               ? sectionLabel
               : t.trainingPartLesson(index, sectionLabel),
-          title: lesson.title,
-          summary: lesson.summary,
-          buttonLabel: state.training!.completedLessons.isEmpty
+          title: needsProfile
+              ? t.trainingProfileMomentTitle
+              : trainingMasteryLessonTitle(context, lesson),
+          summary: needsProfile
+              ? t.trainingProfileMomentBody
+              : resumed
+              ? switch (resumeStage) {
+                  0 => t.trainingResumeTheoryBody,
+                  1 => t.trainingResumeDemoBody,
+                  _ => t.trainingResumePracticeBody,
+                }
+              : lesson.summary,
+          buttonLabel: needsProfile
+              ? t.trainingProfileChoose
+              : resumed
+              ? t.homeContinue
+              : state.training!.completedLessons.isEmpty
               ? t.homeHeroStart
               : t.homeContinue,
           buttonKey: CourseGuideKeys.continueButton,
@@ -466,45 +509,32 @@ class _CatalogTabState extends State<_CatalogTab> {
   @override
   void initState() {
     super.initState();
-    final lesson = widget.state.resources!.lessons.firstWhere((l) => l.visible);
-    expanded.add(
-      context.read<CourseGuideCubit>().config.progressKind ==
-              TrainingProgressKind.modulesAndPieces
-          ? lesson.groupId
-          : lesson.partId,
-    );
+    final first = widget.state.resources!.lessons
+        .where((l) => l.visible && l.published)
+        .firstOrNull;
+    if (first != null) expanded.add(first.groupId);
   }
 
   @override
   Widget build(BuildContext context) {
     final data = widget.state.resources!.lessons
-        .where((l) => l.visible)
+        .where((l) => l.visible && l.published)
         .toList();
     final completed = widget.state.training!.completedLessons;
     final config = context.read<CourseGuideCubit>().config;
     final modules =
         config.progressKind == TrainingProgressKind.modulesAndPieces;
-    final sections = modules
-        ? {for (final lesson in data) lesson.groupId: lesson.group}
-        : {for (final lesson in data) lesson.partId: lesson.partTitle};
+    final groups = {for (final lesson in data) lesson.groupId: lesson.group};
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       children: [
-        if (config.hasLevelTest) ...[
-          PlacementTestCard(
-            label: context.l10n.trainingCourseLevelTest,
-            onTap: () => widget.onLevelTest?.call(),
-            tapKey: CourseGuideKeys.levelTest,
-          ),
-          const SizedBox(height: 12),
-        ],
-        for (final (index, part) in sections.entries.indexed) ...[
-          if (expanded.contains(part.key)) ...[
+        for (final (index, group) in groups.entries.indexed) ...[
+          if (!modules || expanded.contains(group.key)) ...[
             if (modules)
               Padding(
                 padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
                 child: Text(
-                  '${context.l10n.trainingModuleLabel(index + 1)} · ${part.value}'
+                  '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}'
                       .toUpperCase(),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     height: 20 / 12,
@@ -513,71 +543,37 @@ class _CatalogTabState extends State<_CatalogTab> {
                 ),
               )
             else
-              CoursePartHeader(
-                label: context.l10n.trainingPartLabel(
-                  courseGuideRoman(index + 1),
-                ),
-                title: part.value,
-                count: context.l10n.trainingCount(
-                  _chapters(data, part.key).length,
-                  _chapters(data, part.key)
-                      .where((id) => _status(id) == CourseItemState.approved)
-                      .length,
+              KeyedSubtree(
+                key: CourseGuideKeys.chapter(group.key),
+                child: CoursePartHeader(
+                  label: context.l10n.trainingChapterLabel(index + 1),
+                  title: group.value,
+                  titleWeight: FontWeight.w500,
+                  padding: EdgeInsets.fromLTRB(4, index == 0 ? 0 : 8, 4, 0),
                 ),
               ),
-            SizedBox(height: modules ? 8 : 12),
-            for (final entry
-                in (modules
-                        ? {
-                            for (final l in data.where(
-                              (l) => l.groupId == part.key,
-                            ))
-                              l.id: l.title,
-                          }
-                        : {
-                            for (final l in data.where(
-                              (l) => l.partId == part.key,
-                            ))
-                              l.groupId: l.group,
-                          })
-                    .entries) ...[
+            const SizedBox(height: 8),
+            for (final (lessonIndex, lesson)
+                in data.where((l) => l.groupId == group.key).indexed) ...[
               CourseItemTile(
-                key: modules
-                    ? CourseGuideKeys.chapterLesson(entry.key)
-                    : CourseGuideKeys.chapter(entry.key),
-                state: modules
-                    ? completed.containsKey(entry.key)
-                          ? CourseItemState.approved
-                          : widget.state.nextLesson?.id == entry.key
+                key: CourseGuideKeys.chapterLesson(lesson.id),
+                state: completed.containsKey(lesson.id)
+                    ? CourseItemState.approved
+                    : widget.state.nextLesson?.id == lesson.id
+                    ? modules
                           ? CourseItemState.next
-                          : CourseItemState.open
-                    : _status(entry.key),
+                          : CourseItemState.started
+                    : CourseItemState.open,
                 title: modules
                     ? context.l10n.trainingLessonLabel(
-                        data
-                                .where((l) => l.groupId == part.key)
-                                .toList()
-                                .indexWhere((l) => l.id == entry.key) +
-                            1,
-                        entry.value,
+                        lessonIndex + 1,
+                        lesson.title,
                       )
-                    : context.l10n.trainingChapterTitle(
-                        _chapters(data, part.key).indexOf(entry.key) + 1,
-                        entry.value,
-                      ),
-                summary: modules
-                    ? data.firstWhere((l) => l.id == entry.key).summary
-                    : data
-                          .where(
-                            (l) =>
-                                l.groupId == entry.key &&
-                                l.kind != TrainingLessonKind.test,
-                          )
-                          .map((l) => l.title)
-                          .join(', '),
-                onTap: () => modules
-                    ? widget.onLesson(data.firstWhere((l) => l.id == entry.key))
-                    : widget.onChapter(entry.key),
+                    : lesson.kind == TrainingLessonKind.test
+                    ? context.l10n.trainingChapterTestTitle
+                    : lesson.title,
+                summary: modules ? lesson.summary : null,
+                onTap: () => widget.onLesson(lesson),
               ),
               const SizedBox(height: 8),
             ],
@@ -586,61 +582,23 @@ class _CatalogTabState extends State<_CatalogTab> {
               padding: const EdgeInsets.only(bottom: 12),
               child: Material(
                 color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                borderRadius: BorderRadius.circular(AppShape.large),
+                borderRadius: BorderRadius.circular(AppShape.card),
                 child: ListTile(
-                  key: CourseGuideKeys.catalogPart(part.key),
-                  title: modules
-                      ? Text(
-                          '${context.l10n.trainingModuleLabel(index + 1)} · ${part.value}',
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              context.l10n.trainingPartLabel(
-                                courseGuideRoman(index + 1),
-                              ),
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary,
-                                  ),
-                            ),
-                            Text(part.value),
-                          ],
-                        ),
+                  key: CourseGuideKeys.catalogPart(group.key),
+                  title: Text(
+                    '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}',
+                  ),
                   trailing: const Icon(
                     Icons.expand_more,
                     size: AppIconSize.standard,
                   ),
-                  onTap: () => setState(() => expanded.add(part.key)),
+                  onTap: () => setState(() => expanded.add(group.key)),
                 ),
               ),
             ),
         ],
       ],
     );
-  }
-
-  List<String> _chapters(List<TrainingLesson> lessons, String part) => lessons
-      .where((l) => l.partId == part)
-      .map((l) => l.groupId)
-      .toSet()
-      .toList();
-
-  CourseItemState _status(String chapter) {
-    final lessons = widget.state.resources!.lessons
-        .where((l) => l.groupId == chapter)
-        .toList();
-    final done = lessons
-        .where((l) => widget.state.training!.completedLessons.containsKey(l.id))
-        .length;
-    return done == lessons.length
-        ? CourseItemState.approved
-        : done > 0
-        ? CourseItemState.started
-        : CourseItemState.open;
   }
 }
 

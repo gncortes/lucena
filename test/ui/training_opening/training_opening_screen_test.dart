@@ -18,8 +18,10 @@ import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
-import 'package:lucena/ui/core/widgets/teacher_speech.dart';
-import 'package:lucena/ui/core/widgets/exercise_actions.dart';
+
+import '../training_exercise/training_exercise_screen_test.dart'
+    show expectCanvasBlock;
+
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import 'package:lucena/ui/training_opening/view_models/training_opening_cubit.dart';
 import 'package:lucena/ui/training_opening/widgets/training_opening_screen.dart';
@@ -171,7 +173,7 @@ void main() {
         );
         expect(
           tester
-              .widget<ExerciseHintButton>(find.byKey(TrainingKeys.exerciseHint))
+              .widget<IconButton>(find.byKey(TrainingKeys.exerciseHint))
               .onPressed,
           isNotNull,
         );
@@ -202,6 +204,9 @@ void main() {
   testWidgets(
     'script notation uses authored fullmove and review restores final FEN',
     (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(412, 917);
+      addTearDown(tester.view.reset);
       await prepare(scripted: scriptedTrecho());
       await tester.pumpWidget(
         TestApp(
@@ -272,31 +277,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(
-        tester.getSize(find.byKey(TrainingKeys.openingBoard)).width,
-        size.width > size.height ? lessThan(size.width) : size.width,
-      );
       void expectCenteredBoard() {
         final board = tester.getRect(find.byKey(TrainingKeys.openingBoard));
-        expect(
-          board.width,
-          size.width > size.height ? lessThan(size.width) : size.width,
-        );
         expect(board.width, greaterThan(0));
-        expect(board.center.dy, closeTo((52 + size.height - 24) / 2, .01));
-        final speech = tester.getRect(find.byType(TeacherSpeech));
-        expect(
-          Theme.of(tester.element(find.byType(TeacherSpeech)))
-              .textTheme
-              .bodyLarge!
-              .fontSize,
-          14,
-        );
-        expect(
-          speech.bottom,
-          closeTo(board.top - (size.height < 780 ? 0 : 8), .01),
-        );
-        expect(speech.top, greaterThanOrEqualTo(52 + 64));
+        expectCanvasBlock(tester, size, TrainingKeys.openingBoard);
       }
 
       expectCenteredBoard();
@@ -304,24 +288,24 @@ void main() {
           .element(find.byKey(TrainingKeys.openingBoard))
           .read<TrainingOpeningCubit>();
       expect(
-        tester.widget<ExerciseActions>(find.byType(ExerciseActions)).navigation,
-        ExerciseNavigation.start,
+        tester.widget<IconButton>(find.byKey(TrainingKeys.prevMove)).onPressed,
+        isNull,
       );
       expect(
-        tester.widget<ExerciseActions>(find.byType(ExerciseActions)).onNextMove,
+        tester.widget<IconButton>(find.byKey(TrainingKeys.nextMove)).onPressed,
         isNull,
       );
       await cubit.play('e2e4');
       await tester.pumpAndSettle();
       expect(
-        tester.widget<ExerciseActions>(find.byType(ExerciseActions)).navigation,
-        ExerciseNavigation.end,
+        tester.widget<IconButton>(find.byKey(TrainingKeys.prevMove)).onPressed,
+        isNotNull,
       );
       await tester.tap(find.byKey(TrainingKeys.prevMove));
       await tester.pumpAndSettle();
       expect(
-        tester.widget<ExerciseActions>(find.byType(ExerciseActions)).navigation,
-        ExerciseNavigation.middle,
+        tester.widget<IconButton>(find.byKey(TrainingKeys.nextMove)).onPressed,
+        isNotNull,
       );
       expect(
         tester

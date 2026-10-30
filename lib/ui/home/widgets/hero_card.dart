@@ -15,6 +15,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
@@ -237,6 +238,7 @@ class _HeroLayout extends StatelessWidget {
       style: theme.textTheme.labelMedium?.copyWith(
         color: on.withValues(alpha: 0.85),
         fontWeight: AppWeight.strong,
+        letterSpacing: 0,
       ),
     );
     final avatar = data.avatar;
@@ -346,7 +348,8 @@ class _HeroLayout extends StatelessWidget {
                     ),
                     onPressed: data.onPressed,
                     icon: const Icon(
-                      Icons.play_arrow_rounded,
+                      CanvasSymbols.playArrow,
+                      fill: 1,
                       size: AppIconSize.button,
                     ),
                     label: Text(data.action),

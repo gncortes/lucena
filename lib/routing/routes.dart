@@ -9,6 +9,19 @@ import '../domain/models/linked_lesson.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
+  static const learningAnalysis = '/learning-analysis';
+  static String learningAnalysisAt(
+    String fen, {
+    List<String> moves = const [],
+    String orientation = 'white',
+  }) => Uri(
+    path: learningAnalysis,
+    queryParameters: {
+      'fen': fen,
+      'moves': moves.join(','),
+      'view': orientation,
+    },
+  ).toString();
   static const boardControls = '/board-controls';
   static const home = '/';
   static const invalidLink = '/invalid-link';

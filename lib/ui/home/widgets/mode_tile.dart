@@ -114,6 +114,7 @@ class ModeTile extends StatelessWidget {
     final tone = shortcut.tone(colors);
     final body = theme.textTheme.bodySmall?.copyWith(
       color: colors.onSurfaceVariant,
+      letterSpacing: 0,
     );
     return SizedBox(
       height: height,
@@ -139,6 +140,7 @@ class ModeTile extends StatelessWidget {
                   ),
                   child: Icon(
                     shortcut.icon,
+                    fill: 1,
                     size: AppIconSize.standard,
                     color: tone.foreground,
                   ),
@@ -151,6 +153,7 @@ class ModeTile extends StatelessWidget {
                       maxLines: 1,
                       style: context.cardTitle?.copyWith(
                         fontWeight: AppWeight.heavy,
+                        letterSpacing: 0,
                       ),
                     ),
                     // Sempre a altura de duas linhas: o título fica na

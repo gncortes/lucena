@@ -135,9 +135,10 @@ void main() {
           startsWith('Aula 1 · '),
         );
       } else {
-        final list = tester.widget<ListView>(find.byType(ListView));
-        final delegate = list.childrenDelegate as SliverChildListDelegate;
-        expect(delegate.children.length, training.day!.goals.length + 1);
+        expect(
+          find.byType(CourseItemTile, skipOffstage: false),
+          findsNWidgets(training.day!.goals.length),
+        );
         final speech = find.byType(TeacherSpeech);
         expect(tester.widget<TeacherSpeech>(speech).avatarSize, 40);
         expect(

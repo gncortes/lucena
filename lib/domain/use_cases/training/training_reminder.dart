@@ -2,6 +2,7 @@ import '../../models/training/training_state.dart';
 import '../now.dart';
 import 'reminder_text.dart';
 import 'training_date.dart';
+import 'training_goal_counts.dart';
 
 final class TrainingReminder {
   const TrainingReminder(this.at, this.text);
@@ -18,7 +19,10 @@ TrainingReminder? trainingReminder(TrainingState state, Now now) {
       !day.plan.reminderOn) {
     return null;
   }
-  final text = reminderText(day);
+  final text = reminderText(
+    day,
+    remaining: trainingGoalCounts(state).remaining,
+  );
   if (text == null) return null;
   final scheduled = DateTime(
     at.year,

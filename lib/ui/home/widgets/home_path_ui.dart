@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/canvas_symbols.dart';
+
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/rating_level.dart';
 import '../../../domain/use_cases/home_suggestion.dart';
@@ -13,13 +15,13 @@ import '../../core/l10n/l10n.dart';
 extension HomePathUi on HomePath {
   IconData get icon => switch (this) {
     HomePath.learn => Icons.school_outlined,
-    HomePath.journey => Icons.hiking_rounded,
+    HomePath.journey => CanvasSymbols.hiking,
     HomePath.forYou => Icons.route_outlined,
-    HomePath.endgames => Icons.auto_stories_outlined,
+    HomePath.endgames => CanvasSymbols.autoStories,
     HomePath.speedrun => Icons.timer_outlined,
-    HomePath.train => Icons.grid_view_rounded,
-    HomePath.race => Icons.extension,
-    HomePath.stars => Icons.star_rounded,
+    HomePath.train => CanvasSymbols.gridView,
+    HomePath.race => CanvasSymbols.extensionIcon,
+    HomePath.stars => CanvasSymbols.star,
   };
 
   String title(AppLocalizations l10n) => switch (this) {

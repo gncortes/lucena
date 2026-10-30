@@ -1,6 +1,11 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class TrainingKeys {
+  static const progressLevelTest = Key('training.progressLevelTest');
+  static const openingPage = Key('training.openingPage');
+  static const exercisePage = Key('training.exercisePage');
+  static const exerciseAnalyze = Key('training.exerciseAnalyze');
+  static const progressEmpty = Key('training.progressEmpty');
   static const testLeaveDialog = Key('training.testLeaveDialog');
   static const testContinue = Key('training.testContinue');
   static const testLeave = Key('training.testLeave');
@@ -67,6 +72,13 @@ abstract final class TrainingKeys {
   static Key moduleRow(String id) => Key('training.module.$id');
   static Key pieceStars(String piece) => Key('training.pieceStars.$piece');
   static const tourNext = Key('training.tourNext');
+  static const themeScroll = Key('training.themeScroll');
+  static const themeLegend = Key('training.themeLegend');
+  static const themeExercisesHeading = Key('training.themeExercisesHeading');
+  static Key themeExercise(int index) => Key('training.themeExercise.$index');
+  static Key themeThumbnail(int index) => Key('training.themeThumbnail.$index');
+  static Key themeResult(int index) => Key('training.themeResult.$index');
+  static Key themeRedo(int index) => Key('training.themeRedo.$index');
   static const themeScreen = Key('training.themeScreen');
   static const themeChart = Key('training.themeChart');
   static const themeBack = Key('training.themeBack');

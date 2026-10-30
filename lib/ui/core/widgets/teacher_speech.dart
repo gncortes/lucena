@@ -3,6 +3,9 @@ import 'dart:ui' show BoxHeightStyle;
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
+
+import '../theme/canvas_symbols.dart';
+
 import 'package:intl/intl.dart' show Bidi;
 
 import 'speech_balloon.dart';
@@ -63,6 +66,9 @@ class TeacherSpeech extends StatelessWidget {
     this.part = TeacherSpeechPart.all,
     this.explanation,
     this.lessonV2 = false,
+    this.canvasHeader = false,
+    this.canvasTrainingBalloon = false,
+    this.showSpeedBadge = true,
     this.headerAvatar,
     this.avatarHeroTag,
     this.onVariation,
@@ -97,6 +103,9 @@ class TeacherSpeech extends StatelessWidget {
   final bool unifiedSound;
   final ExplanationPayload? explanation;
   final bool lessonV2;
+  final bool canvasHeader;
+  final bool canvasTrainingBalloon;
+  final bool showSpeedBadge;
 
   /// Na lição V2, o retrato do cabeçalho maior que o padrão (28), com raio 6
   /// (lição roteirizada, T70).
@@ -273,7 +282,9 @@ class TeacherSpeech extends StatelessWidget {
     return Row(
       children: [
         Expanded(child: _name(context)),
+        if (canvasHeader && action != null) const SizedBox(width: 12),
         ?action,
+        if (canvasHeader) const SizedBox(width: 12),
         BlocBuilder<SpeechCubit, SpeechState>(
           bloc: speech,
           buildWhen: (a, b) =>
@@ -288,6 +299,8 @@ class TeacherSpeech extends StatelessWidget {
                   state.settings.enabled &&
                   state.availableFor(language);
               return LessonVoiceButton(
+                canvasLayout: canvasHeader,
+                showSpeedBadge: showSpeedBadge,
                 audible: audible,
                 speed: state.settings.speed,
                 onPressed:
@@ -317,7 +330,7 @@ class TeacherSpeech extends StatelessWidget {
               children: [
                 // A velocidade da voz: cada toque passa para a próxima.
                 // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
-                if (soundEnabled && state.settings.enabled)
+                if (showSpeedBadge && soundEnabled && state.settings.enabled)
                   TextButton(
                     key: VoiceKeys.speedButton,
                     style: TextButton.styleFrom(
@@ -425,7 +438,8 @@ class TeacherSpeech extends StatelessWidget {
           ] else ...[
             // O vão de 6 da ponta ao retrato vem do balão.
             _headerRow(context, avatar),
-            if (unifiedSound) const SizedBox(height: 2),
+            if (unifiedSound || canvasTrainingBalloon)
+              const SizedBox(height: 2),
             _closable(context),
           ],
         ],
@@ -460,9 +474,11 @@ class TeacherSpeech extends StatelessWidget {
       children: [
         avatar,
         SizedBox(
-          width: lessonV2
+          width: canvasHeader
+              ? 12
+              : lessonV2
               ? 8
-              : trainingLayout || unifiedSound
+              : trainingLayout || unifiedSound || canvasTrainingBalloon
               ? 12
               : 10,
         ),
@@ -474,7 +490,11 @@ class TeacherSpeech extends StatelessWidget {
     final avatarSize = headerAvatar ?? 0;
     return SizedBox(
       key: ViktorSheetKeys.header,
-      height: avatarSize > 48 ? avatarSize : 48,
+      height: canvasHeader
+          ? 40
+          : avatarSize > 48
+          ? avatarSize
+          : 48,
       child: row,
     );
   }
@@ -516,6 +536,7 @@ class TeacherSpeech extends StatelessWidget {
                 fontWeight: bubbleAboveHeader
                     ? FontWeight.w700
                     : FontWeight.w500,
+                letterSpacing: canvasTrainingBalloon ? 0 : null,
               ),
     );
   }
@@ -753,8 +774,17 @@ class TeacherSpeech extends StatelessWidget {
     final colors = theme.colorScheme;
     // Corpo da lição V2: 15/22,5, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
-      fontSize: section ? 15 : null,
-      height: section ? 1.5 : null,
+      fontSize: canvasTrainingBalloon
+          ? 14
+          : section
+          ? 15
+          : null,
+      height: canvasTrainingBalloon
+          ? 20 / 14
+          : section
+          ? 1.5
+          : null,
+      letterSpacing: canvasTrainingBalloon ? .25 : null,
       fontWeight: section ? FontWeight.w400 : null,
       color: section ? colors.onSurface : null,
     );
@@ -956,7 +986,9 @@ class TeacherSpeech extends StatelessWidget {
     // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
     final stacked = _stackedIn(context);
     return SpeechBalloon(
-      padding: unifiedSound
+      padding: canvasTrainingBalloon
+          ? const EdgeInsetsDirectional.all(16)
+          : unifiedSound
           ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 12)
           : trainingLayout && MediaQuery.sizeOf(context).height < 780
           ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 6)
@@ -1505,10 +1537,14 @@ class LessonVoiceButton extends StatelessWidget {
     required this.audible,
     required this.speed,
     required this.onPressed,
+    this.canvasLayout = false,
+    this.showSpeedBadge = true,
     super.key,
   });
 
   final bool audible;
+  final bool canvasLayout;
+  final bool showSpeedBadge;
   final double speed;
   final VoidCallback? onPressed;
 
@@ -1519,26 +1555,40 @@ class LessonVoiceButton extends StatelessWidget {
     return IconButton(
       key: VoiceKeys.speakButton,
       color: colors.onSurfaceVariant,
-      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      constraints: canvasLayout
+          ? const BoxConstraints.tightFor(width: 44, height: 44)
+          : const BoxConstraints(minWidth: 48, minHeight: 48),
+      padding: canvasLayout ? EdgeInsets.zero : null,
+      style: canvasLayout
+          ? IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            )
+          : null,
       tooltip: audible
           ? l10n.lessonSoundOn(l10n.voiceSpeedValue(speed))
           : l10n.lessonSoundOff,
       onPressed: onPressed,
       icon: SizedBox(
-        width: 32,
-        height: 32,
+        width: canvasLayout ? 44 : 32,
+        height: canvasLayout ? 44 : 32,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
             if (audible)
-              const Icon(Icons.volume_up_outlined)
+              Icon(
+                canvasLayout
+                    ? CanvasSymbols.volumeUp
+                    : Icons.volume_up_outlined,
+              )
+            else if (canvasLayout)
+              const Icon(CanvasSymbols.volumeOff)
             else
               const SoundOffIcon(),
-            if (audible)
+            if (audible && showSpeedBadge)
               PositionedDirectional(
-                start: -4,
-                top: -4,
+                start: canvasLayout ? 0 : -4,
+                top: canvasLayout ? 0 : -4,
                 child: ExcludeSemantics(
                   child: Container(
                     height: 16,

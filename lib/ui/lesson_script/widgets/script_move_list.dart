@@ -196,7 +196,7 @@ class ScriptMoveList extends StatelessWidget {
               ),
             ),
           Semantics(
-            label: localizedSan(context.l10n, entry.san),
+            label: entry.displaySan ?? localizedSan(context.l10n, entry.san),
             button: true,
             selected: selected,
             excludeSemantics: true,
@@ -215,7 +215,7 @@ class ScriptMoveList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppShape.small),
                 ),
                 child: Text(
-                  '${localizedSan(context.l10n, entry.san)}${entry.symbol ?? ''}',
+                  '${entry.displaySan ?? localizedSan(context.l10n, entry.san)}${entry.symbol ?? ''}',
                   style: style.copyWith(
                     color: selected ? null : _symbolColor(entry.symbol),
                   ),

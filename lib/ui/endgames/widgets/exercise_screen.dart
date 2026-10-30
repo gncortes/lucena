@@ -31,6 +31,7 @@ import '../../core/widgets/script_speech_sheet.dart';
 import '../../core/widgets/speech_balloon.dart';
 import '../../core/widgets/square_flash.dart';
 import '../../core/widgets/time_display.dart';
+import '../../core/widgets/training_canvas_layout.dart';
 import '../../../domain/use_cases/step_clock.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
@@ -77,6 +78,35 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   ChessboardController? _board;
   bool _allowExit = false, _askingExit = false;
 
+  Future<void> _submitTestMove(Move move) async {
+    final cubit = context.read<ExerciseCubit>();
+    final exerciseId = cubit.state.exercise?.id;
+    try {
+      await cubit.submitTestMove(move);
+    } on Object {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+      );
+      while (mounted &&
+          !cubit.isClosed &&
+          cubit.state.exercise?.id == exerciseId &&
+          cubit.state.testAnswerPending) {
+        await Future<void>.delayed(AppMotion.persistenceRetry);
+        if (!mounted ||
+            cubit.isClosed ||
+            cubit.state.exercise?.id != exerciseId) {
+          return;
+        }
+        try {
+          await cubit.submitTestMove(move);
+        } on Object {
+          // Keep the original answer and retry; input remains disabled.
+        }
+      }
+    }
+  }
+
   Future<void> _requestExit() async {
     if (_askingExit) return;
     final cubit = context.read<ExerciseCubit>();
@@ -94,7 +124,11 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         key: TrainingKeys.testLeaveDialog,
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         title: Text(t.trainingTestLeaveTitle),
-        content: Text(t.trainingTestLeaveBody(done, cubit.state.number)),
+        content: Text(
+          done == 0
+              ? t.testCanvasLeaveEmptyBody
+              : t.trainingTestLeaveBody(done, cubit.state.number),
+        ),
         actions: [
           TextButton(
             key: TrainingKeys.testContinue,
@@ -199,6 +233,18 @@ class _ExerciseScreenState extends State<ExerciseScreen>
   void _onState(BuildContext context, ExerciseState state) {
     final previous = _previous;
     _previous = state;
+    if (widget.trainingTest &&
+        !state.locked &&
+        state.phase == ExercisePhase.done &&
+        previous.phase != ExercisePhase.done) {
+      final next = state.nextExercise;
+      context.pushReplacement(
+        next == null
+            ? Routes.endgameExercisesDone(state.lesson!.id)
+            : Routes.endgameExercise(state.lesson!.id, next),
+      );
+      return;
+    }
     // Resolvendo: o cronômetro já com o tempo do exercício (ao reabrir o
     // app, o tabuleiro nasce aqui, antes do primeiro tique).
     if (state.phase != ExercisePhase.done) {
@@ -251,6 +297,8 @@ class _ExerciseScreenState extends State<ExerciseScreen>
             key: ExerciseKeys.screen,
             // Só o número: o título da aula, longo, ficou na tela dela.
             appBar: LucenaAppBar(
+              toolbarHeight: widget.trainingTest ? 64 : null,
+              centerTitle: widget.trainingTest ? true : null,
               leading: widget.trainingTest
                   ? BackButton(
                       key: TrainingKeys.testBack,
@@ -260,20 +308,22 @@ class _ExerciseScreenState extends State<ExerciseScreen>
               title: lesson == null
                   ? null
                   : Text(
-                      l10n.exerciseTitle(state.number, state.count),
+                      widget.trainingTest
+                          ? l10n.testCanvasCounter(state.number, state.count)
+                          : l10n.exerciseTitle(state.number, state.count),
                       key: ExerciseKeys.counter,
                     ),
               // O que o exercício vale agora: dourada (3), prata (2) ou
               // bronze (1); cada erro ou dica desce um degrau, e a vazia fica
               // vazia até o fim.
               actions: [
-                if (state.exercise case final exercise?)
+                if (!widget.trainingTest && state.exercise != null)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(
                       end: AppSpacing.md,
                     ),
                     child: Semantics(
-                      label: _starLabel(l10n, state, exercise),
+                      label: _starLabel(l10n, state, state.exercise!),
                       excludeSemantics: true,
                       // Neutra, na cor do texto (canvas PropV2ExA*): cheia se
                       // ainda vale pontos, vazia se não.
@@ -326,6 +376,25 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     final boardSettings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
+    if (widget.trainingTest && !state.locked && state.viktor != null) {
+      return Column(
+        children: [
+          Expanded(
+            child: TrainingCanvasPage(
+              pageKey: ExerciseKeys.page,
+              teacher: state.viktor!,
+              text: state.side == Side.white
+                  ? l10n.testCanvasWhite
+                  : l10n.testCanvasBlack,
+              boardBuilder: (size) =>
+                  _boardArea(context, state, boardSettings, size: size),
+              notation: const SizedBox(height: 40),
+            ),
+          ),
+          const TrainingCanvasFooter(),
+        ],
+      );
+    }
     final hide = context.select(
       (SettingsCubit c) => c.state?.exerciseHiddenMoves ?? false,
     );
@@ -655,7 +724,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                         ),
                     },
                     onMove: (move, {viaDragAndDrop}) =>
-                        context.read<ExerciseCubit>().play(move),
+                        widget.trainingTest && !state.locked
+                        ? _submitTestMove(move)
+                        : context.read<ExerciseCubit>().play(move),
                   ),
                 ),
               ),

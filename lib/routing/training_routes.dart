@@ -1,4 +1,6 @@
 import 'training_lesson_scope.dart';
+import '../data/repositories/placement/placement_repository.dart';
+import '../data/repositories/school/school_progress_repository.dart';
 
 import 'dart:async';
 
@@ -20,6 +22,9 @@ import '../domain/models/training/training_content.dart';
 import '../domain/models/training/training_course.dart';
 import '../domain/models/training/training_course_config.dart';
 import '../domain/use_cases/now.dart';
+import '../domain/use_cases/training/needs_opening_profile.dart';
+import '../ui/training_profile/widgets/training_profile_screen.dart';
+import '../ui/training_profile/widgets/training_profile_why_screen.dart';
 import '../ui/core/widgets/reload_on_return.dart';
 import '../ui/core/analytics/analytics_context.dart';
 import '../ui/core/l10n/l10n.dart';
@@ -63,6 +68,27 @@ GoRoute trainingRoute() => GoRoute(
     origin: state.uri.queryParameters['origem'] == 'home' ? 'home' : 'toque',
   ),
   routes: [
+    GoRoute(
+      path: 'profile',
+      builder: (context, state) => _guide(
+        _Profile(startPart: state.uri.queryParameters['part']),
+        config: _config(state),
+      ),
+      routes: [
+        GoRoute(
+          path: 'why',
+          builder: (context, state) => TrainingProfileWhyScreen(
+            openingName: state.uri.queryParameters['name'] ?? '',
+            onClose: () => _back(context),
+          ),
+        ),
+        GoRoute(
+          path: 'why-london',
+          builder: (context, state) =>
+              TrainingProfileWhyScreen(onClose: () => _back(context)),
+        ),
+      ],
+    ),
     GoRoute(
       path: 'content/:chapter',
       builder: (context, state) => CourseEntryGate(
@@ -153,6 +179,7 @@ GoRoute trainingRoute() => GoRoute(
             config: _config(state),
             theme: state.pathParameters['theme']!,
             goalKey: state.uri.queryParameters['goal'],
+            practiceExerciseId: state.uri.queryParameters['practice'],
             launch: state.extra is TrainingLaunch
                 ? state.extra as TrainingLaunch
                 : null,
@@ -213,6 +240,8 @@ Widget _guide(
         characters: context.read<CharacterRepository>(),
         testLessons: trainingTestRepository(context, config.indexSource),
         testProgress: context.read<EndgameProgressRepository>(),
+        placement: context.read<PlacementRepository>(),
+        schoolProgress: context.read<SchoolProgressRepository>(),
         beforeLoad: () async {
           final history = context.read<TrainingHistorySource>();
           final repository = context.read<course_training.TrainingRepository>();
@@ -260,8 +289,22 @@ void _lesson(
   BuildContext context,
   TrainingLesson lesson, {
   String origin = 'treino_guia',
+  bool replace = false,
 }) {
   final guide = context.read<CourseGuideCubit>();
+  if (needsOpeningProfile(
+    guide.state.training!,
+    guide.state.resources!,
+    lesson,
+  )) {
+    context.push(
+      Uri(
+        path: '${Routes.training(guide.config.course.name)}/profile',
+        queryParameters: {'part': lesson.partId},
+      ).toString(),
+    );
+    return;
+  }
   final lessons =
       guide.state.resources?.lessons.where((l) => l.visible).toList() ??
       const <TrainingLesson>[];
@@ -278,16 +321,58 @@ void _lesson(
       );
     }
   }
-  context.push(
-    Uri(
-      path:
-          '${Routes.training(context.read<CourseGuideCubit>().config.course.name)}/content/${lesson.groupId.isEmpty ? 'entry' : lesson.groupId}',
-      queryParameters: {
-        'destination': trainingLessonDestination(lesson, origin: origin),
-        'title': lesson.title,
-      },
-    ).toString(),
-    extra: lesson,
+  final destination = Uri(
+    path:
+        '${Routes.training(context.read<CourseGuideCubit>().config.course.name)}/content/${lesson.groupId.isEmpty ? 'entry' : lesson.groupId}',
+    queryParameters: {
+      'destination': trainingLessonDestination(lesson, origin: origin),
+      'title': lesson.title,
+    },
+  ).toString();
+  if (replace) {
+    context.pushReplacement(destination, extra: lesson);
+  } else {
+    context.push(destination, extra: lesson);
+  }
+}
+
+class _Profile extends StatelessWidget {
+  const _Profile({this.startPart});
+  final String? startPart;
+
+  @override
+  Widget build(BuildContext context) => TrainingProfileScreen(
+    startPart: startPart,
+    onBack: () => _back(context),
+    onWhyLondon: () => context.push(
+      Uri(
+        path:
+            '${Routes.training(context.read<CourseGuideCubit>().config.course.name)}/profile/why-london',
+        queryParameters: {'part': ?startPart},
+      ).toString(),
+    ),
+    onWhyUnavailable: (name) => context.push(
+      Uri(
+        path:
+            '${Routes.training(context.read<CourseGuideCubit>().config.course.name)}/profile/why',
+        queryParameters: {'part': ?startPart, 'name': name},
+      ).toString(),
+    ),
+    onChosen: () {
+      final cubit = context.read<CourseGuideCubit>();
+      final lessons = cubit.state.resources!.lessons.where(
+        (lesson) =>
+            lesson.kind == TrainingLessonKind.opening &&
+            lesson.visible &&
+            lesson.published &&
+            (lesson.openingProfile == null ||
+                lesson.openingProfile == cubit.state.training!.openingProfile),
+      );
+      final lesson =
+          lessons.where((l) => l.partId == startPart).firstOrNull ??
+          lessons.where((l) => l.inCourseOrder).firstOrNull;
+      if (lesson != null) _lesson(context, lesson, replace: true);
+    },
   );
 }
 
@@ -422,6 +507,11 @@ class _Guide extends StatelessWidget {
             ? null
             : TrainingThemeScreen(
                 lessonId: theme!,
+                onExercise: (exercise) => context.push(
+                  Uri.parse(Routes.trainingExercise(course, theme!))
+                      .replace(queryParameters: {'practice': exercise.id})
+                      .toString(),
+                ),
                 onBack: () => _back(context),
                 embedded: true,
               ),
@@ -457,6 +547,7 @@ class _ExerciseDestination extends StatefulWidget {
     required this.config,
     required this.theme,
     this.goalKey,
+    this.practiceExerciseId,
     this.opening = false,
     this.fromList = false,
     this.launch,
@@ -465,6 +556,7 @@ class _ExerciseDestination extends StatefulWidget {
   final String theme;
   final TrainingCourseConfig config;
   final String? goalKey;
+  final String? practiceExerciseId;
   final String? partId;
   final bool opening, fromList;
   final TrainingLaunch? launch;
@@ -507,6 +599,23 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
         .where((c) => c.id == Character.masterId)
         .firstOrNull;
     if (lesson == null || teacher == null) return null;
+    if (widget.practiceExerciseId != null) {
+      final id = widget.practiceExerciseId;
+      if (!(state.cycles[widget.theme]?.days.any((d) => d.exerciseId == id) ??
+              false) ||
+          !(resources.banks[widget.theme]?.any((e) => e.id == id) ?? false)) {
+        return null;
+      }
+      return (
+        goal: TrainingGoal(
+          kind: GoalKind.exercise,
+          ref: widget.theme,
+          itemId: id,
+        ),
+        title: lesson.title,
+        teacher: teacher,
+      );
+    }
     if (goal == null && !(widget.opening && widget.partId != null)) return null;
     return (
       goal: goal ?? TrainingGoal(kind: GoalKind.openings, ref: widget.theme),
@@ -519,6 +628,16 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
     if (_finishing) return;
     _finishing = true;
     final router = GoRouter.of(context);
+    if (widget.practiceExerciseId != null) {
+      if (router.canPop()) {
+        router.pop();
+      } else {
+        router.go(
+          Routes.trainingTheme(widget.config.course.name, widget.theme),
+        );
+      }
+      return;
+    }
     try {
       await context.read<course_training.TrainingRepository>().update(
         widget.config.course,
@@ -585,6 +704,10 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
           config: widget.config,
           now: context.read<Now>(),
           goalKey: data.goal.key,
+          practiceTheme: widget.practiceExerciseId == null
+              ? null
+              : widget.theme,
+          practiceExerciseId: widget.practiceExerciseId,
           title: data.title,
           teacher: data.teacher,
           onNextGoal: _finish,

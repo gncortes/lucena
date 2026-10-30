@@ -22,6 +22,25 @@ class AppColors extends ThemeExtension<AppColors> {
 
   /// Completed/missed cycle days (Canvas T85, the four cycle endings).
   static const trainingDayCorrect = Color(0xff2e6b45);
+  static const trainingChartGrid = Color(0xffe2e4e9);
+  static const trainingCanvasSurface = Color(0xfff5f7f4);
+  static const trainingAnalysisPrimary = Color(0xff24508f);
+  static const trainingAnalysisSelected = Color(0xffdce4fc);
+  static const trainingAnalysisHistory = Color(0xffe7eaf0);
+  static const trainingAnalysisDivider = Color(0xffc5c6ce);
+  static const trainingAnalysisDark = Color(0xff272727);
+  static const trainingAnalysisSkeleton = Color(0xffe1e3e6);
+  static const trainingCanvasInk = Color(0xff1a1b21);
+  static const trainingCanvasSecondary = Color(0xff44464f);
+  static const trainingCanvasMuted = Color(0xff757680);
+  static const trainingAnalysisInactive = Color(0xffb4b5ba);
+  static const trainingSolutionArrow = Color(0xcc15781b);
+  static const trainingFabSurface = Color(0xfff9f9ff);
+  static const trainingFabShadowUmbra = Color(0x4d000000);
+  static const trainingFabShadowPenumbra = Color(0x26000000);
+  static const trainingFabShadow = Color(0x73000000);
+  static const trainingDisabledInk = Color(0x611a1b21);
+  static const trainingCanvasOutline = Color(0xff74777f);
   static const trainingHintSurface = Color(0xfffbf8ff);
   static const trainingDayWrong = Color(0xffb3261e);
   static const trainingMasteryDeveloping = Color(0xff9a6b00);

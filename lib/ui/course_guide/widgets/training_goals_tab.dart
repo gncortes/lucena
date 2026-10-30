@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../domain/use_cases/training/training_goal_counts.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/training/day_goals.dart';
@@ -36,6 +39,7 @@ class TrainingGoalsTab extends StatelessWidget {
       final day = state.training?.day;
       if (day == null) return const SizedBox.shrink();
       final t = context.l10n;
+      final counts = trainingGoalCounts(state.training!);
       final cubit = context.read<CourseGuideCubit>();
       final extra = day.goals.any((g) => g.kind == GoalKind.extraLesson);
       final offer =
@@ -51,8 +55,7 @@ class TrainingGoalsTab extends StatelessWidget {
           state.training!.cycles.isEmpty &&
           state.training!.openings.isEmpty;
       final sections = cubit.config.sections;
-      final contents = <Widget>[];
-      if (day.goals.any(
+      final hasOfflineLesson = day.goals.any(
         (goal) =>
             !goal.done &&
             (goal.kind == GoalKind.lesson ||
@@ -62,7 +65,17 @@ class TrainingGoalsTab extends StatelessWidget {
                   lesson.id == goal.ref &&
                   state.resources!.offlineChapters.contains(lesson.groupId),
             ),
-      )) {
+      );
+      final introductorySpacing =
+          !hasOfflineLesson &&
+          cubit.config.progressKind != TrainingProgressKind.modulesAndPieces &&
+          (!day.studyDay || state.training!.completedLessons.length == 1);
+      final goalGap = introductorySpacing ? 12.0 : 8.0;
+      final schoolFirstLessons =
+          cubit.config.progressKind == TrainingProgressKind.modulesAndPieces &&
+          state.training!.completedLessons.isEmpty;
+      final contents = <Widget>[];
+      if (hasOfflineLesson) {
         contents.add(const TrainingGoalsOfflineNotice());
       }
       if (offer) {
@@ -70,6 +83,7 @@ class TrainingGoalsTab extends StatelessWidget {
           _panel(
             context,
             highlight: true,
+            spacing: 8,
             key: TrainingKeys.doubleOffer,
             children: [
               Text(
@@ -126,6 +140,10 @@ class TrainingGoalsTab extends StatelessWidget {
                     ),
                   ),
                   child: TeacherSpeech(
+                    canvasHeader: true,
+                    canvasTrainingBalloon: true,
+                    unifiedSound: true,
+                    showSpeedBadge: false,
                     teacher: state.teacher!,
                     avatarSize: 40,
                     text: courseGuideCopy(
@@ -151,7 +169,7 @@ class TrainingGoalsTab extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    t.trainingGoalsLeft(day.remaining, day.goals.length),
+                    t.trainingGoalsLeft(counts.remaining, counts.total),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -161,10 +179,11 @@ class TrainingGoalsTab extends StatelessWidget {
               SizedBox(
                 height: 6,
                 child: AnimatedProgress(
+                  roundValue: true,
                   backgroundColor: Theme.of(context).colorScheme.outlineVariant,
-                  value: day.goals.isEmpty
+                  value: counts.total == 0
                       ? 0
-                      : (day.goals.length - day.remaining) / day.goals.length,
+                      : (counts.total - counts.remaining) / counts.total,
                 ),
               ),
               _planLine(context, day),
@@ -197,26 +216,22 @@ class TrainingGoalsTab extends StatelessWidget {
         contents.add(
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
             children: [
               _section(context, t.trainingSectionDoubled),
               for (final g in day.goals.where((g) => !g.done))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _goal(context, state, g),
-                ),
+                _goal(context, state, g),
             ],
           ),
         );
         contents.add(
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
             children: [
               _section(context, t.trainingSectionDoneToday),
               for (final g in day.goals.where((g) => g.done))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _goal(context, state, g, completedCopy: true),
-                ),
+                _goal(context, state, g, completedCopy: true),
             ],
           ),
         );
@@ -245,16 +260,18 @@ class TrainingGoalsTab extends StatelessWidget {
             GoalSection.stars => t.trainingSectionStars,
           };
           contents.add(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            _GoalsSection(
+              header: !firstLesson || section != GoalSection.lessons
+                  ? _section(context, label)
+                  : null,
+              headerGap: schoolFirstLessons ? 0 : goalGap,
               children: [
-                if (!firstLesson || section != GoalSection.lessons)
-                  _section(context, label),
-                for (final g in goals)
+                for (final (index, g) in goals.indexed)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: EdgeInsets.only(top: index == 0 ? 0 : goalGap),
                     child: _goal(context, state, g),
                   ),
+                if (schoolFirstLessons) const SizedBox(height: 8),
               ],
             ),
           );
@@ -272,12 +289,25 @@ class TrainingGoalsTab extends StatelessWidget {
           );
         }
       }
-      return ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        children: [
-          for (final item in contents)
-            Padding(padding: const EdgeInsets.only(bottom: 8), child: item),
-        ],
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: CustomScrollView(
+          slivers: [
+            for (final item in contents)
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  0,
+                  16,
+                  firstLesson && item is _GoalsSection ? 16 : goalGap,
+                ),
+                sliver: item is _GoalsSection
+                    ? item
+                    : SliverToBoxAdapter(child: item),
+              ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ],
+        ),
       );
     },
   );
@@ -338,7 +368,7 @@ class TrainingGoalsTab extends StatelessWidget {
       GoalKind.speedrun => t.trainingSpeedrunGoalTitle,
       GoalKind.lesson || GoalKind.extraLesson =>
         lesson == null ? '' : _lessonTitle(context, state, lesson),
-      _ => lesson?.title ?? '',
+      _ => lesson == null ? '' : trainingMasteryLessonTitle(context, lesson),
     };
     final summary = switch (goal.kind) {
       GoalKind.lesson =>
@@ -431,7 +461,7 @@ class TrainingGoalsTab extends StatelessWidget {
         .toList();
     return context.l10n.trainingLessonLabel(
       lessons.indexWhere((l) => l.id == lesson.id) + 1,
-      lesson.title,
+      trainingMasteryLessonTitle(context, lesson),
     );
   }
 
@@ -461,17 +491,21 @@ class TrainingGoalsTab extends StatelessWidget {
   );
 
   static Widget _section(BuildContext context, String text) => Padding(
-    padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+    padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
     child: Text(
       text,
-      style: Theme.of(context).textTheme.labelMedium
-          ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        height: 20 / 12,
+        letterSpacing: 0,
+      ),
     ),
   );
   static Widget _panel(
     BuildContext context, {
     required List<Widget> children,
     bool highlight = false,
+    double spacing = 10,
     Key? key,
   }) => Material(
     key: key,
@@ -483,9 +517,62 @@ class TrainingGoalsTab extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: 10,
+        spacing: spacing,
         children: children,
       ),
     ),
   );
+}
+
+/// Keeps a section's heading visible only while that section is scrolling.
+class _GoalsSection extends StatelessWidget {
+  const _GoalsSection({
+    required this.header,
+    required this.headerGap,
+    required this.children,
+  });
+
+  final Widget? header;
+  final double headerGap;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => SliverMainAxisGroup(
+    slivers: [
+      if (header != null)
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _GoalsHeader(
+            extent:
+                4 + 20 * MediaQuery.textScalerOf(context).scale(1) + headerGap,
+            child: ColoredBox(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: Align(alignment: Alignment.topLeft, child: header!),
+            ),
+          ),
+        ),
+      SliverList.list(children: children),
+    ],
+  );
+}
+
+class _GoalsHeader extends SliverPersistentHeaderDelegate {
+  _GoalsHeader({required this.extent, required this.child});
+
+  final double extent;
+  final Widget child;
+
+  @override
+  double get minExtent => extent;
+  @override
+  double get maxExtent => extent;
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => SizedBox.expand(child: child);
+  @override
+  bool shouldRebuild(_GoalsHeader oldDelegate) =>
+      extent != oldDelegate.extent || child != oldDelegate.child;
 }

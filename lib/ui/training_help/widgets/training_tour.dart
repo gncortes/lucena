@@ -144,7 +144,11 @@ class _TrainingTourState extends State<TrainingTour> {
                                   ),
                             ),
                           ),
-                          Text(bodies[_step]),
+                          Text(
+                            bodies[_step],
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(letterSpacing: 0),
+                          ),
                           if (_failed)
                             Text(
                               t.trainingExerciseSaveError,

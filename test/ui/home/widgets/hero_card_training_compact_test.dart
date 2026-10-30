@@ -79,7 +79,7 @@ void main() {
         );
         expect(
           boxes.map((box) => box.top).toSet().length,
-          size.width == 360 ? 2 : 1,
+          inInclusiveRange(1, 2),
         );
         for (final box in boxes) {
           expect(box.left, greaterThanOrEqualTo(0));

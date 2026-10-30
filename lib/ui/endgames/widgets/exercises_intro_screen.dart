@@ -1,9 +1,13 @@
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_colors.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/character.dart';
+import '../../../domain/models/endgame_lesson.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/endgames_keys.dart';
@@ -18,6 +22,8 @@ import 'grade_widgets.dart';
 import 'stars_row.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/character_avatar.dart';
+import '../../core/theme/canvas_symbols.dart';
+import '../../core/keys/test_canvas_keys.dart';
 
 /// Antes dos exercícios: o Viktor explica como pensar (uns 5 minutos por
 /// posição) e como a nota fecha; chips com o tamanho do teste e a nota
@@ -36,6 +42,22 @@ class ExercisesIntroScreen extends StatelessWidget {
     final lesson = state.lesson;
     final viktor = state.viktor;
     final next = state.nextExercise;
+    if (lesson != null && lesson.id.startsWith('pilares.')) {
+      final chapter =
+          int.tryParse(
+            RegExp(r'\.c(\d+)').firstMatch(lesson.id)?.group(1) ?? '',
+          ) ??
+          state.lessonNumber;
+      return TestCanvasIntroPage(
+        chapter: chapter,
+        count: state.exerciseCount,
+        onStart: next == null
+            ? null
+            : () => context.pushReplacement(
+                Routes.endgameExercise(lesson.id, next.id),
+              ),
+      );
+    }
     // As faixas, da melhor para a menor; numa aula pequena duas podem pedir
     // o mesmo, e aí só a de cima vale.
     final tiers = <MapEntry<ExerciseGrade, int>>[];
@@ -239,6 +261,242 @@ class ExercisesIntroScreen extends StatelessWidget {
               ),
       ),
     );
+  }
+}
+
+/// Canvas chapter-test introduction. Data and navigation are supplied by the
+/// existing chapter scope, also allowing explicit preview fixtures.
+class TestCanvasIntroPage extends StatelessWidget {
+  const TestCanvasIntroPage({
+    required this.chapter,
+    required this.count,
+    this.onStart,
+    super.key,
+  });
+  final int chapter, count;
+  final VoidCallback? onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.l10n;
+    final facts = [
+      (
+        Icons.format_list_numbered,
+        t.endgameTestCount(count),
+        t.testCanvasCountBody,
+      ),
+      (CanvasSymbols.lightbulb, t.testCanvasNoHint, t.testCanvasNoHintBody),
+      (
+        Icons.visibility_off_outlined,
+        t.testCanvasAnswerEnd,
+        t.testCanvasAnswerEndBody,
+      ),
+      (Icons.timer_off_outlined, t.exercisesIntroChipThink, t.testCanvasThink),
+    ];
+    final names = [
+      t.exerciseGradePerfect,
+      t.exerciseGradeExcellent,
+      t.exerciseGradeGood,
+      t.testCanvasRegular,
+      t.testCanvasFailed,
+    ];
+    final thresholds = [
+      count,
+      ChapterTestScores.excellent(count),
+      ChapterTestScores.good(count),
+      ChapterTestScores.passed(count),
+      (ChapterTestScores.passed(count) - 1).clamp(0, count),
+    ];
+    return Scaffold(
+      key: ExercisesIntroKeys.screen,
+      appBar: LucenaAppBar(
+        toolbarHeight: 64,
+        title: Text(
+          t.testCanvasTitle(chapter),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _TestCanvasCard(
+                      child: Column(
+                        key: TestCanvasKeys.facts,
+                        spacing: 14,
+                        children: [
+                          for (final (icon, title, body) in facts)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              spacing: 12,
+                              children: [
+                                Icon(
+                                  icon,
+                                  size: AppIconSize.standard,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        title,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          height: 20 / 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        body,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          height: 16 / 12,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _TestCanvasCard(
+                      child: Column(
+                        key: ExercisesIntroKeys.tiers,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 6,
+                        children: [
+                          Text(
+                            t.testCanvasMedals,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              height: 20 / 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          for (var i = 0; i < 5; i++)
+                            SizedBox(
+                              height: 28,
+                              child: Row(
+                                spacing: 8,
+                                children: [
+                                  SizedBox(
+                                    width: 56,
+                                    height: 24,
+                                    child: Center(
+                                      child: TestCanvasMedal(
+                                        grade: ExerciseGrade.values[4 - i],
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      names[i],
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        height: 20 / 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    i == 4
+                                        ? t.testCanvasBelow(thresholds[i])
+                                        : t.testCanvasScore(
+                                            thresholds[i],
+                                            count,
+                                          ),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      height: 20 / 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ActionsFooter(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              children: [
+                FilledButton.icon(
+                  key: ExercisesIntroKeys.start,
+                  onPressed: onStart,
+                  icon: const Icon(CanvasSymbols.playArrow),
+                  label: Text(t.endgamePartStart),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TestCanvasCard extends StatelessWidget {
+  const _TestCanvasCard({required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: AppColors.chessWhiteColor,
+      borderRadius: BorderRadius.circular(AppShape.card),
+    ),
+    child: Padding(padding: const EdgeInsets.all(16), child: child),
+  );
+}
+
+/// Filled Material Symbols medals follow CompEstrelas geometry.
+class TestCanvasMedal extends StatelessWidget {
+  const TestCanvasMedal({required this.grade, this.size = 80, super.key});
+  final ExerciseGrade grade;
+  final double size;
+  @override
+  Widget build(BuildContext context) {
+    final color = switch (grade) {
+      ExerciseGrade.perfect || ExerciseGrade.excellent => AppColors.goldColor,
+      ExerciseGrade.good => AppColors.silverColor,
+      ExerciseGrade.passed => AppColors.bronzeColor,
+      ExerciseGrade.below => AppColors.trainingCanvasOutline,
+    };
+    final star = Icon(
+      CanvasSymbols.star,
+      size: size,
+      color: color,
+      fill: grade == ExerciseGrade.below ? 0 : 1,
+    );
+    return grade == ExerciseGrade.perfect
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Icon(CanvasSymbols.star, size: size * .6, color: color, fill: 1),
+              star,
+              Icon(CanvasSymbols.star, size: size * .6, color: color, fill: 1),
+            ],
+          )
+        : star;
   }
 }
 

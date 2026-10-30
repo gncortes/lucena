@@ -1,3 +1,6 @@
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_colors.dart';
 import '../../../domain/models/survey.dart';
 
 import 'dart:async';
@@ -17,7 +20,8 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_button_text.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lesson_sound_dialog.dart';
@@ -48,6 +52,7 @@ class LessonScriptScreen extends StatefulWidget {
     this.previewTeacher,
     this.previewTitle,
     this.homeHero = false,
+    this.onAnalyze,
     super.key,
   });
 
@@ -57,6 +62,7 @@ class LessonScriptScreen extends StatefulWidget {
   final Character? previewTeacher;
   final String? previewTitle;
   final bool homeHero;
+  final ValueChanged<String>? onAnalyze;
 
   @override
   State<LessonScriptScreen> createState() => _LessonScriptScreenState();
@@ -64,10 +70,6 @@ class LessonScriptScreen extends StatefulWidget {
 
 class _LessonScriptScreenState extends State<LessonScriptScreen>
     with WidgetsBindingObserver {
-  /// Reserva também os 4 dp do anel em cada lado do botão principal.
-  /// Fica igual aos controles de demonstração, mesmo quando eles saem.
-  static const _footerContentHeight = ScriptDemoButton.mainSize + AppSpacing.sm;
-
   Character? _viktor;
   bool _started = false;
   bool _leaving = false;
@@ -102,7 +104,15 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     setState(() => _canPop = true);
     // O PopScope precisa receber canPop antes da segunda tentativa.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.pop();
+      if (!mounted) return;
+      final router = GoRouter.maybeOf(context);
+      if (router?.canPop() == true) {
+        router!.pop();
+      } else if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        router?.go(Routes.home);
+      }
     });
   }
 
@@ -157,7 +167,21 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     super.didChangeDependencies();
     final cubit = context.read<LessonScriptCubit>();
     final width = MediaQuery.sizeOf(context).width;
-    final metrics = ScriptSpeechMetrics.of(context);
+    final media = MediaQuery.of(context);
+    final region =
+        media.size.height -
+        media.padding.vertical -
+        64 -
+        96 -
+        (cubit.endgame ? 0 : 12);
+    var lines = 2;
+    for (final candidate in [(4, 40), (3, 40), (2, 40), (2, 0)]) {
+      if (region >= 42 + 22.5 * candidate.$1 + 58 + width + candidate.$2) {
+        lines = candidate.$1;
+        break;
+      }
+    }
+    final metrics = ScriptSpeechMetrics.canvas(lines);
     // A tela diz ao Cubit se os balões cabem; antes de abrir, para o 1º
     // trecho já vir junto.
     cubit.setSpeechFits((texts) => metrics.fits(context, width, texts));
@@ -222,14 +246,14 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       builder: (context, state) => Scaffold(
         key: LessonScriptKeys.screen,
         appBar: LucenaAppBar(
-          leading: ModalRoute.of(context)?.canPop == true
-              ? const BackButton(key: LessonScriptKeys.close)
-              : null,
-          // Exceção de D2 só na lição: o livro de Curiosidades só aparece
-          // na posição que tem curiosidade, e o título fica à esquerda em
-          // todas as etapas, com ou sem ele, para não pular (Gabriel,
-          // 14/10/2026; canvas `T70-etapa1-estados`).
-          centerTitle: false,
+          leading: IconButton(
+            key: LessonScriptKeys.close,
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => unawaited(_leave()),
+            icon: const Icon(CanvasSymbols.arrowBack),
+          ),
+          toolbarHeight: 64,
+          centerTitle: state.curiosities == null,
           title: FutureBuilder<String?>(
             future: widget.title,
             initialData: widget.previewTitle,
@@ -237,6 +261,13 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
               snapshot.data?.isNotEmpty == true
                   ? snapshot.data!
                   : widget.previewTitle ?? '',
+              maxLines: 2,
+              textWidthBasis: TextWidthBasis.longestLine,
+              overflow: TextOverflow.ellipsis,
+              textAlign: state.curiosities == null
+                  ? TextAlign.center
+                  : TextAlign.start,
+              style: const TextStyle(fontSize: 22, height: 28 / 22),
             ),
           ),
           actions: [
@@ -260,6 +291,21 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
                       icon: Icons.auto_stories_outlined,
                       message: context.l10n.lessonsUnavailableMessage,
                     ),
+                  ),
+                )
+              : cubit.practiceIssue != null
+              ? Center(
+                  child: EmptyState(
+                    style: EmptyStateStyle.error,
+                    icon: Icons.error_outline,
+                    message:
+                        cubit.practiceIssue ==
+                            ScriptPracticeIssue.opponentUnavailable
+                        ? context.l10n.practiceOpponentUnavailable
+                        : context.l10n.practiceSolutionUnavailable,
+                    actionLabel: context.l10n.lessonRetry,
+                    actionKey: LessonScriptKeys.primary,
+                    onAction: () => unawaited(cubit.retryPracticeIssue()),
                   ),
                 )
               : state.ready || widget.preview != null
@@ -317,10 +363,21 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final settings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
-    final marks = context.select(
+    final savedMarks = context.select(
       (SettingsCubit c) => c.state?.lessonMarks ?? true,
     );
-    final text = SpeechText.plainOf(context, state.speech.join(' '));
+    // The explicit solution must remain visible without rewriting preferences.
+    final marks = savedMarks || cubit.showingPracticeSolution;
+    final texts =
+        cubit.showingPracticeSolution &&
+            (state.touching || state.arrows.isNotEmpty)
+        ? [
+            state.touching
+                ? context.l10n.practiceSolutionTarget
+                : context.l10n.practiceSolutionFollow,
+          ]
+        : state.speech;
+    final text = SpeechText.plainOf(context, texts.join(' '));
     // Todo botão citado na fala é link e faz o mesmo que ele, enquanto o
     // botão está no rodapé (Gabriel, 14/10/2026).
     VoidCallback? link(ScriptAction action) =>
@@ -338,9 +395,10 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         : () => unawaited(
             showScriptSpeechSheet(
               context,
+              canvasLayout: true,
               viktor: viktor,
               title: context.l10n.teacherName(viktor.name),
-              texts: state.speech,
+              texts: texts,
               onMainLine: onMainLine,
               onShowAnswer: onShowAnswer,
               onSquareTap: _flash.show,
@@ -360,7 +418,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           );
     Widget speechOf(ScriptSpeechMetrics metrics) {
       Widget speech = ScriptSpeech(
-        texts: state.speech,
+        texts: texts,
         metrics: metrics,
         typing: state.machineThinking,
         onMainLine: onMainLine,
@@ -394,14 +452,15 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
 
     final strip = SizedBox(
       key: LessonScriptKeys.characterBar,
-      height: ScriptPage.stripHeight,
+      height: ScriptPage.canvasStripHeight,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
         child: viktor == null
             ? null
             : TeacherSpeech(
                 part: TeacherSpeechPart.header,
                 lessonV2: true,
+                canvasHeader: true,
                 headerAvatar: 40,
                 avatarHeroTag: scriptViktorHeroTag,
                 teacher: viktor,
@@ -409,16 +468,38 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
                 speechContext: SpeechContext.teaching,
                 onSoundSettings: () => showLessonSoundDialog(context),
                 // Ao lado do som: mostrar ou esconder as marcações.
-                headerAction: IconButton(
-                  key: LessonScriptKeys.marksToggle,
-                  tooltip: marks
-                      ? context.l10n.lessonHideMarks
-                      : context.l10n.lessonShowMarks,
-                  isSelected: marks,
-                  icon: const Icon(Icons.layers_clear_outlined),
-                  selectedIcon: const Icon(Icons.layers_outlined),
-                  onPressed: () => context.read<SettingsCubit>().setLessonMarks(
-                    shown: !marks,
+                headerAction: SizedBox.square(
+                  dimension: 40,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned(
+                        left: -4,
+                        top: -4,
+                        width: 48,
+                        height: 48,
+                        child: IconButton(
+                          key: LessonScriptKeys.marksToggle,
+                          tooltip: marks
+                              ? context.l10n.lessonHideMarks
+                              : context.l10n.lessonShowMarks,
+                          isSelected: marks,
+                          icon: const Icon(CanvasSymbols.layersClear),
+                          selectedIcon: const Icon(CanvasSymbols.layers),
+                          style: IconButton.styleFrom(
+                            fixedSize: const Size.square(48),
+                            minimumSize: const Size.square(48),
+                            padding: EdgeInsets.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: cubit.showingPracticeSolution
+                              ? null
+                              : () => context
+                                    .read<SettingsCubit>()
+                                    .setLessonMarks(shown: !savedMarks),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -426,6 +507,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     );
     Widget board(double size) {
       final board = ScriptBoard(
+        canvasFeedback: true,
         state: state,
         size: size,
         settings: settings,
@@ -439,23 +521,92 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
           : board;
     }
 
-    return Column(
-      children: [
-        Expanded(
-          child: ScriptPage(
-            pageKey: LessonScriptKeys.page,
-            speechBuilder: speechOf,
-            strip: strip,
-            boardBuilder: board,
-            list: ScriptMoveList(
-              moves: state.moves,
-              currentId: state.currentMoveId,
-              onTap: cubit.goToMove,
-            ),
+    return LayoutBuilder(
+      builder: (context, box) {
+        final progressHeight = !cubit.endgame && cubit.progressSteps > 0
+            ? 12.0
+            : 0.0;
+        final geometry = ScriptCanvasMetrics.forSize(
+          Size(
+            box.maxWidth,
+            (box.maxHeight - 96 - progressHeight)
+                .clamp(0, double.infinity)
+                .toDouble(),
           ),
-        ),
-        _footer(context, cubit, state),
-      ],
+        );
+        // Canvas list padding is 4 + 8 dp above choices. At least 44 dp of
+        // each response must remain hittable within the page, below the board.
+        final choicesInFooter =
+            cubit.answerChoices.isNotEmpty &&
+            geometry.availableListHeight < 12 + 44;
+        return Column(
+          children: [
+            if (!cubit.endgame && cubit.progressSteps > 0)
+              Semantics(
+                label: context.l10n.tourStep(
+                  cubit.progressValue.ceil(),
+                  cubit.progressSteps,
+                ),
+                child: Padding(
+                  key: LessonScriptKeys.progress,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                  child: Row(
+                    children: [
+                      for (var i = 0; i < cubit.progressSteps; i++) ...[
+                        if (i > 0) const SizedBox(width: 4),
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(AppShape.tiny),
+                            child: LinearProgressIndicator(
+                              value: (cubit.progressValue - i)
+                                  .clamp(0, 1)
+                                  .toDouble(),
+                              minHeight: 8,
+                              borderRadius: BorderRadius.circular(
+                                AppShape.tiny,
+                              ),
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            Expanded(
+              child: ScriptPage(
+                canvasLayout: true,
+                actionsBelowBoard:
+                    cubit.answerChoices.isNotEmpty && !choicesInFooter,
+                pageKey: LessonScriptKeys.page,
+                speechBuilder: speechOf,
+                strip: strip,
+                boardBuilder: board,
+                list: cubit.answerChoices.isNotEmpty
+                    ? choicesInFooter
+                          ? const SizedBox.shrink()
+                          : Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                              child: _answerChoices(cubit),
+                            )
+                    : ScriptMoveList(
+                        moves: state.moves,
+                        currentId:
+                            !cubit.endgame &&
+                                state.phase == ScriptPhase.praticaFim
+                            ? null
+                            : state.currentMoveId,
+                        onTap: cubit.goToMove,
+                      ),
+              ),
+            ),
+            _footer(context, cubit, state, choicesInFooter: choicesInFooter),
+          ],
+        );
+      },
     );
   }
 
@@ -470,7 +621,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     final (label, key) = switch (action) {
       ScriptAction.continuar => (l10n.lessonContinue, LessonScriptKeys.primary),
       ScriptAction.proximaEtapa => (
-        l10n.lessonNextStage,
+        cubit.endgame ? stateLabel(cubit.state, context) : l10n.lessonContinue,
         LessonScriptKeys.primary,
       ),
       ScriptAction.tentarDeNovo => (l10n.lessonRetry, LessonScriptKeys.primary),
@@ -479,7 +630,7 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
         LessonScriptKeys.primary,
       ),
       ScriptAction.verResposta => (
-        l10n.lessonShowAnswer,
+        l10n.trainingSeeSolution,
         LessonScriptKeys.showAnswer,
       ),
       ScriptAction.linhaPrincipal => (
@@ -496,28 +647,57 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       ),
     };
     return ExerciseAction(
-      label: label,
+      label:
+          action == ScriptAction.continuar &&
+              cubit.state.stageId == 'demos' &&
+              cubit.state.phase == ScriptPhase.fimExemplo
+          ? l10n.lessonNextModelGame
+          : label,
       key: key,
       primary: primary,
       onPressed: () => unawaited(cubit.onAction(action)),
     );
   }
 
+  Widget _answerChoices(LessonScriptCubit cubit) => Row(
+    spacing: 12,
+    children: [
+      for (final (index, label) in cubit.answerChoices.indexed)
+        Expanded(
+          child: SizedBox(
+            height: kButtonHeight,
+            child: OutlinedButton(
+              key: LessonScriptKeys.answerChoice(index),
+              onPressed: () => unawaited(cubit.answerChoice(index)),
+              child: Text(label),
+            ),
+          ),
+        ),
+    ],
+  );
+
+  String stateLabel(LessonScriptState state, BuildContext context) =>
+      switch (state.stageId) {
+        'ideia' => context.l10n.lessonModelGames,
+        'demos' => context.l10n.trainingPartPractice,
+        _ => context.l10n.lessonNextStage,
+      };
+
   Widget _footer(
     BuildContext context,
     LessonScriptCubit cubit,
-    LessonScriptState state,
-  ) {
+    LessonScriptState state, {
+    bool choicesInFooter = false,
+  }) {
     final secondary = _action(context, cubit, state.secondary, primary: false);
     final primary = _action(context, cubit, state.primary, primary: true);
-    final colors = Theme.of(context).colorScheme;
     final demo = state.demo;
     // Demonstração (etapa 2): ↻ ⏮ ⏸/▶ e o ⏭ com o anel no lugar dos
     // botões; no fim, só ↻ e o botão principal (canvas, E12). Teoria (etapa
     // 1): nas falas de "Continuar", ⏸/▶ e o ⏭ com o anel.
     final repeat = ScriptDemoButton(
       buttonKey: LessonScriptKeys.demoRepeat,
-      icon: Icons.replay_rounded,
+      icon: CanvasSymbols.replay,
       tooltip: context.l10n.lessonDemoReplay,
       onPressed: () => unawaited(cubit.demoRepeat()),
     );
@@ -536,36 +716,156 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
             onStepBack: cubit.demoStepBack,
             onToggle: cubit.demoToggle,
             onNext: () => primary.onPressed?.call(),
+            canvasLayout: true,
           );
-    final back = state.canBack
-        ? FloatingActionButton(
+    final back = state.canBack && state.stageId != 'pratica'
+        ? _CanvasLessonFab(
             key: LessonScriptKeys.back,
-            heroTag: null,
-            shape: const CircleBorder(),
-            elevation: 2,
-            backgroundColor: colors.surface,
-            foregroundColor: colors.primary,
             tooltip: context.l10n.lessonPreviousStep,
             onPressed: cubit.back,
-            child: const Icon(Icons.arrow_back),
+            child: const Icon(CanvasSymbols.arrowBack),
           )
         : null;
-    return ExerciseActions(
-      // Mesmo fundo da tela, sem linha em cima (Gabriel, 14/10/2026).
-      color: Theme.of(context).scaffoldBackgroundColor,
-      // O voltar redondo da lição (`lesson_screen.dart`, Gabriel 14/10/2026):
-      // só aparece quando há para onde voltar.
-      // Com ou sem controles, guarda também a altura do anel: o tabuleiro
-      // não pula ao terminar/repetir a demonstração ou trocar de fase.
-      hint: controls == null
-          ? SizedBox(
-              height: _footerContentHeight,
-              child: back == null ? null : Center(child: back),
+    Widget actionButton(ExerciseAction action) {
+      final style = ButtonStyle(
+        minimumSize: const WidgetStatePropertyAll(
+          Size(0, kButtonHeightCompact),
+        ),
+        padding: WidgetStatePropertyAll(
+          EdgeInsets.symmetric(
+            horizontal: MediaQuery.sizeOf(context).width < 384 ? 12 : 22,
+          ),
+        ),
+        textStyle: WidgetStatePropertyAll(
+          AppButtonText.footer(context)?.copyWith(
+            fontSize: 14,
+            height: 20 / 14,
+            fontWeight: FontWeight.w500,
+            letterSpacing: .1,
+          ),
+        ),
+      );
+      final label = Text(
+        action.label,
+        maxLines: 2,
+        textAlign: TextAlign.center,
+      );
+      return action.primary
+          ? FilledButton(
+              key: action.key,
+              style: style,
+              onPressed: action.onPressed,
+              child: label,
             )
-          : Expanded(child: Row(children: [?back, const Spacer(), controls])),
-      leading: demo != null && demo.ended ? repeat : null,
-      hug: true,
-      actions: controls == null ? [?secondary, ?primary] : const [],
+          : OutlinedButton(
+              key: action.key,
+              style: style,
+              onPressed: action.onPressed,
+              child: label,
+            );
+    }
+
+    if (choicesInFooter) {
+      return SizedBox(
+        key: LessonScriptKeys.footer,
+        height: 96,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _answerChoices(cubit),
+        ),
+      );
+    }
+    return SizedBox(
+      key: LessonScriptKeys.footer,
+      height: 96,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          spacing: 12,
+          children: [
+            ?back,
+            if (cubit.canHint)
+              _CanvasLessonFab(
+                key: LessonScriptKeys.hint,
+                tooltip: context.l10n.lessonHint,
+                onPressed: () => unawaited(cubit.hint()),
+                child: const Icon(CanvasSymbols.lightbulb),
+              ),
+            if (cubit.canAnalyze && widget.onAnalyze != null)
+              _CanvasLessonFab(
+                key: LessonScriptKeys.analyze,
+                tooltip: context.l10n.lessonAnalyzePosition,
+                onPressed: () => widget.onAnalyze!(state.fen),
+                child: const Icon(CanvasSymbols.search),
+              ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child:
+                    controls ??
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 12,
+                      children: [
+                        if (demo?.ended == true) repeat,
+                        if (secondary != null)
+                          Flexible(child: actionButton(secondary)),
+                        if (primary != null)
+                          Flexible(child: actionButton(primary)),
+                      ],
+                    ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+}
+
+class _CanvasLessonFab extends StatelessWidget {
+  const _CanvasLessonFab({
+    required this.tooltip,
+    required this.onPressed,
+    required this.child,
+    super.key,
+  });
+  final String tooltip;
+  final VoidCallback onPressed;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: const BoxDecoration(
+      shape: BoxShape.circle,
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.trainingFabShadowUmbra,
+          offset: Offset(0, 1),
+          blurRadius: 2,
+        ),
+        BoxShadow(
+          color: AppColors.trainingFabShadowPenumbra,
+          offset: Offset(0, 2),
+          blurRadius: 6,
+          spreadRadius: 2,
+        ),
+      ],
+    ),
+    child: Material(
+      color: AppColors.trainingFabSurface,
+      shape: const CircleBorder(),
+      child: IconButton(
+        tooltip: tooltip,
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          fixedSize: const Size.square(56),
+          minimumSize: const Size.square(56),
+          shape: const CircleBorder(),
+          backgroundColor: Colors.transparent,
+          foregroundColor: Theme.of(context).colorScheme.primary,
+        ),
+        icon: child,
+      ),
+    ),
+  );
 }

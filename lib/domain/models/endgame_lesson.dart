@@ -1,6 +1,21 @@
 import 'endgame_position.dart';
 import 'lesson.dart';
 
+/// Correct-answer thresholds for chapter tests, independent of point weights.
+abstract final class ChapterTestScores {
+  static int passed(int total) => (total * 9 + 11) ~/ 12;
+  static int good(int total) => (total * 10 + 11) ~/ 12;
+  static int excellent(int total) => (total * 11 + 11) ~/ 12;
+  static int gradeIndex(int correct, int total) {
+    if (total <= 0) return 0;
+    if (correct == total) return 4;
+    if (correct >= excellent(total)) return 3;
+    if (correct >= good(total)) return 2;
+    if (correct >= passed(total)) return 1;
+    return 0;
+  }
+}
+
 /// As aulas de finais do Viktor: o passo seguinte da escola. Cada aula tem a
 /// lição (os mesmos passos da escola), os exercícios com estrelas, a nota
 /// mínima e o passo final, que leva ao final de verdade.
@@ -218,6 +233,7 @@ class EndgameLessonProgress {
     this.approved = false,
     this.parts = const {},
     this.stars = const {},
+    this.lastTestAnswers,
     this.exercise,
   });
 
@@ -244,6 +260,24 @@ class EndgameLessonProgress {
   /// As estrelas ganhas em cada exercício resolvido, pelo id dele.
   final Map<String, int> stars;
 
+  /// Last completed chapter test. Current [stars] may belong to a retake;
+  /// a missing key is unanswered, while false is an observed wrong answer.
+  final Map<String, bool>? lastTestAnswers;
+
+  Map<String, bool>? completedTestOf(EndgameLesson lesson) {
+    final saved = lastTestAnswers;
+    if (saved != null) return saved;
+    // Only complete legacy runs can be migrated into a visible grade.
+    if (lesson.exercises.isEmpty ||
+        solvedOf(lesson) != lesson.exercises.length) {
+      return null;
+    }
+    return {
+      for (final exercise in lesson.exercises)
+        exercise.id: stars[exercise.id] == exercise.stars,
+    };
+  }
+
   /// O exercício aberto quando o app fechou.
   final ExerciseCheckpoint? exercise;
 
@@ -266,6 +300,7 @@ class EndgameLessonProgress {
     bool? approved,
     Set<String>? parts,
     Map<String, int>? stars,
+    Map<String, bool>? lastTestAnswers,
     ExerciseCheckpoint? exercise,
     bool clearExercise = false,
   }) => EndgameLessonProgress(
@@ -273,6 +308,7 @@ class EndgameLessonProgress {
     approved: approved ?? this.approved,
     parts: parts ?? this.parts,
     stars: stars ?? this.stars,
+    lastTestAnswers: lastTestAnswers ?? this.lastTestAnswers,
     exercise: clearExercise ? null : exercise ?? this.exercise,
   );
 
@@ -281,6 +317,7 @@ class EndgameLessonProgress {
     if (approved) 'approved': true,
     'parts': parts.toList()..sort(),
     'stars': stars,
+    'lastTestAnswers': ?lastTestAnswers,
     'exercise': ?exercise?.toJson(),
   };
 
@@ -298,6 +335,13 @@ class EndgameLessonProgress {
             in (json['stars'] as Map<String, dynamic>? ?? const {}).entries)
           if (value is int) key: value,
       },
+      lastTestAnswers: json['lastTestAnswers'] is Map<String, dynamic>
+          ? {
+              for (final MapEntry(:key, :value)
+                  in (json['lastTestAnswers'] as Map<String, dynamic>).entries)
+                if (value is bool) key: value,
+            }
+          : null,
       exercise: ExerciseCheckpoint.fromJson(json['exercise']),
     );
   }

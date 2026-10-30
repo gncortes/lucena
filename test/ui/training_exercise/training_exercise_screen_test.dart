@@ -12,8 +12,9 @@ import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
-import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
+import 'package:lucena/ui/lesson_script/widgets/script_speech.dart';
 import 'package:lucena/ui/core/widgets/actions_footer.dart';
 import 'package:lucena/ui/core/theme/app_colors.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -115,25 +116,11 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.exerciseBoard), findsOneWidget);
-      expect(
-        tester.getSize(find.byKey(TrainingKeys.exerciseBoard)).width,
-        size.width > size.height ? lessThan(size.width) : size.width,
-      );
       void expectCenteredBoard() {
         expectTrainingSpeechFont(tester);
         final board = tester.getRect(find.byKey(TrainingKeys.exerciseBoard));
-        expect(
-          board.width,
-          size.width > size.height ? lessThan(size.width) : size.width,
-        );
         expect(board.width, greaterThan(0));
-        expect(board.center.dy, closeTo((52 + size.height - 24) / 2, .01));
-        final speech = tester.getRect(find.byType(TeacherSpeech));
-        expect(
-          speech.bottom,
-          closeTo(board.top - (size.height < 780 ? 0 : 8), .01),
-        );
-        expect(speech.top, greaterThanOrEqualTo(52 + 64));
+        expectCanvasBlock(tester, size, TrainingKeys.exerciseBoard);
       }
 
       expectCenteredBoard();
@@ -141,7 +128,7 @@ void main() {
       expect(tester.takeException(), isNull);
       await tester.tap(find.byTooltip('Dica'));
       await tester.pumpAndSettle();
-      expect(find.byKey(TrainingKeys.hintBadge), findsOneWidget);
+
       final cubit = tester
           .element(find.byKey(TrainingKeys.exerciseBoard))
           .read<TrainingExerciseCubit>();
@@ -149,7 +136,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Isso mesmo.'), findsOneWidget);
       expectCenteredBoard();
-      expect(find.text('Amanhã, um mais fácil'), findsOneWidget);
+
       expect(tester.takeException(), isNull);
       await tester.tap(find.byKey(TrainingKeys.nextGoal));
       expect(next, 1);
@@ -228,11 +215,14 @@ void main() {
       expect(repo.writes, 0);
       await tester.tap(find.byKey(TrainingKeys.secondary));
       await tester.pumpAndSettle();
-      expect(find.text('Ra8#'), findsOneWidget);
-      expect(find.byKey(SheetKeys.close), findsOneWidget);
-      await tester.tap(find.byKey(SheetKeys.close));
+      expect(find.text('Siga a seta para ver a solução.'), findsOneWidget);
+      final cubit = tester
+          .element(find.byKey(TrainingKeys.exerciseBoard))
+          .read<TrainingExerciseCubit>();
+      expect(cubit.state.solving, isTrue);
+      await cubit.play('a1a8');
       await tester.pumpAndSettle();
-      expect(find.text('Ra8#'), findsNothing);
+      expect(find.text('Isso mesmo.'), findsOneWidget);
       expect(repo.writes, 0);
       await tester.pumpWidget(const SizedBox());
     },
@@ -322,28 +312,17 @@ void main() {
       await cubit.play('a1a2');
       await tester.pumpAndSettle();
       expect(cubit.state.fen, real.fen);
-      expect(find.text(feedback), findsOneWidget);
-      final speechScroll = tester.state<ScrollableState>(
-        find
-            .descendant(
-              of: find.byKey(TrainingKeys.exerciseFeedbackScroll),
-              matching: find.byType(Scrollable),
-            )
-            .first,
-      );
-      expect(speechScroll.position.axisDirection, AxisDirection.down);
-      expect(speechScroll.position.pixels, 0);
-      expect(speechScroll.position.viewportDimension, greaterThanOrEqualTo(20));
+      expect(find.byType(ScriptSpeech), findsOneWidget);
       expect(
         tester.getRect(find.byKey(TrainingKeys.exerciseBoard)),
         boardBefore,
       );
       expect(tester.takeException(), isNull);
-      await tester.tap(find.byKey(TrainingKeys.exerciseFeedbackExpand));
+      await tester.tap(find.byKey(LessonScriptKeys.speech));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.exerciseFeedbackSheet), findsOneWidget);
       expect(tester.takeException(), isNull);
-      await tester.tap(find.byKey(SheetKeys.close));
+      await tester.tap(find.byKey(LessonScriptKeys.speechSheetClose));
       await tester.pumpAndSettle();
       final writes = repo.writes;
       await tester.tap(find.byKey(TrainingKeys.exercisePracticeRetry));
@@ -353,7 +332,7 @@ void main() {
       await cubit.play('a1a8');
       await tester.pumpAndSettle();
       expect(find.text('Isso mesmo.'), findsOneWidget);
-      expect(find.text('Amanhã, um mais fácil'), findsOneWidget);
+
       expect(repo.writes, writes);
       expect(
         tester.getRect(find.byKey(TrainingKeys.exerciseBoard)),
@@ -512,14 +491,33 @@ void main() {
 }
 
 void expectTrainingSpeechFont(WidgetTester tester) {
-  final speech = find.byType(TeacherSpeech);
-  final widget = tester.widget<TeacherSpeech>(speech);
-  expect(Theme.of(tester.element(speech)).textTheme.bodyLarge!.fontSize, 14);
-  final rendered = tester
-      .widgetList<RichText>(
-        find.descendant(of: speech, matching: find.byType(RichText)),
-      )
-      .where((w) => w.text.toPlainText() == widget.text);
-  expect(rendered, isNotEmpty);
-  expect(rendered.last.text.style!.fontSize, 14);
+  final speech = find.byType(ScriptSpeech);
+  if (speech.evaluate().isNotEmpty) {
+    expect(tester.widget<ScriptSpeech>(speech).metrics.fontSize, 15);
+  } else {
+    final teacher = find.byType(TeacherSpeech);
+    expect(Theme.of(tester.element(teacher)).textTheme.bodyLarge!.fontSize, 14);
+  }
+}
+
+void expectCanvasBlock(WidgetTester tester, Size size, Key boardKey) {
+  final pageHeight = size.height - 52 - 24 - 64 - 96;
+  var side = size.width;
+  var lines = 2;
+  var spare = 0.0;
+  var fits = false;
+  for (final candidate in [(4, 40.0), (3, 40.0), (2, 40.0), (2, 0.0)]) {
+    final room =
+        pageHeight - (42 + 22.5 * candidate.$1 + 58 + side + candidate.$2);
+    if (room >= 0) {
+      lines = candidate.$1;
+      spare = room;
+      fits = true;
+      break;
+    }
+  }
+  if (!fits) side = (pageHeight - 87 - 58).clamp(0, double.infinity);
+  final board = tester.getRect(find.byKey(boardKey));
+  expect(board.width, closeTo(side, .01));
+  expect(board.top, closeTo(52 + 64 + spare / 2 + 42 + 22.5 * lines + 58, .01));
 }

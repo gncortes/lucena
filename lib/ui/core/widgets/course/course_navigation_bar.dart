@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../domain/models/training/training_course.dart';
 import '../../keys/course_guide_keys.dart';
 import '../../l10n/l10n.dart';
+import '../../theme/canvas_symbols.dart';
 
 /// The same course tabs during entry, downloads and the installed guide.
 class CourseNavigationBar extends StatelessWidget {
@@ -33,7 +34,7 @@ class CourseNavigationBar extends StatelessWidget {
           border: Border(top: BorderSide(color: colors.outlineVariant)),
         ),
         child: NavigationBar(
-          height: 78,
+          height: 79,
           selectedIndex: selectedIndex,
           onDestinationSelected: onDestinationSelected,
           backgroundColor: colors.surfaceContainerLowest,
@@ -46,13 +47,15 @@ class CourseNavigationBar extends StatelessWidget {
               fontWeight: states.contains(WidgetState.selected)
                   ? FontWeight.w600
                   : FontWeight.w500,
+              letterSpacing: 0,
+              height: 14 / 12,
             ),
           ),
           destinations: [
             for (final (i, icon) in [
-              Icons.school_outlined,
-              Icons.task_alt,
-              Icons.insights,
+              CanvasSymbols.school,
+              CanvasSymbols.taskAlt,
+              CanvasSymbols.insights,
               Icons.menu_book_outlined,
             ].indexed)
               NavigationDestination(

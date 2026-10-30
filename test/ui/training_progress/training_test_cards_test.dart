@@ -11,6 +11,8 @@ import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/widgets/course/course_item_tile.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/training_progress_tab.dart';
+import 'package:lucena/ui/endgames/widgets/grade_widgets.dart';
+import 'package:lucena/domain/use_cases/endgame_lesson_rules.dart';
 
 import '../../../testing/fakes/fake_course_training_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -74,7 +76,6 @@ void main() {
           addTearDown(repo.dispose);
           await cubit.load();
           String? opened;
-          var placement = false;
           await tester.pumpWidget(
             TestApp(
               locale: const Locale('pt'),
@@ -84,7 +85,6 @@ void main() {
                   body: TrainingProgressTab(
                     onTheme: (_) {},
                     onTest: (id) => opened = id,
-                    onLevelTest: () => placement = true,
                     testProgress: {
                       if (sample == 'done')
                         'actual-test': (
@@ -109,23 +109,26 @@ void main() {
           await tester.pumpAndSettle();
           final t = tester.element(find.byType(TrainingProgressTab)).l10n;
           final card = find.byKey(CourseGuideKeys.chapterLesson('actual-test'));
+          if (sample == 'locked' || sample == 'open') {
+            expect(card, findsNothing);
+            expect(find.text(t.trainingProgressEmptyTitle), findsOneWidget);
+            expect(find.byKey(CourseGuideKeys.levelTest), findsNothing);
+            expect(tester.takeException(), isNull);
+            return;
+          }
           await tester.ensureVisible(card);
           final tile = tester.widget<CourseItemTile>(card);
-          expect(
-            tile.title,
-            t.trainingProgressChapterTitle(2, 'Capítulo real'),
-          );
+          expect(tile.title, t.trainingChapterLabel(2));
           expect(tile.state, switch (sample) {
             'done' => CourseItemState.approved,
-            'zero' => CourseItemState.started,
+            'zero' => CourseItemState.open,
             'locked' => CourseItemState.locked,
             _ => CourseItemState.open,
           });
           if (sample == 'done') {
-            expect(find.text(t.trainingCount(12, 10)), findsOneWidget);
-            expect(find.text(t.trainingTestDoneBody), findsOneWidget);
+            expect((tile.medal as GradeMedal).grade, ExerciseGrade.good);
           } else if (sample == 'zero') {
-            expect(find.text(t.trainingCount(12, 0)), findsOneWidget);
+            expect((tile.medal as GradeMedal).grade, ExerciseGrade.below);
             expect(find.text(t.trainingTestsMissing), findsNothing);
           } else if (sample == 'locked') {
             expect(
@@ -136,11 +139,7 @@ void main() {
           }
           await tester.tap(card);
           expect(opened, sample == 'locked' ? isNull : 'actual-test');
-          final level = find.byKey(CourseGuideKeys.levelTest);
-          await tester.ensureVisible(level);
-          await tester.tap(level);
-          expect(placement, isTrue);
-          expect(find.text(t.trainingLevelTestOptional), findsOneWidget);
+          expect(find.byKey(CourseGuideKeys.levelTest), findsNothing);
           expect(tester.takeException(), isNull);
         },
       );

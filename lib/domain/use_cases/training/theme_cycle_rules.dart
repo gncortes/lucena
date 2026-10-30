@@ -19,6 +19,7 @@ final class ThemeCycleRules {
     TrainingExercise exercise, {
     required bool correct,
     bool hint = false,
+    int? elapsedMs,
     Iterable<TrainingExercise> bank = const [],
     String installSeed = '',
   }) {
@@ -38,6 +39,7 @@ final class ThemeCycleRules {
         stars: exercise.stars,
         correct: correct,
         hint: hint,
+        elapsedMs: elapsedMs,
         mock: exercise.mock,
         phase: cycle.phase,
       ),

@@ -17,6 +17,7 @@ final class CompleteTrainingGoal {
     String goalKey, {
     required bool correct,
     bool hint = false,
+    int? elapsedMs,
     TrainingExerciseError? exerciseError,
   }) {
     final goal = _pending(state, goalKey);
@@ -34,6 +35,7 @@ final class CompleteTrainingGoal {
       exercise,
       correct: correct,
       hint: hint,
+      elapsedMs: elapsedMs,
       bank: bank,
       installSeed: state.installSeed,
     );

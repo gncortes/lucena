@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 abstract final class CourseGuideKeys {
   static const screen = Key('courseGuide.screen');
+  static const back = Key('courseGuide.back');
   static const chapterScreen = Key('courseGuide.chapter.screen');
   static Key chapter(String id) => Key('courseGuide.chapter.$id');
   static Key chapterLesson(String id) => Key('courseGuide.chapter.lesson.$id');

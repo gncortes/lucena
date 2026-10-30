@@ -1,0 +1,133 @@
+[
+  {
+    "id": "Exercicio",
+    "speech": "As pretas jogam: ache o golpe.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "5r1k/5Rb1/p2P2Pp/1p5n/2p5/P4B1P/1pP5/5R1K b - - 2 32",
+      "orientation": "pretas",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "ExercicioSemFala",
+    "speech": "Encontre o melhor lance.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "5r1k/5Rb1/p2P2Pp/1p5n/2p5/P4B1P/1pP5/5R1K b - - 2 32",
+      "orientation": "pretas",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "ExercicioDica",
+    "speech": "Que xeque do cavalo ataca outra peça ao mesmo tempo?",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "5r1k/5Rb1/p2P2Pp/1p5n/2p5/P4B1P/1pP5/5R1K b - - 2 32",
+      "orientation": "pretas",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "ExercicioLance2",
+    "speech": "Isso. O rei saiu do xeque: e agora?",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "5r1k/5Rb1/p2P2Pp/1p6/2p5/P4BnP/1pP3K1/5R2 b - - 4 33",
+      "orientation": "pretas",
+      "last-move": "h1g2",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "ExercicioErrouLance2",
+    "speech": "O primeiro lance estava certo, mas Txf7 devolve a vantagem: depois de gxf7, o peão ameaça coroar. O cavalo de g3 tem um alvo melhor.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "7k/5rb1/p2P2Pp/1p6/2p5/P4BnP/1pP3K1/5R2 w - - 0 34",
+      "orientation": "pretas",
+      "last-move": "f8f7",
+      "linha-errada": "true",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "ExercicioRetry",
+    "speech": "As pretas jogam: ache o golpe.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "6rk/7p/1p1pN2P/3P1P2/p1Q1P3/Pn4q1/1PB5/1K5R b - - 0 35",
+      "orientation": "pretas",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "ExercicioAcertouDica",
+    "speech": "Certo, com dica: conta como feito, mas não soma pontos, e o próximo exercício vem um nível mais fácil.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "5r1k/5Rb1/p2P2Pp/1p6/2p5/P4B1P/1pP3K1/5n2 w - - 0 34",
+      "orientation": "pretas",
+      "last-move": "g3f1",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "Acertou",
+    "speech": "Isso. Cg3+ dá xeque e ataca a torre de f1: depois de Rg2, o cavalo leva a torre.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "5r1k/5Rb1/p2P2Pp/1p6/2p5/P4B1P/1pP3K1/5n2 w - - 0 34",
+      "orientation": "pretas",
+      "last-move": "g3f1",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "Errou",
+    "speech": "35...Dg2 ataca a torre branca em h1, que está pendurada, mas 36.Dc3+ Cd4 37.Dxd4+ captura o cavalo preto com xeque, e as brancas ficam com um bispo, um cavalo e dois peões a mais. Que xeque deixa duas peças brancas atacadas?",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "6rk/7p/1p1pN2P/3P1P2/p1Q1P3/Pn6/1PB3q1/1K5R w - - 1 36",
+      "orientation": "pretas",
+      "last-move": "g3g2",
+      "linha-errada": "true",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "Solucao",
+    "speech": "Siga a seta: o cavalo vai a d2.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "6rk/7p/1p1pN2P/3P1P2/p1Q1P3/Pn4q1/1PB5/1K5R b - - 0 35",
+      "orientation": "pretas",
+      "arrows": "b3d2:green",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "SolucaoSegue",
+    "speech": "O rei saiu do xeque. Agora a dama de c4.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "6rk/7p/1p1pN2P/3P1P2/p1Q1P3/P5q1/KPBn4/7R b - - 2 36",
+      "orientation": "pretas",
+      "last-move": "b1a2",
+      "arrows": "d2c4:green",
+      "hint-size": "412px,412px"
+    }
+  },
+  {
+    "id": "SolucaoFim",
+    "speech": "Esse era o garfo: com xeque, o rei não tem tempo de salvar a dama.",
+    "board": {
+      "name": "CompTabuleiro",
+      "fen": "6rk/7p/1p1pN2P/3P1P2/p1n1P3/P5q1/KPB5/7R w - - 0 37",
+      "orientation": "pretas",
+      "last-move": "d2c4",
+      "hint-size": "412px,412px"
+    }
+  }
+]

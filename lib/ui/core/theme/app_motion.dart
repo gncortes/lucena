@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 /// Para respeitar "remover animações" do sistema, a tela pede as durações por
 /// [AppMotion.of], que as devolve zeradas.
 abstract final class AppMotion {
+  static const persistenceRetry = Duration(milliseconds: 500);
+
   /// Resposta ao toque: botão, chip, seleção de casa.
   static const tap = Durations.short2;
 

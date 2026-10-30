@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/theme/canvas_symbols.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../core/keys/training_keys.dart';
@@ -85,7 +88,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Icon(
-                      Icons.notifications_outlined,
+                      CanvasSymbols.notifications,
                       color: Theme.of(dialogContext).colorScheme.secondary,
                     ),
                     const SizedBox(height: 16),
@@ -291,335 +294,390 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen>
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) => BlocBuilder<TrainingPlanCubit, TrainingPlanState>(
-    builder: (context, state) {
-      final cubit = context.read<TrainingPlanCubit>();
-      final config = cubit.config;
-      final t = context.l10n;
-      final colors = Theme.of(context).colorScheme;
-      final plan = state.draft;
-      final titleStyle = Theme.of(context).textTheme.titleMedium;
-      final letters = [
-        t.trainingPlanWeekdaySunday,
-        t.trainingPlanWeekdayMonday,
-        t.trainingPlanWeekdayTuesday,
-        t.trainingPlanWeekdayWednesday,
-        t.trainingPlanWeekdayThursday,
-        t.trainingPlanWeekdayFriday,
-        t.trainingPlanWeekdaySaturday,
-      ];
-      final extraKey = config.planExtraRecommendationKeys[plan.minutes];
-      final screenWidth = MediaQuery.of(context).size.width;
-      // Seven 48 dp day targets need 336 dp. Retain Canvas gutters whenever
-      // space permits, reducing only the compact phone gutters.
-      final horizontalPadding = screenWidth < 368 ? 12.0 : 16.0;
-      final dayPadding = ((screenWidth - 2 * horizontalPadding - 336) / 2)
-          .clamp(0.0, 12.0)
-          .toDouble();
-      return PopScope(
-        canPop: !state.saving,
-        child: Scaffold(
-          key: TrainingKeys.planScreen,
-          appBar: LucenaAppBar(
-            centerTitle: true,
-            toolbarHeight: 64,
-            title: Text(t.trainingPlanTitle),
-            leading: BackButton(onPressed: state.busy ? null : widget.onBack),
-          ),
-          body: SafeArea(
-            top: false,
-            child: state.loading
-                ? const Center(child: CircularProgressIndicator())
-                : !state.ready
-                ? Center(
-                    child: TextButton(
-                      onPressed: cubit.load,
-                      child: Text(t.lessonRetry),
-                    ),
-                  )
-                : DefaultTextStyle.merge(
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    child: ListView(
-                      key: TrainingKeys.planScroll,
-                      padding: EdgeInsets.fromLTRB(
-                        horizontalPadding,
-                        8,
-                        horizontalPadding,
-                        24,
+  Widget build(BuildContext context) => Theme(
+    data: Theme.of(context).copyWith(
+      textTheme: Theme.of(context).textTheme.copyWith(
+        bodyMedium: Theme.of(context).textTheme.bodyMedium
+            ?.copyWith(letterSpacing: 0),
+        bodySmall: Theme.of(context).textTheme.bodySmall
+            ?.copyWith(letterSpacing: 0),
+        titleMedium: Theme.of(context).textTheme.titleMedium
+            ?.copyWith(letterSpacing: 0),
+      ),
+    ),
+    child: BlocBuilder<TrainingPlanCubit, TrainingPlanState>(
+      builder: (context, state) {
+        final cubit = context.read<TrainingPlanCubit>();
+        final config = cubit.config;
+        final t = context.l10n;
+        final colors = Theme.of(context).colorScheme;
+        final plan = state.draft;
+        final titleStyle = Theme.of(context).textTheme.titleMedium;
+        final letters = [
+          t.trainingPlanWeekdaySunday,
+          t.trainingPlanWeekdayMonday,
+          t.trainingPlanWeekdayTuesday,
+          t.trainingPlanWeekdayWednesday,
+          t.trainingPlanWeekdayThursday,
+          t.trainingPlanWeekdayFriday,
+          t.trainingPlanWeekdaySaturday,
+        ];
+        final extraKey = config.planExtraRecommendationKeys[plan.minutes];
+        final screenWidth = MediaQuery.of(context).size.width;
+        // Seven 48 dp day targets need 336 dp. Retain Canvas gutters whenever
+        // space permits, reducing only the compact phone gutters.
+        final horizontalPadding = screenWidth < 368 ? 12.0 : 16.0;
+        final dayPadding = ((screenWidth - 2 * horizontalPadding - 336) / 2)
+            .clamp(0.0, 12.0)
+            .toDouble();
+        return PopScope(
+          canPop: !state.saving,
+          child: Scaffold(
+            key: TrainingKeys.planScreen,
+            appBar: LucenaAppBar(
+              centerTitle: true,
+              toolbarHeight: 64,
+              title: Text(t.trainingPlanTitle),
+              leading: IconButton(
+                onPressed: state.busy ? null : widget.onBack,
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                icon: const Icon(CanvasSymbols.arrowBack),
+              ),
+            ),
+            body: SafeArea(
+              top: false,
+              child: state.loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : !state.ready
+                  ? Center(
+                      child: TextButton(
+                        onPressed: cubit.load,
+                        child: Text(t.lessonRetry),
                       ),
-                      children: [
-                        if (!state.editing)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Text(t.trainingPlanIntro),
-                          ),
-                        _card(context, [
-                          Text(t.trainingPlanTimeQuestion, style: titleStyle),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 0,
-                            children: [
-                              for (final option in config.planOptions)
-                                Semantics(
-                                  button: true,
-                                  selected: plan.minutes == option.minutes,
-                                  label: courseGuideCopy(
-                                    context,
-                                    config.planLabelKeys[option.minutes]!,
-                                  ),
-                                  onTap: state.busy
-                                      ? null
-                                      : () =>
-                                            cubit.selectMinutes(option.minutes),
-                                  child: ExcludeSemantics(
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: InkWell(
-                                        key: TrainingKeys.planChip(
-                                          option.minutes,
-                                        ),
-                                        borderRadius: BorderRadius.circular(
-                                          AppShape.small,
-                                        ),
-                                        onTap: state.busy
-                                            ? null
-                                            : () => cubit.selectMinutes(
-                                                option.minutes,
-                                              ),
-                                        child: Center(
-                                          widthFactor: 1,
-                                          child: IgnorePointer(
-                                            child: ChoiceChip(
-                                              visualDensity: AppChip.density,
-                                              materialTapTargetSize:
-                                                  AppChip.tapTarget,
-                                              label: Text(
-                                                courseGuideCopy(
-                                                  context,
-                                                  config.planLabelKeys[option
-                                                      .minutes]!,
-                                                ),
-                                              ),
-                                              selected:
-                                                  plan.minutes ==
+                    )
+                  : DefaultTextStyle.merge(
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      child: ListView(
+                        key: TrainingKeys.planScroll,
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding,
+                          8,
+                          horizontalPadding,
+                          24,
+                        ),
+                        children: [
+                          if (!state.editing)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Text(t.trainingPlanIntro),
+                            ),
+                          _card(context, [
+                            Text(t.trainingPlanTimeQuestion, style: titleStyle),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 0,
+                              children: [
+                                for (final option in config.planOptions)
+                                  Semantics(
+                                    button: true,
+                                    selected: plan.minutes == option.minutes,
+                                    label: courseGuideCopy(
+                                      context,
+                                      config.planLabelKeys[option.minutes]!,
+                                    ),
+                                    onTap: state.busy
+                                        ? null
+                                        : () => cubit.selectMinutes(
+                                            option.minutes,
+                                          ),
+                                    child: ExcludeSemantics(
+                                      child: SizedBox(
+                                        height: 48,
+                                        child: InkWell(
+                                          key: TrainingKeys.planChip(
+                                            option.minutes,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            AppShape.small,
+                                          ),
+                                          onTap: state.busy
+                                              ? null
+                                              : () => cubit.selectMinutes(
                                                   option.minutes,
-                                              onSelected: state.busy
-                                                  ? null
-                                                  : (_) => cubit.selectMinutes(
-                                                      option.minutes,
+                                                ),
+                                          child: Center(
+                                            widthFactor: 1,
+                                            child: IgnorePointer(
+                                              child: ChoiceChip(
+                                                showCheckmark: false,
+                                                avatar:
+                                                    plan.minutes ==
+                                                        option.minutes
+                                                    ? const Icon(
+                                                        CanvasSymbols.check,
+                                                        size: 20,
+                                                        opticalSize: 20,
+                                                      )
+                                                    : null,
+                                                avatarBoxConstraints:
+                                                    const BoxConstraints.tightFor(
+                                                      width: 20,
+                                                      height: 20,
                                                     ),
+                                                padding: EdgeInsets.fromLTRB(
+                                                  plan.minutes == option.minutes
+                                                      ? 8
+                                                      : 16,
+                                                  6,
+                                                  16,
+                                                  6,
+                                                ),
+                                                labelPadding: EdgeInsets.only(
+                                                  left:
+                                                      plan.minutes ==
+                                                          option.minutes
+                                                      ? 8
+                                                      : 0,
+                                                ),
+                                                labelStyle: Theme.of(context)
+                                                    .textTheme
+                                                    .labelLarge
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      letterSpacing: 0,
+                                                      height: 20 / 14,
+                                                    ),
+                                                visualDensity: AppChip.density,
+                                                materialTapTargetSize:
+                                                    AppChip.tapTarget,
+                                                label: Text(
+                                                  courseGuideCopy(
+                                                    context,
+                                                    config.planLabelKeys[option
+                                                        .minutes]!,
+                                                  ),
+                                                ),
+                                                selected:
+                                                    plan.minutes ==
+                                                    option.minutes,
+                                                onSelected: state.busy
+                                                    ? null
+                                                    : (_) =>
+                                                          cubit.selectMinutes(
+                                                            option.minutes,
+                                                          ),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        ]),
-                        const SizedBox(height: 12),
-                        _card(
-                          context,
-                          [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.lightbulb_outline,
-                                  color: colors.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    t.trainingPlanRecommended,
-                                    style: titleStyle,
-                                  ),
-                                ),
                               ],
                             ),
-                            Text(
-                              courseGuideCopy(
-                                context,
-                                config.planRecommendationKeys[plan.minutes]!,
-                              ),
-                            ),
-                            if (extraKey != null)
-                              Text(courseGuideCopy(context, extraKey)),
-                          ],
-                          highlighted: true,
-                          spacing: 8,
-                        ),
-                        const SizedBox(height: 12),
-                        _card(
-                          context,
-                          [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Text(
-                                t.trainingPlanDays,
-                                style: titleStyle,
-                              ),
-                            ),
-                            // The 40 dp painted circle lives inside a distinct 48 dp hit target.
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: dayPadding,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          ]),
+                          const SizedBox(height: 12),
+                          _card(
+                            context,
+                            [
+                              Row(
                                 children: [
-                                  for (var i = 0; i < 7; i++)
-                                    _weekday(context, state, i, letters[i]),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Text(
-                                t.trainingPlanDaysOff,
-                                style: TextStyle(
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ],
-                          weekdays: true,
-                          spacing: 10,
-                        ),
-                        const SizedBox(height: 12),
-                        _card(
-                          context,
-                          [
-                            SwitchListTile(
-                              key: TrainingKeys.reminderSwitch,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              secondary: Icon(
-                                state.denied
-                                    ? Icons.notifications_off_outlined
-                                    : Icons.notifications_outlined,
-                              ),
-                              title: Text(t.trainingReminderTitle),
-                              subtitle: Text(t.trainingReminderSub),
-                              value: plan.reminderOn && !state.denied,
-                              onChanged: state.busy
-                                  ? null
-                                  : (on) {
-                                      if (on) {
-                                        _enableReminder();
-                                      } else {
-                                        cubit.disableReminder();
-                                      }
-                                    },
-                            ),
-                            if (state.denied)
-                              _card(context, [
-                                Text(t.trainingReminderDenied),
-                                OutlinedButton.icon(
-                                  key: TrainingKeys.openNotificationSettings,
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size.fromHeight(
-                                      kButtonHeight,
+                                  Icon(
+                                    CanvasSymbols.lightbulb,
+                                    color: colors.primary,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      t.trainingPlanRecommended,
+                                      style: titleStyle,
                                     ),
                                   ),
-                                  onPressed: state.busy
-                                      ? null
-                                      : cubit.openSettings,
-                                  icon: const Icon(Icons.open_in_new),
-                                  label: Text(t.trainingOpenSettings),
+                                ],
+                              ),
+                              Text(
+                                courseGuideCopy(
+                                  context,
+                                  config.planRecommendationKeys[plan.minutes]!,
                                 ),
-                              ], highlighted: true)
-                            else if (plan.reminderOn) ...[
-                              ListTile(
-                                key: TrainingKeys.reminderTime,
-                                contentPadding: const EdgeInsets.symmetric(
+                              ),
+                              if (extraKey != null)
+                                Text(courseGuideCopy(context, extraKey)),
+                            ],
+                            highlighted: true,
+                            spacing: 8,
+                          ),
+                          const SizedBox(height: 12),
+                          _card(
+                            context,
+                            [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
-                                leading: const Icon(Icons.schedule),
-                                title: Text(t.trainingReminderTime),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                child: Text(
+                                  t.trainingPlanDays,
+                                  style: titleStyle,
+                                ),
+                              ),
+                              // The 40 dp painted circle lives inside a distinct 48 dp hit target.
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: dayPadding,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      MaterialLocalizations.of(context)
-                                          .formatTimeOfDay(
-                                            TimeOfDay(
-                                              hour: plan.reminderHour,
-                                              minute: plan.reminderMinute,
-                                            ),
-                                            alwaysUse24HourFormat: true,
-                                          ),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        height: 24 / 16,
-                                        color: colors.primary,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const Icon(Icons.chevron_right),
+                                    for (var i = 0; i < 7; i++)
+                                      _weekday(context, state, i, letters[i]),
                                   ],
                                 ),
-                                onTap: state.busy ? null : _pickTime,
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
                                 child: Text(
-                                  t.trainingReminderSilent,
+                                  t.trainingPlanDaysOff,
                                   style: TextStyle(
                                     color: colors.onSurfaceVariant,
                                   ),
                                 ),
                               ),
                             ],
-                          ],
-                          spacing: 0,
-                          inset: 8,
-                          verticalInset: 4,
-                        ),
-                        if (state.failed)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
+                            weekdays: true,
+                            spacing: 10,
+                          ),
+                          const SizedBox(height: 12),
+                          _card(
+                            context,
+                            [
+                              SwitchListTile(
+                                key: TrainingKeys.reminderSwitch,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                secondary: Icon(
+                                  state.denied
+                                      ? Icons.notifications_off_outlined
+                                      : CanvasSymbols.notifications,
+                                ),
+                                title: Text(t.trainingReminderTitle),
+                                subtitle: Text(t.trainingReminderSub),
+                                value: plan.reminderOn && !state.denied,
+                                onChanged: state.busy
+                                    ? null
+                                    : (on) {
+                                        if (on) {
+                                          _enableReminder();
+                                        } else {
+                                          cubit.disableReminder();
+                                        }
+                                      },
+                              ),
+                              if (state.denied)
+                                _card(context, [
+                                  Text(t.trainingReminderDenied),
+                                  OutlinedButton.icon(
+                                    key: TrainingKeys.openNotificationSettings,
+                                    style: OutlinedButton.styleFrom(
+                                      minimumSize: const Size.fromHeight(
+                                        kButtonHeight,
+                                      ),
+                                    ),
+                                    onPressed: state.busy
+                                        ? null
+                                        : cubit.openSettings,
+                                    icon: const Icon(Icons.open_in_new),
+                                    label: Text(t.trainingOpenSettings),
+                                  ),
+                                ], highlighted: true)
+                              else if (plan.reminderOn) ...[
+                                ListTile(
+                                  key: TrainingKeys.reminderTime,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  leading: const Icon(CanvasSymbols.schedule),
+                                  title: Text(t.trainingReminderTime),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        MaterialLocalizations.of(context)
+                                            .formatTimeOfDay(
+                                              TimeOfDay(
+                                                hour: plan.reminderHour,
+                                                minute: plan.reminderMinute,
+                                              ),
+                                              alwaysUse24HourFormat: true,
+                                            ),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          height: 24 / 16,
+                                          color: colors.primary,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const Icon(Icons.chevron_right),
+                                    ],
+                                  ),
+                                  onTap: state.busy ? null : _pickTime,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  child: Text(
+                                    t.trainingReminderSilent,
+                                    style: TextStyle(
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                            spacing: 0,
+                            inset: 8,
+                            verticalInset: 4,
+                          ),
+                          if (state.failed)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Text(
+                                t.trainingPlanSaveError,
+                                key: TrainingKeys.planError,
+                                style: TextStyle(color: colors.error),
+                              ),
+                            ),
+                          const SizedBox(height: 24),
+                          FilledButton(
+                            key: TrainingKeys.planSave,
+                            style: FilledButton.styleFrom(
+                              minimumSize: const Size.fromHeight(kButtonHeight),
+                              textStyle: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(
+                                    fontSize: 16,
+                                    height: 24 / 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                            onPressed: state.busy ? null : _save,
                             child: Text(
-                              t.trainingPlanSaveError,
-                              key: TrainingKeys.planError,
-                              style: TextStyle(color: colors.error),
+                              state.editing
+                                  ? t.trainingPlanSave
+                                  : t.trainingPlanStart,
                             ),
                           ),
-                        const SizedBox(height: 24),
-                        FilledButton(
-                          key: TrainingKeys.planSave,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size.fromHeight(kButtonHeight),
-                            textStyle: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(
-                                  fontSize: 16,
-                                  height: 24 / 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                          ),
-                          onPressed: state.busy ? null : _save,
-                          child: Text(
-                            state.editing
-                                ? t.trainingPlanSave
-                                : t.trainingPlanStart,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
+            ),
           ),
-        ),
-      );
-    },
+        );
+      },
+    ),
   );
 }

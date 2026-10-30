@@ -10,6 +10,7 @@ import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/use_cases/training/home_course_card.dart';
+import '../../../domain/use_cases/training/needs_opening_profile.dart';
 import '../../../routing/routes.dart';
 import '../../../routing/training_launch.dart';
 import '../../../routing/training_goal_destination.dart';
@@ -108,6 +109,17 @@ Future<void> openTrainingCourse(
     );
     if (!context.mounted) return;
     unawaited(router.push('${Routes.training(course.name)}?origem=home'));
+    if (needsOpeningProfile(training.state, training.resources, lesson)) {
+      unawaited(
+        router.push(
+          Uri(
+            path: '${Routes.training(course.name)}/profile',
+            queryParameters: {'part': lesson!.partId},
+          ).toString(),
+        ),
+      );
+      return;
+    }
     if (card.destination == HomeCourseDestination.lessonTab) {
       return;
     }

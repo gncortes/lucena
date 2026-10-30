@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:dartchess/dartchess.dart';
+
+import '../../../domain/use_cases/game_rules.dart';
+
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/training/training_analytics.dart';
@@ -58,6 +62,7 @@ final class TrainingExerciseState {
     this.errorSnapshot,
     this.practicing = false,
     this.practiceCorrect = false,
+    this.solving = false,
   });
   final TrainingExercisePhase phase;
   final TrainingExercise? exercise;
@@ -68,12 +73,40 @@ final class TrainingExerciseState {
   final bool hint, correct, reinforcement, error;
   final String? errorFeedback;
   final TrainingExerciseError? errorSnapshot;
-  final bool practicing, practiceCorrect;
+  final bool practicing, practiceCorrect, solving;
   bool get displayedCorrect => practicing ? practiceCorrect : correct;
   bool get canRetryPractice =>
       phase == TrainingExercisePhase.result &&
       !displayedCorrect &&
       errorSnapshot != null;
+
+  /// The actual continuation for notation and analysis, including accepted
+  /// alternatives. A main-line continuation is never attributed to a branch.
+  List<String> get playedMoves {
+    final source = exercise;
+    if (source == null) return const [];
+    final snapshot = errorSnapshot;
+    if (phase == TrainingExercisePhase.result &&
+        !displayedCorrect &&
+        snapshot != null) {
+      return [...source.solution.take(snapshot.cursor), snapshot.wrongMove];
+    }
+    if (lastMove != null) {
+      for (var index = 0; index < source.solution.length; index += 2) {
+        if (!source.alternativesAt(index).contains(lastMove)) continue;
+        final candidate = [...source.solution.take(index), lastMove!];
+        var position = GameRules.fromFen(source.fen);
+        for (final uci in candidate) {
+          final move = Move.parse(uci);
+          position = position == null || move == null
+              ? null
+              : GameRules.play(position, move)?.position;
+        }
+        if (position?.fen == fen) return candidate;
+      }
+    }
+    return source.solution.take(cursor).toList();
+  }
 
   TrainingExerciseState copyWith({
     TrainingExercisePhase? phase,
@@ -89,6 +122,7 @@ final class TrainingExerciseState {
     TrainingExerciseError? errorSnapshot,
     bool? practicing,
     bool? practiceCorrect,
+    bool? solving,
   }) => TrainingExerciseState(
     phase: phase ?? this.phase,
     exercise: exercise,
@@ -105,6 +139,7 @@ final class TrainingExerciseState {
     errorSnapshot: errorSnapshot ?? this.errorSnapshot,
     practicing: practicing ?? this.practicing,
     practiceCorrect: practiceCorrect ?? this.practiceCorrect,
+    solving: solving ?? this.solving,
   );
 }
 
@@ -117,6 +152,8 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     this.trainingAnalytics,
     required this.goalKey,
     this.origin = 'metas',
+    this.practiceTheme,
+    this.practiceExerciseId,
   }) : super(const TrainingExerciseState());
   final TrainingRepository repository;
   final TrainingCourseConfig config;
@@ -142,6 +179,10 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
 
   final String goalKey;
   final String origin;
+
+  /// Explicit history mode; loading and playing never mutate course progress.
+  final String? practiceTheme, practiceExerciseId;
+  bool get historicalPractice => practiceTheme != null;
   DateTime? _started;
   Duration? _finished;
   Map<String, String> _feedback = const {};
@@ -158,6 +199,39 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
   Future<void> load() async {
     try {
       final resources = await repository.resources(config.course);
+      if (historicalPractice) {
+        final saved = await repository.load(config.course);
+        final cycle = saved.cycles[practiceTheme];
+        final exercise = resources.banks[practiceTheme]
+            ?.where((e) => e.id == practiceExerciseId)
+            .firstOrNull;
+        if (cycle == null ||
+            exercise == null ||
+            !cycle.days.any((d) => d.exerciseId == practiceExerciseId)) {
+          throw StateError('Historical exercise unavailable');
+        }
+        PlayTrainingExercise(exercise);
+        _openedAt = now();
+        _started = now();
+        _feedback = resources.errorFeedback[practiceTheme] ?? const {};
+        emit(
+          TrainingExerciseState(
+            phase: TrainingExercisePhase.playing,
+            exercise: exercise,
+            goal: TrainingGoal(
+              kind: GoalKind.exercise,
+              ref: practiceTheme!,
+              itemId: exercise.id,
+              stars: exercise.stars,
+            ),
+            cycle: cycle,
+            fen: exercise.fen,
+            lastMove: exercise.lastMove,
+            practicing: true,
+          ),
+        );
+        return;
+      }
       final saved = await repository.transact(
         config.course,
         (current) => BuildDayGoals(now, config)(current, resources),
@@ -195,7 +269,11 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
       }
       _started =
           trainingAnalytics?.attempt(config.course, goal.key)?.started ?? now();
-      _finished = goal.done ? Duration.zero : null;
+      _finished = goal.done
+          ? (result?.elapsedMs == null
+                ? Duration.zero
+                : Duration(milliseconds: result!.elapsedMs!))
+          : null;
       emit(
         TrainingExerciseState(
           phase: goal.done
@@ -274,6 +352,9 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
   Future<void> play(String uci) async {
     if (state.phase != TrainingExercisePhase.playing) return;
     final before = state;
+    if (before.solving && uci != before.exercise!.solution[before.cursor]) {
+      return;
+    }
     final step = PlayTrainingExercise(state.exercise!)
         .play(state.fen!, state.cursor, uci);
     TrainingExerciseError? snapshot;
@@ -309,6 +390,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
             : TrainingExercisePhase.playing,
       ),
     );
+    if (step.done && before.practicing) _finished = elapsed;
     if (step.done && !before.practicing) {
       _finished = elapsed;
       await save();
@@ -337,8 +419,32 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     );
   }
 
+  /// Guided replay uses only the authored line and never rewrites the attempt.
+  void showSolution() {
+    if (state.phase != TrainingExercisePhase.result || state.exercise == null) {
+      return;
+    }
+    emit(
+      TrainingExerciseState(
+        phase: TrainingExercisePhase.playing,
+        exercise: state.exercise,
+        goal: state.goal,
+        cycle: state.cycle,
+        fen: state.exercise!.fen,
+        lastMove: state.exercise!.lastMove,
+        correct: state.correct,
+        reinforcement: state.reinforcement,
+        practicing: true,
+        solving: true,
+        errorSnapshot: state.errorSnapshot,
+      ),
+    );
+  }
+
   Future<void> save() async {
-    if (state.phase != TrainingExercisePhase.saving) return;
+    if (historicalPractice || state.phase != TrainingExercisePhase.saving) {
+      return;
+    }
     try {
       final saved = await repository.transact(config.course, (current) async {
         final resources = await repository.resources(config.course);
@@ -369,6 +475,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
           goalKey,
           correct: state.correct,
           exerciseError: state.errorSnapshot,
+          elapsedMs: elapsed.inMilliseconds.clamp(0, 1 << 53),
           hint:
               state.hint ||
               (refreshed.day?.goals
@@ -416,6 +523,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
   /// Returns true only when navigation may leave the exercise.
   bool next() {
     if (state.phase != TrainingExercisePhase.result) return false;
+    if (historicalPractice) return true;
     final cycle = state.cycle!;
     final finished = state.reinforcement
         ? cycle.phase != ThemePhase.reinforce

@@ -3,6 +3,7 @@
 abstract final class AppIconSize {
   /// Dentro de chip e de selo.
   static const small = 16.0;
+  static const compact = 18.0;
 
   /// Dentro de botão e de aviso.
   static const button = 20.0;

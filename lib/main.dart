@@ -6,6 +6,13 @@ import 'dart:async';
 import 'domain/models/lesson_content.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry;
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'data/repositories/analysis/learning_analysis_repository.dart';
+import 'data/services/preferences_service.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -121,6 +128,11 @@ import 'ui/wiki/view_models/wiki_links_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Material Symbols Rounded',
+    ], await rootBundle.loadString('assets/fonts/MaterialSymbols-LICENSE.txt'));
+  });
   final version = await Dependencies.installedVersion();
   final firebase = await startFirebase();
   final trainingSeed = await Dependencies.trainingInstallSeed();
@@ -468,6 +480,11 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<AnalysisRepository>.value(
           value: dependencies.analysisRepository,
+        ),
+        RepositoryProvider<LearningAnalysisRepository>(
+          create: (_) =>
+              dependencies.learningAnalysisRepository ??
+              LearningAnalysisRepository(PreferencesService()),
         ),
         RepositoryProvider<GameReviewRepository>.value(
           value: dependencies.gameReviewRepository,

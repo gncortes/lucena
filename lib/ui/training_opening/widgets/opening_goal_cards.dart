@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/canvas_symbols.dart';
 
 import '../../../domain/models/training/training_resources.dart';
 import '../../../domain/models/training/training_state.dart';
@@ -53,6 +54,9 @@ class OpeningGoalCards extends StatelessWidget {
               return Card(
                 key: TrainingKeys.openingCard(entry.key),
                 margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppShape.card),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Column(
@@ -75,14 +79,19 @@ class OpeningGoalCards extends StatelessWidget {
                                 ),
                                 Text(
                                   bank.first.black ? t.sideBlack : t.sideWhite,
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        height: 16 / 12,
+                                        color: colors.onSurface,
+                                      ),
                                 ),
                               ],
                             ),
                           ),
                           Text(
                             t.trainingOpeningCount(progress.done, bank.length),
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(color: colors.onSurfaceVariant),
                           ),
                         ],
                       ),
@@ -101,7 +110,8 @@ class OpeningGoalCards extends StatelessWidget {
                                       ? AppColors.record
                                       : available && i == index
                                       ? colors.primary
-                                      : colors.surface,
+                                      : Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                   borderRadius: BorderRadius.circular(
                                     AppShape.small,
                                   ),
@@ -110,7 +120,7 @@ class OpeningGoalCards extends StatelessWidget {
                                 child:
                                     entry.value.doneTrechos.containsKey(part.id)
                                     ? Icon(
-                                        Icons.check,
+                                        CanvasSymbols.check,
                                         size: AppIconSize.small,
                                         color: colors.onPrimary,
                                       )
@@ -147,7 +157,10 @@ class OpeningGoalCards extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const Icon(Icons.chevron_right),
+                              const Icon(
+                                CanvasSymbols.chevronRight,
+                                size: AppIconSize.button,
+                              ),
                             ],
                           ),
                         ),

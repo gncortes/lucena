@@ -103,10 +103,15 @@ flutter:
     - assets/tablebase/roteiros/
     # Teste de nível (T52): mapa de habilidades e banco de perguntas
     - assets/placement/
+    - assets/fonts/MaterialSymbols-LICENSE.txt
     # Pesos do Maia-3 (tools/maia/export_weights.py)
     - assets/models/maia3-5m.bin
 
   fonts:
+    # Official Material Symbols Rounded subset used by the Canvas.
+    - family: LucenaCanvasSymbols
+      fonts:
+        - asset: assets/fonts/LucenaCanvasSymbols.ttf
     # Peças de xadrez para a notação figurina (tools/make_figurine_font.py)
     - family: LucenaFigurine
       fonts:

@@ -119,7 +119,7 @@ void main() {
         if (course.isNotEmpty) {
           expect(
             course.single.body,
-            'Falta a aula Tema 9 e 9 metas para concluir.',
+            'Falta a aula Tema 9 e 12 metas para concluir.',
           );
           expect(course.single.title, 'Hora do xadrez');
           expect(course.single.payload, '/');

@@ -134,6 +134,7 @@ final class TrainingCourseConfig {
   );
   static const pilares = TrainingCourseConfig(
     course: TrainingCourse.pilares,
+    lessonMinutes: 15,
     hasLevelTest: true,
     indexSource: 'assets/courses/pilares/index.json',
     followUps: PilaresFollowUps(),

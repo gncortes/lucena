@@ -15,6 +15,7 @@ import 'package:lucena/domain/use_cases/training/complete_training_goal.dart';
 import 'package:lucena/domain/use_cases/training/complete_training_lesson.dart';
 import 'package:lucena/domain/use_cases/training/double_training_goals.dart';
 import 'package:lucena/domain/use_cases/training/training_date.dart';
+import 'package:lucena/domain/use_cases/training/play_training_opening.dart';
 
 import '../fakes/fake_now.dart';
 import '../fakes/fake_course_training_repository.dart';
@@ -294,6 +295,146 @@ final class TrainingScenarioBuilder {
     }
   }
 
+  /// Canvas's middle-day example: three old topics, lesson four today and
+  /// four unlocked openings. Every completion goes through production rules.
+  TrainingState canvasGoalsScenario(String sample) {
+    if (!{
+      'middle',
+      'goalDone',
+      'extraLesson',
+      'nextDay',
+      'done',
+      'doneExtra',
+    }.contains(sample)) {
+      return goalsScenario(sample);
+    }
+    final data = content;
+    final topics = data.lessons
+        .where((l) => l.visible && l.kind == TrainingLessonKind.theme)
+        .toList();
+    final openings = data.lessons
+        .where(
+          (l) =>
+              l.visible &&
+              l.kind == TrainingLessonKind.opening &&
+              data.openings.containsKey(l.id),
+        )
+        .take(4)
+        .toList();
+    final yesterday = trainingDate(now().subtract(const Duration(days: 1)));
+    List<bool> results(OpeningTrecho part) => List.filled(
+      PlayTrainingOpening(part).validStudentMoveCounts.first,
+      true,
+    );
+    var state = TrainingState(
+      course: course,
+      installSeed: 'canvas-middle',
+      onboardingDone: true,
+      plan: const TrainingPlan(weekdays: 127),
+      completedLessons: {
+        for (final l in data.lessons.takeWhile((l) => l.id != topics[3].id))
+          l.id: yesterday,
+        for (final l in openings) l.id: yesterday,
+      },
+      cycles: {
+        for (var i = 0; i < 3; i++)
+          topics[i].id: ThemeCycle(
+            lessonId: topics[i].id,
+            startedOn: '2026-10-01',
+            level: i < 2 ? 2 : 1,
+            days: [
+              for (var d = 0; d < 3 - i; d++)
+                ThemeDay(
+                  date: trainingDate(now().subtract(Duration(days: 4 - d))),
+                  exerciseId: 'canvas.$i.$d',
+                  stars: 1,
+                  correct: true,
+                ),
+            ],
+          ),
+      },
+      openings: {
+        for (final (i, l) in openings.indexed)
+          l.id: OpeningTrack(
+            lessonId: l.id,
+            startedOn: '2026-10-01',
+            doneTrechos: {
+              for (final p in data.openings[l.id]!.take(
+                i == 1
+                    ? 0
+                    : i == 3
+                    ? data.openings[l.id]!.length
+                    : 1,
+              ))
+                p.id: yesterday,
+            },
+            firstTry: {
+              for (final p in data.openings[l.id]!.take(
+                i == 1
+                    ? 0
+                    : i == 3
+                    ? data.openings[l.id]!.length
+                    : 1,
+              ))
+                p.id: results(p),
+            },
+          ),
+      },
+    );
+    state = BuildDayGoals(now, config)(state, data);
+    state = CompleteTrainingLesson(now, config)(state, data, topics[3]);
+    TrainingState finishOpening(TrainingState current, String id) {
+      final goal = current.day!.goals
+          .where((g) => g.kind == GoalKind.openings)
+          .firstOrNull;
+      final partId = goal?.items[id];
+      if (partId == null) return current;
+      final part = data.openings[id]!.firstWhere((p) => p.id == partId);
+      return CompleteTrainingGoal(now)
+          .opening(current, data, id, results(part));
+    }
+
+    final second = state.day!.goals.firstWhere(
+      (g) => g.kind == GoalKind.exercise && g.ref == topics[1].id,
+    );
+    state = CompleteTrainingGoal(now)
+        .exercise(state, data, second.key, correct: true);
+    for (final l in openings.skip(2)) {
+      state = finishOpening(state, l.id);
+    }
+    if (sample == 'goalDone') {
+      final goal = state.day!.goals.firstWhere(
+        (g) => g.kind == GoalKind.exercise && g.ref == topics.first.id,
+      );
+      return CompleteTrainingGoal(now)
+          .exercise(state, data, goal.key, correct: true);
+    }
+    if (sample == 'done' || sample == 'doneExtra') {
+      for (final goal in state.day!.goals.toList()) {
+        if (goal.done) continue;
+        if (goal.kind == GoalKind.exercise) {
+          state = CompleteTrainingGoal(now)
+              .exercise(state, data, goal.key, correct: true);
+        } else if (goal.kind == GoalKind.openings) {
+          for (final id in goal.items.keys) {
+            state = finishOpening(state, id);
+          }
+        }
+      }
+    }
+    if ({'extraLesson', 'nextDay', 'doneExtra'}.contains(sample)) {
+      state = CompleteTrainingLesson(now, config)(state, data, topics[4]);
+    }
+    if (sample == 'nextDay') {
+      now.advance(const Duration(days: 1));
+      state = BuildDayGoals(now, config)(state, data);
+      for (final l in openings.skip(2)) {
+        state = finishOpening(state, l.id);
+      }
+    }
+    return state;
+  }
+
   TrainingState large({int cycleDay = 1, bool dayOff = false}) {
     if (course != TrainingCourse.pilares) {
       return schoolPieces(dayOff: dayOff);
@@ -380,9 +521,20 @@ final class TrainingScenarioBuilder {
             .exercise(state, content, goal.key, correct: true);
       } else if (goal.kind == GoalKind.openings) {
         if (leaveOpenings) continue;
-        for (final id in goal.items.keys) {
-          state = CompleteTrainingGoal(now)
-              .opening(state, content, id, [true, true]);
+        for (final entry in goal.items.entries) {
+          final id = entry.key;
+          final part = content.openings[id]!.firstWhere(
+            (part) => part.id == entry.value,
+          );
+          state = CompleteTrainingGoal(now).opening(
+            state,
+            content,
+            id,
+            List.filled(
+              PlayTrainingOpening(part).validStudentMoveCounts.first,
+              true,
+            ),
+          );
         }
       } else if (goal.kind == GoalKind.lesson) {
         state = CompleteTrainingLesson(now, config)(
@@ -420,6 +572,27 @@ final class TrainingScenarioBuilder {
 
   TrainingState schoolOffDay() => schoolDayOne(dayOff: true);
   TrainingState schoolTwoHours() => schoolDayOne(minutes: 120);
+
+  TrainingState schoolDayOneProgress() {
+    var state = schoolDayOne();
+    for (final lesson in content.lessons.take(2)) {
+      state = CompleteTrainingLesson(now, config)(state, content, lesson);
+    }
+    return ReconcileSchoolTraining(now)(
+      state,
+      content,
+      SchoolTrainingObservations(
+        starRuns: [
+          StarChallengeRun(
+            piece: ChallengePiece.rook,
+            level: ChallengeLevel.easy,
+            points: 99,
+            at: now(),
+          ),
+        ],
+      ),
+    );
+  }
 
   TrainingState schoolPieces({
     bool dayOff = false,

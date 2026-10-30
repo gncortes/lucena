@@ -1,11 +1,15 @@
+import '../../core/theme/app_icon_size.dart';
+
 import 'dart:async';
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/training/course_training_repository.dart';
+import '../../../routing/routes.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/analytics_event.dart';
@@ -15,21 +19,23 @@ import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/endgame_lesson_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
-import '../../core/board/centered_board_layout.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
-import '../../core/theme/app_shape.dart';
+import '../../core/theme/canvas_symbols.dart';
+import '../../core/widgets/training_canvas_layout.dart';
+import '../../lesson_script/widgets/script_move_list.dart';
+import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/course/training_badge.dart';
-import '../../core/widgets/exercise_actions.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/lucena_sheet.dart';
+import '../../core/widgets/script_speech_sheet.dart';
+import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../core/widgets/teacher_speech.dart';
-import '../../core/widgets/speech_balloon.dart';
 import '../../endgames/widgets/grade_widgets.dart';
+import '../../endgames/widgets/stars_row.dart';
 import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/training_exercise_cubit.dart';
 
@@ -44,8 +50,11 @@ class TrainingExerciseScreen extends StatelessWidget {
     required this.teacher,
     required this.onNextGoal,
     required this.onRedoLesson,
+    this.practiceTheme,
+    this.practiceExerciseId,
     this.heroTag,
     this.preview,
+    this.previewSpeech,
     this.homeHero = false,
     super.key,
   });
@@ -53,11 +62,15 @@ class TrainingExerciseScreen extends StatelessWidget {
   final TrainingCourseConfig config;
   final Now now;
   final String goalKey, title;
+  final String? practiceTheme, practiceExerciseId;
   final Character teacher;
   final VoidCallback onNextGoal;
   final ValueChanged<String> onRedoLesson;
   final Object? heroTag;
   final TrainingExerciseState? preview;
+
+  /// Explicit visual fixture text; ignored without a preview state.
+  final String? previewSpeech;
   final bool homeHero;
 
   @override
@@ -67,6 +80,8 @@ class TrainingExerciseScreen extends StatelessWidget {
       config: config,
       now: now,
       goalKey: goalKey,
+      practiceTheme: practiceTheme,
+      practiceExerciseId: practiceExerciseId,
       analytics: context.analytics,
       trainingAnalytics: context.trainingAnalytics,
     )..load(),
@@ -132,15 +147,32 @@ class _ExerciseViewState extends State<_ExerciseView> {
           state.phase != TrainingExercisePhase.expired;
       final result = state.phase == TrainingExercisePhase.result;
       final feedback = result ? state.errorFeedback : null;
-      final screen = MediaQuery.sizeOf(context);
-      final boardCenter = BoardViewport.usefulHeightOf(context) / 2 - 64;
-      // Preserve the natural speech/header when a full-width board cannot fit.
-      final fullWidthFits =
-          boardCenter - screen.width / 2 >= (screen.height < 780 ? 80 : 112);
+      final speech =
+          (widget.screen.preview != null
+              ? widget.screen.previewSpeech
+              : null) ??
+          (state.solving && !result
+              ? l.trainingSolutionPrompt
+              : feedback ??
+                    (result
+                        ? state.displayedCorrect
+                              ? l.trainingFixedCorrect
+                              : l.trainingFixedWrong
+                        : l.trainingFixedPrompt));
+      final moves = state.playedMoves;
+      final sans = exercise == null
+          ? <String>[]
+          : GameRules.sanLine(GameRules.fromFen(exercise.fen)!, moves);
+      final start = exercise == null ? null : GameRules.fromFen(exercise.fen)!;
       return Scaffold(
         key: TrainingKeys.exerciseScreen,
         appBar: LucenaAppBar(
           toolbarHeight: 64,
+          leading: IconButton(
+            icon: const Icon(CanvasSymbols.arrowBack),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
           centerTitle: true,
           title: Text(
             widget.screen.title,
@@ -151,11 +183,21 @@ class _ExerciseViewState extends State<_ExerciseView> {
             if (exercise != null)
               Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: TrainingBadge.difficultyIcon(
-                  context,
-                  exercise.stars,
+                child: Semantics(
                   key: TrainingKeys.exerciseTitleDifficulty,
-                  size: 24,
+                  label: TrainingBadge.difficultyLabel(context, exercise.stars),
+                  child: Icon(
+                    CanvasSymbols.star,
+                    size: AppIconSize.standard,
+                    fill:
+                        state.hint ||
+                            state.solving ||
+                            state.errorSnapshot != null ||
+                            (result && !state.correct)
+                        ? 0
+                        : 1,
+                    color: StarsRow.colorFor(exercise.stars),
+                  ),
                 ),
               ),
           ],
@@ -175,205 +217,39 @@ class _ExerciseViewState extends State<_ExerciseView> {
                 )
               : IgnorePointer(
                   ignoring: loading,
-                  child: CenteredBoardLayout(
-                    centerY: boardCenter,
-                    minFraction: fullWidthFits ? 1 : 0,
-                    reserveTop: 120,
-                    reserveBottom: 72,
-                    gap: 0,
-                    shrinkSides: false,
-                    top: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        12,
-                        0,
-                        12,
-                        screen.height < 780 ? 0 : 8,
-                      ),
-                      child: feedback == null
-                          ? SingleChildScrollView(
-                              reverse: true,
-                              child: Padding(
-                                padding: EdgeInsets.zero,
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    textTheme: Theme.of(context).textTheme
-                                        .copyWith(
-                                          bodyLarge: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium,
-                                        ),
-                                  ),
-                                  child: TeacherSpeech(
-                                    teacher: widget.screen.teacher,
-                                    avatarSize: 40,
-                                    bubbleAboveHeader: true,
-                                    trainingLayout: true,
-                                    headerAction: feedback == null
-                                        ? null
-                                        : IconButton(
-                                            key: TrainingKeys
-                                                .exerciseFeedbackExpand,
-                                            tooltip: l.trainingSeeExplanation,
-                                            icon: const Icon(
-                                              Icons.open_in_full,
-                                            ),
-                                            onPressed: () =>
-                                                _feedback(context, feedback),
-                                          ),
-                                    text: result
-                                        ? (feedback ??
-                                              (state.displayedCorrect
-                                                  ? l.trainingFixedCorrect
-                                                  : l.trainingFixedWrong))
-                                        : l.trainingFixedPrompt,
-                                    speechContext: SpeechContext.teaching,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Flexible(
-                                  child: SpeechBalloon(
-                                    tail: BalloonTail.down,
-                                    tailX: SpeechBalloon.tailXFor(40),
-                                    pop: false,
-                                    padding: screen.height < 780
-                                        ? const EdgeInsetsDirectional.symmetric(
-                                            horizontal: 16,
-                                            vertical: 0,
-                                          )
-                                        : SpeechBalloon.defaultPadding,
-                                    child: SingleChildScrollView(
-                                      key: TrainingKeys.exerciseFeedbackScroll,
-                                      child: Text(
-                                        feedback,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TeacherSpeech(
-                                  part: TeacherSpeechPart.header,
-                                  teacher: widget.screen.teacher,
-                                  avatarSize: 40,
-                                  text: feedback,
-                                  speechContext: SpeechContext.teaching,
-                                  bubbleAboveHeader: true,
-                                  trainingLayout: true,
-                                  headerAction: IconButton(
-                                    key: TrainingKeys.exerciseFeedbackExpand,
-                                    tooltip: l.trainingSeeExplanation,
-                                    icon: const Icon(Icons.open_in_full),
-                                    onPressed: () =>
-                                        _feedback(context, feedback),
-                                  ),
-                                ),
-                              ],
-                            ),
+                  child: TrainingCanvasPage(
+                    pageKey: TrainingKeys.exercisePage,
+                    teacher: widget.screen.teacher,
+                    text: speech,
+                    onOpen: () => _feedback(context, speech),
+                    boardBuilder: (size) => Builder(
+                      builder: (context) => _board(context, state, size),
                     ),
-                    board: LayoutBuilder(
-                      builder: (context, box) =>
-                          _board(context, state, box.maxWidth),
-                    ),
-                    bottom: Column(
-                      mainAxisSize: MainAxisSize.min,
+                    notation: Column(
                       children: [
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: result ? 56 : 48,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Wrap(
-                                alignment: WrapAlignment.center,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                spacing: 12,
-                                runSpacing: 4,
-                                children: [
-                                  if (result)
-                                    Material(
-                                      color: state.displayedCorrect
-                                          ? Theme.of(context)
-                                                .colorScheme
-                                                .primaryContainer
-                                          : Theme.of(context)
-                                                .colorScheme
-                                                .errorContainer,
-                                      borderRadius: BorderRadius.circular(
-                                        AppShape.full,
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 8,
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          spacing: 8,
-                                          children: [
-                                            Icon(
-                                              state.displayedCorrect
-                                                  ? Icons.check_circle
-                                                  : Icons.highlight_off,
-                                              color: state.displayedCorrect
-                                                  ? Theme.of(context)
-                                                        .colorScheme
-                                                        .primary
-                                                  : Theme.of(context)
-                                                        .colorScheme
-                                                        .onErrorContainer,
-                                            ),
-                                            Text(
-                                              state.displayedCorrect
-                                                  ? l.exerciseSolvedCorrect
-                                                  : l.trainingWrongResult,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.w700,
-                                                    color:
-                                                        state.displayedCorrect
-                                                        ? Theme.of(context)
-                                                              .colorScheme
-                                                              .onPrimaryContainer
-                                                        : Theme.of(context)
-                                                              .colorScheme
-                                                              .onErrorContainer,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  if (state.hint)
-                                    TrainingBadge.withHint(context),
-                                ],
+                        ScriptMoveList(
+                          moves: [
+                            for (var i = 0; i < sans.length; i++)
+                              ScriptMoveEntry(
+                                id: '$i',
+                                san: sans[i],
+                                number:
+                                    start!.fullmoves +
+                                    (i + (start.turn == Side.black ? 1 : 0)) ~/
+                                        2,
+                                side: i.isEven
+                                    ? start.turn
+                                    : start.turn.opposite,
+                                variant: false,
                               ),
-                              if (result)
-                                Text(
-                                  state.hint || !state.correct
-                                      ? l.trainingTomorrowEasier
-                                      : l.trainingTomorrowHarder,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                            ],
-                          ),
+                          ],
+                          currentId: sans.isEmpty ? null : '${sans.length - 1}',
+                          onTap: (_) {},
                         ),
                         if (state.error)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              l.trainingExerciseSaveError,
-                              key: TrainingKeys.exerciseSaveError,
-                            ),
+                          Text(
+                            l.trainingExerciseSaveError,
+                            key: TrainingKeys.exerciseSaveError,
                           ),
                       ],
                     ),
@@ -385,53 +261,66 @@ class _ExerciseViewState extends State<_ExerciseView> {
             : SafeArea(
                 child: IgnorePointer(
                   ignoring: loading,
-                  child: ExerciseActions(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    hint: state.phase == TrainingExercisePhase.playing
-                        ? ExerciseHintButton(
-                            backgroundColor: AppColors.trainingHintSurface,
+                  child: TrainingCanvasFooter(
+                    leading: result
+                        ? TrainingCanvasFooter.round(
+                            key: TrainingKeys.exerciseAnalyze,
+                            icon: CanvasSymbols.search,
+                            label: l.learningAnalysisTitle,
+                            onPressed: () => context.push(
+                              Routes.learningAnalysisAt(
+                                exercise.fen,
+                                moves: moves,
+                                orientation: exercise.fen.split(' ')[1] == 'b'
+                                    ? 'black'
+                                    : 'white',
+                              ),
+                            ),
+                          )
+                        : state.phase == TrainingExercisePhase.playing &&
+                              !state.solving
+                        ? TrainingCanvasFooter.hint(
                             key: TrainingKeys.exerciseHint,
                             label: l.exerciseHintFree,
                             onPressed: cubit.hint,
                           )
                         : null,
-                    leading: state.canRetryPractice
-                        ? IconButton(
-                            key: TrainingKeys.exercisePracticeRetry,
-                            tooltip: l.lessonRetry,
-                            icon: const Icon(Icons.replay),
-                            onPressed: cubit.retryPractice,
+                    secondary: result && !state.displayedCorrect
+                        ? TrainingCanvasFooter.button(
+                            key: TrainingKeys.secondary,
+                            label: l.trainingSeeSolution,
+                            onPressed: cubit.showSolution,
                           )
                         : null,
-                    actions: [
-                      if (result)
-                        ExerciseAction(
-                          label: state.correct
-                              ? l.trainingSeeExplanation
-                              : l.trainingSeeSolution,
-                          key: TrainingKeys.secondary,
-                          onPressed: () => _solution(context, state),
-                        ),
-                      if (result)
-                        ExerciseAction(
-                          label: l.trainingNextGoal,
-                          primary: true,
-                          key: TrainingKeys.nextGoal,
-                          onPressed: () {
-                            if (cubit.next()) widget.screen.onNextGoal();
-                          },
-                        ),
-                      if (state.error)
-                        ExerciseAction(
-                          label: l.lessonRetry,
-                          primary: true,
-                          key: TrainingKeys.exerciseRetry,
-                          onPressed:
-                              state.phase == TrainingExercisePhase.playing
-                              ? cubit.hint
-                              : cubit.save,
-                        ),
-                    ],
+                    primary: state.error
+                        ? TrainingCanvasFooter.button(
+                            key: TrainingKeys.exerciseRetry,
+                            label: l.lessonRetry,
+                            primary: true,
+                            onPressed:
+                                state.phase == TrainingExercisePhase.playing
+                                ? cubit.hint
+                                : cubit.save,
+                          )
+                        : state.canRetryPractice
+                        ? TrainingCanvasFooter.button(
+                            key: TrainingKeys.exercisePracticeRetry,
+                            label: l.lessonRetry,
+                            primary: true,
+                            onPressed: cubit.retryPractice,
+                          )
+                        : result
+                        ? TrainingCanvasFooter.button(
+                            key: TrainingKeys.nextGoal,
+                            label: cubit.historicalPractice
+                                ? l.trainingViewProgress
+                                : l.trainingNextGoal,
+                            primary: true,
+                            onPressed: () {
+                              if (cubit.next()) widget.screen.onNextGoal();
+                            },
+                          )
+                        : null,
                   ),
                 ),
               ),
@@ -445,13 +334,22 @@ class _ExerciseViewState extends State<_ExerciseView> {
     double size,
   ) {
     final cubit = context.read<TrainingExerciseCubit>();
-    final position = GameRules.fromFen(state.fen!)!;
+    final failed =
+        state.phase == TrainingExercisePhase.result && !state.displayedCorrect
+        ? state.errorSnapshot
+        : null;
+    final wrongMove = failed == null ? null : Move.parse(failed.wrongMove);
+    final failedPosition = failed == null || wrongMove == null
+        ? null
+        : GameRules.play(GameRules.fromFen(failed.fen)!, wrongMove)?.position;
+    final fen = failedPosition?.fen ?? state.fen!;
+    final position = GameRules.fromFen(fen)!;
     final side = state.exercise!.fen.split(' ')[1] == 'b'
         ? Side.black
         : Side.white;
     final playing = state.phase == TrainingExercisePhase.playing;
     final data = GameData(
-      fen: state.fen!,
+      fen: fen,
       playerSide: !playing
           ? PlayerSide.none
           : side == Side.white
@@ -459,7 +357,11 @@ class _ExerciseViewState extends State<_ExerciseView> {
           : PlayerSide.black,
       sideToMove: position.turn,
       validMoves: playing ? GameRules.legalMoves(position) : const {},
-      lastMove: state.lastMove == null ? null : Move.parse(state.lastMove!),
+      lastMove: failedPosition != null
+          ? wrongMove
+          : state.lastMove == null
+          ? null
+          : Move.parse(state.lastMove!),
       kingSquareInCheck: GameRules.checkedKing(position),
     );
     if (_controller == null) {
@@ -470,7 +372,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
     final settings = context.select(
       (SettingsCubit c) => c.state?.board ?? const BoardSettings(),
     );
-    final hint = state.hint && playing
+    final hint = (state.hint || state.solving) && playing
         ? Move.parse(state.exercise!.solution[state.cursor])
         : null;
     Widget board = Directionality(
@@ -484,7 +386,9 @@ class _ExerciseViewState extends State<_ExerciseView> {
         shapes: {
           if (hint is NormalMove)
             Arrow(
-              color: Theme.of(context).colorScheme.primary,
+              color: state.solving
+                  ? AppColors.trainingSolutionArrow
+                  : Theme.of(context).colorScheme.primary,
               orig: hint.from,
               dest: hint.to,
             ),
@@ -500,34 +404,21 @@ class _ExerciseViewState extends State<_ExerciseView> {
     return board;
   }
 
-  void _solution(BuildContext context, TrainingExerciseState state) {
-    final exercise = state.exercise!;
-    final san = GameRules.sanLine(
-      GameRules.fromFen(exercise.fen)!,
-      exercise.solution,
-    );
-    showLucenaSheet<void>(
-      context,
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(san.join(' '), textDirection: TextDirection.ltr),
-      ),
-    );
-  }
-
   void _feedback(BuildContext context, String text) {
-    showLucenaSheet<void>(
+    showScriptSpeechSheet(
       context,
       sheetKey: TrainingKeys.exerciseFeedbackSheet,
-      builder: (_) => SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: TeacherSpeech(
-          teacher: widget.screen.teacher,
-          text: text,
-          speechContext: SpeechContext.teaching,
-          trainingLayout: true,
-        ),
+      canvasLayout: true,
+      action: LessonVoiceButton(
+        audible: false,
+        speed: 1,
+        showSpeedBadge: false,
+        canvasLayout: true,
+        onPressed: () => showLessonSoundDialog(context),
       ),
+      viktor: widget.screen.teacher,
+      title: context.l10n.teacherName(widget.screen.teacher.name),
+      texts: [text],
     );
   }
 
@@ -602,7 +493,8 @@ class _ExerciseViewState extends State<_ExerciseView> {
                     ? ExerciseGrade.passed
                     : ExerciseGrade.below,
               ),
-              const SizedBox(height: 8),
+              // Canvas inline medal reserves four extra baseline pixels.
+              const SizedBox(height: 12),
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -610,6 +502,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                   fontSize: 22,
                   height: 28 / 22,
                   fontWeight: FontWeight.w800,
+                  letterSpacing: 0,
                 ),
               ),
               const SizedBox(height: 4),
@@ -625,6 +518,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontSize: 16,
                   height: 24 / 16,
+                  letterSpacing: 0,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -640,10 +534,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
                       backgroundColor: day.earned
                           ? AppColors.trainingDayCorrect
                           : AppColors.trainingDayWrong,
-                      foregroundColor: AppColors.white,
+                      foregroundColor: AppColors.chessWhiteColor,
                       child: Icon(
                         day.earned ? Icons.check : Icons.close,
-                        size: 20,
+                        size: AppIconSize.button,
                       ),
                     ),
                 ],
@@ -655,6 +549,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontSize: 14,
                   height: 20 / 14,
+                  letterSpacing: 0,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -662,10 +557,16 @@ class _ExerciseViewState extends State<_ExerciseView> {
               Theme(
                 data: Theme.of(context).copyWith(
                   textTheme: Theme.of(context).textTheme.copyWith(
-                    bodyLarge: Theme.of(context).textTheme.bodyMedium,
+                    bodyLarge: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontSize: 14,
+                      height: 20 / 14,
+                      letterSpacing: 0,
+                    ),
                   ),
                 ),
                 child: TeacherSpeech(
+                  showSpeedBadge: false,
+                  canvasTrainingBalloon: true,
                   teacher: widget.screen.teacher,
                   avatarSize: 56,
                   text: viktor,

@@ -162,6 +162,49 @@ class CourseDownloadRepository {
     await add('assets/lessons/en/lessons.json');
     await add('assets/lessons/pt/lessons.json', optional: true);
     if (config.course == TrainingCourse.escola) {
+      final course = jsonDecode(files[config.indexSource]!) as Map;
+      final lessons = [
+        for (final module in (course['modules'] as List))
+          for (final lesson in ((module as Map)['lessons'] as List? ?? []))
+            if ((lesson as Map)['id'] is String) lesson,
+      ];
+      if (lessons.isNotEmpty) {
+        // These paths are constructed by AssetLessonScriptRepository, rather
+        // than written as references in course.json or the scripts.
+        for (final language in ['en', 'pt']) {
+          for (final name in [
+            'lessons',
+            'roteiro_generico',
+            'roteiro_iniciante',
+          ]) {
+            await add('assets/lessons/$language/$name.json');
+          }
+        }
+      }
+      for (final lesson in lessons) {
+        final id = lesson['id'] as String;
+        // The school route also constructs this path directly from the id.
+        await add('assets/lessons/roteiros/$id.json');
+        final endgame = 'assets/lessons/endgames/$id.json';
+        await add(endgame, optional: true);
+        final parts = files.containsKey(endgame)
+            ? (jsonDecode(files[endgame]!) as Map)['parts'] as List? ?? []
+            : const [];
+        for (final language in ['en', 'pt']) {
+          await add('assets/lessons/$language/iniciante/$id.json');
+          await add(
+            'assets/lessons/$language/endgames/$id.json',
+            optional: true,
+          );
+          for (final part in parts) {
+            if (part is! Map || part['id'] is! String) continue;
+            await add(
+              'assets/lessons/$language/endgames/$id.${part['id']}.rot.json',
+              optional: true,
+            );
+          }
+        }
+      }
       return files;
     }
     final index = jsonDecode(files[config.indexSource]!) as Map;

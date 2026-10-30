@@ -4,6 +4,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_shape.dart';
+import '../../core/theme/canvas_symbols.dart';
 
 import '../../../domain/models/lesson_content.dart';
 import '../../core/keys/training_entry_keys.dart';
@@ -129,11 +130,12 @@ class CourseDownloadFailure extends StatelessWidget {
             children: [
               EmptyState(
                 style: EmptyStateStyle.error,
+                iconFill: 1,
                 icon: noSpace
                     ? Icons.sd_card_alert
                     : offline
-                    ? Icons.cloud_off
-                    : Icons.sync_problem,
+                    ? CanvasSymbols.cloudOff
+                    : CanvasSymbols.syncProblem,
                 usePrimaryErrorColor: true,
                 message: message,
                 actionLabel: t.lessonRetry,
@@ -153,7 +155,7 @@ class CourseDownloadFailure extends StatelessWidget {
                       // Keep the retry screen, including on devices without a handler.
                     }
                   },
-                  icon: const Icon(Icons.folder_open),
+                  icon: const Icon(CanvasSymbols.folderOpen, fill: 1),
                   label: Text(t.trainingDownloadOpenStorage),
                 ),
             ],

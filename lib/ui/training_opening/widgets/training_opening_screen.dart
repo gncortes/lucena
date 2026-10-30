@@ -12,16 +12,17 @@ import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../core/board/board_settings_ui.dart';
-import '../../core/board/centered_board_layout.dart';
 import '../../core/analytics/analytics_context.dart';
 import '../../core/keys/training_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_motion.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/widgets/exercise_actions.dart';
+import '../../core/widgets/training_canvas_layout.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/lucena_app_bar.dart';
-import '../../core/widgets/teacher_speech.dart';
+import '../../core/widgets/script_speech_sheet.dart';
+import '../../core/widgets/teacher_speech.dart' show LessonVoiceButton;
+import '../../core/widgets/lesson_sound_dialog.dart';
 import '../../lesson_script/view_models/lesson_script_state.dart';
 import '../../lesson_script/widgets/script_move_list.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -126,14 +127,7 @@ class _OpeningViewState extends State<_OpeningView> {
       final ready =
           state.line != null && state.phase != TrainingOpeningPhase.expired;
       final bank = state.resources?.openings[state.lessonId] ?? [];
-      final screen = MediaQuery.sizeOf(context);
       final multipart = state.trecho?.lines.isNotEmpty == true;
-      final boardCenter =
-          BoardViewport.usefulHeightOf(context) / 2 -
-          (multipart ? 64 : kToolbarHeight);
-      // Preserve the natural speech/header when a full-width board cannot fit.
-      final fullWidthFits =
-          boardCenter - screen.width / 2 >= (screen.height < 780 ? 80 : 112);
       final number = bank.indexWhere((t) => t.id == state.trecho?.id) + 1;
       final notation = multipart
           ? state.line!.notationIndices(
@@ -155,10 +149,14 @@ class _OpeningViewState extends State<_OpeningView> {
       return Scaffold(
         key: TrainingKeys.openingScreen,
         appBar: LucenaAppBar(
-          toolbarHeight: multipart ? 64 : null,
-          leading: ModalRoute.of(context)?.canPop == true
-              ? const BackButton(key: TrainingKeys.openingBack)
-              : null,
+          toolbarHeight: 64,
+          centerTitle: true,
+          leading: IconButton(
+            key: TrainingKeys.openingBack,
+            icon: const Icon(CanvasSymbols.arrowBack),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
           title: Text(
             key: TrainingKeys.openingTitle(state.lessonId ?? ''),
             ready
@@ -187,76 +185,33 @@ class _OpeningViewState extends State<_OpeningView> {
                 )
               : IgnorePointer(
                   ignoring: loading || _replayFen != null,
-                  child: CenteredBoardLayout(
-                    centerY: boardCenter,
-                    minFraction: fullWidthFits ? 1 : 0,
-                    reserveTop: 120,
-                    reserveBottom: multipart ? 56 : 72,
-                    gap: 0,
-                    shrinkSides: false,
-                    top: Padding(
-                      padding: EdgeInsets.fromLTRB(
-                        12,
-                        0,
-                        12,
-                        screen.height < 780 ? 0 : 8,
-                      ),
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          textTheme: Theme.of(context).textTheme.copyWith(
-                            bodyLarge: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                        child: TeacherSpeech(
-                          teacher: widget.screen.teacher,
-                          avatarSize: 40,
-                          bubbleAboveHeader: true,
-                          trainingLayout: true,
-                          text: speechText,
-                          speechContext: SpeechContext.teaching,
-                        ),
+                  child: TrainingCanvasPage(
+                    pageKey: TrainingKeys.openingPage,
+                    teacher: widget.screen.teacher,
+                    text: speechText,
+                    onOpen: () => _fullSpeech(context, speechText),
+                    boardBuilder: (size) => AnimatedOpacity(
+                      opacity: _fading ? 0 : 1,
+                      duration: AppMotion.of(context).component,
+                      onEnd: _onFadeEnd,
+                      child: Builder(
+                        builder: (context) => _board(context, state, size),
                       ),
                     ),
-                    board: LayoutBuilder(
-                      builder: (context, box) => AnimatedOpacity(
-                        opacity: _fading ? 0 : 1,
-                        duration: AppMotion.of(context).component,
-                        onEnd: _onFadeEnd,
-                        child: _board(context, state, box.maxWidth),
-                      ),
-                    ),
-                    bottom: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: SingleChildScrollView(
-                            child: ScriptMoveList(
-                              moves: [
-                                for (final i in notation)
-                                  if (state.line!.moveAt(i) != null)
-                                    ScriptMoveEntry(
-                                      id: '${i + 1}',
-                                      san: state.line!.san[i],
-                                      number: state.line!.moveNumberAt(i),
-                                      side: state.line!.sideAt(i),
-                                      variant: false,
-                                    ),
-                              ],
-                              currentId: state.shown == 0
-                                  ? null
-                                  : '${state.shown}',
-                              onTap: (id) {
-                                cubit.notationTap(int.parse(id));
-                              },
+                    notation: ScriptMoveList(
+                      moves: [
+                        for (final i in notation)
+                          if (state.line!.moveAt(i) != null)
+                            ScriptMoveEntry(
+                              id: '${i + 1}',
+                              san: state.line!.san[i],
+                              number: state.line!.moveNumberAt(i),
+                              side: state.line!.sideAt(i),
+                              variant: false,
                             ),
-                          ),
-                        ),
-                        if (state.error)
-                          Text(
-                            l.trainingExerciseSaveError,
-                            key: TrainingKeys.openingSaveError,
-                          ),
                       ],
+                      currentId: state.shown == 0 ? null : '${state.shown}',
+                      onTap: (id) => cubit.notationTap(int.parse(id)),
                     ),
                   ),
                 ),
@@ -266,13 +221,10 @@ class _OpeningViewState extends State<_OpeningView> {
             : SafeArea(
                 child: IgnorePointer(
                   ignoring: loading,
-                  child: ExerciseActions(
-                    hug: state.phase == TrainingOpeningPhase.complete,
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    hint: state.phase == TrainingOpeningPhase.complete
+                  child: TrainingCanvasFooter(
+                    leading: state.phase == TrainingOpeningPhase.complete
                         ? null
-                        : ExerciseHintButton(
-                            backgroundColor: AppColors.trainingHintSurface,
+                        : TrainingCanvasFooter.hint(
                             key: TrainingKeys.exerciseHint,
                             label: l.exerciseHintFree,
                             onPressed:
@@ -282,50 +234,78 @@ class _OpeningViewState extends State<_OpeningView> {
                                 : null,
                           ),
                     navigation: state.phase == TrainingOpeningPhase.complete
+                        ? []
+                        : [
+                            TrainingCanvasFooter.round(
+                              key: TrainingKeys.prevMove,
+                              icon: CanvasSymbols.chevronLeft,
+                              label: l.trainingPrevMove,
+                              navigation: true,
+                              onPressed: state.shown == 0
+                                  ? null
+                                  : () => cubit.review(state.shown - 1),
+                            ),
+                            TrainingCanvasFooter.round(
+                              key: TrainingKeys.nextMove,
+                              icon: CanvasSymbols.chevronRight,
+                              label: l.trainingNextMove,
+                              navigation: true,
+                              onPressed: state.reviewing
+                                  ? () => cubit.review(state.shown + 1)
+                                  : null,
+                            ),
+                          ],
+                    secondary: state.phase != TrainingOpeningPhase.complete
                         ? null
-                        : state.shown == 0
-                        ? ExerciseNavigation.start
-                        : state.shown == state.cursor
-                        ? ExerciseNavigation.end
-                        : ExerciseNavigation.middle,
-                    onPreviousMove: () => cubit.review(state.shown - 1),
-                    onNextMove: state.reviewing
-                        ? () => cubit.review(state.shown + 1)
-                        : null,
-                    actions: [
-                      if (state.error)
-                        ExerciseAction(
-                          key: TrainingKeys.openingSaveRetry,
-                          label: l.lessonRetry,
-                          primary: true,
-                          onPressed: cubit.retry,
-                        ),
-                      if (state.phase == TrainingOpeningPhase.complete)
-                        ExerciseAction(
-                          key: state.allPartsDone
-                              ? TrainingKeys.openingProgress
-                              : TrainingKeys.openingNextPart,
-                          label: state.allPartsDone
-                              ? l.trainingViewProgress
-                              : l.trainingNextPart,
-                          onPressed: state.allPartsDone
-                              ? widget.screen.onProgress
-                              : cubit.nextPart,
-                        ),
-                      if (state.phase == TrainingOpeningPhase.complete)
-                        ExerciseAction(
-                          key: TrainingKeys.nextGoal,
-                          label: l.trainingNextGoal,
-                          primary: true,
-                          onPressed: widget.screen.onNextGoal,
-                        ),
-                    ],
+                        : TrainingCanvasFooter.button(
+                            key: state.allPartsDone
+                                ? TrainingKeys.openingProgress
+                                : TrainingKeys.openingNextPart,
+                            label: state.allPartsDone
+                                ? l.trainingViewProgress
+                                : l.trainingNextPart,
+                            onPressed: state.allPartsDone
+                                ? widget.screen.onProgress
+                                : cubit.nextPart,
+                          ),
+                    primary: state.error
+                        ? TrainingCanvasFooter.button(
+                            key: TrainingKeys.openingSaveRetry,
+                            label: l.lessonRetry,
+                            primary: true,
+                            onPressed: cubit.retry,
+                          )
+                        : state.phase != TrainingOpeningPhase.complete
+                        ? null
+                        : TrainingCanvasFooter.button(
+                            key: TrainingKeys.nextGoal,
+                            label: l.trainingNextGoal,
+                            primary: true,
+                            onPressed: widget.screen.onNextGoal,
+                          ),
                   ),
                 ),
               ),
       );
     },
   );
+
+  void _fullSpeech(BuildContext context, String text) {
+    showScriptSpeechSheet(
+      context,
+      canvasLayout: true,
+      action: LessonVoiceButton(
+        audible: false,
+        speed: 1,
+        showSpeedBadge: false,
+        canvasLayout: true,
+        onPressed: () => showLessonSoundDialog(context),
+      ),
+      viktor: widget.screen.teacher,
+      title: context.l10n.teacherName(widget.screen.teacher.name),
+      texts: [text],
+    );
+  }
 
   Widget _board(BuildContext context, TrainingOpeningState state, double size) {
     final cubit = context.read<TrainingOpeningCubit>();

@@ -8,15 +8,16 @@ final class TrainingReminderText {
   final Map<String, Object> arguments;
 }
 
-TrainingReminderText? reminderText(DayGoals day) {
+TrainingReminderText? reminderText(DayGoals day, {int? remaining}) {
   if (!day.studyDay || day.allDone) return null;
   final lesson = day.goals
       .where((g) => g.kind == GoalKind.lesson && !g.done)
       .firstOrNull;
+  final count = remaining ?? day.remaining;
   return lesson == null
-      ? TrainingReminderText('trainingNotifGoals', {'n': day.remaining})
+      ? TrainingReminderText('trainingNotifGoals', {'n': count})
       : TrainingReminderText('trainingNotifLesson', {
           'aula': lesson.ref,
-          'n': day.remaining - 1,
+          'n': count - 1,
         });
 }

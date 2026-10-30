@@ -24,7 +24,7 @@ import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
-import 'package:lucena/ui/core/widgets/teacher_speech.dart';
+import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/course_entry/widgets/course_entry_gate.dart';
 import 'package:lucena/ui/course_guide/view_models/course_guide_cubit.dart';
 import 'package:lucena/ui/course_guide/widgets/course_guide_screen.dart';
@@ -119,7 +119,12 @@ Future<void> shot(WidgetTester tester, String name, Size size) async {
   for (final key in [TrainingKeys.exerciseBoard, TrainingKeys.openingBoard]) {
     if (find.byKey(key).evaluate().isNotEmpty) {
       final board = tester.getRect(find.byKey(key));
-      expect(board.center.dy, closeTo((52 + size.height - 24) / 2, .01));
+      // Canvas centres the speech/Viktor/board/notation block. Its board is
+      // deliberately below the viewport centre; block geometry is checked by
+      // the dedicated C6/D6 Canvas fixtures, not by this shared capture helper.
+      expect(board.center.dx, closeTo(size.width / 2, .01));
+      expect(board.top, greaterThanOrEqualTo(52 + 64));
+      expect(board.bottom, lessThanOrEqualTo(size.height - 24 - 96 + .01));
     }
   }
   if (capture.isEmpty) return;
@@ -675,17 +680,13 @@ void main() {
           tester.getRect(find.byKey(TrainingKeys.openingBoard)),
           initialBoard,
         );
-        final speechScroll = find.descendant(
-          of: find.byType(TeacherSpeech),
-          matching: find.byType(Scrollable),
-        );
-        final position = tester.state<ScrollableState>(speechScroll).position;
-        if (position.maxScrollExtent > 0) {
-          await tester.drag(speechScroll, const Offset(0, -240));
-          await tester.pumpAndSettle();
-          expect(position.pixels, position.maxScrollExtent);
-          await shot(tester, 'AberturaConcluidaRolada', size);
-        }
+        await tester.tap(find.byKey(LessonScriptKeys.speech));
+        await tester.pumpAndSettle();
+        expect(find.byKey(LessonScriptKeys.speechSheet), findsOneWidget);
+        await shot(tester, 'AberturaConcluidaFalaInteira', size);
+        await tester.tap(find.byKey(LessonScriptKeys.speechSheetClose));
+        await tester.pumpAndSettle();
+        expect(find.byKey(LessonScriptKeys.speechSheet), findsNothing);
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
       },

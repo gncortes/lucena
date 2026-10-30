@@ -82,15 +82,34 @@ class EndgameLessonState {
 
   int get score {
     final lesson = this.lesson;
+    if (lesson?.id.startsWith('pilares.') == true) {
+      return progress
+              .completedTestOf(lesson!)
+              ?.values
+              .where((correct) => correct)
+              .length ??
+          0;
+    }
     return lesson == null ? 0 : progress.scoreOf(lesson);
   }
 
-  int get maxScore => lesson?.maxScore ?? 0;
-  int get passScore => lesson?.passScore ?? 0;
+  int get maxScore => lesson?.id.startsWith('pilares.') == true
+      ? exerciseCount
+      : lesson?.maxScore ?? 0;
+  int get passScore => lesson?.id.startsWith('pilares.') == true
+      ? ChapterTestScores.passed(exerciseCount)
+      : lesson?.passScore ?? 0;
 
   /// A faixa da nota atual e as estrelas que cada faixa pede.
   ExerciseGrade get grade {
     final lesson = this.lesson;
+    if (lesson?.id.startsWith('pilares.') == true) {
+      if (progress.completedTestOf(lesson!) == null) return ExerciseGrade.below;
+      return ExerciseGrade.values[ChapterTestScores.gradeIndex(
+        score,
+        exerciseCount,
+      )];
+    }
     return lesson == null
         ? ExerciseGrade.below
         : EndgameLessonRules.grade(lesson, score);
@@ -98,6 +117,14 @@ class EndgameLessonState {
 
   Map<ExerciseGrade, int> get gradeStars {
     final lesson = this.lesson;
+    if (lesson?.id.startsWith('pilares.') == true) {
+      return {
+        ExerciseGrade.passed: ChapterTestScores.passed(exerciseCount),
+        ExerciseGrade.good: ChapterTestScores.good(exerciseCount),
+        ExerciseGrade.excellent: ChapterTestScores.excellent(exerciseCount),
+        ExerciseGrade.perfect: exerciseCount,
+      };
+    }
     return lesson == null ? const {} : EndgameLessonRules.gradeStars(lesson);
   }
 
@@ -116,6 +143,11 @@ class EndgameLessonState {
   /// A nota mínima foi alcançada: o passo final está liberado.
   bool get passed {
     final lesson = this.lesson;
+    if (lesson?.id.startsWith('pilares.') == true) {
+      return progress.lessonDone &&
+          progress.completedTestOf(lesson!) != null &&
+          score >= passScore;
+    }
     return lesson != null && EndgameLessonRules.passed(lesson, progress);
   }
 
@@ -244,7 +276,13 @@ class EndgameLessonCubit extends Cubit<EndgameLessonState> {
     final all = await _progress.load();
     final cleared = all
         .of(lesson.id)
-        .copyWith(stars: const {}, clearExercise: true);
+        .copyWith(
+          stars: const {},
+          clearExercise: true,
+          lastTestAnswers: lesson.id.startsWith('pilares.')
+              ? all.of(lesson.id).completedTestOf(lesson)
+              : null,
+        );
     await _progress.save(all.withLesson(lesson.id, cleared));
     if (isClosed) return;
     emit(state.copyWith(progress: cleared));

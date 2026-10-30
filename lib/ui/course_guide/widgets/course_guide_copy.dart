@@ -1,6 +1,22 @@
 import 'package:flutter/widgets.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../../domain/models/training/training_content.dart';
+
+/// Study screens use the explanatory topic label; Catalog keeps the short title.
+String trainingMasteryLessonTitle(
+  BuildContext context,
+  TrainingLesson lesson,
+) => switch (lesson.id) {
+  'pilares.c1.doubleAttack' => context.l10n.trainingMasteryDoubleAttack,
+  'pilares.c1.hangingPiece' => context.l10n.trainingMasteryHangingPiece,
+  _ => lesson.title,
+};
+
+String trainingProgressOpeningTitle(BuildContext context, OpeningTrecho part) =>
+    part.openingId == 'others' || part.openingId == 'othersAggr'
+    ? context.l10n.trainingOpeningChipOthers
+    : part.title;
 
 /// Maps the localization identifiers carried by TrainingCourseConfig. Course
 /// views consume the same slots without branching on a course enum.

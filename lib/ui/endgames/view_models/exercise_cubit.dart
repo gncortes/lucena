@@ -53,6 +53,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   DateTime? _pausedAt;
   Completer<void>? _foreground;
   bool _closing = false;
+  bool _testSubmitting = false;
+  Move? _firstTestAnswer;
 
   Future<void> _waitForForeground() async {
     while (_pausedAt != null && !_closing && !isClosed) {
@@ -182,6 +184,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     bool restartPosition = false,
   }) async {
     final revision = ++_loadRevision;
+    _firstTestAnswer = null;
     final contentVersion = await learning?.versionOf(true, lessonId);
     if (isClosed || revision != _loadRevision) return;
     _learningVersion = contentVersion;
@@ -299,6 +302,36 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   }
 
   /// O aluno moveu uma peça.
+  /// Chapter tests record the first legal answer without revealing feedback.
+  /// Acceptance comes from the authored exercise contract, as in [play].
+  Future<void> submitTestMove(Move move) async {
+    if (state.locked || _testSubmitting || isClosed) return;
+    if (_firstTestAnswer == null && !state.interactive) return;
+    final position = _position();
+    final answer = _firstTestAnswer ?? move;
+    final played = position == null ? null : GameRules.play(position, answer);
+    if (played == null) return;
+    final exercise = state.exercise!;
+    final accepted = LessonRules.accepts(exercise.step, state.turn, answer.uci);
+    _firstTestAnswer = answer;
+    _testSubmitting = true;
+    emit(state.copyWith(testAnswerPending: true));
+    try {
+      await _finish(
+        fen: played.position.fen,
+        lastMove: answer,
+        history: [answer.uci],
+        earned: accepted ? exercise.stars : 0,
+        solutionShown: !accepted,
+      );
+      _firstTestAnswer = null;
+      if (!isClosed) emit(state.copyWith(testAnswerPending: false));
+    } finally {
+      _testSubmitting = false;
+    }
+  }
+
+  /// O aluno moveu uma peça no treino com feedback.
   Future<void> play(Move move) async {
     if (!state.interactive) {
       return;
@@ -648,8 +681,18 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     if (!state.locked) {
       final all = await _progress.load();
       final each = all.of(lesson.id);
+      final stars = {...each.stars, exercise.id: earned};
+      final complete = lesson.exercises.every(
+        (other) => stars.containsKey(other.id),
+      );
       final saved = each.copyWith(
-        stars: {...each.stars, exercise.id: earned},
+        stars: stars,
+        lastTestAnswers: lesson.id.startsWith('pilares.') && complete
+            ? {
+                for (final other in lesson.exercises)
+                  other.id: stars[other.id] == other.stars,
+              }
+            : null,
         clearExercise: true,
       );
       await _progress.save(all.withLesson(lesson.id, saved));
@@ -657,7 +700,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       if (lesson.exercises.every(
         (other) => saved.stars.containsKey(other.id),
       )) {
-        if (!approvalObserved && saved.scoreOf(lesson) >= lesson.passScore) {
+        if (!approvalObserved && _passedTest(lesson, saved)) {
           await learning?.notifyUnitCompleted(
             owner: _learningOwner,
             kind: 'endgame_chapter',
@@ -683,7 +726,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       // still finish a local training goal; it never mints an account grade.
       final closed = (await _progress.load()).of(lesson.id);
       if (EndgameLessonRules.allSolved(lesson, closed) &&
-          closed.scoreOf(lesson) >= lesson.passScore) {
+          _passedTest(lesson, closed)) {
         await learning?.notifyUnitCompleted(
           owner: _learningOwner,
           kind: 'endgame_chapter',
@@ -877,7 +920,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       }
       final observed = EndgameLessonProgress(stars: current.exerciseStars);
       if (EndgameLessonRules.allSolved(lesson, observed) &&
-          observed.scoreOf(lesson) >= lesson.passScore) {
+          _passedTest(lesson, observed)) {
         await repository.observe(
           owner: owner,
           version: version,
@@ -914,4 +957,16 @@ class ExerciseCubit extends Cubit<ExerciseState> {
     _said[key] = index + 1;
     return state.texts.say(key, index);
   }
+
+  static bool _passedTest(
+    EndgameLesson lesson,
+    EndgameLessonProgress progress,
+  ) => lesson.id.startsWith('pilares.')
+      ? lesson.exercises
+                .where(
+                  (exercise) => progress.stars[exercise.id] == exercise.stars,
+                )
+                .length >=
+            ChapterTestScores.passed(lesson.exercises.length)
+      : progress.scoreOf(lesson) >= lesson.passScore;
 }

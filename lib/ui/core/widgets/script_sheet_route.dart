@@ -18,6 +18,8 @@ Future<void> showScriptSheet(
   Key? closeKey,
   String? closeTooltip,
   Color? color,
+  double? closeGap,
+  double? closeMargin,
 }) {
   final barrier = MaterialLocalizations.of(context).modalBarrierDismissLabel;
   return Navigator.of(context).push<void>(
@@ -33,6 +35,8 @@ Future<void> showScriptSheet(
         closeKey: closeKey,
         closeTooltip: closeTooltip,
         color: color,
+        closeGap: closeGap,
+        closeMargin: closeMargin,
         child: builder(context),
       ),
       transitionsBuilder: (context, animation, _, child) => SlideTransition(
@@ -58,6 +62,8 @@ class ScriptSheetFrame extends StatelessWidget {
     this.closeKey,
     this.closeTooltip,
     this.color,
+    this.closeGap,
+    this.closeMargin,
     super.key,
   });
 
@@ -65,6 +71,8 @@ class ScriptSheetFrame extends StatelessWidget {
 
   /// O fundo da folha (padrão: a superfície mais clara).
   final Color? color;
+  final double? closeGap;
+  final double? closeMargin;
 
   /// A altura máxima da folha, em fração da tela (sem o ✕).
   final double maxHeightFactor;
@@ -88,9 +96,9 @@ class ScriptSheetFrame extends StatelessWidget {
           Align(
             alignment: AlignmentDirectional.centerEnd,
             child: Padding(
-              padding: const EdgeInsetsDirectional.only(
-                end: SheetCloseButton.margin,
-                bottom: SheetCloseButton.gap,
+              padding: EdgeInsetsDirectional.only(
+                end: closeMargin ?? SheetCloseButton.margin,
+                bottom: closeGap ?? SheetCloseButton.gap,
               ),
               child: SheetCloseButton(
                 key: closeKey,

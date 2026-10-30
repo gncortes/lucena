@@ -89,6 +89,7 @@ void main() {
             'opening': OpeningTrack(
               lessonId: 'opening',
               startedOn: '2026-10-20',
+              doneTrechos: {'a': '2026-10-21', 'retired-mock': '2026-10-22'},
               firstTry: {
                 'a': [true, false, true],
                 'retired-mock': [true, true, true],
@@ -137,7 +138,7 @@ void main() {
         expect(find.byType(Scaffold), findsOneWidget);
         expect(find.byType(AppBar), findsNothing);
         expect(find.byKey(TrainingKeys.themeScreen), findsOneWidget);
-        expect(find.text(t.trainingThemeReinforceInfo), findsNothing);
+        expect(find.text(t.themeCanvasReinforceInfo(1)), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );
@@ -245,6 +246,11 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        if (stars.isEmpty) {
+          expect(find.byKey(TrainingKeys.masteryRow('theme')), findsNothing);
+          expect(tester.takeException(), isNull);
+          return;
+        }
         final progress = tester.widget<AnimatedProgress>(
           find.byType(AnimatedProgress).first,
         );
@@ -281,9 +287,10 @@ void main() {
         await tester.pumpAndSettle();
         final context = tester.element(find.byType(TrainingProgressTab));
         final t = context.l10n;
-        expect(find.text(t.trainingPercent(83)), findsOneWidget);
-        expect(find.text(t.trainingTestsMissing), findsOneWidget);
-        expect(find.text(t.trainingOpeningsFirm(2, 3)), findsOneWidget);
+        expect(find.text(t.trainingPercent(83)), findsNothing);
+        expect(find.text(t.trainingTestsMissing), findsNothing);
+        expect(find.text(t.trainingOpeningAccuracyNote), findsOneWidget);
+        expect(find.text(t.trainingOpeningAllDoneShort), findsOneWidget);
         final progress = tester.widget<AnimatedProgress>(
           find.byType(AnimatedProgress).first,
         );
@@ -296,7 +303,7 @@ void main() {
     );
 
     testWidgets(
-      'detalhe separa reforço, exibe sete exercícios e dica em $size',
+      'detalhe lista histórico e reforço sem inventar tempo em $size',
       (tester) async {
         setPhoneSize(tester, size);
         final cubit = await load();
@@ -317,13 +324,14 @@ void main() {
         final t = tester.element(find.byType(TrainingThemeScreen)).l10n;
         expect(find.text(t.trainingPercent(cycle.score)), findsOneWidget);
         expect(find.byKey(TrainingKeys.themeChart), findsOneWidget);
-        expect(find.byIcon(Icons.lightbulb_outline), findsOneWidget);
+        expect(find.byKey(TrainingKeys.themeExercisesHeading), findsOneWidget);
+        expect(find.text(t.themeCanvasWrong), findsWidgets);
         expect(find.text('8'), findsNothing);
         await tester.scrollUntilVisible(
-          find.text(t.trainingThemeReinforceInfo),
+          find.text(t.themeCanvasReinforceInfo(1)),
           120,
         );
-        expect(find.text(t.trainingThemeReinforceInfo), findsOneWidget);
+        expect(find.text(t.themeCanvasReinforceInfo(1)), findsOneWidget);
         await tester.tap(find.byKey(TrainingKeys.themeBack));
         expect(back, isTrue);
         expect(tester.takeException(), isNull);

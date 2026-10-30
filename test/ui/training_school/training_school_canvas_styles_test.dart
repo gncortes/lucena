@@ -94,15 +94,17 @@ void main() {
     },
   );
 
-  testWidgets('Pilares retains part title and chapter count', (tester) async {
+  testWidgets('Pilares shows chapter heading and direct lesson rows', (
+    tester,
+  ) async {
     setPhoneSize(tester, const Size(412, 917));
     await guide.pumpGuide(tester);
     final header = tester.widget<CoursePartHeader>(
       find.byType(CoursePartHeader).first,
     );
-    expect(header.label, 'Parte I');
-    expect(header.title, 'Primeira parte');
-    expect(header.count, '1 de 2');
+    expect(header.label, 'Capítulo 1');
+    expect(header.title, 'Capítulo omega');
+    expect(header.count, isNull);
     expect(find.text('MÓDULO 1 · CAPÍTULO OMEGA'), findsNothing);
     expect(tester.takeException(), isNull);
   });

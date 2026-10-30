@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/theme/canvas_symbols.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -187,7 +188,10 @@ void main() {
         final cta = find.byKey(TrainingKeys.trainTrecho('active'));
         expect(tester.getSize(cta).height, greaterThanOrEqualTo(48));
         expect(
-          find.descendant(of: cta, matching: find.byIcon(Icons.chevron_right)),
+          find.descendant(
+            of: cta,
+            matching: find.byIcon(CanvasSymbols.chevronRight),
+          ),
           findsOneWidget,
         );
         final label = find.text('Treinar a parte 1');
@@ -303,7 +307,7 @@ void main() {
       '/training/pilares/openings',
     );
     host.repository.writeError = null;
-    await tester.tap(find.byType(BackButton));
+    await tester.tap(find.byKey(CourseGuideKeys.back));
     await tester.pumpAndSettle();
     expect(
       host.router.routeInformationProvider.value.uri.path,
@@ -331,7 +335,7 @@ void main() {
             .path,
         Routes.trainingPlan('pilares'),
       );
-      await tester.tap(find.byType(BackButton));
+      await tester.tap(find.byIcon(CanvasSymbols.arrowBack));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.openingsScreen), findsOneWidget);
       await tester.tap(find.byKey(TrainingKeys.trainTrecho('active')));
@@ -348,7 +352,7 @@ void main() {
       await opening.play('e2e4');
       await opening.play('g1f3');
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(BackButton));
+      await tester.tap(find.byIcon(CanvasSymbols.arrowBack));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.openingsScreen), findsOneWidget);
       expect(find.byKey(TrainingKeys.trainTrecho('active')), findsNothing);

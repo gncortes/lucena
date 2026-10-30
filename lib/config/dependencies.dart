@@ -141,6 +141,7 @@ import '../data/services/asset_service.dart';
 import '../data/services/database/app_database.dart';
 import '../data/services/maia_service.dart';
 import '../data/services/preferences_service.dart';
+import '../data/repositories/analysis/learning_analysis_repository.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../data/repositories/account/account_invite_repository.dart';
@@ -221,6 +222,7 @@ class Dependencies {
     required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
+    this.learningAnalysisRepository,
     required this.gameReviewRepository,
     required this.ongoingGameRepository,
     required this.conclusionRepository,
@@ -532,6 +534,7 @@ class Dependencies {
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
+      learningAnalysisRepository: LearningAnalysisRepository(preferences),
       gameReviewRepository: LocalGameReviewRepository(preferences),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       conclusionRepository: LocalConclusionRepository(preferences),
@@ -691,6 +694,7 @@ class Dependencies {
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;
+  final LearningAnalysisRepository? learningAnalysisRepository;
   final GameReviewRepository gameReviewRepository;
   final OngoingGameRepository ongoingGameRepository;
   final ConclusionRepository conclusionRepository;

@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/training/course_download_repository.dart';
 import 'package:lucena/data/repositories/account/account_repository.dart';
+import 'package:lucena/data/repositories/placement/placement_repository.dart';
+
+import 'fakes/fake_placement_repository.dart';
 
 import 'fakes/fake_course_download_repository.dart';
 import 'fakes/fake_account_repository.dart';
@@ -77,6 +80,7 @@ class TestApp extends StatelessWidget {
     this.reviewRepository,
     this.schoolProgressRepository,
     this.endgameProgressRepository,
+    this.placementRepository,
     super.key,
   });
 
@@ -141,6 +145,7 @@ class TestApp extends StatelessWidget {
   /// O progresso que conta as aulas concluídas do convite.
   final SchoolProgressRepository? schoolProgressRepository;
   final EndgameProgressRepository? endgameProgressRepository;
+  final PlacementRepository? placementRepository;
 
   /// Com rotas: a tela testada navega (o [child] não é usado).
   final GoRouter? router;
@@ -226,6 +231,9 @@ class TestApp extends StatelessWidget {
         ],
         RepositoryProvider<ShareRepository>.value(
           value: shareRepository ?? FakeShareRepository(),
+        ),
+        RepositoryProvider<PlacementRepository>.value(
+          value: placementRepository ?? FakePlacementRepository(),
         ),
         RepositoryProvider<WebPages>.value(value: webPages ?? FakeWebPages()),
         RepositoryProvider<SurveyRepository>.value(

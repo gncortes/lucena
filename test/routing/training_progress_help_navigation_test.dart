@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/domain/models/training/theme_cycle.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/characters/character_repository.dart';
 import 'package:lucena/data/repositories/endgames/endgame_lesson_repository.dart';
@@ -36,8 +37,25 @@ void main() {
       );
       await settings.load();
       addTearDown(settings.close);
+      final saved = scenario.large();
       final repo = FakeTrainingRepository(
-        states: {TrainingCourse.pilares: scenario.large()},
+        states: {
+          TrainingCourse.pilares: saved.copyWith(
+            cycles: {
+              ...saved.cycles,
+              'theme1': saved.cycles['theme1']!.copyWith(
+                days: [
+                  ThemeDay(
+                    date: '2026-10-25',
+                    exerciseId: scenario.content.banks['theme1']!.first.id,
+                    stars: 1,
+                    correct: true,
+                  ),
+                ],
+              ),
+            },
+          ),
+        },
         content: {TrainingCourse.pilares: scenario.content},
       );
       final router = GoRouter(
@@ -86,7 +104,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.themeScreen), findsOneWidget);
       expect(find.byType(NavigationBar), findsOneWidget);
-      await tester.tap(find.byType(BackButton).first);
+      await tester.tap(find.byKey(CourseGuideKeys.back));
       await tester.pumpAndSettle();
       expect(find.byKey(TrainingKeys.themeScreen), findsNothing);
       await tester.tap(find.byKey(CourseGuideKeys.helpAction));

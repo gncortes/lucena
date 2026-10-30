@@ -42,7 +42,18 @@ Future<CourseGuideCubit> guide() async {
         installSeed: 'qa11',
         tab: CourseGuideTab.progress,
         cycles: {
-          'theme': ThemeCycle(lessonId: 'theme', startedOn: '2026-10-20'),
+          'theme': ThemeCycle(
+            lessonId: 'theme',
+            startedOn: '2026-10-20',
+            days: [
+              const ThemeDay(
+                date: '2026-10-20',
+                exerciseId: 'e1',
+                stars: 1,
+                correct: true,
+              ),
+            ],
+          ),
         },
       ),
     },
@@ -88,7 +99,7 @@ void main() {
       );
       expect(
         tester
-            .widget<Text>(find.text(t.trainingCycleDays(0)))
+            .widget<Text>(find.text(t.trainingCycleDays(1)))
             .style!
             .fontWeight,
         FontWeight.w500,
@@ -97,7 +108,7 @@ void main() {
         tester
             .widget<AnimatedProgress>(find.byType(AnimatedProgress))
             .backgroundColor,
-        Theme.of(context).colorScheme.surface,
+        Theme.of(context).scaffoldBackgroundColor,
       );
       expect(tester.takeException(), isNull);
     });

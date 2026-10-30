@@ -10332,9 +10332,9 @@
       }
     }
   },
-  "trainingEndFirmBody": "From now on, this theme returns from time to time to help you remember.",
+  "trainingEndFirmBody": "The topic leaves your goals: you can now solve it on your own.",
   "@trainingEndFirmBody": {
-    "description": "T85 training exercise and cycle result: trainingEndFirmBody."
+    "description": "Training UI copy; dynamic content has an explicit fallback."
   },
   "trainingEndFirmCleanViktor": "You completed this cycle. That is what matters.",
   "@trainingEndFirmCleanViktor": {
@@ -10560,9 +10560,9 @@
   "@homeCourseTrain": {
     "description": "T85 course training Home card: homeCourseTrain."
   },
-  "courseGuideFaq1Answer": "The next lesson, reinforcement, one exercise for each theme in training and opening segments. The number on the Goals tab shows how many remain.",
+  "courseGuideFaq1Answer": "The current lesson, reinforcement, one exercise for each topic in training and the opening parts. The number on the Goals tab shows how many remain.",
   "@courseGuideFaq1Answer": {
-    "description": "T85 progress, help and guided tour: courseGuideFaq1Answer."
+    "description": "Training UI copy; dynamic content has an explicit fallback."
   },
   "courseGuideFaq1Question": "What are today's goals?",
   "@courseGuideFaq1Question": {
@@ -10632,9 +10632,9 @@
   "@courseGuideTour1Title": {
     "description": "T85 progress, help and guided tour: courseGuideTour1Title."
   },
-  "courseGuideTour2Body": "What to do today: the lesson, reinforcement, one exercise for each theme in training and opening segments. The number shows how many remain.",
+  "courseGuideTour2Body": "What to do today: the lesson, reinforcement, one exercise for each topic in training and the opening parts. The number shows how many remain.",
   "@courseGuideTour2Body": {
-    "description": "T85 progress, help and guided tour: courseGuideTour2Body."
+    "description": "Training UI copy; dynamic content has an explicit fallback."
   },
   "courseGuideTour2Title": "Goals",
   "@courseGuideTour2Title": {
@@ -11264,5 +11264,524 @@
         "type": "String"
       }
     }
+  },
+  "lessonModelGames": "Model games",
+  "@lessonModelGames": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "lessonNextModelGame": "Next game",
+  "@lessonNextModelGame": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "lessonAnalyzePosition": "Analyze with the engine",
+  "@lessonAnalyzePosition": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingProgressEmptyTitle": "Your progress appears here",
+  "@trainingProgressEmptyTitle": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingProgressEmptyBody": "As you complete lessons and daily goals, your topic scores, openings and tests appear here.",
+  "@trainingProgressEmptyBody": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingOpeningAccuracyNote": "First-try accuracy the last time you trained each part.",
+  "@trainingOpeningAccuracyNote": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingOpeningAllDoneShort": "All done",
+  "@trainingOpeningAllDoneShort": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingChapterLabel": "Chapter {n}",
+  "@trainingChapterLabel": {
+    "description": "Lesson stage footer label matching the training Canvas.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingOpeningPartsSummary": "{done} of {total} parts",
+  "@trainingOpeningPartsSummary": {
+    "description": "Lesson stage footer label matching the training Canvas.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingChapterTestTitle": "Chapter test",
+  "@trainingChapterTestTitle": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendThemes": "Topic mastery · score from the last 7",
+  "@trainingProgressLegendThemes": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendFirm": "70% or more: solid topic",
+  "@trainingProgressLegendFirm": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendDeveloping": "Below 70%: topic still developing",
+  "@trainingProgressLegendDeveloping": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendIncomplete": "Fewer than 7 exercises: score not final yet",
+  "@trainingProgressLegendIncomplete": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpenings": "Openings · first-try accuracy in the latest practice of each part",
+  "@trainingProgressLegendOpenings": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningPerfect": "100%: part without mistakes",
+  "@trainingProgressLegendOpeningPerfect": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningSome": "70 to 99%: some moves missed",
+  "@trainingProgressLegendOpeningSome": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningRetry": "Below 70%: worth retrying the part",
+  "@trainingProgressLegendOpeningRetry": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningPending": "Part to do",
+  "@trainingProgressLegendOpeningPending": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTests": "Tests · medal for correct answers in 12 exercises",
+  "@trainingProgressLegendTests": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestPerfect": "Three stars · 12 of 12, perfect",
+  "@trainingProgressLegendTestPerfect": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestExcellent": "Excellent · 11 of 12",
+  "@trainingProgressLegendTestExcellent": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestGood": "Great · 10 of 12",
+  "@trainingProgressLegendTestGood": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestPassed": "Pass · 9 of 12, the minimum to pass",
+  "@trainingProgressLegendTestPassed": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestBelow": "Not passed · 8 or fewer",
+  "@trainingProgressLegendTestBelow": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressHowToUse": "How to use",
+  "@trainingProgressHowToUse": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseTheme": "Tap a topic to see its last 7 exercises, one by one.",
+  "@trainingProgressUseTheme": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseOpening": "Tap an opening to see its parts; \"Retry\" trains the part again.",
+  "@trainingProgressUseOpening": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseTest": "Tap a test to retry it at any time. The latest score counts; an empty star means it has not been passed yet.",
+  "@trainingProgressUseTest": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseDone": "Only what you have done appears here. Tests not yet taken are in the Catalog.",
+  "@trainingProgressUseDone": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingMasteryDoubleAttack": "Double attacks with the queen and other pieces",
+  "@trainingMasteryDoubleAttack": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingMasteryHangingPiece": "Loose pieces: counting attackers and defenders",
+  "@trainingMasteryHangingPiece": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "learningAnalysisTitle": "Analysis",
+  "@learningAnalysisTitle": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisSettings": "Engine settings",
+  "@learningAnalysisSettings": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisEngine": "Engine",
+  "@learningAnalysisEngine": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisShowEngine": "Show engine",
+  "@learningAnalysisShowEngine": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisEngineDetail": "{engine}, lines and evaluation bar",
+  "@learningAnalysisEngineDetail": {
+    "description": "Dedicated position analysis copy from the training Canvas.",
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learningAnalysisLines": "Engine lines",
+  "@learningAnalysisLines": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisConfirm": "Confirm",
+  "@learningAnalysisConfirm": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisFirst": "First move",
+  "@learningAnalysisFirst": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisPrevious": "Previous move",
+  "@learningAnalysisPrevious": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisNext": "Next move",
+  "@learningAnalysisNext": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisLast": "Last move",
+  "@learningAnalysisLast": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisClose": "Close settings",
+  "@learningAnalysisClose": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisSaveError": "Could not save. Try again.",
+  "@learningAnalysisSaveError": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "trainingSolutionPrompt": "Follow the arrow to see the solution.",
+  "@trainingSolutionPrompt": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChoiceTitle": "Your openings",
+  "@trainingProfileChoiceTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChoiceIntro": "Choose a style. The opening lessons in each part follow your chosen style. You can change it any time in Progress › Openings.",
+  "@trainingProfileChoiceIntro": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileRecommended": "Recommended",
+  "@trainingProfileRecommended": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileSolidDescription": "Firm structures, few risks and clear plans. Good for those who want to play safely.",
+  "@trainingProfileSolidDescription": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileAggressiveDescription": "An open centre, initiative and attacks on the king. Good for those who enjoy calculating.",
+  "@trainingProfileAggressiveDescription": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChooseSolid": "Choose Solid",
+  "@trainingProfileChooseSolid": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChooseAggressive": "Choose Aggressive",
+  "@trainingProfileChooseAggressive": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileMomentTitle": "Choose your openings",
+  "@trainingProfileMomentTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileMomentLabel": "{part} · openings",
+  "@trainingProfileMomentLabel": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingProfileMomentBody": "Before the opening lessons in this part, choose a style: Solid or Aggressive.",
+  "@trainingProfileMomentBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChoose": "Choose",
+  "@trainingProfileChoose": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileAgainstOthers": "Against the rest",
+  "@trainingProfileAgainstOthers": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonTitle": "Why the London",
+  "@trainingProfileWhyLondonTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonPlan": "The setup is always the same: d4, Bf4, e3, Nf3, c3 and Bd3. The bishop comes out before e3 so it is not trapped. The plan is to bring a knight to e5 and, once the pieces are ready, attack the king.",
+  "@trainingProfileWhyLondonPlan": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonStats": "In your range (1200 to 1400 on Lichess), the London appears in 1 out of every 9 games with 1.d4, and White wins 51% of them.",
+  "@trainingProfileWhyLondonStats": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonLink": "The plan uses the pin, which you have already seen in lesson 2.1.",
+  "@trainingProfileWhyLondonLink": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileE4": "1.e4",
+  "@trainingProfileE4": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileDragon": "Accelerated Dragon",
+  "@trainingProfileDragon": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileKingsIndian": "King’s Indian",
+  "@trainingProfileKingsIndian": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileCaroKann": "Caro-Kann",
+  "@trainingProfileCaroKann": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyTitle": "Why {name}?",
+  "@trainingProfileWhyTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingProfilePresentationUnavailable": "This presentation is not available yet.",
+  "@trainingProfilePresentationUnavailable": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasTitle": "Chapter {chapter} test",
+  "@testCanvasTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "chapter": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasCounter": "Test · {current} of {total}",
+  "@testCanvasCounter": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasCountBody": "From this chapter and a few from previous chapters.",
+  "@testCanvasCountBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasNoHint": "No hints",
+  "@testCanvasNoHint": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasNoHintBody": "See what you can solve on your own.",
+  "@testCanvasNoHintBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasAnswerEnd": "Answers at the end",
+  "@testCanvasAnswerEnd": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasAnswerEndBody": "Make your move and go to the next question; results appear at the end.",
+  "@testCanvasAnswerEndBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasThink": "Think before moving.",
+  "@testCanvasThink": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasMedals": "Medal for correct answers",
+  "@testCanvasMedals": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasRegular": "Fair",
+  "@testCanvasRegular": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasFailed": "Not passed",
+  "@testCanvasFailed": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasFailedTitle": "Not passed yet",
+  "@testCanvasFailedTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasBelow": "{count} or fewer",
+  "@testCanvasBelow": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasReview": "Tap a number to see the position and solution.",
+  "@testCanvasReview": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasRetry": "Retake the test",
+  "@testCanvasRetry": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasContinue": "Continue the course",
+  "@testCanvasContinue": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasFailedSpeech": "The chapter lessons return as reinforcement in your goals. Retake the test whenever you want: the course stays open.",
+  "@testCanvasFailedSpeech": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasWhite": "White to move.",
+  "@testCanvasWhite": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasBlack": "Black to move.",
+  "@testCanvasBlack": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasLeaveEmptyBody": "No exercises completed. When you return, start at exercise 1.",
+  "@testCanvasLeaveEmptyBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasScore": "{correct} of {total}",
+  "@testCanvasScore": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasResultSpeech": "You answered {correct} of {total} exercises correctly. Tap the numbers to review the positions and solutions.",
+  "@testCanvasResultSpeech": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "themeCanvasExercisesDone": "Completed exercises",
+  "@themeCanvasExercisesDone": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "themeCanvasCorrect": "Correct",
+  "@themeCanvasCorrect": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "themeCanvasWrong": "Wrong",
+  "@themeCanvasWrong": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "themeCanvasExercise": "Exercise {number}",
+  "@themeCanvasExercise": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "themeCanvasResultTime": "{result} · {time}",
+  "@themeCanvasResultTime": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "themeCanvasReinforceInfo": "Below 70 %: the {count} remaining theme exercises are in your goals as reinforcement.",
+  "@themeCanvasReinforceInfo": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingResumeLabel": "{part} · lesson {number} · {stage}",
+  "@trainingResumeLabel": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      },
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingResumeTheory": "theory",
+  "@trainingResumeTheory": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumeDemo": "demonstration",
+  "@trainingResumeDemo": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumePractice": "practice",
+  "@trainingResumePractice": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumeTheoryBody": "You stopped during the theory. It restarts from the beginning, with previous stages saved.",
+  "@trainingResumeTheoryBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumeDemoBody": "You stopped during the demonstration. It restarts from the beginning, with the theory you have seen saved.",
+  "@trainingResumeDemoBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumePracticeBody": "You stopped during practice. The exercise restarts from its initial position.",
+  "@trainingResumePracticeBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceSolutionFollow": "Follow the arrow.",
+  "@practiceSolutionFollow": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceSolutionTarget": "Tap the marked square.",
+  "@practiceSolutionTarget": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceSolutionUnavailable": "The solution for this position could not be shown. Try again.",
+  "@practiceSolutionUnavailable": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceOpponentUnavailable": "The engine response could not be obtained. Try again.",
+  "@practiceOpponentUnavailable": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
   }
 }
