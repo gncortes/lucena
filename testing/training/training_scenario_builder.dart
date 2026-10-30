@@ -174,8 +174,7 @@ final class TrainingScenarioBuilder {
                 segment.id: [
                   for (
                     var move = 0;
-                    move <
-                        (segment.moves.length + (segment.black ? 0 : 1)) ~/ 2;
+                    move < PlayTrainingOpening(segment).studentMoves;
                     move++
                   )
                     move == 0,

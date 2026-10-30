@@ -11226,7 +11226,7 @@
   },
   "trainingLessonNeedsInternet": "Needs internet to download",
   "trainingTestLeaveTitle": "Leave the test?",
-  "trainingTestLeaveBody": "Your {done} completed exercises are saved. When you return, you continue with exercise {next}.",
+  "trainingTestLeaveBody": "{done, plural, one{Your completed exercise is saved. When you return, you continue with exercise {next}.} other{Your {done} completed exercises are saved. When you return, you continue with exercise {next}.}}",
   "@trainingTestLeaveBody": {
     "placeholders": {
       "done": {

@@ -6,6 +6,8 @@ import 'package:lucena/data/repositories/training/training_learning_bridge.dart'
 import 'package:lucena/data/services/lesson_content_service.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
+import 'package:lucena/domain/models/training/training_course_config.dart';
+import 'package:lucena/ui/training_opening/view_models/training_opening_cubit.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/domain/use_cases/training/home_course_card.dart';
 import 'package:lucena/domain/use_cases/training/training_date.dart';
@@ -89,6 +91,31 @@ void main() {
     ]);
     expect(builder.allDone().day!.goals.every((g) => g.done), isTrue);
     expect(builder.doubled().day!.doubled, isTrue);
+  });
+
+  test('native opening fixtures play both current-format parts', () async {
+    await repository.seed(E2ETrainingScenario.goalsMiddle, now);
+    final cubit = TrainingOpeningCubit(
+      repository: repository,
+      config: TrainingCourseConfig.pilares,
+      now: now,
+    );
+    addTearDown(cubit.close);
+    await cubit.load(lessonId: 'pilares.abertura_1', partId: 't1');
+    expect(cubit.state.trecho!.lines, isNotEmpty);
+    await cubit.play('d2d4');
+    await cubit.play('c1f4');
+    expect(cubit.state.phase, TrainingOpeningPhase.complete);
+    await cubit.nextPart();
+    expect(cubit.state.trecho!.id, 't2');
+    await cubit.play('d2d4');
+    expect(cubit.state.phase, TrainingOpeningPhase.complete);
+    expect(cubit.state.allPartsDone, isTrue);
+    final saved = await reopen().load(course);
+    expect(
+      saved.openings['pilares.abertura_1']!.doneTrechos.keys,
+      containsAll(['t1', 't2']),
+    );
   });
 
   for (final entry in e2eGoalsScenarios.entries) {

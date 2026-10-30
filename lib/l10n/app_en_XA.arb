@@ -2139,7 +2139,7 @@
   "trainingCourseNext": "[Ñéxt one]",
   "trainingLessonNeedsInternet": "[Ñéédš îñtéŕñét tö döwñlöåd one two three]",
   "trainingTestLeaveTitle": "[Léåvé thé téšt? one two]",
-  "trainingTestLeaveBody": "[Ýöûŕ {done} çömplétéd éxéŕçîšéš åŕé šåvéd. Whéñ ýöû ŕétûŕñ, ýöû çöñtîñûé wîth éxéŕçîšé {next}. one two three four five six seven eight]",
+  "trainingTestLeaveBody": "{done, plural, one{[Ýöûŕ çömplétéd éxéŕçîšé îš šåvéd. Whéñ ýöû ŕétûŕñ, ýöû çöñtîñûé wîth éxéŕçîšé {next}. one two three four five six seven]} other{[Ýöûŕ {done} çömplétéd éxéŕçîšéš åŕé šåvéd. Whéñ ýöû ŕétûŕñ, ýöû çöñtîñûé wîth éxéŕçîšé {next}. one two three four five six seven eight]}}",
   "trainingTestContinue": "[Çöñtîñûé thé téšt one two]",
   "trainingTestLeave": "[Léåvé one]",
   "trainingDownloadCourseError": "[Çöûld ñöt döwñlöåd thé çöûŕšé. Tŕý åĝåîñ îñ å féw möméñtš. one two three four five]",

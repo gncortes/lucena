@@ -2241,7 +2241,7 @@
   "trainingCourseNext": "Próxima",
   "trainingLessonNeedsInternet": "Precisa de internet para baixar",
   "trainingTestLeaveTitle": "Sair do teste?",
-  "trainingTestLeaveBody": "Os {done} exercícios feitos ficam salvos. Quando voltar, você continua no exercício {next}.",
+  "trainingTestLeaveBody": "{done, plural, one{O exercício feito fica salvo. Quando voltar, você continua no exercício {next}.} other{Os {done} exercícios feitos ficam salvos. Quando voltar, você continua no exercício {next}.}}",
   "trainingTestContinue": "Continuar o teste",
   "trainingTestLeave": "Sair",
   "trainingDownloadCourseError": "Não foi possível baixar o curso. Tente de novo em alguns instantes.",

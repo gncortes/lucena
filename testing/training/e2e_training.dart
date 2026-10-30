@@ -125,14 +125,18 @@ final class E2ETrainingRepository implements TrainingRepository {
                 lesson.id: [
                   OpeningTrecho(
                     id: 't1',
-                    title: 'Linha 1',
-                    moves: ['d2d4', 'd7d5', 'c1f4'],
+                    title: lesson.title,
+                    lines: [
+                      ['d2d4', 'd7d5', 'c1f4'],
+                    ],
                     mock: true,
                   ),
                   OpeningTrecho(
                     id: 't2',
-                    title: 'Linha 2',
-                    moves: ['d2d4', 'g8f6'],
+                    title: lesson.title,
+                    lines: [
+                      ['d2d4', 'g8f6'],
+                    ],
                     mock: true,
                   ),
                 ],
