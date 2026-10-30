@@ -201,7 +201,11 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
       final lesson = outcome.next;
       if (lesson == null || outcome.last) {
         // A Escola concluída: os próximos passos.
-        context.go(Routes.nextStepsSchool);
+        context.go(
+          cubit.origin?.startsWith('treino_') == true
+              ? Routes.training('escola')
+              : Routes.nextStepsSchool,
+        );
       } else {
         // A aula concluída, com o convite "Sua opinião" e a próxima aula.
         context.pushReplacement(

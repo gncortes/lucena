@@ -33,6 +33,7 @@ void main() {
     SurveyKind kind,
     String id, {
     String? next,
+    String? origin,
     List<RaceProblem> problems = raceTestProblems,
     EndgameTrail? trail,
   }) async {
@@ -61,7 +62,10 @@ void main() {
       },
     );
     final router = GoRouter(
-      initialLocation: '/finished',
+      initialLocation: Uri(
+        path: '/finished',
+        queryParameters: origin == null ? null : {'origem': origin},
+      ).toString(),
       routes: [
         GoRoute(
           path: '/finished',
@@ -73,6 +77,7 @@ void main() {
         stub('/survey/:kind'),
         stub(Routes.school),
         stub(Routes.endgames),
+        stub('/training/:course'),
         stub('/endgames/:id/roteiro'),
         stub(Routes.race),
         stub('/setup'),
@@ -240,4 +245,30 @@ void main() {
     expect(finished.hasExercises, isFalse);
     expect(finished.practice, isNull);
   });
+  for (final kind in [SurveyKind.school, SurveyKind.endgames]) {
+    for (final close in [false, true]) {
+      testWidgets(
+        'training ${kind.code} completion exit close=$close returns to its course',
+        (tester) async {
+          await pump(
+            tester,
+            kind,
+            kind == SurveyKind.school ? 'pieces.rook' : 'rook.lucena',
+            origin: 'treino_guia',
+          );
+          final action = find.byKey(
+            close ? LessonFinishedKeys.close : LessonFinishedKeys.back,
+          );
+          await tester.ensureVisible(action);
+          await tester.pumpAndSettle();
+          await tester.tap(action);
+          await tester.pumpAndSettle();
+          expect(
+            opened.last,
+            Routes.training(kind == SurveyKind.school ? 'escola' : 'pilares'),
+          );
+        },
+      );
+    }
+  }
 }

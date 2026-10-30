@@ -376,6 +376,7 @@ void main() {
               await output.writeAsString(jsonEncode(records));
             });
           }
+
           await saveMetrics(id);
           Future<void> capture(String name) async {
             if (Platform.environment['T85_CAPTURE'] != '1') return;

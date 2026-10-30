@@ -34,6 +34,14 @@ class LessonFinishedScreen extends StatelessWidget {
   /// O curso de onde a pessoa veio: a Escola ou as aulas de finais.
   bool get _school => kind == SurveyKind.school;
 
+  String _backRoute(BuildContext context) {
+    final origin = GoRouterState.of(context).uri.queryParameters['origem'];
+    if (origin?.startsWith('treino_') == true) {
+      return Routes.training(_school ? 'escola' : 'pilares');
+    }
+    return _school ? Routes.school : Routes.endgames;
+  }
+
   void _next(BuildContext context, String id) {
     final origin = GoRouterState.of(context).uri.queryParameters['origem'];
     context.pushReplacement(
@@ -97,10 +105,10 @@ class LessonFinishedScreen extends StatelessWidget {
         appBar: LucenaAppBar(
           title: Text(state.title),
           leading: IconButton(
+            key: LessonFinishedKeys.close,
             icon: const Icon(Icons.close),
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () =>
-                context.go(_school ? Routes.school : Routes.endgames),
+            onPressed: () => context.go(_backRoute(context)),
           ),
         ),
         body: Stack(
@@ -184,11 +192,8 @@ class LessonFinishedScreen extends StatelessWidget {
                                     height: kButtonHeight,
                                     child: OutlinedButton(
                                       key: LessonFinishedKeys.back,
-                                      onPressed: () => context.go(
-                                        _school
-                                            ? Routes.school
-                                            : Routes.endgames,
-                                      ),
+                                      onPressed: () =>
+                                          context.go(_backRoute(context)),
                                       child: Text(
                                         _school
                                             ? l10n.surveyBackToSchool

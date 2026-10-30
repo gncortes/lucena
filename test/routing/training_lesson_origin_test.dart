@@ -69,15 +69,22 @@ void main() {
     'treino_guia',
     'treino_metas',
   ]) {
-    for (final transition in ['school', 'endgame-finished', 'endgame-part']) {
+    for (final transition in [
+      'school',
+      'school-finished',
+      'endgame-finished',
+      'endgame-part',
+    ]) {
       testWidgets('script completion carries $origin through $transition', (
         tester,
       ) async {
         setPhoneSize(tester, const Size(412, 915));
-        final school = transition == 'school';
+        final school = transition.startsWith('school');
         final source = FakeLessonSource(
           endgame: !school,
-          outcome: transition == 'endgame-part'
+          outcome: transition == 'school-finished'
+              ? const LessonOutcome(last: true)
+              : transition == 'endgame-part'
               ? const LessonOutcome(nextPart: 'second')
               : const LessonOutcome(next: 'pieces.mate'),
         );
@@ -120,6 +127,14 @@ void main() {
               path: '/endgames/:id/roteiro',
               builder: (_, _) => const Scaffold(),
             ),
+            GoRoute(
+              path: '/training/:course',
+              builder: (_, _) => const Scaffold(),
+            ),
+            GoRoute(
+              path: Routes.nextStepsSchool,
+              builder: (_, _) => const Scaffold(),
+            ),
           ],
         );
         addTearDown(router.dispose);
@@ -139,6 +154,16 @@ void main() {
           '${school ? 'pieces.rook' : 'pilares.c1'}/first',
         ]);
         final uri = router.routeInformationProvider.value.uri;
+        if (transition == 'school-finished') {
+          expect(
+            uri.path,
+            origin?.startsWith('treino_') == true
+                ? Routes.training('escola')
+                : Routes.nextStepsSchool,
+          );
+          await tester.pumpWidget(const SizedBox());
+          return;
+        }
         expect(uri.queryParameters['origem'], origin);
         expect(
           uri.path,
