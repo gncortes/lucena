@@ -263,6 +263,55 @@ Map<String, dynamic> _mateJson(String fen) => {
 const _rooksFen = 'k7/7R/8/8/8/8/8/K5R1 w - - 0 1';
 
 void main() {
+  test('analysis exports a legal contiguous played line ending at the current board', () async {
+    final r = await _Rig.open();
+    await _toQuestion(r);
+    await r.cubit.onMove('d3e4');
+    final launch = r.cubit.analysisLaunch;
+    expect(launch.moves, isNotEmpty);
+    Position position = Chess.fromSetup(Setup.parseFen(launch.fen));
+    for (final uci in launch.moves) {
+      final move = Move.parse(uci)!;
+      expect(position.isLegal(move), isTrue);
+      position = position.play(move);
+    }
+    expect(position.fen, Chess.fromSetup(Setup.parseFen(r.s.fen)).fen);
+    expect(launch.orientation, r.s.orientation);
+  });
+  test('Canvas progress counts authored examples; hint reveals authored origin only', () async {
+    final r = await _Rig.open(endgame: false);
+    final total = scriptFixture().stages.fold(
+      0,
+      (count, stage) => count + stage.examples.length,
+    );
+    expect(r.cubit.progressSteps, total);
+    expect(r.cubit.progressValue, .5);
+    expect(r.cubit.canHint, isFalse);
+    await _toQuestion(r);
+    final before = r.s;
+    expect(r.cubit.canHint, isTrue);
+    await r.cubit.hint();
+    final expected =
+        scriptFixture().stages.first.examples.first.question!.right.first;
+    expect(r.s.marks, [expected.substring(0, 2)]);
+    expect(r.s.fen, before.fen);
+    expect(r.s.primary, before.primary);
+    expect(r.s.phase, before.phase);
+    expect(r.cubit.canAnalyze, isFalse);
+  });
+
+  test(
+    'practice without authored move or table does not invent a hint',
+    () async {
+      final r = await _Rig.open(stage: 2);
+      expect(r.s.phase, ScriptPhase.praticaVez);
+      expect(r.cubit.canHint, isFalse);
+      final before = r.s;
+      await r.cubit.hint();
+      expect(r.s, before);
+    },
+  );
+
   group('UX09 checkpoint do roteiro', () {
     Future<LessonCheckpoint> saved(_Rig r) async {
       await Future<void>.delayed(Duration.zero);
@@ -293,16 +342,16 @@ void main() {
       },
     );
 
-    test('histórico agrupado não ultrapassa o cursor salvo', () async {
+    test('force stop reabre início da etapa com o agrupamento atual', () async {
       final r = await _Rig.open();
       await r.next();
       final reopened = await _Rig.open(
         checkpoint: await saved(r),
         fits: (_) => true,
       );
-      expect(reopened.s.speech, ['e2']);
+      expect(reopened.s.speech, ['e1', 'e2', 'e3']);
       reopened.cubit.back();
-      expect(reopened.s.speech, ['e1']);
+      expect(reopened.s.speech, ['e1', 'e2', 'e3']);
       expect(reopened.s.canBack, isFalse);
     });
 
@@ -325,18 +374,21 @@ void main() {
     );
 
     test(
-      'explicação pausada mantém cursor, tabuleiro e recuo após sair',
+      'explicação reinicia etapa após force stop, mesmo antes pausada',
       () async {
         final r = await _Rig.open();
         await r.next();
         r.cubit.demoToggle();
         final checkpoint = await saved(r);
         final reopened = await _Rig.open(checkpoint: checkpoint);
-        expect(reopened.s.speech, ['e2']);
-        expect(reopened.s.fen, r.s.fen);
-        expect(reopened.s.marks, r.s.marks);
-        expect(reopened.s.demo!.playing, isFalse);
-        expect(reopened.pending, isEmpty);
+        expect(reopened.s.speech, ['e1']);
+        expect(reopened.s.fen, exampleOneFen);
+        expect(
+          reopened.s.marks,
+          scriptFixture().stages.first.examples.first.entry.first.marks,
+        );
+        expect(reopened.s.demo!.playing, isTrue);
+        expect(reopened.pending, hasLength(1));
         reopened.cubit.back();
         expect(reopened.s.speech, ['e1']);
         final back = await _Rig.open(checkpoint: await saved(reopened));
@@ -344,44 +396,38 @@ void main() {
       },
     );
 
-    test(
-      'ramo alternativo e exemplo são restaurados sem rejogar animação',
-      () async {
-        final r = await _Rig.open();
-        await _toQuestion(r);
-        await r.cubit.onMove('d3e4');
-        await r.times(4);
-        expect(r.s.exampleIndex, 1);
-        await r.next();
-        expect(r.s.phase, ScriptPhase.pergunta);
-        await r.cubit.onMove('e8f7');
-        expect(r.s.speech, ['altA']);
-        final reopened = await _Rig.open(checkpoint: await saved(r));
-        expect(reopened.s.exampleIndex, 1);
-        expect(reopened.s.speech, ['altA']);
-        expect(reopened.s.fen, afterKf7);
-        expect(reopened.s.transition.kind, TransitionKind.jump);
-        expect(reopened.s.transition.ucis, isEmpty);
-        await reopened.next();
-        expect(reopened.s.speech, ['altBack']);
-      },
-    );
+    test('force stop descarta ramo e exemplo, recomeçando a etapa', () async {
+      final r = await _Rig.open();
+      await _toQuestion(r);
+      await r.cubit.onMove('d3e4');
+      await r.times(4);
+      expect(r.s.exampleIndex, 1);
+      await r.next();
+      expect(r.s.phase, ScriptPhase.pergunta);
+      await r.cubit.onMove('e8f7');
+      expect(r.s.speech, ['altA']);
+      final reopened = await _Rig.open(checkpoint: await saved(r));
+      expect(reopened.s.exampleIndex, 0);
+      expect(reopened.s.speech, ['e1']);
+      expect(reopened.s.fen, exampleOneFen);
+      expect(reopened.s.transition.kind, TransitionKind.jump);
+      expect(reopened.s.transition.ucis, isEmpty);
+      await reopened.next();
+      expect(reopened.s.speech, ['e2']);
+    });
 
-    test(
-      'demonstração retoma pausada e repetir reinicia deliberadamente',
-      () async {
-        final r = await _Rig.open(stage: 1);
-        await r.next();
-        r.cubit.demoToggle();
-        final reopened = await _Rig.open(checkpoint: await saved(r));
-        expect(reopened.s.speech, ['d1b']);
-        expect(reopened.s.demo!.playing, isFalse);
-        await reopened.cubit.demoRepeat();
-        final repeated = await _Rig.open(checkpoint: await saved(reopened));
-        expect(repeated.s.speech, ['d1a']);
-        expect(repeated.s.demo!.playing, isTrue);
-      },
-    );
+    test('demonstração recomeça do início ao recriar o processo', () async {
+      final r = await _Rig.open(stage: 1);
+      await r.next();
+      r.cubit.demoToggle();
+      final reopened = await _Rig.open(checkpoint: await saved(r));
+      expect(reopened.s.speech, ['d1a']);
+      expect(reopened.s.demo!.playing, isTrue);
+      await reopened.cubit.demoRepeat();
+      final repeated = await _Rig.open(checkpoint: await saved(reopened));
+      expect(repeated.s.speech, ['d1a']);
+      expect(repeated.s.demo!.playing, isTrue);
+    });
 
     test(
       'checkpoint antigo mantém etapa com cursor inicial por padrão',
@@ -418,35 +464,33 @@ void main() {
       }
     });
 
-    test(
-      'trecho agrupado mantém fala e posição completas ao reabrir',
-      () async {
-        final r = await _Rig.open();
-        r.cubit.setSpeechFits((texts) => true);
-        expect(r.s.speech, ['e1', 'e2', 'e3']);
-        final reopened = await _Rig.open(checkpoint: await saved(r));
-        expect(reopened.s.speech, r.s.speech);
-        expect(reopened.s.marks, r.s.marks);
-        await reopened.next();
-        expect(reopened.s.phase, ScriptPhase.pergunta);
-      },
-    );
+    test('retomada recompõe início da etapa em vez do grupo salvo', () async {
+      final r = await _Rig.open();
+      r.cubit.setSpeechFits((texts) => true);
+      expect(r.s.speech, ['e1', 'e2', 'e3']);
+      final reopened = await _Rig.open(checkpoint: await saved(r));
+      expect(reopened.s.speech, ['e1']);
+      expect(
+        reopened.s.marks,
+        scriptFixture().stages.first.examples.first.entry.first.marks,
+      );
+      expect(reopened.s.phase, ScriptPhase.entrada);
+      expect(reopened.s.canBack, false);
+    });
 
-    test(
-      'prática estável restaura lances legais e a posição do aluno',
-      () async {
-        final r = await _Rig.open(stage: 2);
-        await r.anyMove();
-        final checkpoint = await saved(r);
-        expect(checkpoint.moves, isNotEmpty);
-        final reopened = await _Rig.open(checkpoint: checkpoint);
-        expect(reopened.s.stageIndex, 2);
-        expect(reopened.s.fen, r.s.fen);
-        expect(reopened.s.lastMove, r.s.lastMove);
-        expect(reopened.s.phase, r.s.phase);
-        expect(reopened.s.machineThinking, isFalse);
-      },
-    );
+    test('prática recomeça na posição inicial ao recriar o processo', () async {
+      final r = await _Rig.open(stage: 2);
+      await r.anyMove();
+      final checkpoint = await saved(r);
+      expect(checkpoint.moves, isNotEmpty);
+      final reopened = await _Rig.open(checkpoint: checkpoint);
+      expect(reopened.s.stageIndex, 2);
+      expect(reopened.s.fen, practiceFen);
+      expect(reopened.s.lastMove, isNull);
+      expect(reopened.s.phase, ScriptPhase.praticaVez);
+      expect(reopened.s.moves, isEmpty);
+      expect(reopened.s.machineThinking, isFalse);
+    });
 
     test('prática rejeita caminho ilegal mesmo com FEN salvo', () async {
       final r = await _Rig.open(
@@ -465,27 +509,32 @@ void main() {
       expect(r.s.lastMove, isNull);
     });
 
-    test('prática de toque retoma a próxima casa e o fim estável', () async {
-      final json = scriptJson();
-      json['etapas'][2]['exemplos'][0]['pratica'] = {
-        'tipo': 'toque',
-        't': 'p.t',
-        'alvos': ['a1', 'b2'],
-      };
-      final r = await _Rig.open(json: json, stage: 2);
-      await r.cubit.onSquare('a1');
-      final reopened = await _Rig.open(json: json, checkpoint: await saved(r));
-      expect(reopened.s.touched, ['a1']);
-      expect(reopened.s.speech, r.s.speech);
-      await reopened.cubit.onSquare('b2');
-      final done = await _Rig.open(
-        json: json,
-        checkpoint: await saved(reopened),
-      );
-      expect(done.s.phase, ScriptPhase.praticaFim);
-      expect(done.s.touched, ['a1', 'b2']);
-      expect(done.s.speech, reopened.s.speech);
-    });
+    test(
+      'prática de toque recomeça sem casas coletadas após force stop',
+      () async {
+        final json = scriptJson();
+        json['etapas'][2]['exemplos'][0]['pratica'] = {
+          'tipo': 'toque',
+          't': 'p.t',
+          'alvos': ['a1', 'b2'],
+        };
+        final r = await _Rig.open(json: json, stage: 2);
+        await r.cubit.onSquare('a1');
+        final reopened = await _Rig.open(
+          json: json,
+          checkpoint: await saved(r),
+        );
+        expect(reopened.s.touched, isEmpty);
+        await reopened.cubit.onSquare('a1');
+        await reopened.cubit.onSquare('b2');
+        final done = await _Rig.open(
+          json: json,
+          checkpoint: await saved(reopened),
+        );
+        expect(done.s.phase, ScriptPhase.praticaVez);
+        expect(done.s.touched, isEmpty);
+      },
+    );
 
     test(
       'resposta de máquina pendente conserva o último checkpoint estável',
@@ -1266,7 +1315,7 @@ void main() {
     });
 
     test(
-      'fechar de verdade retoma o trecho da etapa 2 pela rota padrão',
+      'fechar de verdade reabre o início da demonstração pela rota padrão',
       () async {
         final r = await _Rig.open(stage: 1);
         await r.elapse();
@@ -1286,8 +1335,8 @@ void main() {
         expect(stage, 0);
         final reopened = await _Rig.open(stage: stage, checkpoint: saved);
         expect(reopened.s.stageIndex, 1);
-        expect(reopened.s.speech, r.s.speech);
-        expect(reopened.s.fen, r.s.fen);
+        expect(reopened.s.speech, ['d1a']);
+        expect(reopened.s.fen, scriptFixture().stages[1].examples[0].fen);
         expect(reopened.s.demo!.full, isTrue);
       },
     );
@@ -1415,6 +1464,30 @@ void main() {
       expect(r.s.primary, isNull);
     });
 
+    test(
+      'erro jogo usa KPK para solução e nunca usa posição refutada como origem',
+      () async {
+        final oracle = FakeKpkOracle(
+          rule: (p) => p.fen.startsWith('4k3/8/8/8/5K2/1P6/8/8')
+              ? KpkOutcome.draw
+              : null,
+        );
+        final r = await _Rig.open(stage: 2, oracle: oracle);
+        await r.cubit.onMove('f3f4');
+        await r.cubit.onAction(ScriptAction.verResposta);
+        expect(r.s.fen, practiceFen);
+        expect(r.cubit.showingPracticeSolution, true);
+        expect(r.s.arrows, hasLength(1));
+        final arrow = r.s.arrows.single;
+        final position = Chess.fromSetup(Setup.parseFen(r.s.fen));
+        expect(position.isLegal(Move.parse('${arrow.from}${arrow.to}')!), true);
+        final before = r.s;
+        r.cubit.pauseForBackground();
+        r.cubit.resumeFromBackground();
+        expect(r.s, before);
+      },
+    );
+
     test('começa pela máquina quando a vez é dela', () async {
       final r = await _Rig.open(stage: 2);
       // 2º exemplo: o aluno joga de pretas e a vez já é dele
@@ -1519,7 +1592,7 @@ void main() {
       expect(r.s.phase, ScriptPhase.praticaFim);
       expect(r.s.speech, ['fim.capturado']);
       expect(r.s.primary, ScriptAction.voltarInicio);
-      expect(r.s.secondary, isNull);
+      expect(r.s.secondary, ScriptAction.verResposta);
       await r.cubit.onAction(ScriptAction.voltarInicio);
       expect(r.s.phase, ScriptPhase.praticaVez);
       expect(r.s.fen, '8/8/8/8/1k6/8/P7/K7 w - - 0 1');
@@ -1808,18 +1881,72 @@ void main() {
     });
 
     test(
-      'o motor falha: a máquina joga um lance legal e a prática segue',
+      'jogo terminado sem meta mostra solução desde o FEN inicial por motor',
       () async {
-        final engine = FakeOpponentRepository()..failNext = true;
-        final r = await _Rig.open(json: _mateJson(_rooksFen), opponent: engine);
-        await r.cubit.onMove('a1b1');
-        expect(r.s.lastMove, 'a8b8');
-        expect(r.s.movable, Side.white);
-        final none = await _Rig.open(json: _mateJson(_rooksFen));
-        await none.cubit.onMove('a1b1');
-        expect(none.s.lastMove, 'a8b8');
+        const fen = 'k7/8/1K6/8/8/8/8/2Q5 w - - 0 1';
+        final r = await _Rig.open(
+          json: _mateJson(fen),
+          opponent: FakeOpponentRepository(),
+        );
+        await r.cubit.onMove('c1c7');
+        expect(r.s.secondary, ScriptAction.verResposta);
+        await r.cubit.onAction(ScriptAction.verResposta);
+        expect(r.s.fen, fen);
+        expect(r.cubit.practiceIssue, isNull);
+        expect(r.s.arrows, hasLength(1));
       },
     );
+
+    test('solução jogo sem tabela nem motor fica indisponível, nunca primeiro legal', () async {
+      const fen = 'k7/8/1K6/8/8/8/8/2Q5 w - - 0 1';
+      final r = await _Rig.open(json: _mateJson(fen));
+      await r.cubit.onMove('c1c7');
+      await r.cubit.onAction(ScriptAction.verResposta);
+      expect(r.s.fen, fen);
+      expect(r.s.arrows, isEmpty);
+      expect(r.s.moves, isEmpty);
+      expect(r.cubit.practiceIssue, ScriptPracticeIssue.solutionUnavailable);
+      await r.cubit.retryPracticeIssue();
+      expect(r.cubit.practiceIssue, ScriptPracticeIssue.solutionUnavailable);
+    });
+
+    test('requisição de solução bloqueia input concorrente e sair cancela resultado tardio', () async {
+      const fen = 'k7/8/1K6/8/8/8/8/2Q5 w - - 0 1';
+      final engine = FakeOpponentRepository();
+      final r = await _Rig.open(json: _mateJson(fen), opponent: engine);
+      await r.cubit.onMove('c1c7');
+      engine.hold();
+      final showing = r.cubit.onAction(ScriptAction.verResposta);
+      await Future<void>.delayed(Duration.zero);
+      expect(r.s.machineThinking, true);
+      expect(r.s.movable, isNull);
+      await r.cubit.onMove('c1c7');
+      expect(r.s.moves, isEmpty);
+      await r.cubit.leave();
+      final left = r.s;
+      engine.release();
+      await showing;
+      expect(r.s, left);
+      expect(r.source.completed, isEmpty);
+    });
+
+    test('o motor falha: erro honesto, sem lance inventado, e retry', () async {
+      final engine = FakeOpponentRepository()..failNext = true;
+      final r = await _Rig.open(json: _mateJson(_rooksFen), opponent: engine);
+      await r.cubit.onMove('a1b1');
+      expect(r.s.lastMove, 'a1b1');
+      expect(r.s.movable, isNull);
+      expect(r.s.machineThinking, false);
+      expect(r.cubit.practiceIssue, ScriptPracticeIssue.opponentUnavailable);
+      await r.cubit.retryPracticeIssue();
+      expect(r.cubit.practiceIssue, isNull);
+      expect(r.s.lastMove, 'a8b8');
+      expect(r.s.movable, Side.white);
+      final none = await _Rig.open(json: _mateJson(_rooksFen));
+      await none.cubit.onMove('a1b1');
+      expect(none.s.lastMove, 'a1b1');
+      expect(none.cubit.practiceIssue, ScriptPracticeIssue.opponentUnavailable);
+    });
   });
 
   group('analytics', () {

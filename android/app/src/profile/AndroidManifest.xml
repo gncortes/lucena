@@ -4,4 +4,6 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Local content for profile-mode emulator evidence; excluded from release. -->
+    <application android:networkSecurityConfig="@xml/profile_network_security"/>
 </manifest>

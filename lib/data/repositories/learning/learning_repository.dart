@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../../domain/models/learning_record.dart';
+import '../../../domain/models/learning_unit_completion.dart';
 import '../../../domain/use_cases/now.dart';
 import '../../services/preferences_service.dart';
 
@@ -14,12 +15,34 @@ class LearningRepository {
     required this.currentUid,
     required this.versionOf,
     this.onChanged,
+    this.onUnitCompleted,
   });
   final PreferencesService _preferences;
   final Now _now;
   final String? Function() currentUid;
   final Future<String?> Function(bool endgame, String id) versionOf;
   final void Function()? onChanged;
+  final Future<void> Function(LearningUnitCompletion)? onUnitCompleted;
+
+  /// Awaited by explicit completion commands. Guest-local training can observe
+  /// activity without creating or importing nominal account records.
+  Future<void> notifyUnitCompleted({
+    required String? owner,
+    required String kind,
+    required String unitId,
+    bool testPassed = false,
+  }) async {
+    if (owner != currentUid()) return;
+    await onUnitCompleted?.call(
+      LearningUnitCompletion(
+        kind: kind,
+        unitId: unitId,
+        at: _now(),
+        testPassed: testPassed,
+      ),
+    );
+  }
+
   Future<void> _pending = Future.value();
 
   Future<T> serial<T>(Future<T> Function() action) {

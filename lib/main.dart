@@ -1,13 +1,26 @@
+import 'data/repositories/training/training_endgame_content.dart';
+import 'data/repositories/training/course_download_repository.dart';
+
 import 'dart:async';
 
 import 'domain/models/lesson_content.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry;
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'data/repositories/analysis/learning_analysis_repository.dart';
+import 'data/services/preferences_service.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
 import 'data/repositories/learning/learning_repository.dart';
+import 'data/repositories/training/training_school_content.dart';
+import 'data/repositories/training/training_history_source.dart';
+import 'domain/use_cases/training/training_analytics.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
 import 'domain/models/campaign.dart';
@@ -88,6 +101,8 @@ import 'data/repositories/sync/sync_scheduler.dart';
 import 'data/repositories/training/training_repository.dart';
 import 'data/repositories/voice/voice_repository.dart';
 import 'data/repositories/blind/blind_log_repository.dart';
+import 'data/repositories/training/course_training_repository.dart'
+    as course_training;
 import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
@@ -113,13 +128,23 @@ import 'ui/wiki/view_models/wiki_links_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Material Symbols Rounded',
+    ], await rootBundle.loadString('assets/fonts/MaterialSymbols-LICENSE.txt'));
+  });
   final version = await Dependencies.installedVersion();
   final firebase = await startFirebase();
+  final trainingSeed = await Dependencies.trainingInstallSeed();
   // O push que chega com o app fechado: o app monta a notificação.
   if (firebase) listenPushInBackground();
   runApp(
     LucenaApp(
-      dependencies: Dependencies.normal(version: version, firebase: firebase),
+      dependencies: Dependencies.normal(
+        version: version,
+        firebase: firebase,
+        trainingInstallSeed: trainingSeed,
+      ),
     ),
   );
 }
@@ -390,6 +415,14 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<AnalyticsRepository>.value(
           value: dependencies.analyticsRepository,
         ),
+        RepositoryProvider<TrainingAnalytics>(
+          create: (_) =>
+              dependencies.trainingAnalytics ??
+              TrainingAnalytics(
+                now: dependencies.now,
+                log: dependencies.analyticsRepository.log,
+              ),
+        ),
         RepositoryProvider<SettingsRepository>.value(
           value: dependencies.settingsRepository,
         ),
@@ -448,6 +481,11 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<AnalysisRepository>.value(
           value: dependencies.analysisRepository,
         ),
+        RepositoryProvider<LearningAnalysisRepository>(
+          create: (_) =>
+              dependencies.learningAnalysisRepository ??
+              LearningAnalysisRepository(PreferencesService()),
+        ),
         RepositoryProvider<GameReviewRepository>.value(
           value: dependencies.gameReviewRepository,
         ),
@@ -477,6 +515,24 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<TrainingRepository>.value(
           value: dependencies.trainingRepository,
+        ),
+        RepositoryProvider<course_training.TrainingRepository>.value(
+          value: dependencies.courseTrainingRepository,
+        ),
+        RepositoryProvider<CourseDownloadRepository>.value(
+          value: dependencies.courseDownloads,
+        ),
+        RepositoryProvider<TrainingSchoolContent>.value(
+          value:
+              dependencies.trainingSchoolContent ??
+              TrainingSchoolContent(dependencies.lessonRepository),
+        ),
+        RepositoryProvider<TrainingHistorySource>.value(
+          value: TrainingHistorySource(
+            dependencies.courseTrainingRepository,
+            learning: dependencies.learningRepository,
+            now: dependencies.now,
+          ),
         ),
         RepositoryProvider<OpponentRepository>.value(
           value: dependencies.opponentRepository,
@@ -549,6 +605,9 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<StarChallengeRepository>.value(
           value: dependencies.starChallengeRepository,
+        ),
+        RepositoryProvider<TrainingEndgameContent?>.value(
+          value: dependencies.trainingEndgameContent,
         ),
         RepositoryProvider<EndgameLessonRepository>.value(
           value: dependencies.endgameLessonRepository,
@@ -659,6 +718,9 @@ class _LucenaAppState extends State<LucenaApp> {
               week: dependencies.weekRepository,
               now: dependencies.now,
               changes: dependencies.localChanges,
+              training: dependencies.courseTrainingRepository,
+              courses: activeTrainingCourses,
+              analytics: dependencies.analyticsRepository,
             ),
           ),
           BlocProvider(

@@ -6,6 +6,7 @@ import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/widgets/animated_speech_switcher.dart';
 import '../../core/widgets/speech_balloon.dart';
+import '../../core/widgets/speech_sheet_fade.dart';
 import '../../core/widgets/typing_dots.dart';
 import 'script_page.dart';
 
@@ -21,7 +22,17 @@ class ScriptSpeechMetrics {
     required this.verticalPadding,
     required this.horizontalPadding,
     required this.maxLines,
+    this.canvasLayout = false,
   });
+
+  factory ScriptSpeechMetrics.canvas(int lines) => ScriptSpeechMetrics._(
+    compact: false,
+    fontSize: 15,
+    verticalPadding: 12,
+    horizontalPadding: 16,
+    maxLines: lines,
+    canvasLayout: true,
+  );
 
   factory ScriptSpeechMetrics.of(BuildContext context) {
     // Tela baixa: 360×640 (o protótipo `m*.png`); 412×915 é a normal.
@@ -73,6 +84,7 @@ class ScriptSpeechMetrics {
   static const portraitGap = 2.0;
 
   final bool compact;
+  final bool canvasLayout;
   final double fontSize;
   final double verticalPadding;
   final double horizontalPadding;
@@ -82,17 +94,23 @@ class ScriptSpeechMetrics {
   /// fala corta em "… Ver mais".
   final int maxLines;
 
-  TextStyle style(BuildContext context) =>
-      Theme.of(context).textTheme.bodyLarge!
-          .copyWith(fontSize: fontSize, height: lineHeight);
+  TextStyle style(BuildContext context) => Theme.of(context)
+      .textTheme
+      .bodyLarge!
+      .copyWith(
+        fontSize: fontSize,
+        height: lineHeight,
+        letterSpacing: canvasLayout ? 0 : null,
+      );
 
   /// A altura fixa da área da fala: [maxLines] linhas, a folga do balão e a
   /// ponta. Não muda de um passo para outro; o balão fica preso embaixo.
-  double areaHeight(BuildContext context) =>
-      minTop +
-      _lineHeight(context) * maxLines +
-      2 * verticalPadding +
-      SpeechBalloon.tailHeight;
+  double areaHeight(BuildContext context) => (canvasLayout
+      ? 42 + 22.5 * maxLines
+      : minTop +
+            _lineHeight(context) * maxLines +
+            2 * verticalPadding +
+            SpeechBalloon.tailHeight);
 
   /// A altura da fala em [maxLines] linhas.
   double textMaxHeight(BuildContext context) => _lineHeight(context) * maxLines;
@@ -214,15 +232,16 @@ class ScriptSpeech extends StatelessWidget {
     final whole = footnote == null ? text : '$text\n$footnote';
     // A faixa deixa 5 dp acima do retrato; a ponta (sem o vão padrão de 6)
     // desce sobre eles até sobrar [ScriptSpeechMetrics.portraitGap].
-    const overlap =
-        (ScriptPage.stripHeight - portrait) / 2 -
-        ScriptSpeechMetrics.portraitGap;
-    final speech = SpeechBalloon(
+    final overlap = metrics.canvasLayout
+        ? 0.0
+        : (ScriptPage.stripHeight - portrait) / 2 -
+              ScriptSpeechMetrics.portraitGap;
+    final balloon = SpeechBalloon(
       key: LessonScriptKeys.speech,
       // Fala nova: o texto troca em crossfade e a altura anima.
       speech: whole,
       tailX: SpeechBalloon.tailXFor(portrait),
-      tailSpace: 0,
+      tailSpace: metrics.canvasLayout ? SpeechBalloon.tailGap : 0,
       minHeight: metrics.minHeight(context),
       pop: false,
       onTap: onOpen,
@@ -233,6 +252,41 @@ class ScriptSpeech extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, box) {
+          if (metrics.canvasLayout) {
+            final fitted = CanvasSpeechLayout.fit(
+              text: text,
+              width: box.maxWidth - 16,
+              lines: metrics.maxLines - (footnote == null ? 0 : 1),
+            );
+            return SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SpeechText(
+                    text: fitted.text,
+                    style: metrics
+                        .style(context)
+                        .copyWith(fontSize: fitted.fontSize, color: onColor),
+                    highlightLooseSquares: false,
+                    appendMore: fitted.truncated,
+                    onMore: onOpen,
+                    onMainLine: onMainLine,
+                    onShowAnswer: onShowAnswer,
+                    onSquareTap: onSquareTap,
+                  ),
+                  if (footnote != null)
+                    SpeechText(
+                      text: footnote!,
+                      style: metrics.style(context).copyWith(color: onColor),
+                      highlightLooseSquares: false,
+                      onSquareTap: onSquareTap,
+                    ),
+                ],
+              ),
+            );
+          }
           final plain = SpeechText.noBreak(SpeechText.plainOf(context, whole));
           final style = metrics.fittedStyle(context, box.maxWidth, plain);
           final fits = metrics.textFits(
@@ -273,6 +327,9 @@ class ScriptSpeech extends StatelessWidget {
         },
       ),
     );
+    final speech = metrics.canvasLayout
+        ? SpeechSheetFade.exempt(child: balloon)
+        : balloon;
     return SpeechPop(
       child: SizedBox(
         height: metrics.areaHeight(context),
@@ -315,6 +372,182 @@ class ScriptSpeech extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The word fitting contract of CompBalao (Roboto widths in 1/2048 em).
+/// This determines only the visible excerpt; the complete authored text is kept.
+class CanvasSpeechLayout {
+  const CanvasSpeechLayout(this.text, this.fontSize, this.truncated);
+  final String text;
+  final double fontSize;
+  final bool truncated;
+
+  static const _widths = <String, int>{
+    ' ': 507,
+    'a': 1114,
+    'b': 1118,
+    'c': 1042,
+    'd': 1124,
+    'e': 1058,
+    'f': 694,
+    'g': 1118,
+    'h': 1102,
+    'i': 487,
+    'j': 478,
+    'k': 1015,
+    'l': 487,
+    'm': 1751,
+    'n': 1104,
+    'o': 1141,
+    'p': 1118,
+    'q': 1124,
+    'r': 677,
+    's': 1031,
+    't': 654,
+    'u': 1103,
+    'v': 969,
+    'w': 1503,
+    'x': 991,
+    'y': 948,
+    'z': 991,
+    '.': 527,
+    ',': 393,
+    ':': 484,
+    ';': 423,
+    '!': 527,
+    '?': 945,
+    '-': 553,
+    '–': 1102,
+    '(': 685,
+    ')': 696,
+    "'": 349,
+  };
+  static double _width(String text, double px, bool bold) {
+    const accents = 'àáâãäåèéêëìíîïòóôõöùúûüçÀÁÂÃÄÅÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÇ';
+    const plain = 'aaaaaaeeeeiiiiooooouuuucAAAAAAEEEEIIIIOOOOOUUUUC';
+    var units = 0;
+    for (final rune in text.runes) {
+      var c = String.fromCharCode(rune);
+      final accent = accents.indexOf(c);
+      if (accent >= 0) c = plain[accent];
+      units +=
+          _widths[c] ??
+          (RegExp('[A-Z]').hasMatch(c)
+              ? 1330
+              : RegExp('[0-9]').hasMatch(c)
+              ? 1150
+              : 1100);
+    }
+    return units / 2048 * px * (bold ? 1.05 : 1);
+  }
+
+  static CanvasSpeechLayout fit({
+    required String text,
+    required double width,
+    required int lines,
+  }) {
+    final source = text.replaceAll(RegExp(r'\n\s*\n+'), '\n');
+    final parts = <(String, String)>[];
+    var at = 0;
+    for (final match in RegExp(r'\[[^\]]+\]|\{[^}]+\}').allMatches(source)) {
+      if (match.start > at) parts.add((source.substring(at, match.start), ''));
+      final marked = match.group(0)!;
+      parts.add((marked.substring(1, marked.length - 1), marked[0]));
+      at = match.end;
+    }
+    if (at < source.length) parts.add((source.substring(at), ''));
+    final limit = math.max(1, lines);
+    int count(double px) {
+      var total = 0;
+      var lineCount = 1;
+      var used = 0.0;
+      for (final part in parts) {
+        final paragraphs = part.$1.split('\n');
+        for (var p = 0; p < paragraphs.length; p++) {
+          if (p > 0) {
+            total += lineCount;
+            lineCount = 1;
+            used = 0;
+          }
+          final words = paragraphs[p].split(' ');
+          for (var i = 0; i < words.length; i++) {
+            final length = _width(words[i], px, part.$2.isNotEmpty);
+            final space = i > 0 ? _width(' ', px, false) : 0;
+            if (used > 0 && used + space + length > width) {
+              lineCount++;
+              used = length;
+            } else {
+              used += space + length;
+            }
+          }
+        }
+      }
+      return total + lineCount;
+    }
+
+    var px = 15.0;
+    while (px > 13 && count(px) > limit) {
+      px -= .5;
+    }
+    if (count(px) <= limit) return CanvasSpeechLayout(source, px, false);
+    final reserve = _width('… ', px, false) + _width('Ver mais', px, true) + 2;
+    final output = <(String, String)>[];
+    var line = 1;
+    var used = 0.0;
+    var end = false;
+    for (final part in parts) {
+      var accepted = '';
+      final paragraphs = part.$1.split('\n');
+      for (var p = 0; p < paragraphs.length; p++) {
+        if (p > 0) {
+          if (line >= limit) {
+            end = true;
+            break;
+          }
+          line++;
+          used = 0;
+          accepted += '\n';
+        }
+        final words = paragraphs[p].split(' ');
+        for (var i = 0; i < words.length; i++) {
+          final length = _width(words[i], px, part.$2.isNotEmpty);
+          final space = i > 0 ? _width(' ', px, false) : 0;
+          final available = (line == limit ? width - reserve : width) * .96;
+          if (used > 0 && used + space + length > available) {
+            if (line >= limit) {
+              end = true;
+              break;
+            }
+            line++;
+            used = length;
+          } else {
+            used += space + length;
+          }
+          accepted += '${i > 0 ? ' ' : ''}${words[i]}';
+        }
+        if (end) break;
+      }
+      if (accepted.isNotEmpty) output.add((accepted, part.$2));
+      if (end) break;
+    }
+    if (output.isNotEmpty) {
+      final last = output.removeLast();
+      output.add((last.$1.replaceFirst(RegExp(r'[\s,;:.–-]+$'), ''), last.$2));
+    }
+    return CanvasSpeechLayout(
+      output
+          .map(
+            (part) => switch (part.$2) {
+              '[' => '[${part.$1}]',
+              '{' => '{${part.$1}}',
+              _ => part.$1,
+            },
+          )
+          .join(),
+      px,
+      true,
     );
   }
 }

@@ -44,6 +44,8 @@ class StarChallengeState {
     this.best,
     this.earned = 0,
     this.newBest = false,
+    this.saving = false,
+    this.saveError = false,
   });
 
   final ChallengePiece? piece;
@@ -76,9 +78,11 @@ class StarChallengeState {
   /// A nota (0 a 3) no fim.
   final int earned;
   final bool newBest;
+  final bool saving, saveError;
 
   bool get ready => fen != null;
-  bool get interactive => phase == ChallengePhase.running;
+  bool get interactive =>
+      phase == ChallengePhase.running && !saving && !saveError;
 
   /// A estrela está para sumir (o último segundo): pisca.
   bool get starBlinking =>
@@ -111,6 +115,8 @@ class StarChallengeState {
     int? best,
     int? earned,
     bool? newBest,
+    bool? saving,
+    bool? saveError,
   }) => StarChallengeState(
     piece: piece ?? this.piece,
     level: level ?? this.level,
@@ -129,6 +135,8 @@ class StarChallengeState {
     best: best ?? this.best,
     earned: earned ?? this.earned,
     newBest: newBest ?? this.newBest,
+    saving: saving ?? this.saving,
+    saveError: saveError ?? this.saveError,
   );
 }
 
@@ -169,8 +177,12 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   DateTime? _pausedAt;
   Duration _pausedTotal = Duration.zero;
   DateTime? _starExpiresAt;
+  bool _finishing = false;
+  StarChallengeRun? _pendingRun;
+  StarChallengeState? _finishSnapshot;
 
   Future<void> load(ChallengePiece piece, ChallengeLevel level) async {
+    if (_pendingRun != null) return;
     final best = (await _progress.load()).bestOf(piece, level);
     if (isClosed) return;
     // Fechado à força, o app reabre no Pronto deste desafio.
@@ -191,6 +203,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
 
   /// "Vai": a primeira estrela aparece e o relógio começa.
   void start() {
+    if (_pendingRun != null) return;
     if (state.phase != ChallengePhase.ready) return;
     final square = StarChallengeRules.pieceSquare(_board);
     if (square == null) return;
@@ -231,7 +244,7 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
   /// O relógio: quanto falta, o fim quando chega a zero, e a estrela que
   /// some no prazo (outra acende, sem ponto).
   void tick() {
-    if (state.phase != ChallengePhase.running) return;
+    if (!state.interactive) return;
     final elapsed = _now().difference(_startedAt!) - _pausedTotal;
     final left = state.level!.duration - elapsed;
     if (left <= Duration.zero) {
@@ -291,13 +304,14 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
 
   /// Em segundo plano: o relógio (e o prazo da estrela) param.
   void pause() {
-    if (state.phase != ChallengePhase.running) return;
+    if (!state.interactive) return;
     _pausedAt = _now();
     _timer?.cancel();
     emit(state.copyWith(phase: ChallengePhase.paused));
   }
 
   void resume() {
+    if (_pendingRun != null) return;
     if (state.phase != ChallengePhase.paused) return;
     final paused = _now().difference(_pausedAt!);
     _pausedTotal += paused;
@@ -312,31 +326,65 @@ class StarChallengeCubit extends Cubit<StarChallengeState> {
 
   /// De novo, com outro tabuleiro.
   Future<void> retry() async {
+    if (_pendingRun != null) return;
     _timer?.cancel();
     await load(state.piece!, state.level!);
   }
 
   Future<void> _finish() async {
+    if (_pendingRun != null || !state.interactive) return;
     _timer?.cancel();
-    final piece = state.piece!;
-    final level = state.level!;
-    final points = state.points;
-    final earned = StarChallengeRules.earned(level, points);
+    _pendingRun = StarChallengeRun(
+      piece: state.piece!,
+      level: state.level!,
+      points: state.points,
+      at: _now(),
+    );
+    _finishSnapshot = state.copyWith(timeLeft: Duration.zero);
+    await _saveFinish();
+  }
+
+  /// Retries the same finished round, preserving its original points and date.
+  Future<void> retryFinish() async {
+    if (!state.saveError || state.saving) return;
+    await _saveFinish();
+  }
+
+  Future<void> _saveFinish() async {
+    final run = _pendingRun;
+    final snapshot = _finishSnapshot;
+    if (_finishing || run == null || snapshot == null || isClosed) return;
+    _finishing = true;
+    emit(snapshot.copyWith(saving: true, saveError: false));
+    final earned = StarChallengeRules.earned(run.level, run.points);
     // Zero ponto não é recorde.
-    final newBest = points > 0 && points > (state.best ?? 0);
-    if (newBest) {
-      final all = await _progress.load();
-      await _progress.save(all.withBest(piece, level, points));
+    final newBest = run.points > 0 && run.points > (snapshot.best ?? 0);
+    try {
+      await _progress.addRun(
+        piece: run.piece,
+        level: run.level,
+        points: run.points,
+        at: run.at,
+      );
+    } catch (_) {
+      if (!isClosed) emit(snapshot.copyWith(saving: false, saveError: true));
+      return;
+    } finally {
+      _finishing = false;
     }
+    _pendingRun = null;
+    _finishSnapshot = null;
     if (isClosed) return;
     emit(
-      state.copyWith(
+      snapshot.copyWith(
         phase: ChallengePhase.finished,
         timeLeft: Duration.zero,
         clearStar: true,
         earned: earned,
         newBest: newBest,
-        best: newBest ? points : state.best,
+        best: newBest ? run.points : snapshot.best,
+        saving: false,
+        saveError: false,
       ),
     );
   }

@@ -1,0 +1,265 @@
+import 'dart:async';
+import 'dart:convert';
+
+import '../../../domain/models/training/training_content.dart';
+import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/training_resources.dart';
+import '../../../domain/models/training/training_state.dart';
+import '../../../domain/use_cases/training/opening_parts.dart';
+import '../../services/lesson_content_service.dart';
+import '../../services/preferences_service.dart';
+import 'course_training_repository.dart';
+
+final class TrainingRepositoryLocal implements TrainingRepository {
+  TrainingRepositoryLocal(
+    this.preferences,
+    this.content, {
+    required this.installSeed,
+    this.configs = const {TrainingCourse.pilares: TrainingCourseConfig.pilares},
+    this.contentSources = const {},
+    this.onSaved,
+  });
+
+  /// Best effort observer: called only after durable persistence.
+  final FutureOr<void> Function(TrainingState before, TrainingState after)?
+  onSaved;
+  final PreferencesService preferences;
+  final LessonContentAssets content;
+  final String installSeed;
+  final Map<TrainingCourse, TrainingCourseConfig> configs;
+  final Map<String, Future<TrainingResources> Function()> contentSources;
+  final _changes = StreamController<TrainingState>.broadcast();
+  final _pending = <TrainingCourse, Future<void>>{};
+  @override
+  Stream<TrainingState> get changes => _changes.stream;
+
+  static String key(TrainingCourse course) => 'training.v1.${course.name}';
+  Future<T> _serial<T>(TrainingCourse course, Future<T> Function() action) {
+    final next = (_pending[course] ?? Future<void>.value()).then(
+      (_) => action(),
+    );
+    _pending[course] = next.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stack) {},
+    );
+    return next;
+  }
+
+  Future<TrainingState> _read(TrainingCourse course) async {
+    final raw = await preferences.getString(key(course));
+    if (raw == null) {
+      return TrainingState(course: course, installSeed: installSeed);
+    }
+    // Refuse unreadable/newer data without overwriting it or clearing progress.
+    final state = TrainingState.fromJson(
+      jsonDecode(raw) as Map<String, dynamic>,
+    );
+    if (state.course != course) {
+      throw const FormatException('Training course key mismatch');
+    }
+    return state;
+  }
+
+  @override
+  Future<TrainingState> load(TrainingCourse course) =>
+      _serial(course, () => _read(course));
+
+  @override
+  Future<TrainingState> update(
+    TrainingCourse course,
+    TrainingState Function(TrainingState) change,
+  ) => transact(course, change);
+
+  @override
+  Future<TrainingState> transact(
+    TrainingCourse course,
+    FutureOr<TrainingState> Function(TrainingState) change,
+  ) => _serial(course, () async {
+    final before = await _read(course);
+    final after = await change(before);
+    if (identical(before, after)) return before;
+    if (after.course != course || after.installSeed != before.installSeed) {
+      throw ArgumentError(
+        'A transaction cannot change course or installation seed',
+      );
+    }
+    await preferences.setString(key(course), jsonEncode(after.toJson()));
+    try {
+      final observer = onSaved;
+      if (observer != null) {
+        unawaited(
+          Future<void>.sync(() => observer(before, after))
+              .catchError((Object _) {}),
+        );
+      }
+    } catch (_) {
+      // Telemetry must never roll back a durable command or block navigation.
+    }
+    _changes.add(
+      after,
+    ); // Subscribers/navigation only observe a durable change.
+    return after;
+  });
+
+  Future<Map<String, dynamic>?> _json(
+    String path, {
+    void Function()? onOffline,
+  }) async {
+    try {
+      return jsonDecode(await content.loadString(path)) as Map<String, dynamic>;
+    } on LessonContentNetworkUnavailable {
+      onOffline?.call();
+      return null;
+    } on LessonContentUnavailable {
+      return null;
+    }
+  }
+
+  @override
+  Future<TrainingResources> resources(TrainingCourse course) async {
+    final config = configs[course];
+    if (config == null) {
+      throw ArgumentError.value(course, 'course', 'Course is not configured');
+    }
+    final source = contentSources[config.indexSource];
+    if (source != null) return source();
+    final index = await _json(config.indexSource);
+    if (index == null) return TrainingResources();
+    final saved = await _read(course);
+    final lessons = <TrainingLesson>[];
+    var hasUnpublishedContent = false;
+    final unpublished = <String>{};
+    for (final part in (index['partes'] as List)) {
+      for (final chapter in ((part as Map)['capitulos'] as List)) {
+        final published =
+            chapter['publicado'] != false && chapter['status'] != 'draft';
+        if (!published) {
+          hasUnpublishedContent = true;
+          unpublished.add(chapter['id'] as String);
+          if ((chapter['aulas'] as List).isEmpty) {
+            lessons.add(
+              TrainingLesson(
+                id: chapter['id'] as String,
+                kind: TrainingLessonKind.test,
+                title: chapter['titulo'] as String,
+                groupId: chapter['id'] as String,
+                partId: part['id'] as String,
+                visible: false,
+                published: false,
+              ),
+            );
+          }
+        }
+        for (final data in ((chapter as Map)['aulas'] as List)) {
+          final lesson = data as Map;
+          lessons.add(
+            TrainingLesson(
+              id: lesson['id'] as String,
+              kind: switch (lesson['tipo']) {
+                'tema' => TrainingLessonKind.theme,
+                'abertura' => TrainingLessonKind.opening,
+                'teste' => TrainingLessonKind.test,
+                _ => throw const FormatException('Unknown lesson kind'),
+              },
+              title: lesson['titulo'] as String,
+              summary: lesson['resumo'] as String? ?? '',
+              group: chapter['titulo'] as String,
+              groupId: chapter['id'] as String,
+              partId: part['id'] as String,
+              partTitle: part['titulo'] as String,
+              visible: published,
+              published: published,
+              openingProfile: lesson['tipo'] == 'abertura'
+                  ? lesson['perfil'] as String? ??
+                        openingProfileForLesson(lesson['id'] as String)
+                  : null,
+            ),
+          );
+        }
+      }
+    }
+    final banks = <String, List<TrainingExercise>>{};
+    final openings = <String, List<OpeningTrecho>>{};
+    final errorFeedback = <String, Map<String, String>>{};
+    final offlineChapters = <String>{};
+    await Future.wait(
+      lessons.map((lesson) async {
+        if (unpublished.contains(lesson.groupId)) return;
+        if (lesson.openingProfile != null &&
+            lesson.openingProfile != saved.openingProfile) {
+          return;
+        }
+        if (lesson.kind == TrainingLessonKind.theme) {
+          final json = await _json(
+            'assets/lessons/treino/${lesson.id}.json',
+            onOffline: () => offlineChapters.add(lesson.groupId),
+          );
+          if (json != null) {
+            banks[lesson.id] = (json['exercicios'] as List)
+                .map(
+                  (e) => TrainingExercise.fromJson(
+                    Map<String, dynamic>.from(e as Map),
+                  ),
+                )
+                .toList();
+          }
+          // PT-BR is the current training scope. An absent optional file never
+          // makes an otherwise playable bank unavailable.
+          final feedback = await _json(
+            'assets/lessons/treino/pt/${lesson.id}.json',
+          );
+          if (feedback != null) {
+            errorFeedback[lesson.id] = feedback.cast<String, String>();
+          }
+        } else if (lesson.kind == TrainingLessonKind.opening) {
+          final json = await _json(
+            'assets/lessons/treino/aberturas/${lesson.id}.json',
+            onOffline: () => offlineChapters.add(lesson.groupId),
+          );
+          if (json != null) {
+            openings[lesson.id] = (json['trechos'] as List)
+                .map(
+                  (t) => OpeningTrecho.fromJson({
+                    'cor': json['cor'],
+                    ...Map<String, dynamic>.from(t as Map),
+                  }),
+                )
+                .toList();
+          }
+        } else if (lesson.kind == TrainingLessonKind.test &&
+            lesson.groupId.isNotEmpty) {
+          await _json(
+            'assets/lessons/endgames/${lesson.groupId}.json',
+            onOffline: () => offlineChapters.add(lesson.groupId),
+          );
+        }
+      }),
+    );
+    final parts = lessons.map((l) => l.partId).toSet().toList();
+    final profileStart = parts.indexOf(saved.openingProfileStartPart);
+    return TrainingResources(
+      lessons: [
+        for (final lesson in lessons)
+          if (lesson.openingProfile ?? openings[lesson.id]?.firstOrNull?.profile
+              case final profile?)
+            TrainingLesson.fromJson({
+              ...lesson.toJson(),
+              'visible': lesson.visible && profile == saved.openingProfile,
+              'inCourseOrder':
+                  profileStart < 0 ||
+                  parts.indexOf(lesson.partId) >= profileStart,
+            })
+          else
+            lesson,
+      ],
+      banks: banks,
+      openings: openings,
+      errorFeedback: errorFeedback,
+      offlineChapters: offlineChapters,
+      hasUnpublishedContent: hasUnpublishedContent,
+    );
+  }
+
+  Future<void> dispose() => _changes.close();
+}

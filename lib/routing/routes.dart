@@ -9,6 +9,19 @@ import '../domain/models/linked_lesson.dart';
 import '../domain/models/survey.dart';
 
 abstract final class Routes {
+  static const learningAnalysis = '/learning-analysis';
+  static String learningAnalysisAt(
+    String fen, {
+    List<String> moves = const [],
+    String orientation = 'white',
+  }) => Uri(
+    path: learningAnalysis,
+    queryParameters: {
+      'fen': fen,
+      'moves': moves.join(','),
+      'view': orientation,
+    },
+  ).toString();
   static const boardControls = '/board-controls';
   static const home = '/';
   static const invalidLink = '/invalid-link';
@@ -437,11 +450,17 @@ abstract final class Routes {
   /// A tela "Aula concluída" da aula [id]: de [kind] `school` (Escola) ou
   /// `endgames` (aula de finais, com os capítulos todos feitos).
   /// [next] é a aula seguinte, se houver.
-  static String lessonFinished(SurveyKind kind, String id, {String? next}) =>
-      Uri(
-        path: '/lesson-finished/${kind.code}/$id',
-        queryParameters: next == null ? null : {'next': next},
-      ).toString();
+  static String lessonFinished(
+    SurveyKind kind,
+    String id, {
+    String? next,
+    String? origin,
+  }) => Uri(
+    path: '/lesson-finished/${kind.code}/$id',
+    queryParameters: next == null && origin == null
+        ? null
+        : {'next': ?next, 'origem': ?origin},
+  ).toString();
 
   /// O tour da primeira abertura (também aberto por Configurações).
   static const tour = '/tour';
@@ -598,4 +617,29 @@ abstract final class Routes {
   static const pilaresBand = '/settings/pilares/faixa';
   static const pilaresMap = '/settings/pilares/mapa';
   static const pilaresChapter = '/settings/pilares/mapa/capitulo';
+
+  static String training(String course) =>
+      '/training/${Uri.encodeComponent(course)}';
+  static String trainingPlan(String course) => '${training(course)}/plan';
+  static String trainingChapter(String course, String chapter) =>
+      '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';
+  static String trainingExercise(String course, String theme) =>
+      '${training(course)}/exercise/${Uri.encodeComponent(theme)}';
+  static String trainingOpening(String course, String opening) =>
+      '${training(course)}/opening/${Uri.encodeComponent(opening)}';
+  static String trainingTheme(String course, String theme) =>
+      '${training(course)}/theme/${Uri.encodeComponent(theme)}';
+
+  /// Private indexes refer either to a full chapter or a scripted part.
+  static String trainingLesson(String id, {String origin = 'treino_guia'}) {
+    final parts = id.split('.');
+    if (parts.length > 2 && parts.first == 'pilares') {
+      return endgameLessonScript(
+        parts.take(2).join('.'),
+        part: parts.skip(2).join('.'),
+        origin: origin,
+      );
+    }
+    return endgameLesson(id, origin: origin);
+  }
 }

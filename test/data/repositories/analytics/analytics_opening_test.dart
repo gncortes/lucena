@@ -132,6 +132,8 @@ void main() {
 
   test('o tipo do aviso sai do caminho', () {
     expect(AnalyticsOpening.alertType('/daily'), 'dia');
+    expect(AnalyticsOpening.alertType('/training/pilares'), 'treino');
+    expect(AnalyticsOpening.alertType('/training/escola'), 'treino');
     expect(AnalyticsOpening.alertType('/endgame-lesson/lucena'), 'aulas');
     expect(AnalyticsOpening.alertType('/featured/42'), 'torneios');
     expect(AnalyticsOpening.alertType('/'), 'novidades');

@@ -8,6 +8,7 @@ class RoundFooterButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.onPressed,
+    this.backgroundColor,
     super.key,
   });
 
@@ -17,6 +18,7 @@ class RoundFooterButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback? onPressed;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class RoundFooterButton extends StatelessWidget {
       heroTag: null,
       shape: const CircleBorder(),
       elevation: 2,
-      backgroundColor: colors.surface,
+      backgroundColor: backgroundColor ?? colors.surface,
       foregroundColor: colors.primary,
       tooltip: tooltip,
       onPressed: onPressed,

@@ -3,8 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/campaign/campaign_repository.dart';
+import '../../../domain/use_cases/training/training_analytics.dart';
 
 extension AnalyticsContext on BuildContext {
+  TrainingAnalytics? get trainingAnalytics {
+    try {
+      return read<TrainingAnalytics>();
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
   /// As estatísticas (E1.03) para passar ao view model. Sem o repositório
   /// acima (uma tela montada sozinha num teste), nenhuma: o Analytics nunca
   /// derruba uma tela.

@@ -20,6 +20,12 @@ void continueAfterSignIn(
   bool replace = false,
 }) {
   final restored = state.restored;
+  // Course entry resumes its authenticated package gate immediately.
+  if (Routes.isRouteFrom(from) &&
+      Uri.tryParse(from)?.path.startsWith('/training/') == true) {
+    context.go(from);
+    return;
+  }
   final target = restored != null
       ? Routes.accountRestoredFrom(from)
       : state.offline

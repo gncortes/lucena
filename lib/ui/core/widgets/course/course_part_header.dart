@@ -9,7 +9,14 @@ import '../../theme/app_text.dart';
 class CoursePartHeader extends StatelessWidget {
   const CoursePartHeader({
     required this.title,
-    required this.count,
+    this.count,
+    this.titleWeight = AppWeight.strong,
+    this.padding = const EdgeInsetsDirectional.fromSTEB(
+      AppSpacing.xs,
+      AppSpacing.sm,
+      AppSpacing.xs,
+      0,
+    ),
     this.label,
     this.countKey,
     super.key,
@@ -17,7 +24,9 @@ class CoursePartHeader extends StatelessWidget {
 
   final String? label;
   final String title;
-  final String count;
+  final String? count;
+  final FontWeight titleWeight;
+  final EdgeInsetsGeometry padding;
   final Key? countKey;
 
   @override
@@ -26,12 +35,7 @@ class CoursePartHeader extends StatelessWidget {
     final colors = theme.colorScheme;
     final label = this.label;
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(
-        AppSpacing.xs,
-        AppSpacing.sm,
-        AppSpacing.xs,
-        0,
-      ),
+      padding: padding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         spacing: AppSpacing.md,
@@ -45,25 +49,28 @@ class CoursePartHeader extends StatelessWidget {
                     label,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: colors.primary,
+                      height: 16 / 12,
+                      letterSpacing: 0,
                     ),
                   ),
                 Text(
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: AppWeight.strong,
+                    fontWeight: titleWeight,
                   ),
                 ),
               ],
             ),
           ),
-          Text(
-            count,
-            key: countKey,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.onSurfaceVariant,
-              fontFeatures: const [FontFeature.tabularFigures()],
+          if (count case final count?)
+            Text(
+              count,
+              key: countKey,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
             ),
-          ),
         ],
       ),
     );

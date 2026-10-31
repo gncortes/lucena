@@ -126,7 +126,7 @@ class TourScreen extends StatelessWidget {
                       children: [
                         ViktorConversation(
                           viktor: state.viktor,
-                          speech: state.speech,
+                          speech: state.speech ?? _publicSpeech(l10n, state),
                           viktorKey: TourKeys.viktor,
                           speechKey: TourKeys.speech,
                         ),
@@ -187,6 +187,22 @@ class TourScreen extends StatelessWidget {
     );
   }
 }
+
+String _publicSpeech(AppLocalizations l10n, TourState state) =>
+    switch (state.step) {
+      TourStep.board => l10n.tourSpeechBoard,
+      TourStep.voice =>
+        state.linkSetupDone
+            ? (state.hasVoices
+                  ? l10n.tourSpeechVoiceLink
+                  : l10n.tourSpeechVoiceLinkNone)
+            : (state.hasVoices
+                  ? l10n.tourSpeechVoice
+                  : l10n.tourSpeechVoiceNone),
+      TourStep.school => l10n.tourSpeechSchool,
+      TourStep.help => l10n.tourSpeechHelp,
+      TourStep.play => l10n.tourSpeechPlay,
+    };
 
 /// Recorta só os lados do passo: em cima e embaixo sobra 16 dp para a sombra.
 class _SideClipper extends CustomClipper<Rect> {

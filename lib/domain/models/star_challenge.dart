@@ -1,5 +1,32 @@
 import 'package:dartchess/dartchess.dart';
 
+/// One finished round, including repeated scores and zero-point rounds.
+final class StarChallengeRun {
+  const StarChallengeRun({
+    required this.piece,
+    required this.level,
+    required this.points,
+    required this.at,
+  });
+  final ChallengePiece piece;
+  final ChallengeLevel level;
+  final int points;
+  final DateTime at;
+  Map<String, Object?> toJson() => {
+    'piece': piece.name,
+    'level': level.name,
+    'points': points,
+    'at': at.toUtc().toIso8601String(),
+  };
+  factory StarChallengeRun.fromJson(Map<String, dynamic> json) =>
+      StarChallengeRun(
+        piece: ChallengePiece.values.byName(json['piece'] as String),
+        level: ChallengeLevel.values.byName(json['level'] as String),
+        points: json['points'] as int,
+        at: DateTime.parse(json['at'] as String),
+      );
+}
+
 /// A peça de um desafio das estrelas.
 enum ChallengePiece {
   rook(Role.rook),

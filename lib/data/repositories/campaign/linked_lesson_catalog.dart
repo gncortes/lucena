@@ -40,7 +40,7 @@ class LinkedLessonCatalog {
             kind: lesson.kind,
             title: title,
             module: texts.plain('endgames.module.${found.module}'),
-            fen: found.keyPositions.firstOrNull?.fen ?? found.practice.fen,
+            fen: found.keyPositions.firstOrNull?.fen ?? found.practice?.fen,
           );
         case LinkedLessonKind.school:
           final found = (await _school.course()).lesson(lesson.id);

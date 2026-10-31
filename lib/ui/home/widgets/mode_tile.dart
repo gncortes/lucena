@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/dependencies.dart' show activeTrainingCourses;
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -71,7 +74,10 @@ extension HomeShortcutUi on HomeShortcut {
   };
 
   String get route => switch (this) {
-    HomeShortcut.school => HomePath.learn.route,
+    HomeShortcut.school =>
+      activeTrainingCourses.contains(TrainingCourseConfig.escola)
+          ? Routes.school
+          : HomePath.learn.route,
     HomeShortcut.journey => HomePath.journey.route,
     HomeShortcut.endgames => HomePath.endgames.route,
     HomeShortcut.train => HomePath.train.route,
@@ -114,6 +120,7 @@ class ModeTile extends StatelessWidget {
     final tone = shortcut.tone(colors);
     final body = theme.textTheme.bodySmall?.copyWith(
       color: colors.onSurfaceVariant,
+      letterSpacing: 0,
     );
     return SizedBox(
       height: height,
@@ -139,6 +146,7 @@ class ModeTile extends StatelessWidget {
                   ),
                   child: Icon(
                     shortcut.icon,
+                    fill: 1,
                     size: AppIconSize.standard,
                     color: tone.foreground,
                   ),
@@ -151,6 +159,7 @@ class ModeTile extends StatelessWidget {
                       maxLines: 1,
                       style: context.cardTitle?.copyWith(
                         fontWeight: AppWeight.heavy,
+                        letterSpacing: 0,
                       ),
                     ),
                     // Sempre a altura de duas linhas: o título fica na

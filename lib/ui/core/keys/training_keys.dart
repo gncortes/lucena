@@ -1,0 +1,92 @@
+import 'package:flutter/widgets.dart';
+
+abstract final class TrainingKeys {
+  static const progressLevelTest = Key('training.progressLevelTest');
+  static const openingPage = Key('training.openingPage');
+  static const exercisePage = Key('training.exercisePage');
+  static const exerciseAnalyze = Key('training.exerciseAnalyze');
+  static const progressEmpty = Key('training.progressEmpty');
+  static const testLeaveDialog = Key('training.testLeaveDialog');
+  static const testContinue = Key('training.testContinue');
+  static const testLeave = Key('training.testLeave');
+  static const testBack = Key('training.testBack');
+  static const exerciseTitleDifficulty = Key(
+    'training.exerciseTitleDifficulty',
+  );
+  static const openingNextPart = Key('training.openingNextPart');
+  static const openingProgress = Key('training.openingProgress');
+  static const openingProgressScreen = Key('training.openingProgressScreen');
+  static Key openingPart(String id) => Key('training.openingPart.$id');
+  static Key openingProfile(String id) => Key('training.openingProfile.$id');
+  static const completedCourse = Key('training.completedCourse');
+  static const completedPrimary = Key('training.completedPrimary');
+  static const completedCatalog = Key('training.completedCatalog');
+  static const goalsSummary = Key('training.goalsSummary');
+  static Key goalTile(String kind, String ref) =>
+      Key('training.goal.$kind.$ref');
+  static const doubleOffer = Key('training.doubleOffer');
+  static const doubleButton = Key('training.doubleButton');
+  static const difficultyBadge = Key('training.difficultyBadge');
+  static const hintBadge = Key('training.hintBadge');
+  static const exerciseBoard = Key('training.exerciseBoard');
+  static const exerciseScreen = Key('training.exerciseScreen');
+  static const exerciseHint = Key('training.exerciseHint');
+  static const exerciseRetry = Key('training.exerciseRetry');
+  static const exercisePracticeRetry = Key('training.exercisePracticeRetry');
+  static const exerciseFeedbackExpand = Key('training.exerciseFeedbackExpand');
+  static const exerciseFeedbackSheet = Key('training.exerciseFeedbackSheet');
+  static const exerciseFeedbackScroll = Key('training.exerciseFeedbackScroll');
+  static const exerciseSaveError = Key('training.exerciseSaveError');
+  static const exerciseEnd = Key('training.exerciseEnd');
+  static const nextGoal = Key('training.nextGoal');
+  static const secondary = Key('training.secondary');
+  static const endPrimary = Key('training.endPrimary');
+  static const endSecondary = Key('training.endSecondary');
+  static Key openingCard(String id) => Key('training.opening.$id');
+  static const openingsScreen = Key('training.openingsScreen');
+  static const openingScreen = Key('training.openingScreen');
+  static const openingBack = Key('training.openingBack');
+  static const openingBoard = Key('training.openingBoard');
+  static Key openingTitle(String id) => Key('training.openingTitle.$id');
+  static const openingSaveRetry = Key('training.openingSaveRetry');
+  static const openingSaveError = Key('training.openingSaveError');
+  static Key trainTrecho(String id) => Key('training.trainTrecho.$id');
+  static const prevMove = Key('training.prevMove');
+  static const nextMove = Key('training.nextMove');
+  static Key moveInList(int i) => Key('training.move.$i');
+  static Key planChip(int min) => Key('training.plan.$min');
+  static Key weekday(int i) => Key('training.weekday.$i');
+  static const reminderSwitch = Key('training.reminderSwitch');
+  static const reminderTime = Key('training.reminderTime');
+  static const planSave = Key('training.planSave');
+  static const planScreen = Key('training.planScreen');
+  static const planScroll = Key('training.planScroll');
+  static const planError = Key('training.planError');
+  static const permissionDialog = Key('training.permissionDialog');
+  static const permissionLater = Key('training.permissionLater');
+  static const permissionAllow = Key('training.permissionAllow');
+  static const openNotificationSettings = Key(
+    'training.openNotificationSettings',
+  );
+  static Key masteryRow(String id) => Key('training.mastery.$id');
+  static Key moduleRow(String id) => Key('training.module.$id');
+  static Key pieceStars(String piece) => Key('training.pieceStars.$piece');
+  static const tourNext = Key('training.tourNext');
+  static const themeScroll = Key('training.themeScroll');
+  static const themeLegend = Key('training.themeLegend');
+  static const themeExercisesHeading = Key('training.themeExercisesHeading');
+  static Key themeExercise(int index) => Key('training.themeExercise.$index');
+  static Key themeThumbnail(int index) => Key('training.themeThumbnail.$index');
+  static Key themeResult(int index) => Key('training.themeResult.$index');
+  static Key themeRedo(int index) => Key('training.themeRedo.$index');
+  static const themeScreen = Key('training.themeScreen');
+  static const themeChart = Key('training.themeChart');
+  static const themeBack = Key('training.themeBack');
+  static const helpScreen = Key('training.helpScreen');
+  static const helpBack = Key('training.helpBack');
+  static const helpTour = Key('training.helpTour');
+  static Key faq(int index) => Key('training.faq.$index');
+  static const tourOverlay = Key('training.tourOverlay');
+  static const tourClose = Key('training.tourClose');
+  static const tourSkip = Key('training.tourSkip');
+}

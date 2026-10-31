@@ -176,6 +176,24 @@ enum ScriptJudge {
 }
 
 /// A pergunta de um exemplo: o aluno sugere o primeiro lance.
+/// An authored answer button. Its explanation and continuation come entirely
+/// from the lesson package, just like an authored move answer.
+class ScriptChoice {
+  const ScriptChoice({
+    required this.t,
+    required this.correct,
+    required this.steps,
+  });
+  factory ScriptChoice.fromJson(Map<String, dynamic> json) => ScriptChoice(
+    t: json['t'] as String,
+    correct: json['correta'] as bool,
+    steps: ScriptStep.list(json['passos']),
+  );
+  final String t;
+  final bool correct;
+  final List<ScriptStep> steps;
+}
+
 class ScriptQuestion {
   const ScriptQuestion({
     required this.t,
@@ -189,6 +207,7 @@ class ScriptQuestion {
     this.pieces,
     this.outside,
     this.back,
+    this.choices = const [],
   });
 
   factory ScriptQuestion.fromJson(Map<String, dynamic> json) => ScriptQuestion(
@@ -213,10 +232,15 @@ class ScriptQuestion {
     pieces: _squares(json['pecas']),
     outside: json['fora'] as String?,
     back: json['volta'] as String?,
+    choices: [
+      for (final choice in json['escolhas'] as List? ?? const [])
+        ScriptChoice.fromJson(Map<String, dynamic>.from(choice as Map)),
+    ],
   );
 
   /// A fala da pergunta.
   final String t;
+  final List<ScriptChoice> choices;
 
   /// Os lances certos (`certos`).
   final List<String> right;

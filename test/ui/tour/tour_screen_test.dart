@@ -8,12 +8,15 @@ import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/domain/models/character.dart';
 import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/core/keys/voice_keys.dart';
+import 'package:lucena/ui/core/l10n/l10n.dart';
+import 'package:lucena/ui/core/widgets/viktor_conversation.dart';
 import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -45,6 +48,12 @@ final _texts = LessonTexts.fromJson({
   'tour.voice.link': 'Bela partida!',
 });
 
+class _UnavailableLessons extends FakeLessonRepository {
+  @override
+  Future<LessonTexts> texts(String language) async =>
+      throw const LessonContentUnavailable();
+}
+
 void main() {
   late FakeSettingsRepository settings;
   late FakeVoiceRepository voice;
@@ -58,6 +67,7 @@ void main() {
     Size size = const Size(412, 915),
     bool voices = true,
     bool link = false,
+    bool unavailable = false,
     List<Character>? characters,
   }) async {
     tester.view.devicePixelRatio = 1;
@@ -92,7 +102,9 @@ void main() {
               onboarding: onboarding,
               profile: profile,
               characters: FakeCharacterRepository(characters: characters),
-              lessons: FakeLessonRepository(texts: _texts),
+              lessons: unavailable
+                  ? _UnavailableLessons()
+                  : FakeLessonRepository(texts: _texts),
               voice: voices ? voiceRepository : null,
             )..load('pt'),
             child: const TourScreen(),
@@ -123,6 +135,43 @@ void main() {
       .first;
 
   const sizes = [Size(412, 915), Size(360, 640)];
+
+  for (final voices in [true, false]) {
+    for (final link in [false, true]) {
+      testWidgets('guest tour has public speech without package '
+          '(voices: $voices, link: $link)', (tester) async {
+        final l10n = await AppLocalizations.delegate.load(const Locale('pt'));
+        await pumpTour(tester, voices: voices, link: link, unavailable: true);
+        final expected = [
+          if (!link) l10n.tourSpeechBoard,
+          if (link)
+            voices ? l10n.tourSpeechVoiceLink : l10n.tourSpeechVoiceLinkNone
+          else
+            voices ? l10n.tourSpeechVoice : l10n.tourSpeechVoiceNone,
+          l10n.tourSpeechSchool,
+          l10n.tourSpeechHelp,
+          l10n.tourSpeechPlay,
+        ];
+        for (var index = 0; index < expected.length; index++) {
+          expect(tester.takeException(), isNull);
+          expect(find.byKey(TourKeys.speech), findsOneWidget);
+          expect(
+            tester
+                .widget<ViktorConversation>(find.byType(ViktorConversation))
+                .speech,
+            expected[index],
+          );
+          if (index < expected.length - 1) {
+            await tester.tap(find.byKey(TourKeys.nextButton));
+            await tester.pumpAndSettle();
+          }
+        }
+        await tester.tap(find.byKey(TourKeys.startButton));
+        await tester.pumpAndSettle();
+        expect(find.text('rota-objetivo'), findsOneWidget);
+      });
+    }
+  }
 
   group('layout, em 412x915 e 360x640', () {
     for (final size in sizes) {

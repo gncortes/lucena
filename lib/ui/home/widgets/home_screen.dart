@@ -14,6 +14,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/staggered_entrance.dart';
 import '../../featured/widgets/featured_card.dart';
@@ -142,6 +143,8 @@ class _HomeScreenState extends State<HomeScreen>
                           key: HomeKeys.title,
                           maxLines: 1,
                           style: theme.textTheme.titleLarge?.copyWith(
+                            fontSize: 26,
+                            height: 32 / 26,
                             fontWeight: AppWeight.heavy,
                           ),
                         ),
@@ -154,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen>
                       IconButton(
                         key: HomeKeys.settingsButton,
                         icon: const Icon(
-                          Icons.settings_outlined,
+                          CanvasSymbols.settings,
                           size: AppIconSize.standard,
                         ),
                         tooltip: l10n.settingsTitle,

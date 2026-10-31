@@ -14,9 +14,22 @@ import '../../testing/e2e_dependencies.dart';
 /// Continuar e o que mais a fase pede. O estado é lido do cubit; os gestos
 /// são os do jogador (toque no tabuleiro, no balão, nos botões).
 class ScriptLessonRobot {
-  const ScriptLessonRobot(this.$);
+  const ScriptLessonRobot(this.$, {this.manualClock = false});
 
   final PatrolIntegrationTester $;
+
+  /// T85 steps the injected clock itself. Waiting for an animated demo to
+  /// settle before advancing that clock can stall the same animation.
+  final bool manualClock;
+
+  Future<void> _tapAction(Key key) async {
+    if (manualClock) {
+      await $.tester.tap(find.byKey(key));
+      await $.pump();
+    } else {
+      await $(key).tap();
+    }
+  }
 
   LessonScriptCubit get cubit => $.tester
       .element(find.byKey(LessonScriptKeys.screen))
@@ -61,14 +74,23 @@ class ScriptLessonRobot {
   /// perguntas e espera nas demonstrações, até [done] ser verdadeiro.
   Future<void> advanceUntil(bool Function() done) async {
     for (var i = 0; i < 300 && !done(); i++) {
+      if (manualClock && i % 25 == 0) {
+        debugPrint(
+          'T85 lesson step $i: ${state.stageId}/${state.exampleIndex} '
+          '${state.phase}',
+        );
+      }
       if (find.byKey(LessonScriptKeys.primary).evaluate().isNotEmpty) {
-        await $(LessonScriptKeys.primary).tap();
+        await _tapAction(LessonScriptKeys.primary);
+        await settle(4);
+      } else if (find.byKey(LessonScriptKeys.nextPart).evaluate().isNotEmpty) {
+        await _tapAction(LessonScriptKeys.nextPart);
         await settle(4);
       } else if (find
           .byKey(LessonScriptKeys.showAnswer)
           .evaluate()
           .isNotEmpty) {
-        await $(LessonScriptKeys.showAnswer).tap();
+        await _tapAction(LessonScriptKeys.showAnswer);
         await settle(4);
       } else {
         await settle(5);

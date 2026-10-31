@@ -660,6 +660,7 @@ void main() {
       await tester.tap(find.byKey(HomeKeys.settingsButton));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byKey(SettingsKeys.openLinkTile));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(SettingsKeys.openLinkTile));
       await tester.pumpAndSettle();
 

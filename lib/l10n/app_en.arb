@@ -1385,6 +1385,22 @@
       }
     }
   },
+  "tourSpeechBoard": "Hello! I am Viktor, your teacher. Before we start, choose the board colours and the pieces you like best.",
+  "@tourSpeechBoard": {"description": "Public onboarding speech, copied verbatim from tour.board."},
+  "tourSpeechVoice": "I can read aloud everything I say. Choose my voice; tap one to hear it. And tell me what to call you.",
+  "@tourSpeechVoice": {"description": "Public onboarding speech, copied verbatim from tour.voice."},
+  "tourSpeechVoiceNone": "Before we go on, tell me what to call you.",
+  "@tourSpeechVoiceNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.none."},
+  "tourSpeechVoiceLink": "Nice game! I am Viktor, your teacher. I can read aloud everything I say. Choose my voice, and tell me what to call you.",
+  "@tourSpeechVoiceLink": {"description": "Public onboarding speech, copied verbatim from tour.voice.link."},
+  "tourSpeechVoiceLinkNone": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you.",
+  "@tourSpeechVoiceLinkNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.link.none."},
+  "tourSpeechSchool": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
+  "@tourSpeechSchool": {"description": "Public onboarding speech, copied verbatim from tour.school."},
+  "tourSpeechHelp": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
+  "@tourSpeechHelp": {"description": "Public onboarding speech, copied verbatim from tour.help."},
+  "tourSpeechPlay": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
+  "@tourSpeechPlay": {"description": "Public onboarding speech, copied verbatim from tour.play."},
   "tourBack": "Back",
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."
@@ -9783,5 +9799,2005 @@
   "homeShortcutSchoolBody": "From the pieces to your first mate",
   "@homeShortcutSchoolBody": {
     "description": "Two-line description on the school shortcut tile."
+  },
+  "trainingWithHint": "With hint",
+  "trainingPrevMove": "Previous move",
+  "trainingNextMove": "Next move",
+  "@trainingWithHint": {
+    "description": "Training badge: an exercise solved with a hint."
+  },
+  "@trainingPrevMove": {
+    "description": "Training opening footer: show the previous move."
+  },
+  "@trainingNextMove": {
+    "description": "Training opening footer: show the next move."
+  },
+  "trainingPilaresTitle": "Pilares do Xadrez",
+  "@trainingPilaresTitle": {
+    "description": "T85 course guide: trainingPilaresTitle."
+  },
+  "courseGuideTabLesson": "Lesson",
+  "@courseGuideTabLesson": {
+    "description": "T85 course guide: courseGuideTabLesson."
+  },
+  "courseGuideTabGoals": "Goals",
+  "@courseGuideTabGoals": {
+    "description": "T85 course guide: courseGuideTabGoals."
+  },
+  "courseGuideTabProgress": "Progress",
+  "@courseGuideTabProgress": {
+    "description": "T85 course guide: courseGuideTabProgress."
+  },
+  "courseGuideTabCatalog": "Catalog",
+  "@courseGuideTabCatalog": {
+    "description": "T85 course guide: courseGuideTabCatalog."
+  },
+  "courseGuidePlanAction": "Your plan",
+  "@courseGuidePlanAction": {
+    "description": "T85 course guide: courseGuidePlanAction."
+  },
+  "courseGuideHelpAction": "How it works",
+  "@courseGuideHelpAction": {
+    "description": "T85 course guide: courseGuideHelpAction."
+  },
+  "courseGuideWelcomeTitle": "Welcome to Pilares do Xadrez",
+  "@courseGuideWelcomeTitle": {
+    "description": "T85 course guide: courseGuideWelcomeTitle."
+  },
+  "courseGuideWelcomeBody": "One lesson at a time, from basic tactics to opening principles. After each lesson, the theme returns in short daily exercises to help you remember it.",
+  "@courseGuideWelcomeBody": {
+    "description": "T85 course guide: courseGuideWelcomeBody."
+  },
+  "courseGuideTabsTitle": "The tabs below",
+  "@courseGuideTabsTitle": {
+    "description": "T85 course guide: courseGuideTabsTitle."
+  },
+  "courseGuideTabsLesson": "Your next lesson is always here.",
+  "@courseGuideTabsLesson": {
+    "description": "T85 course guide: courseGuideTabsLesson."
+  },
+  "courseGuideTabsGoals": "What to do today.",
+  "@courseGuideTabsGoals": {
+    "description": "T85 course guide: courseGuideTabsGoals."
+  },
+  "courseGuideTabsProgress": "How well you know each theme.",
+  "@courseGuideTabsProgress": {
+    "description": "T85 course guide: courseGuideTabsProgress."
+  },
+  "courseGuideTabsCatalog": "All lessons in the course.",
+  "@courseGuideTabsCatalog": {
+    "description": "T85 course guide: courseGuideTabsCatalog."
+  },
+  "courseGuideTabIntro": "{tab}: {body}",
+  "@courseGuideTabIntro": {
+    "description": "T85 course guide: courseGuideTabIntro.",
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      },
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+  "courseGuideSeeCatalog": "View the catalog",
+  "@courseGuideSeeCatalog": {
+    "description": "T85 course guide: courseGuideSeeCatalog."
+  },
+  "courseGuideStudyTips": "Study tips",
+  "@courseGuideStudyTips": {
+    "description": "T85 course guide: courseGuideStudyTips."
+  },
+  "courseGuideTips1Title": "Think before moving",
+  "@courseGuideTips1Title": {
+    "description": "T85 course guide: courseGuideTips1Title."
+  },
+  "courseGuideTips1Body": "In difficult positions, think for at least 5 minutes before playing. The effort helps you remember the idea.",
+  "@courseGuideTips1Body": {
+    "description": "T85 course guide: courseGuideTips1Body."
+  },
+  "courseGuideTips2Title": "Set up the board",
+  "@courseGuideTips2Title": {
+    "description": "T85 course guide: courseGuideTips2Title."
+  },
+  "courseGuideTips2Body": "If you have a board, set up the position and calculate without moving the pieces until you choose your move.",
+  "@courseGuideTips2Body": {
+    "description": "T85 course guide: courseGuideTips2Body."
+  },
+  "courseGuideTips3Title": "Write down your variations",
+  "@courseGuideTips3Title": {
+    "description": "T85 course guide: courseGuideTips3Title."
+  },
+  "courseGuideTips3Body": "Write down candidate moves and the lines you calculated. Then compare them with the solution.",
+  "@courseGuideTips3Body": {
+    "description": "T85 course guide: courseGuideTips3Body."
+  },
+  "courseGuideTips4Title": "Return to your mistakes",
+  "@courseGuideTips4Title": {
+    "description": "T85 course guide: courseGuideTips4Title."
+  },
+  "courseGuideTips4Body": "Made a mistake? Before continuing, find out what you missed in the position.",
+  "@courseGuideTips4Body": {
+    "description": "T85 course guide: courseGuideTips4Body."
+  },
+  "trainingGoalsTitle": "Today’s goals",
+  "@trainingGoalsTitle": {
+    "description": "T85 course guide: trainingGoalsTitle."
+  },
+  "trainingGoalsLeft": "{n} of {total} left",
+  "@trainingGoalsLeft": {
+    "description": "T85 course guide: trainingGoalsLeft.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingPartLesson": "{part} · lesson {n}",
+  "@trainingPartLesson": {
+    "description": "T85 course guide: trainingPartLesson.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "part": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingCount": "{done} of {total}",
+  "@trainingCount": {
+    "description": "T85 course guide: trainingCount.",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingPartLabel": "Part {roman}",
+  "@trainingPartLabel": {
+    "description": "T85 course guide: trainingPartLabel.",
+    "placeholders": {
+      "roman": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingChapterTitle": "{n} · {title}",
+  "@trainingChapterTitle": {
+    "description": "T85 course guide: trainingChapterTitle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingCourseLevelTest": "Level test: see what you already know.",
+  "@trainingCourseLevelTest": {
+    "description": "T85 course guide: trainingCourseLevelTest."
+  },
+  "trainingPlanTitle": "Your plan",
+  "@trainingPlanTitle": {
+    "description": "T85 study plan: trainingPlanTitle"
+  },
+  "trainingPlanIntro": "Set your goal. You can change it later using the plan at the top of your goals.",
+  "@trainingPlanIntro": {
+    "description": "T85 study plan: trainingPlanIntro"
+  },
+  "trainingPlanTimeQuestion": "How much time do you have to study chess each day?",
+  "@trainingPlanTimeQuestion": {
+    "description": "T85 study plan: trainingPlanTimeQuestion"
+  },
+  "trainingPlanTime15": "15 min",
+  "@trainingPlanTime15": {
+    "description": "T85 study plan: trainingPlanTime15"
+  },
+  "trainingPlanTime30": "30 min",
+  "@trainingPlanTime30": {
+    "description": "T85 study plan: trainingPlanTime30"
+  },
+  "trainingPlanTime60": "1 hour",
+  "@trainingPlanTime60": {
+    "description": "T85 study plan: trainingPlanTime60"
+  },
+  "trainingPlanTime120": "2 hours",
+  "@trainingPlanTime120": {
+    "description": "T85 study plan: trainingPlanTime120"
+  },
+  "trainingPlanTime240": "4 hours or more",
+  "@trainingPlanTime240": {
+    "description": "T85 study plan: trainingPlanTime240"
+  },
+  "trainingPlanReco15": "One new lesson every two study days; on the other day, just exercises for the themes.",
+  "@trainingPlanReco15": {
+    "description": "T85 study plan: trainingPlanReco15"
+  },
+  "trainingPlanReco30": "One new lesson per study day, plus theme exercises and openings.",
+  "@trainingPlanReco30": {
+    "description": "T85 study plan: trainingPlanReco30"
+  },
+  "trainingPlanReco60": "One new lesson per study day, plus exercises. There is time to think carefully about each position.",
+  "@trainingPlanReco60": {
+    "description": "T85 study plan: trainingPlanReco60"
+  },
+  "trainingPlanReco120": "One new lesson per study day, plus exercises, with time to set up positions on a board and write down variations.",
+  "@trainingPlanReco120": {
+    "description": "T85 study plan: trainingPlanReco120"
+  },
+  "trainingPlanReco240": "Two new lessons per study day, plus exercises. This is the most we recommend: too many new lessons on the same day do not stick.",
+  "@trainingPlanReco240": {
+    "description": "T85 study plan: trainingPlanReco240"
+  },
+  "trainingPlanRecoMore": "Want more? Once you meet your goal, the app offers to double it.",
+  "@trainingPlanRecoMore": {
+    "description": "T85 study plan: trainingPlanRecoMore"
+  },
+  "trainingPlanRecommended": "Recommended for you",
+  "@trainingPlanRecommended": {
+    "description": "T85 study plan: trainingPlanRecommended"
+  },
+  "trainingPlanDays": "Study days",
+  "@trainingPlanDays": {
+    "description": "T85 study plan: trainingPlanDays"
+  },
+  "trainingPlanDaysOff": "Your goals rest on the other days.",
+  "@trainingPlanDaysOff": {
+    "description": "T85 study plan: trainingPlanDaysOff"
+  },
+  "trainingPlanWeekdaySunday": "S",
+  "@trainingPlanWeekdaySunday": {
+    "description": "T85 study plan: trainingPlanWeekdaySunday"
+  },
+  "trainingPlanWeekdayMonday": "M",
+  "@trainingPlanWeekdayMonday": {
+    "description": "T85 study plan: trainingPlanWeekdayMonday"
+  },
+  "trainingPlanWeekdayTuesday": "T",
+  "@trainingPlanWeekdayTuesday": {
+    "description": "T85 study plan: trainingPlanWeekdayTuesday"
+  },
+  "trainingPlanWeekdayWednesday": "W",
+  "@trainingPlanWeekdayWednesday": {
+    "description": "T85 study plan: trainingPlanWeekdayWednesday"
+  },
+  "trainingPlanWeekdayThursday": "T",
+  "@trainingPlanWeekdayThursday": {
+    "description": "T85 study plan: trainingPlanWeekdayThursday"
+  },
+  "trainingPlanWeekdayFriday": "F",
+  "@trainingPlanWeekdayFriday": {
+    "description": "T85 study plan: trainingPlanWeekdayFriday"
+  },
+  "trainingPlanWeekdaySaturday": "S",
+  "@trainingPlanWeekdaySaturday": {
+    "description": "T85 study plan: trainingPlanWeekdaySaturday"
+  },
+  "trainingPlanWeekdaySemantic": "{day, select, 0{Sunday} 1{Monday} 2{Tuesday} 3{Wednesday} 4{Thursday} 5{Friday} other{Saturday}}",
+  "@trainingPlanWeekdaySemantic": {
+    "description": "T85 study plan: trainingPlanWeekdaySemantic",
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingReminderTitle": "Study reminder",
+  "@trainingReminderTitle": {
+    "description": "T85 study plan: trainingReminderTitle"
+  },
+  "trainingReminderSub": "Only if goals remain for the day",
+  "@trainingReminderSub": {
+    "description": "T85 study plan: trainingReminderSub"
+  },
+  "trainingReminderTime": "Time",
+  "@trainingReminderTime": {
+    "description": "T85 study plan: trainingReminderTime"
+  },
+  "trainingReminderSilent": "Delivered without sound or vibration: just a reminder.",
+  "@trainingReminderSilent": {
+    "description": "T85 study plan: trainingReminderSilent"
+  },
+  "trainingReminderDenied": "Lucena notifications are disabled on your phone. To receive reminders, allow them in settings.",
+  "@trainingReminderDenied": {
+    "description": "T85 study plan: trainingReminderDenied"
+  },
+  "trainingOpenSettings": "Open settings",
+  "@trainingOpenSettings": {
+    "description": "T85 study plan: trainingOpenSettings"
+  },
+  "trainingPermissionTitle": "Receive the reminder?",
+  "@trainingPermissionTitle": {
+    "description": "T85 study plan: trainingPermissionTitle"
+  },
+  "trainingPermissionBody": "To remind you at study time, Lucena needs your permission to send notifications. The reminder arrives without sound or vibration.",
+  "@trainingPermissionBody": {
+    "description": "T85 study plan: trainingPermissionBody"
+  },
+  "trainingPermissionLater": "Not now",
+  "@trainingPermissionLater": {
+    "description": "T85 study plan: trainingPermissionLater"
+  },
+  "trainingPermissionAllow": "Allow",
+  "@trainingPermissionAllow": {
+    "description": "T85 study plan: trainingPermissionAllow"
+  },
+  "trainingPlanSave": "Save",
+  "@trainingPlanSave": {
+    "description": "T85 study plan: trainingPlanSave"
+  },
+  "trainingPlanStart": "Start the course",
+  "@trainingPlanStart": {
+    "description": "T85 study plan: trainingPlanStart"
+  },
+  "trainingTimePickerTitle": "Reminder time",
+  "@trainingTimePickerTitle": {
+    "description": "T85 study plan: trainingTimePickerTitle"
+  },
+  "trainingPlanSaveError": "Could not save. Your choices were kept. Try again.",
+  "@trainingPlanSaveError": {
+    "description": "T85 study plan: trainingPlanSaveError"
+  },
+  "trainingNotifTitle": "Time for chess",
+  "@trainingNotifTitle": {
+    "description": "T85 study plan: trainingNotifTitle"
+  },
+  "trainingNotifLesson": "Lesson {aula} and {n, plural, one{1 goal} other{{n} goals}} remain to finish.",
+  "@trainingNotifLesson": {
+    "description": "T85 study plan: trainingNotifLesson",
+    "placeholders": {
+      "aula": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingNotifGoals": "{n, plural, one{1 goal} other{{n} goals}} to finish.",
+  "@trainingNotifGoals": {
+    "description": "T85 study plan: trainingNotifGoals",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingLessonExtraDone": "Extra lesson · completed today",
+  "@trainingLessonExtraDone": {
+    "description": "T85 daily goals and progress: trainingLessonExtraDone."
+  },
+  "trainingOpeningsSummary": "{n} openings · {done} of {total} parts today",
+  "@trainingOpeningsSummary": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingLessonNew": "New lesson · about {min} minutes",
+  "@trainingLessonNew": {
+    "description": "T85 daily goals and progress: trainingLessonNew.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSectionIfStudy": "IF YOU WANT TO STUDY TODAY",
+  "@trainingSectionIfStudy": {
+    "description": "T85 daily goals and progress: trainingSectionIfStudy."
+  },
+  "trainingSectionDoneToday": "DONE TODAY",
+  "@trainingSectionDoneToday": {
+    "description": "T85 daily goals and progress: trainingSectionDoneToday."
+  },
+  "trainingDayOffBody": "Your goals return on the next study day. Unfinished goals will wait for you.",
+  "@trainingDayOffBody": {
+    "description": "T85 daily goals and progress: trainingDayOffBody."
+  },
+  "trainingSectionLesson": "LESSON",
+  "@trainingSectionLesson": {
+    "description": "T85 daily goals and progress: trainingSectionLesson."
+  },
+  "trainingDayOffTitle": "Today is a rest day",
+  "@trainingDayOffTitle": {
+    "description": "T85 daily goals and progress: trainingDayOffTitle."
+  },
+  "trainingLessonDoneToday": "Completed today",
+  "@trainingLessonDoneToday": {
+    "description": "T85 daily goals and progress: trainingLessonDoneToday."
+  },
+  "trainingOpeningsTitle": "Openings",
+  "@trainingOpeningsTitle": {
+    "description": "T85 daily goals and progress: trainingOpeningsTitle."
+  },
+  "trainingSectionLessons": "LESSONS",
+  "@trainingSectionLessons": {
+    "description": "T85 daily goals and progress: trainingSectionLessons."
+  },
+  "trainingSectionOpenings": "OPENINGS",
+  "@trainingSectionOpenings": {
+    "description": "T85 daily goals and progress: trainingSectionOpenings."
+  },
+  "trainingAllDoneViktor": "All done for today. On the next study day, exercises you solved correctly will be a little harder.",
+  "@trainingAllDoneViktor": {
+    "description": "T85 daily goals and progress: trainingAllDoneViktor."
+  },
+  "trainingSectionExercisesN": "EXERCISES · {n} THEMES",
+  "@trainingSectionExercisesN": {
+    "description": "T85 daily goals and progress: trainingSectionExercisesN.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSectionExercises": "EXERCISES",
+  "@trainingSectionExercises": {
+    "description": "T85 daily goals and progress: trainingSectionExercises."
+  },
+  "trainingOneExercise": "1 exercise",
+  "@trainingOneExercise": {
+    "description": "T85 daily goals and progress: trainingOneExercise."
+  },
+  "trainingSectionReinforce": "REINFORCEMENT",
+  "@trainingSectionReinforce": {
+    "description": "T85 daily goals and progress: trainingSectionReinforce."
+  },
+  "trainingWeekdaysCustom": "{n, plural, =0{0 study days} one{1 study day} other{{n} study days}}",
+  "@trainingWeekdaysCustom": {
+    "description": "T85 daily goals and progress: trainingWeekdaysCustom.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingRedoLesson": "Redo the lesson",
+  "@trainingRedoLesson": {
+    "description": "T85 daily goals and progress: trainingRedoLesson."
+  },
+  "trainingWeekdaysDefault": "Monday to Friday",
+  "@trainingWeekdaysDefault": {
+    "description": "T85 daily goals and progress: trainingWeekdaysDefault."
+  },
+  "trainingDoubleAction": "Double the goals",
+  "@trainingDoubleAction": {
+    "description": "T85 daily goals and progress: trainingDoubleAction."
+  },
+  "trainingFirstInfo": "After you complete a lesson, its theme enters the goals for 7 study days, one exercise per day.",
+  "@trainingFirstInfo": {
+    "description": "T85 daily goals and progress: trainingFirstInfo."
+  },
+  "trainingDoubleOfferBody": "Today gains another lesson and another exercise for each theme. Openings wait for the next study day.",
+  "@trainingDoubleOfferBody": {
+    "description": "T85 daily goals and progress: trainingDoubleOfferBody."
+  },
+  "trainingPlanLine": "Plan: {days}",
+  "@trainingPlanLine": {
+    "description": "T85 daily goals and progress: trainingPlanLine.",
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingSectionDoubled": "DOUBLED GOALS",
+  "@trainingSectionDoubled": {
+    "description": "T85 daily goals and progress: trainingSectionDoubled."
+  },
+  "trainingDayOffInfo": "A lesson completed early counts as a completed goal. Its exercises start on the next study day.",
+  "@trainingDayOffInfo": {
+    "description": "T85 daily goals and progress: trainingDayOffInfo."
+  },
+  "trainingGoalsToday": "Today",
+  "@trainingGoalsToday": {
+    "description": "T85 daily goals and progress: trainingGoalsToday."
+  },
+  "trainingDoubleOfferTitle": "All done for today. Want to double your goals?",
+  "@trainingDoubleOfferTitle": {
+    "description": "T85 daily goals and progress: trainingDoubleOfferTitle."
+  },
+  "trainingReinforceLeft": "Reinforcement · {n} exercises left in this theme",
+  "@trainingReinforceLeft": {
+    "description": "T85 daily goals and progress: trainingReinforceLeft.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingLessonLabel": "Lesson {n} · {title}",
+  "@trainingLessonLabel": {
+    "description": "T85 Viktor School daily training: trainingLessonLabel.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEndBackToGoals": "Back to goals",
+  "@trainingEndBackToGoals": {
+    "description": "T85 training exercise and cycle result: trainingEndBackToGoals."
+  },
+  "trainingEndCycleScore": "Cycle score: {score}%",
+  "@trainingEndCycleScore": {
+    "description": "T85 training exercise and cycle result: trainingEndCycleScore.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEndFirmBody": "The topic leaves your goals: you can now solve it on your own.",
+  "@trainingEndFirmBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingEndFirmCleanViktor": "You completed this cycle. That is what matters.",
+  "@trainingEndFirmCleanViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndFirmTitle": "Theme mastered: {theme}",
+  "@trainingEndFirmTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndFirmTitle.",
+    "placeholders": {
+      "theme": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEndFirmViktor": "A stumble on the hard exercise, and you were back on track the next day. That is what matters.",
+  "@trainingEndFirmViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndNotNow": "Not now",
+  "@trainingEndNotNow": {
+    "description": "T85 training exercise and cycle result: trainingEndNotNow."
+  },
+  "trainingEndRedo": "Redo the lesson",
+  "@trainingEndRedo": {
+    "description": "T85 training exercise and cycle result: trainingEndRedo."
+  },
+  "trainingEndRedoAfterBody": "Even with extra practice, the theme stayed below 70 %. Repeat the lesson: afterwards, its exercises restart from easy.",
+  "@trainingEndRedoAfterBody": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoAfterBody."
+  },
+  "trainingEndRedoAfterTitle": "Time to redo the lesson",
+  "@trainingEndRedoAfterTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoAfterTitle."
+  },
+  "trainingEndRedoAfterViktor": "Sometimes an idea needs another careful look before practice. Return to the lesson, and the exercises will be easier afterwards.",
+  "@trainingEndRedoAfterViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndRedoBody": "The theme is not familiar yet. Repeating the lesson now is the shortest path; exercises restart from easy.",
+  "@trainingEndRedoBody": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoBody."
+  },
+  "trainingEndRedoTitle": "Redo the lesson",
+  "@trainingEndRedoTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndRedoTitle."
+  },
+  "trainingEndRedoViktor": "It did not work this time, and that is fine. Let us revisit the idea together before moving on.",
+  "@trainingEndRedoViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndReinforceBody": "You do not need to repeat the lesson. {n, plural, =1{The remaining exercise from {theme} is now in your goals: practise until the theme becomes familiar.} other{The {n} remaining exercises from {theme} are now in your goals: practise until the theme becomes familiar.}}",
+  "@trainingEndReinforceBody": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceBody.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "theme": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEndReinforceFirst": "Do reinforcement first",
+  "@trainingEndReinforceFirst": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceFirst."
+  },
+  "trainingEndReinforceScore": "Reinforcement: {correct} of {total} correct ({score}%)",
+  "@trainingEndReinforceScore": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceScore.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEndReinforceTitle": "More practice on this theme",
+  "@trainingEndReinforceTitle": {
+    "description": "T85 training exercise and cycle result: trainingEndReinforceTitle."
+  },
+  "trainingEndReinforceViktor": "You understood the idea; now practise spotting the tactic faster. A few more exercises will make it feel natural.",
+  "@trainingEndReinforceViktor": {
+    "description": "Training cycle ending, matching the approved Canvas."
+  },
+  "trainingEndReviewLesson": "Review the lesson anyway",
+  "@trainingEndReviewLesson": {
+    "description": "T85 training exercise and cycle result: trainingEndReviewLesson."
+  },
+  "trainingEndSeeGoals": "See goals",
+  "@trainingEndSeeGoals": {
+    "description": "T85 training exercise and cycle result: trainingEndSeeGoals."
+  },
+  "trainingExerciseExpired": "Return to your goals to continue training.",
+  "@trainingExerciseExpired": {
+    "description": "T85 training exercise and cycle result: trainingExerciseExpired."
+  },
+  "trainingExerciseSaveError": "Could not save. Try again.",
+  "@trainingExerciseSaveError": {
+    "description": "T85 training exercise and cycle result: trainingExerciseSaveError."
+  },
+  "trainingFindMove": "{side, select, white{White} other{Black}} to play: find the tactic.",
+  "@trainingFindMove": {
+    "description": "T85 training exercise and cycle result: trainingFindMove.",
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingNextGoal": "Next goal",
+  "@trainingNextGoal": {
+    "description": "T85 training exercise and cycle result: trainingNextGoal."
+  },
+  "trainingSeeExplanation": "See explanation",
+  "@trainingSeeExplanation": {
+    "description": "T85 training exercise and cycle result: trainingSeeExplanation."
+  },
+  "trainingSeeSolution": "See the solution",
+  "@trainingSeeSolution": {
+    "description": "T85 training exercise and cycle result: trainingSeeSolution."
+  },
+  "trainingTomorrowEasier": "Tomorrow, an easier exercise",
+  "@trainingTomorrowEasier": {
+    "description": "T85 training exercise and cycle result: trainingTomorrowEasier."
+  },
+  "trainingTomorrowHarder": "Tomorrow, a harder exercise",
+  "@trainingTomorrowHarder": {
+    "description": "T85 training exercise and cycle result: trainingTomorrowHarder."
+  },
+  "trainingWrongResult": "Not quite",
+  "@trainingWrongResult": {
+    "description": "T85 training exercise and cycle result: trainingWrongResult."
+  },
+  "trainingOpeningAllFirm": "All parts completed · review only",
+  "@trainingOpeningAllFirm": {
+    "description": "T85 opening training: trainingOpeningAllFirm."
+  },
+  "trainingOpeningComplete": "Part completed.",
+  "@trainingOpeningComplete": {
+    "description": "T85 opening training: trainingOpeningComplete."
+  },
+  "trainingOpeningCount": "{done} of {total}",
+  "@trainingOpeningCount": {
+    "description": "T85 opening training: trainingOpeningCount.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingOpeningDoneToday": "Today's part completed",
+  "@trainingOpeningDoneToday": {
+    "description": "T85 opening training: trainingOpeningDoneToday."
+  },
+  "trainingOpeningPrompt": "Play the moves in your repertoire.",
+  "@trainingOpeningPrompt": {
+    "description": "T85 opening training: trainingOpeningPrompt."
+  },
+  "trainingOpeningTitle": "{opening} · Part {n} of {total}",
+  "@trainingOpeningTitle": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingOpeningTrain": "Train part {n} · {reply}",
+  "@trainingOpeningTrain": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "reply": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingOpeningWrong": "Find another move.",
+  "@trainingOpeningWrong": {
+    "description": "T85 opening training: trainingOpeningWrong."
+  },
+  "trainingOpeningsInfo": "Each opening is divided into parts. Play your moves and review them using the arrows.",
+  "@trainingOpeningsInfo": {
+    "description": "T85 opening training: trainingOpeningsInfo."
+  },
+  "homeCourseAllDone": "Goals completed · another lesson?",
+  "@homeCourseAllDone": {
+    "description": "T85 course training Home card: homeCourseAllDone."
+  },
+  "homeCourseDayOff": "Rest day · another lesson?",
+  "@homeCourseDayOff": {
+    "description": "T85 course training Home card: homeCourseDayOff."
+  },
+  "homeCourseNextGoal": "Next goal",
+  "@homeCourseNextGoal": {
+    "description": "T85 course training Home card: homeCourseNextGoal."
+  },
+  "homeCourseSolve": "Solve",
+  "@homeCourseSolve": {
+    "description": "T85 course training Home card: homeCourseSolve."
+  },
+  "homeCourseToday": "Today’s lesson",
+  "@homeCourseToday": {
+    "description": "T85 course training Home card: homeCourseToday."
+  },
+  "homeCourseTrain": "Train",
+  "@homeCourseTrain": {
+    "description": "T85 course training Home card: homeCourseTrain."
+  },
+  "courseGuideFaq1Answer": "The current lesson, reinforcement, one exercise for each topic in training and the opening parts. The number on the Goals tab shows how many remain.",
+  "@courseGuideFaq1Answer": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "courseGuideFaq1Question": "What are today's goals?",
+  "@courseGuideFaq1Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq1Question."
+  },
+  "courseGuideFaq2Answer": "A cycle of seven exercises starts on the study day after the lesson, with one exercise per study day. If you miss a day, the cycle waits and the goal stays where you left it.",
+  "@courseGuideFaq2Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq2Answer."
+  },
+  "courseGuideFaq2Question": "How do the seven days of exercises work?",
+  "@courseGuideFaq2Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq2Question."
+  },
+  "courseGuideFaq3Answer": "The app shows the correct move, and the next exercise drops one level, down to a minimum of one star. Solving with a hint also lowers the level and earns no score points.",
+  "@courseGuideFaq3Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq3Answer."
+  },
+  "courseGuideFaq3Question": "What happens if I get an exercise wrong?",
+  "@courseGuideFaq3Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq3Question."
+  },
+  "courseGuideFaq4Answer": "It is the total stars earned for correct answers without hints, divided by 15. At 70% or above, the theme is firm; below that, you receive reinforcement or the option to repeat the lesson.",
+  "@courseGuideFaq4Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq4Answer."
+  },
+  "courseGuideFaq4Question": "What is the cycle score?",
+  "@courseGuideFaq4Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq4Question."
+  },
+  "courseGuideFaq5Answer": "You can start any lesson from the Catalog. It counts as an extra lesson, and its theme enters your goals on the next study day.",
+  "@courseGuideFaq5Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq5Answer."
+  },
+  "courseGuideFaq5Question": "Can I skip a lesson?",
+  "@courseGuideFaq5Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq5Question."
+  },
+  "courseGuideFaq6Answer": "Tests check the lesson content. You can see your scores in Progress.",
+  "@courseGuideFaq6Answer": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq6Answer."
+  },
+  "courseGuideFaq6Question": "What are tests for?",
+  "@courseGuideFaq6Question": {
+    "description": "T85 progress, help and guided tour: courseGuideFaq6Question."
+  },
+  "courseGuideFaqTitle": "Frequently asked questions",
+  "@courseGuideFaqTitle": {
+    "description": "T85 progress, help and guided tour: courseGuideFaqTitle."
+  },
+  "courseGuideHelpTourAction": "Take the tour",
+  "@courseGuideHelpTourAction": {
+    "description": "T85 progress, help and guided tour: courseGuideHelpTourAction."
+  },
+  "courseGuideHelpTourBody": "A quick tour of Lesson, Goals, Progress and Catalog. It only appears when you ask.",
+  "@courseGuideHelpTourBody": {
+    "description": "T85 progress, help and guided tour: courseGuideHelpTourBody."
+  },
+  "courseGuideHelpTourTitle": "Explore the tabs",
+  "@courseGuideHelpTourTitle": {
+    "description": "T85 progress, help and guided tour: courseGuideHelpTourTitle."
+  },
+  "courseGuideTour1Body": "Your current lesson is always here. Tap Continue to pick up where you left off.",
+  "@courseGuideTour1Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour1Body."
+  },
+  "courseGuideTour1Title": "Lesson",
+  "@courseGuideTour1Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour1Title."
+  },
+  "courseGuideTour2Body": "What to do today: the lesson, reinforcement, one exercise for each topic in training and the opening parts. The number shows how many remain.",
+  "@courseGuideTour2Body": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "courseGuideTour2Title": "Goals",
+  "@courseGuideTour2Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour2Title."
+  },
+  "courseGuideTour3Body": "Mastery of each theme, the tests you have taken and those still to do.",
+  "@courseGuideTour3Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour3Body."
+  },
+  "courseGuideTour3Title": "Progress",
+  "@courseGuideTour3Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour3Title."
+  },
+  "courseGuideTour4Body": "Every lesson in the course. You can start any lesson and revisit those you have completed.",
+  "@courseGuideTour4Body": {
+    "description": "T85 progress, help and guided tour: courseGuideTour4Body."
+  },
+  "courseGuideTour4Title": "Catalog",
+  "@courseGuideTour4Title": {
+    "description": "T85 progress, help and guided tour: courseGuideTour4Title."
+  },
+  "courseGuideTourDone": "Got it",
+  "@courseGuideTourDone": {
+    "description": "T85 progress, help and guided tour: courseGuideTourDone."
+  },
+  "courseGuideTourNext": "Next",
+  "@courseGuideTourNext": {
+    "description": "T85 progress, help and guided tour: courseGuideTourNext."
+  },
+  "courseGuideTourOf": "{n} of {total}",
+  "@courseGuideTourOf": {
+    "description": "T85 progress, help and guided tour: courseGuideTourOf.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "courseGuideTourSkip": "Skip",
+  "@courseGuideTourSkip": {
+    "description": "T85 progress, help and guided tour: courseGuideTourSkip."
+  },
+  "trainingByExercise": "Exercise by exercise",
+  "@trainingByExercise": {
+    "description": "T85 progress, help and guided tour: trainingByExercise."
+  },
+  "trainingChartLegend": "Cumulative score after each exercise. Green: correct · red: incorrect · light bulb: hint used, no points.",
+  "@trainingChartLegend": {
+    "description": "T85 progress, help and guided tour: trainingChartLegend."
+  },
+  "trainingCycleDays": "{n} of 7",
+  "@trainingCycleDays": {
+    "description": "T85 daily goals and progress: trainingCycleDays.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingCycleScore": "Cycle score",
+  "@trainingCycleScore": {
+    "description": "T85 progress, help and guided tour: trainingCycleScore."
+  },
+  "trainingMasteryNote": "Score from the last 7 exercises. The marker is the 70% threshold.",
+  "@trainingMasteryNote": {
+    "description": "T85 daily goals and progress: trainingMasteryNote."
+  },
+  "trainingMasteryTitle": "Mastery by theme",
+  "@trainingMasteryTitle": {
+    "description": "T85 daily goals and progress: trainingMasteryTitle."
+  },
+  "trainingOpeningsFirm": "{done} of {total} moves firm",
+  "@trainingOpeningsFirm": {
+    "description": "T85 daily goals and progress: trainingOpeningsFirm.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingPercent": "{value} %",
+  "@trainingPercent": {
+    "description": "T85 daily goals and progress: trainingPercent.",
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingTestsMissing": "No recorded score",
+  "@trainingTestsMissing": {
+    "description": "T85 progress, help and guided tour: trainingTestsMissing."
+  },
+  "trainingTestsTitle": "Tests",
+  "@trainingTestsTitle": {
+    "description": "T85 daily goals and progress: trainingTestsTitle."
+  },
+  "trainingThemeReinforceInfo": "Below 70%: the remaining exercises for this theme become reinforcement goals.",
+  "@trainingThemeReinforceInfo": {
+    "description": "T85 progress, help and guided tour: trainingThemeReinforceInfo."
+  },
+  "trainingThemeTitle": "Theme mastery",
+  "@trainingThemeTitle": {
+    "description": "T85 progress, help and guided tour: trainingThemeTitle."
+  },
+  "trainingProgressChapterTitle": "Chapter {n} · {title}",
+  "@trainingProgressChapterTitle": {
+    "description": "Chapter heading for a test in course progress.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingTestDoneBody": "Practice exercises · completed",
+  "@trainingTestDoneBody": {
+    "description": "Subtitle of a completed chapter test in course progress."
+  },
+  "trainingTestLocked": "Unlocks after completing {lesson}",
+  "@trainingTestLocked": {
+    "description": "Lesson required before a chapter test becomes available.",
+    "placeholders": {
+      "lesson": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingLevelTestOptional": "Optional: skip what you already know",
+  "@trainingLevelTestOptional": {
+    "description": "Description of the optional level test in course progress."
+  },
+  "trainingProgressPieceStars": "Stars by piece",
+  "@trainingProgressPieceStars": {
+    "description": "T85 Viktor School daily training: trainingProgressPieceStars."
+  },
+  "trainingEscolaWelcomeTitle": "Welcome to Viktor’s School",
+  "@trainingEscolaWelcomeTitle": {
+    "description": "T85 Viktor School daily training: trainingEscolaWelcomeTitle."
+  },
+  "trainingSpeedrunGoal": "Queen and two rooks in {min} minutes · {bot}",
+  "@trainingSpeedrunGoal": {
+    "description": "T85 Viktor School daily training: trainingSpeedrunGoal.",
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "bot": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingEscolaAllDoneViktor": "All done for today. Your goals return on the next study day.",
+  "@trainingEscolaAllDoneViktor": {
+    "description": "T85 Viktor School daily training: trainingEscolaAllDoneViktor."
+  },
+  "trainingEscolaTabsGoals": "what to do today.",
+  "@trainingEscolaTabsGoals": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsGoals."
+  },
+  "trainingEscolaPlanReco120": "Twelve lessons per study day, plus challenges. You finish the course in 4 days. This is the most we recommend: too many new rules at once can get mixed up.",
+  "@trainingEscolaPlanReco120": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco120."
+  },
+  "trainingEscolaTips1Title": "Look before you move",
+  "@trainingEscolaTips1Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips1Title."
+  },
+  "trainingEscolaTips1Body": "Before each move, check what your opponent’s pieces attack. This is how you stop losing pieces for free.",
+  "@trainingEscolaTips1Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips1Body."
+  },
+  "trainingEscolaPlanReco60": "Eight lessons per study day, plus challenges. The course takes about 1 week.",
+  "@trainingEscolaPlanReco60": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco60."
+  },
+  "trainingProgressLessons": "Lessons",
+  "@trainingProgressLessons": {
+    "description": "T85 Viktor School daily training: trainingProgressLessons."
+  },
+  "trainingSectionStars": "STAR CHALLENGES",
+  "@trainingSectionStars": {
+    "description": "T85 Viktor School daily training: trainingSectionStars."
+  },
+  "trainingEscolaWelcomeBody": "From moving the pieces to your first checkmates, in short lessons. After each lesson, a challenge to practise what you have just learned.",
+  "@trainingEscolaWelcomeBody": {
+    "description": "T85 Viktor School daily training: trainingEscolaWelcomeBody."
+  },
+  "trainingEscolaPlanReco30": "Four lessons per study day, plus challenges. The course takes about 2 weeks.",
+  "@trainingEscolaPlanReco30": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco30."
+  },
+  "trainingEscolaTips2Title": "Repeat the challenges",
+  "@trainingEscolaTips2Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips2Title."
+  },
+  "trainingPlanTime120More": "2 hours or more",
+  "@trainingPlanTime120More": {
+    "description": "T85 Viktor School daily training: trainingPlanTime120More."
+  },
+  "trainingEscolaTabsLesson": "your next lesson, always here.",
+  "@trainingEscolaTabsLesson": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsLesson."
+  },
+  "trainingStarGoalDone": "{level} · {n, plural, one{1 star} other{{n} stars}}",
+  "@trainingStarGoalDone": {
+    "description": "T85 Viktor School daily training: trainingStarGoalDone.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaDayOffInfo": "Lessons completed ahead count as completed goals on the next study day. Their challenges are added that day.",
+  "@trainingEscolaDayOffInfo": {
+    "description": "T85 Viktor School daily training: trainingEscolaDayOffInfo."
+  },
+  "trainingEscolaTabsProgress": "completed lessons and stars.",
+  "@trainingEscolaTabsProgress": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsProgress."
+  },
+  "trainingEscolaTips4Body": "After the lessons, play against Coco and use what you have learned.",
+  "@trainingEscolaTips4Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips4Body."
+  },
+  "trainingEscolaTips2Body": "Collect stars until you can move each piece without thinking. Moving becomes a reflex.",
+  "@trainingEscolaTips2Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips2Body."
+  },
+  "trainingStarGoal": "{level} · collect {n, plural, one{1 star} other{{n} stars}}",
+  "@trainingStarGoal": {
+    "description": "T85 Viktor School daily training: trainingStarGoal.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSpeedrunGoalTitle": "Speedrun: both checkmates",
+  "@trainingSpeedrunGoalTitle": {
+    "description": "T85 Viktor School daily training: trainingSpeedrunGoalTitle."
+  },
+  "trainingBotGoal": "Against {bot} · {rating}",
+  "@trainingBotGoal": {
+    "description": "T85 Viktor School daily training: trainingBotGoal.",
+    "placeholders": {
+      "bot": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaTabsCatalog": "all the lessons in the course.",
+  "@trainingEscolaTabsCatalog": {
+    "description": "T85 Viktor School daily training: trainingEscolaTabsCatalog."
+  },
+  "trainingEscolaDoubleBody": "Another {n} lessons and their challenges are added today.",
+  "@trainingEscolaDoubleBody": {
+    "description": "T85 Viktor School daily training: trainingEscolaDoubleBody.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaTips3Title": "Say the square names",
+  "@trainingEscolaTips3Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips3Title."
+  },
+  "trainingSectionBots": "AGAINST THE BOTS",
+  "@trainingSectionBots": {
+    "description": "T85 Viktor School daily training: trainingSectionBots."
+  },
+  "trainingEscolaTips3Body": "When you move, say the square: e4, d5. Soon you will be able to read any game.",
+  "@trainingEscolaTips3Body": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips3Body."
+  },
+  "trainingEscolaTips4Title": "Play games",
+  "@trainingEscolaTips4Title": {
+    "description": "T85 Viktor School daily training: trainingEscolaTips4Title."
+  },
+  "trainingBotNameCoco": "Coco",
+  "@trainingBotNameCoco": {
+    "description": "T85 Viktor School daily training: trainingBotNameCoco."
+  },
+  "trainingModuleLabel": "Module {n}",
+  "@trainingModuleLabel": {
+    "description": "T85 Viktor School daily training: trainingModuleLabel.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaPlanReco15": "Two lessons per study day, plus challenges for the pieces you have already learned. The course takes about 4 weeks.",
+  "@trainingEscolaPlanReco15": {
+    "description": "T85 Viktor School daily training: trainingEscolaPlanReco15."
+  },
+  "trainingBotGoalDone": "Win against {bot} · {rating}",
+  "@trainingBotGoalDone": {
+    "description": "T85 Viktor School daily training: trainingBotGoalDone.",
+    "placeholders": {
+      "bot": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEscolaFirstInfo": "After you finish a piece lesson, its star challenge is added to your goals immediately.",
+  "@trainingEscolaFirstInfo": {
+    "description": "T85 Viktor School daily training: trainingEscolaFirstInfo."
+  },
+  "trainingGoalsAllDone": "All done for today",
+  "@trainingGoalsAllDone": {
+    "description": "T85 daily goals and progress: trainingGoalsAllDone."
+  },
+  "trainingOpeningPartComplete": "Part {n} completed.",
+  "@trainingOpeningPartComplete": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingFixedPrompt": "Find the best move.",
+  "trainingFixedCorrect": "That is right.",
+  "trainingFixedWrong": "Find another move.",
+  "trainingOpeningFinished": "{opening} completed: all {total} parts done. From now on, it returns to your goals for review only.",
+  "@trainingOpeningFinished": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingNextPart": "Next part",
+  "trainingViewProgress": "View progress",
+  "trainingViewGoals": "View goals",
+  "trainingViewCatalog": "View catalog",
+  "trainingStartPilares": "Start Pilares",
+  "trainingPilaresCompletedTitle": "You completed Pilares do Xadrez",
+  "trainingPilaresCompletedBody": "All lessons and tests completed. Goals continue with theme exercises and openings; use the Catalog to review a lesson.",
+  "trainingEscolaCompletedTitle": "You completed Viktor’s School",
+  "trainingEscolaCompletedBody": "You finished all the School lessons. Your next step is Pilares do Xadrez.",
+  "trainingPartName": "Part {n}",
+  "@trainingPartName": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingPartRedo": "Redo",
+  "trainingPartPractice": "Practice",
+  "trainingPartPending": "To do",
+  "trainingOpeningProgressNote": "{profile} repertoire · first-try accuracy the last time you trained each part",
+  "@trainingOpeningProgressNote": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingProfileSolid": "Solid",
+  "trainingProfileAggressive": "Aggressive",
+  "trainingEntrySpeech": "To start the course, sign in to your account. This lets me save your progress, lesson by lesson.",
+  "trainingEntrySaved": "Your progress saved, on any phone",
+  "trainingEntryOffline": "Downloaded lessons work offline",
+  "trainingEntryEmail": "Use email",
+  "trainingDownloadCourseOffline": "You are offline. To download the course for the first time, connect and tap Try again.",
+  "trainingDownloadChapterOffline": "This lesson has not been downloaded. Connect to the internet: the entire chapter downloads at once, then works offline.",
+  "trainingDownloadChapterError": "Could not download the chapter. Try again in a few moments.",
+  "trainingDownloadStorage": "Your phone needs more space to download this chapter (about {size} MB). Once downloaded, its lessons and exercises work offline.",
+  "trainingDownloadOpenStorage": "Open storage",
+  "trainingGoalsOffline": "You are offline. Today’s lesson has not been downloaded; your other goals work normally.",
+  "trainingUnpublishedTitle": "The next lesson is coming soon",
+  "trainingUnpublishedBody": "You finished all published lessons. While you wait for the next one, today’s goals continue: theme exercises and openings.",
+  "@trainingDownloadStorage": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "@trainingFixedPrompt": {
+    "description": "Training course state."
+  },
+  "@trainingFixedCorrect": {
+    "description": "Training course state."
+  },
+  "@trainingFixedWrong": {
+    "description": "Training course state."
+  },
+  "@trainingNextPart": {
+    "description": "Training course state."
+  },
+  "@trainingViewProgress": {
+    "description": "Training course state."
+  },
+  "@trainingViewGoals": {
+    "description": "Training course state."
+  },
+  "@trainingViewCatalog": {
+    "description": "Training course state."
+  },
+  "@trainingStartPilares": {
+    "description": "Training course state."
+  },
+  "@trainingPilaresCompletedTitle": {
+    "description": "Training course state."
+  },
+  "@trainingPilaresCompletedBody": {
+    "description": "Training course state."
+  },
+  "@trainingEscolaCompletedTitle": {
+    "description": "Training course state."
+  },
+  "@trainingEscolaCompletedBody": {
+    "description": "Training course state."
+  },
+  "@trainingPartRedo": {
+    "description": "Training course state."
+  },
+  "@trainingPartPractice": {
+    "description": "Training course state."
+  },
+  "@trainingPartPending": {
+    "description": "Training course state."
+  },
+  "@trainingProfileSolid": {
+    "description": "Training course state."
+  },
+  "@trainingProfileAggressive": {
+    "description": "Training course state."
+  },
+  "@trainingEntrySpeech": {
+    "description": "Training course state."
+  },
+  "@trainingEntrySaved": {
+    "description": "Training course state."
+  },
+  "@trainingEntryOffline": {
+    "description": "Training course state."
+  },
+  "@trainingEntryEmail": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadCourseOffline": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadChapterOffline": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadChapterError": {
+    "description": "Training course state."
+  },
+  "@trainingDownloadOpenStorage": {
+    "description": "Training course state."
+  },
+  "@trainingGoalsOffline": {
+    "description": "Training course state."
+  },
+  "@trainingUnpublishedTitle": {
+    "description": "Training course state."
+  },
+  "@trainingUnpublishedBody": {
+    "description": "Training course state."
+  },
+  "trainingRepertoire": "{profile} repertoire",
+  "@trainingRepertoire": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingRepertoireNote": "First-try accuracy the last time you trained each part",
+  "trainingProfileChange": "Change",
+  "trainingProfileChangeTitle": "Change to {profile}?",
+  "@trainingProfileChangeTitle": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingProfileChangeBody": "The next opening lessons will use {profile}, starting with Part {part}. Its lessons from parts you have already completed remain in the Catalog.",
+  "@trainingProfileChangeBody": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      },
+      "part": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingProfileChangeSaved": "Everything you did in {profile} stays saved. If you return to it, you continue where you left off.",
+  "@trainingProfileChangeSaved": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingOpeningChipLondon": "London",
+  "trainingOpeningChipSlav": "Slav",
+  "trainingOpeningChipOthers": "Others",
+  "@trainingRepertoireNote": {
+    "description": "Training course state."
+  },
+  "@trainingProfileChange": {
+    "description": "Training course state."
+  },
+  "@trainingOpeningChipLondon": {
+    "description": "Training course state."
+  },
+  "@trainingOpeningChipSlav": {
+    "description": "Training course state."
+  },
+  "@trainingOpeningChipOthers": {
+    "description": "Training course state."
+  },
+  "trainingProfileCancel": "Cancel",
+  "@trainingProfileCancel": {
+    "description": "Training course state."
+  },
+  "trainingProfileNoPractice": "No practice in this repertoire yet",
+  "trainingProfileSwitched": "Your progress in {previous} was saved. Opening goals now use {profile}.",
+  "@trainingProfileSwitched": {
+    "placeholders": {
+      "previous": {
+        "type": "String"
+      },
+      "profile": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingOpeningSideTitle": "{opening} · {side, select, black{as Black} other{as White}}",
+  "@trainingOpeningSideTitle": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      },
+      "side": {
+        "type": "String"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingCourseNext": "Next",
+  "@trainingProfileNoPractice": {
+    "description": "Training course state."
+  },
+  "@trainingCourseNext": {
+    "description": "Training course state."
+  },
+  "trainingLessonNeedsInternet": "Needs internet to download",
+  "trainingTestLeaveTitle": "Leave the test?",
+  "trainingTestLeaveBody": "{done, plural, one{Your completed exercise is saved. When you return, you continue with exercise {next}.} other{Your {done} completed exercises are saved. When you return, you continue with exercise {next}.}}",
+  "@trainingTestLeaveBody": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "next": {
+        "type": "int"
+      }
+    },
+    "description": "Training course state."
+  },
+  "trainingTestContinue": "Continue the test",
+  "trainingTestLeave": "Leave",
+  "@trainingLessonNeedsInternet": {
+    "description": "Training course state."
+  },
+  "@trainingTestLeaveTitle": {
+    "description": "Training course state."
+  },
+  "@trainingTestContinue": {
+    "description": "Training course state."
+  },
+  "@trainingTestLeave": {
+    "description": "Training course state."
+  },
+  "trainingDownloadCourseError": "Could not download the course. Try again in a few moments.",
+  "@trainingDownloadCourseError": {
+    "description": "Course entry download failure without a dedicated Canvas artboard."
+  },
+  "trainingDownloadCourseStorage": "There is not enough space to download the course (about {size} MB). Free up space and try again. Once downloaded, the course works offline.",
+  "@trainingDownloadCourseStorage": {
+    "description": "Course entry download failure without a dedicated Canvas artboard.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonModelGames": "Model games",
+  "@lessonModelGames": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "lessonNextModelGame": "Next game",
+  "@lessonNextModelGame": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "lessonAnalyzePosition": "Analyze with the engine",
+  "@lessonAnalyzePosition": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingProgressEmptyTitle": "Your progress appears here",
+  "@trainingProgressEmptyTitle": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingProgressEmptyBody": "As you complete lessons and daily goals, your topic scores, openings and tests appear here.",
+  "@trainingProgressEmptyBody": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingOpeningAccuracyNote": "First-try accuracy the last time you trained each part.",
+  "@trainingOpeningAccuracyNote": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingOpeningAllDoneShort": "All done",
+  "@trainingOpeningAllDoneShort": {
+    "description": "Lesson stage footer label matching the training Canvas."
+  },
+  "trainingChapterLabel": "Chapter {n}",
+  "@trainingChapterLabel": {
+    "description": "Lesson stage footer label matching the training Canvas.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingOpeningPartsSummary": "{done} of {total} parts",
+  "@trainingOpeningPartsSummary": {
+    "description": "Lesson stage footer label matching the training Canvas.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingChapterTestTitle": "Chapter test",
+  "@trainingChapterTestTitle": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendThemes": "Topic mastery · score from the last 7",
+  "@trainingProgressLegendThemes": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendFirm": "70% or more: solid topic",
+  "@trainingProgressLegendFirm": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendDeveloping": "Below 70%: topic still developing",
+  "@trainingProgressLegendDeveloping": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendIncomplete": "Fewer than 7 exercises: score not final yet",
+  "@trainingProgressLegendIncomplete": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpenings": "Openings · first-try accuracy in the latest practice of each part",
+  "@trainingProgressLegendOpenings": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningPerfect": "100%: part without mistakes",
+  "@trainingProgressLegendOpeningPerfect": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningSome": "70 to 99%: some moves missed",
+  "@trainingProgressLegendOpeningSome": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningRetry": "Below 70%: worth retrying the part",
+  "@trainingProgressLegendOpeningRetry": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendOpeningPending": "Part to do",
+  "@trainingProgressLegendOpeningPending": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTests": "Tests · medal for correct answers in 12 exercises",
+  "@trainingProgressLegendTests": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestPerfect": "Three stars · 12 of 12, perfect",
+  "@trainingProgressLegendTestPerfect": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestExcellent": "Excellent · 11 of 12",
+  "@trainingProgressLegendTestExcellent": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestGood": "Great · 10 of 12",
+  "@trainingProgressLegendTestGood": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestPassed": "Pass · 9 of 12, the minimum to pass",
+  "@trainingProgressLegendTestPassed": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressLegendTestBelow": "Not passed · 8 or fewer",
+  "@trainingProgressLegendTestBelow": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressHowToUse": "How to use",
+  "@trainingProgressHowToUse": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseTheme": "Tap a topic to see its last 7 exercises, one by one.",
+  "@trainingProgressUseTheme": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseOpening": "Tap an opening to see its parts; \"Retry\" trains the part again.",
+  "@trainingProgressUseOpening": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseTest": "Tap a test to retry it at any time. The latest score counts; an empty star means it has not been passed yet.",
+  "@trainingProgressUseTest": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingProgressUseDone": "Only what you have done appears here. Tests not yet taken are in the Catalog.",
+  "@trainingProgressUseDone": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingMasteryDoubleAttack": "Double attacks with the queen and other pieces",
+  "@trainingMasteryDoubleAttack": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "trainingMasteryHangingPiece": "Loose pieces: counting attackers and defenders",
+  "@trainingMasteryHangingPiece": {
+    "description": "Training progress copy matching the approved Canvas."
+  },
+  "learningAnalysisTitle": "Analysis",
+  "@learningAnalysisTitle": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisSettings": "Engine settings",
+  "@learningAnalysisSettings": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisEngine": "Engine",
+  "@learningAnalysisEngine": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisShowEngine": "Show engine",
+  "@learningAnalysisShowEngine": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisEngineDetail": "{engine}, lines and evaluation bar",
+  "@learningAnalysisEngineDetail": {
+    "description": "Dedicated position analysis copy from the training Canvas.",
+    "placeholders": {
+      "engine": {
+        "type": "String"
+      }
+    }
+  },
+  "learningAnalysisLines": "Engine lines",
+  "@learningAnalysisLines": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisConfirm": "Confirm",
+  "@learningAnalysisConfirm": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisFirst": "First move",
+  "@learningAnalysisFirst": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisPrevious": "Previous move",
+  "@learningAnalysisPrevious": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisNext": "Next move",
+  "@learningAnalysisNext": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisLast": "Last move",
+  "@learningAnalysisLast": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisClose": "Close settings",
+  "@learningAnalysisClose": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "learningAnalysisSaveError": "Could not save. Try again.",
+  "@learningAnalysisSaveError": {
+    "description": "Dedicated position analysis copy from the training Canvas."
+  },
+  "trainingSolutionPrompt": "Follow the arrow to see the solution.",
+  "@trainingSolutionPrompt": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChoiceTitle": "Your openings",
+  "@trainingProfileChoiceTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChoiceIntro": "Choose a style. The opening lessons in each part follow your chosen style. You can change it any time in Progress › Openings.",
+  "@trainingProfileChoiceIntro": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileRecommended": "Recommended",
+  "@trainingProfileRecommended": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileSolidDescription": "Firm structures, few risks and clear plans. Good for those who want to play safely.",
+  "@trainingProfileSolidDescription": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileAggressiveDescription": "An open centre, initiative and attacks on the king. Good for those who enjoy calculating.",
+  "@trainingProfileAggressiveDescription": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChooseSolid": "Choose Solid",
+  "@trainingProfileChooseSolid": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChooseAggressive": "Choose Aggressive",
+  "@trainingProfileChooseAggressive": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileMomentTitle": "Choose your openings",
+  "@trainingProfileMomentTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileMomentLabel": "{part} · openings",
+  "@trainingProfileMomentLabel": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingProfileMomentBody": "Before the opening lessons in this part, choose a style: Solid or Aggressive.",
+  "@trainingProfileMomentBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileChoose": "Choose",
+  "@trainingProfileChoose": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileAgainstOthers": "Against the rest",
+  "@trainingProfileAgainstOthers": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonTitle": "Why the London",
+  "@trainingProfileWhyLondonTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonPlan": "The setup is always the same: d4, Bf4, e3, Nf3, c3 and Bd3. The bishop comes out before e3 so it is not trapped. The plan is to bring a knight to e5 and, once the pieces are ready, attack the king.",
+  "@trainingProfileWhyLondonPlan": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonStats": "In your range (1200 to 1400 on Lichess), the London appears in 1 out of every 9 games with 1.d4, and White wins 51% of them.",
+  "@trainingProfileWhyLondonStats": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyLondonLink": "The plan uses the pin, which you have already seen in lesson 2.1.",
+  "@trainingProfileWhyLondonLink": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileE4": "1.e4",
+  "@trainingProfileE4": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileDragon": "Accelerated Dragon",
+  "@trainingProfileDragon": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileKingsIndian": "King’s Indian",
+  "@trainingProfileKingsIndian": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileCaroKann": "Caro-Kann",
+  "@trainingProfileCaroKann": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingProfileWhyTitle": "Why {name}?",
+  "@trainingProfileWhyTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingProfilePresentationUnavailable": "This presentation is not available yet.",
+  "@trainingProfilePresentationUnavailable": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasTitle": "Chapter {chapter} test",
+  "@testCanvasTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "chapter": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasCounter": "Test · {current} of {total}",
+  "@testCanvasCounter": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasCountBody": "From this chapter and a few from previous chapters.",
+  "@testCanvasCountBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasNoHint": "No hints",
+  "@testCanvasNoHint": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasNoHintBody": "See what you can solve on your own.",
+  "@testCanvasNoHintBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasAnswerEnd": "Answers at the end",
+  "@testCanvasAnswerEnd": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasAnswerEndBody": "Make your move and go to the next question; results appear at the end.",
+  "@testCanvasAnswerEndBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasThink": "Think before moving.",
+  "@testCanvasThink": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasMedals": "Medal for correct answers",
+  "@testCanvasMedals": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasRegular": "Fair",
+  "@testCanvasRegular": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasFailed": "Not passed",
+  "@testCanvasFailed": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasFailedTitle": "Not passed yet",
+  "@testCanvasFailedTitle": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasBelow": "{count} or fewer",
+  "@testCanvasBelow": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasReview": "Tap a number to see the position and solution.",
+  "@testCanvasReview": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasRetry": "Retake the test",
+  "@testCanvasRetry": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasContinue": "Continue the course",
+  "@testCanvasContinue": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasFailedSpeech": "The chapter lessons return as reinforcement in your goals. Retake the test whenever you want: the course stays open.",
+  "@testCanvasFailedSpeech": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasWhite": "White to move.",
+  "@testCanvasWhite": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasBlack": "Black to move.",
+  "@testCanvasBlack": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasLeaveEmptyBody": "No exercises completed. When you return, start at exercise 1.",
+  "@testCanvasLeaveEmptyBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "testCanvasScore": "{correct} of {total}",
+  "@testCanvasScore": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "testCanvasResultSpeech": "You answered {correct} of {total} exercises correctly. Tap the numbers to review the positions and solutions.",
+  "@testCanvasResultSpeech": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "themeCanvasExercisesDone": "Completed exercises",
+  "@themeCanvasExercisesDone": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "themeCanvasCorrect": "Correct",
+  "@themeCanvasCorrect": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "themeCanvasWrong": "Wrong",
+  "@themeCanvasWrong": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "themeCanvasExercise": "Exercise {number}",
+  "@themeCanvasExercise": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "themeCanvasResultTime": "{result} · {time}",
+  "@themeCanvasResultTime": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "themeCanvasReinforceInfo": "Below 70 %: the {count} remaining theme exercises are in your goals as reinforcement.",
+  "@themeCanvasReinforceInfo": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingResumeLabel": "{part} · lesson {number} · {stage}",
+  "@trainingResumeLabel": {
+    "description": "Training UI copy; dynamic content has an explicit fallback.",
+    "placeholders": {
+      "part": {
+        "type": "String"
+      },
+      "number": {
+        "type": "int"
+      },
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingResumeTheory": "theory",
+  "@trainingResumeTheory": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumeDemo": "demonstration",
+  "@trainingResumeDemo": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumePractice": "practice",
+  "@trainingResumePractice": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumeTheoryBody": "You stopped during the theory. It restarts from the beginning, with previous stages saved.",
+  "@trainingResumeTheoryBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumeDemoBody": "You stopped during the demonstration. It restarts from the beginning, with the theory you have seen saved.",
+  "@trainingResumeDemoBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "trainingResumePracticeBody": "You stopped during practice. The exercise restarts from its initial position.",
+  "@trainingResumePracticeBody": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceSolutionFollow": "Follow the arrow.",
+  "@practiceSolutionFollow": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceSolutionTarget": "Tap the marked square.",
+  "@practiceSolutionTarget": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceSolutionUnavailable": "The solution for this position could not be shown. Try again.",
+  "@practiceSolutionUnavailable": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
+  },
+  "practiceOpponentUnavailable": "The engine response could not be obtained. Try again.",
+  "@practiceOpponentUnavailable": {
+    "description": "Training UI copy; dynamic content has an explicit fallback."
   }
 }

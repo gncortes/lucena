@@ -34,21 +34,32 @@ class LessonFinishedScreen extends StatelessWidget {
   /// O curso de onde a pessoa veio: a Escola ou as aulas de finais.
   bool get _school => kind == SurveyKind.school;
 
+  String _backRoute(BuildContext context) {
+    final origin = GoRouterState.of(context).uri.queryParameters['origem'];
+    if (origin?.startsWith('treino_') == true) {
+      return Routes.training(_school ? 'escola' : 'pilares');
+    }
+    return _school ? Routes.school : Routes.endgames;
+  }
+
   void _next(BuildContext context, String id) {
+    final origin = GoRouterState.of(context).uri.queryParameters['origem'];
     context.pushReplacement(
-      _school ? Routes.lessonScript(id) : Routes.endgameLessonScript(id),
+      _school
+          ? Routes.lessonScript(id, origin: origin)
+          : Routes.endgameLessonScript(id, origin: origin),
     );
   }
 
   /// As opções dos "Próximos passos"; nulas na Escola.
   List<NextStep>? _steps(BuildContext context, LessonFinishedState state) {
     final practice = state.practice;
-    if (_school || practice == null) return null;
+    if (_school) return null;
     final l10n = context.l10n;
     final subcategory = state.raceSubcategory;
     final name = subcategory == null ? null : endgameName(l10n, subcategory);
     return [
-      if (subcategory != null)
+      if (practice != null && subcategory != null)
         NextStep(
           id: 'raceOnly',
           icon: Icons.timer,
@@ -56,21 +67,22 @@ class LessonFinishedScreen extends StatelessWidget {
           body: l10n.lessonFinishedRaceBody,
           onTap: () => context.push(Routes.raceOnly(subcategory: subcategory)),
         ),
-      NextStep(
-        id: 'train',
-        icon: Icons.sports_esports,
-        title: name == null
-            ? l10n.lessonFinishedTrainTitle
-            : l10n.nextStepsPractice(name),
-        body: l10n.lessonFinishedTrainBody,
-        onTap: () => context.push(
-          Routes.setup(
-            practice.fen,
-            goal: practice.goal.code,
-            position: practice.positionId,
+      if (practice != null)
+        NextStep(
+          id: 'train',
+          icon: Icons.sports_esports,
+          title: name == null
+              ? l10n.lessonFinishedTrainTitle
+              : l10n.nextStepsPractice(name),
+          body: l10n.lessonFinishedTrainBody,
+          onTap: () => context.push(
+            Routes.setup(
+              practice.fen,
+              goal: practice.goal.code,
+              position: practice.positionId,
+            ),
           ),
         ),
-      ),
       if (state.hasExercises)
         NextStep(
           id: 'exercises',
@@ -93,10 +105,10 @@ class LessonFinishedScreen extends StatelessWidget {
         appBar: LucenaAppBar(
           title: Text(state.title),
           leading: IconButton(
+            key: LessonFinishedKeys.close,
             icon: const Icon(Icons.close),
             tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
-            onPressed: () =>
-                context.go(_school ? Routes.school : Routes.endgames),
+            onPressed: () => context.go(_backRoute(context)),
           ),
         ),
         body: Stack(
@@ -180,11 +192,8 @@ class LessonFinishedScreen extends StatelessWidget {
                                     height: kButtonHeight,
                                     child: OutlinedButton(
                                       key: LessonFinishedKeys.back,
-                                      onPressed: () => context.go(
-                                        _school
-                                            ? Routes.school
-                                            : Routes.endgames,
-                                      ),
+                                      onPressed: () =>
+                                          context.go(_backRoute(context)),
                                       child: Text(
                                         _school
                                             ? l10n.surveyBackToSchool

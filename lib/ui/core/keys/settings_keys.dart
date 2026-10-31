@@ -4,6 +4,8 @@ import '../../../domain/models/app_accent.dart';
 import '../../../domain/models/app_theme_mode.dart';
 
 abstract final class SettingsKeys {
+  static const escolaTrainingTile = Key('settings.escolaTraining');
+
   /// "Tela inicial": os caminhos da tela inicial.
   static const homeLayoutTile = Key('settings.homeLayout');
 
@@ -53,6 +55,7 @@ abstract final class SettingsKeys {
 
   /// A prévia do Pilares do Xadrez (T82), só nas versões de desenvolvimento.
   static const pilaresPreviewTile = Key('settings.pilaresPreview');
+  static const pilaresTrainingTile = Key('settings.pilaresTraining');
   static const boardBehaviorTile = Key('settings.boardBehavior');
   static const boardBehaviorValue = Key('settings.boardBehavior.value');
 

@@ -250,7 +250,7 @@ class _ContinueBar extends StatelessWidget {
           state.progress.stars.isNotEmpty || state.progress.exercise != null;
       label = started ? l10n.endgameResumeTest : l10n.endgameContinueTest;
       onPressed = () => context.push(Routes.endgameExercisesIntro(lesson.id));
-    } else {
+    } else if (practice != null) {
       label = l10n.endgameTrain;
       onPressed = () => context.push(
         Routes.setup(
@@ -259,6 +259,8 @@ class _ContinueBar extends StatelessWidget {
           position: practice.positionId,
         ),
       );
+    } else {
+      return const SizedBox.shrink();
     }
     return CourseContinueFooter(
       buttonKey: EndgameLessonKeys.continueButton,

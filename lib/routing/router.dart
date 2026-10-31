@@ -1,9 +1,22 @@
+import 'training_lesson_scope.dart';
+import '../domain/models/learning_analysis.dart';
+import '../data/repositories/analysis/learning_analysis_repository.dart';
+import '../ui/learning_analysis/view_models/learning_analysis_cubit.dart';
+import '../ui/learning_analysis/widgets/learning_analysis_screen.dart';
 import '../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../ui/course_preview/widgets/course_chapter_preview_screen.dart';
 import '../ui/course_preview/widgets/course_map_preview_screen.dart';
 import '../ui/course_preview/widgets/course_sale_screen.dart';
 import '../data/repositories/course_preview/course_preview_repository.dart';
+import '../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../domain/models/training/training_course_config.dart';
+import '../domain/models/training/training_content.dart';
+import 'training_launch.dart';
+import 'training_goal_return.dart';
+import '../data/repositories/training/training_school_content.dart';
+import '../ui/home/view_models/training_lesson_preview.dart';
 import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/survey/survey_repository.dart';
 import '../domain/models/survey.dart';
@@ -224,6 +237,7 @@ import '../ui/week/widgets/week_screen.dart';
 import '../ui/update/widgets/update_recommended_screen.dart';
 import '../ui/update/widgets/update_required_screen.dart';
 import 'routes.dart';
+import 'training_routes.dart';
 import '../ui/blind/widgets/blind_entry_screen.dart';
 import '../data/repositories/account/account_repository.dart';
 import '../data/repositories/sync/sync_scheduler.dart';
@@ -277,6 +291,32 @@ GoRouter buildRouter({
       );
     },
     routes: [
+      _route(
+        path: Routes.learningAnalysis,
+        builder: (context, state) {
+          final fen = state.uri.queryParameters['fen'] ?? '';
+          if (GameRules.fromFen(fen) == null) return const InvalidLinkScreen();
+          final launch = LearningAnalysisLaunch(
+            fen: fen,
+            moves: (state.uri.queryParameters['moves'] ?? '')
+                .split(',')
+                .where((move) => move.isNotEmpty)
+                .toList(),
+            orientation: state.uri.queryParameters['view'] == 'black'
+                ? Side.black
+                : Side.white,
+          );
+          return BlocProvider(
+            create: (_) => LearningAnalysisCubit(
+              launch: launch,
+              repository: context.read<LearningAnalysisRepository>(),
+              engine: context.read<AnalysisRepository>(),
+            )..load(),
+            child: const LearningAnalysisScreen(),
+          );
+        },
+      ),
+      trainingRoute(),
       _route(
         path: Routes.invalidLink,
         builder: (context, state) => const InvalidLinkScreen(),
@@ -353,6 +393,10 @@ GoRouter buildRouter({
       ),
       _route(
         path: '/lesson-finished/:kind/:id',
+        lessonScopeId: (state) =>
+            state.pathParameters['kind'] == SurveyKind.endgames.code
+            ? state.pathParameters['id']
+            : null,
         redirect: (context, state) =>
             SurveyKind.byCode(state.pathParameters['kind'] ?? '') == null
             ? Routes.home
@@ -364,7 +408,12 @@ GoRouter buildRouter({
               kind: kind,
               lessonId: state.pathParameters['id']!,
               nextId: state.uri.queryParameters['next'],
-              school: context.read<LessonRepository>(),
+              school:
+                  state.uri.queryParameters['origem']?.startsWith('treino_') ==
+                          true &&
+                      kind == SurveyKind.school
+                  ? context.read<TrainingSchoolContent>()
+                  : context.read<LessonRepository>(),
               endgames: context.read<EndgameLessonRepository>(),
               race: context.read<RaceRepository>(),
               analytics: context.analytics,
@@ -542,6 +591,12 @@ GoRouter buildRouter({
             activity: context.read<ActivityRepository>(),
             games: context.read<OngoingGameRepository>(),
             analytics: context.analytics,
+            courseTraining: context.read<course_training.TrainingRepository>(),
+            trainingCourses: activeTrainingCourses,
+            trainingLessonPreview: trainingLessonPreviewLoader(
+              scripts: context.read<LessonScriptRepository>(),
+              language: _language(context),
+            ),
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
@@ -811,11 +866,24 @@ GoRouter buildRouter({
             path: 'school',
             // Escola escondida (VisibleLessons): a lista e as aulas dela
             // levam à tela inicial; os desafios de estrelas continuam.
-            redirect: (context, state) =>
-                VisibleLessons.school ||
-                    state.uri.path.startsWith(Routes.starChallenges)
-                ? null
-                : Routes.home,
+            redirect: (context, state) {
+              final training = activeTrainingCourses.contains(
+                TrainingCourseConfig.escola,
+              );
+              if (training && state.uri.path == Routes.school) {
+                return Routes.training(TrainingCourseConfig.escola.course.name);
+              }
+              if (VisibleLessons.school ||
+                  state.uri.path.startsWith(Routes.starChallenges) ||
+                  training &&
+                      (state.uri.queryParameters['origem']?.startsWith(
+                            'treino_',
+                          ) ??
+                          false)) {
+                return null;
+              }
+              return Routes.home;
+            },
             builder: (context, state) => BlocProvider(
               create: (_) => SchoolCubit(
                 lessons: context.read<LessonRepository>(),
@@ -873,7 +941,10 @@ GoRouter buildRouter({
                           }
                           return cubit;
                         },
-                        child: const StarChallengeScreen(),
+                        child: StarChallengeScreen(
+                          trainingGoalDone: _trainingGoalDone(context, state),
+                          onNextGoal: _trainingNextGoal(context, state),
+                        ),
                       );
                     },
                   ),
@@ -889,7 +960,13 @@ GoRouter buildRouter({
                       int.tryParse(state.uri.queryParameters['etapa'] ?? '') ??
                       0;
                   final language = _language(context);
-                  final lessons = context.read<LessonRepository>();
+                  final LessonRepository lessons =
+                      state.uri.queryParameters['origem']?.startsWith(
+                            'treino_',
+                          ) ==
+                          true
+                      ? context.read<TrainingSchoolContent>()
+                      : context.read<LessonRepository>();
                   return BlocProvider(
                     key: ValueKey('script.$id'),
                     create: (_) => LessonScriptCubit(
@@ -911,16 +988,25 @@ GoRouter buildRouter({
                         learning: context.read<LearningRepository?>(),
                         analytics: context.analytics,
                         campaigns: context.read<CampaignRepository>(),
+                        analyticsOrigin: state.uri.queryParameters['origem'],
                       ),
                       initialStage: stage,
+                      now: context.read<Now>(),
                       analytics: context.analytics,
                       origin: state.uri.queryParameters['origem'],
                     ),
-                    child: LessonScriptScreen(
-                      key: ValueKey('script.$id'),
-                      title: lessons
-                          .texts(language)
-                          .then((texts) => texts.lessonTitle(id)),
+                    child: Builder(
+                      builder: (context) => LessonScriptScreen(
+                        onAnalyze: (_) => _openLearningAnalysis(context),
+                        key: ValueKey('script.$id'),
+                        preview: _trainingLaunch(state)?.lessonPreview,
+                        previewTeacher: _trainingLaunch(state)?.teacher,
+                        previewTitle: _trainingTitle(state),
+                        homeHero: _trainingLaunch(state)?.lessonPreview != null,
+                        title: lessons
+                            .texts(language)
+                            .then((texts) => texts.lessonTitle(id)),
+                      ),
                     ),
                   );
                 },
@@ -1034,7 +1120,10 @@ GoRouter buildRouter({
                     // Parte que não abre mais (retomada salva de um capítulo
                     // sem roteiro): cai no início da primeira parte.
                     redirect: (context, state) => resolveScriptPart(
-                      context.read<EndgameLessonRepository>(),
+                      trainingLessonRepository(
+                        context,
+                        state.pathParameters['lesson'],
+                      ),
                       state.pathParameters['lesson']!,
                       state.uri.queryParameters['part'],
                     ),
@@ -1074,26 +1163,46 @@ GoRouter buildRouter({
                             learning: context.read<LearningRepository?>(),
                             analytics: context.analytics,
                             campaigns: context.read<CampaignRepository>(),
+                            analyticsLessonType: id.startsWith('pilares.')
+                                ? 'pilares'
+                                : null,
+                            analyticsOrigin:
+                                state.uri.queryParameters['origem'] ??
+                                'catalogo',
                           ),
                           initialStage: stage,
+                          now: context.read<Now>(),
                           analytics: context.analytics,
                           origin: state.uri.queryParameters['origem'],
+                          analyticsLessonType: id.startsWith('pilares.')
+                              ? 'pilares'
+                              : null,
                         ),
-                        child: LessonScriptScreen(
-                          key: ValueKey('script.$id.$part'),
-                          title: lessons.texts(language).then((texts) async {
-                            final title = texts.partTitle(id, part);
-                            if (title == null) return null;
-                            final chapter = (await lessons.trail()).lesson(id);
-                            final index =
-                                chapter?.lesson.sections.indexWhere(
-                                  (unit) => unit.id == part,
-                                ) ??
-                                -1;
-                            return index < 0
-                                ? title
-                                : l10n.endgameActivityTitle(index + 1, title);
-                          }),
+                        child: Builder(
+                          builder: (context) => LessonScriptScreen(
+                            onAnalyze: (_) => _openLearningAnalysis(context),
+                            key: ValueKey('script.$id.$part'),
+                            preview: _trainingLaunch(state)?.lessonPreview,
+                            previewTeacher: _trainingLaunch(state)?.teacher,
+                            previewTitle: _trainingTitle(state),
+                            homeHero:
+                                _trainingLaunch(state)?.lessonPreview != null,
+                            title: lessons.texts(language).then((texts) async {
+                              final title = texts.partTitle(id, part);
+                              if (title == null) return null;
+                              final chapter = (await lessons.trail()).lesson(
+                                id,
+                              );
+                              final index =
+                                  chapter?.lesson.sections.indexWhere(
+                                    (unit) => unit.id == part,
+                                  ) ??
+                                  -1;
+                              return index < 0
+                                  ? title
+                                  : l10n.endgameActivityTitle(index + 1, title);
+                            }),
+                          ),
                         ),
                       );
                     },
@@ -1152,19 +1261,28 @@ GoRouter buildRouter({
                       return BlocProvider(
                         // O exercício seguinte troca o view model.
                         key: ValueKey('$id.$exercise'),
-                        create: (_) => ExerciseCubit(
-                          learning: context.read<LearningRepository?>(),
-                          feedback: context.read<ExerciseFeedbackRepository?>(),
-                          now: context.read<Now>(),
-                          sounds: context.read<GameSounds>(),
-                          haptics: context.read<GameHaptics>(),
-                          analytics: context.analytics,
-                          lessons: context.read<EndgameLessonRepository>(),
-                          progress: context.read<EndgameProgressRepository>(),
-                          characters: context.read<CharacterRepository>(),
-                        )..load(id, exercise, _language(context)),
+                        create: (_) =>
+                            ExerciseCubit(
+                              learning: context.read<LearningRepository?>(),
+                              feedback: context
+                                  .read<ExerciseFeedbackRepository?>(),
+                              now: context.read<Now>(),
+                              sounds: context.read<GameSounds>(),
+                              haptics: context.read<GameHaptics>(),
+                              analytics: context.analytics,
+                              lessons: context.read<EndgameLessonRepository>(),
+                              progress: context
+                                  .read<EndgameProgressRepository>(),
+                              characters: context.read<CharacterRepository>(),
+                            )..load(
+                              id,
+                              exercise,
+                              _language(context),
+                              restartPosition: id.startsWith('pilares.'),
+                            ),
                         child: ExerciseScreen(
                           key: ValueKey('exercise.$id.$exercise'),
+                          trainingTest: id.startsWith('pilares.'),
                           lessonId: id,
                           exerciseId: exercise,
                           // A lista manda a posição, para a miniatura voar.
@@ -1215,6 +1333,9 @@ GoRouter buildRouter({
                           ),
                           child: ChallengeScreen(
                             rungId: state.pathParameters['rung']!,
+                            homeHero: _trainingLaunch(state)?.challenge != null,
+                            trainingGoalDone: _trainingGoalDone(context, state),
+                            onNextGoal: _trainingNextGoal(context, state),
                           ),
                         ),
                       ),
@@ -1302,7 +1423,11 @@ GoRouter buildRouter({
                       onReturn: () => context.read<SpeedrunCubit>().load(
                         speedrunId: state.pathParameters['speedrun'],
                       ),
-                      child: const SpeedrunScreen(),
+                      child: SpeedrunScreen(
+                        preview: _trainingLaunch(state)?.speedrun,
+                        trainingGoalDone: _trainingGoalDone(context, state),
+                        onNextGoal: _trainingNextGoal(context, state),
+                      ),
                     ),
                   ),
                 ),
@@ -1762,7 +1887,11 @@ JourneyCubit _journeyCubit(BuildContext context, {Object? initial}) =>
     JourneyCubit(
       context.read<JourneyRepository>(),
       context.read<ProgressRepository>(),
-      initial: initial is JourneyState ? initial : null,
+      initial: initial is JourneyState
+          ? initial
+          : initial is TrainingLaunch && initial.challenge != null
+          ? JourneyState(challenge: initial.challenge)
+          : null,
       onboarding: context.read<OnboardingRepository>(),
       characters: context.read<CharacterRepository>(),
       school: context.read<SchoolProgressRepository>(),
@@ -1870,6 +1999,7 @@ GoRoute _route({
   required String path,
   required GoRouterWidgetBuilder builder,
   GoRouterRedirect? redirect,
+  String? Function(GoRouterState)? lessonScopeId,
   List<RouteBase> routes = const [],
   bool fade = false,
   bool sharedAxis = false,
@@ -1877,6 +2007,13 @@ GoRoute _route({
   path: path,
   redirect: redirect,
   pageBuilder: (context, state) {
+    Widget buildChild() => scopeTrainingLesson(
+      context,
+      lessonScopeId == null
+          ? state.pathParameters['lesson']
+          : lessonScopeId(state),
+      (scoped) => builder(scoped, state),
+    );
     if (sharedAxis) {
       final duration = AppMotion.of(context).screen;
       return CustomTransitionPage<void>(
@@ -1890,19 +2027,50 @@ GoRoute _route({
               transitionType: SharedAxisTransitionType.scaled,
               child: child,
             ),
-        child: builder(context, state),
+        child: buildChild(),
       );
     }
-    if (!fade) {
-      return MaterialPage<void>(
-        key: state.pageKey,
-        child: builder(context, state),
-      );
+    if (!fade && state.extra is! TrainingLaunch) {
+      return MaterialPage<void>(key: state.pageKey, child: buildChild());
     }
-    return gamePage(context, state, builder(context, state));
+    return gamePage(context, state, buildChild());
   },
   routes: routes,
 );
+
+TrainingLaunch? _trainingLaunch(GoRouterState state) =>
+    state.extra is TrainingLaunch ? state.extra as TrainingLaunch : null;
+
+String? _trainingTitle(GoRouterState state) =>
+    _trainingLaunch(state)?.title ??
+    (state.extra is TrainingLesson
+        ? (state.extra as TrainingLesson).title
+        : null);
+
+Future<bool> Function()? _trainingGoalDone(
+  BuildContext context,
+  GoRouterState state,
+) {
+  final link = TrainingGoalReturn.from(state);
+  return link == null ? null : () => link.done(context);
+}
+
+VoidCallback? _trainingNextGoal(BuildContext context, GoRouterState state) {
+  final link = TrainingGoalReturn.from(state);
+  return link == null
+      ? null
+      : () async {
+          try {
+            await link.next(context);
+          } catch (_) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(context.l10n.trainingExerciseSaveError)),
+              );
+            }
+          }
+        };
+}
 
 /// A página da partida: só um fade, com a tela de baixo parada. O tabuleiro
 /// da tela de antes (com a marca de `gameBoardTag`) voa até o centro dela, e
@@ -1947,3 +2115,15 @@ bool? _endgamesFilter(GoRouterState state) =>
       'forYou' => false,
       _ => null,
     };
+
+void _openLearningAnalysis(BuildContext context) {
+  final launch = context.read<LessonScriptCubit>().analysisLaunch;
+  if (GameRules.fromFen(launch.fen) == null) return;
+  context.push(
+    Routes.learningAnalysisAt(
+      launch.fen,
+      moves: launch.moves,
+      orientation: launch.orientation.name,
+    ),
+  );
+}

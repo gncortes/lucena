@@ -103,12 +103,16 @@ class FirebasePushRepository implements PushRepository {
       .contains('-rc.');
 
   @override
-  Future<bool> requestPermission() => _service.requestPermission();
+  Future<bool> requestPermission() => _service.available
+      ? _service.requestPermission()
+      : _notifications.requestPermission();
 
   @override
   Future<bool> permitted() async {
     try {
-      return await _service.permitted();
+      return _service.available
+          ? await _service.permitted()
+          : await _notifications.permitted();
     } on Object catch (error) {
       debugPrint('Push sem estado da permissão: $error');
       return false;

@@ -1,6 +1,27 @@
+import '../data/repositories/training/training_endgame_content.dart';
 import '../data/services/lesson_content_service.dart';
+import '../data/services/lesson_package_service.dart';
+import '../data/services/lesson_package_index.dart';
+import '../data/repositories/training/course_download_repository.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 import 'dart:async';
+import 'dart:math';
+
+import '../data/repositories/training/course_training_repository.dart'
+    as course_training;
+import '../data/repositories/training/course_training_repository_local.dart'
+    as course_training;
+import '../data/repositories/training/training_learning_bridge.dart';
+import '../data/repositories/training/observed_training_repository.dart';
+import '../data/repositories/training/school_training_observation_source.dart';
+import '../data/repositories/training/school_training_observer.dart';
+import '../data/repositories/training/training_school_content.dart';
+import '../domain/models/training/training_course_config.dart';
+import '../domain/models/training/school_training_resources.dart';
+import '../domain/use_cases/training/training_analytics.dart';
+import '../domain/use_cases/visible_lessons.dart';
 
 import '../data/repositories/activity/activity_repository.dart';
 import '../data/repositories/analytics/analytics_repository.dart';
@@ -120,6 +141,7 @@ import '../data/services/asset_service.dart';
 import '../data/services/database/app_database.dart';
 import '../data/services/maia_service.dart';
 import '../data/services/preferences_service.dart';
+import '../data/repositories/analysis/learning_analysis_repository.dart';
 import '../data/services/stockfish_service.dart';
 import '../data/services/vibration_service.dart';
 import '../data/repositories/account/account_invite_repository.dart';
@@ -174,6 +196,12 @@ const appVersion = String.fromEnvironment('APP_VERSION');
 /// Patrol e nas candidatas de QA (`-rc`); nunca na versão final.
 bool get showsDevTools => kDebugMode || isE2E || appVersion.contains('-rc');
 
+List<TrainingCourseConfig> get activeTrainingCourses => [
+  if (showsDevTools) TrainingCourseConfig.pilares,
+  if (kDebugMode || isE2E || VisibleLessons.schoolLessonIds.isNotEmpty)
+    TrainingCourseConfig.escola,
+];
+
 /// As implementações que entram no app.
 ///
 /// As composições de teste ficam em `testing/`: código de `lib/` não importa
@@ -194,11 +222,16 @@ class Dependencies {
     required this.placementRepository,
     required this.soundRepository,
     required this.analysisRepository,
+    this.learningAnalysisRepository,
     required this.gameReviewRepository,
     required this.ongoingGameRepository,
     required this.conclusionRepository,
     required this.positionsRepository,
     required this.trainingRepository,
+    this.courseTrainingRepository =
+        const course_training.NoTrainingRepository(),
+    this.courseDownloads = const CourseDownloadRepository.unconfigured(),
+    this.trainingAnalytics,
     required this.opponentRepository,
     required this.maiaRepository,
     required this.progressRepository,
@@ -215,9 +248,11 @@ class Dependencies {
     required this.unlockRepository,
     required this.paceRepository,
     required this.lessonRepository,
+    this.trainingSchoolContent,
     required this.schoolProgressRepository,
     required this.starChallengeRepository,
     required this.endgameLessonRepository,
+    this.trainingEndgameContent,
     required this.lessonScriptRepository,
     required this.kpkRepository,
     required this.scriptTableRepository,
@@ -272,11 +307,30 @@ class Dependencies {
     return AppVersion(info.version);
   }
 
+  static Future<String>? _trainingInstallSeed;
+
+  /// Created once per installation, independently of account and Analytics.
+  static Future<String> trainingInstallSeed() =>
+      _trainingInstallSeed ??= (() async {
+        final preferences = PreferencesService();
+        const key = 'training.installSeed';
+        final saved = await preferences.getString(key);
+        if (saved != null && saved.isNotEmpty) return saved;
+        final random = Random.secure();
+        final seed = List.generate(
+          32,
+          (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+        ).join();
+        await preferences.setString(key, seed);
+        return seed;
+      })();
+
   /// [firebase] diz se o Firebase subiu (`startFirebase`). Sem ele, a conta e
   /// o push ficam desligados e o resto do app funciona igual.
   factory Dependencies.normal({
     AppVersion version = const AppVersion(appVersion),
     bool firebase = false,
+    String? trainingInstallSeed,
   }) {
     final auth = firebase ? FirebaseAuthService() : const NoAuthService();
     final preferences = PreferencesService();
@@ -286,12 +340,23 @@ class Dependencies {
     final database = AppDatabase();
     const now = SystemNow();
     const assets = AssetService();
-    final lessonContent = createLessonContentAssets(
+    final contentSource = createLessonContentAssets(
       releaseBuild: kReleaseMode,
       firebase: firebase,
       localUrl: const String.fromEnvironment('CONTENT_URL'),
       publishedRelease: const String.fromEnvironment('CONTENT_RELEASE'),
     );
+    const packageIndexPath = String.fromEnvironment('CONTENT_PACKAGE_INDEX');
+    final packages = contentSource.reader == null
+        ? null
+        : LessonPackageService(
+            source: contentSource.reader!,
+            directory: getApplicationSupportDirectory,
+            identity: () => auth.current?.uid,
+          );
+    final lessonContent = packages == null
+        ? contentSource
+        : LessonContentAssets(reader: packages);
     final positions = AssetPositionsRepository(assets);
     final maia = MaiaService(() => assets.loadBytes(MaiaService.weightsAsset));
     final stockfish = StockfishService();
@@ -300,6 +365,46 @@ class Dependencies {
     final maiaRepository = DeviceMaiaRepository(maia);
     final evaluation = StockfishEvaluationRepository(stockfish);
     final lessons = AssetLessonRepository(lessonContent);
+    final trainingSchoolContent = TrainingSchoolContent(
+      lessons,
+      includeAll: kDebugMode || isE2E,
+    );
+    final analytics = ServiceAnalyticsRepository(
+      firebase && analyticsMode != AnalyticsMode.off
+          ? FirebaseAnalyticsService()
+          : const NoAnalyticsService(),
+      preferences,
+      mode: analyticsMode,
+    );
+    late final course_training.TrainingRepository courseTrainingStorage;
+    final trainingAnalytics = TrainingAnalytics(
+      now: now,
+      log: analytics.log,
+      read: (course) => courseTrainingStorage.load(course),
+      write: (course, change) => courseTrainingStorage.update(course, change),
+    );
+    courseTrainingStorage = trainingInstallSeed == null
+        ? const course_training.NoTrainingRepository()
+        : course_training.TrainingRepositoryLocal(
+            preferences,
+            lessonContent,
+            installSeed: trainingInstallSeed,
+            onSaved: trainingAnalytics.onSaved,
+            configs: {
+              for (final config in TrainingCourseConfig.all)
+                config.course: config,
+            },
+            contentSources: {
+              TrainingCourseConfig.escola.indexSource: () async {
+                return schoolTrainingResources(
+                  await trainingSchoolContent.course(),
+                  await trainingSchoolContent.texts('pt'),
+                );
+              },
+            },
+          );
+    late final course_training.TrainingRepository courseTraining;
+    late final TrainingLearningBridge trainingLearning;
     final cloudStore = firebase
         ? FirestoreCloudStoreService()
         : const NoCloudStoreService();
@@ -316,6 +421,7 @@ class Dependencies {
       currentUid: () => auth.current?.uid,
       versionOf: LearningContentVersion(lessonContent).call,
       onChanged: () => changes.add(null),
+      onUnitCompleted: (completion) => trainingLearning.call(completion),
     );
     final activity = LocalActivityRepository(preferences, progress, now);
     // Capítulo terminado: também é dia com atividade (decisão 2b da E1.22).
@@ -339,6 +445,27 @@ class Dependencies {
       activity,
     );
     final stars = LocalStarChallengeRepository(preferences);
+    final schoolObservations = SchoolTrainingObservationSource(
+      now: now,
+      stars: stars,
+      progress: progress,
+      speedruns: speedruns,
+      journey: journey,
+    );
+    courseTraining = ObservedTrainingRepository(
+      courseTrainingStorage,
+      observers: {
+        TrainingCourseConfig.escola.course: SchoolTrainingObserver(
+          now: now,
+          source: schoolObservations,
+          analytics: trainingAnalytics,
+        ).call,
+      },
+    );
+    trainingLearning = TrainingLearningBridge(
+      courseTraining,
+      courses: TrainingCourseConfig.all,
+    );
     final endgames = NotifyingEndgameProgressRepository(
       LocalEndgameProgressRepository(preferences),
       changed,
@@ -361,13 +488,6 @@ class Dependencies {
     // A V1 sai sem anúncios nem "Remover anúncios" (decisão do Gabriel,
     // 2026-10-22): o código da E1.25 fica, com os serviços vazios.
     const purchases = NoPurchaseRepository();
-    final analytics = ServiceAnalyticsRepository(
-      firebase && analyticsMode != AnalyticsMode.off
-          ? FirebaseAnalyticsService()
-          : const NoAnalyticsService(),
-      preferences,
-      mode: analyticsMode,
-    );
     const ads = NoAdsRepository();
     final PushService pushService = firebase
         ? FirebasePushService()
@@ -414,11 +534,26 @@ class Dependencies {
       placementRepository: LocalPlacementRepository(assets, preferences),
       soundRepository: DeviceSoundRepository(SoundService()),
       analysisRepository: StockfishAnalysisRepository(stockfish),
+      learningAnalysisRepository: LearningAnalysisRepository(preferences),
       gameReviewRepository: LocalGameReviewRepository(preferences),
       ongoingGameRepository: LocalOngoingGameRepository(preferences),
       conclusionRepository: LocalConclusionRepository(preferences),
       positionsRepository: positions,
       trainingRepository: LocalTrainingRepository(preferences),
+      courseTrainingRepository: courseTraining,
+      courseDownloads: CourseDownloadRepository(
+        packages,
+        openingProfile: () async =>
+            (await courseTraining.load(TrainingCourseConfig.pilares.course))
+                .openingProfile,
+        indexSource:
+            firebase &&
+                contentSource.reader is PublishedLessonContentReader &&
+                packageIndexPath.isNotEmpty
+            ? LessonPackageIndexSource.firestore(packageIndexPath)
+            : null,
+      ),
+      trainingAnalytics: trainingAnalytics,
       opponentRepository: DeviceOpponentRepository(
         maia: MaiaOpponentRepository(maia, now: now, pace: pace),
         stockfish: StockfishOpponentRepository(stockfish),
@@ -439,9 +574,17 @@ class Dependencies {
       unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: VisibleLessonRepository(lessons),
+      trainingSchoolContent: trainingSchoolContent,
       schoolProgressRepository: school,
       starChallengeRepository: stars,
       endgameLessonRepository: endgameLessons,
+      trainingEndgameContent: showsDevTools
+          ? TrainingEndgameContent.fromConfigs(
+              lessonContent,
+              school: lessons,
+              configs: activeTrainingCourses,
+            )
+          : null,
       lessonScriptRepository: AssetLessonScriptRepository(lessonContent),
       kpkRepository: AssetKpkRepository(assets),
       scriptTableRepository: AssetScriptTableRepository(assets),
@@ -551,11 +694,15 @@ class Dependencies {
   final PlacementRepository placementRepository;
   final SoundRepository soundRepository;
   final AnalysisRepository analysisRepository;
+  final LearningAnalysisRepository? learningAnalysisRepository;
   final GameReviewRepository gameReviewRepository;
   final OngoingGameRepository ongoingGameRepository;
   final ConclusionRepository conclusionRepository;
   final PositionsRepository positionsRepository;
   final TrainingRepository trainingRepository;
+  final course_training.TrainingRepository courseTrainingRepository;
+  final CourseDownloadRepository courseDownloads;
+  final TrainingAnalytics? trainingAnalytics;
   final OpponentRepository opponentRepository;
   final MaiaRepository maiaRepository;
   final ProgressRepository progressRepository;
@@ -572,9 +719,11 @@ class Dependencies {
   final UnlockRepository unlockRepository;
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
+  final TrainingSchoolContent? trainingSchoolContent;
   final SchoolProgressRepository schoolProgressRepository;
   final StarChallengeRepository starChallengeRepository;
   final EndgameLessonRepository endgameLessonRepository;
+  final TrainingEndgameContent? trainingEndgameContent;
   final LessonScriptRepository lessonScriptRepository;
   final KpkRepository kpkRepository;
 

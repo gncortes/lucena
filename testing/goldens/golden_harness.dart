@@ -37,6 +37,9 @@ abstract final class Goldens {
       'test/goldens/fonts/NotoNaskhArabic-Bold.ttf',
     ]);
     await family('LucenaFigurine', ['assets/fonts/LucenaFigurine.ttf']);
+    await family('LucenaCanvasSymbols', [
+      'assets/fonts/LucenaCanvasSymbols.ttf',
+    ]);
   }
 
   static final variants = [
