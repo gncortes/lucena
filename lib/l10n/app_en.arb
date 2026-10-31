@@ -1385,6 +1385,22 @@
       }
     }
   },
+  "tourSpeechBoard": "Hello! I am Viktor, your teacher. Before we start, choose the board colours and the pieces you like best.",
+  "@tourSpeechBoard": {"description": "Public onboarding speech, copied verbatim from tour.board."},
+  "tourSpeechVoice": "I can read aloud everything I say. Choose my voice; tap one to hear it. And tell me what to call you.",
+  "@tourSpeechVoice": {"description": "Public onboarding speech, copied verbatim from tour.voice."},
+  "tourSpeechVoiceNone": "Before we go on, tell me what to call you.",
+  "@tourSpeechVoiceNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.none."},
+  "tourSpeechVoiceLink": "Nice game! I am Viktor, your teacher. I can read aloud everything I say. Choose my voice, and tell me what to call you.",
+  "@tourSpeechVoiceLink": {"description": "Public onboarding speech, copied verbatim from tour.voice.link."},
+  "tourSpeechVoiceLinkNone": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you.",
+  "@tourSpeechVoiceLinkNone": {"description": "Public onboarding speech, copied verbatim from tour.voice.link.none."},
+  "tourSpeechSchool": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
+  "@tourSpeechSchool": {"description": "Public onboarding speech, copied verbatim from tour.school."},
+  "tourSpeechHelp": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
+  "@tourSpeechHelp": {"description": "Public onboarding speech, copied verbatim from tour.help."},
+  "tourSpeechPlay": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
+  "@tourSpeechPlay": {"description": "Public onboarding speech, copied verbatim from tour.play."},
   "tourBack": "Back",
   "@tourBack": {
     "description": "Button that goes to the previous step of the tour."

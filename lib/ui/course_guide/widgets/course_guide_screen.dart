@@ -114,7 +114,7 @@ class CourseGuideScreen extends StatelessWidget {
         body: SafeArea(
           top: false,
           child: state.loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const CourseDownloadSkeleton()
               : state.failed && training == null
               ? Center(
                   child: TextButton(

@@ -11,6 +11,7 @@ import '../../../data/repositories/voice/voice_repository.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/voice.dart';
 import '../../../domain/use_cases/profile_rules.dart';
@@ -146,7 +147,13 @@ class TourCubit extends Cubit<TourState> {
     _saved = await _onboarding.load();
     final profile = await _profile.load();
     final characters = await _characters.characters();
-    final texts = await _lessons.texts(language);
+    var texts = LessonTexts.empty;
+    try {
+      texts = await _lessons.texts(language);
+    } on LessonContentUnavailable {
+      // First-time guests have no protected course package yet. The screen
+      // has public localized tour speech independent of that package.
+    }
     if (isClosed) return;
     Character? viktor;
     for (final character in characters) {

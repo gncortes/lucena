@@ -3,6 +3,10 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lucena/data/services/lesson_content_service.dart';
 import 'package:lucena/data/services/lesson_package_service.dart';
 import 'package:lucena/data/repositories/training/course_download_repository.dart';
+import 'package:lucena/data/repositories/training/course_training_repository.dart'
+    as course_training;
+import 'package:lucena/data/repositories/training/course_training_repository_local.dart'
+    as course_training;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:lucena/data/services/secure_storage_service.dart';
@@ -71,6 +75,7 @@ import 'package:lucena/data/repositories/speedrun/speedrun_repository_local.dart
 import 'package:lucena/data/repositories/opponent/opponent_repository_maia.dart';
 import 'package:lucena/data/services/maia_service.dart';
 import 'package:lucena/domain/models/game_setup.dart';
+import 'package:lucena/domain/models/account.dart';
 import 'package:lucena/data/repositories/ongoing_game/ongoing_game_repository_local.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:lucena/data/repositories/opponent/opponent_repository.dart';
@@ -288,14 +293,21 @@ AppDatabase? _database;
 ///
 /// Com [ads], o anúncio falso da E1.25 (desenhado pelo app, sem SDK) entra
 /// antes das aulas; sem ele, os outros cenários não veem anúncio.
+/// [nativeInitialAccount] permite iniciar como visitante os pacotes locais.
+/// [realCourseTraining] usa bancos reais e não aceita cenários pré-preenchidos.
 Future<Dependencies> e2eDependencies({
   bool ads = false,
   E2ETrainingScenario? trainingScenario,
   NotificationService? notifications,
   PushRepository? push,
   bool localContentPackages = false,
+  bool realCourseTraining = false,
+  Account? nativeInitialAccount = FakeAccountRepository.google,
   Now? now,
 }) async {
+  if (realCourseTraining && trainingScenario != null) {
+    throw ArgumentError('Real course training cannot use a seeded scenario');
+  }
   final clock = now ?? e2eNow;
   await _database?.close();
   final database = _database = AppDatabase();
@@ -305,7 +317,7 @@ Future<Dependencies> e2eDependencies({
     localUrl: const String.fromEnvironment('CONTENT_URL'),
   );
   final account = FakeAccountRepository(
-    account: localContentPackages ? FakeAccountRepository.google : null,
+    account: localContentPackages ? nativeInitialAccount : null,
   );
   final localReader = source.reader;
   if (localContentPackages && localReader is LocalHttpLessonContentReader) {
@@ -348,15 +360,31 @@ Future<Dependencies> e2eDependencies({
   final flags = FakeRemoteFlagsRepository();
   final trainingSchool = TrainingSchoolContent(lessons, includeAll: true);
   late final TrainingAnalytics trainingAnalytics;
-  final courseTrainingRaw = E2ETrainingRepository(
-    PreferencesService(),
-    content,
-    onSaved: (before, after) => trainingAnalytics.onSaved(before, after),
-    schoolContent: () async => schoolTrainingResources(
-      await trainingSchool.course(),
-      await trainingSchool.texts('pt'),
-    ),
+  schoolContent() async => schoolTrainingResources(
+    await trainingSchool.course(),
+    await trainingSchool.texts('pt'),
   );
+  final course_training.TrainingRepository courseTrainingRaw =
+      realCourseTraining
+      ? course_training.TrainingRepositoryLocal(
+          PreferencesService(),
+          content,
+          installSeed: await Dependencies.trainingInstallSeed(),
+          onSaved: (before, after) => trainingAnalytics.onSaved(before, after),
+          configs: {
+            for (final config in TrainingCourseConfig.all)
+              config.course: config,
+          },
+          contentSources: {
+            TrainingCourseConfig.escola.indexSource: schoolContent,
+          },
+        )
+      : E2ETrainingRepository(
+          PreferencesService(),
+          content,
+          onSaved: (before, after) => trainingAnalytics.onSaved(before, after),
+          schoolContent: schoolContent,
+        );
   trainingAnalytics = TrainingAnalytics(
     now: clock,
     log: e2eAnalytics.log,
@@ -384,7 +412,7 @@ Future<Dependencies> e2eDependencies({
       ).call,
     },
   );
-  if (trainingScenario != null) {
+  if (trainingScenario != null && courseTrainingRaw is E2ETrainingRepository) {
     if (packages != null) {
       // A seeded native scenario starts with installed course metadata. Fresh
       // emulators must download it through the same verified package service

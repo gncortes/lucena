@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../config/dependencies.dart' show activeTrainingCourses;
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -71,7 +74,10 @@ extension HomeShortcutUi on HomeShortcut {
   };
 
   String get route => switch (this) {
-    HomeShortcut.school => HomePath.learn.route,
+    HomeShortcut.school =>
+      activeTrainingCourses.contains(TrainingCourseConfig.escola)
+          ? Routes.school
+          : HomePath.learn.route,
     HomeShortcut.journey => HomePath.journey.route,
     HomeShortcut.endgames => HomePath.endgames.route,
     HomeShortcut.train => HomePath.train.route,

@@ -14,6 +14,7 @@ import '../../../domain/models/training/training_course_config.dart';
 import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_state.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
+import '../../../domain/use_cases/training/future_training_reminders.dart';
 import '../../../domain/use_cases/training/training_reminder.dart';
 import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../data/services/notification_service.dart';
@@ -132,13 +133,13 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
           )
         : const <PlannedReminder>[];
     final trainingNotifications = permitted && courseTexts != null
-        ? await _courseNotifications(courseTexts)
+        ? await _courseNotifications(courseTexts, _ReminderNow(now))
         : <ScheduledNotification>[];
     await _reminders.replace([
       for (final reminder in plan) _notification(reminder, now, texts),
       ...trainingNotifications,
     ]);
-    await _recordTrainingSchedules(trainingNotifications);
+    await _recordTrainingSchedules(trainingNotifications, now);
     if (!isClosed && !listEquals(plan, state)) emit(plan);
   }
 
@@ -146,34 +147,56 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   /// flow erases notifications belonging to the other.
   Future<List<ScheduledNotification>> _courseNotifications(
     CourseReminderTexts texts,
+    Now now,
   ) async {
     final repository = _training;
     if (repository == null) return [];
     final notifications = <ScheduledNotification>[];
     for (final config in courses) {
       final before = await repository.load(config.course);
-      if (!before.onboardingDone) continue;
+      if (!before.onboardingDone || !before.plan.reminderOn) continue;
       final resources = await repository.resources(config.course);
       final training = await repository.update(
         config.course,
-        (s) => BuildDayGoals(_now, config)(s, resources),
+        (s) => BuildDayGoals(now, config)(s, resources),
       );
-      final request = trainingReminder(training, _now);
-      if (request == null) continue;
-      final lessonId = request.text.arguments['aula'];
-      final lesson = resources.lessons
-          .where((l) => l.id == lessonId)
-          .firstOrNull;
-      notifications.add(
-        ScheduledNotification(
-          id: trainingFirstId + config.course.index,
-          channel: texts.trainingChannel,
-          title: texts.trainingTitle,
-          body: texts.trainingBody(request.text, lesson?.title),
-          at: request.at,
-          payload: Routes.home,
-        ),
-      );
+      void add(TrainingReminder request, int id, {bool repeatWeekly = false}) {
+        final lessonId = request.text.arguments['aula'];
+        final lesson = resources.lessons
+            .where((l) => l.id == lessonId)
+            .firstOrNull;
+        notifications.add(
+          ScheduledNotification(
+            id: id,
+            channel: texts.trainingChannel,
+            title: texts.trainingTitle,
+            body: texts.trainingBody(request.text, lesson?.title),
+            at: request.at,
+            payload: Routes.home,
+            repeatWeekly: repeatWeekly,
+          ),
+        );
+      }
+
+      final today = trainingReminder(training, now);
+      if (today != null) add(today, trainingFirstId + config.course.index);
+      for (final future in futureTrainingReminders(
+        training,
+        resources,
+        config,
+        now(),
+      )) {
+        add(
+          future.request,
+          (future.repeatWeekly
+                  ? trainingWeeklyFirstId
+                  : trainingTransientFirstId) +
+              32 * config.course.index +
+              future.request.at.weekday -
+              1,
+          repeatWeekly: future.repeatWeekly,
+        );
+      }
     }
     return notifications;
   }
@@ -182,6 +205,7 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   /// a restart or overlapping refresh cannot count the same delivery twice.
   Future<void> _recordTrainingSchedules(
     List<ScheduledNotification> notifications,
+    DateTime now,
   ) async {
     final repository = _training;
     if (repository == null) return;
@@ -195,12 +219,12 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
         final at = notification?.at;
         var next = current;
         if (old != null &&
-            !old.isAfter(_now()) &&
+            !old.isAfter(now) &&
             current.analyticsReminderShownAt != old) {
           next = next.copyWith(analyticsReminderShownAt: old);
           shown = AnalyticsEvents.treinoLembreteMostrado(
             curso: config.course.name,
-            atrasoMin: _now().difference(old).inMinutes.clamp(0, 2147483647),
+            atrasoMin: now.difference(old).inMinutes.clamp(0, 2147483647),
           );
         }
         if (old != at) {
@@ -230,6 +254,8 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   }
 
   static const trainingFirstId = 600;
+  static const trainingWeeklyFirstId = 700;
+  static const trainingTransientFirstId = 708;
 
   ScheduledNotification _notification(
     PlannedReminder reminder,
@@ -278,4 +304,11 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     await _trainingChanges?.cancel();
     return super.close();
   }
+}
+
+class _ReminderNow implements Now {
+  const _ReminderNow(this.value);
+  final DateTime value;
+  @override
+  DateTime call() => value;
 }

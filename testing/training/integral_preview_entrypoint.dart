@@ -17,6 +17,7 @@ import 'package:lucena/ui/reminders/widgets/l10n_reminder_texts.dart';
 import 'package:lucena/domain/use_cases/training/reminder_text.dart';
 
 import '../e2e_dependencies.dart';
+import '../fakes/fake_account_repository.dart';
 import '../fakes/fake_push_repository.dart';
 import 'e2e_training.dart';
 import 'native_frame_recorder.dart';
@@ -46,7 +47,14 @@ Future<void> main() async {
     'T85_SCENARIO',
     defaultValue: 'goalsMiddle',
   );
-  const fixture = 't85-integral-native-v1-$scenarioName';
+  const firstInstall = bool.fromEnvironment(
+    'T85_FIRST_INSTALL',
+    defaultValue: false,
+  );
+  const fixture = firstInstall
+      ? 't85-integral-native-first-install-v2'
+      : 't85-integral-native-v1-$scenarioName';
+  const authFixture = 't85-integral-native-first-install-provider-v3';
   final preferences = PreferencesService();
   final seeded = await preferences.getBool(fixture) ?? false;
   e2eNow.value = DateTime(2026, 10, 26, 12);
@@ -54,20 +62,43 @@ Future<void> main() async {
   final notifications = DeviceNotificationService();
   final dependencies = await e2eDependencies(
     localContentPackages: true,
+    realCourseTraining: firstInstall,
+    nativeInitialAccount: firstInstall ? null : FakeAccountRepository.google,
     now: const SystemNow(),
     notifications: notifications,
     push: _NativePermissionPush(notifications),
-    trainingScenario: seeded
+    trainingScenario: firstInstall || seeded
         ? null
         : E2ETrainingScenario.values.byName(scenarioName),
   );
+  if (firstInstall) {
+    // Only the fixture provider survives restart; no credentials are persisted.
+    final account = dependencies.accountRepository;
+    final provider = await preferences.getString(authFixture);
+    if (provider == 'google') {
+      await account.signInWithGoogle();
+    } else if (provider == 'email') {
+      // This repository is a test double; these are not real credentials.
+      await account.signInWithEmail('teste@example.com', 'native-fixture');
+    }
+    account.changes
+        .asyncMap(
+          (value) => preferences.setString(
+            authFixture,
+            value?.provider.name ?? 'guest',
+          ),
+        )
+        .listen((_) {});
+  }
   if (!seeded) {
     final settings = await dependencies.settingsRepository.load();
     await dependencies.settingsRepository.save(
       settings.copyWith(languageCode: 'pt', themeMode: AppThemeMode.light),
     );
     await dependencies.onboardingRepository.save(
-      const Onboarding(done: true, boardControlsDone: true),
+      firstInstall
+          ? const Onboarding(done: false)
+          : const Onboarding(done: true, boardControlsDone: true),
     );
     await preferences.setBool(fixture, value: true);
   }
