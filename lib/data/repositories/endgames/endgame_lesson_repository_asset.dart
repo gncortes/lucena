@@ -166,6 +166,7 @@ class AssetEndgameLessonRepository implements EndgameLessonRepository {
                 PositionGoal.fromCode(exercise['goal'] as String?) ??
                 PositionGoal.win,
             origin: exercise['origin'] as String? ?? 'own',
+            profile: exercise['perfil'] as String?,
             line: AssetLessonRepository.parseLine(exercise['line'] as List),
           ),
       ],

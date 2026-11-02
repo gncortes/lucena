@@ -235,4 +235,81 @@ void main() {
       'Private title',
     );
   });
+
+  group('teste de abertura filtrado pelo perfil escolhido', () {
+    Map<String, dynamic> exercise(String id, String? perfil) => {
+      'id': id,
+      'stars': 1,
+      'fen': '6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1',
+      'goal': 'win',
+      'line': [
+        {
+          'accept': ['a1a8'],
+        },
+      ],
+      'perfil': ?perfil,
+    };
+
+    Future<List<String>> ids(String? chosen) async {
+      final raw = jsonDecode(assets.files[chapter]!) as Map<String, dynamic>;
+      raw['exercises'] = [
+        exercise('s1', 'solido'),
+        exercise('a1', 'agressivo'),
+        exercise('s2', 'solido'),
+        exercise('n1', null),
+      ];
+      assets.files[chapter] = jsonEncode(raw);
+      final filtered = TrainingEndgameContent(
+        assets,
+        school: FakeLessonRepository(),
+        indexes: {'private': index},
+        openingProfile: () async => chosen,
+      );
+      final lesson = (await filtered.forId('private.c1')!.trail()).lesson(
+        'private.c1',
+      )!;
+      expect(lesson.maxScore, lesson.exercises.length);
+      return [for (final e in lesson.exercises) e.id];
+    }
+
+    test('Solido nao traz exercicio Agressivo', () async {
+      expect(await ids('solido'), ['s1', 's2', 'n1']);
+    });
+
+    test('Agressivo nao traz exercicio Solido', () async {
+      expect(await ids('agressivo'), ['a1', 'n1']);
+    });
+
+    test('sem perfil escolhido nada some', () async {
+      expect(await ids(null), ['s1', 'a1', 's2', 'n1']);
+    });
+
+    test('trocar o perfil vale na hora, sem reler os arquivos', () async {
+      var chosen = 'solido';
+      final filtered = TrainingEndgameContent(
+        assets,
+        school: FakeLessonRepository(),
+        indexes: {'private': index},
+        openingProfile: () async => chosen,
+      );
+      final raw = jsonDecode(assets.files[chapter]!) as Map<String, dynamic>;
+      raw['exercises'] = [
+        exercise('s1', 'solido'),
+        exercise('a1', 'agressivo'),
+      ];
+      assets.files[chapter] = jsonEncode(raw);
+      final source = filtered.forId('private.c1')!;
+      expect(
+        (await source.trail()).lesson('private.c1')!.exercises.single.id,
+        's1',
+      );
+      final reads = assets.reads.length;
+      chosen = 'agressivo';
+      expect(
+        (await source.trail()).lesson('private.c1')!.exercises.single.id,
+        'a1',
+      );
+      expect(assets.reads.length, reads);
+    });
+  });
 }

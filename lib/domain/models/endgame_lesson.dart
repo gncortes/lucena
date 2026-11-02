@@ -119,6 +119,7 @@ class Exercise {
     required this.goal,
     required this.line,
     this.origin = 'own',
+    this.profile,
   });
 
   final String id;
@@ -133,6 +134,9 @@ class Exercise {
 
   /// `own` ou o id da referência de onde a posição veio.
   final String origin;
+
+  /// `solido` ou `agressivo` nos exercícios de abertura; nulo nos demais.
+  final String? profile;
 
   /// O passo de lance equivalente, para as regras e a tela da aula.
   MoveStep get step => MoveStep(id: id, fen: fen, line: line);
