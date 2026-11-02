@@ -18,6 +18,7 @@ final class TrainingEndgameContent {
     AssetService assets, {
     required LessonRepository school,
     required Map<String, String> indexes,
+    Future<String?> Function()? openingProfile,
   }) : _sources = {
          for (final entry in indexes.entries)
            entry.key: _TrainingEndgameRepository(
@@ -25,6 +26,7 @@ final class TrainingEndgameContent {
              school: school,
              namespace: entry.key,
              index: entry.value,
+             openingProfile: openingProfile,
            ),
        };
 
@@ -32,9 +34,11 @@ final class TrainingEndgameContent {
     AssetService assets, {
     required LessonRepository school,
     required Iterable<TrainingCourseConfig> configs,
+    Future<String?> Function()? openingProfile,
   }) => TrainingEndgameContent(
     assets,
     school: school,
+    openingProfile: openingProfile,
     indexes: {
       for (final config in configs)
         if (config.indexSource.startsWith('assets/courses/'))
@@ -59,6 +63,7 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
     required this.school,
     required this.namespace,
     required this.index,
+    this.openingProfile,
   }) {
     if (!RegExp(r'^[A-Za-z0-9_-]+$').hasMatch(namespace)) {
       throw ArgumentError.value(namespace, 'namespace');
@@ -68,6 +73,10 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
   final AssetService assets;
   final LessonRepository school;
   final String namespace, index;
+
+  /// O perfil de abertura escolhido (nulo: ainda não escolheu). Lido a cada
+  /// pedido, porque o aluno pode trocar de perfil com a trilha em cache.
+  final Future<String?> Function()? openingProfile;
   late final _cache = ScopedAssetCache(assets);
 
   Future<Map<String, dynamic>> _index() => _cache.load(
@@ -77,7 +86,42 @@ final class _TrainingEndgameRepository implements EndgameLessonRepository {
   );
 
   @override
-  Future<EndgameTrail> trail() => _cache.load('trail', _trail);
+  Future<EndgameTrail> trail() async {
+    final all = await _cache.load('trail', _trail);
+    final profile = await openingProfile?.call();
+    return profile == null ? all : _forProfile(all, profile);
+  }
+
+  /// Nos capítulos de abertura, o teste traz só os exercícios do perfil
+  /// escolhido; exercício sem perfil fica.
+  EndgameTrail _forProfile(EndgameTrail trail, String profile) => EndgameTrail(
+    modules: [
+      for (final module in trail.modules)
+        EndgameModule(
+          id: module.id,
+          lessons: [
+            for (final lesson in module.lessons)
+              lesson.exercises.any((e) => e.profile != null)
+                  ? EndgameLesson(
+                      id: lesson.id,
+                      module: lesson.module,
+                      lesson: lesson.lesson,
+                      exercises: [
+                        for (final e in lesson.exercises)
+                          if (e.profile == null || e.profile == profile) e,
+                      ],
+                      passScore: lesson.passScore,
+                      keyPositions: lesson.keyPositions,
+                      practice: lesson.practice,
+                      references: lesson.references,
+                      inReview: lesson.inReview,
+                      failed: lesson.failed,
+                    )
+                  : lesson,
+          ],
+        ),
+    ],
+  );
 
   Future<EndgameTrail> _trail() async {
     final json = await _index();

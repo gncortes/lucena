@@ -22,6 +22,7 @@ import '../data/repositories/training/training_school_content.dart';
 import '../domain/models/training/training_course_config.dart';
 import '../domain/models/training/school_training_resources.dart';
 import '../domain/use_cases/training/training_analytics.dart';
+import '../domain/use_cases/training/chosen_opening_profile.dart';
 import '../domain/use_cases/visible_lessons.dart';
 
 import '../data/repositories/activity/activity_repository.dart';
@@ -573,6 +574,9 @@ class Dependencies {
               lessonContent,
               school: lessons,
               configs: activeTrainingCourses,
+              openingProfile: () async => chosenOpeningProfile(
+                await courseTraining.load(TrainingCourseConfig.pilares.course),
+              ),
             )
           : null,
       lessonScriptRepository: AssetLessonScriptRepository(lessonContent),
