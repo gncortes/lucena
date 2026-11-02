@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/use_cases/analytics_rules.dart';
 import '../../services/firebase/analytics_service.dart';
+import '../../services/firebase/crash_report_service.dart';
 import '../../services/preferences_service.dart';
 
 /// O último link pelo qual a pessoa chegou (E1.03 §9): preenche a `geracao`
@@ -165,7 +166,13 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
   @override
   Future<void> start() async {
     await _loaded;
-    await _safely(() => _service.setCollectionEnabled(_collects));
+    await _applyCollection();
+  }
+
+  Future<void> _applyCollection() async {
+    final enabled = _collects;
+    await _safely(() => setCrashReportsEnabled(enabled));
+    await _safely(() => _service.setCollectionEnabled(enabled));
   }
 
   @override
@@ -185,7 +192,7 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
       await _stop();
     } else {
       _enabled = true;
-      await _safely(() => _service.setCollectionEnabled(_collects));
+      await _applyCollection();
       await log(AnalyticsEvents.privacidadeAnalytics(ligado: true));
     }
     await _preferences.setBool(enabledKey, value: enabled);
@@ -206,14 +213,14 @@ class ServiceAnalyticsRepository implements AnalyticsRepository {
     if (team) {
       await _stop();
     } else {
-      await _safely(() => _service.setCollectionEnabled(_collects));
+      await _applyCollection();
     }
   }
 
   /// Desliga a coleta, zera os dados do aparelho e esquece as propriedades
   /// enviadas (se voltar a ligar, vão de novo).
   Future<void> _stop() async {
-    await _safely(() => _service.setCollectionEnabled(false));
+    await _applyCollection();
     await _safely(_service.resetData);
     _traits = {};
     await _preferences.remove(traitsKey);

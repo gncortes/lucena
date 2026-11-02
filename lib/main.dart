@@ -3,7 +3,6 @@ import 'data/repositories/training/course_download_repository.dart';
 
 import 'dart:async';
 
-import 'domain/use_cases/analytics_rules.dart';
 import 'domain/models/lesson_content.dart';
 
 import 'package:flutter/material.dart';
@@ -143,7 +142,8 @@ Future<void> main() async {
   if (firebase) {
     await startCrashReports(
       FirebaseCrashReportService(),
-      enabled: analyticsMode != AnalyticsMode.off,
+      // The analytics repository applies opt-in/team policy once loaded.
+      enabled: false,
     );
   }
   final version = await _launchValue(

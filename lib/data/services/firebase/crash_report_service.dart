@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show ErrorCallback;
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +12,9 @@ abstract interface class CrashReportService {
 }
 
 CrashReportService? _activeReports;
+CrashReportService? _configuredReports;
+FlutterExceptionHandler? _installedFlutterHandler;
+ErrorCallback? _installedPlatformHandler;
 
 /// Failures handled by a recoverable screen still belong in the crash report.
 void reportHandledError(Object error, StackTrace stack) {
@@ -44,18 +48,46 @@ Future<void> startCrashReports(
   CrashReportService reports, {
   required bool enabled,
 }) async {
+  _configuredReports = reports;
+  _activeReports = null;
+  await setCrashReportsEnabled(enabled);
+}
+
+/// Applies the analytics repository's loaded opt-in/team policy without
+/// stacking handlers when the switch changes repeatedly.
+Future<void> setCrashReportsEnabled(bool enabled) async {
+  final reports = _configuredReports;
+  if (!enabled) _activeReports = null;
+  if (reports == null) return;
   await reports.setEnabled(enabled);
-  _activeReports = enabled ? reports : null;
   if (!enabled) return;
-  final previous = FlutterError.onError;
-  FlutterError.onError = (details) {
-    previous?.call(details);
-    unawaited(reports.flutterError(details).catchError(_ignore));
-  };
-  PlatformDispatcher.instance.onError = (error, stack) {
-    unawaited(reports.fatalError(error, stack).catchError(_ignore));
-    return true;
-  };
+  _activeReports = reports;
+  if (_installedFlutterHandler == null ||
+      !identical(FlutterError.onError, _installedFlutterHandler)) {
+    final previous = FlutterError.onError;
+    _installedFlutterHandler = (details) {
+      previous?.call(details);
+      final active = _activeReports;
+      if (active != null) {
+        unawaited(active.flutterError(details).catchError(_ignore));
+      }
+    };
+    FlutterError.onError = _installedFlutterHandler;
+  }
+  if (_installedPlatformHandler == null ||
+      !identical(
+        PlatformDispatcher.instance.onError,
+        _installedPlatformHandler,
+      )) {
+    final previous = PlatformDispatcher.instance.onError;
+    _installedPlatformHandler = (error, stack) {
+      final active = _activeReports;
+      if (active == null) return previous?.call(error, stack) ?? false;
+      unawaited(active.fatalError(error, stack).catchError(_ignore));
+      return true;
+    };
+    PlatformDispatcher.instance.onError = _installedPlatformHandler;
+  }
 }
 
 // Falha ao relatar não pode virar outra falha a relatar.
