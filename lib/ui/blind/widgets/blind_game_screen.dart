@@ -13,6 +13,9 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +27,7 @@ import '../../core/board/centered_board_layout.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
@@ -339,6 +343,14 @@ class _BlindGameScreenState extends State<BlindGameScreen>
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final cubit = context.read<BlindGameCubit>();
+    if (context.watch<BlindGameCubit>().state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: cubit.reload,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final clocks = context.select(
       (SettingsCubit cubit) =>
           cubit.state?.clock.position ?? ClockPosition.fallback,
@@ -372,7 +384,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
           ],
         ),
         body: !state.ready || state.position == null
-            ? const SizedBox.shrink()
+            ? const SafeArea(child: SkeletonList())
             : BoardViewport(
                 usefulHeight: BoardViewport.usefulHeightOf(context),
                 child: SafeArea(

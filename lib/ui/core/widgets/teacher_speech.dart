@@ -3,6 +3,9 @@ import 'dart:ui' show BoxHeightStyle;
 
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
+
+import '../theme/canvas_symbols.dart';
+
 import 'package:intl/intl.dart' show Bidi;
 
 import 'speech_balloon.dart';
@@ -36,6 +39,7 @@ import '../theme/app_spacing.dart';
 import '../theme/app_text.dart';
 import '../theme/lesson_text_colors.dart';
 import 'sound_off_icon.dart';
+import 'lesson_sound_dialog.dart';
 import 'speech_sheet_fade.dart';
 
 /// Onde a fala acontece, que decide o desenho do balão (regra da T51, G1).
@@ -62,6 +66,9 @@ class TeacherSpeech extends StatelessWidget {
     this.part = TeacherSpeechPart.all,
     this.explanation,
     this.lessonV2 = false,
+    this.canvasHeader = false,
+    this.canvasTrainingBalloon = false,
+    this.showSpeedBadge = true,
     this.headerAvatar,
     this.avatarHeroTag,
     this.onVariation,
@@ -80,12 +87,25 @@ class TeacherSpeech extends StatelessWidget {
     this.onSpoken,
     this.headerAction,
     this.onSoundSettings,
+    this.bubbleAboveHeader = false,
+    this.trainingLayout = false,
+    this.unifiedSound = false,
     super.key,
   });
 
   final Character teacher;
+
+  /// Training Canvas: the speech points down towards the teacher's header.
+  final bool bubbleAboveHeader;
+
+  /// Keep the training header next to the board; reduce bubble padding on compact screens.
+  final bool trainingLayout;
+  final bool unifiedSound;
   final ExplanationPayload? explanation;
   final bool lessonV2;
+  final bool canvasHeader;
+  final bool canvasTrainingBalloon;
+  final bool showSpeedBadge;
 
   /// Na lição V2, o retrato do cabeçalho maior que o padrão (28), com raio 6
   /// (lição roteirizada, T70).
@@ -262,7 +282,9 @@ class TeacherSpeech extends StatelessWidget {
     return Row(
       children: [
         Expanded(child: _name(context)),
+        if (canvasHeader && action != null) const SizedBox(width: 12),
         ?action,
+        if (canvasHeader) const SizedBox(width: 12),
         BlocBuilder<SpeechCubit, SpeechState>(
           bloc: speech,
           buildWhen: (a, b) =>
@@ -271,15 +293,18 @@ class TeacherSpeech extends StatelessWidget {
               a.settings.enabled != b.settings.enabled ||
               a.availableFor(language) != b.availableFor(language),
           builder: (context, state) {
-            if (lessonV2) {
+            if (lessonV2 || trainingLayout || unifiedSound) {
               final audible =
                   soundEnabled &&
                   state.settings.enabled &&
                   state.availableFor(language);
               return LessonVoiceButton(
+                canvasLayout: canvasHeader,
+                showSpeedBadge: showSpeedBadge,
                 audible: audible,
                 speed: state.settings.speed,
-                onPressed: onSoundSettings,
+                onPressed:
+                    onSoundSettings ?? () => showLessonSoundDialog(context),
               );
             }
             // Sem voz no idioma, o botão de som continua à vista: o toque
@@ -305,7 +330,7 @@ class TeacherSpeech extends StatelessWidget {
               children: [
                 // A velocidade da voz: cada toque passa para a próxima.
                 // Voz desligada: sem o chip de velocidade (CompFalaViktor, `voz`).
-                if (soundEnabled && state.settings.enabled)
+                if (showSpeedBadge && soundEnabled && state.settings.enabled)
                   TextButton(
                     key: VoiceKeys.speedButton,
                     style: TextButton.styleFrom(
@@ -401,11 +426,22 @@ class TeacherSpeech extends StatelessWidget {
     }
     if (_stackedIn(context)) {
       return Column(
+        mainAxisSize: trainingLayout ? MainAxisSize.min : MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // O vão de 6 da ponta ao retrato vem do balão.
-          _headerRow(context, avatar),
-          _closable(context),
+          if (bubbleAboveHeader) ...[
+            if (trainingLayout)
+              Flexible(child: _closable(context))
+            else
+              _closable(context),
+            _headerRow(context, avatar),
+          ] else ...[
+            // O vão de 6 da ponta ao retrato vem do balão.
+            _headerRow(context, avatar),
+            if (unifiedSound || canvasTrainingBalloon)
+              const SizedBox(height: 2),
+            _closable(context),
+          ],
         ],
       );
     }
@@ -437,15 +473,28 @@ class TeacherSpeech extends StatelessWidget {
     final row = Row(
       children: [
         avatar,
-        SizedBox(width: lessonV2 ? 8 : 10),
+        SizedBox(
+          width: canvasHeader
+              ? 12
+              : lessonV2
+              ? 8
+              : trainingLayout || unifiedSound || canvasTrainingBalloon
+              ? 12
+              : 10,
+        ),
         Expanded(child: _header(context)),
       ],
     );
+    if (trainingLayout) return SizedBox(height: this.avatarSize, child: row);
     if (!lessonV2) return row;
     final avatarSize = headerAvatar ?? 0;
     return SizedBox(
       key: ViktorSheetKeys.header,
-      height: avatarSize > 48 ? avatarSize : 48,
+      height: canvasHeader
+          ? 40
+          : avatarSize > 48
+          ? avatarSize
+          : 48,
       child: row,
     );
   }
@@ -484,7 +533,10 @@ class TeacherSpeech extends StatelessWidget {
                   : theme.textTheme.labelLarge)
               ?.copyWith(
                 color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w500,
+                fontWeight: bubbleAboveHeader
+                    ? FontWeight.w700
+                    : FontWeight.w500,
+                letterSpacing: canvasTrainingBalloon ? 0 : null,
               ),
     );
   }
@@ -722,8 +774,17 @@ class TeacherSpeech extends StatelessWidget {
     final colors = theme.colorScheme;
     // Corpo da lição V2: 15/22,5, peso 400, onSurface.
     final style = theme.textTheme.bodyLarge?.copyWith(
-      fontSize: section ? 15 : null,
-      height: section ? 1.5 : null,
+      fontSize: canvasTrainingBalloon
+          ? 14
+          : section
+          ? 15
+          : null,
+      height: canvasTrainingBalloon
+          ? 20 / 14
+          : section
+          ? 1.5
+          : null,
+      letterSpacing: canvasTrainingBalloon ? .25 : null,
       fontWeight: section ? FontWeight.w400 : null,
       color: section ? colors.onSurface : null,
     );
@@ -925,15 +986,22 @@ class TeacherSpeech extends StatelessWidget {
     // ponta fica embaixo do meio do retrato no ensino e ao lado na partida.
     final stacked = _stackedIn(context);
     return SpeechBalloon(
+      padding: canvasTrainingBalloon
+          ? const EdgeInsetsDirectional.all(16)
+          : unifiedSound
+          ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 12)
+          : trainingLayout && MediaQuery.sizeOf(context).height < 780
+          ? const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 6)
+          : SpeechBalloon.defaultPadding,
       pop: false,
       tail: _compact(context) || part == TeacherSpeechPart.bubble
           ? BalloonTail.none
           : stacked
-          ? BalloonTail.up
+          ? (bubbleAboveHeader ? BalloonTail.down : BalloonTail.up)
           : BalloonTail.start,
       tailX: SpeechBalloon.tailXFor(avatarSize),
       tailY: avatarSize / 2,
-      child: content,
+      child: trainingLayout ? SingleChildScrollView(child: content) : content,
     );
   }
 }
@@ -1469,10 +1537,14 @@ class LessonVoiceButton extends StatelessWidget {
     required this.audible,
     required this.speed,
     required this.onPressed,
+    this.canvasLayout = false,
+    this.showSpeedBadge = true,
     super.key,
   });
 
   final bool audible;
+  final bool canvasLayout;
+  final bool showSpeedBadge;
   final double speed;
   final VoidCallback? onPressed;
 
@@ -1483,26 +1555,40 @@ class LessonVoiceButton extends StatelessWidget {
     return IconButton(
       key: VoiceKeys.speakButton,
       color: colors.onSurfaceVariant,
-      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      constraints: canvasLayout
+          ? const BoxConstraints.tightFor(width: 44, height: 44)
+          : const BoxConstraints(minWidth: 48, minHeight: 48),
+      padding: canvasLayout ? EdgeInsets.zero : null,
+      style: canvasLayout
+          ? IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            )
+          : null,
       tooltip: audible
           ? l10n.lessonSoundOn(l10n.voiceSpeedValue(speed))
           : l10n.lessonSoundOff,
       onPressed: onPressed,
       icon: SizedBox(
-        width: 32,
-        height: 32,
+        width: canvasLayout ? 44 : 32,
+        height: canvasLayout ? 44 : 32,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
             if (audible)
-              const Icon(Icons.volume_up_outlined)
+              Icon(
+                canvasLayout
+                    ? CanvasSymbols.volumeUp
+                    : Icons.volume_up_outlined,
+              )
+            else if (canvasLayout)
+              const Icon(CanvasSymbols.volumeOff)
             else
               const SoundOffIcon(),
-            if (audible)
+            if (audible && showSpeedBadge)
               PositionedDirectional(
-                start: -4,
-                top: -4,
+                start: canvasLayout ? 0 : -4,
+                top: canvasLayout ? 0 : -4,
                 child: ExcludeSemantics(
                   child: Container(
                     height: 16,

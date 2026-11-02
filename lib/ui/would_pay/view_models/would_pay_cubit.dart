@@ -1,3 +1,6 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +21,9 @@ import '../../../domain/use_cases/lesson_count.dart';
 import '../../../domain/use_cases/would_pay_rules.dart';
 
 class WouldPayState {
+  final LoadFailure? failure;
   const WouldPayState({
+    this.failure,
     this.ready = false,
     this.step = 0,
     this.answers = const WouldPayAnswers(),
@@ -89,6 +94,19 @@ class WouldPayCubit extends Cubit<WouldPayState> {
 
   /// [step] (1 a 3) vem da rota; sem ele, o do rascunho.
   Future<void> load({int? step}) async {
+    _retryLoad = () => load(step: step);
+    try {
+      await _load(step: step);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(WouldPayState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load({int? step}) async {
     // Viu o questionário: nesta sessão não pede avaliação.
     _review.noteSurveySeen();
     final draft = await _wouldPay.loadDraft();

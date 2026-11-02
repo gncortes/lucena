@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +19,7 @@ import '../../catalog/widgets/catalog_ui.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/custom_position_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../settings/view_models/settings_cubit.dart';
@@ -152,6 +156,14 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
         }
       },
       builder: (context, state) {
+        if (state.failed) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.generic,
+            onAction: context.read<CustomPositionCubit>().load,
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
         return Scaffold(
           key: CustomPositionKeys.screen,
           appBar: LucenaAppBar(
@@ -166,7 +178,7 @@ class _CustomPositionScreenState extends State<CustomPositionScreen> {
             ],
           ),
           body: !state.ready
-              ? const SizedBox.shrink()
+              ? const SafeArea(child: SkeletonList())
               : Column(
                   children: [
                     // O tabuleiro fica parado no alto: arrastar nele move as

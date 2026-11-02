@@ -9,6 +9,7 @@ import '../../../domain/models/lesson_script.dart';
 import '../../../domain/use_cases/game_rules.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/lesson_script_keys.dart';
+import '../../core/theme/canvas_symbols.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/widgets/square_flash.dart';
 import '../view_models/lesson_script_state.dart';
@@ -45,6 +46,7 @@ class ScriptBoard extends StatefulWidget {
     this.onSquare,
     this.flash,
     this.showMarks = true,
+    this.canvasFeedback = false,
     super.key,
   });
 
@@ -60,6 +62,7 @@ class ScriptBoard extends StatefulWidget {
   final LessonScriptState state;
   final double size;
   final BoardSettings settings;
+  final bool canvasFeedback;
   final ValueChanged<String> onMove;
 
   /// Toque numa casa (qualquer uma, até vazia) na prática do tipo toque.
@@ -128,7 +131,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
           position?.turn ?? (fen.contains(' b') ? Side.black : Side.white),
       validMoves: live ? dests : const {},
       lastMove: last == null ? null : Move.parse(last),
-      kingSquareInCheck: position == null
+      kingSquareInCheck: widget.canvasFeedback || position == null
           ? null
           : GameRules.checkedKing(position),
     );
@@ -372,6 +375,7 @@ class _ScriptBoardState extends State<ScriptBoard> {
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Chessboard(
             key: LessonScriptKeys.board,
@@ -409,9 +413,35 @@ class _ScriptBoardState extends State<ScriptBoard> {
                 key: LessonScriptKeys.coordinates,
                 orientation: _orientation,
                 settings: settings,
+                proportional: widget.canvasFeedback,
               ),
             ),
+          for (final name in widget.state.stars) _star(name),
         ],
+      ),
+    );
+  }
+
+  Widget _star(String name) {
+    final square = Square.fromName(name.split(':').first);
+    final white = _orientation == Side.white;
+    final side = widget.size / 8;
+    return Positioned(
+      left: (white ? square.file : 7 - square.file) * side,
+      top: (white ? 7 - square.rank : square.rank) * side,
+      width: side,
+      height: side,
+      child: IgnorePointer(
+        child: Center(
+          child: Icon(
+            CanvasSymbols.star,
+            fill: 1,
+            opticalSize: widget.size * .09,
+            key: LessonScriptKeys.star(name),
+            size: widget.size * .09,
+            color: const Color(0xFFF2B705),
+          ),
+        ),
       ),
     );
   }

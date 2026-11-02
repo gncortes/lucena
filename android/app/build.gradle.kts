@@ -8,6 +8,7 @@ plugins {
 // Sem ele (CI de PR, forks), o app compila sem a configuração do Firebase.
 if (file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 // Assinatura de release: variáveis definidas só pelo CI (ambiente `release` do GitHub).

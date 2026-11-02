@@ -1,6 +1,13 @@
 import 'package:chessground/chessground.dart';
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
 
 import '../../core/widgets/app_bar_progress.dart';
 import '../../core/theme/app_text.dart';
@@ -10,6 +17,8 @@ import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/models/board_settings.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/placement.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -48,6 +57,28 @@ class PlacementScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<PlacementCubit>().state;
+    if (state.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<PlacementCubit>().load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+        onFreeSpace:
+            failure != LoadFailure.noSpace ||
+                Theme.of(context).platform != TargetPlatform.android
+            ? null
+            : () async {
+                try {
+                  await const AndroidIntent(
+                    action: 'android.settings.INTERNAL_STORAGE_SETTINGS',
+                  ).launch();
+                } on Object catch (error, stack) {
+                  debugPrint('storage settings failed: $error');
+                  reportHandledError(error, stack);
+                }
+              },
+      );
+    }
     return Scaffold(
       key: PlacementKeys.screen,
       // O resultado tem o próprio cabeçalho, que recolhe ao rolar.

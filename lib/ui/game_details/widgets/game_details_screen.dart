@@ -4,6 +4,11 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'package:intl/intl.dart' show DateFormat, NumberFormat;
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -48,6 +53,19 @@ class GameDetailsScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<GameDetailsCubit>().state;
     final attempt = state.attempt;
+    if (state.failed || (state.ready && attempt == null)) {
+      final missing = state.ready && attempt == null;
+      return LoadErrorScreen(
+        kind: missing ? LoadErrorKind.notFound : LoadErrorKind.generic,
+        onAction: missing
+            ? () => context.go(Routes.home)
+            : () => context.read<GameDetailsCubit>().load(
+                language: Localizations.localeOf(context).languageCode,
+              ),
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     return Scaffold(
       key: GameDetailsKeys.screen,
       appBar: LucenaAppBar(

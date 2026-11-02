@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -33,6 +35,14 @@ class ChallengeLinkScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<ChallengeLinkCubit>().state;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<ChallengeLinkCubit>().load,
+      );
+    }
     final link = state.link;
     final theme = Theme.of(context);
     final goal = GoalStyle.of(context, link.goal);

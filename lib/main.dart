@@ -1,13 +1,27 @@
+import 'data/repositories/training/training_endgame_content.dart';
+import 'data/repositories/training/course_download_repository.dart';
+
 import 'dart:async';
 
+import 'domain/use_cases/analytics_rules.dart';
 import 'domain/models/lesson_content.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry, kReleaseMode;
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'data/repositories/analysis/learning_analysis_repository.dart';
+import 'data/services/preferences_service.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'config/dependencies.dart';
 import 'data/repositories/learning/learning_repository.dart';
+import 'data/repositories/training/training_school_content.dart';
+import 'data/repositories/training/training_history_source.dart';
+import 'domain/use_cases/training/training_analytics.dart';
 import 'config/push_alerts.dart';
 import 'domain/models/push_alert.dart';
 import 'domain/models/campaign.dart';
@@ -67,6 +81,7 @@ import 'data/repositories/chesscom/chesscom_repository.dart';
 import 'data/repositories/lichess/lichess_repository.dart';
 import 'data/repositories/deep_link/deep_link_repository.dart';
 import 'data/repositories/push/push_repository.dart';
+import 'data/services/firebase/crash_report_service.dart';
 import 'data/services/firebase/firebase_bootstrap.dart';
 import 'data/repositories/share/share_repository.dart';
 import 'data/repositories/placement/placement_repository.dart';
@@ -88,6 +103,8 @@ import 'data/repositories/sync/sync_scheduler.dart';
 import 'data/repositories/training/training_repository.dart';
 import 'data/repositories/voice/voice_repository.dart';
 import 'data/repositories/blind/blind_log_repository.dart';
+import 'data/repositories/training/course_training_repository.dart'
+    as course_training;
 import 'data/repositories/blind/speech_input_repository.dart';
 import 'domain/models/app_settings.dart';
 import 'domain/models/app_version.dart';
@@ -104,6 +121,9 @@ import 'ui/reminders/widgets/reminders_bridge.dart';
 import 'ui/core/sound/game_haptics.dart';
 import 'ui/core/sound/game_sounds.dart';
 import 'ui/core/l10n/l10n.dart';
+import 'ui/core/widgets/load_error.dart';
+import 'ui/core/widgets/load_skeleton.dart';
+import 'ui/core/widgets/load_error_fallback.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/core/theme/app_theme_mode_ui.dart';
 import 'ui/profile/view_models/profile_cubit.dart';
@@ -113,15 +133,98 @@ import 'ui/wiki/view_models/wiki_links_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final version = await Dependencies.installedVersion();
+  if (kReleaseMode) ErrorWidget.builder = buildLoadErrorFallback;
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks([
+      'Material Symbols Rounded',
+    ], await rootBundle.loadString('assets/fonts/MaterialSymbols-LICENSE.txt'));
+  });
   final firebase = await startFirebase();
+  if (firebase) {
+    await startCrashReports(
+      FirebaseCrashReportService(),
+      enabled: analyticsMode != AnalyticsMode.off,
+    );
+  }
+  final version = await _launchValue(
+    Dependencies.installedVersion,
+    const AppVersion('0.0.0'),
+  );
   // O push que chega com o app fechado: o app monta a notificação.
   if (firebase) listenPushInBackground();
   runApp(
-    LucenaApp(
-      dependencies: Dependencies.normal(version: version, firebase: firebase),
+    LucenaBootstrap(
+      initialize: () async => Dependencies.normal(
+        version: version,
+        firebase: firebase,
+        trainingInstallSeed: await Dependencies.trainingInstallSeed(),
+      ),
     ),
   );
+}
+
+Future<T> _launchValue<T>(Future<T> Function() read, T fallback) async {
+  try {
+    return await read();
+  } on Object catch (error, stack) {
+    reportHandledError(error, stack);
+    return fallback;
+  }
+}
+
+/// Required installation data must be readable before creating production
+/// repositories. A recoverable seed failure cannot silently disable training.
+class LucenaBootstrap extends StatefulWidget {
+  const LucenaBootstrap({required this.initialize, super.key});
+  final Future<Dependencies> Function() initialize;
+  @override
+  State<LucenaBootstrap> createState() => _LucenaBootstrapState();
+}
+
+class _LucenaBootstrapState extends State<LucenaBootstrap> {
+  Dependencies? _dependencies;
+  int _failures = 0;
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_initialize());
+  }
+
+  Future<void> _initialize() async {
+    if (_loading) return;
+    _loading = true;
+    try {
+      final dependencies = await widget.initialize();
+      if (mounted) setState(() => _dependencies = dependencies);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (mounted) setState(() => _failures++);
+    } finally {
+      _loading = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dependencies = _dependencies;
+    if (dependencies != null) return LucenaApp(dependencies: dependencies);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: appSupportedLocales,
+      home: _failures == 0
+          ? const LoadSkeletonScreen()
+          : LoadErrorScreen(
+              kind: _failures == 1
+                  ? LoadErrorKind.launch
+                  : LoadErrorKind.launchAgain,
+              onAction: _initialize,
+            ),
+    );
+  }
 }
 
 class LucenaApp extends StatefulWidget {
@@ -136,6 +239,16 @@ class LucenaApp extends StatefulWidget {
 class _LucenaAppState extends State<LucenaApp> {
   // Nulo até saber em que tela o app abre.
   GoRouter? _router;
+  int _launchFailures = 0;
+  bool _opening = false;
+  final _started = <String>{};
+  Future<PushOpening?>? _initialPush;
+  Future<Uri?>? _initialLink;
+  late final SettingsCubit _settings = SettingsCubit(
+    widget.dependencies.settingsRepository,
+    languages: widget.dependencies.languages,
+    sound: widget.dependencies.soundRepository,
+  );
 
   // O screen_view de cada tela (E1.03).
   ScreenTracker? _screens;
@@ -196,22 +309,61 @@ class _LucenaAppState extends State<LucenaApp> {
   // Partida ou aula que estava na tela quando o app foi fechado: o app
   // reabre nela.
   Future<void> _openRouter() async {
+    if (_opening) return;
+    _opening = true;
+    try {
+      await _settings.load();
+      await _loadRouter();
+    } on Object catch (error, stack) {
+      // Report the original failure, without exposing its message in the UI.
+      debugPrint('App launch failed: $error\n$stack');
+      reportHandledError(error, stack);
+      if (mounted) {
+        _screens?.dispose();
+        _screens = null;
+        _router?.dispose();
+        setState(() {
+          _router = null;
+          _launchFailures++;
+        });
+      }
+    } finally {
+      _opening = false;
+    }
+  }
+
+  Future<void> _loadRouter() async {
     final game = await widget.dependencies.ongoingGameRepository.load();
+    final blind = await widget.dependencies.blindCheckpointRepository.load();
     final conclusion = await widget.dependencies.conclusionRepository.pending();
     final school = await widget.dependencies.schoolProgressRepository.load();
     final endgames = await widget.dependencies.endgameProgressRepository.load();
     final stars = await widget.dependencies.starChallengeRepository.open();
     final deepLinks = widget.dependencies.deepLinkRepository;
     final push = widget.dependencies.pushRepository;
-    unawaited(push.start());
+    _startOnce('push', push.start);
     // Só o último aparelho em que a conta entrou recebe o push dela.
-    unawaited(widget.dependencies.accountRepository.linkPushDevice());
+    _startOnce(
+      'pushDevice',
+      widget.dependencies.accountRepository.linkPushDevice,
+    );
     // O dia da primeira abertura conta para o pedido de avaliação (E1.26).
-    unawaited(widget.dependencies.reviewRepository.markFirstOpen());
-    final pushOpening = await push.initialOpening();
+    _startOnce('review', widget.dependencies.reviewRepository.markFirstOpen);
+    final pushOpening = await (_initialPush ??= push
+        .initialOpening()
+        .catchError((Object error, StackTrace stack) {
+          _initialPush = null;
+          Error.throwWithStackTrace(error, stack);
+        }));
     final pushed = pushOpening?.link;
     final onboarding = await widget.dependencies.onboardingRepository.load();
-    var opened = await deepLinks.initialUri();
+    var opened = await (_initialLink ??= deepLinks.initialUri().catchError((
+      Object error,
+      StackTrace stack,
+    ) {
+      _initialLink = null;
+      Error.throwWithStackTrace(error, stack);
+    }));
     // Deferred deep link (T84): na 1ª abertura sem link nem aviso, o link do
     // post que levou à Play abre como se tivesse sido tocado com o app já
     // instalado.
@@ -226,8 +378,9 @@ class _LucenaAppState extends State<LucenaApp> {
               ? null
               : deepLinks.parse(opened))
         : (pushed == null ? null : deepLinks.parse(pushed));
-    unawaited(
-      _analytics.launched(
+    _startOnce(
+      'launchAnalytics',
+      () => _analytics.launched(
         link: link,
         lessonLink: opened == null ? null : LessonLink.tryParse(opened),
         pushed: opened == null && pushOpening != null,
@@ -238,8 +391,9 @@ class _LucenaAppState extends State<LucenaApp> {
     // quer fazer?", o consentimento do Google. Quem veio de um link não vê o
     // formulário agora.
     final profile = await widget.dependencies.profileRepository.load();
-    unawaited(
-      widget.dependencies.adsRepository.start(
+    _startOnce(
+      'ads',
+      () => widget.dependencies.adsRepository.start(
         fromLink: opened != null || link != null,
         goalAnswered: onboarding.done || profile.goal != null,
       ),
@@ -281,6 +435,7 @@ class _LucenaAppState extends State<LucenaApp> {
         initialLocation: launchLocation(
           conclusion: conclusion,
           resumeGame: game != null && game.reopensOnLaunch,
+          resumeBlind: blind != null,
           school: school,
           endgames: endgames,
           stars: stars,
@@ -315,7 +470,7 @@ class _LucenaAppState extends State<LucenaApp> {
       router.routerDelegate.addListener(openInvalid);
       openInvalid();
     }
-    _links = deepLinks.openedUris.listen((uri) {
+    _links ??= deepLinks.openedUris.listen((uri) {
       final link = deepLinks.parse(uri);
       if (link != null) unawaited(_analytics.opened(link));
       final lessonLink = LessonLink.tryParse(uri);
@@ -329,7 +484,7 @@ class _LucenaAppState extends State<LucenaApp> {
     });
     // Um aviso pode trazer o link de um desafio ou o de uma tela (final do
     // dia, aula, final ou torneio).
-    _pushLinks = push.opened.listen((opening) {
+    _pushLinks ??= push.opened.listen((opening) {
       unawaited(_analytics.pushOpened(opening));
       final uri = opening.link;
       // Sem link: o toque só traz o app para a frente.
@@ -348,7 +503,17 @@ class _LucenaAppState extends State<LucenaApp> {
     }
   }
 
-  // A tela do link do aviso; link que esta versão não conhece: o início.
+  void _startOnce(String name, Future<void> Function() start) {
+    if (!_started.add(name)) return;
+    unawaited(
+      Future<void>.sync(start).catchError((Object error, StackTrace stack) {
+        reportHandledError(error, stack);
+      }),
+    );
+  }
+
+  // A tela do link do aviso; sem destino, o usuário fica onde está: trocar a
+  // pilha tiraria da partida e apagaria a retomada.
   Future<void> _openPushed(Uri uri) async {
     final route = await pushRoute(
       uri,
@@ -357,11 +522,7 @@ class _LucenaAppState extends State<LucenaApp> {
           widget.dependencies.remindersRepository.pausedLesson('pt'),
     );
     if (!mounted) return;
-    if (route == Routes.home) {
-      _router?.go(route);
-    } else {
-      _router?.push(route);
-    }
+    if (route != null) _router?.push(route);
   }
 
   @override
@@ -374,6 +535,7 @@ class _LucenaAppState extends State<LucenaApp> {
     _updateRefresh.dispose();
     _accountRefresh?.dispose();
     unawaited(_update.close());
+    unawaited(_settings.close());
     super.dispose();
   }
 
@@ -389,6 +551,14 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<Now>.value(value: dependencies.now),
         RepositoryProvider<AnalyticsRepository>.value(
           value: dependencies.analyticsRepository,
+        ),
+        RepositoryProvider<TrainingAnalytics>(
+          create: (_) =>
+              dependencies.trainingAnalytics ??
+              TrainingAnalytics(
+                now: dependencies.now,
+                log: dependencies.analyticsRepository.log,
+              ),
         ),
         RepositoryProvider<SettingsRepository>.value(
           value: dependencies.settingsRepository,
@@ -448,6 +618,11 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<AnalysisRepository>.value(
           value: dependencies.analysisRepository,
         ),
+        RepositoryProvider<LearningAnalysisRepository>(
+          create: (_) =>
+              dependencies.learningAnalysisRepository ??
+              LearningAnalysisRepository(PreferencesService()),
+        ),
         RepositoryProvider<GameReviewRepository>.value(
           value: dependencies.gameReviewRepository,
         ),
@@ -477,6 +652,24 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<TrainingRepository>.value(
           value: dependencies.trainingRepository,
+        ),
+        RepositoryProvider<course_training.TrainingRepository>.value(
+          value: dependencies.courseTrainingRepository,
+        ),
+        RepositoryProvider<CourseDownloadRepository>.value(
+          value: dependencies.courseDownloads,
+        ),
+        RepositoryProvider<TrainingSchoolContent>.value(
+          value:
+              dependencies.trainingSchoolContent ??
+              TrainingSchoolContent(dependencies.lessonRepository),
+        ),
+        RepositoryProvider<TrainingHistorySource>.value(
+          value: TrainingHistorySource(
+            dependencies.courseTrainingRepository,
+            learning: dependencies.learningRepository,
+            now: dependencies.now,
+          ),
         ),
         RepositoryProvider<OpponentRepository>.value(
           value: dependencies.opponentRepository,
@@ -550,6 +743,9 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<StarChallengeRepository>.value(
           value: dependencies.starChallengeRepository,
         ),
+        RepositoryProvider<TrainingEndgameContent?>.value(
+          value: dependencies.trainingEndgameContent,
+        ),
         RepositoryProvider<EndgameLessonRepository>.value(
           value: dependencies.endgameLessonRepository,
         ),
@@ -620,13 +816,7 @@ class _LucenaAppState extends State<LucenaApp> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<UpdateCubit>.value(value: _update),
-          BlocProvider(
-            create: (context) => SettingsCubit(
-              dependencies.settingsRepository,
-              languages: dependencies.languages,
-              sound: dependencies.soundRepository,
-            )..load(),
-          ),
+          BlocProvider<SettingsCubit>.value(value: _settings),
           BlocProvider(
             create: (context) => ProfileCubit(
               dependencies.profileRepository,
@@ -659,6 +849,9 @@ class _LucenaAppState extends State<LucenaApp> {
               week: dependencies.weekRepository,
               now: dependencies.now,
               changes: dependencies.localChanges,
+              training: dependencies.courseTrainingRepository,
+              courses: activeTrainingCourses,
+              analytics: dependencies.analyticsRepository,
             ),
           ),
           BlocProvider(
@@ -674,10 +867,25 @@ class _LucenaAppState extends State<LucenaApp> {
         ],
         child: BlocBuilder<SettingsCubit, AppSettings?>(
           builder: (context, settings) {
-            // Até as preferências chegarem, só o fundo: o app nunca aparece
-            // no idioma errado nem na tela errada.
+            // Before preferences and routing are ready, use the localized
+            // loading/error shell, without guessing an application route.
             if (settings == null || router == null) {
-              return const _LaunchBackground();
+              final defaults = settings ?? const AppSettings();
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.of(Brightness.light, accent: defaults.accent),
+                locale: localeFromCode(defaults.languageCode),
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: appSupportedLocales,
+                home: _launchFailures == 0
+                    ? const LoadSkeletonScreen()
+                    : LoadErrorScreen(
+                        kind: _launchFailures == 1
+                            ? LoadErrorKind.launch
+                            : LoadErrorKind.launchAgain,
+                        onAction: _openRouter,
+                      ),
+              );
             }
             return _QuietInBackground(
               child: MaterialApp.router(
@@ -752,16 +960,4 @@ class _QuietInBackgroundState extends State<_QuietInBackground> {
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-/// O mesmo fundo da abertura nativa e da tela inicial.
-class _LaunchBackground extends StatelessWidget {
-  const _LaunchBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-    final theme = isDark ? AppTheme.dark : AppTheme.light;
-    return ColoredBox(color: theme.scaffoldBackgroundColor);
-  }
 }

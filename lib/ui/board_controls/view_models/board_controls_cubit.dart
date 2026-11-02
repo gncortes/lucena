@@ -1,14 +1,20 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/onboarding/onboarding_repository.dart';
 import '../../../domain/use_cases/game_rules.dart';
 
 class BoardControlsState {
+  final LoadFailure? failure;
   const BoardControlsState({
     this.position = GameRules.initial,
     this.lastMove,
     this.leaving = false,
+    this.failure,
   });
 
   final Position position;
@@ -25,7 +31,19 @@ class BoardControlsCubit extends Cubit<BoardControlsState> {
   bool _saving = false;
   Future<void> _writes = Future<void>.value();
 
-  Future<void> load() => _writes = _load();
+  Future<void> load() => _writes = _loadSafely();
+
+  Future<void> _loadSafely() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('board controls load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(const BoardControlsState(failure: LoadFailure.generic));
+      }
+    }
+  }
 
   Future<void> _load() async {
     final saved = await _onboarding.load();

@@ -1,3 +1,6 @@
+import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +33,19 @@ class WouldPayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loadState = context.watch<WouldPayCubit>().state;
+    if (!loadState.ready && loadState.failure == null) {
+      return const LoadSkeletonScreen();
+    }
+    if (loadState.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<WouldPayCubit>().retryLoad,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
+
     final cubit = context.read<WouldPayCubit>();
     return BlocBuilder<WouldPayCubit, WouldPayState>(
       builder: (context, state) {

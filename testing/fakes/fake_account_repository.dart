@@ -80,6 +80,7 @@ class FakeAccountRepository implements AccountRepository {
 
   /// O `photo` do último [deleteAccount].
   bool? deletedWithPhoto;
+  final deletedUids = <String>[];
 
   @override
   Future<void> sendPasswordReset(String email) async {
@@ -115,9 +116,19 @@ class FakeAccountRepository implements AccountRepository {
   Future<void> linkPushDevice() async => pushLinks++;
 
   @override
-  Future<void> deleteAccount({bool photo = false}) async {
+  Future<bool> deleteAccount({
+    required String expectedUid,
+    bool photo = false,
+  }) async {
+    if (account?.uid != expectedUid) {
+      _set(null);
+      throw const AccountException(AccountFailure.userMismatch);
+    }
     _throwIfFailing();
+    if (canceled) return false;
     deletedWithPhoto = photo;
+    deletedUids.add(expectedUid);
     _set(null);
+    return true;
   }
 }

@@ -54,14 +54,14 @@ void main() {
   });
 
   test(
-    'aula já terminada, outro site ou tela desconhecida: o início',
+    'aula já terminada, outro site ou tela desconhecida: sem destino',
     () async {
-      expect(await route('/lesson', lesson: null), Routes.home);
-      expect(await route('https://example.com/daily'), Routes.home);
-      expect(await route('javascript:/daily'), Routes.home);
-      expect(await route('/settings'), Routes.home);
+      expect(await route('/lesson', lesson: null), isNull);
+      expect(await route('https://example.com/daily'), isNull);
+      expect(await route('javascript:/daily'), isNull);
+      expect(await route('/settings'), isNull);
       // Um link de uma versão nova (tela que esta versão não tem).
-      expect(await route('/featured/ranking/2026'), Routes.home);
+      expect(await route('/featured/ranking/2026'), isNull);
     },
   );
 }

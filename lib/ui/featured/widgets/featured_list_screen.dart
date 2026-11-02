@@ -1,3 +1,6 @@
+import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -27,6 +30,19 @@ class FeaturedListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loadState = context.watch<FeaturedCatalogCubit>().state;
+    if (!loadState.ready && loadState.failure == null) {
+      return const LoadSkeletonScreen();
+    }
+    if (loadState.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<FeaturedCatalogCubit>().retryLoad,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
+
     final l10n = context.l10n;
     return Scaffold(
       key: FeaturedKeys.listScreen,

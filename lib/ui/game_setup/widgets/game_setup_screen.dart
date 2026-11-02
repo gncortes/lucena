@@ -23,6 +23,7 @@ import '../../challenge/widgets/challenge_sheet.dart';
 import '../../core/keys/challenge_keys.dart';
 import '../../core/keys/game_setup_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../view_models/game_setup_cubit.dart';
 import '../../core/keys/blind_keys.dart';
@@ -65,6 +66,14 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<GameSetupCubit>().state;
+    if (state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: context.read<GameSetupCubit>().load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final language = Localizations.localeOf(context).toLanguageTag();
     final voiceAvailable = context.select(
       (SpeechCubit cubit) => cubit.state.availableFor(language),

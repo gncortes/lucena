@@ -1,3 +1,6 @@
+import '../../journey/widgets/challenge_load_error.dart';
+import '../../core/widgets/skeleton.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +15,7 @@ class DailyStartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      BlocListener<DailyStartCubit, DailyStartState>(
+      BlocConsumer<DailyStartCubit, DailyStartState>(
         listener: (context, state) {
           if (state case DailyStartReady(:final location)) {
             // Sem final hoje, a home; com ele, a partida no lugar desta tela.
@@ -21,6 +24,12 @@ class DailyStartScreen extends StatelessWidget {
                 : context.replace(location);
           }
         },
-        child: const Scaffold(body: SizedBox.shrink()),
+        builder: (context, state) => state is DailyStartFailed
+            ? challengeLoadError(
+                context,
+                state.failure,
+                context.read<DailyStartCubit>().load,
+              )
+            : const Scaffold(body: SkeletonList()),
       );
 }

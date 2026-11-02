@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
 
@@ -20,6 +25,15 @@ class StreakScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final cubit = context.watch<StreakCubit>();
+    if (cubit.state.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: cubit.load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     return Scaffold(
       key: StreakKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.streakTitle)),

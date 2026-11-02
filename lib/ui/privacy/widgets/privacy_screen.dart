@@ -13,6 +13,8 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/load_error.dart';
+import '../../../routing/routes.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../settings/widgets/about_screen.dart';
 import '../view_models/privacy_cubit.dart';
@@ -27,6 +29,14 @@ class PrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<PrivacyCubit>().state;
+    if (state.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<PrivacyCubit>().load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final ads = context.read<AdsRepository>().enabled;
     final language = Localizations.localeOf(context).languageCode;
     return Scaffold(

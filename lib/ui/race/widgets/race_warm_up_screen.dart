@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,6 +67,15 @@ class RaceWarmUpScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<RaceWarmUpCubit>().state;
     final cubit = context.read<RaceWarmUpCubit>();
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        () =>
+            cubit.load(subcategory: args.subcategory, category: args.category),
+      );
+    }
     final settings = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
@@ -83,7 +95,7 @@ class RaceWarmUpScreen extends StatelessWidget {
       body: state.done
           ? _Done(state: state, args: args)
           : problem == null
-          ? const SizedBox.shrink()
+          ? const SkeletonList()
           : Stack(
               fit: StackFit.expand,
               children: [

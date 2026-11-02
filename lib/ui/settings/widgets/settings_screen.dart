@@ -102,6 +102,20 @@ class SettingsScreen extends StatelessWidget {
                 ),
               if (showsDevTools)
                 ProfileRow(
+                  key: SettingsKeys.pilaresTrainingTile,
+                  icon: Icons.task_alt,
+                  title: l10n.trainingPilaresTitle,
+                  onTap: () => context.push(Routes.training('pilares')),
+                ),
+              if (showsDevTools)
+                ProfileRow(
+                  key: SettingsKeys.escolaTrainingTile,
+                  icon: Icons.task_alt,
+                  title: l10n.schoolTitle,
+                  onTap: () => context.push(Routes.training('escola')),
+                ),
+              if (showsDevTools)
+                ProfileRow(
                   key: SettingsKeys.openLinkTile,
                   icon: Icons.link,
                   title: l10n.devOpenLinkTitle,

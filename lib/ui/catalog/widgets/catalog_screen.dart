@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../course_guide/widgets/training_load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 
 import '../../../domain/models/speedrun.dart';
@@ -31,6 +34,14 @@ class CatalogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<CatalogCubit>().state;
     final categories = state.categories;
+    final failure = context.watch<CatalogCubit>().state.failure;
+    if (failure != null) {
+      return trainingLoadError(
+        context,
+        failure,
+        () => context.read<CatalogCubit>().load(),
+      );
+    }
     return Scaffold(
       key: CatalogKeys.screen,
       appBar: LucenaAppBar(

@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,6 +23,8 @@ part 'journey_cubit.freezed.dart';
 @freezed
 abstract class JourneyState with _$JourneyState {
   const factory JourneyState({
+    LoadFailure? failure,
+
     /// Nulo enquanto a Jornada é lida.
     JourneyProgress? progress,
 
@@ -92,42 +97,59 @@ class JourneyCubit extends Cubit<JourneyState> {
 
   /// Lê a Jornada. Com [rungId] e [positionId], lê também o desafio e o
   /// histórico dele.
+  String? _rungId;
+  String? _positionId;
+
+  Future<void> retry() => load(rungId: _rungId, positionId: _positionId);
+
   Future<void> load({String? rungId, String? positionId}) async {
-    final ladder = await _journey.ladder();
-    final fulfilled = {
-      ...await _progress.fulfilledChallenges(),
-      ...await _speedrunSpecialsDone(ladder),
-    };
-    final onboarding = await _onboarding?.load();
-    final progress = Mastery.of(
-      ladder,
-      fulfilled,
-      startRung: onboarding?.startRung,
-    );
-    Challenge? challenge;
-    for (final rung in ladder) {
-      if (rung.id != rungId) continue;
-      for (final candidate in rung.challenges) {
-        if (candidate.position.id == positionId) challenge = candidate;
+    _rungId = rungId;
+    _positionId = positionId;
+    try {
+      final ladder = await _journey.ladder();
+      final fulfilled = {
+        ...await _progress.fulfilledChallenges(),
+        ...await _speedrunSpecialsDone(ladder),
+      };
+      final onboarding = await _onboarding?.load();
+      final progress = Mastery.of(
+        ladder,
+        fulfilled,
+        startRung: onboarding?.startRung,
+      );
+      Challenge? challenge;
+      for (final rung in ladder) {
+        if (rung.id != rungId) continue;
+        for (final candidate in rung.challenges) {
+          if (candidate.position.id == positionId) challenge = candidate;
+        }
       }
+      final attempts = challenge == null
+          ? const <Attempt>[]
+          : await _progress.attemptsForChallenge(challenge.id);
+      final characters = await _characters?.characters() ?? const <Character>[];
+      final student = (await _school?.load())?.isStudent ?? false;
+      final reunion = student
+          ? (await _lessons?.texts(_language))?.say('journey.reunion')
+          : null;
+      if (isClosed) return;
+      emit(
+        JourneyState(
+          failure:
+              (rungId != null && !ladder.any((rung) => rung.id == rungId)) ||
+                  (positionId != null && challenge == null)
+              ? LoadFailure.notFound
+              : null,
+          progress: progress,
+          challenge: challenge,
+          attempts: attempts,
+          characters: characters,
+          reunion: reunion,
+        ),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(JourneyState(failure: LoadFailure.of(error)));
     }
-    final attempts = challenge == null
-        ? const <Attempt>[]
-        : await _progress.attemptsForChallenge(challenge.id);
-    final characters = await _characters?.characters() ?? const <Character>[];
-    final student = (await _school?.load())?.isStudent ?? false;
-    final reunion = student
-        ? (await _lessons?.texts(_language))?.say('journey.reunion')
-        : null;
-    if (isClosed) return;
-    emit(
-      JourneyState(
-        progress: progress,
-        challenge: challenge,
-        attempts: attempts,
-        characters: characters,
-        reunion: reunion,
-      ),
-    );
   }
 }

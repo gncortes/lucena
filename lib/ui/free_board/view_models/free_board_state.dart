@@ -36,6 +36,7 @@ abstract class FreeBoardState with _$FreeBoardState {
 
     /// Falso enquanto a partida em andamento ainda está sendo lida do aparelho.
     @Default(true) bool ready,
+    @Default(false) bool failed,
 
     /// Os lances jogados, em notação algébrica (`e4`, `Nf3`, `O-O`).
     @Default(<String>[]) List<String> moves,

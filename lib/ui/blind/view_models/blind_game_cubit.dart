@@ -4,6 +4,8 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/blind/blind_log_repository.dart';
 import '../../../data/repositories/blind/blind_checkpoint_repository.dart';
 import '../../../domain/models/blind_checkpoint.dart';
@@ -131,6 +133,7 @@ class BlindPhrases {
 
 class BlindState {
   const BlindState({
+    this.failed = false,
     this.held = false,
     this.phase = BlindPhase.loading,
     this.view = BlindView.empty,
@@ -167,6 +170,7 @@ class BlindState {
 
   /// O resultado já foi dito: a tela troca para a conclusão (T51, B).
   final bool concluded;
+  final bool failed;
 
   /// A partida gravada (desafio da Jornada). Nula nas que não se gravam.
   final int? gameId;
@@ -267,6 +271,7 @@ class BlindState {
   }
 
   BlindState copyWith({
+    bool? failed,
     BlindPhase? phase,
     BlindView? view,
     Position? position,
@@ -300,6 +305,7 @@ class BlindState {
     bool? concluded,
     int? gameId,
   }) => BlindState(
+    failed: failed ?? this.failed,
     concluded: concluded ?? this.concluded,
     gameId: gameId ?? this.gameId,
     held: held ?? this.held,
@@ -441,6 +447,61 @@ class BlindGameCubit extends Cubit<BlindState> {
   BlindPhase _beforeListening = BlindPhase.playerTurn;
 
   Future<void> load({
+    required String fen,
+    bool restore = true,
+    bool resumeAny = false,
+    required Side userSide,
+    required OpponentKind kind,
+    int? level,
+    required String language,
+    required BlindPhrases phrases,
+    ClockConfig? clock,
+    BlindView? view,
+    String? challengeId,
+    String? positionId,
+    PositionGoal goal = PositionGoal.win,
+  }) async {
+    _retryLoad = () => load(
+      fen: fen,
+      restore: restore,
+      resumeAny: resumeAny,
+      userSide: userSide,
+      kind: kind,
+      level: level,
+      language: language,
+      phrases: phrases,
+      clock: clock,
+      view: view,
+      challengeId: challengeId,
+      positionId: positionId,
+      goal: goal,
+    );
+    try {
+      await _load(
+        fen: fen,
+        restore: restore,
+        resumeAny: resumeAny,
+        userSide: userSide,
+        kind: kind,
+        level: level,
+        language: language,
+        phrases: phrases,
+        clock: clock,
+        view: view,
+        challengeId: challengeId,
+        positionId: positionId,
+        goal: goal,
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> reload() => _retryLoad?.call() ?? Future.value();
+
+  Future<void> _load({
     required String fen,
     bool restore = true,
     bool resumeAny = false,

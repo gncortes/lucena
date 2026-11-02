@@ -14,6 +14,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/load_error.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../region/widgets/region_sheet.dart';
 import '../view_models/alerts_cubit.dart';
@@ -53,6 +54,14 @@ class _AlertsScreenState extends State<AlertsScreen> {
     final theme = Theme.of(context);
     final state = context.watch<AlertsCubit>().state;
     final cubit = context.read<AlertsCubit>();
+    if (state.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: cubit.load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final settings = state.settings;
     void change(AlertSettings next) => unawaited(cubit.change(next));
     final switches = [

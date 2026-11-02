@@ -1,3 +1,6 @@
+import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../domain/models/analytics_event.dart';
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -6,6 +9,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/repositories/activity/activity_repository.dart';
 import '../../../data/repositories/reminders/reminders_repository.dart';
 import '../../../data/repositories/week/week_repository.dart';
+import '../../../data/repositories/training/course_training_repository.dart';
+import '../../../domain/models/training/training_course_config.dart';
+import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/training/training_state.dart';
+import '../../../domain/use_cases/training/build_day_goals.dart';
+import '../../../domain/use_cases/training/future_training_reminders.dart';
+import '../../../domain/use_cases/training/training_reminder.dart';
+import '../../../domain/use_cases/training/training_goal_counts.dart';
 import '../../../data/services/notification_service.dart';
 import '../../../domain/models/alert_settings.dart';
 import '../../../domain/models/reminder.dart';
@@ -26,8 +37,21 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
     required this._week,
     required this._now,
     Stream<void>? changes,
-  }) : super(const []) {
+    TrainingRepository? training,
+    this.analytics = const NoAnalyticsRepository(),
+    this.courses = const [TrainingCourseConfig.pilares],
+  }) : _training = training,
+       super(const []) {
     _changes = changes?.listen((_) => unawaited(refresh()));
+    _trainingChanges = training?.changes.listen((_) => unawaited(refresh()));
+  }
+
+  final AnalyticsRepository analytics;
+  Future<void> _log(AnalyticsEvent event) {
+    unawaited(
+      Future<void>.sync(() => analytics.log(event)).catchError((Object _) {}),
+    );
+    return Future<void>.value();
   }
 
   final RemindersRepository _reminders;
@@ -35,6 +59,9 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   final WeekRepository _week;
   final Now _now;
   StreamSubscription<void>? _changes;
+  final TrainingRepository? _training;
+  final List<TrainingCourseConfig> courses;
+  StreamSubscription<TrainingState>? _trainingChanges;
 
   AlertSettings? _settings;
   ReminderTexts? _texts;
@@ -82,9 +109,18 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   Future<void> _replan() async {
     final settings = _settings!;
     final texts = _texts!;
+    final courseTexts = switch (texts) {
+      CourseReminderTexts value => value,
+      _ => null,
+    };
     // O nome dos canais vai junto: outro idioma renomeia.
-    await _reminders.start([texts.reminders, texts.week]);
-    final enabled = settings.daily && await _reminders.permitted();
+    await _reminders.start([
+      texts.reminders,
+      texts.week,
+      if (_training != null && courseTexts != null) courseTexts.trainingChannel,
+    ]);
+    final permitted = await _reminders.permitted();
+    final enabled = settings.daily && permitted;
     final now = _now();
     final plan = enabled
         ? ReminderPlanner.plan(
@@ -96,11 +132,130 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
             week: await _week.summary(),
           )
         : const <PlannedReminder>[];
+    final trainingNotifications = permitted && courseTexts != null
+        ? await _courseNotifications(courseTexts, _ReminderNow(now))
+        : <ScheduledNotification>[];
     await _reminders.replace([
       for (final reminder in plan) _notification(reminder, now, texts),
+      ...trainingNotifications,
     ]);
+    await _recordTrainingSchedules(trainingNotifications, now);
     if (!isClosed && !listEquals(plan, state)) emit(plan);
   }
+
+  /// Course and existing reminders share the same replace operation, so neither
+  /// flow erases notifications belonging to the other.
+  Future<List<ScheduledNotification>> _courseNotifications(
+    CourseReminderTexts texts,
+    Now now,
+  ) async {
+    final repository = _training;
+    if (repository == null) return [];
+    final notifications = <ScheduledNotification>[];
+    for (final config in courses) {
+      final before = await repository.load(config.course);
+      if (!before.onboardingDone || !before.plan.reminderOn) continue;
+      final resources = await repository.resources(config.course);
+      final training = await repository.update(
+        config.course,
+        (s) => BuildDayGoals(now, config)(s, resources),
+      );
+      void add(TrainingReminder request, int id, {bool repeatWeekly = false}) {
+        final lessonId = request.text.arguments['aula'];
+        final lesson = resources.lessons
+            .where((l) => l.id == lessonId)
+            .firstOrNull;
+        notifications.add(
+          ScheduledNotification(
+            id: id,
+            channel: texts.trainingChannel,
+            title: texts.trainingTitle,
+            body: texts.trainingBody(request.text, lesson?.title),
+            at: request.at,
+            payload: Routes.home,
+            repeatWeekly: repeatWeekly,
+          ),
+        );
+      }
+
+      final today = trainingReminder(training, now);
+      if (today != null) add(today, trainingFirstId + config.course.index);
+      for (final future in futureTrainingReminders(
+        training,
+        resources,
+        config,
+        now(),
+      )) {
+        add(
+          future.request,
+          (future.repeatWeekly
+                  ? trainingWeeklyFirstId
+                  : trainingTransientFirstId) +
+              32 * config.course.index +
+              future.request.at.weekday -
+              1,
+          repeatWeekly: future.repeatWeekly,
+        );
+      }
+    }
+    return notifications;
+  }
+
+  /// Called only after replace succeeds. Persist inference before logging, so
+  /// a restart or overlapping refresh cannot count the same delivery twice.
+  Future<void> _recordTrainingSchedules(
+    List<ScheduledNotification> notifications,
+    DateTime now,
+  ) async {
+    final repository = _training;
+    if (repository == null) return;
+    for (final config in courses) {
+      final notification = notifications
+          .where((n) => n.id == trainingFirstId + config.course.index)
+          .firstOrNull;
+      AnalyticsEvent? scheduled, shown;
+      await repository.transact(config.course, (current) {
+        final old = current.analyticsReminderAt;
+        final at = notification?.at;
+        var next = current;
+        if (old != null &&
+            !old.isAfter(now) &&
+            current.analyticsReminderShownAt != old) {
+          next = next.copyWith(analyticsReminderShownAt: old);
+          shown = AnalyticsEvents.treinoLembreteMostrado(
+            curso: config.course.name,
+            atrasoMin: now.difference(old).inMinutes.clamp(0, 2147483647),
+          );
+        }
+        if (old != at) {
+          next = next.copyWith(analyticsReminderAt: at);
+          if (at != null) {
+            scheduled = AnalyticsEvents.treinoLembreteAgendado(
+              curso: config.course.name,
+              hora: at.hour,
+              metas: trainingGoalCounts(current).remaining,
+              aulaPendente:
+                  current.day?.goals.any(
+                    (g) =>
+                        !g.done &&
+                        (g.kind == GoalKind.lesson ||
+                            g.kind == GoalKind.redo ||
+                            g.kind == GoalKind.extraLesson),
+                  ) ??
+                  false,
+            );
+          }
+        }
+        return next;
+      });
+      if (shown != null) unawaited(_log(shown!));
+      if (scheduled != null) unawaited(_log(scheduled!));
+    }
+  }
+
+  static const trainingFirstId = 600;
+  static const trainingWeeklyFirstId = 700;
+  static const trainingTransientFirstId = 708;
 
   ScheduledNotification _notification(
     PlannedReminder reminder,
@@ -146,6 +301,14 @@ class RemindersCubit extends Cubit<List<PlannedReminder>> {
   @override
   Future<void> close() async {
     await _changes?.cancel();
+    await _trainingChanges?.cancel();
     return super.close();
   }
+}
+
+class _ReminderNow implements Now {
+  const _ReminderNow(this.value);
+  final DateTime value;
+  @override
+  DateTime call() => value;
 }

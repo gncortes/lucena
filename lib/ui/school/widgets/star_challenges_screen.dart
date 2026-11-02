@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -29,12 +32,20 @@ class StarChallengesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final failure = context.watch<StarChallengesCubit>().state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<StarChallengesCubit>().load,
+      );
+    }
     return Scaffold(
       key: StarChallengeKeys.listScreen,
       appBar: LucenaAppBar(title: Text(l10n.starChallengesTitle)),
       body: BlocBuilder<StarChallengesCubit, StarChallengesState>(
         builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
+          if (!state.ready) return const SkeletonList();
           return ListView(
             padding: scrollPadding(
               context,

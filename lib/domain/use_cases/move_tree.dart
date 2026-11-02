@@ -9,6 +9,8 @@ abstract final class ScriptTracks {
   static const main = 'main';
   static const reveal = 'reveal';
   static const altPrefix = 'alt:';
+  static const choicePrefix = 'choice:';
+  static String choice(int index) => '$choicePrefix$index';
 
   static String alt(String uci) => '$altPrefix$uci';
 
@@ -34,6 +36,13 @@ abstract final class ScriptTracks {
     final question = example.question;
     if (key == entry) return example.entry;
     if (question == null) return example.line;
+    if (key.startsWith(choicePrefix)) {
+      final index = int.tryParse(key.substring(choicePrefix.length));
+      final answer = index == null
+          ? null
+          : question.choices.elementAtOrNull(index);
+      return answer == null ? const [] : [...answer.steps, ...example.line];
+    }
     if (key == reveal) return [question.reveal, ...example.line];
     if (key.startsWith(altPrefix)) {
       final uci = key.substring(altPrefix.length);
@@ -314,6 +323,17 @@ class MoveTree {
       main,
     );
     final variants = <MoveNode>[];
+    for (var i = 0; i < question.choices.length; i++) {
+      walk(
+        ScriptTracks.steps(example, ScriptTracks.choice(i)),
+        ScriptTracks.choice(i),
+        0,
+        entryFen,
+        path,
+        true,
+        variants,
+      );
+    }
     for (final uci in question.alternatives.keys) {
       walk(
         question.alternatives[uci]!,

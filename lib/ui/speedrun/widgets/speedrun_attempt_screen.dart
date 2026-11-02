@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -44,6 +46,14 @@ class SpeedrunAttemptScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<SpeedrunCubit>().state;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<SpeedrunCubit>().retry,
+      );
+    }
     final summary = state.selected;
     final run = state.run;
     if (summary == null || run == null) {

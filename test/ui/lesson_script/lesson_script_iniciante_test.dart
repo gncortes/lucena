@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/lesson_script.dart';
 import 'package:lucena/ui/lesson_script/view_models/lesson_script_cubit.dart';
 
 import '../../../testing/fakes/fake_kpk_repository.dart';
+import '../../../testing/fakes/fake_analytics_repository.dart';
 import '../../../testing/fakes/fake_lesson_script_repository.dart';
 import '../../../testing/fakes/fake_lesson_source.dart';
 
@@ -166,6 +167,7 @@ class _Rig {
     Map<String, dynamic> json, {
     int stage = 0,
     Map<String, String> texts = const {},
+    FakeAnalyticsRepository? analytics,
   }) async {
     final source = FakeLessonSource();
     final undo = <Completer<void>>[];
@@ -179,6 +181,7 @@ class _Rig {
       scripts: FakeLessonScriptRepository(script, texts),
       kpk: FakeKpkRepository(FakeKpkOracle()),
       source: source,
+      analytics: analytics ?? FakeAnalyticsRepository(),
       initialStage: stage,
       delay: (duration) {
         if (duration != LessonScriptCubit.undoDelay) return Future.value();
@@ -199,14 +202,18 @@ Set<String> _names(Iterable<Square> squares) => {
 
 void main() {
   group('prática do tipo lance (com rei)', () {
-    test('lance errado volta com a fala dele', () async {
+    test('lance errado fica até Tentar de novo com a fala dele', () async {
       final r = await _Rig.open(_findJson());
       expect(r.s.phase, ScriptPhase.praticaVez);
       unawaited(r.cubit.onMove('a1a8'));
       await Future<void>.delayed(Duration.zero);
       expect(r.s.speech, ['m1.cedo']);
       expect(r.s.tone, ScriptTone.bad);
-      await r.release();
+      expect(r.s.lastMove, 'a1a8');
+      expect(r.s.phase, ScriptPhase.praticaFim);
+      expect(r.s.secondary, ScriptAction.verResposta);
+      expect(r.s.movable, isNull);
+      await r.cubit.onAction(ScriptAction.tentarDeNovo);
       expect(r.s.fen, '7k/8/6K1/8/8/8/8/R7 w - - 0 1');
       expect(r.s.movable, isNotNull);
     });
@@ -221,6 +228,132 @@ void main() {
       expect(r.s.phase, ScriptPhase.praticaFim);
       expect(r.s.speech, ['ini.lance.certo', 'm1.fim']);
       expect(r.s.moves.map((m) => m.san), ['Ra7', 'Kg8', 'Ra8#']);
+    });
+  });
+
+  group('solução guiada da prática', () {
+    test(
+      'dica mantém o resultado da prática assistido na telemetria',
+      () async {
+        final analytics = FakeAnalyticsRepository();
+        final r = await _Rig.open(_findJson(), analytics: analytics);
+        expect(r.cubit.canHint, true);
+        await r.cubit.hint();
+        await r.cubit.onMove('a1a7');
+        await r.cubit.onMove('a7a8');
+        expect(r.s.phase, ScriptPhase.praticaFim);
+        expect(r.s.tone, ScriptTone.good);
+        final result = analytics.eventsNamed('exercicio_resultado').single;
+        expect(result.params['acertou'], 'nao');
+        expect(result.params['dicas'], 1);
+      },
+    );
+    test(
+      'erro durável, input concorrente bloqueado, retry remove só o erro',
+      () async {
+        final r = await _Rig.open(_findJson());
+        await Future.wait([r.cubit.onMove('a1a8'), r.cubit.onMove('a1b1')]);
+        expect(r.s.moves, hasLength(1));
+        expect(r.s.lastMove, 'a1a8');
+        final error = r.s;
+        r.cubit.pauseForBackground();
+        r.cubit.resumeFromBackground();
+        expect(r.s, error);
+        await r.cubit.onMove('h8g8');
+        r.cubit.back();
+        expect(r.s, error);
+        await r.cubit.onAction(ScriptAction.tentarDeNovo);
+        expect(r.s.moves, isEmpty);
+        await r.cubit.onMove('a1a7');
+        final before = r.s;
+        await r.cubit.onMove('a7b7');
+        expect(r.s.phase, ScriptPhase.praticaFim);
+        await r.cubit.onAction(ScriptAction.tentarDeNovo);
+        expect(r.s.fen, before.fen);
+        expect(r.s.moves.map((m) => m.san), ['Ra7', 'Kg8']);
+      },
+    );
+
+    test(
+      'solução segue linha e reply legais sem melhorar tentativa ou pontos',
+      () async {
+        final analytics = FakeAnalyticsRepository();
+        final r = await _Rig.open(_findJson(), analytics: analytics);
+        await r.cubit.onMove('a1a8');
+        await r.cubit.onAction(ScriptAction.verResposta);
+        expect(r.cubit.showingPracticeSolution, true);
+        expect(r.s.arrows.single.from, 'a1');
+        expect(r.s.arrows.single.to, 'a7');
+        expect(r.s.moves, isEmpty);
+        final guided = r.s;
+        await r.cubit.onMove('a1b1');
+        expect(r.s, guided);
+        await r.cubit.onMove('a1a7');
+        expect(r.s.lastMove, 'h8g8');
+        expect(r.s.arrows.single.from, 'a7');
+        expect(r.s.arrows.single.to, 'a8');
+        await r.cubit.onMove('a7a8');
+        expect(r.s.phase, ScriptPhase.praticaFim);
+        expect(r.s.arrows, isEmpty);
+        final results = analytics.eventsNamed('exercicio_resultado');
+        expect(results, hasLength(2));
+        expect(results.first.params['acertou'], 'nao');
+        expect(results.last.params['acertou'], 'nao');
+        expect(results.last.params['dicas'], 1);
+        await r.cubit.onAction(ScriptAction.proximaParte);
+        final chapter = analytics
+            .eventsNamed('aula_capitulo_fim')
+            .single
+            .params;
+        expect(chapter['exercicios'], 0);
+        expect(chapter['erros'], 1);
+        expect(chapter['dicas'], 1);
+      },
+    );
+
+    test(
+      'linha inconsistente não inventa seta ou lance e oferece nova tentativa',
+      () async {
+        final json = _findJson();
+        final example = json['etapas'][0]['exemplos'][0];
+        example['pratica']['linha'][0]['resposta'] = 'h8h1';
+        final r = await _Rig.open(json);
+        await r.cubit.onMove('a1a8');
+        await r.cubit.onAction(ScriptAction.verResposta);
+        expect(r.cubit.practiceIssue, ScriptPracticeIssue.solutionUnavailable);
+        expect(r.s.arrows, isEmpty);
+        expect(r.s.movable, isNull);
+        await r.cubit.retryPracticeIssue();
+        expect(r.cubit.practiceIssue, ScriptPracticeIssue.solutionUnavailable);
+        expect(r.s.moves, isEmpty);
+      },
+    );
+
+    test(
+      'solução valida todas as alternativas e escolhe continuação compatível',
+      () async {
+        final json = _findJson();
+        json['etapas'][0]['exemplos'][0]['pratica']['linha'][0]['certos'] = [
+          'a1b1',
+          'a1a7',
+        ];
+        final r = await _Rig.open(json);
+        await r.cubit.onMove('a1a8');
+        await r.cubit.onAction(ScriptAction.verResposta);
+        expect(r.s.arrows.single.to, 'a7');
+        expect(r.cubit.practiceIssue, isNull);
+      },
+    );
+
+    test('sair da solução interrompe input e não conclui prática', () async {
+      final r = await _Rig.open(_findJson());
+      await r.cubit.onMove('a1a8');
+      await r.cubit.onAction(ScriptAction.verResposta);
+      await r.cubit.leave();
+      final leaving = r.s;
+      await r.cubit.onMove('a1a7');
+      expect(r.s, leaving);
+      expect(r.source.completed, isEmpty);
     });
   });
 
@@ -245,7 +378,8 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       expect(r.s.speech, ['ini.lance.errado']);
       expect(r.s.tone, ScriptTone.bad);
-      await r.release();
+      expect(r.s.lastMove, 'd6c7');
+      await r.cubit.onAction(ScriptAction.tentarDeNovo);
       expect(r.s.fen, startsWith('8/2p5/3Pn2k/'));
     });
 
@@ -259,7 +393,7 @@ void main() {
       unawaited(r.cubit.onMove('b7a8r'));
       await Future<void>.delayed(Duration.zero);
       expect(r.s.speech, ['promove.err']);
-      await r.release();
+      await r.cubit.onAction(ScriptAction.tentarDeNovo);
       await r.cubit.onMove('b7a8q');
       expect(r.s.phase, ScriptPhase.praticaFim);
       expect(r.s.moves.last.san, 'bxa8=Q');
@@ -277,7 +411,7 @@ void main() {
       unawaited(r.cubit.onMove('b7a8r'));
       await Future<void>.delayed(Duration.zero);
       expect(r.s.speech, ['perde', 'porque']);
-      await r.release();
+      expect(r.s.phase, ScriptPhase.praticaFim);
     });
   });
 
@@ -421,6 +555,27 @@ void main() {
       expect(r.s.tone, ScriptTone.good);
       expect(r.s.speech, ['Clique na casa a1.']);
     });
+
+    test(
+      'Ver solução usa apenas alvos autorais e avança a marcação ao tocar',
+      () async {
+        final r = await touch();
+        await r.cubit.onSquare('d4');
+        expect(r.s.secondary, ScriptAction.verResposta);
+        await r.cubit.onAction(ScriptAction.verResposta);
+        expect(r.s.marks, ['e4']);
+        expect(r.s.touchMiss, isNull);
+        await r.cubit.onSquare('d4');
+        expect(r.s.touched, isEmpty);
+        await r.cubit.onSquare('e4');
+        expect(r.s.marks, ['a1']);
+        await r.cubit.onSquare('a1');
+        expect(r.s.marks, ['e1']);
+        await r.cubit.onSquare('e1');
+        expect(r.s.phase, ScriptPhase.praticaFim);
+        expect(r.s.marks, isEmpty);
+      },
+    );
 
     test('a última casa (ocupada também conta) conclui a prática', () async {
       final r = await touch(coordinates: true);

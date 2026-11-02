@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,6 +16,7 @@ import '../../core/widgets/course/chapter_lesson_list.dart';
 import '../../core/widgets/course/course_chapter_layout.dart';
 import '../../core/widgets/course/course_continue_footer.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/load_error.dart';
 import '../view_models/endgame_lesson_cubit.dart';
 
 /// Um capítulo de finais (canvas `PropV2FinaisLicao`, padrão T1 dos cursos):
@@ -26,6 +30,20 @@ class EndgameLessonScreen extends StatelessWidget {
     final l10n = context.l10n;
     return BlocBuilder<EndgameLessonCubit, EndgameLessonState>(
       builder: (context, state) {
+        if (state.failure case final failure?) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.fromFailure(failure),
+            onAction: context.read<EndgameLessonCubit>().retryLoad,
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
+        if (state.missing) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.notFound,
+            onAction: () => context.go(Routes.home),
+          );
+        }
         final lesson = state.lesson;
         return Scaffold(
           key: EndgameLessonKeys.screen,
@@ -42,7 +60,7 @@ class EndgameLessonScreen extends StatelessWidget {
             ],
           ),
           body: !state.ready
-              ? const SizedBox.shrink()
+              ? const SkeletonList()
               : state.missing || lesson == null
               ? Center(
                   child: Text(
@@ -250,7 +268,7 @@ class _ContinueBar extends StatelessWidget {
           state.progress.stars.isNotEmpty || state.progress.exercise != null;
       label = started ? l10n.endgameResumeTest : l10n.endgameContinueTest;
       onPressed = () => context.push(Routes.endgameExercisesIntro(lesson.id));
-    } else {
+    } else if (practice != null) {
       label = l10n.endgameTrain;
       onPressed = () => context.push(
         Routes.setup(
@@ -259,6 +277,8 @@ class _ContinueBar extends StatelessWidget {
           position: practice.positionId,
         ),
       );
+    } else {
+      return const SizedBox.shrink();
     }
     return CourseContinueFooter(
       buttonKey: EndgameLessonKeys.continueButton,

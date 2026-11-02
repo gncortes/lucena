@@ -667,11 +667,19 @@ class SpeechText extends StatefulWidget {
     this.onShowAnswer,
     this.onSquareTap,
     this.onMore,
+    this.highlightLooseSquares = true,
+    this.appendMore = false,
+    this.textHeightBehavior,
     super.key,
   });
 
   final String text;
+  final bool highlightLooseSquares;
+
+  /// The source has already fitted and cut this text by whole words.
+  final bool appendMore;
   final TextStyle style;
+  final TextHeightBehavior? textHeightBehavior;
   final int? maxLines;
 
   /// Com [maxLines]: a fala que não cabe é cortada numa palavra inteira e
@@ -814,7 +822,9 @@ class _SpeechTextState extends State<SpeechText> {
         spans.add(
           TextSpan(
             text: name,
-            style: square,
+            style: m.group(2) == null && !widget.highlightLooseSquares
+                ? widget.style
+                : square,
             recognizer: tappable ? _squareTap(name) : null,
           ),
         );
@@ -855,6 +865,7 @@ class _SpeechTextState extends State<SpeechText> {
       return Text(
         text,
         style: widget.style,
+        textHeightBehavior: widget.textHeightBehavior,
         maxLines: maxLines,
         overflow: overflow,
       );
@@ -867,6 +878,7 @@ class _SpeechTextState extends State<SpeechText> {
       ),
       maxLines: maxLines,
       overflow: overflow,
+      textHeightBehavior: widget.textHeightBehavior,
     );
     final onSquare = widget.onSquareTap;
     if (onSquare == null) return rich;
@@ -885,6 +897,7 @@ class _SpeechTextState extends State<SpeechText> {
         ),
         textDirection: Directionality.of(context),
         textScaler: MediaQuery.textScalerOf(context),
+        textHeightBehavior: widget.textHeightBehavior,
       )..layout(maxWidth: width);
 
   /// Onde começa a frase do último link; nulo se ela é a fala inteira.
@@ -899,6 +912,15 @@ class _SpeechTextState extends State<SpeechText> {
   Widget build(BuildContext context) {
     final maxLines = widget.maxLines;
     final text = SpeechText.noBreak(widget.text);
+    if (widget.appendMore) {
+      return _rich(
+        context,
+        text,
+        null,
+        more: SpeechFit.more(context, style: widget.style, recognizer: _more),
+        key: SpeechKeys.cut,
+      );
+    }
     if (maxLines != null && widget.onMore != null) {
       return LayoutBuilder(
         builder: (context, box) {

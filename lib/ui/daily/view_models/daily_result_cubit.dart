@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/crowd/crowd_repository.dart';
@@ -12,12 +15,15 @@ import '../../../domain/use_cases/now.dart';
 /// acertaram" (E1.24).
 class DailyResultState {
   const DailyResultState({
+    this.failure,
     this.ready = false,
     this.daily,
     this.record,
     this.past = false,
     this.crowd,
   });
+
+  final LoadFailure? failure;
 
   final bool ready;
   final DailyFinal? daily;
@@ -55,20 +61,25 @@ class DailyResultCubit extends Cubit<DailyResultState> {
   final Now _now;
 
   Future<void> load() async {
-    final day = DateTime.parse(date);
-    final past = date.compareTo(DailyRecord.dayCode(_now())) < 0;
-    final daily = await _daily.of(day);
-    final record = await _daily.record(day);
-    final crowd = past ? await _crowd.daily(date) : null;
-    if (isClosed) return;
-    emit(
-      DailyResultState(
-        ready: true,
-        daily: daily,
-        record: record,
-        past: past,
-        crowd: crowd,
-      ),
-    );
+    try {
+      final day = DateTime.parse(date);
+      final past = date.compareTo(DailyRecord.dayCode(_now())) < 0;
+      final daily = await _daily.of(day);
+      final record = await _daily.record(day);
+      final crowd = past ? await _crowd.daily(date) : null;
+      if (isClosed) return;
+      emit(
+        DailyResultState(
+          ready: true,
+          daily: daily,
+          record: record,
+          past: past,
+          crowd: crowd,
+        ),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(DailyResultState(failure: LoadFailure.of(error)));
+    }
   }
 }

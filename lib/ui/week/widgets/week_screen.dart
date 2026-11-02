@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
@@ -24,6 +27,24 @@ class WeekScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.watch<WeekCubit>();
+    return ValueListenableBuilder(
+      valueListenable: cubit.failure,
+      builder: (context, failure, _) {
+        if (failure != null) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.fromFailure(failure),
+            onAction: cubit.load,
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
+        return _build(context);
+      },
+    );
+  }
+
+  Widget _build(BuildContext context) {
     final l10n = context.l10n;
     final week = context.watch<WeekCubit>().state;
     return Scaffold(

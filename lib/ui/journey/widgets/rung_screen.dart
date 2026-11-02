@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,6 +60,16 @@ class RungScreen extends StatelessWidget {
             for (final challenge in rung.rung.challenges)
               if (!rung.completed.contains(challenge.id)) challenge,
           ].firstOrNull;
+    final failure =
+        context.watch<JourneyCubit>().state.failure ??
+        (progress != null && rung == null ? LoadFailure.notFound : null);
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        () => context.read<JourneyCubit>().load(rungId: rungId),
+      );
+    }
     return Scaffold(
       key: JourneyKeys.rungScreen,
       appBar: LucenaAppBar(

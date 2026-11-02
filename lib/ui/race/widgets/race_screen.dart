@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -56,6 +59,14 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
     final cubit = context.read<RaceCubit>();
     return BlocBuilder<RaceCubit, RaceState>(
       builder: (context, state) {
+        final failure = state.failure;
+        if (failure != null) {
+          return challengeLoadError(
+            context,
+            failure,
+            context.read<RaceCubit>().load,
+          );
+        }
         final playing = state.phase == RacePhase.playing;
         final reviewing = state.phase == RacePhase.reviewing;
         // Voltar no meio da corrida a abandona; na revisão, volta ao
@@ -73,7 +84,7 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
             body: SafeArea(
               bottom: false,
               child: switch (state.phase) {
-                RacePhase.loading => const SizedBox.shrink(),
+                RacePhase.loading => const SkeletonList(),
                 RacePhase.intro => RaceIntroView(state: state),
                 RacePhase.playing => RaceGameView(state: state),
                 RacePhase.finished => RaceResultView(state: state),

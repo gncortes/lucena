@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -11,6 +15,7 @@ import '../../../data/repositories/voice/voice_repository.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson.dart';
+import '../../../domain/models/lesson_content.dart';
 import '../../../domain/models/onboarding.dart';
 import '../../../domain/models/voice.dart';
 import '../../../domain/use_cases/profile_rules.dart';
@@ -29,8 +34,10 @@ enum TourStep {
 }
 
 class TourState {
+  final LoadFailure? failure;
   const TourState({
     this.ready = false,
+    this.failure,
     this.step = TourStep.board,
     this.nickname = '',
     this.finished = false,
@@ -141,12 +148,31 @@ class TourCubit extends Cubit<TourState> {
 
   /// As falas do Viktor vêm em [language] (as que faltam, em inglês).
   Future<void> load(String language) async {
+    try {
+      await _load(language);
+    } on Object catch (error, stack) {
+      // A failed persisted write must not poison the next explicit load.
+      _onboardingSaved = Future<void>.value();
+      _nicknameSaved = Future<void>.value();
+      debugPrint('tour load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(TourState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load(String language) async {
     await _onboardingSaved;
     await _nicknameSaved;
     _saved = await _onboarding.load();
     final profile = await _profile.load();
     final characters = await _characters.characters();
-    final texts = await _lessons.texts(language);
+    var texts = LessonTexts.empty;
+    try {
+      texts = await _lessons.texts(language);
+    } on LessonContentUnavailable {
+      // First-time guests have no protected course package yet. The screen
+      // has public localized tour speech independent of that package.
+    }
     if (isClosed) return;
     Character? viktor;
     for (final character in characters) {

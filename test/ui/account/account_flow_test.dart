@@ -182,7 +182,7 @@ void main() {
       await tester.tap(find.byKey(AccountKeys.passwordEye));
       await tester.pump();
       expect(hidden(), isFalse);
-      expect(find.byTooltip('Esconder a senha'), findsOneWidget);
+      expect(find.byTooltip('Ocultar senha'), findsOneWidget);
     });
 
     testWidgets('"Já tem conta? Entrar" troca para Entrar', (tester) async {
@@ -265,7 +265,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('o e-mail vem do campo; mandar mostra "Confira o seu e-mail"', (
+    testWidgets('o e-mail vem do campo; mandar mostra "Verifique seu e-mail"', (
       tester,
     ) async {
       await openReset(tester);
@@ -328,7 +328,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(AccountKeys.resetSheet), findsOneWidget);
-      expect(find.text('Confira o e-mail.'), findsOneWidget);
+      expect(find.text('Verifique o e-mail.'), findsOneWidget);
     });
   });
 
@@ -439,9 +439,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(
-          'Não deu para enviar a foto. Confira a internet e tente de novo.',
-        ),
+        find.text('Não foi possível enviar a foto. Tente novamente.'),
         findsOneWidget,
       );
       expect(find.byKey(AccountKeys.dataScreen), findsOneWidget);

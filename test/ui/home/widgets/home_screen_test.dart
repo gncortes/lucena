@@ -34,6 +34,15 @@ import '../../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../../testing/fakes/fake_now.dart';
 import '../../../../testing/goldens/golden_harness.dart';
 
+class _FailingProgress extends FakeProgressRepository {
+  bool fails = true;
+  @override
+  Future<Set<String>> fulfilledChallenges() async {
+    if (fails) throw StateError('banco indisponível');
+    return super.fulfilledChallenges();
+  }
+}
+
 /// A tela inicial com o que ela lê (a Jornada, o rating), tudo falso.
 class _Home extends StatelessWidget {
   const _Home(
@@ -93,6 +102,24 @@ class _Home extends StatelessWidget {
 }
 
 void main() {
+  testWidgets('falha no início mostra erro sem voltar e retry carrega', (
+    tester,
+  ) async {
+    final progress = _FailingProgress();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        child: _Home(const HomeScreen(), progress: progress),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+    expect(find.text('Voltar'), findsNothing);
+    progress.fails = false;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(HomeKeys.screen), findsOneWidget);
+  });
   double opacityOf(WidgetTester tester, Key key) {
     final fade = tester.widget<FadeTransition>(
       find

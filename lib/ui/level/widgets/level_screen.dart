@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/skeleton.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -164,7 +168,15 @@ class _LevelScreenState extends State<LevelScreen> with WidgetsBindingObserver {
       ],
       child: BlocBuilder<LevelCubit, LevelState>(
         builder: (context, state) {
-          if (!state.ready) return const Scaffold(key: LevelKeys.screen);
+          if (state.failure case final failure?) {
+            return LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(failure),
+              onAction: context.read<LevelCubit>().load,
+            );
+          }
+          if (!state.ready) {
+            return const Scaffold(key: LevelKeys.screen, body: SkeletonList());
+          }
           final choice = state.choice;
           final placed = state.placed;
           Widget card(

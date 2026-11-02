@@ -11,6 +11,62 @@ import 'package:lucena/ui/lesson_script/widgets/script_board.dart';
 
 void main() {
   const size = 320.0;
+  testWidgets(
+    'stars are real board targets and survive hidden teaching marks',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ScriptBoard(
+              state: const LessonScriptState(
+                ready: true,
+                fen: '8/8/8/8/8/8/8/R7 w - - 0 1',
+                stars: ['a6', 'f6', 'f2'],
+              ),
+              size: size,
+              settings: const BoardSettings(),
+              showMarks: false,
+              onMove: (_) {},
+            ),
+          ),
+        ),
+      );
+      for (final square in ['a6', 'f6', 'f2']) {
+        expect(find.byKey(LessonScriptKeys.star(square)), findsOneWidget);
+      }
+      final a6 = tester.getCenter(find.byKey(LessonScriptKeys.star('a6')));
+      final f6 = tester.getCenter(find.byKey(LessonScriptKeys.star('f6')));
+      final f2 = tester.getCenter(find.byKey(LessonScriptKeys.star('f2')));
+      expect(f6.dx - a6.dx, 5 * size / 8);
+      expect(f2.dy - f6.dy, 4 * size / 8);
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets('Canvas error preserves the position without a red outline', (
+    tester,
+  ) async {
+    const fen = '4k3/8/8/8/8/8/8/4K3 w - - 0 1';
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ScriptBoard(
+            state: const LessonScriptState(
+              ready: true,
+              fen: fen,
+              tone: ScriptTone.bad,
+            ),
+            size: size,
+            settings: const BoardSettings(),
+            canvasFeedback: true,
+            onMove: (_) {},
+          ),
+        ),
+      ),
+    );
+    expect(find.byKey(LessonScriptKeys.wrongLine), findsNothing);
+    expect(tester.widget<ScriptBoard>(find.byType(ScriptBoard)).state.fen, fen);
+    expect(tester.takeException(), isNull);
+  });
 
   /// O centro da casa [square] com as brancas embaixo.
   Offset at(WidgetTester tester, Square square) {

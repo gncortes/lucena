@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/blind_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/lucena_app_bar.dart';
@@ -55,6 +56,14 @@ class _BlindEntryScreenState extends State<BlindEntryScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final speech = context.watch<SpeechCubit>().state;
+    if (speech.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: context.read<SpeechCubit>().load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final available = speech.availableFor(
       Localizations.localeOf(context).toLanguageTag(),
     );

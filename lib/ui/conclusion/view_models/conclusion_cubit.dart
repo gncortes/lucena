@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/achievements/achievements_repository.dart';
 import '../../../data/repositories/analysis/analysis_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -58,6 +60,7 @@ class ConclusionState {
   const ConclusionState({
     this.ready = false,
     this.missing = false,
+    this.failed = false,
     this.conclusion,
     this.opponent,
     this.characters = const [],
@@ -81,6 +84,7 @@ class ConclusionState {
 
   /// A partida não existe mais (apagada ou id errado).
   final bool missing;
+  final bool failed;
   final Conclusion? conclusion;
 
   /// O adversário como personagem. Nulo no tabuleiro livre de dois.
@@ -129,6 +133,7 @@ class ConclusionState {
   final bool bestLineDone;
 
   ConclusionState copyWith({
+    bool? failed,
     GameReview? review,
     bool? reviewing,
     int? reviewDone,
@@ -139,6 +144,7 @@ class ConclusionState {
   }) => ConclusionState(
     ready: ready,
     missing: missing,
+    failed: failed ?? this.failed,
     conclusion: conclusion,
     opponent: opponent,
     characters: characters,
@@ -221,6 +227,19 @@ class ConclusionCubit extends Cubit<ConclusionState> {
 
   /// Monta a conclusão da partida gravada [gameId].
   Future<void> load(int gameId, String language) async {
+    _retryLoad = () => load(gameId, language);
+    try {
+      await _load(gameId, language);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> reload() => _retryLoad?.call() ?? Future.value();
+
+  Future<void> _load(int gameId, String language) async {
     final game = (await _progress.attemptsById([gameId]))[gameId];
     if (game == null) {
       if (!isClosed) emit(const ConclusionState(ready: true, missing: true));

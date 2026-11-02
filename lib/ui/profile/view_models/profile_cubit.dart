@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/profile/profile_repository.dart';
@@ -23,6 +27,8 @@ class ProfileCubit extends Cubit<UserProfile?> {
   final ProfileRepository _repository;
   final AnalyticsRepository _analytics;
   final String? Function()? _region;
+  // Preserve the nullable public profile API and the last loaded profile.
+  final failure = ValueNotifier<LoadFailure?>(null);
 
   /// O país da região do celular, se ele informar.
   String? get phoneCountry {
@@ -31,13 +37,30 @@ class ProfileCubit extends Cubit<UserProfile?> {
   }
 
   Future<void> load() async {
+    try {
+      await _load();
+      if (!isClosed) failure.value = null;
+    } on Object catch (error, stack) {
+      debugPrint('profile load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) failure.value = LoadFailure.generic;
+    }
+  }
+
+  Future<void> _load() async {
     var profile = await _repository.load();
     final region = _region?.call();
     if (profile.country == null && region != null && region.isNotEmpty) {
       profile = profile.copyWith(country: region.toUpperCase());
       await _repository.save(profile);
     }
-    emit(profile);
+    if (!isClosed) emit(profile);
+  }
+
+  @override
+  Future<void> close() {
+    failure.dispose();
+    return super.close();
   }
 
   /// "Seus dados": o apelido (já limpo) e o avatar. O resto fica.

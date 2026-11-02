@@ -28,12 +28,16 @@ class EmptyState extends StatelessWidget {
   const EmptyState({
     required this.message,
     this.icon,
+    this.iconFill,
     this.style = EmptyStateStyle.tonal,
     this.actionLabel,
     this.onAction,
     this.actionKey,
     this.messageKey,
     this.actionIcon,
+    this.usePrimaryErrorColor = false,
+    this.title,
+    this.plainIcon = false,
     super.key,
   });
 
@@ -48,6 +52,10 @@ class EmptyState extends StatelessWidget {
   final Key? actionKey;
   final Key? messageKey;
   final IconData? actionIcon;
+  final bool usePrimaryErrorColor;
+  final String? title;
+  final bool plainIcon;
+  final double? iconFill;
 
   @override
   Widget build(BuildContext context) {
@@ -71,21 +79,36 @@ class EmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (!text && icon != null || filters) ...[
-            if (filters)
+            if (filters || plainIcon)
               Icon(
                 icon ?? Icons.filter_list_off,
                 size: AppIconSize.illustration,
-                color: colors.outline,
+                opticalSize: plainIcon ? AppIconSize.illustration : null,
+                color: plainIcon ? colors.onSurfaceVariant : colors.outline,
               )
             else
               _circle(colors),
+            const SizedBox(height: AppSpacing.md),
+          ],
+          if (title case final title?) ...[
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 0),
+            ),
             const SizedBox(height: AppSpacing.md),
           ],
           Text(
             message,
             key: messageKey,
             textAlign: TextAlign.center,
-            style: loud
+            style: plainIcon
+                ? theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.onSurface,
+                    height: 20 / 14,
+                    letterSpacing: 0,
+                  )
+                : loud
                 ? theme.textTheme.bodyLarge?.copyWith(
                     color: colors.onSurfaceVariant,
                   )
@@ -104,7 +127,7 @@ class EmptyState extends StatelessWidget {
 
   // O ícone de 48 num círculo suave de 72.
   Widget _circle(ColorScheme colors) {
-    final error = style == EmptyStateStyle.error;
+    final error = style == EmptyStateStyle.error && !usePrimaryErrorColor;
     return Container(
       width: circle,
       height: circle,
@@ -116,6 +139,7 @@ class EmptyState extends StatelessWidget {
       ),
       child: Icon(
         icon,
+        fill: iconFill,
         size: AppIconSize.illustration,
         color: error ? colors.error : colors.primary,
       ),

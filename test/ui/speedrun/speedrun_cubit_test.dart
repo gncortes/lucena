@@ -98,6 +98,40 @@ void main() {
     expect(cubit.state.run!.currentStage, 0);
     expect((await settings.load()).clock.speedrunTime, SpeedrunPaces.standard);
   });
+  test('fixed Journey start preserves the base id and pace while explicit variants remain distinct', () async {
+    const declared = TimeControl(
+      initial: Duration(minutes: 15),
+      increment: Duration(seconds: 10),
+    );
+    final base = sampleSpeedruns.first.copyWith(
+      id: 'fixed.special',
+      journeyOnly: true,
+      time: declared,
+    );
+    final cubit = SpeedrunCubit(
+      journey: FakeJourneyRepository(speedruns: [base]),
+      speedruns: speedruns,
+      games: games,
+      now: now,
+    );
+    addTearDown(cubit.close);
+    await cubit.load(speedrunId: base.id);
+    expect(cubit.state.selected!.speedrun.time, declared);
+    final (fixed, fixedAttempt) = (await cubit.startWith(declared))!;
+    expect(fixed.id, base.id);
+    expect(fixed.time, declared);
+    expect(fixed.stages.every((s) => s.time == declared), isTrue);
+    expect((await speedruns.attempt(fixedAttempt))!.speedrunId, base.id);
+    final (variant, variantAttempt) = (await cubit.startWith(
+      SpeedrunPaces.standard,
+    ))!;
+    expect(variant.id, '${base.id}@300+3');
+    expect(variant.time, SpeedrunPaces.standard);
+    expect((await speedruns.attempt(variantAttempt))!.speedrunId, variant.id);
+    await cubit.load(speedrunId: variant.id, attemptId: variantAttempt);
+    expect(cubit.state.selected!.speedrun.time, SpeedrunPaces.standard);
+    expect(cubit.state.run!.attempt.speedrunId, variant.id);
+  });
 
   test('a etapa no tabuleiro mantém a tentativa em andamento', () async {
     final cubit = build();

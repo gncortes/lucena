@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +32,14 @@ class AchievementsScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<AchievementsCubit>().state;
     final all = state.all;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<AchievementsCubit>().load,
+      );
+    }
     return Scaffold(
       key: AchievementsKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.achievementsTitle)),

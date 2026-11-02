@@ -27,6 +27,7 @@ import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/account_avatar.dart';
 import '../../core/widgets/lucena_app_bar.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 import '../../core/widgets/section_title.dart';
 import '../../goal/widgets/goal_sheet.dart';
@@ -46,7 +47,25 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
+  Widget build(BuildContext context) {
+    final cubit = context.read<ProfileCubit>();
+    return ValueListenableBuilder(
+      valueListenable: cubit.failure,
+      builder: (context, failure, _) {
+        if (failure != null) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.fromFailure(failure),
+            onAction: cubit.load,
+            onBack: () =>
+                context.canPop() ? context.pop() : context.go(Routes.home),
+          );
+        }
+        return _build(context);
+      },
+    );
+  }
+
+  Widget _build(BuildContext context) => BlocProvider(
     create: (context) => ProfileAccountCubit(
       accounts: context.read<AccountRepository>(),
       sync: context.read<SyncScheduler>(),
@@ -78,7 +97,11 @@ class _ProfileView extends StatelessWidget {
 
   Future<void> _delete(BuildContext context) async {
     final cubit = context.read<ProfileAccountCubit>();
-    if (await showAccountDeleteDialog(context)) await cubit.deleteAccount();
+    final uid = cubit.state.account?.uid;
+    if (uid == null) return;
+    if (await showAccountDeleteDialog(context)) {
+      await cubit.deleteAccount(expectedUid: uid);
+    }
   }
 
   // Com e-mail, o Firebase pediu um login recente: a pessoa entra de novo e
@@ -103,6 +126,7 @@ class _ProfileView extends StatelessWidget {
       ProfileNotice.deleteOffline => l10n.accountDeleteOffline,
       ProfileNotice.deleteRelogin => l10n.accountDeleteRelogin,
       ProfileNotice.deleteFailed => l10n.accountDeleteFailed,
+      ProfileNotice.deleteDifferentAccount => l10n.accountDeleteRelogin,
       ProfileNotice.deleted => l10n.accountDeleted,
       ProfileNotice.lichessOffline || null => l10n.lichessRefreshFailed,
     });

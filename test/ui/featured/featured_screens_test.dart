@@ -1,4 +1,14 @@
+import 'package:dartchess/dartchess.dart';
+
+import '../../../testing/board_gestures.dart';
+
+import 'dart:async';
+
+import 'package:lucena/domain/models/find_move_checkpoint.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/home_keys.dart';
+import 'package:lucena/routing/routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/ui/core/widgets/position_board.dart';
@@ -30,6 +40,29 @@ import '../../../testing/fakes/fake_featured_repositories.dart';
 import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/test_app.dart';
+
+class _ControlledProgress extends FakeFeaturedProgressRepository {
+  Completer<void>? gate;
+  bool failWrite = false;
+  bool failRead = false;
+
+  @override
+  Future<FindMoveCheckpoint?> findMove(FeaturedEndgame endgame) async {
+    if (failRead) throw StateError('checkpoint read');
+    return super.findMove(endgame);
+  }
+
+  @override
+  Future<void> saveFindMove(
+    String id,
+    FindMoveCheckpoint checkpoint, {
+    Future<void> Function()? onPlayed,
+  }) async {
+    await gate?.future;
+    if (failWrite) throw StateError('checkpoint write');
+    await super.saveFindMove(id, checkpoint, onPlayed: onPlayed);
+  }
+}
 
 void main() {
   late FakeFeaturedRepository repository;
@@ -118,6 +151,10 @@ void main() {
               Text('final ${state.pathParameters['id']}'),
         ),
         GoRoute(path: '/featured', builder: (_, _) => const Text('lista')),
+        GoRoute(
+          path: Routes.home,
+          builder: (_, _) => const Scaffold(key: HomeKeys.screen),
+        ),
       ],
     );
     addTearDown(router.dispose);
@@ -307,7 +344,7 @@ void main() {
         location: '/t/nada',
         path: '/t/:id',
       );
-      expect(find.byKey(FeaturedKeys.tournamentMissing), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
     });
   });
 
@@ -386,7 +423,7 @@ void main() {
         location: '/e/nada',
         path: '/e/:id',
       );
-      expect(find.byKey(FeaturedKeys.endgameMissing), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
     });
   });
 
@@ -397,6 +434,99 @@ void main() {
       location: '/e/b',
       path: '/e/:id',
     );
+
+    testWidgets('falha na dica e retry pendente reativam tabuleiro', (
+      tester,
+    ) async {
+      final controlled = _ControlledProgress()..failWrite = true;
+      progress = controlled;
+      await openFind(tester);
+      await tester.tap(find.byKey(FeaturedKeys.findHint));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      controlled.failWrite = false;
+      controlled.gate = Completer<void>();
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pump();
+      expect(find.byKey(FeaturedKeys.findBoard), findsOneWidget);
+      controlled.gate!.complete();
+      await tester.pumpAndSettle();
+      expect(find.byKey(FeaturedKeys.findHintText), findsOneWidget);
+      final board = tester.getRect(find.byKey(FeaturedKeys.findBoard));
+      await tester.tapAt(squareCenter(board, 'c8', orientation: Side.black));
+      await tester.pump();
+      await tester.tapAt(squareCenter(board, 'b8', orientation: Side.black));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FeaturedKeys.findContinue), findsOneWidget);
+      expect(controlled.checkpoints['b']!.phase, FindMovePhase.solved);
+    });
+
+    testWidgets('falha ao salvar sem pilha permite voltar para o início', (
+      tester,
+    ) async {
+      progress = _ControlledProgress()..failWrite = true;
+      await openFind(tester);
+      await tester.tap(find.byKey(FeaturedKeys.findHint));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      await tester.tap(find.byKey(LoadErrorKeys.back));
+      await tester.pumpAndSettle();
+      expect(find.byKey(HomeKeys.screen), findsOneWidget);
+    });
+
+    testWidgets('botão continua com spinner até salvar e retry regrava', (
+      tester,
+    ) async {
+      final controlled = _ControlledProgress();
+      progress = controlled;
+      await openFind(tester);
+      controlled.gate = Completer<void>();
+      await tester.tap(find.byKey(FeaturedKeys.findAnswer));
+      await tester.pump();
+      expect(find.byKey(FeaturedKeys.findScreen), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.findAnswer), findsOneWidget);
+      expect(find.byKey(FeaturedKeys.findContinue), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(FeaturedKeys.findAnswer),
+          matching: find.byType(CircularProgressIndicator),
+        ),
+        findsOneWidget,
+      );
+      controlled.failWrite = true;
+      controlled.gate!.complete();
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      controlled.failWrite = false;
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FeaturedKeys.findContinue), findsOneWidget);
+      expect(controlled.checkpoints['b']!.phase, FindMovePhase.revealed);
+    });
+
+    testWidgets('erro ao ler checkpoint usa erro padrão e retry', (
+      tester,
+    ) async {
+      final controlled = _ControlledProgress()..failRead = true;
+      progress = controlled;
+      await openFind(tester);
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      controlled.failRead = false;
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FeaturedKeys.findScreen), findsOneWidget);
+    });
+
+    testWidgets('reabrir pelo parent conserva a dica', (tester) async {
+      await openFind(tester);
+      await tester.tap(find.byKey(FeaturedKeys.findHint));
+      await tester.pumpAndSettle();
+      expect(find.byKey(FeaturedKeys.findHintText), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+      await openFind(tester);
+      expect(find.byKey(FeaturedKeys.findHintText), findsOneWidget);
+    });
 
     testWidgets('mostra o tabuleiro e a pergunta', (tester) async {
       await openFind(tester);

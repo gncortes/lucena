@@ -1,6 +1,11 @@
 import '../../core/widgets/empty_state.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,6 +39,17 @@ class EndgamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final failure = context.watch<EndgamesCubit>().state.failure;
+    if (failure != null) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: () => context.read<EndgamesCubit>().load(
+          Localizations.localeOf(context).languageCode,
+        ),
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     return Scaffold(
       key: EndgamesKeys.screen,
       appBar: LucenaAppBar(
@@ -51,7 +67,7 @@ class EndgamesScreen extends StatelessWidget {
       ),
       body: BlocBuilder<EndgamesCubit, EndgamesState>(
         builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
+          if (!state.ready) return const SkeletonList();
           if (state.trail.lessons.isEmpty) {
             return SafeArea(
               top: false,

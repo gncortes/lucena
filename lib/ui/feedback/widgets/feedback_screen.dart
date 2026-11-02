@@ -1,3 +1,6 @@
+import '../../core/widgets/load_skeleton.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +30,19 @@ class FeedbackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loadState = context.watch<FeedbackCubit>().state;
+    if (!loadState.ready && loadState.failure == null) {
+      return const LoadSkeletonScreen();
+    }
+    if (loadState.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: context.read<FeedbackCubit>().retryLoad,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
+
     final cubit = context.read<FeedbackCubit>();
     return BlocBuilder<FeedbackCubit, FeedbackState>(
       builder: (context, state) {

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/analysis/analysis_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
 import '../../../data/repositories/progress/progress_repository.dart';
@@ -37,6 +39,7 @@ class LoggedMove {
 class GameDetailsState {
   const GameDetailsState({
     this.ready = false,
+    this.failed = false,
     this.attempt,
     this.start,
     this.moves = const [],
@@ -65,6 +68,7 @@ class GameDetailsState {
   });
 
   final bool ready;
+  final bool failed;
 
   /// A partida. Nula se não foi achada.
   final Attempt? attempt;
@@ -231,6 +235,7 @@ class GameDetailsState {
     Map<String, EngineScore>? variationScores,
   }) => GameDetailsState(
     ready: ready,
+    failed: failed,
     attempt: attempt,
     start: start,
     moves: moves,
@@ -334,6 +339,10 @@ class GameDetailsCubit extends Cubit<GameDetailsState> {
   Future<void> load({String language = 'en'}) {
     if (isClosed || state.ready) return Future.value();
     return _loading ??= _load(language: language)
+        .catchError((Object error, StackTrace stack) {
+          reportHandledError(error, stack);
+          if (!isClosed) emit(const GameDetailsState(failed: true));
+        })
         .whenComplete(() => _loading = null);
   }
 

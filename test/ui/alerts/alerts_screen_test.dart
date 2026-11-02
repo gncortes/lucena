@@ -57,7 +57,10 @@ void main() {
     await pump(tester);
 
     expect(find.byKey(AlertsKeys.allowed), findsOneWidget);
-    expect(find.text('Android: avisos permitidos para o Lucena'), findsOne);
+    expect(
+      find.text('Android: notificações permitidas para o Lucena'),
+      findsOne,
+    );
     expect(find.byKey(AlertsKeys.offBanner), findsNothing);
     expect(on(tester, AlertsKeys.tournaments), isTrue);
     expect(on(tester, AlertsKeys.daily), isTrue);
@@ -76,7 +79,7 @@ void main() {
     await pump(tester);
 
     expect(find.byKey(AlertsKeys.offBanner), findsOneWidget);
-    expect(find.text('Os avisos estão desligados no Android'), findsOne);
+    expect(find.text('As notificações estão desligadas no Android'), findsOne);
     expect(find.byKey(AlertsKeys.allowed), findsNothing);
 
     await tester.tap(find.byKey(AlertsKeys.offOpen));

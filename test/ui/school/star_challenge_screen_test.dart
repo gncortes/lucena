@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/star_challenge.dart';
 import 'package:lucena/domain/use_cases/lesson_rules.dart';
 import 'package:lucena/domain/use_cases/star_challenge_rules.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
+import 'package:lucena/ui/core/keys/training_keys.dart';
 import 'package:lucena/ui/core/widgets/time_display.dart';
 import 'package:lucena/ui/school/view_models/star_challenge_cubit.dart';
 import 'package:lucena/ui/school/widgets/star_challenge_screen.dart';
@@ -51,6 +52,8 @@ void main() {
     ThemeMode themeMode = ThemeMode.light,
     TextDirection direction = TextDirection.ltr,
     Locale locale = const Locale('en'),
+    Future<bool> Function()? trainingGoalDone,
+    VoidCallback? onNextGoal,
   }) async {
     // Tela de celular: o tabuleiro ocupa a largura.
     tester.view.physicalSize = size * 3;
@@ -79,13 +82,50 @@ void main() {
           value: cubit,
           child: Directionality(
             textDirection: direction,
-            child: const StarChallengeScreen(),
+            child: StarChallengeScreen(
+              trainingGoalDone: trainingGoalDone,
+              onNextGoal: onNextGoal,
+            ),
           ),
         ),
       ),
     );
     await tester.pumpAndSettle();
     return cubit;
+  }
+
+  /// "Centralizar igual" (T65): a sobra meio a meio entre a barra do app e o
+  for (final done in [false, true]) {
+    testWidgets(
+      'training stars exposes next only after saved qualifying round $done',
+      (tester) async {
+        var taps = 0;
+        final cubit = await pump(
+          tester,
+          size: const Size(360, 740),
+          trainingGoalDone: () async => done,
+          onNextGoal: () => taps++,
+        );
+        expect(find.byKey(TrainingKeys.nextGoal), findsNothing);
+        await tester.tap(find.byKey(StarChallengeKeys.goButton));
+        now.advance(const Duration(minutes: 1));
+        cubit.tick();
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(TrainingKeys.nextGoal),
+          done ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(StarChallengeKeys.retryButton),
+          done ? findsNothing : findsOneWidget,
+        );
+        if (done) {
+          await tester.tap(find.byKey(TrainingKeys.nextGoal));
+          expect(taps, 1);
+        }
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   /// "Centralizar igual" (T65): a sobra meio a meio entre a barra do app e o

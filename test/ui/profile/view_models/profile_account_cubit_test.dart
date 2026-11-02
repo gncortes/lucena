@@ -92,7 +92,8 @@ void main() {
     await cubit.deleteAccount();
     expect(accounts.deletedWithPhoto, isFalse);
 
-    accounts.account = FakeAccountRepository.google;
+    await accounts.signInWithGoogle();
+    await pumpEventQueue();
     await profiles.save(const UserProfile(photo: AvatarPhoto.upload));
     await cubit.deleteAccount();
     expect(accounts.deletedWithPhoto, isTrue);
@@ -124,8 +125,8 @@ void main() {
     accounts.account = FakeAccountRepository.google;
     await cubit.deleteAfterSignIn(email.uid);
 
-    expect(accounts.current, FakeAccountRepository.google);
-    expect(cubit.state.notice, ProfileNotice.deleteFailed);
+    expect(accounts.current, isNull);
+    expect(cubit.state.notice, ProfileNotice.deleteDifferentAccount);
 
     accounts.account = email;
     await cubit.deleteAfterSignIn(email.uid);

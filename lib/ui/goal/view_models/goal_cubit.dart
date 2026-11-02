@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -26,8 +30,10 @@ enum GoalExit {
 }
 
 class GoalState {
+  final LoadFailure? failure;
   const GoalState({
     this.ready = false,
+    this.failure,
     this.goal = GoalPreference.endgames,
     this.exit,
     this.viktor,
@@ -74,6 +80,16 @@ class GoalCubit extends Cubit<GoalState> {
   bool _finishing = false;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('goal load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(GoalState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load() async {
     final onboarding = await _onboarding.load();
     final profile = await _profile.load();
     final characters = await _characters.characters();

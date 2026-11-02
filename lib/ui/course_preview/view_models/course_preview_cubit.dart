@@ -1,3 +1,6 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -8,7 +11,13 @@ import '../../../domain/models/course_preview.dart';
 /// O que as telas da prévia mostram: carregando, os textos ou a falta deles,
 /// e o Viktor da fala da venda.
 class CoursePreviewState {
-  const CoursePreviewState({this.ready = false, this.preview, this.viktor});
+  final LoadFailure? failure;
+  const CoursePreviewState({
+    this.failure,
+    this.ready = false,
+    this.preview,
+    this.viktor,
+  });
 
   final bool ready;
   final CoursePreview? preview;
@@ -24,6 +33,19 @@ class CoursePreviewCubit extends Cubit<CoursePreviewState> {
   final CharacterRepository _characters;
 
   Future<void> load() async {
+    _retryLoad = () => load();
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(CoursePreviewState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load() async {
     final preview = await _repository.load();
     final characters = await _characters.characters();
     if (isClosed) return;

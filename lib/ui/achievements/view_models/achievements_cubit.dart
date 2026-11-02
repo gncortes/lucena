@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/achievements/achievements_repository.dart';
@@ -18,6 +21,7 @@ enum AchievementsFilter { all, unlocked, locked, history }
 /// das que faltam.
 class AchievementsState {
   const AchievementsState({
+    this.failure,
     this.all,
     this.unlocked = const {},
     this.characters = const [],
@@ -28,6 +32,8 @@ class AchievementsState {
   });
 
   /// Nulo enquanto é lida.
+  final LoadFailure? failure;
+
   final List<Achievement>? all;
   final Map<String, UnlockedAchievement> unlocked;
 
@@ -101,37 +107,42 @@ class AchievementsCubit extends Cubit<AchievementsState> {
   final SpeedrunRepository? _speedruns;
 
   Future<void> load() async {
-    final all = await _achievements.all();
-    final unlocked = await _achievements.unlocked();
-    final characters = await _characters?.characters() ?? const <Character>[];
-    final facts = await _facts?.load();
-    final progress = <String, AchievementProgress>{
-      if (facts != null)
-        for (final achievement in all)
-          if (!unlocked.containsKey(achievement.id))
-            achievement.id: ?AchievementRules.progress(achievement, facts),
-    };
-    final speedrunOfAttempt = <int, String>{};
-    for (final item in unlocked.values) {
-      final attemptId = item.speedrunAttemptId;
-      if (attemptId == null || speedrunOfAttempt.containsKey(attemptId)) {
-        continue;
+    try {
+      final all = await _achievements.all();
+      final unlocked = await _achievements.unlocked();
+      final characters = await _characters?.characters() ?? const <Character>[];
+      final facts = await _facts?.load();
+      final progress = <String, AchievementProgress>{
+        if (facts != null)
+          for (final achievement in all)
+            if (!unlocked.containsKey(achievement.id))
+              achievement.id: ?AchievementRules.progress(achievement, facts),
+      };
+      final speedrunOfAttempt = <int, String>{};
+      for (final item in unlocked.values) {
+        final attemptId = item.speedrunAttemptId;
+        if (attemptId == null || speedrunOfAttempt.containsKey(attemptId)) {
+          continue;
+        }
+        final attempt = await _speedruns?.attempt(attemptId);
+        if (attempt != null) speedrunOfAttempt[attemptId] = attempt.speedrunId;
       }
-      final attempt = await _speedruns?.attempt(attemptId);
-      if (attempt != null) speedrunOfAttempt[attemptId] = attempt.speedrunId;
+      if (isClosed) return;
+      emit(
+        AchievementsState(
+          all: all,
+          unlocked: unlocked,
+          characters: characters,
+          progress: progress,
+          speedrunOfAttempt: speedrunOfAttempt,
+          now: _now(),
+          filter: state.filter,
+        ),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(AchievementsState(failure: LoadFailure.of(error)));
     }
-    if (isClosed) return;
-    emit(
-      AchievementsState(
-        all: all,
-        unlocked: unlocked,
-        characters: characters,
-        progress: progress,
-        speedrunOfAttempt: speedrunOfAttempt,
-        now: _now(),
-        filter: state.filter,
-      ),
-    );
   }
 
   void filter(AchievementsFilter filter) {

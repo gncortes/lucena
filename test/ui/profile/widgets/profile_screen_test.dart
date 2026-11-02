@@ -299,12 +299,35 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('Conta apagada. Neste celular, tudo continua sem conta.'),
+        find.text('Conta excluída. Neste celular, tudo continua sem conta.'),
         findsOneWidget,
       );
       await tester.pumpAndSettle();
       expect(accounts.current, isNull);
       expect(find.byKey(ProfileKeys.localCard), findsOneWidget);
+    });
+
+    testWidgets('Conta1 trocar de conta com confirmação aberta não apaga B', (
+      tester,
+    ) async {
+      await pumpScreen(tester);
+      await tester.tap(find.byKey(ProfileKeys.delete));
+      await tester.pumpAndSettle();
+      await accounts.signInWithEmail('outra@example.com', 'password');
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(AccountKeys.deleteConfirm));
+      await tester.pumpAndSettle();
+
+      expect(accounts.deletedUids, isEmpty);
+      expect(accounts.current, isNull);
+      expect(
+        find.text('Por segurança, entre novamente na conta para excluir.'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Conta excluída. Neste celular, tudo continua sem conta.'),
+        findsNothing,
+      );
     });
 
     testWidgets('apagar sem internet não apaga e avisa', (tester) async {
@@ -316,7 +339,9 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('Sem internet não dá para apagar a conta. Nada foi apagado.'),
+        find.text(
+          'Sem internet não dá para excluir a conta. Nada foi excluído.',
+        ),
         findsOneWidget,
       );
       expect(accounts.current, FakeAccountRepository.google);

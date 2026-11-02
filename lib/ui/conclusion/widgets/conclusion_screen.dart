@@ -23,6 +23,7 @@ import '../../achievements/widgets/achievement_detail.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../../domain/models/game_review.dart';
 import '../../core/opponent/opponent_ui.dart';
 import '../../core/review/move_quality_ui.dart';
@@ -125,6 +126,16 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     final state = context.watch<ConclusionCubit>().state;
     final conclusion = state.conclusion;
     final language = Localizations.localeOf(context).languageCode;
+    if (state.failed || state.missing) {
+      return LoadErrorScreen(
+        kind: state.missing ? LoadErrorKind.notFound : LoadErrorKind.generic,
+        onAction: state.missing
+            ? () => context.go(Routes.home)
+            : context.read<ConclusionCubit>().reload,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final scaffold = PopScope(
       canPop: conclusion?.run?.nextChallenge == null,
       onPopInvokedWithResult: (didPop, _) {

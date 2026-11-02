@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
+import '../../core/widgets/load_error.dart';
 
 import '../../../domain/models/history_filter.dart';
 import '../../core/keys/history_keys.dart';
@@ -56,6 +60,19 @@ class _HistoryScreenState extends State<HistoryScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final state = context.watch<HistoryCubit>().state;
+    if (state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: () async {
+          final cubit = context.read<HistoryCubit>();
+          await cubit.load();
+          if (mounted) _restore(cubit.state);
+        },
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     return BlocListener<HistoryCubit, HistoryState>(
       listenWhen: (before, after) =>
           (!before.loaded && after.loaded) || before.tab != after.tab,

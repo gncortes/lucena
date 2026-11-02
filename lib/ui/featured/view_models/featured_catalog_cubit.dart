@@ -1,3 +1,6 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/featured/featured_progress_repository.dart';
@@ -8,7 +11,9 @@ import '../../../domain/use_cases/now.dart';
 
 /// A lista de finais em destaque, com os filtros de país e de origem.
 class FeaturedCatalogState {
+  final LoadFailure? failure;
   const FeaturedCatalogState({
+    this.failure,
     this.ready = false,
     this.catalog = FeaturedCatalog.empty,
     this.items = const [],
@@ -55,6 +60,19 @@ class FeaturedCatalogCubit extends Cubit<FeaturedCatalogState> {
   List<FeaturedItem> _all = const [];
 
   Future<void> load() async {
+    _retryLoad = () => load();
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(FeaturedCatalogState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load() async {
     final catalog = await _featured.catalog();
     final played = await _progress.played();
     if (isClosed) return;

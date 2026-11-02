@@ -12,6 +12,7 @@ import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/core/theme/app_theme.dart';
 
 import '../../testing/e2e_dependencies.dart';
+import '../../testing/training/e2e_training.dart';
 
 import 'variant.dart';
 
@@ -33,6 +34,7 @@ class AppRobot {
     Locale? systemLocale,
     bool lightDevice = false,
     bool tour = false,
+    E2ETrainingScenario? trainingScenario,
   }) async {
     expect(isE2E, isTrue, reason: 'Rode o Patrol com --dart-define=E2E=true');
     // O app do cenário anterior sai da tela e as gravações que ele deixou na
@@ -61,7 +63,7 @@ class AppRobot {
       dispatcher.platformBrightnessTestValue = Brightness.dark;
       addTearDown(dispatcher.clearPlatformBrightnessTestValue);
     }
-    await _pumpApp();
+    await _pumpApp(trainingScenario: trainingScenario);
   }
 
   /// Fecha e abre o app de novo, mantendo o que foi gravado no aparelho. Como
@@ -87,9 +89,12 @@ class AppRobot {
   // A key nova a cada abertura garante um app do zero, sem estado em memória.
   // A leitura das preferências vem do aparelho e não agenda quadros: só o
   // pumpAndSettle não basta, é preciso esperar a primeira tela aparecer.
-  Future<void> _pumpApp() async {
+  Future<void> _pumpApp({E2ETrainingScenario? trainingScenario}) async {
     await $.pumpWidgetAndSettle(
-      LucenaApp(key: UniqueKey(), dependencies: await e2eDependencies()),
+      LucenaApp(
+        key: UniqueKey(),
+        dependencies: await e2eDependencies(trainingScenario: trainingScenario),
+      ),
     );
     // O app abre na tela inicial ou, com partida em andamento, no tabuleiro.
     await $(Scaffold).waitUntilVisible();

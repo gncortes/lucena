@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +36,14 @@ class SpeedrunHistoryScreen extends StatelessWidget {
     final l10n = context.l10n;
     final state = context.watch<SpeedrunHistoryCubit>().state;
     final speedrun = state.speedrun;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<SpeedrunHistoryCubit>().retry,
+      );
+    }
     return Scaffold(
       key: SpeedrunKeys.historyScreen,
       appBar: LucenaAppBar(title: Text(l10n.historyTitle)),

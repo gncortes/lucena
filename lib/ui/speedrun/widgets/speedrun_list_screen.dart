@@ -1,3 +1,5 @@
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_chip.dart';
@@ -40,6 +42,15 @@ class SpeedrunListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = context.watch<SpeedrunCubit>().state;
+    final failure = state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<SpeedrunCubit>().retry,
+      );
+    }
+
     final all = state.all;
     final marathon = state.marathonMode;
     // Fora da dificuldade escolhida, o speedrun some da lista (o de

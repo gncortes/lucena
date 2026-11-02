@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../routing/routes.dart';
+import '../../core/widgets/load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,6 +31,14 @@ class HomeLayoutScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final cubit = context.read<HomeLayoutCubit>();
     final state = context.watch<HomeLayoutCubit>().state;
+    if (state.failure case final failure?) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.fromFailure(failure),
+        onAction: cubit.load,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     final layout = state.layout;
     return Scaffold(
       key: HomeLayoutKeys.screen,

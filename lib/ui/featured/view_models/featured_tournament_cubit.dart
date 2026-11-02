@@ -1,3 +1,6 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/featured/featured_alerts_repository.dart';
@@ -9,7 +12,9 @@ import '../../../domain/use_cases/now.dart';
 
 /// A tela de um torneio: o resumo, os links e os finais dele.
 class FeaturedTournamentState {
+  final LoadFailure? failure;
   const FeaturedTournamentState({
+    this.failure,
     this.ready = false,
     this.tournament,
     this.items = const [],
@@ -55,6 +60,21 @@ class FeaturedTournamentCubit extends Cubit<FeaturedTournamentState> {
   final Now _now;
 
   Future<void> load() async {
+    _retryLoad = () => load();
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(FeaturedTournamentState(failure: LoadFailure.of(error)));
+      }
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load() async {
     final catalog = await _featured.catalog();
     final played = await _progress.played();
     final alertOn = _alerts.available && await _alerts.tournamentEnabled(id);

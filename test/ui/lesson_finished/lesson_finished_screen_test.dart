@@ -1,3 +1,4 @@
+import 'package:lucena/domain/models/endgame_lesson.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,7 +33,9 @@ void main() {
     SurveyKind kind,
     String id, {
     String? next,
+    String? origin,
     List<RaceProblem> problems = raceTestProblems,
+    EndgameTrail? trail,
   }) async {
     tester.view
       ..physicalSize = const Size(412, 917)
@@ -43,7 +46,7 @@ void main() {
       lessonId: id,
       nextId: next,
       school: FakeLessonRepository(),
-      endgames: FakeEndgameLessonRepository(),
+      endgames: FakeEndgameLessonRepository(trail: trail),
       race: FakeRaceRepository(
         now: FakeNow(DateTime.utc(2026, 1, 1)),
         problems: problems,
@@ -59,7 +62,10 @@ void main() {
       },
     );
     final router = GoRouter(
-      initialLocation: '/finished',
+      initialLocation: Uri(
+        path: '/finished',
+        queryParameters: origin == null ? null : {'origem': origin},
+      ).toString(),
       routes: [
         GoRoute(
           path: '/finished',
@@ -71,6 +77,7 @@ void main() {
         stub('/survey/:kind'),
         stub(Routes.school),
         stub(Routes.endgames),
+        stub('/training/:course'),
         stub('/endgames/:id/roteiro'),
         stub(Routes.race),
         stub('/setup'),
@@ -185,8 +192,83 @@ void main() {
     expect(find.text('Practice this endgame'), findsOneWidget);
   });
 
+  for (final hasPractice in [false, true]) {
+    for (final hasExercises in [false, true]) {
+      testWidgets('next steps practice=$hasPractice exercises=$hasExercises', (
+        tester,
+      ) async {
+        final original = FakeEndgameLessonRepository.sample.lessons.first;
+        expect(original.practice, isNotNull);
+        final lesson = EndgameLesson(
+          id: original.id,
+          module: original.module,
+          lesson: original.lesson,
+          exercises: hasExercises ? original.exercises : const [],
+          passScore: hasExercises ? original.passScore : 0,
+          keyPositions: original.keyPositions,
+          practice: hasPractice ? original.practice : null,
+        );
+        await pump(
+          tester,
+          SurveyKind.endgames,
+          lesson.id,
+          trail: EndgameTrail(
+            modules: [
+              EndgameModule(id: lesson.module, lessons: [lesson]),
+            ],
+          ),
+        );
+        expect(
+          find.byKey(NextStepsKeys.option('train')),
+          hasPractice ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(NextStepsKeys.option('exercises')),
+          hasExercises ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.byKey(NextStepsKeys.block),
+          hasPractice || hasExercises ? findsOneWidget : findsNothing,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('Escola: sem os "Próximos passos"', (tester) async {
     await pump(tester, SurveyKind.school, 'pieces.rook');
     expect(find.byKey(NextStepsKeys.block), findsNothing);
+    final finished = tester
+        .element(find.byType(LessonFinishedScreen))
+        .read<LessonFinishedCubit>()
+        .state;
+    expect(finished.hasExercises, isFalse);
+    expect(finished.practice, isNull);
   });
+  for (final kind in [SurveyKind.school, SurveyKind.endgames]) {
+    for (final close in [false, true]) {
+      testWidgets(
+        'training ${kind.code} completion exit close=$close returns to its course',
+        (tester) async {
+          await pump(
+            tester,
+            kind,
+            kind == SurveyKind.school ? 'pieces.rook' : 'rook.lucena',
+            origin: 'treino_guia',
+          );
+          final action = find.byKey(
+            close ? LessonFinishedKeys.close : LessonFinishedKeys.back,
+          );
+          await tester.ensureVisible(action);
+          await tester.pumpAndSettle();
+          await tester.tap(action);
+          await tester.pumpAndSettle();
+          expect(
+            opened.last,
+            Routes.training(kind == SurveyKind.school ? 'escola' : 'pilares'),
+          );
+        },
+      );
+    }
+  }
 }

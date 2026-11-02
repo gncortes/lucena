@@ -1,10 +1,14 @@
+import '../../core/widgets/load_error.dart';
+
 import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../routing/routes.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/featured.dart';
 import '../../../domain/use_cases/game_rules.dart';
@@ -50,52 +54,59 @@ class FindMoveScreen extends StatelessWidget {
     final l10n = context.l10n;
     final cubit = context.read<FindMoveCubit>();
     return BlocBuilder<FindMoveCubit, FindMoveState>(
-      builder: (context, state) => Scaffold(
-        key: FeaturedKeys.findScreen,
-        appBar: LucenaAppBar(
-          title: Text(l10n.featuredFindTitle),
-          actions: [
-            IconButton(
-              key: FeaturedKeys.bookButton,
-              tooltip: l10n.featuredBookTitle,
-              icon: const Icon(Icons.menu_book_outlined),
-              onPressed: () => showFeaturedBook(
-                context,
-                endgame: endgame,
-                tournament: tournament,
+      builder: (context, state) => state.failure != null
+          ? LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(state.failure!),
+              onAction: cubit.retrySave,
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            )
+          : Scaffold(
+              key: FeaturedKeys.findScreen,
+              appBar: LucenaAppBar(
+                title: Text(l10n.featuredFindTitle),
+                actions: [
+                  IconButton(
+                    key: FeaturedKeys.bookButton,
+                    tooltip: l10n.featuredBookTitle,
+                    icon: const Icon(Icons.menu_book_outlined),
+                    onPressed: () => showFeaturedBook(
+                      context,
+                      endgame: endgame,
+                      tournament: tournament,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: scrollPadding(
-                  context,
-                  left: AppSpacing.lg,
-                  right: AppSpacing.lg,
-                  bottom: AppSpacing.lg,
-                ),
+              body: Column(
                 children: [
-                  _Header(endgame: endgame, tournament: tournament),
-                  const SizedBox(height: AppSpacing.md),
-                  _FindBoard(endgame: endgame, state: state),
-                  const SizedBox(height: AppSpacing.md),
-                  _Feedback(state: state, cubit: cubit),
+                  Expanded(
+                    child: ListView(
+                      padding: scrollPadding(
+                        context,
+                        left: AppSpacing.lg,
+                        right: AppSpacing.lg,
+                        bottom: AppSpacing.lg,
+                      ),
+                      children: [
+                        _Header(endgame: endgame, tournament: tournament),
+                        const SizedBox(height: AppSpacing.md),
+                        _FindBoard(endgame: endgame, state: state),
+                        const SizedBox(height: AppSpacing.md),
+                        _Feedback(state: state, cubit: cubit),
+                      ],
+                    ),
+                  ),
+                  _Actions(
+                    state: state,
+                    cubit: cubit,
+                    endgame: endgame,
+                    tournament: tournament,
+                    tournamentFinals: tournamentFinals,
+                  ),
                 ],
               ),
             ),
-            _Actions(
-              state: state,
-              cubit: cubit,
-              endgame: endgame,
-              tournament: tournament,
-              tournamentFinals: tournamentFinals,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -166,6 +177,7 @@ class _FindBoard extends StatefulWidget {
 class _FindBoardState extends State<_FindBoard> {
   ChessboardController? _controller;
   int _attempt = -1;
+  bool? _active;
 
   @override
   void dispose() {
@@ -208,7 +220,7 @@ class _FindBoardState extends State<_FindBoard> {
   Widget build(BuildContext context) {
     final state = widget.state;
     final position = GameRules.fromFen(widget.endgame.fen);
-    final active = position != null && !state.finished;
+    final active = position != null && !state.finished && state.saving == null;
     final board = context.select(
       (SettingsCubit cubit) => cubit.state?.board ?? const BoardSettings(),
     );
@@ -217,10 +229,13 @@ class _FindBoardState extends State<_FindBoard> {
       420.0,
     );
     // Um lance errado: tabuleiro novo para a próxima tentativa.
-    if (_attempt != state.attempts || _controller == null) {
+    if (_attempt != state.attempts ||
+        _active != active ||
+        _controller == null) {
       _controller?.dispose();
       _controller = ChessboardController(game: _game(position, active: active));
       _attempt = state.attempts;
+      _active = active;
     }
     return Center(
       child: IgnorePointer(
@@ -305,8 +320,13 @@ class _Feedback extends StatelessWidget {
             alignment: AlignmentDirectional.centerStart,
             child: TextButton.icon(
               key: FeaturedKeys.findHint,
-              onPressed: cubit.showHint,
-              icon: const Icon(Icons.lightbulb_outline),
+              onPressed: state.saving == null ? cubit.showHint : null,
+              icon: state.saving == 'hint'
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.lightbulb_outline),
               label: Text(l10n.featuredFindHintButton),
             ),
           ),
@@ -359,16 +379,18 @@ class _Actions extends StatelessWidget {
     if (state.finished) {
       final next = FilledButton.icon(
         key: FeaturedKeys.findContinue,
-        onPressed: () async {
-          await askRegionOnce(context);
-          if (!context.mounted) return;
-          await showFeaturedNext(
-            context,
-            endgame: endgame,
-            tournament: tournament,
-            tournamentFinals: tournamentFinals,
-          );
-        },
+        onPressed: state.saving != null
+            ? null
+            : () async {
+                await askRegionOnce(context);
+                if (!context.mounted) return;
+                await showFeaturedNext(
+                  context,
+                  endgame: endgame,
+                  tournament: tournament,
+                  tournamentFinals: tournamentFinals,
+                );
+              },
         icon: const Icon(Icons.arrow_forward),
         label: Text(l10n.featuredContinue),
       );
@@ -378,8 +400,13 @@ class _Actions extends StatelessWidget {
           if (state.phase == FindMovePhase.revealed)
             OutlinedButton.icon(
               key: FeaturedKeys.findRetry,
-              onPressed: cubit.retry,
-              icon: const Icon(Icons.replay),
+              onPressed: state.saving == null ? cubit.retry : null,
+              icon: state.saving == 'retry'
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.replay),
               label: Text(l10n.featuredFindRetry),
             ),
           next,
@@ -393,13 +420,15 @@ class _Actions extends StatelessWidget {
               buttonKey: FeaturedKeys.findAnswer,
               icon: Icons.visibility_outlined,
               label: l10n.featuredFindShowAnswer,
-              onPressed: cubit.reveal,
+              loading: state.saving == 'answer',
+              onPressed: state.saving == null ? cubit.reveal : null,
             ),
             GameActionButton(
               buttonKey: FeaturedKeys.findRetry,
               icon: Icons.replay,
               label: l10n.featuredFindRetry,
-              onPressed: cubit.retry,
+              loading: state.saving == 'retry',
+              onPressed: state.saving == null ? cubit.retry : null,
             ),
           ]
         : [
@@ -408,13 +437,17 @@ class _Actions extends StatelessWidget {
                 buttonKey: FeaturedKeys.findHint,
                 icon: Icons.lightbulb_outline,
                 label: l10n.featuredFindHintButton,
-                onPressed: state.hint ? null : cubit.showHint,
+                loading: state.saving == 'hint',
+                onPressed: state.hint || state.saving != null
+                    ? null
+                    : cubit.showHint,
               ),
             GameActionButton(
               buttonKey: FeaturedKeys.findAnswer,
               icon: Icons.visibility_outlined,
               label: l10n.featuredFindShowAnswer,
-              onPressed: cubit.reveal,
+              loading: state.saving == 'answer',
+              onPressed: state.saving == null ? cubit.reveal : null,
             ),
           ];
     return SafeArea(

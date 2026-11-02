@@ -10,6 +10,7 @@ import 'routes.dart';
 String launchLocation({
   int? conclusion,
   bool resumeGame = false,
+  bool resumeBlind = false,
   SchoolProgress school = const SchoolProgress(),
   EndgameProgress endgames = const EndgameProgress(),
   OpenStarChallenge? stars,
@@ -30,6 +31,7 @@ String launchLocation({
   if (link != null) return Routes.challenge(link);
   if (conclusion != null) return Routes.conclusion(conclusion);
   if (resumeGame) return Routes.freeBoard;
+  if (resumeBlind) return Routes.blind;
   if (boardControlsOpen) return Routes.boardControls;
   if (lesson != null && lesson.open) {
     return Routes.lessonScript(lesson.lessonId, origin: 'continuar');

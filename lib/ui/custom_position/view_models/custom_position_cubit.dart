@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../data/repositories/training/training_repository.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../domain/models/endgame_position.dart';
 import '../../../domain/use_cases/position_validation.dart';
 
@@ -26,6 +27,7 @@ abstract class CustomPositionState with _$CustomPositionState {
 
     /// Falso até o rascunho ser lido.
     @Default(false) bool ready,
+    @Default(false) bool failed,
   }) = _CustomPositionState;
 }
 
@@ -41,6 +43,15 @@ class CustomPositionCubit extends Cubit<CustomPositionState> {
   final TrainingRepository _training;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> _load() async {
     final draft = await _training.loadCustomDraft();
     if (isClosed) return;
     _apply(

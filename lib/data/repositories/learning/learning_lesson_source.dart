@@ -17,7 +17,10 @@ class LearningLessonSource implements LessonSource {
     this.learning,
     this.analytics = const NoAnalyticsRepository(),
     this.campaigns,
+    this.analyticsLessonType,
+    this.analyticsOrigin,
   }) : _owner = learning?.currentUid();
+  final String? analyticsLessonType, analyticsOrigin;
   final LessonSource inner;
   final LearningRepository? learning;
   final AnalyticsRepository analytics;
@@ -182,7 +185,8 @@ class LearningLessonSource implements LessonSource {
       await analytics.log(
         AnalyticsEvents.aulaConcluida(
           aulaId: id,
-          tipoAula: endgame ? 'finais' : 'escola',
+          tipoAula: analyticsLessonType ?? (endgame ? 'finais' : 'escola'),
+          origem: analyticsOrigin,
         ),
       );
       final campaign = await campaigns?.active();
@@ -194,6 +198,20 @@ class LearningLessonSource implements LessonSource {
         await campaigns!.clear();
         await analytics.log(AnalyticsEvents.campanhaAulaConcluida(campaign));
       }
+    }
+    if (endgame && part != null && after.part) {
+      await learning?.notifyUnitCompleted(
+        owner: _owner,
+        kind: 'endgame_lesson',
+        unitId: '$id/$part',
+      );
+    }
+    if (after.lesson) {
+      await learning?.notifyUnitCompleted(
+        owner: _owner,
+        kind: _kind,
+        unitId: id,
+      );
     }
     return result;
   });

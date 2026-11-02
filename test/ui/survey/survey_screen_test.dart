@@ -156,10 +156,7 @@ void main() {
     await tap(tester, SurveyKeys.interest(SurveyInterest.yes));
     await tap(tester, SurveyKeys.send);
     expect(find.byKey(SurveyKeys.thanks), findsOneWidget);
-    expect(
-      find.textContaining('Muito obrigado por tirar um tempo'),
-      findsOneWidget,
-    );
+    expect(find.text('Obrigado pela sua opinião.'), findsOneWidget);
     expect(find.text('Voltar ao curso'), findsOneWidget);
     final saved = surveys.responses[SurveyKind.endgames]!;
     expect(saved.answers.rating, 5);

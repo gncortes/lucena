@@ -1,0 +1,578 @@
+import 'package:flutter/material.dart';
+
+import '../../../domain/use_cases/training/training_goal_counts.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../domain/models/training/day_goals.dart';
+import '../../../domain/models/training/training_course.dart';
+import '../../../domain/models/training/training_content.dart';
+import '../../core/keys/training_keys.dart';
+import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_button.dart';
+import '../../core/theme/app_shape.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/widgets/animated_progress.dart';
+import '../../core/widgets/course/course_item_tile.dart';
+import '../../core/widgets/teacher_speech.dart';
+import '../view_models/course_guide_cubit.dart';
+import 'course_guide_copy.dart';
+import '../../training_opening/widgets/opening_goal_cards.dart';
+import '../../course_entry/widgets/course_content_states.dart';
+
+class TrainingGoalsTab extends StatelessWidget {
+  const TrainingGoalsTab({
+    required this.onGoal,
+    required this.onPlan,
+    this.onOpening,
+    super.key,
+  });
+  final ValueChanged<TrainingGoal> onGoal;
+  final VoidCallback onPlan;
+  final ValueChanged<String>? onOpening;
+  @override
+  Widget build(
+    BuildContext context,
+  ) => BlocBuilder<CourseGuideCubit, CourseGuideState>(
+    builder: (context, state) {
+      final day = state.training?.day;
+      if (day == null) return const SizedBox.shrink();
+      final t = context.l10n;
+      final counts = trainingGoalCounts(state.training!);
+      final cubit = context.read<CourseGuideCubit>();
+      final extra = day.goals.any((g) => g.kind == GoalKind.extraLesson);
+      final offer =
+          day.allDone &&
+          day.studyDay &&
+          (extra || !cubit.config.doubleRequiresExtraLesson) &&
+          !day.doubled;
+      final firstLesson =
+          day.goals.length == 1 &&
+          day.goals.single.kind == GoalKind.lesson &&
+          !day.goals.single.done &&
+          state.training!.completedLessons.isEmpty &&
+          state.training!.cycles.isEmpty &&
+          state.training!.openings.isEmpty;
+      final sections = cubit.config.sections;
+      final hasOfflineLesson = day.goals.any(
+        (goal) =>
+            !goal.done &&
+            (goal.kind == GoalKind.lesson ||
+                goal.kind == GoalKind.extraLesson) &&
+            state.resources!.lessons.any(
+              (lesson) =>
+                  lesson.id == goal.ref &&
+                  state.resources!.offlineChapters.contains(lesson.groupId),
+            ),
+      );
+      final introductorySpacing =
+          !hasOfflineLesson &&
+          cubit.config.progressKind != TrainingProgressKind.modulesAndPieces &&
+          (!day.studyDay || state.training!.completedLessons.length == 1);
+      final goalGap = introductorySpacing ? 12.0 : 8.0;
+      final schoolFirstLessons =
+          cubit.config.progressKind == TrainingProgressKind.modulesAndPieces &&
+          state.training!.completedLessons.isEmpty;
+      final contents = <Widget>[];
+      if (hasOfflineLesson) {
+        contents.add(const TrainingGoalsOfflineNotice());
+      }
+      if (offer) {
+        contents.add(
+          _panel(
+            context,
+            highlight: true,
+            spacing: 8,
+            key: TrainingKeys.doubleOffer,
+            children: [
+              Text(
+                t.trainingDoubleOfferTitle,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(
+                courseGuideCopy(
+                  context,
+                  cubit.config.doubleOfferBodyKey,
+                  count: cubit.config.option(day.plan.minutes).lessonsPerDay,
+                ),
+              ),
+              FilledButton(
+                key: TrainingKeys.doubleButton,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(kButtonHeight),
+                ),
+                onPressed: state.saving ? null : cubit.doubleGoals,
+                child: Text(t.trainingDoubleAction),
+              ),
+            ],
+          ),
+        );
+      } else if (!day.studyDay) {
+        contents.add(
+          _panel(
+            context,
+            children: [
+              Text(
+                t.trainingDayOffTitle,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text(t.trainingDayOffBody),
+              _planLine(context, day),
+            ],
+          ),
+        );
+      } else if (day.allDone) {
+        contents.add(
+          state.teacher == null
+              ? _panel(
+                  context,
+                  children: [
+                    Text(
+                      courseGuideCopy(context, cubit.config.allDoneSpeechKey),
+                    ),
+                  ],
+                )
+              : Theme(
+                  data: Theme.of(context).copyWith(
+                    textTheme: Theme.of(context).textTheme.copyWith(
+                      bodyLarge: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
+                  child: TeacherSpeech(
+                    canvasHeader: true,
+                    canvasTrainingBalloon: true,
+                    unifiedSound: true,
+                    showSpeedBadge: false,
+                    teacher: state.teacher!,
+                    avatarSize: 40,
+                    text: courseGuideCopy(
+                      context,
+                      cubit.config.allDoneSpeechKey,
+                    ),
+                    speechContext: SpeechContext.teaching,
+                  ),
+                ),
+        );
+      } else {
+        contents.add(
+          _panel(
+            context,
+            key: TrainingKeys.goalsSummary,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      t.trainingGoalsToday,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  Text(
+                    t.trainingGoalsLeft(counts.remaining, counts.total),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 6,
+                child: AnimatedProgress(
+                  roundValue: true,
+                  backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+                  value: counts.total == 0
+                      ? 0
+                      : (counts.total - counts.remaining) / counts.total,
+                ),
+              ),
+              _planLine(context, day),
+            ],
+          ),
+        );
+      }
+      if (!day.studyDay) {
+        final lesson = state.nextLesson;
+        contents.add(_section(context, t.trainingSectionIfStudy));
+        if (lesson != null) {
+          contents.add(
+            CourseItemTile(
+              key: TrainingKeys.goalTile(GoalKind.lesson.name, lesson.id),
+              state: CourseItemState.open,
+              title: _lessonTitle(context, state, lesson),
+              summary: t.trainingLessonNew(cubit.config.lessonMinutes),
+              onTap: () =>
+                  onGoal(TrainingGoal(kind: GoalKind.lesson, ref: lesson.id)),
+            ),
+          );
+        }
+        contents.add(
+          _infoPanel(
+            context,
+            courseGuideCopy(context, cubit.config.dayOffInfoKey),
+          ),
+        );
+      } else if (day.doubled) {
+        contents.add(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
+            children: [
+              _section(context, t.trainingSectionDoubled),
+              for (final g in day.goals.where((g) => !g.done))
+                _goal(context, state, g),
+            ],
+          ),
+        );
+        contents.add(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 8,
+            children: [
+              _section(context, t.trainingSectionDoneToday),
+              for (final g in day.goals.where((g) => g.done))
+                _goal(context, state, g, completedCopy: true),
+            ],
+          ),
+        );
+      } else if (day.allDone && !offer) {
+        for (final goal in day.goals) {
+          contents.add(_goal(context, state, goal));
+        }
+      } else {
+        for (final section in sections) {
+          final goals = day.goals
+              .where((g) => _sectionOf(g.kind) == section)
+              .toList();
+          if (goals.isEmpty) continue;
+          final label = switch (section) {
+            GoalSection.lessons =>
+              goals.length == 1
+                  ? t.trainingSectionLesson
+                  : t.trainingSectionLessons,
+            GoalSection.reinforce => t.trainingSectionReinforce,
+            GoalSection.exercises =>
+              goals.length >= 7
+                  ? t.trainingSectionExercisesN(goals.length)
+                  : t.trainingSectionExercises,
+            GoalSection.openings => t.trainingSectionOpenings,
+            GoalSection.bots => t.trainingSectionBots,
+            GoalSection.stars => t.trainingSectionStars,
+          };
+          contents.add(
+            _GoalsSection(
+              header: !firstLesson || section != GoalSection.lessons
+                  ? _section(context, label)
+                  : null,
+              headerGap: schoolFirstLessons ? 0 : goalGap,
+              children: [
+                for (final (index, g) in goals.indexed)
+                  Padding(
+                    padding: EdgeInsets.only(top: index == 0 ? 0 : goalGap),
+                    child: _goal(context, state, g),
+                  ),
+                if (schoolFirstLessons) const SizedBox(height: 8),
+              ],
+            ),
+          );
+        }
+        if ((cubit.config.progressKind !=
+                    TrainingProgressKind.modulesAndPieces ||
+                state.training!.completedLessons.isEmpty) &&
+            state.training!.cycles.isEmpty &&
+            state.training!.openings.isEmpty) {
+          contents.add(
+            _infoPanel(
+              context,
+              courseGuideCopy(context, cubit.config.firstInfoKey),
+            ),
+          );
+        }
+      }
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: CustomScrollView(
+          slivers: [
+            for (final item in contents)
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  0,
+                  16,
+                  firstLesson && item is _GoalsSection ? 16 : goalGap,
+                ),
+                sliver: item is _GoalsSection
+                    ? item
+                    : SliverToBoxAdapter(child: item),
+              ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ],
+        ),
+      );
+    },
+  );
+
+  Widget _planLine(BuildContext context, DayGoals day) {
+    final t = context.l10n;
+    final days = day.plan.weekdays == 62
+        ? t.trainingWeekdaysDefault
+        : t.trainingWeekdaysCustom(
+            day.plan.weekdayMask.split('').where((bit) => bit == '1').length,
+          );
+    return InkWell(
+      onTap: onPlan,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          spacing: 8,
+          children: [
+            Icon(
+              Icons.edit_calendar_outlined,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            Expanded(child: Text(t.trainingPlanLine(days))),
+            const Icon(Icons.chevron_right),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _goal(
+    BuildContext context,
+    CourseGuideState state,
+    TrainingGoal goal, {
+    bool completedCopy = false,
+  }) {
+    if (goal.kind == GoalKind.openings && onOpening != null) {
+      return OpeningGoalCards(
+        saved: state.training!,
+        resources: state.resources!,
+        onTrain: onOpening!,
+      );
+    }
+    final t = context.l10n;
+    final lesson = state.resources!.lessons
+        .where((l) => l.id == goal.ref)
+        .firstOrNull;
+    final training = state.training!;
+    final cycle = training.cycles[goal.ref];
+    final level = switch (goal.itemId) {
+      'medium' => t.challengeLevelMedium,
+      'hard' => t.challengeLevelHard,
+      _ => t.challengeLevelEasy,
+    };
+    final title = switch (goal.kind) {
+      GoalKind.openings => t.trainingOpeningsTitle,
+      GoalKind.stars => t.starChallengeTitle(goal.ref.split('.').last),
+      GoalKind.speedrun => t.trainingSpeedrunGoalTitle,
+      GoalKind.lesson || GoalKind.extraLesson =>
+        lesson == null ? '' : _lessonTitle(context, state, lesson),
+      _ => lesson == null ? '' : trainingMasteryLessonTitle(context, lesson),
+    };
+    final summary = switch (goal.kind) {
+      GoalKind.lesson =>
+        goal.done
+            ? t.trainingLessonDoneToday
+            : lesson != null &&
+                  state.resources!.offlineChapters.contains(lesson.groupId)
+            ? t.trainingLessonNeedsInternet
+            : t.trainingLessonNew(
+                context.read<CourseGuideCubit>().config.lessonMinutes,
+              ),
+      GoalKind.extraLesson => t.trainingLessonExtraDone,
+      GoalKind.exercise => t.trainingOneExercise,
+      GoalKind.reinforce => t.trainingReinforceLeft(
+        (cycle?.reinforcement.length ?? 0) - (cycle?.reinforceDays.length ?? 0),
+      ),
+      GoalKind.redo => t.trainingRedoLesson,
+      GoalKind.openings => t.trainingOpeningsSummary(
+        goal.items.length,
+        goal.items.entries
+            .where(
+              (e) =>
+                  training.openings[e.key]?.doneTrechos[e.value] ==
+                  training.day!.date,
+            )
+            .length,
+        goal.items.length,
+      ),
+      GoalKind.stars =>
+        goal.done
+            ? t.trainingStarGoalDone(level, goal.stars)
+            : t.trainingStarGoal(level, goal.stars),
+      GoalKind.bot =>
+        goal.done
+            ? t.trainingBotGoalDone(
+                t.trainingBotNameCoco,
+                int.tryParse(goal.items['rung'] ?? '') ?? 1000,
+              )
+            : t.trainingBotGoal(
+                t.trainingBotNameCoco,
+                int.tryParse(goal.items['rung'] ?? '') ?? 1000,
+              ),
+      GoalKind.speedrun => t.trainingSpeedrunGoal(
+        (int.tryParse(goal.items['initialSeconds'] ?? '') ?? 900) ~/ 60,
+        t.trainingBotNameCoco,
+      ),
+    };
+    return AnimatedSwitcher(
+      duration: AppMotion.of(context).component,
+      child: CourseItemTile(
+        key: TrainingKeys.goalTile(
+          goal.kind.name,
+          completedCopy
+              ? '${goal.ref}:${goal.itemId ?? goal.kind.name}'
+              : goal.ref,
+        ),
+        state: goal.done
+            ? CourseItemState.approved
+            : goal.key == training.day?.next?.key
+            ? CourseItemState.next
+            : CourseItemState.open,
+        title: title,
+        summary: summary,
+        difficulty: goal.kind == GoalKind.stars || goal.stars == 0
+            ? null
+            : goal.stars,
+        onTap: goal.done ? null : () => onGoal(goal),
+      ),
+    );
+  }
+
+  String _lessonTitle(
+    BuildContext context,
+    CourseGuideState state,
+    TrainingLesson lesson,
+  ) {
+    if (lesson.kind == TrainingLessonKind.test) return lesson.title;
+    final modules =
+        context.read<CourseGuideCubit>().config.progressKind ==
+        TrainingProgressKind.modulesAndPieces;
+    final lessons = state.resources!.lessons
+        .where(
+          (l) =>
+              l.visible &&
+              l.kind != TrainingLessonKind.test &&
+              (modules
+                  ? l.groupId == lesson.groupId
+                  : l.partId == lesson.partId),
+        )
+        .toList();
+    return context.l10n.trainingLessonLabel(
+      lessons.indexWhere((l) => l.id == lesson.id) + 1,
+      trainingMasteryLessonTitle(context, lesson),
+    );
+  }
+
+  static GoalSection _sectionOf(GoalKind kind) => switch (kind) {
+    GoalKind.lesson || GoalKind.extraLesson => GoalSection.lessons,
+    GoalKind.reinforce || GoalKind.redo => GoalSection.reinforce,
+    GoalKind.exercise => GoalSection.exercises,
+    GoalKind.openings => GoalSection.openings,
+    GoalKind.bot || GoalKind.speedrun => GoalSection.bots,
+    GoalKind.stars => GoalSection.stars,
+  };
+  static Widget _infoPanel(BuildContext context, String text) => _panel(
+    context,
+    highlight: true,
+    children: [
+      Row(
+        spacing: 12,
+        children: [
+          Icon(
+            Icons.info_outline,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          Expanded(child: Text(text)),
+        ],
+      ),
+    ],
+  );
+
+  static Widget _section(BuildContext context, String text) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        height: 20 / 12,
+        letterSpacing: 0,
+      ),
+    ),
+  );
+  static Widget _panel(
+    BuildContext context, {
+    required List<Widget> children,
+    bool highlight = false,
+    double spacing = 10,
+    Key? key,
+  }) => Material(
+    key: key,
+    color: highlight
+        ? Theme.of(context).colorScheme.primaryContainer
+        : AppColors.white,
+    borderRadius: BorderRadius.circular(AppShape.large),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: spacing,
+        children: children,
+      ),
+    ),
+  );
+}
+
+/// Keeps a section's heading visible only while that section is scrolling.
+class _GoalsSection extends StatelessWidget {
+  const _GoalsSection({
+    required this.header,
+    required this.headerGap,
+    required this.children,
+  });
+
+  final Widget? header;
+  final double headerGap;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => SliverMainAxisGroup(
+    slivers: [
+      if (header != null)
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _GoalsHeader(
+            extent:
+                4 + 20 * MediaQuery.textScalerOf(context).scale(1) + headerGap,
+            child: ColoredBox(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: Align(alignment: Alignment.topLeft, child: header!),
+            ),
+          ),
+        ),
+      SliverList.list(children: children),
+    ],
+  );
+}
+
+class _GoalsHeader extends SliverPersistentHeaderDelegate {
+  _GoalsHeader({required this.extent, required this.child});
+
+  final double extent;
+  final Widget child;
+
+  @override
+  double get minExtent => extent;
+  @override
+  double get maxExtent => extent;
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => SizedBox.expand(child: child);
+  @override
+  bool shouldRebuild(_GoalsHeader oldDelegate) =>
+      extent != oldDelegate.extent || child != oldDelegate.child;
+}

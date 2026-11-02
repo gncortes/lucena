@@ -30,6 +30,8 @@ class AnimatedProgress extends StatelessWidget {
     required this.value,
     this.role = ProgressRole.primary,
     this.backgroundColor,
+    this.color,
+    this.roundValue = false,
     super.key,
   });
 
@@ -41,6 +43,8 @@ class AnimatedProgress extends StatelessWidget {
 
   /// O trilho (padrão do tema); sobre um cartão colorido, a tela passa o seu.
   final Color? backgroundColor;
+  final Color? color;
+  final bool roundValue;
 
   Color? _color(BuildContext context) => switch (role) {
     ProgressRole.primary => null,
@@ -52,11 +56,14 @@ class AnimatedProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final value = this.value;
-    final color = _color(context);
+    final color = this.color ?? _color(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppShape.full),
       child: value == null
           ? LinearProgressIndicator(
+              borderRadius: roundValue
+                  ? BorderRadius.circular(AppShape.full)
+                  : null,
               minHeight: height,
               color: color,
               backgroundColor: backgroundColor,
@@ -66,6 +73,9 @@ class AnimatedProgress extends StatelessWidget {
               duration: AppMotion.of(context).screen,
               curve: AppMotion.enter,
               builder: (context, value, _) => LinearProgressIndicator(
+                borderRadius: roundValue
+                    ? BorderRadius.circular(AppShape.full)
+                    : null,
                 value: value,
                 minHeight: height,
                 color: color,

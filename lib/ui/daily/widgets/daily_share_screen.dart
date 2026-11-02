@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -34,6 +37,14 @@ class _DailyShareScreenState extends State<DailyShareScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final failure = context.watch<DailyResultCubit>().state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<DailyResultCubit>().load,
+      );
+    }
     final record = context.select((DailyResultCubit c) => c.state.record);
     final days = context.select((StreakCubit c) => c.state.streak.current);
     final text = record == null ? null : _text(context, record, days);
@@ -42,7 +53,9 @@ class _DailyShareScreenState extends State<DailyShareScreen> {
       child: Scaffold(
         key: DailyKeys.shareScreen,
         appBar: LucenaAppBar(title: Text(l10n.dailyShareTitle)),
-        body: record == null || text == null
+        body: !context.watch<DailyResultCubit>().state.ready
+            ? const SkeletonList()
+            : record == null || text == null
             ? const SizedBox.shrink()
             : ListView(
                 padding: scrollPadding(

@@ -11,6 +11,13 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lucena/notification_timezone")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getTimeZoneId" -> result.success(java.time.ZoneId.systemDefault().id)
+                    else -> result.notImplemented()
+                }
+            }
         // Abre telas do sistema: a de texto para fala (as vozes do aparelho),
         // a de notificações do Lucena e a caixa de entrada do app de e-mail.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lucena/system_settings")

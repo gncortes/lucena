@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -55,6 +58,8 @@ abstract class SpeedrunSummary with _$SpeedrunSummary {
 @freezed
 abstract class SpeedrunState with _$SpeedrunState {
   const factory SpeedrunState({
+    LoadFailure? failure,
+
     /// Os speedruns no ritmo da lista, sem as Maratonas. Nulo enquanto são
     /// lidos.
     List<SpeedrunSummary>? all,
@@ -154,83 +159,103 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
 
   /// Lê tudo. Com [speedrunId], abre esse speedrun; com [attemptId], também
   /// a tentativa.
+  String? _speedrunId;
+  int? _attemptId;
+
+  Future<void> retry() => load(speedrunId: _speedrunId, attemptId: _attemptId);
+
   Future<void> load({String? speedrunId, int? attemptId}) async {
-    final bases = await _journey.speedruns();
-    final clock = (await _settings?.load())?.clock;
-    // Sem ritmo escolhido, o do nível do jogador (sem perfil, o padrão).
-    final level = (await _profile?.load())?.level;
-    // A aba escolhida vale enquanto a tela está aberta; ao abrir, a do nível.
-    final category =
-        state.category ??
-        (level == null ? null : SpeedrunCategory.forLevel(level));
-    TimeControl initial(TimeControl? saved) => level == null
-        ? saved ?? SpeedrunPaces.standard
-        : DefaultPace.of(saved: saved, level: level);
-    final pace = initial(clock?.speedrunTime);
-    final marathonPace = initial(clock?.marathonTime);
-    final all = [
-      for (final base in bases)
-        if (base.kind != SpeedrunKind.marathon && !base.journeyOnly)
-          await _summary(SpeedrunPaces.withTime(base, pace)),
-    ];
-    final marathons = [
-      for (final base in bases)
-        if (base.kind == SpeedrunKind.marathon && !base.journeyOnly)
-          await _summary(SpeedrunPaces.withTime(base, marathonPace)),
-    ];
-    // O speedrun aberto pode ser de outro ritmo que o da lista.
-    final opened = SpeedrunPaces.resolve(bases, speedrunId);
-    final selected = opened == null
-        ? null
-        : [
-                ...all,
-                ...marathons,
-              ].where((s) => s.speedrun.id == opened.id).firstOrNull ??
-              await _summary(opened);
-    SpeedrunRun? run;
-    if (selected != null && attemptId != null) {
-      final attempt = await _speedruns.attempt(attemptId);
-      if (attempt != null) run = SpeedrunScore.run(selected.speedrun, attempt);
+    _speedrunId = speedrunId;
+    _attemptId = attemptId;
+    try {
+      final bases = await _journey.speedruns();
+      final clock = (await _settings?.load())?.clock;
+      // Sem ritmo escolhido, o do nível do jogador (sem perfil, o padrão).
+      final level = (await _profile?.load())?.level;
+      // A aba escolhida vale enquanto a tela está aberta; ao abrir, a do nível.
+      final category =
+          state.category ??
+          (level == null ? null : SpeedrunCategory.forLevel(level));
+      TimeControl initial(TimeControl? saved) => level == null
+          ? saved ?? SpeedrunPaces.standard
+          : DefaultPace.of(saved: saved, level: level);
+      final pace = initial(clock?.speedrunTime);
+      final marathonPace = initial(clock?.marathonTime);
+      final all = [
+        for (final base in bases)
+          if (base.kind != SpeedrunKind.marathon && !base.journeyOnly)
+            await _summary(SpeedrunPaces.withTime(base, pace)),
+      ];
+      final marathons = [
+        for (final base in bases)
+          if (base.kind == SpeedrunKind.marathon && !base.journeyOnly)
+            await _summary(SpeedrunPaces.withTime(base, marathonPace)),
+      ];
+      // O speedrun aberto pode ser de outro ritmo que o da lista.
+      final opened = SpeedrunPaces.resolve(bases, speedrunId);
+      final selected = opened == null
+          ? null
+          : [
+                  ...all,
+                  ...marathons,
+                ].where((s) => s.speedrun.id == opened.id).firstOrNull ??
+                await _summary(opened);
+      SpeedrunRun? run;
+      if (selected != null && attemptId != null) {
+        final attempt = await _speedruns.attempt(attemptId);
+        if (attempt != null) {
+          run = SpeedrunScore.run(selected.speedrun, attempt);
+        }
+      }
+      final characters = await _characters?.characters() ?? const <Character>[];
+      // A oferta do detalhe e o ganho do resumo (paga o que ficou pendente).
+      final payer = _bonus;
+      final offer = selected == null || payer == null
+          ? 0
+          : await payer.offer(selected.speedrun);
+      final bonus = run != null && run.completed && payer != null
+          ? await payer.bonusOf(run.attempt.id)
+          : null;
+      final ongoing = selected?.ongoing;
+      final ongoingOffer = ongoing == null || payer == null
+          ? 0
+          : await payer.offerOf(ongoing.attempt);
+      final paid =
+          run != null && run.completed && bonus == null && payer != null
+          ? await payer.paidFor(selected!.speedrun)
+          : null;
+      if (isClosed) return;
+      emit(
+        SpeedrunState(
+          failure:
+              (speedrunId != null && selected == null) ||
+                  (attemptId != null && run == null)
+              ? LoadFailure.notFound
+              : null,
+          all: all,
+          marathons: marathons,
+          marathonPace: marathonPace,
+          marathonMode: clock?.speedrunMarathon ?? false,
+          category: category,
+          compactPace:
+              level == RatingLevel.beginner || level == RatingLevel.casual,
+          selected: selected,
+          run: run,
+          bonus: bonus,
+          offer: offer,
+          ongoingOffer: ongoingOffer,
+          paid: paid,
+          previousBest: selected == null || run == null
+              ? null
+              : SpeedrunScore.previousBest(selected.records, run),
+          pace: pace,
+          characters: characters,
+        ),
+      );
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(SpeedrunState(failure: LoadFailure.of(error)));
     }
-    final characters = await _characters?.characters() ?? const <Character>[];
-    // A oferta do detalhe e o ganho do resumo (paga o que ficou pendente).
-    final payer = _bonus;
-    final offer = selected == null || payer == null
-        ? 0
-        : await payer.offer(selected.speedrun);
-    final bonus = run != null && run.completed && payer != null
-        ? await payer.bonusOf(run.attempt.id)
-        : null;
-    final ongoing = selected?.ongoing;
-    final ongoingOffer = ongoing == null || payer == null
-        ? 0
-        : await payer.offerOf(ongoing.attempt);
-    final paid = run != null && run.completed && bonus == null && payer != null
-        ? await payer.paidFor(selected!.speedrun)
-        : null;
-    if (isClosed) return;
-    emit(
-      SpeedrunState(
-        all: all,
-        marathons: marathons,
-        marathonPace: marathonPace,
-        marathonMode: clock?.speedrunMarathon ?? false,
-        category: category,
-        compactPace:
-            level == RatingLevel.beginner || level == RatingLevel.casual,
-        selected: selected,
-        run: run,
-        bonus: bonus,
-        offer: offer,
-        ongoingOffer: ongoingOffer,
-        paid: paid,
-        previousBest: selected == null || run == null
-            ? null
-            : SpeedrunScore.previousBest(selected.records, run),
-        pace: pace,
-        characters: characters,
-      ),
-    );
   }
 
   Future<SpeedrunSummary> _summary(Speedrun speedrun) async {
@@ -324,11 +349,10 @@ class SpeedrunCubit extends Cubit<SpeedrunState> {
     if (selected == null) return null;
     final bases = await _journey.speedruns();
     final (baseId, _) = SpeedrunPaces.parse(selected.speedrun.id);
-    final speedrun = SpeedrunPaces.resolve(
-      bases,
-      SpeedrunPaces.idFor(baseId, pace),
-    );
-    if (speedrun == null || speedrun.stages.isEmpty) return null;
+    final base = bases.where((s) => s.id == baseId).firstOrNull;
+    if (base == null) return null;
+    final speedrun = SpeedrunPaces.withTime(base, pace);
+    if (speedrun.stages.isEmpty) return null;
     await _savePace(pace, marathon: speedrun.kind == SpeedrunKind.marathon);
     final attempt = await _speedruns.start(speedrun.id, _now());
     return (speedrun, attempt.id);

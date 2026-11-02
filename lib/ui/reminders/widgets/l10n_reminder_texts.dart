@@ -1,11 +1,12 @@
 import '../../../data/services/notification_service.dart';
 import '../../../domain/models/reminder.dart';
+import '../../../domain/use_cases/training/reminder_text.dart';
 import '../../core/l10n/l10n.dart';
 import '../../week/widgets/week_texts.dart';
 import '../view_models/reminder_texts.dart';
 
 /// Os textos dos lembretes nas traduções do app.
-class L10nReminderTexts implements ReminderTexts {
+class L10nReminderTexts implements ReminderTexts, CourseReminderTexts {
   L10nReminderTexts(this._l10n);
 
   final AppLocalizations _l10n;
@@ -24,6 +25,24 @@ class L10nReminderTexts implements ReminderTexts {
     id: 'resumo_semana_quieto',
     name: _l10n.weekChannel,
   );
+
+  @override
+  NotificationChannelSpec get trainingChannel => NotificationChannelSpec(
+    id: 'treino_quieto',
+    name: _l10n.trainingReminderTitle,
+  );
+  @override
+  String get trainingTitle => _l10n.trainingNotifTitle;
+  @override
+  String trainingBody(TrainingReminderText request, String? lessonTitle) {
+    final count = request.arguments['n']! as int;
+    if (request.key == 'trainingNotifLesson') {
+      return lessonTitle == null
+          ? _l10n.trainingNotifGoals(count + 1)
+          : _l10n.trainingNotifLesson(lessonTitle, count);
+    }
+    return _l10n.trainingNotifGoals(count);
+  }
 
   @override
   String title(PlannedReminder reminder) => switch (reminder.kind) {

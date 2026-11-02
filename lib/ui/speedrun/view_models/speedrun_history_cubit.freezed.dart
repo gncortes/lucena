@@ -315,7 +315,7 @@ $SpeedrunRunCopyWith<$Res> get run {
 /// @nodoc
 mixin _$SpeedrunHistoryState {
 
-/// O speedrun, já no ritmo. Nulo enquanto é lido ou se o id não existe.
+ LoadFailure? get failure;/// O speedrun, já no ritmo. Nulo enquanto é lido ou se o id não existe.
  Speedrun? get speedrun;/// O melhor tempo e quando foi feito. Nulos sem conclusão.
  Duration? get best; DateTime? get bestAt;/// As tentativas terminadas, da mais recente para a mais antiga. A em
 /// andamento fica só no detalhe.
@@ -333,20 +333,20 @@ $SpeedrunHistoryStateCopyWith<SpeedrunHistoryState> get copyWith => _$SpeedrunHi
 @override
 bool operator ==(Object other) {
   final _this = this as SpeedrunHistoryState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunHistoryState&&(identical(other.speedrun, _this.speedrun) || other.speedrun == _this.speedrun)&&(identical(other.best, _this.best) || other.best == _this.best)&&(identical(other.bestAt, _this.bestAt) || other.bestAt == _this.bestAt)&&const DeepCollectionEquality().equals(other.runs, _this.runs)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.loaded, _this.loaded) || other.loaded == _this.loaded)&&(identical(other.year, _this.year) || other.year == _this.year));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SpeedrunHistoryState&&(identical(other.failure, _this.failure) || other.failure == _this.failure)&&(identical(other.speedrun, _this.speedrun) || other.speedrun == _this.speedrun)&&(identical(other.best, _this.best) || other.best == _this.best)&&(identical(other.bestAt, _this.bestAt) || other.bestAt == _this.bestAt)&&const DeepCollectionEquality().equals(other.runs, _this.runs)&&const DeepCollectionEquality().equals(other.characters, _this.characters)&&(identical(other.loaded, _this.loaded) || other.loaded == _this.loaded)&&(identical(other.year, _this.year) || other.year == _this.year));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SpeedrunHistoryState;
-  return Object.hash(runtimeType,_this.speedrun,_this.best,_this.bestAt,const DeepCollectionEquality().hash(_this.runs),const DeepCollectionEquality().hash(_this.characters),_this.loaded,_this.year);
+  return Object.hash(runtimeType,_this.failure,_this.speedrun,_this.best,_this.bestAt,const DeepCollectionEquality().hash(_this.runs),const DeepCollectionEquality().hash(_this.characters),_this.loaded,_this.year);
 }
 
 @override
 String toString() {
   final _this = this as SpeedrunHistoryState;
-  return 'SpeedrunHistoryState(speedrun: ${_this.speedrun}, best: ${_this.best}, bestAt: ${_this.bestAt}, runs: ${_this.runs}, characters: ${_this.characters}, loaded: ${_this.loaded}, year: ${_this.year})';
+  return 'SpeedrunHistoryState(failure: ${_this.failure}, speedrun: ${_this.speedrun}, best: ${_this.best}, bestAt: ${_this.bestAt}, runs: ${_this.runs}, characters: ${_this.characters}, loaded: ${_this.loaded}, year: ${_this.year})';
 }
 
 
@@ -357,7 +357,7 @@ abstract mixin class $SpeedrunHistoryStateCopyWith<$Res>  {
   factory $SpeedrunHistoryStateCopyWith(SpeedrunHistoryState value, $Res Function(SpeedrunHistoryState) _then) = _$SpeedrunHistoryStateCopyWithImpl;
 @useResult
 $Res call({
- Speedrun? speedrun, Duration? best, DateTime? bestAt, List<SpeedrunHistoryRun> runs, List<Character> characters, bool loaded, int? year
+ LoadFailure? failure, Speedrun? speedrun, Duration? best, DateTime? bestAt, List<SpeedrunHistoryRun> runs, List<Character> characters, bool loaded, int? year
 });
 
 
@@ -374,9 +374,10 @@ class _$SpeedrunHistoryStateCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunHistoryState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? speedrun = freezed,Object? best = freezed,Object? bestAt = freezed,Object? runs = null,Object? characters = null,Object? loaded = null,Object? year = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? failure = freezed,Object? speedrun = freezed,Object? best = freezed,Object? bestAt = freezed,Object? runs = null,Object? characters = null,Object? loaded = null,Object? year = freezed,}) {
   return _then(SpeedrunHistoryState(
-speedrun: freezed == speedrun ? _self.speedrun : speedrun // ignore: cast_nullable_to_non_nullable
+failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,speedrun: freezed == speedrun ? _self.speedrun : speedrun // ignore: cast_nullable_to_non_nullable
 as Speedrun?,best: freezed == best ? _self.best : best // ignore: cast_nullable_to_non_nullable
 as Duration?,bestAt: freezed == bestAt ? _self.bestAt : bestAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,runs: null == runs ? _self.runs : runs // ignore: cast_nullable_to_non_nullable
@@ -480,10 +481,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Speedrun? speedrun,  Duration? best,  DateTime? bestAt,  List<SpeedrunHistoryRun> runs,  List<Character> characters,  bool loaded,  int? year)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( LoadFailure? failure,  Speedrun? speedrun,  Duration? best,  DateTime? bestAt,  List<SpeedrunHistoryRun> runs,  List<Character> characters,  bool loaded,  int? year)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SpeedrunHistoryState() when $default != null:
-return $default(_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characters,_that.loaded,_that.year);case _:
+return $default(_that.failure,_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characters,_that.loaded,_that.year);case _:
   return orElse();
 
 }
@@ -501,10 +502,10 @@ return $default(_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characte
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Speedrun? speedrun,  Duration? best,  DateTime? bestAt,  List<SpeedrunHistoryRun> runs,  List<Character> characters,  bool loaded,  int? year)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( LoadFailure? failure,  Speedrun? speedrun,  Duration? best,  DateTime? bestAt,  List<SpeedrunHistoryRun> runs,  List<Character> characters,  bool loaded,  int? year)  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunHistoryState():
-return $default(_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characters,_that.loaded,_that.year);case _:
+return $default(_that.failure,_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characters,_that.loaded,_that.year);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -521,10 +522,10 @@ return $default(_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characte
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Speedrun? speedrun,  Duration? best,  DateTime? bestAt,  List<SpeedrunHistoryRun> runs,  List<Character> characters,  bool loaded,  int? year)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( LoadFailure? failure,  Speedrun? speedrun,  Duration? best,  DateTime? bestAt,  List<SpeedrunHistoryRun> runs,  List<Character> characters,  bool loaded,  int? year)?  $default,) {final _that = this;
 switch (_that) {
 case _SpeedrunHistoryState() when $default != null:
-return $default(_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characters,_that.loaded,_that.year);case _:
+return $default(_that.failure,_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characters,_that.loaded,_that.year);case _:
   return null;
 
 }
@@ -536,9 +537,10 @@ return $default(_that.speedrun,_that.best,_that.bestAt,_that.runs,_that.characte
 
 
 class _SpeedrunHistoryState extends SpeedrunHistoryState {
-  const _SpeedrunHistoryState({this.speedrun, this.best, this.bestAt,  List<SpeedrunHistoryRun> runs = const <SpeedrunHistoryRun>[],  List<Character> characters = const <Character>[], this.loaded = false, this.year}): _runs = runs,_characters = characters,super._();
+  const _SpeedrunHistoryState({this.failure, this.speedrun, this.best, this.bestAt,  List<SpeedrunHistoryRun> runs = const <SpeedrunHistoryRun>[],  List<Character> characters = const <Character>[], this.loaded = false, this.year}): _runs = runs,_characters = characters,super._();
   
 
+@override final  LoadFailure? failure;
 /// O speedrun, já no ritmo. Nulo enquanto é lido ou se o id não existe.
 @override final  Speedrun? speedrun;
 /// O melhor tempo e quando foi feito. Nulos sem conclusão.
@@ -578,18 +580,18 @@ _$SpeedrunHistoryStateCopyWith<_SpeedrunHistoryState> get copyWith => __$Speedru
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunHistoryState&&(identical(other.speedrun, speedrun) || other.speedrun == speedrun)&&(identical(other.best, best) || other.best == best)&&(identical(other.bestAt, bestAt) || other.bestAt == bestAt)&&const DeepCollectionEquality().equals(other.runs, _runs)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.loaded, loaded) || other.loaded == loaded)&&(identical(other.year, year) || other.year == year));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SpeedrunHistoryState&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.speedrun, speedrun) || other.speedrun == speedrun)&&(identical(other.best, best) || other.best == best)&&(identical(other.bestAt, bestAt) || other.bestAt == bestAt)&&const DeepCollectionEquality().equals(other.runs, _runs)&&const DeepCollectionEquality().equals(other.characters, _characters)&&(identical(other.loaded, loaded) || other.loaded == loaded)&&(identical(other.year, year) || other.year == year));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,speedrun,best,bestAt,const DeepCollectionEquality().hash(_runs),const DeepCollectionEquality().hash(_characters),loaded,year);
+    return Object.hash(runtimeType,failure,speedrun,best,bestAt,const DeepCollectionEquality().hash(_runs),const DeepCollectionEquality().hash(_characters),loaded,year);
 }
 
 @override
 String toString() {
-    return 'SpeedrunHistoryState(speedrun: $speedrun, best: $best, bestAt: $bestAt, runs: $runs, characters: $characters, loaded: $loaded, year: $year)';
+    return 'SpeedrunHistoryState(failure: $failure, speedrun: $speedrun, best: $best, bestAt: $bestAt, runs: $runs, characters: $characters, loaded: $loaded, year: $year)';
 }
 
 
@@ -600,7 +602,7 @@ abstract mixin class _$SpeedrunHistoryStateCopyWith<$Res> implements $SpeedrunHi
   factory _$SpeedrunHistoryStateCopyWith(_SpeedrunHistoryState value, $Res Function(_SpeedrunHistoryState) _then) = __$SpeedrunHistoryStateCopyWithImpl;
 @override @useResult
 $Res call({
- Speedrun? speedrun, Duration? best, DateTime? bestAt, List<SpeedrunHistoryRun> runs, List<Character> characters, bool loaded, int? year
+ LoadFailure? failure, Speedrun? speedrun, Duration? best, DateTime? bestAt, List<SpeedrunHistoryRun> runs, List<Character> characters, bool loaded, int? year
 });
 
 
@@ -617,9 +619,10 @@ class __$SpeedrunHistoryStateCopyWithImpl<$Res>
 
 /// Create a copy of SpeedrunHistoryState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? speedrun = freezed,Object? best = freezed,Object? bestAt = freezed,Object? runs = null,Object? characters = null,Object? loaded = null,Object? year = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? failure = freezed,Object? speedrun = freezed,Object? best = freezed,Object? bestAt = freezed,Object? runs = null,Object? characters = null,Object? loaded = null,Object? year = freezed,}) {
   return _then(_SpeedrunHistoryState(
-speedrun: freezed == speedrun ? _self.speedrun : speedrun // ignore: cast_nullable_to_non_nullable
+failure: freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as LoadFailure?,speedrun: freezed == speedrun ? _self.speedrun : speedrun // ignore: cast_nullable_to_non_nullable
 as Speedrun?,best: freezed == best ? _self.best : best // ignore: cast_nullable_to_non_nullable
 as Duration?,bestAt: freezed == bestAt ? _self.bestAt : bestAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,runs: null == runs ? _self._runs : runs // ignore: cast_nullable_to_non_nullable

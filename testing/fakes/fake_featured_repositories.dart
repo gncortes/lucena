@@ -1,3 +1,4 @@
+import 'package:lucena/domain/models/find_move_checkpoint.dart';
 import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository.dart';
@@ -16,6 +17,29 @@ class FakeFeaturedRepository implements FeaturedRepository {
 }
 
 class FakeFeaturedProgressRepository implements FeaturedProgressRepository {
+  final checkpoints = <String, FindMoveCheckpoint>{};
+
+  @override
+  Future<FindMoveCheckpoint?> findMove(FeaturedEndgame endgame) =>
+      FeaturedProgressRepository.serializeFindMove(endgame.id, () async {
+        final saved = checkpoints[endgame.id];
+        return saved != null && saved.matches(endgame) ? saved : null;
+      });
+
+  @override
+  Future<void> saveFindMove(
+    String id,
+    FindMoveCheckpoint checkpoint, {
+    Future<void> Function()? onPlayed,
+  }) => FeaturedProgressRepository.serializeFindMove(id, () async {
+    if (checkpoint.phase == FindMovePhase.solved ||
+        checkpoint.phase == FindMovePhase.revealed) {
+      await markPlayed(id);
+      await onPlayed?.call();
+    }
+    checkpoints[id] = checkpoint;
+  });
+
   final playedIds = <String>{};
   final choices = <String, FeaturedChoice>{};
 

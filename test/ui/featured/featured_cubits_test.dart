@@ -296,7 +296,7 @@ void main() {
         expect(cubit.state.phase, FindMovePhase.wrong);
         expect(cubit.state.attempts, 1);
         expect(progress.playedIds, isEmpty);
-        cubit.retry();
+        await cubit.retry();
         expect(cubit.state.phase, FindMovePhase.asking);
         await cubit.play(Move.parse('c8b8')!);
         expect(cubit.state.phase, FindMovePhase.solved);
@@ -309,14 +309,14 @@ void main() {
 
     test('dica e ver a resposta', () async {
       final cubit = newFind();
-      cubit.showHint();
+      await cubit.showHint();
       expect(cubit.state.hint, isTrue);
       await cubit.reveal();
       expect(cubit.state.phase, FindMovePhase.revealed);
       expect(progress.playedIds, {'b'});
       // Depois de ver a resposta, dá para tentar de novo (tabuleiro novo).
       final attempts = cubit.state.attempts;
-      cubit.retry();
+      await cubit.retry();
       expect(cubit.state.phase, FindMovePhase.asking);
       expect(cubit.state.attempts, attempts + 1);
       expect(cubit.state.hint, isFalse);

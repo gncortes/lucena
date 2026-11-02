@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/characters/character_repository.dart';
@@ -29,8 +33,10 @@ enum PlacementView { loading, intro, question, result }
 
 /// O teste de nível na tela.
 class PlacementViewState {
+  final LoadFailure? failure;
   const PlacementViewState({
     this.view = PlacementView.loading,
+    this.failure,
     this.test,
     this.item,
     this.result,
@@ -170,6 +176,16 @@ class PlacementCubit extends Cubit<PlacementViewState> {
 
   /// Abre a abertura do teste, oferecendo continuar o que ficou pela metade.
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      debugPrint('placement load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(PlacementViewState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> _load() async {
     final skills = await _placement.skills();
     final bank = await _placement.bank();
     _engine = PlacementEngine(skills: skills, bank: bank);

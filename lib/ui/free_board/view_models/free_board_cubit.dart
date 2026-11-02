@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import '../../../data/repositories/analytics/analytics_repository.dart';
 import '../../../data/repositories/draw/draw_offer_repository.dart';
 import '../../../data/repositories/haptics/haptics_repository.dart';
@@ -137,6 +139,18 @@ class FreeBoardCubit extends Cubit<FreeBoardState> {
   /// A tela abriu. Partida nova (criada com posição) é só gravada; sem ela,
   /// continua a partida em andamento ou, se não há, começa uma do início.
   Future<void> open() async {
+    try {
+      await _open();
+      if (!isClosed && state.failed) emit(state.copyWith(failed: false));
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      // A failed opening save must not poison the next retry's write queue.
+      _saving = Future.value();
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> _open() async {
     // Partida em andamento que volta já contou o começo.
     if (state.ready) _countStart();
     if (!state.ready) {

@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/skeleton.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -54,7 +58,16 @@ class TourScreen extends StatelessWidget {
         context.go(Routes.goal);
       },
       builder: (context, state) {
-        if (!state.ready) return const Scaffold(key: TourKeys.screen);
+        if (state.failure case final failure?) {
+          return LoadErrorScreen(
+            kind: LoadErrorKind.fromFailure(failure),
+            onAction: () =>
+                cubit.load(Localizations.localeOf(context).languageCode),
+          );
+        }
+        if (!state.ready) {
+          return const Scaffold(key: TourKeys.screen, body: SkeletonList());
+        }
         final step = state.step;
         final total = state.steps.length;
         final rtl = Directionality.of(context) == TextDirection.rtl;
@@ -126,7 +139,7 @@ class TourScreen extends StatelessWidget {
                       children: [
                         ViktorConversation(
                           viktor: state.viktor,
-                          speech: state.speech,
+                          speech: state.speech ?? _publicSpeech(l10n, state),
                           viktorKey: TourKeys.viktor,
                           speechKey: TourKeys.speech,
                         ),
@@ -187,6 +200,22 @@ class TourScreen extends StatelessWidget {
     );
   }
 }
+
+String _publicSpeech(AppLocalizations l10n, TourState state) =>
+    switch (state.step) {
+      TourStep.board => l10n.tourSpeechBoard,
+      TourStep.voice =>
+        state.linkSetupDone
+            ? (state.hasVoices
+                  ? l10n.tourSpeechVoiceLink
+                  : l10n.tourSpeechVoiceLinkNone)
+            : (state.hasVoices
+                  ? l10n.tourSpeechVoice
+                  : l10n.tourSpeechVoiceNone),
+      TourStep.school => l10n.tourSpeechSchool,
+      TourStep.help => l10n.tourSpeechHelp,
+      TourStep.play => l10n.tourSpeechPlay,
+    };
 
 /// Recorta só os lados do passo: em cima e embaixo sobra 16 dp para a sombra.
 class _SideClipper extends CustomClipper<Rect> {

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../course_guide/widgets/training_load_error.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -39,6 +42,17 @@ class CategoryScreen extends StatelessWidget {
     final sections = context.select(
       (CatalogCubit cubit) => cubit.state.sections,
     );
+    final failure = context.watch<CatalogCubit>().state.failure;
+    if (failure != null) {
+      return trainingLoadError(
+        context,
+        failure,
+        () => context.read<CatalogCubit>().load(
+          category: category,
+          subcategory: subcategory,
+        ),
+      );
+    }
     return Scaffold(
       key: CatalogKeys.categoryScreen,
       appBar: LucenaAppBar(

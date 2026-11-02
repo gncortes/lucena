@@ -40,7 +40,18 @@ class _Auth extends NoAuthService {
   );
 
   @override
-  Future<void> delete() async => deleted = true;
+  Future<bool> delete({
+    required String expectedUid,
+    required Future<void> Function() deleteData,
+    required Future<void> Function(String uid) beforeSignOut,
+  }) async {
+    if (signedIn?.uid != expectedUid) {
+      throw const AccountException(AccountFailure.userMismatch);
+    }
+    await deleteData();
+    deleted = true;
+    return true;
+  }
 }
 
 void main() {
@@ -114,7 +125,7 @@ void main() {
   test('apagar a conta apaga o perfil antes da conta', () async {
     await repository.signInWithGoogle();
 
-    await repository.deleteAccount();
+    await repository.deleteAccount(expectedUid: 'u1');
 
     expect(store.deleted, ['u1']);
     expect(auth.deleted, isTrue);
@@ -125,7 +136,7 @@ void main() {
     store.offline = true;
 
     await expectLater(
-      repository.deleteAccount(),
+      repository.deleteAccount(expectedUid: 'u1'),
       throwsA(
         isA<AccountException>().having(
           (e) => e.failure,
@@ -141,7 +152,7 @@ void main() {
     await repository.signInWithGoogle();
     avatars.offline = true;
 
-    await repository.deleteAccount();
+    await repository.deleteAccount(expectedUid: 'u1');
 
     expect(store.deleted, ['u1']);
     expect(auth.deleted, isTrue);
@@ -151,7 +162,7 @@ void main() {
     await repository.signInWithGoogle();
     avatars.photos['u1'] = Uint8List(1);
 
-    await repository.deleteAccount(photo: true);
+    await repository.deleteAccount(expectedUid: 'u1', photo: true);
 
     expect(avatars.deleted, ['u1']);
     expect(store.deleted, ['u1']);
@@ -163,7 +174,7 @@ void main() {
     avatars.offline = true;
 
     await expectLater(
-      repository.deleteAccount(photo: true),
+      repository.deleteAccount(expectedUid: 'u1', photo: true),
       throwsA(
         isA<AccountException>().having(
           (e) => e.failure,
@@ -176,8 +187,17 @@ void main() {
     expect(auth.deleted, isFalse);
   });
 
-  test('sem conta, apagar não faz nada', () async {
-    await repository.deleteAccount();
+  test('sem conta, apagar falha em vez de sinalizar sucesso', () async {
+    await expectLater(
+      repository.deleteAccount(expectedUid: 'u1'),
+      throwsA(
+        isA<AccountException>().having(
+          (e) => e.failure,
+          'failure',
+          AccountFailure.userMismatch,
+        ),
+      ),
+    );
 
     expect(store.deleted, isEmpty);
     expect(auth.deleted, isFalse);

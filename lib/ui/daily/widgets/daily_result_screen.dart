@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -32,6 +35,14 @@ class DailyResultScreen extends StatelessWidget {
     final date = context.read<DailyResultCubit>().date;
     return BlocBuilder<DailyResultCubit, DailyResultState>(
       builder: (context, state) {
+        final failure = state.failure;
+        if (failure != null) {
+          return challengeLoadError(
+            context,
+            failure,
+            context.read<DailyResultCubit>().load,
+          );
+        }
         final record = state.record;
         return Scaffold(
           key: DailyKeys.resultScreen,
@@ -50,7 +61,7 @@ class DailyResultScreen extends StatelessWidget {
             ],
           ),
           body: !state.ready
-              ? const SizedBox.shrink()
+              ? const SkeletonList()
               : ListView(
                   padding: scrollPadding(
                     context,

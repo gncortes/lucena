@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -61,23 +63,29 @@ class FreeBoardRobot {
     String? goal,
     String? position,
     String? challenge,
+    Key fromScreen = HomeKeys.screen,
+    bool preserveStack = false,
   }) async {
-    final context = $.tester.element(find.byKey(HomeKeys.screen));
-    GoRouter.of(context).go(
-      Routes.freeBoardAt(
-        fen,
-        side: side?.name,
-        view: user?.name,
-        white: white,
-        black: black,
-        opponent: opponent,
-        level: level?.toString(),
-        user: user?.name,
-        goal: goal,
-        position: position,
-        challenge: challenge,
-      ),
+    final context = $.tester.element(find.byKey(fromScreen));
+    final destination = Routes.freeBoardAt(
+      fen,
+      side: side?.name,
+      view: user?.name,
+      white: white,
+      black: black,
+      opponent: opponent,
+      level: level?.toString(),
+      user: user?.name,
+      goal: goal,
+      position: position,
+      challenge: challenge,
     );
+    final router = GoRouter.of(context);
+    if (preserveStack) {
+      unawaited(router.push<void>(destination));
+    } else {
+      router.go(destination);
+    }
     await $.pumpAndSettle();
     await expectVisible();
   }

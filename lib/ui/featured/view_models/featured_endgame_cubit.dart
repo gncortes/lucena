@@ -1,3 +1,7 @@
+import '../../../domain/models/find_move_checkpoint.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -9,7 +13,10 @@ import '../../../domain/models/featured.dart';
 /// Um final em destaque: o livrinho dele, o que o jogador já fez e o
 /// adversário e o relógio que valem.
 class FeaturedEndgameState {
+  final LoadFailure? failure;
   const FeaturedEndgameState({
+    this.failure,
+    this.findMove,
     this.ready = false,
     this.endgame,
     this.tournament,
@@ -18,6 +25,8 @@ class FeaturedEndgameState {
     this.choice,
     this.characters = const [],
   });
+
+  final FindMoveCheckpoint? findMove;
 
   final bool ready;
 
@@ -42,6 +51,8 @@ class FeaturedEndgameState {
 
   FeaturedEndgameState copyWith({bool? played, FeaturedChoice? choice}) =>
       FeaturedEndgameState(
+        failure: failure,
+        findMove: findMove,
         ready: ready,
         endgame: endgame,
         tournament: tournament,
@@ -66,16 +77,33 @@ class FeaturedEndgameCubit extends Cubit<FeaturedEndgameState> {
   final CharacterRepository _characters;
 
   Future<void> load() async {
+    _retryLoad = () => load();
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(FeaturedEndgameState(failure: LoadFailure.of(error)));
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load() async {
     final catalog = await _featured.catalog();
-    final played = (await _progress.played()).contains(id);
     final saved = await _progress.choice(id);
     final characters = await _characters.characters();
-    if (isClosed) return;
     final endgame = catalog.endgame(id);
+    final findMove = endgame != null && endgame.isFindMove
+        ? await _progress.findMove(endgame)
+        : null;
+    final played = (await _progress.played()).contains(id);
+    if (isClosed) return;
     final tournamentId = endgame?.tournamentId;
     emit(
       FeaturedEndgameState(
         ready: true,
+        findMove: findMove,
         endgame: endgame,
         tournament: catalog.tournament(tournamentId),
         siblings: [

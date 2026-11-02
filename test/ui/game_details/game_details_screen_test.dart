@@ -8,6 +8,7 @@ import 'package:lucena/ui/core/review/move_quality_ui.dart';
 import 'package:lucena/ui/core/widgets/figurine.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
@@ -615,7 +616,9 @@ void main() {
   testWidgets('partida que não existe mais: o aviso', (tester) async {
     await pump(tester, 99);
 
-    expect(find.byKey(GameDetailsKeys.notFound), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.action), findsOneWidget);
+    expect(find.byKey(LoadErrorKeys.back), findsNothing);
     expect(find.byKey(GameDetailsKeys.board), findsNothing);
   });
 }

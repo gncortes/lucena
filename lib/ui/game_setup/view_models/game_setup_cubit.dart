@@ -1,5 +1,8 @@
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -59,6 +62,7 @@ abstract class GameSetupState with _$GameSetupState {
 
     /// Falso até a última configuração ser lida.
     @Default(false) bool ready,
+    @Default(false) bool failed,
 
     /// A configuração veio de um link de desafio: a partida é a dele.
     @Default(false) bool fromLink,
@@ -184,6 +188,15 @@ class GameSetupCubit extends Cubit<GameSetupState> {
   final bool initialBlind;
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(state.copyWith(failed: true));
+    }
+  }
+
+  Future<void> _load() async {
     var setup = await _training.loadSetup();
     // O link manda: o adversário, o nível, o relógio e o modo vêm dele (sem
     // gravar, para não trocar a configuração de quem abriu).
@@ -217,6 +230,7 @@ class GameSetupCubit extends Cubit<GameSetupState> {
         paces: paces,
         characters: characters,
         ready: true,
+        failed: false,
       ),
     );
   }

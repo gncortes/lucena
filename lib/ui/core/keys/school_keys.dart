@@ -81,6 +81,9 @@ abstract final class StarChallengeKeys {
 
   /// O "Jogar de novo" no mesmo rodapé, no fim, no lugar do "Vai!".
   static const retryButton = Key('starChallenge.retry');
+  static const saveProgress = Key('starChallenge.saveProgress');
+  static const saveError = Key('starChallenge.saveError');
+  static const retrySave = Key('starChallenge.retrySave');
   static const backButton = Key('starChallenge.back');
 
   /// Um desafio na lista (`<peça>.<nível>`).

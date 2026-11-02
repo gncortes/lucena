@@ -1,3 +1,6 @@
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/characters/character_repository.dart';
@@ -7,7 +10,9 @@ import '../../../domain/models/survey.dart';
 import '../../../domain/use_cases/survey_rules.dart';
 
 class SurveyState {
+  final LoadFailure? failure;
   const SurveyState({
+    this.failure,
     required this.kind,
     this.ready = false,
     this.step = 0,
@@ -68,6 +73,21 @@ class SurveyCubit extends Cubit<SurveyState> {
   SurveyKind get kind => state.kind;
 
   Future<void> load() async {
+    _retryLoad = () => load();
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) {
+        emit(SurveyState(kind: state.kind, failure: LoadFailure.of(error)));
+      }
+    }
+  }
+
+  Future<void> Function()? _retryLoad;
+  Future<void> retryLoad() async => _retryLoad?.call();
+
+  Future<void> _load() async {
     final draft = await surveys.loadDraft(kind);
     Character? viktor;
     for (final character in await characters.characters()) {

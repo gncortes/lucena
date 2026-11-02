@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+import 'package:lucena/ui/core/widgets/skeleton.dart';
 import 'package:lucena/ui/free_board/widgets/move_list.dart';
 import 'package:lucena/ui/free_board/widgets/game_actions_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -269,7 +270,11 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    if (cubit.state.ready) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
   }
 
   Rect boardRect(WidgetTester tester) =>
@@ -1038,6 +1043,7 @@ void main() {
 
       expect(find.byKey(FreeBoardKeys.screen), findsOneWidget);
       expect(find.byKey(FreeBoardKeys.board), findsNothing);
+      expect(find.byType(SkeletonBlock), findsWidgets);
     });
 
     testWidgets('a partida gravada volta com a posição, a lista e o relógio', (

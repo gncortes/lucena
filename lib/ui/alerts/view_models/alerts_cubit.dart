@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/alerts/alerts_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -22,9 +26,11 @@ class AlertsState {
     this.country,
     this.state,
     this.language,
+    this.failure,
   });
 
   final bool ready;
+  final LoadFailure? failure;
   final AlertSettings settings;
 
   /// O Android deixa mostrar avisos.
@@ -49,6 +55,8 @@ class AlertsState {
     AlertSettings? settings,
     bool? permitted,
     String? language,
+    LoadFailure? failure,
+    bool clearFailure = false,
   }) => AlertsState(
     ready: ready,
     settings: settings ?? this.settings,
@@ -57,6 +65,7 @@ class AlertsState {
     country: country,
     state: state,
     language: language ?? this.language,
+    failure: clearFailure ? null : failure ?? this.failure,
   );
 }
 
@@ -95,6 +104,20 @@ class AlertsCubit extends Cubit<AlertsState> {
   }
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      _failed(error, stack);
+    }
+  }
+
+  void _failed(Object error, StackTrace stack) {
+    debugPrint('alerts load failed: $error');
+    reportHandledError(error, stack);
+    if (!isClosed) emit(state.copyWith(failure: LoadFailure.generic));
+  }
+
+  Future<void> _load() async {
     final settings = await _alerts.load();
     final permitted = await _permitted();
     final place = await _place();
@@ -108,9 +131,10 @@ class AlertsCubit extends Cubit<AlertsState> {
         country: place.country,
         state: place.state,
         language: state.language,
+        failure: state.failure,
       ),
     );
-    await _follow();
+    if (await _follow() && !isClosed) emit(state.copyWith(clearFailure: true));
   }
 
   /// O idioma do app mudou (ou ficou conhecido): reinscreve no `idioma_*`.
@@ -122,9 +146,13 @@ class AlertsCubit extends Cubit<AlertsState> {
 
   /// Relê a permissão (a pessoa voltou dos ajustes do Android).
   Future<void> refresh() async {
-    final permitted = await _permitted();
-    if (isClosed || permitted == state.permitted) return;
-    emit(state.copyWith(permitted: permitted));
+    try {
+      final permitted = await _permitted();
+      if (isClosed || permitted == state.permitted) return;
+      emit(state.copyWith(permitted: permitted));
+    } on Object catch (error, stack) {
+      _failed(error, stack);
+    }
   }
 
   /// Grava na hora e acerta os tópicos.
@@ -179,17 +207,25 @@ class AlertsCubit extends Cubit<AlertsState> {
   // Uma troca de tópicos por vez: a seguinte usa o estado mais novo.
   Future<void> _following = Future.value();
 
-  Future<void> _follow() {
-    if (!state.ready) return Future.value();
-    return _following = _following.then(
-      (_) => _push.follow(
-        AlertsRules.topics(
-          state.settings,
-          country: state.country,
-          state: state.state,
-          language: state.language,
+  Future<bool> _follow() async {
+    if (!state.ready) return true;
+    try {
+      _following = _following.then(
+        (_) => _push.follow(
+          AlertsRules.topics(
+            state.settings,
+            country: state.country,
+            state: state.state,
+            language: state.language,
+          ),
         ),
-      ),
-    );
+      );
+      await _following;
+      return true;
+    } on Object catch (error, stack) {
+      _following = Future<void>.value();
+      _failed(error, stack);
+      return false;
+    }
   }
 }

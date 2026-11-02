@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+import '../../../domain/models/load_failure.dart';
 
 import '../../../data/repositories/account/account_repository.dart';
 import '../../../data/repositories/analytics/analytics_repository.dart';
@@ -36,8 +40,10 @@ enum LevelChoice { test, known, lichess, chess, manual, zero }
 enum LevelError { lichessOffline, chessOffline }
 
 class LevelState {
+  final LoadFailure? failure;
   const LevelState({
     this.ready = false,
+    this.failure,
     this.choice = LevelChoice.test,
     this.knowsRating = false,
     this.placed,
@@ -223,6 +229,18 @@ class LevelCubit extends Cubit<LevelState> {
   String get _origin => fromProfile ? 'perfil' : 'nivel';
 
   Future<void> load() async {
+    try {
+      await _load();
+    } on Object catch (error, stack) {
+      // A failed persisted write must not poison the next explicit load.
+      _onboardingSaved = Future<void>.value();
+      debugPrint('level load failed: $error');
+      reportHandledError(error, stack);
+      if (!isClosed) emit(LevelState(failure: LoadFailure.generic));
+    }
+  }
+
+  Future<void> _load() async {
     // A conta criada depois do Lichess (pelo convite) liga os dois.
     _accountSubscription ??= _accounts?.changes.listen((account) {
       if (account != null) unawaited(_markLinked());
@@ -235,7 +253,8 @@ class LevelCubit extends Cubit<LevelState> {
       if (character.id == 'master') viktor = character;
     }
     if (!_saved.done && !fromProfile) {
-      unawaited(_save(_saved.copyWith(stage: OnboardingStage.level)));
+      await _save(_saved.copyWith(stage: OnboardingStage.level));
+      if (isClosed) return;
     }
     final selected = _saved.selectedRating;
     final placed = !fromProfile && !_saved.byHand ? selected : null;

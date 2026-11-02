@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/lesson.dart';
+import 'package:lucena/domain/models/lesson_content.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 
@@ -9,25 +10,33 @@ import '../../../testing/fakes/fake_profile_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
 
+class _UnavailableLessons extends FakeLessonRepository {
+  @override
+  Future<LessonTexts> texts(String language) async =>
+      throw const LessonContentUnavailable();
+}
+
 void main() {
   late FakeOnboardingRepository onboarding;
   late FakeProfileRepository profile;
 
-  TourCubit cubit({bool voices = true}) {
+  TourCubit cubit({bool voices = true, bool unavailable = false}) {
     final cubit = TourCubit(
       onboarding: onboarding,
       profile: profile,
       characters: FakeCharacterRepository(),
       voice: voices ? FakeVoiceRepository() : null,
-      lessons: FakeLessonRepository(
-        texts: LessonTexts.fromJson({
-          'tour.board': 'Welcome, my student.',
-          'tour.voice': 'Pick my voice.',
-          'tour.voice.link': 'Nice game!',
-          'tour.voice.link.none': 'Nice game! Tell me your name.',
-          'tour.voice.none': 'Tell me your name.',
-        }),
-      ),
+      lessons: unavailable
+          ? _UnavailableLessons()
+          : FakeLessonRepository(
+              texts: LessonTexts.fromJson({
+                'tour.board': 'Welcome, my student.',
+                'tour.voice': 'Pick my voice.',
+                'tour.voice.link': 'Nice game!',
+                'tour.voice.link.none': 'Nice game! Tell me your name.',
+                'tour.voice.none': 'Tell me your name.',
+              }),
+            ),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -43,6 +52,26 @@ void main() {
       await tour.next();
     }
   }
+
+  test(
+    'guest without a course package can finish and resume the tour',
+    () async {
+      final tour = cubit(voices: false, unavailable: true);
+      await tour.load('pt');
+      expect(tour.state.ready, isTrue);
+      expect(tour.state.speech, isNull);
+      expect(tour.state.steps, TourStep.values);
+      await tour.next();
+      final reopened = cubit(voices: false, unavailable: true);
+      await reopened.load('pt');
+      expect(reopened.state.step, TourStep.voice);
+      await toLast(reopened);
+      await reopened.finish();
+      expect(reopened.state.finished, isTrue);
+      expect(onboarding.saved.done, isFalse);
+      expect(onboarding.saved.inProgress, isTrue);
+    },
+  );
 
   test('são cinco passos, na ordem, e o nível não é um deles', () async {
     expect(TourStep.values, [

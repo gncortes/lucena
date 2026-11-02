@@ -1,3 +1,6 @@
+import '../../core/widgets/skeleton.dart';
+import '../../journey/widgets/challenge_load_error.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -27,12 +30,20 @@ class RacePerformanceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+    final failure = context.watch<RacePerformanceCubit>().state.failure;
+    if (failure != null) {
+      return challengeLoadError(
+        context,
+        failure,
+        context.read<RacePerformanceCubit>().load,
+      );
+    }
     return Scaffold(
       key: RaceKeys.performanceScreen,
       appBar: LucenaAppBar(title: Text(l10n.racePerformanceTitle)),
       body: BlocBuilder<RacePerformanceCubit, RacePerformanceState>(
         builder: (context, state) {
-          if (!state.ready) return const SizedBox.shrink();
+          if (!state.ready) return const SkeletonList();
           final diagnosis = state.diagnosis;
           final weakest = diagnosis.weakest;
           return ListView(

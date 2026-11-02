@@ -4,6 +4,9 @@ import 'dart:math' as math;
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
+
+import '../../core/widgets/skeleton.dart';
+
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +26,7 @@ import '../../../routing/routes.dart';
 import '../../core/keys/daily_keys.dart';
 import '../../core/keys/free_board_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/widgets/load_error.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_text.dart';
@@ -411,12 +415,20 @@ class _FreeBoardScreenState extends State<FreeBoardScreen>
     ClockPosition clockPosition,
     TalkState talk,
   ) {
-    // Enquanto a partida em andamento é lida do aparelho, só a barra de cima:
-    // o tabuleiro não pisca na posição errada.
+    // O shimmer acompanha a leitura sem exibir o tabuleiro na posição errada.
+    if (state.failed) {
+      return LoadErrorScreen(
+        kind: LoadErrorKind.generic,
+        onAction: cubit.open,
+        onBack: () =>
+            context.canPop() ? context.pop() : context.go(Routes.home),
+      );
+    }
     if (!state.ready) {
       return Scaffold(
         key: FreeBoardKeys.screen,
         appBar: LucenaAppBar(title: Text(context.l10n.freeBoardTitle)),
+        body: const SafeArea(child: SkeletonList()),
       );
     }
     final training = state.mode.userSide != null;

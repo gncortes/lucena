@@ -1,3 +1,6 @@
+import '../../../domain/models/load_failure.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
+
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +22,7 @@ enum RaceFeedback { correct, wrong }
 
 class RaceState {
   const RaceState({
+    this.failure,
     this.phase = RacePhase.loading,
     this.problems = const [],
     this.record = const RaceRecord(),
@@ -36,6 +40,8 @@ class RaceState {
     this.reviewIndex = 0,
     this.diagnosis = const RaceDiagnosis(runs: 0),
   });
+
+  final LoadFailure? failure;
 
   final RacePhase phase;
   final List<RaceProblem> problems;
@@ -155,38 +161,43 @@ class RaceCubit extends Cubit<RaceState> {
   /// Lê o banco e o recorde. Com uma Corrida em andamento (o app foi fechado
   /// no meio), continua dela, se ainda há tempo, ou fecha o resultado.
   Future<void> load() async {
-    final problems = await _repository.problems();
-    final duration = await _repository.duration();
-    final record = await _repository.record(duration: duration);
-    final ongoing = await _repository.ongoing();
-    final saved = await _repository.filter();
-    final history = await _repository.history();
-    final recent = RaceRules.recentIds(history);
-    final only = onlySubcategory != null || onlyCategory != null
-        ? RaceRules.only(
-            problems,
-            subcategory: onlySubcategory,
-            category: onlyCategory,
-          )
-        : null;
-    emit(
-      state.copyWith(
-        problems: problems,
-        record: record,
-        duration: duration,
-        remaining: duration.limit,
-        recent: recent,
-        diagnosis: RaceDiagnosis.of(history, problems),
-        // Um filtro sem problema no banco de hoje volta ao padrão.
-        filter: only != null && RaceRules.count(problems, only) > 0
-            ? only
-            : RaceRules.count(problems, saved) > 0
-            ? saved
-            : const RaceFilter(),
-        phase: RacePhase.intro,
-      ),
-    );
-    if (ongoing != null) await _resume(ongoing);
+    try {
+      final problems = await _repository.problems();
+      final duration = await _repository.duration();
+      final record = await _repository.record(duration: duration);
+      final ongoing = await _repository.ongoing();
+      final saved = await _repository.filter();
+      final history = await _repository.history();
+      final recent = RaceRules.recentIds(history);
+      final only = onlySubcategory != null || onlyCategory != null
+          ? RaceRules.only(
+              problems,
+              subcategory: onlySubcategory,
+              category: onlyCategory,
+            )
+          : null;
+      emit(
+        state.copyWith(
+          problems: problems,
+          record: record,
+          duration: duration,
+          remaining: duration.limit,
+          recent: recent,
+          diagnosis: RaceDiagnosis.of(history, problems),
+          // Um filtro sem problema no banco de hoje volta ao padrão.
+          filter: only != null && RaceRules.count(problems, only) > 0
+              ? only
+              : RaceRules.count(problems, saved) > 0
+              ? saved
+              : const RaceFilter(),
+          phase: RacePhase.intro,
+        ),
+      );
+      if (ongoing != null) await _resume(ongoing);
+    } on Object catch (error, stack) {
+      reportHandledError(error, stack);
+      if (!isClosed) emit(RaceState(failure: LoadFailure.of(error)));
+    }
   }
 
   Future<void> _resume(RaceRun run) async {

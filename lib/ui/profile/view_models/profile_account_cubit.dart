@@ -16,12 +16,13 @@ import '../../../domain/use_cases/analytics_rules.dart';
 
 /// Um aviso do Perfil, mostrado uma vez.
 enum ProfileNotice {
-  /// Apagar sem rede: nada foi apagado.
+  /// A remoção não pôde ser concluída por falta de conexão.
   deleteOffline,
 
   /// O Firebase pediu um login recente; com e-mail, a tela pede a senha.
   deleteRelogin,
   deleteFailed,
+  deleteDifferentAccount,
   deleted,
 
   /// "Atualizar o rating" sem rede: fica o de antes.
@@ -127,22 +128,29 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   /// O progresso fica no aparelho; a conta continua na nuvem.
   Future<void> signOut() => _accounts.signOut();
 
-  /// Apaga a conta (diálogo confirmado). Com Google, um login recente
-  /// pedido pelo Firebase é feito aqui mesmo e a conta é apagada em seguida.
-  Future<void> deleteAccount() async {
+  /// Fixa a conta confirmada antes de ler o perfil ou abrir o Google.
+  Future<void> deleteAccount({String? expectedUid}) async {
+    if (state.busy) return;
+    final uid = expectedUid ?? state.account?.uid;
+    if (uid == null) return _done(ProfileNotice.deleteFailed);
+    await _delete(uid);
+  }
+
+  Future<void> _delete(String expectedUid) async {
     if (state.busy) return;
     emit(state.copyWith(busy: true));
     try {
-      await _accounts.deleteAccount(photo: await _uploadedPhoto());
+      final deleted = await _accounts.deleteAccount(
+        expectedUid: expectedUid,
+        photo: await _uploadedPhoto(),
+      );
+      if (!deleted) return _done(null);
       unawaited(_analytics.log(AnalyticsEvents.contaApagada()));
       _done(ProfileNotice.deleted);
     } on AccountException catch (error) {
-      if (error.failure == AccountFailure.recentLoginRequired &&
-          state.account?.provider == AccountProvider.google) {
-        await _deleteAfterGoogle();
-        return;
-      }
       _done(_deleteNotice(error.failure));
+    } on Object {
+      _done(ProfileNotice.deleteFailed);
     }
   }
 
@@ -150,22 +158,15 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
   /// se a conta ainda é a [uid] confirmada no diálogo.
   Future<void> deleteAfterSignIn(String uid) async {
     if (_accounts.current?.uid != uid) {
-      emit(state.copyWith(notice: ProfileNotice.deleteFailed));
+      try {
+        await _accounts.signOut();
+      } on Object {
+        // O aviso não promete que a saída foi concluída.
+      }
+      _done(ProfileNotice.deleteDifferentAccount);
       return;
     }
-    await deleteAccount();
-  }
-
-  Future<void> _deleteAfterGoogle() async {
-    try {
-      final account = await _accounts.signInWithGoogle();
-      if (account == null) return _done(null);
-      await _accounts.deleteAccount(photo: await _uploadedPhoto());
-      unawaited(_analytics.log(AnalyticsEvents.contaApagada()));
-      _done(ProfileNotice.deleted);
-    } on AccountException catch (error) {
-      _done(_deleteNotice(error.failure));
-    }
+    await _delete(uid);
   }
 
   // Só a foto enviada mora no Storage; a do Google e a inicial, não.
@@ -176,6 +177,7 @@ class ProfileAccountCubit extends Cubit<ProfileAccountState> {
       switch (failure) {
         AccountFailure.network => ProfileNotice.deleteOffline,
         AccountFailure.recentLoginRequired => ProfileNotice.deleteRelogin,
+        AccountFailure.userMismatch => ProfileNotice.deleteDifferentAccount,
         _ => ProfileNotice.deleteFailed,
       };
 

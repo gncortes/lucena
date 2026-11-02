@@ -48,7 +48,8 @@ abstract class AccountRepository {
 
   /// Apaga o perfil no Firestore e a conta no Auth. Com [photo] (o perfil
   /// tem foto enviada), apaga antes a foto no Storage.
-  Future<void> deleteAccount({bool photo = false});
+  /// [expectedUid] é a conta confirmada no diálogo. False: Google cancelado.
+  Future<bool> deleteAccount({required String expectedUid, bool photo = false});
 }
 
 /// A conta no Firebase Auth, com o perfil em `users/{uid}` no Firestore.
@@ -129,8 +130,11 @@ class CloudAccountRepository implements AccountRepository {
   @override
   Future<void> signOut() async {
     final uid = _auth.current?.uid;
-    if (uid != null) await _releasePush(uid);
-    await _auth.signOut();
+    try {
+      if (uid != null) await _releasePush(uid);
+    } finally {
+      await _auth.signOut();
+    }
   }
 
   @override
@@ -206,22 +210,37 @@ class CloudAccountRepository implements AccountRepository {
   }
 
   @override
-  Future<void> deleteAccount({bool photo = false}) async {
-    final account = _auth.current;
-    if (account == null) return;
-    try {
-      // Sem foto enviada o Storage nem é tocado (pode nem estar ativo).
-      if (photo) await _avatars.delete(account.uid);
-      await _store.deleteUser(account.uid);
-    } on FileStoreException {
-      throw const AccountException(AccountFailure.network);
-    } on CloudStoreException {
-      // Sem rede não dá para apagar o que está na nuvem: nada é apagado.
-      throw const AccountException(AccountFailure.network);
-    }
-    await _preferences?.remove(_pushKey);
-    await _auth.delete();
-  }
+  Future<bool> deleteAccount({
+    required String expectedUid,
+    bool photo = false,
+  }) => _auth.delete(
+    expectedUid: expectedUid,
+    beforeSignOut: _releasePush,
+    deleteData: () async {
+      void requireAccount() {
+        if (_auth.current?.uid != expectedUid) {
+          throw const AccountException(AccountFailure.userMismatch);
+        }
+      }
+
+      requireAccount();
+      try {
+        // UID imutável em cada remoção; uma falha tardia pode ser parcial.
+        if (photo) {
+          await _avatars.delete(expectedUid);
+          requireAccount();
+        }
+        await _store.deleteUser(expectedUid);
+        requireAccount();
+      } on FileStoreException {
+        throw const AccountException(AccountFailure.network);
+      } on CloudStoreException {
+        throw const AccountException(AccountFailure.network);
+      }
+      await _preferences?.remove(_pushKey);
+      requireAccount();
+    },
+  );
 
   // A gravação do Firestore só termina quando o servidor confirma; sem rede
   // ela fica na fila do aparelho. O login não espera por ela.
