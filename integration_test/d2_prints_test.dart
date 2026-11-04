@@ -71,6 +71,11 @@ void main() {
     final capture = TrainingCaptureRobot($);
     for (final (name, route, ready) in screens) {
       await go($, route, extra: extras[name], settle: settle);
+      // O conteúdo de algumas telas vem de leitura assíncrona e entra em
+      // cascata depois da rota: sem esta espera, o print sai em branco.
+      for (var i = 0; i < 20; i++) {
+        await $.pump(const Duration(milliseconds: 100));
+      }
       await capture.shot(name, ready: ready);
       final navigator = Navigator.of($.tester.element(find.byKey(ready)));
       navigator.pop();
@@ -181,7 +186,8 @@ void main() {
         lightDevice: true,
         purchases: FakePurchaseRepository(owning(kind)),
       );
-      await shots($, [(name, D2Paths.offer(), PurchaseKeys.offerScreen)]);
+      // O quadro é o Perfil do dono, com o cartão do Pilares.
+      await shots($, [(name, Routes.settingsProfile, ProfileKeys.screen)]);
     }, tags: ['d2-compra']);
   }
 
