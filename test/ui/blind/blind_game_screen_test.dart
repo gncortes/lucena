@@ -26,6 +26,7 @@ import '../../../testing/fakes/fake_opponent_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 import '../../../testing/fakes/fake_speech_input_repository.dart';
 import '../../../testing/fakes/fake_voice_repository.dart';
+import '../../../testing/aparelho_principal.dart';
 import '../../../testing/test_app.dart';
 import '../core/motion/entrada_helpers.dart';
 import '../../../testing/motion_expectations.dart';
@@ -870,6 +871,50 @@ void main() {
     );
     expect(find.byKey(BlindKeys.board), findsOneWidget);
   });
+
+  for (final size in [const Size(360, 640), aparelhoPrincipal]) {
+    testWidgets('$size: o aviso de sem microfone fica no alto sem cobrir as '
+        'vistas e some em 3 s (canvas CompSnackbar, "Às cegas")', (
+      tester,
+    ) async {
+      await pump(tester, permitted: false, size: size, systemBars: true);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byKey(BlindKeys.mic)),
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+      await gesture.up();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(BlindKeys.micDeny));
+      await tester.pumpAndSettle();
+
+      // A superfície do aviso (o SnackBar ocupa a margem até o pé).
+      final toast = tester.getRect(
+        find
+            .descendant(
+              of: find.byKey(BlindKeys.toast),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      // No alto: acima do tabuleiro, longe da barra da fala.
+      expect(toast.bottom, lessThan(size.height / 2));
+      for (final view in BlindView.values) {
+        final segment = tester.getRect(find.byKey(BlindKeys.view(view)));
+        expect(
+          toast.overlaps(segment),
+          isFalse,
+          reason: 'o aviso $toast cobre a vista ${view.name} $segment',
+        );
+      }
+      // Logo abaixo das vistas, sem vão grande.
+      final views = tester.getRect(find.byKey(BlindKeys.view(BlindView.board)));
+      expect(toast.top - views.bottom, inInclusiveRange(4, 20));
+
+      await tester.pump(const Duration(seconds: 3));
+      await tester.pumpAndSettle();
+      expect(find.byKey(BlindKeys.toast), findsNothing);
+    });
+  }
 
   testWidgets('um toque rápido abre a gravação sem segurar: descartar e '
       'enviar nos botões, e o lance aparece escrito para confirmar', (

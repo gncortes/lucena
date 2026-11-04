@@ -148,7 +148,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(opacidadeAcima(tester, find.byKey(status)), 1);
       expect(
-        find.ancestor(of: find.byKey(status), matching: find.byType(ChipLucena)),
+        find.ancestor(
+          of: find.byKey(status),
+          matching: find.byType(ChipLucena),
+        ),
         findsNothing,
         reason: 'a key fica no próprio ChipLucena',
       );

@@ -94,6 +94,10 @@ class BlindGameScreen extends StatefulWidget {
 
 class _BlindGameScreenState extends State<BlindGameScreen>
     with WidgetsBindingObserver {
+  /// As vistas (tabuleiro, casas, nenhum): o aviso do alto desce até logo
+  /// abaixo delas para não as cobrir.
+  final _picker = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -259,15 +263,23 @@ class _BlindGameScreenState extends State<BlindGameScreen>
 
   BlindState _previous = const BlindState();
 
-  /// Um aviso no topo da tela, que some sozinho.
+  /// Um aviso no topo da tela, logo abaixo das vistas, que some sozinho.
   void _toast(BuildContext context, String text, IconData icon) =>
       showLucenaSnackBar(
         context,
         text,
         icon: icon,
         top: true,
+        topAt: _belowPicker(),
         key: BlindKeys.toast,
       );
+
+  /// Onde as vistas terminam na tela (null fora da partida).
+  double? _belowPicker() {
+    final box = _picker.currentContext?.findRenderObject();
+    if (box is! RenderBox || !box.hasSize) return null;
+    return box.localToGlobal(Offset(0, box.size.height)).dy + AppSpacing.sm;
+  }
 
   /// "Qual peça?" num diálogo, com as peças possíveis.
   Future<void> _chooseOption(BuildContext context) async {
@@ -474,6 +486,7 @@ class _BlindGameScreenState extends State<BlindGameScreen>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Padding(
+                                      key: _picker,
                                       padding: const EdgeInsets.only(
                                         bottom: AppSpacing.xs,
                                       ),
