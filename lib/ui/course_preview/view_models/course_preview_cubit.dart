@@ -29,20 +29,22 @@ class CoursePreviewState {
 }
 
 /// Carrega a apresentação do Pilares do Xadrez (H-VEN-01) e o "Para quem é".
-/// Com [origin], registra a oferta vista com o destaque `apresentacao`.
+/// Com [origin], registra a oferta vista com o [highlight] (`apresentacao`
+/// na apresentação, `plano` na venda do plano).
 class CoursePreviewCubit extends Cubit<CoursePreviewState> {
   CoursePreviewCubit(
     this._repository,
     this._characters, {
     AnalyticsRepository? analytics,
     String? origin,
+    String highlight = 'apresentacao',
   }) : super(const CoursePreviewState()) {
     if (analytics != null && origin != null) {
       unawaited(
         analytics.log(
           AnalyticsEvents.pilaresOfertaVista(
             origem: origin,
-            destaque: 'apresentacao',
+            destaque: highlight,
           ),
         ),
       );

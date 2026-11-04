@@ -209,28 +209,39 @@ void main() {
     expect(find.byKey(AdsKeys.screen), findsOneWidget);
   });
 
-  testWidgets('anúncio que não carrega: tentar de novo e voltar', (t) async {
-    final h = _Harness(seen: true);
-    h.ads.loads = [false, false, true];
-    await h.pump(t);
-    await t.tap(find.byKey(_openKey));
-    await t.pumpAndSettle();
-    expect(find.text('Não foi possível carregar o anúncio'), findsOneWidget);
-    expect(
-      find.text(
-        'Sem o anúncio, não é possível abrir a lição. Verifique sua conexão com a internet.',
-      ),
-      findsOneWidget,
-    );
-    await t.tap(find.byKey(AdsKeys.adFailedRetry));
-    await t.pumpAndSettle();
-    expect(h.ads.loadCalls, 2);
-    expect(find.byKey(AdsKeys.failed), findsOneWidget);
-    await t.tap(find.byKey(AdsKeys.adFailedBack));
-    await t.pumpAndSettle();
-    expect(find.byKey(_lessonKey), findsNothing);
-    expect(find.byKey(_openKey), findsOneWidget);
-  });
+  testWidgets(
+    'anúncio que não carrega: tentar de novo e Conhecer o Pilares (H-VEN-13)',
+    (t) async {
+      final h = _Harness(seen: true);
+      h.ads.loads = [false, false, true];
+      await h.pump(t);
+      await t.tap(find.byKey(_openKey));
+      await t.pumpAndSettle();
+      expect(find.text('Ocorreu um erro inesperado'), findsOneWidget);
+      expect(
+        find.text(
+          'A lição abre depois do anúncio. Confira a internet e tente de novo, ou abra direto com o Pilares.',
+        ),
+        findsOneWidget,
+      );
+      await t.tap(find.byKey(AdsKeys.adFailedRetry));
+      await t.pumpAndSettle();
+      expect(h.ads.loadCalls, 2);
+      expect(find.byKey(AdsKeys.failed), findsOneWidget);
+      expect(find.text('Conhecer o Pilares'), findsOneWidget);
+      await t.tap(find.byKey(AdsKeys.adFailedLearnMore));
+      await t.pumpAndSettle();
+      expect(find.text('apresentação anuncio'), findsOneWidget);
+      // Voltar da apresentação reabre a falha, sem perder a lição escolhida.
+      Navigator.of(t.element(find.text('apresentação anuncio'))).pop();
+      await t.pumpAndSettle();
+      expect(find.byKey(AdsKeys.failed), findsOneWidget);
+      await t.tap(find.byKey(AdsKeys.adFailedRetry));
+      await t.pumpAndSettle();
+      expect(find.byKey(AdsKeys.screen), findsOneWidget);
+      expect(find.byKey(_lessonKey), findsNothing);
+    },
+  );
 
   testWidgets('capítulo trancado mostra a folha; Comprar abre a oferta', (
     t,

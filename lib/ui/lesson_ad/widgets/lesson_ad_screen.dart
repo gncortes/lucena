@@ -54,7 +54,10 @@ class _LessonAdScreenState extends State<LessonAdScreen> {
       builder: (context, state) => switch (state.phase) {
         LessonAdPhase.failed => _AdFailed(
           onRetry: () => cubit.load(retry: true),
-          onBack: () => Navigator.of(context).pop(false),
+          onLearnMore: () => context.pushNamed(
+            RouteNames.pilaresPresentation,
+            queryParameters: const {'origem': 'anuncio'},
+          ),
         ),
         LessonAdPhase.loading => const Scaffold(
           key: AdsKeys.loading,
@@ -246,14 +249,15 @@ class _TopText extends StatelessWidget {
   );
 }
 
-/// O anúncio não carregou (canvas `PropV2DemoAnuncioFalhou`): sem anúncio, sem
-/// lição. "Tentar novamente" mostra o carregando no botão; "Voltar" volta ao
-/// catálogo.
+/// O anúncio não carregou (canvas `PropV2DemoAnuncioFalhouCompra`, H-VEN-13):
+/// sem anúncio, sem lição. "Tentar novamente" mostra o carregando no botão;
+/// "Conhecer o Pilares" abre a apresentação, e voltar dela reabre esta tela.
+/// O voltar do sistema volta ao catálogo.
 class _AdFailed extends StatelessWidget {
-  const _AdFailed({required this.onRetry, required this.onBack});
+  const _AdFailed({required this.onRetry, required this.onLearnMore});
 
   final Future<void> Function() onRetry;
-  final VoidCallback onBack;
+  final VoidCallback onLearnMore;
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +287,7 @@ class _AdFailed extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       Text(
-                        l10n.licaoAdFailedTitle,
+                        l10n.loadErrorGenericTitle,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontSize: 22,
@@ -294,7 +298,7 @@ class _AdFailed extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        l10n.licaoAdFailedMessage,
+                        l10n.venAdFailedMessage,
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -315,10 +319,10 @@ class _AdFailed extends StatelessWidget {
                   onPressed: onRetry,
                 ),
                 BusyButton(
-                  buttonKey: AdsKeys.adFailedBack,
-                  label: l10n.licaoAdBack,
+                  buttonKey: AdsKeys.adFailedLearnMore,
+                  label: l10n.licaoAdLearnMore,
                   style: BusyButtonStyle.outlined,
-                  onPressed: onBack,
+                  onPressed: onLearnMore,
                 ),
               ],
             ),
