@@ -2565,5 +2565,6 @@
   "partidaModosFreeBoardBody": "Jogue qualquer posição",
   "partidaModosCustomBody": "Monte a posição peça por peça",
   "partidaModosChooseHome": "Escolher os modos da home",
-  "partidaAnaliseTitulo": "Análise da partida"
+  "partidaAnaliseTitulo": "Análise da partida",
+  "partidaConclusaoVerAnalise": "Ver a análise"
 }

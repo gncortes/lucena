@@ -531,6 +531,51 @@ void main() {
         expect(find.text('Jogar de novo'), findsNothing);
       });
     }
+    testWidgets(
+      'vitória: "Nova partida" na barra e "Ver a análise" no rodapé',
+      (tester) async {
+        await open(
+          tester,
+          locale: const Locale('pt'),
+          moves: _longMoves,
+          played: const Duration(minutes: 5),
+        );
+        expect(find.byKey(ConclusionKeys.appBarNewGame), findsOneWidget);
+        expect(
+          find.byKey(ConclusionKeys.action(ConclusionAction.newGame)),
+          findsNothing,
+        );
+        expect(find.byKey(ConclusionKeys.seeAnalysis), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(ConclusionKeys.seeAnalysis),
+            matching: find.text('Ver a análise'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('derrota: sem "Nova partida" na barra; rodapé a traz', (
+      tester,
+    ) async {
+      await open(
+        tester,
+        outcome: AttemptOutcome.loss,
+        locale: const Locale('pt'),
+        moves: _longMoves,
+        played: const Duration(minutes: 5),
+      );
+      expect(find.byKey(ConclusionKeys.appBarNewGame), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(ConclusionKeys.action(ConclusionAction.newGame)),
+          matching: find.text('Nova partida'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(ConclusionKeys.seeAnalysis), findsNothing);
+    });
   });
 
   group('aviso de conquista', () {

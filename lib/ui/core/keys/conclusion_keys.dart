@@ -39,6 +39,12 @@ abstract final class ConclusionKeys {
   static const analysisShared = Key('conclusion.review.shared');
 
   /// No resumo pronto da análise rápida: a revisão completa da partida.
+  /// "Nova partida" na barra do alto (vitória).
+  static const appBarNewGame = Key('conclusion.appBarNewGame');
+
+  /// "Ver a análise" no rodapé da vitória.
+  static const seeAnalysis = Key('conclusion.seeAnalysis');
+
   static const reviewDeeper = Key('conclusion.review.deeper');
   static const accuracy = Key('conclusion.review.accuracy');
   static const reviewBoard = Key('conclusion.quickReview.board');

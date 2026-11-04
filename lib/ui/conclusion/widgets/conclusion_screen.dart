@@ -151,6 +151,13 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
             onPressed: () => _close(context),
           ),
           actions: [
+            if (conclusion != null && _winNewGame(conclusion, state))
+              IconButton(
+                key: ConclusionKeys.appBarNewGame,
+                tooltip: l10n.freeBoardNewGame,
+                icon: const Icon(Icons.add_rounded),
+                onPressed: () => context.pushReplacement(state.setup!),
+              ),
             if (conclusion != null)
               ShareIconButton(
                 key: ConclusionKeys.share,
@@ -330,9 +337,12 @@ class _Body extends StatelessWidget {
     final actions = conclusion.actions;
     // As duas primeiras ações lado a lado, logo abaixo dos jogadores; as de
     // histórico viram links; "Analisar" fica fixo embaixo.
+    final winFooter = _winNewGame(conclusion, state);
     final main = [
       for (final action in actions)
         if (!_links.contains(action) &&
+            // Vitória: "Nova partida" vai para a barra do alto.
+            !(winFooter && action == ConclusionAction.newGame) &&
             // Sem para onde ir (posição sem configuração): sem o botão.
             (action != ConclusionAction.playAgain || state.replay != null) &&
             (action != ConclusionAction.newGame || state.setup != null))
@@ -495,7 +505,12 @@ class _Body extends StatelessWidget {
               ),
             ),
             // As ações, fixas embaixo: fora da imagem de compartilhar.
-            if (main.isNotEmpty) _ActionsBar(state: state, actions: main),
+            if (main.isNotEmpty)
+              _ActionsBar(
+                state: state,
+                actions: main,
+                seeAnalysisId: winFooter ? conclusion.gameId : null,
+              ),
           ],
         ),
         if (celebrate && !motion.disabled)
@@ -696,10 +711,17 @@ class _Player extends StatelessWidget {
 /// As ações principais, fixas embaixo, uma embaixo da outra: a principal em
 /// cima.
 class _ActionsBar extends StatelessWidget {
-  const _ActionsBar({required this.state, required this.actions});
+  const _ActionsBar({
+    required this.state,
+    required this.actions,
+    this.seeAnalysisId,
+  });
 
   final ConclusionState state;
   final List<ConclusionAction> actions;
+
+  /// Vitória: o segundo botão é "Ver a análise" desta partida.
+  final int? seeAnalysisId;
 
   @override
   Widget build(BuildContext context) {
@@ -708,6 +730,13 @@ class _ActionsBar extends StatelessWidget {
       children: [
         for (final (index, action) in actions.take(2).indexed)
           _ActionButton(action: action, primary: index == 0, state: state),
+        if (seeAnalysisId case final id? when actions.length < 2)
+          OutlinedButton.icon(
+            key: ConclusionKeys.seeAnalysis,
+            onPressed: () => context.push(Routes.game(id)),
+            icon: const Icon(Icons.insights_rounded),
+            label: OneLine(context.l10n.partidaConclusaoVerAnalise),
+          ),
       ],
     );
   }
@@ -1830,3 +1859,12 @@ class DetailedReviewButton extends StatelessWidget {
     label: OneLine(context.l10n.conclusionDetailedReview),
   );
 }
+
+/// Vitória de partida comum (com "Jogar novamente" e "Nova partida"): a
+/// "Nova partida" sobe para a barra e o rodapé ganha "Ver a análise".
+bool _winNewGame(Conclusion conclusion, ConclusionState state) =>
+    conclusion.result == ConclusionResult.won &&
+    conclusion.gameId != null &&
+    conclusion.actions.contains(ConclusionAction.playAgain) &&
+    conclusion.actions.contains(ConclusionAction.newGame) &&
+    state.setup != null;

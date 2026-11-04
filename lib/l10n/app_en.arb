@@ -12713,5 +12713,7 @@
   "partidaAnaliseTitulo": "Game analysis",
   "@partidaAnaliseTitulo": {
     "description": "Title of the game details screen when the game is not found"
-  }
+  },
+  "partidaConclusaoVerAnalise": "View analysis",
+  "@partidaConclusaoVerAnalise": {"description": "Footer button on the win conclusion that opens the game analysis"}
 }
