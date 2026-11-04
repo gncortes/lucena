@@ -7065,27 +7065,6 @@
   "@raceFeedbackWrong": {
     "description": "Accessibility label of the wrong-move icon."
   },
-  "raceEndTime": "Time is up",
-  "@raceEndTime": {
-    "description": "Result title when the clock ran out."
-  },
-  "raceEndErrors": "Three mistakes",
-  "@raceEndErrors": {
-    "description": "Result title when the third mistake ended the race."
-  },
-  "raceEndQuit": "Race ended",
-  "@raceEndQuit": {
-    "description": "Result title when the player left the race."
-  },
-  "raceNewRecord": "New record! It was {previous}",
-  "@raceNewRecord": {
-    "description": "Result: the player beat the record.",
-    "placeholders": {
-      "previous": {
-        "type": "int"
-      }
-    }
-  },
   "raceStatErrors": "{count, plural, =1{mistake} other{mistakes}}",
   "@raceStatErrors": {
     "description": "Result stat card: label under the mistakes count.",
@@ -11603,5 +11582,17 @@
   "desafiosFeaturedTournamentFinals": "{count, plural, =1{One endgame to practice} other{{count} endgames to practice}}",
   "@desafiosFeaturedTournamentFinals": {"placeholders": {"count": {"type": "int"}}},
   "desafiosTournamentDates": "{start} to {end}",
-  "@desafiosTournamentDates": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}}
+  "@desafiosTournamentDates": {"placeholders": {"start": {"type": "String"}, "end": {"type": "String"}}},
+  "desafiosRaceHeadline": "{minutes}-min race · {reason}",
+  "@desafiosRaceHeadline": {"placeholders": {"minutes": {"type": "int"}, "reason": {"type": "String"}}},
+  "desafiosRaceEndTime": "time is up",
+  "@desafiosRaceEndTime": {},
+  "desafiosRaceEndErrors": "3 mistakes",
+  "@desafiosRaceEndErrors": {},
+  "desafiosRaceEndQuit": "quit",
+  "@desafiosRaceEndQuit": {},
+  "desafiosRaceNewRecord": "New {minutes}-min record! It was {previous}",
+  "@desafiosRaceNewRecord": {"placeholders": {"minutes": {"type": "int"}, "previous": {"type": "int"}}},
+  "desafiosRaceSeeAll": "See all {count}",
+  "@desafiosRaceSeeAll": {"placeholders": {"count": {"type": "int"}}}
 }

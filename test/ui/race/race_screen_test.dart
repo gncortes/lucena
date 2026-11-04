@@ -264,7 +264,9 @@ void main() {
     }
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
-    expect(find.text('Three mistakes'), findsOneWidget);
+    expect(find.text('3-min race · 3 mistakes'), findsOneWidget);
+    // Só 3 problemas: nada de "Ver os N".
+    expect(find.byKey(RaceKeys.seeAllProblems), findsNothing);
     expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '0');
     expect(find.byKey(RaceKeys.problemTile(2)), findsOneWidget);
     expect(find.text('Review the 3 mistakes'), findsOneWidget);
@@ -329,6 +331,39 @@ void main() {
     expect(find.byKey(NextStepsKeys.resultsInfo), findsOneWidget);
   });
 
+  testWidgets('resultado com 9 problemas: 8 na grade e Ver os 9 abre a lista '
+      'inteira (H-DES-11)', (tester) async {
+    repository = FakeRaceRepository(
+      now: now,
+      ongoing: RaceRun(
+        startedAt: now(),
+        answers: [
+          for (var i = 0; i < 9; i++)
+            RaceAnswer(
+              problemId: 'race.001',
+              level: 600 + i,
+              move: 'a1a2',
+              correct: i != 4,
+            ),
+        ],
+      ),
+    );
+    now.advance(const Duration(minutes: 10));
+    await pumpRace(tester);
+
+    expect(find.byKey(RaceKeys.resultView), findsOneWidget);
+    expect(find.text('3-min race · time is up'), findsOneWidget);
+    expect(find.byKey(RaceKeys.problemTile(7)), findsOneWidget);
+    expect(find.byKey(RaceKeys.problemTile(8)), findsNothing);
+    expect(find.text('See all 9'), findsOneWidget);
+
+    await tester.ensureVisible(find.byKey(RaceKeys.seeAllProblems));
+    await tester.tap(find.byKey(RaceKeys.seeAllProblems));
+    await tester.pumpAndSettle();
+    expect(find.byKey(RaceKeys.problemsScreen), findsOneWidget);
+    expect(find.byKey(RaceKeys.problemTile(8)), findsOneWidget);
+  });
+
   testWidgets('num celular de 384 de largura, as miniaturas têm vão entre si', (
     tester,
   ) async {
@@ -360,7 +395,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(RaceKeys.resultView), findsOneWidget);
-    expect(find.text('Time is up'), findsOneWidget);
+    expect(find.text('3-min race · time is up'), findsOneWidget);
     expect(tester.widget<Text>(find.byKey(RaceKeys.resultCorrects)).data, '1');
     // Sem erros: não há o que revisar.
     expect(find.byKey(RaceKeys.reviewMistakes), findsNothing);
