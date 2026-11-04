@@ -12,6 +12,7 @@ import '../../../domain/models/featured.dart';
 import '../../../domain/models/game_setup.dart';
 import '../../../domain/models/maia_level.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/keys/featured_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/opponent/opponent_ui.dart';
@@ -30,7 +31,6 @@ import '../../core/widgets/scroll_padding.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../view_models/featured_endgame_cubit.dart';
 import '../view_models/find_move_cubit.dart';
-import 'featured_card.dart';
 import 'featured_game_bar.dart';
 import 'featured_labels.dart';
 import 'find_move_screen.dart';
@@ -293,14 +293,17 @@ class _Heading extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Center(
-          child: PositionBoard(
-            boardKey: FeaturedKeys.endgameBoard,
-            fen: endgame.fen,
-            size: math.min(width, 420),
-            orientation: endgame.userSide,
-            coordinates: true,
-            radius: 0,
-            heroTag: featuredBoardTag(endgame.id),
+          // H-ANI-02: recebe o voo do cartão com o id = FEN.
+          child: TabuleiroHero(
+            id: endgame.fen,
+            child: PositionBoard(
+              boardKey: FeaturedKeys.endgameBoard,
+              fen: endgame.fen,
+              size: math.min(width, 420),
+              orientation: endgame.userSide,
+              coordinates: true,
+              radius: 0,
+            ),
           ),
         ),
       ],

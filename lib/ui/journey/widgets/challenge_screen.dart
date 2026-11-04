@@ -1,6 +1,7 @@
 import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../domain/models/load_failure.dart';
 import '../../../routing/routes.dart';
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/widgets/load_error.dart';
 import '../../journey/widgets/challenge_load_error.dart';
 
@@ -383,19 +384,21 @@ class _BigBoard extends StatelessWidget {
           coordinates: true,
           radius: AppShape.none,
           // A partida é vista pelo lado que joga, como este tabuleiro.
-          heroTag: arriving
-              ? null
-              : launching
+          heroTag: launching && !arriving
               ? gameBoardTag(
                   challenge.position.fen.split(' ')[1] == 'b'
                       ? Side.black
                       : Side.white,
                 )
-              : challengeBoardTag(challenge.id),
+              : null,
         );
-        return arriving
-            ? GameBoardHero(orientation: orientation, child: board)
-            : board;
+        if (arriving) {
+          return GameBoardHero(orientation: orientation, child: board);
+        }
+        // H-ANI-02: chega do cartão (Início ou degrau) com o id = FEN.
+        return launching
+            ? board
+            : TabuleiroHero(id: challenge.position.fen, child: board);
       },
     );
   }

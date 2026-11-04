@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import '../../core/motion/tabuleiro_hero.dart';
 import '../../core/theme/app_chip.dart';
 
 import 'package:dartchess/dartchess.dart';
@@ -252,7 +253,6 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final positionId = state.positionId;
     return CenteredBoardLayout(
       gutter: AppSpacing.lg,
       gap: AppSpacing.md,
@@ -261,16 +261,20 @@ class _Header extends StatelessWidget {
       // O tabuleiro chega voando do cartão de onde veio (catálogo ou aula) e,
       // ao começar, segue voando até o centro da partida.
       board: LayoutBuilder(
-        builder: (context, box) => PositionBoard(
-          boardKey: GameSetupKeys.preview,
-          fen: state.position.fen,
-          size: box.maxWidth,
-          orientation: state.userSide,
-          coordinates: true,
-          heroTag: launching
-              ? gameBoardTag(state.userSide)
-              : setupBoardTag(positionId: positionId, fen: state.position.fen),
-        ),
+        builder: (context, box) {
+          final board = PositionBoard(
+            boardKey: GameSetupKeys.preview,
+            fen: state.position.fen,
+            size: box.maxWidth,
+            orientation: state.userSide,
+            coordinates: true,
+            heroTag: launching ? gameBoardTag(state.userSide) : null,
+          );
+          // H-ANI-02: chega do cartão do catálogo com o id = FEN.
+          return launching
+              ? board
+              : TabuleiroHero(id: state.position.fen, child: board);
+        },
       ),
       bottom: Wrap(
         spacing: AppSpacing.sm,

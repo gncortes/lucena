@@ -11,8 +11,8 @@ import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/routing/router.dart';
 import 'package:lucena/ui/core/keys/journey_keys.dart';
 import 'package:lucena/ui/core/keys/training_keys.dart';
+import 'package:lucena/ui/core/motion/tabuleiro_hero.dart';
 import 'package:lucena/ui/core/widgets/game_board_hero.dart';
-import 'package:lucena/ui/journey/widgets/journey_ui.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/challenge_screen.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
@@ -235,7 +235,8 @@ void main() {
         matching: find.byType(Hero),
       ),
     );
-    expect(hero.tag, challengeBoardTag(challenge.id));
+    // H-ANI-02: a marca é a do kit, com o id = FEN da posição.
+    expect(hero.tag, TabuleiroHero.tag(challenge.position.fen));
     expect(tester.getRect(find.byKey(JourneyKeys.challengeBoard)), start);
     expect(tester.takeException(), isNull);
   });
