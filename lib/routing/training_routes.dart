@@ -19,6 +19,7 @@ import '../data/repositories/endgames/endgame_progress_repository.dart';
 import '../data/repositories/training/training_history_source.dart';
 import '../data/repositories/training/course_download_repository.dart';
 import '../data/repositories/push/push_repository.dart';
+import 'frentes/d1_routes.dart' show showLessonEndSteps;
 import 'frentes/d3_routes.dart' show D3Paths;
 import '../data/repositories/training/course_training_repository.dart'
     as course_training;
@@ -782,9 +783,21 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
       return;
     }
     try {
-      await context.read<course_training.TrainingRepository>().update(
-        widget.config.course,
-        (s) => s.copyWith(tab: CourseGuideTab.goals),
+      final saved = await context
+          .read<course_training.TrainingRepository>()
+          .update(
+            widget.config.course,
+            (s) => s.copyWith(tab: CourseGuideTab.goals),
+          );
+      final title = (await _data)?.title ?? '';
+      if (!mounted) return;
+      // Meta do dia e oferta da demo antes de voltar (H-LIC-50/51, frente D1).
+      final next = await showLessonEndSteps(
+        context,
+        course: widget.config.course,
+        saved: saved,
+        lessonId: widget.theme,
+        lessonTitle: title,
       );
       if (!mounted) return;
       if (router.canPop()) {
@@ -793,6 +806,7 @@ class _ExerciseDestinationState extends State<_ExerciseDestination> {
       } else {
         router.go(Routes.training(widget.config.course.name));
       }
+      if (next != null) unawaited(router.push<void>(next));
     } catch (_) {
       if (mounted) {
         _finishing = false;

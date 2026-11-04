@@ -46,3 +46,16 @@ class LocalDemoOfferRepository implements DemoOfferRepository {
     return next;
   }
 }
+
+/// Sem contador (testes e sem demonstração): nada fica gravado.
+class NoDemoOfferRepository implements DemoOfferRepository {
+  const NoDemoOfferRepository();
+
+  @override
+  Future<DemoOfferState> load(TrainingCourse course) async =>
+      const DemoOfferState();
+
+  @override
+  Future<DemoOfferState> markShown(TrainingCourse course) async =>
+      const DemoOfferState();
+}

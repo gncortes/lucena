@@ -106,6 +106,8 @@ abstract final class RouteNames {
   // D1 (Lição + Opinião): telas novas; a frente registra em `frentes/d1_routes.dart`.
   static const trainingReview = 'trainingReview';
   static const trainingCompleted = 'trainingCompleted';
+  static const trainingDayGoal = 'trainingDayGoal';
+  static const trainingDemoOffer = 'trainingDemoOffer';
   static const lessonAd = 'lessonAd';
   static const lessonSoon = 'lessonSoon';
   static const surveyThanks = 'surveyThanks';
