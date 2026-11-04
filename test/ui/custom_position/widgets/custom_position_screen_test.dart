@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/endgame_position.dart';
+import 'package:lucena/ui/core/keys/core_keys.dart';
 import 'package:lucena/ui/core/keys/custom_position_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/custom_position/view_models/custom_position_cubit.dart';
 import 'package:lucena/ui/custom_position/widgets/custom_position_screen.dart';
@@ -212,5 +216,44 @@ void main() {
       ),
       findsNothing,
     );
+  });
+
+  testWidgets('H-PAR-04: leitura do rascunho falhando: erro com tentar de '
+      'novo, que volta ao esqueleto e abre o editor', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    training = FakeTrainingRepository()..failLoad = true;
+    cubit = CustomPositionCubit(training);
+    addTearDown(cubit.close);
+    await cubit.load();
+    final settings = SettingsCubit(
+      FakeSettingsRepository(),
+      languages: AppLanguage.selectable,
+    );
+    addTearDown(settings.close);
+    await settings.load();
+    await tester.pumpWidget(
+      TestApp(
+        locale: const Locale('pt'),
+        settingsCubit: settings,
+        child: BlocProvider.value(
+          value: cubit,
+          child: const CustomPositionScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+
+    training
+      ..failLoad = false
+      ..gate = Completer<void>();
+    await tester.tap(find.byKey(LoadErrorKeys.action));
+    await tester.pump();
+    expect(find.byKey(CoreKeys.skeleton), findsOneWidget);
+    training.gate!.complete();
+    await tester.pumpAndSettle();
+    expect(find.byKey(CustomPositionKeys.fenField), findsOneWidget);
   });
 }

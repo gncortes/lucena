@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
@@ -14,11 +13,12 @@ import '../../../domain/models/character.dart';
 import '../../../domain/models/game_review.dart';
 import '../../../domain/use_cases/game_export.dart';
 import '../../../domain/use_cases/game_rules.dart';
-import '../../core/theme/app_button.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
-import '../../core/widgets/one_line.dart';
+import '../../core/widgets/board/piece_badge_overlay.dart';
+import '../../core/widgets/skeleton.dart';
+import 'analysis_level_card.dart';
 import '../../core/board/board_settings_ui.dart';
 import '../../core/keys/game_details_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -30,7 +30,6 @@ import '../../settings/view_models/settings_cubit.dart';
 import '../view_models/game_details_cubit.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/lucena_snack_bar.dart';
 
@@ -85,6 +84,7 @@ class ReviewSummary extends StatelessWidget {
     required this.state,
     required this.whiteName,
     required this.blackName,
+    this.userIsWhite,
     super.key,
   });
 
@@ -92,206 +92,127 @@ class ReviewSummary extends StatelessWidget {
   final String whiteName;
   final String blackName;
 
+  /// O jogador é de brancas (verdadeiro), de pretas (falso) ou não há
+  /// jogador (dois jogadores).
+  final bool? userIsWhite;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final review = state.review;
-    final total = state.moves.length;
-    final done = (state.reviewProgress * total).round();
-    final Widget child;
-    if (state.reviewing) {
-      child = Column(
-        key: GameDetailsKeys.reviewProgress,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.reviewRunning(math.min(done + 1, total), total),
-            style: theme.textTheme.titleSmall,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          AnimatedProgress(value: state.reviewProgress),
-        ],
-      );
-    } else if (review == null) {
-      child = Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.insights, color: colors.primary),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  l10n.reviewStart,
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            l10n.reviewSpeedHint,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _speedButtons(context, 0),
-        ],
-      );
-    } else {
-      child = Column(
-        key: GameDetailsKeys.reviewSummary,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Expanded(child: _name(context, whiteName, TextAlign.start)),
-              Expanded(
-                child: Text(
-                  l10n.reviewAccuracy,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              Expanded(child: _name(context, blackName, TextAlign.end)),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            children: [
-              _AccuracyBox(
-                key: GameDetailsKeys.accuracyWhite,
-                value: review.whiteAccuracy,
-                light: true,
-              ),
-              const Spacer(),
-              _AccuracyBox(
-                key: GameDetailsKeys.accuracyBlack,
-                value: review.blackAccuracy,
-                light: false,
-              ),
-            ],
-          ),
-          // Revisada às pressas (ou só passando os lances): dá para revisar
-          // de novo com mais tempo de engine.
-          if (review.depth <
-              GameDetailsCubit.reviewWeights[ReviewSpeed.deep]!) ...[
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              l10n.reviewDeeper,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _speedButtons(context, review.depth),
-          ],
-        ],
-      );
-    }
-    return Card(
-      margin: const EdgeInsets.fromLTRB(
+    // Os números são da análise anterior até a a fundo terminar: ficam em
+    // esqueleto enquanto ela roda por cima de uma já feita.
+    final deepening = state.reviewing && review != null;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
         AppSpacing.md,
         AppSpacing.lg,
         0,
       ),
-      color: Colors.transparent,
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            child,
-            if (state.viktor case final viktor? when state.stories.isNotEmpty)
-              _StoryTeller(
-                viktor: viktor,
-                stories: state.stories,
-                first: state.attempt?.playedAt.millisecond ?? 0,
-                running: state.reviewing,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          AnalysisLevelCard(state: state),
+          if (review != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Row(
+              key: GameDetailsKeys.reviewSummary,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _AccuracyColumn(
+                    label: userIsWhite == null
+                        ? '${l10n.reviewAccuracy} · $whiteName'
+                        : userIsWhite!
+                        ? l10n.partidaPrecisaoSua
+                        : l10n.partidaPrecisaoAdversario(whiteName),
+                    value: review.whiteAccuracy,
+                    boxKey: GameDetailsKeys.accuracyWhite,
+                    light: true,
+                    loading: deepening,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: _AccuracyColumn(
+                    label: userIsWhite == null
+                        ? '${l10n.reviewAccuracy} · $blackName'
+                        : !userIsWhite!
+                        ? l10n.partidaPrecisaoSua
+                        : l10n.partidaPrecisaoAdversario(blackName),
+                    value: review.blackAccuracy,
+                    boxKey: GameDetailsKeys.accuracyBlack,
+                    light: false,
+                    loading: deepening,
+                  ),
+                ),
+              ],
+            ),
+            if (deepening) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                l10n.partidaNivelNota,
+                key: GameDetailsKeys.levelNote,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
               ),
+            ],
           ],
-        ),
+          if (state.viktor case final viktor? when state.stories.isNotEmpty)
+            _StoryTeller(
+              viktor: viktor,
+              stories: state.stories,
+              first: state.attempt?.playedAt.millisecond ?? 0,
+              running: state.reviewing,
+            ),
+        ],
       ),
     );
   }
+}
 
-  /// As três revisões: as já feitas (até [above]) marcadas com o ✓ e sem
-  /// toque; as mais pesadas, para fazer. Os nomes numa linha só, que
-  /// encolhe se faltar largura.
-  Widget _speedButtons(BuildContext context, int above) {
-    final l10n = context.l10n;
-    final speeds = [
-      (ReviewSpeed.quick, GameDetailsKeys.reviewQuick, l10n.reviewQuick),
-      (ReviewSpeed.medium, GameDetailsKeys.reviewButton, l10n.reviewMedium),
-      (ReviewSpeed.deep, GameDetailsKeys.reviewDeep, l10n.reviewDeep),
-    ];
-    final style = FilledButton.styleFrom(
-      minimumSize: const Size.fromHeight(kButtonHeight),
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-    );
-    // A próxima a fazer fica em destaque.
-    final next = speeds
-        .firstWhere(
-          (s) => GameDetailsCubit.reviewWeights[s.$1]! > above,
-          orElse: () => speeds.last,
-        )
-        .$1;
-    return Row(
+/// Um indicador de precisão: o rótulo e o número do lado.
+class _AccuracyColumn extends StatelessWidget {
+  const _AccuracyColumn({
+    required this.label,
+    required this.value,
+    required this.boxKey,
+    required this.light,
+    required this.loading,
+  });
+
+  final String label;
+  final double? value;
+  final Key boxKey;
+  final bool light;
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (final (i, (speed, key, label)) in speeds.indexed) ...[
-          if (i > 0) const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: () {
-              void onPressed() =>
-                  context.read<GameDetailsCubit>().review(speed: speed);
-              final done = GameDetailsCubit.reviewWeights[speed]! <= above;
-              final enabled = state.moves.isNotEmpty && !done;
-              if (done) {
-                return OutlinedButton.icon(
-                  key: key,
-                  style: style,
-                  onPressed: null,
-                  icon: const Icon(
-                    Icons.check_rounded,
-                    size: AppIconSize.button,
-                  ),
-                  label: OneLine(label),
-                );
-              }
-              return speed == next
-                  ? FilledButton(
-                      key: key,
-                      style: style,
-                      onPressed: enabled ? onPressed : null,
-                      child: OneLine(label),
-                    )
-                  : FilledButton.tonal(
-                      key: key,
-                      style: style,
-                      onPressed: enabled ? onPressed : null,
-                      child: OneLine(label),
-                    );
-            }(),
+        Text(
+          label,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-        ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        if (loading)
+          const SkeletonBlock(height: 40)
+        else
+          _AccuracyBox(key: boxKey, value: value, light: light),
       ],
     );
   }
-
-  Widget _name(BuildContext context, String name, TextAlign align) => Text(
-    name,
-    textAlign: align,
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-    style: Theme.of(context).textTheme.titleSmall,
-  );
 }
 
 /// Enquanto a revisão roda, o Viktor conta uma história de xadrez, e troca
@@ -638,13 +559,6 @@ class _ReviewBoardState extends State<ReviewBoard> {
     final locale = Localizations.localeOf(context).toString();
     final reviewed = state.shownReview;
     final move = state.shownMove;
-    final annotations = <Square, Annotation>{
-      if (reviewed != null && move is NormalMove)
-        move.to: Annotation(
-          symbol: reviewed.quality.symbol,
-          color: reviewed.quality.color,
-        ),
-    };
     final shapes = <Shape>{
       if (_arrow(state) case (final orig, final dest, final color))
         Arrow(color: color, orig: orig, dest: dest),
@@ -691,22 +605,35 @@ class _ReviewBoardState extends State<ReviewBoard> {
                     ),
                   ),
                 ),
-              // Sem recorte em volta: a anotação do lance passa um pouco da
-              // casa (na fileira de cima, da borda do tabuleiro).
-              Chessboard(
-                key: GameDetailsKeys.board,
-                size: boardSize,
-                controller: _controller,
-                orientation: widget.orientation,
-                settings: settings.chessground.copyWith(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(AppShape.small),
+              // O selo do lance é um componente por cima do tabuleiro, que
+              // não sai dele (a8, h8, h1, bordas).
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Chessboard(
+                    key: GameDetailsKeys.board,
+                    size: boardSize,
+                    controller: _controller,
+                    orientation: widget.orientation,
+                    settings: settings.chessground.copyWith(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(AppShape.small),
+                      ),
+                    ),
+                    shapes: shapes,
+                    onMove: (move, {viaDragAndDrop}) =>
+                        context.read<GameDetailsCubit>().play(move),
                   ),
-                ),
-                annotations: annotations,
-                shapes: shapes,
-                onMove: (move, {viaDragAndDrop}) =>
-                    context.read<GameDetailsCubit>().play(move),
+                  if (reviewed != null && move is NormalMove)
+                    PieceBadgeOverlay(
+                      key: GameDetailsKeys.pieceBadge,
+                      square: move.to,
+                      orientation: widget.orientation,
+                      size: boardSize,
+                      symbol: reviewed.quality.symbol,
+                      color: reviewed.quality.color,
+                    ),
+                ],
               ),
             ],
           ),
@@ -1166,10 +1093,20 @@ enum _Export { lichess, chessCom, fen, pgn }
 
 /// Com a engine ligada: as melhores linhas da posição mostrada, cada uma com
 /// a avaliação e os primeiros lances.
-class EngineLinesPanel extends StatelessWidget {
+class EngineLinesPanel extends StatefulWidget {
   const EngineLinesPanel({required this.state, super.key});
 
   final GameDetailsState state;
+
+  @override
+  State<EngineLinesPanel> createState() => _EngineLinesPanelState();
+}
+
+class _EngineLinesPanelState extends State<EngineLinesPanel> {
+  /// Quantas das linhas calculadas aparecem (1, 2 ou 3).
+  int _shown = 3;
+
+  GameDetailsState get state => widget.state;
 
   @override
   Widget build(BuildContext context) {
@@ -1177,8 +1114,14 @@ class EngineLinesPanel extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final locale = Localizations.localeOf(context).toString();
-    final lines = state.shownLines;
+    final all = state.shownLines;
     final position = state.shownPosition;
+    // Lance forçado: um só lance legal; só ele aparece, com a nota.
+    final forced =
+        position != null &&
+        !position.isGameOver &&
+        position.legalMoves.values.fold<int>(0, (n, to) => n + to.size) == 1;
+    final lines = all?.take(forced ? 1 : _shown).toList(growable: false);
     final List<Widget> children;
     if (lines == null) {
       children = [
@@ -1198,40 +1141,79 @@ class EngineLinesPanel extends StatelessWidget {
     } else {
       children = [
         for (final (index, line) in lines.indexed)
-          Padding(
+          InkWell(
             key: GameDetailsKeys.engineLine(index),
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+            borderRadius: BorderRadius.circular(AppShape.small),
+            onTap: () {
+              context.read<GameDetailsCubit>().playLine(line.moves);
+              DefaultTabController.maybeOf(context)?.animateTo(1);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              child: Row(
+                children: [
+                  Container(
+                    width: 58,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xs,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: line.score.whiteWinPercent >= 50
+                          ? AppColors.paper
+                          : AppColors.chessBlackColor,
+                      borderRadius: BorderRadius.circular(AppShape.small),
+                    ),
+                    child: Text(
+                      formatScore(line.score, locale),
+                      style: TextStyle(
+                        fontWeight: AppWeight.heavy,
+                        color: line.score.whiteWinPercent >= 50
+                            ? AppColors.ink
+                            : AppColors.white,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: SanText(
+                      _numbered(
+                        position,
+                        GameRules.sanLine(position, line.moves, max: 8),
+                      ),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (forced && lines.isNotEmpty)
+          Padding(
+            key: GameDetailsKeys.forcedNote,
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Row(
               children: [
-                Container(
-                  width: 58,
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: line.score.whiteWinPercent >= 50
-                        ? AppColors.paper
-                        : AppColors.chessBlackColor,
-                    borderRadius: BorderRadius.circular(AppShape.small),
-                  ),
-                  child: Text(
-                    formatScore(line.score, locale),
-                    style: TextStyle(
-                      fontWeight: AppWeight.heavy,
-                      color: line.score.whiteWinPercent >= 50
-                          ? AppColors.ink
-                          : AppColors.white,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                  ),
+                Icon(
+                  Icons.lock,
+                  size: AppIconSize.button,
+                  color: colors.onSurfaceVariant,
                 ),
-                const SizedBox(width: AppSpacing.md),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                  child: SanText(
-                    _numbered(
-                      position,
-                      GameRules.sanLine(position, line.moves, max: 8),
+                  child: Text(
+                    l10n.partidaMotorForcado(
+                      GameRules.sanLine(
+                            position,
+                            lines.first.moves,
+                            max: 1,
+                          ).firstOrNull ??
+                          '',
                     ),
-                    style: theme.textTheme.bodyMedium,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],
@@ -1259,13 +1241,61 @@ class EngineLinesPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...children,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                if (!forced)
+                  SegmentedButton<int>(
+                    showSelectedIcon: false,
+                    style: SegmentedButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    segments: [
+                      for (final count in const [1, 2, 3])
+                        ButtonSegment(
+                          value: count,
+                          label: Text(
+                            '$count',
+                            key: GameDetailsKeys.engineCount(count),
+                          ),
+                          tooltip: l10n.partidaMotorLinhas(count),
+                        ),
+                    ],
+                    selected: {_shown},
+                    onSelectionChanged: (value) =>
+                        setState(() => _shown = value.first),
+                  ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              'Stockfish · ${l10n.reviewDepth(state.shownDepth ?? GameDetailsCubit.engineDepths.first)}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+            ...children,
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              key: GameDetailsKeys.engineHint,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.touch_app,
+                  size: AppIconSize.button,
+                  color: colors.onSurfaceVariant,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    l10n.partidaMotorDica,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

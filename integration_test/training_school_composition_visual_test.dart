@@ -66,7 +66,7 @@ void main() {
       final capture = TrainingCaptureRobot($);
       await capture.openGuide(escola: true);
       if (scenario == E2ETrainingScenario.schoolPieces) {
-        await capture.tab('progress');
+        await capture.tab('stats');
         await $.tester.scrollUntilVisible(
           find.byKey(TrainingKeys.pieceStars('pawn')),
           200,

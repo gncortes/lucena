@@ -37,6 +37,9 @@ class LoadErrorScreen extends StatelessWidget {
     this.onFreeSpace,
     this.showAction = true,
     this.message,
+    this.backLabel,
+    this.actionKey,
+    this.backKey,
     super.key,
   });
 
@@ -46,8 +49,15 @@ class LoadErrorScreen extends StatelessWidget {
   final VoidCallback? onFreeSpace;
   final bool showAction;
 
-  /// Troca a frase de baixo do título (a do capítulo ou a do curso sem rede).
+  /// Troca o texto padrão do tipo (ex.: "para atualizar o Lucena").
   final String? message;
+
+  /// Troca o rótulo de [onBack] (ex.: "Agora não").
+  final String? backLabel;
+
+  /// Keys próprias dos botões (padrão: as de [LoadErrorKeys]).
+  final Key? actionKey;
+  final Key? backKey;
 
   @override
   Widget build(BuildContext context) {
@@ -160,16 +170,16 @@ class LoadErrorScreen extends StatelessWidget {
                     outlined: false,
                   ),
                 _LoadErrorAction(
-                  buttonKey: LoadErrorKeys.action,
+                  buttonKey: actionKey ?? LoadErrorKeys.action,
                   onAction: onAction,
                   label: actionLabel,
                   outlined: freeSpace != null,
                 ),
                 if (kind != LoadErrorKind.notFound && onBack != null)
                   OutlinedButton(
-                    key: LoadErrorKeys.back,
+                    key: backKey ?? LoadErrorKeys.back,
                     onPressed: onBack,
-                    child: Text(t.loadErrorBack),
+                    child: Text(backLabel ?? t.loadErrorBack),
                   ),
               ],
             ),

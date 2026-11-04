@@ -58,7 +58,7 @@ void main() {
     );
     if (!context.mounted) throw StateError('Guide was unmounted');
     await context.read<CourseGuideCubit>().load();
-    await capture.tab('progress');
+    await capture.tab('stats');
     await $(TrainingKeys.progressLevelTest).scrollTo().tap();
     await $(PlacementKeys.start).waitUntilVisible();
     await capture.shot('progress-level-test', ready: PlacementKeys.screen);

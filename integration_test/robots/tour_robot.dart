@@ -6,14 +6,11 @@ import 'package:lucena/domain/models/board_settings.dart';
 import 'package:lucena/data/repositories/onboarding/onboarding_repository.dart';
 import 'package:lucena/data/services/preferences_service.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
-import 'package:lucena/domain/models/level_source.dart';
 import 'package:lucena/domain/models/onboarding.dart';
 import 'package:lucena/domain/models/rating_level.dart';
-import 'package:lucena/domain/use_cases/visible_lessons.dart';
 import 'package:lucena/ui/core/board/board_settings_ui.dart';
 import 'package:lucena/ui/core/keys/goal_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
-import 'package:lucena/ui/core/keys/next_steps_keys.dart';
 import 'package:lucena/ui/core/keys/settings_keys.dart';
 import 'package:lucena/ui/core/keys/tour_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
@@ -34,6 +31,7 @@ class TourRobot {
   /// O passo aberto. A tela do tour rola inteira e um passo alto pode ter o
   /// meio fora da tela: basta ele existir.
   Future<void> expectStep(TourStep step) async {
+    await _answerGoalIfOpen();
     await $(TourKeys.step(step)).waitUntilExists();
     await $.pumpAndSettle();
   }
@@ -41,26 +39,27 @@ class TourRobot {
   TourCubit get cubit =>
       $.tester.element(find.byKey(TourKeys.screen)).read<TourCubit>();
 
-  LevelCubit get levelCubit =>
-      $.tester.element(find.byKey(LevelKeys.screen)).read<LevelCubit>();
+  LevelCubit get levelCubit => $.tester
+      .element(find.byKey(TourKeys.step(TourStep.level)))
+      .read<LevelCubit>();
 
   /// A barra de progresso da barra do app: (posição + 1) de quantos passos
   /// aparecem (cinco; quatro vindo de um link).
   void expectProgress(TourStep step) {
-    final steps = cubit.state.steps;
     final bar = $.tester.widget<LinearProgressIndicator>(
       find.descendant(
         of: find.byKey(TourKeys.progress),
         matching: find.byType(LinearProgressIndicator),
       ),
     );
-    expect(bar.value, closeTo((steps.indexOf(step) + 1) / steps.length, 0.001));
+    expect(bar.value, closeTo(cubit.state.progress, 0.001));
   }
 
-  /// "Continuar" do passo (o último troca só a chave) está habilitado.
+  /// O botão principal do passo está habilitado: o último (Conta) não tem
+  /// "Continuar", o principal dele é o "Agora não".
   void expectPrimaryEnabled({required bool last}) {
-    final button = $.tester.widget<FilledButton>(
-      find.byKey(last ? TourKeys.startButton : TourKeys.nextButton),
+    final button = $.tester.widget<ButtonStyleButton>(
+      find.byKey(last ? TourKeys.accountLater : TourKeys.nextButton),
     );
     expect(button.onPressed, isNotNull);
   }
@@ -71,9 +70,27 @@ class TourRobot {
 
   void expectNotOpen() => expect(find.byKey(TourKeys.screen), findsNothing);
 
+  bool _isOpen(TourStep step) =>
+      find.byKey(TourKeys.step(step)).evaluate().isNotEmpty;
+
+  /// A primeira abertura começa no Objetivo: responde se ele estiver aberto.
+  Future<void> _answerGoalIfOpen() async {
+    if (find.byKey(GoalKeys.screen).evaluate().isNotEmpty) await answerGoal();
+  }
+
+  /// O botão que avança o passo aberto: "Continuar" do Nível, "Agora não" da
+  /// Conta e o "Continuar" comum dos outros.
   Future<void> next() async {
-    await $(TourKeys.nextButton).tap();
-    await $.pumpAndSettle();
+    await _answerGoalIfOpen();
+    final Key key;
+    if (_isOpen(TourStep.level)) {
+      key = LevelKeys.continueButton;
+    } else if (_isOpen(TourStep.account)) {
+      key = TourKeys.accountLater;
+    } else {
+      key = TourKeys.nextButton;
+    }
+    await _tap(key);
   }
 
   /// No primeiro passo: escreve o nome do jogador.
@@ -99,44 +116,45 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
-  /// O tour abre no tabuleiro: avança até o passo da voz (o nome do jogador).
+  /// O tour abre no tabuleiro (depois do Objetivo): avança até o passo da voz (o nome do jogador).
   Future<void> openVoice() async {
     await expectStep(TourStep.board);
+    await next();
+    await expectStep(TourStep.theme);
     await next();
     await expectStep(TourStep.voice);
   }
 
   /// Avança até o passo [step].
   Future<void> nextUntil(TourStep step) async {
-    while (find.byKey(TourKeys.step(step)).evaluate().isEmpty) {
+    await _answerGoalIfOpen();
+    for (var i = 0; i < TourStep.values.length && !_isOpen(step); i++) {
       await next();
     }
   }
 
-  /// Termina os passos do tour (o último leva ao objetivo).
+  /// Termina os passos do tour: no último, "Agora não" leva ao Início.
   Future<void> finishSteps() async {
-    await nextUntil(TourStep.play);
-    await $(TourKeys.startButton).tap();
-    await $.pumpAndSettle();
+    await nextUntil(TourStep.account);
+    await _tap(TourKeys.accountLater);
   }
 
-  /// "O que você quer fazer?": marca [goal] e segue (aprender a jogar vai
-  /// direto para a tela inicial; os outros, para o nível).
+  /// "O que você quer fazer?": marca [goal] e segue para o tour.
   Future<void> answerGoal([
-    GoalPreference goal = GoalPreference.endgames,
+    GoalPreference goal = GoalPreference.improve,
   ]) async {
     await $(GoalKeys.screen).waitUntilVisible();
     await _tap(GoalKeys.option(goal));
     await _tap(GoalKeys.continueButton);
   }
 
-  /// Avança o tour inteiro e o objetivo ([goal]) até "Seu nível".
+  /// Responde o Objetivo ([goal]) e avança o tour até o passo Nível.
   Future<void> nextUntilLevel([
-    GoalPreference goal = GoalPreference.endgames,
+    GoalPreference goal = GoalPreference.improve,
   ]) async {
-    await finishSteps();
     await answerGoal(goal);
-    await $(LevelKeys.screen).waitUntilVisible();
+    await nextUntil(TourStep.level);
+    await expectStep(TourStep.level);
   }
 
   /// No passo do tabuleiro: as cores e as peças.
@@ -169,60 +187,56 @@ class TourRobot {
     await $.pumpAndSettle();
   }
 
-  /// No passo do nível: "Não sei jogar" para o iniciante; as outras faixas
-  /// abrem "Já sei o meu rating" e marcam "Informar o meu rating", e [start] digita o rating delas como do
-  /// Lichess (que não converte).
+  /// No passo do nível: "Estou começando" para o iniciante; as outras faixas
+  /// vêm do cartão "Já sei meu rating" e da folha de faixas.
   Future<void> chooseLevel(RatingLevel level) async {
     _level[this] = level;
     if (level == RatingLevel.beginner) {
       await _tap(LevelKeys.option(LevelChoice.zero));
       return;
     }
-    // O número fica atrás de "Já sei o meu rating".
-    await _tap(LevelKeys.option(LevelChoice.known));
-    await _tap(LevelKeys.continueButton);
-    await _tap(LevelKeys.option(LevelChoice.manual));
+    await _tap(LevelKeys.option(LevelChoice.band));
+    await _tap(LevelKeys.bandOption(level));
+    await _tap(LevelKeys.bandConfirm);
   }
 
   /// No passo do nível: abre o teste de nível.
   Future<void> takeTest() => _tap(LevelKeys.option(LevelChoice.test));
 
-  /// Em "Seu nível": "Continuar" (com o teste marcado e sem teste feito, abre
-  /// o teste). Com "Informar o meu rating", digita a faixa de [chooseLevel].
-  /// Com a faixa escolhida e [leave], sai dos próximos passos para a tela
-  /// inicial.
+  /// No passo Nível: "Continuar" (com o teste marcado e sem teste feito, abre
+  /// o teste). Com a faixa escolhida em [chooseLevel] e [leave], termina o
+  /// tour (Região e Conta) e chega ao Início.
   Future<void> start({bool leave = true}) async {
     await _tap(LevelKeys.continueButton);
-    final level = _level[this];
-    if (level == null) return;
-    if (level == RatingLevel.beginner) {
-      if (leave && !VisibleLessons.school) await leaveNextSteps();
-      return;
-    }
-    await $(LevelKeys.ratingScreen).waitUntilVisible();
-    await $(LevelKeys.ratingField).enterText(level.rating.toString());
-    await $(LevelKeys.ratingSource(RatingOrigin.lichess)).scrollTo().tap();
-    await $(LevelKeys.ratingUse).tap();
-    await $.pumpAndSettle();
     if (leave) await leaveNextSteps();
   }
 
-  /// Nos próximos passos do fim do tour (E1.34): "Ir para o início".
+  /// Termina o que falta do tour a partir do passo aberto: Região
+  /// "Continuar" e Conta "Agora não". Sem tour aberto, não faz nada.
   Future<void> leaveNextSteps() async {
-    await $(NextStepsKeys.screen).waitUntilVisible();
-    await $(NextStepsKeys.home).tap();
+    for (var i = 0; i < TourStep.values.length; i++) {
+      if (find.byKey(TourKeys.screen).evaluate().isEmpty) break;
+      await next();
+    }
     await $.pumpAndSettle();
   }
 
-  /// Pula o tour, responde o objetivo e, em "Seu nível", escolhe [level] e
-  /// segue.
+  /// Responde o Objetivo e pula cada passo do tour (o "Pular" vale só para
+  /// o passo aberto); no Nível escolhe [level] e na Conta sai por "Agora não".
   Future<void> skip({RatingLevel level = RatingLevel.intermediate}) async {
-    await $(TourKeys.skipButton).tap();
+    await _answerGoalIfOpen();
+    for (var i = 0; i < TourStep.values.length; i++) {
+      if (find.byKey(TourKeys.screen).evaluate().isEmpty) break;
+      if (_isOpen(TourStep.account)) {
+        await _tap(TourKeys.accountLater);
+      } else if (_isOpen(TourStep.level)) {
+        await chooseLevel(level);
+        await _tap(LevelKeys.continueButton);
+      } else {
+        await _tap(TourKeys.skipButton);
+      }
+    }
     await $.pumpAndSettle();
-    await answerGoal();
-    await $(LevelKeys.screen).waitUntilVisible();
-    await chooseLevel(level);
-    await start();
   }
 
   /// Em Configurações, "Rever o tour".

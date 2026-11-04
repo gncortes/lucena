@@ -1022,9 +1022,11 @@ void main() {
         addTearDown(cubit.close);
         await cubit.open();
         cubit.resign();
+        await Future<void>.delayed(Duration.zero);
 
         cubit.newGame();
         cubit.resign();
+        await Future<void>.delayed(Duration.zero);
         await cubit.open();
 
         expect(cubit.state.start, queenMate);

@@ -6,6 +6,10 @@ abstract interface class CourseReminderTexts {
   NotificationChannelSpec get trainingChannel;
   String get trainingTitle;
   String trainingBody(TrainingReminderText request, String? lessonTitle);
+
+  /// Aviso do dia seguinte ao torneio (H-TRE-14); nome vazio = "torneio".
+  String tournamentPushTitle(String tournamentName);
+  String get tournamentPushBody;
 }
 
 /// Os textos dos lembretes no idioma do app, montados pela UI (o view model

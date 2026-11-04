@@ -84,7 +84,6 @@ import 'package:lucena/data/repositories/positions/positions_repository_asset.da
 import 'package:lucena/data/repositories/progress/progress_repository_local.dart';
 import 'package:lucena/data/services/stockfish_service.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
-import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/profile/profile_repository_local.dart';
 import 'package:lucena/data/repositories/settings/settings_repository_local.dart';
 import 'package:lucena/data/repositories/training/training_repository_local.dart';
@@ -134,6 +133,7 @@ import 'package:lucena/data/repositories/blind/blind_log_repository.dart';
 
 import 'package:lucena/data/repositories/voice/voice_repository_local.dart';
 import 'package:lucena/data/repositories/course_preview/course_preview_repository_asset.dart';
+import 'package:lucena/data/repositories/featured/featured_alerts_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_progress_repository.dart';
 import 'package:lucena/data/repositories/featured/featured_repository_asset.dart';
 import 'package:lucena/data/repositories/wiki/wiki_links_repository_asset.dart';
@@ -530,7 +530,6 @@ Future<Dependencies> e2eDependencies({
     talkRepository: LocalTalkRepository(PreferencesService()),
     onboardingRepository: LocalOnboardingRepository(PreferencesService()),
     homeLayoutRepository: LocalHomeLayoutRepository(PreferencesService()),
-    unlockRepository: LocalUnlockRepository(PreferencesService()),
     paceRepository: AssetPaceRepository(const AssetService()),
     // As aulas de verdade.
     lessonRepository: VisibleLessonRepository(lessons),
@@ -579,6 +578,9 @@ Future<Dependencies> e2eDependencies({
     featuredProgressRepository: ActiveFeaturedProgressRepository(
       LocalFeaturedProgressRepository(PreferencesService()),
       activity,
+    ),
+    featuredAlertsRepository: LocalFeaturedAlertsRepository(
+      PreferencesService(),
     ),
     activityRepository: activity,
     dailyFinalRepository: LocalDailyFinalRepository(

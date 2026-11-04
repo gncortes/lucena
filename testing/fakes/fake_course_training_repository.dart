@@ -22,10 +22,17 @@ final class FakeTrainingRepository implements TrainingRepository {
   Future<void>? beforeSave;
   Future<void>? beforeResources;
   Object? writeError;
+
+  /// Faz toda leitura do estado falhar, como um arquivo corrompido.
+  Object? readError;
   int writes = 0;
+
+  /// Gravações recusadas por [writeError] (para provar que não há laço).
+  int failedWrites = 0;
   @override
   Stream<TrainingState> get changes => _changes.stream;
   TrainingState _read(TrainingCourse course) {
+    if (readError case final error?) throw error;
     final raw = saved[course];
     return raw == null
         ? TrainingState(course: course, installSeed: 'fake-installation')
@@ -63,7 +70,10 @@ final class FakeTrainingRepository implements TrainingRepository {
           'A transaction cannot change course or installation seed',
         );
       }
-      if (writeError case final error?) throw error;
+      if (writeError case final error?) {
+        failedWrites++;
+        throw error;
+      }
       await beforeSave;
       saved[course] = jsonEncode(state.toJson());
       writes++;

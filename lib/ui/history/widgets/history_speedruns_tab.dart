@@ -53,31 +53,11 @@ class HistorySpeedrunsTab extends StatelessWidget {
         ],
       );
     }
-    final filter = marathon ? state.marathonFilter : state.classicFilter;
     final rows = state.rows(_tab);
     final score = SpeedrunHistoryRows.score(rows);
     return ListView(
       padding: padding,
       children: [
-        HistoryFilterBar(
-          chips: [
-            HistoryChipData(
-              name: 'level',
-              label: filter.level == null
-                  ? l10n.historyFilterLevel
-                  : HistoryLabels.level(l10n, filter.level!),
-              active: filter.level != null,
-            ),
-            HistoryChipData(
-              name: 'pace',
-              label: filter.pace == null
-                  ? l10n.historyFilterPace
-                  : filter.pace!.label(l10n),
-              active: filter.pace != null,
-            ),
-          ],
-          onOpen: () => _openSheet(context, state, all),
-        ),
         if (rows.isEmpty)
           HistoryFilteredEmpty(
             message: marathon
@@ -176,11 +156,10 @@ class HistorySpeedrunsTab extends StatelessWidget {
         : cubit.applyClassicFilter(filter);
   }
 
-  Future<void> _openSheet(
-    BuildContext context,
-    HistoryState state,
-    List<SpeedrunHistoryRow> all,
-  ) async {
+  /// Abre a folha de filtros da aba (o ícone da barra de cima chama).
+  Future<void> openFilter(BuildContext context) async {
+    final state = context.read<HistoryCubit>().state;
+    final all = marathon ? state.marathons : state.classic;
     final l10n = context.l10n;
     final chosen = await showHistoryFilterSheet(
       context,

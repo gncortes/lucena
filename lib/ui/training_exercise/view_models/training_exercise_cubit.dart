@@ -25,6 +25,7 @@ import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/play_training_exercise.dart';
 import '../../../domain/use_cases/training/theme_cycle_rules.dart';
 import '../../../domain/use_cases/training/training_date.dart';
+import '../../core/utils/save_retry.dart';
 
 enum TrainingExercisePhase {
   loading,
@@ -168,11 +169,11 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
   final TrainingAnalytics? trainingAnalytics;
   DateTime? _openedAt;
   Now get _attemptNow => _AttemptNow(_openedAt ?? now());
-  Timer? _saveRetry;
+  final _saveRetry = SaveRetry();
 
   @override
   Future<void> close() async {
-    _saveRetry?.cancel();
+    _saveRetry.cancel();
     await super.close();
   }
 
@@ -338,6 +339,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
         );
         return trainingAnalytics?.attach(changed) ?? changed;
       });
+      _saveRetry.reset();
       if (isClosed) return;
       emit(
         state.copyWith(
@@ -352,8 +354,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     } catch (_) {
       if (isClosed) return;
       emit(state.copyWith(phase: TrainingExercisePhase.playing, error: true));
-      _saveRetry?.cancel();
-      _saveRetry = Timer(const Duration(seconds: 1), () {
+      _saveRetry.schedule(() {
         if (!isClosed) unawaited(hint());
       });
     }
@@ -507,6 +508,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
           )
           .lastOrNull;
       if (recorded == null) throw const _ExpiredExercise();
+      _saveRetry.reset();
       if (isClosed) return;
       emit(
         state.copyWith(
@@ -523,8 +525,7 @@ final class TrainingExerciseCubit extends Cubit<TrainingExerciseState> {
     } catch (_) {
       if (isClosed) return;
       emit(state.copyWith(error: true));
-      _saveRetry?.cancel();
-      _saveRetry = Timer(const Duration(seconds: 1), () {
+      _saveRetry.schedule(() {
         if (!isClosed) unawaited(save());
       });
     }

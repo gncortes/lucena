@@ -48,7 +48,7 @@ void main() {
           TrainingCourse.pilares: TrainingState(
             course: TrainingCourse.pilares,
             installSeed: 'header',
-            tab: CourseGuideTab.progress,
+            tab: CourseGuideTab.stats,
             cycles: {
               'theme': ThemeCycle(lessonId: 'theme', startedOn: '2026-10-20'),
             },
@@ -105,7 +105,7 @@ void main() {
             .widget<NavigationBar>(find.byType(NavigationBar))
             .destinations
             .length,
-        4,
+        5,
       );
       if (theme) expect(find.byKey(TrainingKeys.themeScreen), findsOneWidget);
       expect(tester.takeException(), isNull);

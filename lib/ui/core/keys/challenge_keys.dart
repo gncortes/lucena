@@ -17,6 +17,8 @@ abstract final class ChallengeKeys {
   static const linkField = Key('challenge.link');
   static const share = Key('challenge.share');
   static const copy = Key('challenge.copy');
+  static const shareError = Key('challenge.share.error');
+  static const shareRetry = Key('challenge.share.retry');
 
   /// A tela do desafio fechado (aberto por link).
   static const screen = Key('challenge.screen');

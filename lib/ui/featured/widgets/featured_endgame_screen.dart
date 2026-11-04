@@ -1,6 +1,3 @@
-import '../../core/widgets/load_skeleton.dart';
-import '../../core/widgets/load_error.dart';
-
 import 'dart:math' as math;
 
 import 'package:dartchess/dartchess.dart';
@@ -24,7 +21,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
 import '../../core/widgets/character_avatar.dart';
-import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/load_error.dart';
+import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/position_board.dart';
@@ -55,20 +53,37 @@ class _FeaturedEndgameScreenState extends State<FeaturedEndgameScreen> {
   Widget build(BuildContext context) {
     final loadState = context.watch<FeaturedEndgameCubit>().state;
     if (!loadState.ready && loadState.failure == null) {
-      return const LoadSkeletonScreen();
+      return KeyedSubtree(
+        key: FeaturedKeys.endgameLoading,
+        child: LoadSkeletonScreen(
+          title: context.l10n.featuredEndgameTitle,
+          blocks: const [
+            SkeletonShape.line(220),
+            SkeletonShape.card(48),
+            SkeletonShape.card(412),
+            SkeletonShape.card(48),
+          ],
+        ),
+      );
     }
     if (loadState.ready && loadState.endgame == null) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.notFound,
-        onAction: () => context.go(Routes.home),
+      return KeyedSubtree(
+        key: FeaturedKeys.endgameMissing,
+        child: LoadErrorScreen(
+          kind: LoadErrorKind.notFound,
+          onAction: () => context.go(Routes.home),
+        ),
       );
     }
     if (loadState.failure case final failure?) {
-      return LoadErrorScreen(
-        kind: LoadErrorKind.fromFailure(failure),
-        onAction: context.read<FeaturedEndgameCubit>().retryLoad,
-        onBack: () =>
-            context.canPop() ? context.pop() : context.go(Routes.home),
+      return KeyedSubtree(
+        key: FeaturedKeys.endgameError,
+        child: LoadErrorScreen(
+          kind: LoadErrorKind.fromFailure(failure),
+          onAction: context.read<FeaturedEndgameCubit>().retryLoad,
+          onBack: () =>
+              context.canPop() ? context.pop() : context.go(Routes.home),
+        ),
       );
     }
 
@@ -101,16 +116,8 @@ class _FeaturedEndgameScreenState extends State<FeaturedEndgameScreen> {
                 FeaturedGameActions(boundary: _shareBoundary, ended: true),
             ],
           ),
-          body: !state.ready
+          body: !state.ready || endgame == null
               ? const SizedBox.shrink()
-              : endgame == null
-              ? Center(
-                  child: EmptyState(
-                    messageKey: FeaturedKeys.endgameMissing,
-                    icon: Icons.flag_outlined,
-                    message: l10n.featuredEndgameMissing,
-                  ),
-                )
               : _Ready(
                   state: state,
                   endgame: endgame,

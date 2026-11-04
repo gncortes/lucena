@@ -39,7 +39,7 @@ void main() {
     final cubit = await loaded();
 
     expect(cubit.state.ready, isTrue);
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
     expect(cubit.state.viktor?.id, 'master');
   });
 
@@ -57,40 +57,61 @@ void main() {
     expect(cubit.state.goal, GoalPreference.train);
   });
 
-  test('treinar finais grava o objetivo e segue para o nível', () async {
+  test('treinar finais grava o objetivo e segue para o tour', () async {
     final cubit = await loaded();
     cubit.select(GoalPreference.train);
     await cubit.finish();
 
-    expect(cubit.state.exit, GoalExit.level);
+    expect(cubit.state.exit, GoalExit.tour);
     expect(profile.profile.goal, GoalPreference.train);
     expect(profile.profile.nickname, 'Ana');
+    // O tour começa no primeiro passo; a primeira abertura não acabou.
+    expect(onboarding.saved.stage, OnboardingStage.tour);
+    expect(onboarding.saved.step, 0);
     expect(onboarding.saved.done, isFalse);
     expect(home.layout, isNull);
   });
 
-  test('aprender a jogar pula o nível: iniciante e a tela inicial', () async {
+  test('aprender a jogar segue para o tour já como iniciante', () async {
     final cubit = await loaded();
     cubit.select(GoalPreference.learn);
     await cubit.finish();
 
-    expect(cubit.state.exit, GoalExit.controls);
+    expect(cubit.state.exit, GoalExit.tour);
     expect(profile.profile.goal, GoalPreference.learn);
     expect(profile.profile.level, RatingLevel.beginner);
-    expect(onboarding.saved.done, isTrue);
+    // O nível sai do tour: a faixa já vai gravada, mas só o fim do tour
+    // conclui a primeira abertura.
+    expect(onboarding.saved.done, isFalse);
     expect(onboarding.saved.startRung, '1000');
+    expect(onboarding.saved.selectedRating, RatingLevel.beginner.rating);
     // A sugestão de iniciante, sem ajuste da pessoa.
     expect(home.layout?.custom, isFalse);
     expect(home.layout?.shown.first, isNot(HomePath.race));
     expect(home.seen, isTrue);
   });
 
+  test(
+    'erro ao gravar: tela de erro e Tentar novamente reabre a pergunta',
+    () async {
+      final cubit = await loaded();
+      profile.failNextSave = true;
+      await cubit.finish();
+
+      expect(cubit.state.failure, isNotNull);
+      expect(cubit.state.exit, isNull);
+      await cubit.load();
+      expect(cubit.state.ready, isTrue);
+      expect(cubit.state.failure, isNull);
+    },
+  );
+
   test('depois de gravar, não troca mais', () async {
     final cubit = await loaded();
     await cubit.finish();
     cubit.select(GoalPreference.learn);
 
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
   });
 
   test('vindo de um link: "Aprender a jogar" não vale', () async {
@@ -99,12 +120,12 @@ void main() {
     );
     final cubit = await loaded(fromLink: true);
 
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
     cubit.select(GoalPreference.learn);
-    expect(cubit.state.goal, GoalPreference.endgames);
+    expect(cubit.state.goal, GoalPreference.train);
     cubit.select(GoalPreference.train);
     await cubit.finish();
-    expect(cubit.state.exit, GoalExit.level);
+    expect(cubit.state.exit, GoalExit.tour);
     expect((await profile.load()).goal, GoalPreference.train);
   });
 }

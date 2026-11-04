@@ -18,45 +18,17 @@ class FeaturedItem {
   String get id => endgame.id;
 }
 
-/// Os filtros da lista: o país do torneio e a origem. Nulo é "todos".
-class FeaturedFilter {
-  const FeaturedFilter({this.country, this.origin});
-
-  static const none = FeaturedFilter();
-
-  final String? country;
-  final FeaturedOrigin? origin;
-
-  bool get isActive => country != null || origin != null;
-
-  FeaturedFilter copyWith({
-    String? country,
-    FeaturedOrigin? origin,
-    bool clearCountry = false,
-    bool clearOrigin = false,
-  }) => FeaturedFilter(
-    country: clearCountry ? null : country ?? this.country,
-    origin: clearOrigin ? null : origin ?? this.origin,
-  );
-
-  @override
-  bool operator ==(Object other) =>
-      other is FeaturedFilter &&
-      other.country == country &&
-      other.origin == origin;
-
-  @override
-  int get hashCode => Object.hash(country, origin);
-}
-
-/// A ordem e os filtros dos finais em destaque.
+/// A ordem e a separação dos finais em destaque.
 abstract final class FeaturedRules {
   /// Os finais prontos para a lista: os de torneio em andamento primeiro, os
-  /// ainda não jogados antes dos jogados, e dentro disso os mais recentes.
+  /// ainda não jogados antes dos jogados, os do país do perfil ([country])
+  /// antes dos outros, e dentro disso os mais recentes. Todos os finais
+  /// aparecem para todos: o país só muda a ordem.
   static List<FeaturedItem> items(
     FeaturedCatalog catalog,
     Set<String> played, {
     required DateTime now,
+    String? country,
   }) {
     final items = [
       for (final each in catalog.finals)
@@ -73,6 +45,8 @@ abstract final class FeaturedRules {
       if (live != 0) return live;
       final unplayed = (a.played ? 1 : 0).compareTo(b.played ? 1 : 0);
       if (unplayed != 0) return unplayed;
+      final local = _local(b, country).compareTo(_local(a, country));
+      if (local != 0) return local;
       final aDate = a.endgame.publishedOn;
       final bDate = b.endgame.publishedOn;
       if (aDate != null && bDate != null) {
@@ -89,44 +63,42 @@ abstract final class FeaturedRules {
   static int _rank(FeaturedItem item, DateTime now) =>
       item.tournament?.isOngoing(now) ?? false ? 1 : 0;
 
-  /// O que passa pelo [filter]: o país é o do torneio.
-  static List<FeaturedItem> filtered(
-    List<FeaturedItem> items,
-    FeaturedFilter filter,
-  ) => [
+  static int _local(FeaturedItem item, String? country) =>
+      country != null && item.tournament?.country == country ? 1 : 0;
+
+  /// "Finais recentes": publicados nos últimos [recentDays] dias. O resto
+  /// (e o final sem data) é "Finais históricos".
+  static bool isRecent(FeaturedItem item, DateTime now) {
+    final published = item.endgame.publishedOn;
+    if (published == null) return false;
+    final age = now.difference(published);
+    return !age.isNegative && age < const Duration(days: recentDays);
+  }
+
+  /// Quantos dias depois de publicado um final ainda é recente.
+  static const recentDays = 30;
+
+  /// Os finais recentes, na ordem de [items].
+  static List<FeaturedItem> recent(List<FeaturedItem> items, DateTime now) => [
     for (final item in items)
-      if ((filter.origin == null || item.endgame.origin == filter.origin) &&
-          (filter.country == null ||
-              item.tournament?.country == filter.country))
-        item,
+      if (isRecent(item, now)) item,
   ];
 
-  /// Os torneios em andamento (do país do filtro), para o topo da lista.
-  /// Com a origem diferente de torneio, nenhum.
-  static List<FeaturedTournament> ongoing(
-    FeaturedCatalog catalog,
-    FeaturedFilter filter, {
-    required DateTime now,
-  }) {
-    final origin = filter.origin;
-    if (origin != null && origin != FeaturedOrigin.tournament) return const [];
-    return [
-      for (final each in catalog.tournaments)
-        if (each.isOngoing(now) &&
-            (filter.country == null || each.country == filter.country))
-          each,
-    ];
-  }
+  /// Os finais históricos, na ordem de [items].
+  static List<FeaturedItem> historic(List<FeaturedItem> items, DateTime now) =>
+      [
+        for (final item in items)
+          if (!isRecent(item, now)) item,
+      ];
 
-  /// Os países que têm torneio com final, em ordem de código.
-  static List<String> countries(FeaturedCatalog catalog) {
-    final used = {for (final each in catalog.finals) each.tournamentId};
-    return {
-      for (final tournament in catalog.tournaments)
-        if (used.contains(tournament.id) && tournament.country != null)
-          tournament.country!,
-    }.toList()..sort();
-  }
+  /// Os torneios em andamento, para o topo da lista.
+  static List<FeaturedTournament> ongoing(
+    FeaturedCatalog catalog, {
+    required DateTime now,
+  }) => [
+    for (final each in catalog.tournaments)
+      if (each.isOngoing(now)) each,
+  ];
 
   /// O que a tela inicial destaca: o primeiro da lista, se houver.
   static FeaturedItem? home(List<FeaturedItem> items) =>

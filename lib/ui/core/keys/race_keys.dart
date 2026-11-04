@@ -66,6 +66,8 @@ abstract final class RaceKeys {
   static const statPace = Key('race.result.stat.pace');
   static Key problemTile(int index) => Key('race.result.problem.$index');
   static const again = Key('race.result.again');
+  static const seeAllProblems = Key('race.result.seeAll');
+  static const problemsScreen = Key('race.problems.screen');
   static const reviewMistakes = Key('race.result.review');
   static const close = Key('race.result.close');
 

@@ -118,7 +118,7 @@ void main() {
               find.byKey(CourseGuideKeys.chapterLesson('a1')),
             )
             .title,
-        'Lição 1 · Aula a1',
+        'Aula a1',
       );
       await cubit.selectTab(CourseGuideTab.lesson);
       await tester.pumpAndSettle();

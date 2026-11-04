@@ -24,10 +24,7 @@ import 'package:lucena/ui/challenge/view_models/challenge_link_cubit.dart';
 import 'package:lucena/ui/challenge/widgets/challenge_link_screen.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
 import 'package:lucena/ui/core/widgets/load_error.dart';
-import 'package:lucena/ui/daily/view_models/daily_result_cubit.dart';
 import 'package:lucena/ui/daily/view_models/daily_start_cubit.dart';
-import 'package:lucena/ui/daily/widgets/daily_result_screen.dart';
-import 'package:lucena/ui/daily/widgets/daily_share_screen.dart';
 import 'package:lucena/ui/daily/widgets/daily_start_screen.dart';
 import 'package:lucena/ui/journey/view_models/journey_cubit.dart';
 import 'package:lucena/ui/journey/widgets/challenge_screen.dart';
@@ -53,7 +50,6 @@ import 'package:lucena/ui/streak/view_models/streak_cubit.dart';
 import '../../../testing/fakes/fake_achievements_repository.dart';
 import '../../../testing/fakes/fake_activity_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
-import '../../../testing/fakes/fake_crowd_repository.dart';
 import '../../../testing/fakes/fake_daily_final_repository.dart';
 import '../../../testing/fakes/fake_journey_repository.dart';
 import '../../../testing/fakes/fake_now.dart';
@@ -155,8 +151,6 @@ void main() {
     'performance',
     'warm-up',
     'daily',
-    'daily-result',
-    'daily-share',
     'achievements',
     'stars',
     'star',
@@ -220,12 +214,6 @@ void main() {
         rating: FakeRatingRepository(),
         now: now,
       );
-      final dr = DailyResultCubit(
-        date: '2026-11-02',
-        daily: _Daily(failure),
-        crowd: FakeCrowdRepository(),
-        now: now,
-      );
       final a = AchievementsCubit(_Achievements(failure), now: now);
       final st = StarChallengesCubit(progress: _Stars(failure));
       final star = StarChallengeCubit(progress: _Stars(failure), now: now);
@@ -239,7 +227,6 @@ void main() {
         p,
         w,
         d,
-        dr,
         a,
         st,
         star,
@@ -298,8 +285,6 @@ void main() {
           ),
         ),
         'daily' => (d.load, const DailyStartScreen()),
-        'daily-result' => (dr.load, const DailyResultScreen()),
-        'daily-share' => (dr.load, const DailyShareScreen()),
         'achievements' => (a.load, const AchievementsScreen()),
         'stars' => (st.load, const StarChallengesScreen()),
         _ => (
@@ -328,7 +313,6 @@ void main() {
                 BlocProvider.value(value: p),
                 BlocProvider.value(value: w),
                 BlocProvider.value(value: d),
-                BlocProvider.value(value: dr),
                 BlocProvider.value(value: a),
                 BlocProvider.value(value: st),
                 BlocProvider.value(value: star),

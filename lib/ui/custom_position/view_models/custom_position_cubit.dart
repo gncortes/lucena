@@ -43,6 +43,8 @@ class CustomPositionCubit extends Cubit<CustomPositionState> {
   final TrainingRepository _training;
 
   Future<void> load() async {
+    // "Tentar novamente": volta ao esqueleto enquanto lê de novo.
+    if (state.failed) emit(state.copyWith(failed: false, ready: false));
     try {
       await _load();
     } on Object catch (error, stack) {

@@ -10,24 +10,30 @@ import '../../core/widgets/choice_card.dart';
 extension GoalPreferenceUi on GoalPreference {
   IconData get icon => switch (this) {
     GoalPreference.learn => Icons.school,
-    GoalPreference.endgames => Icons.auto_stories,
+    GoalPreference.improve => Icons.auto_stories,
     GoalPreference.train => Icons.grid_view,
+    GoalPreference.explore => Icons.grid_on,
+    GoalPreference.challenge => Icons.hiking,
   };
 
   String title(AppLocalizations l10n) => switch (this) {
     GoalPreference.learn => l10n.goalLearnTitle,
-    GoalPreference.endgames => l10n.goalEndgamesTitle,
+    GoalPreference.improve => l10n.goalImproveTitle,
     GoalPreference.train => l10n.goalTrainTitle,
+    GoalPreference.explore => l10n.goalExploreTitle,
+    GoalPreference.challenge => l10n.goalChallengeTitle,
   };
 
   String text(AppLocalizations l10n) => switch (this) {
     GoalPreference.learn => l10n.goalLearnText,
-    GoalPreference.endgames => l10n.goalEndgamesText,
+    GoalPreference.improve => l10n.goalImproveText,
     GoalPreference.train => l10n.goalTrainText,
+    GoalPreference.explore => l10n.goalExploreText,
+    GoalPreference.challenge => l10n.goalChallengeText,
   };
 }
 
-/// Os três cartões, um embaixo do outro, com [selected] marcado.
+/// Os cartões, um embaixo do outro, com [selected] marcado.
 class GoalOptions extends StatelessWidget {
   const GoalOptions({
     super.key,

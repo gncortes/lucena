@@ -10,6 +10,7 @@ import 'package:lucena/domain/models/clock.dart';
 import 'package:lucena/domain/models/game_setup.dart';
 import 'package:lucena/ui/challenge/widgets/challenge_sheet.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
+import 'package:lucena/ui/core/theme/app_motion.dart';
 import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 
 import '../../../../testing/fakes/fake_analytics_repository.dart';
@@ -97,6 +98,28 @@ void main() {
     expect(share.texts.single, contains(_sent.uri.toString()));
     expect(share.texts.single, contains('utm_source=app'));
     expect(share.texts.single, isNot(contains('lock=1')));
+  });
+
+  testWidgets('envio que falha: o botão volta e o aviso oferece tentar de novo '
+      '(H-DES-14 gap 9)', (tester) async {
+    await open(tester);
+    share.failing = true;
+    await tester.tap(find.byKey(ChallengeKeys.share));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(ChallengeKeys.shareError), findsOne);
+    expect(find.text('Could not share the link.'), findsOne);
+    expect(
+      tester.widget<FilledButton>(find.byKey(ChallengeKeys.share)).onPressed,
+      isNotNull,
+    );
+
+    share.failing = false;
+    await tester.tap(find.byKey(ChallengeKeys.shareRetry));
+    await tester.pumpAndSettle();
+    expect(share.texts, hasLength(1));
+    expect(find.byKey(ChallengeKeys.shareError), findsNothing);
+    await tester.pump(AppMotion.snackBar);
   });
 
   testWidgets('travar a configuração muda o link', (tester) async {

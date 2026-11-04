@@ -33,8 +33,11 @@ import 'package:lucena/domain/models/voice.dart';
 import 'package:lucena/domain/use_cases/game_rules.dart';
 import 'package:lucena/l10n/app_localizations.dart';
 import 'package:lucena/ui/core/keys/challenge_keys.dart';
-import 'package:lucena/ui/core/keys/daily_keys.dart';
 import 'package:lucena/ui/core/keys/free_board_keys.dart';
+import 'package:lucena/ui/core/keys/game_sound_keys.dart';
+import 'package:lucena/ui/core/keys/load_error_keys.dart';
+import 'package:lucena/ui/core/keys/opponent_error_keys.dart';
+import 'package:lucena/ui/core/keys/sheet_keys.dart';
 import 'package:lucena/ui/core/keys/speech_keys.dart';
 import 'package:lucena/ui/core/keys/lesson_script_keys.dart';
 import 'package:lucena/ui/core/widgets/speech_balloon.dart';
@@ -663,6 +666,28 @@ void main() {
     expect(settings.animationDuration, Duration.zero);
   });
 
+  testWidgets(
+    'H-PAR-07: a barra tem Virar, Relógio, Nova partida, nesta ordem',
+    (tester) async {
+      await pumpScreen(tester, locale: const Locale('pt'));
+
+      String label(Key key) => tester
+          .widget<Text>(
+            find.descendant(of: find.byKey(key), matching: find.byType(Text)),
+          )
+          .data!;
+      expect(label(FreeBoardKeys.flipButton), 'Virar');
+      expect(label(FreeBoardKeys.clockButton), 'Relógio');
+      expect(label(FreeBoardKeys.newGameButton), 'Nova partida');
+      final x = [
+        FreeBoardKeys.flipButton,
+        FreeBoardKeys.clockButton,
+        FreeBoardKeys.newGameButton,
+      ].map((k) => tester.getTopLeft(find.byKey(k)).dx).toList();
+      expect(x[0] < x[1] && x[1] < x[2], isTrue);
+    },
+  );
+
   testWidgets('virar o tabuleiro inverte a orientação e mantém a lista', (
     tester,
   ) async {
@@ -705,6 +730,60 @@ void main() {
       ['Cf3', 'Re7', 'Bc4', 'Rf6', 'Dd4+', 'Re7', 'Ta7+'],
     );
     expect(tester.getSemantics(find.byKey(FreeBoardKeys.move(0))).label, 'Cf3');
+  });
+
+  group('H-PAR-18 adversário que falha', () {
+    const vsMachine = GameMode(
+      opponent: OpponentKind.stockfish,
+      userSide: Side.white,
+    );
+
+    // Três falhas seguidas, 2 s entre elas, como a tela faz a cada tique.
+    Future<void> failThreeTimes(WidgetTester tester) async {
+      opponent.failTimes = 3;
+      await move(tester, 'e2', 'e4');
+      await tester.pump();
+      for (var i = 0; i < 2; i++) {
+        now.advance(const Duration(seconds: 2));
+        cubit.tick();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('na 3ª falha abre a folha, sem ✕', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsOneWidget);
+      expect(find.byKey(SheetKeys.close), findsNothing);
+      expect(cubit.state.opponentError, isTrue);
+    });
+
+    testWidgets('Tentar novamente fecha a folha e o adversário joga', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.retry));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(OpponentErrorKeys.sheet), findsNothing);
+      expect(cubit.state.moves, hasLength(2));
+    });
+
+    testWidgets('Sair mantém a partida gravada', (tester) async {
+      await pumpScreen(tester, mode: vsMachine, playerSide: Side.white);
+      await failThreeTimes(tester);
+
+      await tester.tap(find.byKey(OpponentErrorKeys.leave));
+      await tester.pumpAndSettle();
+
+      final saved = await games.load();
+      expect(saved, isNotNull);
+      expect(saved!.moves, ['e2e4']);
+    });
   });
 
   testWidgets('pré-lance: marcado na vez do adversário e jogado em seguida', (
@@ -2169,6 +2248,60 @@ void main() {
       },
     );
 
+    testWidgets('H-PAR-06: textos das folhas de desistir e de empate', (
+      tester,
+    ) async {
+      await pumpScreen(tester, mode: machine, locale: const Locale('pt'));
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      final resign = find.byKey(FreeBoardKeys.resignSheet);
+      for (final t in [
+        'Desistir da partida?',
+        'A partida termina agora e conta como derrota.',
+        'Desistir',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: resign, matching: find.text(t)),
+          findsOneWidget,
+        );
+      }
+      await tester.tap(find.byKey(FreeBoardKeys.confirmationClose));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.drawButton));
+      await tester.tap(find.byKey(FreeBoardKeys.drawButton));
+      await tester.pumpAndSettle();
+      final draw = find.byKey(FreeBoardKeys.drawSheet);
+      for (final t in [
+        'Oferecer empate?',
+        'Oferecer empate',
+        'Continuar jogando',
+      ]) {
+        expect(
+          find.descendant(of: draw, matching: find.text(t)),
+          findsOneWidget,
+          reason: t,
+        );
+      }
+      // A dica traz o nome do personagem, não "o adversário".
+      final hint = tester
+          .widgetList<Text>(
+            find.descendant(
+              of: draw,
+              matching: find.textContaining('pode aceitar ou recusar'),
+            ),
+          )
+          .single
+          .data!;
+      expect(
+        hint,
+        endsWith(' pode aceitar ou recusar. Se recusar, a partida continua.'),
+      );
+      expect(hint, isNot(contains('adversário')));
+    });
+
     testWidgets('X de desistir fica fora da folha e cancela sem perda', (
       tester,
     ) async {
@@ -2367,6 +2500,66 @@ void main() {
       expect(progress.attempts.single.endReason, GameEndReason.resign);
     });
 
+    /// Desiste sem mexer na rolagem (a tela de erro pode trocar o tabuleiro).
+    Future<void> resignOnly(WidgetTester tester) async {
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.resignButton));
+      await tester.tap(find.byKey(FreeBoardKeys.resignButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(FreeBoardKeys.resignConfirmButton));
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('H-PAR-19: sem espaço ao gravar mostra o erro; Tentar '
+        'novamente grava e abre a conclusão', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+
+      await resignOnly(tester);
+
+      expect(find.byKey(LoadErrorKeys.screen), findsOneWidget);
+      expect(find.text('Not enough space on your phone'), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.freeSpace), findsOneWidget);
+      expect(find.byKey(LoadErrorKeys.back), findsOneWidget);
+      expect(progress.attempts, isEmpty);
+
+      await tester.tap(find.byKey(LoadErrorKeys.action));
+      await tester.pumpAndSettle();
+
+      final id = await cubit.savedGameId();
+      expect(id, 1);
+      expect(find.text('conclusion $id'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
+    });
+
+    testWidgets('H-PAR-19: Voltar leva ao fim da partida e Ver o resultado '
+        'grava de novo', (tester) async {
+      await pumpScreen(
+        tester,
+        fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+        mode: vsMachine,
+        withReporter: true,
+      );
+      progress.failAddAttempt = 1;
+      await resignOnly(tester);
+
+      await tester.tap(find.byKey(LoadErrorKeys.back));
+      await tester.pumpAndSettle();
+      expect(find.byKey(LoadErrorKeys.screen), findsNothing);
+      expect(find.byKey(FreeBoardKeys.seeResultButton), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.tap(find.byKey(FreeBoardKeys.seeResultButton));
+      await tester.pumpAndSettle();
+      expect(find.text('conclusion 1'), findsOneWidget);
+      expect(progress.attempts, hasLength(1));
+    });
+
     testWidgets(
       'desafio de link conserva o motivo de tempo depois do selo inicial',
       (tester) async {
@@ -2423,6 +2616,77 @@ void main() {
       });
     }
 
+    testWidgets('H-PAR-05: na 3ª fala escondida, a dica com "Ajustar" abre o '
+        'painel de som', (tester) async {
+      await pumpScreen(
+        tester,
+        mode: vsMachine.copyWith(opponent: OpponentKind.maia, level: 1000),
+        locale: const Locale('pt'),
+      );
+      await cubit.open();
+      await talk.settled();
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 3; i++) {
+        if (talk.state.line == null) {
+          talk.update(
+            cubit.state.copyWith(
+              drawOffer: DrawOffer.declined,
+              drawDeclinedAt: i,
+            ),
+          );
+          await talk.settled();
+        }
+        talk.dismissLine(lineId: talk.state.line!.id);
+        await talk.settled();
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+      expect(find.byKey(FreeBoardKeys.speechHint), findsOneWidget);
+      expect(
+        find.textContaining('Você pode desligar as falas'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(FreeBoardKeys.speechHintAdjust));
+      await tester.pumpAndSettle();
+      expect(find.byKey(GameSoundKeys.dialog), findsOneWidget);
+    });
+
+    testWidgets(
+      'H-PAR-05: sem relógio o detalhe leva o lado ("1164 · brancas"); '
+      'com relógio, não',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating · brancas',
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.black)),
+          'Pretas',
+        );
+
+        await tester.pumpWidget(const SizedBox.shrink());
+        await pumpScreen(
+          tester,
+          fen: '8/3k4/8/8/8/8/2K5/2Q5 w - - 0 1',
+          mode: vsMachine.copyWith(fromLink: true),
+          locale: const Locale('pt'),
+          clock: ClockConfig.same(
+            const TimeControl(initial: Duration(minutes: 5)),
+          ),
+        );
+        expect(
+          textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
+          'Sem rating',
+        );
+      },
+    );
+
     testWidgets('desafio de link sem rating ainda: "No rating" no lugar do '
         'número', (tester) async {
       await pumpScreen(
@@ -2432,7 +2696,7 @@ void main() {
       );
       expect(
         textOf(tester, FreeBoardKeys.playerDetail(Side.white)),
-        'No rating',
+        'No rating · white',
       );
     });
 
@@ -3292,7 +3556,7 @@ void main() {
       goal: PositionGoal.win,
     );
 
-    testWidgets('a meta aparece antes do primeiro lance', (tester) async {
+    testWidgets('o título é "Final do dia", sem a meta', (tester) async {
       await pumpScreen(
         tester,
         locale: const Locale('pt'),
@@ -3300,17 +3564,7 @@ void main() {
         fen: '3k4/8/3K4/8/8/8/8/7Q w - - 0 1',
       );
       expect(cubit.state.ucis, isEmpty);
-      expect(textOf(tester, DailyKeys.goalSubtitle), 'Brancas jogam e ganham');
-    });
-
-    testWidgets('empate: "e empatam"', (tester) async {
-      await pumpScreen(
-        tester,
-        locale: const Locale('pt'),
-        mode: daily.copyWith(goal: PositionGoal.draw, userSide: Side.black),
-        fen: '3k4/8/3K4/8/8/8/8/7Q b - - 0 1',
-      );
-      expect(textOf(tester, DailyKeys.goalSubtitle), 'Pretas jogam e empatam');
+      expect(textOf(tester, FreeBoardKeys.title), 'Final do dia');
     });
 
     testWidgets('o jogador mostra o rating, não "Sem rating"', (tester) async {
@@ -3324,8 +3578,10 @@ void main() {
       await cubit.open();
       await tester.pumpAndSettle();
       final detail = textOf(tester, FreeBoardKeys.playerDetail(Side.white));
-      expect(detail, isNot('Sem rating'));
-      expect(int.tryParse(detail), isNotNull);
+      expect(detail, isNot(startsWith('Sem rating')));
+      // Sem relógio: "1164 · brancas" (PropV1PartidaSemRelogio).
+      expect(int.tryParse(detail.split(' · ').first), isNotNull);
+      expect(detail, endsWith(' · brancas'));
     });
   });
   group('Resultado persistente por modo e motivo', () {

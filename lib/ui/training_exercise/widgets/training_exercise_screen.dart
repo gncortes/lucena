@@ -1,3 +1,4 @@
+import '../../../domain/models/load_failure.dart';
 import '../../core/theme/app_icon_size.dart';
 
 import 'dart:async';
@@ -173,6 +174,10 @@ class _ExerciseViewState extends State<_ExerciseView> {
       if (state.phase == TrainingExercisePhase.unavailable) {
         return trainingLoadError(context, state.failure, cubit.load);
       }
+      if (state.phase == TrainingExercisePhase.expired) {
+        // A meta saiu do dia no meio do exercício: erro padrão, com ação.
+        return trainingLoadError(context, LoadFailure.unavailable, cubit.load);
+      }
       return Scaffold(
         key: TrainingKeys.exerciseScreen,
         appBar: LucenaAppBar(
@@ -195,9 +200,7 @@ class _ExerciseViewState extends State<_ExerciseView> {
         ),
         body: SafeArea(
           child: !ready
-              ? state.phase == TrainingExercisePhase.expired
-                    ? Center(child: Text(l.trainingExerciseExpired))
-                    : const SkeletonList()
+              ? const SkeletonList()
               : IgnorePointer(
                   ignoring: loading,
                   child: TrainingCanvasPage(

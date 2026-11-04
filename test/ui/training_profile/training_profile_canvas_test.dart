@@ -128,7 +128,7 @@ void main() {
                     lesson.id: '2026-10-29',
                 }
               : {},
-          tab: progress ? CourseGuideTab.progress : CourseGuideTab.lesson,
+          tab: progress ? CourseGuideTab.stats : CourseGuideTab.lesson,
           openings: hasProgress
               ? {
                   for (final id in ['london', 'caroKann', 'slav', 'others'])

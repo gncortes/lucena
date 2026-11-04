@@ -22,7 +22,6 @@ import 'training_launch.dart';
 import 'training_goal_return.dart';
 import '../data/repositories/training/training_school_content.dart';
 import '../ui/home/view_models/training_lesson_preview.dart';
-import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/survey/survey_repository.dart';
 import '../domain/models/survey.dart';
 import '../ui/lesson_finished/view_models/lesson_finished_cubit.dart';
@@ -49,6 +48,7 @@ import 'package:go_router/go_router.dart';
 import '../data/repositories/featured/featured_alerts_repository.dart';
 import '../data/repositories/featured/featured_progress_repository.dart';
 import '../data/repositories/featured/featured_repository.dart';
+import '../data/repositories/push/push_repository.dart';
 import '../ui/featured/view_models/featured_catalog_cubit.dart';
 import '../ui/featured/view_models/featured_endgame_cubit.dart';
 import '../ui/featured/view_models/featured_tournament_cubit.dart';
@@ -83,14 +83,12 @@ import 'review_destinations.dart';
 import '../domain/models/clock.dart';
 import '../domain/use_cases/course_availability.dart';
 import '../domain/use_cases/game_rules.dart';
-import '../domain/models/daily_final.dart';
 import '../domain/use_cases/now.dart';
 import '../ui/board_settings/widgets/board_appearance_screen.dart';
 import '../ui/board_settings/widgets/board_behavior_screen.dart';
 import '../ui/board_settings/widgets/clock_settings_screen.dart';
 import '../ui/voice/widgets/voice_settings_screen.dart';
 import '../data/repositories/home/home_layout_repository.dart';
-import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/journey/journey_repository.dart';
 import '../data/repositories/maia/maia_repository.dart';
 import '../data/repositories/speedrun/speedrun_repository.dart';
@@ -126,10 +124,7 @@ import '../data/repositories/activity/activity_repository.dart';
 import '../ui/streak/view_models/streak_cubit.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
 import '../ui/daily/view_models/daily_game_cubit.dart';
-import '../ui/daily/view_models/daily_result_cubit.dart';
 import '../ui/daily/view_models/daily_start_cubit.dart';
-import '../ui/daily/widgets/daily_result_screen.dart';
-import '../ui/daily/widgets/daily_share_screen.dart';
 import '../ui/daily/widgets/daily_start_screen.dart';
 import '../ui/streak/widgets/streak_screen.dart';
 import '../data/repositories/achievements/achievements_repository.dart';
@@ -409,14 +404,17 @@ GoRouter buildRouter({
         name: RouteNames.tour,
         path: Routes.tour,
         builder: (context, state) => BlocProvider(
-          create: (_) => TourCubit(
-            onboarding: context.read<OnboardingRepository>(),
-            profile: context.read<ProfileRepository>(),
-            characters: context.read<CharacterRepository>(),
-            lessons: context.read<LessonRepository>(),
-            voice: context.read<VoiceRepository>(),
-            analytics: context.analytics,
-          )..load(_language(context)),
+          create: (_) =>
+              TourCubit(
+                onboarding: context.read<OnboardingRepository>(),
+                profile: context.read<ProfileRepository>(),
+                characters: context.read<CharacterRepository>(),
+                voice: context.read<VoiceRepository>(),
+                analytics: context.analytics,
+              )..load(
+                _language(context),
+                phoneCountry: context.read<ProfileCubit>().phoneCountry,
+              ),
           child: const TourScreen(),
         ),
       ),
@@ -513,18 +511,6 @@ GoRouter buildRouter({
           )..load(),
           child: const DailyStartScreen(),
         ),
-      ),
-      _route(
-        name: RouteNames.dailyResult,
-        path: Routes.dailyResult,
-        builder: (context, state) =>
-            _daily(context, state, child: const DailyResultScreen()),
-      ),
-      _route(
-        name: RouteNames.dailyShare,
-        path: Routes.dailyShare,
-        builder: (context, state) =>
-            _daily(context, state, child: const DailyShareScreen()),
       ),
       _route(
         name: RouteNames.accountEnter,
@@ -640,8 +626,13 @@ GoRouter buildRouter({
             )..load(),
             // Volta com true quando o resultado foi usado.
             child: Builder(
-              builder: (context) =>
-                  PlacementScreen(onDone: () => context.pop(true)),
+              builder: (context) => PlacementScreen(
+                onDone: () => context.pop(true),
+                // Vindo do passo Nível, dá para desistir do teste.
+                onPreferRating: state.uri.queryParameters['from'] == 'level'
+                    ? () => context.pop(false)
+                    : null,
+              ),
             ),
           );
         },
@@ -663,7 +654,6 @@ GoRouter buildRouter({
             endgameProgress: context.read<EndgameProgressRepository>(),
             placement: context.read<PlacementRepository>(),
             homeLayout: context.read<HomeLayoutRepository>(),
-            unlocks: context.read<UnlockRepository>(),
             featured: context.read<FeaturedRepository>(),
             featuredProgress: context.read<FeaturedProgressRepository>(),
             now: context.read<Now>(),
@@ -680,6 +670,7 @@ GoRouter buildRouter({
           )..load(_language(context)),
           child: Builder(
             builder: (context) => ReloadOnReturn(
+              onResume: true,
               onReturn: () =>
                   context.read<HomeCubit>().load(_language(context)),
               child: const HomeScreen(),
@@ -913,7 +904,6 @@ GoRouter buildRouter({
             name: RouteNames.allModes,
             path: 'modes',
             builder: (context, state) => AllModesScreen(
-              courseAvailable: _courseAvailable(context),
               hasBlindCheckpoint: () async =>
                   await context.read<BlindCheckpointRepository>().load() !=
                   null,
@@ -1448,20 +1438,8 @@ GoRouter buildRouter({
           _route(
             name: RouteNames.nextSteps,
             path: 'next',
-            builder: (context, state) => NextStepsScreen(
-              level: int.tryParse(state.uri.queryParameters['level'] ?? ''),
-              courseAvailable: _courseAvailable(context),
-            ),
-            routes: [
-              _route(
-                name: RouteNames.nextStepsSchool,
-                path: 'school',
-                builder: (context, state) => NextStepsScreen(
-                  graduated: true,
-                  courseAvailable: _courseAvailable(context),
-                ),
-              ),
-            ],
+            builder: (context, state) =>
+                NextStepsScreen(courseAvailable: _courseAvailable(context)),
           ),
           _route(
             name: RouteNames.race,
@@ -1594,6 +1572,8 @@ GoRouter buildRouter({
               create: (context) => FeaturedCatalogCubit(
                 featured: context.read<FeaturedRepository>(),
                 progress: context.read<FeaturedProgressRepository>(),
+                alerts: context.read<FeaturedAlertsRepository>(),
+                push: context.read<PushRepository>(),
                 now: context.read<Now>(),
                 country: context.read<ProfileCubit>().state?.country,
               )..load(),
@@ -1608,7 +1588,6 @@ GoRouter buildRouter({
                     id: state.pathParameters['id']!,
                     featured: context.read<FeaturedRepository>(),
                     progress: context.read<FeaturedProgressRepository>(),
-                    alerts: context.read<FeaturedAlertsRepository>(),
                     now: context.read<Now>(),
                   )..load(),
                   child: const FeaturedTournamentScreen(),
@@ -2088,37 +2067,6 @@ SpeedrunCubit _speedrunCubit(BuildContext context) => SpeedrunCubit(
 
 /// Uma tela ligada a "Seu nível", com o `LevelCubit` dela no `extra`. Sem ele
 /// (o app reaberto nesse endereço), volta para "Seu nível".
-// O resultado e a imagem do final do dia `?date=` (sem ele, o de hoje), com a
-// sequência de agora.
-Widget _daily(
-  BuildContext context,
-  GoRouterState state, {
-  required Widget child,
-}) {
-  final date =
-      state.uri.queryParameters['date'] ??
-      DailyRecord.dayCode(context.read<Now>()());
-  return MultiBlocProvider(
-    providers: [
-      BlocProvider(
-        create: (context) => DailyResultCubit(
-          date: date,
-          daily: context.read<DailyFinalRepository>(),
-          crowd: context.read<CrowdRepository>(),
-          now: context.read<Now>(),
-        )..load(),
-      ),
-      BlocProvider(
-        create: (context) => StreakCubit(
-          activity: context.read<ActivityRepository>(),
-          now: context.read<Now>(),
-        )..load(),
-      ),
-    ],
-    child: child,
-  );
-}
-
 GoRoute _levelPart(String name, String path, Widget screen) => _route(
   name: name,
   path: path,

@@ -130,14 +130,18 @@ void main() {
       for (final phrase in [
         'a próxima lição, sempre aqui.',
         'o que fazer hoje.',
-        'as lições feitas e as estrelas.',
+        'as lições feitas e as estrelas por peça.',
         'todas as lições do curso.',
       ]) {
         expect(find.textContaining(phrase), findsOneWidget);
       }
       expect(find.byKey(CourseGuideKeys.helpAction), findsNothing);
+      // A Escola não tem a aba Guia.
       for (final tab in CourseGuideTab.values) {
-        expect(find.byKey(CourseGuideKeys.tab(tab.name)), findsOneWidget);
+        expect(
+          find.byKey(CourseGuideKeys.tab(tab.name)),
+          tab == CourseGuideTab.guide ? findsNothing : findsOneWidget,
+        );
       }
       await cubit.repository.update(
         scenario.course,
@@ -187,7 +191,7 @@ void main() {
         if (stateName == 'done') {
           expect(find.byKey(TrainingKeys.doubleButton), findsOneWidget);
           expect(
-            find.text('Entram hoje mais 4 lições e os desafios delas.'),
+            find.text('Entram hoje mais quatro lições e os desafios delas.'),
             findsOneWidget,
           );
           await tester.tap(find.byKey(TrainingKeys.doubleButton));
@@ -276,6 +280,27 @@ void main() {
       },
     );
 
+    testWidgets('School marks the finished lesson as Concluída hoje at $size', (
+      tester,
+    ) async {
+      final scenario = TrainingScenarioBuilder(
+        TrainingCourse.escola,
+        resources: resources(),
+      );
+      final cubit = await show(
+        tester,
+        scenario,
+        scenario.schoolDayOne().copyWith(tab: CourseGuideTab.goals),
+      );
+      expect(find.text('Concluída hoje'), findsNothing);
+      final lesson = scenario.content.lessons.firstWhere(
+        (l) => l.id == 'pieces.rook',
+      );
+      expect(await cubit.observeLesson(lesson), isTrue);
+      await tester.pumpAndSettle();
+      expect(find.text('Concluída hoje'), findsOneWidget);
+    });
+
     testWidgets(
       'School progress counts visible modules and 0–3 completed levels at $size',
       (tester) async {
@@ -287,7 +312,7 @@ void main() {
           tester,
           scenario,
           scenario.schoolDayOne().copyWith(
-            tab: CourseGuideTab.progress,
+            tab: CourseGuideTab.stats,
             completedLessons: {
               'pieces.rook': '2026-10-25',
               'hidden': '2026-10-25',

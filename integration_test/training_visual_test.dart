@@ -152,7 +152,7 @@ void main() {
       if (scenario == E2ETrainingScenario.schoolPieces) {
         await $(TrainingKeys.goalTile('stars', 'pieces.queen')).scrollTo();
         await capture.shot('school-stars-levels');
-        await capture.tab('progress');
+        await capture.tab('stats');
         await capture.shot('school-progress');
         await capture.tab('catalog');
         await capture.shot('school-catalog');

@@ -52,7 +52,6 @@ import 'data/repositories/featured/featured_alerts_repository.dart';
 import 'data/repositories/featured/featured_progress_repository.dart';
 import 'data/repositories/course_preview/course_preview_repository.dart';
 import 'data/repositories/featured/featured_repository.dart';
-import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
@@ -76,7 +75,6 @@ import 'data/repositories/account/avatar_repository.dart';
 import 'data/repositories/account/mail_app_repository.dart';
 import 'data/repositories/activity/activity_repository.dart';
 import 'data/repositories/daily/daily_final_repository.dart';
-import 'data/repositories/crowd/crowd_repository.dart';
 import 'data/repositories/account/account_repository.dart';
 import 'data/repositories/chesscom/chesscom_repository.dart';
 import 'data/repositories/lichess/lichess_repository.dart';
@@ -589,9 +587,6 @@ class _LucenaAppState extends State<LucenaApp> {
         RepositoryProvider<DailyFinalRepository>.value(
           value: dependencies.dailyFinalRepository,
         ),
-        RepositoryProvider<CrowdRepository>.value(
-          value: dependencies.crowdRepository,
-        ),
         RepositoryProvider<SyncScheduler>.value(value: _sync),
         RepositoryProvider<LichessRepository>.value(
           value: dependencies.lichessRepository,
@@ -729,9 +724,6 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<RegionPromptRepository>.value(
           value: dependencies.regionPromptRepository,
-        ),
-        RepositoryProvider<UnlockRepository>.value(
-          value: dependencies.unlockRepository,
         ),
         RepositoryProvider<PaceRepository>.value(
           value: dependencies.paceRepository,

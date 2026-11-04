@@ -9,9 +9,8 @@ abstract final class HistoryKeys {
   /// A aba: 0 Partidas, 1 Clássico, 2 Maratona.
   static Key tab(int index) => Key('history.tab.$index');
 
-  /// O chip de filtro: `all` (o botão `tune`), `period`, `result`, `pace`,
-  /// `level`.
-  static Key filterChip(String name) => Key('history.filter.chip.$name');
+  /// O ícone `tune` de filtros na barra de cima (vale para a aba aberta).
+  static const filterIcon = Key('history.filterIcon');
 
   /// A folha de filtros, cada opção dela (`grupo`, `valor`), o Limpar e o
   /// botão que aplica.

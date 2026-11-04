@@ -22,6 +22,7 @@ import '../../../data/repositories/characters/character_repository.dart';
 import '../../../domain/models/board_settings.dart';
 import '../../../domain/models/character.dart';
 import '../../../domain/models/lesson_script.dart';
+import '../../../routing/frentes/d3_routes.dart' show D3Paths;
 import '../../../routing/routes.dart';
 import '../../core/keys/lesson_script_keys.dart';
 import '../../core/l10n/l10n.dart';
@@ -230,12 +231,8 @@ class _LessonScriptScreenState extends State<LessonScriptScreen>
     if (!cubit.endgame) {
       final lesson = outcome.next;
       if (lesson == null || outcome.last) {
-        // A Escola concluída: os próximos passos.
-        context.go(
-          cubit.origin?.startsWith('treino_') == true
-              ? Routes.training('escola')
-              : Routes.nextStepsSchool,
-        );
+        // A Escola concluída: o diploma (H-ESC-22).
+        context.go(D3Paths.schoolGraduation);
       } else {
         // A aula concluída, com o convite "Sua opinião" e a próxima aula.
         context.pushReplacement(

@@ -64,7 +64,7 @@ void main() {
       ),
     );
     await guide.load();
-    await capture.tab('progress');
+    await capture.tab('stats');
     await capture.shot('progress-pilares');
     final guideTexts = $.tester
         .element(find.byKey(CourseGuideKeys.screen))

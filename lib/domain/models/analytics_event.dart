@@ -192,6 +192,11 @@ abstract final class AnalyticsCatalog {
     ],
     'treino_lembrete_agendado': ['curso', 'hora', 'metas', 'aula_pendente'],
     'treino_lembrete_mostrado': ['curso', 'atraso_min'],
+    // Objetivo e torneio (T85, Treino B).
+    'treino_objetivo_definido': ['curso', 'tipo', 'dias_ate_torneio'],
+    'treino_dia_perdido': ['curso', 'opcao'],
+    'torneio_push_agendado': ['curso'],
+    'torneio_push_mostrado': ['curso'],
     // Aulas e exercícios.
     'aula_aberta': [
       'aula_id', 'tipo_aula', 'origem', 'retomada', 'primeira_vez', //
@@ -231,9 +236,8 @@ abstract final class AnalyticsCatalog {
     'final_filtro': ['tipo', 'valor', 'resultados'],
     // Finais em destaque e torneios.
     'final_destaque_aberto': ['final_id', 'torneio_id', 'entrada'],
-    'final_destaque_filtro': ['tipo', 'valor', 'resultados'],
     'final_destaque_torneio': ['torneio_id', 'em_andamento', 'entrada'],
-    'final_destaque_aviso': ['torneio_id', 'ligado'],
+    'final_destaque_aviso': ['ligado'],
     'final_destaque_ache_lance': [
       'final_id', 'acertou', 'tentativas', 'dica', 'ver_resposta', //
     ],
@@ -506,6 +510,27 @@ abstract final class AnalyticsEvents {
     required int atrasoMin,
   }) =>
       _e('treino_lembrete_mostrado', {'curso': curso, 'atraso_min': atrasoMin});
+
+  static AnalyticsEvent treinoObjetivoDefinido({
+    required String curso,
+    required String tipo,
+    int? diasAteTorneio,
+  }) => _e('treino_objetivo_definido', {
+    'curso': curso,
+    'tipo': tipo,
+    'dias_ate_torneio': diasAteTorneio,
+  });
+
+  static AnalyticsEvent treinoDiaPerdido({
+    required String curso,
+    required String opcao,
+  }) => _e('treino_dia_perdido', {'curso': curso, 'opcao': opcao});
+
+  static AnalyticsEvent torneioPushAgendado({required String curso}) =>
+      _e('torneio_push_agendado', {'curso': curso});
+
+  static AnalyticsEvent torneioPushMostrado({required String curso}) =>
+      _e('torneio_push_mostrado', {'curso': curso});
 
   static AnalyticsEvent _e(String name, [Map<String, Object?> p = const {}]) =>
       AnalyticsEvent._(name, p);
@@ -1080,17 +1105,6 @@ abstract final class AnalyticsEvents {
     'entrada': entrada,
   });
 
-  /// `tipo`: `pais|origem`.
-  static AnalyticsEvent finalDestaqueFiltro({
-    required String tipo,
-    required String valor,
-    required int resultados,
-  }) => _e('final_destaque_filtro', {
-    'tipo': tipo,
-    'valor': valor,
-    'resultados': resultados,
-  });
-
   static AnalyticsEvent finalDestaqueTorneio({
     required String torneioId,
     required bool emAndamento,
@@ -1101,13 +1115,9 @@ abstract final class AnalyticsEvents {
     'entrada': entrada,
   });
 
-  static AnalyticsEvent finalDestaqueAviso({
-    required String torneioId,
-    required bool ligado,
-  }) => _e('final_destaque_aviso', {
-    'torneio_id': torneioId,
-    'ligado': _yn(ligado),
-  });
+  /// O sino geral de finais novos (um só, sem aviso por torneio).
+  static AnalyticsEvent finalDestaqueAviso({required bool ligado}) =>
+      _e('final_destaque_aviso', {'ligado': _yn(ligado)});
 
   static AnalyticsEvent finalDestaqueAcheLance({
     required String finalId,

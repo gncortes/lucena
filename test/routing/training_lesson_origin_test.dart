@@ -13,6 +13,7 @@ import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/lesson.dart';
 import 'package:lucena/domain/models/survey.dart';
 import 'package:lucena/routing/router.dart';
+import 'package:lucena/routing/frentes/d3_routes.dart' show D3Paths;
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/ui/core/keys/lesson_finished_keys.dart';
 import 'package:lucena/ui/lesson_finished/view_models/lesson_finished_cubit.dart';
@@ -132,7 +133,7 @@ void main() {
               builder: (_, _) => const Scaffold(),
             ),
             GoRoute(
-              path: Routes.nextStepsSchool,
+              path: D3Paths.schoolGraduation,
               builder: (_, _) => const Scaffold(),
             ),
           ],
@@ -155,12 +156,8 @@ void main() {
         ]);
         final uri = router.routeInformationProvider.value.uri;
         if (transition == 'school-finished') {
-          expect(
-            uri.path,
-            origin?.startsWith('treino_') == true
-                ? Routes.training('escola')
-                : Routes.nextStepsSchool,
-          );
+          // H-ESC-22: a última lição leva ao diploma, qualquer que seja a origem.
+          expect(uri.path, D3Paths.schoolGraduation);
           await tester.pumpWidget(const SizedBox());
           return;
         }

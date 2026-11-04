@@ -36,6 +36,9 @@ abstract final class SpeedrunKeys {
   /// O modo da lista no alto: clássico ou Maratona.
   static const mode = Key('speedrun.mode');
   static Key modeOption(String mode) => Key('speedrun.mode.$mode');
+  static const helpScreen = Key('speedrun.help.screen');
+  static const helpClose = Key('speedrun.help.close');
+  static const empty = Key('speedrun.empty');
   static const help = Key('speedrun.help');
   static const helpText = Key('speedrun.help.text');
   static const intro = Key('speedrun.intro');

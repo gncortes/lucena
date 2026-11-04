@@ -73,6 +73,15 @@ void main() {
     expect(find.byKey(BlindKeys.voiceRequired), findsOneWidget);
     expect(find.textContaining(l10n.blindVoiceRequired), findsOneWidget);
     expect(find.textContaining(l10n.voiceUnavailable), findsOneWidget);
+    // PropV2R2CegasSemVoz: "ajustes", não "configurações".
+    expect(
+      find.textContaining(
+        'Abra os ajustes de voz do aparelho, toque na engrenagem do mecanismo',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Abrir ajustes de voz do aparelho'), findsOneWidget);
+    expect(find.text('Todos os modos'), findsOneWidget);
     expect(router.routeInformationProvider.value.uri.path, Routes.blindEntry);
     expect(catalogVisits, 0);
     expect(voice.systemOpened, 0);

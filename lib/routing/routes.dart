@@ -270,14 +270,6 @@ abstract final class Routes {
   /// O final do dia aberto de [entry] (`aviso|lembrete|link`; sem ele, da
   /// home): vai para o `final_dia_aberto` do Analytics.
   static String dailyFrom(String entry) => '$daily?entrada=$entry';
-  static const dailyResult = '/daily/result';
-  static const dailyShare = '/daily/share';
-
-  /// O resultado do final do dia [date] (`aaaa-mm-dd`).
-  static String dailyResultOf(String date) =>
-      Uri(path: dailyResult, queryParameters: {'date': date}).toString();
-  static String dailyShareOf(String date) =>
-      Uri(path: dailyShare, queryParameters: {'date': date}).toString();
 
   /// A partida do final do dia: sem relógio, contra o Maia no nível
   /// [level], com o lado e o objetivo do próprio final.
@@ -315,7 +307,6 @@ abstract final class Routes {
     path: nextSteps,
     queryParameters: {'level': ?level?.toString()},
   ).toString();
-  static const nextStepsSchool = '/next/school';
 
   /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
   /// ([category]).
@@ -619,6 +610,11 @@ abstract final class Routes {
 
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';
+
+  /// Guia do curso já na aba Metas (toque na notificação sem lição pendente).
+  static String trainingGoals(String course) => '${training(course)}?aba=goals';
+  static String trainingCatalog(String course) =>
+      '${training(course)}?aba=catalog';
   static String trainingPlan(String course) => '${training(course)}/plan';
   static String trainingChapter(String course, String chapter) =>
       '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';

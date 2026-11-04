@@ -178,9 +178,7 @@ class _TrainingTourState extends State<TrainingTour> {
                                           return;
                                         }
                                         setState(() => _step++);
-                                        widget.onTab(
-                                          CourseGuideTab.values[_step],
-                                        );
+                                        widget.onTab(_tourTabs[_step]);
                                       },
                                 child: Text(
                                   _step == 3
@@ -254,3 +252,11 @@ class _TourMask extends CustomPainter {
       scrim != oldDelegate.scrim ||
       surface != oldDelegate.surface;
 }
+
+/// The tour keeps its four steps; the Guide tab is not part of it.
+const _tourTabs = [
+  CourseGuideTab.lesson,
+  CourseGuideTab.goals,
+  CourseGuideTab.stats,
+  CourseGuideTab.catalog,
+];

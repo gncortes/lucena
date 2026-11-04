@@ -28,6 +28,7 @@ import '../../../domain/use_cases/now.dart';
 import '../../../domain/use_cases/training/build_day_goals.dart';
 import '../../../domain/use_cases/training/complete_training_lesson.dart';
 import '../../../domain/use_cases/training/double_training_goals.dart';
+import '../../core/utils/save_retry.dart';
 
 typedef CourseTestProgress = ({int score, int maxScore, int solved, int total});
 
@@ -140,11 +141,11 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
   final PlacementRepository? placement;
   final SchoolProgressRepository? schoolProgress;
   Future<void> _pending = Future.value();
-  Timer? _saveRetry;
+  final _saveRetry = SaveRetry();
 
   @override
   Future<void> close() async {
-    _saveRetry?.cancel();
+    _saveRetry.cancel();
     await super.close();
   }
 
@@ -281,18 +282,21 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         if (!isClosed) emit(state.copyWith(saving: true, failed: false));
         try {
           final saved = await repository.update(config.course, change);
-          _saveRetry?.cancel();
+          _saveRetry.reset();
           if (!isClosed) emit(state.copyWith(training: saved, saving: false));
           return true;
         } on Object {
           if (!isClosed) emit(state.copyWith(saving: false, failed: true));
-          _saveRetry?.cancel();
-          _saveRetry = Timer(const Duration(seconds: 1), () {
+          _saveRetry.schedule(() {
             if (!isClosed) unawaited(_change(change));
           });
           return false;
         }
       });
+
+  /// Guarda o filtro do Catálogo: só o plano ou tudo.
+  Future<bool> setCatalogOnlyPlan(bool onlyPlan) =>
+      _change((s) => s.copyWith(catalogOnlyPlan: onlyPlan));
 
   Future<bool> selectOpeningProfile(String profile, {String? startPart}) async {
     final saved = await _change((s) {
@@ -364,7 +368,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
           aba: switch (tab) {
             CourseGuideTab.lesson => 'aula',
             CourseGuideTab.goals => 'metas',
-            CourseGuideTab.progress => 'progresso',
+            CourseGuideTab.guide => 'guia',
+            CourseGuideTab.stats => 'estatisticas',
             CourseGuideTab.catalog => 'catalogo',
           },
           origem: origin,
@@ -383,7 +388,8 @@ final class CourseGuideCubit extends Cubit<CourseGuideState> {
         aba: switch (tab) {
           CourseGuideTab.lesson => 'aula',
           CourseGuideTab.goals => 'metas',
-          CourseGuideTab.progress => 'progresso',
+          CourseGuideTab.guide => 'guia',
+          CourseGuideTab.stats => 'estatisticas',
           CourseGuideTab.catalog => 'catalogo',
         },
         origem: origin,

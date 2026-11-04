@@ -120,7 +120,12 @@ void main() {
             await tester.tap(find.byKey(TrainingKeys.tourNext));
             await tester.pumpAndSettle();
           }
-          expect(tabs, CourseGuideTab.values);
+          expect(tabs, [
+            CourseGuideTab.lesson,
+            CourseGuideTab.goals,
+            CourseGuideTab.stats,
+            CourseGuideTab.catalog,
+          ]);
           expect(find.byKey(TrainingKeys.tourSkip), findsNothing);
           await tester.tap(find.byKey(TrainingKeys.tourNext));
         } else if (finish == 'back') {

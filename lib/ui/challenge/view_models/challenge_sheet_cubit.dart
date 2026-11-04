@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../data/repositories/analytics/analytics_repository.dart';
+import '../../../data/repositories/diagnostics/failure_report_repository.dart';
 import '../../../data/repositories/share/share_repository.dart';
 import '../../../domain/models/analytics_event.dart';
 import '../../../domain/models/challenge_link.dart';
@@ -16,6 +17,9 @@ abstract class ChallengeSheetState with _$ChallengeSheetState {
 
     /// O menu do sistema está aberto: sem dois toques abrindo dois menus.
     @Default(false) bool sharing,
+
+    /// Quantas vezes o envio falhou: a tela avisa a cada uma.
+    @Default(0) int shareErrors,
   }) = _ChallengeSheetState;
 }
 
@@ -64,10 +68,22 @@ class ChallengeSheetCubit extends Cubit<ChallengeSheetState> {
     final link = state.link;
     await _createdOnce(link);
     var result = 'indisponivel';
+    var failed = false;
     try {
       result = await _share.shareText(text) ? 'concluido' : 'cancelado';
+    } on Object catch (error, stack) {
+      // O menu do sistema não abriu: avisa e deixa tentar de novo.
+      reportHandledError(error, stack);
+      failed = true;
     } finally {
-      if (!isClosed) emit(state.copyWith(sharing: false));
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            sharing: false,
+            shareErrors: failed ? state.shareErrors + 1 : state.shareErrors,
+          ),
+        );
+      }
       await _analytics.log(
         AnalyticsEvents.share(
           contentType: 'desafio',

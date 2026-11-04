@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../config/dependencies.dart' show activeTrainingCourses;
 import '../../../domain/models/home_layout.dart';
 import '../../../domain/models/home_shortcut.dart';
+import '../../../domain/models/training/training_course.dart';
 import '../../../domain/models/training/training_course_config.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/home_keys.dart';
@@ -21,11 +22,13 @@ extension HomeShortcutUi on HomeShortcut {
   IconData get icon => switch (this) {
     HomeShortcut.school => HomePath.learn.icon,
     HomeShortcut.journey => HomePath.journey.icon,
-    HomeShortcut.endgames => HomePath.endgames.icon,
+    HomeShortcut.pillars => HomePath.endgames.icon,
     HomeShortcut.train => HomePath.train.icon,
     HomeShortcut.speedrun => HomePath.speedrun.icon,
     HomeShortcut.race => HomePath.race.icon,
     HomeShortcut.stars => HomePath.stars.icon,
+    HomeShortcut.freeBoard => HomePath.board.icon,
+    HomeShortcut.customPosition => HomePath.position.icon,
   };
 
   /// O fundo e a cor do ícone (canvas `CompModoTile`).
@@ -35,7 +38,7 @@ extension HomeShortcutUi on HomeShortcut {
           background: colors.primaryContainer,
           foreground: colors.onPrimaryContainer,
         ),
-        HomeShortcut.endgames => (
+        HomeShortcut.pillars => (
           background: colors.tertiaryContainer,
           foreground: AppColors.goldInk,
         ),
@@ -47,7 +50,10 @@ extension HomeShortcutUi on HomeShortcut {
           background: AppColors.tileGreen,
           foreground: AppColors.tileGreenOn,
         ),
-        HomeShortcut.speedrun || HomeShortcut.race => (
+        HomeShortcut.speedrun ||
+        HomeShortcut.race ||
+        HomeShortcut.freeBoard ||
+        HomeShortcut.customPosition => (
           background: colors.surfaceContainerHighest,
           foreground: colors.onSurface,
         ),
@@ -56,45 +62,58 @@ extension HomeShortcutUi on HomeShortcut {
   String title(AppLocalizations l10n) => switch (this) {
     HomeShortcut.school => HomePath.learn.title(l10n),
     HomeShortcut.journey => l10n.homeJourney,
-    HomeShortcut.endgames => l10n.homeEndgames,
+    HomeShortcut.pillars => l10n.homeEndgames,
     HomeShortcut.train => l10n.homeTrain,
     HomeShortcut.speedrun => l10n.homeSpeedrun,
     HomeShortcut.race => l10n.homeRace,
     HomeShortcut.stars => l10n.homeShortcutStars,
+    HomeShortcut.freeBoard => HomePath.board.title(l10n),
+    HomeShortcut.customPosition => HomePath.position.title(l10n),
   };
 
   String body(AppLocalizations l10n) => switch (this) {
     HomeShortcut.school => HomePath.learn.body(l10n, null),
     HomeShortcut.journey => l10n.homeShortcutJourneyBody,
-    HomeShortcut.endgames => l10n.homeShortcutEndgamesBody,
+    HomeShortcut.pillars => l10n.homeShortcutEndgamesBody,
     HomeShortcut.train => l10n.homeShortcutTrainBody,
     HomeShortcut.speedrun => l10n.homeShortcutSpeedrunBody,
     HomeShortcut.race => l10n.homeShortcutRaceBody,
     HomeShortcut.stars => l10n.homeShortcutStarsBody,
+    HomeShortcut.freeBoard => l10n.homeShortcutBoardBody,
+    HomeShortcut.customPosition => l10n.homeShortcutPositionBody,
   };
 
-  String get route => switch (this) {
+  /// A tela que o atalho abre. [hasPlan]: os Pilares abrem o plano para quem
+  /// comprou e a venda para quem não.
+  String route({bool hasPlan = false}) => switch (this) {
     HomeShortcut.school =>
       activeTrainingCourses.contains(TrainingCourseConfig.escola)
           ? Routes.school
           : HomePath.learn.route,
     HomeShortcut.journey => HomePath.journey.route,
-    HomeShortcut.endgames => HomePath.endgames.route,
+    HomeShortcut.pillars =>
+      hasPlan
+          ? Routes.training(TrainingCourse.pilares.name)
+          : Routes.pilaresSale,
     HomeShortcut.train => HomePath.train.route,
     HomeShortcut.speedrun => HomePath.speedrun.route,
     HomeShortcut.race => HomePath.race.route,
     HomeShortcut.stars => HomePath.stars.route,
+    HomeShortcut.freeBoard => HomePath.board.route,
+    HomeShortcut.customPosition => HomePath.position.route,
   };
 
   /// A mesma key dos cartões de caminho de antes.
   Key get key => switch (this) {
     HomeShortcut.school => HomeKeys.schoolButton,
     HomeShortcut.journey => HomeKeys.journeyButton,
-    HomeShortcut.endgames => HomeKeys.endgamesButton,
+    HomeShortcut.pillars => HomeKeys.pillarsButton,
     HomeShortcut.train => HomeKeys.catalogButton,
     HomeShortcut.speedrun => HomeKeys.speedrunButton,
     HomeShortcut.race => HomeKeys.raceButton,
     HomeShortcut.stars => HomeKeys.starsButton,
+    HomeShortcut.freeBoard => HomeKeys.boardButton,
+    HomeShortcut.customPosition => HomeKeys.positionButton,
   };
 }
 
@@ -102,7 +121,7 @@ extension HomeShortcutUi on HomeShortcut {
 /// caixa colorida no alto e, embaixo, o nome e a frase de duas linhas. Todos
 /// com a mesma altura.
 class ModeTile extends StatelessWidget {
-  const ModeTile({required this.shortcut, super.key});
+  const ModeTile({required this.shortcut, this.hasPlan = false, super.key});
 
   /// A altura de todo atalho.
   static const height = 144.0;
@@ -111,6 +130,9 @@ class ModeTile extends StatelessWidget {
   static const iconBox = 44.0;
 
   final HomeShortcut shortcut;
+
+  /// Já tem o plano dos Pilares: o atalho abre o plano em vez da venda.
+  final bool hasPlan;
 
   @override
   Widget build(BuildContext context) {
@@ -127,10 +149,14 @@ class ModeTile extends StatelessWidget {
       child: Material(
         key: shortcut.key,
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppShape.large),
+        // #FAFBF9 com contorno 1px #E1E5DF (H-INI-06).
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppShape.large),
+          side: const BorderSide(color: AppColors.cardOutline),
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () => context.go(shortcut.route),
+          onTap: () => context.go(shortcut.route(hasPlan: hasPlan)),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Column(

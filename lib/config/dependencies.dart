@@ -42,7 +42,6 @@ import '../data/services/firebase/remote_config_service.dart';
 import '../data/services/notification_service.dart';
 import 'push_alerts.dart';
 import '../data/repositories/daily/daily_final_repository.dart';
-import '../data/repositories/crowd/crowd_repository.dart';
 import '../data/repositories/school/lesson_script_repository.dart';
 import '../data/repositories/school/lesson_script_repository_asset.dart';
 import '../data/repositories/tablebase/engine_judge_repository.dart';
@@ -78,7 +77,6 @@ import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/home/home_layout_repository.dart';
-import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_repository_asset.dart';
@@ -248,7 +246,6 @@ class Dependencies {
     required this.talkRepository,
     required this.onboardingRepository,
     required this.homeLayoutRepository,
-    required this.unlockRepository,
     required this.paceRepository,
     required this.lessonRepository,
     this.trainingSchoolContent,
@@ -274,12 +271,11 @@ class Dependencies {
     required this.featuredProgressRepository,
     required this.activityRepository,
     required this.dailyFinalRepository,
-    this.featuredAlertsRepository = const NoFeaturedAlertsRepository(),
+    required this.featuredAlertsRepository,
     this.regionPromptRepository = const NoRegionPromptRepository(),
     this.learningRepository,
     this.requireLessonAccount = false,
     this.syncRepository = const NoSyncRepository(),
-    this.crowdRepository = const NoCrowdRepository(),
     this.accountInviteRepository = const NoAccountInviteRepository(),
     this.avatarRepository = const NoAvatarRepository(),
     this.photoRepository = const NoPhotoRepository(),
@@ -565,7 +561,6 @@ class Dependencies {
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: onboarding,
       homeLayoutRepository: LocalHomeLayoutRepository(preferences),
-      unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: VisibleLessonRepository(lessons),
       trainingSchoolContent: trainingSchoolContent,
@@ -601,8 +596,8 @@ class Dependencies {
       featuredRepository: AssetFeaturedRepository(assets),
       coursePreviewRepository: AssetCoursePreviewRepository(lessonContent),
       featuredProgressRepository: featured,
+      featuredAlertsRepository: LocalFeaturedAlertsRepository(preferences),
       activityRepository: activity,
-      crowdRepository: CloudCrowdRepository(cloudStore),
       dailyFinalRepository: LocalDailyFinalRepository(
         assets,
         positions,
@@ -711,7 +706,6 @@ class Dependencies {
   final TalkRepository talkRepository;
   final OnboardingRepository onboardingRepository;
   final HomeLayoutRepository homeLayoutRepository;
-  final UnlockRepository unlockRepository;
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
   final TrainingSchoolContent? trainingSchoolContent;
@@ -758,7 +752,6 @@ class Dependencies {
   final DailyFinalRepository dailyFinalRepository;
 
   /// O "x% acertaram" (E1.24), lido da nuvem.
-  final CrowdRepository crowdRepository;
 
   /// O progresso na conta (E1.13). Sem conta, ninguém chama.
   final SyncRepository syncRepository;
