@@ -4,7 +4,6 @@ import 'package:lucena/domain/models/alert_settings.dart';
 import 'package:lucena/domain/models/training/goal/tournament_record.dart';
 import 'package:lucena/domain/models/training/goal/training_objective.dart';
 import 'package:lucena/domain/models/training/training_course.dart';
-import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/week_summary.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/reminders/view_models/reminders_cubit.dart';
