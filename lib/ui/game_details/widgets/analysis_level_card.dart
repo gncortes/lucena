@@ -10,11 +10,11 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/lucena_sheet.dart';
 import '../../core/widgets/one_line.dart';
 import '../../core/widgets/sheet_header.dart';
 import '../view_models/game_details_cubit.dart';
+import '../../core/motion/barra_que_enche.dart';
 
 /// O nível da análise da partida (canvas `CompNivelAnalise`): sem análise,
 /// com o texto e o botão "Analisar"; a rápida, com o botão de analisar a
@@ -64,7 +64,7 @@ class AnalysisLevelCard extends StatelessWidget {
         total,
         secondsLeft(state),
       );
-      progress = AnimatedProgress(value: state.reviewProgress);
+      progress = BarraQueEnche(valor: state.reviewProgress);
       background = colors.secondaryContainer;
     } else if (review == null) {
       // Partida de antes das análises automáticas (H-PAR-17).

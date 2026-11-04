@@ -8,6 +8,7 @@ import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../course_guide/widgets/training_load_error.dart';
 import '../view_models/training_goal_cubit.dart';
+import '../../core/motion/barra_que_enche.dart';
 
 /// Moldura das telas do fluxo do objetivo: título só com texto, carregando e
 /// erro únicos da base D0, rodapé fixo opcional.
@@ -61,7 +62,7 @@ class GoalPage extends StatelessWidget {
             bottom: switch (progressOf?.call(view)) {
               final value? => PreferredSize(
                 preferredSize: const Size.fromHeight(4),
-                child: LinearProgressIndicator(value: value, minHeight: 4),
+                child: BarraQueEnche(valor: value, altura: 4),
               ),
               null => null,
             },

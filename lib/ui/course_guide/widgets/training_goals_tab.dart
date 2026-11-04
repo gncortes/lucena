@@ -19,7 +19,6 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_button.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_motion.dart';
-import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/course/course_item_tile.dart';
 import '../../core/widgets/teacher_speech.dart';
 import '../view_models/course_guide_cubit.dart';
@@ -214,12 +213,12 @@ class TrainingGoalsTab extends StatelessWidget {
                             ? 0
                             : (counts.total - counts.remaining) / counts.total,
                       )
-                    : AnimatedProgress(
-                        roundValue: true,
-                        backgroundColor: Theme.of(context)
+                    : BarraQueEnche(
+                        altura: 6,
+                        corDoTrilho: Theme.of(context)
                             .colorScheme
                             .outlineVariant,
-                        value: counts.total == 0
+                        valor: counts.total == 0
                             ? 0
                             : (counts.total - counts.remaining) / counts.total,
                       ),
