@@ -56,4 +56,22 @@ abstract final class PurchaseKeys {
   static const courseFixPayment = Key('profile.course.fixPayment');
   static const courseDetails = Key('profile.course.details');
   static const courseRestore = Key('profile.course.restore');
+
+  // Fim da demonstração (H-VEN-04, PropV2DemoOferta).
+  static const demoEndScreen = Key('demo.offer');
+  static const demoEndPrice = Key('demo.offer.price');
+  static const demoEndSeeOptions = Key('demo.offer.seeOptions');
+  static const demoEndLater = Key('demo.offer.later');
+
+  // Oferta antes do Início (H-VEN-15, PropV2OfertaAntesInicioFolha).
+  static const beforeHomeSheet = Key('offer.beforeHome');
+  static const beforeHomeClose = Key('offer.beforeHome.close');
+  static const beforeHomeLearn = Key('offer.beforeHome.learn');
+
+  // Plano como venda (H-VEN-14, PropV2VendaPlano).
+  static const planSaleScreen = Key('pilares.plan');
+  static const planSaleChapters = Key('pilares.plan.chapters');
+  static const planSaleCompare = Key('pilares.plan.compare');
+  static const planSaleStart = Key('pilares.plan.start');
+  static const planSaleFull = Key('pilares.plan.full');
 }

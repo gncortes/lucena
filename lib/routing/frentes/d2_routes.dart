@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,7 +11,13 @@ import '../../ui/course_preview/view_models/course_preview_cubit.dart';
 import '../../ui/course_preview/widgets/course_band_preview_screen.dart';
 import '../../ui/course_preview/widgets/course_details_screen.dart';
 import '../../ui/course_preview/widgets/course_sale_screen.dart';
+import '../../ui/pilares_sale/view_models/pilares_before_home_cubit.dart';
+import '../../ui/pilares_sale/view_models/pilares_demo_end_cubit.dart';
 import '../../ui/pilares_sale/view_models/pilares_prices_cubit.dart';
+import '../../ui/pilares_sale/widgets/pilares_before_home_sheet.dart';
+import '../../ui/pilares_sale/widgets/pilares_demo_end_screen.dart';
+import '../../ui/pilares_sale/widgets/pilares_plan_sale_screen.dart';
+import '../../data/repositories/campaign/campaign_repository.dart';
 import '../../ui/pilares_sale/widgets/pilares_subscription_ended_screen.dart';
 import '../../ui/pilares_sale/view_models/pilares_offer_cubit.dart';
 import '../../ui/pilares_sale/view_models/pilares_restore_cubit.dart';
@@ -84,6 +90,10 @@ abstract final class D2Paths {
 
   /// Plano como venda (H-VEN-14).
   static const pilaresPlan = '/pilares/plan';
+
+  /// A venda do plano com a `origem` da oferta vista.
+  static String plan({String? origin}) =>
+      Uri(path: pilaresPlan, queryParameters: {'origem': ?origin}).toString();
 
   /// Esqueci a senha (H-CON-08).
   static const accountForgot = '/conta/esqueci-senha';
@@ -234,6 +244,66 @@ final List<RouteBase> d2Routes = [
       ),
     },
   ),
+  // O fim da demonstração (H-VEN-04): ao concluir a Lista de exercícios do
+  // Capítulo 1.
+  appRoute(
+    name: RouteNames.pilaresDemoEnd,
+    path: D2Paths.pilaresDemoEnd,
+    builder: (context, state) => MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          // O evento demo_fim e a campanha valem já na abertura da tela.
+          lazy: false,
+          create: (context) => PilaresDemoEndCubit(
+            analytics: context.analytics,
+            campaigns: context.read<CampaignRepository>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              PilaresPricesCubit(purchases: context.read<PurchaseRepository>()),
+        ),
+      ],
+      child: const PilaresDemoEndScreen(),
+    ),
+  ),
+  // A oferta antes do Início (H-VEN-15): folha sobre o Início; quantas vezes
+  // aparece é do Início (H-INI-14).
+  GoRoute(
+    name: RouteNames.pilaresBeforeHome,
+    path: D2Paths.pilaresBeforeHome,
+    pageBuilder: (context, state) => PilaresSheetPage<void>(
+      key: state.pageKey,
+      name: state.name,
+      child: BlocProvider(
+        create: (context) => PilaresBeforeHomeCubit(
+          analytics: context.analytics,
+          characters: context.read<CharacterRepository>(),
+        ),
+        child: const PilaresBeforeHomeSheet(),
+      ),
+    ),
+  ),
+  // O plano como venda (H-VEN-14): quem tem o curso vai ao Guia.
+  appRoute(
+    name: RouteNames.pilaresPlan,
+    path: D2Paths.pilaresPlan,
+    redirect: (context, state) =>
+        context.read<PurchaseRepository>().state.access.owns
+        ? Routes.training(TrainingCourse.pilares.name)
+        : null,
+    builder: (context, state) => BlocProvider(
+      lazy: false,
+      create: (context) => CoursePreviewCubit(
+        context.read<CoursePreviewRepository>(),
+        context.read<CharacterRepository>(),
+        analytics: context.analytics,
+        origin: state.uri.queryParameters['origem'] ?? 'home',
+        highlight: 'plano',
+      )..load(),
+      child: const PilaresPlanSaleScreen(),
+    ),
+  ),
   appRoute(
     name: RouteNames.pilaresSubscriptionEnded,
     path: D2Paths.pilaresSubscriptionEnded,
@@ -244,3 +314,20 @@ final List<RouteBase> d2Routes = [
     ),
   ),
 ];
+
+/// Uma rota que abre como folha (a de baixo continua atrás, com o véu): a
+/// oferta antes do Início (H-VEN-15). O toque fora e o voltar fecham.
+class PilaresSheetPage<T> extends Page<T> {
+  const PilaresSheetPage({required this.child, super.key, super.name});
+
+  final Widget child;
+
+  @override
+  Route<T> createRoute(BuildContext context) => ModalBottomSheetRoute<T>(
+    settings: this,
+    isScrollControlled: true,
+    showDragHandle: true,
+    useSafeArea: true,
+    builder: (_) => child,
+  );
+}
