@@ -14,6 +14,7 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/motion/tabuleiro_animado.dart';
 import '../../core/widgets/skeleton.dart';
 
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
@@ -652,14 +653,22 @@ class _BlindGameScreenState extends State<BlindGameScreen>
       ),
       BlindView.board when board != null => Directionality(
         textDirection: TextDirection.ltr,
-        child: Chessboard(
-          key: BlindKeys.board,
-          size: size,
-          controller: board,
-          settings: settings.chessground,
-          orientation: orientation,
-          onMove: (move, {viaDragAndDrop}) =>
-              context.read<BlindGameCubit>().playTouch(_withQueen(state, move)),
+        // H-ANI-10: deslize do kit, captura e halo do xeque.
+        child: TabuleiroAnimado(
+          controlador: board,
+          orientacao: orientation,
+          tamanho: size,
+          pecas: settings.chessground.pieceAssets,
+          child: Chessboard(
+            key: BlindKeys.board,
+            size: size,
+            controller: board,
+            settings: TabuleiroAnimado.ajustes(context, settings.chessground),
+            orientation: orientation,
+            onMove: (move, {viaDragAndDrop}) => context
+                .read<BlindGameCubit>()
+                .playTouch(_withQueen(state, move)),
+          ),
         ),
       ),
       BlindView.board => const SizedBox.shrink(),
