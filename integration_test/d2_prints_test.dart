@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
+import 'package:lucena/data/repositories/sync/sync_repository.dart';
+import 'package:lucena/domain/models/progress_summary.dart';
+import 'package:lucena/domain/models/user_profile.dart';
 import 'package:lucena/domain/models/pilares_access.dart';
 import 'package:lucena/routing/frentes/d2_routes.dart';
 import 'package:lucena/routing/routes.dart';
@@ -42,23 +45,40 @@ void main() {
         access: PilaresAccess(kind: kind, endedSeen: endedSeen),
       );
 
-  Future<void> go(PatrolIntegrationTester $, String route) async {
+  /// [settle] falso: a tela tem animação sem fim (o indicador da compra
+  /// processando), e o `pumpAndSettle` nunca terminaria.
+  Future<void> go(
+    PatrolIntegrationTester $,
+    String route, {
+    Object? extra,
+    bool settle = true,
+  }) async {
     final router = GoRouter.of($.tester.element(find.byKey(HomeKeys.screen)));
-    unawaited(router.push<void>(route));
-    await $.pumpAndSettle();
+    unawaited(router.push<void>(route, extra: extra));
+    if (settle) {
+      await $.pumpAndSettle();
+    } else {
+      await $.pump(const Duration(milliseconds: 600));
+    }
   }
 
   Future<void> shots(
     PatrolIntegrationTester $,
-    List<(String, String, Key)> screens,
-  ) async {
+    List<(String, String, Key)> screens, {
+    Map<String, Object> extras = const {},
+    bool settle = true,
+  }) async {
     final capture = TrainingCaptureRobot($);
     for (final (name, route, ready) in screens) {
-      await go($, route);
+      await go($, route, extra: extras[name], settle: settle);
       await capture.shot(name, ready: ready);
       final navigator = Navigator.of($.tester.element(find.byKey(ready)));
       navigator.pop();
-      await $.pumpAndSettle();
+      if (settle) {
+        await $.pumpAndSettle();
+      } else {
+        await $.pump(const Duration(milliseconds: 600));
+      }
     }
   }
 
@@ -86,7 +106,8 @@ void main() {
       (
         'PropV2OfertaAntesInicio',
         D2Paths.pilaresBeforeHome,
-        PurchaseKeys.beforeHomeSheet,
+        // A folha (SafeArea) não recebe toque no centro; o X, sim.
+        PurchaseKeys.beforeHomeClose,
       ),
       (
         'PropV2CompraRestaurar',
@@ -133,7 +154,7 @@ void main() {
     );
     await shots($, [
       ('PropV2CompraProcessando', D2Paths.offer(), PurchaseKeys.offerScreen),
-    ]);
+    ], settle: false);
   }, tags: ['d2-compra']);
 
   for (final (name, kind) in [
@@ -200,21 +221,33 @@ void main() {
       lightDevice: true,
       signedIn: true,
     );
-    await shots($, [
-      ('PropV1RetencaoPerfil', Routes.settingsProfile, ProfileKeys.screen),
-      (
-        'PropV1ContaPerfil',
-        Routes.accountDataFrom('perfil', welcome: true),
-        AccountKeys.dataScreen,
-      ),
-      (
-        'PropV1PerfilRecuperar',
-        Routes.accountRestoredFrom('perfil'),
-        AccountKeys.restoredScreen,
-      ),
-      ('PropV1ContaPrivacidade', Routes.privacy, PrivacyKeys.screen),
-      ('TelaConquistas', Routes.achievements, AchievementsKeys.screen),
-    ]);
+    await shots(
+      $,
+      [
+        ('PropV1RetencaoPerfil', Routes.settingsProfile, ProfileKeys.screen),
+        (
+          'PropV1ContaPerfil',
+          Routes.accountDataFrom('perfil', welcome: true),
+          AccountKeys.dataScreen,
+        ),
+        (
+          'PropV1PerfilRecuperar',
+          Routes.accountRestoredFrom('perfil'),
+          AccountKeys.restoredScreen,
+        ),
+        ('PropV1ContaPrivacidade', Routes.privacy, PrivacyKeys.screen),
+        ('TelaConquistas', Routes.achievements, AchievementsKeys.screen),
+      ],
+      extras: {
+        // A tela "de volta" só abre com o resultado da sincronização.
+        'PropV1PerfilRecuperar': const SyncResult(
+          summary: ProgressSummary(
+            profile: UserProfile(nickname: 'Ana', rating: 1400),
+          ),
+          hadRemote: true,
+        ),
+      },
+    );
   }, tags: ['d2-conta']);
 
   patrolTest('D2 prints: ajustes', ($) async {
