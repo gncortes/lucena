@@ -2,11 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+import '../../../domain/models/legal_document.dart';
 
 import '../../core/keys/account_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../settings/widgets/about_screen.dart';
+import '../../legal/widgets/legal_sheet.dart';
 
 /// "Ao continuar, você concorda com os Termos de uso e a Política de
 /// privacidade." (§2.12), com os dois nomes abrindo as páginas no site.
@@ -41,13 +43,15 @@ class _AccountLegalNoteState extends State<AccountLegalNote> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final language = Localizations.localeOf(context).languageCode;
-    _terms.onTap = () => launchUrl(
-      AboutScreen.termsFor(language),
-      mode: LaunchMode.externalApplication,
+    _terms.onTap = () => openLegal(
+      context,
+      LegalKind.terms,
+      website: AboutScreen.termsFor(language),
     );
-    _privacy.onTap = () => launchUrl(
-      AboutScreen.privacyFor(language),
-      mode: LaunchMode.externalApplication,
+    _privacy.onTap = () => openLegal(
+      context,
+      LegalKind.privacy,
+      website: AboutScreen.privacyFor(language),
     );
     final text = widget.create
         ? l10n.accountLegalCreate(_termsMark, _privacyMark)

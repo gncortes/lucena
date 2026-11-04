@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:lucena/ui/core/widgets/lucena_app_bar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../../domain/models/legal_document.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/settings_keys.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/widgets/open_link.dart';
 import '../../core/widgets/scroll_padding.dart';
+import '../../legal/widgets/legal_sheet.dart';
 
 /// Sobre o Lucena: o site, o código aberto, as licenças, o tour e a versão.
 class AboutScreen extends StatelessWidget {
@@ -46,10 +48,7 @@ class AboutScreen extends StatelessWidget {
       });
 
   /// O endereço como a linha mostra: sem `https://` e sem a barra do fim.
-  static String shown(Uri uri) {
-    final text = '${uri.host}${uri.path}';
-    return text.endsWith('/') ? text.substring(0, text.length - 1) : text;
-  }
+  static String shown(Uri uri) => shownAddress(uri);
 
   static final source = Uri.parse('https://github.com/gncortes/lucena');
 
@@ -108,10 +107,7 @@ class AboutScreen extends StatelessWidget {
             leading: const Icon(Icons.public),
             title: Text(l10n.aboutWebsite),
             trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () => launchUrl(
-              websiteFor(language),
-              mode: LaunchMode.externalApplication,
-            ),
+            onTap: () => openLink(context, websiteFor(language)),
           ),
           ListTile(
             key: SettingsKeys.aboutSource,
@@ -119,8 +115,7 @@ class AboutScreen extends StatelessWidget {
             title: Text(l10n.aboutSource),
             subtitle: Text(l10n.aboutSourceHint),
             trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () =>
-                launchUrl(source, mode: LaunchMode.externalApplication),
+            onTap: () => openLink(context, source),
           ),
           ListTile(
             key: SettingsKeys.aboutLicenses,
@@ -139,9 +134,10 @@ class AboutScreen extends StatelessWidget {
             title: Text(l10n.aboutPrivacy),
             subtitle: Text(shown(privacyFor(language))),
             trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () => launchUrl(
-              privacyFor(language),
-              mode: LaunchMode.externalApplication,
+            onTap: () => openLegal(
+              context,
+              LegalKind.privacy,
+              website: privacyFor(language),
             ),
           ),
           ListTile(
@@ -150,9 +146,10 @@ class AboutScreen extends StatelessWidget {
             title: Text(l10n.aboutTerms),
             subtitle: Text(shown(termsFor(language))),
             trailing: const Icon(Icons.open_in_new, size: AppIconSize.button),
-            onTap: () => launchUrl(
-              termsFor(language),
-              mode: LaunchMode.externalApplication,
+            onTap: () => openLegal(
+              context,
+              LegalKind.terms,
+              website: termsFor(language),
             ),
           ),
           ListTile(

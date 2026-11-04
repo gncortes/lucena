@@ -13,4 +13,7 @@ abstract final class CoreKeys {
   static const busySpinner = Key('core.busySpinner');
   static const infoChip = Key('core.infoChip');
   static const nicknameField = Key('core.nicknameField');
+
+  /// O aviso de que um link externo não abriu (Gap 6 do Sobre).
+  static const linkFailure = Key('core.linkFailure');
 }

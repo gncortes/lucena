@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
+import '../../../domain/models/legal_document.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../data/repositories/ads/ads_repository.dart';
 
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../analytics/widgets/analytics_opt_in_tile.dart';
 import '../../core/analytics/analytics_context.dart';
@@ -17,6 +19,7 @@ import '../../core/widgets/load_error.dart';
 import '../../../routing/routes.dart';
 import '../../profile/widgets/profile_rows.dart';
 import '../../settings/widgets/about_screen.dart';
+import '../../legal/widgets/legal_sheet.dart';
 import '../view_models/privacy_cubit.dart';
 
 /// Privacidade e anúncios (canvas `PropV1AnuncioPrivacidade` e
@@ -87,9 +90,10 @@ class PrivacyScreen extends StatelessWidget {
                 icon: Icons.description,
                 title: l10n.privacyPolicy,
                 value: l10n.privacyPolicyValue,
-                onTap: () => launchUrl(
-                  AboutScreen.privacyFor(language),
-                  mode: LaunchMode.externalApplication,
+                onTap: () => openLegal(
+                  context,
+                  LegalKind.privacy,
+                  website: AboutScreen.privacyFor(language),
                 ),
               ),
               if (state.hasAccount)

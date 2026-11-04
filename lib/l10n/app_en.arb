@@ -11814,5 +11814,9 @@
   "ajuAlertsAllow": "Allow",
   "@ajuAlertsAllow": {
     "description": "Notifications: button in the 'off on Android' banner that shows the system permission request, while it was never asked."
+  },
+  "ajuLinkError": "Couldn't open the link",
+  "@ajuLinkError": {
+    "description": "Aviso quando o navegador não abre um link externo (Sobre, Gap 6)."
   }
 }

@@ -18,6 +18,8 @@ import 'package:lucena/data/repositories/crowd/crowd_repository.dart';
 import 'package:lucena/data/repositories/purchase/purchase_repository.dart';
 import 'package:lucena/data/repositories/share/share_repository.dart';
 import 'package:lucena/data/repositories/store/store_listing_repository.dart';
+import 'package:lucena/data/repositories/links/link_repository.dart';
+import 'package:lucena/data/repositories/legal/legal_repository.dart';
 import 'package:lucena/data/repositories/survey/survey_repository.dart';
 import 'package:lucena/domain/models/app_accent.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -37,6 +39,8 @@ import 'fakes/fake_profile_repository.dart';
 import 'fakes/fake_push_repository.dart';
 import 'fakes/fake_share_repository.dart';
 import 'fakes/fake_store_listing_repository.dart';
+import 'fakes/fake_legal_repository.dart';
+import 'fakes/fake_link_repository.dart';
 import 'fakes/fake_survey_repository.dart';
 import 'fakes/fake_endgame_repositories.dart';
 import 'fakes/fake_feedback_repositories.dart';
@@ -74,6 +78,8 @@ class TestApp extends StatelessWidget {
     this.adsRepository,
     this.purchaseRepository,
     this.storeListingRepository,
+    this.linkRepository,
+    this.legalRepository,
     this.updateCubit,
     this.wouldPayRepository,
     this.feedbackRepository,
@@ -132,6 +138,12 @@ class TestApp extends StatelessWidget {
 
   /// A página do app na Play. Sem ela, um falso que só conta.
   final StoreListingRepository? storeListingRepository;
+
+  /// Os links externos. Sem ele, um falso que abre tudo.
+  final LinkRepository? linkRepository;
+
+  /// Os Termos e a Política. Sem ele, os textos embarcados lidos do disco.
+  final LegalRepository? legalRepository;
 
   /// A atualização (E1.32), quando a tela testada é uma das duas.
   final UpdateCubit? updateCubit;
@@ -271,6 +283,12 @@ class TestApp extends StatelessWidget {
         ),
         RepositoryProvider<StoreListingRepository>.value(
           value: storeListingRepository ?? FakeStoreListingRepository(),
+        ),
+        RepositoryProvider<LinkRepository>.value(
+          value: linkRepository ?? FakeLinkRepository(),
+        ),
+        RepositoryProvider<LegalRepository>.value(
+          value: legalRepository ?? FakeLegalRepository(),
         ),
       ],
       child: MultiBlocProvider(providers: providers, child: app),

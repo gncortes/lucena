@@ -34,6 +34,8 @@ import 'data/repositories/alerts/region_prompt_repository.dart';
 import 'data/repositories/analytics/analytics_opening.dart';
 import 'data/repositories/analytics/analytics_repository.dart';
 import 'data/repositories/purchase/purchase_repository.dart';
+import 'data/repositories/legal/legal_repository.dart';
+import 'data/repositories/links/link_repository.dart';
 import 'data/repositories/store/store_listing_repository.dart';
 import 'data/repositories/blind/blind_checkpoint_repository.dart';
 import 'data/repositories/survey/survey_repository.dart';
@@ -809,6 +811,12 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<StoreListingRepository>.value(
           value: dependencies.storeListingRepository,
+        ),
+        RepositoryProvider<LinkRepository>.value(
+          value: const UrlLauncherLinkRepository(),
+        ),
+        RepositoryProvider<LegalRepository>(
+          create: (_) => AssetLegalRepository(),
         ),
         RepositoryProvider<AppUpdateRepository>.value(
           value: dependencies.appUpdateRepository,

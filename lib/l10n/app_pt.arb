@@ -2396,5 +2396,6 @@
   "ajuRateTitle": "Avaliar o Lucena",
   "ajuRateHint": "Abre a página do app na Play",
   "ajuSaveError": "Ocorreu um erro inesperado",
-  "ajuAlertsAllow": "Permitir"
+  "ajuAlertsAllow": "Permitir",
+  "ajuLinkError": "Não foi possível abrir o link"
 }
