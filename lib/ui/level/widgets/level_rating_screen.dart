@@ -8,6 +8,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/busy_button.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/tip_box.dart';
 import '../view_models/level_cubit.dart';
@@ -69,9 +70,9 @@ class _LevelRatingScreenState extends State<LevelRatingScreen> {
                 decoration: InputDecoration(
                   labelText: l10n.levelManualField,
                   helperText: l10n.levelManualHelp,
-                  // Fora de 400 a 3000, a ajuda vira o erro.
+                  // Fora de 400 a 3000, o erro toma o lugar da ajuda.
                   errorText: typed != null && !state.manualValid
-                      ? l10n.levelManualHelp
+                      ? l10n.levelManualError
                       : null,
                 ),
               ),
@@ -131,10 +132,10 @@ class _LevelRatingScreenState extends State<LevelRatingScreen> {
               removeBottom: keyboard > 0,
               child: ActionsFooter(
                 children: [
-                  FilledButton(
-                    key: LevelKeys.ratingUse,
+                  BusyButton(
+                    buttonKey: LevelKeys.ratingUse,
                     onPressed: lucena == null ? null : cubit.useManual,
-                    child: Text(l10n.levelUseRating),
+                    label: l10n.levelUseRating,
                   ),
                 ],
               ),

@@ -1210,6 +1210,7 @@
   "levelManualAppBar": "[Éñtéŕ ýöûŕ ŕåtîñĝ one two]",
   "levelManualField": "[Ýöûŕ ŕåtîñĝ one two]",
   "levelManualHelp": "[Jûšt thé ñûmbéŕ, fŕöm 400 tö 3000. one two three]",
+  "levelManualError": "[Týpé å ñûmbéŕ fŕöm 400 tö 3000. one two three]",
   "levelManualSource": "[Whéŕé îš thîš ñûmbéŕ fŕöm? one two three]",
   "levelSourceLichess": "[Lîçhéšš one]",
   "levelSourceChess": "[Çhéšš.çöm one]",

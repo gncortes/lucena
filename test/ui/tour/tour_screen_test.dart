@@ -672,6 +672,15 @@ void main() {
       );
     });
 
+    testWidgets('sem entrada para digitar o rating (só o Perfil, H-ABE-16)', (
+      tester,
+    ) async {
+      await pumpTour(tester, step: TourStep.level);
+      expect(find.byKey(LevelKeys.option(LevelChoice.manual)), findsNothing);
+      expect(find.byKey(LevelKeys.option(LevelChoice.known)), findsNothing);
+      expect(find.byKey(LevelKeys.ratingScreen), findsNothing);
+    });
+
     testWidgets('a faixa abre a folha, Confirmar marca e mostra onde começa', (
       tester,
     ) async {

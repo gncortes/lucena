@@ -6442,7 +6442,11 @@
   },
   "levelManualHelp": "Just the number, from 400 to 3000.",
   "@levelManualHelp": {
-    "description": "Helper (and error) under the rating field."
+    "description": "Helper under the rating field while it is empty."
+  },
+  "levelManualError": "Type a number from 400 to 3000.",
+  "@levelManualError": {
+    "description": "Error under the rating field when the number is outside 400 to 3000."
   },
   "levelManualSource": "Where is this number from?",
   "@levelManualSource": {

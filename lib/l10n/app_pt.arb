@@ -1245,6 +1245,7 @@
   "levelManualAppBar": "Informar o rating",
   "levelManualField": "Seu rating",
   "levelManualHelp": "Só o número, de 400 a 3000.",
+  "levelManualError": "Digite um número de 400 a 3000.",
   "levelManualSource": "De onde é esse número?",
   "levelSourceLichess": "Lichess",
   "levelSourceChess": "Chess.com",
