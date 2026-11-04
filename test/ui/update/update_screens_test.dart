@@ -6,6 +6,7 @@ import 'package:lucena/data/repositories/update/app_update_repository.dart';
 import 'package:lucena/routing/router.dart';
 import 'package:lucena/routing/routes.dart';
 import 'package:lucena/routing/stream_refresh.dart';
+import 'package:lucena/ui/core/motion/entradas_vistas.dart';
 import 'package:lucena/ui/core/keys/update_keys.dart';
 import 'package:lucena/ui/core/l10n/l10n.dart';
 import 'package:lucena/ui/core/keys/load_error_keys.dart';
@@ -154,6 +155,14 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(UpdateKeys.requiredOfflineScreen), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is EntradaDaTela &&
+              w.id == 'PropV1AbEstAtualizarObrigatoriaSemRede',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Sem internet'), findsOneWidget);
       expect(
         find.text(
@@ -241,6 +250,14 @@ void main() {
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pumpAndSettle();
       expect(find.byKey(UpdateKeys.recommendedOfflineScreen), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is EntradaDaTela &&
+              w.id == 'PropV1AbEstAtualizarRecomendadaSemRede',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Sem internet'), findsOneWidget);
       expect(find.byKey(UpdateKeys.recommendedRetry), findsOneWidget);
       expect(updates.flexibles, 0);

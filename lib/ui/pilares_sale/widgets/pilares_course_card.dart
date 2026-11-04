@@ -15,6 +15,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../view_models/pilares_course_card_cubit.dart';
+import 'pilares_sale_parts.dart';
 
 /// O curso no Perfil (H-VEN-04/09, quadros `PropV2CompraEntradaPerfil`,
 /// `…JaTem`, `…JaTemMensal` e `…JaTemFalha`): o aviso de pagamento pendente
@@ -197,24 +198,11 @@ class _Header extends StatelessWidget {
             ),
           ),
         ),
-        Container(
+        PilaresBadge(
           key: PurchaseKeys.courseBadge,
-          constraints: const BoxConstraints(minHeight: 24),
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: BorderRadius.circular(AppShape.extraLarge),
-          ),
-          child: Text(
-            text,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontSize: 12,
-              height: 16 / 12,
-              fontWeight: FontWeight.w500,
-              color: foreground,
-            ),
-          ),
+          text: text,
+          background: background,
+          foreground: foreground,
         ),
       ],
     );

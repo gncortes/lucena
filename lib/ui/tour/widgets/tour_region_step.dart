@@ -7,6 +7,7 @@ import '../../core/theme/app_shape.dart';
 import '../../core/keys/tour_keys.dart';
 import '../../core/l10n/countries.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/lucena_sheet.dart';
@@ -28,88 +29,111 @@ class TourRegionStep extends StatelessWidget {
     final regionState = state.regionState;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _Field(
-            key: TourKeys.regionCountry,
-            label: l10n.tourRegionCountry,
-            value: country == null ? null : Countries.name(l10n, country),
-            help: state.countryFromPhone ? l10n.tourRegionCountryHelp : null,
-            onTap: () async {
-              final picked = await _pick(
-                context,
-                title: l10n.tourRegionCountry,
-                options: [
-                  for (final entry in Countries.all(l10n))
-                    _Option(entry.key, entry.value),
-                ],
-                selected: country,
-                emptyText: l10n.countryNotFound,
-              );
-              if (picked != null) cubit.setRegionCountry(picked);
-            },
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _Field(
-            key: TourKeys.regionState,
-            label: l10n.tourRegionState,
-            value: stateName(country: country, state: regionState),
-            enabled: country != null,
-            onTap: () async {
-              final brazil = country == BrazilStates.country;
-              final picked = await _pick(
-                context,
-                title: l10n.tourRegionStateTitle,
-                options: [
-                  if (brazil)
-                    for (final entry in BrazilStates.names.entries)
+      // H-ANI-16: campos e benefícios entram em cascata.
+      child: EntradaEmCascata(
+        itens: [
+          _linha(
+            _Field(
+              key: TourKeys.regionCountry,
+              label: l10n.tourRegionCountry,
+              value: country == null ? null : Countries.name(l10n, country),
+              help: state.countryFromPhone ? l10n.tourRegionCountryHelp : null,
+              onTap: () async {
+                final picked = await _pick(
+                  context,
+                  title: l10n.tourRegionCountry,
+                  options: [
+                    for (final entry in Countries.all(l10n))
                       _Option(entry.key, entry.value),
-                ],
-                selected: regionState,
-                emptyText: l10n.tourRegionNoState,
-                allowTyped: !brazil,
-              );
-              if (picked != null) cubit.setRegionState(picked);
-            },
+                  ],
+                  selected: country,
+                  emptyText: l10n.countryNotFound,
+                );
+                if (picked != null) cubit.setRegionCountry(picked);
+              },
+            ),
           ),
-          const SizedBox(height: AppSpacing.md),
-          _Field(
-            key: TourKeys.regionCity,
-            label: l10n.tourRegionCity,
-            value: state.regionCity,
-            // A cidade espera o estado.
-            enabled: regionState != null,
-            onTap: () async {
-              final picked = await _pick(
-                context,
-                title: l10n.tourRegionCityTitle,
-                options: [
-                  for (final city in BrazilCities.byState[regionState] ?? [])
-                    _Option(city, city),
-                ],
-                selected: state.regionCity,
-                emptyText: l10n.tourRegionNoCity,
-                allowTyped: true,
-              );
-              if (picked != null) cubit.setRegionCity(picked);
-            },
+          _linha(
+            _Field(
+              key: TourKeys.regionState,
+              label: l10n.tourRegionState,
+              value: stateName(country: country, state: regionState),
+              enabled: country != null,
+              onTap: () async {
+                final brazil = country == BrazilStates.country;
+                final picked = await _pick(
+                  context,
+                  title: l10n.tourRegionStateTitle,
+                  options: [
+                    if (brazil)
+                      for (final entry in BrazilStates.names.entries)
+                        _Option(entry.key, entry.value),
+                  ],
+                  selected: regionState,
+                  emptyText: l10n.tourRegionNoState,
+                  allowTyped: !brazil,
+                );
+                if (picked != null) cubit.setRegionState(picked);
+              },
+            ),
           ),
-          const SizedBox(height: AppSpacing.xl),
-          _Benefit(
-            icon: Icons.emoji_events,
-            text: l10n.tourRegionBenefitCountry,
+          _linha(
+            _Field(
+              key: TourKeys.regionCity,
+              label: l10n.tourRegionCity,
+              value: state.regionCity,
+              // A cidade espera o estado.
+              enabled: regionState != null,
+              onTap: () async {
+                final picked = await _pick(
+                  context,
+                  title: l10n.tourRegionCityTitle,
+                  options: [
+                    for (final city in BrazilCities.byState[regionState] ?? [])
+                      _Option(city, city),
+                  ],
+                  selected: state.regionCity,
+                  emptyText: l10n.tourRegionNoCity,
+                  allowTyped: true,
+                );
+                if (picked != null) cubit.setRegionCity(picked);
+              },
+            ),
           ),
-          _Benefit(icon: Icons.location_on, text: l10n.tourRegionBenefitLocal),
-          _Benefit(
-            icon: Icons.notifications,
-            text: l10n.tourRegionBenefitAlerts,
+          ItemDaCascata.texto(
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.md),
+              child: _Benefit(
+                icon: Icons.emoji_events,
+                text: l10n.tourRegionBenefitCountry,
+              ),
+            ),
+          ),
+          ItemDaCascata.texto(
+            _Benefit(
+              icon: Icons.location_on,
+              text: l10n.tourRegionBenefitLocal,
+            ),
+          ),
+          ItemDaCascata.texto(
+            _Benefit(
+              icon: Icons.notifications,
+              text: l10n.tourRegionBenefitAlerts,
+            ),
           ),
         ],
       ),
     );
   }
 }
+
+/// Um campo na cascata, com o espaço de baixo.
+ItemDaCascata _linha(Widget campo) => ItemDaCascata.texto(
+  Padding(
+    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+    child: campo,
+  ),
+);
 
 class _Option {
   const _Option(this.id, this.label);

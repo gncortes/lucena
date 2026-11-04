@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/motion/entradas_vistas.dart';
 import '../../core/widgets/load_error.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/skeleton.dart';
@@ -37,16 +38,19 @@ class LevelLichessScreen extends StatelessWidget {
         if (state.lichessOffline) {
           return KeyedSubtree(
             key: LevelKeys.lichessOfflineScreen,
-            child: LoadErrorScreen(
-              kind: LoadErrorKind.offline,
-              message: l10n.levelLichessNoNet,
-              actionKey: LevelKeys.lichessRetry,
-              backKey: LevelKeys.lichessOfflineBack,
-              onAction: cubit.connectLichess,
-              onBack: () {
-                cubit.dismissOffline();
-                Navigator.of(context).maybePop();
-              },
+            child: EntradaDaTela(
+              id: 'PropV1AbEstLichessSemRede',
+              child: LoadErrorScreen(
+                kind: LoadErrorKind.offline,
+                message: l10n.levelLichessNoNet,
+                actionKey: LevelKeys.lichessRetry,
+                backKey: LevelKeys.lichessOfflineBack,
+                onAction: cubit.connectLichess,
+                onBack: () {
+                  cubit.dismissOffline();
+                  Navigator.of(context).maybePop();
+                },
+              ),
             ),
           );
         }

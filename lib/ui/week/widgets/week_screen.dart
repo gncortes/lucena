@@ -10,6 +10,11 @@ import '../../../domain/models/week_summary.dart';
 import '../../../routing/routes.dart';
 import '../../core/keys/week_keys.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/motion/entradas_vistas.dart';
+import '../../core/motion/lucena_motion.dart';
+import '../../core/motion/numero_que_conta.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/valor_que_anima.dart';
 import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
@@ -25,6 +30,9 @@ import 'week_texts.dart';
 /// dia e o rating.
 class WeekScreen extends StatelessWidget {
   const WeekScreen({super.key});
+
+  /// Quadro do canvas, para a primeira entrada da sessão.
+  static const weekEntranceId = 'PropV1RetencaoSemana';
 
   @override
   Widget build(BuildContext context) {
@@ -51,27 +59,35 @@ class WeekScreen extends StatelessWidget {
   Widget _build(BuildContext context) {
     final l10n = context.l10n;
     final week = context.watch<WeekCubit>().state;
-    return Scaffold(
-      key: WeekKeys.screen,
-      appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
-      body: week == null
-          ? const KeyedSubtree(key: WeekKeys.loading, child: _Skeleton())
-          : _Body(week: week),
-      bottomNavigationBar: ActionsFooter(
-        stacked: true,
-        children: [
-          FilledButton.icon(
-            key: WeekKeys.play,
-            onPressed: () => context.push(Routes.daily),
-            icon: const Icon(Icons.today),
-            label: Text(l10n.weekPlay),
+    return EntradaDaTela(
+      id: WeekScreen.weekEntranceId,
+      child: Scaffold(
+        key: WeekKeys.screen,
+        appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
+        body: ShimmerConteudo(
+          carregando: week == null,
+          esqueleto: const KeyedSubtree(
+            key: WeekKeys.loading,
+            child: _Skeleton(),
           ),
-          TextButton(
-            key: WeekKeys.seeStreak,
-            onPressed: () => context.push(Routes.streak),
-            child: Text(l10n.weekSeeStreak),
-          ),
-        ],
+          child: week == null ? const SizedBox.shrink() : _Body(week: week),
+        ),
+        bottomNavigationBar: ActionsFooter(
+          stacked: true,
+          children: [
+            FilledButton.icon(
+              key: WeekKeys.play,
+              onPressed: () => context.push(Routes.daily),
+              icon: const Icon(Icons.today),
+              label: Text(l10n.weekPlay),
+            ),
+            TextButton(
+              key: WeekKeys.seeStreak,
+              onPressed: () => context.push(Routes.streak),
+              child: Text(l10n.weekSeeStreak),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -148,14 +164,15 @@ class _Body extends StatelessWidget {
             _Number(
               code: 'finals',
               icon: Icons.grid_view,
-              value: '${week.finals}',
+              value: week.finals,
               label: l10n.weekStatFinals,
             ),
             const SizedBox(width: AppSpacing.sm),
             _Number(
               code: 'points',
               icon: Icons.trending_up,
-              value: points > 0 ? '+$points' : '$points',
+              value: points,
+              signed: true,
               label: l10n.weekStatPoints,
             ),
           ],
@@ -166,14 +183,14 @@ class _Body extends StatelessWidget {
             _Number(
               code: 'days',
               icon: Icons.event_repeat,
-              value: '${week.streakDays}',
+              value: week.streakDays,
               label: l10n.weekStatDays,
             ),
             const SizedBox(width: AppSpacing.sm),
             _Number(
               code: 'firstTry',
               icon: Icons.check_circle_outline,
-              value: '${week.firstTry}',
+              value: week.firstTry,
               label: l10n.weekStatFirstTry,
             ),
           ],
@@ -194,12 +211,41 @@ class _Number extends StatelessWidget {
     required this.icon,
     required this.value,
     required this.label,
+    this.signed = false,
   });
 
   final String code;
   final IconData icon;
-  final String value;
+  final int value;
   final String label;
+
+  /// Pontos: positivo leva "+".
+  final bool signed;
+
+  Widget _count(TextStyle? style) {
+    if (!signed) {
+      return NumeroQueConta(
+        valor: value,
+        estilo: style,
+        alinhamento: AlignmentDirectional.centerStart,
+      );
+    }
+    return ValorQueAnima(
+      valor: value.toDouble(),
+      duracao: LucenaMotion.numeroConta,
+      builder: (context, agora) {
+        final n = agora.round();
+        return Text(
+          n > 0 ? '+$n' : '$n',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: style?.copyWith(
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,13 +281,9 @@ class _Number extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      value,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleLarge?.copyWith(
+                    _count(
+                      theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
-                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
                     Text(
