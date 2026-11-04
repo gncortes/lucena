@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dartchess/dartchess.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
 import 'package:lucena/domain/models/game_review.dart';
@@ -11,6 +12,7 @@ import 'package:lucena/ui/game_details/view_models/game_details_cubit.dart';
 import '../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
 
@@ -68,6 +70,11 @@ void main() {
       characters: FakeCharacterRepository(),
       analysis: analysis,
       reviews: reviews,
+      deepAnalysis: EngineDeepAnalysisRepository(
+        analysis: analysis,
+        reviews: reviews,
+        now: FakeNow(DateTime.utc(2026, 10, 6, 12)),
+      ),
     );
     addTearDown(cubit.close);
     return cubit;
@@ -236,7 +243,7 @@ void main() {
 
     expect(shown, [2]);
     expect(unscored, isEmpty);
-    expect(progress, containsAllInOrder([1 / 3, 2 / 3, 1.0]));
+    expect(progress, containsAllInOrder([0.25, 0.5, 0.75, 1.0]));
     expect(cubit.state.reviewing, isFalse);
     final review = cubit.state.review!;
     expect(review.moves[0].weight, 2);
@@ -246,7 +253,7 @@ void main() {
     expect(review.depth, 2);
     expect(review.moves[0].best, 'g1g7');
     expect(review.whiteAccuracy, isNotNull);
-    expect(reviews.reviews[id], same(review));
+    expect(reviews.reviews[id]!.depth, 2);
     // A barra recebe a avaliação de cada posição assim que a engine termina.
     expect(cubit.state.barScores.keys, containsAll([-1, 0, 1, 2]));
   });
@@ -322,6 +329,11 @@ void main() {
         characters: FakeCharacterRepository(),
         analysis: analysis,
         reviews: reviews,
+        deepAnalysis: EngineDeepAnalysisRepository(
+          analysis: analysis,
+          reviews: reviews,
+          now: FakeNow(DateTime.utc(2026, 10, 6, 12)),
+        ),
         settings: FakeSettingsRepository(AppSettings(evalBar: on)),
       );
       addTearDown(cubit.close);

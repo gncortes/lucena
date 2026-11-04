@@ -5,6 +5,7 @@ import 'package:dartchess/dartchess.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucena/data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
 import 'package:lucena/domain/models/attempt.dart';
@@ -20,6 +21,7 @@ import 'package:lucena/ui/settings/view_models/settings_cubit.dart';
 import '../../../testing/fakes/fake_analysis_repository.dart';
 import '../../../testing/fakes/fake_character_repository.dart';
 import '../../../testing/fakes/fake_game_review_repository.dart';
+import '../../../testing/fakes/fake_now.dart';
 import '../../../testing/fakes/fake_progress_repository.dart';
 import '../../../testing/fakes/fake_school_repositories.dart';
 import '../../../testing/fakes/fake_settings_repository.dart';
@@ -63,6 +65,7 @@ void main() {
     FakeSettingsRepository? preferences,
     Locale locale = const Locale('en'),
   }) async {
+    final reviews = FakeGameReviewRepository();
     tester.view.physicalSize = viewport ?? const Size(1080, 5000);
     tester.view.devicePixelRatio = viewport == null ? 2.625 : 1;
     addTearDown(tester.view.reset);
@@ -71,7 +74,12 @@ void main() {
       progress: progress,
       characters: FakeCharacterRepository(),
       analysis: analysis,
-      reviews: FakeGameReviewRepository(),
+      reviews: reviews,
+      deepAnalysis: EngineDeepAnalysisRepository(
+        analysis: analysis,
+        reviews: reviews,
+        now: FakeNow(DateTime.utc(2026, 10, 6, 12)),
+      ),
       lessons: FakeLessonRepository(
         texts: const LessonTexts({
           'review.stories': [

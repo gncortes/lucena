@@ -117,6 +117,7 @@ import 'package:lucena/data/repositories/endgames/exercise_feedback_repository_a
 import 'package:lucena/data/repositories/school/school_progress_repository.dart';
 import 'package:lucena/data/repositories/school/star_challenge_repository.dart';
 import 'package:lucena/data/repositories/rating/rating_repository_local.dart';
+import 'package:lucena/data/repositories/deep_analysis/deep_analysis_repository.dart';
 import 'package:lucena/data/repositories/review/game_review_repository.dart';
 import 'package:lucena/domain/models/move_prediction.dart';
 import 'package:lucena/domain/models/onboarding.dart';
@@ -201,6 +202,7 @@ final e2eChessCom = FakeChessComRepository();
 
 /// O relógio dos cenários: só anda quando o cenário manda.
 final e2eNow = FakeNow(_e2eStart);
+final e2eReviews = LocalGameReviewRepository(PreferencesService());
 
 /// Real reminder composition, with an inspectable device boundary in Patrol.
 final e2eNotifications = FakeNotificationService();
@@ -478,7 +480,12 @@ Future<Dependencies> e2eDependencies({
     ),
     soundRepository: e2eSound,
     analysisRepository: e2eAnalysis,
-    gameReviewRepository: LocalGameReviewRepository(PreferencesService()),
+    gameReviewRepository: e2eReviews,
+    deepAnalysisRepository: EngineDeepAnalysisRepository(
+      analysis: e2eAnalysis,
+      reviews: e2eReviews,
+      now: e2eNow,
+    ),
     ongoingGameRepository: LocalOngoingGameRepository(PreferencesService()),
     conclusionRepository: LocalConclusionRepository(PreferencesService()),
     // O catálogo de verdade: os cenários abrem posições conhecidas dele.
