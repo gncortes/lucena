@@ -228,7 +228,7 @@ class _Banner extends StatelessWidget {
               ),
             ),
             ClipRRect(
-              borderRadius: BorderRadius.circular(3),
+              borderRadius: BorderRadius.circular(AppShape.full),
               child: LinearProgressIndicator(
                 value: total == 0 ? 0 : done / total,
                 minHeight: 6,

@@ -18,7 +18,7 @@ import '../../../domain/models/conclusion.dart';
 import '../../../domain/models/game_end.dart';
 import '../../../domain/use_cases/clock_format.dart';
 import '../../../routing/routes.dart';
-import '../../account/widgets/account_invite_sheet.dart';
+import '../../account/widgets/account_invite_card.dart';
 import '../../achievements/widgets/achievement_detail.dart';
 import '../../achievements/widgets/achievement_toast.dart';
 import '../../core/keys/conclusion_keys.dart';
@@ -103,13 +103,12 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
     setState(() => _inviteAvailable = true);
   }
 
-  Future<void> _openInvite() async {
+  // O X do cartão vale como "Agora não": some e suspende por 7 dias
+  // (H-CON-02).
+  Future<void> _closeInvite() async {
     if (!_inviteAvailable) return;
     setState(() => _inviteAvailable = false);
-    if (context.read<AccountRepository>().current != null) return;
     await widget.invite!.markShown();
-    if (!mounted) return;
-    await showAccountInviteSheet(context);
   }
 
   @override
@@ -188,7 +187,9 @@ class _ConclusionScreenState extends State<ConclusionScreen> {
                     conclusion: conclusion,
                     card: _card,
                     analysis: _analysis,
-                    onAccountInvite: _inviteAvailable ? _openInvite : null,
+                    onAccountInviteClose: _inviteAvailable
+                        ? _closeInvite
+                        : null,
                   ),
                 ],
               ),
@@ -320,7 +321,7 @@ class _Body extends StatelessWidget {
     required this.conclusion,
     required this.card,
     required this.analysis,
-    this.onAccountInvite,
+    this.onAccountInviteClose,
   });
 
   final ConclusionState state;
@@ -329,7 +330,10 @@ class _Body extends StatelessWidget {
 
   /// O cartão da análise rápida (entra na imagem depois de pronta).
   final GlobalKey analysis;
-  final VoidCallback? onAccountInvite;
+
+  /// Com o convite da conta na tela (sem conta, fora da suspensão): o X do
+  /// cartão.
+  final VoidCallback? onAccountInviteClose;
 
   @override
   Widget build(BuildContext context) {
@@ -448,6 +452,17 @@ class _Body extends StatelessWidget {
             characters: state.characters,
           ),
         ),
+      // O convite da conta logo abaixo das conquistas
+      // (PropV2UxConclusaoConta): "Salve suas conquistas" quando houve
+      // conquista nova; sem ela, "Salve seu progresso".
+      if (onAccountInviteClose case final onClose?)
+        AccountInviteCard(
+          key: ConclusionKeys.accountInvite,
+          title: conclusion.achievements.isNotEmpty
+              ? context.l10n.conCartaoTitleWin
+              : context.l10n.conCartaoTitleProgress,
+          onClose: onClose,
+        ),
       // A partida de novo com o Stockfish no lugar do jogador. Fora da imagem
       // de compartilhar.
       if (context.read<ConclusionCubit>().canPlayBestLine)
@@ -456,17 +471,6 @@ class _Body extends StatelessWidget {
       // A análise rápida anda ali mesmo, no fim da tela: sozinha na partida
       // curta, no toque na longa.
       ?quick,
-      if (onAccountInvite != null)
-        Card(
-          child: ListTile(
-            key: ConclusionKeys.accountInvite,
-            leading: const Icon(Icons.cloud_sync_outlined),
-            title: Text(context.l10n.accountTitle),
-            subtitle: Text(context.l10n.accountInviteTextSheet),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onAccountInvite,
-          ),
-        ),
     ];
     return Stack(
       children: [

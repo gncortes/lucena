@@ -599,27 +599,37 @@ void main() {
   });
 
   group('convite da conta', () {
-    testWidgets('resultado livre; convite abre apenas ao tocar no cartão', (
+    testWidgets('H-CON-02: cartão na tela; o X fecha e suspende 7 dias', (
       tester,
     ) async {
       final invite = FakeAccountInviteRepository();
-      await open(tester, fresh: true, invite: invite);
+      await open(
+        tester,
+        fresh: true,
+        invite: invite,
+        locale: const Locale('pt'),
+      );
 
+      // Cartão dentro da tela, sem folha por cima: o resultado fica livre.
       expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
       expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(
+        find.text(
+          cubit.state.conclusion!.achievements.isEmpty
+              ? 'Salve seu progresso'
+              : 'Salve suas conquistas',
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(AccountKeys.google), findsOneWidget);
       expect(invite.shown, isFalse);
       expect(find.byKey(ConclusionKeys.close).hitTestable(), findsOneWidget);
-      await tester.ensureVisible(find.byKey(ConclusionKeys.accountInvite));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(ConclusionKeys.accountInvite));
-      await tester.pumpAndSettle();
-      expect(find.byKey(AccountKeys.inviteSheet), findsOneWidget);
-      expect(invite.shown, isTrue);
 
-      // "Agora não" só fecha: a conclusão fica.
-      await tester.tap(find.byKey(AccountKeys.notNow));
+      await tester.ensureVisible(find.byKey(AccountKeys.inviteCardClose));
       await tester.pumpAndSettle();
-      expect(find.byKey(AccountKeys.inviteSheet), findsNothing);
+      await tester.tap(find.byKey(AccountKeys.inviteCardClose));
+      await tester.pumpAndSettle();
+      expect(invite.shown, isTrue);
       expect(find.byKey(ConclusionKeys.screen), findsOneWidget);
       expect(find.byKey(ConclusionKeys.accountInvite), findsNothing);
     });
@@ -687,11 +697,13 @@ void main() {
         moves: _longMoves,
         played: const Duration(minutes: 5),
         invite: FakeAccountInviteRepository(),
+        locale: const Locale('pt'),
       );
       await tester.pump(AchievementToasts.duration * 0.3);
       expect(cubit.state.conclusion!.achievements, isNotEmpty);
       expect(find.byKey(AchievementsKeys.toast), findsOneWidget);
       expect(find.byKey(ConclusionKeys.accountInvite), findsOneWidget);
+      expect(find.text('Salve suas conquistas'), findsOneWidget);
     });
 
     testWidgets('com conta, não convida', (tester) async {

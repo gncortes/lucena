@@ -351,7 +351,11 @@ class _WeekRow extends StatelessWidget {
                           : colors.outlineVariant,
                     ),
                     child: last
-                        ? Icon(Icons.stadium, size: 18, color: colors.primary)
+                        ? Icon(
+                            Icons.stadium,
+                            size: AppIconSize.compact,
+                            color: colors.primary,
+                          )
                         : Text(
                             '$number',
                             style: theme.textTheme.labelLarge?.copyWith(
