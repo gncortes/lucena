@@ -48,10 +48,14 @@ import '../../core/widgets/character_avatar.dart';
 /// dizer se acertou) e o resultado. [onDone] recebe o fim: o tour segue, as
 /// outras entradas voltam.
 class PlacementScreen extends StatelessWidget {
-  const PlacementScreen({this.onDone, super.key});
+  const PlacementScreen({this.onDone, this.onPreferRating, super.key});
 
   /// O jogador terminou e usou o resultado.
   final VoidCallback? onDone;
+
+  /// "Prefiro informar meu rating": volta ao passo do nível. Sem ela (testes
+  /// abertos de outros lugares), o botão não aparece.
+  final VoidCallback? onPreferRating;
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +117,7 @@ class PlacementScreen extends StatelessWidget {
             PlacementView.intro => _Intro(
               key: const ValueKey('intro'),
               state: state,
+              onPreferRating: onPreferRating,
             ),
             PlacementView.question => _Question(
               key: ValueKey('q${state.number}'),
@@ -125,6 +130,7 @@ class PlacementScreen extends StatelessWidget {
               key: const ValueKey('result'),
               state: state,
               onDone: onDone,
+              onPreferRating: onPreferRating,
             ),
           },
         ),
@@ -135,9 +141,10 @@ class PlacementScreen extends StatelessWidget {
 
 /// A abertura: o Viktor explica, três selos e "Começar" (ou continuar).
 class _Intro extends StatelessWidget {
-  const _Intro({required this.state, super.key});
+  const _Intro({required this.state, this.onPreferRating, super.key});
 
   final PlacementViewState state;
+  final VoidCallback? onPreferRating;
 
   @override
   Widget build(BuildContext context) {
@@ -243,16 +250,29 @@ class _Intro extends StatelessWidget {
               style: FilledButton.styleFrom(
                 textStyle: AppButtonText.footer(context),
               ),
-              onPressed: cubit.start,
-              child: Text(
-                state.resuming ? l10n.placementResume : l10n.placementStart,
-              ),
+              onPressed: state.starting ? null : cubit.start,
+              child: state.starting
+                  ? const SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(
+                      state.resuming
+                          ? l10n.placementResume
+                          : l10n.placementStart,
+                    ),
             ),
             if (state.resuming)
               TextButton(
                 key: PlacementKeys.restart,
                 onPressed: cubit.restart,
                 child: Text(l10n.placementRestart),
+              )
+            else if (onPreferRating != null)
+              TextButton(
+                key: PlacementKeys.preferRating,
+                onPressed: onPreferRating,
+                child: Text(l10n.placementPreferRating),
               ),
           ],
         ),

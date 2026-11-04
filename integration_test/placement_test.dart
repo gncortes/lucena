@@ -4,6 +4,7 @@ import 'package:lucena/ui/core/keys/endgames_keys.dart';
 import 'package:lucena/ui/core/keys/school_keys.dart';
 import 'package:lucena/ui/core/keys/level_keys.dart';
 import 'package:lucena/ui/level/view_models/level_cubit.dart';
+import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -37,7 +38,7 @@ void main() {
     // Fechar à força no meio: a primeira abertura volta em "Seu nível" (só
     // ele a fecha), e o teste continua na mesma pergunta.
     await app.restart();
-    await $(LevelKeys.screen).waitUntilVisible();
+    await tour.expectStep(TourStep.level);
     await tour.takeTest();
     // O teste marcado em "Seu nível" abre ao tocar em "Continuar".
     await tour.start(leave: false);
@@ -49,8 +50,8 @@ void main() {
     await placement.expectResult();
     await placement.useLevel();
 
-    await $(LevelKeys.screen).waitUntilVisible();
-    await tour.start();
+    // "Usar esse rating" leva ao passo Região; o resto do tour termina.
+    await tour.expectStep(TourStep.region);
     await tour.leaveNextSteps();
   });
 

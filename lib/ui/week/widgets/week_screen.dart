@@ -14,6 +14,7 @@ import '../../core/theme/app_icon_size.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/widgets/load_skeleton.dart';
 import '../../core/widgets/lucena_app_bar.dart';
 import '../../core/widgets/scroll_padding.dart';
 import '../view_models/week_cubit.dart';
@@ -32,11 +33,14 @@ class WeekScreen extends StatelessWidget {
       valueListenable: cubit.failure,
       builder: (context, failure, _) {
         if (failure != null) {
-          return LoadErrorScreen(
-            kind: LoadErrorKind.fromFailure(failure),
-            onAction: cubit.load,
-            onBack: () =>
-                context.canPop() ? context.pop() : context.go(Routes.home),
+          return KeyedSubtree(
+            key: WeekKeys.error,
+            child: LoadErrorScreen(
+              kind: LoadErrorKind.fromFailure(failure),
+              onAction: cubit.load,
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go(Routes.home),
+            ),
           );
         }
         return _build(context);
@@ -50,7 +54,9 @@ class WeekScreen extends StatelessWidget {
     return Scaffold(
       key: WeekKeys.screen,
       appBar: LucenaAppBar(title: Text(l10n.weekTitle)),
-      body: week == null ? const SizedBox.shrink() : _Body(week: week),
+      body: week == null
+          ? const KeyedSubtree(key: WeekKeys.loading, child: _Skeleton())
+          : _Body(week: week),
       bottomNavigationBar: ActionsFooter(
         stacked: true,
         children: [
@@ -69,6 +75,22 @@ class WeekScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// O miolo enquanto lê (canvas `PropV1InicioSemanaCarregando`): os botões do
+/// rodapé já aparecem.
+class _Skeleton extends StatelessWidget {
+  const _Skeleton();
+
+  @override
+  Widget build(BuildContext context) => const SkeletonBody([
+    SkeletonShape.block(height: 120),
+    SkeletonShape.block(height: 96),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+    SkeletonShape.block(height: 20, radius: AppShape.small),
+  ]);
 }
 
 class _Body extends StatelessWidget {

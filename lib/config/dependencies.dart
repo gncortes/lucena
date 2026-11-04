@@ -75,7 +75,6 @@ import '../data/repositories/characters/character_repository.dart';
 import '../data/repositories/evaluation/evaluation_repository.dart';
 import '../data/repositories/characters/talk_repository.dart';
 import '../data/repositories/home/home_layout_repository.dart';
-import '../data/repositories/home/unlock_repository.dart';
 import '../data/repositories/onboarding/onboarding_repository.dart';
 import '../data/repositories/school/lesson_repository.dart';
 import '../data/repositories/school/lesson_repository_asset.dart';
@@ -245,7 +244,6 @@ class Dependencies {
     required this.talkRepository,
     required this.onboardingRepository,
     required this.homeLayoutRepository,
-    required this.unlockRepository,
     required this.paceRepository,
     required this.lessonRepository,
     this.trainingSchoolContent,
@@ -559,7 +557,6 @@ class Dependencies {
       talkRepository: LocalTalkRepository(preferences),
       onboardingRepository: onboarding,
       homeLayoutRepository: LocalHomeLayoutRepository(preferences),
-      unlockRepository: LocalUnlockRepository(preferences),
       paceRepository: pace,
       lessonRepository: VisibleLessonRepository(lessons),
       trainingSchoolContent: trainingSchoolContent,
@@ -704,7 +701,6 @@ class Dependencies {
   final TalkRepository talkRepository;
   final OnboardingRepository onboardingRepository;
   final HomeLayoutRepository homeLayoutRepository;
-  final UnlockRepository unlockRepository;
   final PaceRepository paceRepository;
   final LessonRepository lessonRepository;
   final TrainingSchoolContent? trainingSchoolContent;

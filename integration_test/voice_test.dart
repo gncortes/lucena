@@ -34,7 +34,7 @@ void main() {
     expect(voice.lastSpoken.$2, _voice(1));
 
     await tour.next();
-    await tour.expectStep(TourStep.school);
+    await tour.expectStep(TourStep.level);
 
     // Fechar à força: a escolha continua.
     await app.restart();
@@ -54,7 +54,7 @@ void main() {
     await tour.openVoice();
     await voice.chooseNone();
     await tour.next();
-    await tour.expectStep(TourStep.school);
+    await tour.expectStep(TourStep.level);
   });
 
   patrolTest('Configurações > Voz: sem a seção das vozes dos adversários; '

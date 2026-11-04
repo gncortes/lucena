@@ -157,7 +157,11 @@ extension on FeaturedCard {
     return Material(
       key: FeaturedKeys.card(item.id),
       color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(AppShape.large),
+      // #FAFBF9 com contorno 1px #E1E5DF (H-INI-05).
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppShape.large),
+        side: const BorderSide(color: AppColors.cardOutline),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,

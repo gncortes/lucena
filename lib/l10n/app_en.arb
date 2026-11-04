@@ -1445,7 +1445,7 @@
   "@tourSpeechBoard": {
     "description": "Public onboarding speech, copied verbatim from tour.board."
   },
-  "tourSpeechVoice": "I can read aloud everything I say. Choose my voice; tap one to hear it. And tell me what to call you.",
+  "tourSpeechVoice": "I can read aloud everything I say. Tap a voice to hear it.",
   "@tourSpeechVoice": {
     "description": "Public onboarding speech, copied verbatim from tour.voice."
   },
@@ -1460,18 +1460,6 @@
   "tourSpeechVoiceLinkNone": "Nice game! I am Viktor, your teacher. Before we go on, tell me what to call you.",
   "@tourSpeechVoiceLinkNone": {
     "description": "Public onboarding speech, copied verbatim from tour.voice.link.none."
-  },
-  "tourSpeechSchool": "In the lessons, I first explain the idea, move by move. Then I show examples. At the end, you practise on the board.",
-  "@tourSpeechSchool": {
-    "description": "Public onboarding speech, copied verbatim from tour.school."
-  },
-  "tourSpeechHelp": "Stuck? In a lesson, tap Show answer. In an exercise, tap the bulb and I give you a hint. Wrong move? I show you why, and you try again.",
-  "@tourSpeechHelp": {
-    "description": "Public onboarding speech, copied verbatim from tour.help."
-  },
-  "tourSpeechPlay": "Outside the lessons, you play endgames against opponents who play like real people, from Coco to Stockfish. Games against them change your rating, shown at the top of the home screen.",
-  "@tourSpeechPlay": {
-    "description": "Public onboarding speech, copied verbatim from tour.play."
   },
   "tourBack": "Back",
   "@tourBack": {
@@ -1915,11 +1903,11 @@
   "@gameDetailsNotFound": {
     "description": "Game details: the game was deleted between the list and opening it"
   },
-  "homeEndgames": "Endgame course",
+  "homeEndgames": "Pilares do Xadrez",
   "@homeEndgames": {
     "description": "Home card that opens the endgame lessons trail."
   },
-  "homeEndgamesBody": "Lucena, Philidor, bishop and knight: the endgames every player must master.",
+  "homeEndgamesBody": "Your training guide, built around your game",
   "@homeEndgamesBody": {
     "description": "One line under the endgame lessons card on the home screen."
   },
@@ -3049,18 +3037,6 @@
   "@journeySpecialLocked": {
     "description": "Special challenge still locked: win the same endgame normally first."
   },
-  "homeUnlockedBlindTitle": "New mode unlocked: blindfold",
-  "@homeUnlockedBlindTitle": {
-    "description": "Home card shown once after the first blindfold special challenge is won."
-  },
-  "homeUnlockedBlindBody": "You won without seeing the pieces. Now you can play any endgame blindfold: pick the endgame and choose Blindfold.",
-  "@homeUnlockedBlindBody": {
-    "description": "Body of the new-mode card: how to play blindfold from now on."
-  },
-  "homeUnlockedBlindAction": "Pick an endgame",
-  "@homeUnlockedBlindAction": {
-    "description": "Button of the new-mode card: opens the endgame catalog."
-  },
   "journeySpecialSpeedrunTitle": "Short speedrun",
   "@journeySpecialSpeedrunTitle": {
     "description": "Rung special challenge: a short speedrun."
@@ -3634,7 +3610,7 @@
   "@placementTitle": {
     "description": "Title of the placement test screen."
   },
-  "placementIntroSpeech": "No guessing: if you don't know, tap \"I don't know\". At the end I'll build your study plan.",
+  "placementIntroSpeech": "If you don't know, tap \"I don't know\". At the end I'll build your study plan.",
   "@placementIntroSpeech": {
     "description": "Viktor at the start of the placement test."
   },
@@ -3642,7 +3618,7 @@
   "@placementChipQuestions": {
     "description": "Chip on the placement intro."
   },
-  "placementChipMinutes": "about 8 minutes",
+  "placementChipMinutes": "about 8 to 12 minutes",
   "@placementChipMinutes": {
     "description": "Chip on the placement intro: estimated time."
   },
@@ -3695,7 +3671,7 @@
       }
     }
   },
-  "placementResultTitle": "Your level",
+  "placementResultTitle": "Level test",
   "@placementResultTitle": {
     "description": "Title on the placement result."
   },
@@ -5495,37 +5471,9 @@
   "@lessonMoveList": {
     "description": "Accessibility label of the move list below the board in the scripted lesson."
   },
-  "tourVoiceHint": "Opponents get a device voice automatically. You can change my voice later in Settings, and your name in your profile.",
+  "tourVoiceHint": "Opponents use a device voice. You can change my voice later in Settings, and your name in your Profile.",
   "@tourVoiceHint": {
     "description": "Note under the voice choice in the tour."
-  },
-  "tourStageIdea": "Idea",
-  "@tourStageIdea": {
-    "description": "Tour, lessons step: first stage."
-  },
-  "tourStageIdeaBody": "I explain,\nmove by move",
-  "@tourStageIdeaBody": {
-    "description": "Tour, lessons step: what happens in the first stage."
-  },
-  "tourStageExamples": "Examples",
-  "@tourStageExamples": {
-    "description": "Tour, lessons step: second stage."
-  },
-  "tourStageExamplesBody": "I show\non the board",
-  "@tourStageExamplesBody": {
-    "description": "Tour, lessons step: what happens in the second stage."
-  },
-  "tourStagePractice": "Practice",
-  "@tourStagePractice": {
-    "description": "Tour, lessons step: third stage."
-  },
-  "tourStagePracticeBody": "you play\nalone",
-  "@tourStagePracticeBody": {
-    "description": "Tour, lessons step: what happens in the third stage."
-  },
-  "tourStockfishMax": "maximum",
-  "@tourStockfishMax": {
-    "description": "Tour, games step: rating label under the Stockfish square."
   },
   "exerciseSayCorrect": "Correct.",
   "@exerciseSayCorrect": {
@@ -6343,7 +6291,7 @@
   "@levelLichessConnectedTitle": {
     "description": "Title of the screen shown after signing in with Lichess."
   },
-  "levelLichessBack": "Back from Lichess. The access stays on this phone only.",
+  "levelLichessBack": "Back from Lichess. The access stays on this phone only, and needs no Lucena account.",
   "@levelLichessBack": {
     "description": "Text at the top of the Lichess connected screen."
   },
@@ -6417,7 +6365,7 @@
       }
     }
   },
-  "levelLichessTip": "Lichess ratings tend to be higher than FIDE and Chess.com. If it feels easy or hard, Lucena adjusts by itself.",
+  "levelLichessTip": "Each site has its own scale: the same player has a higher number on Lichess than on FIDE or Chess.com. Lucena uses the Lichess scale.",
   "@levelLichessTip": {
     "description": "Tip on the Lichess connected screen."
   },
@@ -6429,11 +6377,11 @@
   "@levelPreferTest": {
     "description": "Text button: take the placement test instead."
   },
-  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. With the test I get your level right.",
+  "levelProvisionalText": "Lichess marks your rating with ?: it is still provisional, with few games. The test gets your level right.",
   "@levelProvisionalText": {
     "description": "Text when the Lichess rating is provisional."
   },
-  "levelProvisionalTip": "If you prefer, I start at {rating} and adjust by myself after a few games.",
+  "levelProvisionalTip": "With {rating}, the level adjusts by itself after a few games.",
   "@levelProvisionalTip": {
     "description": "Tip when the Lichess rating is provisional.",
     "placeholders": {
@@ -6467,17 +6415,9 @@
   "@levelChessHelp": {
     "description": "Helper under the Chess.com username field."
   },
-  "levelChessNotFound": "I couldn't find this user on Chess.com.",
+  "levelChessNotFound": "I couldn't find this user on Chess.com. Check how it is spelled.",
   "@levelChessNotFound": {
     "description": "Error under the Chess.com username field."
-  },
-  "levelChessOffline": "Couldn't reach Chess.com. Check your connection.",
-  "@levelChessOffline": {
-    "description": "Snack bar when Chess.com cannot be reached."
-  },
-  "levelLichessOffline": "Couldn't reach Lichess. Check your connection.",
-  "@levelLichessOffline": {
-    "description": "Snack bar when Lichess cannot be reached."
   },
   "levelFoundUser": "Found: {user}",
   "@levelFoundUser": {
@@ -6488,7 +6428,7 @@
       }
     }
   },
-  "levelChessTip": "Chess.com ratings tend to be lower than Lichess, so I convert them. If it feels easy or hard, Lucena adjusts by itself.",
+  "levelChessTip": "Each site has its own scale: the same player has a lower number on Chess.com than on Lichess. Lucena converts your rating.",
   "@levelChessTip": {
     "description": "Tip on the Chess.com screen."
   },
@@ -7269,7 +7209,7 @@
   "@allModesRaceBody": {
     "description": "All modes: short description of the problem race."
   },
-  "goalViktorSay": "I will tailor the app to you: the home screen starts with what you choose below.",
+  "goalViktorSay": "I will build your home screen around what you want to do.",
   "@goalViktorSay": {
     "description": "Viktor's line on the first-launch question about the user's goal."
   },
@@ -7281,27 +7221,19 @@
   "@goalLearnTitle": {
     "description": "Goal option: learn chess from scratch."
   },
-  "goalLearnText": "First, try moving the pieces on the board. Then practice with the opponents.",
+  "goalLearnText": "From the pieces to the first checkmate",
   "@goalLearnText": {
     "description": "Text of the learn-to-play goal option. Viktor is the teacher's name."
-  },
-  "goalEndgamesTitle": "Learn endgames",
-  "@goalEndgamesTitle": {
-    "description": "Goal option: endgame lessons."
-  },
-  "goalEndgamesText": "Lessons on Lucena, Philidor and the endgames that come up most.",
-  "@goalEndgamesText": {
-    "description": "Text of the learn-endgames goal option. Lucena and Philidor are endgame positions (names, keep)."
   },
   "goalTrainTitle": "Practice endgames",
   "@goalTrainTitle": {
     "description": "Goal option: practice endgame positions."
   },
-  "goalTrainText": "I know the theory: I want to practice the positions.",
+  "goalTrainText": "More than 3,500 endgames of every kind",
   "@goalTrainText": {
     "description": "Text of the practice-endgames goal option."
   },
-  "goalHint": "The other paths stay on the home screen. You can change this later in Profile.",
+  "goalHint": "The other paths stay on Home. You can change this later in Profile.",
   "@goalHint": {
     "description": "Note under the goal options."
   },
@@ -8341,23 +8273,23 @@
   "@accountPhotoFailed": {
     "description": "Snack bar when the photo upload fails."
   },
-  "updateRequiredTitle": "Update Lucena",
+  "updateRequiredTitle": "Update required",
   "@updateRequiredTitle": {
     "description": "Required update screen title: this app version no longer works."
   },
-  "updateRequiredBody": "This version stopped working. The new one takes less than a minute to install, and your progress stays here.",
+  "updateRequiredBody": "The installed version has an error that needs to be fixed. Your lessons and games stay on your device.",
   "@updateRequiredBody": {
     "description": "Required update screen text."
   },
-  "updateRequiredAction": "Update on Play",
+  "updateRequiredAction": "Update",
   "@updateRequiredAction": {
     "description": "Required update screen button: opens the app page on Google Play."
   },
-  "updateRecommendedTitle": "New Lucena version",
+  "updateRecommendedTitle": "New version available",
   "@updateRecommendedTitle": {
     "description": "Recommended update screen title, shown once per version."
   },
-  "updateRecommendedBody": "It has fixes and improvements. Update when you can.",
+  "updateRecommendedBody": "Brings fixes and improvements to Lucena.",
   "@updateRecommendedBody": {
     "description": "Recommended update screen text."
   },
@@ -9065,66 +8997,13 @@
       }
     }
   },
-  "nextStepsReadyBar": "All set",
-  "@nextStepsReadyBar": {
-    "description": "Next steps after the level: app bar title (and hero title without a level)."
-  },
-  "nextStepsLevel": "Your level: {level}",
-  "@nextStepsLevel": {
-    "description": "Next steps after the level: hero title with the rating.",
-    "placeholders": {
-      "level": {
-        "type": "int"
-      }
-    }
-  },
-  "nextStepsReadyBody": "Now we know where to start. Where would you like to begin?",
-  "@nextStepsReadyBody": {
-    "description": "Next steps after the level: hero text."
-  },
-  "nextStepsLessonsBody": "Learn Opposition, Bishop and knight, Queen vs rook and Lucena.",
-  "@nextStepsLessonsBody": {
-    "description": "Next steps: what the endgame lessons cover."
-  },
-  "nextStepsRaceBody": "Solve endgame puzzles against the clock.",
-  "@nextStepsRaceBody": {
-    "description": "Next steps: what the endgame race is for."
-  },
-  "nextStepsTrainTitle": "Practice endgames",
-  "@nextStepsTrainTitle": {
-    "description": "Next steps: option to play an endgame against the engine."
-  },
-  "nextStepsTrainBody": "Pick a position in the catalog and play.",
-  "@nextStepsTrainBody": {
-    "description": "Next steps: text of the training option."
-  },
   "nextStepsHome": "Go to home",
   "@nextStepsHome": {
     "description": "Next steps: footer button to the home screen."
   },
-  "nextStepsSchoolBar": "School completed",
-  "@nextStepsSchoolBar": {
-    "description": "Next steps after the School: app bar title."
-  },
-  "nextStepsSchoolTitle": "You completed the School!",
-  "@nextStepsSchoolTitle": {
-    "description": "Next steps after the School: hero title."
-  },
-  "nextStepsSchoolBody": "The rules and the first mates are yours. What would you like to do now?",
-  "@nextStepsSchoolBody": {
-    "description": "Next steps after the School: hero text."
-  },
   "nextStepsRecommended": "Recommended",
   "@nextStepsRecommended": {
     "description": "Next steps: badge on the recommended option."
-  },
-  "nextStepsLessonsFirst": "Start with the Opposition, the endgame that comes up most.",
-  "@nextStepsLessonsFirst": {
-    "description": "Next steps after the School: endgame lessons text."
-  },
-  "nextStepsJourneyBody": "Beat opponents, one step at a time.",
-  "@nextStepsJourneyBody": {
-    "description": "Next steps after the School: journey text."
   },
   "lessonFinishedRaceOnly": "{name} Race",
   "@lessonFinishedRaceOnly": {
@@ -9468,10 +9347,6 @@
   "@homeRatingStarting": {
     "description": "Home top bar, in place of the rating number while the beginner has played too few games."
   },
-  "homeHeroFirstSteps": "First steps",
-  "@homeHeroFirstSteps": {
-    "description": "Small label on the home hero card before the first game: where the player is."
-  },
   "homeHeroSchool": "School",
   "@homeHeroSchool": {
     "description": "Small label on the home hero card: the beginner school."
@@ -9484,14 +9359,6 @@
         "type": "int"
       }
     }
-  },
-  "homeHeroCourseDone": "Course completed",
-  "@homeHeroCourseDone": {
-    "description": "Home hero card title when every endgame chapter is passed."
-  },
-  "homeHeroSpeedrun": "From Coco to Stockfish",
-  "@homeHeroSpeedrun": {
-    "description": "Home hero card title for the speedrun: the whole Journey."
   },
   "homeHeroStart": "Start",
   "@homeHeroStart": {
@@ -9517,7 +9384,7 @@
   "@homeShortcutJourneyBody": {
     "description": "Two-line description on the Journey shortcut tile."
   },
-  "homeShortcutEndgamesBody": "Learn theoretical endgames like Lucena and Philidor",
+  "homeShortcutEndgamesBody": "Your training guide, built around your game",
   "@homeShortcutEndgamesBody": {
     "description": "Two-line description on the endgame course shortcut tile."
   },
@@ -10624,7 +10491,7 @@
   "@trainingEscolaDayOffInfo": {
     "description": "T85 Viktor School daily training: trainingEscolaDayOffInfo."
   },
-  "trainingEscolaTabsProgress": "completed lessons and stars.",
+  "trainingEscolaTabsProgress": "completed lessons and stars per piece.",
   "@trainingEscolaTabsProgress": {
     "description": "T85 Viktor School daily training: trainingEscolaTabsProgress."
   },
@@ -10668,10 +10535,13 @@
   "@trainingEscolaTabsCatalog": {
     "description": "T85 Viktor School daily training: trainingEscolaTabsCatalog."
   },
-  "trainingEscolaDoubleBody": "Another {n} lessons and their challenges are added today.",
+  "trainingEscolaDoubleBody": "Another {words, select, w1{one lesson} w2{two lessons} w3{three lessons} w4{four lessons} w5{five lessons} w6{six lessons} w8{eight lessons} w12{twelve lessons} other{{n} lessons}} and their challenges are added today.",
   "@trainingEscolaDoubleBody": {
-    "description": "T85 Viktor School daily training: trainingEscolaDoubleBody.",
+    "description": "T85 Viktor School daily training: offer to double the goals. words is w1..w6 for the spelled-out count (any other value falls back to the digit n).",
     "placeholders": {
+      "words": {
+        "type": "String"
+      },
       "n": {
         "type": "int"
       }
@@ -10758,7 +10628,6 @@
   "trainingViewProgress": "View progress",
   "trainingViewGoals": "View goals",
   "trainingViewCatalog": "View catalog",
-  "trainingStartPilares": "Start Pilares",
   "trainingPilaresCompletedTitle": "You completed Pilares do Xadrez",
   "trainingPilaresCompletedBody": "All lessons and tests completed. Goals continue with theme exercises and openings; use the Catalog to review a lesson.",
   "trainingEscolaCompletedTitle": "You completed Viktor’s School",
@@ -10790,7 +10659,6 @@
   "trainingEntrySaved": "Your progress saved, on any phone",
   "trainingEntryOffline": "Downloaded lessons work offline",
   "trainingEntryEmail": "Use email",
-  "trainingDownloadCourseOffline": "You are offline. To download the course for the first time, connect and tap Try again.",
   "trainingDownloadChapterOffline": "This lesson has not been downloaded. Connect to the internet: the entire chapter downloads at once, then works offline.",
   "trainingDownloadChapterError": "Could not download the chapter. Try again in a few moments.",
   "trainingDownloadStorage": "Your phone needs more space to download this chapter (about {size} MB). Once downloaded, its lessons and exercises work offline.",
@@ -10825,9 +10693,6 @@
     "description": "Training course state."
   },
   "@trainingViewCatalog": {
-    "description": "Training course state."
-  },
-  "@trainingStartPilares": {
     "description": "Training course state."
   },
   "@trainingPilaresCompletedTitle": {
@@ -10867,9 +10732,6 @@
     "description": "Training course state."
   },
   "@trainingEntryEmail": {
-    "description": "Training course state."
-  },
-  "@trainingDownloadCourseOffline": {
     "description": "Training course state."
   },
   "@trainingDownloadChapterOffline": {
@@ -11012,10 +10874,6 @@
   },
   "@trainingTestLeave": {
     "description": "Training course state."
-  },
-  "trainingDownloadCourseError": "Could not download the course. Try again in a few moments.",
-  "@trainingDownloadCourseError": {
-    "description": "Course entry download failure without a dedicated Canvas artboard."
   },
   "trainingDownloadCourseStorage": "There is not enough space to download the course (about {size} MB). Free up space and try again. Once downloaded, the course works offline.",
   "@trainingDownloadCourseStorage": {
@@ -12758,11 +12616,335 @@
     }
   },
   "partidaContra": "Against {name}",
-  "@partidaContra": {"description": "Game summary card: opponent line", "placeholders": {"name": {"type": "String"}}},
+  "@partidaContra": {
+    "description": "Game summary card: opponent line",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "playerDetailWithSide": "{detail} · {side}",
-  "@playerDetailWithSide": {"description": "Line under a player's name in a game without a clock: the level or rating, then the side. E.g. 'Level 1000 · black'.", "placeholders": {"detail": {"type": "String", "example": "Level 1000"}, "side": {"type": "String", "example": "black"}}},
+  "@playerDetailWithSide": {
+    "description": "Line under a player's name in a game without a clock: the level or rating, then the side. E.g. 'Level 1000 · black'.",
+    "placeholders": {
+      "detail": {
+        "type": "String",
+        "example": "Level 1000"
+      },
+      "side": {
+        "type": "String",
+        "example": "black"
+      }
+    }
+  },
   "playerSideWhiteLower": "white",
-  "@playerSideWhiteLower": {"description": "Lowercase name of the white side, used after a dot in the player line of a game without a clock."},
+  "@playerSideWhiteLower": {
+    "description": "Lowercase name of the white side, used after a dot in the player line of a game without a clock."
+  },
   "playerSideBlackLower": "black",
-  "@playerSideBlackLower": {"description": "Lowercase name of the black side, used after a dot in the player line of a game without a clock."}
+  "@playerSideBlackLower": {
+    "description": "Lowercase name of the black side, used after a dot in the player line of a game without a clock."
+  },
+  "loadErrorOfflineCourseMessage": "You need an internet connection to access this course.",
+  "@loadErrorOfflineCourseMessage": {
+    "description": "Standard error screen, offline variant shown when a course package cannot be downloaded."
+  },
+  "goalImproveTitle": "Improve my game",
+  "@goalImproveTitle": {
+    "description": "Goal option: improve my game (training guide)."
+  },
+  "goalImproveText": "Your training guide, built for your game",
+  "@goalImproveText": {
+    "description": "Subtitle of the improve goal option."
+  },
+  "goalExploreTitle": "Explore positions",
+  "@goalExploreTitle": {
+    "description": "Goal option: explore positions (free board)."
+  },
+  "goalExploreText": "Play both sides or set up the position",
+  "@goalExploreText": {
+    "description": "Subtitle of the explore goal option."
+  },
+  "goalChallengeTitle": "Take on challenges",
+  "@goalChallengeTitle": {
+    "description": "Goal option: take on challenges (Journey, clock)."
+  },
+  "goalChallengeText": "Stronger opponents and the clock",
+  "@goalChallengeText": {
+    "description": "Subtitle of the challenge goal option."
+  },
+  "trainingModuleLesson": "{module} · Lesson {n}",
+  "@trainingModuleLesson": {
+    "description": "Escola lesson card label: module name and lesson number inside the module.",
+    "placeholders": {
+      "module": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEntrySpeechSchool": "I will follow every lesson and every test of yours, from the first chapter to the diploma.",
+  "@trainingEntrySpeechSchool": {
+    "description": "Viktor speech on the School account gate, shown before sign-in."
+  },
+  "trainingEntrySignIn": "Sign in or create an account",
+  "@trainingEntrySignIn": {
+    "description": "Single button on the School account gate; opens the account screen."
+  },
+  "homeShortcutPosition": "Set up a position",
+  "@homeShortcutPosition": {
+    "description": "Title of the Home shortcut that opens the custom position editor."
+  },
+  "homeShortcutBoardBody": "Play both sides, with or without a clock",
+  "@homeShortcutBoardBody": {
+    "description": "Description of the Home shortcut for the free board."
+  },
+  "homeShortcutPositionBody": "Set up any position and play it",
+  "@homeShortcutPositionBody": {
+    "description": "Description of the Home shortcut for the custom position editor."
+  },
+  "homeHeroLastPosition": "Your last position",
+  "@homeHeroLastPosition": {
+    "description": "Home top card for the Explore positions goal: the title, the saved free board position."
+  },
+  "schoolGraduationBrand": "Viktor's School",
+  "@schoolGraduationBrand": {
+    "description": "Brand line at the top of the School diploma (shown in capitals)."
+  },
+  "schoolGraduationText": "for completing the {n} lessons of Viktor's School",
+  "@schoolGraduationText": {
+    "description": "Diploma text for the School: what the student completed.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolGraduationTeacher": "Viktor",
+  "@schoolGraduationTeacher": {
+    "description": "Teacher name signed on the School diploma."
+  },
+  "schoolGraduationSummary": "What you completed",
+  "@schoolGraduationSummary": {
+    "description": "Title of the per-module summary on the School diploma screen."
+  },
+  "schoolGraduationModuleCount": "{n, plural, =1{1 lesson} other{{n} lessons}}",
+  "@schoolGraduationModuleCount": {
+    "description": "How many lessons the student completed in a module, in the diploma summary.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "schoolGraduationSurveyTitle": "What did you think of the School?",
+  "@schoolGraduationSurveyTitle": {
+    "description": "Title of the card that opens the opinion survey at the end of the School."
+  },
+  "schoolGraduationSurveyBody": "It takes 1 minute and helps improve the lessons.",
+  "@schoolGraduationSurveyBody": {
+    "description": "Subtitle of the opinion card at the end of the School."
+  },
+  "schoolGraduationPilares": "Meet Pilares",
+  "@schoolGraduationPilares": {
+    "description": "Button on the School diploma that opens the Pilares course presentation."
+  },
+  "schoolGraduationShareText": "I completed Viktor's School on Lucena! {link}",
+  "@schoolGraduationShareText": {
+    "description": "Text sent with the diploma image when sharing.",
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "schoolGraduationOpen": "View the diploma",
+  "@schoolGraduationOpen": {
+    "description": "Lesson tab button, with the School completed, that reopens the diploma."
+  },
+  "placementPreferRating": "I'd rather enter my rating",
+  "@placementPreferRating": {
+    "description": "Placement intro and result: text button that leaves the test and goes back to the level step to pick a rating range."
+  },
+  "updateOfflineMessage": "You need an internet connection to update Lucena.",
+  "@updateOfflineMessage": {
+    "description": "Message under 'No internet' on the update screens."
+  },
+  "tourSpeechTheme": "Now choose the app theme. With the system default, it follows your phone's theme.",
+  "@tourSpeechTheme": {
+    "description": "Tour, theme step: what Viktor says."
+  },
+  "tourSpeechLevel": "Be honest: where are you in chess?",
+  "@tourSpeechLevel": {
+    "description": "Tour, level step: what Viktor says."
+  },
+  "tourSpeechRegion": "Where do you play from? That way I highlight the tournament endgames from your region.",
+  "@tourSpeechRegion": {
+    "description": "Tour, region step: what Viktor says."
+  },
+  "tourSpeechAccount": "Last one: do you want to save your progress? You can create the account later, in your Profile.",
+  "@tourSpeechAccount": {
+    "description": "Tour, account step: what Viktor says."
+  },
+  "tourTabColors": "Colors",
+  "@tourTabColors": {
+    "description": "Tour, board step: segmented tab that shows the board colour options."
+  },
+  "tourLevelZeroTitle": "I'm just starting",
+  "@tourLevelZeroTitle": {
+    "description": "Tour level step: card for people who are new to chess; they follow the school lessons."
+  },
+  "tourLevelZeroText": "Viktor's lessons, from how the pieces move to your first checkmates.",
+  "@tourLevelZeroText": {
+    "description": "Body of the \"just starting\" card in the tour level step."
+  },
+  "tourLevelBandTitle": "Pick my range",
+  "@tourLevelBandTitle": {
+    "description": "Tour level step: card that opens the rating range sheet."
+  },
+  "tourLevelBandText": "You pick your rating range, and the Journey starts with the right opponent.",
+  "@tourLevelBandText": {
+    "description": "Body of the \"pick my range\" card before a range is chosen."
+  },
+  "tourLevelBandStart": "The Journey starts at Maia {level}",
+  "@tourLevelBandStart": {
+    "description": "Body of the \"pick my range\" card after a range is chosen; level is the Maia level where the Journey starts.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "tourBandTitle": "Approximate rating",
+  "@tourBandTitle": {
+    "description": "Title of the sheet where the player picks a rating range."
+  },
+  "tourBandHint": "Choose the range closest to your rating, online or over the board.",
+  "@tourBandHint": {
+    "description": "Hint under the title of the rating range sheet."
+  },
+  "tourBandConfirm": "Confirm",
+  "@tourBandConfirm": {
+    "description": "Button that saves the chosen rating range."
+  },
+  "tourRegionCountry": "Country",
+  "@tourRegionCountry": {
+    "description": "Tour region step: label of the country field."
+  },
+  "tourRegionCountryHelp": "From your phone language",
+  "@tourRegionCountryHelp": {
+    "description": "Tour region step: help under the country field when it was filled from the phone language."
+  },
+  "tourRegionState": "State (optional)",
+  "@tourRegionState": {
+    "description": "Tour region step: label of the state field."
+  },
+  "tourRegionCity": "City (optional)",
+  "@tourRegionCity": {
+    "description": "Tour region step: label of the city field."
+  },
+  "tourRegionChoose": "Choose",
+  "@tourRegionChoose": {
+    "description": "Tour region step: hint shown in a field with no value."
+  },
+  "tourRegionBenefitCountry": "Tournament endgames from your country come first",
+  "@tourRegionBenefitCountry": {
+    "description": "Tour region step: first benefit line."
+  },
+  "tourRegionBenefitLocal": "Tournaments from your state and city get priority",
+  "@tourRegionBenefitLocal": {
+    "description": "Tour region step: second benefit line."
+  },
+  "tourRegionBenefitAlerts": "With alerts on, you know when a tournament endgame from your region comes out",
+  "@tourRegionBenefitAlerts": {
+    "description": "Tour region step: third benefit line."
+  },
+  "tourRegionSearch": "Search",
+  "@tourRegionSearch": {
+    "description": "Label of the search field in the country, state and city sheets."
+  },
+  "tourRegionStateTitle": "State",
+  "@tourRegionStateTitle": {
+    "description": "Title of the state sheet."
+  },
+  "tourRegionCityTitle": "City",
+  "@tourRegionCityTitle": {
+    "description": "Title of the city sheet."
+  },
+  "tourRegionNoState": "No state with that name.",
+  "@tourRegionNoState": {
+    "description": "Empty search result in the state sheet."
+  },
+  "tourRegionNoCity": "No city with that name.",
+  "@tourRegionNoCity": {
+    "description": "Empty search result in the city sheet."
+  },
+  "tourRegionUseTyped": "Use “{text}”",
+  "@tourRegionUseTyped": {
+    "description": "Row in the state and city sheets that uses the typed text as the value.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "tourAccountSaved": "Your progress is saved and shows up on any phone",
+  "@tourAccountSaved": {
+    "description": "Tour account step: first benefit line."
+  },
+  "tourAccountNoAccount": "The app works without an account, on this phone only",
+  "@tourAccountNoAccount": {
+    "description": "Tour account step: second benefit line."
+  },
+  "tourAccountGoogle": "Create account with Google",
+  "@tourAccountGoogle": {
+    "description": "Tour account step: Google button."
+  },
+  "tourAccountEmail": "Create account with email",
+  "@tourAccountEmail": {
+    "description": "Tour account step: email button."
+  },
+  "tourAccountNoNetText": "You need an internet connection to create the account.",
+  "@tourAccountNoNetText": {
+    "description": "Tour account step: message when there is no internet."
+  },
+  "tourAccountRetry": "Try again",
+  "@tourAccountRetry": {
+    "description": "Tour account step: retry button on the no-internet state."
+  },
+  "tourAccountBack": "Back",
+  "@tourAccountBack": {
+    "description": "Tour account step: back button on the no-internet state."
+  },
+  "levelLichessProvisionalBack": "Lichess access stays on this phone only and needs no Lucena account.",
+  "@levelLichessProvisionalBack": {
+    "description": "Text under the title of the Lichess screen when the rating is provisional."
+  },
+  "levelLichessCancelled": "Could not finish the Lichess authorization",
+  "@levelLichessCancelled": {
+    "description": "Snack bar shown when the player refuses or leaves the Lichess authorization page."
+  },
+  "levelLichessNoNet": "You need an internet connection to reach Lichess.",
+  "@levelLichessNoNet": {
+    "description": "Message of the no-internet screen of the Lichess level step."
+  },
+  "levelChessNoNet": "You need an internet connection to reach Chess.com.",
+  "@levelChessNoNet": {
+    "description": "Message of the no-internet screen of the Chess.com level step."
+  },
+  "levelChessSearch": "Search",
+  "@levelChessSearch": {
+    "description": "Button that looks up the Chess.com username."
+  },
+  "levelChessNoRatingText": "This account has no rated games on Chess.com yet. With the test, I find your level.",
+  "@levelChessNoRatingText": {
+    "description": "Text of the Chess.com result when the user exists but has no rating."
+  },
+  "levelChessNoRatingTip": "By picking a rating range, the Journey also starts with the right opponent.",
+  "@levelChessNoRatingTip": {
+    "description": "Tip of the Chess.com result when the user has no rating."
+  }
 }

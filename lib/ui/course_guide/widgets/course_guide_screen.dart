@@ -54,12 +54,12 @@ class CourseGuideScreen extends StatelessWidget {
     this.bodyOverride,
     this.titleOverride,
     this.onTabChanged,
-    this.onStartPilares,
+    this.onDiploma,
     super.key,
   });
   final VoidCallback onBack, onPlan, onHelp, onWelcomeContinue;
   final VoidCallback? onLevelTest;
-  final VoidCallback? onStartPilares;
+  final VoidCallback? onDiploma;
   final ValueChanged<TrainingLesson> onLesson;
   final ValueChanged<String> onChapter;
   final WidgetBuilder goalsBuilder, progressBuilder;
@@ -149,7 +149,7 @@ class CourseGuideScreen extends StatelessWidget {
                             ? _LessonTab(
                                 state: state,
                                 onLesson: onLesson,
-                                onStartPilares: onStartPilares,
+                                onDiploma: onDiploma,
                               )
                             : _WelcomeTab(onContinue: onWelcomeContinue),
                       CourseGuideTab.goals => goalsBuilder(context),
@@ -307,11 +307,11 @@ class _LessonTab extends StatelessWidget {
   const _LessonTab({
     required this.state,
     required this.onLesson,
-    this.onStartPilares,
+    this.onDiploma,
   });
   final CourseGuideState state;
   final ValueChanged<TrainingLesson> onLesson;
-  final VoidCallback? onStartPilares;
+  final VoidCallback? onDiploma;
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CourseGuideCubit>();
@@ -388,9 +388,9 @@ class _LessonTab extends StatelessWidget {
               minimumSize: const Size.fromHeight(kButtonHeight),
             ),
             onPressed: school
-                ? onStartPilares
+                ? onDiploma
                 : () => cubit.selectTab(CourseGuideTab.goals),
-            child: Text(school ? t.trainingStartPilares : t.trainingViewGoals),
+            child: Text(school ? t.schoolGraduationOpen : t.trainingViewGoals),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
@@ -470,6 +470,8 @@ class _LessonTab extends StatelessWidget {
               ? t.trainingResumeLabel(sectionLabel, index, resumeStageLabel)
               : lesson.kind == TrainingLessonKind.test
               ? sectionLabel
+              : modules
+              ? t.trainingModuleLesson(sectionLabel, index)
               : t.trainingPartLesson(index, sectionLabel),
           title: needsProfile
               ? t.trainingProfileMomentTitle
@@ -579,6 +581,7 @@ class _CatalogTabState extends State<_CatalogTab> {
           if (!modules || expanded.contains(group.key)) ...[
             if (modules)
               Padding(
+                key: CourseGuideKeys.module(group.key),
                 padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
                 child: Text(
                   '${context.l10n.trainingModuleLabel(index + 1)} · ${group.value}'
@@ -600,8 +603,7 @@ class _CatalogTabState extends State<_CatalogTab> {
                 ),
               ),
             const SizedBox(height: 8),
-            for (final (lessonIndex, lesson)
-                in data.where((l) => l.groupId == group.key).indexed) ...[
+            for (final lesson in data.where((l) => l.groupId == group.key)) ...[
               CourseItemTile(
                 key: CourseGuideKeys.chapterLesson(lesson.id),
                 state: completed.containsKey(lesson.id)
@@ -612,10 +614,7 @@ class _CatalogTabState extends State<_CatalogTab> {
                           : CourseItemState.started
                     : CourseItemState.open,
                 title: modules
-                    ? context.l10n.trainingLessonLabel(
-                        lessonIndex + 1,
-                        lesson.title,
-                      )
+                    ? lesson.title
                     : lesson.kind == TrainingLessonKind.test
                     ? context.l10n.trainingChapterTestTitle
                     : lesson.title,

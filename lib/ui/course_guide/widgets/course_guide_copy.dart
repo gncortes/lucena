@@ -23,7 +23,10 @@ String trainingProgressOpeningTitle(BuildContext context, OpeningTrecho part) =>
 String courseGuideCopy(BuildContext context, String key, {int count = 0}) {
   final t = context.l10n;
   if (key == 'trainingEscolaDoubleBody') {
-    return t.trainingEscolaDoubleBody(count);
+    return t.trainingEscolaDoubleBody(
+      const {1, 2, 3, 4, 5, 6, 8, 12}.contains(count) ? 'w$count' : 'other',
+      count,
+    );
   }
   return <String, String>{
         'trainingPilaresTitle': t.trainingPilaresTitle,

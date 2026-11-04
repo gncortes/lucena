@@ -20,7 +20,6 @@ import '../../core/widgets/animated_progress.dart';
 import '../../core/widgets/character_avatar.dart';
 import '../../core/widgets/game_board_hero.dart';
 import '../../core/widgets/position_board.dart';
-import '../../endgames/widgets/endgame_ui.dart';
 import '../../journey/widgets/journey_ui.dart';
 import '../view_models/home_cubit.dart';
 import 'home_actions.dart';
@@ -57,7 +56,6 @@ class HeroCard extends StatelessWidget {
   _HeroData? _data(BuildContext context) {
     final l10n = context.l10n;
     final school = state.school;
-    final endgame = state.endgame;
     final train = state.trainGoal;
     final current = state.current;
     final next = state.next;
@@ -66,14 +64,6 @@ class HeroCard extends StatelessWidget {
       HomeHero.course when state.training != null => _courseData(
         context,
         state.training!,
-      ),
-      HomeHero.firstSteps => _HeroData(
-        label: l10n.homeHeroFirstSteps,
-        title: l10n.boardMoveMethod,
-        action: l10n.homeHeroStart,
-        avatar: state.character,
-        fen: GameRules.initial.fen,
-        onPressed: () => context.push(Routes.boardControls),
       ),
       HomeHero.school when school != null => _HeroData(
         label: l10n.homeHeroSchool,
@@ -104,26 +94,6 @@ class HeroCard extends StatelessWidget {
         boardTag: challengeBoardTag(next.id),
         onPressed: () => continueJourney(context, state),
       ),
-      HomeHero.endgame when endgame != null => _HeroData(
-        label: l10n.homeEndgames,
-        title: endgame.title,
-        progress: endgame.progress,
-        action: endgame.recommended ? l10n.homeHeroStart : l10n.homeContinue,
-        avatar: endgame.teacher,
-        fen: endgame.fen,
-        boardTag: endgame.openExerciseId == null
-            ? null
-            : exerciseHeroTag(endgame.lessonId, endgame.openExerciseId!),
-        onPressed: () =>
-            context.push(endgame.route, extra: endgame.exerciseFen),
-      ),
-      HomeHero.courseDone => _HeroData(
-        label: l10n.homeEndgames,
-        title: l10n.homeHeroCourseDone,
-        action: l10n.homeGoalTrain,
-        avatar: state.teacher,
-        onPressed: () => context.go(Routes.catalog),
-      ),
       HomeHero.train when train != null => _HeroData(
         label: l10n.homeTrain,
         title: endgameName(l10n, train.suggestion.subcategory.key),
@@ -140,12 +110,12 @@ class HeroCard extends StatelessWidget {
           ),
         ),
       ),
-      HomeHero.speedrun => _HeroData(
-        label: l10n.homeSpeedrun,
-        title: l10n.homeHeroSpeedrun,
-        action: l10n.homeHeroPlay,
-        avatar: Character.stockfish,
-        onPressed: () => context.go(Routes.speedruns),
+      HomeHero.board => _HeroData(
+        label: l10n.freeBoardTitle,
+        title: l10n.homeHeroLastPosition,
+        action: l10n.homeContinue,
+        avatar: state.teacher,
+        onPressed: () => context.go(Routes.freeBoard),
       ),
       _ => null,
     };

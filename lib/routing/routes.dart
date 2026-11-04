@@ -307,7 +307,6 @@ abstract final class Routes {
     path: nextSteps,
     queryParameters: {'level': ?level?.toString()},
   ).toString();
-  static const nextStepsSchool = '/next/school';
 
   /// A Corrida só de um tipo de final ([subcategory]) ou só de uma família
   /// ([category]).
@@ -618,6 +617,11 @@ abstract final class Routes {
 
   static String training(String course) =>
       '/training/${Uri.encodeComponent(course)}';
+
+  /// Guia do curso já na aba Metas (toque na notificação sem lição pendente).
+  static String trainingGoals(String course) => '${training(course)}?aba=goals';
+  static String trainingCatalog(String course) =>
+      '${training(course)}?aba=catalog';
   static String trainingPlan(String course) => '${training(course)}/plan';
   static String trainingChapter(String course, String chapter) =>
       '${training(course)}/chapter/${Uri.encodeComponent(chapter)}';

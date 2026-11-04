@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lucena/domain/models/goal_preference.dart';
 import 'package:lucena/domain/models/rating_level.dart';
 import 'package:lucena/ui/core/keys/home_keys.dart';
-import 'package:lucena/ui/core/keys/level_keys.dart';
+import 'package:lucena/ui/core/keys/tour_keys.dart';
+import 'package:lucena/ui/tour/view_models/tour_cubit.dart';
 import 'package:patrol/patrol.dart';
 
 import 'robots/app_robot.dart';
@@ -16,11 +17,11 @@ void main() {
       'tela inicial já tem o cartão do objetivo', ($) async {
     final tour = TourRobot($);
     await AppRobot($).open(systemLocale: const Locale('pt', 'BR'), tour: true);
-    await tour.finishSteps();
     await tour.answerGoal(GoalPreference.learn);
+    await tour.finishSteps();
 
     await HomeRobot($).expectVisible();
-    expect(find.byKey(LevelKeys.screen), findsNothing);
+    expect(find.byKey(TourKeys.step(TourStep.level)), findsNothing);
     await $(HomeKeys.goalCard).waitUntilVisible();
   });
 
@@ -37,9 +38,9 @@ void main() {
     await $(HomeKeys.goalTitle).waitUntilVisible();
     final before = $.tester.widget<Text>(find.byKey(HomeKeys.goalTitle)).data;
     // "Aprender finais": o Curso de finais é o primeiro atalho.
-    await $(HomeKeys.endgamesButton).scrollTo();
+    await $(HomeKeys.pillarsButton).scrollTo();
     double top(Key key) => $.tester.getTopLeft(find.byKey(key)).dy;
-    expect(top(HomeKeys.endgamesButton), lessThan(top(HomeKeys.catalogButton)));
+    expect(top(HomeKeys.pillarsButton), lessThan(top(HomeKeys.catalogButton)));
 
     await home.openSettings();
     final profile = ProfileRobot($);
@@ -54,7 +55,7 @@ void main() {
     );
     // "Treinar finais": agora o treino vem antes do curso.
     await $(HomeKeys.catalogButton).scrollTo();
-    expect(top(HomeKeys.catalogButton), lessThan(top(HomeKeys.endgamesButton)));
+    expect(top(HomeKeys.catalogButton), lessThan(top(HomeKeys.pillarsButton)));
   });
 
   patrolTest('editar apelido e rating e reiniciar: mantidos', ($) async {

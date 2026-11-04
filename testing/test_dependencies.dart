@@ -53,7 +53,6 @@ import 'package:lucena/data/repositories/photo/photo_repository.dart';
 import 'package:lucena/data/repositories/placement/placement_repository.dart';
 import 'package:lucena/data/repositories/conclusion/conclusion_repository.dart';
 import 'package:lucena/data/repositories/home/home_layout_repository.dart';
-import 'package:lucena/data/repositories/home/unlock_repository.dart';
 import 'package:lucena/data/repositories/journey/journey_repository.dart';
 import 'package:lucena/data/repositories/race/race_repository.dart';
 import 'package:lucena/data/repositories/speedrun/speedrun_repository.dart';
@@ -109,7 +108,6 @@ import 'fakes/fake_analysis_repository.dart';
 import 'fakes/fake_game_review_repository.dart';
 import 'fakes/fake_sound_repository.dart';
 import 'fakes/fake_home_layout_repository.dart';
-import 'fakes/fake_unlock_repository.dart';
 import 'fakes/fake_journey_repository.dart';
 import 'fakes/fake_race_repository.dart';
 import 'fakes/fake_speedrun_repository.dart';
@@ -167,7 +165,6 @@ Dependencies testDependencies({
   TalkRepository? talkRepository,
   OnboardingRepository? onboardingRepository,
   HomeLayoutRepository? homeLayoutRepository,
-  UnlockRepository? unlockRepository,
   PaceRepository? paceRepository,
   LessonRepository? lessonRepository,
   SchoolProgressRepository? schoolProgressRepository,
@@ -238,7 +235,6 @@ Dependencies testDependencies({
     talkRepository: talkRepository ?? FakeTalkRepository(),
     onboardingRepository: onboardingRepository ?? FakeOnboardingRepository(),
     homeLayoutRepository: homeLayoutRepository ?? FakeHomeLayoutRepository(),
-    unlockRepository: unlockRepository ?? FakeUnlockRepository(),
     paceRepository: paceRepository ?? FakePaceRepository(),
     lessonRepository: lessonRepository ?? FakeLessonRepository(),
     schoolProgressRepository:

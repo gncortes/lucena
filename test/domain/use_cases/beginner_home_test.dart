@@ -12,7 +12,7 @@ void main() {
   test('os outros objetivos (e nenhum) veem o rating logo', () {
     expect(BeginnerHome.showsRating(null, 0), isTrue);
     expect(BeginnerHome.showsRating(GoalPreference.train, 0), isTrue);
-    expect(BeginnerHome.showsRating(GoalPreference.endgames, 0), isTrue);
+    expect(BeginnerHome.showsRating(GoalPreference.improve, 0), isTrue);
   });
 
   test('os finais em destaque esperam a primeira vitória de quem aprende', () {

@@ -50,7 +50,6 @@ import 'data/repositories/featured/featured_alerts_repository.dart';
 import 'data/repositories/featured/featured_progress_repository.dart';
 import 'data/repositories/course_preview/course_preview_repository.dart';
 import 'data/repositories/featured/featured_repository.dart';
-import 'data/repositories/home/unlock_repository.dart';
 import 'data/repositories/onboarding/onboarding_repository.dart';
 import 'data/repositories/pace/pace_repository.dart';
 import 'data/repositories/photo/photo_repository.dart';
@@ -723,9 +722,6 @@ class _LucenaAppState extends State<LucenaApp> {
         ),
         RepositoryProvider<RegionPromptRepository>.value(
           value: dependencies.regionPromptRepository,
-        ),
-        RepositoryProvider<UnlockRepository>.value(
-          value: dependencies.unlockRepository,
         ),
         RepositoryProvider<PaceRepository>.value(
           value: dependencies.paceRepository,

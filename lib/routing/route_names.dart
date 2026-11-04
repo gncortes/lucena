@@ -51,7 +51,6 @@ abstract final class RouteNames {
   static const journeyRung = 'journeyRung';
   static const journeyChallenge = 'journeyChallenge';
   static const nextSteps = 'nextSteps';
-  static const nextStepsSchool = 'nextStepsSchool';
   static const race = 'race';
   static const racePerformance = 'racePerformance';
   static const raceWarmUp = 'raceWarmUp';

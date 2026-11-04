@@ -130,7 +130,7 @@ void main() {
       for (final phrase in [
         'a próxima lição, sempre aqui.',
         'o que fazer hoje.',
-        'as lições feitas e as estrelas.',
+        'as lições feitas e as estrelas por peça.',
         'todas as lições do curso.',
       ]) {
         expect(find.textContaining(phrase), findsOneWidget);
@@ -149,7 +149,7 @@ void main() {
       );
       await cubit.load();
       await tester.pumpAndSettle();
-      expect(find.text('Módulo 1 · lição 1'), findsOneWidget);
+      expect(find.text('Módulo 1 · Lição 1'), findsOneWidget);
       await tester.tap(find.byKey(CourseGuideKeys.tab('catalog')));
       await tester.pumpAndSettle();
       expect(find.text('MÓDULO 1 · PEÇAS'), findsOneWidget);
@@ -191,7 +191,7 @@ void main() {
         if (stateName == 'done') {
           expect(find.byKey(TrainingKeys.doubleButton), findsOneWidget);
           expect(
-            find.text('Entram hoje mais 4 lições e os desafios delas.'),
+            find.text('Entram hoje mais quatro lições e os desafios delas.'),
             findsOneWidget,
           );
           await tester.tap(find.byKey(TrainingKeys.doubleButton));
@@ -279,6 +279,27 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets('School marks the finished lesson as Concluída hoje at $size', (
+      tester,
+    ) async {
+      final scenario = TrainingScenarioBuilder(
+        TrainingCourse.escola,
+        resources: resources(),
+      );
+      final cubit = await show(
+        tester,
+        scenario,
+        scenario.schoolDayOne().copyWith(tab: CourseGuideTab.goals),
+      );
+      expect(find.text('Concluída hoje'), findsNothing);
+      final lesson = scenario.content.lessons.firstWhere(
+        (l) => l.id == 'pieces.rook',
+      );
+      expect(await cubit.observeLesson(lesson), isTrue);
+      await tester.pumpAndSettle();
+      expect(find.text('Concluída hoje'), findsOneWidget);
+    });
 
     testWidgets(
       'School progress counts visible modules and 0–3 completed levels at $size',
