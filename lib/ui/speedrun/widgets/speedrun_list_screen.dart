@@ -31,6 +31,8 @@ import '../../core/theme/app_shape.dart';
 import '../../core/widgets/one_line.dart';
 import '../../../domain/use_cases/speedrun_category.dart';
 import '../../core/widgets/skeleton.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/entrada_em_cascata.dart';
 
 /// Os speedruns no ritmo escolhido, com o melhor tempo de cada um.
 class SpeedrunListScreen extends StatelessWidget {
@@ -82,89 +84,94 @@ class SpeedrunListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: all == null
-          ? const SkeletonList()
-          : ListView(
-              // Espaço no fim: o último cartão rola até sair da barra do
-              // sistema.
-              padding: scrollPadding(context, bottom: 48),
-              children: [
-                // O modo no alto: cada partida com o seu relógio, ou um
-                // relógio só para todas (a Maratona). Fica gravado.
-                const _ModePicker(),
-                // O ritmo do modo, sempre à vista: a categoria e, dentro
-                // dela, o tempo. Cada ritmo tem os seus recordes, e o último
-                // de cada modo fica gravado.
-                if (state.compactPace)
-                  _CompactPace(
-                    current: marathon ? state.marathonPace : state.pace,
-                    onChosen: marathon
-                        ? context.read<SpeedrunCubit>().chooseMarathonPace
-                        : context.read<SpeedrunCubit>().choosePace,
-                  )
-                else
-                  _PacePicker(
-                    key: SpeedrunKeys.pace,
-                    current: marathon ? state.marathonPace : state.pace,
-                    onChosen: marathon
-                        ? context.read<SpeedrunCubit>().chooseMarathonPace
-                        : context.read<SpeedrunCubit>().choosePace,
-                  ),
-                // A dificuldade dos finais: abre na do nível do jogador; as
-                // outras ficam a um toque.
-                if (state.category != null &&
-                    [...all, ...state.marathons].any(
-                      (summary) =>
-                          SpeedrunCategories.of(summary.speedrun) != null,
-                    ))
-                  const _CategoryPicker(),
-                if (![...all, ...state.marathons].any(
-                  (summary) =>
-                      (marathon
-                          ? summary.speedrun.kind == SpeedrunKind.marathon
-                          : summary.speedrun.kind != SpeedrunKind.marathon) &&
-                      shown(summary),
-                ))
-                  Padding(
-                    key: SpeedrunKeys.empty,
-                    padding: const EdgeInsets.all(AppSpacing.xl),
-                    child: Text(
-                      l10n.desafiosSpeedrunEmpty,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyLarge,
+      body: ShimmerConteudo(
+        carregando: all == null,
+        esqueleto: const SkeletonList(),
+        child: all == null
+            ? const SizedBox.shrink()
+            : ListView(
+                // Espaço no fim: o último cartão rola até sair da barra do
+                // sistema.
+                padding: scrollPadding(context, bottom: 48),
+                children: [
+                  // O modo no alto: cada partida com o seu relógio, ou um
+                  // relógio só para todas (a Maratona). Fica gravado.
+                  const _ModePicker(),
+                  // O ritmo do modo, sempre à vista: a categoria e, dentro
+                  // dela, o tempo. Cada ritmo tem os seus recordes, e o último
+                  // de cada modo fica gravado.
+                  if (state.compactPace)
+                    _CompactPace(
+                      current: marathon ? state.marathonPace : state.pace,
+                      onChosen: marathon
+                          ? context.read<SpeedrunCubit>().chooseMarathonPace
+                          : context.read<SpeedrunCubit>().choosePace,
+                    )
+                  else
+                    _PacePicker(
+                      key: SpeedrunKeys.pace,
+                      current: marathon ? state.marathonPace : state.pace,
+                      onChosen: marathon
+                          ? context.read<SpeedrunCubit>().chooseMarathonPace
+                          : context.read<SpeedrunCubit>().choosePace,
                     ),
-                  ),
-                if (marathon) ...[
-                  section(l10n.speedrunEndingSection),
-                  for (final (index, summary) in state.marathons.indexed)
-                    if (shown(summary))
-                      StaggeredEntrance(
-                        index: index,
-                        child: _Card(summary: summary),
+                  // A dificuldade dos finais: abre na do nível do jogador; as
+                  // outras ficam a um toque.
+                  if (state.category != null &&
+                      [...all, ...state.marathons].any(
+                        (summary) =>
+                            SpeedrunCategories.of(summary.speedrun) != null,
+                      ))
+                    const _CategoryPicker(),
+                  if (![...all, ...state.marathons].any(
+                    (summary) =>
+                        (marathon
+                            ? summary.speedrun.kind == SpeedrunKind.marathon
+                            : summary.speedrun.kind != SpeedrunKind.marathon) &&
+                        shown(summary),
+                  ))
+                    Padding(
+                      key: SpeedrunKeys.empty,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Text(
+                        l10n.desafiosSpeedrunEmpty,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
-                ] else
-                  for (final kind in SpeedrunKind.values)
-                    // Modalidade sem speedrun na dificuldade não ganha título.
-                    if (all.any(
-                      (summary) =>
-                          summary.speedrun.kind == kind && shown(summary),
-                    )) ...[
-                      section(switch (kind) {
-                        SpeedrunKind.rung => l10n.speedrunRungSection,
-                        SpeedrunKind.ending => l10n.speedrunEndingSection,
-                        SpeedrunKind.exercises => l10n.speedrunExercisesSection,
-                        SpeedrunKind.full => l10n.speedrunFullSection,
-                        SpeedrunKind.marathon => l10n.marathonSection,
-                      }),
-                      for (final (index, summary) in all.indexed)
-                        if (summary.speedrun.kind == kind && shown(summary))
-                          StaggeredEntrance(
-                            index: index,
-                            child: _Card(summary: summary),
-                          ),
-                    ],
-              ],
-            ),
+                    ),
+                  if (marathon) ...[
+                    section(l10n.speedrunEndingSection),
+                    for (final (index, summary) in state.marathons.indexed)
+                      if (shown(summary))
+                        StaggeredEntrance(
+                          index: index,
+                          child: _Card(summary: summary),
+                        ),
+                  ] else
+                    for (final kind in SpeedrunKind.values)
+                      // Modalidade sem speedrun na dificuldade não ganha título.
+                      if (all.any(
+                        (summary) =>
+                            summary.speedrun.kind == kind && shown(summary),
+                      )) ...[
+                        section(switch (kind) {
+                          SpeedrunKind.rung => l10n.speedrunRungSection,
+                          SpeedrunKind.ending => l10n.speedrunEndingSection,
+                          SpeedrunKind.exercises =>
+                            l10n.speedrunExercisesSection,
+                          SpeedrunKind.full => l10n.speedrunFullSection,
+                          SpeedrunKind.marathon => l10n.marathonSection,
+                        }),
+                        for (final (index, summary) in all.indexed)
+                          if (summary.speedrun.kind == kind && shown(summary))
+                            StaggeredEntrance(
+                              index: index,
+                              child: _Card(summary: summary),
+                            ),
+                      ],
+                ],
+              ),
+      ),
     );
   }
 
@@ -244,55 +251,61 @@ class SpeedrunListScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.xl,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        section(
-                          Icons.timer_outlined,
-                          l10n.speedrunModeClassic,
-                          Text(
-                            l10n.speedrunHelpClassic,
-                            key: SpeedrunKeys.intro,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                        section(
-                          Icons.all_inclusive,
-                          l10n.marathonSection,
-                          Text(
-                            l10n.speedrunHelpMarathon,
-                            key: SpeedrunKeys.helpText,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        ),
-                        section(
-                          Icons.av_timer_outlined,
-                          l10n.speedrunPaceLine(paceShort(l10n, pace)),
-                          Text(
-                            l10n.speedrunHelpClock(
-                              initial,
-                              pace.increment.inSeconds,
+                    child: EntradaEmCascata(
+                      montar: (itens) => Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: itens,
+                      ),
+                      itens: [
+                        for (final secao in [
+                          section(
+                            Icons.timer_outlined,
+                            l10n.speedrunModeClassic,
+                            Text(
+                              l10n.speedrunHelpClassic,
+                              key: SpeedrunKeys.intro,
+                              style: theme.textTheme.bodyLarge,
                             ),
-                            key: SpeedrunKeys.paceHelp,
-                            style: theme.textTheme.bodyLarge,
                           ),
-                        ),
-                        section(
-                          Icons.school_outlined,
-                          l10n.speedrunHelpLevels,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: levels,
+                          section(
+                            Icons.all_inclusive,
+                            l10n.marathonSection,
+                            Text(
+                              l10n.speedrunHelpMarathon,
+                              key: SpeedrunKeys.helpText,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
-                        section(
-                          Icons.pause_circle_outline,
-                          l10n.lessonDemoPause,
-                          Text(
-                            l10n.speedrunHelpPause,
-                            style: theme.textTheme.bodyLarge,
+                          section(
+                            Icons.av_timer_outlined,
+                            l10n.speedrunPaceLine(paceShort(l10n, pace)),
+                            Text(
+                              l10n.speedrunHelpClock(
+                                initial,
+                                pace.increment.inSeconds,
+                              ),
+                              key: SpeedrunKeys.paceHelp,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                           ),
-                        ),
+                          section(
+                            Icons.school_outlined,
+                            l10n.speedrunHelpLevels,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: levels,
+                            ),
+                          ),
+                          section(
+                            Icons.pause_circle_outline,
+                            l10n.lessonDemoPause,
+                            Text(
+                              l10n.speedrunHelpPause,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          ),
+                        ])
+                          ItemDaCascata.texto(secao),
                       ],
                     ),
                   ),

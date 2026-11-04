@@ -129,7 +129,8 @@ class TourLevelFooter extends StatelessWidget {
     switch (state.choice) {
       case LevelChoice.test:
         if (state.testPending) {
-          await takeLevelTest(context, finish: false);
+          // "Usar este nível" já é a escolha: o tour segue para a Região.
+          await takeLevelTest(context, finish: true);
         } else {
           await cubit.finish();
         }

@@ -6,6 +6,7 @@ import 'package:lucena/domain/models/training/training_course.dart';
 import 'package:lucena/domain/models/training/training_course_config.dart';
 import 'package:lucena/domain/models/training/training_resources.dart';
 import 'package:lucena/domain/models/training/training_state.dart';
+import 'package:lucena/ui/core/motion/rota_que_abre.dart';
 import 'package:lucena/ui/core/keys/course_guide_keys.dart';
 import 'package:lucena/ui/core/widgets/course/chapter_lesson_list.dart';
 import 'package:lucena/ui/core/widgets/course/course_chapter_layout.dart';
@@ -101,7 +102,11 @@ void main() {
             find.byType(ChapterLessonList),
           );
           expect(list.rows.length, 2);
-          final rows = list.rows.cast<ChapterLessonRow>();
+          // Cada linha vem dentro da origem de onde a aula cresce (H-ANI-04).
+          final rows = [
+            for (final row in list.rows)
+              (row as OrigemQueAbre).child as ChapterLessonRow,
+          ];
           expect(rows.map((r) => r.number), ['2.1', '2.2']);
           expect(
             rows.first.kind,
@@ -117,7 +122,8 @@ void main() {
                 ? ChapterRowKind.recommended
                 : ChapterRowKind.other,
           );
-          final exercises = list.exercises! as ChapterLessonRow;
+          final exercises =
+              (list.exercises! as OrigemQueAbre).child as ChapterLessonRow;
           expect(exercises.kind, ChapterRowKind.exercises);
           expect(exercises.number, '2.3');
           expect(exercises.title, 'Exercícios');

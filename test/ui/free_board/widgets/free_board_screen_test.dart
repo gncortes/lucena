@@ -3227,10 +3227,13 @@ void main() {
       await moveNow(tester, 'h1', 'h8');
       double opacity() => tester
           .widget<Opacity>(
-            find.ancestor(
-              of: find.byKey(FreeBoardKeys.endFlash),
-              matching: find.byType(Opacity),
-            ),
+            // O mais perto: o da tela (H-ANI-07) fica por fora.
+            find
+                .ancestor(
+                  of: find.byKey(FreeBoardKeys.endFlash),
+                  matching: find.byType(Opacity),
+                )
+                .first,
           )
           .opacity;
       expect(opacity(), lessThan(1));

@@ -38,6 +38,8 @@ import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_shape.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/actions_footer.dart';
+import '../../core/motion/shimmer_conteudo.dart';
+import '../../core/motion/botao_carregando.dart';
 
 /// Um desafio das estrelas: o relógio, o tabuleiro com a estrela e, no fim,
 /// a marca e a nota.
@@ -57,6 +59,10 @@ class StarChallengeScreen extends StatefulWidget {
 class _StarChallengeScreenState extends State<StarChallengeScreen>
     with WidgetsBindingObserver {
   ChessboardController? _board;
+
+  // O aluno tocou em "Tentar de novo": o salvar carrega no próprio botão
+  // (H-ANI-08), não num círculo solto.
+  bool _salvandoDeNovo = false;
 
   @override
   void initState() {
@@ -166,7 +172,11 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
               children: [
                 SafeArea(
                   child: Builder(
-                    builder: (context) => _body(context, state, boardSettings),
+                    builder: (context) => ShimmerConteudo(
+                      carregando: !state.ready || _board == null,
+                      esqueleto: const SkeletonList(),
+                      child: _body(context, state, boardSettings),
+                    ),
                   ),
                 ),
                 if (_action(context, state) case final action?)
@@ -215,17 +225,23 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     // Uma linha só: em fonte grande o rótulo diminui em vez de quebrar.
     Widget label(String text) =>
         FittedBox(fit: BoxFit.scaleDown, child: Text(text, maxLines: 1));
+    if (!state.saving && !state.saveError) _salvandoDeNovo = false;
+    if (state.saveError || (state.saving && _salvandoDeNovo)) {
+      return BotaoCarregando(
+        buttonKey: StarChallengeKeys.retrySave,
+        icon: Icons.refresh,
+        label: l10n.lessonRetry,
+        busy: state.saving,
+        onPressed: () {
+          setState(() => _salvandoDeNovo = true);
+          return cubit.retryFinish();
+        },
+      );
+    }
+    // O fim do tempo salva sozinho: sem botão tocado, o círculo no lugar.
     if (state.saving) {
       return const Center(
         child: CircularProgressIndicator(key: StarChallengeKeys.saveProgress),
-      );
-    }
-    if (state.saveError) {
-      return FilledButton.icon(
-        key: StarChallengeKeys.retrySave,
-        icon: const Icon(Icons.refresh),
-        label: label(l10n.lessonRetry),
-        onPressed: cubit.retryFinish,
       );
     }
     return switch (state.phase) {
@@ -260,7 +276,7 @@ class _StarChallengeScreenState extends State<StarChallengeScreen>
     BoardSettings boardSettings,
   ) {
     final board = _board;
-    if (!state.ready || board == null) return const SkeletonList();
+    if (!state.ready || board == null) return const SizedBox.shrink();
     final scaler = MediaQuery.textScalerOf(context);
     // Plain numbers occupy 24 dp at the default scale, plus 10/6 padding.
     final timerHeight = 16 + scaler.scale(24).ceilToDouble();

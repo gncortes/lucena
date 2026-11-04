@@ -23,7 +23,21 @@ class OrigemQueAbre extends StatefulWidget {
 }
 
 class _OrigemQueAbreState extends State<OrigemQueAbre> {
-  static final _origens = <String, _OrigemQueAbreState>{};
+  /// Por id, as origens montadas na ordem em que entraram: vale a última. A
+  /// mesma lição pode estar em duas telas empilhadas (catálogo e capítulo);
+  /// fechar a de cima não apaga a de baixo.
+  static final _origens = <String, List<_OrigemQueAbreState>>{};
+
+  static _OrigemQueAbreState? daVez(String id) => _origens[id]?.lastOrNull;
+
+  void _entra(String id) => (_origens[id] ??= []).add(this);
+
+  void _sai(String id) {
+    final lista = _origens[id];
+    if (lista == null) return;
+    lista.remove(this);
+    if (lista.isEmpty) _origens.remove(id);
+  }
 
   final _escondida = ValueNotifier(false);
 
@@ -37,20 +51,20 @@ class _OrigemQueAbreState extends State<OrigemQueAbre> {
   @override
   void initState() {
     super.initState();
-    _origens[widget.id] = this;
+    _entra(widget.id);
   }
 
   @override
   void didUpdateWidget(OrigemQueAbre antigo) {
     super.didUpdateWidget(antigo);
     if (antigo.id == widget.id) return;
-    if (_origens[antigo.id] == this) _origens.remove(antigo.id);
-    _origens[widget.id] = this;
+    _sai(antigo.id);
+    _entra(widget.id);
   }
 
   @override
   void dispose() {
-    if (_origens[widget.id] == this) _origens.remove(widget.id);
+    _sai(widget.id);
     _escondida.dispose();
     super.dispose();
   }
@@ -161,7 +175,7 @@ class _CrescendoState extends State<_Crescendo> {
   }
 
   void _mudouOEstado(AnimationStatus estado) {
-    final origem = _OrigemQueAbreState._origens[widget.id];
+    final origem = _OrigemQueAbreState.daVez(widget.id);
     if (origem != _origem) _mostra();
     _origem = origem;
     origem?._escondida.value = !estado.isDismissed;
@@ -189,7 +203,7 @@ class _CrescendoState extends State<_Crescendo> {
       animation: widget.animacao,
       builder: (context, _) {
         final tela = limites.biggest;
-        final origem = _OrigemQueAbreState._origens[widget.id];
+        final origem = _OrigemQueAbreState.daVez(widget.id);
         final animando = !widget.animacao.isCompleted;
         if (animando) _inicio = origem?.retangulo ?? _inicio;
         final inicio = _inicio;

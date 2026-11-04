@@ -16,6 +16,7 @@ import '../view_models/history_cubit.dart';
 import 'history_games_tab.dart';
 import 'rating_card.dart';
 import 'history_speedruns_tab.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// O Histórico: Partidas, Clássico e Maratona. A aba escolhida fica gravada
 /// (toque ou arraste).
@@ -88,32 +89,38 @@ class _HistoryScreenState extends State<HistoryScreen>
           title: Text(l10n.historyTitle),
           actions: [if (_hasFilter(state)) _filterIcon(context, state)],
         ),
-        body: !state.loaded
-            ? const HistoryLoading()
-            : NestedScrollView(
-                // O rating sai ao rolar; o título e as abas ficam presos.
-                headerSliverBuilder: (context, _) => [
-                  if (state.history.isNotEmpty)
-                    SliverToBoxAdapter(child: HistoryRatingCard(state: state)),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _TabsHeader(
-                      background: Theme.of(context).scaffoldBackgroundColor,
-                      child: _HistoryTabs(controller: _controller),
+        body: ShimmerConteudo(
+          carregando: !state.loaded,
+          esqueleto: const HistoryLoading(),
+          child: !state.loaded
+              ? const SizedBox.shrink()
+              : NestedScrollView(
+                  // O rating sai ao rolar; o título e as abas ficam presos.
+                  headerSliverBuilder: (context, _) => [
+                    if (state.history.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: HistoryRatingCard(state: state),
+                      ),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _TabsHeader(
+                        background: Theme.of(context).scaffoldBackgroundColor,
+                        child: _HistoryTabs(controller: _controller),
+                      ),
                     ),
-                  ),
-                ],
-                body: TabBarView(
-                  controller: _controller,
-                  children: [
-                    HistoryGamesTab(
-                      gameDestinationBuilder: widget.gameDestinationBuilder,
-                    ),
-                    const HistorySpeedrunsTab(marathon: false),
-                    const HistorySpeedrunsTab(marathon: true),
                   ],
+                  body: TabBarView(
+                    controller: _controller,
+                    children: [
+                      HistoryGamesTab(
+                        gameDestinationBuilder: widget.gameDestinationBuilder,
+                      ),
+                      const HistorySpeedrunsTab(marathon: false),
+                      const HistorySpeedrunsTab(marathon: true),
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

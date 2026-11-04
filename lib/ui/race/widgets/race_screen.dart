@@ -15,6 +15,7 @@ import 'race_game_view.dart';
 import 'race_intro_view.dart';
 import 'race_result_view.dart';
 import 'race_review_view.dart';
+import '../../core/motion/shimmer_conteudo.dart';
 
 /// A Corrida de problemas: abertura, corrida, resultado e revisão numa tela
 /// só; o [RaceCubit] diz em que ponto ela está.
@@ -83,13 +84,17 @@ class _RaceScreenState extends State<RaceScreen> with WidgetsBindingObserver {
             appBar: _appBar(context, state),
             body: SafeArea(
               bottom: false,
-              child: switch (state.phase) {
-                RacePhase.loading => const SkeletonList(),
-                RacePhase.intro => RaceIntroView(state: state),
-                RacePhase.playing => RaceGameView(state: state),
-                RacePhase.finished => RaceResultView(state: state),
-                RacePhase.reviewing => RaceReviewView(state: state),
-              },
+              child: ShimmerConteudo(
+                carregando: state.phase == RacePhase.loading,
+                esqueleto: const SkeletonList(),
+                child: switch (state.phase) {
+                  RacePhase.loading => const SizedBox.shrink(),
+                  RacePhase.intro => RaceIntroView(state: state),
+                  RacePhase.playing => RaceGameView(state: state),
+                  RacePhase.finished => RaceResultView(state: state),
+                  RacePhase.reviewing => RaceReviewView(state: state),
+                },
+              ),
             ),
           ),
         );

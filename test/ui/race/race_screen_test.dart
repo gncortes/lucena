@@ -2,6 +2,9 @@ import 'package:chessground/chessground.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../core/motion/entrada_helpers.dart';
+
 import 'package:lucena/ui/core/theme/app_spacing.dart';
 import 'package:lucena/domain/models/app_language.dart';
 import 'package:lucena/domain/models/app_settings.dart';
@@ -60,6 +63,33 @@ void main() {
     await tester.pumpAndSettle();
     return cubit;
   }
+
+  // H-ANI-16: a introdução da Corrida se monta em ordem, o "Começar" por
+  // último, e o toque fica liberado desde o início.
+  testWidgets('introdução: entra em cascata e o Começar vem por último', (
+    tester,
+  ) async {
+    phone(tester);
+    final cubit = RaceCubit(repository, now);
+    addTearDown(cubit.close);
+    await cubit.load();
+    await tester.pumpWidget(
+      TestApp(
+        settingsCubit: await settings(),
+        child: BlocProvider.value(value: cubit, child: const RaceScreen()),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    final porque = opacidadeAcima(tester, find.byKey(RaceKeys.whyEndgames));
+    final comecar = opacidadeAcima(tester, find.byKey(RaceKeys.start));
+    expect(porque, greaterThan(0));
+    expect(comecar, lessThan(porque));
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(opacidadeAcima(tester, find.byKey(RaceKeys.whyEndgames)), 1);
+    expect(opacidadeAcima(tester, find.byKey(RaceKeys.start)), 1);
+    await tester.pumpAndSettle();
+  });
 
   // Joga [from] -> [to] no tabuleiro da vez, em dois toques.
   Future<void> move(WidgetTester tester, String from, String to) async {
